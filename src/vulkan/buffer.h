@@ -8,16 +8,16 @@
 class Buffer
 {
 	public:
-		Buffer(const Device* device, size_t size, VkBufferUsageFlags usage);
+		Buffer(Device* device, size_t size, VkBufferUsageFlags usage);
 		~Buffer();
 
 		VkBuffer handle() const { return _buffer; }
 		Device* device() const { return _device; }
 
-		DeviceMemory allocateMemory(VkMemoryPropertyFlags properties);
+		DeviceMemory allocateMemory(const VkMemoryPropertyFlags properties);
 		VkMemoryRequirements getMemoryRequirements() const;
 
-		void copyFrom(CommandPool* commandPool, const Buffer& src, VkDeviceSize size);
+		void copyFrom(CommandPool* commandPool, Buffer* src, VkDeviceSize size);
 
 	private:
 		Device* _device;

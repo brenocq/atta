@@ -3,6 +3,7 @@
 SwapChain::SwapChain(Device* device):
 	_device(device)
 {
+	_physicalDevice = _device->physicalDevice();
 	// Swap chain support
 	SupportDetails details = querySwapChainSupport();
 
@@ -69,7 +70,7 @@ SwapChain::SwapChain(Device* device):
 
 	for (const auto image : _images)
 	{
-		_imageViews.push_back(std::make_unique<ImageView>(device, image, _format, VK_IMAGE_ASPECT_COLOR_BIT));
+		_imageViews.push_back(new ImageView(device, image, _format, VK_IMAGE_ASPECT_COLOR_BIT));
 	}
 
 }

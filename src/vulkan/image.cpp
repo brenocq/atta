@@ -1,4 +1,5 @@
 #include "image.h"
+#include "commandBuffers.h"
 
 Image::Image(Device* device, VkExtent2D extent, VkFormat format):
 	Image(device, extent, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT)
@@ -55,12 +56,13 @@ DeviceMemory Image::allocateMemory(VkMemoryPropertyFlags properties) const
 	const auto requirements = getMemoryRequirements();
 	DeviceMemory memory(_device, requirements.size, requirements.memoryTypeBits, properties);
 
-	if(vkBindImageMemory(_device->handle(), _image, memory->handle(), 0) != VK_SUCCESS)
+	if(vkBindImageMemory(_device->handle(), _image, memory.handle(), 0) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[ImageView] Failed to bind image memory!" << RESET << std::endl;
 		exit(1);
 	}
 
+	return memory;
 }
 
 VkMemoryRequirements Image::getMemoryRequirements() const
@@ -94,7 +96,7 @@ void Image::transitionImageLayout(CommandPool* commandPool, VkImageLayout newLay
 	vkQueueSubmit(graphicsQueue, 1, &submitInfo, nullptr);
 	vkQueueWaitIdle(graphicsQueue);
 
-	imageLayout_ = newLayout;
+	_imageLayout = newLayout;
 }
 
 void Image::transitionCommand(CommandPool* commandPool, VkImageLayout newLayout, VkCommandBuffer commandBuffer)
@@ -145,7 +147,7 @@ void Image::transitionCommand(CommandPool* commandPool, VkImageLayout newLayout,
 		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	}
-	else if(imageLayout_ == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) 
+	else if(_imageLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) 
 	{
 		barrier.srcAccessMask = 0;
 		barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
@@ -172,18 +174,18 @@ void Image::copyFrom(CommandPool* commandPool, const Buffer* buffer)
 
 	vkBeginCommandBuffer(commandBuffers[0], &beginInfo);
 
-	VkBufferImageCopy region = {};
-	region.bufferOffset = 0;
-	region.bufferRowLength = 0;
-	region.bufferImageHeight = 0;
-	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	region.imageSubresource.mipLevel = 0;
-	region.imageSubresource.baseArrayLayer = 0;
-	region.imageSubresource.layerCount = 1;
-	region.imageOffset = { 0, 0, 0 };
-	region.imageExtent = { _extent.width, _extent.height, 1 };
+		VkBufferImageCopy region = {};
+		region.bufferOffset = 0;
+		region.bufferRowLength = 0;
+		region.bufferImageHeight = 0;
+		region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		region.imageSubresource.mipLevel = 0;
+		region.imageSubresource.baseArrayLayer = 0;
+		region.imageSubresource.layerCount = 1;
+		region.imageOffset = { 0, 0, 0 };
+		region.imageExtent = { _extent.width, _extent.height, 1 };
 
-	vkCmdCopyBufferToImage(commandBuffers[0], buffer->handle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+		vkCmdCopyBufferToImage(commandBuffers[0], buffer->handle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
 	vkEndCommandBuffer(commandBuffers[0]);
 

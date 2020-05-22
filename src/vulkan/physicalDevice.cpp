@@ -1,80 +1,30 @@
-#include "simulator.h"
+#include "physicalDevice.h"
 
-Simulator::Simulator()
+PhysicalDevice::PhysicalDevice(Instance* instance):
+	_instance(instance)
 {
-	initWindow();
-	initInstance();
-	initSurface();
-	initDevice();
-	initSwapChain();
-
 	printPhysicalDevices();
+	choosePhysicalDevice();
 }
 
-Simulator::~Simulator()
-{
-}
-
-void Simulator::initWindow()
-{
-	WindowConfig windowConfig = {};
-	windowConfig.title = "Breno Queiroz Simulator";
-	windowConfig.width = 1366;
-	windowConfig.height = 768;
-	windowConfig.cursorDisabled = false;
-	windowConfig.fullscreen = false;
-	windowConfig.resizable = false;
-
-	_window = new Window(windowConfig);
-}
-
-void Simulator::initInstance()
-{
-	// Validation layers will only be used if ENABLE_VALIDATION_LAYERS is set to true
-	const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-
-	_instance = new Instance(_window, validationLayers);
-}
-
-void Simulator::initSurface()
-{
-	_surface = new Surface(_instance);
-}
-
-void Simulator::initDevice()
-{
-	VkPhysicalDevice physicalDevice = choosePhysicalDevice();
-	_device = new Device(physicalDevice, _surface);
-	_commandPool = new CommandPool(_device, _device->graphicsFamilyIndex(), true);
-}
-void Simulator::initSwapChain()
-{
-	_swapChain = new SwapChain(_device);
-}
-
-void Simulator::run()
-{
-	_window->drawFrame = [this]() { drawFrame(); };
-	_window->run();
-}
-
-void Simulator::drawFrame()
+PhysicalDevice::~PhysicalDevice()
 {
 
 }
 
-VkPhysicalDevice Simulator::choosePhysicalDevice()
+VkPhysicalDevice PhysicalDevice::choosePhysicalDevice()
 {
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	const std::vector<VkPhysicalDevice>& physicalDevices = _instance->physicalDevices();
 
+	// Check if any of the physical devices have geometry shader and graphics queue support 
 	auto result = std::find_if(physicalDevices.begin(), physicalDevices.end(), [](const VkPhysicalDevice& device)
 	{
 		// We want a device with geometry shader support
 		VkPhysicalDeviceFeatures deviceFeatures;
 		vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-		if (!deviceFeatures.geometryShader)
+		if(!deviceFeatures.geometryShader)
 		{
 			return false;
 		}
@@ -95,45 +45,18 @@ VkPhysicalDevice Simulator::choosePhysicalDevice()
 		return graphicsQueue != queueFamilies.end();
 	});
 
-	if (result == physicalDevices.end())
+	if(result == physicalDevices.end())
 	{
 		std::cout << BOLDRED << "[Simulator] Cannot find a suitable device!" << RESET << std::endl;
 		exit(1);
 	}
 
-	return *result;
+	_physicalDevice = *result;
 }
 
-
-
-std::string Simulator::getVersion(const uint32_t version)
+void PhysicalDevice::printPhysicalDevices()
 {
-	// Convert version to human readable
-	std::stringstream ss;
-	ss << VK_VERSION_MAJOR(version);
-	ss << ".";
-	ss << VK_VERSION_MINOR(version);
-	ss << ".";
-	ss << VK_VERSION_PATCH(version);
 
-	return ss.str();
-
-}
-
-std::string Simulator::getVersion(const uint32_t version, const uint32_t vendorId)
-{
-	// Convert version to human readable
-	std::stringstream ss;
-	ss << VK_VERSION_MAJOR(version);
-	ss << ".";
-	ss << (VK_VERSION_MINOR(version) >> (vendorId == 0x10DE ? 2 : 0));
-	ss << ".";
-	ss << (VK_VERSION_PATCH(version) >> (vendorId == 0x10DE ? 4 : 0));
-	return ss.str();
-}
-
-void Simulator::printPhysicalDevices()
-{
 	std::cout << BOLDWHITE << "GPUs with Vulkan support: " << RESET << std::endl;
 
 	const std::vector<VkPhysicalDevice> physicalDevices = _instance->physicalDevices();
@@ -200,4 +123,29 @@ void Simulator::printPhysicalDevices()
 		std::cout << "driver " << getVersion(prop.driverVersion, prop.vendorID);
 		std::cout << ")" << std::endl;
 	}
+}
+
+std::string PhysicalDevice::getVersion(const uint32_t version)
+{
+	// Convert version to human readable
+	std::stringstream ss;
+	ss << VK_VERSION_MAJOR(version);
+	ss << ".";
+	ss << VK_VERSION_MINOR(version);
+	ss << ".";
+	ss << VK_VERSION_PATCH(version);
+
+	return ss.str();
+}
+
+std::string PhysicalDevice::getVersion(const uint32_t version, const uint32_t vendorId)
+{
+	// Convert version to human readable
+	std::stringstream ss;
+	ss << VK_VERSION_MAJOR(version);
+	ss << ".";
+	ss << (VK_VERSION_MINOR(version) >> (vendorId == 0x10DE ? 2 : 0));
+	ss << ".";
+	ss << (VK_VERSION_PATCH(version) >> (vendorId == 0x10DE ? 4 : 0));
+	return ss.str();
 }

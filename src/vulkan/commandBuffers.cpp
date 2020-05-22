@@ -27,7 +27,7 @@ CommandBuffers::~CommandBuffers()
 	}
 }
 
-VkCommandBuffer CommandBuffer::begin(const size_t i)
+VkCommandBuffer CommandBuffers::begin(const size_t i)
 {
 	VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -43,7 +43,7 @@ VkCommandBuffer CommandBuffer::begin(const size_t i)
 	return _commandBuffers[i];
 }
 
-void CommandBuffer::end(const size_t i)
+void CommandBuffers::end(const size_t i)
 {
 
 	if(vkEndCommandBuffer(_commandBuffers[i]) != VK_SUCCESS)

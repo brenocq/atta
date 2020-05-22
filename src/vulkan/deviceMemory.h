@@ -11,7 +11,7 @@ class DeviceMemory
 		DeviceMemory& operator = (const DeviceMemory&) = delete;
 		DeviceMemory& operator = (DeviceMemory&&) = delete;
 
-		DeviceMemory(const Device* device, size_t size, uint32_t memoryTypeBits, VkMemoryPropertyFlags properties);
+		DeviceMemory(Device* device, size_t size, uint32_t memoryTypeBits, VkMemoryPropertyFlags properties);
 		DeviceMemory(DeviceMemory&& other) noexcept;
 		~DeviceMemory();
 
