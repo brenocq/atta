@@ -8,8 +8,8 @@
 class Image
 {
 	public:
-	Image(const Device& device, VkExtent2D extent, VkFormat format);
-	Image(const Device& device, VkExtent2D extent, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage);
+	Image(Device* device, VkExtent2D extent, VkFormat format);
+	Image(Device* device, VkExtent2D extent, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage);
 	Image(Image&& other) noexcept;
 	~Image();
 
@@ -22,7 +22,7 @@ class Image
 	VkMemoryRequirements getMemoryRequirements() const;
 
 	void transitionImageLayout(CommandPool* commandPool, VkImageLayout newLayout);
-	void transitionCommand(CommandPool* commandPool, VkImageLayout newLayout, VkCommandBuffer commandBuffer)
+	void transitionCommand(CommandPool* commandPool, VkImageLayout newLayout, VkCommandBuffer commandBuffer);
 	void copyFrom(CommandPool* commandPool, const Buffer* buffer);
 
 	private:

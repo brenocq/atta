@@ -1,17 +1,21 @@
 #----------- Folders ------------
-BIN	   = bin/
-LIB    = lib/
-SRC	   = src/
-OBJ    = obj/
-SHA    = shaders/
+BIN	   	   = bin/
+LIB    	   = lib/
+SRC	   	   = src/
+SRC_VULKAN = ${SRC}vulkan/
+SRC_ASSETS = ${SRC}assets/
+OBJ    	   = obj/
+SHA    	   = ${SRC}shaders/
 #------------ Files -------------
-FILES = deviceMemory commandBuffers image depthBuffer swapChain imageView commandPool device surface instance stbImage window simulator 
+FILES = 
+FILES_VULKAN = frameBuffer shaderModule descriptorPool descriptorSetLayout descriptorSetManager descriptorSets renderPass pipelineLayout graphicsPipeline fence semaphore buffer deviceMemory commandBuffers image depthBuffer swapChain imageView commandPool physicalDevice device surface instance stbImage window simulator 
+FILES_ASSETS = #scene model texture material
 SHADERS = shader
 #------------ Helpers -------------
 CC = g++
 VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.135.0/x86_64
 CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include -Wall
-LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan -I ${LIB} 
+LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan -I ${LIB}
 
 #---------- Text style ----------
 RED    = \033[0;31m
@@ -21,13 +25,19 @@ BOLD   = \033[1m
 
 
 SOURCES=$(patsubst %, ${SRC}%.cpp, ${FILES})
+SOURCES+=$(patsubst %, ${SRC_VULKAN}%.cpp, ${FILES_VULKAN})
+SOURCES+=$(patsubst %, ${SRC_ASSETS}%.cpp, ${FILES_ASSETS})
+
 HEADERS=$(patsubst %, ${SRC}%.h, ${FILES})
+HEADERS+=$(patsubst %, ${SRC_VULKAN}%.h, ${FILES_VULKAN})
+HEADERS+=$(patsubst %, ${SRC_ASSETS}%.h, ${FILES_ASSETS})
+
 OBJECTS=$(patsubst %, ${OBJ}%.o, ${FILES})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_VULKAN})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_ASSETS})
 
 SHADERS_VERT=$(patsubst %, ${SHA}%.vert, ${SHADERS})
 SHADERS_FRAG=$(patsubst %, ${SHA}%.frag, ${SHADERS})
-
-DEPENDENCIES=../assembler/lib/defines.h
 
 EXECUTABLE=${BIN}simulator
 
@@ -37,6 +47,14 @@ ${OBJ}%.o: ${SRC}%.cpp
 	@/bin/echo -e "${GREEN}Compiling $<${NC}"
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
+${OBJ}%.o: ${SRC_VULKAN}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+
+${OBJ}%.o: ${SRC_ASSETS}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+	
 build: ${OBJECTS} ${SHADERS_VERT} ${SHADERS_FRAG} ${SRC}main.cpp
 	@/bin/echo -e "${GREEN}${BOLD}---------- Building ----------${NC}"
 	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_VERT} -o shaders/vert.spv

@@ -20,6 +20,8 @@ class Instance
 
 	private:
 	bool checkVulkanValidationLayerSupport();
+	std::vector<const char*> getInstanceRequiredExtensions();
+	bool checkInstanceExtensionSupport(std::vector<const char*> requiredExtensions);
 	void getVulkanDevices();
 	void getVulkanExtensions();
 

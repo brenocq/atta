@@ -2,6 +2,7 @@
 #define SWAP_CHAIN_H
 
 #include <memory>
+#include <vector>
 #include "device.h"
 #include "imageView.h"
 
@@ -24,7 +25,7 @@ class SwapChain
 	VkPhysicalDevice physicalDevice() const { return _physicalDevice; }
 	uint32_t minImageCount() const { return _minImageCount; }
 	const std::vector<VkImage>& images() const { return _images; }
-	const std::vector<std::unique_ptr<ImageView>>& imageViews() const { return _imageViews; }
+	std::vector<ImageView*> imageViews() const { return _imageViews; }
 	const VkExtent2D& extent() const { return _extent; }
 	VkFormat format() const { return _format; }
 	VkPresentModeKHR presentMode() const { return _presentMode; }
@@ -45,7 +46,7 @@ class SwapChain
 	VkFormat _format;
 	VkExtent2D _extent;
 	std::vector<VkImage> _images;
-	std::vector<std::unique_ptr<ImageView>> _imageViews;
+	std::vector<ImageView*> _imageViews;
 };
 
 #endif// SWAP_CHAIN_H

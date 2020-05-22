@@ -1,7 +1,7 @@
 #include "deviceMemory.h"
 
 DeviceMemory::DeviceMemory(
-	const Device* device, 
+	Device* device, 
 	const size_t size, 
 	const uint32_t memoryTypeBits, 
 	const VkMemoryPropertyFlags properties) :
@@ -49,7 +49,7 @@ void DeviceMemory::unmapMemory()
 	vkUnmapMemory(_device->handle(), _memory);
 }
 
-uint32_t DeviceMemory::FindMemoryType(const uint32_t typeFilter, const VkMemoryPropertyFlags properties) const
+uint32_t DeviceMemory::findMemoryType(const uint32_t typeFilter, const VkMemoryPropertyFlags properties) const
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(_device->physicalDevice(), &memProperties);
