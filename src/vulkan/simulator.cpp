@@ -32,7 +32,6 @@ void Simulator::initInstance()
 {
 	// Validation layers will only be used if ENABLE_VALIDATION_LAYERS is set to true
 	const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-
 	_instance = new Instance(_window, validationLayers);
 }
 
@@ -45,7 +44,7 @@ void Simulator::initDevice()
 {
 	_physicalDevice = new PhysicalDevice(_instance);
 	_device = new Device(_physicalDevice->handle(), _surface);
-	_commandPool = new CommandPool(_device, _device->graphicsFamilyIndex(), true);
+	_commandPool = new CommandPool(_device, _device->graphicsFamilyIndex(), false);
 }
 
 void Simulator::initSwapChain()
@@ -75,6 +74,11 @@ void Simulator::run()
 {
 	_currentFrame = 0;
 
+	const auto commandBuffer = _commandBuffers->begin(imageIndex);
+	render(commandBuffer, imageIndex);
+	_commandBuffers->end(imageIndex);
+
+
 	_window->drawFrame = [this]() { drawFrame(); };
 	_window->run();
 }
@@ -94,24 +98,21 @@ void Simulator::drawFrame()
 	// Get index of next image to be drawn to, and signal semaphore when ready to be drawn to
 	auto result = vkAcquireNextImageKHR(_device->handle(), _swapChain->handle(), noTimeout, imageAvailableSemaphore, nullptr, &imageIndex);
 
-	if (result == VK_ERROR_OUT_OF_DATE_KHR || _isWireFrame!= _graphicsPipeline->isWireFrame())
-	{
-		//RecreateSwapChain();
-		return;
-	}
+	//if (result == VK_ERROR_OUT_OF_DATE_KHR || _isWireFrame!= _graphicsPipeline->isWireFrame())
+	//{
+	//	//RecreateSwapChain();
+	//	return;
+	//}
 
-	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-	{
-		//Throw(std::runtime_error(std::string("failed to acquire next image (") + ToString(result) + ")"));
-		std::cout << BOLDRED << "[Simulator] Failed to acquire next image!" << RESET << std::endl;
-		exit(1);
-	}
-
-	const auto commandBuffer = _commandBuffers->begin(imageIndex);
-	render(commandBuffer, imageIndex);
-	_commandBuffers->end(imageIndex);
+	//if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	//{
+	//	//Throw(std::runtime_error(std::string("failed to acquire next image (") + ToString(result) + ")"));
+	//	std::cout << BOLDRED << "[Simulator] Failed to acquire next image!" << RESET << std::endl;
+	//	exit(1);
+	//}
 
 	//UpdateUniformBuffer(imageIndex);
+	const auto commandBuffer = _commandBuffers->begin(imageIndex);
 
 	// SUBMIT COMMAND BUFFER TO RENDER
 	VkSubmitInfo submitInfo = {};
@@ -133,7 +134,7 @@ void Simulator::drawFrame()
 
 	inFlightFence.reset();
 
-	if(vkQueueSubmit(_device->graphicsQueue(), 1, &submitInfo, inFlightFence.handle()) != VK_SUCCESS)
+	if(vkQueueSubmit(_device->graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE, inFlightFence.handle()) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[Simulator] Failed to submit draw command buffer!" << RESET << std::endl;
 		exit(1);
@@ -169,9 +170,9 @@ void Simulator::drawFrame()
 
 void Simulator::render(VkCommandBuffer commandBuffer, uint32_t imageIndex)
 {
-	std::array<VkClearValue, 2> clearValues = {};
+	std::array<VkClearValue, 1> clearValues = {};
 	clearValues[0].color = { {1.0f, 0.6f, 0.4f, 1.0f} };
-	clearValues[1].depthStencil = { 1.0f, 0 };
+	//clearValues[1].depthStencil = { 1.0f, 0 };
 
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

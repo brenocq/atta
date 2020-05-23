@@ -47,7 +47,6 @@ Instance::Instance(Window* window, const std::vector<const char*> validationLaye
 	else 
 	{
 		createInfo.enabledLayerCount = 0;
-		createInfo.pNext = nullptr;
 	}
 
 	// Create the Vulkan instance
