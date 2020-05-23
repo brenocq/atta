@@ -74,10 +74,6 @@ void Simulator::run()
 {
 	_currentFrame = 0;
 
-	const auto commandBuffer = _commandBuffers->begin(imageIndex);
-	render(commandBuffer, imageIndex);
-	_commandBuffers->end(imageIndex);
-
 
 	_window->drawFrame = [this]() { drawFrame(); };
 	_window->run();
@@ -111,8 +107,12 @@ void Simulator::drawFrame()
 	//	exit(1);
 	//}
 
+
 	//UpdateUniformBuffer(imageIndex);
 	const auto commandBuffer = _commandBuffers->begin(imageIndex);
+	render(commandBuffer, imageIndex);
+	_commandBuffers->end(imageIndex);
+
 
 	// SUBMIT COMMAND BUFFER TO RENDER
 	VkSubmitInfo submitInfo = {};
@@ -134,7 +134,7 @@ void Simulator::drawFrame()
 
 	inFlightFence.reset();
 
-	if(vkQueueSubmit(_device->graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE, inFlightFence.handle()) != VK_SUCCESS)
+	if(vkQueueSubmit(_device->graphicsQueue(), 1, &submitInfo, inFlightFence.handle()) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[Simulator] Failed to submit draw command buffer!" << RESET << std::endl;
 		exit(1);
