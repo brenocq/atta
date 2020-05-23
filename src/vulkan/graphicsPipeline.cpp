@@ -178,10 +178,10 @@ GraphicsPipeline::GraphicsPipeline(
 	pipelineInfo.pViewportState = &viewportState;
 	pipelineInfo.pRasterizationState = &rasterizer;
 	pipelineInfo.pMultisampleState = &multisampling;
-	pipelineInfo.pDepthStencilState = &depthStencil;
+	pipelineInfo.pDepthStencilState = nullptr;//&depthStencil;
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = nullptr; // Optional
-	pipelineInfo.basePipelineHandle = nullptr; // Optional
+	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
 	pipelineInfo.layout = _pipelineLayout->handle();
 	pipelineInfo.renderPass = _renderPass->handle();

@@ -57,8 +57,8 @@ ${OBJ}%.o: ${SRC_ASSETS}%.cpp
 	
 build: ${OBJECTS} ${SHADERS_VERT} ${SHADERS_FRAG} ${SRC}main.cpp
 	@/bin/echo -e "${GREEN}${BOLD}---------- Building ----------${NC}"
-	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_VERT} -o shaders/vert.spv
-	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_FRAG} -o shaders/frag.spv
+	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_VERT} -o ${SRC}shaders/vert.spv
+	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_FRAG} -o ${SRC}shaders/frag.spv
 	${CC} ${CFLAGS} ${SRC}main.cpp ${OBJECTS} -o ${EXECUTABLE} ${LDFLAGS}
 
 #------------ Init -------------
