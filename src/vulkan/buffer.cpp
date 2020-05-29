@@ -59,7 +59,7 @@ void Buffer::copyFrom(CommandPool* commandPool, Buffer* src, VkDeviceSize size)
 		copyRegion.dstOffset = 0; // Optional
 		copyRegion.size = size;
 
-		vkCmdCopyBuffer(commandBuffers[0], src->handle(), handle(), 1, &copyRegion);
+		vkCmdCopyBuffer(commandBuffers[0], src->handle(), _buffer, 1, &copyRegion);
 
 	vkEndCommandBuffer(commandBuffers[0]);
 

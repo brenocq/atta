@@ -7,7 +7,7 @@
 class PipelineLayout
 {
 	public:
-		PipelineLayout(Device* device/*, DescriptorSetLayout* descriptorSetLayout*/);
+		PipelineLayout(Device* device, DescriptorSetLayout* descriptorSetLayout);
 		~PipelineLayout();
 
 		VkPipelineLayout handle() const { return _pipelineLayout; }

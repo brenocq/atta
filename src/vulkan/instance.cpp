@@ -28,6 +28,12 @@ Instance::Instance(Window* window, const std::vector<const char*> validationLaye
 
 	// Populate vector to hold instance required extensions
 	std::vector<const char*> requiredExtensions = getInstanceRequiredExtensions(); 
+
+	if (!validationLayers.empty())
+	{
+		requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	}
+
 	// Check if all required extensions are supported
 	getVulkanExtensions();
 	if(!checkInstanceExtensionSupport(requiredExtensions))

@@ -7,7 +7,7 @@ DescriptorPool::DescriptorPool(Device* device, const std::vector<DescriptorBindi
 
 	for (const auto& binding : descriptorBindings)
 	{
-		poolSizes.push_back(VkDescriptorPoolSize{ binding.Type, static_cast<uint32_t>(binding.DescriptorCount*maxSets )});
+		poolSizes.push_back(VkDescriptorPoolSize{ binding.type, static_cast<uint32_t>(binding.descriptorCount*maxSets )});
 	}
 
 	VkDescriptorPoolCreateInfo poolInfo = {};

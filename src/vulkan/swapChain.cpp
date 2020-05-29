@@ -72,7 +72,6 @@ SwapChain::SwapChain(Device* device):
 	{
 		_imageViews.push_back(new ImageView(device, image, _format, VK_IMAGE_ASPECT_COLOR_BIT));
 	}
-
 }
 
 SwapChain::~SwapChain()

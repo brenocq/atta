@@ -22,6 +22,8 @@ class Device
 	VkQueue presentQueue() const { return _presentQueue; }
 	VkQueue transferQueue() const { return _transferQueue; }
 
+	void waitIdle() const;
+
 	private:
 	std::vector<VkQueueFamilyProperties>::const_iterator findQueue(
 			const std::vector<VkQueueFamilyProperties>& queueFamilies,
