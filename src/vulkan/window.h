@@ -26,9 +26,13 @@ class Window
 
 	void close();
 	void run();
+	bool isMinimized() const;
+	void waitForEvents() const;
 	GLFWwindow* handle() const { return _window; }
+	WindowConfig config() const { return _config; }
 		
 	std::vector<const char*> getRequiredExtensions() const;
+	VkExtent2D framebufferSize() const;
 	VkExtent2D windowSize() const;
 
 	std::function<void()> drawFrame;

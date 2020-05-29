@@ -101,6 +101,10 @@ Device::~Device()
 	if (_device != nullptr)
 		vkDestroyDevice(_device, nullptr);
 }
+void Device::waitIdle() const
+{
+	vkDeviceWaitIdle(_device);
+}
 
 void Device::checkDeviceExtensions()
 {

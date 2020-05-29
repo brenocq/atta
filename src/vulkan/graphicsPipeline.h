@@ -7,6 +7,8 @@
 #include "descriptorSetManager.h"
 #include "pipelineLayout.h"
 #include "renderPass.h"
+#include "../assets/scene.h"
+#include "../assets/uniformBuffer.h"
 
 class GraphicsPipeline
 {
@@ -14,8 +16,8 @@ class GraphicsPipeline
 		GraphicsPipeline(
 				SwapChain* swapChain, 
 				DepthBuffer* depthBuffer,
-				//const std::vector<UniformBuffer>& uniformBuffers,
-				//const Assets::Scene& scene,
+				const std::vector<UniformBuffer>& uniformBuffers,
+				Scene* scene,
 				bool isWireFrame);
 		~GraphicsPipeline();
 

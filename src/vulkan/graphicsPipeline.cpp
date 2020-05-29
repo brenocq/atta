@@ -5,15 +5,12 @@
 #include "device.h"
 #include "shaderModule.h"
 #include "../assets/vertex.h"
-//#include "Assets/Scene.hpp"
-//#include "Assets/UniformBuffer.hpp"
-//#include "Assets/Vertex.hpp"
 
 GraphicsPipeline::GraphicsPipeline(
 	SwapChain* swapChain, 
 	DepthBuffer* depthBuffer,
-	//const std::vector<Assets::UniformBuffer>& uniformBuffers,
-	//const Assets::Scene& scene,
+	const std::vector<UniformBuffer>& uniformBuffers,
+	Scene* scene,
 	const bool isWireFrame) :
 	_swapChain(swapChain),
 	_isWireFrame(isWireFrame)
@@ -25,10 +22,10 @@ GraphicsPipeline::GraphicsPipeline(
 	//---- VERTEX INPUT ----// (TODO: Put in vertex descriptions when resources created)
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount = 0;//1;
-	vertexInputInfo.pVertexBindingDescriptions = nullptr;//&bindingDescription;
-	vertexInputInfo.vertexAttributeDescriptionCount = 0;//static_cast<uint32_t>(attributeDescriptions.size());
-	vertexInputInfo.pVertexAttributeDescriptions = nullptr;//attributeDescriptions.data(); 
+	vertexInputInfo.vertexBindingDescriptionCount = 1;
+	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data(); 
 	
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -114,48 +111,48 @@ GraphicsPipeline::GraphicsPipeline(
 	{
 		{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
 		{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
-		//{2, static_cast<uint32_t>(scene.TextureSamplers().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
+		{2, static_cast<uint32_t>(scene->textureSamplers().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 	};
 
-	//_descriptorSetManager = new DescriptorSetManager(device, descriptorBindings, uniformBuffers.size());
+	_descriptorSetManager = new DescriptorSetManager(device, descriptorBindings, uniformBuffers.size());
 
-	//DescriptorSets* descriptorSets = _descriptorSetManager->descriptorSets();
+	DescriptorSets* descriptorSets = _descriptorSetManager->descriptorSets();
 
-	//for(uint32_t i = 0; i != _swapChain->images()->size(); i++)
-	//{
-	//	// Uniform buffer
-	//	VkDescriptorBufferInfo uniformBufferInfo = {};
-	//	uniformBufferInfo.buffer = uniformBuffers[i]->buffer()->handle();
-	//	uniformBufferInfo.range = VK_WHOLE_SIZE;
+	for(uint32_t i = 0; i != _swapChain->images().size(); i++)
+	{
+		// Uniform buffer
+		VkDescriptorBufferInfo uniformBufferInfo = {};
+		uniformBufferInfo.buffer = uniformBuffers[i].buffer()->handle();
+		uniformBufferInfo.range = VK_WHOLE_SIZE;
 
-	//	// Material buffer
-	//	//VkDescriptorBufferInfo materialBufferInfo = {};
-	//	//materialBufferInfo.buffer = scene->materialBuffer()->handle();
-	//	//materialBufferInfo.range = VK_WHOLE_SIZE;
+		// Material buffer
+		VkDescriptorBufferInfo materialBufferInfo = {};
+		materialBufferInfo.buffer = scene->materialBuffer()->handle();
+		materialBufferInfo.range = VK_WHOLE_SIZE;
 
-	//	// Image and texture samplers
-	//	//std::vector<VkDescriptorImageInfo> imageInfos(scene.TextureSamplers().size());
+		// Image and texture samplers
+		std::vector<VkDescriptorImageInfo> imageInfos(scene->textureSamplers().size());
 
-	//	//for (size_t t = 0; t != imageInfos.size(); ++t)
-	//	//{
-	//	//	auto& imageInfo = imageInfos[t];
-	//	//	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	//	//	imageInfo.imageView = scene.TextureImageViews()[t];
-	//	//	imageInfo.sampler = scene.TextureSamplers()[t];
-	//	//}
+		for (size_t t = 0; t != imageInfos.size(); ++t)
+		{
+			auto& imageInfo = imageInfos[t];
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = scene->textureImageViews()[t];
+			imageInfo.sampler = scene->textureSamplers()[t];
+		}
 
-	//	const std::vector<VkWriteDescriptorSet> descriptorWrites =
-	//	{
-	//		descriptorSets->bind(i, 0, uniformBufferInfo),
-	//		//descriptorSets.Bind(i, 1, materialBufferInfo),
-	//		//descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
-	//	};
+		const std::vector<VkWriteDescriptorSet> descriptorWrites =
+		{
+			descriptorSets->bind(i, 0, uniformBufferInfo),
+			descriptorSets->bind(i, 1, materialBufferInfo),
+			descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
+		};
 
-	//	descriptorSets->updateDescriptors(i, descriptorWrites);
-	//}
+		descriptorSets->updateDescriptors(i, descriptorWrites);
+	}
 
 	// Create pipeline layout and render pass.
-	_pipelineLayout = new PipelineLayout(device/*, _descriptorSetManager->descriptorSetLayout()*/);
+	_pipelineLayout = new PipelineLayout(device, _descriptorSetManager->descriptorSetLayout());
 	_renderPass = new RenderPass(_swapChain, depthBuffer, true, true);
 
 	// Load shaders.
@@ -178,10 +175,10 @@ GraphicsPipeline::GraphicsPipeline(
 	pipelineInfo.pViewportState = &viewportState;
 	pipelineInfo.pRasterizationState = &rasterizer;
 	pipelineInfo.pMultisampleState = &multisampling;
-	pipelineInfo.pDepthStencilState = nullptr;//&depthStencil;
+	pipelineInfo.pDepthStencilState = &depthStencil;
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = nullptr; // Optional
-	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
+	pipelineInfo.basePipelineHandle = nullptr; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
 	pipelineInfo.layout = _pipelineLayout->handle();
 	pipelineInfo.renderPass = _renderPass->handle();
@@ -201,7 +198,7 @@ GraphicsPipeline::~GraphicsPipeline()
 
 	delete _renderPass;
 	delete _pipelineLayout;
-	//delete _descriptorSetManager;
+	delete _descriptorSetManager;
 }
 
 VkDescriptorSet GraphicsPipeline::descriptorSet(const uint32_t index) const

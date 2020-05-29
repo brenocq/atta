@@ -123,6 +123,7 @@ void PhysicalDevice::printPhysicalDevices()
 		std::cout << "driver " << getVersion(prop.driverVersion, prop.vendorID);
 		std::cout << ")" << std::endl;
 	}
+	std::cout << std::endl;
 }
 
 std::string PhysicalDevice::getVersion(const uint32_t version)

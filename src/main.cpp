@@ -890,17 +890,16 @@ private:
 };
 
 int main() {
-	HelloTriangleApplication app;
+	//HelloTriangleApplication app;
 
-    try {
-        app.run();
-    } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
-        return EXIT_FAILURE;
-    }
-
-	//Simulator* sim = new Simulator(); 
-	//sim->run();
+    //try {
+    //    app.run();
+    //} catch (const std::exception& e) {
+    //    std::cerr << e.what() << std::endl;
+    //    return EXIT_FAILURE;
+    //}
+	Simulator* sim = new Simulator(); 
+	sim->run();
 
 	return EXIT_SUCCESS;
 }

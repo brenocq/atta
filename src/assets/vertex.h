@@ -1,6 +1,12 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
+#define NOMINMAX
+#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#undef APIENTRY
+
 #include <array>
 #include "glm.h"
 

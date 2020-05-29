@@ -1,0 +1,12 @@
+# Swap
+*.swp
+
+# Compiled shaders
+*.spv
+
+# Object files
+*.o
+
+# Program
+bin/simulator
+

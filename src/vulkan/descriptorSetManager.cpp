@@ -8,7 +8,7 @@ DescriptorSetManager::DescriptorSetManager(Device* device, const std::vector<Des
 
 	for (const auto& binding : descriptorBindings)
 	{
-		if (!bindingTypes.insert(std::make_pair(binding.Binding, binding.Type)).second)
+		if (!bindingTypes.insert(std::make_pair(binding.binding, binding.type)).second)
 		{
 			std::cout << BOLDRED << "[DescriptorSetManager] Binding collision!" << RESET << std::endl;
 			exit(1);

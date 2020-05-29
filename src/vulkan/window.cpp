@@ -72,11 +72,29 @@ void Window::run()
 	}
 }
 
+bool Window::isMinimized() const
+{
+	const auto size = framebufferSize();
+	return size.height == 0 && size.width == 0;
+}
+
+void Window::waitForEvents() const
+{
+	glfwWaitEvents();
+}
+
 std::vector<const char*> Window::getRequiredExtensions() const
 {
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 	return std::vector<const char*>(glfwExtensions, glfwExtensions + glfwExtensionCount);
+}
+
+VkExtent2D Window::framebufferSize() const
+{
+	int width, height;
+	glfwGetFramebufferSize(_window, &width, &height);
+	return VkExtent2D{ static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
 }
 
 VkExtent2D Window::windowSize() const

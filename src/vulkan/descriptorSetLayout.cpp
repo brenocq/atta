@@ -8,10 +8,10 @@ DescriptorSetLayout::DescriptorSetLayout(Device* device, const std::vector<Descr
 	for (const auto& binding : descriptorBindings)
 	{
 		VkDescriptorSetLayoutBinding b = {};
-		b.binding = binding.Binding;
-		b.descriptorCount = binding.DescriptorCount;
-		b.descriptorType = binding.Type;
-		b.stageFlags = binding.Stage;
+		b.binding = binding.binding;
+		b.descriptorCount = binding.descriptorCount;
+		b.descriptorType = binding.type;
+		b.stageFlags = binding.stage;
 
 		layoutBindings.push_back(b);
 	}
