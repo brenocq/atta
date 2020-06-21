@@ -7,6 +7,7 @@
 #include <vector>
 #include <string.h>
 #include "defines.h"
+#include "debugCommon.h"
 
 class Instance
 {
@@ -14,10 +15,12 @@ class Instance
 	Instance();
 	~Instance();
 
+	VkInstance handle() const { return _instance; }
 	private:
 	void printExtensionSupport();
-	bool checkValidationLayerSupport();
+	std::vector<const char*> getRequiredExtensions();
 
+	bool checkValidationLayerSupport();
     VkInstance _instance;
 };
 

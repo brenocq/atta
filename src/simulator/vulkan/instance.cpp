@@ -1,5 +1,6 @@
 #include "instance.h"
 
+//--------------------- Instance class -------------------//
 const std::vector<const char*> _validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
@@ -16,7 +17,7 @@ Instance::Instance()
 	// Application info
 	VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "Robot Simulator";
+    appInfo.pApplicationName = "Robot Simulator - by Brenocq";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = "No Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -27,25 +28,26 @@ Instance::Instance()
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions;
+	// Setup required extensions
+	std::vector<const char*> extensions = getRequiredExtensions();
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+	createInfo.ppEnabledExtensionNames = extensions.data();
 
-	// Get glfw extensions
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-	createInfo.enabledExtensionCount = glfwExtensionCount;
-	createInfo.ppEnabledExtensionNames = glfwExtensions;
-
-	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
+	// Setup validation layers
+	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 	if (ENABLE_VALIDATION_LAYERS) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
 		createInfo.ppEnabledLayerNames = _validationLayers.data();
+
+		// Debug debug utils messenger
+		populateDebugMessengerCreateInfo(debugCreateInfo);
+		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
 	} else {
 		createInfo.enabledLayerCount = 0;
+		createInfo.pNext = nullptr;
 	}
 
-	printExtensionSupport();
-
+	//printExtensionSupport();
 	if(vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[Instance]" << RESET << RED << " Failed to create vulkan instance!" << RESET << std::endl;
@@ -55,6 +57,9 @@ Instance::Instance()
 
 Instance::~Instance()
 {
+	if(ENABLE_VALIDATION_LAYERS)
+		//destroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
+
 	vkDestroyInstance(_instance, nullptr);
 }
 
@@ -72,6 +77,21 @@ void Instance::printExtensionSupport()
 	}
 
 	std::cout << RESET;
+}
+
+std::vector<const char*> Instance::getRequiredExtensions()
+{
+	uint32_t glfwExtensionCount = 0;
+	const char** glfwExtensions;
+	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+
+	if (ENABLE_VALIDATION_LAYERS) {
+		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	}
+
+	return extensions;
 }
 
 bool Instance::checkValidationLayerSupport()

@@ -11,7 +11,8 @@ SHA    	   = ${SRC}shaders/
 #------------ Files -------------
 FILES = 
 FILES_SIM = simulator
-FILES_VULKAN = application window instance#debugUtilsMessenger camera sampler tinyObjLoader frameBuffer shaderModule descriptorPool descriptorSetLayout descriptorSetManager descriptorSets renderPass pipelineLayout graphicsPipeline fence semaphore buffer deviceMemory commandBuffers image depthBuffer swapChain imageView commandPool physicalDevice device surface instance stbImage window simulator 
+FILES_VULKAN = application window instance debugMessenger debugCommon
+#debugUtilsMessenger camera sampler tinyObjLoader frameBuffer shaderModule descriptorPool descriptorSetLayout descriptorSetManager descriptorSets renderPass pipelineLayout graphicsPipeline fence semaphore buffer deviceMemory commandBuffers image depthBuffer swapChain imageView commandPool physicalDevice device surface instance stbImage window simulator 
 FILES_ASSETS = #cornellBox scene model texture textureImage uniformBuffer
 SHADERS = shader
 
