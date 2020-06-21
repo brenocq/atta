@@ -889,10 +889,10 @@ private:
 };
 
 int main() {
-    //HelloTriangleApplication app;
-	Simulator* sim = new Simulator();
-	sim->run();
+	Simulator sim = Simulator();
+	sim.run();
 
+    //HelloTriangleApplication app;
     //try {
     //    app.run();
     //} catch (const std::exception& e) {

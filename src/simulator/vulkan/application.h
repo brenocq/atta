@@ -3,6 +3,7 @@
 
 #include "window.h"
 #include "instance.h"
+#include "debugMessenger.h"
 
 class Application
 {
@@ -15,6 +16,7 @@ class Application
 	private:
 	Window* _window;
 	Instance* _instance;
+	DebugMessenger* _debugMessenger;
 };
 
 #endif// APPLICATION_H

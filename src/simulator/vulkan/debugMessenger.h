@@ -7,24 +7,29 @@
 #include <vector>
 #include <string.h>
 #include "defines.h"
+#include "instance.h"
+#include "debugCommon.h"
 
 class DebugMessenger
 {
 	public:
-	DebugMessenger();
+	DebugMessenger(Instance* instance);
 	~DebugMessenger();
 
 	private:
-	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, 
-			const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
-			const VkAllocationCallbacks* pAllocator, 
+	VkResult CreateDebugUtilsMessengerEXT(
+			VkInstance instance,
+			const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+			const VkAllocationCallbacks* pAllocator,
 			VkDebugUtilsMessengerEXT* pDebugMessenger);
 
-	void DestroyDebugUtilsMessengerEXT(VkInstance instance, 
-			VkDebugUtilsMessengerEXT debugMessenger, 
+	void DestroyDebugUtilsMessengerEXT(
+			VkInstance instance,
+			VkDebugUtilsMessengerEXT debugMessenger,
 			const VkAllocationCallbacks* pAllocator);
 
     VkDebugUtilsMessengerEXT _debugMessenger;
+	Instance* _instance;
 };
 
 #endif// DEBUG_UTILS_MESSENGER_H
