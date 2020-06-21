@@ -1,8 +1,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "defines.h"
-#include "vulkan/simulator.h"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -13,6 +11,7 @@
 #include <cstdint>
 #include <optional>
 #include <set>
+#include "simulator/simulator.h"
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -648,10 +647,10 @@ private:
         uint32_t imageIndex;
         vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
-        //if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
-        //    vkWaitForFences(device, 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
-        //}
-        //imagesInFlight[imageIndex] = inFlightFences[currentFrame];
+        if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
+            vkWaitForFences(device, 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+        }
+        imagesInFlight[imageIndex] = inFlightFences[currentFrame];
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -890,7 +889,9 @@ private:
 };
 
 int main() {
-	//HelloTriangleApplication app;
+    //HelloTriangleApplication app;
+	Simulator* sim = new Simulator();
+	sim->run();
 
     //try {
     //    app.run();
@@ -898,8 +899,6 @@ int main() {
     //    std::cerr << e.what() << std::endl;
     //    return EXIT_FAILURE;
     //}
-	Simulator* sim = new Simulator(); 
-	sim->run();
 
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

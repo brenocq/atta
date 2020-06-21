@@ -2,15 +2,19 @@
 BIN	   	   = bin/
 LIB    	   = lib/
 SRC	   	   = src/
-SRC_VULKAN = ${SRC}vulkan/
+SRC_SIM    = ${SRC}simulator/
+SRC_VULKAN = ${SRC_SIM}vulkan/
 SRC_ASSETS = ${SRC}assets/
 OBJ    	   = obj/
 SHA    	   = ${SRC}shaders/
+
 #------------ Files -------------
 FILES = 
-FILES_VULKAN = debugUtilsMessenger camera sampler tinyObjLoader frameBuffer shaderModule descriptorPool descriptorSetLayout descriptorSetManager descriptorSets renderPass pipelineLayout graphicsPipeline fence semaphore buffer deviceMemory commandBuffers image depthBuffer swapChain imageView commandPool physicalDevice device surface instance stbImage window simulator 
-FILES_ASSETS = cornellBox scene model texture textureImage uniformBuffer
+FILES_SIM = simulator
+FILES_VULKAN = application window instance#debugUtilsMessenger camera sampler tinyObjLoader frameBuffer shaderModule descriptorPool descriptorSetLayout descriptorSetManager descriptorSets renderPass pipelineLayout graphicsPipeline fence semaphore buffer deviceMemory commandBuffers image depthBuffer swapChain imageView commandPool physicalDevice device surface instance stbImage window simulator 
+FILES_ASSETS = #cornellBox scene model texture textureImage uniformBuffer
 SHADERS = shader
+
 #------------ Helpers -------------
 CC = g++
 VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.135.0/x86_64
@@ -25,14 +29,17 @@ BOLD   = \033[1m
 
 
 SOURCES=$(patsubst %, ${SRC}%.cpp, ${FILES})
+SOURCES+=$(patsubst %, ${SRC_SIM}%.cpp, ${FILES_SIM})
 SOURCES+=$(patsubst %, ${SRC_VULKAN}%.cpp, ${FILES_VULKAN})
 SOURCES+=$(patsubst %, ${SRC_ASSETS}%.cpp, ${FILES_ASSETS})
 
 HEADERS=$(patsubst %, ${SRC}%.h, ${FILES})
+HEADERS+=$(patsubst %, ${SRC_SIM}%.h, ${FILES_SIM})
 HEADERS+=$(patsubst %, ${SRC_VULKAN}%.h, ${FILES_VULKAN})
 HEADERS+=$(patsubst %, ${SRC_ASSETS}%.h, ${FILES_ASSETS})
 
 OBJECTS=$(patsubst %, ${OBJ}%.o, ${FILES})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_SIM})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_VULKAN})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_ASSETS})
 
@@ -44,6 +51,10 @@ EXECUTABLE=${BIN}simulator
 #------------ Build -------------
 # Compile project files
 ${OBJ}%.o: ${SRC}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+
+${OBJ}%.o: ${SRC_SIM}%.cpp
 	@/bin/echo -e "${GREEN}Compiling $<${NC}"
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
@@ -60,10 +71,6 @@ build: ${OBJECTS} ${SHADERS_VERT} ${SHADERS_FRAG} ${SRC}main.cpp
 	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_VERT} -o ${SRC}shaders/vert.spv
 	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_FRAG} -o ${SRC}shaders/frag.spv
 	${CC} ${CFLAGS} ${SRC}main.cpp ${OBJECTS} -o ${EXECUTABLE} ${LDFLAGS}
-
-#------------ Init -------------
-init:
-	mkdir bin obj
 
 #------------ Run -------------
 run: build
