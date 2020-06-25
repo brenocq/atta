@@ -29,6 +29,7 @@ class SwapChain
     VkExtent2D getExtent() const { return _extent; }
     VkFormat getImageFormat() const { return _imageFormat; }
 	std::vector<ImageView*> getImageViews() const { return _imageViews; }
+	std::vector<VkImage> getImages() const { return _images; }
 
 	private:
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);

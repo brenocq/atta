@@ -21,6 +21,7 @@
 #include "commandPool.h"
 #include "commandBuffers.h"
 #include "semaphore.h"
+#include "fence.h"
 
 class Application
 {
@@ -33,6 +34,7 @@ class Application
 	private:
 	void drawFrame();
 	void render(int i);
+	void createCommandBuffers();
 
 	Window* _window;
 	Instance* _instance;
@@ -46,9 +48,14 @@ class Application
 	CommandBuffers* _commandBuffers;
 
 	std::vector<FrameBuffer*> _frameBuffers;
+	std::vector<VkCommandBuffer> _commandBuffersTest;
 
-	Semaphore* _imageAvailableSemaphore;
-	Semaphore* _renderFinishedSemaphore;
+	std::vector<Semaphore*> _imageAvailableSemaphores;
+	std::vector<Semaphore*> _renderFinishedSemaphores;
+	std::vector<Fence*> _inFlightFences;
+	std::vector<VkFence> _imagesInFlight;
+
+	size_t _currentFrame = 0;
 };
 
 #endif// APPLICATION_H
