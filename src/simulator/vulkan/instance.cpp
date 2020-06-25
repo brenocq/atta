@@ -1,11 +1,14 @@
+//--------------------------------------------------
+// Robot Simulator
+// instance.cpp
+// Date: 21/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #include "instance.h"
 
 //--------------------- Instance class -------------------//
-const std::vector<const char*> _validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-};
-
-Instance::Instance()
+Instance::Instance():
+	_instance(VK_NULL_HANDLE)
 {
 	// Check validation layers support if requested
 	if(ENABLE_VALIDATION_LAYERS && !checkValidationLayerSupport())
@@ -36,8 +39,8 @@ Instance::Instance()
 	// Setup validation layers
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 	if (ENABLE_VALIDATION_LAYERS) {
-		createInfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
-		createInfo.ppEnabledLayerNames = _validationLayers.data();
+		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		createInfo.ppEnabledLayerNames = validationLayers.data();
 
 		// Debug debug utils messenger
 		populateDebugMessengerCreateInfo(debugCreateInfo);
@@ -57,10 +60,8 @@ Instance::Instance()
 
 Instance::~Instance()
 {
-	if(ENABLE_VALIDATION_LAYERS)
-		//destroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
-
 	vkDestroyInstance(_instance, nullptr);
+	_instance = nullptr;
 }
 
 void Instance::printExtensionSupport()
@@ -102,7 +103,7 @@ bool Instance::checkValidationLayerSupport()
 	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
 	// Check if all validation layers are in the available layers
-	for(const char* layerName : _validationLayers) 
+	for(const char* layerName : validationLayers) 
 	{
 		bool layerFound = false;
 

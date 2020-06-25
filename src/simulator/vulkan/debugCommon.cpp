@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Robot Simulator
+// debugCommon.cpp
+// Date: 21/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #include "debugCommon.h"
 
 const char* objectTypeToString(const VkObjectType objectType)
@@ -98,11 +104,11 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vulkanDebugCallback(
 		{
 			const auto object = pCallbackData->pObjects[i];
 			std::cerr
-				<< "    - Object[" << i << "]: "
-				<< "Type: " << objectTypeToString(object.objectType ) << ", "
-				<< "Handle: " << reinterpret_cast<void*>(object.objectHandle) << ", "
-				<< "Name: '" << (object.pObjectName ? object.pObjectName : "") << "'"
-				//<< "Message: " << pCallbackData->pMessage
+				<< "    - Object[" << i << "]: " <<
+				RED << "\n      Type: " << WHITE << objectTypeToString(object.objectType ) <<
+				RED << "\n      Handle: " << WHITE <<reinterpret_cast<void*>(object.objectHandle) <<
+				RED << "\n      Name: " << WHITE << "'" << (object.pObjectName ? object.pObjectName : "") << "'"
+				RED << "\n      Message: " << WHITE << pCallbackData->pMessage
 				<< std::endl;
 		}
 	}

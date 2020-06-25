@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Robot Simulator
+// simulator.cpp
+// Date: 21/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #include "simulator.h"
 
 Simulator::Simulator()

@@ -1,0 +1,53 @@
+//--------------------------------------------------
+// Robot Simulator
+// shaderModule.cpp
+// Date: 24/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
+#include "shaderModule.h"
+
+ShaderModule::ShaderModule(Device* device, const std::string& filename)
+{
+	_device = device;
+	_code = readFile(filename);
+
+	VkShaderModuleCreateInfo createInfo{};
+	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	createInfo.codeSize = _code.size();
+	createInfo.pCode = reinterpret_cast<const uint32_t*>(_code.data());
+
+	if(vkCreateShaderModule(_device->handle(), &createInfo, nullptr, &_shaderModule) != VK_SUCCESS) 
+	{
+		throw std::runtime_error("failed to create shader module!");
+		std::cout << BOLDRED << "[ShaderModule]" << RESET << RED << " Failed to create shader module!" << RESET << std::endl;
+		exit(1);
+	}
+}
+
+ShaderModule::~ShaderModule()
+{
+	if(_shaderModule != nullptr)
+	{
+		vkDestroyShaderModule(_device->handle(), _shaderModule, nullptr);
+		_shaderModule = nullptr;
+	}
+}
+
+std::vector<char> ShaderModule::readFile(const std::string& filename)
+{
+	std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+    if(!file.is_open()) 
+	{
+		std::cout << BOLDRED << "[ShaderModule]" << RESET << RED << " Failed to open file!" << RESET << std::endl;
+		exit(1);
+    }
+
+	size_t fileSize = (size_t) file.tellg();
+	std::vector<char> buffer(fileSize);
+	file.seekg(0);
+	file.read(buffer.data(), fileSize);
+	file.close();
+
+	return buffer;
+}

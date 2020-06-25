@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Robot Simulator
+// debugMessenger.h
+// Date: 21/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #ifndef DEBUG_UTILS_MESSENGER_H
 #define DEBUG_UTILS_MESSENGER_H
 
@@ -17,6 +23,7 @@ class DebugMessenger
 	~DebugMessenger();
 
 	private:
+	void checkArguments(Instance* instance);
 	VkResult CreateDebugUtilsMessengerEXT(
 			VkInstance instance,
 			const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,

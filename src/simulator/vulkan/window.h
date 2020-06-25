@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Robot Simulator
+// window.h
+// Date: 21/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #ifndef WINDOW_H
 #define WINDOW_H
 
@@ -5,6 +11,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <string>
+#include <functional>
 
 class Window
 {
@@ -14,6 +21,10 @@ class Window
 
 	void loop();
 
+    GLFWwindow* handle() const { return _window; }
+    VkExtent2D getExtent() const { return {(uint32_t)_width, (uint32_t)_height}; } 
+
+	std::function<void()> drawFrame;
 	private:
     GLFWwindow* _window;
 	int _height;
