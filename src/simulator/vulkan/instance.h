@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Robot Simulator
+// instance.h
+// Date: 21/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #ifndef INSTANCE_H
 #define INSTANCE_H
 

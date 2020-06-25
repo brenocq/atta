@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Robot Simulator
+// window.cpp
+// Date: 21/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #include "window.h"
 
 Window::Window():
@@ -23,7 +29,13 @@ Window::~Window()
 void Window::loop()
 {
 	// Run in loop until the window is closed
-	while(!glfwWindowShouldClose(_window)) {
+	while(!glfwWindowShouldClose(_window)) 
+	{
         glfwPollEvents();
+
+		if(drawFrame)
+		{
+			drawFrame();
+		}
     }
 }

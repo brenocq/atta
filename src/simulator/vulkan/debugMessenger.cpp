@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Robot Simulator
+// debugMessenger.cpp
+// Date: 21/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #include "debugMessenger.h"
 
 
@@ -23,9 +29,10 @@ void destroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 //------------------------ Debug messenger class -------------------------//
 
-DebugMessenger::DebugMessenger(Instance* instance):
-	_instance(instance)
+DebugMessenger::DebugMessenger(Instance* instance)
 {
+	checkArguments(instance);
+	_instance = instance;
 	if(!ENABLE_VALIDATION_LAYERS)
 		return;
 
@@ -47,4 +54,22 @@ DebugMessenger::~DebugMessenger()
 	{
 		destroyDebugUtilsMessengerEXT(_instance->handle(), _debugMessenger, nullptr);
 	}
+}
+
+void DebugMessenger::checkArguments(Instance* instance)
+{
+	if(instance != nullptr)
+	{
+		if(instance->handle() == VK_NULL_HANDLE)
+		{
+			std::cout << BOLDRED << "[Debug Messenger]" << RESET << RED << " Instance handle can't be null!" << RESET << std::endl;
+			exit(1);
+		}
+	}
+	else
+	{
+		std::cout << BOLDRED << "[Debug Meesenger]" << RESET << RED << " Instance can't be null!" << RESET << std::endl;
+		exit(1);
+	}
+
 }

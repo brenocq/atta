@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Robot Simulator
+// simulator.h
+// Date: 21/06/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
