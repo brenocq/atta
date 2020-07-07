@@ -29,6 +29,7 @@ class GraphicsPipeline
 
 	VkPipeline handle() const { return _graphicsPipeline; }
 	RenderPass* getRenderPass() const { return _renderPass; }
+	PipelineLayout* getPipelineLayout() const { return _pipelineLayout; }
 
 	private:
 	VkPipeline _graphicsPipeline;
