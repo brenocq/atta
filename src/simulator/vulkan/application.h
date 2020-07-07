@@ -7,6 +7,11 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <chrono>
+
 #include <vector>
 
 #include "window.h"
@@ -22,6 +27,11 @@
 #include "commandBuffers.h"
 #include "semaphore.h"
 #include "fence.h"
+#include "vertexBuffer.h"
+#include "indexBuffer.h"
+#include "stagingBuffer.h"
+#include "descriptorSetLayout.h"
+#include "uniformBuffer.h"
 
 class Application
 {
@@ -35,6 +45,11 @@ class Application
 	void drawFrame();
 	void render(int i);
 	void createCommandBuffers();
+	void cleanupSwapChain();
+	void recreateSwapChain();
+	void framebufferResizeCallback() {_framebufferResized = true;}
+	void createBuffers();
+	void updateUniformBuffer(uint32_t currentImage);
 
 	Window* _window;
 	Instance* _instance;
@@ -46,16 +61,22 @@ class Application
 	GraphicsPipeline* _graphicsPipeline;
 	CommandPool* _commandPool;
 	CommandBuffers* _commandBuffers;
+	VertexBuffer* _vertexBuffer;
+	IndexBuffer* _indexBuffer;
+	StagingBuffer* _stagingBuffer;
+	DescriptorSetLayout* _descriptorSetLayout;
 
 	std::vector<FrameBuffer*> _frameBuffers;
 	std::vector<VkCommandBuffer> _commandBuffersTest;
+	std::vector<UniformBuffer*> _uniformBuffers;
 
 	std::vector<Semaphore*> _imageAvailableSemaphores;
 	std::vector<Semaphore*> _renderFinishedSemaphores;
 	std::vector<Fence*> _inFlightFences;
 	std::vector<VkFence> _imagesInFlight;
 
-	size_t _currentFrame = 0;
+	size_t _currentFrame;
+	bool _framebufferResized;
 };
 
 #endif// APPLICATION_H

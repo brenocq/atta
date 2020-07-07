@@ -18,11 +18,13 @@
 #include "swapChain.h"
 #include "pipelineLayout.h"
 #include "renderPass.h"
+#include "descriptorSetLayout.h"
+#include "vertex.h"
 
 class GraphicsPipeline
 {
 	public:
-	GraphicsPipeline(Device* device, SwapChain* swapChain);
+	GraphicsPipeline(Device* device, SwapChain* swapChain, DescriptorSetLayout* descriptorSetLayout);
 	~GraphicsPipeline();
 
 	VkPipeline handle() const { return _graphicsPipeline; }
@@ -35,6 +37,7 @@ class GraphicsPipeline
 	SwapChain* _swapChain;
 	ShaderModule* _vertShaderModule;
 	ShaderModule* _fragShaderModule;
+	DescriptorSetLayout* _descriptorSetLayout;
 	PipelineLayout* _pipelineLayout;
 	RenderPass* _renderPass;
 };

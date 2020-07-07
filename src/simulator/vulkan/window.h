@@ -22,9 +22,12 @@ class Window
 	void loop();
 
     GLFWwindow* handle() const { return _window; }
-    VkExtent2D getExtent() const { return {(uint32_t)_width, (uint32_t)_height}; } 
+    VkExtent2D getExtent();
+	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
+	void waitIfMinimized();
 
 	std::function<void()> drawFrame;
+	std::function<void()> windowResized;
 	private:
     GLFWwindow* _window;
 	int _height;
