@@ -6,10 +6,11 @@
 //--------------------------------------------------
 #include "graphicsPipeline.h"
 
-GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain)
+GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, DescriptorSetLayout* descriptorSetLayout)
 {
 	_device = device;
 	_swapChain = swapChain;
+	_descriptorSetLayout = descriptorSetLayout;
 
  	_vertShaderModule = new ShaderModule(_device, "src/shaders/vert.spv");
     _fragShaderModule = new ShaderModule(_device, "src/shaders/frag.spv");
@@ -33,10 +34,14 @@ GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain)
 	//---------- Fixed functions ----------//
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount = 0;
-	vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
-	vertexInputInfo.vertexAttributeDescriptionCount = 0;
-	vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
+
+	auto bindingDescription = Vertex::getBindingDescription();
+	auto attributeDescriptions = Vertex::getAttributeDescriptions();
+
+	vertexInputInfo.vertexBindingDescriptionCount = 1;
+	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -115,7 +120,7 @@ GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain)
 	dynamicState.dynamicStateCount = 2;
 	dynamicState.pDynamicStates = dynamicStates;
 
-	_pipelineLayout = new PipelineLayout(_device);
+	_pipelineLayout = new PipelineLayout(_device, _descriptorSetLayout);
 	_renderPass = new RenderPass(_device, _swapChain);
 
 	VkGraphicsPipelineCreateInfo pipelineInfo{};

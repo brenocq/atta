@@ -6,7 +6,18 @@
 //--------------------------------------------------
 #include "application.h"
 
-Application::Application()
+const std::vector<Vertex> vertices = {
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+};
+const std::vector<uint16_t> indices = {
+    0, 1, 2, 2, 3, 0
+};
+
+Application::Application():
+	_currentFrame(0), _framebufferResized(false)
 {
 	_window = new Window();
 	_instance = new Instance();
@@ -15,17 +26,16 @@ Application::Application()
 	_physicalDevice = new PhysicalDevice(_instance, _surface);
 	_device = new Device(_physicalDevice);
 	_swapChain = new SwapChain(_device, _window);
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain);
-
+	_descriptorSetLayout = new DescriptorSetLayout(_device);
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _descriptorSetLayout);
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
 	{
 		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 	}
-
 	_commandPool = new CommandPool(_device);
-	//_commandBuffers = new CommandBuffers(_device, _commandPool, _frameBuffers);
-	//render();
+
+	createBuffers();
 	createCommandBuffers();
 
 	_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -42,35 +52,28 @@ Application::Application()
 
 Application::~Application()
 {
+	cleanupSwapChain();
+
+	delete _descriptorSetLayout;
+	_descriptorSetLayout = nullptr;
+
+	delete _indexBuffer;
+	_indexBuffer = nullptr;
+	delete _vertexBuffer;
+	_vertexBuffer = nullptr;
+
 	for(size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
 	{
-		delete _imageAvailableSemaphores[i];
-		_imageAvailableSemaphores[i] = nullptr;
 		delete _renderFinishedSemaphores[i];
 		_renderFinishedSemaphores[i] = nullptr;
+		delete _imageAvailableSemaphores[i];
+		_imageAvailableSemaphores[i] = nullptr;
 		delete _inFlightFences[i];
 		_inFlightFences[i] = nullptr;
     }
 
-	//for(size_t i = 0; i < (size_t)_imagesInFlight.size(); i++){
-	//	delete _imagesInFlight[i];
-	//	_imagesInFlight[i] = nullptr;
-	//}
-
 	delete _commandPool;
 	_commandPool = nullptr;
-
-	for (auto frameBuffer : _frameBuffers) 
-	{
-		delete frameBuffer;
-		frameBuffer = nullptr;
-    }
-
-	delete _graphicsPipeline;
-	_graphicsPipeline = nullptr;
-
-	delete _swapChain;
-	_swapChain = nullptr;
 
 	delete _device;
 	_device = nullptr;
@@ -91,12 +94,61 @@ Application::~Application()
 	_physicalDevice = nullptr;
 }
 
+void Application::cleanupSwapChain()
+{
+	for (auto frameBuffer : _frameBuffers) 
+	{
+		delete frameBuffer;
+		frameBuffer = nullptr;
+    }
+
+	vkFreeCommandBuffers(_device->handle(), _commandPool->handle(), static_cast<uint32_t>(_commandBuffersTest.size()), _commandBuffersTest.data());
+
+	delete _graphicsPipeline;
+	_graphicsPipeline = nullptr;
+
+	delete _swapChain;
+	_swapChain = nullptr;
+
+	for (auto uniformBuffer : _uniformBuffers) 
+	{
+		delete uniformBuffer;
+		uniformBuffer = nullptr;
+    }
+}
+
+void Application::recreateSwapChain()
+{
+	_window->waitIfMinimized();
+	vkDeviceWaitIdle(_device->handle());
+
+	cleanupSwapChain();
+
+	_swapChain = new SwapChain(_device, _window);
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _descriptorSetLayout);
+	_frameBuffers.resize(_swapChain->getImageViews().size());
+
+	for(size_t i = 0; i < _frameBuffers.size(); i++) 
+	{
+		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
+	}
+
+	_uniformBuffers.resize(_swapChain->getImages().size());
+	for(size_t i = 0; i < _swapChain->getImages().size(); i++) 
+	{
+		_uniformBuffers[i] = new UniformBuffer(_device, (int)sizeof(UniformBufferObject));
+    }
+
+	createCommandBuffers();
+}
+
 void Application::run()
 {
 	//for(int i=0; i<_frameBuffers.size(); i++)
 	//	render(i);
 
 	_window->drawFrame = [this]() { drawFrame(); };
+	_window->windowResized = [this]() { framebufferResizeCallback(); };
 	_window->loop();
 	vkDeviceWaitIdle(_device->handle());
 }
@@ -105,11 +157,21 @@ void Application::drawFrame()
 {
 	_inFlightFences[_currentFrame]->wait(UINT64_MAX);
 	_inFlightFences[_currentFrame]->reset();
-	//vkWaitForFences(_device->handle(), 1, &_inFlightFences[_currentFrame]->handle(), VK_TRUE, UINT64_MAX);
-    //vkResetFences(_device->handle(), 1, &_inFlightFences[_currentFrame]->handle());
 
 	uint32_t imageIndex;
-    vkAcquireNextImageKHR(_device->handle(), _swapChain->handle(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame]->handle(), VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(_device->handle(), _swapChain->handle(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame]->handle(), VK_NULL_HANDLE, &imageIndex);
+
+	// Check if is necessary to recreate the swapchain (window resized)
+	if(result == VK_ERROR_OUT_OF_DATE_KHR) 
+	{
+		recreateSwapChain();
+		return;
+	} 
+	else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) 
+	{
+		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to acquire swap chain image!" << RESET << std::endl;
+		exit(1);
+	}
 	
 	// Check if a previous frame is using this image (i.e. there is its fence to wait on)
     if (_imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
@@ -117,6 +179,8 @@ void Application::drawFrame()
     }
     // Mark the image as now being in use by this frame
     _imagesInFlight[imageIndex] = _inFlightFences[_currentFrame]->handle();
+
+	updateUniformBuffer(imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -152,7 +216,18 @@ void Application::drawFrame()
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
 
-	vkQueuePresentKHR(_device->getPresentQueue(), &presentInfo);
+	result = vkQueuePresentKHR(_device->getPresentQueue(), &presentInfo);
+	if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || _framebufferResized)
+	{
+		_framebufferResized = false;
+		recreateSwapChain();
+	} 
+	else if(result != VK_SUCCESS) 
+	{
+		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to present swap chain image!" << RESET << std::endl;
+		exit(1);
+	}
+
 	vkQueueWaitIdle(_device->getPresentQueue());
 
 	_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -226,7 +301,7 @@ void Application::createCommandBuffers()
 		renderPassInfo.renderArea.offset = {0, 0};
 		renderPassInfo.renderArea.extent = _swapChain->getExtent();
 
-		VkClearValue clearColor = {1.0f, 1.0f, 1.0f, 1.0f};
+		VkClearValue clearColor = {0.5f, 1.0f, 1.0f, 1.0f};
 		renderPassInfo.clearValueCount = 1;
 		renderPassInfo.pClearValues = &clearColor;
 
@@ -234,7 +309,11 @@ void Application::createCommandBuffers()
 
 			vkCmdBindPipeline(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
 
-			vkCmdDraw(_commandBuffersTest[i], 9, 1, 0, 0);
+			VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
+			VkDeviceSize offsets[] = {0};
+			vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
+			vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT16);
+			vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(_commandBuffersTest[i]);
 
@@ -243,4 +322,50 @@ void Application::createCommandBuffers()
 			exit(1);
 		}
 	}
+}
+
+void Application::createBuffers()
+{
+	//---------- Vertex Buffer ----------//
+	_stagingBuffer = new StagingBuffer(_device, vertices);
+	_vertexBuffer = new VertexBuffer(_device, vertices);
+	// Transfer from staging buffer to vertex buffer
+	_vertexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(vertices[0])*vertices.size());
+	delete _stagingBuffer;
+	_stagingBuffer = nullptr;
+
+	//---------- Index Buffer ----------//
+	_stagingBuffer = new StagingBuffer(_device, indices);
+	_indexBuffer = new IndexBuffer(_device, indices);
+	// Transfer from staging buffer to vertex buffer
+	_indexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(indices[0])*indices.size());
+	delete _stagingBuffer;
+	_stagingBuffer = nullptr;
+	
+	//---------- Uniform Buffers ----------//
+	_uniformBuffers.resize(_swapChain->getImages().size());
+	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+	for(size_t i = 0; i < _swapChain->getImages().size(); i++) 
+	{
+		_uniformBuffers[i] = new UniformBuffer(_device, bufferSize);
+    }
+}
+
+void Application::updateUniformBuffer(uint32_t currentImage)
+{
+ 	static auto startTime = std::chrono::high_resolution_clock::now();
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+	UniformBufferObject ubo{};
+	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.proj = glm::perspective(glm::radians(45.0f), _swapChain->getExtent().width / (float) _swapChain->getExtent().height, 0.1f, 10.0f);
+	ubo.proj[1][1] *= -1;
+
+	void* data;
+	vkMapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory(), 0, sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+	vkUnmapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory());
 }
