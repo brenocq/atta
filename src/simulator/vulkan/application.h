@@ -31,6 +31,8 @@
 #include "indexBuffer.h"
 #include "stagingBuffer.h"
 #include "descriptorSetLayout.h"
+#include "descriptorPool.h"
+#include "descriptorSets.h"
 #include "uniformBuffer.h"
 
 class Application
@@ -65,6 +67,8 @@ class Application
 	IndexBuffer* _indexBuffer;
 	StagingBuffer* _stagingBuffer;
 	DescriptorSetLayout* _descriptorSetLayout;
+	DescriptorPool* _descriptorPool;
+	DescriptorSets* _descriptorSets;
 
 	std::vector<FrameBuffer*> _frameBuffers;
 	std::vector<VkCommandBuffer> _commandBuffersTest;

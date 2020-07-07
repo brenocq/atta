@@ -36,6 +36,8 @@ Application::Application():
 	_commandPool = new CommandPool(_device);
 
 	createBuffers();
+	_descriptorPool = new DescriptorPool(_device, _swapChain->getImages().size());
+	_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, _uniformBuffers);
 	createCommandBuffers();
 
 	_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -115,6 +117,9 @@ void Application::cleanupSwapChain()
 		delete uniformBuffer;
 		uniformBuffer = nullptr;
     }
+
+	delete _descriptorPool;
+	_descriptorPool = nullptr;
 }
 
 void Application::recreateSwapChain()
@@ -139,6 +144,7 @@ void Application::recreateSwapChain()
 		_uniformBuffers[i] = new UniformBuffer(_device, (int)sizeof(UniformBufferObject));
     }
 
+	_descriptorPool = new DescriptorPool(_device, _swapChain->getImages().size());
 	createCommandBuffers();
 }
 
@@ -313,6 +319,8 @@ void Application::createCommandBuffers()
 			VkDeviceSize offsets[] = {0};
 			vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT16);
+
+			vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
 			vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(_commandBuffersTest[i]);

@@ -10,8 +10,9 @@ PipelineLayout::PipelineLayout(Device* device, DescriptorSetLayout* descriptorSe
 {
 	_device = device;
 	_descriptorSetLayout = descriptorSetLayout;
-	VkDescriptorSetLayout setLayout = _descriptorSetLayout->handle();
 
+	VkDescriptorSetLayout setLayout = _descriptorSetLayout->handle();
+	
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 1;
