@@ -5,9 +5,9 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "image.h"
-#include "stagingBuffer.h"
 
-Image::Image(Device* device, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties)
+Image::Image(Device* device, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties):
+	_layout(VK_IMAGE_LAYOUT_UNDEFINED)
 {
 	_device = device;
 
@@ -52,7 +52,12 @@ Image::Image(Device* device, uint32_t width, uint32_t height, VkFormat format, V
 
 Image::~Image()
 {
-
+	if (_image != nullptr)
+	{
+		vkDestroyImage(_device->handle(), _image, nullptr);
+		_image = nullptr;
+		vkFreeMemory(_device->handle(), _memory, nullptr);
+	}
 }
 
 uint32_t Image::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 

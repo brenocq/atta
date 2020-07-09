@@ -12,17 +12,16 @@ FrameBuffer::FrameBuffer(ImageView* imageView, RenderPass* renderPass)
 	_imageView = imageView;
 	_renderPass = renderPass;
 
-	VkImageView attachments[] =
-	{
-		_imageView->handle()
-		//_renderPass->depthBuffer()->imageView()->handle()
+	std::array<VkImageView, 2> attachments = {
+		_imageView->handle(),
+		_renderPass->getDepthBuffer()->getImageView()->handle()
 	};
 
 	VkFramebufferCreateInfo framebufferInfo = {};
 	framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	framebufferInfo.renderPass = _renderPass->handle();
-	framebufferInfo.attachmentCount = 1;
-	framebufferInfo.pAttachments = attachments;
+	framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+	framebufferInfo.pAttachments = attachments.data();
 	framebufferInfo.width = _renderPass->getSwapChain()->getExtent().width;
 	framebufferInfo.height = _renderPass->getSwapChain()->getExtent().height;
 	framebufferInfo.layers = 1;

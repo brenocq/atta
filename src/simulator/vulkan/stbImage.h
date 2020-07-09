@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Robot Simulator
+// stbImage.h
+// Date: 07/07/2020
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #ifndef STBIMAGE_H
 #define STBIMAGE_H
 

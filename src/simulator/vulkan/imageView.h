@@ -19,7 +19,7 @@
 class ImageView
 {
 	public:
-	ImageView(Device* device, VkImage image, VkFormat format);
+	ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 	~ImageView();
 
 	VkImageView handle() const { return _imageView; }

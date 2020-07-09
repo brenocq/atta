@@ -62,7 +62,10 @@ bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device)
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 
-    return indices.isComplete() && extensionsSupported && swapChainAdequate;
+	VkPhysicalDeviceFeatures supportedFeatures;
+    vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
+    return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
 bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) 

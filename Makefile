@@ -11,7 +11,7 @@ SHA    	   = ${SRC}shaders/
 #------------ Files -------------
 FILES = 
 FILES_SIM = simulator
-FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView graphicsPipeline shaderModule pipelineLayout renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image
+FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView graphicsPipeline shaderModule pipelineLayout renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model
 #debugUtilsMessenger camera sampler tinyObjLoader frameBuffer shaderModule descriptorPool descriptorSetLayout descriptorSetManager descriptorSets renderPass pipelineLayout graphicsPipeline fence semaphore buffer deviceMemory commandBuffers image depthBuffer swapChain imageView commandPool physicalDevice device surface instance stbImage window simulator 
 FILES_ASSETS = #cornellBox scene model texture textureImage uniformBuffer
 SHADERS = shader
@@ -19,7 +19,7 @@ SHADERS = shader
 #------------ Helpers -------------
 CC = g++
 VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.135.0/x86_64
-CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include -Wall
+CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include -Wall -O3
 LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I ${LIB}
 
 #---------- Text style ----------

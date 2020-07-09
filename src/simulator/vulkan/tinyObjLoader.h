@@ -1,8 +1,12 @@
 //--------------------------------------------------
 // Robot Simulator
-// stbImage.cpp
-// Date: 07/07/2020
+// tinyObjLoader.h
+// Date: 08/07/2020
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#define STB_IMAGE_IMPLEMENTATION
-#include "stbImage.h"
+#ifndef TINY_OBJ_LOADER_H
+#define TINY_OBJ_LOADER_H
+
+#include "tiny_obj_loader.h"
+
+#endif// TINY_OBJ_LOADER_H

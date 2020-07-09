@@ -1,35 +1,37 @@
 //--------------------------------------------------
 // Robot Simulator
-// texture.h
+// depthBuffer.h
 // Date: 08/07/2020
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#ifndef DEPTH_BUFFER_H
+#define DEPTH_BUFFER_H
 
 #include <iostream>
-#include <string>
+#include <string.h>
 #include "defines.h"
 #include "device.h"
 #include "commandPool.h"
 #include "image.h"
 #include "imageView.h"
-#include "sampler.h"
 
-class Texture
+class DepthBuffer
 {
 	public:
-	Texture(Device* device, CommandPool* commandPool, std::string filename);
-	~Texture();
+	DepthBuffer(Device* device, CommandPool* commandPool, VkExtent2D extent);
+	~DepthBuffer();
 
 	Device* getDevice() const { return _device; }
+	VkFormat getFormat() const { return _format; }
 	Image* getImage() const { return _image; }
 	ImageView* getImageView() const { return _imageView; }
-	Sampler* getSampler() const { return _sampler; }
 
 	private:
-	void transitionImageLayout(VkFormat format, VkImageLayout newLayout);
-	void copyBufferToImage(VkBuffer buffer, uint32_t width, uint32_t height);
+	VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+	bool hasStencilComponent();
+
+	// TODO also being used in Texture
+	void transitionImageLayout(VkImageLayout newLayout);
 	VkCommandBuffer beginSingleTimeCommands();
 	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
@@ -37,7 +39,8 @@ class Texture
 	CommandPool* _commandPool;
 	Image* _image;
 	ImageView* _imageView;
-	Sampler* _sampler;
+	VkFormat _format;
+	VkExtent2D _extent;
 };
 
-#endif// TEXTURE_H
+#endif// DEPTH_BUFFER_H

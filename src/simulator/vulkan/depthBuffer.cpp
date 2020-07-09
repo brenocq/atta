@@ -1,48 +1,29 @@
 //--------------------------------------------------
 // Robot Simulator
-// texture.cpp
+// depthBuffer.cpp
 // Date: 08/07/2020
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include "texture.h"
-#include "stagingBuffer.h"
-#include "commandPool.h"
-#include "stbImage.h"
+#include "depthBuffer.h"
+#include "physicalDevice.h"
 
-Texture::Texture(Device* device, CommandPool* commandPool, std::string filename)
+DepthBuffer::DepthBuffer(Device* device, CommandPool* commandPool, VkExtent2D extent):
+	_extent(extent)
 {
 	_device = device;
 	_commandPool = commandPool;
+	_format = findSupportedFormat(
+        {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+    );
 
-	int texWidth, texHeight, texChannels;
-    stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-
-    VkDeviceSize imageSize = texWidth * texHeight * 4;
-
-    if(!pixels) 
-	{
-		std::cout << BOLDRED << "[Texture]" << RESET << RED << " Failed to load texture image!" << RESET;
-		std::cout << RED << " (Path: " << WHITE << filename << RED << ")" << RESET << std::endl;
-		exit(1);
-    }
-
-	StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels, imageSize);
-	stbi_image_free(pixels);
-
-	_image = new Image(_device, texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-	transitionImageLayout(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-	transitionImageLayout(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	delete stagingBuffer;
-	stagingBuffer = nullptr;
-
-	_imageView = new ImageView(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
-	_sampler = new Sampler(_device);
+	_image = new Image(_device, _extent.width, _extent.height, _format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	_imageView = new ImageView(_device, _image->handle(), _format, VK_IMAGE_ASPECT_DEPTH_BIT);
+	transitionImageLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 }
 
-Texture::~Texture()
+DepthBuffer::~DepthBuffer()
 {
 	if(_image != nullptr)
 	{
@@ -55,15 +36,36 @@ Texture::~Texture()
 		delete _imageView;
 		_imageView = nullptr;
 	}
-	
-	if(_sampler != nullptr)
-	{
-		delete _sampler;
-		_sampler = nullptr;
-	}
 }
 
-void Texture::transitionImageLayout(VkFormat format, VkImageLayout newLayout)
+VkFormat DepthBuffer::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+{
+	for (VkFormat format : candidates) 
+	{
+		VkFormatProperties props;
+		PhysicalDevice* physicalDevice = _device->getPhysicalDevice();
+		vkGetPhysicalDeviceFormatProperties(physicalDevice->handle(), format, &props);
+
+		if(tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+		{
+			return format;
+		}
+		else if(tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+		{
+			return format;
+		}
+	}
+
+	std::cout << BOLDRED << "[DepthBuffer]" << RESET << RED << " Failed to find supported format!" << RESET << std::endl;
+	exit(1);
+}
+
+bool DepthBuffer::hasStencilComponent() 
+{
+    return _format == VK_FORMAT_D32_SFLOAT_S8_UINT || _format == VK_FORMAT_D24_UNORM_S8_UINT;
+}
+
+void DepthBuffer::transitionImageLayout(VkImageLayout newLayout)
 {
 	// TODO also being used in depth buffer
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
@@ -76,11 +78,26 @@ void Texture::transitionImageLayout(VkFormat format, VkImageLayout newLayout)
 	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 
 	barrier.image = _image->handle();
-	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
+	if(newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+	{
+		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+		if(hasStencilComponent()) 
+		{
+			barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+		}
+	}
+	else 
+	{
+		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	}
+
 	barrier.subresourceRange.baseMipLevel = 0;
 	barrier.subresourceRange.levelCount = 1;
 	barrier.subresourceRange.baseArrayLayer = 0;
 	barrier.subresourceRange.layerCount = 1;
+
 
 	VkPipelineStageFlags sourceStage;
 	VkPipelineStageFlags destinationStage;
@@ -101,9 +118,17 @@ void Texture::transitionImageLayout(VkFormat format, VkImageLayout newLayout)
 		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	} 
+	else if(_image->getImageLayout() == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+	{
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+	}
 	else 
 	{
-		std::cout << BOLDRED << "[Texture]" << RESET << RED << " Unsupported layout transition!" << RESET << std::endl;
+		std::cout << BOLDRED << "[DepthBuffer]" << RESET << RED << " Unsupported layout transition!" << RESET << std::endl;
 		exit(1);
 	}
 
@@ -120,40 +145,7 @@ void Texture::transitionImageLayout(VkFormat format, VkImageLayout newLayout)
 	_image->setImageLayout(newLayout);
 }
 
-void Texture::copyBufferToImage(VkBuffer buffer, uint32_t width, uint32_t height)
-{
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-
-	VkBufferImageCopy region{};
-	region.bufferOffset = 0;
-	region.bufferRowLength = 0;
-	region.bufferImageHeight = 0;
-
-	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	region.imageSubresource.mipLevel = 0;
-	region.imageSubresource.baseArrayLayer = 0;
-	region.imageSubresource.layerCount = 1;
-
-	region.imageOffset = {0, 0, 0};
-	region.imageExtent = {
-		width,
-		height,
-		1
-	};
-
-	vkCmdCopyBufferToImage(
-		commandBuffer,
-		buffer,
-		_image->handle(),
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		1,
-		&region
-	);
-
-    endSingleTimeCommands(commandBuffer);
-}
-
-VkCommandBuffer Texture::beginSingleTimeCommands()
+VkCommandBuffer DepthBuffer::beginSingleTimeCommands()
 {
 	// TODO I think these functions should be static
     VkCommandBufferAllocateInfo allocInfo{};
@@ -174,7 +166,7 @@ VkCommandBuffer Texture::beginSingleTimeCommands()
     return commandBuffer;
 }
 
-void Texture::endSingleTimeCommands(VkCommandBuffer commandBuffer) 
+void DepthBuffer::endSingleTimeCommands(VkCommandBuffer commandBuffer) 
 {
 	// TODO I think these functions should be static
     vkEndCommandBuffer(commandBuffer);

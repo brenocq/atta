@@ -15,11 +15,12 @@
 #include "descriptorPool.h"
 #include "descriptorSetLayout.h"
 #include "uniformBuffer.h"
+#include "texture.h"
 
 class DescriptorSets
 {
 	public:
-	DescriptorSets(Device* device, DescriptorPool* descriptorPool, DescriptorSetLayout* descriptorSetLayout, std::vector<UniformBuffer*> uniformBuffers);
+	DescriptorSets(Device* device, DescriptorPool* descriptorPool, DescriptorSetLayout* descriptorSetLayout, std::vector<UniformBuffer*> uniformBuffers, Texture* texture);
 	~DescriptorSets();
 
 	std::vector<VkDescriptorSet> handle() const { return _descriptorSets; }

@@ -7,13 +7,20 @@
 #include "application.h"
 
 const std::vector<Vertex> vertices = {
-    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+    {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+    {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+    {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+    {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+
+    {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+    {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+    {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+    {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 };
+
 const std::vector<uint16_t> indices = {
-    0, 1, 2, 2, 3, 0
+    0, 1, 2, 2, 3, 0,
+    4, 5, 6, 6, 7, 4
 };
 
 Application::Application():
@@ -25,25 +32,31 @@ Application::Application():
 	_surface = new Surface(_instance, _window);
 	_physicalDevice = new PhysicalDevice(_instance, _surface);
 	_device = new Device(_physicalDevice);
+	_commandPool = new CommandPool(_device);
 	_swapChain = new SwapChain(_device, _window);
 	_descriptorSetLayout = new DescriptorSetLayout(_device);
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _descriptorSetLayout);
+	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _descriptorSetLayout);
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
 	{
 		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 	}
-	_commandPool = new CommandPool(_device);
 
+	_model = new Model(_device, _commandPool, "viking_room");
 	createBuffers();
+
 	_descriptorPool = new DescriptorPool(_device, _swapChain->getImages().size());
-	_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, _uniformBuffers);
+	//_texture = new Texture(_device, _commandPool, "assets/textures/texture.jpg");
+	_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, _uniformBuffers, _model->getTexture());
+
 	createCommandBuffers();
 
 	_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	_inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
 	_imagesInFlight.resize(_swapChain->getImages().size(), VK_NULL_HANDLE);
+
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
 	{
 		_imageAvailableSemaphores[i] = new Semaphore(_device);
@@ -55,6 +68,12 @@ Application::Application():
 Application::~Application()
 {
 	cleanupSwapChain();
+
+	delete _depthBuffer;
+	_depthBuffer = nullptr;
+
+	delete _model;
+	_model = nullptr;
 
 	delete _descriptorSetLayout;
 	_descriptorSetLayout = nullptr;
@@ -98,6 +117,9 @@ Application::~Application()
 
 void Application::cleanupSwapChain()
 {
+	delete _depthBuffer;
+	_depthBuffer = nullptr;
+
 	for (auto frameBuffer : _frameBuffers) 
 	{
 		delete frameBuffer;
@@ -130,7 +152,8 @@ void Application::recreateSwapChain()
 	cleanupSwapChain();
 
 	_swapChain = new SwapChain(_device, _window);
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _descriptorSetLayout);
+	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _descriptorSetLayout);
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
@@ -307,9 +330,11 @@ void Application::createCommandBuffers()
 		renderPassInfo.renderArea.offset = {0, 0};
 		renderPassInfo.renderArea.extent = _swapChain->getExtent();
 
-		VkClearValue clearColor = {0.5f, 1.0f, 1.0f, 1.0f};
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearColor;
+		std::array<VkClearValue, 2> clearValues{};
+		clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+		clearValues[1].depthStencil = {1.0f, 0};
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
 
 		vkCmdBeginRenderPass(_commandBuffersTest[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -318,10 +343,10 @@ void Application::createCommandBuffers()
 			VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
 			VkDeviceSize offsets[] = {0};
 			vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
-			vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT16);
+			vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT32);
 
 			vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
-			vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+			vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(_model->getIndices().size()), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(_commandBuffersTest[i]);
 
@@ -335,18 +360,18 @@ void Application::createCommandBuffers()
 void Application::createBuffers()
 {
 	//---------- Vertex Buffer ----------//
-	_stagingBuffer = new StagingBuffer(_device, vertices);
-	_vertexBuffer = new VertexBuffer(_device, vertices);
+	_stagingBuffer = new StagingBuffer(_device, _model->getVertices());
+	_vertexBuffer = new VertexBuffer(_device, _model->getVertices());
 	// Transfer from staging buffer to vertex buffer
-	_vertexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(vertices[0])*vertices.size());
+	_vertexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(_model->getVertices()[0])*_model->getVertices().size());
 	delete _stagingBuffer;
 	_stagingBuffer = nullptr;
 
 	//---------- Index Buffer ----------//
-	_stagingBuffer = new StagingBuffer(_device, indices);
-	_indexBuffer = new IndexBuffer(_device, indices);
+	_stagingBuffer = new StagingBuffer(_device, _model->getIndices());
+	_indexBuffer = new IndexBuffer(_device, _model->getIndices());
 	// Transfer from staging buffer to vertex buffer
-	_indexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(indices[0])*indices.size());
+	_indexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(_model->getIndices()[0])*_model->getIndices().size());
 	delete _stagingBuffer;
 	_stagingBuffer = nullptr;
 	

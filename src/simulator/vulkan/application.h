@@ -34,6 +34,9 @@
 #include "descriptorPool.h"
 #include "descriptorSets.h"
 #include "uniformBuffer.h"
+#include "texture.h"
+#include "depthBuffer.h"
+#include "model.h"
 
 class Application
 {
@@ -69,6 +72,10 @@ class Application
 	DescriptorSetLayout* _descriptorSetLayout;
 	DescriptorPool* _descriptorPool;
 	DescriptorSets* _descriptorSets;
+	Texture* _texture;
+	DepthBuffer* _depthBuffer;
+
+	Model* _model;
 
 	std::vector<FrameBuffer*> _frameBuffers;
 	std::vector<VkCommandBuffer> _commandBuffersTest;
