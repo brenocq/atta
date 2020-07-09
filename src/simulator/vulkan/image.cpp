@@ -6,8 +6,10 @@
 //--------------------------------------------------
 #include "image.h"
 
-Image::Image(Device* device, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties):
-	_layout(VK_IMAGE_LAYOUT_UNDEFINED)
+Image::Image(Device* device, 
+		uint32_t width, uint32_t height, 
+		VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, uint32_t mipLevels, VkSampleCountFlagBits numSamples):
+	_format(format), _layout(VK_IMAGE_LAYOUT_UNDEFINED), _mipLevels(mipLevels)
 {
 	_device = device;
 
@@ -17,7 +19,7 @@ Image::Image(Device* device, uint32_t width, uint32_t height, VkFormat format, V
 	imageInfo.extent.width = width;
 	imageInfo.extent.height = height;
 	imageInfo.extent.depth = 1;
-	imageInfo.mipLevels = 1;
+	imageInfo.mipLevels = _mipLevels;
 	imageInfo.arrayLayers = 1;
 
 	imageInfo.format = format;
@@ -26,7 +28,7 @@ Image::Image(Device* device, uint32_t width, uint32_t height, VkFormat format, V
 	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	imageInfo.usage = usage;
 	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+	imageInfo.samples = numSamples;
 	imageInfo.flags = 0; // Optional
 
 	if (vkCreateImage(_device->handle(), &imageInfo, nullptr, &_image) != VK_SUCCESS) {

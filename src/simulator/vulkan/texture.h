@@ -30,6 +30,7 @@ class Texture
 	private:
 	void transitionImageLayout(VkFormat format, VkImageLayout newLayout);
 	void copyBufferToImage(VkBuffer buffer, uint32_t width, uint32_t height);
+	void generateMipmaps();
 	VkCommandBuffer beginSingleTimeCommands();
 	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
@@ -38,6 +39,8 @@ class Texture
 	Image* _image;
 	ImageView* _imageView;
 	Sampler* _sampler;
+	uint32_t _mipLevels;
+	int32_t _width, _height;
 };
 
 #endif// TEXTURE_H

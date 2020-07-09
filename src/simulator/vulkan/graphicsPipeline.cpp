@@ -6,11 +6,12 @@
 //--------------------------------------------------
 #include "graphicsPipeline.h"
 
-GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBuffer* depthBuffer, DescriptorSetLayout* descriptorSetLayout)
+GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer, DescriptorSetLayout* descriptorSetLayout)
 {
 	_device = device;
 	_swapChain = swapChain;
 	_depthBuffer = depthBuffer;
+	_colorBuffer = colorBuffer;
 	_descriptorSetLayout = descriptorSetLayout;
 
  	_vertShaderModule = new ShaderModule(_device, "src/shaders/vert.spv");
@@ -85,7 +86,7 @@ GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBu
 	VkPipelineMultisampleStateCreateInfo multisampling{};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = VK_FALSE;
-	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	multisampling.rasterizationSamples = _device->getMsaaSamples();
 	multisampling.minSampleShading = 1.0f; // Optional
 	multisampling.pSampleMask = nullptr; // Optional
 	multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
@@ -135,7 +136,7 @@ GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBu
 	dynamicState.pDynamicStates = dynamicStates;
 
 	_pipelineLayout = new PipelineLayout(_device, _descriptorSetLayout);
-	_renderPass = new RenderPass(_device, _swapChain, _depthBuffer);
+	_renderPass = new RenderPass(_device, _swapChain, _depthBuffer, _colorBuffer);
 
 	VkGraphicsPipelineCreateInfo pipelineInfo{};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

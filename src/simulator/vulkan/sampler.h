@@ -15,7 +15,7 @@
 class Sampler
 {
 	public:
-	Sampler(Device* device);
+	Sampler(Device* device, uint32_t mipLevels=1);
 	~Sampler();
 
 	Device* getDevice() const { return _device; }

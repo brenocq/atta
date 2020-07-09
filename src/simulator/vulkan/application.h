@@ -36,6 +36,7 @@
 #include "uniformBuffer.h"
 #include "texture.h"
 #include "depthBuffer.h"
+#include "colorBuffer.h"
 #include "model.h"
 
 class Application
@@ -74,6 +75,7 @@ class Application
 	DescriptorSets* _descriptorSets;
 	Texture* _texture;
 	DepthBuffer* _depthBuffer;
+	ColorBuffer* _colorBuffer;
 
 	Model* _model;
 

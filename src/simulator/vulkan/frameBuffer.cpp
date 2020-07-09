@@ -12,9 +12,10 @@ FrameBuffer::FrameBuffer(ImageView* imageView, RenderPass* renderPass)
 	_imageView = imageView;
 	_renderPass = renderPass;
 
-	std::array<VkImageView, 2> attachments = {
+	std::array<VkImageView, 3> attachments = {
+		_renderPass->getColorBuffer()->getImageView()->handle(),
+		_renderPass->getDepthBuffer()->getImageView()->handle(),
 		_imageView->handle(),
-		_renderPass->getDepthBuffer()->getImageView()->handle()
 	};
 
 	VkFramebufferCreateInfo framebufferInfo = {};

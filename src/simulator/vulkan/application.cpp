@@ -35,8 +35,9 @@ Application::Application():
 	_commandPool = new CommandPool(_device);
 	_swapChain = new SwapChain(_device, _window);
 	_descriptorSetLayout = new DescriptorSetLayout(_device);
+	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
 	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _descriptorSetLayout);
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _descriptorSetLayout);
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
 	{
@@ -117,6 +118,9 @@ Application::~Application()
 
 void Application::cleanupSwapChain()
 {
+	delete _colorBuffer;
+	_colorBuffer = nullptr;
+
 	delete _depthBuffer;
 	_depthBuffer = nullptr;
 
@@ -152,8 +156,9 @@ void Application::recreateSwapChain()
 	cleanupSwapChain();
 
 	_swapChain = new SwapChain(_device, _window);
+	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
 	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _descriptorSetLayout);
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _descriptorSetLayout);
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
