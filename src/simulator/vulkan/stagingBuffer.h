@@ -19,7 +19,7 @@ class StagingBuffer : public Buffer
 {
 	public:
 	StagingBuffer(Device* device, std::vector<Vertex> vertices);
-	StagingBuffer(Device* device, std::vector<uint16_t> indices);
+	StagingBuffer(Device* device, std::vector<unsigned int> indices);
 	StagingBuffer(Device* device, void* dataToMap, VkDeviceSize size);
 	~StagingBuffer();
 

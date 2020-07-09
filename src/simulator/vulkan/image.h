@@ -20,6 +20,8 @@ class Image
 
 	Device* getDevice() const { return _device; }
 	VkImage handle() const { return _image; }
+	VkImageLayout getImageLayout() const { return _layout; }
+	void setImageLayout(VkImageLayout layout) { _layout = layout; }
 
 	private:
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
@@ -27,6 +29,7 @@ class Image
 	Device* _device;
 	VkImage _image;
 	VkDeviceMemory _memory;
+	VkImageLayout _layout;
 };
 
 #endif// IMAGE_H

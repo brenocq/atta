@@ -17,7 +17,7 @@
 class IndexBuffer : public Buffer
 {
 	public:
-	IndexBuffer(Device* device, std::vector<uint16_t> indices);
+	IndexBuffer(Device* device, std::vector<unsigned int> indices);
 	~IndexBuffer();
 
 	private:

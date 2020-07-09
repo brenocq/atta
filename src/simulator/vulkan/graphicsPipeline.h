@@ -20,11 +20,12 @@
 #include "renderPass.h"
 #include "descriptorSetLayout.h"
 #include "vertex.h"
+#include "depthBuffer.h"
 
 class GraphicsPipeline
 {
 	public:
-	GraphicsPipeline(Device* device, SwapChain* swapChain, DescriptorSetLayout* descriptorSetLayout);
+	GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBuffer* depthBuffer, DescriptorSetLayout* descriptorSetLayout);
 	~GraphicsPipeline();
 
 	VkPipeline handle() const { return _graphicsPipeline; }
@@ -36,6 +37,7 @@ class GraphicsPipeline
 
 	Device* _device;
 	SwapChain* _swapChain;
+	DepthBuffer* _depthBuffer;
 	ShaderModule* _vertShaderModule;
 	ShaderModule* _fragShaderModule;
 	DescriptorSetLayout* _descriptorSetLayout;

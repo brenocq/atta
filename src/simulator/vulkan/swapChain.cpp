@@ -135,6 +135,6 @@ void SwapChain::createImageViews()
 
 	for(size_t i = 0; i < _imageViews.size(); i++) 
 	{
-		_imageViews[i] = new ImageView(_device, _images[i], _imageFormat);
+		_imageViews[i] = new ImageView(_device, _images[i], _imageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 }
