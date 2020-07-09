@@ -18,7 +18,11 @@ DepthBuffer::DepthBuffer(Device* device, CommandPool* commandPool, VkExtent2D ex
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
     );
 
-	_image = new Image(_device, _extent.width, _extent.height, _format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	_image = new Image(_device, _extent.width, _extent.height, _format
+			, VK_IMAGE_TILING_OPTIMAL
+			, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			1, _device->getMsaaSamples());
 	_imageView = new ImageView(_device, _image->handle(), _format, VK_IMAGE_ASPECT_DEPTH_BIT);
 	transitionImageLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 }

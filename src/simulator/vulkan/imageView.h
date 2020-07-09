@@ -19,7 +19,7 @@
 class ImageView
 {
 	public:
-	ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+	ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels=1);
 	~ImageView();
 
 	VkImageView handle() const { return _imageView; }
@@ -28,6 +28,7 @@ class ImageView
 	private:
     VkImageView _imageView;
 	Device* _device;
+	uint32_t _mipLevels;
 };
 
 #endif// IMAGE_VIEW_H

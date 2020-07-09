@@ -6,7 +6,8 @@
 //--------------------------------------------------
 #include "imageView.h"
 
-ImageView::ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
+ImageView::ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels):
+	_mipLevels(mipLevels)
 {
 	_device = device;
 
@@ -17,7 +18,7 @@ ImageView::ImageView(Device* device, VkImage image, VkFormat format, VkImageAspe
 	createInfo.format = format;
 	createInfo.subresourceRange.aspectMask = aspectFlags;
 	createInfo.subresourceRange.baseMipLevel = 0;
-	createInfo.subresourceRange.levelCount = 1;
+	createInfo.subresourceRange.levelCount = _mipLevels;
 	createInfo.subresourceRange.baseArrayLayer = 0;
 	createInfo.subresourceRange.layerCount = 1;
 

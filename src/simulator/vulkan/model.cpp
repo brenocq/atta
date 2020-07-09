@@ -67,7 +67,6 @@ void Model::loadModel()
 		exit(1);
     }
 
-
 	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 	for(const auto& shape : shapes)
 	{
@@ -103,7 +102,6 @@ void Model::loadModel()
 	}
 
 	end = std::chrono::steady_clock::now();
-
 
 	std::cout << WHITE
 		<< std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()

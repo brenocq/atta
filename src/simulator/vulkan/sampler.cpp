@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include "sampler.h"
 
-Sampler::Sampler(Device* device)
+Sampler::Sampler(Device* device, uint32_t mipLevels)
 {
 	_device = device;
 
@@ -31,9 +31,10 @@ Sampler::Sampler(Device* device)
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 
 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-	samplerInfo.mipLodBias = 0.0f;
-	samplerInfo.minLod = 0.0f;
-	samplerInfo.maxLod = 0.0f;
+    samplerInfo.minLod = 0.0f; // Optional
+	//samplerInfo.minLod = static_cast<float>(mipLevels / 2); // Test mipmap (low resolution)
+    samplerInfo.maxLod = static_cast<float>(mipLevels);
+    samplerInfo.mipLodBias = 0.0f; // Optional
 
 	if(vkCreateSampler(_device->handle(), &samplerInfo, nullptr, &_sampler) != VK_SUCCESS)
 	{
