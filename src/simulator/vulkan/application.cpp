@@ -21,11 +21,10 @@ Application::Application():
 	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
 	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
 	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _descriptorSetLayout);
+
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
-	{
 		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
-	}
 
 	_model = new Model(_device, _commandPool, "viking_room");
 	createBuffers();
@@ -49,7 +48,7 @@ Application::Application():
 	}
 
 	// IMGUI
-	_userInterface = new UserInterface(_device, _window, _swapChain, _commandPool);
+	_userInterface = new UserInterface(_device, _window, _swapChain);
 }
 
 Application::~Application()
@@ -142,6 +141,7 @@ void Application::cleanupSwapChain()
 
 void Application::recreateSwapChain()
 {
+	// TODO crashing application
 	_window->waitIfMinimized();
 	vkDeviceWaitIdle(_device->handle());
 
@@ -168,7 +168,7 @@ void Application::recreateSwapChain()
 	createCommandBuffers();
 
 	// IMGUI
-	_userInterface = new UserInterface(_device, _window, _swapChain, _commandPool);
+	_userInterface = new UserInterface(_device, _window, _swapChain);
 }
 
 void Application::run()
@@ -184,15 +184,13 @@ void Application::run()
 
 void Application::drawFrame()
 {
-	_inFlightFences[_currentFrame]->wait(UINT64_MAX);
-	_inFlightFences[_currentFrame]->reset();
-
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_device->handle(), _swapChain->handle(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame]->handle(), VK_NULL_HANDLE, &imageIndex);
 
-	// Check if is necessary to recreate the swapchain (window resized)
+	//---------- Check swapchain ----------//
 	if(result == VK_ERROR_OUT_OF_DATE_KHR) 
 	{
+		// Recreate the swapchain (window resized)
 		recreateSwapChain();
 		return;
 	} 
@@ -201,35 +199,15 @@ void Application::drawFrame()
 		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to acquire swap chain image!" << RESET << std::endl;
 		exit(1);
 	}
-
-	//----------- Render
+	//----------- Render to screen ----------//
 	render(imageIndex);
+	_userInterface->render(imageIndex);
 
-	//----------- Imgui
-	//if(vkEndCommandBuffer(_commandBuffersTest[i]) != VK_SUCCESS)
-	//{
-	//	std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to record command buffer!" << RESET << std::endl;
-	//	exit(1);
-	//}
+	//---------- CPU-GPU syncronization ----------//
+	_inFlightFences[_currentFrame]->wait(UINT64_MAX);
+	_inFlightFences[_currentFrame]->reset();
 
-	//beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	//beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	//beginInfo.pInheritanceInfo = nullptr; // Optional
-	//vkBeginCommandBuffer(_commandBuffersTest[imageIndex], &beginInfo);
-	//_userInterface->render(_commandBuffersTest[imageIndex], _frameBuffers[imageIndex]);
-	//vkEndCommandBuffer(_commandBuffersTest[imageIndex]);
-
-	//----------- Finish render
-	// Check if a previous frame is using this image (i.e. there is its fence to wait on)
-    if(_imagesInFlight[imageIndex] != VK_NULL_HANDLE)
-	{
-        vkWaitForFences(_device->handle(), 1, &_imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
-    }
-    // Mark the image as now being in use by this frame
-    _imagesInFlight[imageIndex] = _inFlightFences[_currentFrame]->handle();
-
-	
-
+	//---------- Submit to queues ----------//
 	updateUniformBuffer(imageIndex);
 
 	VkSubmitInfo submitInfo{};
@@ -239,11 +217,14 @@ void Application::drawFrame()
 	VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 	VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currentFrame]->handle()};
 
+	std::array<VkCommandBuffer, 2> submitCommandBuffers =
+    { _commandBuffersTest[imageIndex],  _userInterface->getCommandBuffer(imageIndex)};
+
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &_commandBuffersTest[imageIndex];
+	submitInfo.commandBufferCount = static_cast<uint32_t>(submitCommandBuffers.size());
+	submitInfo.pCommandBuffers = submitCommandBuffers.data();
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -254,6 +235,7 @@ void Application::drawFrame()
 		exit(1);
 	}
 
+	//---------- Present ----------//
 	VkSwapchainKHR swapChains[] = {_swapChain->handle()};
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -283,8 +265,7 @@ void Application::drawFrame()
 
 void Application::render(int i)
 {
-	//vkResetCommandPool(_device->handle(), _commandPool->handle(), 0);
-
+	//---------- Start command pool ----------//
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	//beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -293,7 +274,6 @@ void Application::render(int i)
 		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
 		exit(1);
 	}
-
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
@@ -320,7 +300,6 @@ void Application::render(int i)
 		vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(_model->getIndices().size()), 1, 0, 0, 0);
 
 	vkCmdEndRenderPass(_commandBuffersTest[i]);
-
 	vkEndCommandBuffer(_commandBuffersTest[i]);
 }
 
@@ -337,7 +316,8 @@ void Application::createCommandBuffers()
 
 	if(vkAllocateCommandBuffers(_device->handle(), &allocInfo, _commandBuffersTest.data()) != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to allocate command buffers!");
+		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to allocate command buffers!" << RESET << std::endl;
+		exit(1);
 	}
 
 	//for(size_t i = 0; i < _commandBuffersTest.size(); i++)

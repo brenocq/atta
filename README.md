@@ -16,7 +16,7 @@ make run -j4
 ```
 
 ## Installation (Linux)
-### Updating g++
+#### Updating g++
 This simulator is using some libraries that were experimental in old version of g++. We can or change all #include<xxx> with erros to #include<experimental/xxx>, or update the g++.
 
 Please use g++ v8.2 or later to compile without errors.
@@ -29,7 +29,7 @@ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 40
 g++ --version
 ```
 
-### Download Vulkan SDK
+#### Download Vulkan SDK
 First we need to download the vulkan SDK, I'm using the release 1.2.135.0.
 You can download the vulkan SDK [here](https://vulkan.lunarg.com/sdk/home).
 
@@ -38,22 +38,22 @@ Extract the files to some folder.
 tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
 ```
 
-### Install GLFW
+#### Install GLFW
 Now we need to install the GLFW to create windows.
 
 ``` shell
 sudo apt-get install libglfw3-dev
 ```
-If you prefer, you build manually from the [official website](https://www.glfw.org/).
+If you prefer, you can build manually from the [official website](https://www.glfw.org/).
 
-### Install GLM
+#### Install GLM
 Now we'll have to download the GLM library to perform linear algebra.
 
 ``` shell
 sudo apt install libglm-dev
 ```
 
-### Change MakeFile
+#### Change Makefile
 The last pass is to change the vulkan SDK path in the makefile:
 
 ``` Makefile
@@ -62,9 +62,9 @@ VULKAN_SDK_PATH = <path>/<xxx>/x86_64
 ```
 
 ## References
-- [Vulkan tutorial](https://vulkan-tutorial.com/) by Alexander Overvoorde
+- [Alexander Overvoorde's Vulkan Tutorial](https://vulkan-tutorial.com/)
 - [Vulkan Programming Guide: The Official Guide to Learning Vulkan](http://www.vulkanprogrammingguide.com/)
-
+- [Guthmann's Imgui Tutorial](https://frguthmann.github.io/posts/vulkan_imgui/)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.

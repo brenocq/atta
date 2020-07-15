@@ -15,7 +15,7 @@ FILES =
 FILES_SIM = simulator
 FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView graphicsPipeline shaderModule pipelineLayout renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model colorBuffer
 FILES_IMGUI = imgui imgui_demo imgui_widgets imgui_draw imgui_impl_glfw imgui_impl_vulkan
-FILES_UI = userInterface uiRenderPass
+FILES_UI = userInterface uiRenderPass uiFrameBuffer
 SHADERS = shader
 
 #------------ Helpers -------------
