@@ -24,6 +24,7 @@ class Instance
 	VkInstance handle() const { return _instance; }
 	private:
 	void printExtensionSupport();
+	void printLayersProperties();
 	std::vector<const char*> getRequiredExtensions();
 
 	bool checkValidationLayerSupport();

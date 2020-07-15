@@ -50,7 +50,8 @@ Instance::Instance():
 		createInfo.pNext = nullptr;
 	}
 
-	//printExtensionSupport();
+	printExtensionSupport();
+	printLayersProperties();
 	if(vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[Instance]" << RESET << RED << " Failed to create vulkan instance!" << RESET << std::endl;
@@ -66,15 +67,40 @@ Instance::~Instance()
 
 void Instance::printExtensionSupport()
 {
+	std::cout << BOLDWHITE << "[Instance]" << RESET <<" Available instance extensions:\n" << WHITE;
+
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 	std::vector<VkExtensionProperties> extensions(extensionCount);
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-	std::cout << BOLDWHITE << "[Instance]" << WHITE <<" Available vulkan extensions:\n";
 	for (const auto& extension : extensions) 
 	{
 		std::cout << '\t' << extension.extensionName << '\n';
+	}
+
+	std::cout << RESET;
+}
+
+void Instance::printLayersProperties()
+{
+	std::cout << BOLDWHITE << "[Instance]" << RESET <<" Available instance layers:\n" << WHITE;
+
+	uint32_t propertyCount = 0;
+	vkEnumerateInstanceLayerProperties(&propertyCount, nullptr);
+
+	if(propertyCount == 0)
+	{
+		std::cout << RED << "\tThere are no available layer properties!" << RESET << std::endl;
+		return;
+	}
+
+	std::vector<VkLayerProperties> properties(propertyCount);
+	vkEnumerateInstanceLayerProperties(&propertyCount, properties.data());
+
+	for (const auto& property : properties) 
+	{
+		std::cout << '\t' << property.layerName << " (" << property.description << ")" << std::endl;
 	}
 
 	std::cout << RESET;

@@ -20,7 +20,7 @@ PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
 	// Check if some device was found
 	if(deviceCount == 0) 
 	{
-		std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find GPUs with Vulkan support!" << RESET << std::endl;
+		std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find GPUs with Vulkan support!" << WHITE << std::endl;
 		exit(1);
 	}
 
@@ -40,7 +40,7 @@ PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
 
 	if(_physicalDevice == VK_NULL_HANDLE) 
 	{
-		std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find a suitable GPU!" << RESET << std::endl;
+		std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find a suitable GPU!" << WHITE << std::endl;
 		exit(1);
 	}
 }
@@ -194,18 +194,47 @@ void PhysicalDevice::checkArguments(Instance* instance, Surface* surface)
 	}
 }
 
+std::string PhysicalDevice::getVersion(const uint32_t version)
+{
+	// Convert version to human readable
+	std::stringstream ss;
+	ss << VK_VERSION_MAJOR(version);
+	ss << ".";
+	ss << VK_VERSION_MINOR(version);
+	ss << ".";
+	ss << VK_VERSION_PATCH(version);
+
+	return ss.str();
+}
+
+std::string PhysicalDevice::getVersion(const uint32_t version, const uint32_t vendorId)
+{
+	// Convert version to human readable
+	std::stringstream ss;
+	ss << VK_VERSION_MAJOR(version);
+	ss << ".";
+	ss << (VK_VERSION_MINOR(version) >> (vendorId == 0x10DE ? 2 : 0));
+	ss << ".";
+	ss << (VK_VERSION_PATCH(version) >> (vendorId == 0x10DE ? 4 : 0));
+	return ss.str();
+}
+
 void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physicalDevices)
 {
+	bool showQueues = true;
+	bool showFeatures = true;
+	bool showLimits = true;
+	bool showAvailableLayers = false;
+	bool showAvailableExtensions = false;
+	bool showMemory = true;
 
-	std::cout << BOLDWHITE << "GPUs with Vulkan support: " << RESET << std::endl;
+	std::cout << BOLDGREEN << "[PhysicalDevice] " << RESET;
+	std::cout  << "GPUs with Vulkan support:"  << WHITE << std::endl;
 
 	for(VkPhysicalDevice device : physicalDevices)
 	{
 		VkPhysicalDeviceProperties prop;
 		vkGetPhysicalDeviceProperties(device, &prop);
-
-		VkPhysicalDeviceFeatures features;
-		vkGetPhysicalDeviceFeatures(device, &features);
 
 		std::string vendorId = "Unknown";
 		switch (prop.vendorID)
@@ -253,38 +282,125 @@ void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physical
 				break;
 		}
 
-		std::cout << "- [" << prop.deviceID << "] ";
-		std::cout << BOLDCYAN << vendorId << " " << prop.deviceName << RESET;
+		std::cout << "\t- ";
+		std::cout << BOLDCYAN << vendorId << " " << prop.deviceName << WHITE;
 		std::cout << " (";
 		std::cout << deviceType << ": ";
 		std::cout << "vulkan " << getVersion(prop.apiVersion) << ", ";
 		std::cout << "driver " << getVersion(prop.driverVersion, prop.vendorID);
 		std::cout << ")" << std::endl;
+
+		if(showQueues)
+		{
+			uint32_t queueFamilyCount = 0;
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+			std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+			
+			std::cout << "\t  - " << CYAN << "QueueFamilies" << WHITE << " (" << queueFamilyCount << "):" << std::endl;
+			for(auto queueFamily : queueFamilies)
+			{
+				std::cout << "\t    - ";
+				if(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+					std::cout << "G";
+				if(queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
+					std::cout << "C";
+				if(queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT)
+					std::cout << "T";
+				if(queueFamily.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT)
+					std::cout << "B";
+				printf(" (%d queues)\n", queueFamily.queueCount);
+
+			}
+		}
+
+		if(showLimits)
+		{
+			VkPhysicalDeviceLimits limits = prop.limits;
+			std::cout << "\t  - " << CYAN << "Limits" << WHITE << std::endl;
+			std::cout << "\t    - maxImageDimension1D: " << limits.maxImageDimension1D << " texels" << std::endl;
+			std::cout << "\t    - maxImageDimension2D: " << limits.maxImageDimension2D << " texels" << std::endl;
+			std::cout << "\t    - maxImageDimension3D: " << limits.maxImageDimension3D << " texels" << std::endl;
+			std::cout << "\t    - maxTexelBufferElements: " << limits.maxTexelBufferElements << " texels (" 
+				<< (int)sqrt(limits.maxTexelBufferElements) << " x " << (int)sqrt(limits.maxTexelBufferElements) << ")" << std::endl;
+			std::cout << "\t    - maxMemoryAllocationCount: " << limits.maxMemoryAllocationCount << " times" << std::endl;
+		}
+
+		if(showFeatures)
+		{
+			std::cout << WHITE << "\t  - " << CYAN << "Features" << WHITE << std::endl;
+
+			VkPhysicalDeviceFeatures features;
+			vkGetPhysicalDeviceFeatures(device, &features);
+			// TODO print features used in this application
+			// https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPhysicalDeviceFeatures.html
+
+			std::cout << "\t    - wideLines: " << (features.wideLines? "OK" : "Does not support") << std::endl;
+			std::cout << "\t    - largePoints: " << (features.largePoints? "OK" : "Does not support") << std::endl;
+			std::cout << "\t    - depthClamp: " << (features.depthClamp? "OK" : "Does not support") << std::endl;
+			std::cout << "\t    - compression BC: " << (features.textureCompressionBC? "OK" : "Does not support") << std::endl;
+			std::cout << "\t    - compression ETC2: " << (features.textureCompressionETC2? "OK" : "Does not support") << std::endl;
+			std::cout << "\t    - compression ASTC_LDR: " << (features.textureCompressionASTC_LDR? "OK" : "Does not support") << std::endl;
+		}
+
+		if(showAvailableLayers)
+		{
+			std::cout << "\t  - " << CYAN << "Available Layers" << WHITE << std::endl;
+
+			uint32_t propertyCount = 0;
+			vkEnumerateDeviceLayerProperties(device, &propertyCount, nullptr);
+
+			if(propertyCount == 0)
+			{
+				std::cout << RED << "\t    There are no available layer properties!" << WHITE << std::endl;
+				return;
+			}
+
+			std::vector<VkLayerProperties> properties(propertyCount);
+			vkEnumerateDeviceLayerProperties(device, &propertyCount, properties.data());
+
+			for (const auto& property : properties) 
+			{
+				std::cout << "\t    - " << property.layerName << " (" << property.description << ")" << std::endl;
+			}
+
+			std::cout << WHITE;
+		}
+
+		if(showAvailableExtensions)
+		{
+			std::cout << "\t  - " << CYAN << "Available extensions" << WHITE << std::endl;
+
+			uint32_t propertyCount = 0;
+			vkEnumerateDeviceExtensionProperties(device, nullptr, &propertyCount, nullptr);
+
+			if(propertyCount == 0)
+			{
+				std::cout << RED << "\t    There are no available extension properties!" << WHITE << std::endl;
+				return;
+			}
+
+			std::vector<VkExtensionProperties> properties(propertyCount);
+			vkEnumerateDeviceExtensionProperties(device, nullptr, &propertyCount, properties.data());
+
+			for (const auto& property : properties) 
+			{
+				std::cout << "\t    - " << property.extensionName << std::endl;
+			}
+
+			std::cout << WHITE;
+		}
+		
+		if(showMemory)
+		{
+			std::cout << "\t  - " << CYAN << "Memory" << WHITE << std::endl;
+
+			VkPhysicalDeviceMemoryProperties memProp;
+			vkGetPhysicalDeviceMemoryProperties(device, &memProp);
+			//std::cout << memProp.memoryTypeCount << std::endl;
+			std::cout << "\t    - heaps (" << memProp.memoryHeapCount << ")" << std::endl;
+			for(int i=0;i<memProp.memoryHeapCount;i++)
+				std::cout << "\t      - heap " << i << ": " << -int(memProp.memoryHeaps[i].size)/int(1<<20) << "Mb" << std::endl;
+		}
 	}
-	std::cout << std::endl;
-}
-
-std::string PhysicalDevice::getVersion(const uint32_t version)
-{
-	// Convert version to human readable
-	std::stringstream ss;
-	ss << VK_VERSION_MAJOR(version);
-	ss << ".";
-	ss << VK_VERSION_MINOR(version);
-	ss << ".";
-	ss << VK_VERSION_PATCH(version);
-
-	return ss.str();
-}
-
-std::string PhysicalDevice::getVersion(const uint32_t version, const uint32_t vendorId)
-{
-	// Convert version to human readable
-	std::stringstream ss;
-	ss << VK_VERSION_MAJOR(version);
-	ss << ".";
-	ss << (VK_VERSION_MINOR(version) >> (vendorId == 0x10DE ? 2 : 0));
-	ss << ".";
-	ss << (VK_VERSION_PATCH(version) >> (vendorId == 0x10DE ? 4 : 0));
-	return ss.str();
 }

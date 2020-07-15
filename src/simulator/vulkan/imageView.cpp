@@ -21,6 +21,10 @@ ImageView::ImageView(Device* device, VkImage image, VkFormat format, VkImageAspe
 	createInfo.subresourceRange.levelCount = _mipLevels;
 	createInfo.subresourceRange.baseArrayLayer = 0;
 	createInfo.subresourceRange.layerCount = 1;
+	createInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+	createInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+	createInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+	createInfo.components.a = VK_COMPONENT_SWIZZLE_A;
 
 	if(vkCreateImageView(_device->handle(), &createInfo, nullptr, &_imageView) != VK_SUCCESS)
 	{

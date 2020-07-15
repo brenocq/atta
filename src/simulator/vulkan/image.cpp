@@ -23,7 +23,8 @@ Image::Image(Device* device,
 	imageInfo.arrayLayers = 1;
 
 	imageInfo.format = format;
-	// Use VK_IMAGE_TILING_LINEAR if wants to access the image data
+	// Use VK_IMAGE_TILING_LINEAR if wants to read/write to the image with the CPU
+	// Linear tilling might not be support for some opetations or formats
 	imageInfo.tiling = tiling;
 	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	imageInfo.usage = usage;

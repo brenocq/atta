@@ -15,7 +15,7 @@
 class DescriptorPool
 {
 	public:
-	DescriptorPool(Device* device, const int size);
+	DescriptorPool(Device* device, std::vector<VkDescriptorPoolSize> poolSizes);
 	~DescriptorPool();
 
 	VkDescriptorPool handle() const { return _descriptorPool; }

@@ -6,23 +6,6 @@
 //--------------------------------------------------
 #include "application.h"
 
-const std::vector<Vertex> vertices = {
-    {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-    {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-    {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-    {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-
-    {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-    {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-    {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-    {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
-};
-
-const std::vector<uint16_t> indices = {
-    0, 1, 2, 2, 3, 0,
-    4, 5, 6, 6, 7, 4
-};
-
 Application::Application():
 	_currentFrame(0), _framebufferResized(false)
 {
@@ -32,7 +15,7 @@ Application::Application():
 	_surface = new Surface(_instance, _window);
 	_physicalDevice = new PhysicalDevice(_instance, _surface);
 	_device = new Device(_physicalDevice);
-	_commandPool = new CommandPool(_device);
+	_commandPool = new CommandPool(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 	_swapChain = new SwapChain(_device, _window);
 	_descriptorSetLayout = new DescriptorSetLayout(_device);
 	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
@@ -47,7 +30,7 @@ Application::Application():
 	_model = new Model(_device, _commandPool, "viking_room");
 	createBuffers();
 
-	_descriptorPool = new DescriptorPool(_device, _swapChain->getImages().size());
+	createDescriptorPool();
 	//_texture = new Texture(_device, _commandPool, "assets/textures/texture.jpg");
 	_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, _uniformBuffers, _model->getTexture());
 
@@ -64,11 +47,17 @@ Application::Application():
 		_renderFinishedSemaphores[i] = new Semaphore(_device);
 		_inFlightFences[i] = new Fence(_device);
 	}
+
+	// IMGUI
+	_userInterface = new UserInterface(_device, _window, _swapChain, _commandPool);
 }
 
 Application::~Application()
 {
 	cleanupSwapChain();
+
+	delete _userInterface;
+	_userInterface = nullptr;
 
 	delete _depthBuffer;
 	_depthBuffer = nullptr;
@@ -118,6 +107,9 @@ Application::~Application()
 
 void Application::cleanupSwapChain()
 {
+	delete _userInterface;
+	_userInterface = nullptr;
+
 	delete _colorBuffer;
 	_colorBuffer = nullptr;
 
@@ -172,8 +164,11 @@ void Application::recreateSwapChain()
 		_uniformBuffers[i] = new UniformBuffer(_device, (int)sizeof(UniformBufferObject));
     }
 
-	_descriptorPool = new DescriptorPool(_device, _swapChain->getImages().size());
+	createDescriptorPool();
 	createCommandBuffers();
+
+	// IMGUI
+	_userInterface = new UserInterface(_device, _window, _swapChain, _commandPool);
 }
 
 void Application::run()
@@ -181,8 +176,8 @@ void Application::run()
 	//for(int i=0; i<_frameBuffers.size(); i++)
 	//	render(i);
 
-	_window->drawFrame = [this]() { drawFrame(); };
-	_window->windowResized = [this]() { framebufferResizeCallback(); };
+	_window->drawFrame = [this](){ drawFrame(); };
+	_window->windowResized = [this](){ framebufferResizeCallback(); };
 	_window->loop();
 	vkDeviceWaitIdle(_device->handle());
 }
@@ -206,13 +201,34 @@ void Application::drawFrame()
 		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to acquire swap chain image!" << RESET << std::endl;
 		exit(1);
 	}
-	
+
+	//----------- Render
+	render(imageIndex);
+
+	//----------- Imgui
+	//if(vkEndCommandBuffer(_commandBuffersTest[i]) != VK_SUCCESS)
+	//{
+	//	std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to record command buffer!" << RESET << std::endl;
+	//	exit(1);
+	//}
+
+	//beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	//beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	//beginInfo.pInheritanceInfo = nullptr; // Optional
+	//vkBeginCommandBuffer(_commandBuffersTest[imageIndex], &beginInfo);
+	//_userInterface->render(_commandBuffersTest[imageIndex], _frameBuffers[imageIndex]);
+	//vkEndCommandBuffer(_commandBuffersTest[imageIndex]);
+
+	//----------- Finish render
 	// Check if a previous frame is using this image (i.e. there is its fence to wait on)
-    if (_imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
+    if(_imagesInFlight[imageIndex] != VK_NULL_HANDLE)
+	{
         vkWaitForFences(_device->handle(), 1, &_imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
     }
     // Mark the image as now being in use by this frame
     _imagesInFlight[imageIndex] = _inFlightFences[_currentFrame]->handle();
+
+	
 
 	updateUniformBuffer(imageIndex);
 
@@ -221,14 +237,13 @@ void Application::drawFrame()
 
 	VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores[_currentFrame]->handle()};
 	VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+	VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currentFrame]->handle()};
+
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
-
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &_commandBuffersTest[imageIndex];
-
-	VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currentFrame]->handle()};
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -239,13 +254,11 @@ void Application::drawFrame()
 		exit(1);
 	}
 
+	VkSwapchainKHR swapChains[] = {_swapChain->handle()};
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
 	presentInfo.waitSemaphoreCount = 1;
 	presentInfo.pWaitSemaphores = signalSemaphores;
-
-	VkSwapchainKHR swapChains[] = {_swapChain->handle()};
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
@@ -267,41 +280,48 @@ void Application::drawFrame()
 	_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+
 void Application::render(int i)
 {
-	std::vector<VkCommandBuffer> commandBuffers = _commandBuffers->handle();
-	//for(size_t i = 0; i < commandBuffers.size(); i++) 
-	//{
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = 0; // Optional
-		beginInfo.pInheritanceInfo = nullptr; // Optional
+	//vkResetCommandPool(_device->handle(), _commandPool->handle(), 0);
 
-		const auto commandBuffer = _commandBuffers->begin(i);
-		{
-			VkRenderPassBeginInfo renderPassInfo{};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
-			renderPassInfo.framebuffer = _frameBuffers[i]->handle();
-			renderPassInfo.renderArea.offset = {0, 0};
-			renderPassInfo.renderArea.extent = _swapChain->getExtent();
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	//beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+	if(vkBeginCommandBuffer(_commandBuffersTest[i], &beginInfo) != VK_SUCCESS)
+	{
+		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
+		exit(1);
+	}
 
-			VkClearValue clearColor = {1.0f, 0.0f, 0.0f, 1.0f};
-			renderPassInfo.clearValueCount = 1;
-			renderPassInfo.pClearValues = &clearColor;
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
+	renderPassInfo.framebuffer = _frameBuffers[i]->handle();
+	renderPassInfo.renderArea.offset = {0, 0};
+	renderPassInfo.renderArea.extent = _swapChain->getExtent();
 
-			vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-			{
-				vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
+	std::array<VkClearValue, 2> clearValues{};
+	clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+	clearValues[1].depthStencil = {1.0f, 0};
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
 
-				vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-			}
-			vkCmdEndRenderPass(commandBuffer);
+	vkCmdBeginRenderPass(_commandBuffersTest[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		}
-		_commandBuffers->end(i);
-	//}
-	_commandBuffers->setHandle(commandBuffers);
+		vkCmdBindPipeline(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
+
+		VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
+		VkDeviceSize offsets[] = {0};
+		vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT32);
+
+		vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
+		vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(_model->getIndices().size()), 1, 0, 0, 0);
+
+	vkCmdEndRenderPass(_commandBuffersTest[i]);
+
+	vkEndCommandBuffer(_commandBuffersTest[i]);
 }
 
 void Application::createCommandBuffers()
@@ -315,51 +335,54 @@ void Application::createCommandBuffers()
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t) _commandBuffersTest.size();
 
-	if (vkAllocateCommandBuffers(_device->handle(), &allocInfo, _commandBuffersTest.data()) != VK_SUCCESS) {
+	if(vkAllocateCommandBuffers(_device->handle(), &allocInfo, _commandBuffersTest.data()) != VK_SUCCESS)
+	{
 		throw std::runtime_error("failed to allocate command buffers!");
 	}
 
-	for (size_t i = 0; i < _commandBuffersTest.size(); i++) {
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	//for(size_t i = 0; i < _commandBuffersTest.size(); i++)
+	//{
+	//	VkCommandBufferBeginInfo beginInfo{};
+	//	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-		if (vkBeginCommandBuffer(_commandBuffersTest[i], &beginInfo) != VK_SUCCESS) {
-			std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
-			exit(1);
-		}
+	//	if(vkBeginCommandBuffer(_commandBuffersTest[i], &beginInfo) != VK_SUCCESS)
+	//	{
+	//		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
+	//		exit(1);
+	//	}
 
-		VkRenderPassBeginInfo renderPassInfo{};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
-		renderPassInfo.framebuffer = _frameBuffers[i]->handle();
-		renderPassInfo.renderArea.offset = {0, 0};
-		renderPassInfo.renderArea.extent = _swapChain->getExtent();
+	//	VkRenderPassBeginInfo renderPassInfo{};
+	//	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	//	renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
+	//	renderPassInfo.framebuffer = _frameBuffers[i]->handle();
+	//	renderPassInfo.renderArea.offset = {0, 0};
+	//	renderPassInfo.renderArea.extent = _swapChain->getExtent();
 
-		std::array<VkClearValue, 2> clearValues{};
-		clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
-		clearValues[1].depthStencil = {1.0f, 0};
-		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-		renderPassInfo.pClearValues = clearValues.data();
+	//	std::array<VkClearValue, 2> clearValues{};
+	//	clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+	//	clearValues[1].depthStencil = {1.0f, 0};
+	//	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	//	renderPassInfo.pClearValues = clearValues.data();
 
-		vkCmdBeginRenderPass(_commandBuffersTest[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	//	vkCmdBeginRenderPass(_commandBuffersTest[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			vkCmdBindPipeline(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
+	//		vkCmdBindPipeline(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
 
-			VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
-			VkDeviceSize offsets[] = {0};
-			vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
-			vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT32);
+	//		VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
+	//		VkDeviceSize offsets[] = {0};
+	//		vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
+	//		vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT32);
 
-			vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
-			vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(_model->getIndices().size()), 1, 0, 0, 0);
+	//		vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
+	//		vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(_model->getIndices().size()), 1, 0, 0, 0);
 
-		vkCmdEndRenderPass(_commandBuffersTest[i]);
+	//	vkCmdEndRenderPass(_commandBuffersTest[i]);
 
-		if (vkEndCommandBuffer(_commandBuffersTest[i]) != VK_SUCCESS) {
-			std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to record command buffer!" << RESET << std::endl;
-			exit(1);
-		}
-	}
+	//	if (vkEndCommandBuffer(_commandBuffersTest[i]) != VK_SUCCESS) {
+	//		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to record command buffer!" << RESET << std::endl;
+	//		exit(1);
+	//	}
+	//}
 }
 
 void Application::createBuffers()
@@ -406,4 +429,21 @@ void Application::updateUniformBuffer(uint32_t currentImage)
 	vkMapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory(), 0, sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 	vkUnmapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory());
+}
+
+void Application::createDescriptorPool()
+{
+	int size = _swapChain->getImages().size();
+
+	std::vector<VkDescriptorPoolSize> poolSizes{};
+	VkDescriptorPoolSize uniformBufferDescriptor;
+	VkDescriptorPoolSize combinedImageSamplerDescriptor;
+	uniformBufferDescriptor.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	uniformBufferDescriptor.descriptorCount = static_cast<uint32_t>(size);
+	combinedImageSamplerDescriptor.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	combinedImageSamplerDescriptor.descriptorCount = static_cast<uint32_t>(size);
+	poolSizes.push_back(uniformBufferDescriptor);
+	poolSizes.push_back(combinedImageSamplerDescriptor);
+
+	_descriptorPool = new DescriptorPool(_device, poolSizes);
 }
