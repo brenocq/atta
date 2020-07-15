@@ -38,6 +38,7 @@
 #include "depthBuffer.h"
 #include "colorBuffer.h"
 #include "model.h"
+#include "ui/userInterface.h"
 
 class Application
 {
@@ -49,13 +50,14 @@ class Application
 
 	private:
 	void drawFrame();
-	void render(int i);
 	void createCommandBuffers();
 	void cleanupSwapChain();
 	void recreateSwapChain();
 	void framebufferResizeCallback() {_framebufferResized = true;}
 	void createBuffers();
 	void updateUniformBuffer(uint32_t currentImage);
+	void createDescriptorPool();
+	void render(int i);
 
 	Window* _window;
 	Instance* _instance;
@@ -76,6 +78,7 @@ class Application
 	Texture* _texture;
 	DepthBuffer* _depthBuffer;
 	ColorBuffer* _colorBuffer;
+	UserInterface* _userInterface;
 
 	Model* _model;
 

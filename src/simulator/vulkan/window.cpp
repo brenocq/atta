@@ -5,6 +5,8 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "window.h"
+#include "stbImage.h"
+#include "defines.h"
 
 Window::Window():
 	_width(800), _height(600)
@@ -15,10 +17,24 @@ Window::Window():
 	// Set window as not resizable
 	// TODO fix recreate swapchain errors
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	// Create window
+
+	//----- Create Window -----//
 	_window = glfwCreateWindow(_width, _height, "Robot Simulator - by Brenocq", nullptr, nullptr);
 	glfwSetWindowUserPointer(_window, this);
 	glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+
+	//----- Icon -----//
+	GLFWimage icon;
+	icon.pixels = stbi_load("assets/textures/icon.png", &icon.width, &icon.height, nullptr, 4);
+
+	if(icon.pixels == nullptr)
+	{
+		std::cout << BOLDRED << "[Window] Failed to load icon!" << RESET << std::endl;
+		exit(1);
+	}
+
+	glfwSetWindowIcon(_window, 1, &icon);
+	stbi_image_free(icon.pixels);
 }
 
 Window::~Window()
@@ -36,9 +52,7 @@ void Window::loop()
         glfwPollEvents();
 
 		if(drawFrame)
-		{
 			drawFrame();
-		}
     }
 }
 

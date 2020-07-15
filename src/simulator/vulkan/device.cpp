@@ -30,6 +30,7 @@ Device::Device(PhysicalDevice* physicalDevice):
 
 	// Device info
 	VkPhysicalDeviceFeatures deviceFeatures{};
+	// TODO check for support and store supported features
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
 
 	VkDeviceCreateInfo createInfo{};
@@ -42,6 +43,7 @@ Device::Device(PhysicalDevice* physicalDevice):
 	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
 	if (ENABLE_VALIDATION_LAYERS) {
+		std::cout << BOLDYELLOW << "[Device]" << RESET << YELLOW << " Validation layers activated." << RESET << std::endl;
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
 	} else {
@@ -59,6 +61,7 @@ Device::Device(PhysicalDevice* physicalDevice):
 
 Device::~Device()
 {
+	vkDeviceWaitIdle(_device);
 	if(_device != nullptr)
 	{
 		vkDestroyDevice(_device, nullptr);

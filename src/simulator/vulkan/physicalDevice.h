@@ -32,6 +32,7 @@ class PhysicalDevice
 	SwapChainSupportDetails querySwapChainSupport();
 
 	Surface* getSurface() const { return _surface; }
+	Instance* getInstance() const { return _instance; }
 
 	private:
 	void checkArguments(Instance* instance, Surface* surface);
