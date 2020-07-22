@@ -22,19 +22,17 @@
 class Model
 {
 	public:
-	Model(Device* device, CommandPool* commandPool, std::string fileName);
+	Model(std::string fileName);
 	~Model();
 
 	Texture* getTexture() const { return _texture; };
 	std::vector<Vertex> getVertices() const { return _vertices; };
 	std::vector<uint32_t> getIndices() const { return _indices; };
 
+	void loadTexture(Device* device, CommandPool* commandPool);
 	private:
-	void loadTexture();
 	void loadModel();
 
-	Device* _device;
-	CommandPool* _commandPool;
 	VertexBuffer* _vertexBuffer;
 	Texture* _texture;
 

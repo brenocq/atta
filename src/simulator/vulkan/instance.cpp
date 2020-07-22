@@ -67,7 +67,7 @@ Instance::~Instance()
 
 void Instance::printExtensionSupport()
 {
-	std::cout << BOLDWHITE << "[Instance]" << RESET <<" Available instance extensions:\n" << WHITE;
+	std::cout << std::endl << BOLDWHITE << "[Instance]" << RESET <<" Available instance extensions:\n" << WHITE;
 
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -84,7 +84,7 @@ void Instance::printExtensionSupport()
 
 void Instance::printLayersProperties()
 {
-	std::cout << BOLDWHITE << "[Instance]" << RESET <<" Available instance layers:\n" << WHITE;
+	std::cout << std::endl << BOLDWHITE << "[Instance]" << RESET <<" Available instance layers:\n" << WHITE;
 
 	uint32_t propertyCount = 0;
 	vkEnumerateInstanceLayerProperties(&propertyCount, nullptr);
@@ -116,6 +116,10 @@ std::vector<const char*> Instance::getRequiredExtensions()
 
 	if (ENABLE_VALIDATION_LAYERS) {
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	}
+	for(auto extension : instanceExtensions)
+	{
+		extensions.push_back(extension);
 	}
 
 	return extensions;

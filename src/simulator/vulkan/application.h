@@ -39,6 +39,8 @@
 #include "colorBuffer.h"
 #include "model.h"
 #include "ui/userInterface.h"
+#include "rayTracing/rayTracing.h"
+#include "../scene.h"
 
 class Application
 {
@@ -78,8 +80,11 @@ class Application
 	Texture* _texture;
 	DepthBuffer* _depthBuffer;
 	ColorBuffer* _colorBuffer;
-	UserInterface* _userInterface;
 
+	UserInterface* _userInterface;
+	RayTracing* _rayTracing;
+
+	Scene* _scene;
 	Model* _model;
 
 	std::vector<FrameBuffer*> _frameBuffers;

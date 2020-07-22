@@ -63,6 +63,28 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vulkanDebugCallback(
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, 
 		void* pUserData)
 {
+	if(pCallbackData->objectCount == 0 || messageSeverity <= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+		return VK_FALSE;
+
+	//---------- Ignore some false alarm messages
+	std::vector<std::string> messagesToIgnore = {"/usr/lib/i386-linux-gnu/"};
+
+	for (uint32_t i = 0; i != pCallbackData->objectCount; ++i)
+	{
+		std::string message = pCallbackData->pMessage;
+
+		// Search if some message matches with a message to ignore
+		for(std::string messageToIgnore : messagesToIgnore)
+		{
+			if(message.find(messageToIgnore) != std::string::npos)
+			{
+				return VK_FALSE;
+			}
+		}
+	}
+
+	//---------- Print messages
+	std::cerr << std::endl;
 	switch (messageSeverity)
 	{
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
@@ -96,23 +118,18 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vulkanDebugCallback(
 			std::cerr << "(Unknown): " << WHITE;
 	}
 
-	if (pCallbackData->objectCount > 0 && messageSeverity > VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+	std::cerr << "\n    Objects (" << pCallbackData->objectCount << "):\n";
+	for (uint32_t i = 0; i != pCallbackData->objectCount; ++i)
 	{
-		std::cerr << "\n    Objects (" << pCallbackData->objectCount << "):\n";
-
-		for (uint32_t i = 0; i != pCallbackData->objectCount; ++i)
-		{
-			const auto object = pCallbackData->pObjects[i];
-			std::cerr
-				<< "    - Object[" << i << "]: " <<
-				RED << "\n      Type: " << WHITE << objectTypeToString(object.objectType ) <<
-				RED << "\n      Handle: " << WHITE <<reinterpret_cast<void*>(object.objectHandle) <<
-				RED << "\n      Name: " << WHITE << "'" << (object.pObjectName ? object.pObjectName : "") << "'"
-				RED << "\n      Message: " << WHITE << pCallbackData->pMessage
-				<< std::endl;
-		}
+		const auto object = pCallbackData->pObjects[i];
+		std::cerr
+			<< "    - Object[" << i << "]: " <<
+			RED << "\n      Type: " << WHITE << objectTypeToString(object.objectType ) <<
+			RED << "\n      Handle: " << WHITE <<reinterpret_cast<void*>(object.objectHandle) <<
+			RED << "\n      Name: " << WHITE << "'" << (object.pObjectName ? object.pObjectName : "") << "'"
+			RED << "\n      Message: " << WHITE << pCallbackData->pMessage << 
+			RESET << std::endl;
 	}
-	std::cerr << RESET << std::endl;
 
 	return VK_FALSE;
 }

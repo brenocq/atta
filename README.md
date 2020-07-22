@@ -15,6 +15,16 @@ make clean
 make run -j4
 ```
 
+## Progress
+These values are unreliable and come from what I think is going on in the code kk (things could change tomorroy as new ideas emerge).
+
+####Core
+GPU Rendering (Vulkan): 60%\
+RayTracing (Nvidia): 20%\
+User interface (Imgui): 5%\
+Physics engine (Bullet): 0%\
+GPU acceleration (Cuda): 0%\
+
 ## Installation (Linux)
 #### Updating g++
 This simulator is using some libraries that were experimental in old version of g++. We can or change all #include<xxx> with erros to #include<experimental/xxx>, or update the g++.

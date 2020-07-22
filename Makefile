@@ -6,21 +6,23 @@ SRC_SIM    = ${SRC}simulator/
 SRC_VULKAN = ${SRC_SIM}vulkan/
 SRC_IMGUI  =  ${LIB}imgui/
 SRC_UI     =  ${SRC_VULKAN}ui/
+SRC_RT     =  ${SRC_VULKAN}rayTracing/
 SRC_ASSETS = ${SRC}assets/
 OBJ    	   = obj/
 SHA    	   = ${SRC}shaders/
 
 #------------ Files -------------
 FILES = 
-FILES_SIM = simulator
+FILES_SIM = simulator scene
 FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView graphicsPipeline shaderModule pipelineLayout renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model colorBuffer
 FILES_IMGUI = imgui imgui_demo imgui_widgets imgui_draw imgui_impl_glfw imgui_impl_vulkan
 FILES_UI = userInterface uiRenderPass uiFrameBuffer
+FILES_RT = rayTracing deviceProcedures accelerationStructure
 SHADERS = shader
 
 #------------ Helpers -------------
 CC = g++
-VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.135.0/x86_64
+VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.141.2/x86_64
 CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include -Wall -O3
 LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I${LIB}
 
@@ -36,12 +38,14 @@ SOURCES+=$(patsubst %, ${SRC_SIM}%.cpp, ${FILES_SIM})
 SOURCES+=$(patsubst %, ${SRC_VULKAN}%.cpp, ${FILES_VULKAN})
 SOURCES+=$(patsubst %, ${SRC_IMGUI}%.cpp, ${FILES_IMGUI})
 SOURCES+=$(patsubst %, ${SRC_UI}%.cpp, ${FILES_UI})
+SOURCES+=$(patsubst %, ${SRC_RT}%.cpp, ${FILES_RT})
 
 OBJECTS=$(patsubst %, ${OBJ}%.o, ${FILES})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_SIM})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_VULKAN})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_IMGUI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_UI})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_RT})
 
 SHADERS_VERT=$(patsubst %, ${SHA}%.vert, ${SHADERS})
 SHADERS_FRAG=$(patsubst %, ${SHA}%.frag, ${SHADERS})
@@ -67,6 +71,10 @@ ${OBJ}%.o: ${SRC_IMGUI}%.cpp
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 	
 ${OBJ}%.o: ${SRC_UI}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+
+${OBJ}%.o: ${SRC_RT}%.cpp
 	@/bin/echo -e "${GREEN}Compiling $<${NC}"
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
