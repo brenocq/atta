@@ -39,6 +39,7 @@ CommandPool::~CommandPool()
 
 VkCommandBuffer CommandPool::beginSingleTimeCommands()
 {
+	// Allocation is slow... maybe use some command buffer already in the command pool
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;

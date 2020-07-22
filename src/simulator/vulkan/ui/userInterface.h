@@ -22,6 +22,8 @@
 #include "uiRenderPass.h"
 #include "uiFrameBuffer.h"
 
+// TODO use renderPass and frameBuffer from vulkan folder
+
 class UserInterface
 {
 	public:

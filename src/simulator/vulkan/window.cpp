@@ -9,7 +9,7 @@
 #include "defines.h"
 
 Window::Window():
-	_width(800), _height(600)
+	_width(1200), _height(900)
 {
 	glfwInit();
 	// To not create an OpenGL context

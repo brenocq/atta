@@ -26,7 +26,10 @@ Application::Application():
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
 		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 
-	_model = new Model(_device, _commandPool, "viking_room");
+	_scene = new Scene();
+	_model = new Model("viking_room");
+	_model->loadTexture(_device, _commandPool);
+	_scene->addModel(_model);
 	createBuffers();
 
 	createDescriptorPool();
@@ -49,6 +52,9 @@ Application::Application():
 
 	// IMGUI
 	_userInterface = new UserInterface(_device, _window, _swapChain);
+
+	// RayTracing
+	_rayTracing = new RayTracing(_device, _commandPool, _scene);
 }
 
 Application::~Application()
@@ -173,9 +179,6 @@ void Application::recreateSwapChain()
 
 void Application::run()
 {
-	//for(int i=0; i<_frameBuffers.size(); i++)
-	//	render(i);
-
 	_window->drawFrame = [this](){ drawFrame(); };
 	_window->windowResized = [this](){ framebufferResizeCallback(); };
 	_window->loop();
@@ -262,7 +265,6 @@ void Application::drawFrame()
 	_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-
 void Application::render(int i)
 {
 	//---------- Start command pool ----------//
@@ -282,13 +284,13 @@ void Application::render(int i)
 	renderPassInfo.renderArea.extent = _swapChain->getExtent();
 
 	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+	clearValues[0].color = {0.5f, 0.5f, 0.5f, 1.0f};
 	clearValues[1].depthStencil = {1.0f, 0};
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
 
 	vkCmdBeginRenderPass(_commandBuffersTest[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
+	{
 		vkCmdBindPipeline(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
 
 		VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
@@ -298,8 +300,9 @@ void Application::render(int i)
 
 		vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
 		vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(_model->getIndices().size()), 1, 0, 0, 0);
-
+	}
 	vkCmdEndRenderPass(_commandBuffersTest[i]);
+
 	vkEndCommandBuffer(_commandBuffersTest[i]);
 }
 

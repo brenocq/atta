@@ -89,11 +89,6 @@ UserInterface::~UserInterface()
 	delete _imguiRenderPass;
 	_imguiRenderPass = nullptr;
 
-	// Resources to destroy when the program ends
-	ImGui_ImplVulkan_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
 	delete _imguiDescriptorPool;
 	_imguiDescriptorPool = nullptr;
 }
@@ -146,7 +141,27 @@ void UserInterface::checkResult(VkResult result)
 
 void UserInterface::draw()
 {
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
+	static bool checkbox = false;
+	static float sliderFloat = 0.f;
+	static int sliderInt = 0;
+
+	//ImGui::Begin("Window");
+	//ImGui::Checkbox("toggle", &checkbox);
+	//ImGui::SliderFloat("float", &sliderFloat, 0.f, 100.f);
+	//ImGui::SliderInt("int", &sliderInt, 0, 100);
+	//ImGui::End();
+
+	if(ImGui::BeginMainMenuBar())
+	{
+        if(ImGui::BeginMenu("Main"))
+        {
+            if(ImGui::Checkbox("RayTracing", &checkbox)) {}
+            if(ImGui::MenuItem("Quit", "ESQ")) {}
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+	}
 }
 
 void UserInterface::render(int i)

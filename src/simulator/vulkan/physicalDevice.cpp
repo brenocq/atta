@@ -20,7 +20,7 @@ PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
 	// Check if some device was found
 	if(deviceCount == 0) 
 	{
-		std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find GPUs with Vulkan support!" << WHITE << std::endl;
+		std::cerr << std::endl << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find GPUs with Vulkan support!" << WHITE << std::endl;
 		exit(1);
 	}
 
@@ -40,7 +40,7 @@ PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
 
 	if(_physicalDevice == VK_NULL_HANDLE) 
 	{
-		std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find a suitable GPU!" << WHITE << std::endl;
+		std::cerr << std::endl << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find a suitable GPU!" << WHITE << std::endl;
 		exit(1);
 	}
 }
@@ -222,13 +222,14 @@ std::string PhysicalDevice::getVersion(const uint32_t version, const uint32_t ve
 void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physicalDevices)
 {
 	bool showQueues = true;
-	bool showFeatures = true;
-	bool showLimits = true;
+	bool showFeatures = false;
+	bool showLimits = false;
 	bool showAvailableLayers = false;
 	bool showAvailableExtensions = false;
-	bool showMemory = true;
+	bool showMemory = false;
+	bool showRayTracingInfo = true;
 
-	std::cout << BOLDGREEN << "[PhysicalDevice] " << RESET;
+	std::cout << std::endl << BOLDGREEN << "[PhysicalDevice] " << RESET;
 	std::cout  << "GPUs with Vulkan support:"  << WHITE << std::endl;
 
 	for(VkPhysicalDevice device : physicalDevices)
@@ -401,6 +402,21 @@ void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physical
 			std::cout << "\t    - heaps (" << memProp.memoryHeapCount << ")" << std::endl;
 			for(int i=0;i<memProp.memoryHeapCount;i++)
 				std::cout << "\t      - heap " << i << ": " << -int(memProp.memoryHeaps[i].size)/int(1<<20) << "Mb" << std::endl;
+		}
+
+		if(showRayTracingInfo)
+		{
+			std::cout << "\t  - " << CYAN << "Ray tracing" << WHITE << std::endl;
+
+			VkPhysicalDeviceRayTracingPropertiesNV nvProps = {};
+			nvProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV;
+
+			VkPhysicalDeviceProperties2 props = {};
+			props.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+			props.pNext = &nvProps;
+			vkGetPhysicalDeviceProperties2(device, &props);
+
+			std::cout << "\t    - maxRecursionDepth: " << nvProps.maxRecursionDepth << std::endl;
 		}
 	}
 }

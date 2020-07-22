@@ -7,16 +7,12 @@
 #include "model.h"
 #include <chrono>
 
-Model::Model(Device* device, CommandPool* commandPool, std::string fileName):
+Model::Model(std::string fileName):
 	_fileName(fileName)
 {
-	_device = device;
-	_commandPool = commandPool;
-
-	std::cout << BOLDGREEN << "[Model]" << RESET << GREEN << " Loading model " << WHITE << fileName << RESET << std::endl;
-	loadTexture();
+	std::cout << std::endl << BOLDGREEN << "[Model]" << RESET << GREEN << " Loading model " << WHITE << fileName << RESET << std::endl;
+	//loadTexture();
 	loadModel();
-	std::cout << std::endl;
 }
 
 Model::~Model()
@@ -29,7 +25,7 @@ Model::~Model()
 
 }
 
-void Model::loadTexture()
+void Model::loadTexture(Device* device, CommandPool* commandPool)
 {
 	std::chrono::steady_clock::time_point begin;
 	std::chrono::steady_clock::time_point end;
@@ -38,7 +34,7 @@ void Model::loadTexture()
 	std::cout << GREEN << "\tLoading Texture... " << WHITE;
 
 	begin = std::chrono::steady_clock::now();
-	_texture = new Texture(_device, _commandPool, texturePath);
+	_texture = new Texture(device, commandPool, texturePath);
 	end = std::chrono::steady_clock::now();
 
 
