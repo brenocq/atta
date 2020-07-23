@@ -9,6 +9,7 @@
 
 #include "accelerationStructure.h"
 #include <vector>
+#include "../../scene.h"
 #include "../buffer.h"
 
 class BottomLevelAccelerationStructure final : public AccelerationStructure

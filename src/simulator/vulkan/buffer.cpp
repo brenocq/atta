@@ -45,6 +45,7 @@ Buffer::~Buffer()
 		vkDestroyBuffer(_device->handle(), _buffer, nullptr);
 		_buffer = nullptr;
 	}
+
 	if(_bufferMemory != nullptr)
 	{
 		vkFreeMemory(_device->handle(), _bufferMemory, nullptr);
@@ -106,4 +107,21 @@ void Buffer::copyFrom(CommandPool* commandPool, VkBuffer srcBuffer, VkDeviceSize
 	vkQueueWaitIdle(graphicsQueue);
 
 	vkFreeCommandBuffers(_device->handle(), commandPool->handle(), 1, &commandBuffer);
+}
+
+void* Buffer::mapMemory(const size_t offset, const size_t size)
+{
+	void* data;
+	if(vkMapMemory(_device->handle(), _bufferMemory, offset, size, 0, &data) != VK_SUCCESS)
+	{
+		std::cout << BOLDRED << "[Buffer]" << RESET << RED << " Failed to find map memory!" << RESET << std::endl;
+		exit(1);
+	}
+
+	return data;
+}
+
+void Buffer::unmapMemory()
+{
+	vkUnmapMemory(_device->handle(), _bufferMemory);
 }

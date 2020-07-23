@@ -52,7 +52,7 @@ AccelerationStructure::MemoryRequirements AccelerationStructure::getMemoryRequir
 	return { resultRequirements, buildRequirements, updateRequirements };
 }
 
-void AccelerationStructure::getMemoryBarrier(VkCommandBuffer commandBuffer)
+void AccelerationStructure::memoryBarrier(VkCommandBuffer commandBuffer)
 {
 	// Wait for the builder to complete by setting a barrier on the resulting buffer. This is
 	// particularly important as the construction of the top-level hierarchy may be called right

@@ -25,6 +25,8 @@ class Buffer
 
 	void copyFrom(CommandPool* commandPool, VkBuffer srcBuffer, VkDeviceSize size);
 
+	void* mapMemory(const size_t offset, const size_t size);
+	void unmapMemory();
 	protected:
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	
