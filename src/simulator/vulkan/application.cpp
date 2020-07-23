@@ -26,10 +26,12 @@ Application::Application():
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
 		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 
-	_scene = new Scene();
 	_model = new Model("viking_room");
 	_model->loadTexture(_device, _commandPool);
-	_scene->addModel(_model);
+
+	std::vector<Model*> models = {_model};
+	std::vector<Texture*> textures = {_model->getTexture()};
+	_scene = new Scene(_commandPool, models, textures, true);
 	createBuffers();
 
 	createDescriptorPool();
@@ -61,14 +63,17 @@ Application::~Application()
 {
 	cleanupSwapChain();
 
+	delete _rayTracing;
+	_rayTracing = nullptr;
+
 	delete _userInterface;
 	_userInterface = nullptr;
 
 	delete _depthBuffer;
 	_depthBuffer = nullptr;
 
-	delete _model;
-	_model = nullptr;
+	delete _scene;
+	_scene = nullptr;
 
 	delete _descriptorSetLayout;
 	_descriptorSetLayout = nullptr;
@@ -299,7 +304,20 @@ void Application::render(int i)
 		vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT32);
 
 		vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
-		vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(_model->getIndices().size()), 1, 0, 0, 0);
+
+		uint32_t vertexOffset = 0;
+		uint32_t indexOffset = 0;
+
+		for (auto model : _scene->getModels())
+		{
+			const uint32_t vertexCount = static_cast<uint32_t>(model->getVertices().size());
+			const uint32_t indexCount = static_cast<uint32_t>(model->getIndices().size());
+
+			vkCmdDrawIndexed(_commandBuffersTest[i], indexCount, 1, indexOffset, vertexOffset, 0);
+
+			vertexOffset += vertexCount;
+			indexOffset += indexCount;
+		}
 	}
 	vkCmdEndRenderPass(_commandBuffersTest[i]);
 

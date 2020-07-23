@@ -28,7 +28,7 @@ class AccelerationStructure
 	MemoryRequirements getMemoryRequirements() const;
 	VkAccelerationStructureNV handle() const { return _accelerationStructure; }
 	
-	static void getMemoryBarrier(VkCommandBuffer commandBuffer);
+	static void memoryBarrier(VkCommandBuffer commandBuffer);
 	protected:
 	AccelerationStructure(DeviceProcedures* deviceProcedures, const VkAccelerationStructureCreateInfoNV& createInfo);
 

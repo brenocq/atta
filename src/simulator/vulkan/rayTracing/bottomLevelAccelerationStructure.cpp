@@ -50,7 +50,7 @@ void BottomLevelAccelerationStructure::generate(
 	const VkDeviceSize scratchOffset,
 	const bool updateOnly) const
 {
-	if (updateOnly && !allowUpdate_)
+	if(updateOnly && !_allowUpdate)
 	{
 		std::cerr << BOLDYELLOW << "[BottomLevelAccelerationStructure]" << YELLOW << " Cannot update readonly structure!" << RESET << std::endl;
 		return;
@@ -68,7 +68,7 @@ void BottomLevelAccelerationStructure::generate(
 	bindInfo.deviceIndexCount = 0;
 	bindInfo.pDeviceIndices = nullptr;
 
-	if(_deviceProcedures->vkBindAccelerationStructureMemoryNV(Device().Handle(), 1, &bindInfo) != VK_SUCCESS)
+	if(_deviceProcedures->vkBindAccelerationStructureMemoryNV(getDevice()->handle(), 1, &bindInfo) != VK_SUCCESS)
 	{
 		std::cerr << BOLDRED << "[BottomLevelAccelerationStructure]" << RED << " Failed to bin acceleration structure!" << RESET << std::endl;
 		exit(1);
@@ -89,7 +89,7 @@ void BottomLevelAccelerationStructure::generate(
 	buildInfo.pGeometries = _geometries.data();
 
 	_deviceProcedures->vkCmdBuildAccelerationStructureNV(
-		commandBuffer, &buildInfo, nullptr, 0, updateOnly, Handle(), previousStructure, scratchBuffer->handle(), scratchOffset);
+		commandBuffer, &buildInfo, nullptr, 0, updateOnly, handle(), previousStructure, scratchBuffer->handle(), scratchOffset);
 }
 
 VkGeometryNV BottomLevelAccelerationStructure::createGeometry(
@@ -104,12 +104,12 @@ VkGeometryNV BottomLevelAccelerationStructure::createGeometry(
 	geometry.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_NV;
 	geometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
 	geometry.geometry.triangles.pNext = nullptr;
-	geometry.geometry.triangles.vertexData = scene.VertexBuffer().Handle();
+	geometry.geometry.triangles.vertexData = scene->getVertexBuffer()->handle();
 	geometry.geometry.triangles.vertexOffset = vertexOffset;
 	geometry.geometry.triangles.vertexCount = vertexCount;
 	geometry.geometry.triangles.vertexStride = sizeof(Vertex);
 	geometry.geometry.triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
-	geometry.geometry.triangles.indexData = scene.IndexBuffer().Handle();
+	geometry.geometry.triangles.indexData = scene->getIndexBuffer()->handle();
 	geometry.geometry.triangles.indexOffset = indexOffset;
 	geometry.geometry.triangles.indexCount = indexCount;
 	geometry.geometry.triangles.indexType = VK_INDEX_TYPE_UINT32;

@@ -16,7 +16,8 @@
 #include "../commandPool.h"
 #include "../../scene.h"
 #include "deviceProcedures.h"
-//#include "bottomLevelAccelerationStructure.h"
+#include "bottomLevelAccelerationStructure.h"
+#include "topLevelAccelerationStructure.h"
 
 class RayTracing
 {
@@ -28,6 +29,7 @@ class RayTracing
 	void getRTProperties();
 	void createAccelerationStructures();
 	void createBottomLevelStructures(VkCommandBuffer commandBuffer);
+	void createTopLevelStructures(VkCommandBuffer commandBuffer);
 
 	Device* _device;
 	CommandPool* _commandPool;
@@ -36,13 +38,14 @@ class RayTracing
 	VkPhysicalDeviceRayTracingPropertiesNV _props = {};
 	DeviceProcedures* _deviceProcedures;
 
-	//std::vector<BottomLevelAccelerationStructure> _blas;
-	//std::vector<TopLevelAccelerationStructure> _tlas;
+	std::vector<BottomLevelAccelerationStructure> _blas;
+	std::vector<TopLevelAccelerationStructure> _tlas;
 	
 	Buffer* _bottomBuffer;
 	Buffer* _bottomScratchBuffer;
 	Buffer* _topBuffer;
 	Buffer* _topScratchBuffer;
+	Buffer* _instancesBuffer;
 };
 
 #endif// RAY_TRACING_H

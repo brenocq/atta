@@ -26,8 +26,8 @@ class Model
 	~Model();
 
 	Texture* getTexture() const { return _texture; };
-	std::vector<Vertex> getVertices() const { return _vertices; };
-	std::vector<uint32_t> getIndices() const { return _indices; };
+	const std::vector<Vertex>& getVertices() const { return _vertices; };
+	const std::vector<uint32_t>& getIndices() const { return _indices; };
 
 	void loadTexture(Device* device, CommandPool* commandPool);
 	private:
