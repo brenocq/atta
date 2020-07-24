@@ -15,10 +15,10 @@ SHA_RT     = ${SHA}rayTracing/
 #------------ Files -------------
 FILES = 
 FILES_SIM = simulator scene
-FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView graphicsPipeline shaderModule pipelineLayout renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model colorBuffer descriptorBinding vulkan descriptorSetManager material
+FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView graphicsPipeline shaderModule pipelineLayout renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model colorBuffer descriptorBinding vulkan descriptorSetManager material imageMemoryBarrier procedural sphere
 FILES_IMGUI = imgui imgui_demo imgui_widgets imgui_draw imgui_impl_glfw imgui_impl_vulkan
 FILES_UI = userInterface uiRenderPass uiFrameBuffer
-FILES_RT = rayTracing deviceProcedures accelerationStructure bottomLevelAccelerationStructure topLevelAccelerationStructure rayTracingPipeline
+FILES_RT = rayTracing deviceProcedures accelerationStructure bottomLevelAccelerationStructure topLevelAccelerationStructure rayTracingPipeline shaderBindingTable
 SHADERS = shader
 #SHADERS_RT = rayTracing.rchit rayTracing.rgen rayTracing.rmiss rayTracing.procedural.rchit rayTracing.procedural.rint
 

@@ -98,16 +98,16 @@ void TopLevelAccelerationStructure::generate(
 }
 
 VkGeometryInstance TopLevelAccelerationStructure::createGeometryInstance(
-	const BottomLevelAccelerationStructure& bottomLevelAs,
+	BottomLevelAccelerationStructure* bottomLevelAs,
 	const glm::mat4& transform,
 	const uint32_t instanceId,
 	const uint32_t hitGroupIndex)
 {
-	const auto& device = bottomLevelAs.getDevice();
-	DeviceProcedures* deviceProcedures = bottomLevelAs.getDeviceProcedures();
+	const auto& device = bottomLevelAs->getDevice();
+	DeviceProcedures* deviceProcedures = bottomLevelAs->getDeviceProcedures();
 
 	uint64_t accelerationStructureHandle;
-	if(deviceProcedures->vkGetAccelerationStructureHandleNV(device->handle(), bottomLevelAs.handle(), sizeof(uint64_t), &accelerationStructureHandle) != VK_SUCCESS)
+	if(deviceProcedures->vkGetAccelerationStructureHandleNV(device->handle(), bottomLevelAs->handle(), sizeof(uint64_t), &accelerationStructureHandle) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[TopLevelAccelerationStructure]" << RESET << RED << " Failed to get acceleration structure handle!" << RESET << std::endl;
 		exit(1);

@@ -32,11 +32,11 @@ class BottomLevelAccelerationStructure final : public AccelerationStructure
 		uint32_t indexOffset, uint32_t indexCount,
 		bool isOpaque);
 
-	//static VkGeometryNV createGeometryAabb(
-	//	const Assets::Scene& scene,
-	//	uint32_t aabbOffset,
-	//	uint32_t aabbCount,
-	//	bool isOpaque);
+	static VkGeometryNV createGeometryAabb(
+		Scene* scene,
+		uint32_t aabbOffset,
+		uint32_t aabbCount,
+		bool isOpaque);
 
 	private:
 

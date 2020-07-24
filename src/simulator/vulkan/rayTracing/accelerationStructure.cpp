@@ -12,9 +12,10 @@ AccelerationStructure::AccelerationStructure(DeviceProcedures* deviceProcedures,
 	_deviceProcedures = deviceProcedures;
 	_device = _deviceProcedures->getDevice();
 
+
 	if(_deviceProcedures->vkCreateAccelerationStructureNV(_device->handle(), &createInfo, nullptr, &_accelerationStructure) != VK_SUCCESS)
 	{
-		std::cerr << BOLDRED << "[AccelerationStructure]" << RESET << RED << " Failed to creeate acceleration strucutre!" << RESET << std::endl;
+		std::cerr << BOLDRED << "[AccelerationStructure]" << RESET << RED << " Failed to create acceleration strucutre!" << RESET << std::endl;
 		exit(1);
 	}
 }

@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string.h>
 #include <vector>
+#include "glm.h"
 #include "defines.h"
 #include "device.h"
 #include "buffer.h"

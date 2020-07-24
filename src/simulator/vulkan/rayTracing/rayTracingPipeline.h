@@ -25,17 +25,17 @@ class RayTracingPipeline final
 		Device* device,
 		DeviceProcedures* deviceProcedures,
 		SwapChain* swapChain,
-		TopLevelAccelerationStructure& accelerationStructure,
+		TopLevelAccelerationStructure* accelerationStructure,
 		ImageView* accumulationImageView,
 		ImageView* outputImageView,
 		std::vector<UniformBuffer*> uniformBuffers,
 		Scene* scene);
 	~RayTracingPipeline();
 
-	uint32_t rayGenShaderIndex() const { return _rayGenIndex; }
-	uint32_t missShaderIndex() const { return _missIndex; }
-	uint32_t triangleHitGroupIndex() const { return _triangleHitGroupIndex; }
-	uint32_t proceduralHitGroupIndex() const { return _proceduralHitGroupIndex; }
+	uint32_t getRayGenShaderIndex() const { return _rayGenIndex; }
+	uint32_t getMissShaderIndex() const { return _missIndex; }
+	uint32_t getTriangleHitGroupIndex() const { return _triangleHitGroupIndex; }
+	uint32_t getProceduralHitGroupIndex() const { return _proceduralHitGroupIndex; }
 
 	VkDescriptorSet getDescriptorSet(uint32_t index) const;
 	PipelineLayout* getPipelineLayout() const { return _pipelineLayout; }

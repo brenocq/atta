@@ -18,7 +18,7 @@
 #include "swapChain.h"
 #include "pipelineLayout.h"
 #include "renderPass.h"
-#include "descriptorSetLayout.h"
+#include "descriptorSetManager.h"
 #include "vertex.h"
 #include "depthBuffer.h"
 #include "colorBuffer.h"
@@ -45,6 +45,7 @@ class GraphicsPipeline
 	DescriptorSetLayout* _descriptorSetLayout;
 	PipelineLayout* _pipelineLayout;
 	RenderPass* _renderPass;
+	DescriptorSetManager* _descriptorSetManager;
 };
 
 #endif// GRAPHICS_PIPELINE_H

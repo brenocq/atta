@@ -23,6 +23,7 @@
 #include "bottomLevelAccelerationStructure.h"
 #include "topLevelAccelerationStructure.h"
 #include "rayTracingPipeline.h"
+#include "shaderBindingTable.h"
 
 class RayTracing
 {
@@ -32,6 +33,7 @@ class RayTracing
 
 	void createSwapChain();
 	void deleteSwapChain();
+	void render(VkCommandBuffer commandBuffer, const uint32_t imageIndex);
 	private:
 	void getRTProperties();
 	void createAccelerationStructures();
@@ -48,9 +50,10 @@ class RayTracing
 	VkPhysicalDeviceRayTracingPropertiesNV _props = {};
 	DeviceProcedures* _deviceProcedures;
 
-	std::vector<BottomLevelAccelerationStructure> _blas;
-	std::vector<TopLevelAccelerationStructure> _tlas;
+	std::vector<BottomLevelAccelerationStructure*> _blas;
+	std::vector<TopLevelAccelerationStructure*> _tlas;
 	RayTracingPipeline* _rayTracingPipeline;
+	ShaderBindingTable* _shaderBindingTable;
 
 	Image* _accumulationImage;
 	ImageView* _accumulationImageView;

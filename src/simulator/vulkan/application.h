@@ -71,8 +71,8 @@ class Application
 	GraphicsPipeline* _graphicsPipeline;
 	CommandPool* _commandPool;
 	CommandBuffers* _commandBuffers;
-	VertexBuffer* _vertexBuffer;
-	IndexBuffer* _indexBuffer;
+	//VertexBuffer* _vertexBuffer;
+	//IndexBuffer* _indexBuffer;
 	StagingBuffer* _stagingBuffer;
 	DescriptorSetLayout* _descriptorSetLayout;
 	DescriptorPool* _descriptorPool;

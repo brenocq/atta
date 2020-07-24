@@ -12,7 +12,7 @@ RayTracingPipeline::RayTracingPipeline(
 	Device* device,
 	DeviceProcedures* deviceProcedures,
 	SwapChain* swapChain,
-	TopLevelAccelerationStructure& accelerationStructure,
+	TopLevelAccelerationStructure* accelerationStructure,
 	ImageView* accumulationImageView,
 	ImageView* outputImageView,
 	std::vector<UniformBuffer*> uniformBuffers,
@@ -55,7 +55,7 @@ RayTracingPipeline::RayTracingPipeline(
 	for(uint32_t i = 0; i != _swapChain->getImages().size(); i++)
 	{
 		// Top level acceleration structure.
-		const auto accelerationStructureHandle = accelerationStructure.handle();
+		const auto accelerationStructureHandle = accelerationStructure->handle();
 		VkWriteDescriptorSetAccelerationStructureNV structureInfo = {};
 		structureInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV;
 		structureInfo.pNext = nullptr;
@@ -122,15 +122,15 @@ RayTracingPipeline::RayTracingPipeline(
 		};
 
 		// Procedural buffer (optional)
-		//VkDescriptorBufferInfo proceduralBufferInfo = {};
-		//
-		//if (scene.HasProcedurals())
-		//{
-		//	proceduralBufferInfo.buffer = scene.ProceduralBuffer().Handle();
-		//	proceduralBufferInfo.range = VK_WHOLE_SIZE;
+		VkDescriptorBufferInfo proceduralBufferInfo = {};
+		
+		if (_scene->hasProcedurals())
+		{
+			proceduralBufferInfo.buffer = _scene->getProceduralBuffer()->handle();
+			proceduralBufferInfo.range = VK_WHOLE_SIZE;
 
-		//	descriptorWrites.push_back(descriptorSets.Bind(i, 9, proceduralBufferInfo));
-		//}
+			descriptorWrites.push_back(descriptorSets->bind(i, 9, proceduralBufferInfo));
+		}
 
 		descriptorSets->updateDescriptors(i, descriptorWrites);
 	}
