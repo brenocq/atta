@@ -50,8 +50,8 @@ Instance::Instance():
 		createInfo.pNext = nullptr;
 	}
 
-	printExtensionSupport();
-	printLayersProperties();
+	//printExtensionSupport();
+	//printLayersProperties();
 	if(vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[Instance]" << RESET << RED << " Failed to create vulkan instance!" << RESET << std::endl;

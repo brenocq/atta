@@ -56,7 +56,7 @@ Application::Application():
 	_userInterface = new UserInterface(_device, _window, _swapChain);
 
 	// RayTracing
-	_rayTracing = new RayTracing(_device, _commandPool, _scene);
+	_rayTracing = new RayTracing(_device, _swapChain, _commandPool, _uniformBuffers, _scene);
 }
 
 Application::~Application()

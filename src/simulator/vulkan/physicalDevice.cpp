@@ -227,7 +227,7 @@ void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physical
 	bool showAvailableLayers = false;
 	bool showAvailableExtensions = false;
 	bool showMemory = false;
-	bool showRayTracingInfo = true;
+	bool showRayTracingInfo = false;
 
 	std::cout << std::endl << BOLDGREEN << "[PhysicalDevice] " << RESET;
 	std::cout  << "GPUs with Vulkan support:"  << WHITE << std::endl;

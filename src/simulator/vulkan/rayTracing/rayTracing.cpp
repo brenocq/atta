@@ -8,19 +8,57 @@
 #include <chrono>
 #include "../vertex.h"
 
-RayTracing::RayTracing(Device* device, CommandPool* commandPool, Scene* scene)
+RayTracing::RayTracing(Device* device, SwapChain* swapChain, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene)
 {
 	_device = device;
+	_swapChain = swapChain;
 	_commandPool = commandPool;
+	_uniformBuffers.assign(uniformBuffers.begin(), uniformBuffers.end());
 	_scene = scene;
 	_deviceProcedures = new DeviceProcedures(_device);
+	_rayTracingPipeline = nullptr;
 
 	getRTProperties();
 	createAccelerationStructures();
+	createSwapChain();
 }
 
 RayTracing::~RayTracing()
 {
+	if(_rayTracingPipeline!=nullptr)
+	{
+		delete _rayTracingPipeline;
+		_rayTracingPipeline = nullptr;
+	}
+
+	if(_accumulationImage!=nullptr)
+	{
+		delete _accumulationImage;
+		_accumulationImage = nullptr;
+	}
+	if(_accumulationImageView!=nullptr)
+	{
+		delete _accumulationImageView;
+		_accumulationImageView = nullptr;
+	}
+
+	if(_outputImage!=nullptr)
+	{
+		delete _outputImage;
+		_outputImage = nullptr;
+	}
+	if(_outputImageView!=nullptr)
+	{
+		delete _outputImageView;
+		_outputImageView = nullptr;
+	}
+	
+	if(_deviceProcedures!=nullptr)
+	{
+		delete _deviceProcedures;
+		_deviceProcedures = nullptr;
+	}
+
 	// BLAS buffers
 	if(_bottomBuffer!=nullptr)
 	{
@@ -52,6 +90,17 @@ RayTracing::~RayTracing()
 		delete _instancesBuffer;
 		_instancesBuffer = nullptr;
 	}
+}
+
+void RayTracing::createSwapChain()
+{
+	createOutputImage();
+	_rayTracingPipeline = new RayTracingPipeline(_device, _deviceProcedures, _swapChain, _tlas[0], _accumulationImageView, _outputImageView, _uniformBuffers, _scene);
+}
+
+void RayTracing::deleteSwapChain()
+{
+
 }
 
 void RayTracing::getRTProperties()
@@ -175,4 +224,21 @@ void RayTracing::createTopLevelStructures(VkCommandBuffer commandBuffer)
 
 	// Generate the structures.
 	_tlas[0].generate(commandBuffer, _topBuffer, 0, _topScratchBuffer, 0, _instancesBuffer, 0, false);
+}
+
+void RayTracing::createOutputImage()
+{
+	const auto extent = _swapChain->getExtent();
+	const auto format = _swapChain->getImageFormat();
+	const auto tiling = VK_IMAGE_TILING_OPTIMAL;
+
+	_accumulationImage = new Image(_device, 
+			extent.width, extent.height, 
+			VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_STORAGE_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	_accumulationImageView = new ImageView(_device, _accumulationImage->handle(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT);
+
+	_outputImage = new Image(_device, 
+			extent.width, extent.height, 
+			format, tiling, VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	_outputImageView = new ImageView(_device, _outputImage->handle(), format, VK_IMAGE_ASPECT_COLOR_BIT);
 }

@@ -11,11 +11,13 @@
 #include <string.h>
 #include "defines.h"
 #include "device.h"
+#include "descriptorBinding.h"
 
 class DescriptorSetLayout
 {
 	public:
 	DescriptorSetLayout(Device* device);
+	DescriptorSetLayout(Device* device, std::vector<DescriptorBinding> descriptorBindings);
 	~DescriptorSetLayout();
 
 	VkDescriptorSetLayout handle() const { return _descriptorSetLayout; }

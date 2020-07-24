@@ -13,6 +13,7 @@
 #include "vulkan/texture.h"
 #include "vulkan/buffer.h"
 #include "vulkan/commandPool.h"
+#include "vulkan/material.h"
 
 class Scene
 {
@@ -25,6 +26,8 @@ class Scene
 	std::vector<Texture*> getTextures() const { return _textures; };
 	Buffer* getVertexBuffer() const { return _vertexBuffer; }
 	Buffer* getIndexBuffer() const { return _indexBuffer; }
+	Buffer* getMaterialBuffer() const { return _materialBuffer; }
+	Buffer* getOffsetBuffer() const { return _offsetBuffer; }
 
 	private:
 	template <class T>
@@ -38,7 +41,7 @@ class Scene
 	CommandPool* _commandPool;
 	Buffer* _vertexBuffer;
 	Buffer* _indexBuffer;
-	//Buffer* _materialBuffer;
+	Buffer* _materialBuffer;
 	Buffer* _offsetBuffer;
 };
 

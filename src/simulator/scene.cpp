@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "scene.h"
 #include "vulkan/vertex.h"
+#include "vulkan/material.h"
 
 Scene::Scene(CommandPool* commandPool, std::vector<Model*> models, std::vector<Texture*> textures, bool enableRayTracing):
 	_models(std::move(models)), _textures(std::move(textures))
@@ -15,6 +16,7 @@ Scene::Scene(CommandPool* commandPool, std::vector<Model*> models, std::vector<T
 	// Concatenate all the models
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
+	std::vector<Material> materials;
 	std::vector<glm::uvec2> offsets;
 
 	for(const auto model : _models)
@@ -22,19 +24,27 @@ Scene::Scene(CommandPool* commandPool, std::vector<Model*> models, std::vector<T
 		// Remember the index, vertex offsets.
 		const uint32_t indexOffset = static_cast<uint32_t>(indices.size());
 		const uint32_t vertexOffset = static_cast<uint32_t>(vertices.size());
+		const auto materialOffset = static_cast<uint32_t>(materials.size());
 
 		offsets.emplace_back(indexOffset, vertexOffset);
 
 		// Copy model data one after the other.
 		vertices.insert(vertices.end(), model->getVertices().begin(), model->getVertices().end());
 		indices.insert(indices.end(), model->getIndices().begin(), model->getIndices().end());
+		materials.insert(materials.end(), model->getMaterials().begin(), model->getMaterials().end());
+
+		// Adjust the material id.
+		for(size_t i = vertexOffset; i != vertices.size(); i++)
+		{
+			vertices[i].materialIndex += materialOffset;
+		}
 	}
 
 	const auto flag = enableRayTracing ? VK_BUFFER_USAGE_STORAGE_BUFFER_BIT : 0;
 
 	createSceneBuffer(_vertexBuffer, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|flag, vertices);
 	createSceneBuffer(_indexBuffer, VK_BUFFER_USAGE_INDEX_BUFFER_BIT|flag, indices);
-	//createSceneBuffer(_materialBuffer;
+	createSceneBuffer(_materialBuffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
 	createSceneBuffer(_offsetBuffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, offsets);
 }
 
@@ -50,6 +60,12 @@ Scene::~Scene()
 	{
 		delete _indexBuffer;
 		_indexBuffer = nullptr;
+	}
+
+	if(_materialBuffer != nullptr)
+	{
+		delete _materialBuffer;
+		_materialBuffer = nullptr;
 	}
 
 	if(_offsetBuffer != nullptr)
