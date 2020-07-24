@@ -10,15 +10,17 @@ SRC_RT     =  ${SRC_VULKAN}rayTracing/
 SRC_ASSETS = ${SRC}assets/
 OBJ    	   = obj/
 SHA    	   = ${SRC}shaders/
+SHA_RT     = ${SHA}rayTracing/
 
 #------------ Files -------------
 FILES = 
 FILES_SIM = simulator scene
-FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView graphicsPipeline shaderModule pipelineLayout renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model colorBuffer
+FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView graphicsPipeline shaderModule pipelineLayout renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model colorBuffer descriptorBinding vulkan descriptorSetManager material
 FILES_IMGUI = imgui imgui_demo imgui_widgets imgui_draw imgui_impl_glfw imgui_impl_vulkan
 FILES_UI = userInterface uiRenderPass uiFrameBuffer
-FILES_RT = rayTracing deviceProcedures accelerationStructure bottomLevelAccelerationStructure topLevelAccelerationStructure
+FILES_RT = rayTracing deviceProcedures accelerationStructure bottomLevelAccelerationStructure topLevelAccelerationStructure rayTracingPipeline
 SHADERS = shader
+#SHADERS_RT = rayTracing.rchit rayTracing.rgen rayTracing.rmiss rayTracing.procedural.rchit rayTracing.procedural.rint
 
 #------------ Helpers -------------
 CC = g++
@@ -80,8 +82,13 @@ ${OBJ}%.o: ${SRC_RT}%.cpp
 
 build: ${OBJECTS} ${SHADERS_VERT} ${SHADERS_FRAG} ${SRC}main.cpp
 	@/bin/echo -e "${GREEN}${BOLD}---------- Building ----------${NC}"
-	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_VERT} -o ${SRC}shaders/vert.spv
-	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_FRAG} -o ${SRC}shaders/frag.spv
+	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_VERT} -o ${SHA}vert.spv
+	$(VULKAN_SDK_PATH)/bin/glslc ${SHADERS_FRAG} -o ${SHA}frag.spv
+	$(VULKAN_SDK_PATH)/bin/glslc ${SHA_RT}rayTracing.procedural.rchit -o ${SHA_RT}rayTracing.procedural.rchit.spv
+	$(VULKAN_SDK_PATH)/bin/glslc ${SHA_RT}rayTracing.procedural.rint -o ${SHA_RT}rayTracing.procedural.rint.spv
+	$(VULKAN_SDK_PATH)/bin/glslc ${SHA_RT}rayTracing.rchit -o ${SHA_RT}rayTracing.rchit.spv
+	$(VULKAN_SDK_PATH)/bin/glslc ${SHA_RT}rayTracing.rgen -o ${SHA_RT}rayTracing.rgen.spv
+	$(VULKAN_SDK_PATH)/bin/glslc ${SHA_RT}rayTracing.rmiss -o ${SHA_RT}rayTracing.rmiss.spv
 	${CC} ${CFLAGS} ${SRC}main.cpp ${OBJECTS} -o ${EXECUTABLE} ${LDFLAGS}
 
 #------------ Run -------------

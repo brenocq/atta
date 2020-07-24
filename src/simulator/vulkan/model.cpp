@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "model.h"
 #include <chrono>
+#include "glm.h"
 
 Model::Model(std::string fileName):
 	_fileName(fileName)
@@ -95,6 +96,26 @@ void Model::loadModel()
 			}
 			_indices.push_back(uniqueVertices[vertex]);
 		}
+	}
+
+	// Materials
+	for(const auto& material : materials)
+	{
+		Material m{};
+		m.diffuse = glm::vec4(material.diffuse[0], material.diffuse[1], material.diffuse[2], 1.0);
+		m.diffuseTextureId = -1;
+
+		_materials.emplace_back(m);
+	}
+
+	if(_materials.empty())
+	{
+		Material m{};
+
+		m.diffuse = glm::vec4(0.7f, 0.7f, 0.7f, 1.0);
+		m.diffuseTextureId = -1;
+
+		_materials.emplace_back(m);
 	}
 
 	end = std::chrono::steady_clock::now();

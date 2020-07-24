@@ -38,6 +38,36 @@ DescriptorSetLayout::DescriptorSetLayout(Device* device)
 	}
 }
 
+DescriptorSetLayout::DescriptorSetLayout(Device* device, std::vector<DescriptorBinding> descriptorBindings)
+{
+	_device = device;
+	std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+
+	for (auto binding : descriptorBindings)
+	{
+		VkDescriptorSetLayoutBinding b = {};
+		b.binding = binding.binding;
+		b.descriptorCount = binding.descriptorCount;
+		b.descriptorType = binding.type;
+		b.stageFlags = binding.stage;
+
+		layoutBindings.push_back(b);
+	}
+
+	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
+	layoutInfo.pBindings = layoutBindings.data();
+
+
+	if(vkCreateDescriptorSetLayout(_device->handle(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
+	{
+		std::cout << BOLDRED << "[DescriptorSetLayout]" << RESET << RED << " Failed to create descriptor set layout!" << RESET << std::endl;
+		exit(1);
+	}
+}
+
+
 DescriptorSetLayout::~DescriptorSetLayout()
 {
 	if(_descriptorSetLayout != nullptr)

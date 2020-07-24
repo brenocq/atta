@@ -14,25 +14,35 @@
 #include "defines.h"
 #include "../device.h"
 #include "../commandPool.h"
+#include "../swapChain.h"
+#include "../uniformBuffer.h"
+#include "../image.h"
+#include "../imageView.h"
 #include "../../scene.h"
 #include "deviceProcedures.h"
 #include "bottomLevelAccelerationStructure.h"
 #include "topLevelAccelerationStructure.h"
+#include "rayTracingPipeline.h"
 
 class RayTracing
 {
 	public:
-	RayTracing(Device* device, CommandPool* commandPool, Scene* scene);
+	RayTracing(Device* device, SwapChain* swapChain, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene);
 	~RayTracing();
 
+	void createSwapChain();
+	void deleteSwapChain();
 	private:
 	void getRTProperties();
 	void createAccelerationStructures();
 	void createBottomLevelStructures(VkCommandBuffer commandBuffer);
 	void createTopLevelStructures(VkCommandBuffer commandBuffer);
+	void createOutputImage();
 
 	Device* _device;
 	CommandPool* _commandPool;
+	SwapChain* _swapChain;
+	std::vector<UniformBuffer*> _uniformBuffers;
 	Scene* _scene;
 
 	VkPhysicalDeviceRayTracingPropertiesNV _props = {};
@@ -40,6 +50,12 @@ class RayTracing
 
 	std::vector<BottomLevelAccelerationStructure> _blas;
 	std::vector<TopLevelAccelerationStructure> _tlas;
+	RayTracingPipeline* _rayTracingPipeline;
+
+	Image* _accumulationImage;
+	ImageView* _accumulationImageView;
+	Image* _outputImage;
+	ImageView* _outputImageView;
 	
 	Buffer* _bottomBuffer;
 	Buffer* _bottomScratchBuffer;

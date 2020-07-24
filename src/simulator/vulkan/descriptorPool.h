@@ -11,11 +11,13 @@
 #include <string.h>
 #include "defines.h"
 #include "device.h"
+#include "descriptorBinding.h"
 
 class DescriptorPool
 {
 	public:
 	DescriptorPool(Device* device, std::vector<VkDescriptorPoolSize> poolSizes);
+	DescriptorPool(Device* device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets);
 	~DescriptorPool();
 
 	VkDescriptorPool handle() const { return _descriptorPool; }

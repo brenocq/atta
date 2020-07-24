@@ -51,3 +51,14 @@ std::vector<char> ShaderModule::readFile(const std::string& filename)
 
 	return buffer;
 }
+
+VkPipelineShaderStageCreateInfo ShaderModule::createShaderStage(VkShaderStageFlagBits stage) const
+{
+	VkPipelineShaderStageCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	createInfo.stage = stage;
+	createInfo.module = _shaderModule;
+	createInfo.pName = "main";
+
+	return createInfo;
+}

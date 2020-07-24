@@ -20,7 +20,7 @@ class ShaderModule
 
 		VkShaderModule handle() const { return _shaderModule; }
 
-		//VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits stage) const;
+		VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits stage) const;
 
 	private:
 		std::vector<char> readFile(const std::string& filename);
