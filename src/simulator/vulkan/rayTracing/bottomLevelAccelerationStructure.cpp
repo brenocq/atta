@@ -70,7 +70,7 @@ void BottomLevelAccelerationStructure::generate(
 
 	if(_deviceProcedures->vkBindAccelerationStructureMemoryNV(getDevice()->handle(), 1, &bindInfo) != VK_SUCCESS)
 	{
-		std::cerr << BOLDRED << "[BottomLevelAccelerationStructure]" << RED << " Failed to bin acceleration structure!" << RESET << std::endl;
+		std::cerr << BOLDRED << "[BottomLevelAccelerationStructure]" << RED << " Failed to bind acceleration structure!" << RESET << std::endl;
 		exit(1);
 	}
 
@@ -121,24 +121,24 @@ VkGeometryNV BottomLevelAccelerationStructure::createGeometry(
 	return geometry;
 }
 
-//VkGeometryNV BottomLevelAccelerationStructure::createGeometryAabb(
-//	const Assets::Scene& scene,
-//	const uint32_t aabbOffset,
-//	const uint32_t aabbCount,
-//	const bool isOpaque)
-//{
-//	VkGeometryNV geometry = {};
-//	geometry.sType = VK_STRUCTURE_TYPE_GEOMETRY_NV;
-//	geometry.pNext = nullptr;
-//	geometry.geometryType = VK_GEOMETRY_TYPE_AABBS_NV;
-//	geometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
-//	geometry.geometry.aabbs.sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV;
-//	geometry.geometry.aabbs.pNext = nullptr;
-//	geometry.geometry.aabbs.aabbData = scene.AabbBuffer().Handle();
-//	geometry.geometry.aabbs.numAABBs = aabbCount;
-//	geometry.geometry.aabbs.stride = sizeof(glm::vec3) * 2;
-//	geometry.geometry.aabbs.offset = aabbOffset;
-//	geometry.flags = isOpaque ? VK_GEOMETRY_OPAQUE_BIT_NV : 0;
-//
-//	return geometry;
-//}
+VkGeometryNV BottomLevelAccelerationStructure::createGeometryAabb(
+	Scene* scene,
+	const uint32_t aabbOffset,
+	const uint32_t aabbCount,
+	const bool isOpaque)
+{
+	VkGeometryNV geometry = {};
+	geometry.sType = VK_STRUCTURE_TYPE_GEOMETRY_NV;
+	geometry.pNext = nullptr;
+	geometry.geometryType = VK_GEOMETRY_TYPE_AABBS_NV;
+	geometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV;
+	geometry.geometry.aabbs.sType = VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV;
+	geometry.geometry.aabbs.pNext = nullptr;
+	geometry.geometry.aabbs.aabbData = scene->getAabbBuffer()->handle();
+	geometry.geometry.aabbs.numAABBs = aabbCount;
+	geometry.geometry.aabbs.stride = sizeof(glm::vec3) * 2;
+	geometry.geometry.aabbs.offset = aabbOffset;
+	geometry.flags = isOpaque ? VK_GEOMETRY_OPAQUE_BIT_NV : 0;
+
+	return geometry;
+}

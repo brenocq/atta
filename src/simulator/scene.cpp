@@ -5,19 +5,24 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "scene.h"
+#include <memory>
 #include "vulkan/vertex.h"
 #include "vulkan/material.h"
+#include "vulkan/sphere.h"
 
 Scene::Scene(CommandPool* commandPool, std::vector<Model*> models, std::vector<Texture*> textures, bool enableRayTracing):
 	_models(std::move(models)), _textures(std::move(textures))
 {
 	_commandPool = commandPool;
+	_proceduralBuffer = nullptr;
 
 	// Concatenate all the models
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
 	std::vector<Material> materials;
 	std::vector<glm::uvec2> offsets;
+	std::vector<std::pair<glm::vec3, glm::vec3>> aabbs;
+	std::vector<glm::vec4> procedurals;
 
 	for(const auto model : _models)
 	{
@@ -38,14 +43,29 @@ Scene::Scene(CommandPool* commandPool, std::vector<Model*> models, std::vector<T
 		{
 			vertices[i].materialIndex += materialOffset;
 		}
+
+		// Add optional procedurals
+		const auto sphere = dynamic_cast<const Sphere*>(model->getProcedural());
+		if (sphere != nullptr)
+		{
+			aabbs.push_back(sphere->boundingBox());
+			procedurals.emplace_back(sphere->center, sphere->radius);
+		}
+		else
+		{
+			aabbs.emplace_back();
+			procedurals.emplace_back();
+		}
 	}
 
 	const auto flag = enableRayTracing ? VK_BUFFER_USAGE_STORAGE_BUFFER_BIT : 0;
 
-	createSceneBuffer(_vertexBuffer, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|flag, vertices);
-	createSceneBuffer(_indexBuffer, VK_BUFFER_USAGE_INDEX_BUFFER_BIT|flag, indices);
-	createSceneBuffer(_materialBuffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
-	createSceneBuffer(_offsetBuffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, offsets);
+	createSceneBuffer(_vertexBuffer, 		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|flag, vertices);
+	createSceneBuffer(_indexBuffer, 		VK_BUFFER_USAGE_INDEX_BUFFER_BIT|flag, 	indices);
+	createSceneBuffer(_materialBuffer, 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,		materials);
+	createSceneBuffer(_offsetBuffer, 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	offsets);
+	createSceneBuffer(_aabbBuffer, 			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	aabbs);
+	createSceneBuffer(_proceduralBuffer, 	VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	procedurals);
 }
 
 Scene::~Scene()
@@ -72,6 +92,18 @@ Scene::~Scene()
 	{
 		delete _offsetBuffer;
 		_offsetBuffer = nullptr;
+	}
+
+	if(_aabbBuffer != nullptr)
+	{
+		delete _aabbBuffer;
+		_aabbBuffer = nullptr;
+	}
+	
+	if(_proceduralBuffer != nullptr)
+	{
+		delete _proceduralBuffer;
+		_proceduralBuffer = nullptr;
 	}
 
 	for(auto model : _models)

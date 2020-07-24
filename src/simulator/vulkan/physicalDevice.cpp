@@ -227,7 +227,7 @@ void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physical
 	bool showAvailableLayers = false;
 	bool showAvailableExtensions = false;
 	bool showMemory = false;
-	bool showRayTracingInfo = false;
+	bool showRayTracingInfo = true;
 
 	std::cout << std::endl << BOLDGREEN << "[PhysicalDevice] " << RESET;
 	std::cout  << "GPUs with Vulkan support:"  << WHITE << std::endl;
@@ -417,6 +417,7 @@ void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physical
 			vkGetPhysicalDeviceProperties2(device, &props);
 
 			std::cout << "\t    - maxRecursionDepth: " << nvProps.maxRecursionDepth << std::endl;
+			std::cout << "\t    - shaderGroupBaseAlignment: " << nvProps.shaderGroupBaseAlignment << std::endl;
 		}
 	}
 }

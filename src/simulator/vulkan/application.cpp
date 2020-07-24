@@ -26,17 +26,24 @@ Application::Application():
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
 		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 
-	_model = new Model("viking_room");
-	_model->loadTexture(_device, _commandPool);
+	std::vector<Model*> models;
+	std::vector<Texture*> textures;
 
-	std::vector<Model*> models = {_model};
-	std::vector<Texture*> textures = {_model->getTexture()};
+	models.push_back(new Model("cube_multi"));
+	models.push_back(Model::createSphere(glm::vec3(1, 0, 0), 0.5, Material::metallic(glm::vec3(0.7f, 0.5f, 0.8f), 0.2f), true));
+	models.push_back(Model::createSphere(glm::vec3(-1, 0, 0), 0.5, Material::dielectric(1.5f), true));
+	models.push_back(Model::createSphere(glm::vec3(0, 1, 0), 0.5, Material::lambertian(glm::vec3(1.0f), 0), true));
+	textures.push_back(new Texture(_device, _commandPool, "assets/models/cube/cube.png"));
+
+	//_model = new Model("cube_multi");
+	//_model->loadTexture(_device, _commandPool);
+
 	_scene = new Scene(_commandPool, models, textures, true);
 	createBuffers();
 
 	createDescriptorPool();
 	//_texture = new Texture(_device, _commandPool, "assets/textures/texture.jpg");
-	_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, _uniformBuffers, _model->getTexture());
+	_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, _uniformBuffers, textures[0]);
 
 	createCommandBuffers();
 
@@ -78,10 +85,10 @@ Application::~Application()
 	delete _descriptorSetLayout;
 	_descriptorSetLayout = nullptr;
 
-	delete _indexBuffer;
-	_indexBuffer = nullptr;
-	delete _vertexBuffer;
-	_vertexBuffer = nullptr;
+	//delete _indexBuffer;
+	//_indexBuffer = nullptr;
+	//delete _vertexBuffer;
+	//_vertexBuffer = nullptr;
 
 	for(size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
 	{
@@ -117,6 +124,8 @@ Application::~Application()
 
 void Application::cleanupSwapChain()
 {
+	_rayTracing->deleteSwapChain();
+
 	delete _userInterface;
 	_userInterface = nullptr;
 
@@ -180,6 +189,7 @@ void Application::recreateSwapChain()
 
 	// IMGUI
 	_userInterface = new UserInterface(_device, _window, _swapChain);
+	_rayTracing->createSwapChain();
 }
 
 void Application::run()
@@ -208,7 +218,8 @@ void Application::drawFrame()
 		exit(1);
 	}
 	//----------- Render to screen ----------//
-	render(imageIndex);
+	_rayTracing->render(_commandBuffersTest[imageIndex], imageIndex);
+	//render(imageIndex);
 	_userInterface->render(imageIndex);
 
 	//---------- CPU-GPU syncronization ----------//
@@ -298,10 +309,10 @@ void Application::render(int i)
 	{
 		vkCmdBindPipeline(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
 
-		VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
-		VkDeviceSize offsets[] = {0};
-		vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
-		vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT32);
+		//VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
+		//VkDeviceSize offsets[] = {0};
+		//vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
+		//vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT32);
 
 		vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
 
@@ -389,20 +400,20 @@ void Application::createCommandBuffers()
 void Application::createBuffers()
 {
 	//---------- Vertex Buffer ----------//
-	_stagingBuffer = new StagingBuffer(_device, _model->getVertices());
-	_vertexBuffer = new VertexBuffer(_device, _model->getVertices());
-	// Transfer from staging buffer to vertex buffer
-	_vertexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(_model->getVertices()[0])*_model->getVertices().size());
-	delete _stagingBuffer;
-	_stagingBuffer = nullptr;
+	//_stagingBuffer = new StagingBuffer(_device, _model->getVertices());
+	//_vertexBuffer = new VertexBuffer(_device, _model->getVertices());
+	//// Transfer from staging buffer to vertex buffer
+	//_vertexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(_model->getVertices()[0])*_model->getVertices().size());
+	//delete _stagingBuffer;
+	//_stagingBuffer = nullptr;
 
-	//---------- Index Buffer ----------//
-	_stagingBuffer = new StagingBuffer(_device, _model->getIndices());
-	_indexBuffer = new IndexBuffer(_device, _model->getIndices());
-	// Transfer from staging buffer to vertex buffer
-	_indexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(_model->getIndices()[0])*_model->getIndices().size());
-	delete _stagingBuffer;
-	_stagingBuffer = nullptr;
+	////---------- Index Buffer ----------//
+	//_stagingBuffer = new StagingBuffer(_device, _model->getIndices());
+	//_indexBuffer = new IndexBuffer(_device, _model->getIndices());
+	//// Transfer from staging buffer to vertex buffer
+	//_indexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(_model->getIndices()[0])*_model->getIndices().size());
+	//delete _stagingBuffer;
+	//_stagingBuffer = nullptr;
 	
 	//---------- Uniform Buffers ----------//
 	_uniformBuffers.resize(_swapChain->getImages().size());
@@ -415,21 +426,21 @@ void Application::createBuffers()
 
 void Application::updateUniformBuffer(uint32_t currentImage)
 {
- 	static auto startTime = std::chrono::high_resolution_clock::now();
+ 	//static auto startTime = std::chrono::high_resolution_clock::now();
 
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+    //auto currentTime = std::chrono::high_resolution_clock::now();
+    //float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-	UniformBufferObject ubo{};
-	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.proj = glm::perspective(glm::radians(45.0f), _swapChain->getExtent().width / (float) _swapChain->getExtent().height, 0.1f, 10.0f);
-	ubo.proj[1][1] *= -1;
+	//UniformBufferObject ubo{};
+	//ubo.modelView = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	//ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	//ubo.projection = glm::perspective(glm::radians(45.0f), _swapChain->getExtent().width / (float) _swapChain->getExtent().height, 0.1f, 10.0f);
+	//ubo.projection[1][1] *= -1;
 
-	void* data;
-	vkMapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory(), 0, sizeof(ubo), 0, &data);
-		memcpy(data, &ubo, sizeof(ubo));
-	vkUnmapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory());
+	//void* data;
+	//vkMapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory(), 0, sizeof(ubo), 0, &data);
+	//	memcpy(data, &ubo, sizeof(ubo));
+	//vkUnmapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory());
 }
 
 void Application::createDescriptorPool()

@@ -49,7 +49,7 @@ class TopLevelAccelerationStructure final : public AccelerationStructure
 		bool updateOnly) const;
 
 	static VkGeometryInstance createGeometryInstance(
-		const BottomLevelAccelerationStructure& bottomLevelAs,
+		BottomLevelAccelerationStructure* bottomLevelAs,
 		const glm::mat4& transform,
 		uint32_t instanceId,
 		uint32_t hitGroupIndex);

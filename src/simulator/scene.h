@@ -8,6 +8,7 @@
 #define SCENE_H
 
 #include <iostream>
+#include <memory>
 #include "defines.h"
 #include "vulkan/model.h"
 #include "vulkan/texture.h"
@@ -28,6 +29,9 @@ class Scene
 	Buffer* getIndexBuffer() const { return _indexBuffer; }
 	Buffer* getMaterialBuffer() const { return _materialBuffer; }
 	Buffer* getOffsetBuffer() const { return _offsetBuffer; }
+	Buffer* getAabbBuffer() const { return _aabbBuffer; }
+	Buffer* getProceduralBuffer() const { return _proceduralBuffer; }
+	bool hasProcedurals() const { return static_cast<bool>(_proceduralBuffer); }
 
 	private:
 	template <class T>
@@ -43,6 +47,8 @@ class Scene
 	Buffer* _indexBuffer;
 	Buffer* _materialBuffer;
 	Buffer* _offsetBuffer;
+	Buffer* _aabbBuffer;
+	Buffer* _proceduralBuffer;
 };
 
 #endif// SCENE_H
