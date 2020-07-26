@@ -16,35 +16,40 @@ Application::Application():
 	_physicalDevice = new PhysicalDevice(_instance, _surface);
 	_device = new Device(_physicalDevice);
 	_commandPool = new CommandPool(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-	_swapChain = new SwapChain(_device, _window);
-	_descriptorSetLayout = new DescriptorSetLayout(_device);
-	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
-	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _descriptorSetLayout);
 
-	_frameBuffers.resize(_swapChain->getImageViews().size());
-	for(size_t i = 0; i < _frameBuffers.size(); i++) 
-		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
-
+	//---------- Scene ----------//
 	std::vector<Model*> models;
 	std::vector<Texture*> textures;
-
 	models.push_back(new Model("cube_multi"));
 	models.push_back(Model::createSphere(glm::vec3(1, 0, 0), 0.5, Material::metallic(glm::vec3(0.7f, 0.5f, 0.8f), 0.2f), true));
 	models.push_back(Model::createSphere(glm::vec3(-1, 0, 0), 0.5, Material::dielectric(1.5f), true));
 	models.push_back(Model::createSphere(glm::vec3(0, 1, 0), 0.5, Material::lambertian(glm::vec3(1.0f), 0), true));
-	textures.push_back(new Texture(_device, _commandPool, "assets/models/cube/cube.png"));
-
-	//_model = new Model("cube_multi");
-	//_model->loadTexture(_device, _commandPool);
-
+	models.push_back(Model::createSphere(glm::vec3(0, -1, 0), 0.5, Material::lambertian(glm::vec3(1.0f), 0), true));
+	textures.push_back(new Texture(_device, _commandPool, "assets/models/cube_multi/cube_multi.png"));
 	_scene = new Scene(_commandPool, models, textures, true);
-	createBuffers();
+
+	//---------- Swap Chain ----------//
+	_swapChain = new SwapChain(_device, _window);
+	
+	//---------- Uniform Buffers ----------//
+	_uniformBuffers.resize(_swapChain->getImages().size());
+	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+	for(size_t i = 0; i < _swapChain->getImages().size(); i++) 
+	{
+		_uniformBuffers[i] = new UniformBuffer(_device, bufferSize);
+    }
+
+	//---------- Graphics pipeline ----------//
+	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
+	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _uniformBuffers, _scene);
+
+	//---------- Frame Buffers ----------//
+	_frameBuffers.resize(_swapChain->getImageViews().size());
+	for(size_t i = 0; i < _frameBuffers.size(); i++) 
+		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 
 	createDescriptorPool();
-	//_texture = new Texture(_device, _commandPool, "assets/textures/texture.jpg");
-	_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, _uniformBuffers, textures[0]);
-
 	createCommandBuffers();
 
 	_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -81,9 +86,6 @@ Application::~Application()
 
 	delete _scene;
 	_scene = nullptr;
-
-	delete _descriptorSetLayout;
-	_descriptorSetLayout = nullptr;
 
 	//delete _indexBuffer;
 	//_indexBuffer = nullptr;
@@ -170,19 +172,22 @@ void Application::recreateSwapChain()
 	_swapChain = new SwapChain(_device, _window);
 	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
 	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _descriptorSetLayout);
-	_frameBuffers.resize(_swapChain->getImageViews().size());
 
-	for(size_t i = 0; i < _frameBuffers.size(); i++) 
-	{
-		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
-	}
 
 	_uniformBuffers.resize(_swapChain->getImages().size());
 	for(size_t i = 0; i < _swapChain->getImages().size(); i++) 
 	{
 		_uniformBuffers[i] = new UniformBuffer(_device, (int)sizeof(UniformBufferObject));
     }
+
+
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _uniformBuffers, _scene);
+	_frameBuffers.resize(_swapChain->getImageViews().size());
+
+	for(size_t i = 0; i < _frameBuffers.size(); i++) 
+	{
+		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
+	}
 
 	createDescriptorPool();
 	createCommandBuffers();
@@ -278,7 +283,7 @@ void Application::drawFrame()
 
 	vkQueueWaitIdle(_device->getPresentQueue());
 
-	_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+	_currentFrame = (_currentFrame + 1) % _inFlightFences.size();
 }
 
 void Application::render(int i)
@@ -287,39 +292,41 @@ void Application::render(int i)
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	//beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 	if(vkBeginCommandBuffer(_commandBuffersTest[i], &beginInfo) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
 		exit(1);
 	}
+
+	std::array<VkClearValue, 2> clearValues{};
+	clearValues[0].color = {1.0f, 0.5f, 0.5f, 1.0f};
+	clearValues[1].depthStencil = {1.0f, 0};
+
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
 	renderPassInfo.framebuffer = _frameBuffers[i]->handle();
 	renderPassInfo.renderArea.offset = {0, 0};
 	renderPassInfo.renderArea.extent = _swapChain->getExtent();
-
-	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = {0.5f, 0.5f, 0.5f, 1.0f};
-	clearValues[1].depthStencil = {1.0f, 0};
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
 
 	vkCmdBeginRenderPass(_commandBuffersTest[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	{
+		VkBuffer vertexBuffers[] = { _scene->getVertexBuffer()->handle() };
+		const VkBuffer indexBuffer = _scene->getIndexBuffer()->handle();
+		VkDeviceSize offsets[] = { 0 };
+
 		vkCmdBindPipeline(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
-
-		//VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
-		//VkDeviceSize offsets[] = {0};
-		//vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
-		//vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT32);
-
-		vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
+		vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[i], 0, nullptr);
+		vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(_commandBuffersTest[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
 		uint32_t vertexOffset = 0;
 		uint32_t indexOffset = 0;
 
-		for (auto model : _scene->getModels())
+		for(auto model : _scene->getModels())
 		{
 			const uint32_t vertexCount = static_cast<uint32_t>(model->getVertices().size());
 			const uint32_t indexCount = static_cast<uint32_t>(model->getIndices().size());
@@ -351,96 +358,11 @@ void Application::createCommandBuffers()
 		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to allocate command buffers!" << RESET << std::endl;
 		exit(1);
 	}
-
-	//for(size_t i = 0; i < _commandBuffersTest.size(); i++)
-	//{
-	//	VkCommandBufferBeginInfo beginInfo{};
-	//	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-	//	if(vkBeginCommandBuffer(_commandBuffersTest[i], &beginInfo) != VK_SUCCESS)
-	//	{
-	//		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
-	//		exit(1);
-	//	}
-
-	//	VkRenderPassBeginInfo renderPassInfo{};
-	//	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	//	renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
-	//	renderPassInfo.framebuffer = _frameBuffers[i]->handle();
-	//	renderPassInfo.renderArea.offset = {0, 0};
-	//	renderPassInfo.renderArea.extent = _swapChain->getExtent();
-
-	//	std::array<VkClearValue, 2> clearValues{};
-	//	clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
-	//	clearValues[1].depthStencil = {1.0f, 0};
-	//	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-	//	renderPassInfo.pClearValues = clearValues.data();
-
-	//	vkCmdBeginRenderPass(_commandBuffersTest[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-	//		vkCmdBindPipeline(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
-
-	//		VkBuffer vertexBuffers[] = {_vertexBuffer->handle()};
-	//		VkDeviceSize offsets[] = {0};
-	//		vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
-	//		vkCmdBindIndexBuffer(_commandBuffersTest[i], _indexBuffer->handle(), 0, VK_INDEX_TYPE_UINT32);
-
-	//		vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_descriptorSets->handle()[i], 0, nullptr);
-	//		vkCmdDrawIndexed(_commandBuffersTest[i], static_cast<uint32_t>(_model->getIndices().size()), 1, 0, 0, 0);
-
-	//	vkCmdEndRenderPass(_commandBuffersTest[i]);
-
-	//	if (vkEndCommandBuffer(_commandBuffersTest[i]) != VK_SUCCESS) {
-	//		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to record command buffer!" << RESET << std::endl;
-	//		exit(1);
-	//	}
-	//}
-}
-
-void Application::createBuffers()
-{
-	//---------- Vertex Buffer ----------//
-	//_stagingBuffer = new StagingBuffer(_device, _model->getVertices());
-	//_vertexBuffer = new VertexBuffer(_device, _model->getVertices());
-	//// Transfer from staging buffer to vertex buffer
-	//_vertexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(_model->getVertices()[0])*_model->getVertices().size());
-	//delete _stagingBuffer;
-	//_stagingBuffer = nullptr;
-
-	////---------- Index Buffer ----------//
-	//_stagingBuffer = new StagingBuffer(_device, _model->getIndices());
-	//_indexBuffer = new IndexBuffer(_device, _model->getIndices());
-	//// Transfer from staging buffer to vertex buffer
-	//_indexBuffer->copyFrom(_commandPool, _stagingBuffer->handle(), sizeof(_model->getIndices()[0])*_model->getIndices().size());
-	//delete _stagingBuffer;
-	//_stagingBuffer = nullptr;
-	
-	//---------- Uniform Buffers ----------//
-	_uniformBuffers.resize(_swapChain->getImages().size());
-	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-	for(size_t i = 0; i < _swapChain->getImages().size(); i++) 
-	{
-		_uniformBuffers[i] = new UniformBuffer(_device, bufferSize);
-    }
 }
 
 void Application::updateUniformBuffer(uint32_t currentImage)
 {
- 	//static auto startTime = std::chrono::high_resolution_clock::now();
-
-    //auto currentTime = std::chrono::high_resolution_clock::now();
-    //float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-	//UniformBufferObject ubo{};
-	//ubo.modelView = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	//ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	//ubo.projection = glm::perspective(glm::radians(45.0f), _swapChain->getExtent().width / (float) _swapChain->getExtent().height, 0.1f, 10.0f);
-	//ubo.projection[1][1] *= -1;
-
-	//void* data;
-	//vkMapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory(), 0, sizeof(ubo), 0, &data);
-	//	memcpy(data, &ubo, sizeof(ubo));
-	//vkUnmapMemory(_device->handle(), _uniformBuffers[currentImage]->getMemory());
+	_uniformBuffers[currentImage]->setValue();
 }
 
 void Application::createDescriptorPool()

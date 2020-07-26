@@ -18,8 +18,8 @@
 class StagingBuffer : public Buffer
 {
 	public:
-	StagingBuffer(Device* device, std::vector<Vertex> vertices);
-	StagingBuffer(Device* device, std::vector<unsigned int> indices);
+	template <class T>
+	StagingBuffer(Device* device, std::vector<T> content);
 	StagingBuffer(Device* device, void* dataToMap, VkDeviceSize size);
 	~StagingBuffer();
 

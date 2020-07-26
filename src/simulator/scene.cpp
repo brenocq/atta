@@ -9,6 +9,8 @@
 #include "vulkan/vertex.h"
 #include "vulkan/material.h"
 #include "vulkan/sphere.h"
+#include "vulkan/buffer.h"
+#include "vulkan/device.h"
 
 Scene::Scene(CommandPool* commandPool, std::vector<Model*> models, std::vector<Texture*> textures, bool enableRayTracing):
 	_models(std::move(models)), _textures(std::move(textures))
@@ -136,4 +138,33 @@ void Scene::createSceneBuffer(Buffer*& buffer,
 			size, 
 			VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, 
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+	copyFromStagingBuffer(buffer, content);
+}
+
+template <class T>
+void Scene::copyFromStagingBuffer(Buffer* dstBuffer, const std::vector<T>& content)
+{
+	Device* device = _commandPool->getDevice();
+	const auto contentSize = sizeof(content[0]) * content.size();
+
+	// Create a temporary host-visible staging buffer.
+	Buffer* stagingBuffer = new Buffer(
+			device, 
+			contentSize, 
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+
+	// Copy the host data into the staging buffer.
+	void* data = stagingBuffer->mapMemory(0, contentSize);
+	std::memcpy(data, content.data(), contentSize);
+	stagingBuffer->unmapMemory();
+
+	//// Copy the staging buffer to the device buffer.
+	dstBuffer->copyFrom(_commandPool, stagingBuffer->handle(), contentSize);
+
+	//// Delete the buffer before the memory
+	delete stagingBuffer;
+	stagingBuffer = nullptr;
 }

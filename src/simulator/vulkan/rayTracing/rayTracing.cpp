@@ -179,7 +179,7 @@ void RayTracing::render(VkCommandBuffer commandBuffer, const uint32_t imageIndex
 	//---------- Start command pool ----------//
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	//beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 	if(vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[RayTracing]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;

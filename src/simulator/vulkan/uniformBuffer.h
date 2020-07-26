@@ -14,13 +14,15 @@
 #include "defines.h"
 #include "device.h"
 #include "buffer.h"
+#include "helpers.h"
 
 class UniformBuffer : public Buffer
 {
 	public:
-	UniformBuffer(Device* device, VkDeviceSize size);
-	~UniformBuffer();
+		UniformBuffer(Device* device, VkDeviceSize size);
+		~UniformBuffer();
 
+		void setValue();
 	private:
 };
 

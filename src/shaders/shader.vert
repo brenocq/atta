@@ -1,21 +1,48 @@
-#version 450
+#version 460
 #extension GL_ARB_separate_shader_objects : enable
+#extension GL_GOOGLE_include_directive : require
+#include "rayTracing/material.glsl"
+#include "rayTracing/uniformBufferObject.glsl"
 
-layout(binding = 0) uniform UniformBufferObject {
-    mat4 model;
-    mat4 view;
-    mat4 proj;
-} ubo;
+layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject Camera; };
+layout(binding = 1) readonly buffer MaterialArray { Material[] Materials; };
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec3 inColor;
-layout(location = 2) in vec2 inTexCoord;
+layout(location = 0) in vec3 InPosition;
+layout(location = 1) in vec3 InNormal;
+layout(location = 2) in vec2 InTexCoord;
+layout(location = 3) in int InMaterialIndex;
 
-layout(location = 0) out vec3 fragColor;
-layout(location = 1) out vec2 fragTexCoord;
+layout(location = 0) out vec3 FragColor;
+layout(location = 1) out vec3 FragNormal;
+layout(location = 2) out vec2 FragTexCoord;
+layout(location = 3) out flat int FragMaterialIndex;
 
-void main() {
-    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
-    fragColor = inColor;
-    fragTexCoord = inTexCoord;
+out gl_PerVertex
+{
+	vec4 gl_Position;
+};
+
+void main() 
+{
+	Material m = Materials[InMaterialIndex];
+
+    gl_Position = Camera.projection * Camera.modelView * vec4(InPosition, 1.0);
+    FragColor = m.diffuse.xyz;
+	FragNormal = vec3(Camera.modelView * vec4(InNormal, 0.0)); // technically not correct, should be ModelInverseTranspose
+	FragTexCoord = InTexCoord;
+	FragMaterialIndex = InMaterialIndex;
 }
+//#version 450
+//#extension GL_ARB_separate_shader_objects : enable
+//
+//layout(location = 0) in vec3 inPosition;
+//layout(location = 1) in vec3 inNormal;
+//layout(location = 2) in vec2 inTexCord;
+//layout(location = 3) in int inMaterialIndex;
+//
+//layout(location = 0) out vec3 fragColor;
+//
+//void main() {
+//	gl_Position = vec4(inPosition, 1.0);
+//    fragColor = inNormal;
+//}

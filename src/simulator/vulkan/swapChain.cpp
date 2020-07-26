@@ -38,15 +38,19 @@ SwapChain::SwapChain(Device* device, Window* window)
 	QueueFamilyIndices indices = physicalDevice->findQueueFamilies();
 	uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
-	if (indices.graphicsFamily != indices.presentFamily) {
+	if(indices.graphicsFamily != indices.presentFamily)
+	{
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
 		createInfo.queueFamilyIndexCount = 2;
 		createInfo.pQueueFamilyIndices = queueFamilyIndices;
-	} else {
+	}
+	else
+	{
 		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		createInfo.queueFamilyIndexCount = 0; // Optional
 		createInfo.pQueueFamilyIndices = nullptr; // Optional
 	}
+
 	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
 	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	createInfo.presentMode = presentMode;

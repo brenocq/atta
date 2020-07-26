@@ -11,12 +11,12 @@ PipelineLayout::PipelineLayout(Device* device, DescriptorSetLayout* descriptorSe
 	_device = device;
 	_descriptorSetLayout = descriptorSetLayout;
 
-	VkDescriptorSetLayout setLayout = _descriptorSetLayout->handle();
+	VkDescriptorSetLayout setLayouts[] = { descriptorSetLayout->handle() };
 	
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &setLayout;
+	pipelineLayoutInfo.pSetLayouts = setLayouts;
 	pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 

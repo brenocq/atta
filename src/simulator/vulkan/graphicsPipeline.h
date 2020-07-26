@@ -19,19 +19,28 @@
 #include "pipelineLayout.h"
 #include "renderPass.h"
 #include "descriptorSetManager.h"
+#include "descriptorBinding.h"
 #include "vertex.h"
 #include "depthBuffer.h"
 #include "colorBuffer.h"
+#include "../scene.h"
 
 class GraphicsPipeline
 {
 	public:
-	GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer, DescriptorSetLayout* descriptorSetLayout);
+	GraphicsPipeline(Device* device, 
+			SwapChain* swapChain, 
+			DepthBuffer* depthBuffer, 
+			ColorBuffer* colorBuffer, 
+			std::vector<UniformBuffer*> uniformBuffers, 
+			Scene* scene);
 	~GraphicsPipeline();
 
 	VkPipeline handle() const { return _graphicsPipeline; }
 	RenderPass* getRenderPass() const { return _renderPass; }
 	PipelineLayout* getPipelineLayout() const { return _pipelineLayout; }
+	DescriptorSetManager* getDescriptorSetManager() const { return _descriptorSetManager; }
+	DescriptorSets* getDescriptorSets() const { return _descriptorSetManager->getDescriptorSets(); }
 
 	private:
 	VkPipeline _graphicsPipeline;
@@ -42,9 +51,9 @@ class GraphicsPipeline
 	ColorBuffer* _colorBuffer;
 	ShaderModule* _vertShaderModule;
 	ShaderModule* _fragShaderModule;
-	DescriptorSetLayout* _descriptorSetLayout;
 	PipelineLayout* _pipelineLayout;
 	RenderPass* _renderPass;
+	Scene* _scene;
 	DescriptorSetManager* _descriptorSetManager;
 };
 
