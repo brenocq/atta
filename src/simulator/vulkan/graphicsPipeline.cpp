@@ -6,13 +6,19 @@
 //--------------------------------------------------
 #include "graphicsPipeline.h"
 
-GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer, DescriptorSetLayout* descriptorSetLayout)
+GraphicsPipeline::GraphicsPipeline(
+			Device* device, 
+			SwapChain* swapChain, 
+			DepthBuffer* depthBuffer, 
+			ColorBuffer* colorBuffer, 
+			std::vector<UniformBuffer*> uniformBuffers, 
+			Scene* scene)
 {
 	_device = device;
 	_swapChain = swapChain;
 	_depthBuffer = depthBuffer;
 	_colorBuffer = colorBuffer;
-	_descriptorSetLayout = descriptorSetLayout;
+	_scene = scene;
 
  	_vertShaderModule = new ShaderModule(_device, "src/shaders/vert.spv");
     _fragShaderModule = new ShaderModule(_device, "src/shaders/frag.spv");
@@ -44,6 +50,11 @@ GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBu
 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+	
+	//vertexInputInfo.vertexBindingDescriptionCount = 0;
+	//vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
+	//vertexInputInfo.vertexAttributeDescriptionCount = 0;
+	//vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -76,8 +87,8 @@ GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBu
 	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 	rasterizer.lineWidth = 1.0f;
 	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-	//rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
-	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	//rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 	rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 	rasterizer.depthBiasClamp = 0.0f; // Optional
@@ -125,17 +136,51 @@ GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, DepthBu
 	//depthStencil.front{}; // Optional
 	//depthStencil.back{}; // Optional
 
-	VkDynamicState dynamicStates[] = {
-		VK_DYNAMIC_STATE_VIEWPORT,
-		VK_DYNAMIC_STATE_LINE_WIDTH
+	// Create descriptor pool/sets.
+	std::vector<DescriptorBinding> descriptorBindings =
+	{
+		{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
+		{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
+		{2, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 	};
 
-	VkPipelineDynamicStateCreateInfo dynamicState{};
-	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.dynamicStateCount = 2;
-	dynamicState.pDynamicStates = dynamicStates;
+	_descriptorSetManager = new DescriptorSetManager(_device, descriptorBindings, uniformBuffers.size());
+	DescriptorSets* descriptorSets = _descriptorSetManager->getDescriptorSets();
 
-	_pipelineLayout = new PipelineLayout(_device, _descriptorSetLayout);
+	for(uint32_t i = 0; i != _swapChain->getImages().size(); i++)
+	{
+		// Uniform buffer
+		VkDescriptorBufferInfo uniformBufferInfo = {};
+		uniformBufferInfo.buffer = uniformBuffers[i]->handle();
+		uniformBufferInfo.range = VK_WHOLE_SIZE;
+
+		// Material buffer
+		VkDescriptorBufferInfo materialBufferInfo = {};
+		materialBufferInfo.buffer = _scene->getMaterialBuffer()->handle();
+		materialBufferInfo.range = VK_WHOLE_SIZE;
+
+		// Image and texture samplers
+		std::vector<VkDescriptorImageInfo> imageInfos(_scene->getTextures().size());
+
+		for (size_t t = 0; t != imageInfos.size(); ++t)
+		{
+			auto& imageInfo = imageInfos[t];
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = _scene->getTextures()[t]->getImageView()->handle();
+			imageInfo.sampler = _scene->getTextures()[t]->getSampler()->handle();
+		}
+
+		const std::vector<VkWriteDescriptorSet> descriptorWrites =
+		{
+			descriptorSets->bind(i, 0, uniformBufferInfo),
+			descriptorSets->bind(i, 1, materialBufferInfo),
+			descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
+		};
+
+		descriptorSets->updateDescriptors(i, descriptorWrites);
+	}
+
+	_pipelineLayout = new PipelineLayout(_device, _descriptorSetManager->getDescriptorSetLayout());
 	_renderPass = new RenderPass(_device, _swapChain, _depthBuffer, _colorBuffer);
 
 	VkGraphicsPipelineCreateInfo pipelineInfo{};
@@ -176,16 +221,22 @@ GraphicsPipeline::~GraphicsPipeline()
 		_graphicsPipeline = nullptr;
 	}
 
+	if(_renderPass != nullptr)
+	{
+		delete _renderPass;
+		_renderPass = nullptr;
+	}
+
 	if(_pipelineLayout != nullptr)
 	{
 		delete _pipelineLayout;
 		_pipelineLayout = nullptr;
 	}
 
-	if(_renderPass != nullptr)
+	if(_descriptorSetManager != nullptr)
 	{
-		delete _renderPass;
-		_renderPass = nullptr;
+		delete _descriptorSetManager;
+		_descriptorSetManager = nullptr;
 	}
 
 	if(_vertShaderModule != nullptr)

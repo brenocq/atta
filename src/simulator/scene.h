@@ -39,6 +39,9 @@ class Scene
 		const VkBufferUsageFlags usage, 
 		const std::vector<T>& content);
 
+	template <class T>
+	void copyFromStagingBuffer(Buffer* dstBuffer, const std::vector<T>& content);
+
 	std::vector<Model*> _models;
 	std::vector<Texture*> _textures;
 

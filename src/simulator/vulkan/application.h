@@ -56,7 +56,6 @@ class Application
 	void cleanupSwapChain();
 	void recreateSwapChain();
 	void framebufferResizeCallback() {_framebufferResized = true;}
-	void createBuffers();
 	void updateUniformBuffer(uint32_t currentImage);
 	void createDescriptorPool();
 	void render(int i);

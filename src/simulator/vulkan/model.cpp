@@ -77,11 +77,11 @@ void Model::loadModel()
 	//---------- Materials ----------//
 	for(const auto& material : objReader.GetMaterials())
 	{
-		//Material m = {};
+		Material m = {};
 
-		//m.diffuse = glm::vec4(material.diffuse[0], material.diffuse[1], material.diffuse[2], 1.0);
-		//m.diffuseTextureId = -1;
-		Material m = Material::diffuseLight(glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]), -1);
+		m.diffuse = glm::vec4(material.diffuse[0], material.diffuse[1], material.diffuse[2], 1.0);
+		m.diffuseTextureId = -1;
+		//Material m = Material::diffuseLight(glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]), -1);
 
 		_materials.emplace_back(m);
 	}
@@ -138,7 +138,7 @@ void Model::loadModel()
 
 			vertex.materialIndex = std::max(0, mesh.material_ids[faceId++ / 3]);
 
-			if (uniqueVertices.count(vertex) == 0)
+			if(uniqueVertices.count(vertex) == 0)
 			{
 				uniqueVertices[vertex] = static_cast<uint32_t>(_vertices.size());
 				_vertices.push_back(vertex);

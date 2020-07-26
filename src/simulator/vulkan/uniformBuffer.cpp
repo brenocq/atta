@@ -11,7 +11,7 @@ UniformBuffer::UniformBuffer(Device* device, VkDeviceSize size):
 {
 	UniformBufferObject ubo;
 	ubo.modelView = glm::translate(glm::mat4(1), glm::vec3(0, 0, -2));
-	ubo.aperture = 0.5f;
+	ubo.aperture = 0.05f;
 	ubo.focusDistance = 2.0f;
 	ubo.projection = glm::perspective(glm::radians(90.0f), 1200 / static_cast<float>(900), 0.1f, 10000.0f);
 	ubo.projection[1][1] *= -1; // Inverting Y for Vulkan, https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
@@ -22,7 +22,7 @@ UniformBuffer::UniformBuffer(Device* device, VkDeviceSize size):
 	ubo.numberOfBounces = 4;
 	ubo.randomSeed = 1;
 	ubo.gammaCorrection = true;
-	ubo.hasSky = false;
+	ubo.hasSky = true;
 
 	const auto data = mapMemory(0, sizeof(UniformBufferObject));
 	std::memcpy(data, &ubo, sizeof(ubo));
@@ -31,4 +31,27 @@ UniformBuffer::UniformBuffer(Device* device, VkDeviceSize size):
 
 UniformBuffer::~UniformBuffer()
 {
+}
+
+void UniformBuffer::setValue()
+{
+	UniformBufferObject ubo;
+	ubo.modelView = glm::translate(glm::mat4(1), glm::vec3(0, 0, -2));
+	//ubo.modelView = glm::lookAt(glm::vec3(13, 2, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	ubo.aperture = 0.05f;
+	ubo.focusDistance = 2.0f;
+	ubo.projection = glm::perspective(glm::radians(90.0f), 1200 / static_cast<float>(900), 0.1f, 10000.0f);
+	ubo.projection[1][1] *= -1; // Inverting Y for Vulkan, https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
+	ubo.modelViewInverse = glm::inverse(ubo.modelView);
+	ubo.projectionInverse = glm::inverse(ubo.projection);
+	ubo.totalNumberOfSamples = 0;
+	ubo.numberOfSamples = 8;
+	ubo.numberOfBounces = 4;
+	ubo.randomSeed = 1;
+	ubo.gammaCorrection = false;
+	ubo.hasSky = false;
+
+	const auto data = mapMemory(0, sizeof(UniformBufferObject));
+	std::memcpy(data, &ubo, sizeof(ubo));
+	unmapMemory();
 }
