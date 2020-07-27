@@ -20,6 +20,6 @@ void main()
 	}
 	else
 	{
-		ray.colorAndDistance = vec4(0, 0, 0, -1);
+		ray.colorAndDistance = vec4(0.2, 0.2, 0.2, -1);
 	}
 }

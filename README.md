@@ -19,8 +19,8 @@ make run -j4
 These values are unreliable and come from what I think is going on in the code kk (things could change tomorroy as new ideas emerge).
 
 #### Core
- - GPU Rendering (Vulkan): 60%
- - RayTracing (Nvidia): 20%
+ - GPU Rendering (Vulkan): 90%
+ - RayTracing (Nvidia): 80%
  - User interface (Imgui): 5%
  - Physics engine (Bullet): 0%
  - GPU acceleration (Cuda): 0%

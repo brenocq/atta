@@ -24,7 +24,7 @@ Application::Application():
 	models.push_back(Model::createSphere(glm::vec3(1, 0, 0), 0.5, Material::metallic(glm::vec3(0.7f, 0.5f, 0.8f), 0.2f), true));
 	models.push_back(Model::createSphere(glm::vec3(-1, 0, 0), 0.5, Material::dielectric(1.5f), true));
 	models.push_back(Model::createSphere(glm::vec3(0, 1, 0), 0.5, Material::lambertian(glm::vec3(1.0f), 0), true));
-	models.push_back(Model::createSphere(glm::vec3(0, -1, 0), 0.5, Material::lambertian(glm::vec3(1.0f), 0), true));
+	models.push_back(Model::createSphere(glm::vec3(0, -1, 0), 0.5, Material::dielectric(0.2f), true));
 	textures.push_back(new Texture(_device, _commandPool, "assets/models/cube_multi/cube_multi.png"));
 	_scene = new Scene(_commandPool, models, textures, true);
 
