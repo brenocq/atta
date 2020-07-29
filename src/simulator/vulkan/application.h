@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // application.h
-// Date: 21/06/2020
+// Date: 2020-06-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef APPLICATION_H
@@ -38,6 +38,7 @@
 #include "depthBuffer.h"
 #include "colorBuffer.h"
 #include "model.h"
+#include "modelViewController.h"
 #include "ui/userInterface.h"
 #include "rayTracing/rayTracing.h"
 #include "../scene.h"
@@ -52,13 +53,18 @@ class Application
 
 	private:
 	void drawFrame();
-	void createCommandBuffers();
 	void cleanupSwapChain();
 	void recreateSwapChain();
 	void framebufferResizeCallback() {_framebufferResized = true;}
 	void updateUniformBuffer(uint32_t currentImage);
 	void createDescriptorPool();
 	void render(int i);
+
+	// Window callbacks
+	void onKey(int key, int scancode, int action, int mods);
+	void onCursorPosition(double xpos, double ypos);
+	void onMouseButton(int button, int action, int mods);
+	void onScroll(double xoffset, double yoffset);
 
 	Window* _window;
 	Instance* _instance;
@@ -70,8 +76,6 @@ class Application
 	GraphicsPipeline* _graphicsPipeline;
 	CommandPool* _commandPool;
 	CommandBuffers* _commandBuffers;
-	//VertexBuffer* _vertexBuffer;
-	//IndexBuffer* _indexBuffer;
 	StagingBuffer* _stagingBuffer;
 	DescriptorSetLayout* _descriptorSetLayout;
 	DescriptorPool* _descriptorPool;
@@ -80,6 +84,8 @@ class Application
 	DepthBuffer* _depthBuffer;
 	ColorBuffer* _colorBuffer;
 
+	ModelViewController* _modelViewController;
+
 	UserInterface* _userInterface;
 	RayTracing* _rayTracing;
 
@@ -87,7 +93,6 @@ class Application
 	Model* _model;
 
 	std::vector<FrameBuffer*> _frameBuffers;
-	std::vector<VkCommandBuffer> _commandBuffersTest;
 	std::vector<UniformBuffer*> _uniformBuffers;
 
 	std::vector<Semaphore*> _imageAvailableSemaphores;
@@ -97,6 +102,7 @@ class Application
 
 	size_t _currentFrame;
 	bool _framebufferResized;
+	double _time;
 };
 
 #endif// APPLICATION_H

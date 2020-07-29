@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // commandBuffers.h
-// Date: 24/06/2020
+// Date: 2020-06-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef COMMAND_BUFFERS_H
@@ -18,7 +18,7 @@
 class CommandBuffers
 {
 	public:
-	CommandBuffers(Device* device, CommandPool* commandPool, std::vector<FrameBuffer*> frameBuffers);
+	CommandBuffers(Device* device, CommandPool* commandPool, uint32_t size);
 	~CommandBuffers();
 
 	std::vector<VkCommandBuffer> handle() const { return _commandBuffers; }

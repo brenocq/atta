@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // model.cpp
-// Date: 08/07/2020
+// Date: 2020-07-08
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "model.h"
@@ -12,7 +12,6 @@ Model::Model(std::string fileName):
 	_fileName(fileName), _procedural(nullptr)
 {
 	std::cout << std::endl << BOLDGREEN << "[Model]" << RESET << GREEN << " Loading model " << WHITE << fileName << RESET << std::endl;
-	//loadTexture();
 	loadModel();
 }
 
@@ -26,30 +25,6 @@ Model::Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, st
 
 Model::~Model()
 {
-	if(_texture != nullptr)
-	{
-		delete _texture;
-		_texture = nullptr;
-	}
-
-}
-
-void Model::loadTexture(Device* device, CommandPool* commandPool)
-{
-	std::chrono::steady_clock::time_point begin;
-	std::chrono::steady_clock::time_point end;
-	std::string texturePath = "assets/models/"+_fileName+"/"+_fileName+".png";
-
-	std::cout << GREEN << "\tLoading Texture... " << WHITE;
-
-	begin = std::chrono::steady_clock::now();
-	_texture = new Texture(device, commandPool, texturePath);
-	end = std::chrono::steady_clock::now();
-
-
-	std::cout << WHITE
-		<< std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-		<< "ms" RESET << std::endl;
 }
 
 void Model::loadModel()
@@ -88,10 +63,11 @@ void Model::loadModel()
 
 	if(_materials.empty())
 	{
-		Material m{};
+		//Material m{};
 
-		m.diffuse = glm::vec4(0.7f, 0.7f, 0.7f, 1.0);
-		m.diffuseTextureId = -1;
+		//m.diffuse = glm::vec4(0.7f, 0.7f, 0.7f, 1.0);
+		//m.diffuseTextureId = -1;
+		Material m = Material::dielectric(1.5f);
 
 		_materials.emplace_back(m);
 	}

@@ -16,7 +16,7 @@ make run -j4
 ```
 
 ## Progress
-These values are unreliable and come from what I think is going on in the code kk (things could change tomorroy as new ideas emerge).
+These values are unreliable and come from what I think is going on in the code kk (things could change tomorrow as new ideas emerge).
 
 #### Core
  - GPU Rendering (Vulkan): 90%
@@ -75,6 +75,7 @@ VULKAN_SDK_PATH = <path>/<xxx>/x86_64
 - [Alexander Overvoorde's Vulkan Tutorial](https://vulkan-tutorial.com/)
 - [Vulkan Programming Guide: The Official Guide to Learning Vulkan](http://www.vulkanprogrammingguide.com/)
 - [Guthmann's Imgui Tutorial](https://frguthmann.github.io/posts/vulkan_imgui/)
+- [GPSnoopy's Ray Tracing implementation](https://github.com/GPSnoopy/RayTracingInVulkan)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.
