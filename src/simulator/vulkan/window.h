@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // window.h
-// Date: 21/06/2020
+// Date: 2020-06-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef WINDOW_H
@@ -16,22 +16,39 @@
 class Window
 {
 	public:
-	Window();
-	~Window();
+		Window();
+		~Window();
 
-	void loop();
+		void loop();
 
-    GLFWwindow* handle() const { return _window; }
-    VkExtent2D getExtent();
-	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
-	void waitIfMinimized();
+		GLFWwindow* handle() const { return _window; }
+		VkExtent2D getExtent();
+		static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
+		void waitIfMinimized();
 
-	std::function<void()> drawFrame;
-	std::function<void()> windowResized;
+		// Callbacks
+		std::function<void()> drawFrame;
+		std::function<void()> windowResized;
+
+		// Glfw callbacks
+		std::function<void(int key, int scancode, int action, int mods)> onKey;
+		std::function<void(double xpos, double ypos)> onCursorPosition;
+		std::function<void(int button, int action, int mods)> onMouseButton;
+		std::function<void(double xoffset, double yoffset)> onScroll;
+
+		double getTime();
+		void close();
+		void toggleCursorVisibility();
 	private:
-    GLFWwindow* _window;
-	int _height;
-	int _width;
+		static void keyCallback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods);
+		static void cursorPositionCallback(GLFWwindow* window, const double xpos, const double ypos);
+		static void mouseButtonCallback(GLFWwindow* window, const int button, const int action, const int mods);
+		static void scrollCallback(GLFWwindow* window, const double xoffset, const double yoffset);
+
+		GLFWwindow* _window;
+		int _height;
+		int _width;
+		bool _cursorVisible;
 };
 
 #endif// WINDOW_H

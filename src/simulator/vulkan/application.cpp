@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // application.cpp
-// Date: 21/06/2020
+// Date: 2020-06-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "application.h"
@@ -50,7 +50,7 @@ Application::Application():
 		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 
 	createDescriptorPool();
-	createCommandBuffers();
+	_commandBuffers = new CommandBuffers(_device, _commandPool, _frameBuffers.size());
 
 	_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -63,6 +63,10 @@ Application::Application():
 		_renderFinishedSemaphores[i] = new Semaphore(_device);
 		_inFlightFences[i] = new Fence(_device);
 	}
+
+	// Model view controller
+	_modelViewController = new ModelViewController();
+	_modelViewController->reset(glm::lookAt(glm::vec3(2, -2, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	// IMGUI
 	_userInterface = new UserInterface(_device, _window, _swapChain);
@@ -81,16 +85,14 @@ Application::~Application()
 	delete _userInterface;
 	_userInterface = nullptr;
 
+	delete _modelViewController;
+	_modelViewController = nullptr;
+
 	delete _depthBuffer;
 	_depthBuffer = nullptr;
 
 	delete _scene;
 	_scene = nullptr;
-
-	//delete _indexBuffer;
-	//_indexBuffer = nullptr;
-	//delete _vertexBuffer;
-	//_vertexBuffer = nullptr;
 
 	for(size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
 	{
@@ -129,6 +131,7 @@ void Application::cleanupSwapChain()
 	_rayTracing->deleteSwapChain();
 
 	delete _userInterface;
+
 	_userInterface = nullptr;
 
 	delete _colorBuffer;
@@ -143,7 +146,8 @@ void Application::cleanupSwapChain()
 		frameBuffer = nullptr;
     }
 
-	vkFreeCommandBuffers(_device->handle(), _commandPool->handle(), static_cast<uint32_t>(_commandBuffersTest.size()), _commandBuffersTest.data());
+	delete _commandBuffers;
+	_commandBuffers = nullptr;
 
 	delete _graphicsPipeline;
 	_graphicsPipeline = nullptr;
@@ -180,7 +184,6 @@ void Application::recreateSwapChain()
 		_uniformBuffers[i] = new UniformBuffer(_device, (int)sizeof(UniformBufferObject));
     }
 
-
 	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _uniformBuffers, _scene);
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 
@@ -190,7 +193,7 @@ void Application::recreateSwapChain()
 	}
 
 	createDescriptorPool();
-	createCommandBuffers();
+	_commandBuffers = new CommandBuffers(_device, _commandPool, _frameBuffers.size());
 
 	// IMGUI
 	_userInterface = new UserInterface(_device, _window, _swapChain);
@@ -201,12 +204,26 @@ void Application::run()
 {
 	_window->drawFrame = [this](){ drawFrame(); };
 	_window->windowResized = [this](){ framebufferResizeCallback(); };
+	_window->onKey = [this](const int key, const int scancode, const int action, const int mods) { onKey(key, scancode, action, mods); };
+	_window->onCursorPosition = [this](const double xpos, const double ypos) { onCursorPosition(xpos, ypos); };
+	_window->onMouseButton = [this](const int button, const int action, const int mods) { onMouseButton(button, action, mods); };
+	_window->onScroll = [this](const double xoffset, const double yoffset) { onScroll(xoffset, yoffset); };
 	_window->loop();
 	vkDeviceWaitIdle(_device->handle());
 }
 
 void Application::drawFrame()
 {
+	//---------- Time ----------//
+	const double prevTime = _time;
+	_time = _window->getTime();
+	const double timeDelta = _time - prevTime;
+	
+	bool cameraUpdated = _modelViewController->updateCamera(5.0f, timeDelta);
+
+	//-----------------------------//
+	//---------- Drawing ----------//
+	//-----------------------------//
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_device->handle(), _swapChain->handle(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame]->handle(), VK_NULL_HANDLE, &imageIndex);
 
@@ -223,7 +240,7 @@ void Application::drawFrame()
 		exit(1);
 	}
 	//----------- Render to screen ----------//
-	_rayTracing->render(_commandBuffersTest[imageIndex], imageIndex);
+	_rayTracing->render(_commandBuffers->handle()[imageIndex], imageIndex);
 	//render(imageIndex);
 	_userInterface->render(imageIndex);
 
@@ -242,7 +259,7 @@ void Application::drawFrame()
 	VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currentFrame]->handle()};
 
 	std::array<VkCommandBuffer, 2> submitCommandBuffers =
-    { _commandBuffersTest[imageIndex],  _userInterface->getCommandBuffer(imageIndex)};
+    { _commandBuffers->handle()[imageIndex],  _userInterface->getCommandBuffer(imageIndex)};
 
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
@@ -288,12 +305,13 @@ void Application::drawFrame()
 
 void Application::render(int i)
 {
+	VkCommandBuffer commandBuffer = _commandBuffers->handle()[i];
 	//---------- Start command pool ----------//
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	//beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	if(vkBeginCommandBuffer(_commandBuffersTest[i], &beginInfo) != VK_SUCCESS)
+	if(vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
 	{
 		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
 		exit(1);
@@ -312,16 +330,16 @@ void Application::render(int i)
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
 
-	vkCmdBeginRenderPass(_commandBuffersTest[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	{
 		VkBuffer vertexBuffers[] = { _scene->getVertexBuffer()->handle() };
 		const VkBuffer indexBuffer = _scene->getIndexBuffer()->handle();
 		VkDeviceSize offsets[] = { 0 };
 
-		vkCmdBindPipeline(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
-		vkCmdBindDescriptorSets(_commandBuffersTest[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[i], 0, nullptr);
-		vkCmdBindVertexBuffers(_commandBuffersTest[i], 0, 1, vertexBuffers, offsets);
-		vkCmdBindIndexBuffer(_commandBuffersTest[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[i], 0, nullptr);
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
 		uint32_t vertexOffset = 0;
 		uint32_t indexOffset = 0;
@@ -331,38 +349,37 @@ void Application::render(int i)
 			const uint32_t vertexCount = static_cast<uint32_t>(model->getVertices().size());
 			const uint32_t indexCount = static_cast<uint32_t>(model->getIndices().size());
 
-			vkCmdDrawIndexed(_commandBuffersTest[i], indexCount, 1, indexOffset, vertexOffset, 0);
+			vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
 
 			vertexOffset += vertexCount;
 			indexOffset += indexCount;
 		}
 	}
-	vkCmdEndRenderPass(_commandBuffersTest[i]);
+	vkCmdEndRenderPass(commandBuffer);
 
-	vkEndCommandBuffer(_commandBuffersTest[i]);
-}
-
-void Application::createCommandBuffers()
-{
-	// TODO put it in a beautiful way
-	_commandBuffersTest.resize(_frameBuffers.size());
-
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = _commandPool->handle();
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = (uint32_t) _commandBuffersTest.size();
-
-	if(vkAllocateCommandBuffers(_device->handle(), &allocInfo, _commandBuffersTest.data()) != VK_SUCCESS)
-	{
-		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to allocate command buffers!" << RESET << std::endl;
-		exit(1);
-	}
+	vkEndCommandBuffer(commandBuffer);
 }
 
 void Application::updateUniformBuffer(uint32_t currentImage)
 {
-	_uniformBuffers[currentImage]->setValue();
+	static int test=0;
+
+	UniformBufferObject ubo;
+	ubo.modelView = _modelViewController->getModelView();
+	ubo.aperture = 0.02f;
+	ubo.focusDistance = 2.0f;
+	ubo.projection = glm::perspective(glm::radians(90.0f), _swapChain->getExtent().width / static_cast<float>(_swapChain->getExtent().height), 0.1f, 10000.0f);
+	ubo.projection[1][1] *= -1; // Inverting Y for Vulkan, https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
+	ubo.modelViewInverse = glm::inverse(ubo.modelView);
+	ubo.projectionInverse = glm::inverse(ubo.projection);
+	ubo.totalNumberOfSamples = test++>100?100:100-test;
+	ubo.numberOfSamples = test++>100?100:100-test;
+	ubo.numberOfBounces = 9;
+	ubo.randomSeed = 1;
+	ubo.gammaCorrection = true;
+	ubo.hasSky = false;
+
+	_uniformBuffers[currentImage]->setValue(ubo);
 }
 
 void Application::createDescriptorPool()
@@ -380,4 +397,35 @@ void Application::createDescriptorPool()
 	poolSizes.push_back(combinedImageSamplerDescriptor);
 
 	_descriptorPool = new DescriptorPool(_device, poolSizes);
+}
+
+void Application::onKey(int key, int scancode, int action, int mods)
+{
+	switch(key)
+	{
+		case GLFW_KEY_ESCAPE:
+			_window->close();
+			break;
+		case GLFW_KEY_F1:
+			if(action == GLFW_PRESS)
+				_window->toggleCursorVisibility();
+			break;
+	}
+	_modelViewController->onKey(key, scancode, action, mods);
+}
+
+void Application::onCursorPosition(double xpos, double ypos)
+{
+
+	_modelViewController->onCursorPosition(xpos, ypos);
+}
+
+void Application::onMouseButton(int button, int action, int mods)
+{
+
+}
+
+void Application::onScroll(double xoffset, double yoffset)
+{
+
 }

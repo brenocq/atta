@@ -115,11 +115,11 @@ Scene::~Scene()
 	}
 
 	// TODO delete when texture isnt deleted by the model
-	//for(auto texture : _textures)
-	//{
-	//	delete texture;
-	//	texture = nullptr;
-	//}
+	for(auto texture : _textures)
+	{
+		delete texture;
+		texture = nullptr;
+	}
 }
 
 void Scene::addModel(Model* model)

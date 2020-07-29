@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // uniformBuffer.h
-// Date: 06/07/2020
+// Date: 2020-07-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef UNIFORM_BUFFER_H
@@ -22,7 +22,7 @@ class UniformBuffer : public Buffer
 		UniformBuffer(Device* device, VkDeviceSize size);
 		~UniformBuffer();
 
-		void setValue();
+		void setValue(UniformBufferObject ubo);
 	private:
 };
 

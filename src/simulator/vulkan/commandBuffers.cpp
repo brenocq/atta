@@ -1,17 +1,17 @@
 //--------------------------------------------------
 // Robot Simulator
 // commandBuffers.cpp
-// Date: 24/06/2020
+// Date: 2020-06-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "commandBuffers.h"
 #include "physicalDevice.h"
 
-CommandBuffers::CommandBuffers(Device* device, CommandPool* commandPool, std::vector<FrameBuffer*> frameBuffers)
+CommandBuffers::CommandBuffers(Device* device, CommandPool* commandPool, uint32_t size)
 {
 	_device = device;
 	_commandPool = commandPool;
-	_commandBuffers.resize(frameBuffers.size());
+	_commandBuffers.resize(size);
 
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -28,6 +28,7 @@ CommandBuffers::CommandBuffers(Device* device, CommandPool* commandPool, std::ve
 
 CommandBuffers::~CommandBuffers()
 {
+	vkFreeCommandBuffers(_device->handle(), _commandPool->handle(), static_cast<uint32_t>(_commandBuffers.size()), _commandBuffers.data());
 }
 
 VkCommandBuffer CommandBuffers::begin(const size_t i)
