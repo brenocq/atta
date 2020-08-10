@@ -9,7 +9,7 @@
 #include "defines.h"
 
 Window::Window():
-	_width(1200), _height(900), _cursorVisible(true)
+	_width(1200), _height(900), _cursorVisible(false)
 {
 	glfwInit();
 	// To not create an OpenGL context
@@ -44,7 +44,7 @@ Window::Window():
 	glfwSetScrollCallback(_window, scrollCallback);
 
 	//----- Window config -----//
-	glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(_window, GLFW_CURSOR, _cursorVisible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED );
 }
 
 Window::~Window()
