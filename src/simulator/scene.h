@@ -22,6 +22,7 @@ class Scene
 	Scene(CommandPool* commandPool, std::vector<Model*> models, std::vector<Texture*> textures, bool enableRayTracing=false);
 	~Scene();
 
+	//--------- Simulation specific ----------//
 	void addModel(Model* model);
 	std::vector<Model*> getModels() const { return _models; };
 	std::vector<Texture*> getTextures() const { return _textures; };
@@ -33,6 +34,11 @@ class Scene
 	Buffer* getProceduralBuffer() const { return _proceduralBuffer; }
 	bool hasProcedurals() const { return static_cast<bool>(_proceduralBuffer); }
 
+	//--------- Simulator specific ---------//
+	Buffer* getLineVertexBuffer() const { return _lineVertexBuffer; }
+	Buffer* getLineIndexBuffer() const { return _lineIndexBuffer; }
+	uint32_t getLineIndexCount() const {return _lineIndexCount; }
+
 	private:
 	template <class T>
 	void createSceneBuffer(Buffer*& buffer,
@@ -41,6 +47,8 @@ class Scene
 
 	template <class T>
 	void copyFromStagingBuffer(Buffer* dstBuffer, const std::vector<T>& content);
+
+	std::pair<std::vector<Vertex>, std::vector<uint32_t>> gridLines();
 
 	std::vector<Model*> _models;
 	std::vector<Texture*> _textures;
@@ -52,6 +60,11 @@ class Scene
 	Buffer* _offsetBuffer;
 	Buffer* _aabbBuffer;
 	Buffer* _proceduralBuffer;
+
+	// Simulator specific
+	uint32_t _lineIndexCount;
+	Buffer* _lineVertexBuffer;
+	Buffer* _lineIndexBuffer;
 };
 
 #endif// SCENE_H
