@@ -346,26 +346,6 @@ void Application::render(int i)
 		// Graphics pipeline
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[i], 0, nullptr);
-		//vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		//vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-		//uint32_t vertexOffset = 0;
-		//uint32_t indexOffset = 0;
-
-		//for(auto model : _scene->getModels())
-		//{
-		//	const uint32_t vertexCount = static_cast<uint32_t>(model->getVertices().size());
-		//	const uint32_t indexCount = static_cast<uint32_t>(model->getIndices().size());
-
-		//	vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
-
-		//	vertexOffset += vertexCount;
-		//	indexOffset += indexCount;
-		//}
-
-		// Line pipeline
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->handle());
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->getPipelineLayout()->handle(), 0, 1, &_linePipeline->getDescriptorSets()->handle()[i], 0, nullptr);
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
@@ -382,6 +362,16 @@ void Application::render(int i)
 			vertexOffset += vertexCount;
 			indexOffset += indexCount;
 		}
+
+		// Line pipeline
+		VkBuffer lineVertexBuffers[] = { _scene->getLineVertexBuffer()->handle() };
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->handle());
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->getPipelineLayout()->handle(), 0, 1, &_linePipeline->getDescriptorSets()->handle()[i], 0, nullptr);
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, lineVertexBuffers, offsets);
+		vkCmdBindIndexBuffer(commandBuffer, _scene->getLineIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
+
+		const uint32_t indexCount = static_cast<uint32_t>(_scene->getLineIndexCount());
+		vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
 	}
 	vkCmdEndRenderPass(commandBuffer);
 

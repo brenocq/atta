@@ -61,6 +61,8 @@ Scene::Scene(CommandPool* commandPool, std::vector<Model*> models, std::vector<T
 	}
 
 	const auto flag = enableRayTracing ? VK_BUFFER_USAGE_STORAGE_BUFFER_BIT : 0;
+	std::pair<std::vector<Vertex>, std::vector<uint32_t>> grid = gridLines();
+	_lineIndexCount = grid.second.size();
 
 	createSceneBuffer(_vertexBuffer, 		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|flag, vertices);
 	createSceneBuffer(_indexBuffer, 		VK_BUFFER_USAGE_INDEX_BUFFER_BIT|flag, 	indices);
@@ -68,6 +70,8 @@ Scene::Scene(CommandPool* commandPool, std::vector<Model*> models, std::vector<T
 	createSceneBuffer(_offsetBuffer, 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	offsets);
 	createSceneBuffer(_aabbBuffer, 			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	aabbs);
 	createSceneBuffer(_proceduralBuffer, 	VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	procedurals);
+	createSceneBuffer(_lineVertexBuffer, 	VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 	grid.first);
+	createSceneBuffer(_lineIndexBuffer, 	VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 	grid.second);
 }
 
 Scene::~Scene()
@@ -106,6 +110,18 @@ Scene::~Scene()
 	{
 		delete _proceduralBuffer;
 		_proceduralBuffer = nullptr;
+	}
+
+	if(_lineVertexBuffer != nullptr)
+	{
+		delete _lineVertexBuffer;
+		_lineVertexBuffer = nullptr;
+	}
+
+	if(_lineIndexBuffer != nullptr)
+	{
+		delete _lineIndexBuffer;
+		_lineIndexBuffer = nullptr;
 	}
 
 	for(auto model : _models)
@@ -161,10 +177,60 @@ void Scene::copyFromStagingBuffer(Buffer* dstBuffer, const std::vector<T>& conte
 	std::memcpy(data, content.data(), contentSize);
 	stagingBuffer->unmapMemory();
 
-	//// Copy the staging buffer to the device buffer.
+	// Copy the staging buffer to the device buffer.
 	dstBuffer->copyFrom(_commandPool, stagingBuffer->handle(), contentSize);
 
-	//// Delete the buffer before the memory
+	// Delete the buffer before the memory
 	delete stagingBuffer;
 	stagingBuffer = nullptr;
+}
+
+
+std::pair<std::vector<Vertex>, std::vector<uint32_t>> Scene::gridLines()
+{
+	int gridSize = 100;
+	const glm::vec3 gridColor = {0.4, 0.4, 0.4};
+	const glm::vec2 texCoord(0,0);
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+
+	// X lines
+	for(int i=-gridSize;i<gridSize;i++)
+	{
+		const glm::vec3 pos1(
+			-gridSize,
+			0,
+			i);
+
+		const glm::vec3 pos2(
+			gridSize,
+			0,
+			i);
+		
+		vertices.push_back(Vertex{ pos1, gridColor, texCoord, 0 });
+		vertices.push_back(Vertex{ pos2, gridColor, texCoord, 0 });
+		indices.push_back(indices.size());
+		indices.push_back(indices.size());
+	}
+
+	// Z lines
+	for(int i=-gridSize;i<gridSize;i++)
+	{
+		const glm::vec3 pos1(
+			i,
+			0,
+			-gridSize);
+
+		const glm::vec3 pos2(
+			i,
+			0,
+			gridSize);
+		
+		vertices.push_back(Vertex{ pos1, gridColor, texCoord, 0 });
+		vertices.push_back(Vertex{ pos2, gridColor, texCoord, 0 });
+		indices.push_back(indices.size());
+		indices.push_back(indices.size());
+	}
+
+	return make_pair(vertices, indices);
 }
