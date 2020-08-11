@@ -11,7 +11,7 @@
 #include "../../scene.h"
 #include "../uniformBuffer.h"
 #include "../imageView.h"
-#include "../pipelineLayout.h"
+#include "../pipeline/pipelineLayout.h"
 #include "../swapChain.h"
 #include "../device.h"
 #include "../descriptorSetManager.h"

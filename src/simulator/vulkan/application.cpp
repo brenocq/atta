@@ -40,14 +40,12 @@ Application::Application():
     }
 
 	//---------- Graphics pipeline ----------//
-	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
-	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _uniformBuffers, _scene);
+	createPipelines();
 
 	//---------- Frame Buffers ----------//
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
-		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
+		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _renderPass);
 
 	createDescriptorPool();
 	_commandBuffers = new CommandBuffers(_device, _commandPool, _frameBuffers.size());
@@ -88,9 +86,6 @@ Application::~Application()
 	delete _modelViewController;
 	_modelViewController = nullptr;
 
-	delete _depthBuffer;
-	_depthBuffer = nullptr;
-
 	delete _scene;
 	_scene = nullptr;
 
@@ -126,6 +121,15 @@ Application::~Application()
 	_physicalDevice = nullptr;
 }
 
+void Application::createPipelines()
+{
+	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
+	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
+	_renderPass = new RenderPass(_device, _swapChain, _depthBuffer, _colorBuffer);
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _renderPass, _uniformBuffers, _scene);
+	_linePipeline = new LinePipeline(_device, _swapChain, _renderPass, _uniformBuffers, _scene);
+}
+
 void Application::cleanupSwapChain()
 {
 	_rayTracing->deleteSwapChain();
@@ -149,8 +153,14 @@ void Application::cleanupSwapChain()
 	delete _commandBuffers;
 	_commandBuffers = nullptr;
 
+	delete _linePipeline;
+	_linePipeline = nullptr;
+
 	delete _graphicsPipeline;
 	_graphicsPipeline = nullptr;
+
+	delete _renderPass;
+	_renderPass = nullptr;
 
 	delete _swapChain;
 	_swapChain = nullptr;
@@ -174,9 +184,6 @@ void Application::recreateSwapChain()
 	cleanupSwapChain();
 
 	_swapChain = new SwapChain(_device, _window);
-	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
-	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
-
 
 	_uniformBuffers.resize(_swapChain->getImages().size());
 	for(size_t i = 0; i < _swapChain->getImages().size(); i++) 
@@ -184,12 +191,12 @@ void Application::recreateSwapChain()
 		_uniformBuffers[i] = new UniformBuffer(_device, (int)sizeof(UniformBufferObject));
     }
 
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _depthBuffer, _colorBuffer, _uniformBuffers, _scene);
+	createPipelines();
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
 	{
-		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
+		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _renderPass);
 	}
 
 	createDescriptorPool();
@@ -323,7 +330,7 @@ void Application::render(int i)
 
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
+	renderPassInfo.renderPass = _renderPass->handle();
 	renderPassInfo.framebuffer = _frameBuffers[i]->handle();
 	renderPassInfo.renderArea.offset = {0, 0};
 	renderPassInfo.renderArea.extent = _swapChain->getExtent();
@@ -336,8 +343,29 @@ void Application::render(int i)
 		const VkBuffer indexBuffer = _scene->getIndexBuffer()->handle();
 		VkDeviceSize offsets[] = { 0 };
 
+		// Graphics pipeline
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[i], 0, nullptr);
+		//vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+		//vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+		//uint32_t vertexOffset = 0;
+		//uint32_t indexOffset = 0;
+
+		//for(auto model : _scene->getModels())
+		//{
+		//	const uint32_t vertexCount = static_cast<uint32_t>(model->getVertices().size());
+		//	const uint32_t indexCount = static_cast<uint32_t>(model->getIndices().size());
+
+		//	vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
+
+		//	vertexOffset += vertexCount;
+		//	indexOffset += indexCount;
+		//}
+
+		// Line pipeline
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->handle());
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->getPipelineLayout()->handle(), 0, 1, &_linePipeline->getDescriptorSets()->handle()[i], 0, nullptr);
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
