@@ -1,8 +1,8 @@
 #version 460
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_GOOGLE_include_directive : require
-#include "rayTracing/material.glsl"
-#include "rayTracing/uniformBufferObject.glsl"
+#include "../rayTracing/material.glsl"
+#include "../rayTracing/uniformBufferObject.glsl"
 
 layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject Camera; };
 layout(binding = 1) readonly buffer MaterialArray { Material[] Materials; };
@@ -32,17 +32,3 @@ void main()
 	FragTexCoord = InTexCoord;
 	FragMaterialIndex = InMaterialIndex;
 }
-//#version 450
-//#extension GL_ARB_separate_shader_objects : enable
-//
-//layout(location = 0) in vec3 inPosition;
-//layout(location = 1) in vec3 inNormal;
-//layout(location = 2) in vec2 inTexCord;
-//layout(location = 3) in int inMaterialIndex;
-//
-//layout(location = 0) out vec3 fragColor;
-//
-//void main() {
-//	gl_Position = vec4(inPosition, 1.0);
-//    fragColor = inNormal;
-//}

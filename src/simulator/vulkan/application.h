@@ -21,7 +21,8 @@
 #include "device.h"
 #include "surface.h"
 #include "swapChain.h"
-#include "graphicsPipeline.h"
+#include "pipeline/graphicsPipeline.h"
+#include "pipeline/linePipeline.h"
 #include "frameBuffer.h"
 #include "commandPool.h"
 #include "commandBuffers.h"
@@ -53,6 +54,7 @@ class Application
 
 	private:
 	void drawFrame();
+	void createPipelines();
 	void cleanupSwapChain();
 	void recreateSwapChain();
 	void framebufferResizeCallback() {_framebufferResized = true;}
@@ -73,7 +75,11 @@ class Application
 	Device* _device;
 	Surface* _surface;
 	SwapChain* _swapChain;
+
+	RenderPass* _renderPass;
 	GraphicsPipeline* _graphicsPipeline;
+	LinePipeline* _linePipeline;
+
 	CommandPool* _commandPool;
 	CommandBuffers* _commandBuffers;
 	StagingBuffer* _stagingBuffer;

@@ -1,27 +1,21 @@
 //--------------------------------------------------
 // Robot Simulator
-// graphicsPipeline.cpp
-// Date: 24/06/2020
+// linePipeline.cpp
+// Date: 2020-08-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include "graphicsPipeline.h"
+#include "linePipeline.h"
 
-GraphicsPipeline::GraphicsPipeline(
-			Device* device, 
+LinePipeline::LinePipeline(Device* device, 
 			SwapChain* swapChain, 
-			DepthBuffer* depthBuffer, 
-			ColorBuffer* colorBuffer, 
+			RenderPass* renderPass,
 			std::vector<UniformBuffer*> uniformBuffers, 
-			Scene* scene)
+			Scene* scene):
+	Pipeline(device, swapChain, renderPass, uniformBuffers, scene)
 {
-	_device = device;
-	_swapChain = swapChain;
-	_depthBuffer = depthBuffer;
-	_colorBuffer = colorBuffer;
-	_scene = scene;
-
- 	_vertShaderModule = new ShaderModule(_device, "src/shaders/vert.spv");
-    _fragShaderModule = new ShaderModule(_device, "src/shaders/frag.spv");
+	//---------- Shaders ----------//
+ 	_vertShaderModule = new ShaderModule(_device, "src/shaders/line/lineShader.vert.spv");
+    _fragShaderModule = new ShaderModule(_device, "src/shaders/line/lineShader.frag.spv");
 
 	// Vert shader
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -40,27 +34,25 @@ GraphicsPipeline::GraphicsPipeline(
 	VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
 	//---------- Fixed functions ----------//
-	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-
+	
+	// Vertex input
 	auto bindingDescription = Vertex::getBindingDescription();
 	auto attributeDescriptions = Vertex::getAttributeDescriptions();
 
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertexInputInfo.vertexBindingDescriptionCount = 1;
 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-	
-	//vertexInputInfo.vertexBindingDescriptionCount = 0;
-	//vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
-	//vertexInputInfo.vertexAttributeDescriptionCount = 0;
-	//vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
 
+	// Input assembly
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	inputAssembly.primitiveRestartEnable = VK_FALSE;
 
+	// Viewport
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
@@ -80,21 +72,21 @@ GraphicsPipeline::GraphicsPipeline(
 	viewportState.scissorCount = 1;
 	viewportState.pScissors = &scissor;
 
+	// Rasterization
 	VkPipelineRasterizationStateCreateInfo rasterizer{};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	rasterizer.depthClampEnable = VK_FALSE;
 	rasterizer.rasterizerDiscardEnable = VK_FALSE;
-	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-	//rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
+	rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
 	rasterizer.lineWidth = 1.0f;
 	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-	//rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 	rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 	rasterizer.depthBiasClamp = 0.0f; // Optional
 	rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
-
+	
+	// Multisample
 	VkPipelineMultisampleStateCreateInfo multisampling{};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = VK_FALSE;
@@ -104,6 +96,7 @@ GraphicsPipeline::GraphicsPipeline(
 	multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
 	multisampling.alphaToOneEnable = VK_FALSE; // Optional
 
+	// Color blend
 	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachment.blendEnable = VK_TRUE;
@@ -125,6 +118,7 @@ GraphicsPipeline::GraphicsPipeline(
 	colorBlending.blendConstants[2] = 0.0f; // Optional
 	colorBlending.blendConstants[3] = 0.0f; // Optional
 
+	// Depth stencil
 	VkPipelineDepthStencilStateCreateInfo depthStencil{};
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 	depthStencil.depthTestEnable = VK_TRUE;
@@ -136,8 +130,8 @@ GraphicsPipeline::GraphicsPipeline(
 	depthStencil.stencilTestEnable = VK_FALSE;
 	//depthStencil.front{}; // Optional
 	//depthStencil.back{}; // Optional
-
-	// Create descriptor pool/sets.
+	
+	//---------- Descriptors ----------//
 	std::vector<DescriptorBinding> descriptorBindings =
 	{
 		{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
@@ -181,9 +175,10 @@ GraphicsPipeline::GraphicsPipeline(
 		descriptorSets->updateDescriptors(i, descriptorWrites);
 	}
 
+	//---------- PipelineLayout ----------//
 	_pipelineLayout = new PipelineLayout(_device, _descriptorSetManager->getDescriptorSetLayout());
-	_renderPass = new RenderPass(_device, _swapChain, _depthBuffer, _colorBuffer);
 
+	//---------- Create Pipeline ----------//
 	VkGraphicsPipelineCreateInfo pipelineInfo{};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipelineInfo.stageCount = 2;
@@ -206,49 +201,14 @@ GraphicsPipeline::GraphicsPipeline(
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional	
 
-	if (vkCreateGraphicsPipelines(_device->handle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline) != VK_SUCCESS) 
+	if (vkCreateGraphicsPipelines(_device->handle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS) 
 	{
-		std::cout << BOLDRED << "[GraphicsPipeline]" << RESET << RED << " Failed to create graphics pipeline!" << RESET << std::endl;
+		std::cout << BOLDRED << "[LinePipeline]" << RESET << RED << " Failed to create line pipeline!" << RESET << std::endl;
 		exit(1);
 	}
 }
 
-GraphicsPipeline::~GraphicsPipeline()
+LinePipeline::~LinePipeline()
 {
-
-	if(_graphicsPipeline != nullptr)
-	{
-		vkDestroyPipeline(_device->handle(), _graphicsPipeline, nullptr);
-		_graphicsPipeline = nullptr;
-	}
-
-	if(_renderPass != nullptr)
-	{
-		delete _renderPass;
-		_renderPass = nullptr;
-	}
-
-	if(_pipelineLayout != nullptr)
-	{
-		delete _pipelineLayout;
-		_pipelineLayout = nullptr;
-	}
-
-	if(_descriptorSetManager != nullptr)
-	{
-		delete _descriptorSetManager;
-		_descriptorSetManager = nullptr;
-	}
-
-	if(_vertShaderModule != nullptr)
-	{
-		delete _vertShaderModule;
-		_vertShaderModule = nullptr;
-	}
-
-	if(_fragShaderModule != nullptr)
-	{
-		delete _fragShaderModule;
-		_fragShaderModule = nullptr;
-	}
+	
 }

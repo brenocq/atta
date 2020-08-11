@@ -10,8 +10,8 @@
 #include <iostream>
 #include <string.h>
 #include "defines.h"
-#include "device.h"
-#include "descriptorSetLayout.h"
+#include "../device.h"
+#include "../descriptorSetLayout.h"
 
 class PipelineLayout
 {
