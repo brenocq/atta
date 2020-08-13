@@ -5,8 +5,10 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "modelViewController.h"
+#include <stdio.h>
 
 ModelViewController::ModelViewController()
+	//_rotateWithMouse(false)
 {
 }
 
@@ -40,26 +42,42 @@ bool ModelViewController::onKey(int key, int scancode, int action, int mods)
 	switch (key)
 	{
 		case GLFW_KEY_S: 
-			_cameraMovingBackward = action != GLFW_RELEASE; 
+			//_cameraMovingBackward = action != GLFW_RELEASE; 
 			return true;
 		case GLFW_KEY_W: 
-			_cameraMovingForward = action != GLFW_RELEASE; 
+			//_cameraMovingForward = action != GLFW_RELEASE; 
 			return true;
 		case GLFW_KEY_A: 
-			_cameraMovingLeft = action != GLFW_RELEASE; 
+			//_cameraMovingLeft = action != GLFW_RELEASE; 
 			return true;
 		case GLFW_KEY_D: 
-			_cameraMovingRight = action != GLFW_RELEASE; 
+			//_cameraMovingRight = action != GLFW_RELEASE; 
 			return true;
 		case GLFW_KEY_Q: 
-			_cameraMovingDown = action != GLFW_RELEASE; 
+			//_cameraMovingDown = action != GLFW_RELEASE; 
 			return true;
 		case GLFW_KEY_E: 
-			_cameraMovingUp = action != GLFW_RELEASE; 
+			//_cameraMovingUp = action != GLFW_RELEASE; 
 			return true;
+		case GLFW_KEY_LEFT_SHIFT:
+			//_planeMoveWithMouse = true;
 		default: 
 			return false;
 	}
+}
+
+void ModelViewController::onMouseButton(int button, int action, int mods)
+{
+	if(button == GLFW_MOUSE_BUTTON_MIDDLE)
+	{
+		//_rotateWithMouse = action == GLFW_PRESS;
+	}
+	//printf("Mouse button: %d %d %d (%d)\n", button, action, mods, _rotateWithMouse);
+}
+
+void ModelViewController::onScroll(double xoffset, double yoffset)
+{
+	moveForward(yoffset/3.f);
 }
 
 bool ModelViewController::onCursorPosition(double xpos, double ypos)
@@ -67,10 +85,14 @@ bool ModelViewController::onCursorPosition(double xpos, double ypos)
 	const auto deltaX = static_cast<float>(xpos - _mousePosX);
 	const auto deltaY = static_cast<float>(ypos - _mousePosY);
 
-	_cameraRotX += deltaX/2;
-	_cameraRotY += deltaY/2;
-	_mousePosX = xpos;
-	_mousePosY = ypos;
+	//if(_rotateWithMouse)
+	//{
+	//	// Rotate with pivot point
+	//	//_cameraRotX += deltaX/2;
+	//	//_cameraRotY += deltaY/2;
+	//	//_mousePosX = xpos;
+	//	//_mousePosY = ypos;
+	//}
 
 	return true;
 }

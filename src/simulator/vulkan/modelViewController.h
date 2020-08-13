@@ -22,6 +22,8 @@ class ModelViewController
 
 		bool onKey(int key, int scancode, int action, int mods);
 		bool onCursorPosition(double xpos, double ypos);
+		void onMouseButton(int button, int action, int mods);
+		void onScroll(double xoffset, double yoffset);
 
 		bool updateCamera(double speed, double timeDelta);
 	private:
@@ -38,6 +40,9 @@ class ModelViewController
 		bool _cameraMovingForward{};
 		bool _cameraMovingDown{};
 		bool _cameraMovingUp{};
+		// New
+		bool _mouseMiddleButton;
+		bool _shiftKey;
 
 		float _cameraRotX{};
 		float _cameraRotY{};
