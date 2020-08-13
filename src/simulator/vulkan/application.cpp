@@ -440,10 +440,10 @@ void Application::onCursorPosition(double xpos, double ypos)
 
 void Application::onMouseButton(int button, int action, int mods)
 {
-
+	_modelViewController->onMouseButton(button, action, mods);
 }
 
 void Application::onScroll(double xoffset, double yoffset)
 {
-
+	_modelViewController->onScroll(xoffset, yoffset);
 }
