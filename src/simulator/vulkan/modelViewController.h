@@ -10,11 +10,12 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include "glm.h"
+#include "window.h"
 
 class ModelViewController
 {
 	public:
-		ModelViewController();
+		ModelViewController(Window* window);
 		~ModelViewController();
 
 		void reset(const glm::mat4& modelView);
@@ -25,13 +26,15 @@ class ModelViewController
 		void onMouseButton(int button, int action, int mods);
 		void onScroll(double xoffset, double yoffset);
 
-		bool updateCamera(double speed, double timeDelta);
+		bool updateCamera(double timeDelta);
 	private:
 		void moveForward(float d);
 		void moveRight(float d);
 		void moveUp(float d);
 		void rotate(float y, float x);
 		void updateVectors();
+
+		Window* _window;
 
 		// Control states
 		bool _cameraMovingLeft{};
@@ -40,13 +43,14 @@ class ModelViewController
 		bool _cameraMovingForward{};
 		bool _cameraMovingDown{};
 		bool _cameraMovingUp{};
-		// New
+
+		// Movement buttons
 		bool _mouseMiddleButton;
 		bool _shiftKey;
 
-		float _cameraRotX{};
-		float _cameraRotY{};
-
+		float _cursorMovX{};
+		float _cursorMovY{};
+		float _speed;
 
 		// Matrices and vectors.
 		glm::mat4 _orientation{};

@@ -63,8 +63,8 @@ Application::Application():
 	}
 
 	// Model view controller
-	_modelViewController = new ModelViewController();
-	_modelViewController->reset(glm::lookAt(glm::vec3(2, -2, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	_modelViewController = new ModelViewController(_window);
+	_modelViewController->reset(glm::lookAt(glm::vec3(1, -1, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	// IMGUI
 	_userInterface = new UserInterface(_device, _window, _swapChain);
@@ -226,7 +226,7 @@ void Application::drawFrame()
 	_time = _window->getTime();
 	const double timeDelta = _time - prevTime;
 	
-	bool cameraUpdated = _modelViewController->updateCamera(5.0f, timeDelta);
+	bool cameraUpdated = _modelViewController->updateCamera(timeDelta);
 
 	//-----------------------------//
 	//---------- Drawing ----------//
