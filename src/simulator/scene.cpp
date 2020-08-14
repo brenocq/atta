@@ -189,7 +189,7 @@ void Scene::copyFromStagingBuffer(Buffer* dstBuffer, const std::vector<T>& conte
 std::pair<std::vector<Vertex>, std::vector<uint32_t>> Scene::gridLines()
 {
 	int gridSize = 100;
-	const glm::vec3 gridColor = {0.4, 0.4, 0.4};
+	const glm::vec3 gridColor = {0.35, 0.35, 0.35};
 	const glm::vec2 texCoord(0,0);
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
