@@ -4,6 +4,7 @@ LIB    	   = lib/
 SRC	   	   = src/
 SRC_SIM    = ${SRC}simulator/
 SRC_VULKAN = ${SRC_SIM}vulkan/
+SRC_PHY    =  ${SRC_SIM}physics/
 SRC_IMGUI  =  ${LIB}imgui/
 SRC_UI     =  ${SRC_VULKAN}ui/
 SRC_RT     =  ${SRC_VULKAN}rayTracing/
@@ -15,8 +16,9 @@ SHA_RT     = ${SHA}rayTracing/
 
 #------------ Files -------------
 FILES = 
-FILES_SIM = simulator scene
+FILES_SIM = simulator scene object
 FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView shaderModule renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model colorBuffer descriptorBinding vulkan descriptorSetManager material imageMemoryBarrier procedural sphere modelViewController 
+FILES_PHY = physicsEngine objectPhysics
 FILES_IMGUI = imgui imgui_demo imgui_widgets imgui_draw imgui_impl_glfw imgui_impl_vulkan
 FILES_UI = userInterface uiRenderPass uiFrameBuffer
 FILES_RT = rayTracing deviceProcedures accelerationStructure bottomLevelAccelerationStructure topLevelAccelerationStructure rayTracingPipeline shaderBindingTable
@@ -27,8 +29,10 @@ FILES_PIP = pipeline pipelineLayout graphicsPipeline linePipeline
 #------------ Helpers -------------
 CC = g++
 VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.141.2/x86_64
+BULLET_SDK_PATH = /home/breno/Programs/bullet3-2.89
 CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include -Wall -O3
-LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I${LIB}
+LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I${LIB} -I$(BULLET_SDK_PATH)/src/ -lBulletDynamics -lBulletCollision -lBulletSoftBody -lLinearMath
+#-L$(BULLET_PATH)/src/*/*.so 
 
 #---------- Text style ----------
 RED    = \033[0;31m
@@ -39,6 +43,7 @@ BOLD   = \033[1m
 OBJECTS=$(patsubst %, ${OBJ}%.o, ${FILES})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_SIM})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_VULKAN})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_PHY})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_IMGUI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_UI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_RT})
@@ -60,6 +65,10 @@ ${OBJ}%.o: ${SRC_SIM}%.cpp
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
 ${OBJ}%.o: ${SRC_VULKAN}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+
+${OBJ}%.o: ${SRC_PHY}%.cpp
 	@/bin/echo -e "${GREEN}Compiling $<${NC}"
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 

@@ -7,12 +7,47 @@
 #include "model.h"
 #include <chrono>
 #include "sphere.h"
+#include <glm/gtc/matrix_inverse.hpp>
+
+int Model::textureId = 0;
+int Model::qtyModels = 0;
+std::vector<std::string> Model::currentModels = {};
+std::vector<uint32_t> Model::vertexOffsets = {0};
+std::vector<uint32_t> Model::indexOffsets = {0};
+std::vector<uint32_t> Model::verticesSize = {};
+std::vector<uint32_t> Model::indicesSize = {};
 
 Model::Model(std::string fileName):
 	_fileName(fileName), _procedural(nullptr)
 {
-	std::cout << std::endl << BOLDGREEN << "[Model]" << RESET << GREEN << " Loading model " << WHITE << fileName << RESET << std::endl;
-	loadModel();
+	// Check if model was previously loaded
+	_modelIndex = -1;
+	for(int i=0; i<(int)Model::currentModels.size(); i++)
+	{
+		if(Model::currentModels[i] == _fileName)
+		{
+			_modelIndex = i;
+			break;
+		}
+	}
+
+	// Load model file if it is the first time it is used
+	if(_modelIndex == -1)
+	{
+		std::cout << std::endl << BOLDGREEN << "[Model]" << RESET << GREEN << " Loading model " << WHITE << fileName << RESET << std::endl;
+		_modelIndex = Model::qtyModels++;
+		loadModel();
+
+		Model::currentModels.push_back(_fileName);
+
+		uint32_t lastV = Model::vertexOffsets.size() > 0 ? Model::vertexOffsets.back() : 0;
+		uint32_t lastI = Model::indexOffsets.size() > 0 ? Model::indexOffsets.back() : 0;
+
+		Model::vertexOffsets.push_back(lastV + _vertices.size());
+		Model::indexOffsets.push_back(lastI + _indices.size());
+		Model::verticesSize.push_back(_vertices.size());
+		Model::indicesSize.push_back(_indices.size());
+	}
 }
 
 Model::Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, Procedural* procedural):
@@ -227,3 +262,26 @@ Model* Model::createSphere(const glm::vec3& center, float radius, const Material
 		std::vector<Material>{material},
 		isProcedural ? new Sphere(center, radius) : nullptr);
 }
+
+const std::vector<Texture*> Model::getTextures(Device* device, CommandPool* commandPool)
+{
+	std::vector<Texture*> textures;
+	for(auto textureName : _textureNames)
+	{
+		textures.push_back(new Texture(device, commandPool, "assets/models/"+_fileName+"/"+textureName));
+	}
+	return textures;
+}
+
+void Model::transform(const glm::mat4& transform)
+{
+	// Can be used to scale/rotate/translate the model before loading the vertices to the memory
+	const auto transformIT = glm::inverseTranspose(transform);
+
+	for (auto& vertex : _vertices)
+	{
+		vertex.pos = transform * glm::vec4(vertex.pos, 1);
+		vertex.normal = transformIT * glm::vec4(vertex.normal, 0);
+	}
+}
+

@@ -47,68 +47,68 @@
 class Application
 {
 	public:
-	Application();
-	~Application();
+		Application(Scene* scene);
+		~Application();
 
-	void run();
+		void run();
 
+		std::function<void(float dt)> onDrawFrame;
 	private:
-	void drawFrame();
-	void createPipelines();
-	void cleanupSwapChain();
-	void recreateSwapChain();
-	void framebufferResizeCallback() {_framebufferResized = true;}
-	void updateUniformBuffer(uint32_t currentImage);
-	void createDescriptorPool();
-	void render(int i);
+		void drawFrame();
+		void createPipelines();
+		void cleanupSwapChain();
+		void recreateSwapChain();
+		void framebufferResizeCallback() {_framebufferResized = true;}
+		void updateUniformBuffer(uint32_t currentImage);
+		void createDescriptorPool();
+		void render(int i);
 
-	// Window callbacks
-	void onKey(int key, int scancode, int action, int mods);
-	void onCursorPosition(double xpos, double ypos);
-	void onMouseButton(int button, int action, int mods);
-	void onScroll(double xoffset, double yoffset);
+		// Window callbacks
+		void onKey(int key, int scancode, int action, int mods);
+		void onCursorPosition(double xpos, double ypos);
+		void onMouseButton(int button, int action, int mods);
+		void onScroll(double xoffset, double yoffset);
 
-	Window* _window;
-	Instance* _instance;
-	DebugMessenger* _debugMessenger;
-	PhysicalDevice* _physicalDevice;
-	Device* _device;
-	Surface* _surface;
-	SwapChain* _swapChain;
+		Window* _window;
+		Instance* _instance;
+		DebugMessenger* _debugMessenger;
+		PhysicalDevice* _physicalDevice;
+		Device* _device;
+		Surface* _surface;
+		SwapChain* _swapChain;
 
-	RenderPass* _renderPass;
-	GraphicsPipeline* _graphicsPipeline;
-	LinePipeline* _linePipeline;
+		RenderPass* _renderPass;
+		GraphicsPipeline* _graphicsPipeline;
+		LinePipeline* _linePipeline;
 
-	CommandPool* _commandPool;
-	CommandBuffers* _commandBuffers;
-	StagingBuffer* _stagingBuffer;
-	DescriptorSetLayout* _descriptorSetLayout;
-	DescriptorPool* _descriptorPool;
-	DescriptorSets* _descriptorSets;
-	Texture* _texture;
-	DepthBuffer* _depthBuffer;
-	ColorBuffer* _colorBuffer;
+		CommandPool* _commandPool;
+		CommandBuffers* _commandBuffers;
+		StagingBuffer* _stagingBuffer;
+		DescriptorSetLayout* _descriptorSetLayout;
+		DescriptorPool* _descriptorPool;
+		DescriptorSets* _descriptorSets;
+		Texture* _texture;
+		DepthBuffer* _depthBuffer;
+		ColorBuffer* _colorBuffer;
 
-	ModelViewController* _modelViewController;
+		ModelViewController* _modelViewController;
 
-	UserInterface* _userInterface;
-	RayTracing* _rayTracing;
+		UserInterface* _userInterface;
+		RayTracing* _rayTracing;
 
-	Scene* _scene;
-	Model* _model;
+		Scene* _scene;
 
-	std::vector<FrameBuffer*> _frameBuffers;
-	std::vector<UniformBuffer*> _uniformBuffers;
+		std::vector<FrameBuffer*> _frameBuffers;
+		std::vector<UniformBuffer*> _uniformBuffers;
 
-	std::vector<Semaphore*> _imageAvailableSemaphores;
-	std::vector<Semaphore*> _renderFinishedSemaphores;
-	std::vector<Fence*> _inFlightFences;
-	std::vector<VkFence> _imagesInFlight;
+		std::vector<Semaphore*> _imageAvailableSemaphores;
+		std::vector<Semaphore*> _renderFinishedSemaphores;
+		std::vector<Fence*> _inFlightFences;
+		std::vector<VkFence> _imagesInFlight;
 
-	size_t _currentFrame;
-	bool _framebufferResized;
-	double _time;
+		size_t _currentFrame;
+		bool _framebufferResized;
+		double _time;
 };
 
 #endif// APPLICATION_H

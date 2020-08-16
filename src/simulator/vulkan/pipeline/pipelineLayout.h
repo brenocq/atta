@@ -12,6 +12,7 @@
 #include "defines.h"
 #include "../device.h"
 #include "../descriptorSetLayout.h"
+#include "../helpers.h"
 
 class PipelineLayout
 {
