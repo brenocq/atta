@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // simulator.h
-// Date: 21/06/2020
+// Date: 2020-06-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef SIMULATOR_H
@@ -9,18 +9,22 @@
 
 #include <string>
 #include <vector>
+#include "scene.h"
 #include "vulkan/application.h"
 
 class Simulator
 {
 	public:
-	Simulator();
-	~Simulator();
+		Simulator();
+		~Simulator();
 
-	void run();
+		void run();
 
 	private:
-	Application* _vulkanApp;
+		void onDrawFrame(float dt);
+
+		Scene* _scene;
+		Application* _vulkanApp;
 };
 
 #endif// SIMULATOR_H

@@ -28,12 +28,6 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
-//struct UniformBufferObject 
-//{
-//    glm::mat4 model;
-//    glm::mat4 view;
-//    glm::mat4 proj;
-//};
 struct UniformBufferObject
 {
 	glm::mat4 modelView;
@@ -50,5 +44,10 @@ struct UniformBufferObject
 	uint32_t hasSky; // bool
 };
 
+
+struct ObjectInfo
+{
+	glm::mat4 modelMatrix;
+};
 
 #endif// HELPERS_H

@@ -6,6 +6,9 @@
 
 layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject Camera; };
 layout(binding = 1) readonly buffer MaterialArray { Material[] Materials; };
+layout(push_constant) uniform ObjectInfo {
+  mat4 modelView;
+} objectInfo;
 
 layout(location = 0) in vec3 InPosition;
 layout(location = 1) in vec3 InNormal;
@@ -26,7 +29,7 @@ void main()
 {
 	Material m = Materials[InMaterialIndex];
 
-    gl_Position = Camera.projection * Camera.modelView * vec4(InPosition, 1.0);
+    gl_Position = Camera.projection * Camera.modelView * objectInfo.modelView * vec4(InPosition, 1.0);
     FragColor = m.diffuse.xyz;
 	FragNormal = vec3(Camera.modelView * vec4(InNormal, 0.0)); // technically not correct, should be ModelInverseTranspose
 	FragTexCoord = InTexCoord;

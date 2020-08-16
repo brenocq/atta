@@ -6,8 +6,8 @@
 //--------------------------------------------------
 #include "application.h"
 
-Application::Application():
-	_currentFrame(0), _framebufferResized(false)
+Application::Application(Scene* scene):
+	_scene(scene), _currentFrame(0), _framebufferResized(false)
 {
 	_window = new Window();
 	_instance = new Instance();
@@ -18,15 +18,7 @@ Application::Application():
 	_commandPool = new CommandPool(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
 	//---------- Scene ----------//
-	std::vector<Model*> models;
-	std::vector<Texture*> textures;
-	models.push_back(new Model("cube_multi"));
-	models.push_back(Model::createSphere(glm::vec3(1, 0, 0), 0.5, Material::metallic(glm::vec3(0.7f, 0.5f, 0.8f), 0.2f), true));
-	models.push_back(Model::createSphere(glm::vec3(-1, 0, 0), 0.5, Material::dielectric(1.5f), true));
-	models.push_back(Model::createSphere(glm::vec3(0, 1, 0), 0.5, Material::lambertian(glm::vec3(1.0f), 0), true));
-	models.push_back(Model::createSphere(glm::vec3(0, -1, 0), 0.5, Material::dielectric(0.2f), true));
-	textures.push_back(new Texture(_device, _commandPool, "assets/models/cube_multi/cube_multi.png"));
-	_scene = new Scene(_commandPool, models, textures, true);
+	_scene->createBuffers(_commandPool);
 
 	//---------- Swap Chain ----------//
 	_swapChain = new SwapChain(_device, _window);
@@ -64,7 +56,7 @@ Application::Application():
 
 	// Model view controller
 	_modelViewController = new ModelViewController(_window);
-	_modelViewController->reset(glm::lookAt(glm::vec3(1, -1, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	_modelViewController->reset(glm::lookAt(glm::vec3(2, 2, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	// IMGUI
 	_userInterface = new UserInterface(_device, _window, _swapChain);
@@ -225,6 +217,10 @@ void Application::drawFrame()
 	const double prevTime = _time;
 	_time = _window->getTime();
 	const double timeDelta = _time - prevTime;
+
+	if(onDrawFrame)
+		onDrawFrame(timeDelta);
+
 	
 	bool cameraUpdated = _modelViewController->updateCamera(timeDelta);
 
@@ -344,34 +340,59 @@ void Application::render(int i)
 		VkDeviceSize offsets[] = { 0 };
 
 		// Graphics pipeline
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[i], 0, nullptr);
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-		uint32_t vertexOffset = 0;
-		uint32_t indexOffset = 0;
-
-		for(auto model : _scene->getModels())
 		{
-			const uint32_t vertexCount = static_cast<uint32_t>(model->getVertices().size());
-			const uint32_t indexCount = static_cast<uint32_t>(model->getIndices().size());
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[i], 0, nullptr);
+			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+			vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-			vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
+			for(auto object : _scene->getObjects())
+			{
+				Model* model = object->getModel();
 
-			vertexOffset += vertexCount;
-			indexOffset += indexCount;
+				ObjectInfo objectInfo;
+				objectInfo.modelMatrix = object->getModelMat();
+
+				vkCmdPushConstants(
+						commandBuffer,
+						_graphicsPipeline->getPipelineLayout()->handle(),
+						VK_SHADER_STAGE_VERTEX_BIT,
+						0,
+						sizeof(ObjectInfo),
+						&objectInfo);
+
+				const uint32_t vertexCount = model->getVerticesSize();
+				const uint32_t indexCount = model->getIndicesSize();
+				const uint32_t vertexOffset = model->getVertexOffset();
+				const uint32_t indexOffset = model->getIndexOffset();
+
+				vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
+			}
 		}
 
 		// Line pipeline
-		VkBuffer lineVertexBuffers[] = { _scene->getLineVertexBuffer()->handle() };
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->handle());
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->getPipelineLayout()->handle(), 0, 1, &_linePipeline->getDescriptorSets()->handle()[i], 0, nullptr);
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, lineVertexBuffers, offsets);
-		vkCmdBindIndexBuffer(commandBuffer, _scene->getLineIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
+		{
+			VkBuffer lineVertexBuffers[] = { _scene->getLineVertexBuffer()->handle() };
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->handle());
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->getPipelineLayout()->handle(), 0, 1, &_linePipeline->getDescriptorSets()->handle()[i], 0, nullptr);
+			vkCmdBindVertexBuffers(commandBuffer, 0, 1, lineVertexBuffers, offsets);
+			vkCmdBindIndexBuffer(commandBuffer, _scene->getLineIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
 
-		const uint32_t indexCount = static_cast<uint32_t>(_scene->getLineIndexCount());
-		vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+
+			ObjectInfo objectInfo;
+			objectInfo.modelMatrix = glm::mat4(1);
+
+			vkCmdPushConstants(
+					commandBuffer,
+					_graphicsPipeline->getPipelineLayout()->handle(),
+					VK_SHADER_STAGE_VERTEX_BIT,
+					0,
+					sizeof(ObjectInfo),
+					&objectInfo);
+
+			const uint32_t indexCount = static_cast<uint32_t>(_scene->getLineIndexCount());
+			vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+		}
 	}
 	vkCmdEndRenderPass(commandBuffer);
 

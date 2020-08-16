@@ -1,10 +1,9 @@
 # Robot Simulator
 <p align="center">
- <img src="./img/2020-07-14.png" height="300">
+ <img src="./img/2020-08-16.png" height="300">
 </p>
 
-Robot simulator for 2D and 3D applications made with Vulkan (optional ray tracing for Nvidia GPUs).
-So far, we can only simulate a viking room :)
+Robot simulator for 2D and 3D applications made with Vulkan (optional ray tracing for Nvidia GPUs). In the near future, we will have a physics engine as well.
 
 ## Running
 ```shell
@@ -22,7 +21,7 @@ These values are unreliable and come from what I think is going on in the code k
  - GPU Rendering (Vulkan): 90%
  - RayTracing (Nvidia): 80%
  - User interface (Imgui): 5%
- - Physics engine (Bullet): 0%
+ - Physics engine (Bullet): 10%
  - GPU acceleration (Cuda): 0%
 
 ## Installation (Linux)
@@ -40,12 +39,19 @@ g++ --version
 ```
 
 #### Download Vulkan SDK
-First we need to download the vulkan SDK, I'm using the release 1.2.135.0.
+First we need to download the vulkan SDK, I'm using the release 1.2.141.2.
 You can download the vulkan SDK [here](https://vulkan.lunarg.com/sdk/home).
 
 Extract the files to some folder.
 ``` shell
 tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
+```
+
+#### Download bullet physics SDK 
+You can download the bullet SDK [here](https://github.com/bulletphysics/bullet3/releases/tag/2.89). I am using the 2.89 version now.
+After downloading, install the bullet library
+``` shell
+sudo apt-get install -y libbullet-dev
 ```
 
 #### Install GLFW
@@ -64,11 +70,12 @@ sudo apt install libglm-dev
 ```
 
 #### Change Makefile
-The last pass is to change the vulkan SDK path in the makefile:
+The last pass is to change the vulkan and buller SDK path in the makefile:
 
 ``` Makefile
 # Open Makefile
 VULKAN_SDK_PATH = <path>/<xxx>/x86_64
+BULLET_SDK_PATH = <path>/bullet3
 ```
 
 ## References
@@ -76,6 +83,7 @@ VULKAN_SDK_PATH = <path>/<xxx>/x86_64
 - [Vulkan Programming Guide: The Official Guide to Learning Vulkan](http://www.vulkanprogrammingguide.com/)
 - [Guthmann's Imgui Tutorial](https://frguthmann.github.io/posts/vulkan_imgui/)
 - [GPSnoopy's Ray Tracing implementation](https://github.com/GPSnoopy/RayTracingInVulkan)
+- [Learning Game Physics with Bullet Physics and OpenGL](https://www.amazon.com.br/Learning-Game-Physics-Bullet-OpenGL/dp/1783281871)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.

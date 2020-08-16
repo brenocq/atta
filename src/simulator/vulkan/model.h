@@ -25,27 +25,49 @@
 class Model
 {
 	public:
-	Model(std::string fileName);
-	~Model();
+		Model(std::string fileName);
+		~Model();
 
-	const std::vector<Vertex>& getVertices() const { return _vertices; };
-	const std::vector<uint32_t>& getIndices() const { return _indices; };
-	const std::vector<Material>& getMaterials() const { return _materials; };
-	Procedural* getProcedural() const { return  _procedural; }
+		void transform(const glm::mat4& transform);
 
-	static Model* createSphere(const glm::vec3& center, float radius, const Material& material, bool isProcedural);
+		//------------- Getters -------------//
+		const std::vector<Vertex>& getVertices() const { return _vertices; };
+		const std::vector<uint32_t>& getIndices() const { return _indices; };
+		const std::vector<Material>& getMaterials() const { return _materials; };
+		const std::vector<Texture*> getTextures(Device* device, CommandPool* commandPool);
+		Procedural* getProcedural() const { return  _procedural; }
+		int getModelIndex() const { return _modelIndex; }
+		uint32_t getVertexOffset() const { return Model::vertexOffsets[_modelIndex]; }
+		uint32_t getIndexOffset() const { return Model::indexOffsets[_modelIndex]; }
+		uint32_t getVerticesSize() const { return Model::verticesSize[_modelIndex]; }
+		uint32_t getIndicesSize() const { return Model::indicesSize[_modelIndex]; }
+		std::string getFileName() const { return _fileName; }
 
+		//----------- Fixed models ---------//
+		static Model* createSphere(const glm::vec3& center, float radius, const Material& material, bool isProcedural);
 	private:
-	Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, Procedural* procedural);
-	void loadModel();
+		Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, Procedural* procedural);
+		void loadModel();
 
-	VertexBuffer* _vertexBuffer;
-	Procedural* _procedural;
+		// Model properties
+		Procedural* _procedural;
+		std::string _fileName;
+		int _modelIndex;
 
-	std::vector<Vertex> _vertices;
-	std::vector<uint32_t> _indices;
-	std::vector<Material> _materials;
-	std::string _fileName;
+		// Info about models already added
+		static int textureId;
+		static int qtyModels;
+		static std::vector<std::string> currentModels;
+		static std::vector<uint32_t> vertexOffsets;
+		static std::vector<uint32_t> indexOffsets;
+		static std::vector<uint32_t> verticesSize;
+		static std::vector<uint32_t> indicesSize;
+
+		// Helpers (Only used first time the object is added)
+		std::vector<Vertex> _vertices;
+		std::vector<uint32_t> _indices;
+		std::vector<Material> _materials;
+		std::vector<std::string> _textureNames;
 };
 
 #endif// MODEL_H
