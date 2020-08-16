@@ -15,7 +15,7 @@ ObjectPhysics::ObjectPhysics(btCollisionShape* bulletShape, glm::vec3 position, 
 	btTransform transform;
 	transform.setIdentity();
 	transform.setOrigin(PhysicsEngine::glm2bt(position));
-	transform.setRotation(PhysicsEngine::glm2bt(glm::quat(rotation)));
+	transform.setRotation(PhysicsEngine::glm2bt(glm::quat(glm::radians(rotation))));
 	_bulletMotionState = new btDefaultMotionState(transform);
 
 	// Calculate inertia
@@ -47,4 +47,26 @@ ObjectPhysics::~ObjectPhysics()
 		delete _bulletMotionState;
 		_bulletMotionState = nullptr;
 	}
+}
+
+glm::vec3 ObjectPhysics::getPosition() const 
+{
+	btTransform bulletTransform;
+	btVector3 bulletPosition = {0,0,0};
+
+	_bulletMotionState->getWorldTransform(bulletTransform);
+	bulletPosition = bulletTransform.getOrigin();
+
+	return PhysicsEngine::bt2glm(bulletPosition);
+}
+
+glm::vec3 ObjectPhysics::getRotation() const
+{
+	btTransform bulletTransform;
+	btQuaternion bulletRotation = {0,0,0};
+
+	_bulletMotionState->getWorldTransform(bulletTransform);
+	bulletRotation = bulletTransform.getRotation();
+
+	return glm::degrees(glm::eulerAngles(PhysicsEngine::bt2glm(bulletRotation)));
 }

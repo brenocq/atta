@@ -23,9 +23,9 @@ class PhysicsEngine
 		void stepSimulation(float dt);
 
 		static btVector3 glm2bt(glm::vec3 vec);
-		static glm::vec3 glm2bt(btVector3 vec);
+		static glm::vec3 bt2glm(btVector3 vec);
 		static btQuaternion glm2bt(glm::quat quat);
-		static glm::quat glm2bt(btQuaternion quat);
+		static glm::quat bt2glm(btQuaternion quat);
 	private:
 		// Core Bullet components
 		btBroadphaseInterface* _bulletBroadphase;

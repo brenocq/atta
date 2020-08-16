@@ -6,11 +6,11 @@
 //--------------------------------------------------
 #include "object.h"
 
-Object::Object(std::string name, std::string fileName, glm::vec3 position, glm::vec3 rotation):
+Object::Object(std::string name, std::string fileName, glm::vec3 position, glm::vec3 rotation, float mass):
 	_name(name), _position(position), _rotation(rotation)
 {
 	_model = new Model(fileName);
-	_physics = new ObjectPhysics(new btBoxShape(btVector3(1,1,1)));
+	_physics = new ObjectPhysics(new btBoxShape(btVector3(0.5,0.5,0.5)), position, rotation, mass);
 }
 
 Object::~Object()
@@ -30,6 +30,12 @@ Object::~Object()
 
 glm::mat4 Object::getModelMat()
 {
+	if(_physics != nullptr)
+	{
+		_position = _physics->getPosition();
+		_rotation = _physics->getRotation();
+	}
+
 	glm::mat4 mat = glm::mat4(1);
 	
 	mat = glm::scale(mat, glm::vec3(1.0));

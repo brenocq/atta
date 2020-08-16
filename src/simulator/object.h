@@ -14,7 +14,7 @@
 class Object
 {
 	public:
-		Object(std::string name, std::string fileName, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0});
+		Object(std::string name, std::string fileName, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, float mass = 1.0f);
 		~Object();
 
 		//---------- Getters ----------//
