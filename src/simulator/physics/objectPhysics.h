@@ -22,6 +22,9 @@ class ObjectPhysics
 		btRigidBody* getRigidBody() const { return _bulletBody; }
 		btDefaultMotionState* getMotionState() const { return _bulletMotionState; }
 
+		glm::vec3 getPosition() const;
+		glm::vec3 getRotation() const;
+
 	private:
 		float _mass;
 

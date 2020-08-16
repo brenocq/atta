@@ -1,9 +1,9 @@
 # Robot Simulator
 <p align="center">
- <img src="./img/2020-08-16.png" height="300">
+ <img src="./img/2020-08-16.gif" height="300">
 </p>
 
-Robot simulator for 2D and 3D applications made with Vulkan (optional ray tracing for Nvidia GPUs). In the near future, we will have a physics engine as well.
+Robot simulator for 2D and 3D applications made with Vulkan (optional ray tracing for Nvidia GPUs.) In the near future, we will have a physics engine as well.
 
 ## Running
 ```shell
@@ -15,7 +15,7 @@ make run -j4
 ```
 
 ## Progress
-These values are unreliable and come from what I think is going on in the code kk (things could change tomorrow as new ideas emerge).
+These values are unreliable and come from what I think is going on in the code kk (things could change tomorrow as new ideas emerge.)
 
 #### Core
  - GPU Rendering (Vulkan): 90%
@@ -48,7 +48,7 @@ tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
 ```
 
 #### Download bullet physics SDK 
-You can download the bullet SDK [here](https://github.com/bulletphysics/bullet3/releases/tag/2.89). I am using the 2.89 version now.
+You can download the bullet SDK [here](https://github.com/bulletphysics/bullet3/releases/tag/2.87). I am using the 2.87 version now (same used in libbullet-dev.)
 After downloading, install the bullet library
 ``` shell
 sudo apt-get install -y libbullet-dev

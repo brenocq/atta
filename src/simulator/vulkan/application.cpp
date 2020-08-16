@@ -56,7 +56,7 @@ Application::Application(Scene* scene):
 
 	// Model view controller
 	_modelViewController = new ModelViewController(_window);
-	_modelViewController->reset(glm::lookAt(glm::vec3(2, 2, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	_modelViewController->reset(glm::lookAt(glm::vec3(3, 3, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	// IMGUI
 	_userInterface = new UserInterface(_device, _window, _swapChain);

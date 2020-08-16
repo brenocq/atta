@@ -29,10 +29,11 @@ FILES_PIP = pipeline pipelineLayout graphicsPipeline linePipeline
 #------------ Helpers -------------
 CC = g++
 VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.141.2/x86_64
-BULLET_SDK_PATH = /home/breno/Programs/bullet3-2.89
+BULLET_SDK_PATH = /home/breno/Programs/bullet3-2.87
+#BULLET_SDK_PATH = /home/breno/Programs/bullet3
 CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include -Wall -O3
 LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I${LIB} -I$(BULLET_SDK_PATH)/src/ -lBulletDynamics -lBulletCollision -lBulletSoftBody -lLinearMath
-#-L$(BULLET_PATH)/src/*/*.so 
+#-L$(BULLET_SDK_PATH)/src/*/*.so 
 
 #---------- Text style ----------
 RED    = \033[0;31m

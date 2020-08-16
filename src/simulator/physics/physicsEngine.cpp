@@ -18,6 +18,8 @@ PhysicsEngine::PhysicsEngine()
 	_bulletSolver = new btSequentialImpulseConstraintSolver;
 	// Create the world
 	_bulletWorld = new btDiscreteDynamicsWorld(_bulletDispatcher, _bulletBroadphase, _bulletSolver, _bulletCollisionConfiguration);
+
+	_bulletWorld->setGravity(btVector3(0, -10, 0));
 }
 
 PhysicsEngine::~PhysicsEngine()
@@ -75,7 +77,7 @@ void PhysicsEngine::stepSimulation(float dt)
 		if(!firstTime)
 		{
 			//printf("step: %f\n", dt);
-			//_bulletWorld->stepSimulation(dt);
+			_bulletWorld->stepSimulation(dt);
 		}
 		else
 			firstTime=false;
@@ -87,7 +89,7 @@ btVector3 PhysicsEngine::glm2bt(glm::vec3 vec)
 	return { vec.x, vec.y, vec.z };
 }
 
-glm::vec3 PhysicsEngine::glm2bt(btVector3 vec)
+glm::vec3 PhysicsEngine::bt2glm(btVector3 vec)
 {
 	return { vec.x(), vec.y(), vec.z() };
 }
@@ -97,7 +99,7 @@ btQuaternion PhysicsEngine::glm2bt(glm::quat quat)
 	return { quat.x, quat.y, quat.z, quat.w };
 }
 
-glm::quat PhysicsEngine::glm2bt(btQuaternion quat)
+glm::quat PhysicsEngine::bt2glm(btQuaternion quat)
 {
 	return { quat.w(), quat.x(), quat.y(), quat.z() };
 }
