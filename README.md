@@ -3,7 +3,7 @@
  <img src="./img/2020-08-16.gif" height="300">
 </p>
 
-Robot simulator for 2D and 3D applications made with Vulkan (optional ray tracing for Nvidia GPUs.) In the near future, we will have a physics engine as well.
+Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs) and Bullet Physics Engine.
 
 ## Running
 ```shell

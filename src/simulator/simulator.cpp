@@ -6,6 +6,9 @@
 //--------------------------------------------------
 #include "simulator.h"
 
+#include "objects/basic/importedObject.h"
+#include "objects/basic/plane.h"
+
 Simulator::Simulator()
 {
 	_scene = new Scene();
@@ -13,13 +16,15 @@ Simulator::Simulator()
 	_scene->loadObject("cube_multi");
 
 	// Create object instances
-	Object* cube1 = new Object("FirstCube", "cube_multi", {0.5,3,0}, {0,0,0}, 1.0f);
-	Object* cube2 = new Object("SecondCube", "cube_multi", {0,0.5,0}, {0,0,0}, 0.0f);
-	Object* cube3 = new Object("ThirdCube", "cube_multi", {-0.5,3,0}, {0,0,0}, 2.0f);
+	Plane* ground = new Plane("Ground", {0,0,0}, {0,0,0}, {100, 100}, 0.0f);
+	ImportedObject* cube1 = new ImportedObject("FirstCube", "cube_multi", {0.5,3,0}, {0,0,0}, {1,1,1}, 1.0f);
+	ImportedObject* cube2 = new ImportedObject("SecondCube", "cube_multi", {0,0.7,0}, {0,0,0}, {1,1,1}, 0.0f);
+	ImportedObject* cube3 = new ImportedObject("ThirdCube", "cube_multi", {-0.5,3,0}, {0,0,0}, {1,1,1}, 2.0f);
 
-	_scene->addObject(cube1);
-	_scene->addObject(cube2);
-	_scene->addObject(cube3);
+	_scene->addObject((Object*)ground);
+	_scene->addObject((Object*)cube1);
+	_scene->addObject((Object*)cube2);
+	_scene->addObject((Object*)cube3);
 
 	_vulkanApp = new Application(_scene);
 	_vulkanApp->onDrawFrame = [this](float dt){ onDrawFrame(dt); };

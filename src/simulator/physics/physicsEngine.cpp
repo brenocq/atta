@@ -19,7 +19,7 @@ PhysicsEngine::PhysicsEngine()
 	// Create the world
 	_bulletWorld = new btDiscreteDynamicsWorld(_bulletDispatcher, _bulletBroadphase, _bulletSolver, _bulletCollisionConfiguration);
 
-	_bulletWorld->setGravity(btVector3(0, -10, 0));
+	_bulletWorld->setGravity(btVector3(0, -9.80665, 0));
 }
 
 PhysicsEngine::~PhysicsEngine()

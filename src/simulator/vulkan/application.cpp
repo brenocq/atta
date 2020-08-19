@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "application.h"
+#include "../objects/basic/importedObject.h"
 
 Application::Application(Scene* scene):
 	_scene(scene), _currentFrame(0), _framebufferResized(false)
@@ -346,27 +347,32 @@ void Application::render(int i)
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-			for(auto object : _scene->getObjects())
+			for(auto abstractPtr : _scene->getObjects())
 			{
-				Model* model = object->getModel();
+				if(abstractPtr->getType() == "ImportedObject")
+				{
+					ImportedObject* object = (ImportedObject*)abstractPtr;
 
-				ObjectInfo objectInfo;
-				objectInfo.modelMatrix = object->getModelMat();
+					Model* model = object->getModel();
 
-				vkCmdPushConstants(
-						commandBuffer,
-						_graphicsPipeline->getPipelineLayout()->handle(),
-						VK_SHADER_STAGE_VERTEX_BIT,
-						0,
-						sizeof(ObjectInfo),
-						&objectInfo);
+					ObjectInfo objectInfo;
+					objectInfo.modelMatrix = object->getModelMat();
 
-				const uint32_t vertexCount = model->getVerticesSize();
-				const uint32_t indexCount = model->getIndicesSize();
-				const uint32_t vertexOffset = model->getVertexOffset();
-				const uint32_t indexOffset = model->getIndexOffset();
+					vkCmdPushConstants(
+							commandBuffer,
+							_graphicsPipeline->getPipelineLayout()->handle(),
+							VK_SHADER_STAGE_VERTEX_BIT,
+							0,
+							sizeof(ObjectInfo),
+							&objectInfo);
 
-				vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
+					const uint32_t vertexCount = model->getVerticesSize();
+					const uint32_t indexCount = model->getIndicesSize();
+					const uint32_t vertexOffset = model->getVertexOffset();
+					const uint32_t indexOffset = model->getIndexOffset();
+
+					vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
+				}
 			}
 		}
 

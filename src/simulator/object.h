@@ -9,28 +9,29 @@
 
 #include <string>
 #include "physics/objectPhysics.h"
-#include "vulkan/model.h"
 
 class Object
 {
 	public:
-		Object(std::string name, std::string fileName, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, float mass = 1.0f);
+		Object(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 scale = {1,1,1}, float mass = 1.0f);
 		~Object();
 
 		//---------- Getters ----------//
-		Model* getModel() const { return _model; }
 		ObjectPhysics* getObjectPhysics() const { return _physics; }
 		glm::vec3 getPosition() const { return _position; }
 		glm::vec3 getRotation() const { return _rotation; }
 		glm::mat4 getModelMat();
+		std::string getType() const { return _type; }
 
-	private:
+	protected:
+		std::string _type;
 		std::string _name;
 		glm::vec3 _position;
 		glm::vec3 _rotation;
+		glm::vec3 _scale;
+		float _mass;
 
 		ObjectPhysics* _physics;
-		Model* _model;
 };
 
 #endif// OBJECT_H

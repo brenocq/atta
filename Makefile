@@ -3,6 +3,8 @@ BIN	   	   = bin/
 LIB    	   = lib/
 SRC	   	   = src/
 SRC_SIM    = ${SRC}simulator/
+SRC_OBJS   = ${SRC_SIM}objects/
+SRC_OBJS_BSC= ${SRC_OBJS}basic/
 SRC_VULKAN = ${SRC_SIM}vulkan/
 SRC_PHY    =  ${SRC_SIM}physics/
 SRC_IMGUI  =  ${LIB}imgui/
@@ -23,6 +25,7 @@ FILES_IMGUI = imgui imgui_demo imgui_widgets imgui_draw imgui_impl_glfw imgui_im
 FILES_UI = userInterface uiRenderPass uiFrameBuffer
 FILES_RT = rayTracing deviceProcedures accelerationStructure bottomLevelAccelerationStructure topLevelAccelerationStructure rayTracingPipeline shaderBindingTable
 FILES_PIP = pipeline pipelineLayout graphicsPipeline linePipeline
+FILES_OBJS_BSC = importedObject plane
 #SHADERS = graphics/graphicsShader line/lineShader
 #SHADERS_RT = rayTracing.rchit rayTracing.rgen rayTracing.rmiss rayTracing.procedural.rchit rayTracing.procedural.rint
 
@@ -49,6 +52,7 @@ OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_IMGUI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_UI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_RT})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_PIP})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_OBJS_BSC})
 
 SHADERS_VERT=$(patsubst %, ${SHA}%.vert, ${SHADERS})
 SHADERS_FRAG=$(patsubst %, ${SHA}%.frag, ${SHADERS})
@@ -86,6 +90,10 @@ ${OBJ}%.o: ${SRC_RT}%.cpp
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
 ${OBJ}%.o: ${SRC_PIP}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+
+${OBJ}%.o: ${SRC_OBJS_BSC}%.cpp
 	@/bin/echo -e "${GREEN}Compiling $<${NC}"
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
