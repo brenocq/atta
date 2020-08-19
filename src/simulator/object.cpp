@@ -6,11 +6,9 @@
 //--------------------------------------------------
 #include "object.h"
 
-Object::Object(std::string name, std::string fileName, glm::vec3 position, glm::vec3 rotation, float mass):
-	_name(name), _position(position), _rotation(rotation)
+Object::Object(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mass):
+	_name(name), _position(position), _rotation(rotation), _scale(scale), _mass(mass), _physics(nullptr), _type("Object")
 {
-	_model = new Model(fileName);
-	_physics = new ObjectPhysics(new btBoxShape(btVector3(0.5,0.5,0.5)), position, rotation, mass);
 }
 
 Object::~Object()
@@ -19,12 +17,6 @@ Object::~Object()
 	{
 		delete _physics;
 		_physics = nullptr;
-	}
-
-	if(_model != nullptr)
-	{
-		delete _model;
-		_model = nullptr;
 	}
 }
 
