@@ -9,7 +9,7 @@
 #include "defines.h"
 
 Window::Window():
-	_width(1200), _height(900), _cursorVisible(true)
+	_width(1200), _height(900), _cursorVisible(true), _lastX(0), _lastY(0)
 {
 	glfwInit();
 	// To not create an OpenGL context
@@ -126,6 +126,12 @@ void Window::cursorPositionCallback(GLFWwindow* window, const double xpos, const
 {
 	//printf("cursor pos: x:%lf y:%lf\n", xpos, ypos);
 	Window* const _this = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	if(_this->getCursorVisible())
+	{
+		_this->setLastX(xpos);
+		_this->setLastY(ypos);
+	}
+
 	if (_this->onCursorPosition)
 	{
 		_this->onCursorPosition(xpos, ypos);

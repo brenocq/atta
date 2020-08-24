@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "application.h"
 #include "../objects/basic/importedObject.h"
+#include "../physics/physicsEngine.h"
 
 Application::Application(Scene* scene):
 	_scene(scene), _currentFrame(0), _framebufferResized(false)
@@ -413,6 +414,7 @@ void Application::updateUniformBuffer(uint32_t currentImage)
 	ubo.modelView = _modelViewController->getModelView();
 	ubo.aperture = 0.02f;
 	ubo.focusDistance = 2.0f;
+	// TODO near/far are hardcoded (being used in physicsEngine too)
 	ubo.projection = glm::perspective(glm::radians(90.0f), _swapChain->getExtent().width / static_cast<float>(_swapChain->getExtent().height), 0.1f, 10000.0f);
 	ubo.projection[1][1] *= -1; // Inverting Y for Vulkan, https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
 	ubo.modelViewInverse = glm::inverse(ubo.modelView);
@@ -461,13 +463,33 @@ void Application::onKey(int key, int scancode, int action, int mods)
 
 void Application::onCursorPosition(double xpos, double ypos)
 {
-
 	_modelViewController->onCursorPosition(xpos, ypos);
 }
 
 void Application::onMouseButton(int button, int action, int mods)
 {
 	_modelViewController->onMouseButton(button, action, mods);
+	switch(button)
+	{
+		case GLFW_MOUSE_BUTTON_LEFT:
+			if(action == GLFW_PRESS && _window->getCursorVisible())
+			{
+				// Handle application mouse click
+				int x = _window->getLastX();
+				int y = _window->getLastY();
+
+				if(onRaycastClick)
+				{
+					glm::vec3 ray = PhysicsEngine::getMouseClickRay(
+							x, y, 
+							_window->getWidth(), _window->getHeight(),
+							_modelViewController->getPosition(), _modelViewController->getForward(), _modelViewController->getUp());
+
+					onRaycastClick(_modelViewController->getPosition(), ray);
+				}
+			}
+			break;
+	}
 }
 
 void Application::onScroll(double xoffset, double yoffset)

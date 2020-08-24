@@ -84,6 +84,82 @@ void PhysicsEngine::stepSimulation(float dt)
 	}
 }
 
+bool PhysicsEngine::raycast(glm::vec3 startPosition, glm::vec3 direction, RayResult& output)
+{
+	if(!_bulletWorld) 
+		return false;
+	
+	// Get the picking ray from where was clicked
+	btVector3 rayTo = PhysicsEngine::glm2bt(direction);
+	btVector3 rayFrom = PhysicsEngine::glm2bt(startPosition);
+
+	// Create raycast callback object
+	btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom,rayTo);	
+	
+	// Perform raycast
+	_bulletWorld->rayTest(rayFrom,rayTo,rayCallback);
+	
+	// Did we hit something?
+	if(rayCallback.hasHit())
+	{
+		printf("Physics hit something");
+		// If so, get the rigid body we hit
+		btRigidBody* pBody = (btRigidBody*)btRigidBody::upcast(rayCallback.m_collisionObject);
+		if (!pBody)
+			return false;
+
+		// Prevent us from picking objects like the ground plane
+		if (pBody->isStaticObject() || pBody->isKinematicObject()) 
+			return false;
+
+		// Set the result data
+		output.body = pBody;
+		output.hitPoint = bt2glm(rayCallback.m_hitPointWorld);
+		return true;
+	}
+	
+	// Didn't hit anything
+	return false;
+}
+
+//---------- Static functions ----------//
+glm::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camUp)
+{
+	const float nearPlane = 0.1f;
+	const float farPlane = 10000.0f;
+
+	// Calculate fielf-of-view
+	float tanFov = 1.0f/nearPlane;
+	float fov = 2.0f*atan(tanFov);
+
+	// Get ray pointing forward from the camera and extend it to the far plane
+	glm::vec3 rayForward = glm::normalize(camForward);
+	rayForward *= farPlane;
+
+	// Find horizontal and vertical vectors relative to the camera
+	glm::vec3 ver = camUp;
+	glm::vec3 hor = glm::cross(rayForward, ver);
+	hor = glm::normalize(hor);
+	ver = glm::cross(hor, rayForward);
+	ver = glm::normalize(ver);
+	hor *= 2.f * farPlane * tanFov;
+	ver *= 2.f * farPlane * tanFov;
+
+	// Calculate aspect ratio
+	float aspect = width/(float)height;
+
+	// Adjust forward-ray based on the X/Y coordinates that were clicked
+	hor *= aspect;
+	glm::vec3 rayToCenter = camPos + rayForward;
+	glm::vec3 dHor = hor * 1.f/(float)width;
+	glm::vec3 dVer = ver * 1.f/(float)height;
+	glm::vec3 rayTo = rayToCenter - hor*0.5f + ver*0.5f;
+	rayTo += dHor*float(x);
+	rayTo -= dVer*float(y);
+		
+	return rayTo;
+}
+
 btVector3 PhysicsEngine::glm2bt(glm::vec3 vec)
 {
 	return { vec.x, vec.y, vec.z };

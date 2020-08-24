@@ -27,6 +27,12 @@ class ModelViewController
 		void onScroll(double xoffset, double yoffset);
 
 		bool updateCamera(double timeDelta);
+
+		//---------- Getters ----------//
+		glm::vec3 getPosition() const { return _position; }
+		glm::vec3 getForward() const { return _forward; }
+		glm::vec3 getUp() const { return _up; }
+
 	private:
 		void moveForward(float d);
 		void moveRight(float d);

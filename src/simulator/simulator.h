@@ -22,6 +22,7 @@ class Simulator
 
 	private:
 		void onDrawFrame(float dt);
+		void onRaycastClick(glm::vec3 pos, glm::vec3 ray);
 
 		Scene* _scene;
 		Application* _vulkanApp;

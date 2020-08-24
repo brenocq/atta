@@ -31,6 +31,7 @@ class Scene
 		void updatePhysics(float dt);
 
 		//--------- Getters ----------//
+		PhysicsEngine* getPhysicsEngine() const { return _physicsEngine; }
 		//----- Simulation specific ------//
 		std::vector<Object*> getObjects() const { return _objects; };
 		std::vector<Model*> getModels() const { return _models; };
