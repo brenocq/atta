@@ -28,6 +28,7 @@ Simulator::Simulator()
 
 	_vulkanApp = new Application(_scene);
 	_vulkanApp->onDrawFrame = [this](float dt){ onDrawFrame(dt); };
+	_vulkanApp->onRaycastClick = [this](glm::vec3 pos, glm::vec3 ray){ onRaycastClick(pos, ray); };
 }
 
 Simulator::~Simulator()
@@ -44,5 +45,15 @@ void Simulator::run()
 void Simulator::onDrawFrame(float dt)
 {
 	_scene->updatePhysics(dt);
+}
 
+void Simulator::onRaycastClick(glm::vec3 pos, glm::vec3 ray)
+{
+	printf("Mouse click ray: (%f,%f,%f)->(%f,%f,%f)\n", pos.x, pos.y, pos.z, ray.x, ray.y, ray.z);
+
+	PhysicsEngine::RayResult result;
+	if(!_scene->getPhysicsEngine()->raycast(pos, ray, result))
+		return;
+
+	printf("Hit something!");
 }

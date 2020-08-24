@@ -39,6 +39,18 @@ class Window
 		double getTime();
 		void close();
 		void toggleCursorVisibility();
+
+		//------------ Getters ------------//
+		int getLastX() const { return _lastX; }
+		int getLastY() const { return _lastY; }
+		bool getCursorVisible() const { return _cursorVisible; }
+		int getWidth() const { return _width; }
+		int getHeight() const { return _height; }
+
+		//------------ Setters ------------//
+		void setLastX(int x) { _lastX = x; }
+		void setLastY(int y) { _lastY = y; }
+
 	private:
 		static void keyCallback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods);
 		static void cursorPositionCallback(GLFWwindow* window, const double xpos, const double ypos);
@@ -49,6 +61,8 @@ class Window
 		int _height;
 		int _width;
 		bool _cursorVisible;
+		int _lastX;
+		int _lastY;
 };
 
 #endif// WINDOW_H

@@ -53,6 +53,7 @@ class Application
 		void run();
 
 		std::function<void(float dt)> onDrawFrame;
+		std::function<void(glm::vec3 cameraPos, glm::vec3 raycastRay)> onRaycastClick;
 	private:
 		void drawFrame();
 		void createPipelines();
