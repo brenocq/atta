@@ -399,6 +399,8 @@ void Application::render(int i)
 
 			const uint32_t indexCount = static_cast<uint32_t>(_scene->getLineIndexCount());
 			vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+
+
 		}
 	}
 	vkCmdEndRenderPass(commandBuffer);

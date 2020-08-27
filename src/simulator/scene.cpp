@@ -11,10 +11,12 @@
 #include "vulkan/sphere.h"
 #include "vulkan/buffer.h"
 #include "vulkan/device.h"
+#include "vulkan/stagingBuffer.h"
 
-Scene::Scene()
+Scene::Scene():
+	_maxLineCount(9999)
 {
-	//_physicsEngine = nullptr;
+	_device = nullptr;
 	_physicsEngine = new PhysicsEngine();
 }
 
@@ -109,10 +111,10 @@ void Scene::addObject(Object* object)
 void Scene::createBuffers(CommandPool* commandPool)
 {
 	_commandPool = commandPool;
-	Device* device = commandPool->getDevice();
+	_device = commandPool->getDevice();
 	_proceduralBuffer = nullptr;
 
-	_textures.push_back(new Texture(device, _commandPool, "assets/models/cube_multi/cube_multi.png"));
+	_textures.push_back(new Texture(_device, _commandPool, "assets/models/cube_multi/cube_multi.png"));
 
 	// Concatenate all the models
 	std::vector<Vertex> vertices;
@@ -158,8 +160,10 @@ void Scene::createBuffers(CommandPool* commandPool)
 
 	// Ray tracing flasg
 	const auto flag = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	std::pair<std::vector<Vertex>, std::vector<uint32_t>> grid = gridLines();
-	_lineIndexCount = grid.second.size();
+
+	// Generate simulation grid (line buffer)
+	genGridLines();
+	_lineIndexCount = _hostLineIndex.size();
 
 	createSceneBuffer(_vertexBuffer, 		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|flag, vertices);
 	createSceneBuffer(_indexBuffer, 		VK_BUFFER_USAGE_INDEX_BUFFER_BIT|flag, 	indices);
@@ -167,8 +171,8 @@ void Scene::createBuffers(CommandPool* commandPool)
 	createSceneBuffer(_offsetBuffer, 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	offsets);
 	createSceneBuffer(_aabbBuffer, 			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	aabbs);
 	createSceneBuffer(_proceduralBuffer, 	VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	procedurals);
-	createSceneBuffer(_lineVertexBuffer, 	VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 	grid.first);
-	createSceneBuffer(_lineIndexBuffer, 	VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 	grid.second);
+	createSceneBuffer(_lineVertexBuffer, 	VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 	_hostLineVertex, _maxLineCount*2);
+	createSceneBuffer(_lineIndexBuffer, 	VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 	_hostLineIndex, _maxLineCount*2);
 }
 
 void Scene::updatePhysics(float dt)
@@ -180,9 +184,15 @@ void Scene::updatePhysics(float dt)
 template <class T>
 void Scene::createSceneBuffer(Buffer*& buffer,
 		const VkBufferUsageFlags usage, 
-		const std::vector<T>& content)
+		const std::vector<T>& content,
+		const uint32_t maxElements)
 {
-	const int size = sizeof(content[0]) * content.size();
+
+	int size;
+	if(maxElements == 0)
+		size = sizeof(content[0]) * content.size();
+	else
+		size = sizeof(content[0]) * maxElements;
 
 	buffer = new Buffer(_commandPool->getDevice(), 
 			size, 
@@ -219,14 +229,45 @@ void Scene::copyFromStagingBuffer(Buffer* dstBuffer, const std::vector<T>& conte
 	stagingBuffer = nullptr;
 }
 
+void Scene::addLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
+{
+	if((_hostLineIndex.size()/2+1)>_maxLineCount)
+		return;
 
-std::pair<std::vector<Vertex>, std::vector<uint32_t>> Scene::gridLines()
+	const glm::vec2 texCoord(0,0);
+
+	Vertex v1 = {p0, color, texCoord, 0};
+	Vertex v2 = {p1, color, texCoord, 0};
+	_hostLineVertex.push_back(v1);
+	_hostLineVertex.push_back(v2);
+	_hostLineIndex.push_back(_hostLineIndex.size());
+	_hostLineIndex.push_back(_hostLineIndex.size());
+}
+
+void Scene::updateLineBuffer()
+{
+	if(_device == nullptr || _commandPool==nullptr)
+		return;
+
+	StagingBuffer* stagingBufferVertex = new StagingBuffer(_device, _hostLineVertex.data(), sizeof(Vertex)*_maxLineCount*2);
+	StagingBuffer* stagingBufferIndex = new StagingBuffer(_device, _hostLineIndex.data(), sizeof(uint32_t)*_maxLineCount*2);
+
+	_lineVertexBuffer->copyFrom(_commandPool, stagingBufferVertex->handle(), sizeof(Vertex)*_maxLineCount*2);
+	_lineIndexBuffer->copyFrom(_commandPool, stagingBufferIndex->handle(), sizeof(uint32_t)*_maxLineCount*2);
+
+	delete stagingBufferVertex;
+	delete stagingBufferIndex;
+	stagingBufferVertex = nullptr;
+	stagingBufferIndex = nullptr;
+
+	_lineIndexCount = _hostLineIndex.size();
+}
+
+void Scene::genGridLines()
 {
 	int gridSize = 100;
 	const glm::vec3 gridColor = {0.35, 0.35, 0.35};
 	const glm::vec2 texCoord(0,0);
-	std::vector<Vertex> vertices;
-	std::vector<uint32_t> indices;
 
 	// X lines
 	for(int i=-gridSize;i<gridSize;i++)
@@ -241,10 +282,7 @@ std::pair<std::vector<Vertex>, std::vector<uint32_t>> Scene::gridLines()
 			0,
 			i);
 		
-		vertices.push_back(Vertex{ pos1, gridColor, texCoord, 0 });
-		vertices.push_back(Vertex{ pos2, gridColor, texCoord, 0 });
-		indices.push_back(indices.size());
-		indices.push_back(indices.size());
+		addLine(pos1, pos2, gridColor);
 	}
 
 	// Z lines
@@ -259,12 +297,7 @@ std::pair<std::vector<Vertex>, std::vector<uint32_t>> Scene::gridLines()
 			i,
 			0,
 			gridSize);
-		
-		vertices.push_back(Vertex{ pos1, gridColor, texCoord, 0 });
-		vertices.push_back(Vertex{ pos2, gridColor, texCoord, 0 });
-		indices.push_back(indices.size());
-		indices.push_back(indices.size());
-	}
 
-	return make_pair(vertices, indices);
+		addLine(pos1, pos2, gridColor);
+	}
 }

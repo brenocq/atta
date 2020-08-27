@@ -130,14 +130,14 @@ glm::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, g
 
 	// Calculate fielf-of-view
 	float tanFov = 1.0f/nearPlane;
-	float fov = 2.0f*atan(tanFov);
+	float fov = btScalar(2.0)*btAtan(tanFov);
 
 	// Get ray pointing forward from the camera and extend it to the far plane
 	glm::vec3 rayForward = glm::normalize(camForward);
 	rayForward *= farPlane;
 
 	// Find horizontal and vertical vectors relative to the camera
-	glm::vec3 ver = camUp;
+	glm::vec3 ver = {0.0f, 1.0f, 0.0f};
 	glm::vec3 hor = glm::cross(rayForward, ver);
 	hor = glm::normalize(hor);
 	ver = glm::cross(hor, rayForward);

@@ -16,7 +16,7 @@ StagingBuffer::StagingBuffer(Device* device, void* dataToMap, VkDeviceSize size)
 }
 
 template <class T>
-StagingBuffer::StagingBuffer(Device* device, std::vector<T> content):
+StagingBuffer::StagingBuffer(Device* device, std::vector<T>& content):
 	Buffer(device, sizeof(content[0])*content.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
 {
 	void* data;
