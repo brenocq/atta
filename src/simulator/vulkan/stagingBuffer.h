@@ -19,7 +19,8 @@ class StagingBuffer : public Buffer
 {
 	public:
 	template <class T>
-	StagingBuffer(Device* device, std::vector<T> content);
+	StagingBuffer(Device* device, std::vector<T>& content);
+
 	StagingBuffer(Device* device, void* dataToMap, VkDeviceSize size);
 	~StagingBuffer();
 

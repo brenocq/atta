@@ -45,6 +45,10 @@ class Scene
 		Buffer* getProceduralBuffer() const { return _proceduralBuffer; }
 		bool hasProcedurals() const { return static_cast<bool>(_proceduralBuffer); }
 
+		//----- Line debugger -----//
+		void addLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
+		void updateLineBuffer();
+
 		//----- Simulator specific -----//
 		Buffer* getLineVertexBuffer() const { return _lineVertexBuffer; }
 		Buffer* getLineIndexBuffer() const { return _lineIndexBuffer; }
@@ -54,12 +58,13 @@ class Scene
 		template <class T>
 		void createSceneBuffer(Buffer*& buffer,
 			const VkBufferUsageFlags usage, 
-			const std::vector<T>& content);
+			const std::vector<T>& content,
+			const uint32_t maxElements=0);
 
 		template <class T>
 		void copyFromStagingBuffer(Buffer* dstBuffer, const std::vector<T>& content);
 
-		std::pair<std::vector<Vertex>, std::vector<uint32_t>> gridLines();
+		void genGridLines();
 
 		// Objects in the scene
 		std::vector<Object*> _objects;
@@ -67,6 +72,7 @@ class Scene
 		std::vector<Model*> _models;
 		std::vector<Texture*> _textures;
 
+		Device* _device;
 		CommandPool* _commandPool;
 		Buffer* _vertexBuffer;
 		Buffer* _indexBuffer;
@@ -76,9 +82,12 @@ class Scene
 		Buffer* _proceduralBuffer;
 
 		// Simulator specific
-		uint32_t _lineIndexCount;
+		uint32_t _maxLineCount;// Maximum number of lines that can be store in memory
+		uint32_t _lineIndexCount;// Current index count (line count*2)
 		Buffer* _lineVertexBuffer;
 		Buffer* _lineIndexBuffer;
+		std::vector<Vertex> _hostLineVertex;
+		std::vector<uint32_t> _hostLineIndex;
 
 		//---------- Physics ----------//
 		PhysicsEngine* _physicsEngine;

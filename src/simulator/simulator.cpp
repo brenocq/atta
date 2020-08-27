@@ -49,6 +49,8 @@ void Simulator::onDrawFrame(float dt)
 
 void Simulator::onRaycastClick(glm::vec3 pos, glm::vec3 ray)
 {
+	_scene->addLine(pos, pos+ray, {1,1,1});
+	_scene->updateLineBuffer();
 	printf("Mouse click ray: (%f,%f,%f)->(%f,%f,%f)\n", pos.x, pos.y, pos.z, ray.x, ray.y, ray.z);
 
 	PhysicsEngine::RayResult result;
