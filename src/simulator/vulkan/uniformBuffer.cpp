@@ -13,7 +13,7 @@ UniformBuffer::UniformBuffer(Device* device, VkDeviceSize size):
 	ubo.modelView = glm::translate(glm::mat4(1), glm::vec3(0, 0, -2));
 	ubo.aperture = 0.05f;
 	ubo.focusDistance = 2.0f;
-	ubo.projection = glm::perspective(glm::radians(90.0f), 1200 / static_cast<float>(900), 0.1f, 10000.0f);
+	ubo.projection = glm::perspective(glm::radians(45.0f), 1200 / static_cast<float>(900), 1.0f, 1000.0f);
 	ubo.projection[1][1] *= -1; // Inverting Y for Vulkan, https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
 	ubo.modelViewInverse = glm::inverse(ubo.modelView);
 	ubo.projectionInverse = glm::inverse(ubo.projection);
