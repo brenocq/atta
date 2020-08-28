@@ -417,7 +417,7 @@ void Application::updateUniformBuffer(uint32_t currentImage)
 	ubo.aperture = 0.02f;
 	ubo.focusDistance = 2.0f;
 	// TODO near/far are hardcoded (being used in physicsEngine too)
-	ubo.projection = glm::perspective(glm::radians(90.0f), _swapChain->getExtent().width / static_cast<float>(_swapChain->getExtent().height), 0.1f, 10000.0f);
+	ubo.projection = glm::perspective(glm::radians(90.0f), _swapChain->getExtent().width / static_cast<float>(_swapChain->getExtent().height), 1.0f, 1000.0f);
 	ubo.projection[1][1] *= -1; // Inverting Y for Vulkan, https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
 	ubo.modelViewInverse = glm::inverse(ubo.modelView);
 	ubo.projectionInverse = glm::inverse(ubo.projection);

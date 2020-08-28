@@ -49,13 +49,19 @@ void Simulator::onDrawFrame(float dt)
 
 void Simulator::onRaycastClick(glm::vec3 pos, glm::vec3 ray)
 {
-	_scene->addLine(pos, pos+ray, {1,1,1});
+	_scene->addLine(pos, pos+ray, {rand()%255/255.f,rand()%255/255.f,rand()%255/255.f});
 	_scene->updateLineBuffer();
-	printf("Mouse click ray: (%f,%f,%f)->(%f,%f,%f)\n", pos.x, pos.y, pos.z, ray.x, ray.y, ray.z);
 
 	PhysicsEngine::RayResult result;
 	if(!_scene->getPhysicsEngine()->raycast(pos, ray, result))
 		return;
 
-	printf("Hit something!");
+	Object* object = _scene->getObjectFromPhysicsBody(result.body);
+	
+	if(object != nullptr)
+	{
+		printf("Hit something! %s (%f, %f, %f)\n", object->getName().c_str(), result.hitPoint.x, result.hitPoint.y, result.hitPoint.z);
+		fflush(stdout);
+	}
 }
+

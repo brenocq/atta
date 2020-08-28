@@ -301,3 +301,13 @@ void Scene::genGridLines()
 		addLine(pos1, pos2, gridColor);
 	}
 }
+
+Object* Scene::getObjectFromPhysicsBody(btRigidBody* body)
+{
+	for(auto object:_objects)
+	{
+		if(object->getObjectPhysics()->getRigidBody() == body)
+			return object;
+	}
+	return nullptr;
+}
