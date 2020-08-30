@@ -6,6 +6,9 @@
 //--------------------------------------------------
 #include "application.h"
 #include "../objects/basic/importedObject.h"
+#include "../objects/basic/box.h"
+#include "../objects/basic/sphere.h"
+#include "../objects/basic/cylinder.h"
 #include "../physics/physicsEngine.h"
 
 Application::Application(Scene* scene):
@@ -61,7 +64,7 @@ Application::Application(Scene* scene):
 	_modelViewController->reset(glm::lookAt(glm::vec3(3, 3, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	// IMGUI
-	_userInterface = new UserInterface(_device, _window, _swapChain);
+	_userInterface = new UserInterface(_device, _window, _swapChain, _scene);
 
 	// RayTracing
 	_rayTracing = new RayTracing(_device, _swapChain, _commandPool, _uniformBuffers, _scene);
@@ -197,7 +200,7 @@ void Application::recreateSwapChain()
 	_commandBuffers = new CommandBuffers(_device, _commandPool, _frameBuffers.size());
 
 	// IMGUI
-	_userInterface = new UserInterface(_device, _window, _swapChain);
+	_userInterface = new UserInterface(_device, _window, _swapChain, _scene);
 	_rayTracing->createSwapChain();
 }
 
@@ -350,30 +353,34 @@ void Application::render(int i)
 
 			for(auto abstractPtr : _scene->getObjects())
 			{
+				Model* model;
 				if(abstractPtr->getType() == "ImportedObject")
-				{
-					ImportedObject* object = (ImportedObject*)abstractPtr;
+					model = ((ImportedObject*)abstractPtr)->getModel();
+				else if(abstractPtr->getType() == "Box")
+					model = ((Box*)abstractPtr)->getModel();
+				else if(abstractPtr->getType() == "Sphere")
+					model = ((Sphere*)abstractPtr)->getModel();
+				else if(abstractPtr->getType() == "Cylinder")
+					model = ((Cylinder*)abstractPtr)->getModel();
+				else continue;
 
-					Model* model = object->getModel();
+				ObjectInfo objectInfo;
+				objectInfo.modelMatrix = abstractPtr->getModelMat();
 
-					ObjectInfo objectInfo;
-					objectInfo.modelMatrix = object->getModelMat();
+				vkCmdPushConstants(
+						commandBuffer,
+						_graphicsPipeline->getPipelineLayout()->handle(),
+						VK_SHADER_STAGE_VERTEX_BIT,
+						0,
+						sizeof(ObjectInfo),
+						&objectInfo);
 
-					vkCmdPushConstants(
-							commandBuffer,
-							_graphicsPipeline->getPipelineLayout()->handle(),
-							VK_SHADER_STAGE_VERTEX_BIT,
-							0,
-							sizeof(ObjectInfo),
-							&objectInfo);
+				const uint32_t vertexCount = model->getVerticesSize();
+				const uint32_t indexCount = model->getIndicesSize();
+				const uint32_t vertexOffset = model->getVertexOffset();
+				const uint32_t indexOffset = model->getIndexOffset();
 
-					const uint32_t vertexCount = model->getVerticesSize();
-					const uint32_t indexCount = model->getIndicesSize();
-					const uint32_t vertexOffset = model->getVertexOffset();
-					const uint32_t indexOffset = model->getIndexOffset();
-
-					vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
-				}
+				vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
 			}
 		}
 
@@ -417,7 +424,7 @@ void Application::updateUniformBuffer(uint32_t currentImage)
 	ubo.aperture = 0.02f;
 	ubo.focusDistance = 2.0f;
 	// TODO near/far are hardcoded (being used in physicsEngine too)
-	ubo.projection = glm::perspective(glm::radians(90.0f), _swapChain->getExtent().width / static_cast<float>(_swapChain->getExtent().height), 1.0f, 1000.0f);
+	ubo.projection = glm::perspective(glm::radians(90.0f), _swapChain->getExtent().width / static_cast<float>(_swapChain->getExtent().height), 0.1f, 1000.0f);
 	ubo.projection[1][1] *= -1; // Inverting Y for Vulkan, https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
 	ubo.modelViewInverse = glm::inverse(ubo.modelView);
 	ubo.projectionInverse = glm::inverse(ubo.projection);

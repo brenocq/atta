@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #include "model.h"
 #include <chrono>
-#include "sphere.h"
 #include <glm/gtc/matrix_inverse.hpp>
 
 int Model::textureId = 0;
@@ -190,87 +189,6 @@ void Model::loadModel()
 		<< "ms" 
 		<< " (" << _vertices.size() << " vertices, " << _indices.size() << " indices)"	
 		<< RESET << std::endl;
-}
-
-
-Model* Model::createSphere(const glm::vec3& center, float radius, const Material& material, const bool isProcedural)
-{
-	const int slices = 32;
-	const int stacks = 16;
-	
-	std::vector<Vertex> vertices;
-	std::vector<uint32_t> indices;
-
-	const float pi = 3.14159265358979f;
-	
-	for (int j = 0; j <= stacks; ++j) 
-	{
-		const float j0 = pi * j / stacks;
-
-		// Vertex
-		const float v = radius * -std::sin(j0);
-		const float z = radius * std::cos(j0);
-		
-		// Normals		
-		const float n0 = -std::sin(j0);
-		const float n1 = std::cos(j0);
-
-		for (int i = 0; i <= slices; ++i) 
-		{
-			const float i0 = 2 * pi * i / slices;
-
-			const glm::vec3 position(
-				center.x + v * std::sin(i0),
-				center.y + z,
-				center.z + v * std::cos(i0));
-			
-			const glm::vec3 normal(
-				n0 * std::sin(i0),
-				n1,
-				n0 * std::cos(i0));
-
-			const glm::vec2 texCoord(
-				static_cast<float>(i) / slices,
-				static_cast<float>(j) / stacks);
-
-			vertices.push_back(Vertex{ position, normal, texCoord, 0 });
-		}
-	}
-
-	for (int j = 0; j < stacks; ++j)
-	{
-		for (int i = 0; i < slices; ++i)
-		{
-			const auto j0 = (j + 0) * (slices + 1);
-			const auto j1 = (j + 1) * (slices + 1);
-			const auto i0 = i + 0;
-			const auto i1 = i + 1;
-			
-			indices.push_back(j0 + i0);
-			indices.push_back(j1 + i0);
-			indices.push_back(j1 + i1);
-			
-			indices.push_back(j0 + i0);
-			indices.push_back(j1 + i1);
-			indices.push_back(j0 + i1);
-		}
-	}
-
-	return new Model(
-		std::move(vertices),
-		std::move(indices),
-		std::vector<Material>{material},
-		isProcedural ? new Sphere(center, radius) : nullptr);
-}
-
-const std::vector<Texture*> Model::getTextures(Device* device, CommandPool* commandPool)
-{
-	std::vector<Texture*> textures;
-	for(auto textureName : _textureNames)
-	{
-		textures.push_back(new Texture(device, commandPool, "assets/models/"+_fileName+"/"+textureName));
-	}
-	return textures;
 }
 
 void Model::transform(const glm::mat4& transform)

@@ -76,7 +76,9 @@ void PhysicsEngine::stepSimulation(float dt)
 
 		if(!firstTime)
 		{
-			//printf("step: %f\n", dt);
+			// Slow motion
+			//_bulletWorld->stepSimulation(dt/10.);
+			// Normal motion
 			_bulletWorld->stepSimulation(dt);
 		}
 		else
@@ -124,11 +126,11 @@ bool PhysicsEngine::raycast(glm::vec3 startPosition, glm::vec3 direction, RayRes
 //---------- Static functions ----------//
 glm::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camUp)
 {
-	const float nearPlane = 1.0f;
+	const float nearPlane = 0.1f;
 	const float farPlane = 1000.0f;
 
 	// Calculate fielf-of-view
-	float tanFov = 1.0f/nearPlane;
+	float tanFov = 1.0f;//1.0f/nearPlane;
 	float fov = btScalar(2.0)*btAtan(tanFov);
 
 	// Get ray pointing forward from the camera and extend it to the far plane

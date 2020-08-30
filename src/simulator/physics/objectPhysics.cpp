@@ -70,3 +70,56 @@ glm::vec3 ObjectPhysics::getRotation() const
 
 	return glm::degrees(glm::eulerAngles(PhysicsEngine::bt2glm(bulletRotation)));
 }
+
+void ObjectPhysics::setPosition(glm::vec3 position)
+{
+	btTransform transform;
+	_bulletBody->getMotionState()->getWorldTransform(transform);
+	transform.setOrigin(PhysicsEngine::glm2bt(position));
+
+	_bulletBody->setWorldTransform(transform);
+	_bulletBody->getMotionState()->setWorldTransform(transform);
+
+	_bulletBody->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+	_bulletBody->setAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
+	_bulletBody->clearForces();
+
+	_bulletBody->activate(true);
+}
+
+void ObjectPhysics::setRotation(glm::vec3 rotation)
+{
+	btTransform transform;
+	_bulletMotionState->getWorldTransform(transform);
+	transform.setRotation(PhysicsEngine::glm2bt(glm::quat(glm::radians(rotation))));
+
+	_bulletBody->setWorldTransform(transform);
+	//_bulletBody->getMotionState()->setWorldTransform(transform);
+
+	_bulletBody->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+	_bulletBody->setAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
+	_bulletBody->clearForces();
+
+	_bulletBody->activate(true);
+}
+
+void ObjectPhysics::setMass(float mass)
+{
+	if(mass == 0)	
+	{
+		_bulletBody->setMassProps(0,btVector3(0,0,0));
+		_bulletBody->setCollisionFlags(_bulletBody->getCollisionFlags() | 
+				btCollisionObject::CF_STATIC_OBJECT);
+		_bulletBody->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
+		_bulletBody->setAngularVelocity(btVector3(0.0f, 0.0f, 0.0f));
+		_bulletBody->clearForces();
+	}
+	else
+	{
+		_bulletBody->setMassProps(mass,btVector3(0,0,0));
+		_bulletBody->setCollisionFlags(_bulletBody->getCollisionFlags() | 
+				btCollisionObject::CF_KINEMATIC_OBJECT);
+
+		_bulletBody->activate(true);
+	}
+}

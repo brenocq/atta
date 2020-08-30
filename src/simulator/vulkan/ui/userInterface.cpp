@@ -6,12 +6,13 @@
 //--------------------------------------------------
 #include "userInterface.h"
 
-UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChain)
+UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChain, Scene* scene)
 {
 	//---------- Get main objects ----------//
 	_device = device;
 	_window = window;
 	_swapChain = swapChain;
+	_scene = scene;
 	PhysicalDevice* physicalDevice = _device->getPhysicalDevice();
 	Instance* instance = physicalDevice->getInstance();
 
@@ -66,7 +67,9 @@ UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChai
 	_imguiCommandPool->endSingleTimeCommands(command_buffer);
 
 	//ImGui_ImplVulkan_DestroyFontUploadObjects();
-	ImGui_ImplVulkan_SetMinImageCount(2);
+	ImGui_ImplVulkan_SetMinImageCount(_swapChain->getImages().size());
+
+	//---------- Init UI variables ---------//
 }
 
 UserInterface::~UserInterface()
@@ -139,30 +142,6 @@ void UserInterface::checkResult(VkResult result)
 	}
 }
 
-void UserInterface::draw()
-{
-	//ImGui::ShowDemoWindow();
-	static bool checkbox = false;
-	static float sliderFloat = 0.f;
-	static int sliderInt = 0;
-
-	//ImGui::Begin("Window");
-	//ImGui::Checkbox("toggle", &checkbox);
-	//ImGui::SliderFloat("float", &sliderFloat, 0.f, 100.f);
-	//ImGui::SliderInt("int", &sliderInt, 0, 100);
-	//ImGui::End();
-
-	if(ImGui::BeginMainMenuBar())
-	{
-        if(ImGui::BeginMenu("Main"))
-        {
-            if(ImGui::Checkbox("RayTracing", &checkbox)) {}
-            if(ImGui::MenuItem("Quit", "ESQ")) {}
-            ImGui::EndMenu();
-        }
-        ImGui::EndMainMenuBar();
-	}
-}
 
 void UserInterface::render(int i)
 {
@@ -194,4 +173,183 @@ void UserInterface::render(int i)
 	}
 	vkCmdEndRenderPass(_imguiCommandBuffers[i]);
 	vkEndCommandBuffer(_imguiCommandBuffers[i]);
+}
+
+//---------------------------------------------//
+//-------------- DRAW FUNCTIONS ---------------//
+//---------------------------------------------//
+
+void UserInterface::draw()
+{
+	ImGui::ShowDemoWindow();
+	static bool enableRayTracing = false;
+	static bool showScene = true;
+
+	if(ImGui::BeginMainMenuBar())
+	{
+        if(ImGui::BeginMenu("Main"))
+        {
+            if(ImGui::Checkbox("RayTracing", &enableRayTracing)) {}
+            if(ImGui::MenuItem("Quit", "ESQ")) {}
+            ImGui::EndMenu();
+        }
+
+        if(ImGui::BeginMenu("Window"))
+        {
+            if(ImGui::Checkbox("Scene", &showScene)) {}
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMainMenuBar();
+	}
+	
+	if(showScene) showSceneWindow(&showScene);
+}
+
+//---------------------------------------------//
+//----------------- IMGUI main ----------------//
+//---------------------------------------------//
+
+void UserInterface::showSceneWindow(bool* showWindow)
+{
+	static bool showObjectInfo = false;
+
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->GetWorkPos());
+	ImGui::SetNextWindowSize(ImVec2(200,viewport->GetWorkSize().y));
+
+  	ImGuiWindowFlags flags =
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoResize;
+        //ImGuiWindowFlags_NoCollapse |
+        //ImGuiWindowFlags_NoSavedSetting;
+        //ImGuiWindowFlags_AlwaysAutoResize |
+        //ImGuiWindowFlags_NoTitleBar;
+
+	// Check scene tree and process clicks
+	ImGui::Begin("Scene", showWindow, flags);
+	{
+        ImGui::Text("Scene tree");ImGui::SameLine();helpMarker("Right-click tree node to show object menu");
+
+		ImGui::BeginChild("World Objects", ImVec2(0, 0), true);
+		{
+			for (auto object : _scene->getObjects())
+			{
+				std::string objectName = object->getName();
+				if(ImGui::TreeNode(objectName.c_str()))
+				{
+					// TODO Check leaf nodes 
+                    //ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+                    //ImGui::TreeNodeEx((void*)(intptr_t)i, nodeFlags, "Cube child", i);
+
+					//// Right-click menu
+					//std::string menuPopupName = objectName + " child popup";
+					//if(ImGui::BeginPopupContextItem(menuPopupName.c_str()))
+					//{
+					//	if(ImGui::Selectable("Edit")) showObjectInfo=true;
+            		//	ImGui::EndPopup();
+					//}
+
+					ImGui::TreePop();
+				}
+				// Right-click menu
+				std::string menuPopupName = objectName + " popup";
+				if(ImGui::BeginPopupContextItem(menuPopupName.c_str()))
+				{
+					if(ImGui::Selectable("Edit"))
+					{
+						_showObjectInfo[object] = true;
+					}
+					if(ImGui::Selectable("Delete"))
+					{
+						// TODO
+					}
+					ImGui::EndPopup();
+				}
+			}
+		}
+        ImGui::EndChild();
+	}
+	ImGui::End();
+
+	showObjectInfoWindows();
+}
+
+void UserInterface::showObjectInfoWindows()
+{
+	for(auto object : _scene->getObjects())
+	{
+		if(!_showObjectInfo[object])
+			continue;
+
+		ImGui::SetNextWindowSize(ImVec2(300, 300));
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoResize;
+
+		ImGui::Begin(object->getName().c_str(), &_showObjectInfo[object], flags);
+		{
+			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+			if(ImGui::BeginTabBar("ObjectInfoTabBar", tab_bar_flags))
+			{
+				if(ImGui::BeginTabItem("Transformation"))
+				{
+					//bool isStatic = object->getStatic();
+					//ImGui::Checkbox("Static", &isStatic);
+					//object->setStatic(isStatic);
+					if(ImGui::TreeNode("Position"))
+					{
+						float posX = object->getPosition().x;
+						float posY = object->getPosition().y;
+						float posZ = object->getPosition().z;
+            			ImGui::SliderFloat("X (m)", &posX, -10, 10, "%.3f");
+            			ImGui::SliderFloat("Y (m)", &posY, -10, 10, "%.3f");
+            			ImGui::SliderFloat("Z (m)", &posZ, -10, 10, "%.3f");
+	
+						object->setPosition({posX, posY, posZ});
+
+						ImGui::TreePop();
+						ImGui::Separator();
+					}
+					if(ImGui::TreeNode("Rotation"))
+					{
+						float rotX = object->getRotation().x;
+						float rotY = object->getRotation().y;
+						float rotZ = object->getRotation().z;
+            			ImGui::SliderFloat("X (degree)", &rotX, 0, 360, "%.3f");
+            			ImGui::SliderFloat("Y (degree)", &rotY, 0, 360, "%.3f");
+            			ImGui::SliderFloat("Z (degree)", &rotZ, 0, 360, "%.3f");
+	
+						object->setRotation({rotX, rotY, rotZ});
+
+						ImGui::TreePop();
+						ImGui::Separator();
+					}
+					ImGui::EndTabItem();
+				}
+				if(ImGui::BeginTabItem("Properties"))
+				{
+					ImGui::BulletText("Object type: %s", object->getType().c_str());
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
+			}
+		}
+		ImGui::End();
+	}
+}
+
+//---------------------------------------------//
+//--------------- IMGUI helpers ---------------//
+//---------------------------------------------//
+
+void UserInterface::helpMarker(std::string text)
+{
+    ImGui::TextDisabled("(?)");
+    if(ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::TextUnformatted(text.c_str());
+        ImGui::EndTooltip();
+    }
 }
