@@ -24,6 +24,12 @@ class ObjectPhysics
 
 		glm::vec3 getPosition() const;
 		glm::vec3 getRotation() const;
+		float getMass() const { return _mass; }
+
+		//---------- Setters ----------//
+		void setPosition(glm::vec3 position);
+		void setRotation(glm::vec3 rotation);
+		void setMass(float mass);
 
 	private:
 		float _mass;

@@ -8,7 +8,6 @@
 #include <memory>
 #include "vulkan/vertex.h"
 #include "vulkan/material.h"
-#include "vulkan/sphere.h"
 #include "vulkan/buffer.h"
 #include "vulkan/device.h"
 #include "vulkan/stagingBuffer.h"
@@ -18,6 +17,11 @@ Scene::Scene():
 {
 	_device = nullptr;
 	_physicsEngine = new PhysicsEngine();
+
+	// Load basic models to the memory
+	_models.push_back(new Model("box"));
+	_models.push_back(new Model("sphere"));
+	_models.push_back(new Model("cylinder"));
 }
 
 Scene::~Scene()
@@ -145,17 +149,17 @@ void Scene::createBuffers(CommandPool* commandPool)
 		}
 
 		// Add optional procedurals
-		const auto sphere = dynamic_cast<const Sphere*>(model->getProcedural());
-		if (sphere != nullptr)
-		{
-			aabbs.push_back(sphere->boundingBox());
-			procedurals.emplace_back(sphere->center, sphere->radius);
-		}
-		else
-		{
+		//const auto sphere = dynamic_cast<const Sphere*>(model->getProcedural());
+		//if (sphere != nullptr)
+		//{
+		//	aabbs.push_back(sphere->boundingBox());
+		//	procedurals.emplace_back(sphere->center, sphere->radius);
+		//}
+		//else
+		//{
 			aabbs.emplace_back();
 			procedurals.emplace_back();
-		}
+		//}
 	}
 
 	// Ray tracing flasg

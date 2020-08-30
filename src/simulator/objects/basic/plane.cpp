@@ -10,7 +10,7 @@ Plane::Plane(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec2
 	Object(name, position, rotation, {1,1,1}, mass), _size(size)
 {
 	_type = "Plane";
-	_physics = new ObjectPhysics(new btBoxShape(btVector3(_size[0],0.0f,_size[1])), _position, _rotation, mass);
+	_physics = new ObjectPhysics(new btStaticPlaneShape(btVector3(0,1,0),0.0f), _position, _rotation, mass);
 }
 
 Plane::~Plane()

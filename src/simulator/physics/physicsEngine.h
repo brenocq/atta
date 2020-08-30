@@ -28,7 +28,10 @@ class PhysicsEngine
 		void stepSimulation(float dt);
 
 		bool raycast(glm::vec3 startPosition, glm::vec3 direction, RayResult& output);
+		//---------- Getters ----------//
+		btDynamicsWorld* getWorld() const { return _bulletWorld; }
 
+		//------- Static helpers ------//
 		static glm::vec3 getMouseClickRay(int x, int y, int width, int height, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camUp);
 		static btVector3 glm2bt(glm::vec3 vec);
 		static glm::vec3 bt2glm(btVector3 vec);

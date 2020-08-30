@@ -43,8 +43,6 @@ class Model
 		uint32_t getIndicesSize() const { return Model::indicesSize[_modelIndex]; }
 		std::string getFileName() const { return _fileName; }
 
-		//----------- Fixed models ---------//
-		static Model* createSphere(const glm::vec3& center, float radius, const Material& material, bool isProcedural);
 	private:
 		Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, Procedural* procedural);
 		void loadModel();
