@@ -48,6 +48,11 @@ class UserInterface
 		//------------- IMGUI helpers -----------------//
 		void helpMarker(std::string text);
 
+		// Scene tree
+		void createSceneTreeNode(Object* object);
+
+		// Object menu
+		void objectMenuPopup(Object* object);
 		std::map<Object*, bool> _showObjectInfo;
 		//---------------------------------------------//
 

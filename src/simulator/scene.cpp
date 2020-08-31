@@ -11,6 +11,7 @@
 #include "vulkan/buffer.h"
 #include "vulkan/device.h"
 #include "vulkan/stagingBuffer.h"
+#include "physics/constraints/fixedConstraint.h"
 
 Scene::Scene():
 	_maxLineCount(9999)
@@ -314,4 +315,18 @@ Object* Scene::getObjectFromPhysicsBody(btRigidBody* body)
 			return object;
 	}
 	return nullptr;
+}
+
+void Scene::linkObjects()
+{
+	for(auto object : _objects)
+	{
+		Constraint* constraint = object->getParentConstraint();
+		if(constraint != nullptr)
+		{
+			ObjectPhysics* childPhysics = object->getObjectPhysics();
+			ObjectPhysics* parentPhysics = object->getParent()->getObjectPhysics();
+			_physicsEngine->getWorld()->addConstraint(constraint->createConstraint(childPhysics, parentPhysics), true);
+		}
+	}
 }

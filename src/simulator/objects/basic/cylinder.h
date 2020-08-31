@@ -17,9 +17,12 @@ class Cylinder : public Object
 
 		//---------- Getters ----------//
 		Model* getModel() const { return _model; }
+		glm::vec3 getColor() const { return _color; };
 
 	private:
 		Model* _model;
+		glm::vec3 _color;
+
 };
 
 #endif// CYLINDER_H
