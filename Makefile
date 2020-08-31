@@ -7,6 +7,7 @@ SRC_OBJS   = ${SRC_SIM}objects/
 SRC_OBJS_BSC= ${SRC_OBJS}basic/
 SRC_VULKAN = ${SRC_SIM}vulkan/
 SRC_PHY    =  ${SRC_SIM}physics/
+SRC_CNST   =  ${SRC_PHY}constraints/
 SRC_HLP    = ${SRC_SIM}helpers/
 SRC_IMGUI  =  ${LIB}imgui/
 SRC_UI     =  ${SRC_VULKAN}ui/
@@ -22,6 +23,7 @@ FILES =
 FILES_SIM = simulator scene object
 FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView shaderModule renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model colorBuffer descriptorBinding vulkan descriptorSetManager material imageMemoryBarrier procedural modelViewController 
 FILES_PHY = physicsEngine objectPhysics
+FILES_CNST = constraint fixedConstraint
 FILES_HLP = log
 FILES_IMGUI = imgui imgui_demo imgui_widgets imgui_draw imgui_impl_glfw imgui_impl_vulkan
 FILES_UI = userInterface uiRenderPass uiFrameBuffer
@@ -50,6 +52,7 @@ OBJECTS=$(patsubst %, ${OBJ}%.o, ${FILES})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_SIM})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_VULKAN})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_PHY})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_CNST})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_HLP})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_IMGUI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_UI})
@@ -77,6 +80,10 @@ ${OBJ}%.o: ${SRC_VULKAN}%.cpp
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
 ${OBJ}%.o: ${SRC_PHY}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+
+${OBJ}%.o: ${SRC_CNST}%.cpp
 	@/bin/echo -e "${GREEN}Compiling $<${NC}"
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 

@@ -48,6 +48,7 @@ struct UniformBufferObject
 struct ObjectInfo
 {
 	glm::mat4 modelMatrix;
+	glm::vec3 color;
 };
 
 #endif// HELPERS_H

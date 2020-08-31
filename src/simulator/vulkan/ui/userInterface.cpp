@@ -233,40 +233,9 @@ void UserInterface::showSceneWindow(bool* showWindow)
 
 		ImGui::BeginChild("World Objects", ImVec2(0, 0), true);
 		{
-			for (auto object : _scene->getObjects())
-			{
-				std::string objectName = object->getName();
-				if(ImGui::TreeNode(objectName.c_str()))
-				{
-					// TODO Check leaf nodes 
-                    //ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-                    //ImGui::TreeNodeEx((void*)(intptr_t)i, nodeFlags, "Cube child", i);
-
-					//// Right-click menu
-					//std::string menuPopupName = objectName + " child popup";
-					//if(ImGui::BeginPopupContextItem(menuPopupName.c_str()))
-					//{
-					//	if(ImGui::Selectable("Edit")) showObjectInfo=true;
-            		//	ImGui::EndPopup();
-					//}
-
-					ImGui::TreePop();
-				}
-				// Right-click menu
-				std::string menuPopupName = objectName + " popup";
-				if(ImGui::BeginPopupContextItem(menuPopupName.c_str()))
-				{
-					if(ImGui::Selectable("Edit"))
-					{
-						_showObjectInfo[object] = true;
-					}
-					if(ImGui::Selectable("Delete"))
-					{
-						// TODO
-					}
-					ImGui::EndPopup();
-				}
-			}
+			for(auto object : _scene->getObjects())
+				if(object->getParent() == nullptr)
+					createSceneTreeNode(object);
 		}
         ImGui::EndChild();
 	}
@@ -353,3 +322,51 @@ void UserInterface::helpMarker(std::string text)
         ImGui::EndTooltip();
     }
 }
+
+// Scene tree
+void UserInterface::createSceneTreeNode(Object* object)
+{
+	std::string objectName = object->getName();
+	std::vector<Object*> children = object->getChildren();
+
+	if(children.size() == 0)
+	{
+		// Leaf node
+		ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+		ImGui::TreeNodeEx(objectName.c_str(), nodeFlags, objectName.c_str());
+		objectMenuPopup(object);
+	}
+	else
+	{
+		// Tree node
+		if(ImGui::TreeNode(objectName.c_str()))
+		{
+			objectMenuPopup(object);
+			for(auto child : children)
+			{
+				createSceneTreeNode(child);
+			}
+			ImGui::TreePop();
+		}
+		objectMenuPopup(object);
+	}
+}
+
+// Object menu
+void UserInterface::objectMenuPopup(Object* object)
+{
+	std::string menuPopupName = object->getName() + " popup";
+	if(ImGui::BeginPopupContextItem(menuPopupName.c_str()))
+	{
+		if(ImGui::Selectable("Edit"))
+		{
+			_showObjectInfo[object] = true;
+		}
+		if(ImGui::Selectable("Delete"))
+		{
+			// TODO
+		}
+		ImGui::EndPopup();
+	}
+}
+

@@ -28,6 +28,7 @@ class Scene
 		void addObject(Object* object);
 		void createBuffers(CommandPool* commandPool);
 
+		void linkObjects();
 		void updatePhysics(float dt);
 
 		//--------- Getters ----------//

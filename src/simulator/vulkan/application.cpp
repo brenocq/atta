@@ -366,6 +366,15 @@ void Application::render(int i)
 
 				ObjectInfo objectInfo;
 				objectInfo.modelMatrix = abstractPtr->getModelMat();
+				if(abstractPtr->getType() == "Box")
+					objectInfo.color = ((Box*)abstractPtr)->getColor();
+				else if(abstractPtr->getType() == "Sphere")
+					objectInfo.color = ((Sphere*)abstractPtr)->getColor();
+				else if(abstractPtr->getType() == "Cylinder")
+					objectInfo.color = ((Cylinder*)abstractPtr)->getColor();
+				else 
+					objectInfo.color = {0,0,0};
+
 
 				vkCmdPushConstants(
 						commandBuffer,

@@ -11,6 +11,7 @@
 #include "objects/basic/box.h"
 #include "objects/basic/sphere.h"
 #include "objects/basic/cylinder.h"
+#include "physics/constraints/fixedConstraint.h"
 
 Simulator::Simulator()
 {
@@ -20,36 +21,35 @@ Simulator::Simulator()
 
 	// Create object instances
 	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {0,0,0});
-	ImportedObject* cube = new ImportedObject("FirstCube", "cube_multi", {0.5,3,0}, {0,0,0}, {1,1,1}, 1.0f);
-	Box* box = new Box("BoxTest", {-0.5,5,0}, {0,0,0}, {2,1,2}, 2.0f, {0.8,0,0});
-	Sphere* sphere = new Sphere("SphereTest", {-0.5,5,0}, {0,0,0}, 2.0f, 2.0f, {0.8,0,0});
-	Cylinder* cylinder = new Cylinder("CylinderTest", {1.0,5,0}, {0,0,0}, {1,2,1}, 2.0f, {0.8,0,0});
+	//ImportedObject* cube = new ImportedObject("FirstCube", "cube_multi", {0.5,3,0}, {0,0,0}, {1,1,1}, 1.0f);
+	Sphere* body = new Sphere("Body", {0,5,0}, {0,0,0}, 2.0f, 2.0f, {0,0.8,0});
+	Sphere* head = new Sphere("Head", {0,7.5,0}, {0,0,0}, 0.5f, 2.0f, {0.8,0,0.8});
+	Cylinder* leg1 = new Cylinder("Leg1", {0.8,2,0}, {0,0,0}, {1,2,1}, 2.0f, {0,0,0.8});
+	Cylinder* leg2 = new Cylinder("Leg2", {-0.8,2,0}, {0,0,0}, {1,2,1}, 2.0f, {0,0,0.8});
+	Box* foot1 = new Box("Foot1", {0.8,0.75,0.5}, {0,0,0}, {1,0.5,2}, 2.0f, {0.8,0,0});
+	Box* foot2 = new Box("Foot2", {-0.8,0.75,0.5}, {0,0,0}, {1,0.5,2}, 2.0f, {0.8,0,0});
+	Cylinder* arm1 = new Cylinder("Arm1", {2.25,4,0}, {0,0,0}, {0.5,2,0.5}, 2.0f, {0,0,0.8});
+	Cylinder* arm2 = new Cylinder("Arm2", {-2.25,4,0}, {0,0,0}, {0.5,2,0.5}, 2.0f, {0,0,0.8});
 
-	//btTransform frameInA;
-	//frameInA = btTransform::getIdentity();
-	//btTransform frameInB;
-	//frameInB = btTransform::getIdentity();
-	//frameInB.setOrigin(btVector3(btScalar(1.), btScalar(0.), btScalar(0.)));
-
-	//btGeneric6DofConstraint* dof6 = new btGeneric6DofConstraint(
-	//		*cube1->getObjectPhysics()->getRigidBody(), 
-	//		*cube3->getObjectPhysics()->getRigidBody(), 
-	//		frameInA,
-	//		frameInB,
-	//		true);
-	//// lock all rorations
-	//dof6->setAngularLowerLimit(btVector3(0.f, 0.f, 0.f));
-	//dof6->setAngularUpperLimit(btVector3(0.f, 0.f, 0.f));
-	//dof6->setLinearLowerLimit(btVector3(0.f, 0.f, 0.f));
-	//dof6->setLinearUpperLimit(btVector3(0.f, 0.f, 0.f));
-	//	
-	//_scene->getPhysicsEngine()->getWorld()->addConstraint(dof6, true);
+	// Set parents
+	body->addChild(head, new FixedConstraint({0,2.5,0}, {0,0,0}));
+	body->addChild(leg1, new FixedConstraint({0.8,-3,0}, {0,0,0}));
+	body->addChild(leg2, new FixedConstraint({-0.8,-3,0}, {0,0,0}));
+	leg1->addChild(foot1, new FixedConstraint({0,-1.25,0.5}, {0,0,0}));
+	leg2->addChild(foot2, new FixedConstraint({0,-1.25,0.5}, {0,0,0}));
+	body->addChild(arm1, new FixedConstraint({2.25,-1,0}, {0,0,0}));
+	body->addChild(arm2, new FixedConstraint({-2.25,-1,0}, {0,0,0}));
 
 	_scene->addObject((Object*)ground);
-	_scene->addObject((Object*)cube);
-	_scene->addObject((Object*)box);
-	_scene->addObject((Object*)sphere);
-	_scene->addObject((Object*)cylinder);
+	_scene->addObject((Object*)body);
+	_scene->addObject((Object*)head);
+	_scene->addObject((Object*)leg1);
+	_scene->addObject((Object*)leg2);
+	_scene->addObject((Object*)foot1);
+	_scene->addObject((Object*)foot2);
+	_scene->addObject((Object*)arm1);
+	_scene->addObject((Object*)arm2);
+	_scene->linkObjects();
 
 	_vulkanApp = new Application(_scene);
 	_vulkanApp->onDrawFrame = [this](float dt){ onDrawFrame(dt); };
