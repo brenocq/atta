@@ -30,6 +30,7 @@ Simulator::Simulator()
 	Box* foot2 = new Box("Foot2", {-0.8,0.75,0.5}, {0,0,0}, {1,0.5,2}, 2.0f, {0.8,0,0});
 	Cylinder* arm1 = new Cylinder("Arm1", {2.25,4,0}, {0,0,0}, {0.5,2,0.5}, 2.0f, {0,0,0.8});
 	Cylinder* arm2 = new Cylinder("Arm2", {-2.25,4,0}, {0,0,0}, {0.5,2,0.5}, 2.0f, {0,0,0.8});
+	Cylinder* wheel = new Cylinder("Wheel", {-5,2,0}, {90,0,0}, {1.0,0.5,1.0}, 0.1f, {0,0,0.8});
 
 	// Set parents
 	body->addChild(head, new FixedConstraint({0,2.5,0}, {0,0,0}));
@@ -49,6 +50,7 @@ Simulator::Simulator()
 	_scene->addObject((Object*)foot2);
 	_scene->addObject((Object*)arm1);
 	_scene->addObject((Object*)arm2);
+	_scene->addObject((Object*)wheel);
 	_scene->linkObjects();
 
 	_vulkanApp = new Application(_scene);
@@ -69,9 +71,9 @@ void Simulator::run()
 
 void Simulator::onDrawFrame(float dt)
 {
-	//btVector3 old = _scene->getObjects()[4]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
-	//_scene->getObjects()[4]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(1.0f, old.y(), old.z()));
-	//_scene->getObjects()[3]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(1.0f, 0.0f, 0.0f));
+	btVector3 old = _scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
+	_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(-1.0f, old.y(), old.z()));
+	_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(0.0f, 1.0f, 0.0f));
 
 	_scene->updatePhysics(dt);
 }
