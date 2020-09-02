@@ -12,6 +12,7 @@
 #include "scene.h"
 #include "vulkan/application.h"
 #include "demo/ttzinho/ttzinho.h"
+#include "helpers/debugDrawer.h"
 
 class Simulator
 {
@@ -26,6 +27,7 @@ class Simulator
 		void onRaycastClick(glm::vec3 pos, glm::vec3 ray);
 
 		Scene* _scene;
+		DebugDrawer* _debugDrawer;
 		Application* _vulkanApp;
 
 		// Example specific

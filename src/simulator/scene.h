@@ -49,6 +49,8 @@ class Scene
 
 		//----- Line debugger -----//
 		void addLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
+		void cleanLines();
+		void drawCollisionShapes();
 		void updateLineBuffer();
 
 		//----- Simulator specific -----//
@@ -89,6 +91,7 @@ class Scene
 		// Simulator specific
 		uint32_t _maxLineCount;// Maximum number of lines that can be store in memory
 		uint32_t _lineIndexCount;// Current index count (line count*2)
+		uint32_t _indexGridCount;// Number of lines in the grid
 		Buffer* _lineVertexBuffer;
 		Buffer* _lineIndexBuffer;
 		std::vector<Vertex> _hostLineVertex;

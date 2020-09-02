@@ -52,6 +52,8 @@ Simulator::Simulator()
 	_scene->addComplexObject(_ttzinho->getObject());// Add the object and its children
 	_scene->linkObjects();
 
+	_debugDrawer = new DebugDrawer(_scene);
+
 	_vulkanApp = new Application(_scene);
 	_vulkanApp->onDrawFrame = [this](float dt){ onDrawFrame(dt); };
 	_vulkanApp->onRaycastClick = [this](glm::vec3 pos, glm::vec3 ray){ onRaycastClick(pos, ray); };
@@ -71,6 +73,12 @@ Simulator::~Simulator()
 		_scene = nullptr;
 	}
 
+	if(_debugDrawer != nullptr)
+	{
+		delete _debugDrawer;
+		_debugDrawer = nullptr;
+	}
+
 	if(_ttzinho != nullptr)
 	{
 		delete _ttzinho;
@@ -88,6 +96,11 @@ void Simulator::onDrawFrame(float dt)
 	//btVector3 old = _scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(-1.0f, old.y(), old.z()));
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(0.0f, 1.0f, 0.0f));
+	_scene->cleanLines();
+	_scene->getPhysicsEngine()->getWorld()->debugDrawWorld();
+	//_scene->drawCollisionShapes();
+	//_scene->addLine(glm::vec3(0,0,0), glm::vec3(-1,1,-1), glm::vec3(1,0,0));
+	_scene->updateLineBuffer();
 
 	_scene->updatePhysics(dt);
 }
@@ -95,7 +108,6 @@ void Simulator::onDrawFrame(float dt)
 void Simulator::onRaycastClick(glm::vec3 pos, glm::vec3 ray)
 {
 	//_scene->addLine(pos, pos+ray, {rand()%255/255.f,rand()%255/255.f,rand()%255/255.f});
-	//_scene->updateLineBuffer();
 
 	PhysicsEngine::RayResult result;
 	if(!_scene->getPhysicsEngine()->raycast(pos, ray, result))
