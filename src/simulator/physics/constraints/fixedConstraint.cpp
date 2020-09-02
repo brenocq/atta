@@ -29,6 +29,7 @@ btTypedConstraint* FixedConstraint::createConstraint(ObjectPhysics* objA, Object
 	
 	btTransform frameInA;
 	frameInA = btTransform::getIdentity();
+	frameInA.setOrigin(PhysicsEngine::glm2bt({0,0.2,0}));
 	btTransform frameInB;
 	frameInB = btTransform::getIdentity();
 	frameInB.setOrigin(PhysicsEngine::glm2bt(_position));

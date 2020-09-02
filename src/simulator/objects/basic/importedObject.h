@@ -16,7 +16,8 @@ class ImportedObject : public Object
 		ImportedObject(
 				std::string name, std::string fileName, 
 				glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 scale = {0,0,0}, 
-				float mass = 1.0f);
+				float mass = 1.0f,
+				btCollisionShape* collisionShape = nullptr);
 		~ImportedObject();
 
 		//---------- Getters ----------//

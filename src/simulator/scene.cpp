@@ -12,6 +12,7 @@
 #include "vulkan/device.h"
 #include "vulkan/stagingBuffer.h"
 #include "physics/constraints/fixedConstraint.h"
+#include "helpers/drawHelper.h"
 
 Scene::Scene():
 	_maxLineCount(9999)
@@ -179,6 +180,7 @@ void Scene::createBuffers(CommandPool* commandPool)
 	// Generate simulation grid (line buffer)
 	genGridLines();
 	_lineIndexCount = _hostLineIndex.size();
+	_indexGridCount = _lineIndexCount;
 
 	createSceneBuffer(_vertexBuffer, 		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|flag, vertices);
 	createSceneBuffer(_indexBuffer, 		VK_BUFFER_USAGE_INDEX_BUFFER_BIT|flag, 	indices);
@@ -257,6 +259,38 @@ void Scene::addLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
 	_hostLineVertex.push_back(v2);
 	_hostLineIndex.push_back(_hostLineIndex.size());
 	_hostLineIndex.push_back(_hostLineIndex.size());
+	_lineIndexCount = _hostLineIndex.size();
+}
+
+void Scene::cleanLines()
+{
+	int currSize = _hostLineVertex.size();
+	while(_hostLineVertex.size()>_indexGridCount)
+	{
+		_hostLineVertex.pop_back();
+		_hostLineIndex.pop_back();
+	}
+
+	_lineIndexCount = _hostLineIndex.size();
+}
+
+void Scene::drawCollisionShapes()
+{
+	for(auto object : _objects)
+	{
+		btCollisionShape* collision = object->getObjectPhysics()->getCollisionShape();
+		switch(collision->getShapeType())
+		{
+			case BOX_SHAPE_PROXYTYPE:
+				const btBoxShape* box = static_cast<const btBoxShape*>(collision);
+				// get the 'halfSize' of the box
+				glm::vec3 size = PhysicsEngine::bt2glm(box->getHalfExtentsWithMargin())*2.0f;
+				//printf("Draw box (%f, %f, %f)\n", halfSize.x, halfSize.y, halfSize.z);
+				//std::vector<std::pair<glm::vec3, glm::vec3>> boxLines = DrawHelper::getBoxLines()
+
+				break;
+		}
+	}
 }
 
 void Scene::updateLineBuffer()
