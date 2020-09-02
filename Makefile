@@ -14,6 +14,7 @@ SRC_UI     =  ${SRC_VULKAN}ui/
 SRC_RT     =  ${SRC_VULKAN}rayTracing/
 SRC_PIP    =  ${SRC_VULKAN}pipeline/
 SRC_ASSETS = ${SRC}assets/
+SRC_DEMO = ${SRC}demo/
 OBJ    	   = obj/
 SHA    	   = ${SRC}shaders/
 SHA_RT     = ${SHA}rayTracing/
@@ -30,6 +31,7 @@ FILES_UI = userInterface uiRenderPass uiFrameBuffer
 FILES_RT = rayTracing deviceProcedures accelerationStructure bottomLevelAccelerationStructure topLevelAccelerationStructure rayTracingPipeline shaderBindingTable
 FILES_PIP = pipeline pipelineLayout graphicsPipeline linePipeline
 FILES_OBJS_BSC = importedObject plane box sphere cylinder
+FILES_DEMO = ttzinho/ttzinho
 #SHADERS = graphics/graphicsShader line/lineShader
 #SHADERS_RT = rayTracing.rchit rayTracing.rgen rayTracing.rmiss rayTracing.procedural.rchit rayTracing.procedural.rint
 
@@ -39,7 +41,7 @@ VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.141.2/x86_64
 BULLET_SDK_PATH = /home/breno/Programs/bullet3-2.87
 #BULLET_SDK_PATH = /home/breno/Programs/bullet3
 CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include -Wall -O3
-LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I${LIB} -I$(BULLET_SDK_PATH)/src/ -lBulletDynamics -lBulletCollision -lBulletSoftBody -lLinearMath
+LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I${LIB} -I${SRC} -I$(BULLET_SDK_PATH)/src/ -lBulletDynamics -lBulletCollision -lBulletSoftBody -lLinearMath
 #-L$(BULLET_SDK_PATH)/src/*/*.so 
 
 #---------- Text style ----------
@@ -59,6 +61,7 @@ OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_UI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_RT})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_PIP})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_OBJS_BSC})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_DEMO})
 
 SHADERS_VERT=$(patsubst %, ${SHA}%.vert, ${SHADERS})
 SHADERS_FRAG=$(patsubst %, ${SHA}%.frag, ${SHADERS})
@@ -108,6 +111,10 @@ ${OBJ}%.o: ${SRC_PIP}%.cpp
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
 ${OBJ}%.o: ${SRC_OBJS_BSC}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+
+${OBJ}%.o: ${SRC_DEMO}%.cpp
 	@/bin/echo -e "${GREEN}Compiling $<${NC}"
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 

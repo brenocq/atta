@@ -17,11 +17,12 @@ Simulator::Simulator()
 {
 	_scene = new Scene();
 	// Load objects
-	_scene->loadObject("cube_multi");
+	_scene->loadObject("wheel");
 
 	// Create object instances
 	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {0,0,0});
 	//ImportedObject* cube = new ImportedObject("FirstCube", "cube_multi", {0.5,3,0}, {0,0,0}, {1,1,1}, 1.0f);
+	/*
 	Sphere* body = new Sphere("Body", {0,5,0}, {0,0,0}, 2.0f, 2.0f, {0,0.8,0});
 	Sphere* head = new Sphere("Head", {0,7.5,0}, {0,0,0}, 0.5f, 2.0f, {0.8,0,0.8});
 	Cylinder* leg1 = new Cylinder("Leg1", {0.8,2,0}, {0,0,0}, {1,2,1}, 2.0f, {0,0,0.8});
@@ -40,17 +41,15 @@ Simulator::Simulator()
 	leg2->addChild(foot2, new FixedConstraint({0,-1.25,0.5}, {0,0,0}));
 	body->addChild(arm1, new FixedConstraint({2.25,-1,0}, {0,0,0}));
 	body->addChild(arm2, new FixedConstraint({-2.25,-1,0}, {0,0,0}));
+	_scene->addComplexObject((Object*)body);
+	*/
 
-	_scene->addObject((Object*)ground);
-	_scene->addObject((Object*)body);
-	_scene->addObject((Object*)head);
-	_scene->addObject((Object*)leg1);
-	_scene->addObject((Object*)leg2);
-	_scene->addObject((Object*)foot1);
-	_scene->addObject((Object*)foot2);
-	_scene->addObject((Object*)arm1);
-	_scene->addObject((Object*)arm2);
-	_scene->addObject((Object*)wheel);
+	// Create demo robot (ttzinho)
+	_ttzinho = new Ttzinho();
+
+
+	_scene->addObject((Object*)ground);// Add a simple object
+	_scene->addComplexObject(_ttzinho->getObject());// Add the object and its children
 	_scene->linkObjects();
 
 	_vulkanApp = new Application(_scene);
@@ -60,8 +59,23 @@ Simulator::Simulator()
 
 Simulator::~Simulator()
 {
-	delete _vulkanApp;
-	delete _scene;
+	if(_vulkanApp != nullptr)
+	{
+		delete _vulkanApp;
+		_vulkanApp = nullptr;
+	}
+
+	if(_scene != nullptr)
+	{
+		delete _scene;
+		_scene = nullptr;
+	}
+
+	if(_ttzinho != nullptr)
+	{
+		delete _ttzinho;
+		_ttzinho = nullptr;
+	}
 }
 
 void Simulator::run()
@@ -71,9 +85,9 @@ void Simulator::run()
 
 void Simulator::onDrawFrame(float dt)
 {
-	btVector3 old = _scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
-	_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(-1.0f, old.y(), old.z()));
-	_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(0.0f, 1.0f, 0.0f));
+	//btVector3 old = _scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
+	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(-1.0f, old.y(), old.z()));
+	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(0.0f, 1.0f, 0.0f));
 
 	_scene->updatePhysics(dt);
 }
