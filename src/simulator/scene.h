@@ -26,6 +26,7 @@ class Scene
 
 		void loadObject(std::string fileName);
 		void addObject(Object* object);
+		void addComplexObject(Object* object);
 		void createBuffers(CommandPool* commandPool);
 
 		void linkObjects();

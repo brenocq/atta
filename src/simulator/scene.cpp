@@ -113,6 +113,16 @@ void Scene::addObject(Object* object)
 	_physicsEngine->addRigidBody(_objects.back()->getObjectPhysics()->getRigidBody());
 }
 
+void Scene::addComplexObject(Object* object)
+{
+	_objects.push_back(object);
+	_physicsEngine->addRigidBody(_objects.back()->getObjectPhysics()->getRigidBody());
+	for(auto child : object->getChildren())
+	{
+		addComplexObject(child);
+	}
+}
+
 void Scene::createBuffers(CommandPool* commandPool)
 {
 	_commandPool = commandPool;

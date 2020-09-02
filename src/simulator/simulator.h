@@ -11,6 +11,7 @@
 #include <vector>
 #include "scene.h"
 #include "vulkan/application.h"
+#include "demo/ttzinho/ttzinho.h"
 
 class Simulator
 {
@@ -26,6 +27,9 @@ class Simulator
 
 		Scene* _scene;
 		Application* _vulkanApp;
+
+		// Example specific
+		Ttzinho* _ttzinho;
 };
 
 #endif// SIMULATOR_H
