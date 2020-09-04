@@ -5,10 +5,11 @@
 // By Breno Cunha Queiroz
 //----------------------------------------
 #include "log.h"
+#include "log.h"
 #include <stdio.h>
+#include "defines.h"
 
-Log::Log(std::string tag, Level level):
-	_tag(tag), _level(level)
+Log::Log()
 {
 
 }
@@ -18,57 +19,41 @@ Log::~Log()
 
 }
 
-void Log::debug(const char* format, ...)
+void Log::debug(std::string tag, std::string text, bool showTag)
 {
-	//logging(LOG_BOLD(LOG_COLOR_GREEN), LOG_RESET_COLOR, format);
+	logging(tag, BOLDGREEN, RESET, text, showTag);
 }
 
-void Log::debug_pair(std::string label, std::string text)
+void Log::success(std::string tag, std::string text, bool showTag)
 {
-    //printf("\t%s%s: %s%s\n", LOG_RESET_COLOR, label.c_str(),
-	//						LOG_RESET_COLOR, text.c_str() );
+	logging(tag, BOLDGREEN, GREEN, text, showTag);
 }
 
-void Log::success(const char* format, ...)
+void Log::info(std::string tag, std::string text, bool showTag)
 {
-	//logging(LOG_BOLD(LOG_COLOR_GREEN), LOG_COLOR(LOG_COLOR_GREEN), format);
+	logging(tag, BOLDCYAN, CYAN, text, showTag);
 }
 
-void Log::info(const char* format, ...)
+void Log::warning(std::string tag, std::string text, bool showTag)
 {
-	//logging(LOG_BOLD(LOG_COLOR_CYAN), LOG_COLOR(LOG_COLOR_CYAN), format);
+	logging(tag, BOLDYELLOW, YELLOW, text, showTag);
 }
 
-void Log::info_pair(std::string label, std::string text)
+void Log::error(std::string tag, std::string text, bool showTag)
 {
-    //printf("\t%s%s: %s%s\n", LOG_COLOR(LOG_COLOR_CYAN), label.c_str(),
-	//						LOG_RESET_COLOR, text.c_str() );
+	logging(tag, BOLDRED, RED, text, showTag);
 }
 
-void Log::warning(const char* format, ...)
+void Log::logging(std::string tag, const char* tagColor, const char* textColor, std::string text, bool showTag)
 {
-	//logging(LOG_BOLD(LOG_COLOR_BROWN), LOG_COLOR(LOG_COLOR_BROWN), format);
-}
+	std::string tag_ = tag;
+	if(!showTag)
+		for(int i=0; i<tag_.size();i++)
+			tag_[i] = ' ';
 
-void Log::error(const char* format, ...)
-{
-	//logging(LOG_BOLD(LOG_COLOR_RED), LOG_COLOR(LOG_COLOR_RED), format);
-}
-
-
-void Log::logging(const char* tag_color, const char* text_color, const char* format, ...)
-{
 	// Print tag
-    printf("%s[%s]%s ", tag_color, _tag.c_str(), text_color);
-
-	// Init list and remove tagColor and textColor from buffer
-	va_list args;
-	va_start(args, format);
-	va_arg(args, const char*);
-	va_arg(args, const char*);
-
-	// Print fomatted data
-	vprintf(format, args);
-	va_end(args);
-    //printf("\n%s", LOG_RESET_COLOR);
+	if(showTag)
+    	printf("%s[%s]%s %s\n%s", tagColor, tag_.c_str(), textColor, text.c_str(), RESET);
+	else
+    	printf("%s %s %s %s\n%s", tagColor, tag_.c_str(), textColor, text.c_str(), RESET);
 }

@@ -8,6 +8,7 @@
 #include "simulator/objects/basic/box.h"
 #include "simulator/objects/basic/importedObject.h"
 #include "simulator/physics/constraints/fixedConstraint.h"
+#include "simulator/helpers/log.h"
 
 Ttzinho::Ttzinho()
 {
@@ -17,6 +18,16 @@ Ttzinho::Ttzinho()
 
 	_object->addChild(wheelL, new FixedConstraint({0.2,0,0}, {0,0,0}));
 	_object->addChild(wheelR, new FixedConstraint({-0.2,0,0}, {0,0,0}));
+
+	Log::debug("Ttzinho", "Created!");
+	Log::debug("Ttzinho", "Created!", false);
+	Log::debug("Ttzinho", "Created!", false);
+	Log::info("Ttzinho", "Created!");
+	Log::info("Ttzinho", "Created!", false);
+	Log::info("Ttzinho", "Created!", false);
+	Log::warning("Ttzinho", "Created!");
+	Log::success("Ttzinho", "Created!");
+	Log::error("Ttzinho", "Created!");
 }
 
 Ttzinho::~Ttzinho()
