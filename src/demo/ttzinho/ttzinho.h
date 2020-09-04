@@ -21,7 +21,6 @@ class Ttzinho
 		Object* getObject() const { return _object; }
 
 	private:
-
 		Object* _object;
 };
 

@@ -46,6 +46,7 @@ vec2 randomInUnitDisk(inout uint seed)
 
 vec3 randomInUnitSphere(inout uint seed)
 {
+	// TODO change to lambertian
 	for(;;)
 	{
 		const vec3 p = 2 * vec3(randomFloat(seed), randomFloat(seed), randomFloat(seed)) - 1;

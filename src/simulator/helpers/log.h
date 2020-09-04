@@ -7,7 +7,6 @@
 #ifndef LOG_H
 #define LOG_H
 #include <string>
-#include <cstdarg>
 
 class Log
 {
@@ -20,21 +19,19 @@ class Log
 			ERROR
 		};
 
-		Log(std::string tag, Level level=Level::DEBUG);
+		Log();
 		~Log();
 
-		void debug(const char* format, ...);
-		void debug_pair(std::string label, std::string text);
-		void success(const char* format, ...);
-		void info(const char* format, ...);
-		void info_pair(std::string label, std::string text);
-		void warning(const char* format, ...);
-		void error(const char* format, ...);
+		static void debug(std::string tag, std::string text, bool showTag=true);
+		//static void debug_pair(std::string tag, std::string label, std::string text);
+		static void success(std::string tag, std::string text, bool showTag=true);
+		static void info(std::string tag, std::string text, bool showTag=true);
+		//static void info_pair(std::string tag, std::string label, std::string text);
+		static void warning(std::string tag, std::string text, bool showTag=true);
+		static void error(std::string tag, std::string text, bool showTag=true);
 
 	private:
-		void logging(const char* tag_color, const char* text_color, const char* format, ...);
-		std::string _tag;
-		Level _level;
+		static void logging(std::string tag, const char* tagColor, const char* textColor, std::string text, bool showTag=true);
 };
 
 #endif// LOG_H
