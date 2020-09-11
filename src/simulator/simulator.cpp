@@ -12,6 +12,7 @@
 #include "objects/basic/sphere.h"
 #include "objects/basic/cylinder.h"
 #include "physics/constraints/fixedConstraint.h"
+#include "physics/constraints/hingeConstraint.h"
 
 Simulator::Simulator()
 {
@@ -21,6 +22,7 @@ Simulator::Simulator()
 
 	// Create object instances
 	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {0,0,0});
+	ImportedObject* wheel = new ImportedObject("Wheel test", "wheel", {-0.4,0.06,0}, {0,0,90}, {1,1,1}, 0.1f, new btCylinderShape(btVector3(0.06, 0.01, 0.06)));
 	//ImportedObject* cube = new ImportedObject("FirstCube", "cube_multi", {0.5,3,0}, {0,0,0}, {1,1,1}, 1.0f);
 	/*
 	Sphere* body = new Sphere("Body", {0,5,0}, {0,0,0}, 2.0f, 2.0f, {0,0.8,0});
@@ -50,6 +52,7 @@ Simulator::Simulator()
 
 	_scene->addObject((Object*)ground);// Add a simple object
 	_scene->addComplexObject(_ttzinho->getObject());// Add the object and its children
+	_scene->addObject((Object*)wheel);// Add a simple object
 	_scene->linkObjects();
 
 	_debugDrawer = new DebugDrawer(_scene);
@@ -96,13 +99,9 @@ void Simulator::onDrawFrame(float dt)
 	//btVector3 old = _scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(-1.0f, old.y(), old.z()));
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(0.0f, 1.0f, 0.0f));
-	_scene->cleanLines();
-	_scene->getPhysicsEngine()->getWorld()->debugDrawWorld();
-	//_scene->drawCollisionShapes();
-	//_scene->addLine(glm::vec3(0,0,0), glm::vec3(-1,1,-1), glm::vec3(1,0,0));
-	_scene->updateLineBuffer();
 
-	_scene->updatePhysics(dt);
+	HingeConstraint* h = (HingeConstraint*)_ttzinho->getObject()->getChildren()[0]->getParentConstraint();
+	h->getConstraint()->setMotorTarget(10, dt);
 }
 
 void Simulator::onRaycastClick(glm::vec3 pos, glm::vec3 ray)

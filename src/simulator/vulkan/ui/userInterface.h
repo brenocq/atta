@@ -37,6 +37,9 @@ class UserInterface
 		UiRenderPass* getRenderPass() const { return _imguiRenderPass; }
 		VkCommandBuffer getCommandBuffer(int i) const { return _imguiCommandBuffers[i]; }
 
+		// Topbar->View
+		bool getShowPhysicsDebugger() const { return _showPhysicsDebugger; }
+
 	private:
 		void createDescriptorPool();
 		void createCommandBuffers();
@@ -66,6 +69,9 @@ class UserInterface
 		UiRenderPass* _imguiRenderPass;
 		std::vector<UiFrameBuffer*> _imguiFrameBuffers;
 		std::vector<VkCommandBuffer> _imguiCommandBuffers;
+
+		// Topbar->View
+		bool _showPhysicsDebugger;
 };
 
 #endif// USER_INTERFACE_H

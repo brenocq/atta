@@ -63,7 +63,7 @@ glm::vec3 ObjectPhysics::getPosition() const
 glm::vec3 ObjectPhysics::getRotation() const
 {
 	btTransform bulletTransform;
-	btQuaternion bulletRotation = {0,0,0};
+	btQuaternion bulletRotation = {0,0,0,0};
 
 	_bulletMotionState->getWorldTransform(bulletTransform);
 	bulletRotation = bulletTransform.getRotation();

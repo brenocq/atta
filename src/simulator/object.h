@@ -24,7 +24,7 @@ class Object
 		//---------- Getters ----------//
 		ObjectPhysics* getObjectPhysics() const { return _physics; }
 		glm::vec3 getPosition() const { return _position; }
-		glm::vec3 getRotation() const { return _rotation; }
+		glm::vec3 getRotation();
 		glm::mat4 getModelMat();
 		std::string getType() const { return _type; }
 		std::string getName() const { return _name; }

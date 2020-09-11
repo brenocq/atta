@@ -6,7 +6,8 @@
 //--------------------------------------------------
 #include "userInterface.h"
 
-UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChain, Scene* scene)
+UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChain, Scene* scene):
+	_showPhysicsDebugger(false)
 {
 	//---------- Get main objects ----------//
 	_device = device;
@@ -197,6 +198,12 @@ void UserInterface::draw()
         if(ImGui::BeginMenu("Window"))
         {
             if(ImGui::Checkbox("Scene", &showScene)) {}
+            ImGui::EndMenu();
+        }
+
+        if(ImGui::BeginMenu("View"))
+        {
+            if(ImGui::Checkbox("Physics debugger", &_showPhysicsDebugger)) {}
             ImGui::EndMenu();
         }
 

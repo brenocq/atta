@@ -1,9 +1,11 @@
 # Robot Simulator
 <p align="center">
- <img src="./img/2020-08-16.gif" height="300">
+ <img src="./img/2020-08-16.gif" height="200">
+ <img src="./img/2020-08-30.png" height="200">
+ <img src="./img/2020-09-01.png" height="200">
 </p>
 
-Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs) and Bullet Physics Engine.
+Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs) and my own physics engine. I was planning on using Bullet physics... But learning how to make one seems fun :).
 
 ## Running
 ```shell
@@ -20,11 +22,14 @@ These values are unreliable and come from what I think is going on in the code k
 #### Core
  - GPU Rendering (Vulkan): 90%
  - RayTracing (Nvidia): 80%
- - User interface (Imgui): 15%
- - Physics engine (Bullet): 30%
+ - User interface (Imgui): 20%
+ - ~~Physics engine (Bullet): 30%~~
+ - Physics engine: 0%
  - GPU acceleration (Cuda): 0%
 
 ## Installation (Linux)
+This simulator is not well finished and I don't recommend trying to install it yet.
+
 #### Updating g++
 This simulator is using some libraries that were experimental in old version of g++. We can or change all #include<xxx> with erros to #include<experimental/xxx>, or update the g++.
 
@@ -48,11 +53,13 @@ tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
 ```
 
 #### Download bullet physics SDK 
-You can download the bullet SDK [here](https://github.com/bulletphysics/bullet3/releases/tag/2.87). I am using the 2.87 version now (same used in libbullet-dev.)
-After downloading, install the bullet library
+~~You can download the bullet SDK [here](https://github.com/bulletphysics/bullet3/releases/tag/2.87). I am using the 2.87 version now (same used in libbullet-dev.)
+After downloading, install the bullet library~~
 ``` shell
 sudo apt-get install -y libbullet-dev
 ```
+**(I won't use Bullet Engine anymore... It will be removed while I build one.)**
+
 
 #### Install GLFW
 Now we need to install the GLFW to create windows.
@@ -83,7 +90,9 @@ BULLET_SDK_PATH = <path>/bullet3
 - [Vulkan Programming Guide: The Official Guide to Learning Vulkan](http://www.vulkanprogrammingguide.com/)
 - [Guthmann's Imgui Tutorial](https://frguthmann.github.io/posts/vulkan_imgui/)
 - [GPSnoopy's Ray Tracing implementation](https://github.com/GPSnoopy/RayTracingInVulkan)
+- [Nvidia Vulkan Ray Tracing Tutorial](https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/)
 - [Learning Game Physics with Bullet Physics and OpenGL](https://www.amazon.com.br/Learning-Game-Physics-Bullet-OpenGL/dp/1783281871)
+- [Game Physics Engine Development](https://www.amazon.com.br/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.

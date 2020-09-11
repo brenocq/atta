@@ -223,8 +223,21 @@ void Application::drawFrame()
 	_time = _window->getTime();
 	const double timeDelta = _time - prevTime;
 
+	//---------- Show from interface ----------//
+	// Clean lines every frame
+	_scene->cleanLines();
+	// Show physics debugger
+	if(_userInterface->getShowPhysicsDebugger())
+		_scene->getPhysicsEngine()->getWorld()->debugDrawWorld();
+
+	// Call simulator onDrawFrame
 	if(onDrawFrame)
 		onDrawFrame(timeDelta);
+
+	// Update line buffer
+	_scene->updateLineBuffer();
+	// Update physics
+	_scene->updatePhysics(timeDelta);
 
 	
 	bool cameraUpdated = _modelViewController->updateCamera(timeDelta);
