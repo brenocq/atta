@@ -38,10 +38,10 @@ FILES_DEMO = ttzinho/ttzinho
 #------------ Helpers -------------
 CC = g++
 VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.141.2/x86_64
-BULLET_SDK_PATH = /home/breno/Programs/bullet3-2.87
+#BULLET_SDK_PATH = /home/breno/Programs/bullet3-2.87
 #BULLET_SDK_PATH = /home/breno/Programs/bullet3
 CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include -Wall -O3
-LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I${LIB} -I${SRC} -I$(BULLET_SDK_PATH)/src/ -lBulletDynamics -lBulletCollision -lBulletSoftBody -lLinearMath
+LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I${LIB} -I${SRC} 
 #-L$(BULLET_SDK_PATH)/src/*/*.so 
 
 #---------- Text style ----------

@@ -8,42 +8,26 @@
 #define PHYSICS_ENGINE_H
 
 #include "glm.h"
-#include <glm/gtc/quaternion.hpp>
-// Bullet
-#include <btBulletDynamicsCommon.h>
-#include <BulletDynamics/Dynamics/btDynamicsWorld.h>
+#include "objectPhysics.h"
+#include <vector>
 
 class PhysicsEngine
 {
 	public:
-		struct RayResult {
-			btRigidBody* body;
-			glm::vec3 hitPoint;
-		};
-
 		PhysicsEngine();
 		~PhysicsEngine();
 
-		void addRigidBody(btRigidBody* rigidBody);
-		void stepSimulation(float dt);
+		void stepPhysics(float dt);
+		void addObjectPhysics(ObjectPhysics* objectPhysics);
 
-		bool raycast(glm::vec3 startPosition, glm::vec3 direction, RayResult& output);
+		bool raycast(glm::vec3 startPosition, glm::vec3 direction);
 		//---------- Getters ----------//
-		btDynamicsWorld* getWorld() const { return _bulletWorld; }
 
 		//------- Static helpers ------//
 		static glm::vec3 getMouseClickRay(int x, int y, int width, int height, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camUp);
-		static btVector3 glm2bt(glm::vec3 vec);
-		static glm::vec3 bt2glm(btVector3 vec);
-		static btQuaternion glm2bt(glm::quat quat);
-		static glm::quat bt2glm(btQuaternion quat);
 	private:
-		// Core Bullet components
-		btBroadphaseInterface* _bulletBroadphase;
-		btCollisionConfiguration* _bulletCollisionConfiguration;
-		btCollisionDispatcher* _bulletDispatcher;
-		btConstraintSolver* _bulletSolver;
-		btDynamicsWorld* _bulletWorld;
+		std::vector<ObjectPhysics*> _objectsPhysics;
+
 };
 
 #endif// PHYSICS_ENGINE_H

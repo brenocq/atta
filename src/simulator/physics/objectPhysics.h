@@ -7,36 +7,42 @@
 #ifndef OBJECT_PHYSICS_H
 #define OBJECT_PHYSICS_H
 
-#include "physicsEngine.h"
-// Bullet
-#include <btBulletDynamicsCommon.h>
+#include "glm.h"
 
 class ObjectPhysics
 {
 	public:
-		ObjectPhysics(btCollisionShape* bulletShape=nullptr, glm::vec3 position={0,0,0}, glm::vec3 rotation={0,0,0}, float mass=1.0);
+		ObjectPhysics(glm::vec3 position={0,0,0}, glm::vec3 rotation={0,0,0}, float mass=1.0);
 		~ObjectPhysics();
 
 		//---------- Getters ----------//
-		btCollisionShape* getCollisionShape() const { return _bulletShape; }
-		btRigidBody* getRigidBody() const { return _bulletBody; }
-		btDefaultMotionState* getMotionState() const { return _bulletMotionState; }
-
-		glm::vec3 getPosition() const;
-		glm::vec3 getRotation() const;
-		float getMass() const { return _mass; }
+		glm::vec3 getPosition() const { return _position; };
+		glm::vec3 getVelocity() const { return _velocity; };
+		glm::vec3 getAcceleration() const { return _acceleration; };
+		float getInverseMass() const { return _inverseMass; }
+		float getMass() const { return _inverseMass<=0 ? 0 : _inverseMass; };
+		float getDamping() const { return _damping; };
 
 		//---------- Setters ----------//
-		void setPosition(glm::vec3 position);
-		void setRotation(glm::vec3 rotation);
-		void setMass(float mass);
+		void setPosition(glm::vec3 position) { _position = position; };
+		void setVelocity(glm::vec3 velocity) { _velocity = velocity; };
+		void setAcceleration(glm::vec3 acceleration) { _acceleration = acceleration; };
+		void setMass(float mass) { _inverseMass = mass>0 ? 1/mass : 0; };
 
 	private:
-		float _mass;
+		glm::vec3 _position;
+		glm::vec3 _velocity;
+		glm::vec3 _acceleration;
 
-		btCollisionShape* _bulletShape;
-		btRigidBody* _bulletBody;
-		btDefaultMotionState* _bulletMotionState;
+		// Damping is required to remove energy added 
+		// through numerical instability in the integrator
+		float _damping;
+
+		// Inverse mass is more useful because integration is simpler
+		// Immovable objects have zero inverseMass (infinity mass)
+		float _inverseMass;
+
+		//--- TODO delete bullet variables ---//
 };
 
 #endif// OBJECT_PHYSICS_H

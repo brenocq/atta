@@ -18,8 +18,6 @@ class Constraint
 
 		std::string getType() const { return _type; };
 
-		virtual btTypedConstraint* createConstraint(ObjectPhysics* objA, ObjectPhysics* objB)=0;
-
 	protected:
 		std::string _type;
 		ObjectPhysics* _objA;

@@ -11,7 +11,7 @@ Cylinder::Cylinder(std::string name, glm::vec3 position, glm::vec3 rotation, glm
 {
 	_type = "Cylinder";
 	_model = new Model("cylinder");
-	_physics = new ObjectPhysics(new btCylinderShape(btVector3(scale[0]/2., scale[1]/2., scale[2]/2.)), _position, _rotation, mass);
+	_physics = new ObjectPhysics(_position, _rotation, mass);
 }
 
 Cylinder::~Cylinder()

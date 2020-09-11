@@ -36,7 +36,7 @@ glm::vec3 Object::getRotation()
 {
 	if(_physics != nullptr)
 	{
-		_rotation = _physics->getRotation();
+		_rotation = glm::vec3(0,0,0);//_physics->getRotation();
 	}
 	return _rotation;
 }
@@ -46,15 +46,15 @@ glm::mat4 Object::getModelMat()
 	if(_physics != nullptr)
 	{
 		_position = _physics->getPosition();
-		_rotation = _physics->getRotation();
+		_rotation = glm::vec3(0,0,0);//_physics->getRotation();
 	}
 
 	glm::mat4 mat = glm::mat4(1);
 	
 	mat = glm::translate(mat, _position);
-	mat = glm::rotate(mat, glm::radians(_rotation.z), glm::vec3(0, 0, 1));
-	mat = glm::rotate(mat, glm::radians(_rotation.y), glm::vec3(0, 1, 0));
-	mat = glm::rotate(mat, glm::radians(_rotation.x), glm::vec3(1, 0, 0));
+	//mat = glm::rotate(mat, glm::radians(_rotation.z), glm::vec3(0, 0, 1));
+	//mat = glm::rotate(mat, glm::radians(_rotation.y), glm::vec3(0, 1, 0));
+	//mat = glm::rotate(mat, glm::radians(_rotation.x), glm::vec3(1, 0, 0));
 	mat = glm::scale(mat, _scale);
 	
 	return mat;
@@ -70,8 +70,8 @@ void Object::setPosition(glm::vec3 position)
 void Object::setRotation(glm::vec3 rotation)
 {
 	_rotation = rotation;
-	if(_physics!=nullptr)
-		_physics->setRotation(rotation);
+	//if(_physics!=nullptr)
+	//	_physics->setRotation(rotation);
 }
 
 void Object::setStatic(bool stat)

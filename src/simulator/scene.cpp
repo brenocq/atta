@@ -111,13 +111,13 @@ void Scene::loadObject(std::string fileName)
 void Scene::addObject(Object* object)
 {
 	_objects.push_back(object);
-	_physicsEngine->addRigidBody(_objects.back()->getObjectPhysics()->getRigidBody());
+	_physicsEngine->addObjectPhysics(_objects.back()->getObjectPhysics());
 }
 
 void Scene::addComplexObject(Object* object)
 {
 	_objects.push_back(object);
-	_physicsEngine->addRigidBody(_objects.back()->getObjectPhysics()->getRigidBody());
+	_physicsEngine->addObjectPhysics(_objects.back()->getObjectPhysics());
 	for(auto child : object->getChildren())
 	{
 		addComplexObject(child);
@@ -194,7 +194,7 @@ void Scene::createBuffers(CommandPool* commandPool)
 
 void Scene::updatePhysics(float dt)
 {
-	_physicsEngine->stepSimulation(dt);
+	_physicsEngine->stepPhysics(dt);
 }
 
 
@@ -276,21 +276,21 @@ void Scene::cleanLines()
 
 void Scene::drawCollisionShapes()
 {
-	for(auto object : _objects)
-	{
-		btCollisionShape* collision = object->getObjectPhysics()->getCollisionShape();
-		switch(collision->getShapeType())
-		{
-			case BOX_SHAPE_PROXYTYPE:
-				const btBoxShape* box = static_cast<const btBoxShape*>(collision);
-				// get the 'halfSize' of the box
-				glm::vec3 size = PhysicsEngine::bt2glm(box->getHalfExtentsWithMargin())*2.0f;
-				//printf("Draw box (%f, %f, %f)\n", halfSize.x, halfSize.y, halfSize.z);
-				//std::vector<std::pair<glm::vec3, glm::vec3>> boxLines = DrawHelper::getBoxLines()
+	//for(auto object : _objects)
+	//{
+	//	btCollisionShape* collision = object->getObjectPhysics()->getCollisionShape();
+	//	switch(collision->getShapeType())
+	//	{
+	//		case BOX_SHAPE_PROXYTYPE:
+	//			const btBoxShape* box = static_cast<const btBoxShape*>(collision);
+	//			// get the 'halfSize' of the box
+	//			glm::vec3 size = PhysicsEngine::bt2glm(box->getHalfExtentsWithMargin())*2.0f;
+	//			//printf("Draw box (%f, %f, %f)\n", halfSize.x, halfSize.y, halfSize.z);
+	//			//std::vector<std::pair<glm::vec3, glm::vec3>> boxLines = DrawHelper::getBoxLines()
 
-				break;
-		}
-	}
+	//			break;
+	//	}
+	//}
 }
 
 void Scene::updateLineBuffer()
@@ -351,26 +351,16 @@ void Scene::genGridLines()
 	}
 }
 
-Object* Scene::getObjectFromPhysicsBody(btRigidBody* body)
-{
-	for(auto object:_objects)
-	{
-		if(object->getObjectPhysics()->getRigidBody() == body)
-			return object;
-	}
-	return nullptr;
-}
-
 void Scene::linkObjects()
 {
-	for(auto object : _objects)
-	{
-		Constraint* constraint = object->getParentConstraint();
-		if(constraint != nullptr)
-		{
-			ObjectPhysics* childPhysics = object->getObjectPhysics();
-			ObjectPhysics* parentPhysics = object->getParent()->getObjectPhysics();
-			_physicsEngine->getWorld()->addConstraint(constraint->createConstraint(childPhysics, parentPhysics), true);
-		}
-	}
+	//for(auto object : _objects)
+	//{
+	//	Constraint* constraint = object->getParentConstraint();
+	//	if(constraint != nullptr)
+	//	{
+	//		ObjectPhysics* childPhysics = object->getObjectPhysics();
+	//		ObjectPhysics* parentPhysics = object->getParent()->getObjectPhysics();
+	//		_physicsEngine->getWorld()->addConstraint(constraint->createConstraint(childPhysics, parentPhysics), true);
+	//	}
+	//}
 }
