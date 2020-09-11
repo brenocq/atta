@@ -9,7 +9,6 @@
 Constraint::Constraint():
 	_objA(nullptr), _objB(nullptr)
 {
-
 }
 
 Constraint::~Constraint()

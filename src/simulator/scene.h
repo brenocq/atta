@@ -58,9 +58,6 @@ class Scene
 		Buffer* getLineIndexBuffer() const { return _lineIndexBuffer; }
 		uint32_t getLineIndexCount() const {return _lineIndexCount; }
 
-		//---- Physics helpers ----//
-		Object* getObjectFromPhysicsBody(btRigidBody* body);
-
 	private:
 		template <class T>
 		void createSceneBuffer(Buffer*& buffer,

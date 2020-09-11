@@ -8,119 +8,44 @@
 
 PhysicsEngine::PhysicsEngine()
 {
-	// Create the collision configuration
-	_bulletCollisionConfiguration = new btDefaultCollisionConfiguration();
-	// Create the dispatcher
-	_bulletDispatcher = new btCollisionDispatcher(_bulletCollisionConfiguration);
-	// Create the broadphase
-	_bulletBroadphase = new btDbvtBroadphase();
-	// Create the constraint solver
-	_bulletSolver = new btSequentialImpulseConstraintSolver;
-	// Create the world
-	_bulletWorld = new btDiscreteDynamicsWorld(_bulletDispatcher, _bulletBroadphase, _bulletSolver, _bulletCollisionConfiguration);
-
-	_bulletWorld->setGravity(btVector3(0, -9.80665, 0));
 }
 
 PhysicsEngine::~PhysicsEngine()
 {
-	if(_bulletWorld != nullptr)
-	{
-		delete _bulletWorld;
-		_bulletWorld = nullptr;
-	}
-
-	if(_bulletSolver != nullptr)
-	{
-		delete _bulletSolver;
-		_bulletSolver = nullptr;
-	}
-
-	if(_bulletBroadphase != nullptr)
-	{
-		delete _bulletBroadphase;
-		_bulletBroadphase = nullptr;
-	}
-
-	if(_bulletDispatcher != nullptr)
-	{
-		delete _bulletDispatcher;
-		_bulletDispatcher = nullptr;
-	}
-
-	if(_bulletCollisionConfiguration != nullptr)
-	{
-		delete _bulletCollisionConfiguration;
-		_bulletCollisionConfiguration = nullptr;
-	}
-
 }
 
-void PhysicsEngine::addRigidBody(btRigidBody* rigidBody)
+void PhysicsEngine::stepPhysics(float dt)
 {
-	_bulletWorld->addRigidBody(rigidBody);
-}
-
-void PhysicsEngine::stepSimulation(float dt)
-{
-	static bool firstTime = true;
-	// The first dt is usually very high because of some initializations
-	// TODO change vulkan dt to start with 0
-
-	if(_bulletWorld)
+	dt/=10.f;
+	for(auto object : _objectsPhysics)
 	{
-		//_bulletWorld->stepSimulation(dt/1000.f);
-		//float dt = clock.getTimeMilliseconds()/1000.0f;
-		// reset the clock to 0
-		//clock.reset();
+		float inverseMass = object->getInverseMass();
+		if(inverseMass<=0)
+			continue;
 
-		if(!firstTime)
-		{
-			// Slow motion
-			_bulletWorld->stepSimulation(dt/10.);
-			// Normal motion
-			//_bulletWorld->stepSimulation(dt);
-		}
-		else
-			firstTime=false;
+		float damping = object->getDamping();
+		glm::vec3 p = object->getPosition();
+		glm::vec3 v = object->getVelocity();
+		glm::vec3 a = object->getAcceleration();
+
+		p += v*dt;
+		v += a*dt;
+
+		v *= powf(damping, dt);
+
+		object->setPosition(p);
+		object->setVelocity(v);
+		object->setAcceleration(a);
 	}
 }
 
-bool PhysicsEngine::raycast(glm::vec3 startPosition, glm::vec3 direction, RayResult& output)
+void PhysicsEngine::addObjectPhysics(ObjectPhysics* objectPhysics)
 {
-	if(!_bulletWorld) 
-		return false;
-	
-	// Get the picking ray from where was clicked
-	btVector3 rayTo = PhysicsEngine::glm2bt(direction);
-	btVector3 rayFrom = PhysicsEngine::glm2bt(startPosition);
+	_objectsPhysics.push_back(objectPhysics);
+}
 
-	// Create raycast callback object
-	btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom,rayTo);	
-	
-	// Perform raycast
-	_bulletWorld->rayTest(rayFrom,rayTo,rayCallback);
-	
-	// Did we hit something?
-	if(rayCallback.hasHit())
-	{
-		// If so, get the rigid body we hit
-		btRigidBody* pBody = (btRigidBody*)btRigidBody::upcast(rayCallback.m_collisionObject);
-		if (!pBody)
-			return false;
-
-		// Prevent us from picking objects like the ground plane
-		if (pBody->isStaticObject() || pBody->isKinematicObject()) 
-			return false;
-
-		// Set the result data
-		output.body = pBody;
-		output.hitPoint = bt2glm(rayCallback.m_hitPointWorld);
-		return true;
-	}
-	
-	// Didn't hit anything
-	return false;
+bool PhysicsEngine::raycast(glm::vec3 startPosition, glm::vec3 direction)
+{
 }
 
 //---------- Static functions ----------//
@@ -131,7 +56,7 @@ glm::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, g
 
 	// Calculate fielf-of-view
 	float tanFov = 1.0f;//1.0f/nearPlane;
-	float fov = btScalar(2.0)*btAtan(tanFov);
+	float fov = 2.0*atan(tanFov);
 
 	// Get ray pointing forward from the camera and extend it to the far plane
 	glm::vec3 rayForward = glm::normalize(camForward);
@@ -159,24 +84,4 @@ glm::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, g
 	rayTo -= dVer*float(y);
 		
 	return rayTo;
-}
-
-btVector3 PhysicsEngine::glm2bt(glm::vec3 vec)
-{
-	return { vec.x, vec.y, vec.z };
-}
-
-glm::vec3 PhysicsEngine::bt2glm(btVector3 vec)
-{
-	return { vec.x(), vec.y(), vec.z() };
-}
-
-btQuaternion PhysicsEngine::glm2bt(glm::quat quat)
-{
-	return { quat.x, quat.y, quat.z, quat.w };
-}
-
-glm::quat PhysicsEngine::bt2glm(btQuaternion quat)
-{
-	return { quat.w(), quat.x(), quat.y(), quat.z() };
 }

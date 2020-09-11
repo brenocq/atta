@@ -14,13 +14,9 @@ class FixedConstraint : public Constraint
 		FixedConstraint(glm::vec3 position, glm::vec3 rotation);
 		~FixedConstraint();
 
-		btTypedConstraint* createConstraint(ObjectPhysics* objA, ObjectPhysics* objB);
-
 	private:
 		glm::vec3 _position;
 		glm::vec3 _rotation;
-
-		btGeneric6DofConstraint* _constraint;
 };
 
 #endif// FIXED_CONSTRAINT_H

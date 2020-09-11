@@ -6,16 +6,12 @@
 //--------------------------------------------------
 #include "importedObject.h"
 
-ImportedObject::ImportedObject(std::string name, std::string fileName, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mass, btCollisionShape* collisionShape):
+ImportedObject::ImportedObject(std::string name, std::string fileName, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mass):
 	Object(name, position, rotation, scale, mass)
 {
 	_type = "ImportedObject";
 	_model = new Model(fileName);
-	if(collisionShape == nullptr)
-		// TODO calculate convex hull shape
-		_physics = new ObjectPhysics(new btBoxShape(btVector3(0.5,0.5,0.5)), _position, _rotation, mass);
-	else
-		_physics = new ObjectPhysics(collisionShape, _position, _rotation, mass);
+	_physics = new ObjectPhysics(_position, _rotation, mass);
 }
 
 ImportedObject::~ImportedObject()

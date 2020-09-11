@@ -227,8 +227,8 @@ void Application::drawFrame()
 	// Clean lines every frame
 	_scene->cleanLines();
 	// Show physics debugger
-	if(_userInterface->getShowPhysicsDebugger())
-		_scene->getPhysicsEngine()->getWorld()->debugDrawWorld();
+	//if(_userInterface->getShowPhysicsDebugger())
+	//	_scene->getPhysicsEngine()->getWorld()->debugDrawWorld();
 
 	// Call simulator onDrawFrame
 	if(onDrawFrame)
