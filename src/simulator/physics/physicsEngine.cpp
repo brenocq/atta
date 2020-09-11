@@ -77,9 +77,9 @@ void PhysicsEngine::stepSimulation(float dt)
 		if(!firstTime)
 		{
 			// Slow motion
-			//_bulletWorld->stepSimulation(dt/10.);
+			_bulletWorld->stepSimulation(dt/10.);
 			// Normal motion
-			_bulletWorld->stepSimulation(dt);
+			//_bulletWorld->stepSimulation(dt);
 		}
 		else
 			firstTime=false;
