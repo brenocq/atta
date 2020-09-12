@@ -16,6 +16,7 @@
 #include "vulkan/buffer.h"
 #include "vulkan/commandPool.h"
 #include "vulkan/material.h"
+#include "vulkan/helpers.h"
 #include "object.h"
 
 class Scene
@@ -43,6 +44,7 @@ class Scene
 		Buffer* getIndexBuffer() const { return _indexBuffer; }
 		Buffer* getMaterialBuffer() const { return _materialBuffer; }
 		Buffer* getOffsetBuffer() const { return _offsetBuffer; }
+		Buffer* getInstanceBuffer() const { return _instanceBuffer; }
 		Buffer* getAabbBuffer() const { return _aabbBuffer; }
 		Buffer* getProceduralBuffer() const { return _proceduralBuffer; }
 		bool hasProcedurals() const { return static_cast<bool>(_proceduralBuffer); }
@@ -57,6 +59,9 @@ class Scene
 		Buffer* getLineVertexBuffer() const { return _lineVertexBuffer; }
 		Buffer* getLineIndexBuffer() const { return _lineIndexBuffer; }
 		uint32_t getLineIndexCount() const {return _lineIndexCount; }
+
+		//--- Ray tracing ---//
+		void updateRayTracingBuffers();
 
 	private:
 		template <class T>
@@ -82,11 +87,13 @@ class Scene
 		Buffer* _indexBuffer;
 		Buffer* _materialBuffer;
 		Buffer* _offsetBuffer;
+		Buffer* _instanceBuffer;
 		Buffer* _aabbBuffer;
 		Buffer* _proceduralBuffer;
 
 		// Simulator specific
 		uint32_t _maxLineCount;// Maximum number of lines that can be store in memory
+		uint32_t _maxRTInstanceCount;// Maximum number of lines that can be store in memory
 		uint32_t _lineIndexCount;// Current index count (line count*2)
 		uint32_t _indexGridCount;// Number of lines in the grid
 		Buffer* _lineVertexBuffer;

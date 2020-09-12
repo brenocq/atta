@@ -86,11 +86,11 @@ void Model::loadModel()
 	//---------- Materials ----------//
 	for(const auto& material : objReader.GetMaterials())
 	{
-		//Material m = {};
+		Material m = {};
 
-		//m.diffuse = glm::vec4(material.diffuse[0], material.diffuse[1], material.diffuse[2], 1.0);
-		//m.diffuseTextureId = -1;
-		Material m = Material::diffuseLight(glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]), -1);
+		m.diffuse = glm::vec4(material.diffuse[0], material.diffuse[1], material.diffuse[2], 1.0);
+		m.diffuseTextureId = -1;
+		//Material m = Material::diffuseLight(glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]), -1);
 
 		_materials.emplace_back(m);
 	}
@@ -101,7 +101,8 @@ void Model::loadModel()
 
 		//m.diffuse = glm::vec4(0.7f, 0.7f, 0.7f, 1.0);
 		//m.diffuseTextureId = -1;
-		Material m = Material::dielectric(1.5f);
+		//Material m = Material::dielectric(1.5f);
+		Material m = Material::diffuseLight(glm::vec3(1.0f, 1.0f, 1.0f), -1);
 
 		_materials.emplace_back(m);
 	}

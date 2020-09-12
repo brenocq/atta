@@ -16,9 +16,4 @@ ImportedObject::ImportedObject(std::string name, std::string fileName, glm::vec3
 
 ImportedObject::~ImportedObject()
 {
-	if(_model != nullptr)
-	{
-		delete _model;
-		_model = nullptr;
-	}
 }

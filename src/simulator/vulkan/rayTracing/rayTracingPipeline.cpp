@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // rayTracingPipeline.cpp
-// Date: 22/07/2020
+// Date: 2020-07-22
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "rayTracingPipeline.h"
@@ -35,17 +35,18 @@ RayTracingPipeline::RayTracingPipeline(
 		// Camera information & co
 		{3, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_NV | VK_SHADER_STAGE_MISS_BIT_NV},
 
-		// Vertex buffer, Index buffer, Material buffer, Offset buffer
+		// Vertex buffer, Index buffer, Material buffer, Offset buffer, Instances buffer
 		{4, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
 		{5, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
 		{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
 		{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
+		{8, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
 
 		// Textures and image samplers
-		{8, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
+		{9, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
 
 		// The Procedural buffer.
-		{9, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV | VK_SHADER_STAGE_INTERSECTION_BIT_NV}
+		{10, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV | VK_SHADER_STAGE_INTERSECTION_BIT_NV}
 	};
 
 	_descriptorSetManager = new DescriptorSetManager(device, descriptorBindings, uniformBuffers.size());
@@ -97,6 +98,11 @@ RayTracingPipeline::RayTracingPipeline(
 		offsetsBufferInfo.buffer = _scene->getOffsetBuffer()->handle();
 		offsetsBufferInfo.range = VK_WHOLE_SIZE;
 
+		// Instance buffer
+		VkDescriptorBufferInfo instanceBufferInfo = {};
+		instanceBufferInfo.buffer = _scene->getInstanceBuffer()->handle();
+		instanceBufferInfo.range = VK_WHOLE_SIZE;
+
 		// Image and texture samplers.
 		std::vector<VkDescriptorImageInfo> imageInfos(_scene->getTextures().size());
 
@@ -118,7 +124,8 @@ RayTracingPipeline::RayTracingPipeline(
 			descriptorSets->bind(i, 5, indexBufferInfo),
 			descriptorSets->bind(i, 6, materialBufferInfo),
 			descriptorSets->bind(i, 7, offsetsBufferInfo),
-			descriptorSets->bind(i, 8, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
+			descriptorSets->bind(i, 8, instanceBufferInfo),
+			descriptorSets->bind(i, 9, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
 		};
 
 		// Procedural buffer (optional)
@@ -129,7 +136,7 @@ RayTracingPipeline::RayTracingPipeline(
 			proceduralBufferInfo.buffer = _scene->getProceduralBuffer()->handle();
 			proceduralBufferInfo.range = VK_WHOLE_SIZE;
 
-			descriptorWrites.push_back(descriptorSets->bind(i, 9, proceduralBufferInfo));
+			descriptorWrites.push_back(descriptorSets->bind(i, 10, proceduralBufferInfo));
 		}
 
 		descriptorSets->updateDescriptors(i, descriptorWrites);

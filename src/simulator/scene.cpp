@@ -13,12 +13,16 @@
 #include "vulkan/stagingBuffer.h"
 #include "physics/constraints/fixedConstraint.h"
 #include "helpers/drawHelper.h"
+#include "objects/basic/box.h"
+#include "objects/basic/cylinder.h"
+#include "objects/basic/sphere.h"
 
 Scene::Scene():
-	_maxLineCount(9999)
+	_maxLineCount(9999), _maxRTInstanceCount(1000)
 {
 	_device = nullptr;
 	_physicsEngine = new PhysicsEngine();
+	_commandPool = nullptr;
 
 	// Load basic models to the memory
 	_models.push_back(new Model("box"));
@@ -56,6 +60,12 @@ Scene::~Scene()
 	{
 		delete _offsetBuffer;
 		_offsetBuffer = nullptr;
+	}
+
+	if(_instanceBuffer != nullptr)
+	{
+		delete _instanceBuffer;
+		_instanceBuffer = nullptr;
 	}
 
 	if(_aabbBuffer != nullptr)
@@ -181,6 +191,8 @@ void Scene::createBuffers(CommandPool* commandPool)
 	genGridLines();
 	_lineIndexCount = _hostLineIndex.size();
 	_indexGridCount = _lineIndexCount;
+	// TODO limit 1000 objects (ray tracing)
+	std::vector<InstanceInfo> instances(_maxRTInstanceCount);
 
 	createSceneBuffer(_vertexBuffer, 		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|flag, vertices);
 	createSceneBuffer(_indexBuffer, 		VK_BUFFER_USAGE_INDEX_BUFFER_BIT|flag, 	indices);
@@ -190,6 +202,38 @@ void Scene::createBuffers(CommandPool* commandPool)
 	createSceneBuffer(_proceduralBuffer, 	VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	procedurals);
 	createSceneBuffer(_lineVertexBuffer, 	VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 	_hostLineVertex, _maxLineCount*2);
 	createSceneBuffer(_lineIndexBuffer, 	VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 	_hostLineIndex, _maxLineCount*2);
+	createSceneBuffer(_instanceBuffer, 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	instances);
+}
+
+void Scene::updateRayTracingBuffers()
+{
+	std::vector<InstanceInfo> instances;
+	for(auto object : _objects)
+	{
+		InstanceInfo instanceInfo;
+		instanceInfo.transform = object->getModelMat();
+		instanceInfo.transformIT = glm::transpose(glm::inverse(object->getModelMat()));
+		// Set object color
+		instanceInfo.diffuse = glm::vec4(-1,-1,-1,1);
+		if(object->getType() == "Box")
+			instanceInfo.diffuse = glm::vec4(((Box*)object)->getColor(),1);
+		if(object->getType() == "Cylinder")
+			instanceInfo.diffuse = glm::vec4(((Cylinder*)object)->getColor(),1);
+		if(object->getType() == "Sphere")
+			instanceInfo.diffuse = glm::vec4(((Sphere*)object)->getColor(),1);
+
+		instances.push_back(instanceInfo);
+	}
+
+	// Update buffer
+	if(_commandPool==nullptr)
+		return;
+	//printf("Command pool OK\n");
+	Device* device = _commandPool->getDevice();
+	StagingBuffer* stagingBuffer = new StagingBuffer(device, instances.data(), sizeof(InstanceInfo)*instances.size());
+	_instanceBuffer->copyFrom(_commandPool, stagingBuffer->handle(), sizeof(InstanceInfo)*instances.size());
+	delete stagingBuffer;
+	stagingBuffer = nullptr;
 }
 
 void Scene::updatePhysics(float dt)

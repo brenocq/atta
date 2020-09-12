@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // deviceProcedures.cpp
-// Date: 15/07/2020
+// Date: 2020-07-15
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <string>

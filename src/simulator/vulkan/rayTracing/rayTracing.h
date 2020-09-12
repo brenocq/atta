@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // rayTracing.h
-// Date: 15/07/2020
+// Date: 2020-07-15
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef RAY_TRACING_H
@@ -28,43 +28,44 @@
 class RayTracing
 {
 	public:
-	RayTracing(Device* device, SwapChain* swapChain, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene);
-	~RayTracing();
+		RayTracing(Device* device, SwapChain* swapChain, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene);
+		~RayTracing();
 
-	void createSwapChain();
-	void deleteSwapChain();
-	void render(VkCommandBuffer commandBuffer, const uint32_t imageIndex);
+		void createSwapChain();
+		void deleteSwapChain();
+		void render(VkCommandBuffer commandBuffer, const uint32_t imageIndex, bool split=false);
+		void recreateTopLevelStructures();
 	private:
-	void getRTProperties();
-	void createAccelerationStructures();
-	void createBottomLevelStructures(VkCommandBuffer commandBuffer);
-	void createTopLevelStructures(VkCommandBuffer commandBuffer);
-	void createOutputImage();
+		void getRTProperties();
+		void createAccelerationStructures();
+		void createBottomLevelStructures(VkCommandBuffer commandBuffer);
+		void createTopLevelStructures(VkCommandBuffer commandBuffer);
+		void createOutputImage();
 
-	Device* _device;
-	CommandPool* _commandPool;
-	SwapChain* _swapChain;
-	std::vector<UniformBuffer*> _uniformBuffers;
-	Scene* _scene;
+		Device* _device;
+		CommandPool* _commandPool;
+		SwapChain* _swapChain;
+		std::vector<UniformBuffer*> _uniformBuffers;
+		Scene* _scene;
 
-	VkPhysicalDeviceRayTracingPropertiesNV _props = {};
-	DeviceProcedures* _deviceProcedures;
+		VkPhysicalDeviceRayTracingPropertiesNV _props = {};
+		DeviceProcedures* _deviceProcedures;
 
-	std::vector<BottomLevelAccelerationStructure*> _blas;
-	std::vector<TopLevelAccelerationStructure*> _tlas;
-	RayTracingPipeline* _rayTracingPipeline;
-	ShaderBindingTable* _shaderBindingTable;
+		std::vector<BottomLevelAccelerationStructure*> _blas;
+		std::vector<TopLevelAccelerationStructure*> _tlas;
+		RayTracingPipeline* _rayTracingPipeline;
+		ShaderBindingTable* _shaderBindingTable;
 
-	Image* _accumulationImage;
-	ImageView* _accumulationImageView;
-	Image* _outputImage;
-	ImageView* _outputImageView;
-	
-	Buffer* _bottomBuffer;
-	Buffer* _bottomScratchBuffer;
-	Buffer* _topBuffer;
-	Buffer* _topScratchBuffer;
-	Buffer* _instancesBuffer;
+		Image* _accumulationImage;
+		ImageView* _accumulationImageView;
+		Image* _outputImage;
+		ImageView* _outputImageView;
+		
+		Buffer* _bottomBuffer;
+		Buffer* _bottomScratchBuffer;
+		Buffer* _topBuffer;
+		Buffer* _topScratchBuffer;
+		Buffer* _instancesBuffer;
 };
 
 #endif// RAY_TRACING_H

@@ -1,8 +1,8 @@
 # Robot Simulator
 <p align="center">
  <img src="./img/2020-08-16.gif" height="200">
- <img src="./img/2020-08-30.png" height="200">
  <img src="./img/2020-09-01.png" height="200">
+ <img src="./img/2020-09-12.png" height="200">
 </p>
 
 Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs) and my own physics engine. I was planning on using Bullet physics... But learning how to make one seems fun :).

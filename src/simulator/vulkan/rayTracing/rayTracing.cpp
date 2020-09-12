@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // rayTracing.cpp
-// Date: 15/07/2020
+// Date: 2020-07-15
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "rayTracing.h"
@@ -26,6 +26,8 @@ RayTracing::RayTracing(Device* device, SwapChain* swapChain, CommandPool* comman
 
 RayTracing::~RayTracing()
 {
+	deleteSwapChain();
+
 	for(auto blas : _blas)
 	{
 		delete blas;
@@ -38,41 +40,6 @@ RayTracing::~RayTracing()
 		tlas = nullptr;
 	}
 
-	if(_shaderBindingTable!=nullptr)
-	{
-		delete _shaderBindingTable;
-		_shaderBindingTable = nullptr;
-	}
-
-	if(_rayTracingPipeline!=nullptr)
-	{
-		delete _rayTracingPipeline;
-		_rayTracingPipeline = nullptr;
-	}
-
-	// Images
-	if(_accumulationImageView!=nullptr)
-	{
-		delete _accumulationImageView;
-		_accumulationImageView = nullptr;
-	}
-	if(_accumulationImage!=nullptr)
-	{
-		delete _accumulationImage;
-		_accumulationImage = nullptr;
-	}
-
-	if(_outputImageView!=nullptr)
-	{
-		delete _outputImageView;
-		_outputImageView = nullptr;
-	}
-	if(_outputImage!=nullptr)
-	{
-		delete _outputImage;
-		_outputImage = nullptr;
-	}
-	
 	// Device Procedures
 	if(_deviceProcedures!=nullptr)
 	{
@@ -127,7 +94,42 @@ void RayTracing::createSwapChain()
 
 void RayTracing::deleteSwapChain()
 {
+	// Images
+	if(_accumulationImageView!=nullptr)
+	{
+		delete _accumulationImageView;
+		_accumulationImageView = nullptr;
+	}
+	if(_accumulationImage!=nullptr)
+	{
+		delete _accumulationImage;
+		_accumulationImage = nullptr;
+	}
 
+	if(_outputImageView!=nullptr)
+	{
+		delete _outputImageView;
+		_outputImageView = nullptr;
+	}
+	if(_outputImage!=nullptr)
+	{
+		delete _outputImage;
+		_outputImage = nullptr;
+	}
+	
+	// Shader binding table
+	if(_shaderBindingTable!=nullptr)
+	{
+		delete _shaderBindingTable;
+		_shaderBindingTable = nullptr;
+	}
+
+	// Ray tracing pipeline
+	if(_rayTracingPipeline!=nullptr)
+	{
+		delete _rayTracingPipeline;
+		_rayTracingPipeline = nullptr;
+	}
 }
 
 void RayTracing::getRTProperties()
@@ -157,6 +159,54 @@ void RayTracing::createAccelerationStructures()
 	std::cout << WHITE << elapsed << "ms" << RESET << std::endl;
 }
 
+void RayTracing::recreateTopLevelStructures()
+{
+	std::cout << std::endl << BOLDGREEN << "[RayTracing]" << GREEN << " Recreating top level acceleration structures... ";
+	const auto timer = std::chrono::high_resolution_clock::now();
+
+	deleteSwapChain();
+	// Delete tlas
+	for(auto tlas : _tlas)
+	{
+		delete tlas;
+		tlas = nullptr;
+	}
+	_tlas.clear();
+
+	// Delete tlas buffers
+	if(_topBuffer!=nullptr)
+	{
+		delete _topBuffer;
+		_topBuffer = nullptr;
+	}
+
+	if(_topScratchBuffer!=nullptr)
+	{
+		delete _topScratchBuffer;
+		_topScratchBuffer = nullptr;
+	}
+
+	if(_instancesBuffer!=nullptr)
+	{
+		delete _instancesBuffer;
+		_instancesBuffer = nullptr;
+	}
+
+	// Update instance buffer
+	_scene->updateRayTracingBuffers();
+	// Create tlas
+	VkCommandBuffer commandBuffer = _commandPool->beginSingleTimeCommands();
+	{
+		createTopLevelStructures(commandBuffer);
+	}
+	_commandPool->endSingleTimeCommands(commandBuffer);
+
+	const auto elapsed = std::chrono::duration<float, std::chrono::milliseconds::period>(std::chrono::high_resolution_clock::now() - timer).count();
+	std::cout << WHITE << elapsed << "ms" << RESET << std::endl;
+
+	createSwapChain();
+}
+
 void RayTracing::createOutputImage()
 {
 	const auto extent = _swapChain->getExtent();
@@ -174,18 +224,8 @@ void RayTracing::createOutputImage()
 	_outputImageView = new ImageView(_device, _outputImage->handle(), format, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
-void RayTracing::render(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
+void RayTracing::render(VkCommandBuffer commandBuffer, const uint32_t imageIndex, bool split)
 {
-	//---------- Start command pool ----------//
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	if(vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-	{
-		std::cout << BOLDRED << "[RayTracing]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
-		exit(1);
-	}
-
 	const auto extent = _swapChain->getExtent();
 
 	VkDescriptorSet descriptorSets[] = { _rayTracingPipeline->getDescriptorSet(imageIndex) };
@@ -221,10 +261,10 @@ void RayTracing::render(VkCommandBuffer commandBuffer, const uint32_t imageIndex
 
 	VkImageCopy copyRegion;
 	copyRegion.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-	copyRegion.srcOffset = { 0, 0, 0 };
+	copyRegion.srcOffset = { split?extent.width/2:0, 0, 0 };
 	copyRegion.dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-	copyRegion.dstOffset = { 0, 0, 0 };
-	copyRegion.extent = { extent.width, extent.height, 1 };
+	copyRegion.dstOffset = { split?extent.width/2:0, 0, 0 };
+	copyRegion.extent = { split?extent.width/2:extent.width, extent.height, 1 };
 
 	vkCmdCopyImage(commandBuffer,
 		_outputImage->handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -236,24 +276,37 @@ void RayTracing::render(VkCommandBuffer commandBuffer, const uint32_t imageIndex
 		0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 	// End command buffer
-	vkEndCommandBuffer(commandBuffer);
 }
 
 void RayTracing::createBottomLevelStructures(VkCommandBuffer commandBuffer)
 {
 	// Bottom level acceleration structure
 	// Triangles via vertex buffers. Procedurals via AABBs.
-	uint32_t vertexOffset = 0;
-	uint32_t indexOffset = 0;
 	uint32_t aabbOffset = 0;
 
 	std::vector<AccelerationStructure::MemoryRequirements> requirements;
+	std::vector<uint32_t> indexesGenerated = {};
 
 	// Create blas object with memory requirements for each model
 	for(Model* model : _scene->getModels())
 	{
-		const auto vertexCount = static_cast<uint32_t>(model->getVertices().size());
-		const auto indexCount = static_cast<uint32_t>(model->getIndices().size());
+		int modelIndex = model->getModelIndex();
+		// Generate only one per model
+		bool found = false;
+		for(auto index : indexesGenerated)
+			if(index == modelIndex)
+			{
+				found = true;
+				break;
+			}
+		if(found)
+			continue;
+		indexesGenerated.push_back(modelIndex);
+
+		const uint32_t vertexCount = model->getVerticesSize();
+		const uint32_t indexCount = model->getIndicesSize();
+		const uint32_t vertexOffset = model->getVertexOffset()*sizeof(Vertex);
+		const uint32_t indexOffset = model->getIndexOffset()*sizeof(uint32_t);
 		const std::vector<VkGeometryNV> geometries =
 		{
 			model->getProcedural()
@@ -265,8 +318,6 @@ void RayTracing::createBottomLevelStructures(VkCommandBuffer commandBuffer)
 		_blas.push_back(blas);
 		requirements.push_back(_blas.back()->getMemoryRequirements());
 
-		vertexOffset += vertexCount * sizeof(Vertex);
-		indexOffset += indexCount * sizeof(uint32_t);
 		aabbOffset += sizeof(glm::vec3) * 2;
 	}
 
@@ -294,6 +345,7 @@ void RayTracing::createBottomLevelStructures(VkCommandBuffer commandBuffer)
 		resultOffset += requirements[i].result.size;
 		scratchOffset += requirements[i].build.size;
 	}
+	// TODO after generating the BLAS it is possible to reduce the memory usage using a more fitted buffer
 }
 
 void RayTracing::createTopLevelStructures(VkCommandBuffer commandBuffer)
@@ -304,13 +356,17 @@ void RayTracing::createTopLevelStructures(VkCommandBuffer commandBuffer)
 
 	// Hit group 0: triangles
 	// Hit group 1: procedurals
-	uint32_t instanceId = 0;
-
-	for (Model* model : _scene->getModels())
+	for(Object* object : _scene->getObjects())
 	{
+		Model* model = object->getModel();
+		// glm::mat4 to expected by nvidia
+		glm::mat4 transformation = glm::transpose(object->getModelMat());
+
+		//_blas[model->getModelIndex()]->getDevice();
+		//std::cout << "INDEX: " << model->getModelIndex() << std::endl;
+		//std::cout << "Size: " << _blas.size() << std::endl;
 		geometryInstances.push_back(TopLevelAccelerationStructure::createGeometryInstance(
-			_blas[instanceId], glm::mat4(1), instanceId, model->getProcedural()?1:0));
-		instanceId++;
+			_blas[model->getModelIndex()], transformation, model->getModelIndex(), model->getProcedural()?1:0));
 	}
 
 	TopLevelAccelerationStructure* tlas = new TopLevelAccelerationStructure(_deviceProcedures, geometryInstances, false);

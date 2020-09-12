@@ -62,7 +62,10 @@ class Application
 		void framebufferResizeCallback() {_framebufferResized = true;}
 		void updateUniformBuffer(uint32_t currentImage);
 		void createDescriptorPool();
-		void render(int i);
+		void render(VkCommandBuffer commandBuffer, int i);
+
+		// User Interface
+		void createUserInterface();
 
 		// Window callbacks
 		void onKey(int key, int scancode, int action, int mods);
@@ -110,6 +113,11 @@ class Application
 		size_t _currentFrame;
 		bool _framebufferResized;
 		double _time;
+
+		// Ray tracing
+		bool _enableRayTracing;
+		int _totalNumberOfSamples;
+		bool _splitRender;
 };
 
 #endif// APPLICATION_H

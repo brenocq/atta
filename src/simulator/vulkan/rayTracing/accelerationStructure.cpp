@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // acceletationStructure.cpp
-// Date: 16/07/2020
+// Date: 2020-07-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "accelerationStructure.h"

@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // shaderBindingTable.h
-// Date: 23/07/2020
+// Date: 2020-07-23
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef SHADER_BINDING_TABLE_H
