@@ -7,9 +7,10 @@
 #ifndef PHYSICS_ENGINE_H
 #define PHYSICS_ENGINE_H
 
+#include <vector>
 #include "glm.h"
 #include "objectPhysics.h"
-#include <vector>
+#include "forces/forceGenerator.h"
 
 class PhysicsEngine
 {
@@ -27,6 +28,7 @@ class PhysicsEngine
 		static glm::vec3 getMouseClickRay(int x, int y, int width, int height, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camUp);
 	private:
 		std::vector<ObjectPhysics*> _objectsPhysics;
+		ForceGenerator* _forceGenerator;
 
 };
 
