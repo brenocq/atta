@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // rayTracingPipeline.h
-// Date: 22/07/2020
+// Date: 2020-07-22
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef RAY_TRACING_PIPELINE_H

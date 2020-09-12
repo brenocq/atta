@@ -7,7 +7,9 @@
 #include "userInterface.h"
 
 UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChain, Scene* scene):
-	_showPhysicsDebugger(false)
+	_showPhysicsDebugger(false),
+	// Toggle variables
+   	_splitRender(nullptr), _enableRayTracing(nullptr)
 {
 	//---------- Get main objects ----------//
 	_device = device;
@@ -183,14 +185,16 @@ void UserInterface::render(int i)
 void UserInterface::draw()
 {
 	ImGui::ShowDemoWindow();
-	static bool enableRayTracing = false;
 	static bool showScene = true;
 
 	if(ImGui::BeginMainMenuBar())
 	{
         if(ImGui::BeginMenu("Main"))
         {
-            if(ImGui::Checkbox("RayTracing", &enableRayTracing)) {}
+			if(_splitRender != nullptr)
+            	ImGui::Checkbox("Split Render", _splitRender);
+			if(_enableRayTracing != nullptr)
+            	ImGui::Checkbox("RayTracing (r)", _enableRayTracing);
             if(ImGui::MenuItem("Quit", "ESQ")) {}
             ImGui::EndMenu();
         }

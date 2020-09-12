@@ -51,4 +51,12 @@ struct ObjectInfo
 	glm::vec3 color;
 };
 
+// TLAS instances (Ray tracing)
+struct InstanceInfo
+{
+	glm::mat4 transform{1};    // Position of the instance
+	glm::mat4 transformIT{1};  // Inverse transpose
+	glm::vec4 diffuse;  // Inverse transpose
+};
+
 #endif// HELPERS_H

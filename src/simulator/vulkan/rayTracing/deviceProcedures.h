@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // deviceProcedures.h
-// Date: 15/07/2020
+// Date: 2020-07-15
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef DEVICE_PROCEDURES_H

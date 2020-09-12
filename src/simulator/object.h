@@ -11,6 +11,7 @@
 #include <vector>
 #include "physics/objectPhysics.h"
 #include "physics/constraints/constraint.h"
+#include "vulkan/model.h"
 
 class Object
 {
@@ -33,6 +34,7 @@ class Object
 		Object* getParent() const { return _parent; }
 		std::vector<Object*> getChildren() const { return _children; }
 		Constraint* getParentConstraint() const { return _parentConstraint; }
+		Model* getModel() const { return _model; }
 
 		//---------- Setters ----------//
 		void setPosition(glm::vec3 position);
@@ -55,6 +57,8 @@ class Object
 
 		ObjectPhysics* _physics;
 		bool _static;
+
+		Model* _model;
 
 	private:
 		Object* _parent;

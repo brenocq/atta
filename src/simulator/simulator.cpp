@@ -21,15 +21,17 @@ Simulator::Simulator()
 	_scene->loadObject("wheel");
 
 	// Create object instances
-	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {0,0,0});
-	ImportedObject* wheel = new ImportedObject("Wheel test", "wheel", {-0.4,0.06,0}, {0,0,90}, {1,1,1}, 0.1f);
+	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {0.8,0.8,0.8});
+	Cylinder* test1 = new Cylinder("Cylinder", {0,1,0}, {0,0,0}, {0.5, 0.5,0.5}, 1.1f, {0.8,0.8,0.8});
+	Sphere* test2 = new Sphere("Sphere", {0,0.5,0}, {0,0,0}, 0.2, 1.1f, {0.8,0.5,0.2});
 
 	// Create demo robot (ttzinho)
 	_ttzinho = new Ttzinho();
 
 	_scene->addObject((Object*)ground);// Add a simple object
 	_scene->addComplexObject(_ttzinho->getObject());// Add the object and its children
-	_scene->addObject((Object*)wheel);// Add a simple object
+	_scene->addObject((Object*)test1);// Add a simple object
+	_scene->addObject((Object*)test2);// Add a simple object
 	_scene->linkObjects();
 
 	_debugDrawer = new DebugDrawer(_scene);

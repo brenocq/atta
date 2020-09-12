@@ -12,6 +12,10 @@ Object::Object(std::string name, glm::vec3 position, glm::vec3 rotation, glm::ve
 	_name(name), _position(position), _rotation(rotation), _scale(scale), _mass(mass), _physics(nullptr), _type("Object")
 {
 	_id = _qtyIds++;
+
+	_physics = nullptr;
+	_model = nullptr;
+
 	_static = _mass > 0;
 	_parent = nullptr;
 	_parentConstraint = nullptr;
@@ -23,6 +27,12 @@ Object::~Object()
 	{
 		delete _physics;
 		_physics = nullptr;
+	}
+
+	if(_model != nullptr)
+	{
+		delete _model;
+		_model = nullptr;
 	}
 
 	if(_parentConstraint != nullptr)

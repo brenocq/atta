@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // bottomLevelAcceletationStructure.h
-// Date: 16/07/2020
+// Date: 2020-07-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef BOTTOM_LEVEL_ACCELERATION_STRUCTURE_H

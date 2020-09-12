@@ -12,7 +12,7 @@
 #include "../physics/physicsEngine.h"
 
 Application::Application(Scene* scene):
-	_scene(scene), _currentFrame(0), _framebufferResized(false)
+	_scene(scene), _currentFrame(0), _framebufferResized(false), _enableRayTracing(false), _totalNumberOfSamples(0), _splitRender(false)
 {
 	_window = new Window();
 	_instance = new Instance();
@@ -64,7 +64,8 @@ Application::Application(Scene* scene):
 	_modelViewController->reset(glm::lookAt(glm::vec3(3, 3, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	// IMGUI
-	_userInterface = new UserInterface(_device, _window, _swapChain, _scene);
+	_userInterface = nullptr;
+	createUserInterface();
 
 	// RayTracing
 	_rayTracing = new RayTracing(_device, _swapChain, _commandPool, _uniformBuffers, _scene);
@@ -125,6 +126,19 @@ void Application::createPipelines()
 	_renderPass = new RenderPass(_device, _swapChain, _depthBuffer, _colorBuffer);
 	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _renderPass, _uniformBuffers, _scene);
 	_linePipeline = new LinePipeline(_device, _swapChain, _renderPass, _uniformBuffers, _scene);
+}
+
+void Application::createUserInterface()
+{
+	if(_userInterface != nullptr)
+	{
+		std::cout << BOLDYELLOW << "[Application]" << RESET << YELLOW << " User interface should be nullptr." << RESET << std::endl;
+		return;
+	}
+
+	_userInterface = new UserInterface(_device, _window, _swapChain, _scene);
+	_userInterface->setEnableRayTacing(&_enableRayTracing);
+	_userInterface->setSplitRender(&_splitRender);
 }
 
 void Application::cleanupSwapChain()
@@ -200,7 +214,7 @@ void Application::recreateSwapChain()
 	_commandBuffers = new CommandBuffers(_device, _commandPool, _frameBuffers.size());
 
 	// IMGUI
-	_userInterface = new UserInterface(_device, _window, _swapChain, _scene);
+	createUserInterface();
 	_rayTracing->createSwapChain();
 }
 
@@ -237,7 +251,7 @@ void Application::drawFrame()
 	// Update line buffer
 	_scene->updateLineBuffer();
 	// Update physics
-	_scene->updatePhysics(timeDelta);
+	//_scene->updatePhysics(timeDelta);
 
 	
 	bool cameraUpdated = _modelViewController->updateCamera(timeDelta);
@@ -260,9 +274,34 @@ void Application::drawFrame()
 		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to acquire swap chain image!" << RESET << std::endl;
 		exit(1);
 	}
-	//----------- Render to screen ----------//
-	//_rayTracing->render(_commandBuffers->handle()[imageIndex], imageIndex);
-	render(imageIndex);
+	VkCommandBuffer commandBuffer = _commandBuffers->handle()[imageIndex];
+	//---------- Start command pool ----------//
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	//beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	if(vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+	{
+		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
+		exit(1);
+	}
+	{
+		if(_enableRayTracing || _splitRender)
+		{
+			// Recreate raytracing swapChain
+			_totalNumberOfSamples = 0;
+			_rayTracing->recreateTopLevelStructures();
+			_rayTracing->render(_commandBuffers->handle()[imageIndex], imageIndex, _splitRender);
+		}
+
+		if(!_enableRayTracing || _splitRender)
+		{
+			render(commandBuffer, imageIndex);
+		}
+	}
+	vkEndCommandBuffer(commandBuffer);
+
+
 	_userInterface->render(imageIndex);
 
 	//---------- CPU-GPU syncronization ----------//
@@ -324,20 +363,8 @@ void Application::drawFrame()
 	_currentFrame = (_currentFrame + 1) % _inFlightFences.size();
 }
 
-void Application::render(int i)
+void Application::render(VkCommandBuffer commandBuffer, int i)
 {
-	VkCommandBuffer commandBuffer = _commandBuffers->handle()[i];
-	//---------- Start command pool ----------//
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	//beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	if(vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-	{
-		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
-		exit(1);
-	}
-
 	std::array<VkClearValue, 2> clearValues{};
 	clearValues[0].color = {0.3f, 0.3f, 0.3f, 1.0f};
 	clearValues[1].depthStencil = {1.0f, 0};
@@ -347,7 +374,10 @@ void Application::render(int i)
 	renderPassInfo.renderPass = _renderPass->handle();
 	renderPassInfo.framebuffer = _frameBuffers[i]->handle();
 	renderPassInfo.renderArea.offset = {0, 0};
-	renderPassInfo.renderArea.extent = _swapChain->getExtent();
+	if(!_splitRender)
+		renderPassInfo.renderArea.extent = _swapChain->getExtent();
+	else
+		renderPassInfo.renderArea.extent = {_swapChain->getExtent().width/2, _swapChain->getExtent().height};
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
 
@@ -433,13 +463,12 @@ void Application::render(int i)
 		}
 	}
 	vkCmdEndRenderPass(commandBuffer);
-
-	vkEndCommandBuffer(commandBuffer);
 }
 
 void Application::updateUniformBuffer(uint32_t currentImage)
 {
-	static int test=0;
+	int samplesPerFrame = 500;
+	_totalNumberOfSamples = samplesPerFrame;
 
 	UniformBufferObject ubo;
 	ubo.modelView = _modelViewController->getModelView();
@@ -450,9 +479,9 @@ void Application::updateUniformBuffer(uint32_t currentImage)
 	ubo.projection[1][1] *= -1; // Inverting Y for Vulkan, https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
 	ubo.modelViewInverse = glm::inverse(ubo.modelView);
 	ubo.projectionInverse = glm::inverse(ubo.projection);
-	ubo.totalNumberOfSamples = test++>100?100:100-test;
-	ubo.numberOfSamples = test++>100?100:100-test;
-	ubo.numberOfBounces = 9;
+	ubo.totalNumberOfSamples = _totalNumberOfSamples;
+	ubo.numberOfSamples = samplesPerFrame;
+	ubo.numberOfBounces = 4;
 	ubo.randomSeed = 1;
 	ubo.gammaCorrection = true;
 	ubo.hasSky = false;
@@ -487,6 +516,14 @@ void Application::onKey(int key, int scancode, int action, int mods)
 		case GLFW_KEY_F1:
 			if(action == GLFW_PRESS)
 				_window->toggleCursorVisibility();
+			break;
+		case GLFW_KEY_R:
+			if(action == GLFW_PRESS)
+				_enableRayTracing = !_enableRayTracing;
+			break;
+		case GLFW_KEY_T:
+			if(action == GLFW_PRESS)
+				_splitRender = !_splitRender;
 			break;
 	}
 	_modelViewController->onKey(key, scancode, action, mods);

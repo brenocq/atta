@@ -19,11 +19,7 @@ class ImportedObject : public Object
 				float mass = 1.0f);
 		~ImportedObject();
 
-		//---------- Getters ----------//
-		Model* getModel() const { return _model; }
-
 	private:
-		Model* _model;
 };
 
 #endif// IMPORTED_OBJECT_H

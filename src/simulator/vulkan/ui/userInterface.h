@@ -40,6 +40,10 @@ class UserInterface
 		// Topbar->View
 		bool getShowPhysicsDebugger() const { return _showPhysicsDebugger; }
 
+		// Set variables
+		void setEnableRayTacing(bool* enableRT) { _enableRayTracing = enableRT; }
+		void setSplitRender(bool* splitRender) { _splitRender = splitRender; }
+
 	private:
 		void createDescriptorPool();
 		void createCommandBuffers();
@@ -70,6 +74,9 @@ class UserInterface
 		std::vector<UiFrameBuffer*> _imguiFrameBuffers;
 		std::vector<VkCommandBuffer> _imguiCommandBuffers;
 
+		// Topbar->Main
+		bool* _enableRayTracing;
+		bool* _splitRender;
 		// Topbar->View
 		bool _showPhysicsDebugger;
 };

@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // topLevelAcceletationStructure.h
-// Date: 22/07/2020
+// Date: 2020-07-22
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef TOP_LEVEL_ACCELERATION_STRUCTURE_H
