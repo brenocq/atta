@@ -8,6 +8,7 @@ SRC_OBJS_BSC= ${SRC_OBJS}basic/
 SRC_VULKAN = ${SRC_SIM}vulkan/
 SRC_PHY    =  ${SRC_SIM}physics/
 SRC_CNST   =  ${SRC_PHY}constraints/
+SRC_FOR    =  ${SRC_PHY}forces/
 SRC_HLP    = ${SRC_SIM}helpers/
 SRC_IMGUI  =  ${LIB}imgui/
 SRC_UI     =  ${SRC_VULKAN}ui/
@@ -25,6 +26,7 @@ FILES_SIM = simulator scene object
 FILES_VULKAN = application window instance debugMessenger debugCommon physicalDevice device surface swapChain helpers imageView shaderModule renderPass frameBuffer commandPool commandBuffers semaphore fence vertex buffer vertexBuffer stagingBuffer indexBuffer descriptorSetLayout uniformBuffer descriptorPool descriptorSets stbImage texture image sampler depthBuffer tinyObjLoader model colorBuffer descriptorBinding vulkan descriptorSetManager material imageMemoryBarrier procedural modelViewController 
 FILES_PHY = physicsEngine objectPhysics
 FILES_CNST = constraint fixedConstraint hingeConstraint
+FILES_FOR = force forceGenerator
 FILES_HLP = log drawHelper debugDrawer
 FILES_IMGUI = imgui imgui_demo imgui_widgets imgui_draw imgui_impl_glfw imgui_impl_vulkan
 FILES_UI = userInterface uiRenderPass uiFrameBuffer
@@ -38,11 +40,8 @@ FILES_DEMO = ttzinho/ttzinho
 #------------ Helpers -------------
 CC = g++
 VULKAN_SDK_PATH = /home/breno/Programs/VulkanSDK/1.2.141.2/x86_64
-#BULLET_SDK_PATH = /home/breno/Programs/bullet3-2.87
-#BULLET_SDK_PATH = /home/breno/Programs/bullet3
 CFLAGS = -std=c++17 -I$(VULKAN_SDK_PATH)/include -Wall -O3
 LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lstdc++fs -lvulkan -I${LIB} -I${SRC} 
-#-L$(BULLET_SDK_PATH)/src/*/*.so 
 
 #---------- Text style ----------
 RED    = \033[0;31m
@@ -55,6 +54,7 @@ OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_SIM})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_VULKAN})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_PHY})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_CNST})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_FOR})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_HLP})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_IMGUI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_UI})
@@ -87,6 +87,10 @@ ${OBJ}%.o: ${SRC_PHY}%.cpp
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
 ${OBJ}%.o: ${SRC_CNST}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+
+${OBJ}%.o: ${SRC_FOR}%.cpp
 	@/bin/echo -e "${GREEN}Compiling $<${NC}"
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 

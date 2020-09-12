@@ -8,10 +8,16 @@
 
 PhysicsEngine::PhysicsEngine()
 {
+	_forceGenerator = new ForceGenerator();
 }
 
 PhysicsEngine::~PhysicsEngine()
 {
+	if(_forceGenerator != nullptr)
+	{
+		delete _forceGenerator;
+		_forceGenerator = nullptr;
+	}
 }
 
 void PhysicsEngine::stepPhysics(float dt)
@@ -19,23 +25,8 @@ void PhysicsEngine::stepPhysics(float dt)
 	dt/=10.f;
 	for(auto object : _objectsPhysics)
 	{
-		float inverseMass = object->getInverseMass();
-		if(inverseMass<=0)
-			continue;
-
-		float damping = object->getDamping();
-		glm::vec3 p = object->getPosition();
-		glm::vec3 v = object->getVelocity();
-		glm::vec3 a = object->getAcceleration();
-
-		p += v*dt;
-		v += a*dt;
-
-		v *= powf(damping, dt);
-
-		object->setPosition(p);
-		object->setVelocity(v);
-		object->setAcceleration(a);
+		object->addForce({0,9.8,0});
+		object->integrate(dt);
 	}
 }
 

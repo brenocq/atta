@@ -15,6 +15,9 @@ class ObjectPhysics
 		ObjectPhysics(glm::vec3 position={0,0,0}, glm::vec3 rotation={0,0,0}, float mass=1.0);
 		~ObjectPhysics();
 
+		void addForce(glm::vec3 force);
+		void integrate(float dt);
+
 		//---------- Getters ----------//
 		glm::vec3 getPosition() const { return _position; };
 		glm::vec3 getVelocity() const { return _velocity; };
@@ -30,9 +33,14 @@ class ObjectPhysics
 		void setMass(float mass) { _inverseMass = mass>0 ? 1/mass : 0; };
 
 	private:
+		// Clear the forces
+		void clearAccumulator();
+
 		glm::vec3 _position;
 		glm::vec3 _velocity;
 		glm::vec3 _acceleration;
+		
+		glm::vec3 _forceAccum;
 
 		// Damping is required to remove energy added 
 		// through numerical instability in the integrator
@@ -41,8 +49,6 @@ class ObjectPhysics
 		// Inverse mass is more useful because integration is simpler
 		// Immovable objects have zero inverseMass (infinity mass)
 		float _inverseMass;
-
-		//--- TODO delete bullet variables ---//
 };
 
 #endif// OBJECT_PHYSICS_H
