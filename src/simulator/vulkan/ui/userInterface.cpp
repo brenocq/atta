@@ -359,7 +359,10 @@ void UserInterface::createSceneTreeNode(Object* object)
 			}
 			ImGui::TreePop();
 		}
-		objectMenuPopup(object);
+		else
+		{
+			objectMenuPopup(object);
+		}
 	}
 }
 

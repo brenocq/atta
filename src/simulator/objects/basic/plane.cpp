@@ -6,10 +6,11 @@
 //--------------------------------------------------
 #include "plane.h"
 
-Plane::Plane(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec2 size, float mass):
-	Object(name, position, rotation, {1,1,1}, mass), _size(size)
+Plane::Plane(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec2 size, float mass, glm::vec3 color):
+	Object(name, position, rotation, {size.x,1,size.y}, mass), _size(size), _color(color)
 {
 	_type = "Plane";
+	_model = new Model("plane");
 	_physics = new ObjectPhysics(_position, _rotation, mass);
 }
 

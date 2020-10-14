@@ -21,10 +21,10 @@ These values are unreliable and come from what I think is going on in the code k
 
 #### Core
  - GPU Rendering (Vulkan): 90%
- - RayTracing (Nvidia): 80%
+ - RayTracing (Nvidia): 85%
  - User interface (Imgui): 20%
  - ~~Physics engine (Bullet): 30%~~
- - Physics engine: 0%
+ - Physics engine: 5%
  - GPU acceleration (Cuda): 0%
 
 ## Installation (Linux)

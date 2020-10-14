@@ -11,16 +11,18 @@ layout(location = 0) in vec3 FragColor;
 layout(location = 1) in vec3 FragNormal;
 layout(location = 2) in vec2 FragTexCoord;
 layout(location = 3) in flat int FragMaterialIndex;
+layout(location = 4) in vec3 FragPos;
 
 layout(location = 0) out vec4 OutColor;
 
 void main() 
 {
 	const int textureId = Materials[FragMaterialIndex].diffuseTextureId;
-	const vec3 lightVector = normalize(vec3(5, 4, 3));
-	const float d = max(dot(lightVector, normalize(FragNormal)), 0.2);
+	const vec3 lightPos = vec3(0, 100, 0);
+	const vec3 lightDir = normalize(lightPos - FragPos);
+	const float diff = max(dot(normalize(FragNormal), lightDir), 0.2);
 	
-	vec3 c = FragColor * d;
+	vec3 c = FragColor * diff;
 	if(textureId >= 0)
 	{
 		c *= texture(TextureSamplers[textureId], FragTexCoord).rgb;
