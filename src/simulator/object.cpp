@@ -72,6 +72,14 @@ glm::mat4 Object::getModelMat()
 
 void Object::setPosition(glm::vec3 position)
 {
+	for(auto child : _children)
+	{
+		glm::vec3 translate = position - _position;
+		glm::vec3 childPos = child->getPosition();
+		childPos += translate;
+		child->setPosition(childPos);
+	}
+
 	_position = position;
 	if(_physics!=nullptr)
 		_physics->setPosition(position);
@@ -79,6 +87,14 @@ void Object::setPosition(glm::vec3 position)
 
 void Object::setRotation(glm::vec3 rotation)
 {
+	for(auto child : _children)
+	{
+		glm::vec3 rot = rotation - _rotation;
+		glm::vec3 childRot = child->getRotation();
+		childRot += rot;
+		child->setRotation(childRot);
+	}
+
 	_rotation = rotation;
 	//if(_physics!=nullptr)
 	//	_physics->setRotation(rotation);

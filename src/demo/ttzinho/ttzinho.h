@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Robot Ttzinho
+// Robot Simulator
 // ttzinho.h
 // Date: 2020-09-01
 // By Breno Cunha Queiroz

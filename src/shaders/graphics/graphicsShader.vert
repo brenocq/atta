@@ -20,6 +20,7 @@ layout(location = 0) out vec3 FragColor;
 layout(location = 1) out vec3 FragNormal;
 layout(location = 2) out vec2 FragTexCoord;
 layout(location = 3) out flat int FragMaterialIndex;
+layout(location = 4) out vec3 FragPos;
 
 out gl_PerVertex
 {
@@ -30,12 +31,15 @@ void main()
 {
 	Material m = Materials[InMaterialIndex];
 
+	FragPos = vec3(objectInfo.modelView * vec4(InPosition, 1.0));
+	FragNormal = vec3(transpose(inverse(objectInfo.modelView)) * vec4(InNormal, 1.0));
+
     gl_Position = Camera.projection * Camera.modelView * objectInfo.modelView * vec4(InPosition, 1.0);
 	if(objectInfo.color.x + objectInfo.color.y + objectInfo.color.z == 0)
     	FragColor = m.diffuse.xyz;
 	else
     	FragColor = objectInfo.color;
-	FragNormal = vec3(Camera.modelView * vec4(InNormal, 0.0)); // technically not correct, should be ModelInverseTranspose
+
 	FragTexCoord = InTexCoord;
 	FragMaterialIndex = InMaterialIndex;
 }

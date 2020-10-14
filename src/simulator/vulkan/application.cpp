@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #include "application.h"
 #include "../objects/basic/importedObject.h"
+#include "../objects/basic/plane.h"
 #include "../objects/basic/box.h"
 #include "../objects/basic/sphere.h"
 #include "../objects/basic/cylinder.h"
+#include "../objects/others/displays/displayTFT144.h"
 #include "../physics/physicsEngine.h"
 
 Application::Application(Scene* scene):
@@ -399,17 +401,23 @@ void Application::render(VkCommandBuffer commandBuffer, int i)
 				Model* model;
 				if(abstractPtr->getType() == "ImportedObject")
 					model = ((ImportedObject*)abstractPtr)->getModel();
+				else if(abstractPtr->getType() == "Plane")
+					model = ((Plane*)abstractPtr)->getModel();
 				else if(abstractPtr->getType() == "Box")
 					model = ((Box*)abstractPtr)->getModel();
 				else if(abstractPtr->getType() == "Sphere")
 					model = ((Sphere*)abstractPtr)->getModel();
 				else if(abstractPtr->getType() == "Cylinder")
 					model = ((Cylinder*)abstractPtr)->getModel();
+				else if(abstractPtr->getType() == "Display")
+					model = ((DisplayTFT144*)abstractPtr)->getModel();
 				else continue;
 
 				ObjectInfo objectInfo;
 				objectInfo.modelMatrix = abstractPtr->getModelMat();
-				if(abstractPtr->getType() == "Box")
+				if(abstractPtr->getType() == "Plane")
+					objectInfo.color = ((Plane*)abstractPtr)->getColor();
+				else if(abstractPtr->getType() == "Box")
 					objectInfo.color = ((Box*)abstractPtr)->getColor();
 				else if(abstractPtr->getType() == "Sphere")
 					objectInfo.color = ((Sphere*)abstractPtr)->getColor();

@@ -32,6 +32,7 @@ FILES_IMGUI = imgui imgui_demo imgui_widgets imgui_draw imgui_impl_glfw imgui_im
 FILES_UI = userInterface uiRenderPass uiFrameBuffer
 FILES_RT = rayTracing deviceProcedures accelerationStructure bottomLevelAccelerationStructure topLevelAccelerationStructure rayTracingPipeline shaderBindingTable
 FILES_PIP = pipeline pipelineLayout graphicsPipeline linePipeline
+FILES_OBJS = others/displays/displayTFT144
 FILES_OBJS_BSC = importedObject plane box sphere cylinder
 FILES_DEMO = ttzinho/ttzinho
 #SHADERS = graphics/graphicsShader line/lineShader
@@ -60,6 +61,7 @@ OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_IMGUI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_UI})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_RT})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_PIP})
+OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_OBJS})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_OBJS_BSC})
 OBJECTS+=$(patsubst %, ${OBJ}%.o, ${FILES_DEMO})
 
@@ -111,6 +113,10 @@ ${OBJ}%.o: ${SRC_RT}%.cpp
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
 ${OBJ}%.o: ${SRC_PIP}%.cpp
+	@/bin/echo -e "${GREEN}Compiling $<${NC}"
+	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
+
+${OBJ}%.o: ${SRC_OBJS}%.cpp
 	@/bin/echo -e "${GREEN}Compiling $<${NC}"
 	${CC} ${CFLAGS} -c $< -o $@ ${LDFLAGS}
 
