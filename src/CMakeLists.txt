@@ -122,6 +122,14 @@ set(src_files_simulator_vulkan_ui
 	simulator/vulkan/ui/userInterface.cpp
 )
 
+set(src_files_simulator_vulkan_ui_imgui
+	simulator/vulkan/ui/imgui/imgui_impl_glfw.cpp
+	simulator/vulkan/ui/imgui/imgui_impl_glfw.h
+	simulator/vulkan/ui/imgui/imgui_impl_vulkan.cpp
+	simulator/vulkan/ui/imgui/imgui_impl_vulkan.h
+)
+
+
 source_group("Main" FILES ${src_files})
 source_group("Simulator" FILES ${src_files_simulator})
 source_group("Simulator.Helpers" FILES ${src_files_simulator_helpers})
@@ -134,6 +142,7 @@ source_group("Simulator.Physics.Colliders" FILES ${src_files_simulator_physics_c
 source_group("Simulator.Physics.Constraints" FILES ${src_files_simulator_physics_constraints})
 source_group("Simulator.Vulkan" FILES ${src_files_simulator_vulkan})
 source_group("Simulator.Vulkan.UI" FILES ${src_files_simulator_vulkan_ui})
+source_group("Simulator.Vulkan.UI.Imgui" FILES ${src_files_simulator_vulkan_ui_imgui})
 source_group("Simulator.Vulkan.RayTracing" FILES ${src_files_simulator_vulkan_raytracing})
 source_group("Simulator.Vulkan.Pipeline" FILES ${src_files_simulator_vulkan_pipeline})
 source_group("Demo.Ttzinho" FILES ${src_files_demo_ttzinho})
@@ -142,7 +151,9 @@ include_directories(.)
 include_directories(${glfw3_INCLUDE_DIRS})
 include_directories(${glm_INCLUDE_DIRS})
 include_directories(${Vulkan_INCLUDE_DIRS})
+message("Vulkan library ${Vulkan_LIBRARY}")
 link_directories(${Vulkan_LIBRARY})
+add_subdirectory(shaders)
 
 add_executable(${exe_name} 
 	${src_files} 
@@ -157,6 +168,7 @@ add_executable(${exe_name}
 	${src_files_simulator_physics_constraints} 
 	${src_files_simulator_vulkan} 
 	${src_files_simulator_vulkan_ui} 
+	${src_files_simulator_vulkan_ui_imgui} 
 	${src_files_simulator_vulkan_raytracing} 
 	${src_files_simulator_vulkan_pipeline} 
 	${src_files_demo_ttzinho}
@@ -165,10 +177,11 @@ add_executable(${exe_name}
 if (UNIX)
 	# GCC8 needs an extra lib for <filesystem>.
 	# This is not needed with GCC9 or higher.
-	set(extra_libs -lbacktrace -lstdc++fs)
+	#set(extra_libs -lbacktrace -lstdc++fs)
+	set(extra_libs -lstdc++fs)
 endif()
 
 set_target_properties(${exe_name} PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-target_link_libraries(${exe_name} PRIVATE glfw glm imgui::imgui tinyobjloader::tinyobjloader ${Vulkan_LIBRARIES} ${extra_libs})
-add_dependencies(${exe_name} assets)
+target_link_libraries(${exe_name} PRIVATE glfw glm imgui::imgui tinyobjloader::tinyobjloader ${Vulkan_LIBRARIES} ${extra_libs} robotSimLib)
+add_dependencies(${exe_name} assets shaders)
 

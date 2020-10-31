@@ -14,8 +14,8 @@ LinePipeline::LinePipeline(Device* device,
 	Pipeline(device, swapChain, renderPass, uniformBuffers, scene)
 {
 	//---------- Shaders ----------//
- 	_vertShaderModule = new ShaderModule(_device, "src/shaders/line/lineShader.vert.spv");
-    _fragShaderModule = new ShaderModule(_device, "src/shaders/line/lineShader.frag.spv");
+ 	_vertShaderModule = new ShaderModule(_device, "src/shaders/shaders/lineShader.vert.spv");
+    _fragShaderModule = new ShaderModule(_device, "src/shaders/shaders/lineShader.frag.spv");
 
 	// Vert shader
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

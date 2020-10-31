@@ -261,10 +261,10 @@ void RayTracing::render(VkCommandBuffer commandBuffer, const uint32_t imageIndex
 
 	VkImageCopy copyRegion;
 	copyRegion.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-	copyRegion.srcOffset = { split?extent.width/2:0, 0, 0 };
+	copyRegion.srcOffset = { split?(int32_t)extent.width/2:0, 0, 0 };
 	copyRegion.dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-	copyRegion.dstOffset = { split?extent.width/2:0, 0, 0 };
-	copyRegion.extent = { split?extent.width/2:extent.width, extent.height, 1 };
+	copyRegion.dstOffset = { split?(int32_t)extent.width/2:0, 0, 0 };
+	copyRegion.extent = { split?(int32_t)extent.width/2:extent.width, extent.height, 1 };
 
 	vkCmdCopyImage(commandBuffer,
 		_outputImage->handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -285,7 +285,7 @@ void RayTracing::createBottomLevelStructures(VkCommandBuffer commandBuffer)
 	uint32_t aabbOffset = 0;
 
 	std::vector<AccelerationStructure::MemoryRequirements> requirements;
-	std::vector<uint32_t> indexesGenerated = {};
+	std::vector<int> indexesGenerated = {};
 
 	// Create blas object with memory requirements for each model
 	for(Model* model : _scene->getModels())

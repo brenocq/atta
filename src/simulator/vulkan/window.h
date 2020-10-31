@@ -58,8 +58,8 @@ class Window
 		static void scrollCallback(GLFWwindow* window, const double xoffset, const double yoffset);
 
 		GLFWwindow* _window;
-		int _height;
 		int _width;
+		int _height;
 		bool _cursorVisible;
 		int _lastX;
 		int _lastY;

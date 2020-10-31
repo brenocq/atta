@@ -18,8 +18,8 @@ class Plane : public Object
 		glm::vec3 getColor() const { return _color; };
 
 	private:
-		glm::vec3 _color;
 		glm::vec2 _size;
+		glm::vec3 _color;
 };
 
 #endif// PLANE_H

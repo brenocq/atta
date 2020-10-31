@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "topLevelAccelerationStructure.h"
+#include <cstring>
 
 VkAccelerationStructureCreateInfoNV getCreateInfo(const size_t instanceCount, const bool allowUpdate)
 {

@@ -225,9 +225,9 @@ void UserInterface::showSceneWindow(bool* showWindow)
 {
 	static bool showObjectInfo = false;
 
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->GetWorkPos());
-	ImGui::SetNextWindowSize(ImVec2(200,viewport->GetWorkSize().y));
+	//ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(0,20));
+	ImGui::SetNextWindowSize(ImVec2(200,_window->getExtent().height-20));
 
   	ImGuiWindowFlags flags =
         ImGuiWindowFlags_NoMove |

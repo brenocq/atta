@@ -145,11 +145,11 @@ RayTracingPipeline::RayTracingPipeline(
 	_pipelineLayout = new PipelineLayout(_device, _descriptorSetManager->getDescriptorSetLayout());
 
 	// Load shaders.
-	const ShaderModule rayGenShader(_device, "src/shaders/rayTracing/rayTracing.rgen.spv");
-	const ShaderModule missShader(_device, "src/shaders/rayTracing/rayTracing.rmiss.spv");
-	const ShaderModule closestHitShader(_device, "src/shaders/rayTracing/rayTracing.rchit.spv");
-	const ShaderModule proceduralClosestHitShader(_device, "src/shaders/rayTracing/rayTracing.procedural.rchit.spv");
-	const ShaderModule proceduralIntersectionShader(_device, "src/shaders/rayTracing/rayTracing.procedural.rint.spv");
+	const ShaderModule rayGenShader(_device, "src/shaders/shaders/rayTracing.rgen.spv");
+	const ShaderModule missShader(_device, "src/shaders/shaders/rayTracing.rmiss.spv");
+	const ShaderModule closestHitShader(_device, "src/shaders/shaders/rayTracing.rchit.spv");
+	const ShaderModule proceduralClosestHitShader(_device, "src/shaders/shaders/rayTracing.procedural.rchit.spv");
+	const ShaderModule proceduralIntersectionShader(_device, "src/shaders/shaders/rayTracing.procedural.rint.spv");
 
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 	{

@@ -15,8 +15,8 @@ GraphicsPipeline::GraphicsPipeline(
 	Pipeline(device, swapChain, renderPass, uniformBuffers, scene)
 {
 	//---------- Shaders ----------//
- 	_vertShaderModule = new ShaderModule(_device, "src/shaders/graphics/graphicsShader.vert.spv");
-    _fragShaderModule = new ShaderModule(_device, "src/shaders/graphics/graphicsShader.frag.spv");
+ 	_vertShaderModule = new ShaderModule(_device, "src/shaders/shaders/graphicsShader.vert.spv");
+    _fragShaderModule = new ShaderModule(_device, "src/shaders/shaders/graphicsShader.frag.spv");
 
 	// Vert shader
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

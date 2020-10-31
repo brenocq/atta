@@ -18,7 +18,6 @@ ShaderModule::ShaderModule(Device* device, const std::string& filename)
 
 	if(vkCreateShaderModule(_device->handle(), &createInfo, nullptr, &_shaderModule) != VK_SUCCESS) 
 	{
-		throw std::runtime_error("failed to create shader module!");
 		std::cout << BOLDRED << "[ShaderModule]" << RESET << RED << " Failed to create shader module!" << RESET << std::endl;
 		exit(1);
 	}
@@ -39,7 +38,7 @@ std::vector<char> ShaderModule::readFile(const std::string& filename)
 
     if(!file.is_open()) 
 	{
-		std::cout << BOLDRED << "[ShaderModule]" << RESET << RED << " Failed to open file!" << RESET << std::endl;
+		std::cout << BOLDRED << "[ShaderModule]" << RESET << RED << " Failed to open file: " << filename << RESET << std::endl;
 		exit(1);
     }
 

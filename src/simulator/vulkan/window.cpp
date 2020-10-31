@@ -7,6 +7,7 @@
 #include "window.h"
 #include "stbImage.h"
 #include "defines.h"
+#include "simulator/helpers/log.h"
 
 Window::Window():
 	_width(1200), _height(900), _cursorVisible(true), _lastX(0), _lastY(0)
@@ -29,7 +30,7 @@ Window::Window():
 
 	if(icon.pixels == nullptr)
 	{
-		std::cout << BOLDRED << "[Window] Failed to load icon!" << RESET << std::endl;
+		Log::error("Window", "Failed to load icon!");
 		exit(1);
 	}
 
@@ -116,7 +117,7 @@ void Window::keyCallback(GLFWwindow* window, const int key, const int scancode, 
 {
 	//printf("key: key:%c scan:%d ac:%d, mods:%d\n", key, scancode, action, mods);
 	Window* const _this = static_cast<Window*>(glfwGetWindowUserPointer(window));
-	if (_this->onKey)
+	if(_this->onKey)
 	{
 		_this->onKey(key, scancode, action, mods);
 	}
@@ -132,7 +133,7 @@ void Window::cursorPositionCallback(GLFWwindow* window, const double xpos, const
 		_this->setLastY(ypos);
 	}
 
-	if (_this->onCursorPosition)
+	if(_this->onCursorPosition)
 	{
 		_this->onCursorPosition(xpos, ypos);
 	}
@@ -142,7 +143,7 @@ void Window::mouseButtonCallback(GLFWwindow* window, const int button, const int
 {
 	//printf("mouse: bt:%d ac:%d mod:%d\n", button, action, mods);
 	Window* const _this = static_cast<Window*>(glfwGetWindowUserPointer(window));
-	if (_this->onMouseButton)
+	if(_this->onMouseButton)
 	{
 		_this->onMouseButton(button, action, mods);
 	}
@@ -151,9 +152,9 @@ void Window::mouseButtonCallback(GLFWwindow* window, const int button, const int
 void Window::scrollCallback(GLFWwindow* window, const double xoffset, const double yoffset)
 {
 	//printf("scroll: xo:%lf yo:%lf\n", xoffset, yoffset);
-	std::cout << std::flush;
+	//std::cout << std::flush;
 	Window* const _this = static_cast<Window*>(glfwGetWindowUserPointer(window));
-	if (_this->onScroll)
+	if(_this->onScroll)
 	{
 		_this->onScroll(xoffset, yoffset);
 	}
