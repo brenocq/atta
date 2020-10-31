@@ -52,6 +52,9 @@ class Application
 
 		void run();
 
+		//---------- Camera handling ----------//
+
+		//---------- Callbacks ----------//
 		std::function<void(float dt)> onDrawFrame;
 		std::function<void(glm::vec3 cameraPos, glm::vec3 raycastRay)> onRaycastClick;
 	private:
@@ -62,7 +65,7 @@ class Application
 		void framebufferResizeCallback() {_framebufferResized = true;}
 		void updateUniformBuffer(uint32_t currentImage);
 		void createDescriptorPool();
-		void render(VkCommandBuffer commandBuffer, int i);
+		void render(VkCommandBuffer commandBuffer, int imageIndex);
 
 		// User Interface
 		void createUserInterface();

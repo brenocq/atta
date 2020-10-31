@@ -35,6 +35,10 @@ set(src_files_simulator_objects_others
 	simulator/objects/others/displays/displayTFT144.cpp
 )
 
+set(src_files_simulator_objects_sensors
+	simulator/objects/sensors/camera/camera.cpp
+)
+
 set(src_files_simulator_physics
 	simulator/physics/objectPhysics.cpp
 	simulator/physics/physicsEngine.cpp
@@ -136,6 +140,7 @@ source_group("Simulator.Helpers" FILES ${src_files_simulator_helpers})
 source_group("Simulator.Objects.Basic" FILES ${src_files_simulator_objects_basic})
 source_group("Simulator.Objects.Others" FILES ${src_files_simulator_objects_others})
 source_group("Simulator.Objects.Controllers" FILES ${src_files_simulator_objects_controllers})
+source_group("Simulator.Objects.Sensors" FILES ${src_files_simulator_objects_sensors})
 source_group("Simulator.Physics" FILES ${src_files_simulator_physics})
 source_group("Simulator.Physics.Forces" FILES ${src_files_simulator_physics_forces})
 source_group("Simulator.Physics.Colliders" FILES ${src_files_simulator_physics_colliders})
@@ -162,6 +167,7 @@ add_executable(${exe_name}
 	${src_files_simulator_objects_basic} 
 	${src_files_simulator_objects_others} 
 	${src_files_simulator_objects_controllers} 
+	${src_files_simulator_objects_sensors}
 	${src_files_simulator_physics} 
 	${src_files_simulator_physics_forces} 
 	${src_files_simulator_physics_colliders} 

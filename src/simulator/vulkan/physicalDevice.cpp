@@ -309,7 +309,9 @@ void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physical
 				if(queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT)
 					std::cout << "T";
 				if(queueFamily.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT)
-					std::cout << "B";
+					std::cout << "S";
+				if(queueFamily.queueFlags & VK_QUEUE_PROTECTED_BIT)
+					std::cout << "P";
 				printf(" (%d queues)\n", queueFamily.queueCount);
 
 			}
@@ -400,7 +402,7 @@ void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physical
 			vkGetPhysicalDeviceMemoryProperties(device, &memProp);
 			//std::cout << memProp.memoryTypeCount << std::endl;
 			std::cout << "\t    - heaps (" << memProp.memoryHeapCount << ")" << std::endl;
-			for(int i=0;i<memProp.memoryHeapCount;i++)
+			for(int i=0;i<(int)memProp.memoryHeapCount;i++)
 				std::cout << "\t      - heap " << i << ": " << -int(memProp.memoryHeaps[i].size)/int(1<<20) << "Mb" << std::endl;
 		}
 

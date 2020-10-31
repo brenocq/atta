@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "commandBuffers.h"
 #include "physicalDevice.h"
+#include "simulator/helpers/log.h"
 
 CommandBuffers::CommandBuffers(Device* device, CommandPool* commandPool, uint32_t size)
 {
@@ -21,7 +22,7 @@ CommandBuffers::CommandBuffers(Device* device, CommandPool* commandPool, uint32_
 
 	if(vkAllocateCommandBuffers(_device->handle(), &allocInfo, _commandBuffers.data()) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to create command buffers!" << RESET << std::endl;
+		Log::error("CommandBuffers", "Failed to create command buffers!");
 		exit(1);
 	}
 }
@@ -35,12 +36,13 @@ VkCommandBuffer CommandBuffers::begin(const size_t i)
 {
 	VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	beginInfo.pInheritanceInfo = nullptr; // Optional
+	//beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;;
+	beginInfo.pInheritanceInfo = nullptr; // Only used by secondary command buffers
 
 	if(vkBeginCommandBuffer(_commandBuffers[i], &beginInfo) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
+		Log::error("CommandBuffers", "Failed to begin recording command buffer!");
 		exit(1);
 	}
 
@@ -49,10 +51,9 @@ VkCommandBuffer CommandBuffers::begin(const size_t i)
 
 void CommandBuffers::end(const size_t i)
 {
-
 	if(vkEndCommandBuffer(_commandBuffers[i]) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to record command buffer!" << RESET << std::endl;
+		Log::error("CommandBuffers", "Failed to record command buffer!");
 		exit(1);
 	}
 }

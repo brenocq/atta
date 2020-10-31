@@ -47,9 +47,13 @@ Application::Application(Scene* scene):
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
 		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _renderPass);
 
+	//---------- Descriptor pool ----------//
 	createDescriptorPool();
+
+	//---------- Command buffers ----------//
 	_commandBuffers = new CommandBuffers(_device, _commandPool, _frameBuffers.size());
 
+	//---------- Syncronization ----------//
 	_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	_inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -62,15 +66,15 @@ Application::Application(Scene* scene):
 		_inFlightFences[i] = new Fence(_device);
 	}
 
-	// Model view controller
+	//---------- Model view controller ----------//
 	_modelViewController = new ModelViewController(_window);
 	_modelViewController->reset(glm::lookAt(glm::vec3(3, 3, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
-	// IMGUI
+	//---------- User Interface ----------//
 	_userInterface = nullptr;
 	createUserInterface();
 
-	// RayTracing
+	//---------- RayTracing ----------//
 	_rayTracing = new RayTracing(_device, _swapChain, _commandPool, _uniformBuffers, _scene);
 }
 
@@ -256,7 +260,6 @@ void Application::drawFrame()
 	// Update physics
 	//_scene->updatePhysics(timeDelta);
 
-	
 	bool cameraUpdated = _modelViewController->updateCamera(timeDelta);
 
 	//-----------------------------//
@@ -277,17 +280,9 @@ void Application::drawFrame()
 		Log::error("Application", "Failed to acquire swap chain image!");
 		exit(1);
 	}
-	VkCommandBuffer commandBuffer = _commandBuffers->handle()[imageIndex];
-	//---------- Start command pool ----------//
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	//beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	if(vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-	{
-		Log::error("Application", "Failed to begin recording command buffer!");
-		exit(1);
-	}
+
+	//---------- Start recording to command buffer ----------//
+	VkCommandBuffer commandBuffer = _commandBuffers->begin(imageIndex);
 	{
 		if(_enableRayTracing || _splitRender)
 		{
@@ -302,30 +297,31 @@ void Application::drawFrame()
 			render(commandBuffer, imageIndex);
 		}
 	}
-	vkEndCommandBuffer(commandBuffer);
+	_commandBuffers->end(imageIndex);
 
-
+	// Record to user interface command buffer
 	_userInterface->render(imageIndex);
 
 	//---------- CPU-GPU syncronization ----------//
 	_inFlightFences[_currentFrame]->wait(UINT64_MAX);
 	_inFlightFences[_currentFrame]->reset();
 
-	//---------- Submit to queues ----------//
-	updateUniformBuffer(imageIndex);
-
-	VkSubmitInfo submitInfo{};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
+	//---------- GPU-GPU syncronization ----------//
 	VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores[_currentFrame]->handle()};
 	VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 	VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currentFrame]->handle()};
 
+	//---------- Update uniform buffers ----------//
+	updateUniformBuffer(imageIndex);
+
+	//---------- Submit to graphics queue ----------//
 	std::array<VkCommandBuffer, 2> submitCommandBuffers =
     { _commandBuffers->handle()[imageIndex],  _userInterface->getCommandBuffer(imageIndex)};
 
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.waitSemaphoreCount = 1;
-	submitInfo.pWaitSemaphores = waitSemaphores;
+	submitInfo.pWaitSemaphores = waitSemaphores;// Wait image available
 	submitInfo.pWaitDstStageMask = waitStages;
 	submitInfo.commandBufferCount = static_cast<uint32_t>(submitCommandBuffers.size());
 	submitInfo.pCommandBuffers = submitCommandBuffers.data();
@@ -334,17 +330,18 @@ void Application::drawFrame()
 
 	_inFlightFences[_currentFrame]->reset();
 
-	if (vkQueueSubmit(_device->getGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]->handle()) != VK_SUCCESS) {
+	if(vkQueueSubmit(_device->getGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]->handle()) != VK_SUCCESS)
+	{
 		Log::error("Application", "Failed to submit draw command buffer!");
 		exit(1);
 	}
 
-	//---------- Present ----------//
+	//---------- Submit do present queue ----------//
 	VkSwapchainKHR swapChains[] = {_swapChain->handle()};
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = signalSemaphores;
+	presentInfo.pWaitSemaphores = signalSemaphores;// Wait processing image
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
@@ -361,12 +358,10 @@ void Application::drawFrame()
 		exit(1);
 	}
 
-	vkQueueWaitIdle(_device->getPresentQueue());
-
 	_currentFrame = (_currentFrame + 1) % _inFlightFences.size();
 }
 
-void Application::render(VkCommandBuffer commandBuffer, int i)
+void Application::render(VkCommandBuffer commandBuffer, int imageIndex)
 {
 	std::array<VkClearValue, 2> clearValues{};
 	clearValues[0].color = {0.3f, 0.3f, 0.3f, 1.0f};
@@ -375,7 +370,7 @@ void Application::render(VkCommandBuffer commandBuffer, int i)
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = _renderPass->handle();
-	renderPassInfo.framebuffer = _frameBuffers[i]->handle();
+	renderPassInfo.framebuffer = _frameBuffers[imageIndex]->handle();
 	renderPassInfo.renderArea.offset = {0, 0};
 	if(!_splitRender)
 		renderPassInfo.renderArea.extent = _swapChain->getExtent();
@@ -393,7 +388,7 @@ void Application::render(VkCommandBuffer commandBuffer, int i)
 		// Graphics pipeline
 		{
 			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
-			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[i], 0, nullptr);
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
@@ -449,10 +444,9 @@ void Application::render(VkCommandBuffer commandBuffer, int i)
 		{
 			VkBuffer lineVertexBuffers[] = { _scene->getLineVertexBuffer()->handle() };
 			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->handle());
-			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->getPipelineLayout()->handle(), 0, 1, &_linePipeline->getDescriptorSets()->handle()[i], 0, nullptr);
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->getPipelineLayout()->handle(), 0, 1, &_linePipeline->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, lineVertexBuffers, offsets);
 			vkCmdBindIndexBuffer(commandBuffer, _scene->getLineIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
-
 
 			ObjectInfo objectInfo;
 			objectInfo.modelMatrix = glm::mat4(1);
@@ -467,8 +461,6 @@ void Application::render(VkCommandBuffer commandBuffer, int i)
 
 			const uint32_t indexCount = static_cast<uint32_t>(_scene->getLineIndexCount());
 			vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
-
-
 		}
 	}
 	vkCmdEndRenderPass(commandBuffer);

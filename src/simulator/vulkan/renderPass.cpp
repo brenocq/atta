@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "renderPass.h"
+#include "simulator/helpers/log.h"
 
 RenderPass::RenderPass(Device* device, SwapChain* swapChain, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer)
 {
@@ -88,8 +89,8 @@ RenderPass::RenderPass(Device* device, SwapChain* swapChain, DepthBuffer* depthB
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;
 
-	if (vkCreateRenderPass(_device->handle(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS) {
-		std::cout << BOLDRED << "[RenderPass]" << RESET << RED << " Failed to create render pass!" << RESET << std::endl;
+	if(vkCreateRenderPass(_device->handle(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS) {
+		Log::error("RenderPass", "Failed to create render pass!");
 		exit(1);
 	}
 }
