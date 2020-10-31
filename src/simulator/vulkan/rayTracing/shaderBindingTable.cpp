@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "shaderBindingTable.h"
+#include <cstring>
 
 size_t roundUp(size_t size, size_t powerOf2Alignment)
 {

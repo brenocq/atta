@@ -30,8 +30,8 @@ Simulator::Simulator()
 
 	_scene->addObject((Object*)ground);// Add a simple object
 	_scene->addComplexObject(_ttzinho->getObject());// Add the object and its children
-	//_scene->addObject((Object*)test1);// Add a simple object
-	//_scene->addObject((Object*)test2);// Add a simple object
+	_scene->addObject((Object*)test1);// Add a simple object
+	_scene->addObject((Object*)test2);// Add a simple object
 	_scene->linkObjects();
 
 	_debugDrawer = new DebugDrawer(_scene);

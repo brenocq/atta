@@ -22,10 +22,12 @@ class Log
 		Log();
 		~Log();
 
+		static void verbose(std::string tag, std::string text, bool showTag=true);
 		static void debug(std::string tag, std::string text, bool showTag=true);
 		//static void debug_pair(std::string tag, std::string label, std::string text);
 		static void success(std::string tag, std::string text, bool showTag=true);
 		static void info(std::string tag, std::string text, bool showTag=true);
+		static void infoItem(std::string tag, std::string text);
 		//static void info_pair(std::string tag, std::string label, std::string text);
 		static void warning(std::string tag, std::string text, bool showTag=true);
 		static void error(std::string tag, std::string text, bool showTag=true);

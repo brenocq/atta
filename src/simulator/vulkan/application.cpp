@@ -12,6 +12,7 @@
 #include "../objects/basic/cylinder.h"
 #include "../objects/others/displays/displayTFT144.h"
 #include "../physics/physicsEngine.h"
+#include "simulator/helpers/log.h"
 
 Application::Application(Scene* scene):
 	_scene(scene), _currentFrame(0), _framebufferResized(false), _enableRayTracing(false), _totalNumberOfSamples(0), _splitRender(false)
@@ -38,7 +39,7 @@ Application::Application(Scene* scene):
 		_uniformBuffers[i] = new UniformBuffer(_device, bufferSize);
     }
 
-	//---------- Graphics pipeline ----------//
+	//---------- Pipelines ----------//
 	createPipelines();
 
 	//---------- Frame Buffers ----------//
@@ -134,7 +135,7 @@ void Application::createUserInterface()
 {
 	if(_userInterface != nullptr)
 	{
-		std::cout << BOLDYELLOW << "[Application]" << RESET << YELLOW << " User interface should be nullptr." << RESET << std::endl;
+		Log::warning("Application", "User interface should be nullptr.");
 		return;
 	}
 
@@ -273,7 +274,7 @@ void Application::drawFrame()
 	} 
 	else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) 
 	{
-		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to acquire swap chain image!" << RESET << std::endl;
+		Log::error("Application", "Failed to acquire swap chain image!");
 		exit(1);
 	}
 	VkCommandBuffer commandBuffer = _commandBuffers->handle()[imageIndex];
@@ -284,7 +285,7 @@ void Application::drawFrame()
 	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 	if(vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[CommandBuffers]" << RESET << RED << " Failed to begin recording command buffer!" << RESET << std::endl;
+		Log::error("Application", "Failed to begin recording command buffer!");
 		exit(1);
 	}
 	{
@@ -334,7 +335,7 @@ void Application::drawFrame()
 	_inFlightFences[_currentFrame]->reset();
 
 	if (vkQueueSubmit(_device->getGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]->handle()) != VK_SUCCESS) {
-		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to submit draw command buffer!" << RESET << std::endl;
+		Log::error("Application", "Failed to submit draw command buffer!");
 		exit(1);
 	}
 
@@ -356,7 +357,7 @@ void Application::drawFrame()
 	} 
 	else if(result != VK_SUCCESS) 
 	{
-		std::cout << BOLDRED << "[Application]" << RESET << RED << " Failed to present swap chain image!" << RESET << std::endl;
+		Log::error("Application", "Failed to present swap chain image!");
 		exit(1);
 	}
 

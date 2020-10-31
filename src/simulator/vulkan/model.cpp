@@ -74,7 +74,7 @@ void Model::loadModel()
 	
 	if (!objReader.ParseFromFile(modelPath))
 	{
-		std::cout << std::endl << BOLDRED << "[Model]" << RED << " Failed to load model" + modelPath + ": " + objReader.Error()<< RESET << std::endl;
+		std::cout << std::endl << BOLDRED << "[Model]" << RED << " Failed to load model " + modelPath + ": " + objReader.Error()<< RESET << std::endl;
 		exit(1);
 	}
 

@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "scene.h"
 #include <memory>
+#include <cstring>
 #include "vulkan/vertex.h"
 #include "vulkan/material.h"
 #include "vulkan/buffer.h"

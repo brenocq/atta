@@ -19,6 +19,11 @@ Log::~Log()
 
 }
 
+void Log::verbose(std::string tag, std::string text, bool showTag)
+{
+	logging(tag, BOLDCYAN, CYAN, text, showTag);
+}
+
 void Log::debug(std::string tag, std::string text, bool showTag)
 {
 	logging(tag, BOLDGREEN, RESET, text, showTag);
@@ -31,7 +36,12 @@ void Log::success(std::string tag, std::string text, bool showTag)
 
 void Log::info(std::string tag, std::string text, bool showTag)
 {
-	logging(tag, BOLDCYAN, CYAN, text, showTag);
+	logging(tag, BOLDWHITE, RESET, text, showTag);
+}
+
+void Log::infoItem(std::string tag, std::string text)
+{
+	info(tag, std::string("- ")+text, false);
 }
 
 void Log::warning(std::string tag, std::string text, bool showTag)

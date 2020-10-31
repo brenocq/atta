@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "instance.h"
+#include "simulator/helpers/log.h"
 
 //--------------------- Instance class -------------------//
 Instance::Instance():
@@ -13,7 +14,7 @@ Instance::Instance():
 	// Check validation layers support if requested
 	if(ENABLE_VALIDATION_LAYERS && !checkValidationLayerSupport())
 	{
-		std::cout << BOLDRED << "[Instance]" << RESET << RED << " Validation layers requested, but not available!" << RESET << std::endl;
+		Log::error("Instance", "Validation layers requested, but not available!");
 		exit(1);
 	}
 
@@ -24,7 +25,7 @@ Instance::Instance():
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = "No Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_0;	
+    appInfo.apiVersion = VK_API_VERSION_1_2;
 
 	// Create instance info
 	VkInstanceCreateInfo createInfo{};
@@ -54,7 +55,7 @@ Instance::Instance():
 	//printLayersProperties();
 	if(vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[Instance]" << RESET << RED << " Failed to create vulkan instance!" << RESET << std::endl;
+		Log::error("Instance", "Failed to create vulkan instance!");
 		exit(1);
 	}
 }
@@ -67,16 +68,16 @@ Instance::~Instance()
 
 void Instance::printExtensionSupport()
 {
-	std::cout << std::endl << BOLDWHITE << "[Instance]" << RESET <<" Available instance extensions:\n" << WHITE;
+	Log::info("Instance", "Available instance extensions:");
 
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 	std::vector<VkExtensionProperties> extensions(extensionCount);
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-	for (const auto& extension : extensions) 
+	for(const auto& extension : extensions) 
 	{
-		std::cout << '\t' << extension.extensionName << '\n';
+		Log::infoItem("Instance", extension.extensionName);
 	}
 
 	std::cout << RESET;
@@ -84,23 +85,23 @@ void Instance::printExtensionSupport()
 
 void Instance::printLayersProperties()
 {
-	std::cout << std::endl << BOLDWHITE << "[Instance]" << RESET <<" Available instance layers:\n" << WHITE;
+	Log::info("Instance", "Available instance layers:");
 
 	uint32_t propertyCount = 0;
 	vkEnumerateInstanceLayerProperties(&propertyCount, nullptr);
 
 	if(propertyCount == 0)
 	{
-		std::cout << RED << "\tThere are no available layer properties!" << RESET << std::endl;
+		Log::warning("Instance", "There are no available layer properties!", false);
 		return;
 	}
 
 	std::vector<VkLayerProperties> properties(propertyCount);
 	vkEnumerateInstanceLayerProperties(&propertyCount, properties.data());
 
-	for (const auto& property : properties) 
+	for(const auto& property : properties) 
 	{
-		std::cout << '\t' << property.layerName << " (" << property.description << ")" << std::endl;
+		Log::infoItem("Instance", property.layerName+std::string(" (")+property.description+std::string(")"));
 	}
 
 	std::cout << RESET;
@@ -114,7 +115,7 @@ std::vector<const char*> Instance::getRequiredExtensions()
 
 	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	if (ENABLE_VALIDATION_LAYERS) {
+	if(ENABLE_VALIDATION_LAYERS) {
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
 	for(auto extension : instanceExtensions)
