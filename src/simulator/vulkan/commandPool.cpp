@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "commandPool.h"
 #include "physicalDevice.h"
+#include "simulator/helpers/log.h"
 
 CommandPool::CommandPool(Device* device, VkCommandPoolCreateFlags flags)
 {
@@ -21,19 +22,17 @@ CommandPool::CommandPool(Device* device, VkCommandPoolCreateFlags flags)
 
 	if(vkCreateCommandPool(_device->handle(), &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[CommandPool]" << RESET << RED << " Failed to create command pool!" << RESET << std::endl;
+		Log::error("CommandPool", "Failed to create command pool!");
 		exit(1);
 	}
 }
 
 CommandPool::~CommandPool()
 {
-
 	if(_commandPool != nullptr)
 	{
 		vkDestroyCommandPool(_device->handle(), _commandPool, nullptr);
 		_commandPool = nullptr;
-
 	}
 }
 

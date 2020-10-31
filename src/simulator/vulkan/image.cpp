@@ -45,7 +45,7 @@ Image::Image(Device* device,
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-	if (vkAllocateMemory(_device->handle(), &allocInfo, nullptr, &_memory) != VK_SUCCESS) {
+	if(vkAllocateMemory(_device->handle(), &allocInfo, nullptr, &_memory) != VK_SUCCESS) {
 		std::cout << BOLDRED << "[Image]" << RESET << RED << " Failed to allocate image memory!" << RESET << std::endl;
 		exit(1);
 	}

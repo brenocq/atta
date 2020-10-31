@@ -18,20 +18,20 @@
 class CommandBuffers
 {
 	public:
-	CommandBuffers(Device* device, CommandPool* commandPool, uint32_t size);
-	~CommandBuffers();
+		CommandBuffers(Device* device, CommandPool* commandPool, uint32_t size);
+		~CommandBuffers();
 
-	std::vector<VkCommandBuffer> handle() const { return _commandBuffers; }
-	void setHandle(std::vector<VkCommandBuffer> newCommandBuffers) { _commandBuffers = newCommandBuffers; }
-	Device* getDevice() const { return _device; }
+		std::vector<VkCommandBuffer> handle() const { return _commandBuffers; }
+		void setHandle(std::vector<VkCommandBuffer> newCommandBuffers) { _commandBuffers = newCommandBuffers; }
+		Device* getDevice() const { return _device; }
 
-	VkCommandBuffer begin(size_t i);
-	void end(size_t i);
+		VkCommandBuffer begin(size_t i);
+		void end(size_t i);
 
 	private:
-	std::vector<VkCommandBuffer> _commandBuffers;
-	Device* _device;
-	CommandPool* _commandPool;
+		Device* _device;
+		std::vector<VkCommandBuffer> _commandBuffers;
+		CommandPool* _commandPool;
 };
 
 #endif// COMMAND_BUFFERS_H

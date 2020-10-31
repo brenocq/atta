@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "userInterface.h"
+#include "simulator/helpers/log.h"
 
 UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChain, Scene* scene):
 	_showPhysicsDebugger(false),
@@ -37,7 +38,7 @@ UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChai
 
 	if(!ImGui_ImplGlfw_InitForVulkan(_window->handle(), true))
 	{
-		std::cout << BOLDRED << "[UserInterface]" << RESET << RED << " Failed to initialise ImGui GLFW adapter!" << RESET << std::endl;
+		Log::error("UserInterface", "Failed to initialise ImGui GLFW adapter!");
 		exit(1);
 	}
 
@@ -56,7 +57,7 @@ UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChai
 
     if(!ImGui_ImplVulkan_Init(&initInfo, _imguiRenderPass->handle()))
 	{
-		std::cout << BOLDRED << "[UserInterface]" << RESET << RED << " Failed to initialise ImGui VULKAN adapter!" << RESET << std::endl;
+		Log::error("UserInterface", "Failed to initialise ImGui VULKAN adapter!");
 		exit(1);
 	}
 	
@@ -64,15 +65,13 @@ UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChai
 	VkCommandBuffer command_buffer = _imguiCommandPool->beginSingleTimeCommands();
 	if(!ImGui_ImplVulkan_CreateFontsTexture(command_buffer))
 	{
-		std::cout << BOLDRED << "[UserInterface]" << RESET << RED << " Failed to create fonts texture!" << RESET << std::endl;
+		Log::error("UserInterface", "Failed to create fonts texture!");
 		exit(1);
 	}
 	_imguiCommandPool->endSingleTimeCommands(command_buffer);
 
-	//ImGui_ImplVulkan_DestroyFontUploadObjects();
+	ImGui_ImplVulkan_DestroyFontUploadObjects();
 	ImGui_ImplVulkan_SetMinImageCount(_swapChain->getImages().size());
-
-	//---------- Init UI variables ---------//
 }
 
 UserInterface::~UserInterface()
@@ -131,7 +130,7 @@ void UserInterface::createCommandBuffers()
 
 	if(vkAllocateCommandBuffers(_device->handle(), &allocInfo, _imguiCommandBuffers.data()) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[UserInterface]" << RESET << RED << " Failed to allocate command buffers!" << RESET << std::endl;
+		Log::error("UserInterface", "Failed to allocate command buffers!");
 		exit(1);
 	}
 }
@@ -140,7 +139,7 @@ void UserInterface::checkResult(VkResult result)
 {
 	if(result != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[UserInterface]" << RESET << RED << " Failed to setup Imgui info!" << RESET << std::endl;
+		Log::error("UserInterface", "Failed to setup Imgui info!");
 		exit(1);
 	}
 }
@@ -159,22 +158,23 @@ void UserInterface::render(int i)
     info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     vkBeginCommandBuffer(_imguiCommandBuffers[i], &info);
-
-	//---------- User interface render pass ----------//
-	VkRenderPassBeginInfo uiRenderPassInfo = {};
-	uiRenderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	uiRenderPassInfo.renderPass = _imguiRenderPass->handle();
-	uiRenderPassInfo.framebuffer = _imguiFrameBuffers[i]->handle();
-	uiRenderPassInfo.renderArea.extent = _swapChain->getExtent();
-	uiRenderPassInfo.clearValueCount = 1;
-	VkClearValue clearValueUi{};
-	clearValueUi.color = {0.0f, 0.0f, 0.0f, 1.0f};
-	uiRenderPassInfo.pClearValues = &clearValueUi;
-	vkCmdBeginRenderPass(_imguiCommandBuffers[i], &uiRenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	{
-		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), _imguiCommandBuffers[i]);
+		//---------- User interface render pass ----------//
+		VkRenderPassBeginInfo uiRenderPassInfo = {};
+		uiRenderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		uiRenderPassInfo.renderPass = _imguiRenderPass->handle();
+		uiRenderPassInfo.framebuffer = _imguiFrameBuffers[i]->handle();
+		uiRenderPassInfo.renderArea.extent = _swapChain->getExtent();
+		uiRenderPassInfo.clearValueCount = 1;
+		VkClearValue clearValueUi{};
+		clearValueUi.color = {0.0f, 0.0f, 0.0f, 1.0f};
+		uiRenderPassInfo.pClearValues = &clearValueUi;
+		vkCmdBeginRenderPass(_imguiCommandBuffers[i], &uiRenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		{
+			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), _imguiCommandBuffers[i]);
+		}
+		vkCmdEndRenderPass(_imguiCommandBuffers[i]);
 	}
-	vkCmdEndRenderPass(_imguiCommandBuffers[i]);
 	vkEndCommandBuffer(_imguiCommandBuffers[i]);
 }
 

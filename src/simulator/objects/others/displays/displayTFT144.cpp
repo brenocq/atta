@@ -9,7 +9,7 @@
 #include "simulator/physics/constraints/hingeConstraint.h"
 
 DisplayTFT144::DisplayTFT144(std::string name, glm::vec3 position, glm::vec3 rotation):
-	Object(name, position, rotation, {0.1,0.1,0.1})
+	Object(name, position, rotation, {1,1,1})
 {
 	_type = "Display";
 	_model = new Model("box");
