@@ -9,24 +9,35 @@
 #include "../vertex.h"
 #include "../imageMemoryBarrier.h"
 
-RayTracing::RayTracing(Device* device, SwapChain* swapChain, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene)
+RayTracing::RayTracing(Device* device, SwapChain* swapChain, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
+	RayTracing(device, swapChain, swapChain->getExtent(), swapChain->getImageFormat(), commandPool, uniformBuffers, scene)
+{
+}
+
+RayTracing::RayTracing(Device* device, VkExtent2D extent, VkFormat format, CommandPool* commandPool, UniformBuffer* uniformBuffer, Scene* scene):
+	RayTracing(device, nullptr, extent, format, commandPool, std::vector<UniformBuffer*>{uniformBuffer}, scene)
+{
+}
+
+RayTracing::RayTracing(Device* device, SwapChain* swapChain, VkExtent2D extent, VkFormat format, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
+	_imageExtent(extent), _imageFormat(format)
 {
 	_device = device;
 	_swapChain = swapChain;
 	_commandPool = commandPool;
-	_uniformBuffers.assign(uniformBuffers.begin(), uniformBuffers.end());
+	_uniformBuffers = uniformBuffers;
 	_scene = scene;
 	_deviceProcedures = new DeviceProcedures(_device);
 	_rayTracingPipeline = nullptr;
 
 	getRTProperties();
 	createAccelerationStructures();
-	createSwapChain();
+	createPipeline();
 }
 
 RayTracing::~RayTracing()
 {
-	deleteSwapChain();
+	deletePipeline();
 
 	for(auto blas : _blas)
 	{
@@ -80,10 +91,15 @@ RayTracing::~RayTracing()
 	}
 }
 
-void RayTracing::createSwapChain()
+void RayTracing::createPipeline()
 {
 	createOutputImage();
-	_rayTracingPipeline = new RayTracingPipeline(_device, _deviceProcedures, _swapChain, _tlas[0], _accumulationImageView, _outputImageView, _uniformBuffers, _scene);
+	if(_swapChain!=nullptr)
+		_rayTracingPipeline = new RayTracingPipeline(_device, _deviceProcedures, _swapChain->getImages().size(), 
+				_tlas[0], _accumulationImageView, _outputImageView, _uniformBuffers, _scene);
+	else
+		_rayTracingPipeline = new RayTracingPipeline(_device, _deviceProcedures, 1, 
+				_tlas[0], _accumulationImageView, _outputImageView, _uniformBuffers, _scene);
 
 	const std::vector<ShaderBindingTable::Entry> rayGenPrograms = { {_rayTracingPipeline->getRayGenShaderIndex(), {}} };
 	const std::vector<ShaderBindingTable::Entry> missPrograms = { {_rayTracingPipeline->getMissShaderIndex(), {}} };
@@ -92,7 +108,7 @@ void RayTracing::createSwapChain()
 	_shaderBindingTable = new ShaderBindingTable(_device, _deviceProcedures, _rayTracingPipeline, _props, rayGenPrograms, missPrograms, hitGroups);
 }
 
-void RayTracing::deleteSwapChain()
+void RayTracing::deletePipeline()
 {
 	// Images
 	if(_accumulationImageView!=nullptr)
@@ -164,7 +180,7 @@ void RayTracing::recreateTopLevelStructures()
 	std::cout << std::endl << BOLDGREEN << "[RayTracing]" << GREEN << " Recreating top level acceleration structures... ";
 	const auto timer = std::chrono::high_resolution_clock::now();
 
-	deleteSwapChain();
+	deletePipeline();
 	// Delete tlas
 	for(auto tlas : _tlas)
 	{
@@ -204,13 +220,13 @@ void RayTracing::recreateTopLevelStructures()
 	const auto elapsed = std::chrono::duration<float, std::chrono::milliseconds::period>(std::chrono::high_resolution_clock::now() - timer).count();
 	std::cout << WHITE << elapsed << "ms" << RESET << std::endl;
 
-	createSwapChain();
+	createPipeline();
 }
 
 void RayTracing::createOutputImage()
 {
-	const auto extent = _swapChain->getExtent();
-	const auto format = _swapChain->getImageFormat();
+	const VkExtent2D extent = _imageExtent;
+	const VkFormat format = _imageFormat;
 	const auto tiling = VK_IMAGE_TILING_OPTIMAL;
 
 	_accumulationImage = new Image(_device, 
@@ -226,7 +242,7 @@ void RayTracing::createOutputImage()
 
 void RayTracing::render(VkCommandBuffer commandBuffer, const uint32_t imageIndex, bool split)
 {
-	const auto extent = _swapChain->getExtent();
+	const VkExtent2D extent = _imageExtent;
 
 	VkDescriptorSet descriptorSets[] = { _rayTracingPipeline->getDescriptorSet(imageIndex) };
 
@@ -246,6 +262,7 @@ void RayTracing::render(VkCommandBuffer commandBuffer, const uint32_t imageIndex
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_NV, _rayTracingPipeline->handle());
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_NV, _rayTracingPipeline->getPipelineLayout()->handle(), 0, 1, descriptorSets, 0, nullptr);
 
+	// Ray tracing to output/accumulation image
 	_deviceProcedures->vkCmdTraceRaysNV(commandBuffer,
 		_shaderBindingTable->getBuffer()->handle(), _shaderBindingTable->getRayGenOffset(),
 		_shaderBindingTable->getBuffer()->handle(), _shaderBindingTable->getMissOffset(), _shaderBindingTable->getMissEntrySize(),
@@ -253,29 +270,32 @@ void RayTracing::render(VkCommandBuffer commandBuffer, const uint32_t imageIndex
 		nullptr, 0, 0,
 		extent.width, extent.height, 1);
 
-	ImageMemoryBarrier::insert(commandBuffer, _outputImage->handle(), subresourceRange, 
-		VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	// Transfer the image to swapChain if its not rendering offline 
+	if(_swapChain!=nullptr)
+	{
+		ImageMemoryBarrier::insert(commandBuffer, _outputImage->handle(), subresourceRange, 
+			VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-	ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, 0,
-		VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, 
+			0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-	VkImageCopy copyRegion;
-	copyRegion.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-	copyRegion.srcOffset = { split?(int32_t)extent.width/2:0, 0, 0 };
-	copyRegion.dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-	copyRegion.dstOffset = { split?(int32_t)extent.width/2:0, 0, 0 };
-	copyRegion.extent = { split?(int32_t)extent.width/2:extent.width, extent.height, 1 };
+		// Copy all image or only half (splits the screen in half)
+		VkImageCopy copyRegion;
+		copyRegion.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
+		copyRegion.srcOffset = { split?(int32_t)extent.width/2:0, 0, 0 };
+		copyRegion.dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
+		copyRegion.dstOffset = { split?(int32_t)extent.width/2:0, 0, 0 };
+		copyRegion.extent = { split?(int32_t)extent.width/2:extent.width, extent.height, 1 };
 
-	vkCmdCopyImage(commandBuffer,
-		_outputImage->handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-		_swapChain->getImages()[imageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		1, &copyRegion);
+		vkCmdCopyImage(commandBuffer,
+			_outputImage->handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+			_swapChain->getImages()[imageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			1, &copyRegion);
 
-	// Changed VK_IMAGE_LAYOUT_PRESENT_SRC_KHR to VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL (imgui)
-	ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
-		0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-
-	// End command buffer
+		// Changed VK_IMAGE_LAYOUT_PRESENT_SRC_KHR to VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL (imgui)
+		ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+	}
 }
 
 void RayTracing::createBottomLevelStructures(VkCommandBuffer commandBuffer)

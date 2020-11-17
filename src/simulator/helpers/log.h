@@ -11,14 +11,6 @@
 class Log
 {
 	public:
-		enum class Level
-		{
-			DEBUG,
-			INFO,
-			WARNING,
-			ERROR
-		};
-
 		Log();
 		~Log();
 

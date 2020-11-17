@@ -24,7 +24,7 @@ class RayTracingPipeline final
 	RayTracingPipeline(
 		Device* device,
 		DeviceProcedures* deviceProcedures,
-		SwapChain* swapChain,
+		uint32_t qtyImages,
 		TopLevelAccelerationStructure* accelerationStructure,
 		ImageView* accumulationImageView,
 		ImageView* outputImageView,
@@ -47,7 +47,7 @@ class RayTracingPipeline final
 	DescriptorSetManager* _descriptorSetManager;
 	PipelineLayout* _pipelineLayout;
 	Device* _device;
-	SwapChain* _swapChain;
+	uint32_t _qtyImages;
 	Scene* _scene;
 
 	uint32_t _rayGenIndex;

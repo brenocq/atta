@@ -11,6 +11,7 @@
 #include "../objects/basic/sphere.h"
 #include "../objects/basic/cylinder.h"
 #include "../objects/others/displays/displayTFT144.h"
+#include "../objects/sensors/camera/camera.h"
 #include "../physics/physicsEngine.h"
 #include "simulator/helpers/log.h"
 
@@ -76,6 +77,9 @@ Application::Application(Scene* scene):
 
 	//---------- RayTracing ----------//
 	_rayTracing = new RayTracing(_device, _swapChain, _commandPool, _uniformBuffers, _scene);
+
+	//---------- Scene special objects ----------//
+	createSpecialSceneObjects();
 }
 
 Application::~Application()
@@ -150,7 +154,7 @@ void Application::createUserInterface()
 
 void Application::cleanupSwapChain()
 {
-	_rayTracing->deleteSwapChain();
+	_rayTracing->deletePipeline();
 
 	delete _userInterface;
 
@@ -222,7 +226,7 @@ void Application::recreateSwapChain()
 
 	// IMGUI
 	createUserInterface();
-	_rayTracing->createSwapChain();
+	_rayTracing->createPipeline();
 }
 
 void Application::run()
@@ -251,8 +255,6 @@ void Application::drawFrame()
 	//if(_userInterface->getShowPhysicsDebugger())
 	//	_scene->getPhysicsEngine()->getWorld()->debugDrawWorld();
 
-	// Call simulator onDrawFrame
-	if(onDrawFrame)
 		onDrawFrame(timeDelta);
 
 	// Update line buffer
@@ -505,6 +507,22 @@ void Application::createDescriptorPool()
 	poolSizes.push_back(combinedImageSamplerDescriptor);
 
 	_descriptorPool = new DescriptorPool(_device, poolSizes);
+}
+
+void createSpecialSceneObjects()
+{
+	for(auto abstractPtr : _scene->getObjects())
+	{
+		std::string objectType = abstractPtr->getType();
+		if(objectType == "Camera")
+		{
+			Camera* camera = (Camera*)abstractPtr;
+		}
+		else if(objectType == "Display")
+		{
+
+		}
+	}
 }
 
 void Application::onKey(int key, int scancode, int action, int mods)
