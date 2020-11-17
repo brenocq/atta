@@ -28,12 +28,17 @@
 class RayTracing
 {
 	public:
+		// Ray Tracing with swapchain
 		RayTracing(Device* device, SwapChain* swapChain, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene);
+		// Offline Ray Tracing
+		RayTracing(Device* device, VkExtent2D extent, VkFormat format, CommandPool* commandPool, UniformBuffer* uniformBuffer, Scene* scene);
+		// Base constructor
+		RayTracing(Device* device, SwapChain* swapChain, VkExtent2D extent, VkFormat format, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffer, Scene* scene);
 		~RayTracing();
 
-		void createSwapChain();
-		void deleteSwapChain();
-		void render(VkCommandBuffer commandBuffer, const uint32_t imageIndex, bool split=false);
+		void createPipeline();
+		void deletePipeline();
+		void render(VkCommandBuffer commandBuffer, const uint32_t imageIndex=0, bool split=false);
 		void recreateTopLevelStructures();
 	private:
 		void getRTProperties();
@@ -42,6 +47,7 @@ class RayTracing
 		void createTopLevelStructures(VkCommandBuffer commandBuffer);
 		void createOutputImage();
 
+		// Main auxiliary objects
 		Device* _device;
 		CommandPool* _commandPool;
 		SwapChain* _swapChain;
@@ -51,11 +57,17 @@ class RayTracing
 		VkPhysicalDeviceRayTracingPropertiesNV _props = {};
 		DeviceProcedures* _deviceProcedures;
 
+		// Ray Tracing objects
 		std::vector<BottomLevelAccelerationStructure*> _blas;
 		std::vector<TopLevelAccelerationStructure*> _tlas;
 		RayTracingPipeline* _rayTracingPipeline;
 		ShaderBindingTable* _shaderBindingTable;
 
+		// Output images info
+		VkExtent2D _imageExtent;
+		VkFormat _imageFormat;
+
+		// Output images
 		Image* _accumulationImage;
 		ImageView* _accumulationImageView;
 		Image* _outputImage;

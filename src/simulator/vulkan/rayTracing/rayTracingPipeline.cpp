@@ -7,11 +7,12 @@
 #include "rayTracingPipeline.h"
 #include "../descriptorBinding.h"
 #include "../shaderModule.h"
+#include "simulator/helpers/log.h"
 
 RayTracingPipeline::RayTracingPipeline(
 	Device* device,
 	DeviceProcedures* deviceProcedures,
-	SwapChain* swapChain,
+	uint32_t qtyImages,
 	TopLevelAccelerationStructure* accelerationStructure,
 	ImageView* accumulationImageView,
 	ImageView* outputImageView,
@@ -19,13 +20,16 @@ RayTracingPipeline::RayTracingPipeline(
 	Scene* scene)
 {
 	_device = device;
-	_swapChain = swapChain;
+	_qtyImages = qtyImages;
 	_scene = scene;
 
-	// Create descriptor pool/sets.
+	if(_qtyImages!=uniformBuffers.size())
+		Log::warning("RayTracingPipeline", "Quantity images ("+std::to_string(qtyImages)+") and uniform buffers size ("+std::to_string(qtyImages)+") differ.");
+
+	// Create descriptor pool/sets
 	const std::vector<DescriptorBinding> descriptorBindings =
 	{
-		// Top level acceleration structure.
+		// Top level acceleration structure
 		{0, 1, VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV, VK_SHADER_STAGE_RAYGEN_BIT_NV},
 
 		// Image accumulation & output
@@ -45,7 +49,7 @@ RayTracingPipeline::RayTracingPipeline(
 		// Textures and image samplers
 		{9, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
 
-		// The Procedural buffer.
+		// The Procedural buffer
 		{10, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV | VK_SHADER_STAGE_INTERSECTION_BIT_NV}
 	};
 
@@ -53,7 +57,7 @@ RayTracingPipeline::RayTracingPipeline(
 
 	DescriptorSets* descriptorSets = _descriptorSetManager->getDescriptorSets();
 
-	for(uint32_t i = 0; i != _swapChain->getImages().size(); i++)
+	for(uint32_t i = 0; i != _qtyImages; i++)
 	{
 		// Top level acceleration structure.
 		const auto accelerationStructureHandle = accelerationStructure->handle();
@@ -144,7 +148,7 @@ RayTracingPipeline::RayTracingPipeline(
 
 	_pipelineLayout = new PipelineLayout(_device, _descriptorSetManager->getDescriptorSetLayout());
 
-	// Load shaders.
+	// Load shaders
 	const ShaderModule rayGenShader(_device, "src/shaders/shaders/rayTracing.rgen.spv");
 	const ShaderModule missShader(_device, "src/shaders/shaders/rayTracing.rmiss.spv");
 	const ShaderModule closestHitShader(_device, "src/shaders/shaders/rayTracing.rchit.spv");

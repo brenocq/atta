@@ -70,6 +70,9 @@ class Application
 		// User Interface
 		void createUserInterface();
 
+		// Special Scene Objects
+		void createSpecialSceneObjects();
+
 		// Window callbacks
 		void onKey(int key, int scancode, int action, int mods);
 		void onCursorPosition(double xpos, double ypos);
@@ -121,6 +124,10 @@ class Application
 		bool _enableRayTracing;
 		int _totalNumberOfSamples;
 		bool _splitRender;
+
+		// Camera parameters
+		std::vector<RayTracing*> _camerasRayTracing;
+		std::vector<GraphicsPipeline*> _camerasRasterization;
 };
 
 #endif// APPLICATION_H
