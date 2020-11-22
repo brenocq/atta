@@ -72,6 +72,7 @@ class Application
 
 		// Special Scene Objects
 		void createSpecialSceneObjects();
+		void updateSpecialSceneObjects();
 
 		// Window callbacks
 		void onKey(int key, int scancode, int action, int mods);
@@ -87,7 +88,6 @@ class Application
 		Surface* _surface;
 		SwapChain* _swapChain;
 
-		RenderPass* _renderPass;
 		GraphicsPipeline* _graphicsPipeline;
 		LinePipeline* _linePipeline;
 
@@ -98,8 +98,6 @@ class Application
 		DescriptorPool* _descriptorPool;
 		DescriptorSets* _descriptorSets;
 		Texture* _texture;
-		DepthBuffer* _depthBuffer;
-		ColorBuffer* _colorBuffer;
 
 		ModelViewController* _modelViewController;
 
@@ -128,7 +126,6 @@ class Application
 		// Camera parameters
 		std::vector<RayTracing*> _camerasRayTracing;
 		std::vector<GraphicsPipeline*> _camerasRasterization;
-		std::vector<RenderPass*> _camerasRenderPass;
 		std::vector<UniformBuffer*> _camerasUniformBuffer;
 };
 

@@ -8,13 +8,11 @@
 
 Pipeline::Pipeline(Device* device, 
 		SwapChain* swapChain, 
-		RenderPass* renderPass,
 		std::vector<UniformBuffer*> uniformBuffers, 
 		Scene* scene)
 {
 	_device = device;
 	_swapChain = swapChain;
-	_renderPass = renderPass;
 	_scene = scene;
 }
 

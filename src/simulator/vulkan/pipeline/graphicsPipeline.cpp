@@ -6,14 +6,28 @@
 //--------------------------------------------------
 #include "graphicsPipeline.h"
 
+#include "simulator/objects/basic/importedObject.h"
+#include "simulator/objects/basic/plane.h"
+#include "simulator/objects/basic/box.h"
+#include "simulator/objects/basic/sphere.h"
+#include "simulator/objects/basic/cylinder.h"
+#include "simulator/objects/others/display/display.h"
+#include "simulator/objects/sensors/camera/camera.h"
+#include "simulator/physics/physicsEngine.h"
+#include "simulator/helpers/log.h"
+
 GraphicsPipeline::GraphicsPipeline(
 			Device* device, 
 			SwapChain* swapChain, 
-			RenderPass* renderPass, 
 			std::vector<UniformBuffer*> uniformBuffers, 
 			Scene* scene):
-	Pipeline(device, swapChain, renderPass, uniformBuffers, scene)
+	Pipeline(device, swapChain, uniformBuffers, scene)
 {
+	//---------- Render pass ----------//
+	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
+	_depthBuffer = new DepthBuffer(_device, _swapChain->getExtent());
+	_renderPass = new RenderPass(_device, _swapChain, _depthBuffer, _colorBuffer);
+	
 	//---------- Shaders ----------//
  	_vertShaderModule = new ShaderModule(_device, "src/shaders/shaders/graphicsShader.vert.spv");
     _fragShaderModule = new ShaderModule(_device, "src/shaders/shaders/graphicsShader.frag.spv");
@@ -203,7 +217,7 @@ GraphicsPipeline::GraphicsPipeline(
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional	
 
-	if (vkCreateGraphicsPipelines(_device->handle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS) 
+	if(vkCreateGraphicsPipelines(_device->handle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS) 
 	{
 		std::cout << BOLDRED << "[GraphicsPipeline]" << RESET << RED << " Failed to create graphics pipeline!" << RESET << std::endl;
 		exit(1);
@@ -212,4 +226,88 @@ GraphicsPipeline::GraphicsPipeline(
 
 GraphicsPipeline::~GraphicsPipeline()
 {
+	if(_colorBuffer != nullptr)
+	{
+		delete _colorBuffer;
+		_colorBuffer = nullptr;
+	}
+
+	if(_depthBuffer != nullptr)
+	{
+		delete _depthBuffer;
+		_depthBuffer = nullptr;
+	}
+
+	if(_renderPass != nullptr)
+	{
+		delete _renderPass;
+		_renderPass = nullptr;
+	}
+}
+
+void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
+{
+	VkBuffer vertexBuffers[] = { _scene->getVertexBuffer()->handle() };
+	VkDeviceSize offsets[] = { 0 };
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
+	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+	vkCmdBindIndexBuffer(commandBuffer, _scene->getIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
+
+	for(auto abstractPtr : _scene->getObjects())
+	{
+		Model* model;
+		if(abstractPtr->getType() == "ImportedObject")
+			model = ((ImportedObject*)abstractPtr)->getModel();
+		else if(abstractPtr->getType() == "Plane")
+			model = ((Plane*)abstractPtr)->getModel();
+		else if(abstractPtr->getType() == "Box")
+			model = ((Box*)abstractPtr)->getModel();
+		else if(abstractPtr->getType() == "Sphere")
+			model = ((Sphere*)abstractPtr)->getModel();
+		else if(abstractPtr->getType() == "Cylinder")
+			model = ((Cylinder*)abstractPtr)->getModel();
+		else if(abstractPtr->getType() == "Display")
+			model = ((Display*)abstractPtr)->getModel();
+		else continue;
+
+		if(model == nullptr)
+			continue;
+
+		ObjectInfo objectInfo;
+		// Model matrix
+		objectInfo.modelMatrix = abstractPtr->getModelMat();
+
+		// Color
+		if(abstractPtr->getType() == "Plane")
+			objectInfo.color = ((Plane*)abstractPtr)->getColor();
+		else if(abstractPtr->getType() == "Box")
+			objectInfo.color = ((Box*)abstractPtr)->getColor();
+		else if(abstractPtr->getType() == "Sphere")
+			objectInfo.color = ((Sphere*)abstractPtr)->getColor();
+		else if(abstractPtr->getType() == "Cylinder")
+			objectInfo.color = ((Cylinder*)abstractPtr)->getColor();
+		else 
+			objectInfo.color = {1,1,1};
+
+		// Material index
+		if(abstractPtr->getType() == "Display")
+			objectInfo.materialIndex = ((Display*)abstractPtr)->getMaterialIndex();
+
+		vkCmdPushConstants(
+				commandBuffer,
+				_pipelineLayout->handle(),
+				VK_SHADER_STAGE_VERTEX_BIT,
+				0,
+				sizeof(ObjectInfo),
+				&objectInfo);
+
+		const uint32_t vertexCount = model->getVerticesSize();
+		const uint32_t indexCount = model->getIndicesSize();
+		const uint32_t vertexOffset = model->getVertexOffset();
+		const uint32_t indexOffset = model->getIndexOffset();
+
+		vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
+	}
 }

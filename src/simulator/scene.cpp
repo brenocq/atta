@@ -17,6 +17,7 @@
 #include "objects/basic/box.h"
 #include "objects/basic/cylinder.h"
 #include "objects/basic/sphere.h"
+#include "objects/others/display/display.h"
 
 Scene::Scene():
 	_maxLineCount(9999), _maxRTInstanceCount(1000)
@@ -151,8 +152,6 @@ void Scene::createBuffers(CommandPool* commandPool)
 	_device = commandPool->getDevice();
 	_proceduralBuffer = nullptr;
 
-	_textures.push_back(new Texture(_device, _commandPool, "assets/models/cube_multi/cube_multi.png"));
-
 	// Concatenate all the models
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
@@ -160,6 +159,31 @@ void Scene::createBuffers(CommandPool* commandPool)
 	std::vector<glm::uvec2> offsets;
 	std::vector<std::pair<glm::vec3, glm::vec3>> aabbs;
 	std::vector<glm::vec4> procedurals;
+
+	// Push special objects info
+	for(auto& object : _objects)
+	{
+		if(object->getType() == "Display")
+		{
+			Display* display = (Display*)object;
+			Display::DisplayInfo info = display->getDisplayInfo();
+
+			// Display texture
+			_textures.push_back(new Texture(_device, _commandPool, (VkExtent2D){info.width, info.height}));
+			int textureId = _textures.size()-1;
+			display->setTextureIndex(textureId);
+
+			// Display material
+			Material m = {};
+			m.diffuse = glm::vec4(1.0, 1.0, 1.0, 1.0);
+			m.diffuseTextureId = textureId;
+			materials.push_back(m);
+
+			int materialId = materials.size()-1;
+			display->setMaterialIndex(materialId);
+		}
+	}
+	_textures.push_back(new Texture(_device, _commandPool, "assets/models/cube_multi/cube_multi.png"));
 
 	for(const auto model : _models)
 	{
@@ -174,6 +198,8 @@ void Scene::createBuffers(CommandPool* commandPool)
 		vertices.insert(vertices.end(), model->getVertices().begin(), model->getVertices().end());
 		indices.insert(indices.end(), model->getIndices().begin(), model->getIndices().end());
 		materials.insert(materials.end(), model->getMaterials().begin(), model->getMaterials().end());
+		//std::cout << "mat: " << materials.size() << " " << model->getFileName() << std::endl;
+		//std::cout << "mat: " << _textures.size() << " " << model->getFileName() << std::endl;
 
 		// Adjust the material id.
 		for(size_t i = vertexOffset; i != vertices.size(); i++)
@@ -195,7 +221,7 @@ void Scene::createBuffers(CommandPool* commandPool)
 		//}
 	}
 
-	// Ray tracing flasg
+	// Ray tracing flags
 	const auto flag = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 
 	// Generate simulation grid (line buffer)

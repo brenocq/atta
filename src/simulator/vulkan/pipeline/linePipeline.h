@@ -7,25 +7,27 @@
 #ifndef LINE_PIPELINE_H
 #define LINE_PIPELINE_H
 
-#include "../vulkan.h"
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include "../vulkan.h"
+#include "simulator/vulkan/renderPass.h"
 #include "pipeline.h"
 
 class LinePipeline : public Pipeline
 {
 	public:
-	LinePipeline(Device* device, 
-			SwapChain* swapChain, 
-			RenderPass* renderPass,
-			std::vector<UniformBuffer*> uniformBuffers, 
-			Scene* scene);
-	~LinePipeline();
+		LinePipeline(Device* device, 
+				SwapChain* swapChain, 
+				RenderPass* renderPass,
+				std::vector<UniformBuffer*> uniformBuffers, 
+				Scene* scene);
+		~LinePipeline();
 
+		void render(VkCommandBuffer commandBuffer, int imageIndex=0);
 
 	private:
+		RenderPass* _renderPass;
 };
 
 #endif// LINE_PIPELINE_H

@@ -32,7 +32,6 @@ class Camera : public Object
 		Camera(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, CameraInfo cameraInfo={RAY_TRACING, 200, 200, 30.0f});
 		~Camera();
 
-		void createCamera(Application* application);
 		void takePicture();
 
 		//---------- Getters and Setters ----------//
