@@ -201,7 +201,7 @@ LinePipeline::LinePipeline(Device* device,
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional	
 
-	if (vkCreateGraphicsPipelines(_device->handle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS) 
+	if(vkCreateGraphicsPipelines(_device->handle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS) 
 	{
 		std::cout << BOLDRED << "[LinePipeline]" << RESET << RED << " Failed to create line pipeline!" << RESET << std::endl;
 		exit(1);

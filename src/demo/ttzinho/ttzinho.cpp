@@ -23,8 +23,8 @@ Ttzinho::Ttzinho()
 
 	Camera::CameraInfo camInfo;
 	camInfo.renderingType = Camera::CameraRenderingType::RAY_TRACING;
-	camInfo.width = 20;
-	camInfo.height = 20;
+	camInfo.width = 200;
+	camInfo.height = 200;
 	camInfo.fov = 30.0f;
 	Camera* camera = new Camera("Camera", {0.0, 0.2, 0.0}, {0,0,0}, camInfo);
 

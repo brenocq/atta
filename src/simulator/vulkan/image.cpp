@@ -9,15 +9,15 @@
 Image::Image(Device* device, 
 		uint32_t width, uint32_t height, 
 		VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, uint32_t mipLevels, VkSampleCountFlagBits numSamples):
-	_format(format), _layout(VK_IMAGE_LAYOUT_UNDEFINED), _mipLevels(mipLevels)
+	_format(format), _extent({width, height}), _layout(VK_IMAGE_LAYOUT_UNDEFINED), _mipLevels(mipLevels)
 {
 	_device = device;
 
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType = VK_IMAGE_TYPE_2D;
-	imageInfo.extent.width = width;
-	imageInfo.extent.height = height;
+	imageInfo.extent.width = _extent.width;
+	imageInfo.extent.height = _extent.height;
 	imageInfo.extent.depth = 1;
 	imageInfo.mipLevels = _mipLevels;
 	imageInfo.arrayLayers = 1;

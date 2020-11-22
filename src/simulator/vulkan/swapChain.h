@@ -15,6 +15,7 @@
 #include <cstdint> // Necessary for UINT32_MAX
 #include "defines.h"
 #include "device.h"
+#include "image.h"
 #include "imageView.h"
 #include "window.h"
 #include "helpers.h"
@@ -25,6 +26,9 @@ class SwapChain
 		SwapChain(Device* device, Window* window);
 		~SwapChain();
 
+		void copyImage(VkCommandBuffer commandBuffer, int imageIndex, Image* src, VkExtent2D extent, VkExtent2D offset);
+
+		//---------- Getters and Setters ----------//
 		VkSwapchainKHR handle() const { return _swapChain; }
 		VkExtent2D getExtent() const { return _extent; }
 		VkFormat getImageFormat() const { return _imageFormat; }

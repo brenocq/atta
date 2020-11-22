@@ -43,6 +43,7 @@ class RayTracing
 
 		//---------- Getters and Setters ----------//
 		Image* getAccumulationImage() const { return _accumulationImage; }
+		Image* getOutputImage() const { return _outputImage; }
 
 	private:
 		void getRTProperties();

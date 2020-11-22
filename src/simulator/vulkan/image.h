@@ -25,6 +25,7 @@ class Image
 		Device* getDevice() const { return _device; }
 		VkImage handle() const { return _image; }
 		VkImageLayout getImageLayout() const { return _layout; }
+		VkExtent2D getExtent() const { return _extent; }
 		VkFormat getFormat() const { return _format; }
 		VkDeviceMemory getMemory() const { return _memory; }
 		void setImageLayout(VkImageLayout layout) { _layout = layout; }
@@ -34,6 +35,7 @@ class Image
 
 		Device* _device;
 		VkImage _image;
+		VkExtent2D _extent;
 		VkFormat _format;
 		VkDeviceMemory _memory;
 		VkImageLayout _layout;
