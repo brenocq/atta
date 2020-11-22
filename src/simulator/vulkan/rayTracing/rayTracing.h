@@ -40,6 +40,10 @@ class RayTracing
 		void deletePipeline();
 		void render(VkCommandBuffer commandBuffer, const uint32_t imageIndex=0, bool split=false);
 		void recreateTopLevelStructures();
+
+		//---------- Getters and Setters ----------//
+		Image* getAccumulationImage() const { return _accumulationImage; }
+
 	private:
 		void getRTProperties();
 		void createAccelerationStructures();

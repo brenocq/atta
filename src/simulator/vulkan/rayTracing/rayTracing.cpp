@@ -310,6 +310,9 @@ void RayTracing::createBottomLevelStructures(VkCommandBuffer commandBuffer)
 	// Create blas object with memory requirements for each model
 	for(Model* model : _scene->getModels())
 	{
+		if(model == nullptr)
+			continue;
+
 		int modelIndex = model->getModelIndex();
 		// Generate only one per model
 		bool found = false;
@@ -379,6 +382,9 @@ void RayTracing::createTopLevelStructures(VkCommandBuffer commandBuffer)
 	for(Object* object : _scene->getObjects())
 	{
 		Model* model = object->getModel();
+		if(model == nullptr)
+			continue;
+
 		// glm::mat4 to expected by nvidia
 		glm::mat4 transformation = glm::transpose(object->getModelMat());
 

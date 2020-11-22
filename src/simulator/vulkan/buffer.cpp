@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "buffer.h"
+#include "simulator/helpers/log.h"
 
 Buffer::Buffer(Device* device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 {
@@ -18,7 +19,7 @@ Buffer::Buffer(Device* device, const int size, const VkBufferUsageFlags usage, V
 
 	if(vkCreateBuffer(_device->handle(), &_bufferInfo, nullptr, &_buffer) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[Buffer]" << RESET << RED << " Failed to create buffer!" << RESET << std::endl;
+		Log::error("Buffer", "Failed to create buffer!");
 		exit(1);
 	}
 
@@ -32,7 +33,7 @@ Buffer::Buffer(Device* device, const int size, const VkBufferUsageFlags usage, V
 
 	if(vkAllocateMemory(_device->handle(), &allocInfo, nullptr, &_bufferMemory) != VK_SUCCESS) 
 	{
-		std::cout << BOLDRED << "[Buffer]" << RESET << RED << " Failed to allocate buffer memory!" << RESET << std::endl;
+		Log::error("Buffer", "Failed to allocate buffer memory!");
 		exit(1);
 	}
 	vkBindBufferMemory(_device->handle(), _buffer, _bufferMemory, 0);
@@ -67,7 +68,7 @@ uint32_t Buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags prope
 		}
 	}
 
-	std::cout << BOLDRED << "[Buffer]" << RESET << RED << " Failed to find suitable memory type!" << RESET << std::endl;
+	Log::error("Buffer", "Failed to find suitable memory type!");
 	exit(1);
 }
 
@@ -114,7 +115,7 @@ void* Buffer::mapMemory(const size_t offset, const size_t size)
 	void* data;
 	if(vkMapMemory(_device->handle(), _bufferMemory, offset, size, 0, &data) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[Buffer]" << RESET << RED << " Failed to find map memory!" << RESET << std::endl;
+		Log::error("Buffer", "Failed to map memory!");
 		exit(1);
 	}
 

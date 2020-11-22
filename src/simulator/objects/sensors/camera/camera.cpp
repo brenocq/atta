@@ -7,10 +7,12 @@
 #include "camera.h"
 Camera::Camera(std::string name, glm::vec3 position, glm::vec3 rotation, CameraInfo cameraInfo):
 	Object(name, position, rotation, {1,1,1}), 
-	_width(cameraInfo.width), _height(cameraInfo.height), _fov(cameraInfo.fov), _renderingType(cameraInfo.renderingType)
+	_info(cameraInfo)
 {
-	_buffer = std::vector<uint8_t>(_width*_height*3);
 	_type = "Camera";
+	_buffer = std::vector<uint8_t>(_info.width*_info.height*3);
+
+	_physics = new ObjectPhysics(_position, _rotation, 1);
 }
 
 Camera::~Camera()

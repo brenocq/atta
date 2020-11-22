@@ -19,7 +19,7 @@ UniformBuffer::UniformBuffer(Device* device, VkDeviceSize size):
 	ubo.modelViewInverse = glm::inverse(ubo.modelView);
 	ubo.projectionInverse = glm::inverse(ubo.projection);
 	ubo.totalNumberOfSamples = 0;
-	ubo.numberOfSamples = 0;
+	ubo.numberOfSamples = 10;
 	ubo.numberOfBounces = 6;
 	ubo.randomSeed = 1;
 	ubo.gammaCorrection = true;
