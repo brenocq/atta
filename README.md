@@ -5,46 +5,11 @@
  <img src="./img/2020-09-12.png" height="200">
 </p>
 
-Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs) and my own physics engine. I was planning on using Bullet physics... But learning how to make one seems fun :).
-
-## Running
-```shell
-git clone https://github.com/Brenocq/RobotSimulator.git
-cd RobotSimulator
-make clean
-# After installation:
-make run -j4
-```
-
-## Progress
-These values are unreliable and come from what I think is going on in the code kk (things could change tomorrow as new ideas emerge.)
-
-#### Core
- - GPU Rendering (Vulkan): 90%
- - RayTracing (Nvidia): 85%
- - User interface (Imgui): 20%
- - ~~Physics engine (Bullet): 30%~~
- - Physics engine: 5%
- - GPU acceleration (Cuda): 0%
+Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing the camera sensor and the TFT display, after that start I will start with the physiscs engine :)
 
 ## Installation (Linux)
-This simulator is not well finished and I don't recommend trying to install it yet.
-
-#### Updating g++
-This simulator is using some libraries that were experimental in old version of g++. We can or change all #include<xxx> with erros to #include<experimental/xxx>, or update the g++.
-
-Please use g++ v8.2 or later to compile without errors.
-``` shell
-g++ --version
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo apt-get update
-sudo apt-get install gcc-8 g++-8
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 40
-g++ --version
-```
-
 #### Download Vulkan SDK
-First we need to download the vulkan SDK, I'm using the release 1.2.141.2.
+First we need to download the vulkan SDK, I'm using the release 1.2.154.0.
 You can download the vulkan SDK [here](https://vulkan.lunarg.com/sdk/home).
 
 Extract the files to some folder.
@@ -52,38 +17,29 @@ Extract the files to some folder.
 tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
 ```
 
-#### Download bullet physics SDK 
-~~You can download the bullet SDK [here](https://github.com/bulletphysics/bullet3/releases/tag/2.87). I am using the 2.87 version now (same used in libbullet-dev.)
-After downloading, install the bullet library~~
-``` shell
-sudo apt-get install -y libbullet-dev
-```
-**(I won't use Bullet Engine anymore... It will be removed while I build one.)**
-
-
-#### Install GLFW
-Now we need to install the GLFW to create windows.
-
-``` shell
-sudo apt-get install libglfw3-dev
-```
-If you prefer, you can build manually from the [official website](https://www.glfw.org/).
-
-#### Install GLM
-Now we'll have to download the GLM library to perform linear algebra.
-
-``` shell
-sudo apt install libglm-dev
+#### Install the RobotSimulator
+```shell
+git clone https://github.com/Brenocq/RobotSimulator.git
+# Change RobotSimulator/run.sh and RobotSimulator/debug.sh vulkan source to your path 
+# Change RobotSimulator/CMakeLists.txt vulkan path to your path
+./install.sh
 ```
 
-#### Change Makefile
-The last pass is to change the vulkan and buller SDK path in the makefile:
-
-``` Makefile
-# Open Makefile
-VULKAN_SDK_PATH = <path>/<xxx>/x86_64
-BULLET_SDK_PATH = <path>/bullet3
+## Running
+```shell
+./run.sh # Release
+./debug.sh # Debug with gdb
 ```
+
+## Progress
+These values are unreliable and come from what I think is going on in the code haha (things could change tomorrow as new ideas emerge.)
+
+#### Core
+ - GPU Rendering (Vulkan): 90%
+ - RayTracing (Nvidia): 85%
+ - User interface (Imgui): 20%
+ - Physics engine: 5%
+ - GPU acceleration (Cuda): 0%
 
 ## References
 - [Alexander Overvoorde's Vulkan Tutorial](https://vulkan-tutorial.com/)

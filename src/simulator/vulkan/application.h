@@ -128,6 +128,7 @@ class Application
 		// Camera parameters
 		std::vector<RayTracing*> _camerasRayTracing;
 		std::vector<GraphicsPipeline*> _camerasRasterization;
+		std::vector<RenderPass*> _camerasRenderPass;
 		std::vector<UniformBuffer*> _camerasUniformBuffer;
 };
 

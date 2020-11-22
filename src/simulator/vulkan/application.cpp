@@ -92,6 +92,18 @@ Application::~Application()
 		rayTracing = nullptr;
 	}
 
+	for(auto& pipeline : _camerasRasterization) 
+	{
+		delete pipeline;
+		pipeline = nullptr;
+    }
+
+	for(auto& renderPass : _camerasRenderPass) 
+	{
+		delete renderPass;
+		renderPass = nullptr;
+    }
+
 	for(auto& uniformBuffer : _camerasUniformBuffer) 
 	{
 		delete uniformBuffer;
@@ -318,6 +330,12 @@ void Application::drawFrame()
 			rt->recreateTopLevelStructures();
 			rt->render(commandBuffer);
 		}
+
+		Image* accImage = _camerasRayTracing[0]->getOutputImage();
+		VkExtent2D offset;
+		offset.width = 400;
+		offset.height = 100;
+		_swapChain->copyImage(commandBuffer, imageIndex, accImage, accImage->getExtent(), offset);
 	}
 	_commandBuffers->end(imageIndex);
 
@@ -378,15 +396,6 @@ void Application::drawFrame()
 	{
 		Log::error("Application", "Failed to present swap chain image!");
 		exit(1);
-	}
-
-	//---------- Updates after rendering ----------//
-	
-	for(auto& rt : _camerasRayTracing)
-	{
-		Image* image = rt->getAccumulationImage();
-		const char* data;	
-		vkMapMemory(_device->handle(), image->getMemory(), 0, VK_WHOLE_SIZE, 0, (void**)&data);
 	}
 
 	//---------- Next frame ----------//
@@ -523,6 +532,7 @@ void Application::updateUniformBuffer(uint32_t currentImage)
 	ubo.hasSky = false;
 
 	_uniformBuffers[currentImage]->setValue(ubo);
+	_camerasUniformBuffer[0]->setValue(ubo);
 }
 
 void Application::createDescriptorPool()
@@ -560,6 +570,11 @@ void Application::createSpecialSceneObjects()
 			{
 				_camerasRayTracing.push_back(new RayTracing(_device, {info.width, info.height}, VK_FORMAT_B8G8R8A8_UNORM, _commandPool, _camerasUniformBuffer.back(), _scene));
 				camera->setRayTracingPipelineIndex(_camerasRayTracing.size()-1);
+			}
+			if(info.renderingType == Camera::CameraRenderingType::RASTERIZATION)
+			{
+				//_camerasRasterization.push_back(new GraphicsPipeline(_device, {info.width, info.height}, VK_FORMAT_B8G8R8A8_UNORM, _renderPass, _camerasUniformBuffer.back(), _scene);
+				//camera->setRasterizationPipelineIndex(_camerasRasterization.size()-1);
 			}
 		}
 		else if(objectType == "Display")
