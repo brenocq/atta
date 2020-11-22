@@ -5,14 +5,14 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "application.h"
-#include "../objects/basic/importedObject.h"
-#include "../objects/basic/plane.h"
-#include "../objects/basic/box.h"
-#include "../objects/basic/sphere.h"
-#include "../objects/basic/cylinder.h"
-#include "../objects/others/displays/displayTFT144.h"
-#include "../objects/sensors/camera/camera.h"
-#include "../physics/physicsEngine.h"
+#include "simulator/objects/basic/importedObject.h"
+#include "simulator/objects/basic/plane.h"
+#include "simulator/objects/basic/box.h"
+#include "simulator/objects/basic/sphere.h"
+#include "simulator/objects/basic/cylinder.h"
+#include "simulator/objects/others/displays/displayTFT144.h"
+#include "simulator/objects/sensors/camera/camera.h"
+#include "simulator/physics/physicsEngine.h"
 #include "simulator/helpers/log.h"
 
 Application::Application(Scene* scene):
@@ -85,6 +85,18 @@ Application::Application(Scene* scene):
 Application::~Application()
 {
 	cleanupSwapChain();
+
+	for(auto& rayTracing : _camerasRayTracing)
+	{
+		delete rayTracing;
+		rayTracing = nullptr;
+	}
+
+	for(auto& uniformBuffer : _camerasUniformBuffer) 
+	{
+		delete uniformBuffer;
+		uniformBuffer = nullptr;
+    }
 
 	delete _rayTracing;
 	_rayTracing = nullptr;
@@ -166,7 +178,7 @@ void Application::cleanupSwapChain()
 	delete _depthBuffer;
 	_depthBuffer = nullptr;
 
-	for (auto frameBuffer : _frameBuffers) 
+	for(auto& frameBuffer : _frameBuffers) 
 	{
 		delete frameBuffer;
 		frameBuffer = nullptr;
@@ -187,7 +199,7 @@ void Application::cleanupSwapChain()
 	delete _swapChain;
 	_swapChain = nullptr;
 
-	for (auto uniformBuffer : _uniformBuffers) 
+	for(auto& uniformBuffer : _uniformBuffers) 
 	{
 		delete uniformBuffer;
 		uniformBuffer = nullptr;
@@ -255,6 +267,7 @@ void Application::drawFrame()
 	//if(_userInterface->getShowPhysicsDebugger())
 	//	_scene->getPhysicsEngine()->getWorld()->debugDrawWorld();
 
+	if(onDrawFrame)
 		onDrawFrame(timeDelta);
 
 	// Update line buffer
@@ -291,12 +304,19 @@ void Application::drawFrame()
 			// Recreate raytracing swapChain
 			_totalNumberOfSamples = 0;
 			_rayTracing->recreateTopLevelStructures();
-			_rayTracing->render(_commandBuffers->handle()[imageIndex], imageIndex, _splitRender);
+			_rayTracing->render(commandBuffer, imageIndex, _splitRender);
 		}
 
 		if(!_enableRayTracing || _splitRender)
 		{
 			render(commandBuffer, imageIndex);
+		}
+
+		// TODO raytracing with FPS
+		for(auto& rt : _camerasRayTracing)
+		{
+			rt->recreateTopLevelStructures();
+			rt->render(commandBuffer);
 		}
 	}
 	_commandBuffers->end(imageIndex);
@@ -360,6 +380,16 @@ void Application::drawFrame()
 		exit(1);
 	}
 
+	//---------- Updates after rendering ----------//
+	
+	for(auto& rt : _camerasRayTracing)
+	{
+		Image* image = rt->getAccumulationImage();
+		const char* data;	
+		vkMapMemory(_device->handle(), image->getMemory(), 0, VK_WHOLE_SIZE, 0, (void**)&data);
+	}
+
+	//---------- Next frame ----------//
 	_currentFrame = (_currentFrame + 1) % _inFlightFences.size();
 }
 
@@ -410,6 +440,9 @@ void Application::render(VkCommandBuffer commandBuffer, int imageIndex)
 				else if(abstractPtr->getType() == "Display")
 					model = ((DisplayTFT144*)abstractPtr)->getModel();
 				else continue;
+
+				if(model == nullptr)
+					continue;
 
 				ObjectInfo objectInfo;
 				objectInfo.modelMatrix = abstractPtr->getModelMat();
@@ -509,14 +542,25 @@ void Application::createDescriptorPool()
 	_descriptorPool = new DescriptorPool(_device, poolSizes);
 }
 
-void createSpecialSceneObjects()
+void Application::createSpecialSceneObjects()
 {
-	for(auto abstractPtr : _scene->getObjects())
+	for(auto& abstractPtr : _scene->getObjects())
 	{
 		std::string objectType = abstractPtr->getType();
 		if(objectType == "Camera")
 		{
 			Camera* camera = (Camera*)abstractPtr;
+			Camera::CameraInfo info = camera->getCameraInfo();
+
+			// Create uniform buffer
+			VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+			_camerasUniformBuffer.push_back(new UniformBuffer(_device, bufferSize));
+			// Create ray tracing pipeline
+			if(info.renderingType == Camera::CameraRenderingType::RAY_TRACING)
+			{
+				_camerasRayTracing.push_back(new RayTracing(_device, {info.width, info.height}, VK_FORMAT_B8G8R8A8_UNORM, _commandPool, _camerasUniformBuffer.back(), _scene));
+				camera->setRayTracingPipelineIndex(_camerasRayTracing.size()-1);
+			}
 		}
 		else if(objectType == "Display")
 		{

@@ -35,14 +35,21 @@ class Camera : public Object
 		void createCamera(Application* application);
 		void takePicture();
 
+		//---------- Getters and Setters ----------//
+		void setRayTracingPipelineIndex(int index) { _rayTracingPipelineIndex = index; }
+		int getRayTracingPipelineIndex() const { return _rayTracingPipelineIndex; }
+		void setRasterizationPipelineIndex(int index) { _rasterizationPipelineIndex = index; }
+		int getRasterizationPipelineIndex() const { return _rasterizationPipelineIndex; }
+		CameraRenderingType getRenderingType() const { return _info.renderingType; }
+		CameraInfo getCameraInfo() const { return _info; }
+
 	private:
 		// Camera parameters
-		unsigned int _width;
-		unsigned int _height;
-		float _fov;
+		CameraInfo _info;
 
 		// Simulation parameters
-		CameraRenderingType _renderingType;
+		int _rayTracingPipelineIndex;
+		int _rasterizationPipelineIndex;
 
 		// Image buffer
 		std::vector<uint8_t> _buffer;

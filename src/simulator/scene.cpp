@@ -94,23 +94,32 @@ Scene::~Scene()
 		_lineIndexBuffer = nullptr;
 	}
 
-	for(auto model : _models)
+	for(auto& model : _models)
 	{
-		delete model;
-		model = nullptr;
+		if(model != nullptr)
+		{
+			delete model;
+			model = nullptr;
+		}
 	}
 
-	for(auto object : _objects)
+	for(auto& object : _objects)
 	{
-		delete object;
-		object = nullptr;
+		if(object != nullptr)
+		{
+			delete object;
+			object = nullptr;
+		}
 	}
 
 	// TODO delete when texture isnt deleted by the model
-	for(auto texture : _textures)
+	for(auto& texture : _textures)
 	{
-		delete texture;
-		texture = nullptr;
+		if(texture != nullptr)
+		{
+			delete texture;
+			texture = nullptr;
+		}
 	}
 }
 

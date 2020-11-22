@@ -8,6 +8,7 @@
 #include "simulator/objects/basic/box.h"
 #include "simulator/objects/basic/importedObject.h"
 #include "simulator/objects/others/displays/displayTFT144.h"
+#include "simulator/objects/sensors/camera/camera.h"
 #include "simulator/physics/constraints/hingeConstraint.h"
 #include "simulator/helpers/log.h"
 
@@ -18,9 +19,19 @@ Ttzinho::Ttzinho()
 	ImportedObject* wheelR = new ImportedObject("Wheel right", "wheel", {0.2,0.12,0}, {0,0,-90}, {1,1,1}, 0.1f);
 	DisplayTFT144* display = new DisplayTFT144("Display", {0.0, 0.2, 0.0});
 
+
+
+	Camera::CameraInfo camInfo;
+	camInfo.renderingType = Camera::CameraRenderingType::RAY_TRACING;
+	camInfo.width = 20;
+	camInfo.height = 20;
+	camInfo.fov = 30.0f;
+	Camera* camera = new Camera("Camera", {0.0, 0.2, 0.0}, {0,0,0}, camInfo);
+
 	_object->addChild(wheelL, new HingeConstraint({0.2,0,0}, {0,0,90}));
 	_object->addChild(wheelR, new HingeConstraint({-0.2,0,0}, {0,0,-90}));
 	_object->addChild(display, new HingeConstraint({-0.2,0,0}, {0,0,-90}));
+	_object->addChild(camera, new HingeConstraint({-0.2,0,0}, {0,0,-90}));
 }
 
 Ttzinho::~Ttzinho()
