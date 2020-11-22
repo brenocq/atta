@@ -19,28 +19,31 @@
 class Texture
 {
 	public:
-	Texture(Device* device, CommandPool* commandPool, std::string filename);
-	~Texture();
+		Texture(Device* device, CommandPool* commandPool, std::string filename);
+		Texture(Device* device, CommandPool* commandPool, VkExtent2D size);
+		~Texture();
 
-	Device* getDevice() const { return _device; }
-	Image* getImage() const { return _image; }
-	ImageView* getImageView() const { return _imageView; }
-	Sampler* getSampler() const { return _sampler; }
+		Device* getDevice() const { return _device; }
+		Image* getImage() const { return _image; }
+		ImageView* getImageView() const { return _imageView; }
+		Sampler* getSampler() const { return _sampler; }
+
+		void updateTextureImage(std::vector<uint8_t> pixels);
 
 	private:
-	void transitionImageLayout(VkFormat format, VkImageLayout newLayout);
-	void copyBufferToImage(VkBuffer buffer, uint32_t width, uint32_t height);
-	void generateMipmaps();
-	VkCommandBuffer beginSingleTimeCommands();
-	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+		void transitionImageLayout(VkFormat format, VkImageLayout newLayout);
+		void copyBufferToImage(VkBuffer buffer, uint32_t width, uint32_t height);
+		void generateMipmaps();
+		VkCommandBuffer beginSingleTimeCommands();
+		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
-	Device* _device;
-	CommandPool* _commandPool;
-	Image* _image;
-	ImageView* _imageView;
-	Sampler* _sampler;
-	uint32_t _mipLevels;
-	int32_t _width, _height;
+		Device* _device;
+		CommandPool* _commandPool;
+		Image* _image;
+		ImageView* _imageView;
+		Sampler* _sampler;
+		uint32_t _mipLevels;
+		int32_t _width, _height;
 };
 
 #endif// TEXTURE_H

@@ -32,7 +32,7 @@ set(src_files_simulator_objects_controllers
 )
 
 set(src_files_simulator_objects_others
-	simulator/objects/others/displays/displayTFT144.cpp
+	simulator/objects/others/display/display.cpp
 )
 
 set(src_files_simulator_objects_sensors

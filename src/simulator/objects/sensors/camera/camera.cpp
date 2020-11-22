@@ -13,6 +13,8 @@ Camera::Camera(std::string name, glm::vec3 position, glm::vec3 rotation, CameraI
 	_buffer = std::vector<uint8_t>(_info.width*_info.height*3);
 
 	_physics = new ObjectPhysics(_position, _rotation, 1);
+
+	// When the vulkan application is created it creates a raytracing/rasterization pipeline to each camera
 }
 
 Camera::~Camera()
@@ -20,14 +22,8 @@ Camera::~Camera()
 
 }
 
-void Camera::createCamera(Application* application)
-{
-	// Create camera pipeline
-
-}
-
 void Camera::takePicture()
 {
-	// Transfer image buffer from GPU memory to buffer
+	// TODO Transfer image buffer from GPU memory to buffer
 
 }

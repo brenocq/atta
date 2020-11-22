@@ -18,29 +18,27 @@
 class DepthBuffer
 {
 	public:
-	DepthBuffer(Device* device, CommandPool* commandPool, VkExtent2D extent);
-	~DepthBuffer();
+		DepthBuffer(Device* device, VkExtent2D extent);
+		~DepthBuffer();
 
-	Device* getDevice() const { return _device; }
-	VkFormat getFormat() const { return _format; }
-	Image* getImage() const { return _image; }
-	ImageView* getImageView() const { return _imageView; }
+		Device* getDevice() const { return _device; }
+		VkFormat getFormat() const { return _format; }
+		Image* getImage() const { return _image; }
+		ImageView* getImageView() const { return _imageView; }
 
 	private:
-	VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-	bool hasStencilComponent();
+		VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+		//bool hasStencilComponent();
 
-	// TODO also being used in Texture
-	void transitionImageLayout(VkImageLayout newLayout);
-	VkCommandBuffer beginSingleTimeCommands();
-	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+		//// TODO also being used in Texture
+		//void transitionImageLayout(VkImageLayout newLayout);
 
-	Device* _device;
-	CommandPool* _commandPool;
-	Image* _image;
-	ImageView* _imageView;
-	VkFormat _format;
-	VkExtent2D _extent;
+		Device* _device;
+		CommandPool* _commandPool;
+		Image* _image;
+		ImageView* _imageView;
+		VkFormat _format;
+		VkExtent2D _extent;
 };
 
 #endif// DEPTH_BUFFER_H

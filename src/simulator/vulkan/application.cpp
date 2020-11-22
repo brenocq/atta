@@ -10,7 +10,7 @@
 #include "simulator/objects/basic/box.h"
 #include "simulator/objects/basic/sphere.h"
 #include "simulator/objects/basic/cylinder.h"
-#include "simulator/objects/others/displays/displayTFT144.h"
+#include "simulator/objects/others/display/display.h"
 #include "simulator/objects/sensors/camera/camera.h"
 #include "simulator/physics/physicsEngine.h"
 #include "simulator/helpers/log.h"
@@ -46,7 +46,7 @@ Application::Application(Scene* scene):
 	//---------- Frame Buffers ----------//
 	_frameBuffers.resize(_swapChain->getImageViews().size());
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
-		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _renderPass);
+		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 
 	//---------- Descriptor pool ----------//
 	createDescriptorPool();
@@ -96,12 +96,6 @@ Application::~Application()
 	{
 		delete pipeline;
 		pipeline = nullptr;
-    }
-
-	for(auto& renderPass : _camerasRenderPass) 
-	{
-		delete renderPass;
-		renderPass = nullptr;
     }
 
 	for(auto& uniformBuffer : _camerasUniformBuffer) 
@@ -156,11 +150,8 @@ Application::~Application()
 
 void Application::createPipelines()
 {
-	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
-	_depthBuffer = new DepthBuffer(_device, _commandPool, _swapChain->getExtent());
-	_renderPass = new RenderPass(_device, _swapChain, _depthBuffer, _colorBuffer);
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _renderPass, _uniformBuffers, _scene);
-	_linePipeline = new LinePipeline(_device, _swapChain, _renderPass, _uniformBuffers, _scene);
+	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _uniformBuffers, _scene);
+	_linePipeline = new LinePipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
 }
 
 void Application::createUserInterface()
@@ -184,12 +175,6 @@ void Application::cleanupSwapChain()
 
 	_userInterface = nullptr;
 
-	delete _colorBuffer;
-	_colorBuffer = nullptr;
-
-	delete _depthBuffer;
-	_depthBuffer = nullptr;
-
 	for(auto& frameBuffer : _frameBuffers) 
 	{
 		delete frameBuffer;
@@ -204,9 +189,6 @@ void Application::cleanupSwapChain()
 
 	delete _graphicsPipeline;
 	_graphicsPipeline = nullptr;
-
-	delete _renderPass;
-	_renderPass = nullptr;
 
 	delete _swapChain;
 	_swapChain = nullptr;
@@ -242,7 +224,7 @@ void Application::recreateSwapChain()
 
 	for(size_t i = 0; i < _frameBuffers.size(); i++) 
 	{
-		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _renderPass);
+		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 	}
 
 	createDescriptorPool();
@@ -284,6 +266,8 @@ void Application::drawFrame()
 
 	// Update line buffer
 	_scene->updateLineBuffer();
+	// Update special objects (camera, display, ...)
+	updateSpecialSceneObjects();
 	// Update physics
 	//_scene->updatePhysics(timeDelta);
 
@@ -410,7 +394,7 @@ void Application::render(VkCommandBuffer commandBuffer, int imageIndex)
 
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = _renderPass->handle();
+	renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
 	renderPassInfo.framebuffer = _frameBuffers[imageIndex]->handle();
 	renderPassInfo.renderArea.offset = {0, 0};
 	if(!_splitRender)
@@ -422,97 +406,18 @@ void Application::render(VkCommandBuffer commandBuffer, int imageIndex)
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	{
-		VkBuffer vertexBuffers[] = { _scene->getVertexBuffer()->handle() };
-		const VkBuffer indexBuffer = _scene->getIndexBuffer()->handle();
-		VkDeviceSize offsets[] = { 0 };
-
 		// Graphics pipeline
-		{
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->handle());
-			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline->getPipelineLayout()->handle(), 0, 1, &_graphicsPipeline->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
-			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-			vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-			for(auto abstractPtr : _scene->getObjects())
-			{
-				Model* model;
-				if(abstractPtr->getType() == "ImportedObject")
-					model = ((ImportedObject*)abstractPtr)->getModel();
-				else if(abstractPtr->getType() == "Plane")
-					model = ((Plane*)abstractPtr)->getModel();
-				else if(abstractPtr->getType() == "Box")
-					model = ((Box*)abstractPtr)->getModel();
-				else if(abstractPtr->getType() == "Sphere")
-					model = ((Sphere*)abstractPtr)->getModel();
-				else if(abstractPtr->getType() == "Cylinder")
-					model = ((Cylinder*)abstractPtr)->getModel();
-				else if(abstractPtr->getType() == "Display")
-					model = ((DisplayTFT144*)abstractPtr)->getModel();
-				else continue;
-
-				if(model == nullptr)
-					continue;
-
-				ObjectInfo objectInfo;
-				objectInfo.modelMatrix = abstractPtr->getModelMat();
-				if(abstractPtr->getType() == "Plane")
-					objectInfo.color = ((Plane*)abstractPtr)->getColor();
-				else if(abstractPtr->getType() == "Box")
-					objectInfo.color = ((Box*)abstractPtr)->getColor();
-				else if(abstractPtr->getType() == "Sphere")
-					objectInfo.color = ((Sphere*)abstractPtr)->getColor();
-				else if(abstractPtr->getType() == "Cylinder")
-					objectInfo.color = ((Cylinder*)abstractPtr)->getColor();
-				else 
-					objectInfo.color = {0,0,0};
-
-
-				vkCmdPushConstants(
-						commandBuffer,
-						_graphicsPipeline->getPipelineLayout()->handle(),
-						VK_SHADER_STAGE_VERTEX_BIT,
-						0,
-						sizeof(ObjectInfo),
-						&objectInfo);
-
-				const uint32_t vertexCount = model->getVerticesSize();
-				const uint32_t indexCount = model->getIndicesSize();
-				const uint32_t vertexOffset = model->getVertexOffset();
-				const uint32_t indexOffset = model->getIndexOffset();
-
-				vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
-			}
-		}
+		_graphicsPipeline->render(commandBuffer, imageIndex);
 
 		// Line pipeline
-		{
-			VkBuffer lineVertexBuffers[] = { _scene->getLineVertexBuffer()->handle() };
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->handle());
-			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linePipeline->getPipelineLayout()->handle(), 0, 1, &_linePipeline->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
-			vkCmdBindVertexBuffers(commandBuffer, 0, 1, lineVertexBuffers, offsets);
-			vkCmdBindIndexBuffer(commandBuffer, _scene->getLineIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
-
-			ObjectInfo objectInfo;
-			objectInfo.modelMatrix = glm::mat4(1);
-
-			vkCmdPushConstants(
-					commandBuffer,
-					_graphicsPipeline->getPipelineLayout()->handle(),
-					VK_SHADER_STAGE_VERTEX_BIT,
-					0,
-					sizeof(ObjectInfo),
-					&objectInfo);
-
-			const uint32_t indexCount = static_cast<uint32_t>(_scene->getLineIndexCount());
-			vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
-		}
+		_linePipeline->render(commandBuffer, imageIndex);
 	}
 	vkCmdEndRenderPass(commandBuffer);
 }
 
 void Application::updateUniformBuffer(uint32_t currentImage)
 {
-	int samplesPerFrame = 500;
+	int samplesPerFrame = 100;
 	_totalNumberOfSamples = samplesPerFrame;
 
 	UniformBufferObject ubo;
@@ -580,6 +485,24 @@ void Application::createSpecialSceneObjects()
 		else if(objectType == "Display")
 		{
 
+		}
+	}
+}
+
+void Application::updateSpecialSceneObjects()
+{
+	for(auto& abstractPtr : _scene->getObjects())
+	{
+		std::string objectType = abstractPtr->getType();
+		if(objectType == "Camera")
+		{
+
+		}
+		else if(objectType == "Display")
+		{
+			Display* display = (Display*)abstractPtr;
+			int textureId = display->getTextureIndex();
+			_scene->getTextures()[textureId]->updateTextureImage(display->buffer);
 		}
 	}
 }

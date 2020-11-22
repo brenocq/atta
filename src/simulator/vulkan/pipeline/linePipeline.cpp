@@ -11,7 +11,7 @@ LinePipeline::LinePipeline(Device* device,
 			RenderPass* renderPass,
 			std::vector<UniformBuffer*> uniformBuffers, 
 			Scene* scene):
-	Pipeline(device, swapChain, renderPass, uniformBuffers, scene)
+	Pipeline(device, swapChain, uniformBuffers, scene), _renderPass(renderPass)
 {
 	//---------- Shaders ----------//
  	_vertShaderModule = new ShaderModule(_device, "src/shaders/shaders/lineShader.vert.spv");
@@ -211,4 +211,29 @@ LinePipeline::LinePipeline(Device* device,
 LinePipeline::~LinePipeline()
 {
 	
+}
+
+void LinePipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
+{
+	VkBuffer lineVertexBuffers[] = { _scene->getLineVertexBuffer()->handle() };
+	VkDeviceSize offsets[] = { 0 };
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
+	vkCmdBindVertexBuffers(commandBuffer, 0, 1, lineVertexBuffers, offsets);
+	vkCmdBindIndexBuffer(commandBuffer, _scene->getLineIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
+
+	ObjectInfo objectInfo;
+	objectInfo.modelMatrix = glm::mat4(1);
+
+	vkCmdPushConstants(
+			commandBuffer,
+			_pipelineLayout->handle(),
+			VK_SHADER_STAGE_VERTEX_BIT,
+			0,
+			sizeof(ObjectInfo),
+			&objectInfo);
+
+	const uint32_t indexCount = static_cast<uint32_t>(_scene->getLineIndexCount());
+	vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
 }
