@@ -37,17 +37,18 @@ void PhysicsEngine::addObjectPhysics(ObjectPhysics* objectPhysics)
 
 bool PhysicsEngine::raycast(glm::vec3 startPosition, glm::vec3 direction)
 {
+	return false;
 }
 
 //---------- Static functions ----------//
 glm::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camUp)
 {
-	const float nearPlane = 0.1f;
+	//const float nearPlane = 0.1f;
 	const float farPlane = 1000.0f;
 
 	// Calculate fielf-of-view
 	float tanFov = 1.0f;//1.0f/nearPlane;
-	float fov = 2.0*atan(tanFov);
+	//float fov = 2.0*atan(tanFov);
 
 	// Get ray pointing forward from the camera and extend it to the far plane
 	glm::vec3 rayForward = glm::normalize(camForward);

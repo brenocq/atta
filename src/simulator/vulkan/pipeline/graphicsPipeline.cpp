@@ -6,27 +6,45 @@
 //--------------------------------------------------
 #include "graphicsPipeline.h"
 
-#include "simulator/objects/basic/importedObject.h"
-#include "simulator/objects/basic/plane.h"
-#include "simulator/objects/basic/box.h"
-#include "simulator/objects/basic/sphere.h"
-#include "simulator/objects/basic/cylinder.h"
+#include "simulator/objects/basics/basics.h"
 #include "simulator/objects/others/display/display.h"
 #include "simulator/objects/sensors/camera/camera.h"
 #include "simulator/physics/physicsEngine.h"
 #include "simulator/helpers/log.h"
 
-GraphicsPipeline::GraphicsPipeline(
-			Device* device, 
-			SwapChain* swapChain, 
-			std::vector<UniformBuffer*> uniformBuffers, 
-			Scene* scene):
-	Pipeline(device, swapChain, uniformBuffers, scene)
+// Graphics Pipeline with swapchain
+GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
+	GraphicsPipeline(device, swapChain->getExtent(), swapChain->getImageFormat(), swapChain->getImageViews(), uniformBuffers, scene)
+{
+}
+
+// Offline Graphics Pipeline
+GraphicsPipeline::GraphicsPipeline(Device* device, 
+		VkExtent2D extent, VkFormat format,
+		ImageView* imageView,
+		UniformBuffer* uniformBuffer, 
+		Scene* scene):
+	GraphicsPipeline(device, extent, format, (std::vector<ImageView*>){imageView}, (std::vector<UniformBuffer*>){uniformBuffer}, scene)
+{
+}
+
+// Base constructor
+GraphicsPipeline::GraphicsPipeline(Device* device, 
+		VkExtent2D extent, VkFormat format,
+		std::vector<ImageView*> imageViews, 
+		std::vector<UniformBuffer*> uniformBuffers, 
+		Scene* scene):
+	Pipeline(device, imageViews, scene), _imageExtent(extent), _imageFormat(format)
 {
 	//---------- Render pass ----------//
-	_colorBuffer = new ColorBuffer(_device, _swapChain, _swapChain->getExtent());
-	_depthBuffer = new DepthBuffer(_device, _swapChain->getExtent());
-	_renderPass = new RenderPass(_device, _swapChain, _depthBuffer, _colorBuffer);
+	_colorBuffer = new ColorBuffer(_device, _imageExtent, _imageFormat);
+	_depthBuffer = new DepthBuffer(_device, _imageExtent);
+	_renderPass = new RenderPass(_device, _depthBuffer, _colorBuffer);
+
+	//---------- Frame Buffers ----------//
+	_frameBuffers.resize(_imageViews.size());
+	for(int i = 0; i < (int)_frameBuffers.size(); i++) 
+		_frameBuffers[i] = new FrameBuffer(_imageViews[i], _renderPass);
 	
 	//---------- Shaders ----------//
  	_vertShaderModule = new ShaderModule(_device, "src/shaders/shaders/graphicsShader.vert.spv");
@@ -70,14 +88,14 @@ GraphicsPipeline::GraphicsPipeline(
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float) _swapChain->getExtent().width;
-	viewport.height = (float) _swapChain->getExtent().height;
+	viewport.width = (float) _imageExtent.width;
+	viewport.height = (float) _imageExtent.height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
 	VkRect2D scissor{};
 	scissor.offset = {0, 0};
-	scissor.extent = _swapChain->getExtent();
+	scissor.extent = _imageExtent;
 
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -158,7 +176,7 @@ GraphicsPipeline::GraphicsPipeline(
 	_descriptorSetManager = new DescriptorSetManager(_device, descriptorBindings, uniformBuffers.size());
 	DescriptorSets* descriptorSets = _descriptorSetManager->getDescriptorSets();
 
-	for(uint32_t i = 0; i != _swapChain->getImages().size(); i++)
+	for(uint32_t i = 0; i < uniformBuffers.size(); i++)
 	{
 		// Uniform buffer
 		VkDescriptorBufferInfo uniformBufferInfo = {};
@@ -224,6 +242,7 @@ GraphicsPipeline::GraphicsPipeline(
 	}
 }
 
+
 GraphicsPipeline::~GraphicsPipeline()
 {
 	if(_colorBuffer != nullptr)
@@ -245,6 +264,32 @@ GraphicsPipeline::~GraphicsPipeline()
 	}
 }
 
+void GraphicsPipeline::beginRender(VkCommandBuffer commandBuffer, int imageIndex)
+{
+	std::array<VkClearValue, 2> clearValues{};
+	clearValues[0].color = {0.3f, 0.3f, 0.3f, 1.0f};
+	clearValues[1].depthStencil = {1.0f, 0};
+
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = _renderPass->handle();
+	renderPassInfo.framebuffer = _frameBuffers[imageIndex]->handle();
+	renderPassInfo.renderArea.offset = {0, 0};
+	//if(!_splitRender)
+		renderPassInfo.renderArea.extent = _imageExtent;
+	//else
+	//	renderPassInfo.renderArea.extent = {_swapChain->getExtent().width/2, _swapChain->getExtent().height};
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
+
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void GraphicsPipeline::endRender(VkCommandBuffer commandBuffer)
+{
+	vkCmdEndRenderPass(commandBuffer);
+}
+
 void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 {
 	VkBuffer vertexBuffers[] = { _scene->getVertexBuffer()->handle() };
@@ -254,6 +299,11 @@ void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 	vkCmdBindIndexBuffer(commandBuffer, _scene->getIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
+
+	if(_frameBuffers.size()==1)
+	{
+		std::cout << "Camera randering " << _scene->getObjects().size() << std::endl;;
+	}
 
 	for(auto abstractPtr : _scene->getObjects())
 	{
@@ -303,7 +353,7 @@ void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 				sizeof(ObjectInfo),
 				&objectInfo);
 
-		const uint32_t vertexCount = model->getVerticesSize();
+		//const uint32_t vertexCount = model->getVerticesSize();
 		const uint32_t indexCount = model->getIndicesSize();
 		const uint32_t vertexOffset = model->getVertexOffset();
 		const uint32_t indexOffset = model->getIndexOffset();

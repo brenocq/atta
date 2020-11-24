@@ -9,7 +9,7 @@
 
 int Object::_qtyIds = 0;
 Object::Object(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mass):
-	_name(name), _position(position), _rotation(rotation), _scale(scale), _mass(mass), _physics(nullptr), _type("Object")
+	_name(name), _type("Object"), _position(position), _rotation(rotation), _scale(scale), _mass(mass), _physics(nullptr)
 {
 	_id = _qtyIds++;
 
@@ -46,7 +46,7 @@ glm::vec3 Object::getRotation()
 {
 	if(_physics != nullptr)
 	{
-		_rotation = glm::vec3(0,0,0);//_physics->getRotation();
+		//_rotation = glm::vec3(0,0,0);//_physics->getRotation();
 	}
 	return _rotation;
 }
@@ -56,15 +56,49 @@ glm::mat4 Object::getModelMat()
 	if(_physics != nullptr)
 	{
 		_position = _physics->getPosition();
-		_rotation = glm::vec3(0,0,0);//_physics->getRotation();
+		//_rotation = glm::vec3(0,0,0);//_physics->getRotation();
 	}
 
 	glm::mat4 mat = glm::mat4(1);
+
+	if(_parent != nullptr)
+	{
+		glm::vec3 parentPos = _parent->getPosition();
+		glm::vec3 parentRot = _parent->getRotation();
+		mat = glm::translate(mat, parentPos);
+		mat = glm::rotate(mat, glm::radians(parentRot.z), glm::vec3(0, 0, 1));
+		mat = glm::rotate(mat, glm::radians(parentRot.y), glm::vec3(0, 1, 0));
+		mat = glm::rotate(mat, glm::radians(parentRot.x), glm::vec3(1, 0, 0));
 	
+		std::string constraintType = _parentConstraint->getType();
+		if(constraintType == "FixedConstraint")
+		{
+			FixedConstraint* constraint = (FixedConstraint*)_parentConstraint;
+			glm::vec3 pos = constraint->getPosition();
+			glm::vec3 rot = constraint->getRotation();
+
+			mat = glm::translate(mat, pos);
+			mat = glm::rotate(mat, glm::radians(rot.z), glm::vec3(0, 0, 1));
+			mat = glm::rotate(mat, glm::radians(rot.y), glm::vec3(0, 1, 0));
+			mat = glm::rotate(mat, glm::radians(rot.x), glm::vec3(1, 0, 0));
+		}
+		else if(constraintType == "HingeConstraint")
+		{
+			HingeConstraint* constraint = (HingeConstraint*)_parentConstraint;
+			glm::vec3 pos = constraint->getPosition();
+			glm::vec3 rot = constraint->getRotation();
+
+			mat = glm::translate(mat, pos);
+			mat = glm::rotate(mat, glm::radians(rot.z), glm::vec3(0, 0, 1));
+			mat = glm::rotate(mat, glm::radians(rot.y), glm::vec3(0, 1, 0));
+			mat = glm::rotate(mat, glm::radians(rot.x), glm::vec3(1, 0, 0));
+		}
+	}
+
 	mat = glm::translate(mat, _position);
-	//mat = glm::rotate(mat, glm::radians(_rotation.z), glm::vec3(0, 0, 1));
-	//mat = glm::rotate(mat, glm::radians(_rotation.y), glm::vec3(0, 1, 0));
-	//mat = glm::rotate(mat, glm::radians(_rotation.x), glm::vec3(1, 0, 0));
+	mat = glm::rotate(mat, glm::radians(_rotation.z), glm::vec3(0, 0, 1));
+	mat = glm::rotate(mat, glm::radians(_rotation.y), glm::vec3(0, 1, 0));
+	mat = glm::rotate(mat, glm::radians(_rotation.x), glm::vec3(1, 0, 0));
 	mat = glm::scale(mat, _scale);
 	
 	return mat;
@@ -72,14 +106,6 @@ glm::mat4 Object::getModelMat()
 
 void Object::setPosition(glm::vec3 position)
 {
-	for(auto child : _children)
-	{
-		glm::vec3 translate = position - _position;
-		glm::vec3 childPos = child->getPosition();
-		childPos += translate;
-		child->setPosition(childPos);
-	}
-
 	_position = position;
 	if(_physics!=nullptr)
 		_physics->setPosition(position);

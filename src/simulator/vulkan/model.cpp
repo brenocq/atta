@@ -17,10 +17,9 @@ std::vector<uint32_t> Model::verticesSize = {};
 std::vector<uint32_t> Model::indicesSize = {};
 
 Model::Model(std::string fileName):
-	_fileName(fileName), _procedural(nullptr)
+	_fileName(fileName), _modelIndex(-1), _procedural(nullptr)
 {
 	// Check if model was previously loaded
-	_modelIndex = -1;
 	for(int i=0; i<(int)Model::currentModels.size(); i++)
 	{
 		if(Model::currentModels[i] == _fileName)
@@ -50,10 +49,10 @@ Model::Model(std::string fileName):
 }
 
 Model::Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, Procedural* procedural):
+	_procedural(procedural),
 	_vertices(std::move(vertices)), 
 	_indices(std::move(indices)),
-	_materials(std::move(materials)),
-	_procedural(procedural)
+	_materials(std::move(materials))
 {
 }
 

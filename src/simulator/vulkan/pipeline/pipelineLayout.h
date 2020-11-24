@@ -17,15 +17,15 @@
 class PipelineLayout
 {
 	public:
-	PipelineLayout(Device* device, DescriptorSetLayout* descriptorSetLayout);
-	~PipelineLayout();
+		PipelineLayout(Device* device, DescriptorSetLayout* descriptorSetLayout);
+		~PipelineLayout();
 
-	VkPipelineLayout handle() const { return _pipelineLayout; }
+		VkPipelineLayout handle() const { return _pipelineLayout; }
 
 	private:
-    VkPipelineLayout _pipelineLayout;
-	Device* _device;
-	DescriptorSetLayout* _descriptorSetLayout;
+		VkPipelineLayout _pipelineLayout;
+		Device* _device;
+		DescriptorSetLayout* _descriptorSetLayout;
 };
 
 #endif// PIPELINE_LAYOUT_H

@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "descriptorSetManager.h"
+#include "simulator/helpers/log.h"
 
 DescriptorSetManager::DescriptorSetManager(Device* device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets)
 {
@@ -17,7 +18,7 @@ DescriptorSetManager::DescriptorSetManager(Device* device, std::vector<Descripto
 	{
 		if(!bindingTypes.insert(std::make_pair(binding.binding, binding.type)).second)
 		{
-			std::cout << BOLDYELLOW << "[DescriptorSetManager]" << RESET << YELLOW << " Binding collision detected!" << RESET << std::endl;
+			Log::warning("DescriptorSetManager", "Binding collision detected!");
 			return;
 		}
 	}

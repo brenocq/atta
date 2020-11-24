@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 #include "physics/objectPhysics.h"
-#include "physics/constraints/constraint.h"
+#include "physics/constraints/constraints.h"
 #include "vulkan/model.h"
 
 class Object
@@ -45,8 +45,8 @@ class Object
 		void setParent(Object* parent) { _parent = parent; };
 		void setParentConstraint(Constraint* constraint);
 
-		std::string _type;
 		std::string _name;
+		std::string _type;
 		int _id;
 		static int _qtyIds;
 

@@ -7,13 +7,10 @@
 #include "pipeline.h"
 
 Pipeline::Pipeline(Device* device, 
-		SwapChain* swapChain, 
-		std::vector<UniformBuffer*> uniformBuffers, 
-		Scene* scene)
+		std::vector<ImageView*> imageViews, 
+		Scene* scene):
+		_device(device), _imageViews(imageViews), _scene(scene)
 {
-	_device = device;
-	_swapChain = swapChain;
-	_scene = scene;
 }
 
 Pipeline::~Pipeline()
@@ -47,4 +44,10 @@ Pipeline::~Pipeline()
 		delete _fragShaderModule;
 		_fragShaderModule = nullptr;
 	}
+
+	for(auto& frameBuffer : _frameBuffers) 
+	{
+		delete frameBuffer;
+		frameBuffer = nullptr;
+    }
 }

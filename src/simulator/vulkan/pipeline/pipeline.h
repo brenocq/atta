@@ -15,7 +15,8 @@
 #include "pipelineLayout.h"
 #include "../device.h"
 #include "../shaderModule.h"
-#include "../swapChain.h"
+#include "../imageView.h"
+#include "../frameBuffer.h"
 #include "../descriptorSetManager.h"
 #include "../descriptorBinding.h"
 #include "../vertex.h"
@@ -25,10 +26,9 @@ class Pipeline
 {
 	public:
 		Pipeline(Device* device, 
-				SwapChain* swapChain, 
-				std::vector<UniformBuffer*> uniformBuffers, 
+				std::vector<ImageView*> imageViews,
 				Scene* scene);
-		~Pipeline();
+		virtual ~Pipeline();
 
 		virtual void render(VkCommandBuffer commandBuffer, int imageIndex=0) = 0;
 
@@ -37,11 +37,16 @@ class Pipeline
 		PipelineLayout* getPipelineLayout() const { return _pipelineLayout; }
 		DescriptorSetManager* getDescriptorSetManager() const { return _descriptorSetManager; }
 		DescriptorSets* getDescriptorSets() const { return _descriptorSetManager->getDescriptorSets(); }
+		std::vector<ImageView*> getImageViews() const { return _imageViews; }
+		std::vector<FrameBuffer*> getFrameBuffers() const { return _frameBuffers; }
+		RenderPass* getRenderPass() const { return _renderPass; }
 
 	protected:
 		VkPipeline _pipeline;
 		Device* _device;
-		SwapChain* _swapChain;
+		std::vector<ImageView*> _imageViews;
+		std::vector<FrameBuffer*> _frameBuffers;
+		RenderPass* _renderPass;
 		Scene* _scene;
 
 		PipelineLayout* _pipelineLayout;

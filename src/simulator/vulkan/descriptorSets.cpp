@@ -29,7 +29,7 @@ DescriptorSets::DescriptorSets(Device* device, DescriptorPool* descriptorPool, D
 		exit(1);
 	}
 
-	for(size_t i = 0; i < size; i++) 
+	for(size_t i = 0; i < (size_t)size; i++) 
 	{
 		VkDescriptorBufferInfo bufferInfo{};
 		bufferInfo.buffer = _uniformBuffers[i]->handle();

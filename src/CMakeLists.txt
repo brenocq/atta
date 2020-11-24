@@ -4,10 +4,6 @@ set(src_files
 	main.cpp
 )
 
-set(src_files_demo_ttzinho
-	demo/ttzinho/ttzinho.cpp
-)
-
 set(src_files_simulator
 	simulator/object.cpp
 	simulator/scene.cpp
@@ -20,12 +16,12 @@ set(src_files_simulator_helpers
 	simulator/helpers/log.cpp
 )
 
-set(src_files_simulator_objects_basic
-	simulator/objects/basic/box.cpp
-	simulator/objects/basic/cylinder.cpp
-	simulator/objects/basic/importedObject.cpp
-	simulator/objects/basic/plane.cpp
-	simulator/objects/basic/sphere.cpp
+set(src_files_simulator_objects_basics
+	simulator/objects/basics/box.cpp
+	simulator/objects/basics/cylinder.cpp
+	simulator/objects/basics/importedObject.cpp
+	simulator/objects/basics/plane.cpp
+	simulator/objects/basics/sphere.cpp
 )
 
 set(src_files_simulator_objects_controllers
@@ -137,7 +133,7 @@ set(src_files_simulator_vulkan_ui_imgui
 source_group("Main" FILES ${src_files})
 source_group("Simulator" FILES ${src_files_simulator})
 source_group("Simulator.Helpers" FILES ${src_files_simulator_helpers})
-source_group("Simulator.Objects.Basic" FILES ${src_files_simulator_objects_basic})
+source_group("Simulator.Objects.Basics" FILES ${src_files_simulator_objects_basics})
 source_group("Simulator.Objects.Others" FILES ${src_files_simulator_objects_others})
 source_group("Simulator.Objects.Controllers" FILES ${src_files_simulator_objects_controllers})
 source_group("Simulator.Objects.Sensors" FILES ${src_files_simulator_objects_sensors})
@@ -150,7 +146,6 @@ source_group("Simulator.Vulkan.UI" FILES ${src_files_simulator_vulkan_ui})
 source_group("Simulator.Vulkan.UI.Imgui" FILES ${src_files_simulator_vulkan_ui_imgui})
 source_group("Simulator.Vulkan.RayTracing" FILES ${src_files_simulator_vulkan_raytracing})
 source_group("Simulator.Vulkan.Pipeline" FILES ${src_files_simulator_vulkan_pipeline})
-source_group("Demo.Ttzinho" FILES ${src_files_demo_ttzinho})
 
 include_directories(.)
 include_directories(${glfw3_INCLUDE_DIRS})
@@ -159,12 +154,13 @@ include_directories(${Vulkan_INCLUDE_DIRS})
 message("Vulkan library ${Vulkan_LIBRARY}")
 link_directories(${Vulkan_LIBRARY})
 add_subdirectory(shaders)
+add_subdirectory(examples)
 
 add_executable(${exe_name} 
 	${src_files} 
 	${src_files_simulator} 
 	${src_files_simulator_helpers} 
-	${src_files_simulator_objects_basic} 
+	${src_files_simulator_objects_basics} 
 	${src_files_simulator_objects_others} 
 	${src_files_simulator_objects_controllers} 
 	${src_files_simulator_objects_sensors}
@@ -177,7 +173,7 @@ add_executable(${exe_name}
 	${src_files_simulator_vulkan_ui_imgui} 
 	${src_files_simulator_vulkan_raytracing} 
 	${src_files_simulator_vulkan_pipeline} 
-	${src_files_demo_ttzinho}
+	${src_files_examples}
 )
 
 if (UNIX)

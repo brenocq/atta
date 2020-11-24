@@ -1,28 +1,26 @@
 //--------------------------------------------------
 // Robot Simulator
-// ttzinho.h
+// miniCleaner.h
 // Date: 2020-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef TTZINHO_H
-#define TTZINHO_H
+#ifndef MINI_CLEANER_H
+#define MINI_CLEANER_H
 
 #include <string>
 #include <vector>
 #include "simulator/object.h"
 
-class Ttzinho
+class MiniCleaner : Object
 {
 	public:
-		Ttzinho();
-		~Ttzinho();
+		MiniCleaner(glm::vec3 position={0,0,0}, glm::vec3 rotation={0,0,0});
+		~MiniCleaner();
 
-		void run();
-		Object* getObject() const { return _object; }
+		void run(float dt);
 
 	private:
-		Object* _object;
 };
 
-#endif// TTZINHO_H
+#endif// MINI_CLEANER_H
 
