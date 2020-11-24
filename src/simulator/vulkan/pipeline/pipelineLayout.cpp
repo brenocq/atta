@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "pipelineLayout.h"
+#include "simulator/helpers/log.h"
 
 PipelineLayout::PipelineLayout(Device* device, DescriptorSetLayout* descriptorSetLayout)
 {
@@ -27,8 +28,8 @@ PipelineLayout::PipelineLayout(Device* device, DescriptorSetLayout* descriptorSe
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
 	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-	if (vkCreatePipelineLayout(_device->handle(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS) {
-		std::cout << BOLDRED << "[PipelineLayout]" << RESET << RED << " Failed to create pipeline layout!" << RESET << std::endl;
+	if(vkCreatePipelineLayout(_device->handle(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS) {
+		Log::error("[PipelineLayout]", "Failed to create pipeline layout!");
 		exit(1);
 	}
 }

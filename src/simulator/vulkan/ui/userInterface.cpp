@@ -8,9 +8,9 @@
 #include "simulator/helpers/log.h"
 
 UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChain, Scene* scene):
-	_showPhysicsDebugger(false),
 	// Toggle variables
-   	_splitRender(nullptr), _enableRayTracing(nullptr)
+   	_enableRayTracing(nullptr), _splitRender(nullptr),
+	_showPhysicsDebugger(false)
 {
 	//---------- Get main objects ----------//
 	_device = device;
@@ -223,7 +223,7 @@ void UserInterface::draw()
 
 void UserInterface::showSceneWindow(bool* showWindow)
 {
-	static bool showObjectInfo = false;
+	//static bool showObjectInfo = false;
 
 	//ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(ImVec2(0,20));

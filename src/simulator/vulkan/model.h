@@ -48,9 +48,9 @@ class Model
 		void loadModel();
 
 		// Model properties
-		Procedural* _procedural;
 		std::string _fileName;
 		int _modelIndex;
+		Procedural* _procedural;
 
 		// Info about models already added
 		static int textureId;

@@ -19,23 +19,40 @@
 class GraphicsPipeline : public Pipeline
 {
 	public:
+		// Graphics Pipeline with swapchain
 		GraphicsPipeline(Device* device, 
 				SwapChain* swapChain, 
 				std::vector<UniformBuffer*> uniformBuffers, 
 				Scene* scene);
+		// Offline Graphics Pipeline
+		GraphicsPipeline(Device* device, 
+				VkExtent2D extent, VkFormat format,
+				ImageView* imageView,
+				UniformBuffer* uniformBuffer, 
+				Scene* scene);
+		// Base constructor
+		GraphicsPipeline(Device* device, 
+				VkExtent2D extent, VkFormat format,
+				std::vector<ImageView*> imageViews, 
+				std::vector<UniformBuffer*> uniformBuffers, 
+				Scene* scene);
 		~GraphicsPipeline();
 
+		void beginRender(VkCommandBuffer commandBuffer, int imageIndex=0);
+		void endRender(VkCommandBuffer commandBuffer);
 		void render(VkCommandBuffer commandBuffer, int imageIndex=0);
 
 		//---------- Getters and Setters ----------//
-		RenderPass* getRenderPass() const { return _renderPass; }
 		DepthBuffer* getDepthBuffer() const { return _depthBuffer; }
 		ColorBuffer* getColorBuffer() const { return _colorBuffer; }
 
 	private:
 		ColorBuffer* _colorBuffer;
 		DepthBuffer* _depthBuffer;
-		RenderPass* _renderPass;
+
+		// Output image info
+		VkExtent2D _imageExtent;
+		VkFormat _imageFormat;
 };
 
 #endif// GRAPHICS_PIPELINE_H

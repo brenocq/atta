@@ -112,7 +112,7 @@ void SwapChain::copyImage(VkCommandBuffer commandBuffer, int imageIndex, Image* 
 	copyRegion.srcSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
 	copyRegion.srcOffset = { 0, 0, 0 };
 	copyRegion.dstSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-	copyRegion.dstOffset = { offset.width, offset.height, 0 };
+	copyRegion.dstOffset = { (int)offset.width, (int)offset.height, 0 };
 	copyRegion.extent = { extent.width, extent.height, 1 };
 
 	vkCmdCopyImage(commandBuffer,
@@ -120,10 +120,13 @@ void SwapChain::copyImage(VkCommandBuffer commandBuffer, int imageIndex, Image* 
 		_images[imageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		1, &copyRegion);
 
+	ImageMemoryBarrier::insert(commandBuffer, src->handle(), subresourceRange, 
+		VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
 	// Changed VK_IMAGE_LAYOUT_PRESENT_SRC_KHR to VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL (imgui)
 	ImageMemoryBarrier::insert(commandBuffer, _images[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 		0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		//0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+	// Change layouts back
 }
 
 VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)

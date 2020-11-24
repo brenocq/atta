@@ -14,9 +14,7 @@
 #include "vulkan/stagingBuffer.h"
 #include "physics/constraints/fixedConstraint.h"
 #include "helpers/drawHelper.h"
-#include "objects/basic/box.h"
-#include "objects/basic/cylinder.h"
-#include "objects/basic/sphere.h"
+#include "objects/basics/basics.h"
 #include "objects/others/display/display.h"
 
 Scene::Scene():
@@ -134,16 +132,8 @@ void Scene::addObject(Object* object)
 {
 	_objects.push_back(object);
 	_physicsEngine->addObjectPhysics(_objects.back()->getObjectPhysics());
-}
-
-void Scene::addComplexObject(Object* object)
-{
-	_objects.push_back(object);
-	_physicsEngine->addObjectPhysics(_objects.back()->getObjectPhysics());
 	for(auto child : object->getChildren())
-	{
-		addComplexObject(child);
-	}
+		addObject(child);
 }
 
 void Scene::createBuffers(CommandPool* commandPool)
@@ -345,7 +335,6 @@ void Scene::addLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
 
 void Scene::cleanLines()
 {
-	int currSize = _hostLineVertex.size();
 	while(_hostLineVertex.size()>_indexGridCount)
 	{
 		_hostLineVertex.pop_back();

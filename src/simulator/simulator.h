@@ -11,7 +11,7 @@
 #include <vector>
 #include "scene.h"
 #include "vulkan/application.h"
-#include "demo/ttzinho/ttzinho.h"
+#include "examples/examples.h"
 #include "helpers/debugDrawer.h"
 
 class Simulator
@@ -30,8 +30,8 @@ class Simulator
 		DebugDrawer* _debugDrawer;
 		Application* _vulkanApp;
 
-		// Example specific
-		Ttzinho* _ttzinho;
+		//---------- Examples ----------//
+		MiniCleaner* _miniCleaner;
 };
 
 #endif// SIMULATOR_H

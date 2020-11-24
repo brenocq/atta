@@ -58,7 +58,7 @@ void Log::logging(std::string tag, const char* tagColor, const char* textColor, 
 {
 	std::string tag_ = tag;
 	if(!showTag)
-		for(int i=0; i<tag_.size();i++)
+		for(int i=0; i<(int)tag_.size();i++)
 			tag_[i] = ' ';
 
 	// Print tag

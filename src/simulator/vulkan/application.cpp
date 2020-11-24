@@ -5,11 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "application.h"
-#include "simulator/objects/basic/importedObject.h"
-#include "simulator/objects/basic/plane.h"
-#include "simulator/objects/basic/box.h"
-#include "simulator/objects/basic/sphere.h"
-#include "simulator/objects/basic/cylinder.h"
+#include "simulator/objects/basics/basics.h"
 #include "simulator/objects/others/display/display.h"
 #include "simulator/objects/sensors/camera/camera.h"
 #include "simulator/physics/physicsEngine.h"
@@ -43,16 +39,11 @@ Application::Application(Scene* scene):
 	//---------- Pipelines ----------//
 	createPipelines();
 
-	//---------- Frame Buffers ----------//
-	_frameBuffers.resize(_swapChain->getImageViews().size());
-	for(size_t i = 0; i < _frameBuffers.size(); i++) 
-		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
-
 	//---------- Descriptor pool ----------//
 	createDescriptorPool();
 
 	//---------- Command buffers ----------//
-	_commandBuffers = new CommandBuffers(_device, _commandPool, _frameBuffers.size());
+	_commandBuffers = new CommandBuffers(_device, _commandPool, _swapChain->getImageViews().size());
 
 	//---------- Syncronization ----------//
 	_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -88,14 +79,38 @@ Application::~Application()
 
 	for(auto& rayTracing : _camerasRayTracing)
 	{
-		delete rayTracing;
-		rayTracing = nullptr;
+		if(rayTracing!=nullptr)
+		{
+			delete rayTracing;
+			rayTracing = nullptr;
+		}
 	}
 
 	for(auto& pipeline : _camerasRasterization) 
 	{
-		delete pipeline;
-		pipeline = nullptr;
+		if(pipeline!=nullptr)
+		{
+			delete pipeline;
+			pipeline = nullptr;
+		}
+    }
+
+	for(auto& imageView : _camerasRasterizationImageView) 
+	{
+		if(imageView!=nullptr)
+		{
+			delete imageView;
+			imageView = nullptr;
+		}
+    }
+
+	for(auto& image : _camerasRasterizationImage) 
+	{
+		if(image!=nullptr)
+		{
+			delete image;
+			image = nullptr;
+		}
     }
 
 	for(auto& uniformBuffer : _camerasUniformBuffer) 
@@ -175,12 +190,6 @@ void Application::cleanupSwapChain()
 
 	_userInterface = nullptr;
 
-	for(auto& frameBuffer : _frameBuffers) 
-	{
-		delete frameBuffer;
-		frameBuffer = nullptr;
-    }
-
 	delete _commandBuffers;
 	_commandBuffers = nullptr;
 
@@ -220,15 +229,15 @@ void Application::recreateSwapChain()
     }
 
 	createPipelines();
-	_frameBuffers.resize(_swapChain->getImageViews().size());
+	//_frameBuffers.resize(_swapChain->getImageViews().size());
 
-	for(size_t i = 0; i < _frameBuffers.size(); i++) 
-	{
-		_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
-	}
+	//for(size_t i = 0; i < _frameBuffers.size(); i++) 
+	//{
+	//	_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
+	//}
 
 	createDescriptorPool();
-	_commandBuffers = new CommandBuffers(_device, _commandPool, _frameBuffers.size());
+	_commandBuffers = new CommandBuffers(_device, _commandPool, _swapChain->getImageViews().size());
 
 	// IMGUI
 	createUserInterface();
@@ -271,7 +280,7 @@ void Application::drawFrame()
 	// Update physics
 	//_scene->updatePhysics(timeDelta);
 
-	bool cameraUpdated = _modelViewController->updateCamera(timeDelta);
+	_modelViewController->updateCamera(timeDelta);
 
 	//-----------------------------//
 	//---------- Drawing ----------//
@@ -308,18 +317,20 @@ void Application::drawFrame()
 			render(commandBuffer, imageIndex);
 		}
 
-		// TODO raytracing with FPS
+		// Render raytracing cameras
 		for(auto& rt : _camerasRayTracing)
 		{
 			rt->recreateTopLevelStructures();
 			rt->render(commandBuffer);
 		}
 
-		Image* accImage = _camerasRayTracing[0]->getOutputImage();
-		VkExtent2D offset;
-		offset.width = 400;
-		offset.height = 100;
-		_swapChain->copyImage(commandBuffer, imageIndex, accImage, accImage->getExtent(), offset);
+		// Render rasterization cameras
+		for(auto& rast : _camerasRasterization)
+		{
+			rast->beginRender(commandBuffer);
+			rast->render(commandBuffer);
+			rast->endRender(commandBuffer);
+		}
 	}
 	_commandBuffers->end(imageIndex);
 
@@ -388,23 +399,7 @@ void Application::drawFrame()
 
 void Application::render(VkCommandBuffer commandBuffer, int imageIndex)
 {
-	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = {0.3f, 0.3f, 0.3f, 1.0f};
-	clearValues[1].depthStencil = {1.0f, 0};
-
-	VkRenderPassBeginInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = _graphicsPipeline->getRenderPass()->handle();
-	renderPassInfo.framebuffer = _frameBuffers[imageIndex]->handle();
-	renderPassInfo.renderArea.offset = {0, 0};
-	if(!_splitRender)
-		renderPassInfo.renderArea.extent = _swapChain->getExtent();
-	else
-		renderPassInfo.renderArea.extent = {_swapChain->getExtent().width/2, _swapChain->getExtent().height};
-	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-	renderPassInfo.pClearValues = clearValues.data();
-
-	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	_graphicsPipeline->beginRender(commandBuffer, imageIndex);
 	{
 		// Graphics pipeline
 		_graphicsPipeline->render(commandBuffer, imageIndex);
@@ -412,7 +407,7 @@ void Application::render(VkCommandBuffer commandBuffer, int imageIndex)
 		// Line pipeline
 		_linePipeline->render(commandBuffer, imageIndex);
 	}
-	vkCmdEndRenderPass(commandBuffer);
+	_graphicsPipeline->endRender(commandBuffer);
 }
 
 void Application::updateUniformBuffer(uint32_t currentImage)
@@ -437,7 +432,10 @@ void Application::updateUniformBuffer(uint32_t currentImage)
 	ubo.hasSky = false;
 
 	_uniformBuffers[currentImage]->setValue(ubo);
-	_camerasUniformBuffer[0]->setValue(ubo);
+	for(auto& uni : _camerasUniformBuffer)
+	{
+		uni->setValue(ubo);
+	}
 }
 
 void Application::createDescriptorPool()
@@ -478,8 +476,26 @@ void Application::createSpecialSceneObjects()
 			}
 			if(info.renderingType == Camera::CameraRenderingType::RASTERIZATION)
 			{
-				//_camerasRasterization.push_back(new GraphicsPipeline(_device, {info.width, info.height}, VK_FORMAT_B8G8R8A8_UNORM, _renderPass, _camerasUniformBuffer.back(), _scene);
-				//camera->setRasterizationPipelineIndex(_camerasRasterization.size()-1);
+				_camerasRasterizationImage.push_back(new Image(
+							_device, 
+							info.width, info.height,
+							VK_FORMAT_B8G8R8A8_UNORM, 
+							VK_IMAGE_TILING_OPTIMAL, 
+							VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, 
+							VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT));
+				_camerasRasterizationImageView.push_back(new ImageView(
+							_device, 
+							_camerasRasterizationImage.back()->handle(), 
+							VK_FORMAT_B8G8R8A8_UNORM, 
+							VK_IMAGE_ASPECT_COLOR_BIT));
+				_camerasRasterization.push_back(new GraphicsPipeline(
+							_device,
+							(VkExtent2D){info.width, info.height},
+							VK_FORMAT_B8G8R8A8_UNORM, 
+							_camerasRasterizationImageView.back(),
+							_camerasUniformBuffer.back(), 
+							_scene));
+				camera->setRasterizationPipelineIndex(_camerasRasterization.size()-1);
 			}
 		}
 		else if(objectType == "Display")
@@ -491,22 +507,44 @@ void Application::createSpecialSceneObjects()
 
 void Application::updateSpecialSceneObjects()
 {
+	static Camera* _camera = nullptr;
 	for(auto& abstractPtr : _scene->getObjects())
 	{
 		std::string objectType = abstractPtr->getType();
 		if(objectType == "Camera")
 		{
-
+			Camera* camera = (Camera*)abstractPtr;
+			_camera = camera;
+			if(camera->getCameraInfo().renderingType==Camera::CameraRenderingType::RAY_TRACING)
+			{
+				Image* output = _camerasRayTracing[camera->getRayTracingPipelineIndex()]->getOutputImage();
+				std::vector<uint8_t> buffer = output->getBuffer(_commandPool);
+				camera->setCameraBuffer(buffer);
+			}
+			else if(camera->getCameraInfo().renderingType==Camera::CameraRenderingType::RASTERIZATION)
+			{
+				std::vector<uint8_t> buffer = _camerasRasterizationImage[camera->getRasterizationPipelineIndex()]->getBuffer(_commandPool);
+				//int sum = 0;
+				//for(auto value : buffer)
+				//	sum+=value;
+				//std::cout << "SUUM: " << sum << "\n";
+				camera->setCameraBuffer(buffer);
+			}
 		}
 		else if(objectType == "Display")
 		{
 			Display* display = (Display*)abstractPtr;
+			if(_camera!=nullptr)
+				display->setBuffer(_camera->getCameraBuffer());
 			int textureId = display->getTextureIndex();
-			_scene->getTextures()[textureId]->updateTextureImage(display->buffer);
+			_scene->getTextures()[textureId]->updateTextureImage(display->getBuffer());
 		}
 	}
 }
 
+//---------------------------------------------------//
+//-------------------- Callbacks --------------------//
+//---------------------------------------------------//
 void Application::onKey(int key, int scancode, int action, int mods)
 {
 	switch(key)

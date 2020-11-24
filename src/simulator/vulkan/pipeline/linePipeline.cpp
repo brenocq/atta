@@ -11,8 +11,9 @@ LinePipeline::LinePipeline(Device* device,
 			RenderPass* renderPass,
 			std::vector<UniformBuffer*> uniformBuffers, 
 			Scene* scene):
-	Pipeline(device, swapChain, uniformBuffers, scene), _renderPass(renderPass)
+	Pipeline(device, swapChain->getImageViews(), scene)
 {
+	_renderPass = renderPass;
 	//---------- Shaders ----------//
  	_vertShaderModule = new ShaderModule(_device, "src/shaders/shaders/lineShader.vert.spv");
     _fragShaderModule = new ShaderModule(_device, "src/shaders/shaders/lineShader.frag.spv");
@@ -56,14 +57,14 @@ LinePipeline::LinePipeline(Device* device,
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float) _swapChain->getExtent().width;
-	viewport.height = (float) _swapChain->getExtent().height;
+	viewport.width = (float) swapChain->getExtent().width;
+	viewport.height = (float) swapChain->getExtent().height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
 	VkRect2D scissor{};
 	scissor.offset = {0, 0};
-	scissor.extent = _swapChain->getExtent();
+	scissor.extent = swapChain->getExtent();
 
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -142,7 +143,7 @@ LinePipeline::LinePipeline(Device* device,
 	_descriptorSetManager = new DescriptorSetManager(_device, descriptorBindings, uniformBuffers.size());
 	DescriptorSets* descriptorSets = _descriptorSetManager->getDescriptorSets();
 
-	for(uint32_t i = 0; i != _swapChain->getImages().size(); i++)
+	for(uint32_t i = 0; i != swapChain->getImages().size(); i++)
 	{
 		// Uniform buffer
 		VkDescriptorBufferInfo uniformBufferInfo = {};

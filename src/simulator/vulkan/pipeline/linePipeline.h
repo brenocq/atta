@@ -27,7 +27,6 @@ class LinePipeline : public Pipeline
 		void render(VkCommandBuffer commandBuffer, int imageIndex=0);
 
 	private:
-		RenderPass* _renderPass;
 };
 
 #endif// LINE_PIPELINE_H

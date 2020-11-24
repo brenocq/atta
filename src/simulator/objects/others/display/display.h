@@ -20,7 +20,7 @@ class Display : public Object
 			unsigned int height = 240;
 		};
 
-		Display(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, DisplayInfo info = {320, 240});
+		Display(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 scale = {0,0,0}, DisplayInfo info = {320, 240});
 		~Display();
 
 		//---------- Getters and Setters ----------//
@@ -29,9 +29,9 @@ class Display : public Object
 		int getTextureIndex() const { return _textureIndex; }
 		void setMaterialIndex(int index) { _materialIndex = index; }
 		int getMaterialIndex() const { return _materialIndex; }
+		std::vector<uint8_t> getBuffer() const { return _buffer; }
+		void setBuffer(std::vector<uint8_t> buffer) { _buffer=buffer; }
 
-		// Display buffer
-		std::vector<uint8_t> buffer;
 	private:
 
 		// Camera parameters
@@ -40,6 +40,9 @@ class Display : public Object
 		// Texture index
 		int _textureIndex;
 		int _materialIndex;
+
+		// Display buffer
+		std::vector<uint8_t> _buffer;
 };
 
 #endif// DISPLAY_H

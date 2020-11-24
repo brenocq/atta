@@ -7,16 +7,15 @@
 #include "renderPass.h"
 #include "simulator/helpers/log.h"
 
-RenderPass::RenderPass(Device* device, SwapChain* swapChain, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer)
+RenderPass::RenderPass(Device* device, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer)
 {
 	_device = device;
-	_swapChain = swapChain;
-	_depthBuffer = depthBuffer;
 	_colorBuffer = colorBuffer;
+	_depthBuffer = depthBuffer;
 
 	//----------- Color attachment ------------//
 	VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = _swapChain->getImageFormat();
+    colorAttachment.format = _colorBuffer->getFormat();
     colorAttachment.samples = _device->getMsaaSamples();	
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -46,7 +45,7 @@ RenderPass::RenderPass(Device* device, SwapChain* swapChain, DepthBuffer* depthB
 
 	//----------- Resolve attachment ------------//
 	VkAttachmentDescription colorAttachmentResolve{};
-    colorAttachmentResolve.format = _swapChain->getImageFormat();
+    colorAttachmentResolve.format = _colorBuffer->getFormat();
     colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;

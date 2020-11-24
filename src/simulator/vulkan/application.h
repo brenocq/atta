@@ -106,7 +106,6 @@ class Application
 
 		Scene* _scene;
 
-		std::vector<FrameBuffer*> _frameBuffers;
 		std::vector<UniformBuffer*> _uniformBuffers;
 
 		std::vector<Semaphore*> _imageAvailableSemaphores;
@@ -125,6 +124,8 @@ class Application
 
 		// Camera parameters
 		std::vector<RayTracing*> _camerasRayTracing;
+		std::vector<Image*> _camerasRasterizationImage;
+		std::vector<ImageView*> _camerasRasterizationImageView;
 		std::vector<GraphicsPipeline*> _camerasRasterization;
 		std::vector<UniformBuffer*> _camerasUniformBuffer;
 };

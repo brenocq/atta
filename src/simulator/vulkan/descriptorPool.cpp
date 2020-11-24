@@ -12,7 +12,7 @@ DescriptorPool::DescriptorPool(Device* device, std::vector<VkDescriptorPoolSize>
 
 	int maxSets = 0;
 	for(auto poolSize : poolSizes)
-		if(poolSize.descriptorCount > maxSets)
+		if((int)poolSize.descriptorCount > maxSets)
 			maxSets = poolSize.descriptorCount;
 
 	VkDescriptorPoolCreateInfo poolInfo{};

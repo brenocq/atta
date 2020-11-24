@@ -14,6 +14,9 @@ class HingeConstraint : public Constraint
 		HingeConstraint(glm::vec3 position, glm::vec3 rotation);
 		~HingeConstraint();
 
+		glm::vec3 getPosition() const { return _position; };
+		glm::vec3 getRotation() const { return _rotation; };
+
 	private:
 		glm::vec3 _position;
 		glm::vec3 _rotation;

@@ -41,6 +41,8 @@ class Camera : public Object
 		int getRasterizationPipelineIndex() const { return _rasterizationPipelineIndex; }
 		CameraRenderingType getRenderingType() const { return _info.renderingType; }
 		CameraInfo getCameraInfo() const { return _info; }
+		std::vector<uint8_t> getCameraBuffer() const { return _buffer; }
+		void setCameraBuffer(std::vector<uint8_t> buffer) { _buffer=buffer; }
 
 	private:
 		// Camera parameters
