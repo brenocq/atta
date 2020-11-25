@@ -112,8 +112,8 @@ GraphicsPipeline::GraphicsPipeline(Device* device,
 	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 	//rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
 	rasterizer.lineWidth = 1.0f;
-	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-	//rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	//rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+	rasterizer.cullMode = VK_CULL_MODE_NONE;
 	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 	rasterizer.depthBiasConstantFactor = 0.0f; // Optional
@@ -267,7 +267,7 @@ GraphicsPipeline::~GraphicsPipeline()
 void GraphicsPipeline::beginRender(VkCommandBuffer commandBuffer, int imageIndex)
 {
 	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = {0.3f, 0.3f, 0.3f, 1.0f};
+	clearValues[0].color = {0.5f, 0.5f, 0.5f, 1.0f};
 	clearValues[1].depthStencil = {1.0f, 0};
 
 	VkRenderPassBeginInfo renderPassInfo{};
@@ -299,11 +299,6 @@ void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 	vkCmdBindIndexBuffer(commandBuffer, _scene->getIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
-
-	if(_frameBuffers.size()==1)
-	{
-		std::cout << "Camera randering " << _scene->getObjects().size() << std::endl;;
-	}
 
 	for(auto abstractPtr : _scene->getObjects())
 	{

@@ -26,6 +26,8 @@ class Object
 		ObjectPhysics* getObjectPhysics() const { return _physics; }
 		glm::vec3 getPosition() const { return _position; }
 		glm::vec3 getRotation();
+		glm::vec3 getWorldPosition();
+		glm::vec3 getWorldRotation();
 		glm::mat4 getModelMat();
 		std::string getType() const { return _type; }
 		std::string getName() const { return _name; }

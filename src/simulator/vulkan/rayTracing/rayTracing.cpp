@@ -310,9 +310,6 @@ void RayTracing::createBottomLevelStructures(VkCommandBuffer commandBuffer)
 	// Create blas object with memory requirements for each model
 	for(Model* model : _scene->getModels())
 	{
-		if(model == nullptr)
-			continue;
-
 		int modelIndex = model->getModelIndex();
 		// Generate only one per model
 		bool found = false;

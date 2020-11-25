@@ -51,6 +51,32 @@ glm::vec3 Object::getRotation()
 	return _rotation;
 }
 
+glm::vec3 Object::getWorldPosition()
+{
+	glm::mat4 transformation = getModelMat();
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::vec3 translation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::decompose(transformation, scale, rotation, translation, skew, perspective);
+
+	return translation;
+}
+
+glm::vec3 Object::getWorldRotation()
+{
+	glm::mat4 transformation = getModelMat();
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::vec3 translation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::decompose(transformation, scale, rotation, translation, skew, perspective);
+
+	return glm::degrees(glm::eulerAngles(rotation));
+}
+
 glm::mat4 Object::getModelMat()
 {
 	if(_physics != nullptr)

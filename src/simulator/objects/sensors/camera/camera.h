@@ -39,6 +39,8 @@ class Camera : public Object
 		int getRayTracingPipelineIndex() const { return _rayTracingPipelineIndex; }
 		void setRasterizationPipelineIndex(int index) { _rasterizationPipelineIndex = index; }
 		int getRasterizationPipelineIndex() const { return _rasterizationPipelineIndex; }
+		void setUniformBufferIndex(int index) { _uniformBufferIndex = index; }
+		int getUniformBufferIndex() const { return _uniformBufferIndex; }
 		CameraRenderingType getRenderingType() const { return _info.renderingType; }
 		CameraInfo getCameraInfo() const { return _info; }
 		std::vector<uint8_t> getCameraBuffer() const { return _buffer; }
@@ -51,6 +53,7 @@ class Camera : public Object
 		// Simulation parameters
 		int _rayTracingPipelineIndex;
 		int _rasterizationPipelineIndex;
+		int _uniformBufferIndex;
 
 		// Image buffer
 		std::vector<uint8_t> _buffer;

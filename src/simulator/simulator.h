@@ -31,7 +31,7 @@ class Simulator
 		Application* _vulkanApp;
 
 		//---------- Examples ----------//
-		MiniCleaner* _miniCleaner;
+		std::vector<MiniCleaner*> _miniCleaners;
 };
 
 #endif// SIMULATOR_H
