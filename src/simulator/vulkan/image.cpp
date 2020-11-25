@@ -81,14 +81,19 @@ std::vector<uint8_t> Image::getBuffer(CommandPool* commandPool)
 		subresourceRange.layerCount = 1;
 
 		// Change transfer layouts
-		if(_layout == VK_IMAGE_LAYOUT_GENERAL)
+		//if(_layout == VK_IMAGE_LAYOUT_GENERAL)
+		//{
+		//	Log::verbose("Image", "Image layout is GENERAL.");
+		//	ImageMemoryBarrier::insert(commandBuffer, _image, subresourceRange, 
+		//		VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+		//}
+		//else if(_layout == VK_IMAGE_LAYOUT_UNDEFINED)
+		//{
 			ImageMemoryBarrier::insert(commandBuffer, _image, subresourceRange, 
-				VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-		else if(_layout == VK_IMAGE_LAYOUT_UNDEFINED)
-			ImageMemoryBarrier::insert(commandBuffer, _image, subresourceRange, 
-				VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-		else
-			Log::warning("Image", "Image layout must be general or undefined.");
+				VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, _layout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+		//}
+		//else
+		//	Log::warning("Image", "Image layout must be general or undefined.");
 		ImageMemoryBarrier::insert(commandBuffer, dstImg->handle(), subresourceRange, 
 			0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 

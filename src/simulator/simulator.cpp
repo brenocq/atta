@@ -18,13 +18,19 @@ Simulator::Simulator()
 
 	// Create object instances
 	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {0.8,0.8,0.8});
+	Cylinder* cylinder = new Cylinder("Obstacle", {7,1,0}, {0,0,0}, {1,1,1}, 0.0f, {0.5f, 0.1f, 0.1f});
 
 	// Create mini cleaner robot
-	_miniCleaner = new MiniCleaner({1,0.1,0}, {0,90,0});
+	_miniCleaners.push_back(new MiniCleaner({1,0.1,0}, {0,90,0}, {1,0,0}));
+	_miniCleaners.push_back(new MiniCleaner({1,0.1,1}, {0,0,0}, {0,1,0}));
+	_miniCleaners.push_back(new MiniCleaner({0,0.1,1}, {0,45,0}, {0,0,1}));
+	_miniCleaners.push_back(new MiniCleaner({0,0.1,0}, {0,-45,0}, {0,1,1}));
 
 	// Add objects to the scene
 	_scene->addObject((Object*)ground);
-	_scene->addObject((Object*)_miniCleaner);
+	for(auto& miniCleaner : _miniCleaners)
+		_scene->addObject((Object*)miniCleaner);
+	_scene->addObject((Object*)cylinder);
 	// Link objects to each other (physics)
 	_scene->linkObjects();
 
@@ -55,10 +61,14 @@ Simulator::~Simulator()
 		_debugDrawer = nullptr;
 	}
 
-	if(_miniCleaner != nullptr)
+	for(auto& miniCleaner : _miniCleaners)
 	{
-		delete _miniCleaner;
-		_miniCleaner = nullptr;
+
+		if(miniCleaner != nullptr)
+		{
+			delete miniCleaner;
+			miniCleaner = nullptr;
+		}
 	}
 }
 
@@ -69,7 +79,8 @@ void Simulator::run()
 
 void Simulator::onDrawFrame(float dt)
 {
-	_miniCleaner->run(dt);
+	for(auto& miniCleaner : _miniCleaners)
+		miniCleaner->run(dt);
 	//btVector3 old = _scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(-1.0f, old.y(), old.z()));
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(0.0f, 1.0f, 0.0f));

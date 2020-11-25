@@ -23,7 +23,7 @@ void main()
 		textureId = materials[fragMaterialIndex].diffuseTextureId;
 	const vec3 lightPos = vec3(0, 100, 0);
 	const vec3 lightDir = normalize(lightPos - fragPos);
-	const float diff = max(dot(normalize(fragNormal), lightDir), 0.2);
+	const float diff = max(dot(normalize(fragNormal), lightDir), 0.5);
 	
 	vec3 c = fragColor * diff;
 	if(textureId >= 0)

@@ -275,8 +275,6 @@ void Application::drawFrame()
 
 	// Update line buffer
 	_scene->updateLineBuffer();
-	// Update special objects (camera, display, ...)
-	updateSpecialSceneObjects();
 	// Update physics
 	//_scene->updatePhysics(timeDelta);
 
@@ -393,6 +391,9 @@ void Application::drawFrame()
 		exit(1);
 	}
 
+	// Update special objects (camera, display, ...)
+	updateSpecialSceneObjects();
+
 	//---------- Next frame ----------//
 	_currentFrame = (_currentFrame + 1) % _inFlightFences.size();
 }
@@ -432,10 +433,6 @@ void Application::updateUniformBuffer(uint32_t currentImage)
 	ubo.hasSky = false;
 
 	_uniformBuffers[currentImage]->setValue(ubo);
-	for(auto& uni : _camerasUniformBuffer)
-	{
-		uni->setValue(ubo);
-	}
 }
 
 void Application::createDescriptorPool()
@@ -473,6 +470,7 @@ void Application::createSpecialSceneObjects()
 			{
 				_camerasRayTracing.push_back(new RayTracing(_device, {info.width, info.height}, VK_FORMAT_B8G8R8A8_UNORM, _commandPool, _camerasUniformBuffer.back(), _scene));
 				camera->setRayTracingPipelineIndex(_camerasRayTracing.size()-1);
+				camera->setUniformBufferIndex(_camerasUniformBuffer.size()-1);
 			}
 			if(info.renderingType == Camera::CameraRenderingType::RASTERIZATION)
 			{
@@ -496,6 +494,7 @@ void Application::createSpecialSceneObjects()
 							_camerasUniformBuffer.back(), 
 							_scene));
 				camera->setRasterizationPipelineIndex(_camerasRasterization.size()-1);
+				camera->setUniformBufferIndex(_camerasUniformBuffer.size()-1);
 			}
 		}
 		else if(objectType == "Display")
@@ -507,14 +506,12 @@ void Application::createSpecialSceneObjects()
 
 void Application::updateSpecialSceneObjects()
 {
-	static Camera* _camera = nullptr;
 	for(auto& abstractPtr : _scene->getObjects())
 	{
 		std::string objectType = abstractPtr->getType();
 		if(objectType == "Camera")
 		{
 			Camera* camera = (Camera*)abstractPtr;
-			_camera = camera;
 			if(camera->getCameraInfo().renderingType==Camera::CameraRenderingType::RAY_TRACING)
 			{
 				Image* output = _camerasRayTracing[camera->getRayTracingPipelineIndex()]->getOutputImage();
@@ -523,19 +520,43 @@ void Application::updateSpecialSceneObjects()
 			}
 			else if(camera->getCameraInfo().renderingType==Camera::CameraRenderingType::RASTERIZATION)
 			{
+				_camerasRasterizationImage[camera->getRasterizationPipelineIndex()]->setImageLayout(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 				std::vector<uint8_t> buffer = _camerasRasterizationImage[camera->getRasterizationPipelineIndex()]->getBuffer(_commandPool);
-				//int sum = 0;
-				//for(auto value : buffer)
-				//	sum+=value;
-				//std::cout << "SUUM: " << sum << "\n";
 				camera->setCameraBuffer(buffer);
+
+				Camera::CameraInfo info = camera->getCameraInfo();
+
+				UniformBufferObject ubo;
+				//ubo.modelView = camera->getModelMat();
+				glm::vec3 camPos = camera->getWorldPosition();
+				glm::vec3 camRot = camera->getWorldRotation();
+				//std::cout << "camRot " << glm::to_string(camRot) << std::endl;
+
+				glm::mat4 rotMatrix = glm::mat4(1);
+				rotMatrix = glm::rotate(rotMatrix, glm::radians(camRot.z), glm::vec3(0, 0, 1));
+				rotMatrix = glm::rotate(rotMatrix, glm::radians(camRot.y), glm::vec3(0, 1, 0));
+				rotMatrix = glm::rotate(rotMatrix, glm::radians(camRot.x), glm::vec3(1, 0, 0));
+
+				glm::vec4 camFront = glm::vec4(1,0,0,1)*rotMatrix;
+				glm::vec4 camUp = glm::vec4(0,1,0,1)*rotMatrix;
+				//std::cout << "camUp " << glm::to_string(glm::vec3(camUp)) << std::endl;
+				//std::cout << "camPos " << glm::to_string(camPos) << std::endl;
+				//std::cout << "camFront " << glm::to_string(glm::vec3(camFront)) << std::endl;
+				//std::cout << "lookAt " << glm::to_string(camPos+glm::vec3(camFront)) << std::endl;
+
+				ubo.modelView = glm::lookAt(camPos, camPos+glm::vec3(camFront), glm::vec3(camUp));
+				ubo.projection = glm::perspective(glm::radians(info.fov), info.width / static_cast<float>(info.height), 0.1f, 1000.0f);
+				ubo.projection[1][1] *= -1;
+				ubo.modelViewInverse = glm::inverse(ubo.modelView);
+				ubo.projectionInverse = glm::inverse(ubo.projection);
+				ubo.hasSky = false;
+
+				_camerasUniformBuffer[camera->getUniformBufferIndex()]->setValue(ubo);
 			}
 		}
 		else if(objectType == "Display")
 		{
 			Display* display = (Display*)abstractPtr;
-			if(_camera!=nullptr)
-				display->setBuffer(_camera->getCameraBuffer());
 			int textureId = display->getTextureIndex();
 			_scene->getTextures()[textureId]->updateTextureImage(display->getBuffer());
 		}
