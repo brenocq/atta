@@ -1,8 +1,8 @@
 # Robot Simulator
 <p align="center">
  <img src="./img/2020-08-16.gif" height="200">
- <img src="./img/2020-09-01.png" height="200">
  <img src="./img/2020-09-12.png" height="200">
+ <img src="./img/2020-11-24.gif" height="200">
 </p>
 
 Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing the camera sensor and the TFT display, after that start I will start with the physiscs engine :)
