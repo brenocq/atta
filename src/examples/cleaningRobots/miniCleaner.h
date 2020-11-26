@@ -13,7 +13,7 @@
 #include "simulator/objects/others/display/display.h"
 #include "simulator/objects/sensors/camera/camera.h"
 
-class MiniCleaner : Object
+class MiniCleaner : public Object
 {
 	public:
 		MiniCleaner(glm::vec3 position={0,0,0}, glm::vec3 rotation={0,0,0}, glm::vec3 color = {0, 1, 1});

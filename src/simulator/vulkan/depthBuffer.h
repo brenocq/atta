@@ -28,10 +28,6 @@ class DepthBuffer
 
 	private:
 		VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-		//bool hasStencilComponent();
-
-		//// TODO also being used in Texture
-		//void transitionImageLayout(VkImageLayout newLayout);
 
 		Device* _device;
 		CommandPool* _commandPool;
@@ -39,6 +35,7 @@ class DepthBuffer
 		ImageView* _imageView;
 		VkFormat _format;
 		VkExtent2D _extent;
+		bool _stencilAvailable;
 };
 
 #endif// DEPTH_BUFFER_H

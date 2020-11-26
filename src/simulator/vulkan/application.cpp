@@ -167,6 +167,8 @@ void Application::createPipelines()
 {
 	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _uniformBuffers, _scene);
 	_linePipeline = new LinePipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
+	_maskPipeline = new MaskPipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
+	_outlinePipeline = new OutlinePipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
 }
 
 void Application::createUserInterface()
@@ -192,6 +194,12 @@ void Application::cleanupSwapChain()
 
 	delete _commandBuffers;
 	_commandBuffers = nullptr;
+
+	delete _maskPipeline;
+	_maskPipeline = nullptr;
+
+	delete _outlinePipeline;
+	_outlinePipeline = nullptr;
 
 	delete _linePipeline;
 	_linePipeline = nullptr;
@@ -407,6 +415,12 @@ void Application::render(VkCommandBuffer commandBuffer, int imageIndex)
 
 		// Line pipeline
 		_linePipeline->render(commandBuffer, imageIndex);
+
+		// Mask pipeline
+		_maskPipeline->render(commandBuffer, imageIndex);
+
+		// Outline pipeline
+		_outlinePipeline->render(commandBuffer, imageIndex);
 	}
 	_graphicsPipeline->endRender(commandBuffer);
 }

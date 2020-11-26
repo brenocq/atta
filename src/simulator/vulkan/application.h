@@ -23,6 +23,8 @@
 #include "swapChain.h"
 #include "pipeline/graphicsPipeline.h"
 #include "pipeline/linePipeline.h"
+#include "pipeline/outlinePipeline.h"
+#include "pipeline/maskPipeline.h"
 #include "frameBuffer.h"
 #include "commandPool.h"
 #include "commandBuffers.h"
@@ -90,6 +92,8 @@ class Application
 
 		GraphicsPipeline* _graphicsPipeline;
 		LinePipeline* _linePipeline;
+		MaskPipeline* _maskPipeline;
+		OutlinePipeline* _outlinePipeline;
 
 		CommandPool* _commandPool;
 		CommandBuffers* _commandBuffers;

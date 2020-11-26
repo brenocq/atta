@@ -1,10 +1,10 @@
 //--------------------------------------------------
 // Robot Simulator
-// graphicsPipeline.cpp
+// outlinePipeline.cpp
 // Date: 24/06/2020
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include "graphicsPipeline.h"
+#include "outlinePipeline.h"
 
 #include "simulator/objects/basics/basics.h"
 #include "simulator/objects/others/display/display.h"
@@ -13,23 +13,25 @@
 #include "simulator/helpers/log.h"
 
 // Graphics Pipeline with swapchain
-GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
-	GraphicsPipeline(device, swapChain->getExtent(), swapChain->getImageFormat(), swapChain->getImageViews(), uniformBuffers, scene)
+OutlinePipeline::OutlinePipeline(Device* device, SwapChain* swapChain, RenderPass* renderPass, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
+	OutlinePipeline(device, renderPass, swapChain->getExtent(), swapChain->getImageFormat(), swapChain->getImageViews(), uniformBuffers, scene)
 {
 }
 
 // Offline Graphics Pipeline
-GraphicsPipeline::GraphicsPipeline(Device* device, 
+OutlinePipeline::OutlinePipeline(Device* device, 
+		RenderPass* renderPass,
 		VkExtent2D extent, VkFormat format,
 		ImageView* imageView,
 		UniformBuffer* uniformBuffer, 
 		Scene* scene):
-	GraphicsPipeline(device, extent, format, (std::vector<ImageView*>){imageView}, (std::vector<UniformBuffer*>){uniformBuffer}, scene)
+	OutlinePipeline(device, renderPass, extent, format, (std::vector<ImageView*>){imageView}, (std::vector<UniformBuffer*>){uniformBuffer}, scene)
 {
 }
 
 // Base constructor
-GraphicsPipeline::GraphicsPipeline(Device* device, 
+OutlinePipeline::OutlinePipeline(Device* device, 
+		RenderPass* renderPass,
 		VkExtent2D extent, VkFormat format,
 		std::vector<ImageView*> imageViews, 
 		std::vector<UniformBuffer*> uniformBuffers, 
@@ -37,18 +39,11 @@ GraphicsPipeline::GraphicsPipeline(Device* device,
 	Pipeline(device, imageViews, scene), _imageExtent(extent), _imageFormat(format)
 {
 	//---------- Render pass ----------//
-	_colorBuffer = new ColorBuffer(_device, _imageExtent, _imageFormat);
-	_depthBuffer = new DepthBuffer(_device, _imageExtent);
-	_renderPass = new RenderPass(_device, _depthBuffer, _colorBuffer);
+	_renderPass = renderPass;
 
-	//---------- Frame Buffers ----------//
-	_frameBuffers.resize(_imageViews.size());
-	for(int i = 0; i < (int)_frameBuffers.size(); i++) 
-		_frameBuffers[i] = new FrameBuffer(_imageViews[i], _renderPass);
-	
 	//---------- Shaders ----------//
- 	_vertShaderModule = new ShaderModule(_device, "src/shaders/shaders/graphicsShader.vert.spv");
-    _fragShaderModule = new ShaderModule(_device, "src/shaders/shaders/graphicsShader.frag.spv");
+ 	_vertShaderModule = new ShaderModule(_device, "src/shaders/shaders/outlineShader.vert.spv");
+    _fragShaderModule = new ShaderModule(_device, "src/shaders/shaders/outlineShader.frag.spv");
 
 	// Vert shader
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -155,15 +150,21 @@ GraphicsPipeline::GraphicsPipeline(Device* device,
 	// Depth stencil
 	VkPipelineDepthStencilStateCreateInfo depthStencil{};
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	depthStencil.depthTestEnable = VK_TRUE;
+	depthStencil.depthTestEnable = VK_FALSE;
 	depthStencil.depthWriteEnable = VK_TRUE;
 	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
 	depthStencil.depthBoundsTestEnable = VK_FALSE;
 	depthStencil.minDepthBounds = 0.0f; // Optional
 	depthStencil.maxDepthBounds = 1.0f; // Optional
-	depthStencil.stencilTestEnable = VK_FALSE;
-	//depthStencil.back = {};
-	//depthStencil.front = {};
+	depthStencil.stencilTestEnable = VK_TRUE;
+	depthStencil.back.compareOp = VK_COMPARE_OP_NOT_EQUAL;
+	depthStencil.back.failOp = VK_STENCIL_OP_KEEP;
+	depthStencil.back.depthFailOp = VK_STENCIL_OP_KEEP;
+	depthStencil.back.passOp = VK_STENCIL_OP_REPLACE;
+	depthStencil.back.compareMask = 0xff;
+	depthStencil.back.writeMask = 0xff;
+	depthStencil.back.reference = 1;
+	depthStencil.front = depthStencil.back;
 
 	//---------- Descriptors ----------//
 	std::vector<DescriptorBinding> descriptorBindings =
@@ -237,13 +238,13 @@ GraphicsPipeline::GraphicsPipeline(Device* device,
 
 	if(vkCreateGraphicsPipelines(_device->handle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS) 
 	{
-		std::cout << BOLDRED << "[GraphicsPipeline]" << RESET << RED << " Failed to create graphics pipeline!" << RESET << std::endl;
+		std::cout << BOLDRED << "[OutlinePipeline]" << RESET << RED << " Failed to create outline pipeline!" << RESET << std::endl;
 		exit(1);
 	}
 }
 
 
-GraphicsPipeline::~GraphicsPipeline()
+OutlinePipeline::~OutlinePipeline()
 {
 	if(_colorBuffer != nullptr)
 	{
@@ -264,33 +265,7 @@ GraphicsPipeline::~GraphicsPipeline()
 	}
 }
 
-void GraphicsPipeline::beginRender(VkCommandBuffer commandBuffer, int imageIndex)
-{
-	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = {0.5f, 0.5f, 0.5f, 1.0f};
-	clearValues[1].depthStencil = {1.0f, 0};
-
-	VkRenderPassBeginInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = _renderPass->handle();
-	renderPassInfo.framebuffer = _frameBuffers[imageIndex]->handle();
-	renderPassInfo.renderArea.offset = {0, 0};
-	//if(!_splitRender)
-		renderPassInfo.renderArea.extent = _imageExtent;
-	//else
-	//	renderPassInfo.renderArea.extent = {_swapChain->getExtent().width/2, _swapChain->getExtent().height};
-	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-	renderPassInfo.pClearValues = clearValues.data();
-
-	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-}
-
-void GraphicsPipeline::endRender(VkCommandBuffer commandBuffer)
-{
-	vkCmdEndRenderPass(commandBuffer);
-}
-
-void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
+void OutlinePipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 {
 	VkBuffer vertexBuffers[] = { _scene->getVertexBuffer()->handle() };
 	VkDeviceSize offsets[] = { 0 };
@@ -302,6 +277,9 @@ void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 
 	for(auto abstractPtr : _scene->getObjects())
 	{
+		if(abstractPtr->getSelection()!=Object::ObjectSelection::SELECTED)
+			continue;
+
 		Model* model;
 		if(abstractPtr->getType() == "ImportedObject")
 			model = ((ImportedObject*)abstractPtr)->getModel();

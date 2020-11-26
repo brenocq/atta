@@ -9,7 +9,8 @@
 
 int Object::_qtyIds = 0;
 Object::Object(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mass):
-	_name(name), _type("Object"), _position(position), _rotation(rotation), _scale(scale), _mass(mass), _physics(nullptr)
+	_name(name), _type("Object"), _position(position), _rotation(rotation), _scale(scale), _mass(mass), _physics(nullptr),
+	_selection(ObjectSelection::UNSELECTED)
 {
 	_id = _qtyIds++;
 
@@ -79,6 +80,8 @@ glm::vec3 Object::getWorldRotation()
 
 glm::mat4 Object::getModelMat()
 {
+	// TODO stores current modelMat and calculates if the object has moved
+	// (Go up until find updated (world) modelMat)
 	if(_physics != nullptr)
 	{
 		_position = _physics->getPosition();
@@ -171,6 +174,13 @@ void Object::setStatic(bool stat)
 
 	//	_physics->setMass(_mass);
 	//}
+}
+
+void Object::setSelection(ObjectSelection sel)
+{
+	_selection = sel;
+	for(auto child : _children)
+		child->setSelection(sel);
 }
 
 void Object::addChild(Object* child, Constraint* constraint)
