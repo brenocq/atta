@@ -112,6 +112,8 @@ set(src_files_simulator_vulkan_raytracing
 set(src_files_simulator_vulkan_pipeline
 	simulator/vulkan/pipeline/graphicsPipeline.cpp
 	simulator/vulkan/pipeline/linePipeline.cpp
+	simulator/vulkan/pipeline/outlinePipeline.cpp
+	simulator/vulkan/pipeline/maskPipeline.cpp
 	simulator/vulkan/pipeline/pipeline.cpp
 	simulator/vulkan/pipeline/pipelineLayout.cpp
 )

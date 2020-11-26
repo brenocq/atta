@@ -388,6 +388,7 @@ void Scene::genGridLines()
 	const glm::vec3 gridColor = {0.35, 0.35, 0.35};
 	const glm::vec2 texCoord(0,0);
 
+	addLine({0,0,0}, {0,0,0}, gridColor);
 	// X lines
 	for(int i=-gridSize;i<gridSize;i++)
 	{

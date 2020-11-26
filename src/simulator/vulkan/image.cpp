@@ -25,8 +25,6 @@ Image::Image(Device* device,
 	imageInfo.arrayLayers = 1;
 
 	imageInfo.format = format;
-	// Use VK_IMAGE_TILING_LINEAR if wants to read/write to the image with the CPU
-	// Linear tilling might not be support for some opetations or formats
 	imageInfo.tiling = tiling;
 	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	imageInfo.usage = usage;
@@ -34,7 +32,8 @@ Image::Image(Device* device,
 	imageInfo.samples = numSamples;
 	imageInfo.flags = 0; // Optional
 
-	if (vkCreateImage(_device->handle(), &imageInfo, nullptr, &_image) != VK_SUCCESS) {
+	if(vkCreateImage(_device->handle(), &imageInfo, nullptr, &_image) != VK_SUCCESS)
+	{
 		Log::error("Image", "Failed to create image!");
 		exit(1);
 	}
@@ -47,7 +46,8 @@ Image::Image(Device* device,
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-	if(vkAllocateMemory(_device->handle(), &allocInfo, nullptr, &_memory) != VK_SUCCESS) {
+	if(vkAllocateMemory(_device->handle(), &allocInfo, nullptr, &_memory) != VK_SUCCESS)
+	{
 		Log::error("Image", "Failed to allocate image memory!");
 		exit(1);
 	}
@@ -81,19 +81,8 @@ std::vector<uint8_t> Image::getBuffer(CommandPool* commandPool)
 		subresourceRange.layerCount = 1;
 
 		// Change transfer layouts
-		//if(_layout == VK_IMAGE_LAYOUT_GENERAL)
-		//{
-		//	Log::verbose("Image", "Image layout is GENERAL.");
-		//	ImageMemoryBarrier::insert(commandBuffer, _image, subresourceRange, 
-		//		VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-		//}
-		//else if(_layout == VK_IMAGE_LAYOUT_UNDEFINED)
-		//{
-			ImageMemoryBarrier::insert(commandBuffer, _image, subresourceRange, 
-				VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, _layout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-		//}
-		//else
-		//	Log::warning("Image", "Image layout must be general or undefined.");
+		ImageMemoryBarrier::insert(commandBuffer, _image, subresourceRange, 
+			VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, _layout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 		ImageMemoryBarrier::insert(commandBuffer, dstImg->handle(), subresourceRange, 
 			0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
@@ -167,6 +156,6 @@ uint32_t Image::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags proper
 		}
 	}
 
-	std::cout << BOLDRED << "[Image]" << RESET << RED << " Failed to find suitable memory type!" << RESET << std::endl;
+	Log::error("Image", "Failed to find suitable memory type!");
 	exit(1);
 }

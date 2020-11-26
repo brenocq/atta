@@ -25,6 +25,7 @@ Simulator::Simulator()
 	_miniCleaners.push_back(new MiniCleaner({1,0.1,1}, {0,0,0}, {0,1,0}));
 	_miniCleaners.push_back(new MiniCleaner({0,0.1,1}, {0,45,0}, {0,0,1}));
 	_miniCleaners.push_back(new MiniCleaner({0,0.1,0}, {0,-45,0}, {0,1,1}));
+	_miniCleaners.back()->setSelection(Object::ObjectSelection::SELECTED);
 
 	// Add objects to the scene
 	_scene->addObject((Object*)ground);

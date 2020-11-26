@@ -16,6 +16,11 @@
 class Object
 {
 	public:
+		enum ObjectSelection {
+			UNSELECTED = 0,
+			SELECTED
+		};
+
 		Object(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 scale = {1,1,1}, float mass = 1.0f);
 		~Object();
 
@@ -37,11 +42,13 @@ class Object
 		std::vector<Object*> getChildren() const { return _children; }
 		Constraint* getParentConstraint() const { return _parentConstraint; }
 		Model* getModel() const { return _model; }
+		ObjectSelection getSelection() const { return _selection; }
 
 		//---------- Setters ----------//
 		void setPosition(glm::vec3 position);
 		void setRotation(glm::vec3 rotation);
 		void setStatic(bool stat);
+		void setSelection(ObjectSelection sel);
 
 	protected:
 		void setParent(Object* parent) { _parent = parent; };
@@ -61,6 +68,9 @@ class Object
 		bool _static;
 
 		Model* _model;
+
+		// UI
+		ObjectSelection _selection;
 
 	private:
 		Object* _parent;
