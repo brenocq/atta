@@ -17,6 +17,7 @@
 #include "guiFrameBuffer.h"
 #include "guiPipelineLayout.h"
 #include "guiUniformBuffer.h"
+#include "widgets/widgets.h"
 
 class GuiPipeline
 {
@@ -28,7 +29,8 @@ class GuiPipeline
 
 		void beginRender(VkCommandBuffer commandBuffer, int imageIndex=0);
 		void endRender(VkCommandBuffer commandBuffer);
-		void render(VkCommandBuffer commandBuffer, int imageIndex=0);
+		void render(VkCommandBuffer commandBuffer, guib::Widget* root, int imageIndex=0);
+		void renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOffset, guib::Size currSize, guib::Widget* widget);
 
 		//---------- Getters and Setters ----------//
 		VkPipeline handle() const { return _pipeline; }

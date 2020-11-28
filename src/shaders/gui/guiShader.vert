@@ -20,7 +20,9 @@ vec2 positions[6] = vec2[](
 
 void main() 
 {
-	vec2 rectCorner = objectInfo.position+positions[gl_VertexIndex]*objectInfo.size;
+	vec2 objPos = objectInfo.position*2-vec2(1.0,1.0);
+	vec2 objSize = objectInfo.size*2;
+	vec2 rectCorner = objPos+positions[gl_VertexIndex]*objSize;
     gl_Position = vec4(rectCorner,0,1);
 
     outFragColor = objectInfo.color;

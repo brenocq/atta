@@ -19,6 +19,7 @@
 #include "simulator/vulkan/commandBuffers.h"
 #include "guiPipeline.h"
 #include "guiUniformBuffer.h"
+#include "widgets/widgets.h"
 
 class UserInterface
 {
@@ -38,6 +39,7 @@ class UserInterface
 		void setSplitRender(bool* splitRender) { _splitRender = splitRender; }
 
 	private:
+		void createWidgetTree();
 		static void checkResult(VkResult result);
 
 		std::map<Object*, bool> _showObjectInfo;
@@ -51,6 +53,10 @@ class UserInterface
 		CommandBuffers* _guiCommandBuffers;
 		std::vector<GuiUniformBuffer*> _guiUniformBuffers;
 		GuiPipeline* _guiPipeline;
+
+
+		//---------- GUI variables ----------//
+		guib::Widget* _widgetTree;
 
 		// Topbar->Main
 		bool* _enableRayTracing;

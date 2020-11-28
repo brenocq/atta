@@ -129,13 +129,14 @@ set(src_files_simulator_vulkan_gui
 	simulator/vulkan/gui/userInterface.cpp
 )
 
-#set(src_files_simulator_vulkan_ui_imgui
-#	simulator/vulkan/ui/imgui/imgui_impl_glfw.cpp
-#	simulator/vulkan/ui/imgui/imgui_impl_glfw.h
-#	simulator/vulkan/ui/imgui/imgui_impl_vulkan.cpp
-#	simulator/vulkan/ui/imgui/imgui_impl_vulkan.h
-#)
-
+set(src_files_simulator_vulkan_gui_widgets
+	simulator/vulkan/gui/widgets/widget.cpp
+	simulator/vulkan/gui/widgets/widgetStructs.cpp
+	simulator/vulkan/gui/widgets/box.cpp
+	simulator/vulkan/gui/widgets/column.cpp
+	simulator/vulkan/gui/widgets/row.cpp
+	simulator/vulkan/gui/widgets/padding.cpp
+)
 
 source_group("Main" FILES ${src_files})
 source_group("Simulator" FILES ${src_files_simulator})
@@ -177,6 +178,7 @@ add_executable(${exe_name}
 	${src_files_simulator_physics_constraints} 
 	${src_files_simulator_vulkan} 
 	${src_files_simulator_vulkan_gui} 
+	${src_files_simulator_vulkan_gui_widgets} 
 	${src_files_simulator_vulkan_raytracing} 
 	${src_files_simulator_vulkan_pipeline} 
 	${src_files_examples}

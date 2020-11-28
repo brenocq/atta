@@ -37,6 +37,7 @@ UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChai
 	}
 
 	_guiPipeline = new GuiPipeline(_device, _swapChain, _guiUniformBuffers);
+	createWidgetTree();
 }
 
 UserInterface::~UserInterface()
@@ -56,6 +57,79 @@ UserInterface::~UserInterface()
 	delete _guiCommandPool;
 	_guiCommandPool = nullptr;
 
+	delete _widgetTree;
+	_widgetTree = nullptr;
+}
+
+void UserInterface::createWidgetTree()
+{
+	_widgetTree = new guib::Box(
+		{
+			.color = {1,0,0,1},
+			.size  = {.5,.5},
+			.child = new guib::Box(
+			{
+				.color = {0,1,0,1},
+				.size  = {.5,1},
+				.child = new guib::Box(
+				{
+					.color = {0,0,1,1},
+					.size  = {.5,.9},
+					.child = (guib::Widget*) new guib::Column(
+					{
+						.children = {
+							new guib::Padding(
+							{
+								.padding = guib::PaddingValues::all(.05),
+								.child = new guib::Box(
+									{
+										.color = {0,1,0,1},
+										.size  = {1,.2}
+									})
+							}),
+							new guib::Padding(
+							{
+								.padding = guib::PaddingValues::symmetric(.4, .05),
+								.child = new guib::Box(
+									{
+										.color = {1,0,0,1},
+										.size  = {1,.2}
+									})
+							}),
+							new guib::Padding(
+							{
+								.padding = {.5, .5, .1, .1},
+								.child = new guib::Box(
+									{
+										.color = {0,1,1,1},
+										.size  = {1,.2}
+									})
+							}),
+							new guib::Box(
+							{
+								.color = {1,0,0,1},
+								.size  = {.9,.4},
+								.child = new guib::Row(
+									{
+										.children = {
+											new guib::Box(
+											{
+												.color = {1,1,1,1},
+												.size  = {.3,.9}
+											}),
+											new guib::Box(
+											{
+												.color = {0,0,0,1},
+												.size  = {.3,.9}
+											})
+										}
+									})
+							})
+						}
+					})
+				})
+			})
+		}); 
 }
 
 void UserInterface::checkResult(VkResult result)
@@ -73,7 +147,7 @@ void UserInterface::render(int i)
 	VkCommandBuffer commandBuffer = _guiCommandBuffers->begin(i);
 	{
 		_guiPipeline->beginRender(commandBuffer, i);
-		_guiPipeline->render(commandBuffer, i);
+		_guiPipeline->render(commandBuffer, _widgetTree, i);
 		_guiPipeline->endRender(commandBuffer);
 	}
 	_guiCommandBuffers->end(i);
@@ -85,5 +159,6 @@ void UserInterface::render(int i)
 
 void UserInterface::draw()
 {
+
 }
 
