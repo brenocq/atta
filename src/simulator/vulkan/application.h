@@ -42,7 +42,7 @@
 #include "colorBuffer.h"
 #include "model.h"
 #include "modelViewController.h"
-#include "ui/userInterface.h"
+#include "gui/userInterface.h"
 #include "rayTracing/rayTracing.h"
 #include "../scene.h"
 

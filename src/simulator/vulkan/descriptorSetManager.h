@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // descriptorSetManager.h
-// Date: 23/07/2020
+// Date: 2020-07-23
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef DESCRIPTOR_SET_MANAGER_H
@@ -19,19 +19,19 @@
 class DescriptorSetManager
 {
 	public:
-	DescriptorSetManager(Device* device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets);
-	~DescriptorSetManager();
+		DescriptorSetManager(Device* device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets);
+		~DescriptorSetManager();
 
-	Device* getDevice() const { return _device; }
-	DescriptorPool* getDescriptorPool() const { return _descriptorPool; }
-	DescriptorSetLayout* getDescriptorSetLayout() const { return _descriptorSetLayout; }
-	DescriptorSets* getDescriptorSets() const { return _descriptorSets; }
+		Device* getDevice() const { return _device; }
+		DescriptorPool* getDescriptorPool() const { return _descriptorPool; }
+		DescriptorSetLayout* getDescriptorSetLayout() const { return _descriptorSetLayout; }
+		DescriptorSets* getDescriptorSets() const { return _descriptorSets; }
 
 	private:
-	Device* _device;
-	DescriptorPool* _descriptorPool;
-	DescriptorSetLayout* _descriptorSetLayout;
-	DescriptorSets* _descriptorSets;
+		Device* _device;
+		DescriptorPool* _descriptorPool;
+		DescriptorSetLayout* _descriptorSetLayout;
+		DescriptorSets* _descriptorSets;
 };
 
 #endif// DESCRIPTOR_SET_MANAGER_H

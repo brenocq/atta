@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // depthBuffer.cpp
-// Date: 08/07/2020
+// Date: 2020-07-08
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "depthBuffer.h"

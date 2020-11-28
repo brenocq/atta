@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // debugMessenger.h
-// Date: 21/06/2020
+// Date: 2020-06-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef DEBUG_UTILS_MESSENGER_H

@@ -1,19 +1,20 @@
 //--------------------------------------------------
 // Robot Simulator
-// uiRenderPass.h
-// Date: 12/07/2020
+// guiRenderPass.h
+// Date: 2020-07-12
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include "uiRenderPass.h"
+#include "guiRenderPass.h"
+#include "simulator/helpers/log.h"
 
-UiRenderPass::UiRenderPass(Device* device, SwapChain* swapChain)
+GuiRenderPass::GuiRenderPass(Device* device, VkFormat colorFormat):
+	_colorFormat(colorFormat)
 {
 	_device = device;
-	_swapChain = swapChain;
 
 	//----------- Color attachment ------------//
 	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = _swapChain->getImageFormat();
+	colorAttachment.format = _colorFormat;
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -51,13 +52,14 @@ UiRenderPass::UiRenderPass(Device* device, SwapChain* swapChain)
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;
 
-	if (vkCreateRenderPass(_device->handle(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS) {
-		std::cout << BOLDRED << "[UiRenderPass]" << RESET << RED << " Failed to create user interface render pass!" << RESET << std::endl;
+	if(vkCreateRenderPass(_device->handle(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS)
+	{
+		Log::error("GuiRenderPass", "Failed to create gui render pass!");
 		exit(1);
 	}
 }
 
-UiRenderPass::~UiRenderPass()
+GuiRenderPass::~GuiRenderPass()
 {
 	if(_renderPass != nullptr)
 	{

@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // scene.cpp
-// Date: 16/07/2020
+// Date: 2020-07-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "scene.h"
@@ -385,7 +385,7 @@ void Scene::updateLineBuffer()
 void Scene::genGridLines()
 {
 	int gridSize = 100;
-	const glm::vec3 gridColor = {0.35, 0.35, 0.35};
+	const glm::vec3 gridColor = {0.45, 0.45, 0.45};
 	const glm::vec2 texCoord(0,0);
 
 	addLine({0,0,0}, {0,0,0}, gridColor);
