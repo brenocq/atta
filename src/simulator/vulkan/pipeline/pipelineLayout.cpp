@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // pipelineLayout.h
-// Date: 24/06/2020
+// Date: 2020-06-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "pipelineLayout.h"
@@ -28,8 +28,9 @@ PipelineLayout::PipelineLayout(Device* device, DescriptorSetLayout* descriptorSe
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
 	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-	if(vkCreatePipelineLayout(_device->handle(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS) {
-		Log::error("[PipelineLayout]", "Failed to create pipeline layout!");
+	if(vkCreatePipelineLayout(_device->handle(), &pipelineLayoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
+	{
+		Log::error("PipelineLayout", "Failed to create pipeline layout!");
 		exit(1);
 	}
 }

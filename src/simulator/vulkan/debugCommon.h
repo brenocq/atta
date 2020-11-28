@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // debugCommon.h
-// Date: 21/06/2020
+// Date: 2020-06-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 // The debug common was created because both debugMessenger.cpp and instance.cpp need to access these functions

@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // descriptorSetLayout.cpp
-// Date: 06/07/2020
+// Date: 2020-07-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "descriptorSetLayout.h"
@@ -58,7 +58,6 @@ DescriptorSetLayout::DescriptorSetLayout(Device* device, std::vector<DescriptorB
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	layoutInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
 	layoutInfo.pBindings = layoutBindings.data();
-
 
 	if(vkCreateDescriptorSetLayout(_device->handle(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
 	{

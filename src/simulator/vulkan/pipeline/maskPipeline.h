@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // maskPipeline.h
-// Date: 26/11/2020
+// Date: 2020-11-26
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef MASK_PIPELINE_H

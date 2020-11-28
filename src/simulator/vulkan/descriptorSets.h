@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // descriptorSets.h
-// Date: 07/07/2020
+// Date: 2020-07-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef DESCRIPTOR_SET_H
@@ -16,12 +16,10 @@
 #include "descriptorPool.h"
 #include "descriptorSetLayout.h"
 #include "uniformBuffer.h"
-#include "texture.h"
 
 class DescriptorSets
 {
 	public:
-		DescriptorSets(Device* device, DescriptorPool* descriptorPool, DescriptorSetLayout* descriptorSetLayout, std::vector<UniformBuffer*> uniformBuffers, Texture* texture);
 		DescriptorSets(
 				Device* device, 
 				DescriptorPool* descriptorPool, 

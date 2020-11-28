@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // colorBuffer.cpp
-// Date: 09/07/2020
+// Date: 2020-07-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "colorBuffer.h"

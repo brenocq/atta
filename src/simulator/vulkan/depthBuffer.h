@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // depthBuffer.h
-// Date: 08/07/2020
+// Date: 2020-07-08
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef DEPTH_BUFFER_H

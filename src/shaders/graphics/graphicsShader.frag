@@ -19,10 +19,12 @@ layout(location = 5) in vec3 viewPos;
 layout(location = 0) out vec4 outColor;
 
 const vec3 ambientColor = vec3(.1,.1,.1);
-const vec3 lightColor = vec3(.8,.8,.8);
+const vec3 lightColor = vec3(.4,.4,.4);
 const vec3 lightPos = vec3(0, 10, 0);
 const vec3 specularColor = vec3(.3,.3,.3);
 const float specularAlpha = 200.0;
+const vec3 dirLightColor = vec3(.6,.6,.6);
+const vec3 dirLight = vec3(0,1,1);
 
 void main() 
 {
@@ -37,10 +39,12 @@ void main()
 	vec3 S = specularColor*pow(clamp(dot(n, h), 0.0, 1.0), specularAlpha);
 	if(dot(n, lightPos)<=0)
 		S = S*0;
-	const vec3 D = fragColor*clamp(dot(n,  l), 0.0, 1.0);
-	const vec3 directColor = lightColor*(D+S);
+	const vec3 diff = fragColor*clamp(dot(n,  l), 0.0, 1.0);
+	const vec3 dir = fragColor*clamp(dot(n,  dirLight), 0.0, 1.0);
+	const vec3 directColor = lightColor*(diff+S);
+	const vec3 directionalColor = dirLightColor*dir;
 	
-	vec3 color = (ambientColor+directColor);
+	vec3 color = (ambientColor+directColor+directionalColor);
 	if(textureId >= 0)
 	{
 		color *= texture(textureSamplers[textureId], fragTexCoord).rgb;

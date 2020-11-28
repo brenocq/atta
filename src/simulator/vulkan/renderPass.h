@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // renderPass.h
-// Date: 24/06/2020
+// Date: 2020-06-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef RENDER_PASS_H

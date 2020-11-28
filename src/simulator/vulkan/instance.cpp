@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // instance.cpp
-// Date: 21/06/2020
+// Date: 2020-06-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "instance.h"

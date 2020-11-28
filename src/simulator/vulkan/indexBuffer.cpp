@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // indexBuffer.cpp
-// Date: 06/07/2020
+// Date: 2020-07-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "indexBuffer.h"

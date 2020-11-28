@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // descriptorSetLayout.h
-// Date: 06/07/2020
+// Date: 2020-07-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef DESCRIPTOR_SET_LAYOUT_H

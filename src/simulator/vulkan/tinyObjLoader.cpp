@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // tinyObjLoader.cpp
-// Date: 08/07/2020
+// Date: 2020-07-08
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #define TINYOBJLOADER_IMPLEMENTATION

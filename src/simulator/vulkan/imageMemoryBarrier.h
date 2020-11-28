@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // imageMemoryBarrier.h
-// Date: 24/07/2020
+// Date: 2020-07-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef IMAGE_MEMORY_BARRIER_H

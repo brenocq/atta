@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Robot Simulator
 // descriptorPool.cpp
-// Date: 07/07/2020
+// Date: 2020-07-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "descriptorPool.h"

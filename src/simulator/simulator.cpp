@@ -19,13 +19,13 @@ Simulator::Simulator()
 	// Create object instances
 	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {0.8,0.8,0.8});
 	Cylinder* cylinder = new Cylinder("Obstacle", {7,1,0}, {0,0,0}, {1,1,1}, 0.0f, {0.5f, 0.1f, 0.1f});
+	cylinder->setSelection(Object::ObjectSelection::SELECTED);
 
 	// Create mini cleaner robot
 	_miniCleaners.push_back(new MiniCleaner({1,0.1,0}, {0,90,0}, {1,0,0}));
 	_miniCleaners.push_back(new MiniCleaner({1,0.1,1}, {0,0,0}, {0,1,0}));
 	_miniCleaners.push_back(new MiniCleaner({0,0.1,1}, {0,45,0}, {0,0,1}));
 	_miniCleaners.push_back(new MiniCleaner({0,0.1,0}, {0,-45,0}, {0,1,1}));
-	_miniCleaners.back()->setSelection(Object::ObjectSelection::SELECTED);
 
 	// Add objects to the scene
 	_scene->addObject((Object*)ground);

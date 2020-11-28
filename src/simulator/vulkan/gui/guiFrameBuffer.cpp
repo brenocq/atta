@@ -1,34 +1,36 @@
 //--------------------------------------------------
 // Robot Simulator
-// uiFrameBuffer.cpp
-// Date: 15/07/2020
+// guiFrameBuffer.cpp
+// Date: 2020-07-15
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include "uiFrameBuffer.h"
+#include "guiFrameBuffer.h"
+#include "simulator/helpers/log.h"
 
-UiFrameBuffer::UiFrameBuffer(ImageView* imageView, UiRenderPass* uiRenderPass)
+GuiFrameBuffer::GuiFrameBuffer(ImageView* imageView, GuiRenderPass* guiRenderPass, VkExtent2D imageExtent):
+	_imageExtent(imageExtent)
 {
 	_imageView = imageView;
-	_uiRenderPass = uiRenderPass;
+	_guiRenderPass = guiRenderPass;
 
 	VkImageView attachment[1] = {_imageView->handle()};
 	VkFramebufferCreateInfo framebufferInfo = {};
 	framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-	framebufferInfo.renderPass = _uiRenderPass->handle();
+	framebufferInfo.renderPass = _guiRenderPass->handle();
 	framebufferInfo.attachmentCount = 1;
 	framebufferInfo.pAttachments = attachment;
-	framebufferInfo.width = _uiRenderPass->getSwapChain()->getExtent().width;
-	framebufferInfo.height = _uiRenderPass->getSwapChain()->getExtent().height;
+	framebufferInfo.width = _imageExtent.width;
+	framebufferInfo.height = _imageExtent.height;
 	framebufferInfo.layers = 1;
 
 	if(vkCreateFramebuffer(_imageView->getDevice()->handle(), &framebufferInfo, nullptr, &_framebuffer) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[FrameBuffer]" << RESET << RED << " Failed to create frame buffer!" << RESET << std::endl;
+		Log::error("GuiFrameBuffer", "Failed to create gui frame buffer!");
 		exit(1);
 	}
 }
 
-UiFrameBuffer::~UiFrameBuffer()
+GuiFrameBuffer::~GuiFrameBuffer()
 {
 	if (_framebuffer != nullptr)
 	{

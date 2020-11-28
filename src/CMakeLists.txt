@@ -118,18 +118,23 @@ set(src_files_simulator_vulkan_pipeline
 	simulator/vulkan/pipeline/pipelineLayout.cpp
 )
 
-set(src_files_simulator_vulkan_ui
-	simulator/vulkan/ui/uiFrameBuffer.cpp
-	simulator/vulkan/ui/uiRenderPass.cpp
-	simulator/vulkan/ui/userInterface.cpp
+set(src_files_simulator_vulkan_gui
+	simulator/vulkan/gui/guiFrameBuffer.cpp
+	simulator/vulkan/gui/guiPipeline.cpp
+	simulator/vulkan/gui/guiPipelineLayout.cpp
+	simulator/vulkan/gui/guiRenderPass.cpp
+	simulator/vulkan/gui/guiStructs.cpp
+	simulator/vulkan/gui/guiUniformBuffer.cpp
+	simulator/vulkan/gui/guiVertex.cpp
+	simulator/vulkan/gui/userInterface.cpp
 )
 
-set(src_files_simulator_vulkan_ui_imgui
-	simulator/vulkan/ui/imgui/imgui_impl_glfw.cpp
-	simulator/vulkan/ui/imgui/imgui_impl_glfw.h
-	simulator/vulkan/ui/imgui/imgui_impl_vulkan.cpp
-	simulator/vulkan/ui/imgui/imgui_impl_vulkan.h
-)
+#set(src_files_simulator_vulkan_ui_imgui
+#	simulator/vulkan/ui/imgui/imgui_impl_glfw.cpp
+#	simulator/vulkan/ui/imgui/imgui_impl_glfw.h
+#	simulator/vulkan/ui/imgui/imgui_impl_vulkan.cpp
+#	simulator/vulkan/ui/imgui/imgui_impl_vulkan.h
+#)
 
 
 source_group("Main" FILES ${src_files})
@@ -171,8 +176,7 @@ add_executable(${exe_name}
 	${src_files_simulator_physics_colliders} 
 	${src_files_simulator_physics_constraints} 
 	${src_files_simulator_vulkan} 
-	${src_files_simulator_vulkan_ui} 
-	${src_files_simulator_vulkan_ui_imgui} 
+	${src_files_simulator_vulkan_gui} 
 	${src_files_simulator_vulkan_raytracing} 
 	${src_files_simulator_vulkan_pipeline} 
 	${src_files_examples}
