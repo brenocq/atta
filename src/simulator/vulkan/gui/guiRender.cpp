@@ -75,18 +75,50 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 	{
 		guib::Column* column = (guib::Column*)widget;
 		std::vector<guib::Widget*> children = column->getChildren();
-		guib::Size totalSize = column->getChildrenTotalSize(currSize);
+		guib::Size totalSize = column->getChildrenTotalSize();
+
+		switch(column->getVAlignment())
+		{
+			case guib::ALIGN_START:
+				break;
+			case guib::ALIGN_CENTER:
+				{
+					float offset = currSize.height/2-totalSize.height/2;
+					currOffset.y += offset;
+					currSize.height -= offset;
+				}
+				break;
+			case guib::ALIGN_END:
+				{
+					float offset = currSize.height-totalSize.height;
+					currOffset.y += offset;
+					currSize.height -= offset;
+				}
+				break;
+		}
+
 
 		for(auto& child : children)
 		{
-			renderWidget(commandBuffer, currOffset, currSize, child);
-
 			guib::Size childSize = child->getSize();
+			guib::Offset childOffset = currOffset;
+			if(childSize.unitW == guib::UNIT_PIXEL)
+			{
+				childSize.width /= _imageExtent.width*currSize.width;
+				childSize.unitW = guib::UNIT_PERCENT;
+			}
 			if(childSize.unitH == guib::UNIT_PIXEL)
 			{
 				childSize.height /= _imageExtent.height*currSize.height;
 				childSize.unitH = guib::UNIT_PERCENT;
 			}
+
+			if(column->getHAlignment()==guib::ALIGN_CENTER)
+				childOffset.x+=currSize.width/2-childSize.width*currSize.width/2;
+			else if(column->getHAlignment()==guib::ALIGN_END)
+				childOffset.x+=currSize.width-childSize.width*currSize.width;
+
+			renderWidget(commandBuffer, childOffset, currSize, child);
 
 			currOffset.y+=currSize.height*childSize.height;
 		}
@@ -95,11 +127,11 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 	{
 		guib::Row* row = (guib::Row*)widget;
 		std::vector<guib::Widget*> children = row->getChildren();
-		guib::Size totalSize = row->getChildrenTotalSize(currSize);
+		guib::Size totalSize = row->getChildrenTotalSize();
 
 		switch(row->getHAlignment())
 		{
-			case guib::ALIGN_LEFT:
+			case guib::ALIGN_START:
 				break;
 			case guib::ALIGN_CENTER:
 				{
@@ -108,10 +140,9 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 					currSize.width -= offset;
 				}
 				break;
-			case guib::ALIGN_RIGHT:
+			case guib::ALIGN_END:
 				{
-					std::cout << "curr:"<<currSize.width<<" size:"<<totalSize.width<<std::endl;
-					float offset = totalSize.width;//currSize.width;//-
+					float offset = currSize.width-totalSize.width;
 					currOffset.x += offset;
 					currSize.width -= offset;
 				}
@@ -120,14 +151,25 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 
 		for(auto& child : children)
 		{
-			renderWidget(commandBuffer, currOffset, currSize, child);
-
 			guib::Size childSize = child->getSize();
+			guib::Offset childOffset = currOffset;
 			if(childSize.unitW == guib::UNIT_PIXEL)
 			{
 				childSize.width /= _imageExtent.width*currSize.width;
 				childSize.unitW = guib::UNIT_PERCENT;
 			}
+			if(childSize.unitH == guib::UNIT_PIXEL)
+			{
+				childSize.height /= _imageExtent.height*currSize.height;
+				childSize.unitH = guib::UNIT_PERCENT;
+			}
+
+			if(row->getVAlignment()==guib::ALIGN_CENTER)
+				childOffset.y+=currSize.height/2-childSize.height*currSize.height/2;
+			else if(row->getVAlignment()==guib::ALIGN_END)
+				childOffset.y+=currSize.height-childSize.height*currSize.height;
+
+			renderWidget(commandBuffer, childOffset, currSize, child);
 
 			currOffset.x+=currSize.width*childSize.width;
 		}

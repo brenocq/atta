@@ -16,9 +16,9 @@ namespace guib
 	};
 
 	enum Alignment {
-		ALIGN_RIGHT=0,
-		ALIGN_LEFT,
-		ALIGN_CENTER
+		ALIGN_START=0,
+		ALIGN_CENTER,
+		ALIGN_END
 	};
 
 	enum Unit {

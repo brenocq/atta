@@ -5,7 +5,6 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "row.h"
-#include <iostream>
 
 namespace guib
 {
@@ -21,7 +20,7 @@ namespace guib
 
 	}
 
-	Size Row::getChildrenTotalSize(Size currSize)
+	Size Row::getChildrenTotalSize()
 	{
 		float maxH = 0;
 		float sumW = 0;
@@ -29,19 +28,17 @@ namespace guib
 		for(auto child : _children)
 		{
 			Size childSize = child->getSize();
-			std::cout << "bef:"<<childSize.width<<" sc:"<<Widget::screenSize.width<<std::endl;
 			if(childSize.unitW == guib::UNIT_PIXEL)
 			{
-				childSize.width /= Widget::screenSize.width*currSize.width;
+				childSize.width /= Widget::screenSize.width;
 				childSize.unitW = guib::UNIT_PERCENT;
 			}
 			if(childSize.unitH == guib::UNIT_PIXEL)
 			{
-				childSize.height /= Widget::screenSize.height*currSize.height;
+				childSize.height /= Widget::screenSize.height;
 				childSize.unitH = guib::UNIT_PERCENT;
 			}
 
-			std::cout << "sum:"<<childSize.width<<std::endl;
 			sumW+=childSize.width;
 			maxH=std::max(maxH, childSize.height);
 		}

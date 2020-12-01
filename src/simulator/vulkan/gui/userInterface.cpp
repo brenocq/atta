@@ -73,6 +73,8 @@ void UserInterface::createWidgetTree()
 			.size  = {300, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
 			.child = new guib::Column(
 			{
+				.hAlignment = guib::ALIGN_CENTER,
+				.vAlignment = guib::ALIGN_START,
 				.children = {
 					new guib::Box(
 					{
@@ -80,18 +82,28 @@ void UserInterface::createWidgetTree()
 						.size  = {1,30, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 						.child = new guib::Row(
 							{
-								.hAlignment = guib::ALIGN_RIGHT,
+								.hAlignment = guib::ALIGN_END,
 								.vAlignment = guib::ALIGN_CENTER,
 								.children = {
 									new guib::Box(
 									{
 										.color = {.8,.8,.3,1},
-										.size  = {20,.8, guib::UNIT_PIXEL, guib::UNIT_PERCENT}
+										.size  = {20,20, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+									}),
+									new guib::Box(
+									{
+										.color = {0,0,0,0},
+										.size  = {4,1, guib::UNIT_PIXEL}
 									}),
 									new guib::Box(
 									{
 										.color = {.8,.3,.3,1},
-										.size  = {20,.8, guib::UNIT_PIXEL, guib::UNIT_PERCENT}
+										.size  = {20,20, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+									}),
+									new guib::Box(
+									{
+										.color = {0,0,0,0},
+										.size  = {4,1, guib::UNIT_PIXEL}
 									})
 								}
 							})
@@ -99,7 +111,7 @@ void UserInterface::createWidgetTree()
 					new guib::Box(
 					{
 						.color = {1,.15,.15,1},
-						.size  = {1,30, guib::UNIT_PERCENT, guib::UNIT_PIXEL}
+						.size  = {0.5,30, guib::UNIT_PERCENT, guib::UNIT_PIXEL}
 					})
 					/*new guib::Padding(
 					{
