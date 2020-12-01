@@ -12,6 +12,8 @@
 
 namespace guib {
 	struct RowInfo {
+		Alignment hAlignment = ALIGN_CENTER;
+		Alignment vAlignment = ALIGN_CENTER;
 		std::vector<Widget*> children = {};
 	};
 
@@ -23,8 +25,13 @@ namespace guib {
 
 			//---------- Getters and Setters ----------//
 			std::vector<Widget*> getChildren() const { return _children; }
+			Size getChildrenTotalSize(Size currSize);
+			Alignment getHAlignment() const { return _hAlignment; }
+			Alignment getVAlignment() const { return _vAlignment; }
 
 		private:
+			Alignment _hAlignment;
+			Alignment _vAlignment;
 			std::vector<Widget*> _children;
 	};
 }

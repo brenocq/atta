@@ -33,6 +33,7 @@ namespace guib {
 			void setSize(Size size) { _size=size; }
 			Size getSize() const { return _size; }
 
+			static Size screenSize;
 		protected:
 			void setType(std::string type) { _type=type; }
 			Size _size;

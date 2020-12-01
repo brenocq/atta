@@ -7,7 +7,6 @@
 #include "guiPipeline.h"
 #include "guiVertex.h"
 #include "simulator/helpers/log.h"
-#include <typeinfo>
 
 GuiPipeline::GuiPipeline(Device* device, 
 				SwapChain* swapChain, 
@@ -254,91 +253,11 @@ void GuiPipeline::beginRender(VkCommandBuffer commandBuffer, int imageIndex)
 	renderPassInfo.pClearValues = clearValues.data();
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 }
 
 void GuiPipeline::endRender(VkCommandBuffer commandBuffer)
 {
 	vkCmdEndRenderPass(commandBuffer);
-}
-
-void GuiPipeline::render(VkCommandBuffer commandBuffer, guib::Widget* root, int imageIndex)
-{
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
-
-	guib::Offset currOffset = {0,0};
-	guib::Size currSize = {1,1};
-
-	renderWidget(commandBuffer, currOffset, currSize, root);
-}
-
-void GuiPipeline::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOffset, guib::Size currSize, guib::Widget* widget)
-{
-	if(widget == nullptr)
-		return;
-
-	guib::Size size = widget->getSize();
-	currSize*=size;
-
-	std::string type = widget->getType();
-	if(type=="Box")
-	{
-		guib::Box* box = (guib::Box*)widget;
-		guib::Color color = box->getColor();
-
-		GuiObjectInfo objectInfo;
-		objectInfo.position = glm::vec2(currOffset.x, currOffset.y);
-		objectInfo.size = glm::vec2(currSize.width, currSize.height);
-		objectInfo.radius = 0.0;
-		objectInfo.color = glm::vec4(color.r, color.g, color.b, color.a);
-
-		vkCmdPushConstants(
-				commandBuffer,
-				_pipelineLayout->handle(),
-				VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-				0,
-				sizeof(GuiObjectInfo),
-				&objectInfo);
-
-		vkCmdDraw(commandBuffer, 6, 1, 0, 0);
-
-		renderWidget(commandBuffer, currOffset, currSize, widget->getChild());
-	}
-	else if(type=="Column")
-	{
-		guib::Column* column = (guib::Column*)widget;
-		std::vector<guib::Widget*> children = column->getChildren();
-		for(auto& child : children)
-		{
-			renderWidget(commandBuffer, currOffset, currSize, child);
-			currOffset.y+=currSize.height*child->getSize().height;
-		}
-	}
-	else if(type=="Row")
-	{
-		guib::Row* row = (guib::Row*)widget;
-		std::vector<guib::Widget*> children = row->getChildren();
-		for(auto& child : children)
-		{
-			renderWidget(commandBuffer, currOffset, currSize, child);
-			currOffset.x+=currSize.width*child->getSize().width;
-		}
-	}
-	else if(type=="Padding")
-	{
-		guib::Padding* padding = (guib::Padding*)widget;
-		guib::PaddingValues pad = padding->getPadding();
-		guib::Widget* child = padding->getChild();
-		if(child!=nullptr)
-		{
-			currOffset.x+=currSize.width*pad.left;
-			currOffset.y+=currSize.height*pad.top;
-
-			currSize.width-=(currSize.width*pad.left+currSize.width*pad.right);
-			currSize.height-=(currSize.height*pad.top+currSize.height*pad.bottom);
-			currSize/=child->getSize();
-			renderWidget(commandBuffer, currOffset, currSize, child);
-			padding->setSize(child->getSize());
-		}
-	}
 }

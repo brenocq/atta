@@ -12,5 +12,6 @@
 #include "column.h"
 #include "row.h"
 #include "padding.h"
+#include "clickDetector.h"
 
 #endif// GUIB_WIDGETS_H
