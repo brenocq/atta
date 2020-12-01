@@ -29,8 +29,6 @@ class GuiPipeline
 
 		void beginRender(VkCommandBuffer commandBuffer, int imageIndex=0);
 		void endRender(VkCommandBuffer commandBuffer);
-		void render(VkCommandBuffer commandBuffer, guib::Widget* root, int imageIndex=0);
-		void renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOffset, guib::Size currSize, guib::Widget* widget);
 
 		//---------- Getters and Setters ----------//
 		VkPipeline handle() const { return _pipeline; }
@@ -55,6 +53,9 @@ class GuiPipeline
 		ShaderModule* _fragShaderModule;
 		DescriptorSetManager* _descriptorSetManager;
 		GuiPipelineLayout* _pipelineLayout;
+
+		//---------- GiuB widget handler ----------//
+		std::vector<guib::ClickDetectorArea> _clickableAreas;
 };
 
 #endif// GUI_PIPELINE_H

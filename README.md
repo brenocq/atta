@@ -6,7 +6,7 @@
 </p>
 
 Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing the camera sensor and the TFT display, after that start I will start with the physiscs engine :)\
-Okey... Maybe I am also creating an GUI library from scratch KKK
+Okey... Maybe I am also creating a GUI library from scratch KKK
 
 ## Installation (Linux)
 #### Download Vulkan SDK
@@ -39,7 +39,7 @@ These values are unreliable and come from what I think is going on in the code h
  - GPU Rendering (Vulkan): 100% (Working well)
  - RayTracing (Nvidia): 85% (Strange objects)
  - ~User interface (Imgui): 20%~
- - User interface: 0%
+ - User interface: 5%
  - Physics engine: 5%
  - GPU acceleration (Cuda): 0%
 

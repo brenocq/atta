@@ -6,10 +6,11 @@
 //--------------------------------------------------
 #include "widget.h"
 
+guib::Size guib::Widget::screenSize = {0,0};
+
 guib::Widget::Widget(WidgetInfo widgetInfo):
 	_size(widgetInfo.size), _offset(widgetInfo.offset), _child(widgetInfo.child), _type("Widget")
 {
-
 }
 
 guib::Widget::~Widget()

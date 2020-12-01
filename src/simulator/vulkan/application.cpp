@@ -601,16 +601,19 @@ void Application::onKey(int key, int scancode, int action, int mods)
 			break;
 	}
 	_modelViewController->onKey(key, scancode, action, mods);
+	_userInterface->onKey(key, scancode, action, mods);
 }
 
 void Application::onCursorPosition(double xpos, double ypos)
 {
 	_modelViewController->onCursorPosition(xpos, ypos);
+	_userInterface->onCursorPosition(xpos, ypos);
 }
 
 void Application::onMouseButton(int button, int action, int mods)
 {
 	_modelViewController->onMouseButton(button, action, mods);
+	_userInterface->onMouseButton(button, action, mods);
 	switch(button)
 	{
 		case GLFW_MOUSE_BUTTON_LEFT:
@@ -637,4 +640,5 @@ void Application::onMouseButton(int button, int action, int mods)
 void Application::onScroll(double xoffset, double yoffset)
 {
 	_modelViewController->onScroll(xoffset, yoffset);
+	_userInterface->onScroll(xoffset, yoffset);
 }

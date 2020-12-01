@@ -126,6 +126,7 @@ set(src_files_simulator_vulkan_gui
 	simulator/vulkan/gui/guiStructs.cpp
 	simulator/vulkan/gui/guiUniformBuffer.cpp
 	simulator/vulkan/gui/guiVertex.cpp
+	simulator/vulkan/gui/guiRender.cpp
 	simulator/vulkan/gui/userInterface.cpp
 )
 
@@ -136,6 +137,7 @@ set(src_files_simulator_vulkan_gui_widgets
 	simulator/vulkan/gui/widgets/column.cpp
 	simulator/vulkan/gui/widgets/row.cpp
 	simulator/vulkan/gui/widgets/padding.cpp
+	simulator/vulkan/gui/widgets/clickDetector.cpp
 )
 
 source_group("Main" FILES ${src_files})
