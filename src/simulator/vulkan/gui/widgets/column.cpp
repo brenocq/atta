@@ -20,7 +20,7 @@ namespace guib
 
 	}
 
-	Size Column::getChildrenTotalSize(Size currSize)
+	Size Column::getChildrenTotalSize()
 	{
 		float sumH = 0;
 		float maxW = 0;
@@ -30,12 +30,12 @@ namespace guib
 			Size childSize = child->getSize();
 			if(childSize.unitW == guib::UNIT_PIXEL)
 			{
-				childSize.width /= Widget::screenSize.width*currSize.width;
+				childSize.width /= Widget::screenSize.width;
 				childSize.unitW = guib::UNIT_PERCENT;
 			}
 			if(childSize.unitH == guib::UNIT_PIXEL)
 			{
-				childSize.height /= Widget::screenSize.height*currSize.height;
+				childSize.height /= Widget::screenSize.height;
 				childSize.unitH = guib::UNIT_PERCENT;
 			}
 
