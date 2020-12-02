@@ -79,7 +79,7 @@ void UserInterface::createWidgetTree()
 					new guib::Box(
 					{
 						.color = {.15,.15,.15,1},
-						.size  = {1,30, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+						.size  = {1,20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 						.child = new guib::Row(
 							{
 								.hAlignment = guib::ALIGN_END,
@@ -88,7 +88,8 @@ void UserInterface::createWidgetTree()
 									new guib::Box(
 									{
 										.color = {.8,.8,.3,1},
-										.size  = {20,20, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+										.radius = {.5, .5, .5, .5},
+										.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
 									}),
 									new guib::Box(
 									{
@@ -98,7 +99,8 @@ void UserInterface::createWidgetTree()
 									new guib::Box(
 									{
 										.color = {.8,.3,.3,1},
-										.size  = {20,20, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+										.radius = {.5, .5, .5, .5},
+										.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
 									}),
 									new guib::Box(
 									{

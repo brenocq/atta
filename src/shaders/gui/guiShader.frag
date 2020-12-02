@@ -12,9 +12,9 @@ layout(location = 0) out vec4 outColor;
 
 void main() 
 {
-	vec2 fragPosRatio = vec2(inFragPos.x*ubo.ratio, inFragPos.y);
 	vec2 objPos = objectInfo.position*2-vec2(1.0,1.0);
 	vec2 objSize = objectInfo.size*2;
+	vec2 fragPosRatio = vec2(inFragPos.x*ubo.ratio, inFragPos.y);
 	vec2 objectPosRatio = vec2(objPos.x*ubo.ratio, objPos.y);
 	vec2 objectSizeRatio = vec2(objSize.x*ubo.ratio, objSize.y);
 	vec2 topLeft = objectPosRatio+vec2(0,0)*objectSizeRatio				+ vec2(objectInfo.radius*ubo.ratio, objectInfo.radius);
