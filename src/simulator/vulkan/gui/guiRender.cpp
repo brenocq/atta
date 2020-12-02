@@ -56,8 +56,11 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 		GuiObjectInfo objectInfo;
 		objectInfo.position = glm::vec2(currOffset.x, currOffset.y);
 		objectInfo.size = glm::vec2(currSize.width, currSize.height);
-		objectInfo.radius = 0.0;
 		objectInfo.color = glm::vec4(color.r, color.g, color.b, color.a);
+
+		// Calculate radius
+		float minSize = std::min(currSize.height, currSize.width);
+		objectInfo.radius = box->getRadius().topLeft*minSize*2;
 
 		vkCmdPushConstants(
 				commandBuffer,
