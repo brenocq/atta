@@ -18,7 +18,7 @@ class GuiRender
 		GuiRender(VkExtent2D _imageExtent, GuiPipelineLayout* _pipelineLayout);
 		~GuiRender();
 
-		void render(VkCommandBuffer commandBuffer, guib::Widget* root);
+		void render(VkCommandBuffer commandBuffer, guib::Widget* root = nullptr, std::vector<guib::Window*> windows = std::vector<guib::Window*>());
 		void renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOffset, guib::Size currSize, guib::Widget* widget);
 
 		// Window callbacks

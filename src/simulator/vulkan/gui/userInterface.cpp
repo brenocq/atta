@@ -85,22 +85,34 @@ void UserInterface::createWidgetTree()
 								.hAlignment = guib::ALIGN_END,
 								.vAlignment = guib::ALIGN_CENTER,
 								.children = {
-									new guib::Box(
+									new guib::ClickDetector(
 									{
-										.color = {.8,.8,.3,1},
-										.radius = {.5, .5, .5, .5},
-										.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+										.onClick = [&](){
+											Log::debug("Click", "Minimize!");
+										},
+										.child = new guib::Box(
+										{
+											.color = {.8,.8,.3,1},
+											.radius = {.5, .5, .5, .5},
+											.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+										}),
 									}),
 									new guib::Box(
 									{
 										.color = {0,0,0,0},
 										.size  = {4,1, guib::UNIT_PIXEL}
 									}),
-									new guib::Box(
+									new guib::ClickDetector(
 									{
-										.color = {.8,.3,.3,1},
-										.radius = {.5, .5, .5, .5},
-										.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+										.onClick = [&](){
+											Log::debug("Click", "Close!");
+										},
+										.child = new guib::Box(
+										{
+											.color = {.8,.3,.3,1},
+											.radius = {.5, .5, .5, .5},
+											.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+										}),
 									}),
 									new guib::Box(
 									{
@@ -170,6 +182,18 @@ void UserInterface::createWidgetTree()
 				}
 			})
 		}); 
+
+	_windows.push_back(
+		new guib::Window(
+		{
+			.name = "Test",
+			.child = new guib::Box(
+				{
+					.color = {1,0,1,1},
+					.size  = {1,.8}
+				})
+		})	
+	);
 }
 
 void UserInterface::checkResult(VkResult result)
@@ -187,7 +211,7 @@ void UserInterface::render(int i)
 	VkCommandBuffer commandBuffer = _guiCommandBuffers->begin(i);
 	{
 		_guiPipeline->beginRender(commandBuffer, i);
-		_guiRender->render(commandBuffer, _widgetTree);
+		_guiRender->render(commandBuffer, _widgetTree, _windows);
 		_guiPipeline->endRender(commandBuffer);
 	}
 	_guiCommandBuffers->end(i);

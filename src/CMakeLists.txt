@@ -138,6 +138,7 @@ set(src_files_simulator_vulkan_gui_widgets
 	simulator/vulkan/gui/widgets/row.cpp
 	simulator/vulkan/gui/widgets/padding.cpp
 	simulator/vulkan/gui/widgets/clickDetector.cpp
+	simulator/vulkan/gui/widgets/window.cpp
 )
 
 source_group("Main" FILES ${src_files})

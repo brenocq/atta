@@ -32,6 +32,8 @@ namespace guib {
 			std::string getType() const { return _type; }
 			void setSize(Size size) { _size=size; }
 			Size getSize() const { return _size; }
+			void setOffset(Offset offset) { _offset=offset; }
+			Offset getOffset() const { return _offset; }
 
 			static Size screenSize;
 		protected:
