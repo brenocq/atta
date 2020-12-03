@@ -19,23 +19,28 @@
 class Device
 {
 	public:
-	Device(PhysicalDevice* physicalDevice);
-	~Device();
+		Device(PhysicalDevice* physicalDevice);
+		~Device();
 
-	VkDevice handle() const { return _device; }
-	PhysicalDevice* getPhysicalDevice() const { return _physicalDevice; }
-	VkQueue getGraphicsQueue() const { return _graphicsQueue; }
-	VkQueue getPresentQueue() const { return _presentQueue; }
+		VkDevice handle() const { return _device; }
+		PhysicalDevice* getPhysicalDevice() const { return _physicalDevice; }
+		VkQueue getGraphicsQueue() const { return _graphicsQueue; }
+		VkQueue getPresentQueue() const { return _presentQueue; }
 
-	VkSampleCountFlagBits getMsaaSamples() const { return _msaaSamples; }
+		VkSampleCountFlagBits getMsaaSamples() const { return _msaaSamples; }
+		bool getRayTracingEnabled() const { return _rayTracingEnabled; }
+
 	private:
-	VkSampleCountFlagBits getMaxUsableSampleCount();
+		VkSampleCountFlagBits getMaxUsableSampleCount();
 
-    VkDevice _device;
-	VkQueue _graphicsQueue;
-	VkQueue _presentQueue;
-	PhysicalDevice* _physicalDevice;
-	VkSampleCountFlagBits _msaaSamples;
+		VkDevice _device;
+		VkQueue _graphicsQueue;
+		VkQueue _presentQueue;
+		PhysicalDevice* _physicalDevice;
+		VkSampleCountFlagBits _msaaSamples;
+
+		//---------- Device properties ----------//
+		bool _rayTracingEnabled;
 };
 
 #endif// DEVICE_H

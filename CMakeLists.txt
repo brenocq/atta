@@ -1,12 +1,12 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.10)
 
 project(RobotSimulator VERSION 0.1.0 LANGUAGES C CXX)
+set(Vulkan_INCLUDE_DIR /home/breno/Programs/VulkanSDK/1.2.154.0/x86_64/include)
 
-set(Vulkan_INCLUDE_DIR /home/breno/Programs/Vulkan/1.2.154.0/x86_64/include)
-#set(ENV{VULKAN_SDK} /home/breno/Programs/Vulkan/1.2.154.0/x86_64)
-#set(ENV{PATH} ENV{VULKAN_SDK}/bin:ENV{PATH})
-#set(ENV{LD_LIBRARY_PATH} ENV{VULKAN_SDK}/lib:ENV{LD_LIBRARY_PATH})
-#set(ENV{VK_LAYER_PATH} ENV{VULKAN_SDK}/etc/vulkan/explicit_layer.d)
+set(ENV{VULKAN_SDK} /home/breno/Programs/Vulkan/1.2.154.0/x86_64)
+set(ENV{PATH} ENV{VULKAN_SDK}/bin:ENV{PATH})
+set(ENV{LD_LIBRARY_PATH} ENV{VULKAN_SDK}/lib:ENV{LD_LIBRARY_PATH})
+set(ENV{VK_LAYER_PATH} ENV{VULKAN_SDK}/etc/vulkan/explicit_layer.d)
 set(CMAKE_DEBUG_POSTFIX d)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)

@@ -7,7 +7,7 @@
 #include "box.h"
 
 guib::Box::Box(BoxInfo boxInfo):
-	Widget({.size=boxInfo.size, .child=boxInfo.child}), _color(boxInfo.color), _radius(boxInfo.radius)
+	Widget({.offset={0,0}, .size=boxInfo.size, .child=boxInfo.child}), _color(boxInfo.color), _radius(boxInfo.radius)
 {
 	Widget::setType("Box");
 }
