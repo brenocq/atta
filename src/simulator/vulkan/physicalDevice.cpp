@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "physicalDevice.h"
+#include "simulator/helpers/log.h"
 
 PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
 {
@@ -12,6 +13,7 @@ PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
 	_instance = instance;
 	_surface = surface;
 	_physicalDevice = VK_NULL_HANDLE;
+	_deviceExtensions = deviceExtensions;
 
 	// Get device count
 	uint32_t deviceCount = 0;
@@ -20,15 +22,15 @@ PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
 	// Check if some device was found
 	if(deviceCount == 0) 
 	{
-		std::cerr << std::endl << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find GPUs with Vulkan support!" << WHITE << std::endl;
+		Log::error("PhysicalDevice", "Failed to find GPUs with Vulkan support!");
 		exit(1);
 	}
 
 	// Get physical devices
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	vkEnumeratePhysicalDevices(_instance->handle(), &deviceCount, devices.data());
-	printPhysicalDevices(devices);
 
+	printPhysicalDevices(devices);
 	for(const auto& device : devices) 
 	{
 		if(isDeviceSuitable(device)) 
@@ -37,10 +39,30 @@ PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
 			break;
 		}
 	}
+	if(_physicalDevice == VK_NULL_HANDLE)
+	{
+		Log::warning("PhysicalDevice", "No physical device with ray tracing support, trying without it.");
+
+		for(unsigned int i=0; i<_deviceExtensions.size(); i++)
+			if(strcmp(_deviceExtensions[i],VK_NV_RAY_TRACING_EXTENSION_NAME)==0)
+			{
+				_deviceExtensions.erase(_deviceExtensions.begin()+i);
+				break;
+			}
+
+		for(const auto& device : devices) 
+		{
+			if(isDeviceSuitable(device)) 
+			{
+				_physicalDevice = device;
+				break;
+			}
+		}
+	}
 
 	if(_physicalDevice == VK_NULL_HANDLE) 
 	{
-		std::cerr << std::endl << BOLDRED << "[Physical Device]" << RESET << RED << " Failed to find a suitable GPU!" << WHITE << std::endl;
+		Log::error("PhysicalDevice", "Failed to find a suitable GPU!");
 		exit(1);
 	}
 }
@@ -56,7 +78,7 @@ bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device)
     bool extensionsSupported = checkDeviceExtensionSupport(device);
 
 	bool swapChainAdequate = false;
-	if (extensionsSupported) 
+	if(extensionsSupported) 
 	{
 		SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
@@ -76,11 +98,14 @@ bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device)
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+    std::set<std::string> requiredExtensions(_deviceExtensions.begin(), _deviceExtensions.end());
 
     for (const auto& extension : availableExtensions) {
         requiredExtensions.erase(extension.extensionName);
     }
+
+	for(auto extension : requiredExtensions)
+		Log::warning("PhysicalDevice", "This device does not support "+std::string(extension));
 
     return requiredExtensions.empty();
 }
@@ -230,7 +255,7 @@ void PhysicalDevice::printPhysicalDevices(std::vector<VkPhysicalDevice> physical
 	bool showRayTracingInfo = true;
 
 	std::cout << std::endl << BOLDGREEN << "[PhysicalDevice] " << RESET;
-	std::cout  << "GPUs with Vulkan support:"  << WHITE << std::endl;
+	std::cout  << "GPU with Vulkan support:"  << WHITE << std::endl;
 
 	for(VkPhysicalDevice device : physicalDevices)
 	{

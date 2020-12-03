@@ -8,7 +8,7 @@
 #include "simulator/helpers/log.h"
 
 Device::Device(PhysicalDevice* physicalDevice):
-	_msaaSamples(VK_SAMPLE_COUNT_1_BIT)
+	_msaaSamples(VK_SAMPLE_COUNT_1_BIT), _rayTracingEnabled(false)
 {
 	_physicalDevice = physicalDevice;
 	_msaaSamples = getMaxUsableSampleCount();
@@ -54,8 +54,16 @@ Device::Device(PhysicalDevice* physicalDevice):
 	createInfo.pEnabledFeatures = &deviceFeatures;
 
 	//----- Enable extensions -----//
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+	const std::vector<const char*> __deviceExtensions = _physicalDevice->getDeviceExtensions();
+	// Check ray tracing enabled
+	for(auto ext : __deviceExtensions)
+	{
+		if(strcmp(ext, VK_NV_RAY_TRACING_EXTENSION_NAME)==0)
+			_rayTracingEnabled = true;
+	}
+
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(__deviceExtensions.size());
+	createInfo.ppEnabledExtensionNames = __deviceExtensions.data();
 
 	//----- Enable layers -----//
 	if(ENABLE_VALIDATION_LAYERS) {
@@ -69,7 +77,7 @@ Device::Device(PhysicalDevice* physicalDevice):
 	//----- Create -----//
 	if(vkCreateDevice(physicalDevice->handle(), &createInfo, nullptr, &_device) != VK_SUCCESS)
 	{
-		Log::warning("Device", "Failed to create device.");
+		Log::error("Device", "Failed to create device.");
 		exit(1);
 	}
 	vkGetDeviceQueue(_device, indices.graphicsFamily.value(), 0, &_graphicsQueue);	

@@ -22,8 +22,8 @@ MiniCleaner::MiniCleaner(glm::vec3 position, glm::vec3 rotation, glm::vec3 color
 	_display = new Display("Display", {0.0, 0.0, 0.0}, {0,0,0}, {.1, .1, .1}, {200,200});
 
 	Camera::CameraInfo camInfo;
-	//camInfo.renderingType = Camera::CameraRenderingType::RAY_TRACING;
-	camInfo.renderingType = Camera::CameraRenderingType::RASTERIZATION;
+	camInfo.renderingType = Camera::CameraRenderingType::RAY_TRACING;
+	//camInfo.renderingType = Camera::CameraRenderingType::RASTERIZATION;
 	camInfo.width = 200;
 	camInfo.height = 200;
 	camInfo.fov = 60.0f;

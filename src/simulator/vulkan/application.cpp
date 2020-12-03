@@ -12,7 +12,8 @@
 #include "simulator/helpers/log.h"
 
 Application::Application(Scene* scene):
-	_scene(scene), _currentFrame(0), _framebufferResized(false), _enableRayTracing(false), _totalNumberOfSamples(0), _splitRender(false)
+	_scene(scene), _currentFrame(0), _framebufferResized(false), _enableRayTracing(false), _totalNumberOfSamples(0), _splitRender(false),
+	_rayTracing(nullptr)
 {
 	_window = new Window();
 	_instance = new Instance();
@@ -67,7 +68,8 @@ Application::Application(Scene* scene):
 	createUserInterface();
 
 	//---------- RayTracing ----------//
-	_rayTracing = new RayTracing(_device, _swapChain, _commandPool, _uniformBuffers, _scene);
+	if(_device->getRayTracingEnabled())
+		_rayTracing = new RayTracing(_device, _swapChain, _commandPool, _uniformBuffers, _scene);
 
 	//---------- Scene special objects ----------//
 	createSpecialSceneObjects();
@@ -119,8 +121,11 @@ Application::~Application()
 		uniformBuffer = nullptr;
     }
 
-	delete _rayTracing;
-	_rayTracing = nullptr;
+	if(_rayTracing != nullptr)
+	{
+		delete _rayTracing;
+		_rayTracing = nullptr;
+	}
 
 	delete _userInterface;
 	_userInterface = nullptr;
@@ -186,7 +191,8 @@ void Application::createUserInterface()
 
 void Application::cleanupSwapChain()
 {
-	_rayTracing->deletePipeline();
+	if(_rayTracing != nullptr)
+		_rayTracing->deletePipeline();
 
 	delete _userInterface;
 
@@ -249,7 +255,8 @@ void Application::recreateSwapChain()
 
 	// IMGUI
 	createUserInterface();
-	_rayTracing->createPipeline();
+	if(_rayTracing!=nullptr)
+		_rayTracing->createPipeline();
 }
 
 void Application::run()
@@ -314,8 +321,11 @@ void Application::drawFrame()
 		{
 			// Recreate raytracing swapChain
 			_totalNumberOfSamples = 0;
-			_rayTracing->recreateTopLevelStructures();
-			_rayTracing->render(commandBuffer, imageIndex, _splitRender);
+			if(_rayTracing!=nullptr)
+			{
+				_rayTracing->recreateTopLevelStructures();
+				_rayTracing->render(commandBuffer, imageIndex, _splitRender);
+			}
 		}
 
 		if(!_enableRayTracing || _splitRender)
@@ -482,9 +492,19 @@ void Application::createSpecialSceneObjects()
 			// Create ray tracing pipeline
 			if(info.renderingType == Camera::CameraRenderingType::RAY_TRACING)
 			{
-				_camerasRayTracing.push_back(new RayTracing(_device, {info.width, info.height}, VK_FORMAT_B8G8R8A8_UNORM, _commandPool, _camerasUniformBuffer.back(), _scene));
-				camera->setRayTracingPipelineIndex(_camerasRayTracing.size()-1);
-				camera->setUniformBufferIndex(_camerasUniformBuffer.size()-1);
+				if(_device->getRayTracingEnabled())
+				{
+					_camerasRayTracing.push_back(new RayTracing(_device, {info.width, info.height}, VK_FORMAT_B8G8R8A8_UNORM, _commandPool, _camerasUniformBuffer.back(), _scene));
+					camera->setRayTracingPipelineIndex(_camerasRayTracing.size()-1);
+					camera->setUniformBufferIndex(_camerasUniformBuffer.size()-1);
+				}
+				else
+				{
+					_camerasUniformBuffer.pop_back();
+					camera->setRayTracingPipelineIndex(-1);
+					camera->setUniformBufferIndex(-1);
+					Log::warning("Application", "Your GPUs do not support ray tracing, camera object not created. You should consider creating your camera with RASTERIZATION.");
+				}
 			}
 			if(info.renderingType == Camera::CameraRenderingType::RASTERIZATION)
 			{
@@ -528,9 +548,13 @@ void Application::updateSpecialSceneObjects()
 			Camera* camera = (Camera*)abstractPtr;
 			if(camera->getCameraInfo().renderingType==Camera::CameraRenderingType::RAY_TRACING)
 			{
-				Image* output = _camerasRayTracing[camera->getRayTracingPipelineIndex()]->getOutputImage();
-				std::vector<uint8_t> buffer = output->getBuffer(_commandPool);
-				camera->setCameraBuffer(buffer);
+				// Check if camera was created
+				if(camera->getRayTracingPipelineIndex()>=0)
+				{
+					Image* output = _camerasRayTracing[camera->getRayTracingPipelineIndex()]->getOutputImage();
+					std::vector<uint8_t> buffer = output->getBuffer(_commandPool);
+					camera->setCameraBuffer(buffer);
+				}
 			}
 			else if(camera->getCameraInfo().renderingType==Camera::CameraRenderingType::RASTERIZATION)
 			{
