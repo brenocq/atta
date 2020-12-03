@@ -65,6 +65,7 @@ class UserInterface
 
 		//---------- GUI variables ----------//
 		guib::Widget* _widgetTree;
+		std::vector<guib::Window*> _windows;
 
 		// Topbar->Main
 		bool* _enableRayTracing;

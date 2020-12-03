@@ -32,6 +32,30 @@ namespace guib
 		Unit unitX = UNIT_PERCENT;
 		Unit unitY = UNIT_PERCENT;
 		
+		Offset& operator+=(const Offset& o)
+		{
+			this->x += o.x;
+			this->y += o.y;
+			return *this;
+		}
+
+		Offset& operator-=(const Offset& o)
+		{
+			this->x -= o.x;
+			this->y -= o.y;
+			return *this;
+		}
+
+		Offset operator+(const Offset& o) const
+		{
+			return {x+o.x, y+o.y, unitX, unitY};
+		}
+
+		Offset operator-(const Offset& o) const
+		{
+			return {x-o.x, y-o.y, unitX, unitY};
+		}
+
 		std::string toString()
 		{
 			return std::string("Offset {x=")+std::to_string(x)+", y="+std::to_string(x)+"}";
@@ -67,7 +91,10 @@ namespace guib
 
 		std::string toString()
 		{
-			return std::string("Size {width=")+std::to_string(width)+", height="+std::to_string(height)+"}";
+			return std::string("Size {width=")+std::to_string(width)+", height="+std::to_string(height)+", unitW="+
+				std::string(unitW==UNIT_PERCENT? "UNIT_PERCENT":"UNIT_PIXEL")+", unitH="+
+				std::string(unitH==UNIT_PERCENT? "UNIT_PERCENT":"UNIT_PIXEL")+
+				"}";
 		}
 	};
 

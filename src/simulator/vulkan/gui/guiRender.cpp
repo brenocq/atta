@@ -20,13 +20,17 @@ GuiRender::~GuiRender()
 
 }
 
-void GuiRender::render(VkCommandBuffer commandBuffer, guib::Widget* root)
+void GuiRender::render(VkCommandBuffer commandBuffer, guib::Widget* root, std::vector<guib::Window*> windows)
 {
 	guib::Offset currOffset = {0,0};
-	guib::Size currSize = {1,1, guib::UNIT_PIXEL};
+	guib::Size currSize = {1,1};
 	_clickableAreas.clear();
 
-	renderWidget(commandBuffer, currOffset, currSize, root);
+	if(root!=nullptr)
+		renderWidget(commandBuffer, currOffset, currSize, root);
+
+	for(auto& window : windows)
+		renderWidget(commandBuffer, currOffset, currSize, window);
 }
 
 void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOffset, guib::Size currSize, guib::Widget* widget)
@@ -34,18 +38,34 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 	if(widget == nullptr)
 		return;
 
-	guib::Size size = widget->getSize();
-	if(size.unitW == guib::UNIT_PIXEL)
+	// Update size and offset 
 	{
-		size.width /= _imageExtent.width*currSize.width;
-		size.unitW = guib::UNIT_PERCENT;
+		guib::Size size = widget->getSize();
+		if(size.unitW == guib::UNIT_PIXEL)
+		{
+			size.width /= _imageExtent.width*currSize.width;
+			size.unitW = guib::UNIT_PERCENT;
+		}
+		if(size.unitH == guib::UNIT_PIXEL)
+		{
+			size.height /= _imageExtent.height*currSize.height;
+			size.unitH = guib::UNIT_PERCENT;
+		}
+
+		guib::Offset offset = widget->getOffset();
+		if(offset.unitX == guib::UNIT_PIXEL)
+		{
+			offset.x /= _imageExtent.width*currSize.width;
+			offset.unitX = guib::UNIT_PERCENT;
+		}
+		if(offset.unitY == guib::UNIT_PIXEL)
+		{
+			offset.y /= _imageExtent.height*currSize.height;
+			offset.unitY = guib::UNIT_PERCENT;
+		}
+		currSize*=size;
+		currOffset+=offset;
 	}
-	if(size.unitH == guib::UNIT_PIXEL)
-	{
-		size.height /= _imageExtent.height*currSize.height;
-		size.unitH = guib::UNIT_PERCENT;
-	}
-	currSize*=size;
 
 	std::string type = widget->getType();
 	if(type=="Box")
@@ -208,6 +228,14 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 		currSize/=child->getSize();
 		renderWidget(commandBuffer, currOffset, currSize, child);
 		clickDetector->setSize(child->getSize());
+	}
+	else if(type=="Window")
+	{
+		Log::debug("GuiRender", "Window");
+		std::cout << currOffset.toString() << std::endl;
+		std::cout << currSize.toString() << std::endl;
+
+		renderWidget(commandBuffer, currOffset, currSize, widget->getChild());
 	}
 }
 
