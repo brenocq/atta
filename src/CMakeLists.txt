@@ -130,15 +130,11 @@ set(src_files_simulator_vulkan_gui
 	simulator/vulkan/gui/userInterface.cpp
 )
 
+file(GLOB guibSrc
+    "simulator/vulkan/gui/widgets/*.cpp"
+)
 set(src_files_simulator_vulkan_gui_widgets
-	simulator/vulkan/gui/widgets/widget.cpp
-	simulator/vulkan/gui/widgets/widgetStructs.cpp
-	simulator/vulkan/gui/widgets/box.cpp
-	simulator/vulkan/gui/widgets/column.cpp
-	simulator/vulkan/gui/widgets/row.cpp
-	simulator/vulkan/gui/widgets/padding.cpp
-	simulator/vulkan/gui/widgets/clickDetector.cpp
-	simulator/vulkan/gui/widgets/window.cpp
+	${guibSrc}
 )
 
 source_group("Main" FILES ${src_files})

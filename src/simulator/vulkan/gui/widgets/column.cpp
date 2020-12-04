@@ -17,7 +17,14 @@ namespace guib
 
 	Column::~Column()
 	{
-
+		for(auto& c : _children)
+		{
+			if(c!=nullptr)
+			{
+				delete c;
+				c = nullptr;
+			}
+		}
 	}
 
 	Size Column::getChildrenTotalSize()
@@ -43,6 +50,6 @@ namespace guib
 			maxW=std::max(maxW, childSize.width);
 		}
 
-		return {maxW, sumH};
+		return {std::min(maxW, 1.0f), std::min(sumH,1.0f)};
 	}
 }

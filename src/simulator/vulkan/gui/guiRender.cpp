@@ -77,6 +77,8 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 		objectInfo.position = glm::vec2(currOffset.x, currOffset.y);
 		objectInfo.size = glm::vec2(currSize.width, currSize.height);
 		objectInfo.color = glm::vec4(color.r, color.g, color.b, color.a);
+		//if(currSize.width<0.009 && currSize.width>0.008)
+		//	std::cout << currSize.toString() << currOffset.toString() << std::endl;
 
 		// Calculate radius
 		float minSize = std::min(currSize.height, currSize.width);
@@ -209,9 +211,7 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 
 			currSize.width-=(currSize.width*pad.left+currSize.width*pad.right);
 			currSize.height-=(currSize.height*pad.top+currSize.height*pad.bottom);
-			currSize/=child->getSize();
 			renderWidget(commandBuffer, currOffset, currSize, child);
-			padding->setSize(child->getSize());
 		}
 	}
 	else if(type=="ClickDetector")
@@ -225,17 +225,28 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 					clickDetector
 				});
 
-		currSize/=child->getSize();
 		renderWidget(commandBuffer, currOffset, currSize, child);
-		clickDetector->setSize(child->getSize());
 	}
 	else if(type=="Window")
 	{
-		Log::debug("GuiRender", "Window");
-		std::cout << currOffset.toString() << std::endl;
-		std::cout << currSize.toString() << std::endl;
-
 		renderWidget(commandBuffer, currOffset, currSize, widget->getChild());
+	}
+	else if(type=="Visibility")
+	{
+		guib::Visibility* visibility = (guib::Visibility*)widget;
+		guib::Widget* child = visibility->getChild();
+
+		if(visibility->getVisible())
+		{
+			renderWidget(commandBuffer, currOffset, currSize, child);
+		}
+	}
+	else if(type=="Protect")
+	{
+		guib::Protect* protect = (guib::Protect*)widget;
+		guib::Widget* child = protect->getProtectedChild();
+
+		renderWidget(commandBuffer, currOffset, currSize, child);
 	}
 }
 

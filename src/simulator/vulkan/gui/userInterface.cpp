@@ -67,126 +67,76 @@ UserInterface::~UserInterface()
 
 void UserInterface::createWidgetTree()
 {
-	_widgetTree = new guib::Box(
-		{
-			.color = {.2,.2,.2,1},
-			.size  = {300, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
-			.child = new guib::Column(
-			{
-				.hAlignment = guib::ALIGN_CENTER,
-				.vAlignment = guib::ALIGN_START,
-				.children = {
-					new guib::Box(
-					{
-						.color = {.15,.15,.15,1},
-						.size  = {1,20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
-						.child = new guib::Row(
-							{
-								.hAlignment = guib::ALIGN_END,
-								.vAlignment = guib::ALIGN_CENTER,
-								.children = {
-									new guib::ClickDetector(
-									{
-										.onClick = [&](){
-											Log::debug("Click", "Minimize!");
-										},
-										.child = new guib::Box(
-										{
-											.color = {.8,.8,.3,1},
-											.radius = {.5, .5, .5, .5},
-											.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
-										}),
-									}),
-									new guib::Box(
-									{
-										.color = {0,0,0,0},
-										.size  = {4,1, guib::UNIT_PIXEL}
-									}),
-									new guib::ClickDetector(
-									{
-										.onClick = [&](){
-											Log::debug("Click", "Close!");
-										},
-										.child = new guib::Box(
-										{
-											.color = {.8,.3,.3,1},
-											.radius = {.5, .5, .5, .5},
-											.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
-										}),
-									}),
-									new guib::Box(
-									{
-										.color = {0,0,0,0},
-										.size  = {4,1, guib::UNIT_PIXEL}
-									})
-								}
-							})
-					}),
-					new guib::Box(
-					{
-						.color = {1,.15,.15,1},
-						.size  = {0.5,30, guib::UNIT_PERCENT, guib::UNIT_PIXEL}
-					})
-					/*new guib::Padding(
-					{
-						.padding = guib::PaddingValues::all(.05),
-						.child = new guib::Box(
-							{
-								.color = {0,1,0,1},
-								.size  = {1,.2}
-							})
-					}),
-					new guib::Padding(
-					{
-						.padding = guib::PaddingValues::symmetric(.4, .05),
-						.child = new guib::ClickDetector({
-								.onClick = [&](){
-									Log::debug("Click", "CLICKED!");
-								},
-								.child = new guib::Box(
-								{
-									.color = {1,1,0,1},
-									.size  = {1,.2}
-								})
-							})
-					}),
-					new guib::Padding(
-					{
-						.padding = {.5, .5, .1, .1},
-						.child = new guib::Box(
-							{
-								.color = {0,1,1,1},
-								.size  = {1,.2}
-							})
-					}),
-					new guib::Box(
-					{
-						.color = {1,0,0,1},
-						.size  = {.9,.4},
-						.child = new guib::Row(
-							{
-								.children = {
-									new guib::Box(
-									{
-										.color = {1,1,1,1},
-										.size  = {.3,.9}
-									}),
-									new guib::Box(
-									{
-										.color = {0,0,0,1},
-										.size  = {.3,.9}
-									})
-								}
-							})
-					})*/
-				}
-			})
-		}); 
+	//_widgetTree = new guib::Box(
+	//	{
+	//		.color = {.2,.2,.2,1},
+	//		.size  = {300, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
+	//		.child = new guib::Column(
+	//		{
+	//			.hAlignment = guib::ALIGN_CENTER,
+	//			.vAlignment = guib::ALIGN_START,
+	//			.children = {
+	//				new guib::Box(
+	//				{
+	//					.color = {.15,.15,.15,1},
+	//					.size  = {1,20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+	//					.child = new guib::Row(
+	//						{
+	//							.hAlignment = guib::ALIGN_END,
+	//							.vAlignment = guib::ALIGN_CENTER,
+	//							.children = {
+	//								new guib::ClickDetector(
+	//								{
+	//									.onClick = [&](){
+	//										Log::debug("Click", "Minimize!");
+	//									},
+	//									.child = new guib::Box(
+	//									{
+	//										.color = {.8,.8,.3,1},
+	//										.radius = {.5, .5, .5, .5},
+	//										.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+	//									}),
+	//								}),
+	//								new guib::Box(
+	//								{
+	//									.color = {0,0,0,0},
+	//									.size  = {4,1, guib::UNIT_PIXEL}
+	//								}),
+	//								new guib::ClickDetector(
+	//								{
+	//									.onClick = [&](){
+	//										Log::debug("Click", "Close!");
+	//									},
+	//									.child = new guib::Box(
+	//									{
+	//										.color = {.8,.3,.3,1},
+	//										.radius = {.5, .5, .5, .5},
+	//										.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+	//									}),
+	//								}),
+	//								new guib::Box(
+	//								{
+	//									.color = {0,0,0,0},
+	//									.size  = {4,1, guib::UNIT_PIXEL}
+	//								})
+	//							}
+	//						})
+	//				}),
+	//				new guib::Box(
+	//				{
+	//					.color = {1,.15,.15,1},
+	//					.size  = {0.5,30, guib::UNIT_PERCENT, guib::UNIT_PIXEL}
+	//				})
+	//			}
+	//		})
+	//	}); 
 
 	_windows.push_back(
 		new guib::Window(
 		{
 			.name = "Test",
+			.offset = {0.5, 0.5},
+			.size = {300, 200, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
 			.child = new guib::Box(
 				{
 					.color = {1,0,1,1},

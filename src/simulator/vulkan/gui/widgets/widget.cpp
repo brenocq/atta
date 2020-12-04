@@ -6,18 +6,21 @@
 //--------------------------------------------------
 #include "widget.h"
 
-guib::Size guib::Widget::screenSize = {0,0};
-
-guib::Widget::Widget(WidgetInfo widgetInfo):
-	_size(widgetInfo.size), _offset(widgetInfo.offset), _child(widgetInfo.child), _type("Widget")
+namespace guib
 {
-}
+	Size Widget::screenSize = {0,0};
 
-guib::Widget::~Widget()
-{
-	if(_child!=nullptr)
+	Widget::Widget(WidgetInfo widgetInfo):
+		_size(widgetInfo.size), _offset(widgetInfo.offset), _child(widgetInfo.child), _type("Widget")
 	{
-		delete _child;
-		_child = nullptr;
+	}
+
+	Widget::~Widget()
+	{
+		if(_child!=nullptr)
+		{
+			delete _child;
+			_child = nullptr;
+		}
 	}
 }
