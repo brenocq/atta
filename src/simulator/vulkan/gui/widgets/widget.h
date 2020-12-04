@@ -24,7 +24,7 @@ namespace guib {
 	{
 		public:
 			Widget(WidgetInfo widgetInfo);
-			~Widget();
+			virtual ~Widget();
 
 			//---------- Getters and Setters ----------//
 			void setChild(Widget* child) { _child=child; }
@@ -38,6 +38,7 @@ namespace guib {
 			static Size screenSize;
 		protected:
 			void setType(std::string type) { _type=type; }
+			Widget** getChildPtr() { return &_child; }
 			Size _size;
 			Offset _offset;
 

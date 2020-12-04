@@ -6,13 +6,18 @@
 //--------------------------------------------------
 #include "padding.h"
 
-guib::Padding::Padding(PaddingInfo paddingInfo):
-	Widget({.child=paddingInfo.child}), _padding(paddingInfo.padding)
+namespace guib
 {
-	Widget::setType("Padding");
-}
+	Padding::Padding(PaddingInfo paddingInfo):
+		Widget({.child=paddingInfo.child}), _padding(paddingInfo.padding)
+	{
+		Widget::setType("Padding");
+		if(Widget::getChild()!=nullptr)
+			Widget::setSize(Widget::getChild()->getSize());
+	}
 
-guib::Padding::~Padding()
-{
+	Padding::~Padding()
+	{
 
+	}
 }

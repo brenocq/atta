@@ -1,22 +1,22 @@
 //--------------------------------------------------
 // GuiB
-// clickDetector.cpp
-// Date: 2020-11-28
+// protect.cpp
+// Date: 2020-12-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include "clickDetector.h"
+#include "protect.h"
 
 namespace guib
 {
-	ClickDetector::ClickDetector(ClickDetectorInfo info):
-		Widget({.child=info.child}), _onClick(info.onClick)
+	Protect::Protect(ProtectInfo info):
+		Widget({}), _protectedChild(info.child)
 	{
-		Widget::setType("ClickDetector");
+		Widget::setType("Protect");
 		if(Widget::getChild()!=nullptr)
 			Widget::setSize(Widget::getChild()->getSize());
 	}
 
-	ClickDetector::~ClickDetector()
+	Protect::~Protect()
 	{
 
 	}

@@ -1,22 +1,22 @@
 //--------------------------------------------------
 // GuiB
-// clickDetector.cpp
-// Date: 2020-11-28
+// visibility.cpp
+// Date: 2020-12-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include "clickDetector.h"
+#include "visibility.h"
 
 namespace guib
 {
-	ClickDetector::ClickDetector(ClickDetectorInfo info):
-		Widget({.child=info.child}), _onClick(info.onClick)
+	Visibility::Visibility(VisibilityInfo info):
+		Widget({.child=info.child}), _visible(info.visible)
 	{
-		Widget::setType("ClickDetector");
+		Widget::setType("Visibility");
 		if(Widget::getChild()!=nullptr)
 			Widget::setSize(Widget::getChild()->getSize());
 	}
 
-	ClickDetector::~ClickDetector()
+	Visibility::~Visibility()
 	{
 
 	}

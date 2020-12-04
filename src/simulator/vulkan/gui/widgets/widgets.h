@@ -14,5 +14,7 @@
 #include "padding.h"
 #include "clickDetector.h"
 #include "window.h"
+#include "visibility.h"
+#include "protect.h"
 
 #endif// GUIB_WIDGETS_H

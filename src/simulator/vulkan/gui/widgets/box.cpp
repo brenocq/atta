@@ -6,13 +6,16 @@
 //--------------------------------------------------
 #include "box.h"
 
-guib::Box::Box(BoxInfo boxInfo):
-	Widget({.offset={0,0}, .size=boxInfo.size, .child=boxInfo.child}), _color(boxInfo.color), _radius(boxInfo.radius)
+namespace guib
 {
-	Widget::setType("Box");
-}
+	Box::Box(BoxInfo boxInfo):
+		Widget({.offset={0,0}, .size=boxInfo.size, .child=boxInfo.child}), _color(boxInfo.color), _radius(boxInfo.radius)
+	{
+		Widget::setType("Box");
+	}
 
-guib::Box::~Box()
-{
+	Box::~Box()
+	{
 
+	}
 }

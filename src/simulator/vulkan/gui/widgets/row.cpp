@@ -17,7 +17,14 @@ namespace guib
 
 	Row::~Row()
 	{
-
+		for(auto& child : _children)
+		{
+			if(child!=nullptr)
+			{
+				delete child;
+				child = nullptr;
+			}
+		}
 	}
 
 	Size Row::getChildrenTotalSize()
@@ -43,7 +50,7 @@ namespace guib
 			maxH=std::max(maxH, childSize.height);
 		}
 
-		return {sumW, maxH};
+		return {std::min(sumW, 1.0f), std::min(maxH,1.0f)};
 	}
 }
 

@@ -34,7 +34,13 @@ namespace guib {
 			bool getMovable() const { return _movable; }
 			bool getFixedSize() const { return _fixedSize; }
 
+			bool getClosed() const { return _closed; }
+			bool getMinimized() const { return _minimized; }
+
 		private:
+			void updateTree();
+
+			// Window parameters
 			std::string _name;
 			bool _closable;
 			bool _fixedSize;
@@ -42,6 +48,11 @@ namespace guib {
 			bool _movable;
 
 			Widget* _root;
+			Widget* _windowChild;
+
+			// Window state
+			bool _minimized;
+			bool _closed;
 	};
 }
 
