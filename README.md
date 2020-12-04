@@ -2,11 +2,10 @@
 <p align="center">
  <img src="./img/2020-08-16.gif" height="200">
  <img src="./img/2020-09-12.png" height="200">
- <img src="./img/2020-11-24.gif" height="200">
+ <img src="./img/2020-12-04.gif" height="200">
 </p>
 
-Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing the camera sensor and the TFT display, after that start I will start with the physiscs engine :)\
-Okey... Maybe I am also creating a GUI library from scratch KKK
+Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing the GUI library, after that start I will start with the physiscs engine :)\
 
 ## Installation (Linux)
 #### Download Vulkan SDK
@@ -38,8 +37,7 @@ These values are unreliable and come from what I think is going on in the code h
 #### Core
  - GPU Rendering (Vulkan): 100% (Working well)
  - RayTracing (Nvidia): 85% (Strange objects)
- - ~User interface (Imgui): 20%~
- - User interface: 5%
+ - User interface: 15%
  - Physics engine: 5%
  - GPU acceleration (Cuda): 0%
 

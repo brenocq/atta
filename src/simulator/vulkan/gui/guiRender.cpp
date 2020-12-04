@@ -9,10 +9,14 @@
 #include "simulator/helpers/log.h"
 #include <GLFW/glfw3.h>
 
-GuiRender::GuiRender(VkExtent2D imageExtent, GuiPipelineLayout* pipelineLayout):
-	_imageExtent(imageExtent), _pipelineLayout(pipelineLayout), _cursorPos({0,0})
+GuiRender::GuiRender(VkExtent2D imageExtent, GuiPipelineLayout* pipelineLayout, GLFWwindow* glfwWindow):
+	_imageExtent(imageExtent), _pipelineLayout(pipelineLayout), _glfwWindow(glfwWindow), _cursorPos({0,0}), _cursorType(CURSOR_TYPE_ARROW), _currDragging(nullptr)
 {
 	guib::Widget::screenSize = {imageExtent.width, imageExtent.height};
+
+	//---------- GLFW setup ----------//
+	_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	glfwSetCursor(_glfwWindow, _cursor);
 }
 
 GuiRender::~GuiRender()
@@ -25,6 +29,7 @@ void GuiRender::render(VkCommandBuffer commandBuffer, guib::Widget* root, std::v
 	guib::Offset currOffset = {0,0};
 	guib::Size currSize = {1,1};
 	_clickableAreas.clear();
+	_draggableAreas.clear();
 
 	if(root!=nullptr)
 		renderWidget(commandBuffer, currOffset, currSize, root);
@@ -227,6 +232,60 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 
 		renderWidget(commandBuffer, currOffset, currSize, child);
 	}
+	else if(type=="Draggable")
+	{
+		guib::Draggable* draggable = (guib::Draggable*)widget;
+		guib::Widget* child = draggable->getChild();
+
+		if(draggable->getActive())
+		{
+			guib::Offset dragOffset = draggable->getDragAreaOffset();
+			if(dragOffset.unitX == guib::UNIT_PIXEL)
+			{
+				dragOffset.x /= _imageExtent.width*currSize.width;
+				dragOffset.unitX = guib::UNIT_PERCENT;
+			}
+			else
+				dragOffset.x *= currSize.width;
+			if(dragOffset.unitY == guib::UNIT_PIXEL)
+			{
+				dragOffset.y /= _imageExtent.height*currSize.height;
+				dragOffset.unitY = guib::UNIT_PERCENT;
+			}
+			else
+				dragOffset.y *= currSize.height;
+
+			guib::Size dragSize = draggable->getDragAreaSize();
+			if(dragSize.unitW == guib::UNIT_PIXEL)
+			{
+				dragSize.width /= _imageExtent.width;
+				dragSize.unitW = guib::UNIT_PERCENT;
+			}
+			else
+				dragSize.width *= currSize.width;
+
+			if(dragSize.unitH == guib::UNIT_PIXEL)
+			{
+				dragSize.height /= _imageExtent.height;
+				dragSize.unitH = guib::UNIT_PERCENT;
+			}
+			else
+				dragSize.height *= currSize.height;
+
+			if(dragSize.width+dragOffset.x>currSize.width)
+				dragSize.width = std::max(0.0f, currSize.width-dragOffset.x);
+			if(dragSize.height+dragOffset.y>currSize.height)
+				dragSize.height = std::max(0.0f, currSize.height-dragOffset.y);
+
+			_draggableAreas.push_back({
+						currOffset+dragOffset,
+						dragSize,
+						draggable
+					});
+		}
+
+		renderWidget(commandBuffer, currOffset, currSize, child);
+	}
 	else if(type=="Window")
 	{
 		renderWidget(commandBuffer, currOffset, currSize, widget->getChild());
@@ -259,11 +318,65 @@ void GuiRender::onCursorPosition(double xpos, double ypos)
 	_cursorPos.x = xpos/_imageExtent.width;
 	_cursorPos.y = ypos/_imageExtent.height;
 	//Log::debug("GuiRender", "cursorPos: "+_cursorPos.toString());
+	if(_currDragging != nullptr)
+	{
+		guib::Offset diff = _cursorPos-_startDraggingCursorPos;
+		_currDragging->getWidgetToDrag()->setOffset(_startDraggingOffset+diff);
+		updateCursor(CURSOR_TYPE_CROSSHAIR);
+	}
+	else
+	{
+		//---------- Change cursor ----------//
+		// Check click detector
+		guib::ClickDetector* clickDetector = nullptr;
+		for(int i=(int)_clickableAreas.size()-1; i>=0; i--)
+		{
+			guib::ClickDetectorArea clickArea = _clickableAreas[i];
+			if(_cursorPos.x>=clickArea.offset.x &&
+				_cursorPos.y>=clickArea.offset.y &&
+				_cursorPos.x<=clickArea.offset.x+clickArea.size.width &&
+				_cursorPos.y<=clickArea.offset.y+clickArea.size.height)
+			{
+				clickDetector = clickArea.clickDetector;
+				break;
+			}
+		}
+		if(clickDetector != nullptr)
+		{
+			updateCursor(CURSOR_TYPE_HAND);
+		}
+		else
+		{
+			// Check draggable
+			guib::Draggable* draggable = nullptr;
+			for(int i=(int)_draggableAreas.size()-1; i>=0; i--)
+			{
+				guib::DragDetectorArea dragArea = _draggableAreas[i];
+				if(_cursorPos.x>=dragArea.offset.x &&
+					_cursorPos.y>=dragArea.offset.y &&
+					_cursorPos.x<=dragArea.offset.x+dragArea.size.width &&
+					_cursorPos.y<=dragArea.offset.y+dragArea.size.height)
+				{
+					draggable = dragArea.draggable;
+					break;
+				}
+			}
+
+			if(draggable != nullptr)
+			{
+				updateCursor(CURSOR_TYPE_CROSSHAIR);
+			}
+			else
+				updateCursor(CURSOR_TYPE_ARROW);
+		}
+	}
+
 }
 
 void GuiRender::onMouseButton(int button, int action, int mods)
 {
 	guib::ClickDetector* clickDetector = nullptr;
+	guib::Draggable* draggable = nullptr;
 	for(int i=(int)_clickableAreas.size()-1; i>=0; i--)
 	{
 		guib::ClickDetectorArea clickArea = _clickableAreas[i];
@@ -276,20 +389,87 @@ void GuiRender::onMouseButton(int button, int action, int mods)
 			break;
 		}
 	}
+	for(int i=(int)_draggableAreas.size()-1; i>=0; i--)
+	{
+		guib::DragDetectorArea dragArea = _draggableAreas[i];
+		if(_cursorPos.x>=dragArea.offset.x &&
+			_cursorPos.y>=dragArea.offset.y &&
+			_cursorPos.x<=dragArea.offset.x+dragArea.size.width &&
+			_cursorPos.y<=dragArea.offset.y+dragArea.size.height)
+		{
+			draggable = dragArea.draggable;
+			break;
+		}
+	}
 
-	if(clickDetector == nullptr)
-		return;
+	if(action == GLFW_RELEASE)
+	{
+		if(_currDragging != nullptr)
+			updateCursor(CURSOR_TYPE_ARROW);
+		_currDragging = nullptr;
+		_startDraggingOffset = {0,0};
+		_startDraggingCursorPos = {0,0};
+	}
 
-	if(clickDetector->getOnClick())
+	if(clickDetector != nullptr)
+	{
+		if(clickDetector->getOnClick())
+		{
+			if(action == GLFW_PRESS)
+			{
+				clickDetector->getOnClick()();
+			}
+		}
+	}
+	else if(draggable != nullptr)
 	{
 		if(action == GLFW_PRESS)
 		{
-			clickDetector->getOnClick()();
+			_currDragging = draggable;
+			_startDraggingOffset = draggable->getWidgetToDrag()->getOffset();
+			_startDraggingCursorPos = _cursorPos;
 		}
 	}
+	else
+		return;
+
 }
 
 void GuiRender::onScroll(double xoffset, double yoffset)
 {
 
 }
+void GuiRender::updateCursor(CursorType cursorType)
+{
+	if(cursorType != _cursorType)
+	{
+		_cursorType = cursorType;
+		glfwDestroyCursor(_cursor);
+		switch(_cursorType)
+		{
+			case CURSOR_TYPE_ARROW:
+				_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+				break;
+			case CURSOR_TYPE_TEXT:
+				_cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+				break;
+			case CURSOR_TYPE_HAND:
+				_cursor = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+				break;
+			case CURSOR_TYPE_CROSSHAIR:
+				_cursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+				break;
+			case CURSOR_TYPE_HRESIZE:
+				_cursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+				break;
+			case CURSOR_TYPE_VRESIZE:
+				_cursor = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+				break;
+			default:
+				_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+				break;
+		}
+		glfwSetCursor(_glfwWindow, _cursor);
+	}
+}
+

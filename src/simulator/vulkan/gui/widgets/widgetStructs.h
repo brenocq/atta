@@ -82,6 +82,11 @@ namespace guib
 			return *this;
 		}
 
+		Size operator*(const Size& s) const
+		{
+			return {width+s.width, height+s.height, unitW, unitH};
+		}
+
 		Size& operator/=(const Size& s)
 		{
 			this->width /= s.width;
@@ -105,4 +110,10 @@ namespace guib
 		ClickDetector* clickDetector = nullptr;
 	};
 
+	class Draggable;
+	struct DragDetectorArea {
+		Offset offset;
+		Size size;
+		Draggable* draggable = nullptr;
+	};
 }
