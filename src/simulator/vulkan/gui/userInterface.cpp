@@ -37,7 +37,7 @@ UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChai
 	}
 
 	_guiPipeline = new GuiPipeline(_device, _swapChain, _guiUniformBuffers);
-	_guiRender = new GuiRender(_swapChain->getExtent(), _guiPipeline->getPipelineLayout());
+	_guiRender = new GuiRender(_swapChain->getExtent(), _guiPipeline->getPipelineLayout(), _window->handle());
 	createWidgetTree();
 }
 
@@ -134,14 +134,34 @@ void UserInterface::createWidgetTree()
 	_windows.push_back(
 		new guib::Window(
 		{
-			.name = "Test",
-			.offset = {0.5, 0.5},
-			.size = {300, 200, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
-			.child = new guib::Box(
+			.name = "Main",
+			.closable = false,
+			.minimizable = true,
+			.movable = false,
+			.offset = {0, 0},
+			.size = {200, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
+			/*.child = new guib::Box(
 				{
 					.color = {1,0,1,1},
-					.size  = {1,.8}
-				})
+					.size  = {1,.7}
+				})*/
+		})	
+	);
+
+	_windows.push_back(
+		new guib::Window(
+		{
+			.name = "Draggable",
+			.closable = true,
+			.minimizable = true,
+			.movable = true,
+			.offset = {0.8, 0},
+			.size = {.2, 200, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+			/*.child = new guib::Box(
+				{
+					.color = {1,0,1,1},
+					.size  = {1,.7}
+				})*/
 		})	
 	);
 }

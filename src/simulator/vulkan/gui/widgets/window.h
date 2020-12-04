@@ -13,6 +13,7 @@
 namespace guib {
 	struct WindowInfo {
 		std::string name = "Unnamed";
+		Color color = {.3,.3,.3,1};
 		bool closable = true;
 		bool fixedSize = true;
 		bool minimizable = true;
@@ -42,6 +43,7 @@ namespace guib {
 
 			// Window parameters
 			std::string _name;
+			Color _color;
 			bool _closable;
 			bool _fixedSize;
 			bool _minimizable;
