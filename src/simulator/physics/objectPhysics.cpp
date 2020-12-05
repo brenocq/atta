@@ -41,6 +41,7 @@ void ObjectPhysics::integrate(float dt)
 	glm::vec3 resultingAcc = _acceleration;
 	resultingAcc += _forceAccum*_inverseMass;
 
+	// Update velocity
 	_velocity += resultingAcc*dt;
 	_velocity *= powf(_damping, dt);
 

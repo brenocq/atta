@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "physicsEngine.h"
+#include "forces/forces.h"
 
 PhysicsEngine::PhysicsEngine()
 {
@@ -22,10 +23,12 @@ PhysicsEngine::~PhysicsEngine()
 
 void PhysicsEngine::stepPhysics(float dt)
 {
-	dt/=10.f;
+	dt/=1.f;
+
+	_forceGenerator->updateForces(dt);
 	for(auto object : _objectsPhysics)
 	{
-		object->addForce({0,9.8,0});
+		//object->addForce({0,-9.8,0});
 		object->integrate(dt);
 	}
 }
@@ -33,6 +36,7 @@ void PhysicsEngine::stepPhysics(float dt)
 void PhysicsEngine::addObjectPhysics(ObjectPhysics* objectPhysics)
 {
 	_objectsPhysics.push_back(objectPhysics);
+	_forceGenerator->add(_objectsPhysics.back(), new AnchoredSpringForce({0,3,0}, 0.1, 1));
 }
 
 bool PhysicsEngine::raycast(glm::vec3 startPosition, glm::vec3 direction)

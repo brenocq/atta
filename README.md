@@ -5,7 +5,7 @@
  <img src="./img/2020-12-04.gif" height="200">
 </p>
 
-Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing the GUI library, after that start I will start with the physiscs engine :)\
+Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing the GUI library, after that I will continue with the physiscs engine :)\
 
 ## Installation (Linux)
 #### Download Vulkan SDK

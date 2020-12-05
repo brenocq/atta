@@ -291,7 +291,7 @@ void Application::drawFrame()
 	// Update line buffer
 	_scene->updateLineBuffer();
 	// Update physics
-	//_scene->updatePhysics(timeDelta);
+	_scene->updatePhysics(timeDelta);
 
 	_modelViewController->updateCamera(timeDelta);
 

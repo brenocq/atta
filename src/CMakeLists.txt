@@ -35,24 +35,34 @@ set(src_files_simulator_objects_sensors
 	simulator/objects/sensors/camera/camera.cpp
 )
 
+#set(src_files_simulator_physics
+#	simulator/physics/objectPhysics.cpp
+#	simulator/physics/physicsEngine.cpp
+#)
+#
+#set(src_files_simulator_physics_colliders
+#)
+#
+#set(src_files_simulator_physics_constraints
+#	simulator/physics/constraints/constraint.cpp
+#	simulator/physics/constraints/fixedConstraint.cpp
+#	simulator/physics/constraints/hingeConstraint.cpp
+#)
+
+#file(GLOB physicsForcesSrc
+#    "simulator/physics/forces/*.cpp"
+#)
+#set(src_files_simulator_physics_forces
+#	${physicsForcesSrc}
+#)
+file(GLOB physicsSrc
+    "simulator/physics/**/*.cpp"
+    "simulator/physics/*.cpp"
+)
 set(src_files_simulator_physics
-	simulator/physics/objectPhysics.cpp
-	simulator/physics/physicsEngine.cpp
+	${physicsSrc}
 )
 
-set(src_files_simulator_physics_colliders
-)
-
-set(src_files_simulator_physics_constraints
-	simulator/physics/constraints/constraint.cpp
-	simulator/physics/constraints/fixedConstraint.cpp
-	simulator/physics/constraints/hingeConstraint.cpp
-)
-
-set(src_files_simulator_physics_forces
-	simulator/physics/forces/force.cpp
-	simulator/physics/forces/forceGenerator.cpp
-)
 
 set(src_files_simulator_vulkan
 	simulator/vulkan/application.cpp
@@ -145,9 +155,9 @@ source_group("Simulator.Objects.Others" FILES ${src_files_simulator_objects_othe
 source_group("Simulator.Objects.Controllers" FILES ${src_files_simulator_objects_controllers})
 source_group("Simulator.Objects.Sensors" FILES ${src_files_simulator_objects_sensors})
 source_group("Simulator.Physics" FILES ${src_files_simulator_physics})
-source_group("Simulator.Physics.Forces" FILES ${src_files_simulator_physics_forces})
-source_group("Simulator.Physics.Colliders" FILES ${src_files_simulator_physics_colliders})
-source_group("Simulator.Physics.Constraints" FILES ${src_files_simulator_physics_constraints})
+#source_group("Simulator.Physics.Forces" FILES ${src_files_simulator_physics_forces})
+#source_group("Simulator.Physics.Colliders" FILES ${src_files_simulator_physics_colliders})
+#source_group("Simulator.Physics.Constraints" FILES ${src_files_simulator_physics_constraints})
 source_group("Simulator.Vulkan" FILES ${src_files_simulator_vulkan})
 source_group("Simulator.Vulkan.UI" FILES ${src_files_simulator_vulkan_ui})
 source_group("Simulator.Vulkan.UI.Imgui" FILES ${src_files_simulator_vulkan_ui_imgui})
@@ -172,9 +182,9 @@ add_executable(${exe_name}
 	${src_files_simulator_objects_controllers} 
 	${src_files_simulator_objects_sensors}
 	${src_files_simulator_physics} 
-	${src_files_simulator_physics_forces} 
-	${src_files_simulator_physics_colliders} 
-	${src_files_simulator_physics_constraints} 
+	#${src_files_simulator_physics_forces} 
+	#${src_files_simulator_physics_colliders} 
+	#${src_files_simulator_physics_constraints} 
 	${src_files_simulator_vulkan} 
 	${src_files_simulator_vulkan_gui} 
 	${src_files_simulator_vulkan_gui_widgets} 
