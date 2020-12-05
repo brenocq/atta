@@ -28,6 +28,7 @@ class ForceGenerator
 		void clear();
 		
 		void updateForces(float dt);
+
 	private:
 		std::vector<ForceRegistration> _registrations;
 		

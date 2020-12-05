@@ -14,7 +14,7 @@ class Force
 {
 	public:
 		// Overload this method to update the force applied to an object
-		virtual void updateForce(ObjectPhysics* object, float dt);
+		virtual void updateForce(ObjectPhysics* object, float dt) = 0;
 
 	private:
 };

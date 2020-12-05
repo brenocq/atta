@@ -11,6 +11,8 @@
 #include "glm.h"
 #include "objectPhysics.h"
 #include "forces/forceGenerator.h"
+#include "collisions/contactGenerator.h"
+#include "collisions/contactResolver.h"
 
 class PhysicsEngine
 {
@@ -29,6 +31,9 @@ class PhysicsEngine
 	private:
 		std::vector<ObjectPhysics*> _objectsPhysics;
 		ForceGenerator* _forceGenerator;
+		ContactResolver* _contactResolver;
+		std::vector<ContactGenerator> _contactGenerators;
+		std::vector<Contact> _contacts;
 
 };
 
