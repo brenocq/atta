@@ -35,26 +35,6 @@ set(src_files_simulator_objects_sensors
 	simulator/objects/sensors/camera/camera.cpp
 )
 
-#set(src_files_simulator_physics
-#	simulator/physics/objectPhysics.cpp
-#	simulator/physics/physicsEngine.cpp
-#)
-#
-#set(src_files_simulator_physics_colliders
-#)
-#
-#set(src_files_simulator_physics_constraints
-#	simulator/physics/constraints/constraint.cpp
-#	simulator/physics/constraints/fixedConstraint.cpp
-#	simulator/physics/constraints/hingeConstraint.cpp
-#)
-
-#file(GLOB physicsForcesSrc
-#    "simulator/physics/forces/*.cpp"
-#)
-#set(src_files_simulator_physics_forces
-#	${physicsForcesSrc}
-#)
 file(GLOB physicsSrc
     "simulator/physics/**/*.cpp"
     "simulator/physics/*.cpp"
@@ -142,6 +122,7 @@ set(src_files_simulator_vulkan_gui
 
 file(GLOB guibSrc
     "simulator/vulkan/gui/widgets/*.cpp"
+    "simulator/vulkan/gui/font/*.cpp"
 )
 set(src_files_simulator_vulkan_gui_widgets
 	${guibSrc}
@@ -168,6 +149,7 @@ include_directories(.)
 include_directories(${glfw3_INCLUDE_DIRS})
 include_directories(${glm_INCLUDE_DIRS})
 include_directories(${Vulkan_INCLUDE_DIRS})
+include_directories(${FREETYPE_INCLUDE_DIRS})
 message("Vulkan library ${Vulkan_LIBRARY}")
 link_directories(${Vulkan_LIBRARY})
 add_subdirectory(shaders)
@@ -182,9 +164,6 @@ add_executable(${exe_name}
 	${src_files_simulator_objects_controllers} 
 	${src_files_simulator_objects_sensors}
 	${src_files_simulator_physics} 
-	#${src_files_simulator_physics_forces} 
-	#${src_files_simulator_physics_colliders} 
-	#${src_files_simulator_physics_constraints} 
 	${src_files_simulator_vulkan} 
 	${src_files_simulator_vulkan_gui} 
 	${src_files_simulator_vulkan_gui_widgets} 
@@ -201,6 +180,6 @@ if (UNIX)
 endif()
 
 set_target_properties(${exe_name} PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-target_link_libraries(${exe_name} PRIVATE glfw glm imgui::imgui tinyobjloader::tinyobjloader ${Vulkan_LIBRARIES} ${extra_libs} robotSimLib)
+target_link_libraries(${exe_name} PRIVATE glfw glm imgui::imgui tinyobjloader::tinyobjloader ${Vulkan_LIBRARIES} ${FREETYPE_LIBRARIES} ${extra_libs} robotSimLib)
 add_dependencies(${exe_name} assets shaders)
 

@@ -38,6 +38,7 @@ find_package(glfw3 REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(tinyobjloader CONFIG REQUIRED)
+find_package(Freetype REQUIRED)
 find_package(Vulkan REQUIRED)
 
 message(STATUS "Searching Vulkan...")
