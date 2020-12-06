@@ -10,7 +10,7 @@ namespace guib
 {
 	Column::Column(ColumnInfo columnInfo):
 		Widget({}), _children(columnInfo.children), 
-		_vAlignment(columnInfo.vAlignment), _hAlignment(columnInfo.hAlignment)
+		_hAlignment(columnInfo.hAlignment), _vAlignment(columnInfo.vAlignment)
 	{
 		Widget::setType("Column");
 	}

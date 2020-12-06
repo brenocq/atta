@@ -4,29 +4,35 @@
 // Date: 2020-11-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#ifndef GUIB_WIDGET_STRUCTS
+#define GUIB_WIDGET_STRUCTS
 #include <string>
 
 namespace guib
 {
-	struct Color {
+	struct Color
+	{
 		float r;
 		float g;
 		float b;
 		float a;
 	};
 
-	enum Alignment {
+	enum Alignment
+	{
 		ALIGN_START=0,
 		ALIGN_CENTER,
 		ALIGN_END
 	};
 
-	enum Unit {
+	enum Unit
+	{
 		UNIT_PIXEL=0,
 		UNIT_PERCENT
 	};
 
-	struct Offset {
+	struct Offset
+	{
 		float x;
 		float y;
 		Unit unitX = UNIT_PERCENT;
@@ -62,7 +68,8 @@ namespace guib
 		}
 	};
 
-	struct Size {
+	struct Size
+	{
 		float width;
 		float height;
 		Unit unitW = UNIT_PERCENT;
@@ -103,8 +110,27 @@ namespace guib
 		}
 	};
 
+	struct BoxRadius
+	{
+		float topLeft = 0.0f;
+		float bottomLeft = 0.0f;
+		float bottomRight = 0.0f;
+		float topRight = 0.0f;
+		Unit unitTL = UNIT_PERCENT;
+		Unit unitBL = UNIT_PERCENT;
+		Unit unitBR = UNIT_PERCENT;
+		Unit unitTR = UNIT_PERCENT;
+
+		std::string toString()
+		{
+			return std::string("BoxRadius {topLeft=")+std::to_string(topLeft)+", bottomLeft="+std::to_string(bottomLeft)+", bottomRight="+std::to_string(bottomRight)+", topRight="+std::to_string(topRight)+"}";
+		}
+	};
+
+
 	class ClickDetector;
-	struct ClickDetectorArea {
+	struct ClickDetectorArea
+	{
 		Offset offset;
 		Size size;
 		ClickDetector* clickDetector = nullptr;
@@ -117,3 +143,4 @@ namespace guib
 		Draggable* draggable = nullptr;
 	};
 }
+#endif// GUIB_WIDGET_STRUCTS

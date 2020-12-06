@@ -71,64 +71,6 @@ void UserInterface::createWidgetTree()
 	//	{
 	//		.color = {.2,.2,.2,1},
 	//		.size  = {300, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
-	//		.child = new guib::Column(
-	//		{
-	//			.hAlignment = guib::ALIGN_CENTER,
-	//			.vAlignment = guib::ALIGN_START,
-	//			.children = {
-	//				new guib::Box(
-	//				{
-	//					.color = {.15,.15,.15,1},
-	//					.size  = {1,20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
-	//					.child = new guib::Row(
-	//						{
-	//							.hAlignment = guib::ALIGN_END,
-	//							.vAlignment = guib::ALIGN_CENTER,
-	//							.children = {
-	//								new guib::ClickDetector(
-	//								{
-	//									.onClick = [&](){
-	//										Log::debug("Click", "Minimize!");
-	//									},
-	//									.child = new guib::Box(
-	//									{
-	//										.color = {.8,.8,.3,1},
-	//										.radius = {.5, .5, .5, .5},
-	//										.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
-	//									}),
-	//								}),
-	//								new guib::Box(
-	//								{
-	//									.color = {0,0,0,0},
-	//									.size  = {4,1, guib::UNIT_PIXEL}
-	//								}),
-	//								new guib::ClickDetector(
-	//								{
-	//									.onClick = [&](){
-	//										Log::debug("Click", "Close!");
-	//									},
-	//									.child = new guib::Box(
-	//									{
-	//										.color = {.8,.3,.3,1},
-	//										.radius = {.5, .5, .5, .5},
-	//										.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
-	//									}),
-	//								}),
-	//								new guib::Box(
-	//								{
-	//									.color = {0,0,0,0},
-	//									.size  = {4,1, guib::UNIT_PIXEL}
-	//								})
-	//							}
-	//						})
-	//				}),
-	//				new guib::Box(
-	//				{
-	//					.color = {1,.15,.15,1},
-	//					.size  = {0.5,30, guib::UNIT_PERCENT, guib::UNIT_PIXEL}
-	//				})
-	//			}
-	//		})
 	//	}); 
 
 	_windows.push_back(
@@ -140,11 +82,17 @@ void UserInterface::createWidgetTree()
 			.movable = false,
 			.offset = {0, 0},
 			.size = {200, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
-			/*.child = new guib::Box(
+			.child = new guib::Align(
 				{
-					.color = {1,0,1,1},
-					.size  = {1,.7}
-				})*/
+					.hAlignment = guib::ALIGN_CENTER,
+					.vAlignment = guib::ALIGN_START,
+					.child = new guib::Button(
+					{
+						.onClick = [&](){
+						},
+						.size = {100, 20, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+					})
+				})
 		})	
 	);
 
