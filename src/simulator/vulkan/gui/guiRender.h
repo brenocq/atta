@@ -13,6 +13,7 @@
 #include <string>
 #include "guiPipelineLayout.h"
 #include "widgets/widgets.h"
+#include "font/fontLoader.h"
 
 class GuiRender
 {
@@ -59,6 +60,9 @@ class GuiRender
 		guib::Draggable* _currDragging;
 		guib::Offset _startDraggingOffset;
 		guib::Offset _startDraggingCursorPos;
+
+		//---------- GuiB font render ----------//
+		guib::FontLoader* _fontLoader;
 };
 
 #endif// GUI_RENDER_H

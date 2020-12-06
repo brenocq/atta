@@ -13,6 +13,7 @@ GuiRender::GuiRender(VkExtent2D imageExtent, GuiPipelineLayout* pipelineLayout, 
 	_imageExtent(imageExtent), _pipelineLayout(pipelineLayout), _glfwWindow(glfwWindow), _cursorPos({0,0}), _cursorType(CURSOR_TYPE_ARROW), _currDragging(nullptr)
 {
 	guib::Widget::screenSize = {imageExtent.width, imageExtent.height};
+	_fontLoader = new guib::FontLoader("assets/fonts/Ubuntu-Medium.ttf");
 
 	//---------- GLFW setup ----------//
 	_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
