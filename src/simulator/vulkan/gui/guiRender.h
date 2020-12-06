@@ -53,6 +53,9 @@ class GuiRender
 		//---------- GuiB widget handler ----------//
 		std::vector<guib::ClickDetectorArea> _clickableAreas;
 		std::vector<guib::DragDetectorArea> _draggableAreas;
+		// Handling ClickDetector
+		std::pair<guib::ClickDetectorArea,bool> _currClickArea;// Current hovering/clicking
+		// Handling Draggable
 		guib::Draggable* _currDragging;
 		guib::Offset _startDraggingOffset;
 		guib::Offset _startDraggingCursorPos;

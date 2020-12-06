@@ -150,7 +150,9 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 
 			renderWidget(commandBuffer, childOffset, currSize, child);
 
-			currOffset.y+=currSize.height*childSize.height;
+			float offset = currSize.height*childSize.height;
+			currOffset.y+=offset;
+			currSize.height-=offset;
 		}
 	}
 	else if(type=="Row")
@@ -201,7 +203,9 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 
 			renderWidget(commandBuffer, childOffset, currSize, child);
 
-			currOffset.x+=currSize.width*childSize.width;
+			float offset = currSize.width*childSize.width;
+			currOffset.x+=offset;
+			currSize.width-=offset;
 		}
 	}
 	else if(type=="Padding")
@@ -307,8 +311,78 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 
 		renderWidget(commandBuffer, currOffset, currSize, child);
 	}
+	else if(type=="Button")
+	{
+		renderWidget(commandBuffer, currOffset, currSize, widget->getChild());
+	}
+	else if(type=="Align")
+	{
+		guib::Align* align = (guib::Align*)widget;
+		guib::Widget* child = align->getChild();
+		guib::Size childSize = child->getSize();
+		if(childSize.unitW == guib::UNIT_PIXEL)
+		{
+			childSize.width /= _imageExtent.width;
+			childSize.unitW = guib::UNIT_PERCENT;
+		}
+		else
+			childSize.width *= currSize.width;
+
+		if(childSize.unitH == guib::UNIT_PIXEL)
+		{
+			childSize.height /= _imageExtent.height;
+			childSize.unitH = guib::UNIT_PERCENT;
+		}
+		else
+			childSize.height *= currSize.height;
+
+		switch(align->getHAlignment())
+		{
+			case guib::ALIGN_START:
+				break;
+			case guib::ALIGN_CENTER:
+				{
+					float offset = currSize.width/2-childSize.width/2;
+					currOffset.x += offset;
+					currSize.width -= offset;
+				}
+				break;
+			case guib::ALIGN_END:
+				{
+					float offset = currSize.width-childSize.width;
+					currOffset.x += offset;
+					currSize.width -= offset;
+				}
+				break;
+		}
+
+		switch(align->getVAlignment())
+		{
+			case guib::ALIGN_START:
+				break;
+			case guib::ALIGN_CENTER:
+				{
+					float offset = currSize.height/2-childSize.height/2;
+					currOffset.y += offset;
+					currSize.height -= offset;
+				}
+				break;
+			case guib::ALIGN_END:
+				{
+					float offset = currSize.height-childSize.height;
+					currOffset.y += offset;
+					currSize.height -= offset;
+				}
+				break;
+		}
+
+		renderWidget(commandBuffer, currOffset, currSize, widget->getChild());
+	}
 }
 
+//----------------------------------------//
+//-------------- Callbacks ---------------//
+//----------------------------------------//
 void GuiRender::onKey(int key, int scancode, int action, int mods)
 {
 }
@@ -318,17 +392,39 @@ void GuiRender::onCursorPosition(double xpos, double ypos)
 	_cursorPos.x = xpos/_imageExtent.width;
 	_cursorPos.y = ypos/_imageExtent.height;
 	//Log::debug("GuiRender", "cursorPos: "+_cursorPos.toString());
+	//---------- Update dragging ----------//
 	if(_currDragging != nullptr)
 	{
 		guib::Offset diff = _cursorPos-_startDraggingCursorPos;
 		_currDragging->getWidgetToDrag()->setOffset(_startDraggingOffset+diff);
 		updateCursor(CURSOR_TYPE_CROSSHAIR);
+		return;
 	}
-	else
+
+	//---------- Check current click detector ----------//
+	if(_currClickArea.second)
 	{
-		//---------- Change cursor ----------//
+		// Check stopped hovering
+		if(_cursorPos.x<_currClickArea.first.offset.x ||
+			_cursorPos.y<_currClickArea.first.offset.y ||
+			_cursorPos.x>_currClickArea.first.offset.x+_currClickArea.first.size.width ||
+			_cursorPos.y>_currClickArea.first.offset.y+_currClickArea.first.size.height)
+		{
+			_currClickArea.first.clickDetector->setHovering(false);
+			if(_currClickArea.first.clickDetector->getOnStopHover())
+				_currClickArea.first.clickDetector->getOnStopHover()();
+		}
+
+		if(_currClickArea.first.clickDetector->getClicking() == false &&
+				_currClickArea.first.clickDetector->getRightClicking() == false &&
+				_currClickArea.first.clickDetector->getHovering() == false)
+			_currClickArea.second = false;
+	}
+
+	//---------- Change cursor ----------//
+	if(_currClickArea.second == false)
+	{
 		// Check click detector
-		guib::ClickDetector* clickDetector = nullptr;
 		for(int i=(int)_clickableAreas.size()-1; i>=0; i--)
 		{
 			guib::ClickDetectorArea clickArea = _clickableAreas[i];
@@ -337,46 +433,77 @@ void GuiRender::onCursorPosition(double xpos, double ypos)
 				_cursorPos.x<=clickArea.offset.x+clickArea.size.width &&
 				_cursorPos.y<=clickArea.offset.y+clickArea.size.height)
 			{
-				clickDetector = clickArea.clickDetector;
+				_currClickArea.first = clickArea;
+				_currClickArea.second = true;
+				_currClickArea.first.clickDetector->setHovering(true);
+				if(_currClickArea.first.clickDetector->getOnHover())
+					_currClickArea.first.clickDetector->getOnHover()();
 				break;
 			}
 		}
-		if(clickDetector != nullptr)
+	}
+
+	//---------- Check hovering click area ----------//
+	if(_currClickArea.second && _currClickArea.first.clickDetector->getHovering())
+	{
+		updateCursor(CURSOR_TYPE_HAND);
+	}
+	//---------- Check hovering draggable area ----------//
+	else
+	{
+		// Check draggable
+		guib::Draggable* draggable = nullptr;
+		for(int i=(int)_draggableAreas.size()-1; i>=0; i--)
 		{
-			updateCursor(CURSOR_TYPE_HAND);
+			guib::DragDetectorArea dragArea = _draggableAreas[i];
+			if(_cursorPos.x>=dragArea.offset.x &&
+				_cursorPos.y>=dragArea.offset.y &&
+				_cursorPos.x<=dragArea.offset.x+dragArea.size.width &&
+				_cursorPos.y<=dragArea.offset.y+dragArea.size.height)
+			{
+				draggable = dragArea.draggable;
+				break;
+			}
+		}
+
+		if(draggable != nullptr)
+		{
+			updateCursor(CURSOR_TYPE_CROSSHAIR);
 		}
 		else
-		{
-			// Check draggable
-			guib::Draggable* draggable = nullptr;
-			for(int i=(int)_draggableAreas.size()-1; i>=0; i--)
-			{
-				guib::DragDetectorArea dragArea = _draggableAreas[i];
-				if(_cursorPos.x>=dragArea.offset.x &&
-					_cursorPos.y>=dragArea.offset.y &&
-					_cursorPos.x<=dragArea.offset.x+dragArea.size.width &&
-					_cursorPos.y<=dragArea.offset.y+dragArea.size.height)
-				{
-					draggable = dragArea.draggable;
-					break;
-				}
-			}
-
-			if(draggable != nullptr)
-			{
-				updateCursor(CURSOR_TYPE_CROSSHAIR);
-			}
-			else
-				updateCursor(CURSOR_TYPE_ARROW);
-		}
+			updateCursor(CURSOR_TYPE_ARROW);
 	}
 
 }
 
 void GuiRender::onMouseButton(int button, int action, int mods)
 {
-	guib::ClickDetector* clickDetector = nullptr;
-	guib::Draggable* draggable = nullptr;
+	//---------- Check current click detector ----------//
+	// Update current click detector if exists (mouse pressing, hovering, release...)
+	if(_currClickArea.second)
+	{
+		if(action == GLFW_RELEASE)
+		{
+			if(button == GLFW_MOUSE_BUTTON_LEFT && _currClickArea.first.clickDetector->getClicking())
+			{
+				_currClickArea.first.clickDetector->setClicking(false);
+				if(_currClickArea.first.clickDetector->getOnStopClick())
+					_currClickArea.first.clickDetector->getOnStopClick()();
+			}
+			else if(button == GLFW_MOUSE_BUTTON_RIGHT && _currClickArea.first.clickDetector->getRightClicking())
+			{
+				_currClickArea.first.clickDetector->setRightClicking(false);
+				if(_currClickArea.first.clickDetector->getOnStopRightClick())
+					_currClickArea.first.clickDetector->getOnStopRightClick()();
+			}
+		}
+		if(_currClickArea.first.clickDetector->getClicking() == false &&
+				_currClickArea.first.clickDetector->getRightClicking() == false &&
+				_currClickArea.first.clickDetector->getHovering() == false)
+			_currClickArea.second = false;
+	}
+
+	//---------- Check click detector ----------//
 	for(int i=(int)_clickableAreas.size()-1; i>=0; i--)
 	{
 		guib::ClickDetectorArea clickArea = _clickableAreas[i];
@@ -385,10 +512,32 @@ void GuiRender::onMouseButton(int button, int action, int mods)
 			_cursorPos.x<=clickArea.offset.x+clickArea.size.width &&
 			_cursorPos.y<=clickArea.offset.y+clickArea.size.height)
 		{
-			clickDetector = clickArea.clickDetector;
+			_currClickArea.first = clickArea;
+			_currClickArea.second = true;
 			break;
 		}
 	}
+	if(_currClickArea.second)
+	{
+		if(action == GLFW_PRESS)
+		{
+			if(button == GLFW_MOUSE_BUTTON_LEFT)
+			{
+				_currClickArea.first.clickDetector->setClicking(true);
+				if(_currClickArea.first.clickDetector->getOnClick())
+					_currClickArea.first.clickDetector->getOnClick()();
+			}
+			else if(button == GLFW_MOUSE_BUTTON_RIGHT)
+			{
+				_currClickArea.first.clickDetector->setRightClicking(true);
+				if(_currClickArea.first.clickDetector->getOnRightClick())
+					_currClickArea.first.clickDetector->getOnRightClick()();
+			}
+		}
+	}
+
+	//---------- Check draggable ----------//
+	guib::Draggable* draggable = nullptr;
 	for(int i=(int)_draggableAreas.size()-1; i>=0; i--)
 	{
 		guib::DragDetectorArea dragArea = _draggableAreas[i];
@@ -410,18 +559,7 @@ void GuiRender::onMouseButton(int button, int action, int mods)
 		_startDraggingOffset = {0,0};
 		_startDraggingCursorPos = {0,0};
 	}
-
-	if(clickDetector != nullptr)
-	{
-		if(clickDetector->getOnClick())
-		{
-			if(action == GLFW_PRESS)
-			{
-				clickDetector->getOnClick()();
-			}
-		}
-	}
-	else if(draggable != nullptr)
+	if(draggable != nullptr)
 	{
 		if(action == GLFW_PRESS)
 		{
@@ -430,8 +568,7 @@ void GuiRender::onMouseButton(int button, int action, int mods)
 			_startDraggingCursorPos = _cursorPos;
 		}
 	}
-	else
-		return;
+	return;
 
 }
 
@@ -439,6 +576,7 @@ void GuiRender::onScroll(double xoffset, double yoffset)
 {
 
 }
+
 void GuiRender::updateCursor(CursorType cursorType)
 {
 	if(cursorType != _cursorType)

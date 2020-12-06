@@ -8,24 +8,9 @@
 #define GUIB_BOX_H
 
 #include "widget.h"
+#include "widgetStructs.h"
 
 namespace guib {
-	struct BoxRadius {
-		float topLeft = 0.0f;
-		float bottomLeft = 0.0f;
-		float bottomRight = 0.0f;
-		float topRight = 0.0f;
-		Unit unitTL = UNIT_PERCENT;
-		Unit unitBL = UNIT_PERCENT;
-		Unit unitBR = UNIT_PERCENT;
-		Unit unitTR = UNIT_PERCENT;
-
-		std::string toString()
-		{
-			return std::string("BoxRadius {topLeft=")+std::to_string(topLeft)+", bottomLeft="+std::to_string(bottomLeft)+", bottomRight="+std::to_string(bottomRight)+", topRight="+std::to_string(topRight)+"}";
-		}
-	};
-
 	struct BoxInfo {
 		Color color = {.3,.3,.3,1};
 		BoxRadius radius = {.0,.0,.0,.0};

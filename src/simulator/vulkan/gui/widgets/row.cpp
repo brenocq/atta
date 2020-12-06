@@ -10,7 +10,7 @@ namespace guib
 {
 	Row::Row(RowInfo rowInfo):
 		Widget({}), _children(rowInfo.children), 
-		_vAlignment(rowInfo.vAlignment), _hAlignment(rowInfo.hAlignment)
+		_hAlignment(rowInfo.hAlignment), _vAlignment(rowInfo.vAlignment)
 	{
 		Widget::setType("Row");
 	}

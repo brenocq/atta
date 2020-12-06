@@ -17,5 +17,7 @@
 #include "visibility.h"
 #include "protect.h"
 #include "draggable.h"
+#include "button.h"
+#include "align.h"
 
 #endif// GUIB_WIDGETS_H
