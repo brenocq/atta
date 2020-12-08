@@ -8,6 +8,7 @@ layout(push_constant) uniform GuiObjectInfoStruct { GuiObjectInfo objectInfo; };
 
 layout(location = 0) out vec4 outFragColor;
 layout(location = 1) out vec2 outFragPos;
+layout(location = 2) out vec2 outTexCoord;
 
 vec2 positions[6] = vec2[](
     vec2(0.0, 0.0),
@@ -27,4 +28,9 @@ void main()
 
     outFragColor = objectInfo.color;
     outFragPos = rectCorner;
+
+	if(objectInfo.isLetter == 1)
+    	outTexCoord = objectInfo.offsetLetter+positions[gl_VertexIndex]*objectInfo.sizeLetter;
+	else
+		outTexCoord = vec2(-1,-1);
 }

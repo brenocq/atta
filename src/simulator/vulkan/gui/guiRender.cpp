@@ -9,11 +9,12 @@
 #include "simulator/helpers/log.h"
 #include <GLFW/glfw3.h>
 
-GuiRender::GuiRender(VkExtent2D imageExtent, GuiPipelineLayout* pipelineLayout, GLFWwindow* glfwWindow):
-	_imageExtent(imageExtent), _pipelineLayout(pipelineLayout), _glfwWindow(glfwWindow), _cursorPos({0,0}), _cursorType(CURSOR_TYPE_ARROW), _currDragging(nullptr)
+GuiRender::GuiRender(VkExtent2D imageExtent, GuiPipelineLayout* pipelineLayout, GLFWwindow* glfwWindow, guib::FontLoader* fontLoader):
+	_imageExtent(imageExtent), _pipelineLayout(pipelineLayout), _glfwWindow(glfwWindow), 
+	_cursorPos({0,0}), _cursorType(CURSOR_TYPE_ARROW), _currDragging(nullptr),
+	_fontLoader(fontLoader)
 {
 	guib::Widget::screenSize = {imageExtent.width, imageExtent.height};
-	_fontLoader = new guib::FontLoader("assets/fonts/Ubuntu-Medium.ttf");
 
 	//---------- GLFW setup ----------//
 	_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
@@ -83,8 +84,7 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 		objectInfo.position = glm::vec2(currOffset.x, currOffset.y);
 		objectInfo.size = glm::vec2(currSize.width, currSize.height);
 		objectInfo.color = glm::vec4(color.r, color.g, color.b, color.a);
-		//if(currSize.width<0.009 && currSize.width>0.008)
-		//	std::cout << currSize.toString() << currOffset.toString() << std::endl;
+		objectInfo.isLetter = 0;
 
 		// Calculate radius
 		float minSize = std::min(currSize.height, currSize.width);
@@ -101,6 +101,54 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 		vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 
 		renderWidget(commandBuffer, currOffset, currSize, widget->getChild());
+	}
+	else if(type=="Text")
+	{
+		guib::Text* text = (guib::Text*)widget;
+		guib::Color color = text->getColor();
+
+		float currX = currOffset.x;
+		//std::cout << "Render text: " << text->getText() << std::endl;
+		//std::cout << "Size: " << currSize.toString() << std::endl;
+		//std::cout << "Offset: " << currOffset.toString() << std::endl;
+		for(auto letter : text->getText())
+		{
+			
+			guib::GlyphInfo gInfo = _fontLoader->getFontTexture().glyphsInfo[letter];
+			float tw = gInfo.width;
+			float th = gInfo.height;
+			float tx = gInfo.x;
+			float ty = gInfo.y;
+			float heightPerc = gInfo.height*_fontLoader->getFontTexture().atlas.height/100.0f;
+			float offsetLeft = gInfo.left/gInfo.width;
+			float offsetTop = (gInfo.top/gInfo.height);
+			float advance = gInfo.advance/gInfo.width;
+
+			//std::cout << "offset " << offsetTop << std::endl;
+
+			glm::vec2 textOffset = {currX, currOffset.y};
+			textOffset.y += currSize.height*(1-heightPerc);
+
+			GuiObjectInfo objectInfo;
+			objectInfo.position = textOffset;
+			objectInfo.size = glm::vec2(currSize.height*(tw/th)*heightPerc, currSize.height*heightPerc);
+			objectInfo.color = glm::vec4(color.r, color.g, color.b, color.a);
+			objectInfo.isLetter = 1;
+			objectInfo.offsetLetter = glm::vec2(tx, ty);
+			objectInfo.sizeLetter = glm::vec2(tw, th);
+
+			vkCmdPushConstants(
+					commandBuffer,
+					_pipelineLayout->handle(),
+					VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+					0,
+					sizeof(GuiObjectInfo),
+					&objectInfo);
+
+			vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+
+			currX += currSize.height*(tw/th)*heightPerc;
+		}
 	}
 	else if(type=="Column")
 	{

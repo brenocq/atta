@@ -77,6 +77,46 @@ Texture::Texture(Device* device, CommandPool* commandPool, VkExtent2D size)
 	_sampler = new Sampler(_device, _mipLevels);
 }
 
+Texture::Texture(Device* device, CommandPool* commandPool, unsigned char buffer[],  VkExtent2D size)
+{
+	_device = device;
+	_commandPool = commandPool;
+	_width = size.width;
+	_height = size.height;
+
+	_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_width, _height)))) + 1;
+
+    VkDeviceSize imageSize = _width * _height * 4;
+	std::vector<uint8_t> pixels(imageSize);
+
+	// Copy from buffer to image pixels buffer
+	for(int y=0; y<_height; y++)
+	{
+		for(int x=0; x<_width; x++)
+		{
+			pixels[(x+y*_width)*4+0] = 255;
+			pixels[(x+y*_width)*4+1] = 255;
+			pixels[(x+y*_width)*4+2] = 255;
+			pixels[(x+y*_width)*4+3] = buffer[x+y*_width];
+		}
+	}
+
+	StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels.data(), imageSize);
+
+	_image = new Image(_device, _width, _height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
+
+	transitionImageLayout(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
+	// Transition to read only while generating mipmaps
+	generateMipmaps();
+
+	delete stagingBuffer;
+	stagingBuffer = nullptr;
+
+	_imageView = new ImageView(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
+	_sampler = new Sampler(_device, _mipLevels);
+}
+
 void Texture::updateTextureImage(std::vector<uint8_t> pixels)
 {
 	std::vector<uint8_t> data(_width*_height*4);

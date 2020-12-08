@@ -91,7 +91,7 @@ endmacro()
 
 copy_models(model_files models copied_models)
 copy_textures(texture_files textures copied_textures)
-copy_fonts(font_fonts fonts copied_fonts)
+copy_fonts(font_files fonts copied_fonts)
 	
 source_group("Models" FILES ${model_files})
 source_group("Textures" FILES ${texture_files})
