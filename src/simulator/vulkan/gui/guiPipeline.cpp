@@ -10,7 +10,8 @@
 
 GuiPipeline::GuiPipeline(Device* device, 
 				SwapChain* swapChain, 
-				std::vector<GuiUniformBuffer*> uniformBuffers)
+				std::vector<GuiUniformBuffer*> uniformBuffers,
+				guib::FontLoader* _fontLoader)
 {
 	_device = device;
 
@@ -143,6 +144,7 @@ GuiPipeline::GuiPipeline(Device* device,
 	std::vector<DescriptorBinding> descriptorBindings =
 	{
 		{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT|VK_SHADER_STAGE_FRAGMENT_BIT},
+		{1, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 	};
 
 	_descriptorSetManager = new DescriptorSetManager(_device, descriptorBindings, _imageViews.size());
@@ -155,9 +157,18 @@ GuiPipeline::GuiPipeline(Device* device,
 		uniformBufferInfo.buffer = uniformBuffers[i]->handle();
 		uniformBufferInfo.range = VK_WHOLE_SIZE;
 
+		// Image and texture samplers (font)
+		std::vector<VkDescriptorImageInfo> imageInfos(1);
+
+		auto& imageInfo = imageInfos[0];
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = _fontLoader->getTexture()->getImageView()->handle();
+		imageInfo.sampler = _fontLoader->getTexture()->getSampler()->handle();
+
 		const std::vector<VkWriteDescriptorSet> descriptorWrites =
 		{
 			descriptorSets->bind(i, 0, uniformBufferInfo),
+			descriptorSets->bind(i, 1, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
 		};
 
 		descriptorSets->updateDescriptors(i, descriptorWrites);

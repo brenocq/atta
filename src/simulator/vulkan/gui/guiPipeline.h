@@ -18,13 +18,15 @@
 #include "guiPipelineLayout.h"
 #include "guiUniformBuffer.h"
 #include "widgets/widgets.h"
+#include "font/fontLoader.h"
 
 class GuiPipeline
 {
 	public:
 		GuiPipeline(Device* device, 
 				SwapChain* swapChain, 
-				std::vector<GuiUniformBuffer*> uniformBuffers);
+				std::vector<GuiUniformBuffer*> uniformBuffers,
+				guib::FontLoader* _fontLoader);
 		~GuiPipeline();
 
 		void beginRender(VkCommandBuffer commandBuffer, int imageIndex=0);

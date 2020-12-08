@@ -10,4 +10,7 @@ struct GuiObjectInfo
 	vec2 size;
 	vec4 color;
 	float radius;
+	int isLetter;
+	vec2 offsetLetter;
+	vec2 sizeLetter;
 };

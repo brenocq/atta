@@ -21,6 +21,7 @@
 #include "guiUniformBuffer.h"
 #include "guiRender.h"
 #include "widgets/widgets.h"
+#include "font/fontLoader.h"
 
 class UserInterface
 {
@@ -72,6 +73,9 @@ class UserInterface
 		bool* _splitRender;
 		// Topbar->View
 		bool _showPhysicsDebugger;
+
+		//---------- GuiB font render ----------//
+		guib::FontLoader* _fontLoader;
 };
 
 #endif// USER_INTERFACE_H

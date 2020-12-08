@@ -19,5 +19,6 @@
 #include "draggable.h"
 #include "button.h"
 #include "align.h"
+#include "text.h"
 
 #endif// GUIB_WIDGETS_H

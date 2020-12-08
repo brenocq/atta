@@ -28,7 +28,7 @@ class GuiRender
 	};
 
 	public:
-		GuiRender(VkExtent2D _imageExtent, GuiPipelineLayout* _pipelineLayout, GLFWwindow* glfwWindow);
+		GuiRender(VkExtent2D _imageExtent, GuiPipelineLayout* _pipelineLayout, GLFWwindow* glfwWindow, guib::FontLoader* fontLoader);
 		~GuiRender();
 
 		void render(VkCommandBuffer commandBuffer, guib::Widget* root = nullptr, std::vector<guib::Window*> windows = std::vector<guib::Window*>());

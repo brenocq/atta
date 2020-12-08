@@ -21,6 +21,7 @@ class Texture
 	public:
 		Texture(Device* device, CommandPool* commandPool, std::string filename);
 		Texture(Device* device, CommandPool* commandPool, VkExtent2D size);
+		Texture(Device* device, CommandPool* commandPool, unsigned char buffer[],  VkExtent2D size);
 		~Texture();
 
 		Device* getDevice() const { return _device; }

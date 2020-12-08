@@ -36,8 +36,11 @@ UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChai
 		_guiUniformBuffers[i]->setValue(ubo);
 	}
 
-	_guiPipeline = new GuiPipeline(_device, _swapChain, _guiUniformBuffers);
-	_guiRender = new GuiRender(_swapChain->getExtent(), _guiPipeline->getPipelineLayout(), _window->handle());
+	// Load font to texture
+	_fontLoader = new guib::FontLoader(_device, _guiCommandPool, "assets/fonts/Ubuntu-Medium.ttf");
+
+	_guiPipeline = new GuiPipeline(_device, _swapChain, _guiUniformBuffers, _fontLoader);
+	_guiRender = new GuiRender(_swapChain->getExtent(), _guiPipeline->getPipelineLayout(), _window->handle(), _fontLoader);
 	createWidgetTree();
 }
 
@@ -90,7 +93,13 @@ void UserInterface::createWidgetTree()
 					{
 						.onClick = [&](){
 						},
-						.size = {100, 20, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
+						.size = {100, 20, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+						.child = new guib::Text(
+						{
+							.color = {1,0,0,1},
+							.text = "Button",
+							.textSize = 16
+						})
 					})
 				})
 		})	
