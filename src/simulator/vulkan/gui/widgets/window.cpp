@@ -99,20 +99,48 @@ namespace guib
 									.size  = {1,20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 									.child = new guib::Row(
 									{
-										.hAlignment = guib::ALIGN_END,
+										.hAlignment = guib::ALIGN_START,
 										.vAlignment = guib::ALIGN_CENTER,
 										.children = {
-											minimizeButton,
 											new guib::Box(
 											{
 												.color = {0,0,0,0},
 												.size  = {4,1, guib::UNIT_PIXEL}
 											}),
-											closeButton,
+											new guib::Box(
+											{
+												.color = {1,0,1,0},
+												.size  = {.5,1},
+												.child = new guib::Text(
+												{
+													.color = {0.8, 0.8, 0.8, 1.0},
+													.text = _name,
+													.textSize = 14
+												})
+											}),
 											new guib::Box(
 											{
 												.color = {0,0,0,0},
-												.size  = {4,1, guib::UNIT_PIXEL}
+												.size  = {1,1},
+												.child = new guib::Row(
+												{
+													.hAlignment = guib::ALIGN_END,
+													.vAlignment = guib::ALIGN_CENTER,
+													.children = {
+														minimizeButton,
+														new guib::Box(
+														{
+															.color = {0,0,0,0},
+															.size  = {4,1, guib::UNIT_PIXEL}
+														}),
+														closeButton,
+														new guib::Box(
+														{
+															.color = {0,0,0,0},
+															.size  = {4,1, guib::UNIT_PIXEL}
+														})
+													}
+												})
 											})
 										}
 									})

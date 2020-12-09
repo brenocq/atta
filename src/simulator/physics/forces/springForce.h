@@ -14,13 +14,15 @@
 class SpringForce : public Force
 {
 	public:
-		SpringForce(ObjectPhysics* other, float k, float restLenght);
+		SpringForce(glm::vec3 connectionPoint, ObjectPhysics* other, glm::vec3 otherConnectionPoint, float k, float restLenght);
 		~SpringForce();
 
 		virtual void updateForce(ObjectPhysics* object, float dt);
 
 	private:
 		ObjectPhysics* _other;
+		glm::vec3 _connectionPoint;
+		glm::vec3 _otherConnectionPoint;
 		float _k;
 		float _restLenght;
 };
