@@ -1,11 +1,11 @@
-# Robot Simulator
+# Atta - Robot Simulator
 <p align="center">
  <img src="./img/2020-08-16.gif" height="200">
  <img src="./img/2020-09-12.png" height="200">
  <img src="./img/2020-12-04.gif" height="200">
 </p>
 
-Robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing the GUI library, after that I will continue with the physiscs engine :)\
+Atta is a robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing the GUI library and the physiscs engine.
 
 ## Installation (Linux)
 #### Download Vulkan SDK

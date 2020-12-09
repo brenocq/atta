@@ -8,7 +8,7 @@
 #define CONTACT_GENERATOR_H
 
 #include <vector>
-#include "glm.h"
+#include "simulator/math/math.h"
 #include "../objectPhysics.h"
 #include "contact.h"
 

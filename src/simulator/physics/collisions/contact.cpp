@@ -14,10 +14,10 @@ void Contact::resolve(float dt)
 
 float Contact::calculateSeparatingVelocity() const
 {
-	glm::vec3 relativeVel = objects.first->getVelocity();
+	atta::vec3 relativeVel = objects.first->getVelocity();
 	if(objects.second!=nullptr)
 		relativeVel -= objects.second->getVelocity();
-	return glm::dot(relativeVel, contactNormal);
+	return relativeVel.dot(contactNormal);
 }
 
 void Contact::resolveVelocity(float dt)
@@ -32,9 +32,9 @@ void Contact::resolveVelocity(float dt)
 	float newSepVel	= -sepVel*restitution;
 	
 	// Check velocity buildup due to acceleration only
-	glm::vec3 accCausedVelocity = objects.first->getAcceleration();
+	atta::vec3 accCausedVelocity = objects.first->getAcceleration();
 	if(objects.second !=nullptr) accCausedVelocity -= objects.second->getAcceleration();
-	float accCausedSepVel = glm::dot(accCausedVelocity, contactNormal)*dt;
+	float accCausedSepVel = accCausedVelocity.dot(contactNormal)*dt;
 	if(accCausedSepVel<0)
 	{
 		newSepVel += restitution*accCausedSepVel;
@@ -58,7 +58,7 @@ void Contact::resolveVelocity(float dt)
 	float impulse = deltaVel/totalInverseMass; 
 
 	// Total impulse per unit of inverse mass
-	glm::vec3 impulsePerIMass = contactNormal*impulse;
+	atta::vec3 impulsePerIMass = contactNormal*impulse;
 
 
 	// Apply impulses: In direction of the contact normal and proportional to the inverse mass
@@ -66,7 +66,7 @@ void Contact::resolveVelocity(float dt)
 			impulsePerIMass*objects.first->getInverseMass());
 
 	if(objects.second!=nullptr)
-		objects.second->setVelocity(objects.second->getVelocity()+
+		objects.second->setVelocity(objects.second->getVelocity()
 				-impulsePerIMass*objects.second->getInverseMass());
 }
 
@@ -86,13 +86,13 @@ void Contact::resolveInterpenetration(float dt)
 		return;
 
 	// Amount of penetration resolution per unit of inverse mass
-	glm::vec3 movePerIMass = contactNormal*(penetration/totalInverseMass);
+	atta::vec3 movePerIMass = contactNormal*(penetration/totalInverseMass);
 
 	// Apply penetration resolution
 	objects.first->setPosition(objects.first->getPosition()+
 			movePerIMass*objects.first->getInverseMass());
 
 	if(objects.second!=nullptr)
-		objects.second->setPosition(objects.second->getPosition()+
-				-movePerIMass*objects.second->getInverseMass());
+		objects.second->setPosition(objects.second->getPosition()-
+				movePerIMass*objects.second->getInverseMass());
 }

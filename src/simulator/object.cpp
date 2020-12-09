@@ -137,7 +137,7 @@ void Object::setPosition(glm::vec3 position)
 {
 	_position = position;
 	if(_physics!=nullptr)
-		_physics->setPosition(position);
+		_physics->setPosition(atta::vec3(position));
 }
 
 void Object::setRotation(glm::vec3 rotation)

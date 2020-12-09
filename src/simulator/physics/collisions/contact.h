@@ -7,7 +7,7 @@
 #ifndef CONTACT_H
 #define CONTACT_H
 
-#include "glm.h"
+#include "simulator/math/math.h"
 #include "../objectPhysics.h"
 
 // Contact between two objects, resolving the contact means resolving their interpenetration
@@ -25,7 +25,7 @@ class Contact
 		float penetration;
 
 		// Direction of the contact normal in world coordinates
-		glm::vec3 contactNormal;
+		atta::vec3 contactNormal;
 	
 		void resolve(float dt);
 		float calculateSeparatingVelocity() const;

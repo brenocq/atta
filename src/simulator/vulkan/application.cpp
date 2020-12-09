@@ -649,12 +649,12 @@ void Application::onMouseButton(int button, int action, int mods)
 
 				if(onRaycastClick)
 				{
-					glm::vec3 ray = PhysicsEngine::getMouseClickRay(
-							x, y, 
-							_window->getWidth(), _window->getHeight(),
-							_modelViewController->getPosition(), _modelViewController->getForward(), _modelViewController->getUp());
+					//glm::vec3 ray = PhysicsEngine::getMouseClickRay(
+					//		x, y, 
+					//		_window->getWidth(), _window->getHeight(),
+					//		_modelViewController->getPosition(), _modelViewController->getForward(), _modelViewController->getUp());
 
-					onRaycastClick(_modelViewController->getPosition(), ray);
+					//onRaycastClick(_modelViewController->getPosition(), ray);
 				}
 			}
 			break;
