@@ -120,6 +120,7 @@ set(src_files_simulator_vulkan_gui
 	simulator/vulkan/gui/userInterface.cpp
 )
 
+# GUI
 file(GLOB guibSrc
     "simulator/vulkan/gui/widgets/*.cpp"
     "simulator/vulkan/gui/font/*.cpp"
@@ -128,22 +129,14 @@ set(src_files_simulator_vulkan_gui_widgets
 	${guibSrc}
 )
 
-source_group("Main" FILES ${src_files})
-source_group("Simulator" FILES ${src_files_simulator})
-source_group("Simulator.Helpers" FILES ${src_files_simulator_helpers})
-source_group("Simulator.Objects.Basics" FILES ${src_files_simulator_objects_basics})
-source_group("Simulator.Objects.Others" FILES ${src_files_simulator_objects_others})
-source_group("Simulator.Objects.Controllers" FILES ${src_files_simulator_objects_controllers})
-source_group("Simulator.Objects.Sensors" FILES ${src_files_simulator_objects_sensors})
-source_group("Simulator.Physics" FILES ${src_files_simulator_physics})
-#source_group("Simulator.Physics.Forces" FILES ${src_files_simulator_physics_forces})
-#source_group("Simulator.Physics.Colliders" FILES ${src_files_simulator_physics_colliders})
-#source_group("Simulator.Physics.Constraints" FILES ${src_files_simulator_physics_constraints})
-source_group("Simulator.Vulkan" FILES ${src_files_simulator_vulkan})
-source_group("Simulator.Vulkan.UI" FILES ${src_files_simulator_vulkan_ui})
-source_group("Simulator.Vulkan.UI.Imgui" FILES ${src_files_simulator_vulkan_ui_imgui})
-source_group("Simulator.Vulkan.RayTracing" FILES ${src_files_simulator_vulkan_raytracing})
-source_group("Simulator.Vulkan.Pipeline" FILES ${src_files_simulator_vulkan_pipeline})
+# Math
+file(GLOB mathSrc
+    "simulator/math/*.cpp"
+)
+set(src_files_simulator_math
+	${mathSrc}
+)
+
 
 include_directories(.)
 include_directories(${glfw3_INCLUDE_DIRS})
@@ -159,6 +152,7 @@ add_executable(${exe_name}
 	${src_files} 
 	${src_files_simulator} 
 	${src_files_simulator_helpers} 
+	${src_files_simulator_math} 
 	${src_files_simulator_objects_basics} 
 	${src_files_simulator_objects_others} 
 	${src_files_simulator_objects_controllers} 

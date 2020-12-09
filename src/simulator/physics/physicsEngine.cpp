@@ -39,13 +39,13 @@ void PhysicsEngine::addObjectPhysics(ObjectPhysics* objectPhysics)
 	_forceGenerator->add(_objectsPhysics.back(), new AnchoredSpringForce({0,3,0}, 0.1, 1));
 }
 
-bool PhysicsEngine::raycast(glm::vec3 startPosition, glm::vec3 direction)
+bool PhysicsEngine::raycast(atta::vec3 startPosition, atta::vec3 direction)
 {
 	return false;
 }
 
 //---------- Static functions ----------//
-glm::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, glm::vec3 camPos, glm::vec3 camForward, glm::vec3 camUp)
+atta::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, atta::vec3 camPos, atta::vec3 camForward, atta::vec3 camUp)
 {
 	//const float nearPlane = 0.1f;
 	const float farPlane = 1000.0f;
@@ -55,15 +55,15 @@ glm::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, g
 	//float fov = 2.0*atan(tanFov);
 
 	// Get ray pointing forward from the camera and extend it to the far plane
-	glm::vec3 rayForward = glm::normalize(camForward);
+	atta::vec3 rayForward = camForward.unit();
 	rayForward *= farPlane;
 
 	// Find horizontal and vertical vectors relative to the camera
-	glm::vec3 ver = {0.0f, 1.0f, 0.0f};
-	glm::vec3 hor = glm::cross(rayForward, ver);
-	hor = glm::normalize(hor);
-	ver = glm::cross(hor, rayForward);
-	ver = glm::normalize(ver);
+	atta::vec3 ver = {0.0f, 1.0f, 0.0f};
+	atta::vec3 hor = rayForward.cross(ver);
+	hor.normalize();
+	ver = hor.cross(rayForward);
+	ver.normalize();
 	hor *= 2.f * farPlane * tanFov;
 	ver *= 2.f * farPlane * tanFov;
 
@@ -72,10 +72,10 @@ glm::vec3 PhysicsEngine::getMouseClickRay(int x, int y, int width, int height, g
 
 	// Adjust forward-ray based on the X/Y coordinates that were clicked
 	hor *= aspect;
-	glm::vec3 rayToCenter = camPos + rayForward;
-	glm::vec3 dHor = hor * 1.f/(float)width;
-	glm::vec3 dVer = ver * 1.f/(float)height;
-	glm::vec3 rayTo = rayToCenter - hor*0.5f + ver*0.5f;
+	atta::vec3 rayToCenter = camPos + rayForward;
+	atta::vec3 dHor = hor * 1.f/(float)width;
+	atta::vec3 dVer = ver * 1.f/(float)height;
+	atta::vec3 rayTo = rayToCenter - hor*0.5f + ver*0.5f;
 	rayTo += dHor*float(x);
 	rayTo -= dVer*float(y);
 		
