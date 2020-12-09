@@ -96,8 +96,8 @@ void UserInterface::createWidgetTree()
 						.size = {100, 20, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
 						.child = new guib::Text(
 						{
-							.color = {1,0,0,1},
-							.text = "Button",
+							.color = {1,1,1,1},
+							.text = "abcdefghi",
 							.textSize = 16
 						})
 					})

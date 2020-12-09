@@ -22,7 +22,8 @@ namespace guib
 	{
 		ALIGN_START=0,
 		ALIGN_CENTER,
-		ALIGN_END
+		ALIGN_END,
+		ALIGN_BETWEEN,
 	};
 
 	enum Unit

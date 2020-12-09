@@ -124,10 +124,10 @@ void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOff
 			float offsetTop = (gInfo.top/gInfo.height);
 			float advance = gInfo.advance/gInfo.width;
 
-			//std::cout << "offset " << offsetTop << std::endl;
+			//std::cout << "offset " << (char)letter <<" "<< offsetTop << std::endl;
 
 			glm::vec2 textOffset = {currX, currOffset.y};
-			textOffset.y += currSize.height*(1-heightPerc);
+			textOffset.y += currSize.height*((1-heightPerc)+(1-offsetTop));
 
 			GuiObjectInfo objectInfo;
 			objectInfo.position = textOffset;
@@ -583,6 +583,7 @@ void GuiRender::onMouseButton(int button, int action, int mods)
 					_currClickArea.first.clickDetector->getOnRightClick()();
 			}
 		}
+		return;
 	}
 
 	//---------- Check draggable ----------//
@@ -608,12 +609,12 @@ void GuiRender::onMouseButton(int button, int action, int mods)
 		_startDraggingOffset = {0,0};
 		_startDraggingCursorPos = {0,0};
 	}
-	if(draggable != nullptr)
+	if(draggable != nullptr && draggable->getWidgetToDrag()!=nullptr)
 	{
 		if(action == GLFW_PRESS)
 		{
 			_currDragging = draggable;
-			_startDraggingOffset = draggable->getWidgetToDrag()->getOffset();
+			_startDraggingOffset = 	draggable->getWidgetToDrag()->getOffset();
 			_startDraggingCursorPos = _cursorPos;
 		}
 	}

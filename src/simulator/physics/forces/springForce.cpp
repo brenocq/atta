@@ -6,8 +6,10 @@
 //--------------------------------------------------
 #include "springForce.h"
 
-SpringForce::SpringForce(ObjectPhysics* other, float k, float restLenght):
-	_other(other), _k(k), _restLenght(restLenght)
+SpringForce::SpringForce(glm::vec3 connectionPoint, ObjectPhysics* other, glm::vec3 otherConnectionPoint, float k, float restLenght):
+	_other(other), 
+	_connectionPoint(connectionPoint), _otherConnectionPoint(otherConnectionPoint),
+	_k(k), _restLenght(restLenght)
 {
 
 }
@@ -19,9 +21,12 @@ SpringForce::~SpringForce()
 
 void SpringForce::updateForce(ObjectPhysics* object, float dt)
 {
+	// Local and other connection points in world space
+	glm::vec3 lws = object->getPointInWorldSpace(_connectionPoint);
+	glm::vec3 ows = _other->getPointInWorldSpace(_otherConnectionPoint);
+
 	// Calculate spring vector
-	glm::vec3 force = object->getPosition();
-	force -= _other->getPosition();
+	glm::vec3 force = lws-ows;
 
 	// Calculate force magnitude
 	float magnitude = glm::length(force);
@@ -31,5 +36,5 @@ void SpringForce::updateForce(ObjectPhysics* object, float dt)
 	// Apply spring force
 	force = glm::normalize(force);
 	force *= -magnitude;
-	object->addForce(force);
+	object->addForceAtPoint(force, lws);
 }
