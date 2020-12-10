@@ -1,40 +1,42 @@
 //--------------------------------------------------
-// Robot PhysicsEngine
+// Atta Physics
 // physicsEngine.h
 // Date: 2020-08-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef PHYSICS_ENGINE_H
-#define PHYSICS_ENGINE_H
+#ifndef ATTA_PHY_PHYSICS_ENGINE_H
+#define ATTA_PHY_PHYSICS_ENGINE_H
 
 #include <vector>
-#include "objectPhysics.h"
+#include "body.h"
 #include "simulator/math/math.h"
 #include "forces/forceGenerator.h"
 #include "collisions/contactGenerator.h"
 #include "collisions/contactResolver.h"
 
-class PhysicsEngine
+namespace atta::phy
 {
-	public:
-		PhysicsEngine();
-		~PhysicsEngine();
+	class PhysicsEngine
+	{
+		public:
+			PhysicsEngine();
+			~PhysicsEngine();
 
-		void stepPhysics(float dt);
-		void addObjectPhysics(ObjectPhysics* objectPhysics);
+			void stepPhysics(float dt);
+			void addBody(Body* body);
 
-		bool raycast(atta::vec3 startPosition, atta::vec3 direction);
-		//---------- Getters ----------//
+			bool raycast(vec3 startPosition, atta::vec3 direction);
+			//---------- Getters ----------//
 
-		//------- Static helpers ------//
-		static atta::vec3 getMouseClickRay(int x, int y, int width, int height, atta::vec3 camPos, atta::vec3 camForward, atta::vec3 camUp);
-	private:
-		std::vector<ObjectPhysics*> _objectsPhysics;
-		ForceGenerator* _forceGenerator;
-		ContactResolver* _contactResolver;
-		std::vector<ContactGenerator> _contactGenerators;
-		std::vector<Contact> _contacts;
+			//------- Static helpers ------//
+			static vec3 getMouseClickRay(int x, int y, int width, int height, vec3 camPos, vec3 camForward, vec3 camUp);
+		private:
+			std::vector<Body*> _bodies;
+			ForceGenerator* _forceGenerator;
+			ContactResolver* _contactResolver;
+			std::vector<ContactGenerator> _contactGenerators;
+			std::vector<Contact> _contacts;
 
-};
-
-#endif// PHYSICS_ENGINE_H
+	};
+}
+#endif// ATTA_PHY_PHYSICS_ENGINE_H

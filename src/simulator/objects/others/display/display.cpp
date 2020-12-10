@@ -13,7 +13,7 @@ Display::Display(std::string name, glm::vec3 position, glm::vec3 rotation, glm::
 {
 	_type = "Display";
 	_model = new Model("plane");
-	_physics = new ObjectPhysics(_position, _rotation, 0.2);
+	_bodyPhysics = new Body(_position, _rotation, 0.2);
 
 	_buffer = std::vector<uint8_t>(_info.width*_info.height*3);
 

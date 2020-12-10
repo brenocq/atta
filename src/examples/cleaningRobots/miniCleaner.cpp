@@ -8,13 +8,14 @@
 #include "simulator/objects/basics/basics.h"
 #include "simulator/physics/constraints/constraints.h"
 #include "simulator/helpers/log.h"
+using namespace atta::phy;
 
 MiniCleaner::MiniCleaner(glm::vec3 position, glm::vec3 rotation, glm::vec3 color):
 	Object("MiniCleaner", position, rotation, {1,1,1}, 0.1f)
 {
 	_type = "MiniCleaner";
 	//_model = new Model("box");
-	_physics = new ObjectPhysics(_position, _rotation, _mass);
+	_bodyPhysics = new Body(_position, _rotation, _mass);
 
 	Box* body = new Box("Body", {0,0,0}, {0,0,0}, {0.18, 0.01,0.05}, 0.1f, color);
 	ImportedObject* wheelL = new ImportedObject("Wheel left", "wheel", {0.0,0.0,0}, {0,0,0}, {1,1,1}, 0.1f);

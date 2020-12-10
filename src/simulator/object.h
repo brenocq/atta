@@ -9,9 +9,11 @@
 
 #include <string>
 #include <vector>
-#include "physics/objectPhysics.h"
+#include "physics/body.h"
 #include "physics/constraints/constraints.h"
 #include "vulkan/model.h"
+
+using namespace atta::phy;
 
 class Object
 {
@@ -24,11 +26,11 @@ class Object
 		Object(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 scale = {1,1,1}, float mass = 1.0f);
 		~Object();
 
-		void addChild(Object* child, Constraint* constraint);
+		void addChild(Object* child, atta::phy::Constraint* constraint);
 		void removeChild(Object* child);
 
 		//---------- Getters ----------//
-		ObjectPhysics* getObjectPhysics() const { return _physics; }
+		atta::phy::Body* getBodyPhysics() const { return _bodyPhysics; }
 		glm::vec3 getPosition() const { return _position; }
 		glm::vec3 getRotation();
 		glm::vec3 getWorldPosition();
@@ -40,7 +42,7 @@ class Object
 		bool getStatic() const { return _static; }
 		Object* getParent() const { return _parent; }
 		std::vector<Object*> getChildren() const { return _children; }
-		Constraint* getParentConstraint() const { return _parentConstraint; }
+		atta::phy::Constraint* getParentConstraint() const { return _parentConstraint; }
 		Model* getModel() const { return _model; }
 		ObjectSelection getSelection() const { return _selection; }
 
@@ -52,7 +54,7 @@ class Object
 
 	protected:
 		void setParent(Object* parent) { _parent = parent; };
-		void setParentConstraint(Constraint* constraint);
+		void setParentConstraint(atta::phy::Constraint* constraint);
 
 		std::string _name;
 		std::string _type;
@@ -64,7 +66,7 @@ class Object
 		glm::vec3 _scale;
 		float _mass;
 
-		ObjectPhysics* _physics;
+		atta::phy::Body* _bodyPhysics;
 		bool _static;
 
 		Model* _model;
@@ -74,7 +76,7 @@ class Object
 
 	private:
 		Object* _parent;
-		Constraint* _parentConstraint;
+		atta::phy::Constraint* _parentConstraint;
 		std::vector<Object*> _children;
 };
 

@@ -1,28 +1,30 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // anchoredSpringForce.h
 // Date: 2020-12-04
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ANCHORED_SPRING_FORCE_H
-#define ANCHORED_SPRING_FORCE_H
+#ifndef ATTA_PHY_ANCHORED_SPRING_FORCE_H
+#define ATTA_PHY_ANCHORED_SPRING_FORCE_H
 
 #include "glm.h"
 #include "force.h"
-#include "../objectPhysics.h"
+#include "simulator/physics/body.h"
 
-class AnchoredSpringForce : public Force
+namespace atta::phy
 {
-	public:
-		AnchoredSpringForce(glm::vec3 anchor, float k, float restLenght);
-		~AnchoredSpringForce();
+	class AnchoredSpringForce : public Force
+	{
+		public:
+			AnchoredSpringForce(glm::vec3 anchor, float k, float restLenght);
+			~AnchoredSpringForce();
 
-		virtual void updateForce(ObjectPhysics* object, float dt);
+			virtual void updateForce(Body* object, float dt);
 
-	private:
-		glm::vec3 _anchor;
-		float _k;
-		float _restLenght;
-};
-
-#endif// ANCHORED_SPRING_FORCE_H
+		private:
+			glm::vec3 _anchor;
+			float _k;
+			float _restLenght;
+	};
+}
+#endif// ATTA_PHY_ANCHORED_SPRING_FORCE_H

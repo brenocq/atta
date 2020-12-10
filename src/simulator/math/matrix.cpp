@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta - Robot Simulator
+// Atta Math
 // matrix.cpp
 // Date: 2020-12-09
 // By Breno Cunha Queiroz

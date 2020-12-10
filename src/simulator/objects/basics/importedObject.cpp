@@ -11,7 +11,7 @@ ImportedObject::ImportedObject(std::string name, std::string fileName, glm::vec3
 {
 	_type = "ImportedObject";
 	_model = new Model(fileName);
-	_physics = new ObjectPhysics(_position, _rotation, mass);
+	_bodyPhysics = new Body(_position, _rotation, mass);
 }
 
 ImportedObject::~ImportedObject()

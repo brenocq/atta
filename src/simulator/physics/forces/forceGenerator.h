@@ -1,37 +1,39 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // forceGenerator.h
 // Date: 2020-09-11
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef FORCE_GENERATOR_H
-#define FORCE_GENERATOR_H
+#ifndef ATTA_PHY_FORCE_GENERATOR_H
+#define ATTA_PHY_FORCE_GENERATOR_H
 
 #include "force.h"
-#include "../objectPhysics.h"
+#include "simulator/physics/body.h"
 #include <vector>
 
-class ForceGenerator
+namespace atta::phy
 {
-	public:
-		struct ForceRegistration
-		{
-			ObjectPhysics* object;
-			Force* force;
-		};
+	class ForceGenerator
+	{
+		public:
+			struct ForceRegistration
+			{
+				Body* object;
+				Force* force;
+			};
 
-		ForceGenerator();
-		~ForceGenerator();
+			ForceGenerator();
+			~ForceGenerator();
 
-		void add(ObjectPhysics* object, Force* force);
-		void remove(ObjectPhysics* object, Force* force);
-		void clear();
-		
-		void updateForces(float dt);
+			void add(Body* object, Force* force);
+			void remove(Body* object, Force* force);
+			void clear();
+			
+			void updateForces(float dt);
 
-	private:
-		std::vector<ForceRegistration> _registrations;
-		
-};
-
-#endif// FORCE_GENERATOR_H
+		private:
+			std::vector<ForceRegistration> _registrations;
+			
+	};
+}
+#endif// ATTA_PHY_FORCE_GENERATOR_H

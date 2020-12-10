@@ -131,7 +131,7 @@ void Scene::loadObject(std::string fileName)
 void Scene::addObject(Object* object)
 {
 	_objects.push_back(object);
-	_physicsEngine->addObjectPhysics(_objects.back()->getObjectPhysics());
+	_physicsEngine->addBody(_objects.back()->getBodyPhysics());
 	for(auto child : object->getChildren())
 		addObject(child);
 }

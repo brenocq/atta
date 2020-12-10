@@ -1,26 +1,29 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // gravityForce.h
 // Date: 2020-12-04
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef GRAVITY_FORCE_H
-#define GRAVITY_FORCE_H
+#ifndef ATTA_PHY_GRAVITY_FORCE_H
+#define ATTA_PHY_GRAVITY_FORCE_H
 
 #include "glm.h"
 #include "force.h"
-#include "../objectPhysics.h"
+#include "simulator/physics/body.h"
 
-class GravityForce : public Force
+namespace atta::phy
 {
-	public:
-		GravityForce(glm::vec3 gravity);
-		~GravityForce();
+	class GravityForce : public Force
+	{
+		public:
+			GravityForce(glm::vec3 gravity);
+			~GravityForce();
 
-		virtual void updateForce(ObjectPhysics* object, float dt);
+			virtual void updateForce(Body* object, float dt);
 
-	private:
-		glm::vec3 _gravity;
-};
+		private:
+			glm::vec3 _gravity;
+	};
+}
 
-#endif// GRAVITY_FORCE_H
+#endif// ATTA_PHY_GRAVITY_FORCE_H

@@ -1,13 +1,13 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // constraints.h
 // Date: 2020-11-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef CONSTRAINTS_H
-#define CONSTRAINTS_H
+#ifndef ATTA_PHY_CONSTRAINTS_H
+#define ATTA_PHY_CONSTRAINTS_H
 
 #include "fixedConstraint.h"
 #include "hingeConstraint.h"
 
-#endif// CONSTRAINTS_H
+#endif// ATTA_PHY_CONSTRAINTS_H
