@@ -1,22 +1,24 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // force.h
 // Date: 2020-09-11
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef FORCE_H
-#define FORCE_H
+#ifndef ATTA_PHY_FORCE_H
+#define ATTA_PHY_FORCE_H
 
 #include "glm.h"
-#include "../objectPhysics.h"
+#include "simulator/physics/body.h"
 
-class Force
+namespace atta::phy
 {
-	public:
-		// Overload this method to update the force applied to an object
-		virtual void updateForce(ObjectPhysics* object, float dt) = 0;
+	class Force
+	{
+		public:
+			// Overload this method to update the force applied to an object
+			virtual void updateForce(Body* object, float dt) = 0;
 
-	private:
-};
-
-#endif// FORCE_H
+		private:
+	};
+}
+#endif// ATTA_PHY_FORCE_H

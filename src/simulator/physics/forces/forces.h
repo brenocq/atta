@@ -1,11 +1,11 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // forces.h
 // Date: 2020-12-04
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef FORCES_H
-#define FORCES_H
+#ifndef ATTA_PHY_FORCES_H
+#define ATTA_PHY_FORCES_H
 
 #include "force.h"
 #include "forceGenerator.h"
@@ -14,4 +14,4 @@
 #include "springForce.h"
 #include "anchoredSpringForce.h"
 
-#endif// FORCES_H
+#endif// ATTA_PHY_FORCES_H

@@ -1,25 +1,28 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // fixedConstraint.h
 // Date: 2020-08-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef FIXED_CONSTRAINT_H
-#define FIXED_CONSTRAINT_H
+#ifndef ATTA_PHY_FIXED_CONSTRAINT_H
+#define ATTA_PHY_FIXED_CONSTRAINT_H
 #include "constraint.h"
 
-class FixedConstraint : public Constraint
+namespace atta::phy
 {
-	public:
-		FixedConstraint(glm::vec3 position, glm::vec3 rotation);
-		~FixedConstraint();
+	class FixedConstraint : public Constraint
+	{
+		public:
+			FixedConstraint(glm::vec3 position, glm::vec3 rotation);
+			~FixedConstraint();
 
-		glm::vec3 getPosition() const { return _position; };
-		glm::vec3 getRotation() const { return _rotation; };
+			glm::vec3 getPosition() const { return _position; };
+			glm::vec3 getRotation() const { return _rotation; };
 
-	private:
-		glm::vec3 _position;
-		glm::vec3 _rotation;
-};
+		private:
+			glm::vec3 _position;
+			glm::vec3 _rotation;
+	};
+}
 
-#endif// FIXED_CONSTRAINT_H
+#endif// ATTA_PHY_FIXED_CONSTRAINT_H

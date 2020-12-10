@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // contactGenerator.cpp
 // Date: 2020-12-05
 // By Breno Cunha Queiroz

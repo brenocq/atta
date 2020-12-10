@@ -1,27 +1,30 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // constraint.h
 // Date: 2020-08-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef CONSTRAINT_H
-#define CONSTRAINT_H
+#ifndef ATTA_PHY_CONSTRAINT_H
+#define ATTA_PHY_CONSTRAINT_H
 
 #include <string>
-#include "../objectPhysics.h"
+#include "simulator/physics/body.h"
 
-class Constraint
+namespace atta::phy
 {
-	public:
-		Constraint();
-		~Constraint();
+	class Constraint
+	{
+		public:
+			Constraint();
+			~Constraint();
 
-		std::string getType() const { return _type; };
+			std::string getType() const { return _type; };
 
-	protected:
-		std::string _type;
-		ObjectPhysics* _objA;
-		ObjectPhysics* _objB;
-};
+		protected:
+			std::string _type;
+			Body* _objA;
+			Body* _objB;
+	};
+}
 
-#endif// CONSTRAINT_H
+#endif// ATTA_PHY_CONSTRAINT_H

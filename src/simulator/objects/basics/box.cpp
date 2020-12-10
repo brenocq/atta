@@ -11,7 +11,7 @@ Box::Box(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec3 siz
 {
 	_type = "Box";
 	_model = new Model("box");
-	_physics = new ObjectPhysics(_position, _rotation, mass);
+	_bodyPhysics = new Body(_position, _rotation, mass);
 }
 
 Box::~Box()

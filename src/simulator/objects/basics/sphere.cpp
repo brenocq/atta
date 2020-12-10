@@ -11,7 +11,7 @@ Sphere::Sphere(std::string name, glm::vec3 position, glm::vec3 rotation, float r
 {
 	_type = "Sphere";
 	_model = new Model("sphere");
-	_physics = new ObjectPhysics(_position, _rotation, mass);
+	_bodyPhysics = new Body(_position, _rotation, mass);
 }
 
 Sphere::~Sphere()

@@ -19,6 +19,8 @@
 #include "vulkan/helpers.h"
 #include "object.h"
 
+using namespace atta::phy;
+
 class Scene
 {
 	public:

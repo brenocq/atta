@@ -9,12 +9,12 @@
 
 int Object::_qtyIds = 0;
 Object::Object(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mass):
-	_name(name), _type("Object"), _position(position), _rotation(rotation), _scale(scale), _mass(mass), _physics(nullptr),
+	_name(name), _type("Object"), _position(position), _rotation(rotation), _scale(scale), _mass(mass), _bodyPhysics(nullptr),
 	_selection(ObjectSelection::UNSELECTED)
 {
 	_id = _qtyIds++;
 
-	_physics = nullptr;
+	_bodyPhysics = nullptr;
 	_model = nullptr;
 
 	_static = _mass > 0;
@@ -24,10 +24,10 @@ Object::Object(std::string name, glm::vec3 position, glm::vec3 rotation, glm::ve
 
 Object::~Object()
 {
-	if(_physics != nullptr)
+	if(_bodyPhysics != nullptr)
 	{
-		delete _physics;
-		_physics = nullptr;
+		delete _bodyPhysics;
+		_bodyPhysics = nullptr;
 	}
 
 	if(_model != nullptr)
@@ -45,9 +45,9 @@ Object::~Object()
 
 glm::vec3 Object::getRotation()
 {
-	if(_physics != nullptr)
+	if(_bodyPhysics != nullptr)
 	{
-		//_rotation = glm::vec3(0,0,0);//_physics->getRotation();
+		//_rotation = glm::vec3(0,0,0);//_bodyPhysics->getRotation();
 	}
 	return _rotation;
 }
@@ -82,10 +82,10 @@ glm::mat4 Object::getModelMat()
 {
 	// TODO stores current modelMat and calculates if the object has moved
 	// (Go up until find updated (world) modelMat)
-	if(_physics != nullptr)
+	if(_bodyPhysics != nullptr)
 	{
-		_position = _physics->getPosition();
-		//_rotation = glm::vec3(0,0,0);//_physics->getRotation();
+		_position = _bodyPhysics->getPosition();
+		//_rotation = glm::vec3(0,0,0);//_bodyPhysics->getRotation();
 	}
 
 	glm::mat4 mat = glm::mat4(1);
@@ -136,8 +136,8 @@ glm::mat4 Object::getModelMat()
 void Object::setPosition(glm::vec3 position)
 {
 	_position = position;
-	if(_physics!=nullptr)
-		_physics->setPosition(atta::vec3(position));
+	if(_bodyPhysics!=nullptr)
+		_bodyPhysics->setPosition(atta::vec3(position));
 }
 
 void Object::setRotation(glm::vec3 rotation)
@@ -151,8 +151,8 @@ void Object::setRotation(glm::vec3 rotation)
 	}
 
 	_rotation = rotation;
-	//if(_physics!=nullptr)
-	//	_physics->setRotation(rotation);
+	//if(_bodyPhysics!=nullptr)
+	//	_bodyPhysics->setRotation(rotation);
 }
 
 void Object::setStatic(bool stat)
@@ -162,7 +162,7 @@ void Object::setStatic(bool stat)
 	//{
 	//	std::cout << "STATIC\n";
 	//	_static = true;
-	//	_physics->setMass(0);
+	//	_bodyPhysics->setMass(0);
 	//}
 	//else
 	//{
@@ -172,7 +172,7 @@ void Object::setStatic(bool stat)
 	//	if(_mass==0)
 	//		_mass = 1.0f;
 
-	//	_physics->setMass(_mass);
+	//	_bodyPhysics->setMass(_mass);
 	//}
 }
 
@@ -216,7 +216,7 @@ void Object::removeChild(Object* child)
 	}
 }
 
-void Object::setParentConstraint(Constraint* constraint)
+void Object::setParentConstraint(atta::phy::Constraint* constraint)
 {
 	if(_parentConstraint != nullptr)
 	{

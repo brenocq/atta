@@ -1,26 +1,29 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // dragForce.h
 // Date: 2020-12-04
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef DRAG_FORCE_H
-#define DRAG_FORCE_H
+#ifndef ATTA_PHY_DRAG_FORCE_H
+#define ATTA_PHY_DRAG_FORCE_H
 
 #include "glm.h"
 #include "force.h"
-#include "../objectPhysics.h"
+#include "simulator/physics/body.h"
 
-class DragForce : public Force
+namespace atta::phy
 {
-	public:
-		DragForce(float k1, float k2);
-		~DragForce();
+	class DragForce : public Force
+	{
+		public:
+			DragForce(float k1, float k2);
+			~DragForce();
 
-		virtual void updateForce(ObjectPhysics* object, float dt);
+			virtual void updateForce(Body* object, float dt);
 
-	private:
-		float _k1, _k2;
-};
+		private:
+			float _k1, _k2;
+	};
+}
 
-#endif// DRAG_FORCE_H
+#endif// ATTA_PHY_DRAG_FORCE_H

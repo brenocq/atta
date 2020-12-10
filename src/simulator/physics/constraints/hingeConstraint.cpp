@@ -1,17 +1,20 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Physics
 // hingeConstraint.cpp
 // Date: 2020-08-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "hingeConstraint.h"
 
-HingeConstraint::HingeConstraint(glm::vec3 position, glm::vec3 rotation):
-	_position(position), _rotation(rotation)
+namespace atta::phy
 {
-	_type = "HingeConstraint";
-}
+	HingeConstraint::HingeConstraint(glm::vec3 position, glm::vec3 rotation):
+		_position(position), _rotation(rotation)
+	{
+		_type = "HingeConstraint";
+	}
 
-HingeConstraint::~HingeConstraint()
-{
+	HingeConstraint::~HingeConstraint()
+	{
+	}
 }
