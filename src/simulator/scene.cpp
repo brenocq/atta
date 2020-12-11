@@ -13,7 +13,6 @@
 #include "vulkan/device.h"
 #include "vulkan/stagingBuffer.h"
 #include "physics/constraints/fixedConstraint.h"
-#include "helpers/drawHelper.h"
 #include "objects/basics/basics.h"
 #include "objects/others/display/display.h"
 
