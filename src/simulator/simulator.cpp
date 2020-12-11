@@ -18,8 +18,12 @@ Simulator::Simulator()
 
 	// Create object instances
 	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {0.8,0.8,0.8});
-	Cylinder* cylinder = new Cylinder("Obstacle", {0,1,0}, {0,0,0}, {1,1,1}, 1.0f, {0.5f, 0.1f, 0.1f});
-	cylinder->setSelection(Object::ObjectSelection::SELECTED);
+	//Cylinder* cylinder = new Cylinder("Obstacle", {0,1,0}, {0,0,0}, {1,1,1}, 1.0f, {0.5f, 0.1f, 0.1f});
+	//cylinder->setSelection(Object::ObjectSelection::SELECTED);
+	Box* box = new Box("Box", {0,1,0}, {0,0,0}, {1,1,1}, 1.0f, {0.5f, 0.1f, 0.1f});
+	box->setSelection(Object::ObjectSelection::SELECTED);
+	Sphere* sphere = new Sphere("Sphere", {-2,1,0}, {0,0,0}, 0.5f, 1.0f, {0.1f, 0.1f, 0.5f});
+	sphere->setSelection(Object::ObjectSelection::SELECTED);
 
 	// Create mini cleaner robot
 	//_miniCleaners.push_back(new MiniCleaner({1,0.1,0}, {0,90,0}, {1,0,0}));
@@ -28,14 +32,15 @@ Simulator::Simulator()
 	//_miniCleaners.push_back(new MiniCleaner({0,0.1,0}, {0,-45,0}, {0,1,1}));
 
 	// Add objects to the scene
-	_scene->addObject((Object*)ground);
+	_scene->addObject(ground);
 	//for(auto& miniCleaner : _miniCleaners)
 	//	_scene->addObject((Object*)miniCleaner);
-	_scene->addObject((Object*)cylinder);
+	_scene->addObject(box);
+	_scene->addObject(sphere);
 	// Link objects to each other (physics)
 	_scene->linkObjects();
 
-	_debugDrawer = new DebugDrawer(_scene);
+	_drawer = new Drawer(_scene);
 
 	_vulkanApp = new Application(_scene);
 	_vulkanApp->onDrawFrame = [this](float dt){ onDrawFrame(dt); };
@@ -56,10 +61,10 @@ Simulator::~Simulator()
 		_scene = nullptr;
 	}
 
-	if(_debugDrawer != nullptr)
+	if(_drawer != nullptr)
 	{
-		delete _debugDrawer;
-		_debugDrawer = nullptr;
+		delete _drawer;
+		_drawer = nullptr;
 	}
 
 	for(auto& miniCleaner : _miniCleaners)
@@ -81,6 +86,8 @@ void Simulator::onDrawFrame(float dt)
 {
 	for(auto& miniCleaner : _miniCleaners)
 		miniCleaner->run(dt);
+
+	_drawer->drawPhysicsShapes();
 	//btVector3 old = _scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(-1.0f, old.y(), old.z()));
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(0.0f, 1.0f, 0.0f));

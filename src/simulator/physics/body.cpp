@@ -29,6 +29,14 @@ namespace atta::phy
 
 	Body::~Body()
 	{
+		for(auto& shape : _shapes)
+		{
+			if(shape != nullptr)
+			{
+				delete shape;
+				shape = nullptr;
+			}
+		}
 	}
 
 	void Body::addForce(vec3 force)

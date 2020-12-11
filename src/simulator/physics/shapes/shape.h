@@ -29,6 +29,12 @@ namespace atta::phy
 							vec3 scale = vec3());
 			~Shape();
 
+			//---------- Getters ----------//
+			ShapeType getType() const { return _type; }
+			vec3 getPosition() const { return _position; }
+			quat getOrientation() const { return _orientation; }
+			vec3 getScale() const { return _scale; }
+
 		protected:
 			void setType(ShapeType type) { _type = type; } 
 

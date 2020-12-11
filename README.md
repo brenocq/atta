@@ -44,10 +44,8 @@ These values are unreliable and come from what I think is going on in the code h
 ## References
 - [Alexander Overvoorde's Vulkan Tutorial](https://vulkan-tutorial.com/)
 - [Vulkan Programming Guide: The Official Guide to Learning Vulkan](http://www.vulkanprogrammingguide.com/)
-- [Guthmann's Imgui Tutorial](https://frguthmann.github.io/posts/vulkan_imgui/)
 - [GPSnoopy's Ray Tracing implementation](https://github.com/GPSnoopy/RayTracingInVulkan)
 - [Nvidia Vulkan Ray Tracing Tutorial](https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/)
-- [Learning Game Physics with Bullet Physics and OpenGL](https://www.amazon.com.br/Learning-Game-Physics-Bullet-OpenGL/dp/1783281871)
 - [Game Physics Engine Development](https://www.amazon.com.br/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
 
 ## License

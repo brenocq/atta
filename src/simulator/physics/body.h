@@ -7,7 +7,9 @@
 #ifndef ATTA_PHY_BODY_H
 #define ATTA_PHY_BODY_H
 
+#include <vector>
 #include "simulator/math/math.h"
+#include "simulator/physics/shapes/shapes.h"
 
 namespace atta::phy
 {
@@ -17,10 +19,13 @@ namespace atta::phy
 			Body(vec3 position={0,0,0}, vec3 rotation={0,0,0}, float mass=1.0);
 			~Body();
 
+			//---------- Shape ----------//
+			void addShape(Shape* shape) { _shapes.push_back(shape); }
+
+			//---------- Force/Torque ----------//
 			void addForce(vec3 force);
 			void addForceAtBodyPoint(vec3 force, vec3 point);
 			void addForceAtPoint(vec3 force, vec3 point);
-
 			void integrate(float dt);
 
 			//---------- Helpers ----------//
@@ -33,6 +38,7 @@ namespace atta::phy
 			float getInverseMass() const { return _inverseMass; }
 			float getMass() const { return _inverseMass<=0 ? 0 : _inverseMass; };
 			float getDamping() const { return _damping; };
+			std::vector<Shape*> getShapes() const { return _shapes; }
 
 			//---------- Setters ----------//
 			void setPosition(vec3 position) { _position = position; };
@@ -46,6 +52,9 @@ namespace atta::phy
 			void calculateDerivedData();
 			void calculateTransformMatrix();
 			void transformInertiaTensor();
+
+			// Shape
+			std::vector<Shape*> _shapes;
 
 			// Linear
 			float _inverseMass;

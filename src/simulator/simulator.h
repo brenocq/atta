@@ -12,7 +12,9 @@
 #include "scene.h"
 #include "vulkan/application.h"
 #include "examples/examples.h"
-#include "helpers/debugDrawer.h"
+#include "helpers/drawer.h"
+
+using namespace atta;
 
 class Simulator
 {
@@ -27,7 +29,7 @@ class Simulator
 		void onRaycastClick(glm::vec3 pos, glm::vec3 ray);
 
 		Scene* _scene;
-		DebugDrawer* _debugDrawer;
+		Drawer* _drawer;
 		Application* _vulkanApp;
 
 		//---------- Examples ----------//

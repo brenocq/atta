@@ -10,10 +10,11 @@ set(src_files_simulator
 	simulator/simulator.cpp
 )
 
+file(GLOB helpersSrc
+    "simulator/helpers/*.cpp"
+)
 set(src_files_simulator_helpers
-	simulator/helpers/debugDrawer.cpp
-	simulator/helpers/drawHelper.cpp
-	simulator/helpers/log.cpp
+	${helpersSrc}
 )
 
 set(src_files_simulator_objects_basics
