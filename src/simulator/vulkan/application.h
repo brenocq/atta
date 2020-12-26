@@ -25,6 +25,7 @@
 #include "pipeline/linePipeline.h"
 #include "pipeline/outlinePipeline.h"
 #include "pipeline/maskPipeline.h"
+#include "pipeline/skyboxPipeline.h"
 #include "frameBuffer.h"
 #include "commandPool.h"
 #include "commandBuffers.h"
@@ -66,7 +67,6 @@ class Application
 		void recreateSwapChain();
 		void framebufferResizeCallback() {_framebufferResized = true;}
 		void updateUniformBuffer(uint32_t currentImage);
-		void createDescriptorPool();
 		void render(VkCommandBuffer commandBuffer, int imageIndex);
 
 		// User Interface
@@ -82,6 +82,7 @@ class Application
 		void onMouseButton(int button, int action, int mods);
 		void onScroll(double xoffset, double yoffset);
 
+		// Core clases
 		Window* _window;
 		Instance* _instance;
 		DebugMessenger* _debugMessenger;
@@ -90,28 +91,29 @@ class Application
 		Surface* _surface;
 		SwapChain* _swapChain;
 
+		// Pipelines
 		GraphicsPipeline* _graphicsPipeline;
 		LinePipeline* _linePipeline;
 		MaskPipeline* _maskPipeline;
 		OutlinePipeline* _outlinePipeline;
+		SkyboxPipeline* _skyboxPipeline;
 
-		CommandPool* _commandPool;
-		CommandBuffers* _commandBuffers;
-		StagingBuffer* _stagingBuffer;
-		DescriptorSetLayout* _descriptorSetLayout;
-		DescriptorPool* _descriptorPool;
-		DescriptorSets* _descriptorSets;
-		Texture* _texture;
-
-		ModelViewController* _modelViewController;
-
+		// Other renderers
 		UserInterface* _userInterface;
 		RayTracing* _rayTracing;
 
-		Scene* _scene;
+		// Command Buffers
+		CommandPool* _commandPool;
+		CommandBuffers* _commandBuffers;
 
+		// modelViewController
+		ModelViewController* _modelViewController;
 		std::vector<UniformBuffer*> _uniformBuffers;
 
+		// Scene info
+		Scene* _scene;
+
+		// Image/swapchain synchronization
 		std::vector<Semaphore*> _imageAvailableSemaphores;
 		std::vector<Semaphore*> _renderFinishedSemaphores;
 		std::vector<Fence*> _inFlightFences;
@@ -126,7 +128,7 @@ class Application
 		int _totalNumberOfSamples;
 		bool _splitRender;
 
-		// Camera parameters
+		// Camera sensor parameters
 		std::vector<RayTracing*> _camerasRayTracing;
 		std::vector<Image*> _camerasRasterizationImage;
 		std::vector<ImageView*> _camerasRasterizationImageView;

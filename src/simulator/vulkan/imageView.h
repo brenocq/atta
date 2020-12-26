@@ -19,7 +19,7 @@
 class ImageView
 {
 	public:
-		ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels=1);
+		ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels=1, bool isCubeMap=false);
 		~ImageView();
 
 		VkImageView handle() const { return _imageView; }

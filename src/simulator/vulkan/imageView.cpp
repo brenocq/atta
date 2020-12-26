@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include "imageView.h"
 
-ImageView::ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels):
+ImageView::ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, bool isCubeMap):
 	_mipLevels(mipLevels)
 {
 	_device = device;
@@ -25,6 +25,12 @@ ImageView::ImageView(Device* device, VkImage image, VkFormat format, VkImageAspe
 	createInfo.components.g = VK_COMPONENT_SWIZZLE_G;
 	createInfo.components.b = VK_COMPONENT_SWIZZLE_B;
 	createInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+
+	if(isCubeMap)
+	{
+		createInfo.viewType =  VK_IMAGE_VIEW_TYPE_CUBE;
+		createInfo.subresourceRange.layerCount = 6;
+	}
 
 	if(vkCreateImageView(_device->handle(), &createInfo, nullptr, &_imageView) != VK_SUCCESS)
 	{

@@ -19,7 +19,7 @@
 class Texture
 {
 	public:
-		Texture(Device* device, CommandPool* commandPool, std::string filename);
+		Texture(Device* device, CommandPool* commandPool, std::string filename, VkFormat format=VK_FORMAT_R8G8B8A8_SRGB);
 		Texture(Device* device, CommandPool* commandPool, VkExtent2D size);
 		Texture(Device* device, CommandPool* commandPool, unsigned char buffer[],  VkExtent2D size);
 		~Texture();
@@ -32,11 +32,11 @@ class Texture
 		void updateTextureImage(std::vector<uint8_t> pixels);
 
 	private:
-		void transitionImageLayout(VkFormat format, VkImageLayout newLayout);
+		void transitionImageLayout(VkImageLayout newLayout);
 		void copyBufferToImage(VkBuffer buffer, uint32_t width, uint32_t height);
+		void copyBufferToCubeMapImages(VkBuffer buffer, uint32_t width, uint32_t height);
+		void copyEquToCubeMapImages(float* buffer, uint32_t width, uint32_t height);
 		void generateMipmaps();
-		VkCommandBuffer beginSingleTimeCommands();
-		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
 		Device* _device;
 		CommandPool* _commandPool;
@@ -44,6 +44,7 @@ class Texture
 		ImageView* _imageView;
 		Sampler* _sampler;
 		uint32_t _mipLevels;
+		uint32_t _arrayLayers;
 		int32_t _width, _height;
 };
 

@@ -5,28 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "descriptorPool.h"
-
-DescriptorPool::DescriptorPool(Device* device, std::vector<VkDescriptorPoolSize> poolSizes)
-{
-	_device = device;
-
-	int maxSets = 0;
-	for(auto poolSize : poolSizes)
-		if((int)poolSize.descriptorCount > maxSets)
-			maxSets = poolSize.descriptorCount;
-
-	VkDescriptorPoolCreateInfo poolInfo{};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(maxSets);
-
-	if(vkCreateDescriptorPool(_device->handle(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
-	{
-		std::cout << BOLDRED << "[DescriptorPool]" << RESET << RED << " Failed to create descriptor pool!" << RESET << std::endl;
-		exit(1);
-	}
-}
+#include "simulator/helpers/log.h"
 
 DescriptorPool::DescriptorPool(Device* device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets)
 {
@@ -46,7 +25,7 @@ DescriptorPool::DescriptorPool(Device* device, std::vector<DescriptorBinding> de
 
 	if(vkCreateDescriptorPool(_device->handle(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[DescriptorPool]" << RESET << RED << " Failed to create descriptor pool!" << RESET << std::endl;
+		Log::error("DescriptorPool", "Failed to create descriptor pool!");
 		exit(1);
 	}
 }
@@ -57,6 +36,5 @@ DescriptorPool::~DescriptorPool()
 	{
 		vkDestroyDescriptorPool(_device->handle(), _descriptorPool, nullptr);
 		_descriptorPool = nullptr;
-
 	}
 }

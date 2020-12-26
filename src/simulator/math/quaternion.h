@@ -65,6 +65,13 @@ namespace atta
                 q.i*multiplier.j - q.j*multiplier.i;
         }
 
+        quat operator *(const quat &multiplier)
+        {
+			quat result = (*this);
+			result*=multiplier;
+			return result;
+        }
+
         void addScaledVector(const vec3& vector, float scale)
         {
             quat q(0,
@@ -83,6 +90,14 @@ namespace atta
             quat q(0, vector.x, vector.y, vector.z);
             (*this) *= q;
         }
+
+		void fromEuler(vec3 e)
+		{
+			r = cos(e.x/2)*cos(e.y/2)*cos(e.z/2)+sin(e.x/2)*sin(e.y/2)*sin(e.z/2);
+			i = sin(e.x/2)*cos(e.y/2)*cos(e.z/2)-cos(e.x/2)*sin(e.y/2)*sin(e.z/2);
+			j = cos(e.x/2)*sin(e.y/2)*cos(e.z/2)+sin(e.x/2)*cos(e.y/2)*sin(e.z/2);
+			k = cos(e.x/2)*cos(e.y/2)*sin(e.z/2)-sin(e.x/2)*sin(e.y/2)*cos(e.z/2);
+		}
     };
 }
 #endif// ATTA_QUATERNION_H

@@ -170,7 +170,8 @@ GraphicsPipeline::GraphicsPipeline(Device* device,
 	{
 		{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
 		{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
-		{2, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
+		{2, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT},
+		{3, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 	};
 
 	_descriptorSetManager = new DescriptorSetManager(_device, descriptorBindings, uniformBuffers.size());
@@ -193,17 +194,24 @@ GraphicsPipeline::GraphicsPipeline(Device* device,
 
 		for (size_t t = 0; t != imageInfos.size(); ++t)
 		{
-			auto& imageInfo = imageInfos[t];
+			VkDescriptorImageInfo& imageInfo = imageInfos[t];
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			imageInfo.imageView = _scene->getTextures()[t]->getImageView()->handle();
 			imageInfo.sampler = _scene->getTextures()[t]->getSampler()->handle();
 		}
 
+		// Irradiance map
+		VkDescriptorImageInfo imageIrradianceMapInfo;
+		imageIrradianceMapInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageIrradianceMapInfo.imageView = _scene->getEnvIrrTexture()->getImageView()->handle();
+		imageIrradianceMapInfo.sampler = _scene->getEnvIrrTexture()->getSampler()->handle();
+
 		const std::vector<VkWriteDescriptorSet> descriptorWrites =
 		{
 			descriptorSets->bind(i, 0, uniformBufferInfo),
 			descriptorSets->bind(i, 1, materialBufferInfo),
-			descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
+			descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
+			descriptorSets->bind(i, 3, imageIrradianceMapInfo)
 		};
 
 		descriptorSets->updateDescriptors(i, descriptorWrites);
@@ -313,6 +321,8 @@ void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 			model = ((Sphere*)abstractPtr)->getModel();
 		else if(abstractPtr->getType() == "Cylinder")
 			model = ((Cylinder*)abstractPtr)->getModel();
+		else if(abstractPtr->getType() == "Capsule")
+			model = ((Capsule*)abstractPtr)->getModel();
 		else if(abstractPtr->getType() == "Display")
 			model = ((Display*)abstractPtr)->getModel();
 		else continue;
@@ -333,6 +343,8 @@ void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 			objectInfo.color = ((Sphere*)abstractPtr)->getColor();
 		else if(abstractPtr->getType() == "Cylinder")
 			objectInfo.color = ((Cylinder*)abstractPtr)->getColor();
+		else if(abstractPtr->getType() == "Capsule")
+			objectInfo.color = ((Capsule*)abstractPtr)->getColor();
 		else 
 			objectInfo.color = {1,1,1};
 

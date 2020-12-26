@@ -8,8 +8,8 @@
 
 namespace atta::phy
 {
-	SphereShape::SphereShape(vec3 position, float radius):
-		Shape(position, quat(), vec3(1,1,1)), _radius(radius)
+	SphereShape::SphereShape(vec3 position, quat orientation, float radius):
+		Shape(position, orientation, vec3(radius*2,radius*2,radius*2)), _radius(radius)
 	{
 		setType(SPHERE_SHAPE);
 	}

@@ -8,6 +8,8 @@
 #define ATTA_VECTOR_H
 #include <math.h>
 #include "glm.h"
+//#include "quaternion.h"
+
 
 namespace atta
 {

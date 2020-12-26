@@ -10,7 +10,7 @@
 
 Image::Image(Device* device, 
 		uint32_t width, uint32_t height, 
-		VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, uint32_t mipLevels, VkSampleCountFlagBits numSamples):
+		VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, uint32_t mipLevels, VkSampleCountFlagBits numSamples, bool isCubeMap):
 	_format(format), _extent({width, height}), _layout(VK_IMAGE_LAYOUT_UNDEFINED), _mipLevels(mipLevels)
 {
 	_device = device;
@@ -23,14 +23,19 @@ Image::Image(Device* device,
 	imageInfo.extent.depth = 1;
 	imageInfo.mipLevels = _mipLevels;
 	imageInfo.arrayLayers = 1;
-
 	imageInfo.format = format;
 	imageInfo.tiling = tiling;
 	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	imageInfo.usage = usage;
 	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	imageInfo.samples = numSamples;
-	imageInfo.flags = 0; // Optional
+	if(!isCubeMap)
+		imageInfo.flags = 0;
+	else
+	{
+		imageInfo.arrayLayers = 6; 
+		imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+	}
 
 	if(vkCreateImage(_device->handle(), &imageInfo, nullptr, &_image) != VK_SUCCESS)
 	{

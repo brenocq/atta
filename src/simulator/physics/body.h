@@ -16,7 +16,7 @@ namespace atta::phy
 	class Body
 	{
 		public:
-			Body(vec3 position={0,0,0}, vec3 rotation={0,0,0}, float mass=1.0);
+			Body(vec3* position, quat* orientation, float mass=1.0);
 			~Body();
 
 			//---------- Shape ----------//
@@ -32,16 +32,20 @@ namespace atta::phy
 			vec3 getPointInWorldSpace(vec3 point);
 
 			//---------- Getters ----------//
-			vec3 getPosition() const { return _position; };
+			vec3 getPosition() const { return *_position; };
 			vec3 getVelocity() const { return _velocity; };
 			vec3 getAcceleration() const { return _acceleration; };
 			float getInverseMass() const { return _inverseMass; }
 			float getMass() const { return _inverseMass<=0 ? 0 : _inverseMass; };
 			float getDamping() const { return _damping; };
+
+			quat getOrientation() const { return *_orientation; };
+
 			std::vector<Shape*> getShapes() const { return _shapes; }
+			mat4 getTransformMatrix() const { return _transformMatrix; };
 
 			//---------- Setters ----------//
-			void setPosition(vec3 position) { _position = position; };
+			void setPosition(vec3 position) { *_position = position; };
 			void setVelocity(vec3 velocity) { _velocity = velocity; };
 			void setAcceleration(vec3 acceleration) { _acceleration = acceleration; };
 			void setMass(float mass) { _inverseMass = mass>0 ? 1/mass : 0; };
@@ -59,14 +63,14 @@ namespace atta::phy
 			// Linear
 			float _inverseMass;
 			float _damping;
-			vec3 _position;
+			vec3* _position;
 			vec3 _velocity;
 			vec3 _acceleration;
 
 			// Angular
 			mat3 _inverseInertiaTensor;
 			float _angularDamping;
-			quat _orientation;
+			quat* _orientation;
 			vec3 _rotation;// Angular velocity
 			
 			// Accumulators

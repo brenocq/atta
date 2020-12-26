@@ -17,24 +17,27 @@ set(src_files_simulator_helpers
 	${helpersSrc}
 )
 
-set(src_files_simulator_objects_basics
-	simulator/objects/basics/box.cpp
-	simulator/objects/basics/cylinder.cpp
-	simulator/objects/basics/importedObject.cpp
-	simulator/objects/basics/plane.cpp
-	simulator/objects/basics/sphere.cpp
+
+file(GLOB objectsSrc
+    "simulator/objects/*.cpp"
+    "simulator/objects/**/*.cpp"
+    "simulator/objects/**/**/*.cpp"
 )
 
-set(src_files_simulator_objects_controllers
+set(src_files_simulator_objects
+	${objectsSrc}
 )
 
-set(src_files_simulator_objects_others
-	simulator/objects/others/display/display.cpp
-)
-
-set(src_files_simulator_objects_sensors
-	simulator/objects/sensors/camera/camera.cpp
-)
+#set(src_files_simulator_objects_controllers
+#)
+#
+#set(src_files_simulator_objects_others
+#	simulator/objects/others/display/display.cpp
+#)
+#
+#set(src_files_simulator_objects_sensors
+#	simulator/objects/sensors/camera/camera.cpp
+#)
 
 file(GLOB physicsSrc
     "simulator/physics/**/*.cpp"
@@ -104,6 +107,7 @@ set(src_files_simulator_vulkan_pipeline
 	simulator/vulkan/pipeline/graphicsPipeline.cpp
 	simulator/vulkan/pipeline/linePipeline.cpp
 	simulator/vulkan/pipeline/outlinePipeline.cpp
+	simulator/vulkan/pipeline/skyboxPipeline.cpp
 	simulator/vulkan/pipeline/maskPipeline.cpp
 	simulator/vulkan/pipeline/pipeline.cpp
 	simulator/vulkan/pipeline/pipelineLayout.cpp
@@ -154,10 +158,7 @@ add_executable(${exe_name}
 	${src_files_simulator} 
 	${src_files_simulator_helpers} 
 	${src_files_simulator_math} 
-	${src_files_simulator_objects_basics} 
-	${src_files_simulator_objects_others} 
-	${src_files_simulator_objects_controllers} 
-	${src_files_simulator_objects_sensors}
+	${src_files_simulator_objects} 
 	${src_files_simulator_physics} 
 	${src_files_simulator_vulkan} 
 	${src_files_simulator_vulkan_gui} 

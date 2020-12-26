@@ -37,20 +37,34 @@ namespace atta
 					{
 						case SPHERE_SHAPE:
 							{
-								SphereShape* bs = (SphereShape*) shape;
-								//drawBox(bs->getPosition(), bs->getOrientation(), bs->getSize(), {1,0,0});
-								quat q = quat(1,0,0,1);
-								q.normalize();
-								drawSphere({2,2,0}, q, 1.0f, {1,0,0});
+								SphereShape* s = (SphereShape*) shape;
+								vec3 position = body->getTransformMatrix()*s->getPosition();
+								quat orientation = s->getOrientation()*body->getOrientation();
+								drawSphere(position, orientation, s->getRadius(), {1,0,0});
 							}
 							break;
 						case BOX_SHAPE:
 							{
 								BoxShape* bs = (BoxShape*) shape;
-								//drawBox(bs->getPosition(), bs->getOrientation(), bs->getSize(), {1,0,0});
-								quat q = quat(1,1,1,1);
-								q.normalize();
-								drawBox({0,3,0}, q, bs->getSize(), {1,0,0});
+								vec3 position = body->getTransformMatrix()*bs->getPosition();
+								quat orientation = bs->getOrientation()*body->getOrientation();
+								drawBox(position, orientation, bs->getSize(), {1,0,0});
+							}
+							break;
+						case CYLINDER_SHAPE:
+							{
+								CylinderShape* s = (CylinderShape*) shape;
+								vec3 position = body->getTransformMatrix()*s->getPosition();
+								quat orientation = s->getOrientation()*body->getOrientation();
+								drawCylinder(position, orientation, s->getScale(), {1,0,0});
+							}
+							break;
+						case CAPSULE_SHAPE:
+							{
+								CapsuleShape* s = (CapsuleShape*) shape;
+								vec3 position = body->getTransformMatrix()*s->getPosition();
+								quat orientation = s->getOrientation()*body->getOrientation();
+								drawCapsule(position, orientation, s->getScale(), {1,0,0});
 							}
 							break;
 					}
@@ -61,8 +75,8 @@ namespace atta
 
 	void Drawer::drawSphere(vec3 position, quat orientation, float radius, vec3 color)
 	{
-		int qtyLong = 16;
-		int qtyLat = 16;
+		int qtyLong = 24;
+		int qtyLat = 24;
 		//---------- Create vertices ----------//
 		std::vector<vec3> v;// Vertices
 		for(int p=0; p<qtyLat+1; p++)
@@ -77,7 +91,7 @@ namespace atta
 
 		//---------- Transform vertices ----------//
 		mat4 transform = mat4();
-		transform.setOrientationAndPos(orientation, position);
+		transform.setPosOriScale(position, orientation, {radius*2, radius*2, radius*2});
 
 		for(auto& vertex : v)
 		{
@@ -121,7 +135,7 @@ namespace atta
 
 		//---------- Transform vertices ----------//
 		mat4 transform = mat4();
-		transform.setOrientationAndPos(orientation, position);
+		transform.setPosOriScale(position, orientation, size);
 
 		for(auto& vertex : v)
 		{
@@ -146,5 +160,99 @@ namespace atta
 		_scene->addLine(v[1], v[5], color);
 		_scene->addLine(v[2], v[6], color);
 		_scene->addLine(v[3], v[7], color);
+	}
+
+	void Drawer::drawCylinder(vec3 position, quat orientation, vec3 size, vec3 color)
+	{
+		int qtyFaces = 24;
+		//---------- Create vertices ----------//
+		std::vector<vec3> v;// Vertices
+		// Bottom-center
+		v.push_back({0, -0.5, 0});
+		// Top-center
+		v.push_back({0, 0.5, 0});
+		// Bottom circle
+		for(int i=0; i<qtyFaces; i++)
+		{
+			float theta = i*(2*M_PI/qtyFaces);
+			v.push_back({0.5*cos(theta), -0.5, 0.5*sin(theta)});
+		}
+		// Top circle
+		for(int i=0; i<qtyFaces; i++)
+		{
+			float theta = i*(2*M_PI/qtyFaces);
+			v.push_back({0.5*cos(theta), 0.5, 0.5*sin(theta)});
+		}
+
+		//---------- Transform vertices ----------//
+		mat4 transform = mat4();
+		transform.setPosOriScale(position, orientation, size);
+
+		for(auto& vertex : v)
+		{
+			vertex = transform*vertex;	
+		}
+
+		//---------- Draw lines ----------//
+		for(int i=0; i<qtyFaces; i++)
+		{
+			float theta = i*(2*M_PI/qtyFaces);
+			_scene->addLine(v[0], v[i+2], color);
+			_scene->addLine(v[1], v[i+2+qtyFaces], color);
+			_scene->addLine(v[i+2], v[i+2+qtyFaces], color);
+
+			if(i<qtyFaces-1)
+			{
+				_scene->addLine(v[i+2], v[i+3], color);
+				_scene->addLine(v[i+2+qtyFaces], v[i+3+qtyFaces], color);
+			}
+		}
+	}
+
+	void Drawer::drawCapsule(vec3 position, quat orientation, vec3 size, vec3 color)
+	{
+		int qtyFaces = 24;
+		//---------- Create vertices ----------//
+		std::vector<vec3> v;// Vertices
+		// Bottom-center
+		v.push_back({0, -0.5, 0});
+		// Top-center
+		v.push_back({0, 0.5, 0});
+		// Bottom circle
+		for(int i=0; i<qtyFaces; i++)
+		{
+			float theta = i*(2*M_PI/qtyFaces);
+			v.push_back({0.6*cos(theta), -1.0, 0.6*sin(theta)});
+		}
+		// Top circle
+		for(int i=0; i<qtyFaces; i++)
+		{
+			float theta = i*(2*M_PI/qtyFaces);
+			v.push_back({0.6*cos(theta), 1.0, 0.6*sin(theta)});
+		}
+
+		//---------- Transform vertices ----------//
+		mat4 transform = mat4();
+		transform.setPosOriScale(position, orientation, size);
+
+		for(auto& vertex : v)
+		{
+			vertex = transform*vertex;	
+		}
+
+		//---------- Draw lines ----------//
+		for(int i=0; i<qtyFaces; i++)
+		{
+			float theta = i*(2*M_PI/qtyFaces);
+			_scene->addLine(v[0], v[i+2], color);
+			_scene->addLine(v[1], v[i+2+qtyFaces], color);
+			_scene->addLine(v[i+2], v[i+2+qtyFaces], color);
+
+			if(i<qtyFaces-1)
+			{
+				_scene->addLine(v[i+2], v[i+3], color);
+				_scene->addLine(v[i+2+qtyFaces], v[i+3+qtyFaces], color);
+			}
+		}
 	}
 }

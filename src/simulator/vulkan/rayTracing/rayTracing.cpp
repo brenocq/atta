@@ -383,7 +383,7 @@ void RayTracing::createTopLevelStructures(VkCommandBuffer commandBuffer)
 			continue;
 
 		// glm::mat4 to expected by nvidia
-		glm::mat4 transformation = glm::transpose(object->getModelMat());
+		glm::mat4 transformation = glm::transpose(glm::mat4(object->getModelMat()));
 
 		//_blas[model->getModelIndex()]->getDevice();
 		//std::cout << "INDEX: " << model->getModelIndex() << std::endl;
