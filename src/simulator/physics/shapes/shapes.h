@@ -10,5 +10,7 @@
 #include "shape.h"
 #include "boxShape.h"
 #include "sphereShape.h"
+#include "cylinderShape.h"
+#include "capsuleShape.h"
 
 #endif// ATTA_PHY_SHAPES_H

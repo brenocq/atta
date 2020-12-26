@@ -12,8 +12,11 @@ Sphere::Sphere(std::string name, glm::vec3 position, glm::vec3 rotation, float r
 {
 	_type = "Sphere";
 	_model = new Model("sphere");
-	_bodyPhysics = new Body(_position, _rotation, mass);
-	_bodyPhysics->addShape(new atta::phy::SphereShape());
+
+	_orientation.fromEuler(atta::radians(atta::vec3(_rotation)));
+
+	_bodyPhysics = new Body(&_position, &_orientation, mass);
+	_bodyPhysics->addShape(new atta::phy::SphereShape(vec3(), quat(), radius+0.001));
 }
 
 Sphere::~Sphere()

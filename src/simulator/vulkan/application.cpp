@@ -40,9 +40,6 @@ Application::Application(Scene* scene):
 	//---------- Pipelines ----------//
 	createPipelines();
 
-	//---------- Descriptor pool ----------//
-	createDescriptorPool();
-
 	//---------- Command buffers ----------//
 	_commandBuffers = new CommandBuffers(_device, _commandPool, _swapChain->getImageViews().size());
 
@@ -174,6 +171,7 @@ void Application::createPipelines()
 	_linePipeline = new LinePipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
 	_maskPipeline = new MaskPipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
 	_outlinePipeline = new OutlinePipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
+	_skyboxPipeline = new SkyboxPipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
 }
 
 void Application::createUserInterface()
@@ -207,6 +205,9 @@ void Application::cleanupSwapChain()
 	delete _outlinePipeline;
 	_outlinePipeline = nullptr;
 
+	delete _skyboxPipeline;
+	_skyboxPipeline = nullptr;
+
 	delete _linePipeline;
 	_linePipeline = nullptr;
 
@@ -221,9 +222,6 @@ void Application::cleanupSwapChain()
 		delete uniformBuffer;
 		uniformBuffer = nullptr;
     }
-
-	delete _descriptorPool;
-	_descriptorPool = nullptr;
 }
 
 void Application::recreateSwapChain()
@@ -250,7 +248,6 @@ void Application::recreateSwapChain()
 	//	_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 	//}
 
-	createDescriptorPool();
 	_commandBuffers = new CommandBuffers(_device, _commandPool, _swapChain->getImageViews().size());
 
 	// IMGUI
@@ -291,7 +288,7 @@ void Application::drawFrame()
 	// Update line buffer
 	_scene->updateLineBuffer();
 	// Update physics
-	_scene->updatePhysics(timeDelta);
+	//_scene->updatePhysics(timeDelta);
 
 	_modelViewController->updateCamera(timeDelta);
 
@@ -420,6 +417,9 @@ void Application::render(VkCommandBuffer commandBuffer, int imageIndex)
 {
 	_graphicsPipeline->beginRender(commandBuffer, imageIndex);
 	{
+		// Skybox pipeline
+		_skyboxPipeline->render(commandBuffer, imageIndex);
+
 		// Graphics pipeline
 		_graphicsPipeline->render(commandBuffer, imageIndex);
 
@@ -457,23 +457,6 @@ void Application::updateUniformBuffer(uint32_t currentImage)
 	ubo.hasSky = false;
 
 	_uniformBuffers[currentImage]->setValue(ubo);
-}
-
-void Application::createDescriptorPool()
-{
-	int size = _swapChain->getImages().size();
-
-	std::vector<VkDescriptorPoolSize> poolSizes{};
-	VkDescriptorPoolSize uniformBufferDescriptor;
-	VkDescriptorPoolSize combinedImageSamplerDescriptor;
-	uniformBufferDescriptor.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	uniformBufferDescriptor.descriptorCount = static_cast<uint32_t>(size);
-	combinedImageSamplerDescriptor.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	combinedImageSamplerDescriptor.descriptorCount = static_cast<uint32_t>(size);
-	poolSizes.push_back(uniformBufferDescriptor);
-	poolSizes.push_back(combinedImageSamplerDescriptor);
-
-	_descriptorPool = new DescriptorPool(_device, poolSizes);
 }
 
 void Application::createSpecialSceneObjects()

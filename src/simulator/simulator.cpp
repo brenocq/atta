@@ -17,13 +17,15 @@ Simulator::Simulator()
 	_scene->loadObject("wheel");
 
 	// Create object instances
-	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {0.8,0.8,0.8});
+	Box* ground = new Box("Ground", {0,-1,0}, {0,0,0}, {200, 2, 200}, 0.0f, {1.0,1.0,1.0});
 	//Cylinder* cylinder = new Cylinder("Obstacle", {0,1,0}, {0,0,0}, {1,1,1}, 1.0f, {0.5f, 0.1f, 0.1f});
 	//cylinder->setSelection(Object::ObjectSelection::SELECTED);
-	Box* box = new Box("Box", {0,1,0}, {0,0,0}, {1,1,1}, 1.0f, {0.5f, 0.1f, 0.1f});
-	box->setSelection(Object::ObjectSelection::SELECTED);
-	Sphere* sphere = new Sphere("Sphere", {-2,1,0}, {0,0,0}, 0.5f, 1.0f, {0.1f, 0.1f, 0.5f});
-	sphere->setSelection(Object::ObjectSelection::SELECTED);
+	Box* box = new Box("Box", {0,1,0}, {0,45,45}, {1,1,1}, 1.0f, {0.5f, 0.1f, 0.1f});
+	//box->setSelection(Object::ObjectSelection::SELECTED);
+	Sphere* sphere = new Sphere("Sphere", {-2,1,0}, {90,0,0}, 0.5f, 1.0f, {0.1f, 0.1f, 0.5f});
+	Cylinder* cylinder = new Cylinder("Cylinder", {2,1,0}, {0,0,0}, {1,1,1}, 1.0f, {0.1f, 0.5f, 0.5f});
+	Capsule* capsule = new Capsule("Capsule", {0,3,0}, {0,0,0}, {1,1,1}, 1.0f, {0.5f, 0.5f, 0.1f});
+	//sphere->setSelection(Object::ObjectSelection::SELECTED);
 
 	// Create mini cleaner robot
 	//_miniCleaners.push_back(new MiniCleaner({1,0.1,0}, {0,90,0}, {1,0,0}));
@@ -37,6 +39,8 @@ Simulator::Simulator()
 	//	_scene->addObject((Object*)miniCleaner);
 	_scene->addObject(box);
 	_scene->addObject(sphere);
+	_scene->addObject(cylinder);
+	_scene->addObject(capsule);
 	// Link objects to each other (physics)
 	_scene->linkObjects();
 
@@ -87,7 +91,7 @@ void Simulator::onDrawFrame(float dt)
 	for(auto& miniCleaner : _miniCleaners)
 		miniCleaner->run(dt);
 
-	_drawer->drawPhysicsShapes();
+	//_drawer->drawPhysicsShapes();
 	//btVector3 old = _scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(-1.0f, old.y(), old.z()));
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(0.0f, 1.0f, 0.0f));

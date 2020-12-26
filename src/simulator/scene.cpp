@@ -15,9 +15,11 @@
 #include "physics/constraints/fixedConstraint.h"
 #include "objects/basics/basics.h"
 #include "objects/others/display/display.h"
+#include "simulator/helpers/log.h"
 
 Scene::Scene():
-	_maxLineCount(9999), _maxRTInstanceCount(1000)
+	_maxLineCount(9999), _maxRTInstanceCount(1000),
+	_envTexture(nullptr)
 {
 	_device = nullptr;
 	_physicsEngine = new PhysicsEngine();
@@ -28,6 +30,7 @@ Scene::Scene():
 	_models.push_back(new Model("box"));
 	_models.push_back(new Model("sphere"));
 	_models.push_back(new Model("cylinder"));
+	_models.push_back(new Model("capsule"));
 }
 
 Scene::~Scene()
@@ -119,6 +122,12 @@ Scene::~Scene()
 			texture = nullptr;
 		}
 	}
+
+	if(_envTexture != nullptr)
+	{
+		delete _envTexture;
+		_envTexture = nullptr;
+	}
 }
 
 void Scene::loadObject(std::string fileName)
@@ -144,6 +153,9 @@ void Scene::createBuffers(CommandPool* commandPool)
 	// Concatenate all the models
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
+	std::vector<Vertex> verticesSkybox;
+	std::vector<uint32_t> indicesSkybox;
+
 	std::vector<Material> materials;
 	std::vector<glm::uvec2> offsets;
 	std::vector<std::pair<glm::vec3, glm::vec3>> aabbs;
@@ -196,6 +208,14 @@ void Scene::createBuffers(CommandPool* commandPool)
 			vertices[i].materialIndex += materialOffset;
 		}
 
+		// Send box to skybox buffer
+		if(model->getFileName()=="box")
+		{
+			verticesSkybox.insert(verticesSkybox.end(), model->getVertices().begin(), model->getVertices().end());
+			indicesSkybox.insert(indicesSkybox.end(), model->getIndices().begin(), model->getIndices().end());
+			_skyboxIndexCount = indicesSkybox.size();
+		}
+
 		// Add optional procedurals
 		//const auto sphere = dynamic_cast<const Sphere*>(model->getProcedural());
 		//if (sphere != nullptr)
@@ -228,7 +248,19 @@ void Scene::createBuffers(CommandPool* commandPool)
 	createSceneBuffer(_proceduralBuffer, 	VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	procedurals);
 	createSceneBuffer(_lineVertexBuffer, 	VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 	_hostLineVertex, _maxLineCount*2);
 	createSceneBuffer(_lineIndexBuffer, 	VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 	_hostLineIndex, _maxLineCount*2);
+	createSceneBuffer(_skyboxVertexBuffer, 	VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 	verticesSkybox);
+	createSceneBuffer(_skyboxIndexBuffer, 	VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 	indicesSkybox);
 	createSceneBuffer(_instanceBuffer, 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 	instances);
+
+	//---------- Lighting ----------//
+	//_envTexture = new Texture(_device, _commandPool, "assets/textures/texture.jpg");
+	_envTexture = new Texture(_device, _commandPool, "assets/textures/WinterForest_Ref.hdr", VK_FORMAT_R32G32B32A32_SFLOAT);
+	_envIrrTexture = new Texture(_device, _commandPool, "assets/textures/WinterForest_Env.hdr", VK_FORMAT_R32G32B32A32_SFLOAT);
+
+	//_envTexture = new Texture(_device, _commandPool, "assets/textures/14-Hamarikyu_Bridge_B_3k.hdr", VK_FORMAT_R32G32B32A32_SFLOAT);
+	//_envIrrTexture = new Texture(_device, _commandPool, "assets/textures/14-Hamarikyu_Bridge_B_Env.hdr", VK_FORMAT_R32G32B32A32_SFLOAT);
+	//_envTexture = new Texture(_device, _commandPool, "assets/textures/14-Hamarikyu_Bridge_B_Env.hdr", VK_FORMAT_R32G32B32A32_SFLOAT);
+
 }
 
 void Scene::updateRayTracingBuffers()
@@ -238,7 +270,7 @@ void Scene::updateRayTracingBuffers()
 	{
 		InstanceInfo instanceInfo;
 		instanceInfo.transform = object->getModelMat();
-		instanceInfo.transformIT = glm::transpose(glm::inverse(object->getModelMat()));
+		instanceInfo.transformIT = glm::transpose(glm::inverse(glm::mat4(object->getModelMat())));
 		// Set object color
 		instanceInfo.diffuse = glm::vec4(-1,-1,-1,1);
 		if(object->getType() == "Box")
@@ -319,7 +351,10 @@ void Scene::copyFromStagingBuffer(Buffer* dstBuffer, const std::vector<T>& conte
 void Scene::addLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
 {
 	if((_hostLineIndex.size()/2+1)>_maxLineCount)
+	{
+		Log::warning("Scene", "Maximum quantity of lines reached! Reduce the number of lines or increase the maximum number.");
 		return;
+	}
 
 	const glm::vec2 texCoord(0,0);
 

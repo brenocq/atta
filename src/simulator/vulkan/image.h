@@ -19,7 +19,7 @@ class Image
 		Image(Device* device, 
 				uint32_t width, uint32_t height
 				, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties
-				, uint32_t mipLevels=1, VkSampleCountFlagBits numSamples=VK_SAMPLE_COUNT_1_BIT);
+				, uint32_t mipLevels=1, VkSampleCountFlagBits numSamples=VK_SAMPLE_COUNT_1_BIT, bool isCubeMap=false);
 		~Image();
 
 		//---------- Getters and Setters ----------//

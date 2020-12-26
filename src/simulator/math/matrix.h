@@ -8,6 +8,7 @@
 #define ATTA_MATRIX_H
 #include "vector.h"
 #include "quaternion.h"
+#include "glm.h"
 
 namespace atta
 {
@@ -17,7 +18,7 @@ namespace atta
     class mat4
     {
     public:
-        float data[12];
+        float data[16];
 
         mat4();
         mat4(float diag);
@@ -32,9 +33,11 @@ namespace atta
         vec3 operator*(const vec3 &vector) const;
         vec3 transform(const vec3 &vector) const;
         mat4 translate(const vec3 &vector) const;
+		mat4 operator*(const float v) const;
 
         mat4 inverse() const;
         void invert();
+        void transpose();
 
         vec3 transformDirection(const vec3 &vector) const;
         vec3 transformInverseDirection(const vec3 &vector) const;
@@ -42,6 +45,13 @@ namespace atta
         vec3 transformInverse(const vec3 &vector) const;
         vec3 getAxisVector(int i) const;
         void setOrientationAndPos(const quat &q, const vec3 &pos);
+        void setPosOriScale(const vec3 &pos, const quat &q, const vec3 &scale);
+
+		// Glm conversion
+		operator glm::mat4() const
+		{
+			return glm::make_mat4(data);
+		}
     };
 	//------------------------------------------------------------//
 	//--------------------------- mat3 ---------------------------//

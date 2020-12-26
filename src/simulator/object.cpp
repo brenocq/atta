@@ -8,10 +8,12 @@
 #include <iostream>
 
 int Object::_qtyIds = 0;
-Object::Object(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mass):
+Object::Object(std::string name, atta::vec3 position, atta::vec3 rotation, atta::vec3 scale, float mass):
 	_name(name), _type("Object"), _position(position), _rotation(rotation), _scale(scale), _mass(mass), _bodyPhysics(nullptr),
 	_selection(ObjectSelection::UNSELECTED)
 {
+	_orientation.fromEuler(atta::radians(rotation));
+
 	_id = _qtyIds++;
 
 	_bodyPhysics = nullptr;
@@ -43,109 +45,112 @@ Object::~Object()
 	}
 }
 
-glm::vec3 Object::getRotation()
+atta::vec3 Object::getRotation()
 {
 	if(_bodyPhysics != nullptr)
 	{
-		//_rotation = glm::vec3(0,0,0);//_bodyPhysics->getRotation();
+		//_rotation = atta::vec3(0,0,0);//_bodyPhysics->getRotation();
 	}
 	return _rotation;
 }
 
-glm::vec3 Object::getWorldPosition()
+atta::vec3 Object::getWorldPosition()
 {
-	glm::mat4 transformation = getModelMat();
-	glm::vec3 scale;
-	glm::quat rotation;
-	glm::vec3 translation;
-	glm::vec3 skew;
-	glm::vec4 perspective;
-	glm::decompose(transformation, scale, rotation, translation, skew, perspective);
+	//atta::mat4 transformation = getModelMat();
+	//atta::vec3 scale;
+	//atta::quat rotation;
+	//atta::vec3 translation;
+	//atta::vec3 skew;
+	//atta::vec4 perspective;
+	//atta::decompose(transformation, scale, rotation, translation, skew, perspective);
 
-	return translation;
+	return atta::vec3();
 }
 
-glm::vec3 Object::getWorldRotation()
+atta::vec3 Object::getWorldRotation()
 {
-	glm::mat4 transformation = getModelMat();
-	glm::vec3 scale;
-	glm::quat rotation;
-	glm::vec3 translation;
-	glm::vec3 skew;
-	glm::vec4 perspective;
-	glm::decompose(transformation, scale, rotation, translation, skew, perspective);
+	//atta::mat4 transformation = getModelMat();
+	//atta::vec3 scale;
+	//atta::quat rotation;
+	//atta::vec3 translation;
+	//atta::vec3 skew;
+	//atta::vec4 perspective;
+	//atta::decompose(transformation, scale, rotation, translation, skew, perspective);
 
-	return glm::degrees(glm::eulerAngles(rotation));
+	//return atta::degrees(atta::eulerAngles(rotation));
+	return atta::vec3();
 }
 
-glm::mat4 Object::getModelMat()
+atta::mat4 Object::getModelMat()
 {
 	// TODO stores current modelMat and calculates if the object has moved
 	// (Go up until find updated (world) modelMat)
-	if(_bodyPhysics != nullptr)
-	{
-		_position = _bodyPhysics->getPosition();
-		//_rotation = glm::vec3(0,0,0);//_bodyPhysics->getRotation();
-	}
+	//if(_bodyPhysics != nullptr)
+	//{
+	//	_position = _bodyPhysics->getPosition();
+	//	_orientation = _bodyPhysics->getOrientation();
+	//	//_rotation = atta::vec3(0,0,0);//_bodyPhysics->getRotation();
+	//}
 
-	glm::mat4 mat = glm::mat4(1);
+	atta::mat4 mat = atta::mat4(1);
 
-	if(_parent != nullptr)
-	{
-		glm::vec3 parentPos = _parent->getPosition();
-		glm::vec3 parentRot = _parent->getRotation();
-		mat = glm::translate(mat, parentPos);
-		mat = glm::rotate(mat, glm::radians(parentRot.z), glm::vec3(0, 0, 1));
-		mat = glm::rotate(mat, glm::radians(parentRot.y), glm::vec3(0, 1, 0));
-		mat = glm::rotate(mat, glm::radians(parentRot.x), glm::vec3(1, 0, 0));
-	
-		std::string constraintType = _parentConstraint->getType();
-		if(constraintType == "FixedConstraint")
-		{
-			FixedConstraint* constraint = (FixedConstraint*)_parentConstraint;
-			glm::vec3 pos = constraint->getPosition();
-			glm::vec3 rot = constraint->getRotation();
+	//if(_parent != nullptr)
+	//{
+	//	atta::vec3 parentPos = _parent->getPosition();
+	//	atta::vec3 parentRot = _parent->getRotation();
+	//	mat = atta::translate(mat, parentPos);
+	//	mat = atta::rotate(mat, atta::radians(parentRot.z), atta::vec3(0, 0, 1));
+	//	mat = atta::rotate(mat, atta::radians(parentRot.y), atta::vec3(0, 1, 0));
+	//	mat = atta::rotate(mat, atta::radians(parentRot.x), atta::vec3(1, 0, 0));
+	//
+	//	std::string constraintType = _parentConstraint->getType();
+	//	if(constraintType == "FixedConstraint")
+	//	{
+	//		FixedConstraint* constraint = (FixedConstraint*)_parentConstraint;
+	//		atta::vec3 pos = constraint->getPosition();
+	//		atta::vec3 rot = constraint->getRotation();
 
-			mat = glm::translate(mat, pos);
-			mat = glm::rotate(mat, glm::radians(rot.z), glm::vec3(0, 0, 1));
-			mat = glm::rotate(mat, glm::radians(rot.y), glm::vec3(0, 1, 0));
-			mat = glm::rotate(mat, glm::radians(rot.x), glm::vec3(1, 0, 0));
-		}
-		else if(constraintType == "HingeConstraint")
-		{
-			HingeConstraint* constraint = (HingeConstraint*)_parentConstraint;
-			glm::vec3 pos = constraint->getPosition();
-			glm::vec3 rot = constraint->getRotation();
+	//		mat = atta::translate(mat, pos);
+	//		mat = atta::rotate(mat, atta::radians(rot.z), atta::vec3(0, 0, 1));
+	//		mat = atta::rotate(mat, atta::radians(rot.y), atta::vec3(0, 1, 0));
+	//		mat = atta::rotate(mat, atta::radians(rot.x), atta::vec3(1, 0, 0));
+	//	}
+	//	else if(constraintType == "HingeConstraint")
+	//	{
+	//		HingeConstraint* constraint = (HingeConstraint*)_parentConstraint;
+	//		atta::vec3 pos = constraint->getPosition();
+	//		atta::vec3 rot = constraint->getRotation();
 
-			mat = glm::translate(mat, pos);
-			mat = glm::rotate(mat, glm::radians(rot.z), glm::vec3(0, 0, 1));
-			mat = glm::rotate(mat, glm::radians(rot.y), glm::vec3(0, 1, 0));
-			mat = glm::rotate(mat, glm::radians(rot.x), glm::vec3(1, 0, 0));
-		}
-	}
+	//		mat = atta::translate(mat, pos);
+	//		mat = atta::rotate(mat, atta::radians(rot.z), atta::vec3(0, 0, 1));
+	//		mat = atta::rotate(mat, atta::radians(rot.y), atta::vec3(0, 1, 0));
+	//		mat = atta::rotate(mat, atta::radians(rot.x), atta::vec3(1, 0, 0));
+	//	}
+	//}
 
-	mat = glm::translate(mat, _position);
-	mat = glm::rotate(mat, glm::radians(_rotation.z), glm::vec3(0, 0, 1));
-	mat = glm::rotate(mat, glm::radians(_rotation.y), glm::vec3(0, 1, 0));
-	mat = glm::rotate(mat, glm::radians(_rotation.x), glm::vec3(1, 0, 0));
-	mat = glm::scale(mat, _scale);
+	mat.setPosOriScale(_position, _orientation, _scale);
+	mat.transpose();
+	//mat = atta::rotate(mat, atta::radians(_rotation.x), atta::vec3(1, 0, 0));
+	//mat = atta::rotate(mat, atta::radians(_rotation.y), atta::vec3(0, 1, 0));
+	//mat = atta::rotate(mat, atta::radians(_rotation.z), atta::vec3(0, 0, 1));
+	//mat = atta::scale(mat, _scale);
 	
 	return mat;
 }
 
-void Object::setPosition(glm::vec3 position)
+void Object::setPosition(atta::vec3 position)
 {
 	_position = position;
-	if(_bodyPhysics!=nullptr)
-		_bodyPhysics->setPosition(atta::vec3(position));
+	//if(_bodyPhysics!=nullptr)
+	//	_bodyPhysics->setPosition(atta::vec3(position));
 }
 
-void Object::setRotation(glm::vec3 rotation)
+void Object::setRotation(atta::vec3 rotation)
 {
 	for(auto child : _children)
 	{
-		glm::vec3 rot = rotation - _rotation;
-		glm::vec3 childRot = child->getRotation();
+		atta::vec3 rot = rotation - _rotation;
+		atta::vec3 childRot = child->getRotation();
 		childRot += rot;
 		child->setRotation(childRot);
 	}

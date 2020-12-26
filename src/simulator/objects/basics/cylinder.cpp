@@ -11,7 +11,8 @@ Cylinder::Cylinder(std::string name, glm::vec3 position, glm::vec3 rotation, glm
 {
 	_type = "Cylinder";
 	_model = new Model("cylinder");
-	_bodyPhysics = new Body(_position, _rotation, mass);
+	_bodyPhysics = new Body(&_position, &_orientation, mass);
+	_bodyPhysics->addShape(new atta::phy::CylinderShape(atta::vec3(), atta::quat(), atta::vec3(1,1,1)));
 }
 
 Cylinder::~Cylinder()

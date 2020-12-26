@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "descriptorSetLayout.h"
+#include "simulator/helpers/log.h"
 
 DescriptorSetLayout::DescriptorSetLayout(Device* device)
 {
@@ -33,7 +34,7 @@ DescriptorSetLayout::DescriptorSetLayout(Device* device)
 
 	if(vkCreateDescriptorSetLayout(_device->handle(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
 	{
-		std::cout << BOLDRED << "[DescriptorSetLayout]" << RESET << RED << " Failed to create descriptor set layout!" << RESET << std::endl;
+		Log::error("DescriptorSetLayout", "Failed to create descriptor set layout!");
 		exit(1);
 	}
 }

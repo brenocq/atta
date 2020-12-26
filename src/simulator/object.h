@@ -13,7 +13,8 @@
 #include "physics/constraints/constraints.h"
 #include "vulkan/model.h"
 
-using namespace atta::phy;
+using namespace atta;
+using namespace phy;
 
 class Object
 {
@@ -23,7 +24,7 @@ class Object
 			SELECTED
 		};
 
-		Object(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 scale = {1,1,1}, float mass = 1.0f);
+		Object(std::string name, atta::vec3 position = {0,0,0}, atta::vec3 rotation = {0,0,0}, atta::vec3 scale = {1,1,1}, float mass = 1.0f);
 		~Object();
 
 		void addChild(Object* child, atta::phy::Constraint* constraint);
@@ -31,11 +32,11 @@ class Object
 
 		//---------- Getters ----------//
 		atta::phy::Body* getBodyPhysics() const { return _bodyPhysics; }
-		glm::vec3 getPosition() const { return _position; }
-		glm::vec3 getRotation();
-		glm::vec3 getWorldPosition();
-		glm::vec3 getWorldRotation();
-		glm::mat4 getModelMat();
+		atta::vec3 getPosition() const { return _position; }
+		atta::vec3 getRotation();
+		atta::vec3 getWorldPosition();
+		atta::vec3 getWorldRotation();
+		atta::mat4 getModelMat();
 		std::string getType() const { return _type; }
 		std::string getName() const { return _name; }
 		int getId() const { return _id; }
@@ -47,8 +48,8 @@ class Object
 		ObjectSelection getSelection() const { return _selection; }
 
 		//---------- Setters ----------//
-		void setPosition(glm::vec3 position);
-		void setRotation(glm::vec3 rotation);
+		void setPosition(atta::vec3 position);
+		void setRotation(atta::vec3 rotation);
 		void setStatic(bool stat);
 		void setSelection(ObjectSelection sel);
 
@@ -61,9 +62,10 @@ class Object
 		int _id;
 		static int _qtyIds;
 
-		glm::vec3 _position;
-		glm::vec3 _rotation;
-		glm::vec3 _scale;
+		atta::vec3 _position;
+		atta::vec3 _rotation;
+		atta::quat _orientation;
+		atta::vec3 _scale;
 		float _mass;
 
 		atta::phy::Body* _bodyPhysics;

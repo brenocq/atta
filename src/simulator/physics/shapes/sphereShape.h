@@ -14,9 +14,10 @@ namespace atta::phy
 	class SphereShape : public Shape
 	{
 		public:
-			SphereShape(vec3 position = vec3(), float radius = 1.0f);
+			SphereShape(vec3 position = vec3(), quat orientation = quat(), float radius = 1.0f);
 			~SphereShape();
 
+			float getRadius() const { return _radius; }
 		private:
 			float _radius;
 	};

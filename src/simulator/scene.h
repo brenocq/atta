@@ -49,6 +49,8 @@ class Scene
 		Buffer* getAabbBuffer() const { return _aabbBuffer; }
 		Buffer* getProceduralBuffer() const { return _proceduralBuffer; }
 		bool hasProcedurals() const { return static_cast<bool>(_proceduralBuffer); }
+		Texture* getEnvTexture() const { return _envTexture; }
+		Texture* getEnvIrrTexture() const { return _envIrrTexture; }
 
 		//----- Line debugger -----//
 		void addLine(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
@@ -60,6 +62,9 @@ class Scene
 		Buffer* getLineVertexBuffer() const { return _lineVertexBuffer; }
 		Buffer* getLineIndexBuffer() const { return _lineIndexBuffer; }
 		uint32_t getLineIndexCount() const {return _lineIndexCount; }
+		Buffer* getSkyboxVertexBuffer() const { return _skyboxVertexBuffer; }
+		Buffer* getSkyboxIndexBuffer() const { return _skyboxIndexBuffer; }
+		uint32_t getSkyboxIndexCount() const {return _skyboxIndexCount; }
 
 		//--- Ray tracing ---//
 		void updateRayTracingBuffers();
@@ -101,6 +106,14 @@ class Scene
 		Buffer* _lineIndexBuffer;
 		std::vector<Vertex> _hostLineVertex;
 		std::vector<uint32_t> _hostLineIndex;
+
+		Buffer* _skyboxVertexBuffer;
+		Buffer* _skyboxIndexBuffer;
+		uint32_t _skyboxIndexCount;
+
+		//---------- Lighting ----------//
+		Texture* _envTexture;// Environment image reference (high resolution)
+		Texture* _envIrrTexture;// Environment irradiance
 
 		//---------- Physics ----------//
 		PhysicsEngine* _physicsEngine;

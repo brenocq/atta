@@ -45,6 +45,18 @@ Instance::Instance():
 
 		// Debug debug utils messenger
 		populateDebugMessengerCreateInfo(debugCreateInfo);
+
+		// Best practices
+		//VkValidationFeatureEnableEXT enables[] = {VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT};
+		//VkValidationFeaturesEXT features = {};
+		//features.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+		//features.enabledValidationFeatureCount = 1;
+		//features.pEnabledValidationFeatures = enables;
+
+		//// Next
+		//features.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
+		//createInfo.pNext = &features;
+
 		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
 	} else {
 		createInfo.enabledLayerCount = 0;
@@ -116,8 +128,10 @@ std::vector<const char*> Instance::getRequiredExtensions()
 	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
 	if(ENABLE_VALIDATION_LAYERS) {
+		//extensions.push_back(VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME);
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
+
 	for(auto extension : instanceExtensions)
 	{
 		extensions.push_back(extension);

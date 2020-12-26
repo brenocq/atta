@@ -136,9 +136,22 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vulkanDebugCallback(
 
 void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) 
 {
+	// Debug messenger
 	createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 	createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	createInfo.pfnUserCallback = vulkanDebugCallback;
+
+	// Enable best practices
+	//VkValidationFeatureEnableEXT enables[] = {VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT};
+	//VkValidationFeaturesEXT features = {};
+	//features.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+	//features.enabledValidationFeatureCount = 1;
+	//features.pEnabledValidationFeatures = enables;
+
+	////features.enabledValidationFeatureCount = 0;
+	////features.pEnabledValidationFeatures = nullptr;
+
+	//createInfo.pNext = &features;
 }

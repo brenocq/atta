@@ -11,7 +11,7 @@ Plane::Plane(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec2
 {
 	_type = "Plane";
 	_model = new Model("plane");
-	_bodyPhysics = new Body(_position, _rotation, mass);
+	_bodyPhysics = new Body(&_position, &_orientation, mass);
 }
 
 Plane::~Plane()

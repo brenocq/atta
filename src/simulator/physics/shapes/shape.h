@@ -25,8 +25,8 @@ namespace atta::phy
 	{
 		public:
 			Shape(vec3 position = vec3(),
-							quat orientation = quat(),
-							vec3 scale = vec3());
+					quat orientation = quat(),
+					vec3 scale = vec3());
 			~Shape();
 
 			//---------- Getters ----------//

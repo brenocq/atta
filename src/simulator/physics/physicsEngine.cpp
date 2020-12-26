@@ -25,13 +25,13 @@ namespace atta::phy
 
 	void PhysicsEngine::stepPhysics(float dt)
 	{
-		dt/=1.f;
+		dt/=10.f;
 
 		_forceGenerator->updateForces(dt);
-		for(auto object : _bodies)
+		for(auto body : _bodies)
 		{
-			//object->addForce({0,-9.8,0});
-			object->integrate(dt);
+			body->addForce({0,-9.8,0});
+			body->integrate(dt);
 		}
 	}
 

@@ -8,8 +8,8 @@
 
 namespace atta::phy
 {
-	Body::Body(vec3 position, vec3 rotation, float mass):
-		_position(position)
+	Body::Body(vec3* position, quat* orientation, float mass):
+		_position(position), _orientation(orientation)
 	{
 		if(mass > 0)
 			_inverseMass = 1/mass;
@@ -20,8 +20,6 @@ namespace atta::phy
 		_velocity = vec3(0,0,0);
 		_acceleration = vec3(0,0,0);
 
-
-		_orientation = quat();
 		// TODO initialize inertia tensor from shape
 
 		_forceAccum = vec3(0,0,0);
@@ -54,7 +52,7 @@ namespace atta::phy
 	void Body::addForceAtPoint(vec3 force, vec3 point)
 	{
 		// Convert point to relative to center of mass
-		vec3 pt = point - _position;
+		vec3 pt = point - *_position;
 
 		_forceAccum += force;
 		_torqueAccum += pt.cross(force);
@@ -83,7 +81,7 @@ namespace atta::phy
 		_rotation *= powf(_angularDamping, dt);
 
 		// Update linear position
-		_position += _velocity*dt;
+		*_position += _velocity*dt;
 
 		// TODO Update angular position
 		//_orientation +=	_rotation*dt; 
@@ -112,7 +110,7 @@ namespace atta::phy
 
 	void Body::calculateDerivedData()
 	{
-		_orientation.normalize();
+		_orientation->normalize();
 
 		// Calculate transform matrix
 		calculateTransformMatrix();
@@ -123,29 +121,29 @@ namespace atta::phy
 
 	void Body::calculateTransformMatrix()
 	{
-		_transformMatrix.data[0] = 1-2*_orientation.j*_orientation.j-
-			2*_orientation.k*_orientation.k;
-		_transformMatrix.data[1] = 2*_orientation.i*_orientation.j -
-			2*_orientation.r*_orientation.k;
-		_transformMatrix.data[2] = 2*_orientation.i*_orientation.k +
-			2*_orientation.r*_orientation.j;
-		_transformMatrix.data[3] = _position.x;
+		_transformMatrix.data[0] = 1-2*(*_orientation).j*(*_orientation).j-
+			2*(*_orientation).k*(*_orientation).k;
+		_transformMatrix.data[1] = 2*(*_orientation).i*(*_orientation).j -
+			2*(*_orientation).r*(*_orientation).k;
+		_transformMatrix.data[2] = 2*(*_orientation).i*(*_orientation).k +
+			2*(*_orientation).r*(*_orientation).j;
+		_transformMatrix.data[3] = _position->x;
 
-		_transformMatrix.data[4] = 2*_orientation.i*_orientation.j +
-			2*_orientation.r*_orientation.k;
-		_transformMatrix.data[5] = 1-2*_orientation.i*_orientation.i-
-			2*_orientation.k*_orientation.k;
-		_transformMatrix.data[6] = 2*_orientation.j*_orientation.k -
-			2*_orientation.r*_orientation.i;
-		_transformMatrix.data[7] = _position.y;
+		_transformMatrix.data[4] = 2*(*_orientation).i*(*_orientation).j +
+			2*(*_orientation).r*(*_orientation).k;
+		_transformMatrix.data[5] = 1-2*(*_orientation).i*(*_orientation).i-
+			2*(*_orientation).k*(*_orientation).k;
+		_transformMatrix.data[6] = 2*(*_orientation).j*(*_orientation).k -
+			2*(*_orientation).r*(*_orientation).i;
+		_transformMatrix.data[7] = _position->y;
 
-		_transformMatrix.data[8] = 2*_orientation.i*_orientation.k -
-			2*_orientation.r*_orientation.j;
-		_transformMatrix.data[9] = 2*_orientation.j*_orientation.k +
-			2*_orientation.r*_orientation.i;
-		_transformMatrix.data[10] = 1-2*_orientation.i*_orientation.i-
-			2*_orientation.j*_orientation.j;
-		_transformMatrix.data[11] = _position.z;
+		_transformMatrix.data[8] = 2*(*_orientation).i*(*_orientation).k -
+			2*(*_orientation).r*(*_orientation).j;
+		_transformMatrix.data[9] = 2*(*_orientation).j*(*_orientation).k +
+			2*(*_orientation).r*(*_orientation).i;
+		_transformMatrix.data[10] = 1-2*(*_orientation).i*(*_orientation).i-
+			2*(*_orientation).j*(*_orientation).j;
+		_transformMatrix.data[11] = _position->z;
 	}
 
 	void Body::transformInertiaTensor()

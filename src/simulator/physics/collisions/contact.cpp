@@ -16,7 +16,7 @@ namespace atta::phy
 
 	float Contact::calculateSeparatingVelocity() const
 	{
-		atta::vec3 relativeVel = objects.first->getVelocity();
+		vec3 relativeVel = objects.first->getVelocity();
 		if(objects.second!=nullptr)
 			relativeVel -= objects.second->getVelocity();
 		return relativeVel.dot(contactNormal);
@@ -34,7 +34,7 @@ namespace atta::phy
 		float newSepVel	= -sepVel*restitution;
 		
 		// Check velocity buildup due to acceleration only
-		atta::vec3 accCausedVelocity = objects.first->getAcceleration();
+		vec3 accCausedVelocity = objects.first->getAcceleration();
 		if(objects.second !=nullptr) accCausedVelocity -= objects.second->getAcceleration();
 		float accCausedSepVel = accCausedVelocity.dot(contactNormal)*dt;
 		if(accCausedSepVel<0)
@@ -60,7 +60,7 @@ namespace atta::phy
 		float impulse = deltaVel/totalInverseMass; 
 
 		// Total impulse per unit of inverse mass
-		atta::vec3 impulsePerIMass = contactNormal*impulse;
+		vec3 impulsePerIMass = contactNormal*impulse;
 
 
 		// Apply impulses: In direction of the contact normal and proportional to the inverse mass
@@ -88,7 +88,7 @@ namespace atta::phy
 			return;
 
 		// Amount of penetration resolution per unit of inverse mass
-		atta::vec3 movePerIMass = contactNormal*(penetration/totalInverseMass);
+		vec3 movePerIMass = contactNormal*(penetration/totalInverseMass);
 
 		// Apply penetration resolution
 		objects.first->setPosition(objects.first->getPosition()+

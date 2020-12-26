@@ -33,11 +33,11 @@ void GuiRender::render(VkCommandBuffer commandBuffer, guib::Widget* root, std::v
 	_clickableAreas.clear();
 	_draggableAreas.clear();
 
-	if(root!=nullptr)
-		renderWidget(commandBuffer, currOffset, currSize, root);
+	//if(root!=nullptr)
+	//	renderWidget(commandBuffer, currOffset, currSize, root);
 
-	for(auto& window : windows)
-		renderWidget(commandBuffer, currOffset, currSize, window);
+	//for(auto& window : windows)
+	//	renderWidget(commandBuffer, currOffset, currSize, window);
 }
 
 void GuiRender::renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOffset, guib::Size currSize, guib::Widget* widget)
