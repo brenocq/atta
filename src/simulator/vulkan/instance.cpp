@@ -89,7 +89,7 @@ void Instance::printExtensionSupport()
 
 	for(const auto& extension : extensions) 
 	{
-		Log::infoItem("Instance", extension.extensionName);
+		Log::info("Instance", extension.extensionName);
 	}
 
 	std::cout << RESET;
@@ -113,7 +113,7 @@ void Instance::printLayersProperties()
 
 	for(const auto& property : properties) 
 	{
-		Log::infoItem("Instance", property.layerName+std::string(" (")+property.description+std::string(")"));
+		Log::info("Instance", property.layerName+std::string(" (")+property.description+std::string(")"));
 	}
 
 	std::cout << RESET;

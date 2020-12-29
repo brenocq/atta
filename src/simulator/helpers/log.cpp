@@ -7,63 +7,20 @@
 #include "log.h"
 #include "log.h"
 #include <stdio.h>
+#include <iostream>
 #include "defines.h"
 
-Log::Log()
+void Log::replace(std::string& str, const std::string& oldStr, const std::string& newStr)
 {
-
+	std::string::size_type pos = 0u;
+	while((pos = str.find(oldStr, pos)) != std::string::npos)
+	{
+		str.replace(pos, oldStr.length(), newStr);
+		pos += newStr.length();
+	}
 }
 
-Log::~Log()
+std::string Log::toString(const char* str)
 {
-
-}
-
-void Log::verbose(std::string tag, std::string text, bool showTag)
-{
-	logging(tag, BOLDCYAN, CYAN, text, showTag);
-}
-
-void Log::debug(std::string tag, std::string text, bool showTag)
-{
-	logging(tag, BOLDGREEN, RESET, text, showTag);
-}
-
-void Log::success(std::string tag, std::string text, bool showTag)
-{
-	logging(tag, BOLDGREEN, GREEN, text, showTag);
-}
-
-void Log::info(std::string tag, std::string text, bool showTag)
-{
-	logging(tag, BOLDWHITE, RESET, text, showTag);
-}
-
-void Log::infoItem(std::string tag, std::string text)
-{
-	info(tag, std::string("- ")+text, false);
-}
-
-void Log::warning(std::string tag, std::string text, bool showTag)
-{
-	logging(tag, BOLDYELLOW, YELLOW, text, showTag);
-}
-
-void Log::error(std::string tag, std::string text, bool showTag)
-{
-	logging(tag, BOLDRED, RED, text, showTag);
-}
-
-void Log::logging(std::string tag, const char* tagColor, const char* textColor, std::string text, bool showTag)
-{
-	std::string tag_ = tag;
-	if(!showTag)
-		for(int i=0; i<(int)tag_.size();i++)
-			tag_[i] = ' ';
-
-	// Print tag
-	if(showTag)
-    	printf("%s[%s]%s %s\n%s", tagColor, tag_.c_str(), textColor, text.c_str(), RESET);
-	else
-    	printf("%s %s %s %s\n%s", tagColor, tag_.c_str(), textColor, text.c_str(), RESET);
+	return std::string(str);
 }
