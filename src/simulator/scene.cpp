@@ -29,8 +29,8 @@ Scene::Scene():
 	_models.push_back(new Model("plane"));
 	_models.push_back(new Model("box"));
 	_models.push_back(new Model("atta::sphere"));
-	_models.push_back(new Model("cylinder"));
-	_models.push_back(new Model("capsule"));
+	_models.push_back(new Model("atta::cylinder"));
+	_models.push_back(new Model("atta::capsule"));
 }
 
 Scene::~Scene()

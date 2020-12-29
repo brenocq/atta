@@ -1,5 +1,5 @@
 //----------------------------------------
-// Robot Simulator
+// Atta Log
 // log.cpp
 // Date: 2020-08-20
 // By Breno Cunha Queiroz
