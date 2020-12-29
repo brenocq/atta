@@ -41,6 +41,14 @@ Model::Model(std::string fileName):
 			{
 				createSphereModel();
 			}
+			else if(fileName.find("cylinder")!=std::string::npos)
+			{
+				createCylinderModel();
+			}
+			else if(fileName.find("capsule")!=std::string::npos)
+			{
+				createCapsuleModel();
+			}
 		}
 		else
 		{
@@ -255,6 +263,291 @@ void Model::createSphereModel()
 			_indices.push_back(j*qtyLong+i+1);
 		}
 	}
+
+	//---------- Create materials ----------//
+	Material m = Material::diffuseLight(glm::vec3(1.0f, 1.0f, 1.0f), -1);
+	_materials.emplace_back(m);
+
+	Log::success("Model", "Sphere mesh created");
+}
+
+void Model::createCylinderModel()
+{
+	int qtySections = 32;
+	float radius = 0.5;
+	float height = 1;
+	//---------- Create vertices ----------//
+	// Vertices with normal tangent to circle
+	for(int t=0; t<qtySections; t++)
+	{
+		float theta = t*(2*M_PI/qtySections);
+
+		Vertex vertex;
+		vertex.normal = glm::normalize(glm::vec3(cos(theta), 0, sin(theta)));
+		vertex.materialIndex = 0;
+
+		// Bottom
+		vertex.pos = {radius*cos(theta), -height/2, radius*sin(theta)};
+		vertex.texCoord = {theta/(2*M_PI),0};
+		_vertices.push_back(vertex);
+
+		// Top
+		vertex.pos = {radius*cos(theta), height/2, radius*sin(theta)};
+		vertex.texCoord = {theta/(2*M_PI),1};
+		_vertices.push_back(vertex);
+	}
+	// Top
+	for(int t=0; t<qtySections; t++)
+	{
+		float theta = t*(2*M_PI/qtySections);
+
+		Vertex vertex;
+		vertex.normal = glm::vec3(0, 1, 0);
+		vertex.materialIndex = 0;
+
+		vertex.pos = {radius*cos(theta), height/2, radius*sin(theta)};
+		vertex.texCoord = {theta/(2*M_PI),1};
+		_vertices.push_back(vertex);
+	}
+	// Bottom
+	for(int t=0; t<qtySections; t++)
+	{
+		float theta = t*(2*M_PI/qtySections);
+
+		Vertex vertex;
+		vertex.normal = glm::vec3(0, -1, 0);
+		vertex.materialIndex = 0;
+
+		vertex.pos = {radius*cos(theta), -height/2, radius*sin(theta)};
+		vertex.texCoord = {theta/(2*M_PI),1};
+		_vertices.push_back(vertex);
+	}
+	// Top center
+	{
+		Vertex vertex;
+		vertex.normal = glm::vec3(0, 1, 0);
+		vertex.materialIndex = 0;
+		vertex.pos = {0, height/2, 0};
+		vertex.texCoord = {0,1};
+		_vertices.push_back(vertex);
+	}
+
+	// Bottom center
+	{
+		Vertex vertex;
+		vertex.normal = glm::vec3(0, -1, 0);
+		vertex.materialIndex = 0;
+		vertex.pos = {0, -height/2, 0};
+		vertex.texCoord = {0,1};
+		_vertices.push_back(vertex);
+	}
+
+	//---------- Create indices ----------//
+	// Side face indices
+	for(int i=0; i<qtySections*2-2; i++)
+	{
+		_indices.push_back(i);
+		_indices.push_back(i+1);
+		_indices.push_back(i+2);
+	}
+	_indices.push_back(qtySections*2-1);
+	_indices.push_back(qtySections*2-2);
+	_indices.push_back(2);
+
+	_indices.push_back(0);
+	_indices.push_back(1);
+	_indices.push_back(qtySections*2-1);
+	// Top face indices
+	for(int i=qtySections*2; i<qtySections*3-1; i++)
+	{
+		_indices.push_back(i);
+		_indices.push_back(i+1);
+		_indices.push_back(qtySections*4);
+	}
+	_indices.push_back(qtySections*2);
+	_indices.push_back(qtySections*3-1);
+	_indices.push_back(qtySections*4);
+	// Bottom face indices
+	for(int i=qtySections*3; i<qtySections*4-1; i++)
+	{
+		_indices.push_back(i);
+		_indices.push_back(i+1);
+		_indices.push_back(qtySections*4+1);
+	}
+	_indices.push_back(qtySections*3);
+	_indices.push_back(qtySections*4-1);
+	_indices.push_back(qtySections*4+1);
+
+	//---------- Create materials ----------//
+	Material m = Material::diffuseLight(glm::vec3(1.0f, 1.0f, 1.0f), -1);
+	_materials.emplace_back(m);
+
+	Log::success("Model", "Cylinder mesh created");
+}
+
+void Model::createCapsuleModel()
+{
+	int qtyLong = 32;
+	int qtyLat = 16;
+	float radius = 0.5;
+	float height = 2.0;
+	//---------- Create vertices ----------//
+	// Top sphere
+	for(int p=1; p<qtyLat/2+1; p++)
+	{
+		for(int t=0; t<qtyLong; t++)
+		{
+			float phi = M_PI-p*(M_PI/qtyLat);
+			float theta = t*(2*M_PI/qtyLong);
+
+			Vertex vertex;
+			vertex.pos = {radius*cos(theta)*sin(phi), -radius*cos(phi) + height/2-radius, radius*sin(theta)*sin(phi)};
+			vertex.normal = glm::normalize(glm::vec3(radius*cos(theta)*sin(phi), -radius*cos(phi), radius*sin(theta)*sin(phi)));
+			vertex.materialIndex = 0;
+			vertex.texCoord = {theta/2*M_PI,(phi+M_PI/2)/M_PI};
+			_vertices.push_back(vertex);
+		}
+	}
+	// Bottom sphere
+	for(int p=1; p<qtyLat/2+1; p++)
+	{
+		for(int t=0; t<qtyLong; t++)
+		{
+			float phi = M_PI-p*(M_PI/qtyLat);
+			float theta = t*(2*M_PI/qtyLong);
+
+			Vertex vertex;
+			vertex.pos = {radius*cos(theta)*sin(phi), radius*cos(phi) - (height/2-radius), radius*sin(theta)*sin(phi)};
+			vertex.normal = glm::normalize(glm::vec3(radius*cos(theta)*sin(phi), radius*cos(phi), radius*sin(theta)*sin(phi)));
+			vertex.materialIndex = 0;
+			vertex.texCoord = {theta/2*M_PI,(phi+M_PI/2)/M_PI};
+			_vertices.push_back(vertex);
+		}
+	}
+
+	int indexCircle = _vertices.size();
+	// Circle
+	for(int t=0; t<qtyLong; t++)
+	{
+		float theta = t*(2*M_PI/qtyLong);
+
+		Vertex vertex;
+		vertex.normal = glm::normalize(glm::vec3(cos(theta), 0, sin(theta)));
+		vertex.materialIndex = 0;
+
+		// Bottom
+		vertex.pos = {radius*cos(theta), -(height/2-radius), radius*sin(theta)};
+		vertex.texCoord = {theta/(2*M_PI),0};
+		_vertices.push_back(vertex);
+
+		// Top
+		vertex.pos = {radius*cos(theta), (height/2-radius), radius*sin(theta)};
+		vertex.texCoord = {theta/(2*M_PI),1};
+		_vertices.push_back(vertex);
+	}
+	// Extreme vertices
+	{
+		Vertex vertex;
+		vertex.materialIndex = 0;
+		vertex.texCoord = {0,0};
+
+		// Top
+		vertex.pos = {0, height/2, 0};
+		vertex.normal = glm::vec3(0, 1, 0);
+		_vertices.push_back(vertex);
+
+		// Bottom
+		vertex.pos = {0, -height/2, 0};
+		vertex.normal = glm::vec3(0, -1, 0);
+		_vertices.push_back(vertex);
+	}
+
+	//---------- Create indices ----------//
+	// Top sphere
+	for(int j=0; j<qtyLat/2-1; j++)
+	{
+		for(int i=0; i<qtyLong; i++)
+		{
+			_indices.push_back(j*qtyLong+i);
+			_indices.push_back(j*qtyLong+i+1);
+			_indices.push_back((j+1)*qtyLong+i);
+
+			if(i+1<qtyLong)
+			{
+				_indices.push_back((j+1)*qtyLong+i);
+				_indices.push_back((j+1)*qtyLong+i+1);
+				_indices.push_back(j*qtyLong+i+1);
+			}
+			else
+			{
+				_indices.push_back(j*qtyLong);
+				_indices.push_back((j+1)*qtyLong-1);
+				_indices.push_back((j+1)*qtyLong);
+			}
+		}
+	}
+
+	// Bottom sphere
+	for(int j=qtyLat/2; j<qtyLat-1; j++)
+	{
+		for(int i=0; i<qtyLong; i++)
+		{
+			_indices.push_back(j*qtyLong+i);
+			_indices.push_back(j*qtyLong+i+1);
+			_indices.push_back((j+1)*qtyLong+i);
+
+			if(i+1<qtyLong)
+			{
+				_indices.push_back((j+1)*qtyLong+i);
+				_indices.push_back((j+1)*qtyLong+i+1);
+				_indices.push_back(j*qtyLong+i+1);
+			}
+			else
+			{
+				_indices.push_back(j*qtyLong);
+				_indices.push_back((j+1)*qtyLong-1);
+				_indices.push_back((j+1)*qtyLong);
+			}
+		}
+	}
+	
+	// Side face indices
+	for(int i=indexCircle; i<indexCircle+qtyLong*2-2; i++)
+	{
+		_indices.push_back(i);
+		_indices.push_back(i+1);
+		_indices.push_back(i+2);
+	}
+	_indices.push_back(indexCircle+qtyLong*2-1);
+	_indices.push_back(indexCircle+qtyLong*2-2);
+	_indices.push_back(indexCircle+2);
+
+	_indices.push_back(indexCircle+0);
+	_indices.push_back(indexCircle+1);
+	_indices.push_back(indexCircle+qtyLong*2-1);
+
+	// Extreme triangles top
+	for(int i=0;i<qtyLong-1; i++)
+	{
+		_indices.push_back(i);
+		_indices.push_back(i+1);
+		_indices.push_back(_vertices.size()-2);
+	}
+	_indices.push_back(0);
+	_indices.push_back(qtyLong-1);
+	_indices.push_back(_vertices.size()-2);
+
+	// Extreme triangles bottom
+	int startExB = qtyLat/2*qtyLong;
+	for(int i=startExB;i<startExB+qtyLong-1; i++)
+	{
+		_indices.push_back(i);
+		_indices.push_back(i+1);
+		_indices.push_back(_vertices.size()-1);
+	}
+	_indices.push_back(startExB);
+	_indices.push_back(startExB+qtyLong-1);
+	_indices.push_back(_vertices.size()-1);
 
 	//---------- Create materials ----------//
 	Material m = Material::diffuseLight(glm::vec3(1.0f, 1.0f, 1.0f), -1);

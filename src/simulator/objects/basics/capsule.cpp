@@ -10,7 +10,7 @@ Capsule::Capsule(std::string name, glm::vec3 position, glm::vec3 rotation, glm::
 	Object(name, position, rotation, scale, mass), _color(color)
 {
 	_type = "Capsule";
-	_model = new Model("capsule");
+	_model = new Model("atta::capsule");
 	_bodyPhysics = new Body(&_position, &_orientation, mass);
 	_bodyPhysics->addShape(new atta::phy::CapsuleShape(atta::vec3(), atta::quat(), atta::vec3(1,1,1)));
 }

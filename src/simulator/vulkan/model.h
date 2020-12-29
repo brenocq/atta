@@ -47,6 +47,8 @@ class Model
 		Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, Procedural* procedural);
 		void loadModel();
 		void createSphereModel();
+		void createCylinderModel();
+		void createCapsuleModel();
 
 		// Model properties
 		std::string _fileName;
