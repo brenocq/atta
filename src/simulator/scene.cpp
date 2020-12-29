@@ -28,7 +28,7 @@ Scene::Scene():
 	// Load basic models to the memory
 	_models.push_back(new Model("plane"));
 	_models.push_back(new Model("box"));
-	_models.push_back(new Model("sphere"));
+	_models.push_back(new Model("atta::sphere"));
 	_models.push_back(new Model("cylinder"));
 	_models.push_back(new Model("capsule"));
 }

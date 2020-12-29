@@ -11,7 +11,7 @@ Sphere::Sphere(std::string name, glm::vec3 position, glm::vec3 rotation, float r
 	Object(name, position, rotation, {radius*2, radius*2, radius*2}, mass), _color(color)
 {
 	_type = "Sphere";
-	_model = new Model("sphere");
+	_model = new Model("atta::sphere");
 
 	_orientation.fromEuler(atta::radians(atta::vec3(_rotation)));
 

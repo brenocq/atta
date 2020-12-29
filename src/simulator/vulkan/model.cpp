@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "model.h"
+#include "simulator/helpers/log.h"
 #include <chrono>
 #include <glm/gtc/matrix_inverse.hpp>
 
@@ -29,13 +30,27 @@ Model::Model(std::string fileName):
 		}
 	}
 
-	// Load model file if it is the first time it is used
+	//---------- Load model if it is the first time it is used ----------//
 	if(_modelIndex == -1)
 	{
-		std::cout << std::endl << BOLDGREEN << "[Model]" << RESET << GREEN << " Loading model " << WHITE << fileName << RESET << std::endl;
-		_modelIndex = Model::qtyModels++;
-		loadModel();
+		if(fileName.find("atta::")!=std::string::npos)
+		{
+			//----- Atta custom model -----//
+			// Check sphere
+			if(fileName.find("sphere")!=std::string::npos)
+			{
+				createSphereModel();
+			}
+		}
+		else
+		{
+			//----- Load model from file -----//
+				std::cout << std::endl << BOLDGREEN << "[Model]" << RESET << GREEN << " Loading model " << WHITE << fileName << RESET << std::endl;
+				loadModel();
+		}
 
+		// Save model data
+		_modelIndex = Model::qtyModels++;
 		Model::currentModels.push_back(_fileName);
 
 		uint32_t lastV = Model::vertexOffsets.size() > 0 ? Model::vertexOffsets.back() : 0;
@@ -46,6 +61,7 @@ Model::Model(std::string fileName):
 		Model::verticesSize.push_back(_vertices.size());
 		Model::indicesSize.push_back(_indices.size());
 	}
+
 }
 
 Model::Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, Procedural* procedural):
@@ -203,3 +219,46 @@ void Model::transform(const glm::mat4& transform)
 	}
 }
 
+void Model::createSphereModel()
+{
+	int qtyLong = 32;
+	int qtyLat = 16;
+	float radius = 0.5;
+	//---------- Create vertices ----------//
+	for(int p=0; p<qtyLat+1; p++)
+	{
+		for(int t=0; t<qtyLong; t++)
+		{
+			float phi = -M_PI+p*(M_PI/qtyLat);
+			float theta = t*(2*M_PI/qtyLong);
+
+			Vertex vertex;
+			vertex.pos = {radius*cos(theta)*sin(phi), radius*cos(phi), radius*sin(theta)*sin(phi)};
+			vertex.normal = glm::normalize(vertex.pos);
+			vertex.materialIndex = 0;
+			vertex.texCoord = {theta/2*M_PI,(phi+M_PI/2)/M_PI};
+			_vertices.push_back(vertex);
+		}
+	}
+
+	//---------- Create indices ----------//
+	for(int j=0; j<qtyLat; j++)
+	{
+		for(int i=0; i<qtyLong; i++)
+		{
+			_indices.push_back(j*qtyLong+i);
+			_indices.push_back(j*qtyLong+i+1);
+			_indices.push_back((j+1)*qtyLong+i);
+
+			_indices.push_back((j+1)*qtyLong+i);
+			_indices.push_back((j+1)*qtyLong+i+1);
+			_indices.push_back(j*qtyLong+i+1);
+		}
+	}
+
+	//---------- Create materials ----------//
+	Material m = Material::diffuseLight(glm::vec3(1.0f, 1.0f, 1.0f), -1);
+	_materials.emplace_back(m);
+
+	Log::success("Model", "Sphere mesh created");
+}

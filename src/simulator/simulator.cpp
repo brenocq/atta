@@ -22,7 +22,7 @@ Simulator::Simulator()
 	//cylinder->setSelection(Object::ObjectSelection::SELECTED);
 	Box* box = new Box("Box", {0,1,0}, {0,45,45}, {1,1,1}, 1.0f, {0.5f, 0.1f, 0.1f});
 	//box->setSelection(Object::ObjectSelection::SELECTED);
-	Sphere* sphere = new Sphere("Sphere", {-2,1,0}, {90,0,0}, 0.5f, 1.0f, {0.1f, 0.1f, 0.5f});
+	Sphere* sphere = new Sphere("Sphere", {-2,1,0}, {90,0,0}, 0.5f, 1.0f, {0.2f, 0.2f, 0.8f});
 	Cylinder* cylinder = new Cylinder("Cylinder", {2,1,0}, {0,0,0}, {1,1,1}, 1.0f, {0.1f, 0.5f, 0.5f});
 	Capsule* capsule = new Capsule("Capsule", {0,3,0}, {0,0,0}, {1,1,1}, 1.0f, {0.5f, 0.5f, 0.1f});
 	//sphere->setSelection(Object::ObjectSelection::SELECTED);
