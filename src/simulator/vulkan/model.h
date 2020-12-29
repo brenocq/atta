@@ -46,6 +46,7 @@ class Model
 	private:
 		Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, Procedural* procedural);
 		void loadModel();
+		void createSphereModel();
 
 		// Model properties
 		std::string _fileName;
