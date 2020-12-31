@@ -81,6 +81,11 @@ namespace atta
 		return result;
 	}
 
+    mat4 mat4::operator()(const mat4 &o) const
+	{
+		return (*this)*o;
+	}
+
 	mat4 mat4::operator+(const mat4 &o) const
 	{
 		mat4 result;

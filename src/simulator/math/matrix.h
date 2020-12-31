@@ -7,6 +7,7 @@
 #ifndef ATTA_MATRIX_H
 #define ATTA_MATRIX_H
 #include "vector.h"
+#include "point.h"
 #include "quaternion.h"
 #include "glm.h"
 
@@ -29,8 +30,21 @@ namespace atta
         void setInverse(const mat4 &m);
 
         mat4 operator*(const mat4 &o) const;
+        mat4 operator()(const mat4 &o) const;
         mat4 operator+(const mat4 &o) const;
         vec3 operator*(const vec3 &vector) const;
+		template<typename T>
+        point3<T> operator*(const point3<T> &p) const
+		{
+			T x=p.x, y=p.y, z=p.z;
+			T xp = data[0]*x + data[1]*y + data[2]*z + data[3];
+			T yp = data[4]*x + data[5]*y + data[6]*z + data[7];
+			T zp = data[8]*x + data[9]*y + data[10]*z + data[11];
+			T wp = data[12]*x + data[13]*y + data[14]*z + data[15];
+			if(wp == 1) return point3<T>(xp, yp, zp);
+			else return point3<T>(xp, yp, zp)/wp;
+		}
+
         vec3 transform(const vec3 &vector) const;
         mat4 translate(const vec3 &vector) const;
 		mat4 operator*(const float v) const;
