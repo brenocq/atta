@@ -47,6 +47,14 @@ set(src_files_simulator_physics
 	${physicsSrc}
 )
 
+file(GLOB rayTracingCPUSrc
+	"simulator/vulkan/rayTracingCPU/**/*.cpp"
+	"simulator/vulkan/rayTracingCPU/*.cpp"
+)
+set(src_files_simulator_vulkan_raytracing_cpu
+	${rayTracingCPUSrc}
+)
+
 
 set(src_files_simulator_vulkan
 	simulator/vulkan/application.cpp
@@ -164,6 +172,7 @@ add_executable(${exe_name}
 	${src_files_simulator_vulkan_gui} 
 	${src_files_simulator_vulkan_gui_widgets} 
 	${src_files_simulator_vulkan_raytracing} 
+	${src_files_simulator_vulkan_raytracing_cpu}
 	${src_files_simulator_vulkan_pipeline} 
 	${src_files_examples}
 )

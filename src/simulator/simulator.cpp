@@ -91,7 +91,7 @@ void Simulator::onDrawFrame(float dt)
 	for(auto& miniCleaner : _miniCleaners)
 		miniCleaner->run(dt);
 
-	//_drawer->drawPhysicsShapes();
+	_drawer->drawPhysicsShapes();
 	//btVector3 old = _scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->getLinearVelocity();
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setLinearVelocity(btVector3(-1.0f, old.y(), old.z()));
 	//_scene->getObjects()[9]->getObjectPhysics()->getRigidBody()->setAngularVelocity(btVector3(0.0f, 1.0f, 0.0f));
