@@ -108,6 +108,7 @@ class Log
 		
 		//---------- Convert parameters to string ----------//
 		static std::string toString(const char* str);
+		static std::string toString(std::string str);
 
 		template<class T>
 		static std::string toString(std::vector<T> vec)

@@ -27,6 +27,8 @@ namespace guib {
 			ClickDetector(ClickDetectorInfo info);
 			~ClickDetector();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			std::function<void()> getOnClick() const { return _onClick; }
 			std::function<void()> getOnStopClick() const { return _onStopClick; }

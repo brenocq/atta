@@ -26,25 +26,42 @@ namespace guib {
 			Widget(WidgetInfo widgetInfo);
 			virtual ~Widget();
 
+			virtual void render();
+			virtual void preProcess();
+			virtual void update();
+
 			//---------- Getters and Setters ----------//
 			void setChild(Widget* child) { _child=child; }
 			Widget* getChild() const { return _child; }
+			void setParent(Widget* parent) { _parent=parent; }
+			Widget* getParent() const { return _parent; }
 			std::string getType() const { return _type; }
 			void setSize(Size size) { _size=size; }
 			Size getSize() const { return _size; }
+			Size& getSize() { return _size; }
 			void setOffset(Offset offset) { _offset=offset; }
 			Offset getOffset() const { return _offset; }
+			Offset& getOffset() { return _offset; }
 
-			static Size screenSize;
+			virtual void getSizeOffset(Size &size, Offset &offset);
+
 		protected:
 			void setType(std::string type) { _type=type; }
 			Widget** getChildPtr() { return &_child; }
+			void getParentSizeOffset(Size &pSize, Offset &pOffset);
+			void startPreProcess();
+			void endPreProcess();
+
+			void solveDimensionsPercent();
+			void solveDimensionsPixel();
+
 			Size _size;
 			Offset _offset;
-
-		private:
 			Widget* _child;
+			Widget* _parent;
 			std::string _type;
+		private:
+			WidgetInfo _widgetInfo;
 	};
 }
 

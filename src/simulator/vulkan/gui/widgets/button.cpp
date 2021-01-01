@@ -58,5 +58,10 @@ namespace guib
 	Button::~Button()
 	{
 	}
+
+	void Button::render()
+	{
+
+	}
 }
 

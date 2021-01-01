@@ -39,6 +39,8 @@ namespace guib {
 			Padding(PaddingInfo paddingInfo);
 			~Padding();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			PaddingValues getPadding() const { return _padding; }
 

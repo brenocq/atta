@@ -19,4 +19,9 @@ namespace guib
 	{
 
 	}
+
+	void Text::render()
+	{
+
+	}
 }

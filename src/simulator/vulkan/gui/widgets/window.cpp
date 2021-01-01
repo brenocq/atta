@@ -26,6 +26,12 @@ namespace guib
 
 	}
 
+	void Window::render()
+	{
+		//renderWidget(commandBuffer, currOffset, currSize, widget->getChild());
+		//getChild->render(currOffset, currSize);
+	}
+
 	void Window::updateTree()
 	{
 		Widget** c = Widget::getChildPtr();

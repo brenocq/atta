@@ -10,7 +10,7 @@
 UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChain, Scene* scene):
 	// Toggle variables
    	_enableRayTracing(nullptr), _splitRender(nullptr),
-	_showPhysicsDebugger(false)
+	_showPhysicsDebugger(false), _rootWidget(nullptr)
 {
 	//---------- Get main objects ----------//
 	_device = device;
@@ -40,7 +40,7 @@ UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChai
 	_fontLoader = new guib::FontLoader(_device, _guiCommandPool, "assets/fonts/Ubuntu-Medium.ttf");
 
 	_guiPipeline = new GuiPipeline(_device, _swapChain, _guiUniformBuffers, _fontLoader);
-	_guiRender = new GuiRender(_swapChain->getExtent(), _guiPipeline->getPipelineLayout(), _window->handle(), _fontLoader);
+	_guiRender = new guib::GuiRender(_swapChain->getExtent(), _guiPipeline->getPipelineLayout(), _window->handle(), _fontLoader);
 	createWidgetTree();
 }
 
@@ -64,17 +64,36 @@ UserInterface::~UserInterface()
 	delete _guiCommandPool;
 	_guiCommandPool = nullptr;
 
-	delete _widgetTree;
-	_widgetTree = nullptr;
+	if(_rootWidget != nullptr)
+	{
+		delete _rootWidget;
+		_rootWidget = nullptr;
+	}
 }
 
 void UserInterface::createWidgetTree()
 {
-	//_widgetTree = new guib::Box(
-	//	{
-	//		.color = {.2,.2,.2,1},
-	//		.size  = {300, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
-	//	}); 
+	_rootWidget = new guib::Box(
+		{
+			.color = {.2,.2,.2,1},
+			.size  = {300, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
+			.child = new guib::Align({
+				.hAlignment = guib::ALIGN_CENTER,
+				.vAlignment = guib::ALIGN_END,
+				.child = new guib::Box({
+					.color = {.8, .5, .3},
+					.size = {.8, .8},
+					.child = new guib::Align({
+						.hAlignment = guib::ALIGN_CENTER,
+						.vAlignment = guib::ALIGN_CENTER,
+						.child = new guib::Box({
+							.color = {.3, .5, .8},
+							.size = {.5, .5}
+						})
+					})
+				})
+			})
+		}); 
 
 	_windows.push_back(
 		new guib::Window(
@@ -121,6 +140,9 @@ void UserInterface::createWidgetTree()
 				})*/
 		})	
 	);
+
+	_guiRender->setRootWidget(_rootWidget);
+	//_guiRender->setWindowWidgets(_windows);
 }
 
 void UserInterface::checkResult(VkResult result)
@@ -138,7 +160,7 @@ void UserInterface::render(int i)
 	VkCommandBuffer commandBuffer = _guiCommandBuffers->begin(i);
 	{
 		_guiPipeline->beginRender(commandBuffer, i);
-		_guiRender->render(commandBuffer, _widgetTree, _windows);
+		_guiRender->render(commandBuffer);
 		_guiPipeline->endRender(commandBuffer);
 	}
 	_guiCommandBuffers->end(i);

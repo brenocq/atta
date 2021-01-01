@@ -29,7 +29,8 @@ namespace guib
 	enum Unit
 	{
 		UNIT_PIXEL=0,
-		UNIT_PERCENT
+		UNIT_PERCENT,
+		UNIT_SCREEN
 	};
 
 	struct Offset
@@ -104,9 +105,16 @@ namespace guib
 
 		std::string toString()
 		{
-			return std::string("Size {width=")+std::to_string(width)+", height="+std::to_string(height)+", unitW="+
-				std::string(unitW==UNIT_PERCENT? "UNIT_PERCENT":"UNIT_PIXEL")+", unitH="+
-				std::string(unitH==UNIT_PERCENT? "UNIT_PERCENT":"UNIT_PIXEL")+
+			std::string strUW = "UNIT_PERCENT";
+			std::string strUH = "UNIT_PERCENT";
+			if(unitW == UNIT_PIXEL) strUW = "UNIT_PIXEL";
+			else if(unitW == UNIT_SCREEN) strUW = "UNIT_SCREEN";
+			if(unitH == UNIT_PIXEL) strUH = "UNIT_PIXEL";
+			else if(unitH == UNIT_SCREEN) strUH = "UNIT_SCREEN";
+
+			return std::string("Size {width=")+std::to_string(width)+", height="+std::to_string(height)+
+				", unitW="+strUW+
+				", unitH="+strUH+
 				"}";
 		}
 	};

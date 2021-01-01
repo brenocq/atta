@@ -21,4 +21,9 @@ namespace guib
 	Draggable::~Draggable()
 	{
 	}
+
+	void Draggable::render()
+	{
+
+	}
 }
