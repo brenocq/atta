@@ -25,6 +25,8 @@ namespace guib {
 			Draggable(DraggableInfo info);
 			~Draggable();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			bool getActive() const { return _active; }
 			Offset getDragAreaOffset() const { return _dragAreaOffset; }

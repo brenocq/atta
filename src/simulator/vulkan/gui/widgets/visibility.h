@@ -21,6 +21,8 @@ namespace guib {
 			Visibility(VisibilityInfo info);
 			~Visibility();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			void setVisible(bool visible) { _visible=visible; }
 			bool getVisible() const { return _visible; }

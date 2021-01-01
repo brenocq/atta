@@ -20,4 +20,10 @@ namespace guib
 	{
 
 	}
+
+	void Visibility::render()
+	{
+
+	}
 }
+

@@ -121,22 +121,11 @@ set(src_files_simulator_vulkan_pipeline
 	simulator/vulkan/pipeline/pipelineLayout.cpp
 )
 
-set(src_files_simulator_vulkan_gui
-	simulator/vulkan/gui/guiFrameBuffer.cpp
-	simulator/vulkan/gui/guiPipeline.cpp
-	simulator/vulkan/gui/guiPipelineLayout.cpp
-	simulator/vulkan/gui/guiRenderPass.cpp
-	simulator/vulkan/gui/guiStructs.cpp
-	simulator/vulkan/gui/guiUniformBuffer.cpp
-	simulator/vulkan/gui/guiVertex.cpp
-	simulator/vulkan/gui/guiRender.cpp
-	simulator/vulkan/gui/userInterface.cpp
-)
-
 # GUI
 file(GLOB guibSrc
     "simulator/vulkan/gui/widgets/*.cpp"
     "simulator/vulkan/gui/font/*.cpp"
+    "simulator/vulkan/gui/*.cpp"
 )
 set(src_files_simulator_vulkan_gui_widgets
 	${guibSrc}

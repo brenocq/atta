@@ -20,6 +20,8 @@ namespace guib {
 			Protect(ProtectInfo info);
 			~Protect();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			Widget* getProtectedChild() const { return _protectedChild; }
 

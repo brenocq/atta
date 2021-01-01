@@ -23,6 +23,8 @@ namespace guib {
 			Column(ColumnInfo columnInfo);
 			~Column();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			std::vector<Widget*> getChildren() const { return _children; }
 			Size getChildrenTotalSize();

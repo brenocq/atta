@@ -20,4 +20,9 @@ namespace guib
 	{
 
 	}
+
+	void Protect::render()
+	{
+
+	}
 }

@@ -29,6 +29,8 @@ namespace guib {
 			Button(ButtonInfo info);
 			~Button();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			Color getColor() const { return _color; }
 			Color getHoverColor() const { return _hoverColor; }

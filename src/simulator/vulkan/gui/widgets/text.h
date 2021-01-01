@@ -23,6 +23,8 @@ namespace guib {
 			Text(TextInfo info);
 			~Text();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			void setColor(Color color) { _color=color; }
 			Color getColor() const { return _color; }

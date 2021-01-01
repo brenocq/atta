@@ -61,11 +61,11 @@ class UserInterface
 		CommandBuffers* _guiCommandBuffers;
 		std::vector<GuiUniformBuffer*> _guiUniformBuffers;
 		GuiPipeline* _guiPipeline;
-		GuiRender* _guiRender;
+		guib::GuiRender* _guiRender;
 
 
 		//---------- GUI variables ----------//
-		guib::Widget* _widgetTree;
+		guib::Widget* _rootWidget;
 		std::vector<guib::Window*> _windows;
 
 		// Topbar->Main

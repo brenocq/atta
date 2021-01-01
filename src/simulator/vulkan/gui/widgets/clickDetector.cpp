@@ -24,4 +24,9 @@ namespace guib
 	{
 
 	}
+
+	void ClickDetector::render()
+	{
+
+	}
 }

@@ -23,6 +23,8 @@ namespace guib {
 			Align(AlignInfo info);
 			~Align();
 
+			void preProcess();
+
 			//---------- Getters and Setters ----------//
 			Alignment getHAlignment() const { return _hAlignment; }
 			Alignment getVAlignment() const { return _vAlignment; }

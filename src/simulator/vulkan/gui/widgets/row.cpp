@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "row.h"
+#include "../guiState.h"
 
 namespace guib
 {
@@ -27,6 +28,11 @@ namespace guib
 		}
 	}
 
+	void Row::render()
+	{
+
+	}
+
 	Size Row::getChildrenTotalSize()
 	{
 		float maxH = 0;
@@ -37,12 +43,12 @@ namespace guib
 			Size childSize = child->getSize();
 			if(childSize.unitW == guib::UNIT_PIXEL)
 			{
-				childSize.width /= Widget::screenSize.width;
+				childSize.width /= state::screenSize.width;
 				childSize.unitW = guib::UNIT_PERCENT;
 			}
 			if(childSize.unitH == guib::UNIT_PIXEL)
 			{
-				childSize.height /= Widget::screenSize.height;
+				childSize.height /= state::screenSize.height;
 				childSize.unitH = guib::UNIT_PERCENT;
 			}
 

@@ -24,3 +24,8 @@ std::string Log::toString(const char* str)
 {
 	return std::string(str);
 }
+
+std::string Log::toString(std::string str)
+{
+	return str;
+}

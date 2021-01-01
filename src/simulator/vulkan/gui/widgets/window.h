@@ -29,6 +29,8 @@ namespace guib {
 			Window(WindowInfo info);
 			~Window();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			bool getClosable() const { return _closable; }
 			bool getMinimizable() const { return _minimizable; }

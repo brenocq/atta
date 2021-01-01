@@ -23,6 +23,8 @@ namespace guib {
 			Row(RowInfo rowInfo);
 			~Row();
 
+			void render();
+
 			//---------- Getters and Setters ----------//
 			std::vector<Widget*> getChildren() const { return _children; }
 			Size getChildrenTotalSize();
