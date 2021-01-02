@@ -18,9 +18,9 @@ namespace guib {
 	{
 		public:
 			Protect(ProtectInfo info);
-			~Protect();
+			~Protect() override;// Override to not delete the child
 
-			void render();
+			void preProcessSizeOffset() override;
 
 			//---------- Getters and Setters ----------//
 			Widget* getProtectedChild() const { return _protectedChild; }

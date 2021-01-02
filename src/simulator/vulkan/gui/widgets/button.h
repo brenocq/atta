@@ -18,8 +18,8 @@ namespace guib {
 		Color hoverColor = {.45,.45,.45,1};
 		Color clickColor = {.5,.5,.5,1};
 		std::function<void()> onClick;
-		Size size = {.8,.8};
 		BoxRadius radius = {.0,.0,.0,.0};
+		Size size = {.8,.8};
 		Widget* child = nullptr;
 	};
 
@@ -27,9 +27,6 @@ namespace guib {
 	{
 		public:
 			Button(ButtonInfo info);
-			~Button();
-
-			void render();
 
 			//---------- Getters and Setters ----------//
 			Color getColor() const { return _color; }

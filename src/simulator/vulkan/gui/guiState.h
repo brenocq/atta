@@ -40,10 +40,9 @@ namespace guib
 		extern std::pair<guib::ClickDetectorArea, bool> currClickArea;// Current hovering/clicking
 
 		// Handling Draggable
-		extern std::vector<guib::DragDetectorArea> draggableAreas;
+		extern std::vector<guib::Draggable*> draggables;
 		extern guib::Draggable* currDragging;
-		extern guib::Offset startDraggingOffset;
-		extern guib::Offset startDraggingCursorPos;
+		extern guib::Offset lastDraggingCursorPos;
 
 		//---------- GuiB font render ----------//
 		extern guib::FontLoader* fontLoader;

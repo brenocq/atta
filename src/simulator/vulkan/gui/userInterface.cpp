@@ -73,7 +73,8 @@ UserInterface::~UserInterface()
 
 void UserInterface::createWidgetTree()
 {
-	_rootWidget = new guib::Box(
+	_rootWidget = 
+		new guib::Box(
 		{
 			.color = {.2,.2,.2,1},
 			.size  = {300, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
@@ -82,13 +83,27 @@ void UserInterface::createWidgetTree()
 				.vAlignment = guib::ALIGN_END,
 				.child = new guib::Box({
 					.color = {.8, .5, .3},
-					.size = {.8, .8},
+					.size = {1, .8},
 					.child = new guib::Align({
 						.hAlignment = guib::ALIGN_CENTER,
 						.vAlignment = guib::ALIGN_CENTER,
-						.child = new guib::Box({
-							.color = {.3, .5, .8},
-							.size = {.5, .5}
+						.child = new guib::Visibility({
+							.visible = true,
+							.child = new guib::Column(
+							{
+								.hAlignment = guib::ALIGN_CENTER,
+								.vAlignment = guib::ALIGN_END,
+								.children = {
+									new guib::Box({
+										.color = {.1,.8,.3,1},
+										.size = {.3,.9},
+									}),
+									new guib::Box({
+										.color = {.8,.1,.3,1},
+										.size = {.99,.1},
+									})
+								}
+							})
 						})
 					})
 				})
@@ -141,8 +156,8 @@ void UserInterface::createWidgetTree()
 		})	
 	);
 
-	_guiRender->setRootWidget(_rootWidget);
-	//_guiRender->setWindowWidgets(_windows);
+	//_guiRender->setRootWidget(_rootWidget);
+	_guiRender->setWindowWidgets(_windows);
 }
 
 void UserInterface::checkResult(VkResult result)

@@ -27,8 +27,9 @@ namespace guib {
 			virtual ~Widget();
 
 			virtual void render();
-			virtual void preProcess();
+			void treePreProcess();
 			virtual void update();
+			virtual void addOffsetTree(Offset offset);
 
 			//---------- Getters and Setters ----------//
 			void setChild(Widget* child) { _child=child; }
@@ -43,23 +44,30 @@ namespace guib {
 			Offset getOffset() const { return _offset; }
 			Offset& getOffset() { return _offset; }
 
-			virtual void getSizeOffset(Size &size, Offset &offset);
+			virtual void parentAsksSizeOffset(Size &size, Offset &offset);
 
 		protected:
 			void setType(std::string type) { _type=type; }
 			Widget** getChildPtr() { return &_child; }
 			void getParentSizeOffset(Size &pSize, Offset &pOffset);
-			void startPreProcess();
-			void endPreProcess();
+
+			virtual void preProcessSizeOffset();
+			virtual void preProcess();
+			virtual void startPreProcess();
+			virtual void endPreProcess();
 
 			void solveDimensionsPercent();
 			void solveDimensionsPixel();
+
+			void wrapChild();
+			void fillParent();
 
 			Size _size;
 			Offset _offset;
 			Widget* _child;
 			Widget* _parent;
 			std::string _type;
+
 		private:
 			WidgetInfo _widgetInfo;
 	};

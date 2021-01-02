@@ -11,7 +11,7 @@
 
 namespace guib {
 	struct VisibilityInfo {
-		bool visible = true;
+		bool visible;
 		Widget* child;
 	};
 
@@ -19,9 +19,9 @@ namespace guib {
 	{
 		public:
 			Visibility(VisibilityInfo info);
-			~Visibility();
 
-			void render();
+			void preProcessSizeOffset() override;
+			void render() override;
 
 			//---------- Getters and Setters ----------//
 			void setVisible(bool visible) { _visible=visible; }

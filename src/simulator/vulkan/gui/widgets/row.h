@@ -21,9 +21,15 @@ namespace guib {
 	{
 		public:
 			Row(RowInfo rowInfo);
-			~Row();
+			~Row() override;// Delete children
 
-			void render();
+			void preProcessSizeOffset() override;
+			void startPreProcess() override;
+			void endPreProcess() override;
+
+			void render() override;
+
+			void addOffsetTree(Offset offset) override;
 
 			//---------- Getters and Setters ----------//
 			std::vector<Widget*> getChildren() const { return _children; }

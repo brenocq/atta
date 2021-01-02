@@ -23,13 +23,11 @@ namespace guib {
 		Widget* child = nullptr;
 	};
 
+	class Visibility;
 	class Window : public Widget
 	{
 		public:
 			Window(WindowInfo info);
-			~Window();
-
-			void render();
 
 			//---------- Getters and Setters ----------//
 			bool getClosable() const { return _closable; }
@@ -53,6 +51,7 @@ namespace guib {
 
 			Widget* _root;
 			Widget* _windowChild;
+			Visibility* _windowChildVisibility;
 
 			// Window state
 			bool _minimized;

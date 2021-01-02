@@ -21,9 +21,9 @@ namespace guib {
 	{
 		public:
 			Text(TextInfo info);
-			~Text();
 
-			void render();
+			void preProcessSizeOffset() override;
+			void render() override;
 
 			//---------- Getters and Setters ----------//
 			void setColor(Color color) { _color=color; }
