@@ -21,17 +21,6 @@ namespace guib
 		updateTree();
 	}
 
-	Window::~Window()
-	{
-
-	}
-
-	void Window::render()
-	{
-		//renderWidget(commandBuffer, currOffset, currSize, widget->getChild());
-		//getChild->render(currOffset, currSize);
-	}
-
 	void Window::updateTree()
 	{
 		Widget** c = Widget::getChildPtr();
@@ -48,7 +37,8 @@ namespace guib
 							{
 								.onClick = [&](){
 									_minimized = !_minimized;
-									updateTree();
+									//updateTree();
+									_windowChildVisibility->setVisible(_minimized);
 								},
 								.child = new guib::Box(
 								{
@@ -67,8 +57,9 @@ namespace guib
 			closeButton = new guib::ClickDetector(
 							{
 								.onClick = [&](){
-									_closed = true;
-									updateTree();
+									//_closed = true;
+									//updateTree();
+									((Visibility*)_root)->setVisible(false);
 								},
 								.child = new guib::Box(
 								{
@@ -81,14 +72,66 @@ namespace guib
 		else
 			closeButton = new guib::Box({.color={0,0,0,0}, .size={0,0}});
 
+		Widget* topBar = new guib::Box(
+						{
+							.color = {.15,.15,.15,1},
+							.size  = {1,20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+							.child = new guib::Row(
+							{
+								.hAlignment = guib::ALIGN_START,
+								.vAlignment = guib::ALIGN_CENTER,
+								.children = {
+									//new guib::Box(
+									//{
+									//	.color = {0,0,0,0},
+									//	.size  = {4,1, guib::UNIT_PIXEL}
+									//}),
+									new guib::Box(
+									{
+										.color = {1,0,1,0},
+										.size  = {.5,1},
+										.child = new guib::Text(
+										{
+											.color = {0.8, 0.8, 0.8, 1.0},
+											.text = _name,
+											.textSize = 14
+										})
+									}),
+									new guib::Box(
+									{
+										.color = {0,0,0,0},
+										.size  = {.5,1},
+										.child = new guib::Row(
+										{
+											.hAlignment = guib::ALIGN_END,
+											.vAlignment = guib::ALIGN_CENTER,
+											.children = {
+												minimizeButton,
+												new guib::Box(
+												{
+													.color = {0,0,0,0},
+													.size  = {4,1, guib::UNIT_PIXEL}
+												}),
+												closeButton,
+												new guib::Box(
+												{
+													.color = {0,0,0,0},
+													.size  = {4,1, guib::UNIT_PIXEL}
+												})
+											}
+										})
+									})
+								}
+							})
+						});
+
 		_root = new guib::Visibility(
 			{
 				.visible = !_closed,
 				.child = new guib::Draggable(
 				{
 					.active = _movable,
-					.dragAreaOffset = {0,0},
-					.dragAreaSize = {1,20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+					.widgetToHover = topBar,
 					.widgetToDrag = this,
 					.child = new guib::Box(
 					{
@@ -99,59 +142,8 @@ namespace guib
 							.hAlignment = guib::ALIGN_CENTER,
 							.vAlignment = guib::ALIGN_START,
 							.children = {
-								new guib::Box(
-								{
-									.color = {.15,.15,.15,1},
-									.size  = {1,20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
-									.child = new guib::Row(
-									{
-										.hAlignment = guib::ALIGN_START,
-										.vAlignment = guib::ALIGN_CENTER,
-										.children = {
-											new guib::Box(
-											{
-												.color = {0,0,0,0},
-												.size  = {4,1, guib::UNIT_PIXEL}
-											}),
-											new guib::Box(
-											{
-												.color = {1,0,1,0},
-												.size  = {.5,1},
-												.child = new guib::Text(
-												{
-													.color = {0.8, 0.8, 0.8, 1.0},
-													.text = _name,
-													.textSize = 14
-												})
-											}),
-											new guib::Box(
-											{
-												.color = {0,0,0,0},
-												.size  = {1,1},
-												.child = new guib::Row(
-												{
-													.hAlignment = guib::ALIGN_END,
-													.vAlignment = guib::ALIGN_CENTER,
-													.children = {
-														minimizeButton,
-														new guib::Box(
-														{
-															.color = {0,0,0,0},
-															.size  = {4,1, guib::UNIT_PIXEL}
-														}),
-														closeButton,
-														new guib::Box(
-														{
-															.color = {0,0,0,0},
-															.size  = {4,1, guib::UNIT_PIXEL}
-														})
-													}
-												})
-											})
-										}
-									})
-								}),
-								new Visibility(
+								topBar,
+								_windowChildVisibility=new Visibility(
 								{
 									.visible = !_minimized,
 									.child= new Box(

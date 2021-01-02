@@ -66,7 +66,17 @@ namespace guib
 
 		std::string toString()
 		{
-			return std::string("Offset {x=")+std::to_string(x)+", y="+std::to_string(x)+"}";
+			std::string strUX = "UNIT_PERCENT";
+			std::string strUY = "UNIT_PERCENT";
+			if(unitX == UNIT_PIXEL) strUX = "UNIT_PIXEL";
+			else if(unitX == UNIT_SCREEN) strUX = "UNIT_SCREEN";
+			if(unitY == UNIT_PIXEL) strUY = "UNIT_PIXEL";
+			else if(unitY == UNIT_SCREEN) strUY = "UNIT_SCREEN";
+
+			return std::string("Offset{x=")+std::to_string(x)+", y="+std::to_string(x)+
+				", unitX="+strUX+
+				", unitY="+strUY+
+				"}";
 		}
 	};
 
@@ -112,7 +122,7 @@ namespace guib
 			if(unitH == UNIT_PIXEL) strUH = "UNIT_PIXEL";
 			else if(unitH == UNIT_SCREEN) strUH = "UNIT_SCREEN";
 
-			return std::string("Size {width=")+std::to_string(width)+", height="+std::to_string(height)+
+			return std::string("Size{width=")+std::to_string(width)+", height="+std::to_string(height)+
 				", unitW="+strUW+
 				", unitH="+strUH+
 				"}";

@@ -13,9 +13,8 @@
 namespace guib {
 	struct DraggableInfo {
 		bool active = true;
-		Offset dragAreaOffset = {0,0};
-		Size dragAreaSize = {1,1};
-		Widget* widgetToDrag = nullptr;
+		Widget* widgetToHover = nullptr;// nullptr -> this
+		Widget* widgetToDrag = nullptr;// nullptr -> this
 		Widget* child = nullptr;
 	};
 
@@ -23,21 +22,21 @@ namespace guib {
 	{
 		public:
 			Draggable(DraggableInfo info);
-			~Draggable();
 
-			void render();
+			void preProcessSizeOffset() override;
+			void preProcess() override;
 
 			//---------- Getters and Setters ----------//
 			bool getActive() const { return _active; }
-			Offset getDragAreaOffset() const { return _dragAreaOffset; }
-			Size getDragAreaSize() const { return _dragAreaSize; }
+			Widget* getWidgetToHover() const { return _widgetToHover; }
 			Widget* getWidgetToDrag() const { return _widgetToDrag; }
 
 		private:
 			bool _active;
-			Offset _dragAreaOffset;
-			Size _dragAreaSize;
+			Widget* _widgetToHover;
 			Widget* _widgetToDrag;
+
+			int _draggableStateIndex;
 	};
 }
 

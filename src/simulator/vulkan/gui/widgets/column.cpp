@@ -28,34 +28,106 @@ namespace guib
 		}
 	}
 
+	void Column::preProcessSizeOffset()
+	{
+		Widget::fillParent();
+	}
+
+	void Column::startPreProcess()
+	{
+		Widget::startPreProcess();
+		for(auto& child : _children)
+			child->setParent(this);
+	}
+
+	void Column::endPreProcess()
+	{
+		Widget::endPreProcess();
+		Offset columnOffset = _offset;
+
+		Size totalSize = getChildrenTotalSize();
+		// Calculate initial offset
+		switch(_vAlignment)
+		{
+			case guib::ALIGN_START:
+				break;
+			case guib::ALIGN_CENTER:
+				{
+					float offset = (_size.height-totalSize.height)*0.5f;
+					_offset.y += offset;
+				}
+				break;
+			case guib::ALIGN_END:
+				{
+					float offset = _size.height-totalSize.height;
+					_offset.y += offset;
+				}
+				break;
+		}
+
+		for(auto& child : _children)
+		{
+			Size childSize;
+			Offset childOffset;
+			child->parentAsksSizeOffset(childSize, childOffset);
+
+			// Add offset of each child
+			switch(_hAlignment)
+			{
+				case guib::ALIGN_START:
+					break;
+				case guib::ALIGN_CENTER:
+					{
+						float offset = (_size.width-childSize.width)*0.5f;
+						_offset.x = columnOffset.x + offset;
+					}
+					break;
+				case guib::ALIGN_END:
+					{
+						float offset = _size.width-childSize.width;
+						_offset.x = columnOffset.x + offset;
+					}
+					break;
+			}
+
+			// Process next child
+			child->treePreProcess();
+			
+			_offset.y+=childSize.height;	
+		}
+		_offset = columnOffset;
+	}
+
 	void Column::render()
 	{
-
+		for(auto& child : _children)
+		{
+			child->render();
+		}
 	}
 
 	Size Column::getChildrenTotalSize()
 	{
-		float sumH = 0;
 		float maxW = 0;
+		float sumH = 0;
 		
-		for(auto child : _children)
+		for(auto& child : _children)
 		{
-			Size childSize = child->getSize();
-			if(childSize.unitW == guib::UNIT_PIXEL)
-			{
-				childSize.width /= state::screenSize.width;
-				childSize.unitW = guib::UNIT_PERCENT;
-			}
-			if(childSize.unitH == guib::UNIT_PIXEL)
-			{
-				childSize.height /= state::screenSize.height;
-				childSize.unitH = guib::UNIT_PERCENT;
-			}
+			Size childSize;
+			Offset childOffset;
+			child->parentAsksSizeOffset(childSize, childOffset);
 
-			sumH+=childSize.height;
 			maxW=std::max(maxW, childSize.width);
+			sumH+=childSize.height;
 		}
 
-		return {std::min(maxW, 1.0f), std::min(sumH,1.0f)};
+		return {maxW, sumH, UNIT_SCREEN, UNIT_SCREEN};
+	}
+
+	void Column::addOffsetTree(Offset offset)
+	{
+		Widget::addOffsetTree(offset);
+		for(auto& child : _children)
+			child->addOffsetTree(offset);
 	}
 }

@@ -9,10 +9,10 @@
 namespace guib::state
 {
 	GuiRender* guiRender = nullptr;
-	Size screenSize = {0,0};
+	Size screenSize = {0,0, UNIT_SCREEN, UNIT_SCREEN};
 
 	//---------- GuiB window/viewport handling ----------//
-	Offset cursorPos = {0,0};
+	Offset cursorPos = {0,0, UNIT_SCREEN, UNIT_SCREEN};
 	CursorType cursorType = CURSOR_TYPE_ARROW;
 
 	//---------- GuiB special widget handler ----------//
@@ -20,10 +20,9 @@ namespace guib::state
 	std::vector<ClickDetectorArea> clickableAreas;
 	std::pair<ClickDetectorArea, bool> currClickArea;// Current hovering/clicking
 	// Handling Draggable
-	std::vector<DragDetectorArea> draggableAreas;
+	std::vector<guib::Draggable*> draggables;
 	Draggable* currDragging = nullptr;
-	Offset startDraggingOffset;
-	Offset startDraggingCursorPos;
+	Offset lastDraggingCursorPos;
 
 	//---------- GuiB font render ----------//
 	FontLoader* fontLoader = nullptr;

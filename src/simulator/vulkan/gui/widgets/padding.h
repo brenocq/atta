@@ -14,17 +14,22 @@ namespace guib {
 	struct PaddingValues  {
 		float top = 0.1f;
 		float right = 0.1f;
-		float bottom = 0.1;
-		float left = 0.1;
+		float bottom = 0.1f;
+		float left = 0.1f;
+		Unit unitT = UNIT_PERCENT;
+		Unit unitR = UNIT_PERCENT;
+		Unit unitB = UNIT_PERCENT;
+		Unit unitL = UNIT_PERCENT;
 
-		static PaddingValues symmetric(float horizontal, float vertical)
+		static PaddingValues symmetric(float horizontal, float vertical, 
+				Unit unitH = UNIT_PERCENT, Unit unitV = UNIT_PERCENT)
 		{
-			return {vertical, horizontal, vertical, horizontal};
+			return {vertical, horizontal, vertical, horizontal, unitV, unitH, unitV, unitH};
 		}
 
-		static PaddingValues all(float value)
+		static PaddingValues all(float value, Unit unit = UNIT_PERCENT)
 		{
-			return {value, value, value, value};
+			return {value, value, value, value, unit, unit, unit, unit};
 		}
 	};
 
@@ -37,9 +42,9 @@ namespace guib {
 	{
 		public:
 			Padding(PaddingInfo paddingInfo);
-			~Padding();
 
-			void render();
+			void startPreProcess() override;
+			void preProcessSizeOffset() override;
 
 			//---------- Getters and Setters ----------//
 			PaddingValues getPadding() const { return _padding; }

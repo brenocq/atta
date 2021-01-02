@@ -9,20 +9,17 @@
 namespace guib
 {
 	Protect::Protect(ProtectInfo info):
-		Widget({}), _protectedChild(info.child)
+		Widget({.child=info.child})
 	{
 		Widget::setType("Protect");
-		if(Widget::getChild()!=nullptr)
-			Widget::setSize(Widget::getChild()->getSize());
 	}
 
 	Protect::~Protect()
 	{
-
 	}
 
-	void Protect::render()
+	void Protect::preProcessSizeOffset()
 	{
-
+		Widget::wrapChild();
 	}
 }

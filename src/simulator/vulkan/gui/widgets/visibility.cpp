@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "visibility.h"
+#include "simulator/helpers/log.h"
 
 namespace guib
 {
@@ -12,18 +13,17 @@ namespace guib
 		Widget({.child=info.child}), _visible(info.visible)
 	{
 		Widget::setType("Visibility");
-		if(Widget::getChild()!=nullptr)
-			Widget::setSize(Widget::getChild()->getSize());
 	}
 
-	Visibility::~Visibility()
+	void Visibility::preProcessSizeOffset()
 	{
-
+		Widget::wrapChild();
 	}
 
 	void Visibility::render()
 	{
-
+		if(_visible && _child)
+			_child->render();
 	}
 }
 

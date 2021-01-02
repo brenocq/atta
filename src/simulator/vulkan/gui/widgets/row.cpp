@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "row.h"
 #include "../guiState.h"
+#include "simulator/helpers/log.h"
 
 namespace guib
 {
@@ -28,9 +29,82 @@ namespace guib
 		}
 	}
 
+	void Row::preProcessSizeOffset()
+	{
+		Widget::fillParent();
+	}
+
+	void Row::startPreProcess()
+	{
+		Widget::startPreProcess();
+		for(auto& child : _children)
+			child->setParent(this);
+	}
+
+	void Row::endPreProcess()
+	{
+		Widget::endPreProcess();
+		Offset rowOffset = _offset;
+
+		Size totalSize = getChildrenTotalSize();
+		// Calculate initial offset
+		switch(_hAlignment)
+		{
+			case guib::ALIGN_START:
+				break;
+			case guib::ALIGN_CENTER:
+				{
+					float offset = (_size.width-totalSize.width)*0.5f;
+					_offset.x += offset;
+				}
+				break;
+			case guib::ALIGN_END:
+				{
+					float offset = _size.width-totalSize.width;
+					_offset.x += offset;
+				}
+				break;
+		}
+
+		for(auto& child : _children)
+		{
+			Size childSize;
+			Offset childOffset;
+			child->parentAsksSizeOffset(childSize, childOffset);
+
+			// Add offset of each child
+			switch(_vAlignment)
+			{
+				case guib::ALIGN_START:
+					break;
+				case guib::ALIGN_CENTER:
+					{
+						float offset = (_size.height-childSize.height)*0.5f;
+						_offset.y = rowOffset.y + offset;
+					}
+					break;
+				case guib::ALIGN_END:
+					{
+						float offset = _size.height-childSize.height;
+						_offset.y = rowOffset.y + offset;
+					}
+					break;
+			}
+
+			// Process next child
+			child->treePreProcess();
+			
+			_offset.x+=childSize.width;	
+		}
+		_offset = rowOffset;
+	}
+
 	void Row::render()
 	{
-
+		for(auto& child : _children)
+		{
+			child->render();
+		}
 	}
 
 	Size Row::getChildrenTotalSize()
@@ -38,25 +112,24 @@ namespace guib
 		float maxH = 0;
 		float sumW = 0;
 		
-		for(auto child : _children)
+		for(auto& child : _children)
 		{
-			Size childSize = child->getSize();
-			if(childSize.unitW == guib::UNIT_PIXEL)
-			{
-				childSize.width /= state::screenSize.width;
-				childSize.unitW = guib::UNIT_PERCENT;
-			}
-			if(childSize.unitH == guib::UNIT_PIXEL)
-			{
-				childSize.height /= state::screenSize.height;
-				childSize.unitH = guib::UNIT_PERCENT;
-			}
+			Size childSize;
+			Offset childOffset;
+			child->parentAsksSizeOffset(childSize, childOffset);
 
 			sumW+=childSize.width;
 			maxH=std::max(maxH, childSize.height);
 		}
 
-		return {std::min(sumW, 1.0f), std::min(maxH,1.0f)};
+		return {sumW, maxH, UNIT_SCREEN, UNIT_SCREEN};
+	}
+
+	void Row::addOffsetTree(Offset offset)
+	{
+		Widget::addOffsetTree(offset);
+		for(auto& child : _children)
+			child->addOffsetTree(offset);
 	}
 }
 

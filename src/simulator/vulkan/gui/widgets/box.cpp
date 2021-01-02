@@ -21,11 +21,6 @@ namespace guib
 		Widget::setType("Box");
 	}
 
-	Box::~Box()
-	{
-
-	}
-
 	void Box::render()
 	{
 		guib::Color color = getColor();

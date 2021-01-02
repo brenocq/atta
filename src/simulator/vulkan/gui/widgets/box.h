@@ -22,9 +22,8 @@ namespace guib {
 	{
 		public:
 			Box(BoxInfo boxInfo);
-			~Box();
 
-			void render();
+			void render() override;
 
 			//---------- Getters and Setters ----------//
 			void setColor(Color color) { _color=color; }

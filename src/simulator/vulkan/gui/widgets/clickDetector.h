@@ -25,9 +25,10 @@ namespace guib {
 	{
 		public:
 			ClickDetector(ClickDetectorInfo info);
-			~ClickDetector();
 
-			void render();
+			void preProcessSizeOffset() override;
+			void preProcess() override;
+			void addOffsetTree(Offset offset) override;
 
 			//---------- Getters and Setters ----------//
 			std::function<void()> getOnClick() const { return _onClick; }
@@ -57,6 +58,7 @@ namespace guib {
 			bool _clicking;
 			bool _rightClicking;
 
+			int _clickableStateIndex;
 	};
 }
 

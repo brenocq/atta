@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "clickDetector.h"
+#include "../guiState.h"
 
 namespace guib
 {
@@ -13,20 +14,27 @@ namespace guib
 		_onClick(info.onClick), _onStopClick(info.onStopClick),
 		_onRightClick(info.onRightClick), _onStopRightClick(info.onStopRightClick),
 		_onHover(info.onHover), _onStopHover(info.onStopHover),
-		_hovering(false), _clicking(false), _rightClicking(false)
+		_hovering(false), _clicking(false), _rightClicking(false),
+		_clickableStateIndex(-1)
 	{
 		Widget::setType("ClickDetector");
-		if(Widget::getChild()!=nullptr)
-			Widget::setSize(Widget::getChild()->getSize());
 	}
 
-	ClickDetector::~ClickDetector()
-	{
 
+	void ClickDetector::preProcessSizeOffset()
+	{
+		Widget::wrapChild();
 	}
 
-	void ClickDetector::render()
+	void ClickDetector::preProcess()
 	{
+		_clickableStateIndex = state::clickableAreas.size();
+		state::clickableAreas.push_back({_offset, _size, this});
+	}
 
+	void ClickDetector::addOffsetTree(Offset offset)
+	{
+		state::clickableAreas[_clickableStateIndex].offset += offset;
+		Widget::addOffsetTree(offset);
 	}
 }

@@ -21,9 +21,8 @@ namespace guib {
 	{
 		public:
 			Align(AlignInfo info);
-			~Align();
 
-			void preProcess();
+			void preProcessSizeOffset() override;
 
 			//---------- Getters and Setters ----------//
 			Alignment getHAlignment() const { return _hAlignment; }

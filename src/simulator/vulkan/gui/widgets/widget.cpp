@@ -7,6 +7,7 @@
 #include "widget.h"
 #include "../guiState.h"
 #include "simulator/helpers/log.h"
+#include <math.h>
 
 namespace guib
 {
@@ -31,7 +32,7 @@ namespace guib
 
 	void Widget::render()
 	{
-		//Log::debug("Widget", "Render [c]$0", _type);
+		//	Log::debug("Widget", "Render [c]$0 [] Off:$1", _type, _offset.toString());
 		if(_child)
 			_child->render();
 	}
@@ -51,13 +52,19 @@ namespace guib
 		}
 	}
 
-	void Widget::getSizeOffset(Size &size, Offset &offset)
+	void Widget::parentAsksSizeOffset(Size &size, Offset &offset)
 	{
-		// The parent can call this method if it needs to modify the child size/offset
-		// Ex: Align
-		solveDimensionsPercent();
-		size = _size;	
-		offset = _offset;	
+		// The parent can call this method if it needs to now the child size/offset to define its own
+		startPreProcess();
+		preProcessSizeOffset();
+		size = _size;
+		offset = _offset;
+
+		if(std::isnan(size.width) || std::isnan(size.height) || std::isnan(offset.x) || std::isnan(offset.y))
+		{
+			Log::error("guib::Align", "Child size/offset must be possible to calculate!");
+			return;
+		}
 	}
 
 	//--------------------------------//
@@ -65,24 +72,85 @@ namespace guib
 	//--------------------------------//
 	void Widget::startPreProcess()
 	{
-		//Log::debug("Widget", "Start preprocess [c]$0", _type);
 		// Convert from UNIT_PERCENT to UNIT_SCREEN
 		// It is made in pre preocess because it needs to have a reference to the parent, which occurs after the tree is created
 		solveDimensionsPercent();
+
 		if(_child)
 			_child->setParent(this);
 	}
 
 	void Widget::endPreProcess()
 	{
+		//Log::debug("Widget", "End PreProcess [w]$0[] with [w]$1 []--[w] $2", _type, _size.toString(), _offset.toString());
 		if(_child)
-			_child->preProcess();
+			_child->treePreProcess();
+	}
+
+
+	void Widget::preProcessSizeOffset()
+	{
+		// Executes when defining tree widgets size and offset
 	}
 
 	void Widget::preProcess()
 	{
+		// Executes one time after the tree is created
+	}
+
+	void Widget::treePreProcess()
+	{
 		startPreProcess();
+		{
+			preProcessSizeOffset();
+
+			// Local to global offset (local+parent)
+			if(_parent) _offset += _parent->getOffset();
+
+			preProcess();
+		}
 		endPreProcess();
+	}
+
+	//--------------------------------//
+	//---------- Tree Wrap -----------//
+	//--------------------------------//
+	void Widget::wrapChild()
+	{
+		// Sometimes the child needs to now the parent size/offset to calculate your own size/offset
+		fillParent();
+
+		// Wrap child if it exists
+		if(_child)
+		{
+			Size parentSize;
+			Offset parentOffset;
+			getParentSizeOffset(parentSize, parentOffset);
+
+			Size childSize;
+			Offset childOffset;
+			_child->parentAsksSizeOffset(childSize, childOffset);
+
+			if(std::isnan(childSize.width) || std::isnan(childSize.height) || std::isnan(childOffset.x) || std::isnan(childOffset.y))
+			{
+				Log::error("guib::Widget", "[w](wrapChild)[] Child size/offset must be possible to calculate!");
+				return;
+			}
+
+			_size = childSize;
+			_offset = _offset+childOffset;
+		}
+	}
+
+	void Widget::fillParent()
+	{
+		Size parentSize;
+		Offset parentOffset;
+
+		getParentSizeOffset(parentSize, parentOffset);
+		// Calculate local coord size and offset
+		_size = parentSize;
+		_offset = {0,0};
 	}
 
 	//--------------------------------//
@@ -90,8 +158,22 @@ namespace guib
 	//--------------------------------//
 	void Widget::update()
 	{
+		//startPreProcess();
+		//preProcessSizeOffset();
+		//if(_parent) _offset += _parent->getOffset();
+
+		//Log::debug("Widget", "Update [w]$0[] with [w]$1 []--[w] $2", _type, _size.toString(), _offset.toString());
+
 		if(_child)
 			_child->update();
+	}
+
+	void Widget::addOffsetTree(Offset offset)
+	{
+		_offset += offset;
+		//Log::debug("Widget", "AddOff [y]$0[] with [w]$1", _type, _offset.toString());
+		if(_child)
+			_child->addOffsetTree(offset);
 	}
 
 	//--------------------------------//
@@ -100,9 +182,6 @@ namespace guib
 	void Widget::solveDimensionsPercent()
 	{
 		// Convert from UNIT_PERCENT to UNIT_SCREEN
-		if(_parent == nullptr)
-			return;
-
 		Size parentSize;
 		Offset parentOffset;
 		getParentSizeOffset(parentSize, parentOffset);
@@ -120,12 +199,12 @@ namespace guib
 
 		if(_offset.unitX == guib::UNIT_PERCENT)
 		{
-			_offset.x = parentOffset.x + parentSize.width*_offset.x;
+			_offset.x = parentSize.width*_offset.x;
 			_offset.unitX = guib::UNIT_SCREEN;
 		}
 		if(_offset.unitY == guib::UNIT_PERCENT)
 		{
-			_offset.y = parentOffset.y + parentSize.height*_offset.y;
+			_offset.y = parentSize.height*_offset.y;
 			_offset.unitY = guib::UNIT_SCREEN;
 		}
 	}
@@ -158,7 +237,5 @@ namespace guib
 			_offset.unitY = guib::UNIT_SCREEN;
 		}
 	}
-
-
 }
 
