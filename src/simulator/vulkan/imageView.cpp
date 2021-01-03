@@ -41,10 +41,5 @@ ImageView::ImageView(Device* device, VkImage image, VkFormat format, VkImageAspe
 
 ImageView::~ImageView()
 {
-	if(_imageView != nullptr)
-	{
-		vkDestroyImageView(_device->handle(), _imageView, nullptr);
-		_imageView = nullptr;
-
-	}
+	vkDestroyImageView(_device->handle(), _imageView, nullptr);
 }

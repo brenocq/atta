@@ -95,14 +95,38 @@ Scene::~Scene()
 		_lineIndexBuffer = nullptr;
 	}
 
-	for(auto& model : _models)
+	if(_skyboxVertexBuffer != nullptr)
 	{
-		if(model != nullptr)
-		{
-			delete model;
-			model = nullptr;
-		}
+		delete _skyboxVertexBuffer;
+		_skyboxVertexBuffer = nullptr;
 	}
+
+	if(_skyboxIndexBuffer != nullptr)
+	{
+		delete _skyboxIndexBuffer;
+		_skyboxIndexBuffer = nullptr;
+	}
+
+	if(_envTexture != nullptr)
+	{
+		delete _envTexture;
+		_envTexture = nullptr;
+	}
+
+	if(_envIrrTexture != nullptr)
+	{
+		delete _envIrrTexture;
+		_envIrrTexture = nullptr;
+	}
+
+	//for(auto& model : _models)
+	//{
+	//	if(model != nullptr)
+	//	{
+	//		delete model;
+	//		model = nullptr;
+	//	}
+	//}
 
 	for(auto& object : _objects)
 	{

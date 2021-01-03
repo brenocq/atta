@@ -43,14 +43,7 @@ class OutlinePipeline : public Pipeline
 
 		void render(VkCommandBuffer commandBuffer, int imageIndex=0);
 
-		//---------- Getters and Setters ----------//
-		DepthBuffer* getDepthBuffer() const { return _depthBuffer; }
-		ColorBuffer* getColorBuffer() const { return _colorBuffer; }
-
 	private:
-		ColorBuffer* _colorBuffer;
-		DepthBuffer* _depthBuffer;
-
 		// Output image info
 		VkExtent2D _imageExtent;
 		VkFormat _imageFormat;
