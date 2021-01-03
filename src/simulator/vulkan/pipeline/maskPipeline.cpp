@@ -242,23 +242,6 @@ MaskPipeline::MaskPipeline(Device* device,
 
 MaskPipeline::~MaskPipeline()
 {
-	if(_colorBuffer != nullptr)
-	{
-		delete _colorBuffer;
-		_colorBuffer = nullptr;
-	}
-
-	if(_depthBuffer != nullptr)
-	{
-		delete _depthBuffer;
-		_depthBuffer = nullptr;
-	}
-
-	if(_renderPass != nullptr)
-	{
-		delete _renderPass;
-		_renderPass = nullptr;
-	}
 }
 
 void MaskPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)

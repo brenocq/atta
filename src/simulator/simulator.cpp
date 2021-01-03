@@ -71,14 +71,14 @@ Simulator::~Simulator()
 		_drawer = nullptr;
 	}
 
-	for(auto& miniCleaner : _miniCleaners)
-	{
-		if(miniCleaner != nullptr)
-		{
-			delete miniCleaner;
-			miniCleaner = nullptr;
-		}
-	}
+	//for(auto& miniCleaner : _miniCleaners)
+	//{
+	//	if(miniCleaner != nullptr)
+	//	{
+	//		delete miniCleaner;
+	//		miniCleaner = nullptr;
+	//	}
+	//}
 }
 
 void Simulator::run()
