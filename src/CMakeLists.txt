@@ -101,15 +101,24 @@ set(src_files_simulator_vulkan
 	simulator/vulkan/window.cpp
 )
 
-set(src_files_simulator_vulkan_raytracing
-	simulator/vulkan/rayTracing/accelerationStructure.cpp
-	simulator/vulkan/rayTracing/bottomLevelAccelerationStructure.cpp
-	simulator/vulkan/rayTracing/deviceProcedures.cpp
-	simulator/vulkan/rayTracing/rayTracing.cpp
-	simulator/vulkan/rayTracing/rayTracingPipeline.cpp
-	simulator/vulkan/rayTracing/shaderBindingTable.cpp
-	simulator/vulkan/rayTracing/topLevelAccelerationStructure.cpp
+# RayTracing
+file(GLOB rtSrc
+    "simulator/vulkan/rayTracing/**/*.cpp"
+	"simulator/vulkan/rayTracing/*.cpp"
 )
+set(src_files_simulator_vulkan_raytracing
+	${rtSrc}
+)
+
+#set(src_files_simulator_vulkan_raytracing
+#	simulator/vulkan/rayTracing/accelerationStructure.cpp
+#	simulator/vulkan/rayTracing/bottomLevelAccelerationStructure.cpp
+#	simulator/vulkan/rayTracing/deviceProcedures.cpp
+#	simulator/vulkan/rayTracing/rayTracing.cpp
+#	simulator/vulkan/rayTracing/rayTracingPipeline.cpp
+#	simulator/vulkan/rayTracing/shaderBindingTable.cpp
+#	simulator/vulkan/rayTracing/topLevelAccelerationStructure.cpp
+#)
 
 set(src_files_simulator_vulkan_pipeline
 	simulator/vulkan/pipeline/graphicsPipeline.cpp

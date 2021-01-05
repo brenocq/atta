@@ -66,7 +66,10 @@ Application::Application(Scene* scene):
 
 	//---------- RayTracing ----------//
 	if(_device->getRayTracingEnabled())
+	{
 		_rayTracing = new RayTracing(_device, _swapChain, _commandPool, _uniformBuffers, _scene);
+	}
+	_rayTracingCPU = new atta::rt::RayTracingCPU();
 
 	//---------- Scene special objects ----------//
 	createSpecialSceneObjects();
@@ -122,6 +125,12 @@ Application::~Application()
 	{
 		delete _rayTracing;
 		_rayTracing = nullptr;
+	}
+
+	if(_rayTracingCPU != nullptr)
+	{
+		delete _rayTracingCPU;
+		_rayTracingCPU = nullptr;
 	}
 
 	delete _userInterface;
