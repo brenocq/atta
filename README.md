@@ -39,10 +39,11 @@ These values are unreliable and come from what I think is going on in the code (
 
 #### Core
  - Vulkan specific: 100%
- - RayTracing (GPU): 85%
+ - RayTracing (Vulkan): 85%
  - RayTracing (CPU): 5%
- - Graphics user interface: 15%
+ - Graphics user interface: 20%
  - Physics engine: 10%
+ - Threading: 10%
 
 ## References
 - [Alexander Overvoorde's Vulkan Tutorial](https://vulkan-tutorial.com/)
@@ -51,7 +52,7 @@ These values are unreliable and come from what I think is going on in the code (
 - [Nvidia Vulkan Ray Tracing Tutorial](https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/)
 - [Game Physics Engine Development](https://www.amazon.com/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
 - [Real-Time Collision Detection](https://www.amazon.com/Real-Time-Collision-Detection-Interactive-Technology/dp/1558607323)
-- [Physically Based Rendering](https://pbrt.org/)
+- [Physically Based Rendering](http://www.pbr-book.org/)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.

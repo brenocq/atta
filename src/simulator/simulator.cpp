@@ -9,9 +9,18 @@
 #include "simulator/objects/basics/basics.h"
 #include "simulator/physics/constraints/fixedConstraint.h"
 #include "simulator/physics/constraints/hingeConstraint.h"
+#include "simulator/helpers/evaluator.h"
 
 Simulator::Simulator()
 {
+	Evaluator::reportCounter("test", 2);
+	Evaluator::reportCounter("alo", 1);
+	Evaluator::reportCounter("test");
+	Evaluator::reportCounter("alo", 5);
+	Evaluator::showReports();
+	Evaluator::clear();
+	Evaluator::showReports();
+
 	_scene = new Scene();
 	// Load objects
 	_scene->loadObject("wheel");

@@ -45,6 +45,7 @@
 #include "modelViewController.h"
 #include "gui/userInterface.h"
 #include "rayTracing/rayTracing.h"
+#include "rayTracing/rayTracingCPU/rayTracingCPU.h"
 #include "../scene.h"
 
 class Application
@@ -101,6 +102,7 @@ class Application
 		// Other renderers
 		UserInterface* _userInterface;
 		RayTracing* _rayTracing;
+		atta::rt::RayTracingCPU* _rayTracingCPU;
 
 		// Command Buffers
 		CommandPool* _commandPool;
