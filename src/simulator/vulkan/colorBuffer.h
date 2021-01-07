@@ -18,17 +18,17 @@
 class ColorBuffer
 {
 	public:
-		ColorBuffer(Device* device, VkExtent2D extent, VkFormat format);
+		ColorBuffer(std::shared_ptr<Device> device, VkExtent2D extent, VkFormat format);
 		~ColorBuffer();
 
-		Device* getDevice() const { return _device; }
+		std::shared_ptr<Device> getDevice() const { return _device; }
 		Image* getImage() const { return _image; }
 		ImageView* getImageView() const { return _imageView; }
 		VkExtent2D getExtent() const { return _extent; }
 		VkFormat getFormat() const { return _format; }
 
 	private:
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		Image* _image;
 		ImageView* _imageView;
 		VkExtent2D _extent;

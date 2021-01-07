@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include "pipeline.h"
 
-Pipeline::Pipeline(Device* device, 
+Pipeline::Pipeline(std::shared_ptr<Device> device, 
 		std::vector<ImageView*> imageViews, 
 		Scene* scene):
 		_device(device), _imageViews(imageViews), _scene(scene)

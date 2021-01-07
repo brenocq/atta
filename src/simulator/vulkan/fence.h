@@ -15,18 +15,18 @@
 class Fence
 {
 	public:
-	Fence(Device* device);
-	~Fence();
+		Fence(std::shared_ptr<Device> device);
+		~Fence();
 
-	VkFence handle() { return _fence; }
-	Device* getDevice() const { return _device; }
+		VkFence handle() { return _fence; }
+		std::shared_ptr<Device> getDevice() const { return _device; }
 
-	void reset();
-	void wait(uint64_t timeout) const;
+		void reset();
+		void wait(uint64_t timeout) const;
 
 	private:
-    VkFence _fence;
-	Device* _device;
+		VkFence _fence;
+		std::shared_ptr<Device> _device;
 };
 
 #endif// FENCE_H

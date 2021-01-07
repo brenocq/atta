@@ -11,7 +11,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
-#include <string.h>
+#include <memory>
+#include <string>
 #include <cstdint> // Necessary for UINT32_MAX
 #include "defines.h"
 #include "device.h"
@@ -23,7 +24,7 @@
 class SwapChain
 {
 	public:
-		SwapChain(Device* device, Window* window);
+		SwapChain(std::shared_ptr<Device> device, std::shared_ptr<Window> window);
 		~SwapChain();
 
 		void copyImage(VkCommandBuffer commandBuffer, int imageIndex, Image* src, VkExtent2D extent, VkExtent2D offset);
@@ -42,8 +43,8 @@ class SwapChain
 
 		void createImageViews();
 
-		Device* _device;
-		Window* _window;
+		std::shared_ptr<Device> _device;
+		std::weak_ptr<Window> _window;
 
 		VkSwapchainKHR _swapChain;
 		std::vector<VkImage> _images;

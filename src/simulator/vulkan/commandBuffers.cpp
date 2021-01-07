@@ -8,10 +8,9 @@
 #include "physicalDevice.h"
 #include "simulator/helpers/log.h"
 
-CommandBuffers::CommandBuffers(Device* device, CommandPool* commandPool, uint32_t size)
+CommandBuffers::CommandBuffers(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, uint32_t size):
+	_device(device), _commandPool(commandPool)
 {
-	_device = device;
-	_commandPool = commandPool;
 	_commandBuffers.resize(size);
 
 	VkCommandBufferAllocateInfo allocInfo{};

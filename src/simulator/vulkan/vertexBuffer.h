@@ -18,7 +18,7 @@
 class VertexBuffer : public Buffer
 {
 	public:
-	VertexBuffer(Device* device, std::vector<Vertex> vertices);
+	VertexBuffer(std::shared_ptr<Device> device, std::vector<Vertex> vertices);
 	~VertexBuffer();
 
 	private:

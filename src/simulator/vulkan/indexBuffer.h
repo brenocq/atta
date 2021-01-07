@@ -17,7 +17,7 @@
 class IndexBuffer : public Buffer
 {
 	public:
-	IndexBuffer(Device* device, std::vector<unsigned int> indices);
+	IndexBuffer(std::shared_ptr<Device> device, std::vector<unsigned int> indices);
 	~IndexBuffer();
 
 	private:

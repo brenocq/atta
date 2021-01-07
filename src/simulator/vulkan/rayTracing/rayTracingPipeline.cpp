@@ -10,16 +10,16 @@
 #include "simulator/helpers/log.h"
 
 RayTracingPipeline::RayTracingPipeline(
-	Device* device,
+	std::shared_ptr<Device> device,
 	DeviceProcedures* deviceProcedures,
 	uint32_t qtyImages,
 	TopLevelAccelerationStructure* accelerationStructure,
 	ImageView* accumulationImageView,
 	ImageView* outputImageView,
 	std::vector<UniformBuffer*> uniformBuffers,
-	Scene* scene)
+	Scene* scene):
+	_device(device)
 {
-	_device = device;
 	_qtyImages = qtyImages;
 	_scene = scene;
 

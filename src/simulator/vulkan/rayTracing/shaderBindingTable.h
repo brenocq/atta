@@ -22,7 +22,7 @@ class ShaderBindingTable final
 	};
 
 	ShaderBindingTable(
-		Device* device,
+		std::shared_ptr<Device> device,
 		DeviceProcedures* deviceProcedures,
 		RayTracingPipeline* rayTracingPipeline,
 		VkPhysicalDeviceRayTracingPropertiesNV rayTracingProperties,
@@ -52,7 +52,7 @@ class ShaderBindingTable final
 	const size_t _missOffset;
 	const size_t _hitGroupOffset;
 
-	Device* _device;
+	std::shared_ptr<Device> _device;
  	Buffer* _buffer;
 };
 

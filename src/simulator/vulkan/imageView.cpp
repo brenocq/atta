@@ -6,11 +6,9 @@
 //--------------------------------------------------
 #include "imageView.h"
 
-ImageView::ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, bool isCubeMap):
-	_mipLevels(mipLevels)
+ImageView::ImageView(std::shared_ptr<Device> device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, bool isCubeMap):
+	_device(device), _mipLevels(mipLevels)
 {
-	_device = device;
-
 	VkImageViewCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	createInfo.image = image;

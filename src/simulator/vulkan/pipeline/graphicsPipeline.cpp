@@ -13,13 +13,18 @@
 #include "simulator/helpers/log.h"
 
 // Graphics Pipeline with swapchain
-GraphicsPipeline::GraphicsPipeline(Device* device, SwapChain* swapChain, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
+GraphicsPipeline::GraphicsPipeline(
+		std::shared_ptr<Device> device, 
+		std::shared_ptr<SwapChain> swapChain, 
+		std::vector<UniformBuffer*> uniformBuffers, 
+		Scene* scene):
 	GraphicsPipeline(device, swapChain->getExtent(), swapChain->getImageFormat(), swapChain->getImageViews(), uniformBuffers, scene)
 {
 }
 
 // Offline Graphics Pipeline
-GraphicsPipeline::GraphicsPipeline(Device* device, 
+GraphicsPipeline::GraphicsPipeline(
+		std::shared_ptr<Device> device, 
 		VkExtent2D extent, VkFormat format,
 		ImageView* imageView,
 		UniformBuffer* uniformBuffer, 
@@ -29,7 +34,8 @@ GraphicsPipeline::GraphicsPipeline(Device* device,
 }
 
 // Base constructor
-GraphicsPipeline::GraphicsPipeline(Device* device, 
+GraphicsPipeline::GraphicsPipeline(
+		std::shared_ptr<Device> device, 
 		VkExtent2D extent, VkFormat format,
 		std::vector<ImageView*> imageViews, 
 		std::vector<UniformBuffer*> uniformBuffers, 

@@ -9,22 +9,35 @@
 #include "../vertex.h"
 #include "../imageMemoryBarrier.h"
 
-RayTracing::RayTracing(Device* device, SwapChain* swapChain, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
+RayTracing::RayTracing(
+		std::shared_ptr<Device> device, 
+		std::shared_ptr<SwapChain> swapChain, 
+		std::shared_ptr<CommandPool> commandPool, 
+		std::vector<UniformBuffer*> uniformBuffers, 
+		Scene* scene):
 	RayTracing(device, swapChain, swapChain->getExtent(), swapChain->getImageFormat(), commandPool, uniformBuffers, scene)
 {
 }
 
-RayTracing::RayTracing(Device* device, VkExtent2D extent, VkFormat format, CommandPool* commandPool, UniformBuffer* uniformBuffer, Scene* scene):
-	RayTracing(device, nullptr, extent, format, commandPool, std::vector<UniformBuffer*>{uniformBuffer}, scene)
+RayTracing::RayTracing(
+		std::shared_ptr<Device> device, 
+		VkExtent2D extent, VkFormat format, 
+		std::shared_ptr<CommandPool> commandPool, 
+		UniformBuffer* uniformBuffer, 
+		Scene* scene):
+	RayTracing(device, std::shared_ptr<SwapChain>(nullptr), extent, format, commandPool, std::vector<UniformBuffer*>{uniformBuffer}, scene)
 {
 }
 
-RayTracing::RayTracing(Device* device, SwapChain* swapChain, VkExtent2D extent, VkFormat format, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
-	_imageExtent(extent), _imageFormat(format)
+RayTracing::RayTracing(
+		std::shared_ptr<Device> device, 
+		std::shared_ptr<SwapChain> swapChain, 
+		VkExtent2D extent, VkFormat format, 
+		std::shared_ptr<CommandPool> commandPool, 
+		std::vector<UniformBuffer*> uniformBuffers, 
+		Scene* scene):
+	_device(device), _swapChain(swapChain), _commandPool(commandPool), _imageExtent(extent), _imageFormat(format)
 {
-	_device = device;
-	_swapChain = swapChain;
-	_commandPool = commandPool;
 	_uniformBuffers = uniformBuffers;
 	_scene = scene;
 	_deviceProcedures = new DeviceProcedures(_device);

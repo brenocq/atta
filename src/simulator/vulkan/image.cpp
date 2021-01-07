@@ -8,13 +8,12 @@
 #include "simulator/helpers/log.h"
 #include "simulator/vulkan/imageMemoryBarrier.h"
 
-Image::Image(Device* device, 
+Image::Image(std::shared_ptr<Device> device, 
 		uint32_t width, uint32_t height, 
 		VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, uint32_t mipLevels, VkSampleCountFlagBits numSamples, bool isCubeMap):
-	_format(format), _extent({width, height}), _layout(VK_IMAGE_LAYOUT_UNDEFINED), _mipLevels(mipLevels)
+	_device(device), _format(format), _extent({width, height}), _layout(VK_IMAGE_LAYOUT_UNDEFINED), _mipLevels(mipLevels)
+	
 {
-	_device = device;
-
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -70,7 +69,7 @@ Image::~Image()
 	}
 }
 
-std::vector<uint8_t> Image::getBuffer(CommandPool* commandPool)
+std::vector<uint8_t> Image::getBuffer(std::shared_ptr<CommandPool> commandPool)
 {
 	Image* dstImg = new Image(_device, _extent.width, _extent.height,
 			_format, VK_IMAGE_TILING_LINEAR, VK_IMAGE_USAGE_TRANSFER_DST_BIT,
@@ -149,7 +148,7 @@ std::vector<uint8_t> Image::getBuffer(CommandPool* commandPool)
 uint32_t Image::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
 {
 	// Copied from buffer class. TODO get from same place
-	PhysicalDevice* physicalDevice = _device->getPhysicalDevice();
+	std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice->handle(), &memProperties);
 

@@ -7,17 +7,31 @@
 #include "physicalDevice.h"
 #include "simulator/helpers/log.h"
 
-PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
+PhysicalDevice::PhysicalDevice(std::shared_ptr<Instance> instance, std::shared_ptr<Surface> surface):
+	_instance(instance), _surface(surface)
 {
-	checkArguments(instance, surface);
-	_instance = instance;
-	_surface = surface;
+	// Check pointers
+	auto instance_ = _instance.lock();
+	if(!instance_)
+	{
+		Log::error("PhysicalDevice", "Instance is expired in the constructor!");
+		exit(1);
+	}
+	
+	auto surface_ = _surface.lock();
+	if(!surface_)
+	{
+		Log::error("PhysicalDevice", "Surface is expired in the constructor!");
+		exit(1);
+	}
+
+
 	_physicalDevice = VK_NULL_HANDLE;
 	_deviceExtensions = deviceExtensions;
 
 	// Get device count
 	uint32_t deviceCount = 0;
-	vkEnumeratePhysicalDevices(_instance->handle(), &deviceCount, nullptr);
+	vkEnumeratePhysicalDevices(instance_->handle(), &deviceCount, nullptr);
 	
 	// Check if some device was found
 	if(deviceCount == 0) 
@@ -28,7 +42,7 @@ PhysicalDevice::PhysicalDevice(Instance* instance, Surface* surface)
 
 	// Get physical devices
 	std::vector<VkPhysicalDevice> devices(deviceCount);
-	vkEnumeratePhysicalDevices(_instance->handle(), &deviceCount, devices.data());
+	vkEnumeratePhysicalDevices(instance_->handle(), &deviceCount, devices.data());
 
 	printPhysicalDevices(devices);
 	for(const auto& device : devices) 
@@ -112,6 +126,13 @@ bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device)
 
 QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice device) 
 {
+	auto surface_ = _surface.lock();
+	if(!surface_)
+	{
+		Log::error("PhysicalDevice", "Surface is expired in the findQueueFamilies!");
+		exit(1);
+	}
+
     // Logic to find graphics queue family
 	QueueFamilyIndices indices;	
 
@@ -130,7 +151,7 @@ QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice device)
 		}
 
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, _surface->handle(), &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_->handle(), &presentSupport);
 		if (presentSupport) 
 		{
 			indices.presentFamily = i;
@@ -155,9 +176,15 @@ SwapChainSupportDetails PhysicalDevice::querySwapChainSupport()
 
 SwapChainSupportDetails PhysicalDevice::querySwapChainSupport(VkPhysicalDevice device)
 {
-	VkSurfaceKHR surface = _surface->handle();
-
 	SwapChainSupportDetails details;
+	auto surface_ = _surface.lock();
+	if(!surface_)
+	{
+		Log::error("PhysicalDevice", "Surface is expired in the querySwapChainSupport!");
+		exit(1);
+	}
+	VkSurfaceKHR surface = surface_->handle();
+
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
 
 	// Surface formats
@@ -186,37 +213,6 @@ SwapChainSupportDetails PhysicalDevice::querySwapChainSupport(VkPhysicalDevice d
 QueueFamilyIndices PhysicalDevice::findQueueFamilies()
 {
 	return findQueueFamilies(_physicalDevice);
-}
-
-void PhysicalDevice::checkArguments(Instance* instance, Surface* surface)
-{
-	if(instance != nullptr)
-	{
-		if(instance->handle() == VK_NULL_HANDLE)
-		{
-			std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Instance handle can't be null!" << RESET << std::endl;
-			exit(1);
-		}
-	}
-	else
-	{
-		std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Instance can't be null!" << RESET << std::endl;
-		exit(1);
-	}
-
-	if(surface != nullptr)
-	{
-		if(surface->handle() == VK_NULL_HANDLE)
-		{
-			std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Surface handle can't be null!" << RESET << std::endl;
-			exit(1);
-		}
-	}
-	else
-	{
-		std::cout << BOLDRED << "[Physical Device]" << RESET << RED << " Surface can't be null!" << RESET << std::endl;
-		exit(1);
-	}
 }
 
 std::string PhysicalDevice::getVersion(const uint32_t version)

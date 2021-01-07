@@ -8,13 +8,12 @@
 #include "guiVertex.h"
 #include "simulator/helpers/log.h"
 
-GuiPipeline::GuiPipeline(Device* device, 
-				SwapChain* swapChain, 
+GuiPipeline::GuiPipeline(std::shared_ptr<Device> device, 
+				std::shared_ptr<SwapChain> swapChain, 
 				std::vector<GuiUniformBuffer*> uniformBuffers,
-				guib::FontLoader* _fontLoader)
+				guib::FontLoader* _fontLoader):
+	_device(device)
 {
-	_device = device;
-
 	//---------- Get swapchain images ----------//
 	_imageViews = swapChain->getImageViews();
 	_imageFormat = swapChain->getImageFormat();

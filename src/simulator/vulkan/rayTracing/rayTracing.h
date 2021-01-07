@@ -29,11 +29,11 @@ class RayTracing
 {
 	public:
 		// Ray Tracing with swapchain
-		RayTracing(Device* device, SwapChain* swapChain, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene);
+		RayTracing(std::shared_ptr<Device> device, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<CommandPool> commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene);
 		// Offline Ray Tracing
-		RayTracing(Device* device, VkExtent2D extent, VkFormat format, CommandPool* commandPool, UniformBuffer* uniformBuffer, Scene* scene);
+		RayTracing(std::shared_ptr<Device> device, VkExtent2D extent, VkFormat format, std::shared_ptr<CommandPool> commandPool, UniformBuffer* uniformBuffer, Scene* scene);
 		// Base constructor
-		RayTracing(Device* device, SwapChain* swapChain, VkExtent2D extent, VkFormat format, CommandPool* commandPool, std::vector<UniformBuffer*> uniformBuffer, Scene* scene);
+		RayTracing(std::shared_ptr<Device> device, std::shared_ptr<SwapChain> swapChain, VkExtent2D extent, VkFormat format, std::shared_ptr<CommandPool> commandPool, std::vector<UniformBuffer*> uniformBuffer, Scene* scene);
 		~RayTracing();
 
 		void createPipeline();
@@ -53,9 +53,9 @@ class RayTracing
 		void createOutputImage();
 
 		// Main auxiliary objects
-		Device* _device;
-		CommandPool* _commandPool;
-		SwapChain* _swapChain;
+		std::shared_ptr<Device> _device;
+		std::shared_ptr<CommandPool> _commandPool;
+		std::shared_ptr<SwapChain> _swapChain;
 		std::vector<UniformBuffer*> _uniformBuffers;
 		Scene* _scene;
 

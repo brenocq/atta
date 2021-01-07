@@ -16,7 +16,7 @@
 class GuiRenderPass
 {
 	public:
-		GuiRenderPass(Device* device, VkFormat colorFormat);
+		GuiRenderPass(std::shared_ptr<Device> device, VkFormat colorFormat);
 		~GuiRenderPass();
 
 		VkRenderPass handle() const { return _renderPass; }
@@ -24,7 +24,7 @@ class GuiRenderPass
 
 	private:
 		VkRenderPass _renderPass;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		VkFormat _colorFormat;
 };
 

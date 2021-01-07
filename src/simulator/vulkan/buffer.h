@@ -16,14 +16,14 @@
 class Buffer
 {
 	public:
-		Buffer(Device* device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+		Buffer(std::shared_ptr<Device> device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 		~Buffer();
 
 		VkBuffer handle() { return _buffer; }
-		Device* getDevice() const { return _device; }
+		std::shared_ptr<Device> getDevice() const { return _device; }
 		VkDeviceMemory getMemory() const { return _bufferMemory; }
 
-		void copyFrom(CommandPool* commandPool, VkBuffer srcBuffer, VkDeviceSize size);
+		void copyFrom(std::shared_ptr<CommandPool> commandPool, VkBuffer srcBuffer, VkDeviceSize size);
 
 		void* mapMemory(const size_t offset, const size_t size);
 		void unmapMemory();
@@ -33,7 +33,7 @@ class Buffer
 		VkBuffer _buffer;
 		VkBufferCreateInfo _bufferInfo;
 		VkDeviceMemory _bufferMemory;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 };
 
 #endif// BUFFER_H

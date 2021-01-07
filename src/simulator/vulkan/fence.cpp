@@ -6,9 +6,9 @@
 //--------------------------------------------------
 #include "fence.h"
 
-Fence::Fence(Device* device)
+Fence::Fence(std::shared_ptr<Device> device):
+	_device(device)
 {
-	_device = device;
 
 	VkFenceCreateInfo fenceInfo{};
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;

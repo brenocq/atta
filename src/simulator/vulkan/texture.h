@@ -19,12 +19,12 @@
 class Texture
 {
 	public:
-		Texture(Device* device, CommandPool* commandPool, std::string filename, VkFormat format=VK_FORMAT_R8G8B8A8_SRGB);
-		Texture(Device* device, CommandPool* commandPool, VkExtent2D size);
-		Texture(Device* device, CommandPool* commandPool, unsigned char buffer[],  VkExtent2D size);
+		Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format=VK_FORMAT_R8G8B8A8_SRGB);
+		Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size);
+		Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, unsigned char buffer[],  VkExtent2D size);
 		~Texture();
 
-		Device* getDevice() const { return _device; }
+		std::shared_ptr<Device> getDevice() const { return _device; }
 		Image* getImage() const { return _image; }
 		ImageView* getImageView() const { return _imageView; }
 		Sampler* getSampler() const { return _sampler; }
@@ -38,8 +38,8 @@ class Texture
 		void copyEquToCubeMapImages(float* buffer, uint32_t width, uint32_t height);
 		void generateMipmaps();
 
-		Device* _device;
-		CommandPool* _commandPool;
+		std::shared_ptr<Device> _device;
+		std::shared_ptr<CommandPool> _commandPool;
 		Image* _image;
 		ImageView* _imageView;
 		Sampler* _sampler;

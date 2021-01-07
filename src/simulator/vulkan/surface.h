@@ -11,6 +11,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
+#include <memory>
 #include <string.h>
 #include "defines.h"
 #include "window.h"
@@ -19,15 +20,15 @@
 class Surface
 {
 	public:
-	Surface(Instance* instance, Window* window);
+	Surface(std::shared_ptr<Instance> instance, std::shared_ptr<Window> window);
 	~Surface();
 
 	VkSurfaceKHR handle() const { return _surface; }
 	private:
 
     VkSurfaceKHR _surface;
-	Window* _window;
-	Instance* _instance;
+	std::shared_ptr<Instance> _instance;
+	std::shared_ptr<Window> _window;
 };
 
 #endif// SURFACE_H

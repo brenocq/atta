@@ -8,11 +8,9 @@
 #include "guiStructs.h"
 #include "simulator/helpers/log.h"
 
-GuiPipelineLayout::GuiPipelineLayout(Device* device, DescriptorSetLayout* descriptorSetLayout)
+GuiPipelineLayout::GuiPipelineLayout(std::shared_ptr<Device> device, DescriptorSetLayout* descriptorSetLayout):
+	_device(device), _descriptorSetLayout(descriptorSetLayout)
 {
-	_device = device;
-	_descriptorSetLayout = descriptorSetLayout;
-
 	VkDescriptorSetLayout setLayouts[] = { descriptorSetLayout->handle() };
 	
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};

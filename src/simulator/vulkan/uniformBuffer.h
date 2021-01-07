@@ -19,7 +19,7 @@
 class UniformBuffer : public Buffer
 {
 	public:
-		UniformBuffer(Device* device, VkDeviceSize size);
+		UniformBuffer(std::shared_ptr<Device> device, VkDeviceSize size);
 		~UniformBuffer();
 
 		void setValue(UniformBufferObject ubo);

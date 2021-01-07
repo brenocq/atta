@@ -11,6 +11,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
+#include <memory>
 #include <string.h>
 #include "defines.h"
 #include "instance.h"
@@ -19,24 +20,23 @@
 class DebugMessenger
 {
 	public:
-	DebugMessenger(Instance* instance);
-	~DebugMessenger();
+		DebugMessenger(std::shared_ptr<Instance> instance);
+		~DebugMessenger();
 
 	private:
-	void checkArguments(Instance* instance);
-	VkResult CreateDebugUtilsMessengerEXT(
-			VkInstance instance,
-			const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-			const VkAllocationCallbacks* pAllocator,
-			VkDebugUtilsMessengerEXT* pDebugMessenger);
+		VkResult CreateDebugUtilsMessengerEXT(
+				VkInstance instance,
+				const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+				const VkAllocationCallbacks* pAllocator,
+				VkDebugUtilsMessengerEXT* pDebugMessenger);
 
-	void DestroyDebugUtilsMessengerEXT(
-			VkInstance instance,
-			VkDebugUtilsMessengerEXT debugMessenger,
-			const VkAllocationCallbacks* pAllocator);
+		void DestroyDebugUtilsMessengerEXT(
+				VkInstance instance,
+				VkDebugUtilsMessengerEXT debugMessenger,
+				const VkAllocationCallbacks* pAllocator);
 
-    VkDebugUtilsMessengerEXT _debugMessenger;
-	Instance* _instance;
+		VkDebugUtilsMessengerEXT _debugMessenger;
+		std::shared_ptr<Instance> _instance;
 };
 
 #endif// DEBUG_UTILS_MESSENGER_H

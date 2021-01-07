@@ -52,7 +52,7 @@ size_t copyShaderData(
 }
 
 ShaderBindingTable::ShaderBindingTable(
-	Device* device, 
+	std::shared_ptr<Device> device, 
 	DeviceProcedures* deviceProcedures, 
 	RayTracingPipeline* rayTracingPipeline,
 	VkPhysicalDeviceRayTracingPropertiesNV rayTracingProperties,

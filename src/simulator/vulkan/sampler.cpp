@@ -6,9 +6,9 @@
 //--------------------------------------------------
 #include "sampler.h"
 
-Sampler::Sampler(Device* device, uint32_t mipLevels)
+Sampler::Sampler(std::shared_ptr<Device> device, uint32_t mipLevels):
+	_device(device)
 {
-	_device = device;
 
 	VkSamplerCreateInfo samplerInfo{};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;

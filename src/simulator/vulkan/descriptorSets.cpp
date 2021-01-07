@@ -9,13 +9,13 @@
 #include "simulator/helpers/log.h"
 
 DescriptorSets::DescriptorSets(
-		Device* device, 
+		std::shared_ptr<Device> device, 
 		DescriptorPool* descriptorPool, 
 		DescriptorSetLayout* descriptorSetLayout,
 		std::map<uint32_t, VkDescriptorType> bindingTypes, 
-		size_t size)
+		size_t size):
+	_device(device)
 {
-	_device = device;
 	_descriptorPool = descriptorPool;
 	_descriptorSetLayout = descriptorSetLayout;
 	_bindingTypes = bindingTypes;

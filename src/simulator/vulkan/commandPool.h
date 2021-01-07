@@ -15,17 +15,17 @@
 class CommandPool
 {
 	public:
-		CommandPool(Device* device, VkCommandPoolCreateFlags flags=0);
+		CommandPool(std::shared_ptr<Device> device, VkCommandPoolCreateFlags flags=0);
 		~CommandPool();
 
 		VkCommandPool handle() const { return _commandPool; }
-		Device* getDevice() const { return _device; }
+		std::shared_ptr<Device> getDevice() const { return _device; }
 
 		VkCommandBuffer beginSingleTimeCommands();
 		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 	private:
 		VkCommandPool _commandPool;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 };
 
 #endif// COMMAND_POOL_H

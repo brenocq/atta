@@ -20,7 +20,7 @@ namespace guib {
 	class FontLoader
 	{
 		public:
-			FontLoader(Device* device, CommandPool* commandPool, std::string filename);
+			FontLoader(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename);
 			~FontLoader();
 
 			//---------- Getters and Setters ----------//
@@ -37,8 +37,8 @@ namespace guib {
 			FontTexture _fontTexture;
 
 			// Vulkan specific
-			Device* _device;
-			CommandPool* _commandPool;
+			std::shared_ptr<Device> _device;
+			std::shared_ptr<CommandPool> _commandPool;
 			Texture* _texture;
 	};
 }

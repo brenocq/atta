@@ -13,13 +13,14 @@
 #include "simulator/helpers/log.h"
 
 // Graphics Pipeline with swapchain
-MaskPipeline::MaskPipeline(Device* device, SwapChain* swapChain, RenderPass* renderPass, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
+MaskPipeline::MaskPipeline(std::shared_ptr<Device> device, std::shared_ptr<SwapChain> swapChain, RenderPass* renderPass, std::vector<UniformBuffer*> uniformBuffers, Scene* scene):
 	MaskPipeline(device, renderPass, swapChain->getExtent(), swapChain->getImageFormat(), swapChain->getImageViews(), uniformBuffers, scene)
 {
 }
 
 // Offline Graphics Pipeline
-MaskPipeline::MaskPipeline(Device* device, 
+MaskPipeline::MaskPipeline(
+		std::shared_ptr<Device> device, 
 		RenderPass* renderPass,
 		VkExtent2D extent, VkFormat format,
 		ImageView* imageView,
@@ -30,7 +31,8 @@ MaskPipeline::MaskPipeline(Device* device,
 }
 
 // Base constructor
-MaskPipeline::MaskPipeline(Device* device, 
+MaskPipeline::MaskPipeline(
+		std::shared_ptr<Device> device, 
 		RenderPass* renderPass,
 		VkExtent2D extent, VkFormat format,
 		std::vector<ImageView*> imageViews, 

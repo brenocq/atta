@@ -7,8 +7,9 @@
 #include "skyboxPipeline.h"
 #include "simulator/helpers/log.h"
 
-SkyboxPipeline::SkyboxPipeline(Device* device, 
-			SwapChain* swapChain, 
+SkyboxPipeline::SkyboxPipeline(
+			std::shared_ptr<Device> device, 
+			std::shared_ptr<SwapChain> swapChain, 
 			RenderPass* renderPass,
 			std::vector<UniformBuffer*> uniformBuffers, 
 			Scene* scene):

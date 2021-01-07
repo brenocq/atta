@@ -17,14 +17,14 @@
 class PipelineLayout
 {
 	public:
-		PipelineLayout(Device* device, DescriptorSetLayout* descriptorSetLayout);
+		PipelineLayout(std::shared_ptr<Device> device, DescriptorSetLayout* descriptorSetLayout);
 		~PipelineLayout();
 
 		VkPipelineLayout handle() const { return _pipelineLayout; }
 
 	private:
 		VkPipelineLayout _pipelineLayout;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		DescriptorSetLayout* _descriptorSetLayout;
 };
 

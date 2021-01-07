@@ -26,7 +26,7 @@
 class UserInterface
 {
 	public:
-		UserInterface(Device* device, Window* window, SwapChain* swapChain, Scene* scene);
+		UserInterface(std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<SwapChain> swapChain, Scene* scene);
 		~UserInterface();
 
 		void draw();
@@ -52,12 +52,12 @@ class UserInterface
 
 		std::map<Object*, bool> _showObjectInfo;
 
-		Device* _device;
-		Window* _window;
-		SwapChain* _swapChain;
+		std::shared_ptr<Device> _device;
+		std::shared_ptr<Window> _window;
+		std::shared_ptr<SwapChain> _swapChain;
 		Scene* _scene;
 
-		CommandPool* _guiCommandPool;
+		std::shared_ptr<CommandPool> _guiCommandPool;
 		CommandBuffers* _guiCommandBuffers;
 		std::vector<GuiUniformBuffer*> _guiUniformBuffers;
 		GuiPipeline* _guiPipeline;

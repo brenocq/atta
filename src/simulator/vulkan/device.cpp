@@ -7,14 +7,13 @@
 #include "device.h"
 #include "simulator/helpers/log.h"
 
-Device::Device(PhysicalDevice* physicalDevice):
-	_msaaSamples(VK_SAMPLE_COUNT_1_BIT), _rayTracingEnabled(false)
+Device::Device(std::shared_ptr<PhysicalDevice> physicalDevice):
+	_physicalDevice(physicalDevice), _msaaSamples(VK_SAMPLE_COUNT_1_BIT), _rayTracingEnabled(false)
 {
-	_physicalDevice = physicalDevice;
 	_msaaSamples = getMaxUsableSampleCount();
 
 	//----- Get queues -----//
-	QueueFamilyIndices indices = physicalDevice->findQueueFamilies();
+	QueueFamilyIndices indices = _physicalDevice->findQueueFamilies();
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
@@ -75,7 +74,7 @@ Device::Device(PhysicalDevice* physicalDevice):
 	}
 
 	//----- Create -----//
-	if(vkCreateDevice(physicalDevice->handle(), &createInfo, nullptr, &_device) != VK_SUCCESS)
+	if(vkCreateDevice(_physicalDevice->handle(), &createInfo, nullptr, &_device) != VK_SUCCESS)
 	{
 		Log::error("Device", "Failed to create device.");
 		exit(1);

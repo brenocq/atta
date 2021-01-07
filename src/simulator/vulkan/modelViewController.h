@@ -9,13 +9,15 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#include <memory>
 #include "glm.h"
 #include "window.h"
+#include "simulator/helpers/log.h"
 
 class ModelViewController
 {
 	public:
-		ModelViewController(Window* window);
+		ModelViewController(std::shared_ptr<Window> window);
 		~ModelViewController();
 
 		void reset(const glm::mat4& modelView);
@@ -40,7 +42,7 @@ class ModelViewController
 		void rotate(float y, float x);
 		void updateVectors();
 
-		Window* _window;
+		std::weak_ptr<Window> _window;
 
 		// Control states
 		bool _cameraMovingLeft{};

@@ -21,7 +21,7 @@ class DescriptorSets
 {
 	public:
 		DescriptorSets(
-				Device* device, 
+				std::shared_ptr<Device> device, 
 				DescriptorPool* descriptorPool, 
 				DescriptorSetLayout* descriptorSetLayout,
 				std::map<uint32_t, VkDescriptorType> bindingTypes, 
@@ -30,7 +30,7 @@ class DescriptorSets
 		~DescriptorSets();
 
 		std::vector<VkDescriptorSet> handle() const { return _descriptorSets; }
-		Device* getDevice() const { return _device; }
+		std::shared_ptr<Device> getDevice() const { return _device; }
 
 		VkWriteDescriptorSet bind(uint32_t index, uint32_t binding, const VkDescriptorBufferInfo& bufferInfo, uint32_t count = 1) const;
 		VkWriteDescriptorSet bind(uint32_t index, uint32_t binding, const VkDescriptorImageInfo& imageInfo, uint32_t count = 1) const;
@@ -42,7 +42,7 @@ class DescriptorSets
 
 		std::vector<VkDescriptorSet> _descriptorSets;
 		std::map<uint32_t, VkDescriptorType> _bindingTypes;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		DescriptorPool* _descriptorPool;
 		DescriptorSetLayout* _descriptorSetLayout;
 		std::vector<UniformBuffer*> _uniformBuffers;

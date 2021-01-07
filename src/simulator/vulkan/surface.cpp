@@ -7,16 +7,14 @@
 #include "surface.h"
 #include "simulator/helpers/log.h"
 
-Surface::Surface(Instance* instance, Window* window)
+Surface::Surface(std::shared_ptr<Instance> instance, std::shared_ptr<Window> window):
+	_instance(instance), _window(window)
 {
-	_instance = instance;
-	_window = window;
-
-	if(glfwCreateWindowSurface(_instance->handle(), window->handle(), nullptr, &_surface) != VK_SUCCESS) 
+	if(glfwCreateWindowSurface(_instance->handle(), _window->handle(), nullptr, &_surface) != VK_SUCCESS) 
 	{
 		Log::error("Surface", "Failed to create window surface!");
 		exit(1);
-    }	
+	}	
 }
 
 Surface::~Surface()

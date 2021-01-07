@@ -9,10 +9,9 @@
 #include <iostream>
 #include <math.h>// isnan
 
-ModelViewController::ModelViewController(Window* window):
-	_mouseMiddleButton(false), _shiftKey(false), _speed(5.0f)
+ModelViewController::ModelViewController(std::shared_ptr<Window> window):
+	_window(window), _mouseMiddleButton(false), _shiftKey(false), _speed(5.0f)
 {
-	_window = window;
 }
 
 ModelViewController::~ModelViewController()
@@ -77,7 +76,16 @@ void ModelViewController::onMouseButton(int button, int action, int mods)
 		case GLFW_MOUSE_BUTTON_MIDDLE:
 			_mouseMiddleButton = action == GLFW_PRESS;
 			if(action == GLFW_PRESS || action == GLFW_RELEASE)
-				_window->toggleCursorVisibility();
+			{
+				if(auto w = _window.lock())
+				{
+					w->toggleCursorVisibility();
+				}
+				else
+				{
+					Log::warning("ModelViewController", "Window is expired, it was not possible to toggle cursor visibility");
+				}
+			}
 			break;
 	}
 }

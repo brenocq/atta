@@ -10,12 +10,9 @@
 #include "stbImage.h"
 #include "simulator/helpers/log.h"
 
-Texture::Texture(Device* device, CommandPool* commandPool, std::string filename, VkFormat format):
-	_arrayLayers(1)
+Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format):
+	_device(device), _commandPool(commandPool), _arrayLayers(1)
 {
-	_device = device;
-	_commandPool = commandPool;
-
 	int texWidth, texHeight, texChannels;
     void* pixels = nullptr;
 
@@ -106,12 +103,9 @@ Texture::Texture(Device* device, CommandPool* commandPool, std::string filename,
 	Log::success("Texture", filename + " loaded successfully: " + std::to_string(_width) + " x " + std::to_string(_height));
 }
 
-Texture::Texture(Device* device, CommandPool* commandPool, VkExtent2D size):
-	_arrayLayers(1)
+Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size):
+	_device(device), _commandPool(commandPool), _arrayLayers(1)
 {
-	_device = device;
-	_commandPool = commandPool;
-
 	_width = size.width;
 	_height = size.height;
 	_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_width, _height)))) + 1;
@@ -135,11 +129,9 @@ Texture::Texture(Device* device, CommandPool* commandPool, VkExtent2D size):
 	_sampler = new Sampler(_device, _mipLevels);
 }
 
-Texture::Texture(Device* device, CommandPool* commandPool, unsigned char buffer[],  VkExtent2D size):
-	_arrayLayers(1)
+Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, unsigned char buffer[],  VkExtent2D size):
+	_device(device), _commandPool(commandPool), _arrayLayers(1)
 {
-	_device = device;
-	_commandPool = commandPool;
 	_width = size.width;
 	_height = size.height;
 

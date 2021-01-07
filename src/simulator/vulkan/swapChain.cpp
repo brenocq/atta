@@ -8,11 +8,10 @@
 #include "imageMemoryBarrier.h"
 #include "simulator/helpers/log.h"
 
-SwapChain::SwapChain(Device* device, Window* window)
+SwapChain::SwapChain(std::shared_ptr<Device> device, std::shared_ptr<Window> window):
+	_device(device), _window(window)
 {
-	_device = device;
-	_window = window;
-	PhysicalDevice* physicalDevice = _device->getPhysicalDevice();
+	std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
 
  	SwapChainSupportDetails swapChainSupport = physicalDevice->querySwapChainSupport();
 
@@ -166,10 +165,14 @@ VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 	else 
 	{
 		// Get current window extent
-        VkExtent2D actualExtent = _window->getExtent();
+		VkExtent2D actualExtent = {0,0};
+		if(auto window = _window.lock())
+			actualExtent = window->getExtent();
+		else
+			Log::error("SwapChain", "Window is expired!");
 
-        actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
-        actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
+		actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
+		actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
 
         return actualExtent;
     }
