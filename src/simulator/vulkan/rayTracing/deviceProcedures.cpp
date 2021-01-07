@@ -8,7 +8,7 @@
 #include "deviceProcedures.h"
 
 template <class Func>
-Func getProcedure(Device* device, const char* const name)
+Func getProcedure(std::shared_ptr<Device> device, const char* const name)
 {
 	const auto func = reinterpret_cast<Func>(vkGetDeviceProcAddr(device->handle(), name));
 	if(func == nullptr)
@@ -20,7 +20,7 @@ Func getProcedure(Device* device, const char* const name)
 }
 
 
-DeviceProcedures::DeviceProcedures(Device* device):
+DeviceProcedures::DeviceProcedures(std::shared_ptr<Device> device):
 	vkCreateAccelerationStructureNV(getProcedure<PFN_vkCreateAccelerationStructureNV>(device, "vkCreateAccelerationStructureNV")),
 	vkDestroyAccelerationStructureNV(getProcedure<PFN_vkDestroyAccelerationStructureNV>(device, "vkDestroyAccelerationStructureNV")),
 	vkGetAccelerationStructureMemoryRequirementsNV(getProcedure<PFN_vkGetAccelerationStructureMemoryRequirementsNV>(device, "vkGetAccelerationStructureMemoryRequirementsNV")),

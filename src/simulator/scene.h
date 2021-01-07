@@ -29,7 +29,7 @@ class Scene
 
 		void loadObject(std::string fileName);
 		void addObject(Object* object);
-		void createBuffers(CommandPool* commandPool);
+		void createBuffers(std::shared_ptr<CommandPool> commandPool);
 
 		void linkObjects();
 		void updatePhysics(float dt);
@@ -87,8 +87,8 @@ class Scene
 		std::vector<Model*> _models;
 		std::vector<Texture*> _textures;
 
-		Device* _device;
-		CommandPool* _commandPool;
+		std::shared_ptr<Device> _device;
+		std::shared_ptr<CommandPool> _commandPool;
 		Buffer* _vertexBuffer;
 		Buffer* _indexBuffer;
 		Buffer* _materialBuffer;

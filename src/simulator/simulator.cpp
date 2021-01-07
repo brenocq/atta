@@ -13,6 +13,7 @@
 
 Simulator::Simulator()
 {
+	welcome();
 	Evaluator::reportCounter("test", 2);
 	Evaluator::reportCounter("alo", 1);
 	Evaluator::reportCounter("test");
@@ -123,3 +124,14 @@ void Simulator::onRaycastClick(glm::vec3 pos, glm::vec3 ray)
 	//}
 }
 
+void Simulator::welcome()
+{
+	std::cout << 
+		COLOR_BOLD_GREEN << 
+		"\t┌───────────────────────────────────┐\n"
+		"\t│░░░░░░░░░░█▀█░▀█▀░▀█▀░█▀█░░░░░░░░░░│\n"
+		"\t│░░░░░░░░░░█▀█░░█░░░█░░█▀█░░░░░░░░░░│\n"
+		"\t│░▀░░▀░░▀░░▀░▀░░▀░░░▀░░▀░▀░░▀░░▀░░▀░│\n"
+		"\t└───────────────────────────────────┘\n" <<
+		COLOR_RESET;
+}

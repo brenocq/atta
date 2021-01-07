@@ -16,15 +16,15 @@
 class DescriptorPool
 {
 	public:
-		DescriptorPool(Device* device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets);
+		DescriptorPool(std::shared_ptr<Device> device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets);
 		~DescriptorPool();
 
 		VkDescriptorPool handle() const { return _descriptorPool; }
-		Device* getDevice() const { return _device; }
+		std::shared_ptr<Device> getDevice() const { return _device; }
 
 	private:
 		VkDescriptorPool _descriptorPool;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 };
 
 #endif// DESCRIPTOR_POOL_H

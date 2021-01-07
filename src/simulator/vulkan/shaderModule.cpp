@@ -6,9 +6,9 @@
 //--------------------------------------------------
 #include "shaderModule.h"
 
-ShaderModule::ShaderModule(Device* device, const std::string& filename)
+ShaderModule::ShaderModule(std::shared_ptr<Device> device, const std::string& filename):
+	_device(device)
 {
-	_device = device;
 	_code = readFile(filename);
 
 	VkShaderModuleCreateInfo createInfo{};

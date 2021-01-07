@@ -18,20 +18,20 @@ class MaskPipeline : public Pipeline
 {
 	public:
 		// Graphics Pipeline with swapchain
-		MaskPipeline(Device* device, 
-				SwapChain* swapChain, 
+		MaskPipeline(std::shared_ptr<Device> device, 
+				std::shared_ptr<SwapChain> swapChain, 
 				RenderPass* renderPass,
 				std::vector<UniformBuffer*> uniformBuffers, 
 				Scene* scene);
 		// Offline Graphics Pipeline
-		MaskPipeline(Device* device, 
+		MaskPipeline(std::shared_ptr<Device> device, 
 				RenderPass* renderPass,
 				VkExtent2D extent, VkFormat format,
 				ImageView* imageView,
 				UniformBuffer* uniformBuffer, 
 				Scene* scene);
 		// Base constructor
-		MaskPipeline(Device* device, 
+		MaskPipeline(std::shared_ptr<Device> device, 
 				RenderPass* renderPass,
 				VkExtent2D extent, VkFormat format,
 				std::vector<ImageView*> imageViews, 

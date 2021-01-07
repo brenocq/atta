@@ -20,20 +20,20 @@ class OutlinePipeline : public Pipeline
 {
 	public:
 		// Graphics Pipeline with swapchain
-		OutlinePipeline(Device* device, 
-				SwapChain* swapChain, 
+		OutlinePipeline(std::shared_ptr<Device> device, 
+				std::shared_ptr<SwapChain> swapChain, 
 				RenderPass* renderPass,
 				std::vector<UniformBuffer*> uniformBuffers, 
 				Scene* scene);
 		// Offline Graphics Pipeline
-		OutlinePipeline(Device* device, 
+		OutlinePipeline(std::shared_ptr<Device> device, 
 				RenderPass* renderPass,
 				VkExtent2D extent, VkFormat format,
 				ImageView* imageView,
 				UniformBuffer* uniformBuffer, 
 				Scene* scene);
 		// Base constructor
-		OutlinePipeline(Device* device, 
+		OutlinePipeline(std::shared_ptr<Device> device, 
 				RenderPass* renderPass,
 				VkExtent2D extent, VkFormat format,
 				std::vector<ImageView*> imageViews, 

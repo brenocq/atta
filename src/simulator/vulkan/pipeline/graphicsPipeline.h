@@ -20,18 +20,18 @@ class GraphicsPipeline : public Pipeline
 {
 	public:
 		// Graphics Pipeline with swapchain
-		GraphicsPipeline(Device* device, 
-				SwapChain* swapChain, 
+		GraphicsPipeline(std::shared_ptr<Device> device, 
+				std::shared_ptr<SwapChain> swapChain, 
 				std::vector<UniformBuffer*> uniformBuffers, 
 				Scene* scene);
 		// Offline Graphics Pipeline
-		GraphicsPipeline(Device* device, 
+		GraphicsPipeline(std::shared_ptr<Device> device, 
 				VkExtent2D extent, VkFormat format,
 				ImageView* imageView,
 				UniformBuffer* uniformBuffer, 
 				Scene* scene);
 		// Base constructor
-		GraphicsPipeline(Device* device, 
+		GraphicsPipeline(std::shared_ptr<Device> device, 
 				VkExtent2D extent, VkFormat format,
 				std::vector<ImageView*> imageViews, 
 				std::vector<UniformBuffer*> uniformBuffers, 

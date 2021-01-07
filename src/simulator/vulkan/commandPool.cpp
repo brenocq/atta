@@ -8,10 +8,10 @@
 #include "physicalDevice.h"
 #include "simulator/helpers/log.h"
 
-CommandPool::CommandPool(Device* device, VkCommandPoolCreateFlags flags)
+CommandPool::CommandPool(std::shared_ptr<Device> device, VkCommandPoolCreateFlags flags):
+	_device(device)
 {
-	_device = device;
-	PhysicalDevice* physicalDevice = _device->getPhysicalDevice();
+	std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
 
 	QueueFamilyIndices queueFamilyIndices = physicalDevice->findQueueFamilies();
 

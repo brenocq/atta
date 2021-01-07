@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <chrono>
+#include <memory>
 
 #include <vector>
 
@@ -56,8 +57,6 @@ class Application
 
 		void run();
 
-		//---------- Camera handling ----------//
-
 		//---------- Callbacks ----------//
 		std::function<void(float dt)> onDrawFrame;
 		std::function<void(glm::vec3 cameraPos, glm::vec3 raycastRay)> onRaycastClick;
@@ -84,29 +83,29 @@ class Application
 		void onScroll(double xoffset, double yoffset);
 
 		// Core clases
-		Window* _window;
-		Instance* _instance;
-		DebugMessenger* _debugMessenger;
-		PhysicalDevice* _physicalDevice;
-		Device* _device;
-		Surface* _surface;
-		SwapChain* _swapChain;
-
-		// Pipelines
-		GraphicsPipeline* _graphicsPipeline;
-		LinePipeline* _linePipeline;
-		MaskPipeline* _maskPipeline;
-		OutlinePipeline* _outlinePipeline;
-		SkyboxPipeline* _skyboxPipeline;
-
-		// Other renderers
-		UserInterface* _userInterface;
-		RayTracing* _rayTracing;
-		atta::rt::RayTracingCPU* _rayTracingCPU;
+		std::shared_ptr<Window> _window;
+		std::shared_ptr<Instance> _instance;
+		std::unique_ptr<DebugMessenger> _debugMessenger;
+		std::shared_ptr<Surface> _surface;
+		std::shared_ptr<PhysicalDevice> _physicalDevice;
+		std::shared_ptr<Device> _device;
+		std::shared_ptr<SwapChain> _swapChain;
 
 		// Command Buffers
-		CommandPool* _commandPool;
-		CommandBuffers* _commandBuffers;
+		std::shared_ptr<CommandPool> _commandPool;
+		std::unique_ptr<CommandBuffers> _commandBuffers;
+
+		// Pipelines
+		std::unique_ptr<GraphicsPipeline> _graphicsPipeline;
+		std::unique_ptr<LinePipeline> _linePipeline;
+		std::unique_ptr<MaskPipeline> _maskPipeline;
+		std::unique_ptr<OutlinePipeline> _outlinePipeline;
+		std::unique_ptr<SkyboxPipeline> _skyboxPipeline;
+
+		// Other renderers
+		std::unique_ptr<UserInterface> _userInterface;
+		RayTracing* _rayTracing;
+		atta::rt::RayTracingCPU* _rayTracingCPU;
 
 		// modelViewController
 		ModelViewController* _modelViewController;

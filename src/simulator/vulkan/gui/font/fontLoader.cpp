@@ -9,7 +9,7 @@
 #include <iostream>
 
 namespace guib {
-	FontLoader::FontLoader(Device* device, CommandPool* commandPool, std::string filename):
+	FontLoader::FontLoader(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename):
 		_filename(filename), _device(device), _commandPool(commandPool)
 	{
 		FT_Error error;

@@ -7,9 +7,9 @@
 #include "descriptorPool.h"
 #include "simulator/helpers/log.h"
 
-DescriptorPool::DescriptorPool(Device* device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets)
+DescriptorPool::DescriptorPool(std::shared_ptr<Device> device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets):
+	_device(device)
 {
-	_device = device;
 
 	std::vector<VkDescriptorPoolSize> poolSizes;
 	for(auto binding : descriptorBindings)

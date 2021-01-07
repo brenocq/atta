@@ -7,10 +7,9 @@
 #include "buffer.h"
 #include "simulator/helpers/log.h"
 
-Buffer::Buffer(Device* device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+Buffer::Buffer(std::shared_ptr<Device> device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties):
+	_device(device)
 {
-	_device = device;
-
 	_bufferInfo = {};
     _bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     _bufferInfo.size = size;
@@ -56,7 +55,7 @@ Buffer::~Buffer()
 
 uint32_t Buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
 {
-	PhysicalDevice* physicalDevice = _device->getPhysicalDevice();
+	std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice->handle(), &memProperties);
 
@@ -72,7 +71,7 @@ uint32_t Buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags prope
 	exit(1);
 }
 
-void Buffer::copyFrom(CommandPool* commandPool, VkBuffer srcBuffer, VkDeviceSize size)
+void Buffer::copyFrom(std::shared_ptr<CommandPool> commandPool, VkBuffer srcBuffer, VkDeviceSize size)
 {
 	VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

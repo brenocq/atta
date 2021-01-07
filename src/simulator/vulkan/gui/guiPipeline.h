@@ -23,8 +23,8 @@
 class GuiPipeline
 {
 	public:
-		GuiPipeline(Device* device, 
-				SwapChain* swapChain, 
+		GuiPipeline(std::shared_ptr<Device> device, 
+				std::shared_ptr<SwapChain> swapChain, 
 				std::vector<GuiUniformBuffer*> uniformBuffers,
 				guib::FontLoader* _fontLoader);
 		~GuiPipeline();
@@ -43,7 +43,7 @@ class GuiPipeline
 
 	private:
 		VkPipeline _pipeline;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		std::vector<GuiFrameBuffer*> _frameBuffers;
 		GuiRenderPass* _renderPass;
 

@@ -7,11 +7,9 @@
 #include "guiRenderPass.h"
 #include "simulator/helpers/log.h"
 
-GuiRenderPass::GuiRenderPass(Device* device, VkFormat colorFormat):
-	_colorFormat(colorFormat)
+GuiRenderPass::GuiRenderPass(std::shared_ptr<Device> device, VkFormat colorFormat):
+	_device(device), _colorFormat(colorFormat)
 {
-	_device = device;
-
 	//----------- Color attachment ------------//
 	VkAttachmentDescription colorAttachment{};
 	colorAttachment.format = _colorFormat;

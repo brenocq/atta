@@ -15,7 +15,7 @@
 class ShaderModule
 {
 	public:
-		ShaderModule(Device* device, const std::string& filename);
+		ShaderModule(std::shared_ptr<Device> device, const std::string& filename);
 		~ShaderModule();
 
 		VkShaderModule handle() const { return _shaderModule; }
@@ -25,7 +25,7 @@ class ShaderModule
 	private:
 		std::vector<char> readFile(const std::string& filename);
 
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		VkShaderModule _shaderModule;
 		std::vector<char> _code;
 };

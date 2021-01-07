@@ -25,7 +25,7 @@
 class Pipeline
 {
 	public:
-		Pipeline(Device* device, 
+		Pipeline(std::shared_ptr<Device> device, 
 				std::vector<ImageView*> imageViews,
 				Scene* scene);
 		virtual ~Pipeline();
@@ -43,7 +43,7 @@ class Pipeline
 
 	protected:
 		VkPipeline _pipeline;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		std::vector<ImageView*> _imageViews;
 		std::vector<FrameBuffer*> _frameBuffers;
 		RenderPass* _renderPass;

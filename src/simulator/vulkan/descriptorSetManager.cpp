@@ -7,9 +7,12 @@
 #include "descriptorSetManager.h"
 #include "simulator/helpers/log.h"
 
-DescriptorSetManager::DescriptorSetManager(Device* device, std::vector<DescriptorBinding> descriptorBindings, size_t maxSets)
+DescriptorSetManager::DescriptorSetManager(
+		std::shared_ptr<Device> device, 
+		std::vector<DescriptorBinding> descriptorBindings, 
+		size_t maxSets):
+	_device(device)
 {
-	_device = device;
 	
 	// Sanity check to avoid binding different resources to the same binding point
 	std::map<uint32_t, VkDescriptorType> bindingTypes;

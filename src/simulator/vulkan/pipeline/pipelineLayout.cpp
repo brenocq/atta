@@ -7,9 +7,9 @@
 #include "pipelineLayout.h"
 #include "simulator/helpers/log.h"
 
-PipelineLayout::PipelineLayout(Device* device, DescriptorSetLayout* descriptorSetLayout)
+PipelineLayout::PipelineLayout(std::shared_ptr<Device> device, DescriptorSetLayout* descriptorSetLayout):
+	_device(device)
 {
-	_device = device;
 	_descriptorSetLayout = descriptorSetLayout;
 
 	VkDescriptorSetLayout setLayouts[] = { descriptorSetLayout->handle() };

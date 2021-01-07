@@ -17,8 +17,8 @@
 class SkyboxPipeline : public Pipeline
 {
 	public:
-		SkyboxPipeline(Device* device, 
-				SwapChain* swapChain, 
+		SkyboxPipeline(std::shared_ptr<Device> device, 
+				std::shared_ptr<SwapChain> swapChain, 
 				RenderPass* renderPass,
 				std::vector<UniformBuffer*> uniformBuffers, 
 				Scene* scene);

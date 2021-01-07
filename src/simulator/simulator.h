@@ -24,7 +24,9 @@ class Simulator
 
 		void run();
 
+
 	private:
+		void welcome();
 		void onDrawFrame(float dt);
 		void onRaycastClick(glm::vec3 pos, glm::vec3 ray);
 

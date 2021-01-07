@@ -13,6 +13,7 @@
 #include <vector>
 #include <set>
 #include <optional>
+#include <memory>
 #include <sstream>
 #include <string.h>
 #include "defines.h"
@@ -24,7 +25,7 @@
 class PhysicalDevice
 {
 	public:
-		PhysicalDevice(Instance* instance, Surface* surface);
+		PhysicalDevice(std::shared_ptr<Instance> instance, std::shared_ptr<Surface> surface);
 		~PhysicalDevice();
 
 		VkPhysicalDevice handle() const { return _physicalDevice; }
@@ -32,8 +33,8 @@ class PhysicalDevice
 		SwapChainSupportDetails querySwapChainSupport();
 
 		//---------- Getters and Setters ----------//
-		Instance* getInstance() const { return _instance; }
-		Surface* getSurface() const { return _surface; }
+		std::shared_ptr<Instance> getInstance() const { return _instance.lock(); }
+		std::shared_ptr<Surface> getSurface() const { return _surface.lock(); }
 		//std::vector<const char*> getDeviceExtensions() const { return _deviceExtensions; }
 
 		const std::vector<const char*> getDeviceExtensions() const {
@@ -43,7 +44,6 @@ class PhysicalDevice
 		}
 
 	private:
-		void checkArguments(Instance* instance, Surface* surface);
 		bool isDeviceSuitable(VkPhysicalDevice device);
 		bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 		SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
@@ -55,8 +55,8 @@ class PhysicalDevice
 		std::string getVersion(const uint32_t version, const uint32_t vendorId);
 
 		VkPhysicalDevice _physicalDevice;
-		Instance* _instance;
-		Surface* _surface;
+		std::weak_ptr<Instance> _instance;
+		std::weak_ptr<Surface> _surface;
 
 		// Extensions
 		std::vector<const char*> _deviceExtensions;

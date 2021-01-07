@@ -172,22 +172,22 @@ class Log
 		}
 };
 
-#undef COLOR_RESET
-#undef COLOR_BLACK
-#undef COLOR_RED
-#undef COLOR_GREEN
-#undef COLOR_YELLOW
-#undef COLOR_BLUE
-#undef COLOR_MAGENTA
-#undef COLOR_CYAN
-#undef COLOR_WHITE
-#undef COLOR_BOLD_BLACK
-#undef COLOR_BOLD_RED
-#undef COLOR_BOLD_GREEN
-#undef COLOR_BOLD_YELLOW
-#undef COLOR_BOLD_BLUE
-#undef COLOR_BOLD_MAGENTA
-#undef COLOR_BOLD_CYAN
-#undef COLOR_BOLD_WHITE
+//#undef COLOR_RESET
+//#undef COLOR_BLACK
+//#undef COLOR_RED
+//#undef COLOR_GREEN
+//#undef COLOR_YELLOW
+//#undef COLOR_BLUE
+//#undef COLOR_MAGENTA
+//#undef COLOR_CYAN
+//#undef COLOR_WHITE
+//#undef COLOR_BOLD_BLACK
+//#undef COLOR_BOLD_RED
+//#undef COLOR_BOLD_GREEN
+//#undef COLOR_BOLD_YELLOW
+//#undef COLOR_BOLD_BLUE
+//#undef COLOR_BOLD_MAGENTA
+//#undef COLOR_BOLD_CYAN
+//#undef COLOR_BOLD_WHITE
 
 #endif// LOG_H

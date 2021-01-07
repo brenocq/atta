@@ -19,15 +19,17 @@
 class ImageView
 {
 	public:
-		ImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels=1, bool isCubeMap=false);
+		ImageView(std::shared_ptr<Device> device, VkImage image, 
+				VkFormat format, VkImageAspectFlags aspectFlags, 
+				uint32_t mipLevels=1, bool isCubeMap=false);
 		~ImageView();
 
 		VkImageView handle() const { return _imageView; }
-		Device* getDevice() const { return _device; }
+		std::shared_ptr<Device> getDevice() const { return _device; }
 
 	private:
 		VkImageView _imageView;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		uint32_t _mipLevels;
 };
 

@@ -22,7 +22,7 @@ class RayTracingPipeline final
 {
 	public:
 	RayTracingPipeline(
-		Device* device,
+		std::shared_ptr<Device> device,
 		DeviceProcedures* deviceProcedures,
 		uint32_t qtyImages,
 		TopLevelAccelerationStructure* accelerationStructure,
@@ -46,7 +46,7 @@ class RayTracingPipeline final
 
 	DescriptorSetManager* _descriptorSetManager;
 	PipelineLayout* _pipelineLayout;
-	Device* _device;
+	std::shared_ptr<Device> _device;
 	uint32_t _qtyImages;
 	Scene* _scene;
 

@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include "stagingBuffer.h"
 
-StagingBuffer::StagingBuffer(Device* device, void* dataToMap, VkDeviceSize size):
+StagingBuffer::StagingBuffer(std::shared_ptr<Device> device, void* dataToMap, VkDeviceSize size):
 	Buffer(device, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
 {
 	void* data;
@@ -16,7 +16,7 @@ StagingBuffer::StagingBuffer(Device* device, void* dataToMap, VkDeviceSize size)
 }
 
 template <class T>
-StagingBuffer::StagingBuffer(Device* device, std::vector<T>& content):
+StagingBuffer::StagingBuffer(std::shared_ptr<Device> device, std::vector<T>& content):
 	Buffer(device, sizeof(content[0])*content.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
 {
 	void* data;

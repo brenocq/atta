@@ -7,9 +7,9 @@
 #include "descriptorSetLayout.h"
 #include "simulator/helpers/log.h"
 
-DescriptorSetLayout::DescriptorSetLayout(Device* device)
+DescriptorSetLayout::DescriptorSetLayout(std::shared_ptr<Device> device):
+	_device(device)
 {
-	_device = device;
 
 	VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.binding = 0;
@@ -39,9 +39,9 @@ DescriptorSetLayout::DescriptorSetLayout(Device* device)
 	}
 }
 
-DescriptorSetLayout::DescriptorSetLayout(Device* device, std::vector<DescriptorBinding> descriptorBindings)
+DescriptorSetLayout::DescriptorSetLayout(std::shared_ptr<Device> device, std::vector<DescriptorBinding> descriptorBindings):
+	_device(device)
 {
-	_device = device;
 	std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
 
 	for (auto binding : descriptorBindings)

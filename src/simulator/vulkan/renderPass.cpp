@@ -7,9 +7,9 @@
 #include "renderPass.h"
 #include "simulator/helpers/log.h"
 
-RenderPass::RenderPass(Device* device, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer)
+RenderPass::RenderPass(std::shared_ptr<Device> device, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer):
+	_device(device)
 {
-	_device = device;
 	_colorBuffer = colorBuffer;
 	_depthBuffer = depthBuffer;
 

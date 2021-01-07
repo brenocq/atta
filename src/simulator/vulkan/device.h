@@ -12,18 +12,19 @@
 #include <iostream>
 #include <vector>
 #include <set>
-#include <string.h>
+#include <string>
+#include <memory>
 #include "defines.h"
 #include "physicalDevice.h"
 
 class Device
 {
 	public:
-		Device(PhysicalDevice* physicalDevice);
+		Device(std::shared_ptr<PhysicalDevice> physicalDevice);
 		~Device();
 
 		VkDevice handle() const { return _device; }
-		PhysicalDevice* getPhysicalDevice() const { return _physicalDevice; }
+		std::shared_ptr<PhysicalDevice> getPhysicalDevice() const { return _physicalDevice; }
 		VkQueue getGraphicsQueue() const { return _graphicsQueue; }
 		VkQueue getPresentQueue() const { return _presentQueue; }
 
@@ -36,7 +37,7 @@ class Device
 		VkDevice _device;
 		VkQueue _graphicsQueue;
 		VkQueue _presentQueue;
-		PhysicalDevice* _physicalDevice;
+		std::shared_ptr<PhysicalDevice> _physicalDevice;
 		VkSampleCountFlagBits _msaaSamples;
 
 		//---------- Device properties ----------//

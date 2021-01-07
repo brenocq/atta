@@ -19,7 +19,7 @@
 class GuiUniformBuffer : public Buffer
 {
 	public:
-		GuiUniformBuffer(Device* device, VkDeviceSize size);
+		GuiUniformBuffer(std::shared_ptr<Device> device, VkDeviceSize size);
 		~GuiUniformBuffer();
 
 		void setValue(GuiUniformBufferObject ubo);

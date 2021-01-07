@@ -6,11 +6,9 @@
 //--------------------------------------------------
 #include "colorBuffer.h"
 
-ColorBuffer::ColorBuffer(Device* device, VkExtent2D extent, VkFormat format):
-	_extent(extent), _format(format)
+ColorBuffer::ColorBuffer(std::shared_ptr<Device> device, VkExtent2D extent, VkFormat format):
+	_device(device), _extent(extent), _format(format)
 {
-	_device = device;
-
 	_image = new Image(_device, _extent.width, _extent.height, _format
 			, VK_IMAGE_TILING_OPTIMAL
 			, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT

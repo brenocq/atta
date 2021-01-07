@@ -17,8 +17,8 @@
 class LinePipeline : public Pipeline
 {
 	public:
-		LinePipeline(Device* device, 
-				SwapChain* swapChain, 
+		LinePipeline(std::shared_ptr<Device> device, 
+				std::shared_ptr<SwapChain> swapChain, 
 				RenderPass* renderPass,
 				std::vector<UniformBuffer*> uniformBuffers, 
 				Scene* scene);

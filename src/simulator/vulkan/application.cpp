@@ -15,19 +15,19 @@ Application::Application(Scene* scene):
 	_scene(scene), _currentFrame(0), _framebufferResized(false), _enableRayTracing(false), _totalNumberOfSamples(0), _splitRender(false),
 	_rayTracing(nullptr)
 {
-	_window = new Window();
-	_instance = new Instance();
-	_debugMessenger = new DebugMessenger(_instance);
-	_surface = new Surface(_instance, _window);
-	_physicalDevice = new PhysicalDevice(_instance, _surface);
-	_device = new Device(_physicalDevice);
-	_commandPool = new CommandPool(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+	_window = std::make_shared<Window>();
+	_instance = std::make_shared<Instance>();
+	_debugMessenger = std::make_unique<DebugMessenger>(_instance);
+	_surface = std::make_shared<Surface>(_instance, _window);
+	_physicalDevice = std::make_shared<PhysicalDevice>(_instance, _surface);
+	_device = std::make_shared<Device>(_physicalDevice);
+	_commandPool = std::make_shared<CommandPool>(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
 	//---------- Scene ----------//
 	_scene->createBuffers(_commandPool);
 
 	//---------- Swap Chain ----------//
-	_swapChain = new SwapChain(_device, _window);
+	_swapChain = std::make_shared<SwapChain>(_device, _window);
 	
 	//---------- Uniform Buffers ----------//
 	_uniformBuffers.resize(_swapChain->getImages().size());
@@ -41,7 +41,7 @@ Application::Application(Scene* scene):
 	createPipelines();
 
 	//---------- Command buffers ----------//
-	_commandBuffers = new CommandBuffers(_device, _commandPool, _swapChain->getImageViews().size());
+	_commandBuffers = std::make_unique<CommandBuffers>(_device, _commandPool, _swapChain->getImageViews().size());
 
 	//---------- Syncronization ----------//
 	_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -61,7 +61,6 @@ Application::Application(Scene* scene):
 	_modelViewController->reset(glm::lookAt(glm::vec3(3, 3, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
 
 	//---------- User Interface ----------//
-	_userInterface = nullptr;
 	createUserInterface();
 
 	//---------- RayTracing ----------//
@@ -133,8 +132,8 @@ Application::~Application()
 		_rayTracingCPU = nullptr;
 	}
 
-	delete _userInterface;
-	_userInterface = nullptr;
+	//delete _userInterface;
+	//_userInterface = nullptr;
 
 	delete _modelViewController;
 	_modelViewController = nullptr;
@@ -152,46 +151,38 @@ Application::~Application()
 		_inFlightFences[i] = nullptr;
     }
 
-	delete _commandPool;
-	_commandPool = nullptr;
+	//delete _commandPool;
+	//_commandPool = nullptr;
 
-	delete _device;
-	_device = nullptr;
+	//delete _device;
+	//_device = nullptr;
 
-	delete _debugMessenger;
-	_debugMessenger = nullptr;
+	//delete _debugMessenger;
+	//_debugMessenger = nullptr;
 
-	delete _surface;
-	_surface = nullptr;
+	//delete _surface;
+	//_surface = nullptr;
 
-	delete _instance;
-	_instance = nullptr;
+	//delete _window;
+	//_window = nullptr;
 
-	delete _window;
-	_window = nullptr;
-
-	delete _physicalDevice;
-	_physicalDevice = nullptr;
+	//delete _physicalDevice;
+	//_physicalDevice = nullptr;
 }
 
 void Application::createPipelines()
 {
-	_graphicsPipeline = new GraphicsPipeline(_device, _swapChain, _uniformBuffers, _scene);
-	_linePipeline = new LinePipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
-	_maskPipeline = new MaskPipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
-	_outlinePipeline = new OutlinePipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
-	_skyboxPipeline = new SkyboxPipeline(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
+	_graphicsPipeline = std::make_unique<GraphicsPipeline>(_device, _swapChain, _uniformBuffers, _scene);
+	_linePipeline = std::make_unique<LinePipeline>(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
+	_maskPipeline = std::make_unique<MaskPipeline>(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
+	_outlinePipeline = std::make_unique<OutlinePipeline>(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
+	_skyboxPipeline = std::make_unique<SkyboxPipeline>(_device, _swapChain, _graphicsPipeline->getRenderPass(), _uniformBuffers, _scene);
 }
 
 void Application::createUserInterface()
 {
-	if(_userInterface != nullptr)
-	{
-		Log::warning("Application", "User interface should be nullptr.");
-		return;
-	}
-
-	_userInterface = new UserInterface(_device, _window, _swapChain, _scene);
+	_userInterface.reset();
+	_userInterface = std::make_unique<UserInterface>(_device, _window, _swapChain, _scene);
 	_userInterface->setEnableRayTacing(&_enableRayTracing);
 	_userInterface->setSplitRender(&_splitRender);
 }
@@ -201,30 +192,26 @@ void Application::cleanupSwapChain()
 	if(_rayTracing != nullptr)
 		_rayTracing->deletePipeline();
 
-	delete _userInterface;
+	//delete _userInterface;
+	//_userInterface = nullptr;
 
-	_userInterface = nullptr;
+	//delete _commandBuffers;
+	//_commandBuffers = nullptr;
 
-	delete _commandBuffers;
-	_commandBuffers = nullptr;
+	//delete _maskPipeline;
+	//_maskPipeline = nullptr;
 
-	delete _maskPipeline;
-	_maskPipeline = nullptr;
+	//delete _outlinePipeline;
+	//_outlinePipeline = nullptr;
 
-	delete _outlinePipeline;
-	_outlinePipeline = nullptr;
+	//delete _skyboxPipeline;
+	//_skyboxPipeline = nullptr;
 
-	delete _skyboxPipeline;
-	_skyboxPipeline = nullptr;
+	//delete _linePipeline;
+	//_linePipeline = nullptr;
 
-	delete _linePipeline;
-	_linePipeline = nullptr;
-
-	delete _graphicsPipeline;
-	_graphicsPipeline = nullptr;
-
-	delete _swapChain;
-	_swapChain = nullptr;
+	//delete _graphicsPipeline;
+	//_graphicsPipeline = nullptr;
 
 	for(auto& uniformBuffer : _uniformBuffers) 
 	{
@@ -241,7 +228,8 @@ void Application::recreateSwapChain()
 
 	cleanupSwapChain();
 
-	_swapChain = new SwapChain(_device, _window);
+	_swapChain = std::make_shared<SwapChain>(_device, _window);
+
 
 	_uniformBuffers.resize(_swapChain->getImages().size());
 	for(size_t i = 0; i < _swapChain->getImages().size(); i++) 
@@ -256,8 +244,8 @@ void Application::recreateSwapChain()
 	//{
 	//	_frameBuffers[i] = new FrameBuffer(_swapChain->getImageViews()[i], _graphicsPipeline->getRenderPass());
 	//}
-
-	_commandBuffers = new CommandBuffers(_device, _commandPool, _swapChain->getImageViews().size());
+	_commandBuffers.reset();
+	_commandBuffers = std::make_unique<CommandBuffers>(_device, _commandPool, _swapChain->getImageViews().size());
 
 	// IMGUI
 	createUserInterface();

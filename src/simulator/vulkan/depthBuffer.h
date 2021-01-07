@@ -18,10 +18,10 @@
 class DepthBuffer
 {
 	public:
-		DepthBuffer(Device* device, VkExtent2D extent);
+		DepthBuffer(std::shared_ptr<Device> device, VkExtent2D extent);
 		~DepthBuffer();
 
-		Device* getDevice() const { return _device; }
+		std::shared_ptr<Device> getDevice() const { return _device; }
 		VkFormat getFormat() const { return _format; }
 		Image* getImage() const { return _image; }
 		ImageView* getImageView() const { return _imageView; }
@@ -29,7 +29,7 @@ class DepthBuffer
 	private:
 		VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		CommandPool* _commandPool;
 		Image* _image;
 		ImageView* _imageView;

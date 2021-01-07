@@ -15,15 +15,15 @@
 class Semaphore
 {
 	public:
-	Semaphore(Device* device);
+	Semaphore(std::shared_ptr<Device> device);
 	~Semaphore();
 
 	VkSemaphore handle() const { return _semaphore; }
-	Device* getDevice() const { return _device; }
+	std::shared_ptr<Device> getDevice() const { return _device; }
 
 	private:
     VkSemaphore _semaphore;
-	Device* _device;
+	std::shared_ptr<Device> _device;
 };
 
 #endif// SEMAPHORE_H

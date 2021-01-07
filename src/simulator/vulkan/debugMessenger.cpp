@@ -30,10 +30,9 @@ void destroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 //------------------------ Debug Messenger class -------------------------//
 
-DebugMessenger::DebugMessenger(Instance* instance)
+DebugMessenger::DebugMessenger(std::shared_ptr<Instance> instance):
+	_instance(instance)
 {
-	checkArguments(instance);
-	_instance = instance;
 	if(!ENABLE_VALIDATION_LAYERS)
 		return;
 
@@ -54,22 +53,5 @@ DebugMessenger::~DebugMessenger()
 	if(_debugMessenger != nullptr)
 	{
 		destroyDebugUtilsMessengerEXT(_instance->handle(), _debugMessenger, nullptr);
-	}
-}
-
-void DebugMessenger::checkArguments(Instance* instance)
-{
-	if(instance != nullptr)
-	{
-		if(instance->handle() == VK_NULL_HANDLE)
-		{
-			Log::error("Debug Messenger", "Instance handle can't be null!");
-			exit(1);
-		}
-	}
-	else
-	{
-		Log::error("Debug Messenger", "Instance can't be null!");
-		exit(1);
 	}
 }

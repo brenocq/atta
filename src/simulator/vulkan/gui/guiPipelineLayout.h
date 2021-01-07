@@ -16,14 +16,14 @@
 class GuiPipelineLayout
 {
 	public:
-		GuiPipelineLayout(Device* device, DescriptorSetLayout* descriptorSetLayout);
+		GuiPipelineLayout(std::shared_ptr<Device> device, DescriptorSetLayout* descriptorSetLayout);
 		~GuiPipelineLayout();
 
 		VkPipelineLayout handle() const { return _pipelineLayout; }
 
 	private:
 		VkPipelineLayout _pipelineLayout;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		DescriptorSetLayout* _descriptorSetLayout;
 };
 

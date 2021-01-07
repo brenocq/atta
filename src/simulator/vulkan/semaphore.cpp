@@ -6,9 +6,9 @@
 //--------------------------------------------------
 #include "semaphore.h"
 
-Semaphore::Semaphore(Device* device)
+Semaphore::Semaphore(std::shared_ptr<Device> device):
+	_device(device)
 {
-	_device = device;
 
 	VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;

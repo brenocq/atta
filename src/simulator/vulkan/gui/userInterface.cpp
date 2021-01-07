@@ -7,21 +7,21 @@
 #include "userInterface.h"
 #include "simulator/helpers/log.h"
 
-UserInterface::UserInterface(Device* device, Window* window, SwapChain* swapChain, Scene* scene):
+UserInterface::UserInterface(
+		std::shared_ptr<Device> device, 
+		std::shared_ptr<Window> window, 
+		std::shared_ptr<SwapChain> swapChain, 
+		Scene* scene):
+	_device(device),
+	_window(window),
+	_scene(scene),
+	_swapChain(swapChain),
 	// Toggle variables
    	_enableRayTracing(nullptr), _splitRender(nullptr),
 	_showPhysicsDebugger(false), _rootWidget(nullptr)
 {
-	//---------- Get main objects ----------//
-	_device = device;
-	_window = window;
-	_swapChain = swapChain;
-	_scene = scene;
-	PhysicalDevice* physicalDevice = _device->getPhysicalDevice();
-	Instance* instance = physicalDevice->getInstance();
-
 	//---------- Create gui objects ----------//
-	_guiCommandPool = new CommandPool(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+	_guiCommandPool = std::make_shared<CommandPool>(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 	_guiCommandBuffers = new CommandBuffers(_device, _guiCommandPool, _swapChain->getImageViews().size());
 
 	_guiUniformBuffers.resize(_swapChain->getImageViews().size());
@@ -61,8 +61,8 @@ UserInterface::~UserInterface()
 	delete _guiCommandBuffers;
 	_guiCommandBuffers = nullptr;
 
-	delete _guiCommandPool;
-	_guiCommandPool = nullptr;
+	//delete _guiCommandPool;
+	//_guiCommandPool = nullptr;
 
 	if(_rootWidget != nullptr)
 	{

@@ -21,9 +21,7 @@ Scene::Scene():
 	_maxLineCount(9999), _maxRTInstanceCount(1000),
 	_envTexture(nullptr)
 {
-	_device = nullptr;
 	_physicsEngine = new PhysicsEngine();
-	_commandPool = nullptr;
 
 	// Load basic models to the memory
 	_models.push_back(new Model("plane"));
@@ -168,7 +166,7 @@ void Scene::addObject(Object* object)
 		addObject(child);
 }
 
-void Scene::createBuffers(CommandPool* commandPool)
+void Scene::createBuffers(std::shared_ptr<CommandPool> commandPool)
 {
 	_commandPool = commandPool;
 	_device = commandPool->getDevice();
@@ -311,7 +309,7 @@ void Scene::updateRayTracingBuffers()
 	if(_commandPool==nullptr)
 		return;
 	//printf("Command pool OK\n");
-	Device* device = _commandPool->getDevice();
+	std::shared_ptr<Device> device = _commandPool->getDevice();
 	StagingBuffer* stagingBuffer = new StagingBuffer(device, instances.data(), sizeof(InstanceInfo)*instances.size());
 	_instanceBuffer->copyFrom(_commandPool, stagingBuffer->handle(), sizeof(InstanceInfo)*instances.size());
 	delete stagingBuffer;
@@ -348,7 +346,7 @@ void Scene::createSceneBuffer(Buffer*& buffer,
 template <class T>
 void Scene::copyFromStagingBuffer(Buffer* dstBuffer, const std::vector<T>& content)
 {
-	Device* device = _commandPool->getDevice();
+	std::shared_ptr<Device> device = _commandPool->getDevice();
 	const auto contentSize = sizeof(content[0]) * content.size();
 
 	// Create a temporary host-visible staging buffer.

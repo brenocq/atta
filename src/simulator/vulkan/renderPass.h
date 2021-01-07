@@ -18,7 +18,7 @@
 class RenderPass
 {
 	public:
-		RenderPass(Device* device, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer);
+		RenderPass(std::shared_ptr<Device> device, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer);
 		~RenderPass();
 
 		VkRenderPass handle() const { return _renderPass; }
@@ -27,7 +27,7 @@ class RenderPass
 
 	private:
 		VkRenderPass _renderPass;
-		Device* _device;
+		std::shared_ptr<Device> _device;
 		DepthBuffer* _depthBuffer;
 		ColorBuffer* _colorBuffer;
 };

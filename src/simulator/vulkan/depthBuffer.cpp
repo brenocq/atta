@@ -8,10 +8,9 @@
 #include "physicalDevice.h"
 #include "simulator/helpers/log.h"
 
-DepthBuffer::DepthBuffer(Device* device, VkExtent2D extent):
-	_extent(extent)
+DepthBuffer::DepthBuffer(std::shared_ptr<Device> device, VkExtent2D extent):
+	_device(device), _extent(extent)
 {
-	_device = device;
 	_format = findSupportedFormat(
         {VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT, VK_FORMAT_D16_UNORM_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D16_UNORM},
         VK_IMAGE_TILING_OPTIMAL,
@@ -47,7 +46,7 @@ VkFormat DepthBuffer::findSupportedFormat(const std::vector<VkFormat>& candidate
 	for (VkFormat format : candidates) 
 	{
 		VkFormatProperties props;
-		PhysicalDevice* physicalDevice = _device->getPhysicalDevice();
+		std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
 		vkGetPhysicalDeviceFormatProperties(physicalDevice->handle(), format, &props);
 
 		if(format == VK_FORMAT_D32_SFLOAT || format == VK_FORMAT_D16_UNORM)

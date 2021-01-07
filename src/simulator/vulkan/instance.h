@@ -18,17 +18,17 @@
 class Instance
 {
 	public:
-	Instance();
-	~Instance();
+		Instance();
+		~Instance();
 
-	VkInstance handle() const { return _instance; }
+		VkInstance handle() const { return _instance; }
 	private:
-	void printExtensionSupport();
-	void printLayersProperties();
-	std::vector<const char*> getRequiredExtensions();
+		void printExtensionSupport();
+		void printLayersProperties();
+		std::vector<const char*> getRequiredExtensions();
 
-	bool checkValidationLayerSupport();
-    VkInstance _instance;
+		bool checkValidationLayerSupport();
+		VkInstance _instance;
 };
 
 #endif// INSTANCE_H
