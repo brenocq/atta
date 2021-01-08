@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_MATRIX_H
 #define ATTA_MATRIX_H
+
 #include "vector.h"
 #include "point.h"
 #include "quaternion.h"

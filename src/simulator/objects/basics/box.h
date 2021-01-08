@@ -6,20 +6,33 @@
 //--------------------------------------------------
 #ifndef BOX_H
 #define BOX_H
-#include "../../object.h"
-#include "../../vulkan/model.h"
 
-class Box : public Object
+#include "simulator/objects/object.h"
+
+namespace atta
 {
-	public:
-		Box(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 size = {1,1,1}, float mass = 1.0f, glm::vec3 color = {1,1,1});
-		~Box();
+	class Box : public Object
+	{
+		public:
+			struct CreateInfo
+			{
+				std::string name = "Box";
+				vec3 position = {0,0,0};
+				vec3 rotation = {0,0,0};
+				vec3 scale = {1,1,1};
+				float mass = 1.0f;
+				vec3 color = {0.3f, 0.3f, 0.3f};
+			};
 
-		//---------- Getters ----------//
-		glm::vec3 getColor() const { return _color; };
+			Box(CreateInfo info);
+			~Box();
 
-	private:
-		glm::vec3 _color;
-};
+			//---------- Getters ----------//
+			vec3 getColor() const { return _color; };
+
+		private:
+			vec3 _color;
+	};
+}
 
 #endif// BOX_H

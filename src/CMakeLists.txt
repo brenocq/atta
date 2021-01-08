@@ -4,12 +4,17 @@ set(src_files
 	main.cpp
 )
 
+
+#---------- simulator
+file(GLOB simulatorSrc
+    "simulator/*.cpp"
+)
 set(src_files_simulator
-	simulator/object.cpp
-	simulator/scene.cpp
-	simulator/simulator.cpp
+	${simulatorSrc}
 )
 
+
+#---------- simulator/helpers
 file(GLOB helpersSrc
     "simulator/helpers/*.cpp"
 )
@@ -18,6 +23,7 @@ set(src_files_simulator_helpers
 )
 
 
+#---------- simulator/objects
 file(GLOB objectsSrc
     "simulator/objects/*.cpp"
     "simulator/objects/**/*.cpp"
@@ -28,17 +34,7 @@ set(src_files_simulator_objects
 	${objectsSrc}
 )
 
-#set(src_files_simulator_objects_controllers
-#)
-#
-#set(src_files_simulator_objects_others
-#	simulator/objects/others/display/display.cpp
-#)
-#
-#set(src_files_simulator_objects_sensors
-#	simulator/objects/sensors/camera/camera.cpp
-#)
-
+#---------- simulator/physics
 file(GLOB physicsSrc
     "simulator/physics/**/*.cpp"
     "simulator/physics/*.cpp"
@@ -47,98 +43,64 @@ set(src_files_simulator_physics
 	${physicsSrc}
 )
 
-file(GLOB rayTracingCPUSrc
-	"simulator/vulkan/rayTracingCPU/**/*.cpp"
-	"simulator/vulkan/rayTracingCPU/*.cpp"
+#---------- simulator/parallel
+file(GLOB parallelSrc
+    "simulator/parallel/**/*.cpp"
+    "simulator/parallel/*.cpp"
 )
-set(src_files_simulator_vulkan_raytracing_cpu
-	${rayTracingCPUSrc}
-)
-
-
-set(src_files_simulator_vulkan
-	simulator/vulkan/application.cpp
-	simulator/vulkan/buffer.cpp
-	simulator/vulkan/colorBuffer.cpp
-	simulator/vulkan/commandBuffers.cpp
-	simulator/vulkan/commandPool.cpp
-	simulator/vulkan/debugCommon.cpp
-	simulator/vulkan/debugMessenger.cpp
-	simulator/vulkan/depthBuffer.cpp
-	simulator/vulkan/descriptorBinding.cpp
-	simulator/vulkan/descriptorPool.cpp
-	simulator/vulkan/descriptorSetLayout.cpp
-	simulator/vulkan/descriptorSetManager.cpp
-	simulator/vulkan/descriptorSets.cpp
-	simulator/vulkan/device.cpp
-	simulator/vulkan/fence.cpp
-	simulator/vulkan/frameBuffer.cpp
-	simulator/vulkan/helpers.cpp
-	simulator/vulkan/image.cpp
-	simulator/vulkan/imageMemoryBarrier.cpp	
-	simulator/vulkan/imageView.cpp
-	simulator/vulkan/indexBuffer.cpp
-	simulator/vulkan/instance.cpp
-	simulator/vulkan/material.cpp
-	simulator/vulkan/model.cpp
-	simulator/vulkan/modelViewController.cpp
-	simulator/vulkan/physicalDevice.cpp
-	simulator/vulkan/procedural.cpp
-	simulator/vulkan/renderPass.cpp
-	simulator/vulkan/sampler.cpp
-	simulator/vulkan/semaphore.cpp
-	simulator/vulkan/shaderModule.cpp
-	simulator/vulkan/stagingBuffer.cpp
-	simulator/vulkan/stbImage.cpp
-	simulator/vulkan/surface.cpp
-	simulator/vulkan/swapChain.cpp
-	simulator/vulkan/texture.cpp
-	simulator/vulkan/tinyObjLoader.cpp
-	simulator/vulkan/uniformBuffer.cpp
-	simulator/vulkan/vertex.cpp
-	simulator/vulkan/vertexBuffer.cpp
-	simulator/vulkan/vulkan.cpp
-	simulator/vulkan/window.cpp
+set(src_files_simulator_parallel
+	${parallelSrc}
 )
 
-# RayTracing
-file(GLOB rtSrc
-    "simulator/vulkan/rayTracing/**/*.cpp"
-	"simulator/vulkan/rayTracing/*.cpp"
-)
-set(src_files_simulator_vulkan_raytracing
-	${rtSrc}
-)
-
-#set(src_files_simulator_vulkan_raytracing
-#	simulator/vulkan/rayTracing/accelerationStructure.cpp
-#	simulator/vulkan/rayTracing/bottomLevelAccelerationStructure.cpp
-#	simulator/vulkan/rayTracing/deviceProcedures.cpp
-#	simulator/vulkan/rayTracing/rayTracing.cpp
-#	simulator/vulkan/rayTracing/rayTracingPipeline.cpp
-#	simulator/vulkan/rayTracing/shaderBindingTable.cpp
-#	simulator/vulkan/rayTracing/topLevelAccelerationStructure.cpp
+#---------- simulator/graphics/core
+#file(GLOB graphicsCoreSrc
+#    "simulator/graphics/core/*.cpp"
 #)
-
-set(src_files_simulator_vulkan_pipeline
-	simulator/vulkan/pipeline/graphicsPipeline.cpp
-	simulator/vulkan/pipeline/linePipeline.cpp
-	simulator/vulkan/pipeline/outlinePipeline.cpp
-	simulator/vulkan/pipeline/skyboxPipeline.cpp
-	simulator/vulkan/pipeline/maskPipeline.cpp
-	simulator/vulkan/pipeline/pipeline.cpp
-	simulator/vulkan/pipeline/pipelineLayout.cpp
+set(src_files_simulator_graphics_core
+	simulator/graphics/core/model.cpp
+	simulator/graphics/core/mesh.cpp
+	simulator/graphics/core/material.cpp
+	simulator/graphics/core/texture.cpp
+	simulator/graphics/core/vertex.cpp
+	simulator/graphics/core/window.cpp
 )
 
-# GUI
-file(GLOB guibSrc
-    "simulator/vulkan/gui/widgets/*.cpp"
-    "simulator/vulkan/gui/font/*.cpp"
-    "simulator/vulkan/gui/*.cpp"
-)
-set(src_files_simulator_vulkan_gui_widgets
-	${guibSrc}
-)
+#---------- simulator/vulkan
+#file(GLOB VulkanSrc
+#	"simulator/vulkan/*.cpp"
+#)
+#set(src_files_simulator_vulkan
+#	${VulkanSrc}
+#)
+#
+##---------- simulator/vulkan/rayTracing
+#file(GLOB rtSrc
+#    "simulator/vulkan/rayTracing/**/*.cpp"
+#	"simulator/vulkan/rayTracing/*.cpp"
+#)
+#set(src_files_simulator_vulkan_raytracing
+#	${rtSrc}
+#)
+#
+#set(src_files_simulator_vulkan_pipeline
+#	simulator/vulkan/pipeline/graphicsPipeline.cpp
+#	simulator/vulkan/pipeline/linePipeline.cpp
+#	simulator/vulkan/pipeline/outlinePipeline.cpp
+#	simulator/vulkan/pipeline/skyboxPipeline.cpp
+#	simulator/vulkan/pipeline/maskPipeline.cpp
+#	simulator/vulkan/pipeline/pipeline.cpp
+#	simulator/vulkan/pipeline/pipelineLayout.cpp
+#)
+#
+## GUI
+#file(GLOB guibSrc
+#    "simulator/vulkan/gui/widgets/*.cpp"
+#    "simulator/vulkan/gui/font/*.cpp"
+#    "simulator/vulkan/gui/*.cpp"
+#)
+#set(src_files_simulator_vulkan_gui_widgets
+#	${guibSrc}
+#)
 
 # Math
 file(GLOB mathSrc
@@ -163,16 +125,17 @@ add_executable(${exe_name}
 	${src_files} 
 	${src_files_simulator} 
 	${src_files_simulator_helpers} 
+	${src_files_simulator_parallel}
 	${src_files_simulator_math} 
 	${src_files_simulator_objects} 
-	${src_files_simulator_physics} 
-	${src_files_simulator_vulkan} 
-	${src_files_simulator_vulkan_gui} 
-	${src_files_simulator_vulkan_gui_widgets} 
-	${src_files_simulator_vulkan_raytracing} 
-	${src_files_simulator_vulkan_raytracing_cpu}
-	${src_files_simulator_vulkan_pipeline} 
-	${src_files_examples}
+	${src_files_simulator_graphics_core} 
+	#${src_files_simulator_physics} 
+	#${src_files_simulator_vulkan} 
+	#${src_files_simulator_vulkan_gui} 
+	#${src_files_simulator_vulkan_gui_widgets} 
+	#${src_files_simulator_vulkan_raytracing} 
+	#${src_files_simulator_vulkan_pipeline} 
+	#${src_files_examples}
 )
 
 if (UNIX)

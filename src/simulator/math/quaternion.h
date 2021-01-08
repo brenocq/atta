@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_QUATERNION_H
 #define ATTA_QUATERNION_H
+
 #include "vector.h"
 #include <cmath>
 #include <cfloat>

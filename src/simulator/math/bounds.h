@@ -6,9 +6,10 @@
 //--------------------------------------------------
 #ifndef ATTA_BOUNDS_H
 #define ATTA_BOUNDS_H
+
+#include <limits>
 #include "point.h"
 #include "ray.h"
-#include <limits>
 
 namespace atta
 {

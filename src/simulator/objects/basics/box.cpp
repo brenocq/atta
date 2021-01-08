@@ -5,21 +5,24 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "box.h"
-#include "simulator/physics/shapes/shapes.h"
-#include "simulator/math/math.h"
 
-Box::Box(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec3 size, float mass, glm::vec3 color):
-	Object(name, position, rotation, size, mass), _color(color)
+namespace atta
 {
-	_type = "Box";
-	_model = new Model("box");
+	Box::Box(CreateInfo info):
+		Object({info.name, info.position, info.rotation, info.scale, info.mass}), _color(info.color)
+	{
+		Object::setType("Box");
 
-	_orientation.fromEuler(atta::radians(atta::vec3(_rotation)));
+		//----- Create model -----//
+		Model::CreateInfo modelInfo = {
+			.meshName = "atta::box"
+		};
 
-	_bodyPhysics = new Body(&_position, &_orientation, mass);
-	_bodyPhysics->addShape(new atta::phy::BoxShape(vec3(), quat(), _scale));
-}
+		std::shared_ptr<Model> model = std::make_shared<Model>(modelInfo);
+		Object::setModel(model);
+	}
 
-Box::~Box()
-{
+	Box::~Box()
+	{
+	}
 }

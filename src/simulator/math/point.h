@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_POINT_H
 #define ATTA_POINT_H
+
 #include <math.h>
 #include "vector.h"
 

@@ -6,15 +6,15 @@
 //--------------------------------------------------
 #include "cylinder.h"
 
-Cylinder::Cylinder(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mass, glm::vec3 color):
-	Object(name, position, rotation, scale, mass), _color(color)
+namespace atta
 {
-	_type = "Cylinder";
-	_model = new Model("atta::cylinder");
-	_bodyPhysics = new Body(&_position, &_orientation, mass);
-	_bodyPhysics->addShape(new atta::phy::CylinderShape(atta::vec3(), atta::quat(), atta::vec3(1,1,1)));
-}
+	Cylinder::Cylinder(CreateInfo info):
+		Object({info.name, info.position, info.rotation, {1,1,1}, info.mass}), _color(info.color)
+	{
+		Object::setType("Cylinder");
+	}
 
-Cylinder::~Cylinder()
-{
+	Cylinder::~Cylinder()
+	{
+	}
 }

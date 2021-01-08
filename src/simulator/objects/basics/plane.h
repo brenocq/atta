@@ -6,20 +6,33 @@
 //--------------------------------------------------
 #ifndef PLANE_H
 #define PLANE_H
-#include "../../object.h"
 
-class Plane : public Object
+#include "simulator/objects/object.h"
+
+namespace atta
 {
-	public:
-		Plane(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec2 size = {1,1}, float mass = 1.0f, glm::vec3 color = {1,1,1});
-		~Plane();
+	class Plane : public Object
+	{
+		public:
+			struct CreateInfo
+			{
+				std::string name = "Plane";
+				vec3 position = {0,0,0};
+				vec3 rotation = {0,0,0};
+				vec2 size = {1,1};
+				float mass = 1.0f;
+				vec3 color = {0.3f, 0.3f, 0.3f};
+			};
 
-		//---------- Getters ----------//
-		glm::vec3 getColor() const { return _color; };
+			Plane(CreateInfo info);
+			~Plane();
 
-	private:
-		glm::vec2 _size;
-		glm::vec3 _color;
-};
+			//---------- Getters ----------//
+			vec3 getColor() const { return _color; };
+
+		private:
+			vec3 _color;
+	};
+}
 
 #endif// PLANE_H

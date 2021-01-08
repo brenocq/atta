@@ -46,15 +46,18 @@ namespace atta
 	class LocalEvaluator
 	{
 		public:
-			LocalEvaluator(std::string description="Results");
+			LocalEvaluator(std::string description="Finished evaluator");
 			~LocalEvaluator();
 
 			void stop();
+			void print();
+			double getMs() const { return _duration*0.001; }
 
 		private:
-			bool _finished;
 			std::string _description;
+			bool _finished;
 			std::chrono::time_point<std::chrono::high_resolution_clock> _startTime;
+			long int _duration;
 	};
 }
 #endif// ATTA_EVALUATOR_H

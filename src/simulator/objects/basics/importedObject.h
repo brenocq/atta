@@ -7,19 +7,28 @@
 #ifndef IMPORTED_OBJECT_H
 #define IMPORTED_OBJECT_H
 
-#include "../../object.h"
-#include "../../vulkan/model.h"
+#include "simulator/objects/object.h"
 
-class ImportedObject : public Object
+namespace atta
 {
-	public:
-		ImportedObject(
-				std::string name, std::string fileName, 
-				glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 scale = {0,0,0}, 
-				float mass = 1.0f);
-		~ImportedObject();
+	class ImportedObject : public Object
+	{
+		public:
+			struct CreateInfo
+			{
+				std::string name = "ImportedObject";
+				std::string fileName = "";
+				vec3 position = {0,0,0};
+				vec3 rotation = {0,0,0};
+				vec3 scale = {1,1,1};
+				float mass = 1.0f;
+			};
 
-	private:
-};
+			ImportedObject(CreateInfo info);
+			~ImportedObject();
+
+		private:
+	};
+}
 
 #endif// IMPORTED_OBJECT_H
