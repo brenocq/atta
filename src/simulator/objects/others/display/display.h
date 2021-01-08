@@ -9,41 +9,56 @@
 
 #include <string>
 #include <vector>
-#include "simulator/object.h"
+#include "simulator/objects/object.h"
 
-class Display : public Object
+namespace atta
 {
-	public:
-		struct DisplayInfo
-		{
-			unsigned int width = 320;
-			unsigned int height = 240;
-		};
+	class Display : public Object
+	{
+		public:
+			struct ScreenInfo
+			{
+				unsigned int width = 320;
+				unsigned int height = 240;
+			};
 
-		Display(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 scale = {0,0,0}, DisplayInfo info = {320, 240});
-		~Display();
+			struct CreateInfo
+			{
+				std::string name = "Box";
+				vec3 position = {0,0,0};
+				vec3 rotation = {0,0,0};
+				vec3 scale = {1,1,1};
+				float mass = 1.0f;
+				vec3 color = {0.3f, 0.3f, 0.3f};
+				ScreenInfo screenInfo = {320, 240};
+			};
 
-		//---------- Getters and Setters ----------//
-		DisplayInfo getDisplayInfo() const { return _info; }
-		void setTextureIndex(int index) { _textureIndex = index; }
-		int getTextureIndex() const { return _textureIndex; }
-		void setMaterialIndex(int index) { _materialIndex = index; }
-		int getMaterialIndex() const { return _materialIndex; }
-		std::vector<uint8_t> getBuffer() const { return _buffer; }
-		void setBuffer(std::vector<uint8_t> buffer) { _buffer=buffer; }
+			Display(CreateInfo info);
+			~Display();
 
-	private:
+			//---------- Getters ----------//
+			ScreenInfo getDisplayInfo() const { return _info; }
+			int getTextureIndex() const { return _textureIndex; }
+			int getMaterialIndex() const { return _materialIndex; }
+			std::vector<uint8_t> getBuffer() const { return _buffer; }
 
-		// Camera parameters
-		DisplayInfo _info;
+			//---------- Setters ----------//
+			void setMaterialIndex(int index) { _materialIndex = index; }
+			void setTextureIndex(int index) { _textureIndex = index; }
+			void setBuffer(std::vector<uint8_t> buffer) { _buffer=buffer; }
 
-		// Texture index
-		int _textureIndex;
-		int _materialIndex;
+		private:
+			ScreenInfo _info;
 
-		// Display buffer
-		std::vector<uint8_t> _buffer;
-};
+			// Display buffer
+			std::vector<uint8_t> _buffer;
+
+			//----- Graphics -----//
+			int _textureIndex;
+			int _materialIndex;
+
+	};
+}
 
 #endif// DISPLAY_H
 

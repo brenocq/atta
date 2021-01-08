@@ -12,6 +12,5 @@
 #include "importedObject.h"
 #include "plane.h"
 #include "sphere.h"
-#include "capsule.h"
 
 #endif// SIM_OBJECTS_BASICS_H

@@ -6,14 +6,15 @@
 //--------------------------------------------------
 #include "plane.h"
 
-Plane::Plane(std::string name, glm::vec3 position, glm::vec3 rotation, glm::vec2 size, float mass, glm::vec3 color):
-	Object(name, position, rotation, {size.x,1,size.y}, mass), _size(size), _color(color)
+namespace atta
 {
-	_type = "Plane";
-	_model = new Model("plane");
-	_bodyPhysics = new Body(&_position, &_orientation, mass);
-}
+	Plane::Plane(CreateInfo info):
+		Object({info.name, info.position, info.rotation, {info.size.x,1,info.size.y}, info.mass}), _color(info.color)
+	{
+		Object::setType("Plane");
+	}
 
-Plane::~Plane()
-{
+	Plane::~Plane()
+	{
+	}
 }

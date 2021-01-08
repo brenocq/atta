@@ -6,9 +6,9 @@
 //--------------------------------------------------
 #ifndef ATTA_VECTOR_H
 #define ATTA_VECTOR_H
+
 #include <math.h>
 #include "glm.h"
-//#include "quaternion.h"
 
 namespace atta
 {
@@ -50,7 +50,7 @@ namespace atta
 
 			// Subtract vector
 			template <typename U>
-			T operator-=(const vector3<U>& v)
+			void operator-=(const vector3<U>& v)
 			{
 				x -= v.x;
 				y -= v.y;
@@ -138,7 +138,7 @@ namespace atta
 			}
 			
 			// Normalize
-			float normalize()
+			void normalize()
 			{
 				float l = length();
 				if(l > 0)
@@ -228,6 +228,30 @@ namespace atta
 	}
 
 
+	// Cross
+	template <typename T>
+	inline vector3<T> cross(const vector3<T> &v1, const vector3<T> &v2)
+	{
+		// Using always double to avoid float-pointing error
+		double xd = v1.x, yd = v1.y, zd = v1.z;
+		double vxd = v2.x, vyd = v2.y, vzd = v2.z;
+		return vector3<T>((yd*vzd) - (zd*vyd),
+						  (zd*vxd) - (xd*vzd),
+						  (xd*vyd) - (yd*vxd));
+	}
+
+	// Normalize
+	template <typename T>
+	inline vector3<T> normalize(const vector3<T> &v)
+	{
+		float l = v.length();
+		if(l > 0)
+		{
+			return v * 1.0f/l;
+		}
+		return v;
+	}
+
 	//---------- Vector 2 ----------//
 	template <typename T>
 	class vector2
@@ -261,7 +285,7 @@ namespace atta
 
 			// Subtract vector
 			template <typename U>
-			T operator-=(const vector2<U>& v)
+			void operator-=(const vector2<U>& v)
 			{
 				x -= v.x;
 				y -= v.y;
@@ -333,7 +357,7 @@ namespace atta
 			}
 			
 			// Normalize
-			float normalize()
+			void normalize()
 			{
 				float l = length();
 				if(l > 0)
@@ -425,5 +449,23 @@ namespace atta
 	typedef vector2<int> vec2i;
 
 }
+
+namespace std {
+	template<> struct hash<atta::vec3> {
+		size_t operator()(atta::vec3 const& vec) const {
+			return ((hash<float>()(vec.x) ^
+				   (hash<float>()(vec.y) << 1)) >> 1) ^
+				   (hash<float>()(vec.z) << 1);
+		}
+	};
+
+	template<> struct hash<atta::vec2> {
+		size_t operator()(atta::vec2 const& vec) const {
+			return ((hash<float>()(vec.x) ^
+				   (hash<float>()(vec.y) << 1)) >> 1);
+		}
+	};
+}
+
 
 #endif// ATTA_VECTOR_H

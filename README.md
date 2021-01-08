@@ -43,7 +43,7 @@ These values are unreliable and come from what I think is going on in the code (
  - RayTracing (CPU): 5%
  - Graphics user interface: 20%
  - Physics engine: 10%
- - Threading: 10%
+ - Threading: 30%
 
 ## References
 - [Alexander Overvoorde's Vulkan Tutorial](https://vulkan-tutorial.com/)

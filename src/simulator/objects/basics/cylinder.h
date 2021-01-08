@@ -6,21 +6,35 @@
 //--------------------------------------------------
 #ifndef CYLINDER_H
 #define CYLINDER_H
-#include "../../object.h"
-#include "../../vulkan/model.h"
 
-class Cylinder : public Object
+#include "simulator/objects/object.h"
+
+namespace atta
 {
-	public:
-		Cylinder(std::string name, glm::vec3 position = {0,0,0}, glm::vec3 rotation = {0,0,0}, glm::vec3 scale = {0,0,0}, float mass = 1.0f, glm::vec3 color = {1,1,1});
-		~Cylinder();
+	class Cylinder : public Object
+	{
+		public:
+			struct CreateInfo
+			{
+				std::string name = "Cylinder";
+				vec3 position = {0,0,0};
+				vec3 rotation = {0,0,0};
+				float height = 1.0f;
+				float radius = 0.5f;
+				float mass = 1.0f;
+				vec3 color = {0.3f, 0.3f, 0.3f};
+			};
 
-		//---------- Getters ----------//
-		glm::vec3 getColor() const { return _color; };
+			Cylinder(CreateInfo info);
+			~Cylinder();
 
-	private:
-		glm::vec3 _color;
+			//---------- Getters ----------//
+			vec3 getColor() const { return _color; };
 
-};
+		private:
+			vec3 _color;
+
+	};
+}
 
 #endif// CYLINDER_H

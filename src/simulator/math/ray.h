@@ -6,9 +6,10 @@
 //--------------------------------------------------
 #ifndef ATTA_RAY_H
 #define ATTA_RAY_H
+
 #include <math.h>
 #include <limits>
-#include "simulator/math/math.h"
+#include "common.h"
 #include "point.h"
 #include "vector.h"
 

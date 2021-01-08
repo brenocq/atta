@@ -6,14 +6,22 @@
 //--------------------------------------------------
 #include "importedObject.h"
 
-ImportedObject::ImportedObject(std::string name, std::string fileName, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mass):
-	Object(name, position, rotation, scale, mass)
+namespace atta
 {
-	_type = "ImportedObject";
-	_model = new Model(fileName);
-	_bodyPhysics = new Body(&_position, &_orientation, mass);
-}
+	ImportedObject::ImportedObject(CreateInfo info):
+		Object({info.name, info.position, info.rotation, info.scale, info.mass})
+	{
+		Object::setType("ImportedObject");
 
-ImportedObject::~ImportedObject()
-{
+		//----- Create model -----//
+		Model::CreateInfo modelInfo = {
+			.meshName = info.fileName
+		};
+		std::shared_ptr<Model> model = std::make_shared<Model>(modelInfo);
+		Object::setModel(model);
+	}
+
+	ImportedObject::~ImportedObject()
+	{
+	}
 }

@@ -5,24 +5,30 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "camera.h"
-Camera::Camera(std::string name, glm::vec3 position, glm::vec3 rotation, CameraInfo cameraInfo):
-	Object(name, position, rotation, {1,1,1}), 
-	_info(cameraInfo)
+
+namespace atta
 {
-	_type = "Camera";
-	_buffer = std::vector<uint8_t>(_info.width*_info.height*3);
-	_bodyPhysics = new Body(&_position, &_orientation, 1.0f);
+	Camera::Camera(CreateInfo info):
+		Object({info.name, info.position, info.rotation, info.scale}), 
+		_renderingType(info.renderingType), 
+		_width(info.width), _height(info.height),
+		_fov(info.fov)
+	{
+		Object::setType("Camera");
+		_buffer = std::vector<uint8_t>(_width*_height*3);
+		//_bodyPhysics = new Body(&_position, &_orientation, 1.0f);
 
-	// When the vulkan application is created it creates a raytracing/rasterization pipeline to each camera
-}
+		// When the vulkan application is created it creates a raytracing/rasterization pipeline to each camera
+	}
 
-Camera::~Camera()
-{
+	Camera::~Camera()
+	{
 
-}
+	}
 
-void Camera::takePicture()
-{
-	// TODO Transfer image buffer from GPU memory to buffer
+	void Camera::takePicture()
+	{
+		// TODO Transfer image buffer from GPU memory to buffer
 
+	}
 }
