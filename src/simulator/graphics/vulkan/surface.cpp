@@ -7,21 +7,24 @@
 #include "surface.h"
 #include "simulator/helpers/log.h"
 
-Surface::Surface(std::shared_ptr<Instance> instance, std::shared_ptr<Window> window):
-	_instance(instance), _window(window)
+namespace atta::vk
 {
-	if(glfwCreateWindowSurface(_instance->handle(), _window->handle(), nullptr, &_surface) != VK_SUCCESS) 
+	Surface::Surface(std::shared_ptr<Instance> instance, std::shared_ptr<Window> window):
+		_instance(instance), _window(window)
 	{
-		Log::error("Surface", "Failed to create window surface!");
-		exit(1);
-	}	
-}
+		if(glfwCreateWindowSurface(_instance->handle(), _window->handle(), nullptr, &_surface) != VK_SUCCESS) 
+		{
+			Log::error("Surface", "Failed to create window surface!");
+			exit(1);
+		}	
+	}
 
-Surface::~Surface()
-{
-	if(_surface != nullptr)
+	Surface::~Surface()
 	{
-		vkDestroySurfaceKHR(_instance->handle(), _surface, nullptr);
-		_surface = nullptr;
+		if(_surface != nullptr)
+		{
+			vkDestroySurfaceKHR(_instance->handle(), _surface, nullptr);
+			_surface = nullptr;
+		}
 	}
 }

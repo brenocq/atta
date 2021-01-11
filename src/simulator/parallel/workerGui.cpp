@@ -11,21 +11,21 @@ namespace atta
 {
 	WorkerGui::WorkerGui()
 	{
-
+		// Create window (GUI thread only)
+		_window = std::make_shared<Window>();
 	}
 
 	WorkerGui::~WorkerGui()
 	{
-
+		std::cout << "GUI worker destroyed\n";
 	}
 
 	void WorkerGui::operator()()
 	{
-		std::cout << "GUI worker\n";
+		// TODO check _window->shouldClose();
 		while(true)
 		{
-
+			_window->poolEvents();
 		}
-		std::cout << "GUI worker stop\n";
 	}
 }

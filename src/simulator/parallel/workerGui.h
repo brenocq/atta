@@ -8,6 +8,7 @@
 #define ATTA_WORKER_GUI_H
 
 #include "worker.h"
+#include "simulator/graphics/core/window.h"
 
 namespace atta
 {
@@ -20,6 +21,7 @@ namespace atta
 			void operator()();
 
 		private:
+			std::shared_ptr<Window> _window;
 	};
 }
 

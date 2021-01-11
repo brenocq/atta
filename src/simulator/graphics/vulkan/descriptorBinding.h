@@ -4,8 +4,8 @@
 // Date: 2020-07-23
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef DESCRIPTOR_BINDING_H
-#define DESCRIPTOR_BINDING_H
+#ifndef ATTA_VK_DESCRIPTOR_BINDING_H
+#define ATTA_VK_DESCRIPTOR_BINDING_H
 #include <cstdint>
 #include "vulkan.h"
 
@@ -16,4 +16,4 @@ struct DescriptorBinding
 	VkDescriptorType type;// Type of the bound descriptor(s)
 	VkShaderStageFlags stage;// Shader stage at which the bound resources will be available
 };
-#endif// DESCRIPTOR_BINDING_H
+#endif// ATTA_VK_DESCRIPTOR_BINDING_H

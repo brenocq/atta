@@ -4,8 +4,8 @@
 // Date: 2020-07-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef STAGING_BUFFER_H
-#define STAGING_BUFFER_H
+#ifndef ATTA_VK_STAGING_BUFFER_H
+#define ATTA_VK_STAGING_BUFFER_H
 
 #include <iostream>
 #include <string.h>
@@ -15,16 +15,19 @@
 #include "buffer.h"
 #include "simulator/graphics/core/vertex.h"
 
-class StagingBuffer : public Buffer
+namespace atta::vk
 {
-	public:
-	template <class T>
-	StagingBuffer(std::shared_ptr<Device> device, std::vector<T>& content);
+	class StagingBuffer : public Buffer
+	{
+		public:
+		template <class T>
+		StagingBuffer(std::shared_ptr<Device> device, std::vector<T>& content);
 
-	StagingBuffer(std::shared_ptr<Device> device, void* dataToMap, VkDeviceSize size);
-	~StagingBuffer();
+		StagingBuffer(std::shared_ptr<Device> device, void* dataToMap, VkDeviceSize size);
+		~StagingBuffer();
 
-	private:
-};
+		private:
+	};
+}
 
-#endif// STAGING_BUFFER_H
+#endif// ATTA_VK_STAGING_BUFFER_H

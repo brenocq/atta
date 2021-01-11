@@ -4,8 +4,8 @@
 // Date: 2020-07-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef INDEX_BUFFER_H
-#define INDEX_BUFFER_H
+#ifndef ATTA_VK_INDEX_BUFFER_H
+#define ATTA_VK_INDEX_BUFFER_H
 
 #include <iostream>
 #include <string.h>
@@ -14,13 +14,16 @@
 #include "device.h"
 #include "buffer.h"
 
-class IndexBuffer : public Buffer
+namespace atta::vk
 {
-	public:
-	IndexBuffer(std::shared_ptr<Device> device, std::vector<unsigned int> indices);
-	~IndexBuffer();
+	class IndexBuffer : public Buffer
+	{
+		public:
+			IndexBuffer(std::shared_ptr<Device> device, std::vector<unsigned int> indices);
+			~IndexBuffer();
 
-	private:
-};
+		private:
+	};
+}
 
-#endif// INDEX_BUFFER_H
+#endif// ATTA_VK_INDEX_BUFFER_H

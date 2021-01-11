@@ -12,9 +12,11 @@
 #include <memory>
 #include "simulator/parallel/threadPool.h"
 #include "simulator/objects/object.h"
-#include "simulator/graphics/core/window.h"
-#include "simulator/graphics/renderer.h"
-#include "simulator/scene.h"
+#include "simulator/graphics/vulkan/vulkanCore.h"
+#include "simulator/core/accelerator.h"
+#include "simulator/core/scene.h"
+#include "simulator/graphics/renderers/renderer.h"
+#include "simulator/graphics/renderers/rastRenderer.h"
 //#include "simulator/helpers/drawer.h"
 
 namespace atta
@@ -34,10 +36,13 @@ namespace atta
 
 		private:
 			std::shared_ptr<ThreadPool> _threadPool;
-			std::shared_ptr<Window> _window;
-			std::shared_ptr<Renderer> _renderer;
 
+			std::shared_ptr<vk::VulkanCore> _vulkanCore;
 			std::shared_ptr<Scene> _scene;
+			std::shared_ptr<Accelerator> _accelerator;
+
+			std::vector<std::shared_ptr<Renderer>> _renderers;
+
 			//std::shared_ptr<Drawer> _drawer;
 			//std::shared_ptr<Application> _vulkanApp;
 	};

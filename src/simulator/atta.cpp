@@ -15,17 +15,34 @@ namespace atta
 	{
 		// Create thread pool
 		_threadPool = std::make_shared<ThreadPool>();
-
-		// Create window
-		_window = std::make_shared<Window>();
+		_threadPool->createGeneralistWorkers();
+		_threadPool->createGuiWorker();
 
 		// Create scene
-		_scene = std::make_shared<Scene>({.objects = createInfo.objects});
+		Scene::CreateInfo sceneInfo = 
+		{
+			.objects = createInfo.objects
+		};
+		_scene = std::make_shared<Scene>(sceneInfo);
+
+		// Create accelerator
+		Accelerator::CreateInfo accInfo = 
+		{
+			.objects = createInfo.objects
+		};
+		_accelerator = std::make_shared<Accelerator>(accInfo);
+
+		// Create vulkan core
+		_vulkanCore = std::make_shared<vk::VulkanCore>();
+
+		// Create renderers
+		std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>();
+		_renderers.push_back(rast);
 
 		// Initialize physics
 		
 		// Initialize renderer
-		_renderer = std::make_shared<Renderer>(_window, _scene);
+		//_renderer = std::make_shared<Renderer>(_window, _scene);
 
 		// Initialize objects
 
@@ -38,5 +55,10 @@ namespace atta
 
 	void Atta::run()
 	{
+		// Manage threadPool workers
+		while(true)
+		{
+
+		}
 	}
 }
