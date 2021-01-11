@@ -59,40 +59,40 @@ namespace atta
 			RenderingType _renderingType;
 			// Core clases
 			std::shared_ptr<Window> _window;
-			std::shared_ptr<Instance> _instance;
-			std::unique_ptr<DebugMessenger> _debugMessenger;
-			std::shared_ptr<Surface> _surface;
-			std::shared_ptr<PhysicalDevice> _physicalDevice;
-			std::shared_ptr<Device> _device;
-			std::shared_ptr<SwapChain> _swapChain;
+			std::shared_ptr<vk::Instance> _instance;
+			std::unique_ptr<vk::DebugMessenger> _debugMessenger;
+			std::shared_ptr<vk::Surface> _surface;
+			std::shared_ptr<vk::PhysicalDevice> _physicalDevice;
+			std::shared_ptr<vk::Device> _device;
+			std::shared_ptr<vk::SwapChain> _swapChain;
 
 			// Command Buffers
-			std::shared_ptr<CommandPool> _commandPool;
-			std::unique_ptr<CommandBuffers> _commandBuffers;
+			std::shared_ptr<vk::CommandPool> _commandPool;
+			std::unique_ptr<vk::CommandBuffers> _commandBuffers;
 
 			// Pipelines
-			std::unique_ptr<GraphicsPipeline> _graphicsPipeline;
-			std::unique_ptr<LinePipeline> _linePipeline;
-			std::unique_ptr<MaskPipeline> _maskPipeline;
-			std::unique_ptr<OutlinePipeline> _outlinePipeline;
-			std::unique_ptr<SkyboxPipeline> _skyboxPipeline;
+			std::unique_ptr<vk::GraphicsPipeline> _graphicsPipeline;
+			std::unique_ptr<vk::LinePipeline> _linePipeline;
+			std::unique_ptr<vk::MaskPipeline> _maskPipeline;
+			std::unique_ptr<vk::OutlinePipeline> _outlinePipeline;
+			std::unique_ptr<vk::SkyboxPipeline> _skyboxPipeline;
 
 			// Other renderers
 			std::unique_ptr<UserInterface> _userInterface;
-			RayTracing* _rayTracing;
-			atta::rt::RayTracingCPU* _rayTracingCPU;
+			std::shared_ptr<rt::RayTracing> _rayTracing;
+			std::shared_ptr<rt::RayTracingCPU> _rayTracingCPU;
 
 			// modelViewController
-			ModelViewController* _modelViewController;
-			std::vector<UniformBuffer*> _uniformBuffers;
+			std::shared_ptr<ModelViewController> _modelViewController;
+			std::vector<std::shared_ptr<UniformBuffer>> _uniformBuffers;
 
 			// Scene info
 			std::shared_ptr<Scene> _scene;
 
 			// Image/swapchain synchronization
-			std::vector<Semaphore*> _imageAvailableSemaphores;
-			std::vector<Semaphore*> _renderFinishedSemaphores;
-			std::vector<Fence*> _inFlightFences;
+			std::vector<std::shared_ptr<vk::Semaphore>> _imageAvailableSemaphores;
+			std::vector<std::shared_ptr<vk::Semaphore>> _renderFinishedSemaphores;
+			std::vector<std::shared_ptr<vk::Fence>> _inFlightFences;
 			std::vector<VkFence> _imagesInFlight;
 
 			size_t _currentFrame;
@@ -105,11 +105,11 @@ namespace atta
 			bool _splitRender;
 
 			// Camera sensor parameters
-			std::vector<RayTracing*> _camerasRayTracing;
-			std::vector<Image*> _camerasRasterizationImage;
-			std::vector<ImageView*> _camerasRasterizationImageView;
-			std::vector<GraphicsPipeline*> _camerasRasterization;
-			std::vector<UniformBuffer*> _camerasUniformBuffer;
+			std::vector<std::shared_ptr<vk::RayTracing>> _camerasRayTracing;
+			std::vector<std::shared_ptr<vk::Image>> _camerasRasterizationImage;
+			std::vector<std::shared_ptr<vk::ImageView>> _camerasRasterizationImageView;
+			std::vector<std::shared_ptr<vk::GraphicsPipeline>> _camerasRasterization;
+			std::vector<std::shared_ptr<vk::UniformBuffer>> _camerasUniformBuffer;
 	};
 }
 #endif// ATTA_RENDERER_H

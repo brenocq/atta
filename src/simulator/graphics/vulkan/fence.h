@@ -4,29 +4,32 @@
 // Date: 2020-06-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef FENCE_H
-#define FENCE_H
+#ifndef ATTA_VK_FENCE_H
+#define ATTA_VK_FENCE_H
 
 #include <iostream>
 #include <string.h>
 #include "defines.h"
 #include "device.h"
 
-class Fence
+namespace atta::vk
 {
-	public:
-		Fence(std::shared_ptr<Device> device);
-		~Fence();
+	class Fence
+	{
+		public:
+			Fence(std::shared_ptr<Device> device);
+			~Fence();
 
-		VkFence handle() { return _fence; }
-		std::shared_ptr<Device> getDevice() const { return _device; }
+			VkFence handle() { return _fence; }
+			std::shared_ptr<Device> getDevice() const { return _device; }
 
-		void reset();
-		void wait(uint64_t timeout) const;
+			void reset();
+			void wait(uint64_t timeout) const;
 
-	private:
-		VkFence _fence;
-		std::shared_ptr<Device> _device;
-};
+		private:
+			VkFence _fence;
+			std::shared_ptr<Device> _device;
+	};
+}
 
-#endif// FENCE_H
+#endif// ATTA_VK_FENCE_H

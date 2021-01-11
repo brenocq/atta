@@ -41,6 +41,7 @@ namespace atta
 			double getTime();
 			void close();
 			void toggleCursorVisibility();
+			void poolEvents(){ glfwPollEvents(); }
 
 			//------------ Getters ------------//
 			int getLastX() const { return _lastX; }
@@ -48,6 +49,7 @@ namespace atta
 			bool getCursorVisible() const { return _cursorVisible; }
 			int getWidth() const { return _width; }
 			int getHeight() const { return _height; }
+			bool getShouldChose() const { return glfwWindowShouldClose(_window); }
 
 			//------------ Setters ------------//
 			void setLastX(int x) { _lastX = x; }

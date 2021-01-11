@@ -4,20 +4,23 @@
 // Date: 2020-06-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef PROCEDURAL_H
-#define PROCEDURAL_H
+#ifndef ATTA_VK_PROCEDURAL_H
+#define ATTA_VK_PROCEDURAL_H
 
 #include <iostream>
 #include <string.h>
 #include "defines.h"
 #include "glm.h"
 
-class Procedural
+namespace atta::vk
 {
-	public:
-	Procedural() = default;
-	virtual ~Procedural() = default;;
-	virtual std::pair<glm::vec3, glm::vec3> boundingBox() const = 0;
-};
+	class Procedural
+	{
+		public:
+		Procedural() = default;
+		virtual ~Procedural() = default;;
+		virtual std::pair<glm::vec3, glm::vec3> boundingBox() const = 0;
+	};
+}
 
-#endif// PROCEDURAL_H
+#endif// ATTA_VK_PROCEDURAL_H

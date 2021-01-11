@@ -4,8 +4,8 @@
 // Date: 2020-07-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef VERTEX_BUFFER_H
-#define VERTEX_BUFFER_H
+#ifndef ATTA_VK_VERTEX_BUFFER_H
+#define ATTA_VK_VERTEX_BUFFER_H
 
 #include <iostream>
 #include <string.h>
@@ -15,13 +15,16 @@
 #include "buffer.h"
 #include "simulator/graphics/core/vertex.h"
 
-class VertexBuffer : public Buffer
+namespace atta::vk
 {
-	public:
-		VertexBuffer(std::shared_ptr<Device> device, std::vector<Vertex> vertices);
-		~VertexBuffer();
+	class VertexBuffer : public Buffer
+	{
+		public:
+			VertexBuffer(std::shared_ptr<Device> device, std::vector<Vertex> vertices);
+			~VertexBuffer();
 
-	private:
-};
+		private:
+	};
+}
 
-#endif// VERTEX_BUFFER_H
+#endif// ATTA_VK_VERTEX_BUFFER_H

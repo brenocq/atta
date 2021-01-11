@@ -7,8 +7,8 @@
 #ifndef ACCELERATION_STRUCTURE_H
 #define ACCELERATION_STRUCTURE_H
 
-#include "../device.h"
-#include "../buffer.h"
+#include "simulator/graphics/vulkan/device.h"
+#include "simulator/graphics/vulkan/buffer.h"
 #include "deviceProcedures.h"
 
 class AccelerationStructure

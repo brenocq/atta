@@ -6,28 +6,31 @@
 //--------------------------------------------------
 #include "colorBuffer.h"
 
-ColorBuffer::ColorBuffer(std::shared_ptr<Device> device, VkExtent2D extent, VkFormat format):
-	_device(device), _extent(extent), _format(format)
+namespace atta::vk
 {
-	_image = new Image(_device, _extent.width, _extent.height, _format
-			, VK_IMAGE_TILING_OPTIMAL
-			, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-			, 1, device->getMsaaSamples());
-	_imageView = new ImageView(_device, _image->handle(), _format, VK_IMAGE_ASPECT_COLOR_BIT);
-}
-
-ColorBuffer::~ColorBuffer()
-{
-	if(_image != nullptr)
+	ColorBuffer::ColorBuffer(std::shared_ptr<Device> device, VkExtent2D extent, VkFormat format):
+		_device(device), _extent(extent), _format(format)
 	{
-		delete _image;
-		_image = nullptr;
+		_image = new Image(_device, _extent.width, _extent.height, _format
+				, VK_IMAGE_TILING_OPTIMAL
+				, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+				, 1, device->getMsaaSamples());
+		_imageView = new ImageView(_device, _image->handle(), _format, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 
-	if(_imageView != nullptr)
+	ColorBuffer::~ColorBuffer()
 	{
-		delete _imageView;
-		_imageView = nullptr;
+		if(_image != nullptr)
+		{
+			delete _image;
+			_image = nullptr;
+		}
+
+		if(_imageView != nullptr)
+		{
+			delete _imageView;
+			_imageView = nullptr;
+		}
 	}
 }

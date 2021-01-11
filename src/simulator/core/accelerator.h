@@ -1,11 +1,11 @@
 //--------------------------------------------------
 // Robot Simulator
-// scene.h
-// Date: 2020-07-16
+// accelerator.h
+// Date: 2021-01-11
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_SCENE_H
-#define ATTA_SCENE_H
+#ifndef ATTA_ACCELERATOR_H
+#define ATTA_ACCELERATOR_H
 
 #include <vector>
 #include <memory>
@@ -13,7 +13,7 @@
 
 namespace atta
 {
-	class Scene
+	class Accelerator
 	{
 		public:
 			struct CreateInfo
@@ -21,13 +21,11 @@ namespace atta
 				std::vector<std::shared_ptr<Object>> objects;
 			};
 
-			Scene(CreateInfo info);
-			~Scene();
-
+			Accelerator(CreateInfo info);
+			~Accelerator();
 
 		private:
 			std::vector<std::shared_ptr<Object>> _objects;
 	};
 }
-
-#endif// ATTA_SCENE_H
+#endif// ATTA_ACCELERATOR_H

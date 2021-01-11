@@ -4,8 +4,8 @@
 // Date: 2020-07-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef UNIFORM_BUFFER_H
-#define UNIFORM_BUFFER_H
+#ifndef ATTA_VK_UNIFORM_BUFFER_H
+#define ATTA_VK_UNIFORM_BUFFER_H
 
 #include <iostream>
 #include <string.h>
@@ -16,14 +16,17 @@
 #include "buffer.h"
 #include "helpers.h"
 
-class UniformBuffer : public Buffer
+namespace atta::vk
 {
-	public:
-		UniformBuffer(std::shared_ptr<Device> device, VkDeviceSize size);
-		~UniformBuffer();
+	class UniformBuffer : public Buffer
+	{
+		public:
+			UniformBuffer(std::shared_ptr<Device> device, VkDeviceSize size);
+			~UniformBuffer();
 
-		void setValue(UniformBufferObject ubo);
-	private:
-};
+			void setValue(UniformBufferObject ubo);
+		private:
+	};
+}
 
-#endif// UNIFORM_BUFFER_H
+#endif// ATTA_VK_UNIFORM_BUFFER_H

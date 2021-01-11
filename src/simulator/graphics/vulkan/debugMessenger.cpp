@@ -30,28 +30,31 @@ void destroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 //------------------------ Debug Messenger class -------------------------//
 
-DebugMessenger::DebugMessenger(std::shared_ptr<Instance> instance):
-	_instance(instance)
+namespace atta::vk
 {
-	if(!ENABLE_VALIDATION_LAYERS)
-		return;
-
-	// Debug messenger create info
-	VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
-	populateDebugMessengerCreateInfo(createInfo);
-
-	// Create debug messenger
-	if(createDebugUtilsMessengerEXT(_instance->handle(), &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS) 
+	DebugMessenger::DebugMessenger(std::shared_ptr<Instance> instance):
+		_instance(instance)
 	{
-		Log::error("Debug Messenger", "Failed to create vulkan debug utils messenger!");
-		exit(1);
+		if(!ENABLE_VALIDATION_LAYERS)
+			return;
+
+		// Debug messenger create info
+		VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
+		populateDebugMessengerCreateInfo(createInfo);
+
+		// Create debug messenger
+		if(createDebugUtilsMessengerEXT(_instance->handle(), &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS) 
+		{
+			Log::error("Debug Messenger", "Failed to create vulkan debug utils messenger!");
+			exit(1);
+		}
 	}
-}
 
-DebugMessenger::~DebugMessenger()
-{
-	if(_debugMessenger != nullptr)
+	DebugMessenger::~DebugMessenger()
 	{
-		destroyDebugUtilsMessengerEXT(_instance->handle(), _debugMessenger, nullptr);
+		if(_debugMessenger != nullptr)
+		{
+			destroyDebugUtilsMessengerEXT(_instance->handle(), _debugMessenger, nullptr);
+		}
 	}
 }

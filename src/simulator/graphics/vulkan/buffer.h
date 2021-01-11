@@ -4,8 +4,8 @@
 // Date: 2020-07-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef BUFFER_H
-#define BUFFER_H
+#ifndef ATTA_VK_BUFFER_H
+#define ATTA_VK_BUFFER_H
 
 #include <iostream>
 #include <string.h>
@@ -13,27 +13,30 @@
 #include "device.h"
 #include "commandPool.h"
 
-class Buffer
+namespace atta::vk
 {
-	public:
-		Buffer(std::shared_ptr<Device> device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
-		~Buffer();
+	class Buffer
+	{
+		public:
+			Buffer(std::shared_ptr<Device> device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+			~Buffer();
 
-		VkBuffer handle() { return _buffer; }
-		std::shared_ptr<Device> getDevice() const { return _device; }
-		VkDeviceMemory getMemory() const { return _bufferMemory; }
+			VkBuffer handle() { return _buffer; }
+			std::shared_ptr<Device> getDevice() const { return _device; }
+			VkDeviceMemory getMemory() const { return _bufferMemory; }
 
-		void copyFrom(std::shared_ptr<CommandPool> commandPool, VkBuffer srcBuffer, VkDeviceSize size);
+			void copyFrom(std::shared_ptr<CommandPool> commandPool, VkBuffer srcBuffer, VkDeviceSize size);
 
-		void* mapMemory(const size_t offset, const size_t size);
-		void unmapMemory();
-	protected:
-		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-		
-		VkBuffer _buffer;
-		VkBufferCreateInfo _bufferInfo;
-		VkDeviceMemory _bufferMemory;
-		std::shared_ptr<Device> _device;
-};
+			void* mapMemory(const size_t offset, const size_t size);
+			void unmapMemory();
+		protected:
+			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+			
+			VkBuffer _buffer;
+			VkBufferCreateInfo _bufferInfo;
+			VkDeviceMemory _bufferMemory;
+			std::shared_ptr<Device> _device;
+	};
+}
 
-#endif// BUFFER_H
+#endif// ATTA_VK_BUFFER_H

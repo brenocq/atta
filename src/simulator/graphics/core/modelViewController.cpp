@@ -19,12 +19,12 @@ ModelViewController::~ModelViewController()
 
 }
 
-void ModelViewController::reset(const glm::mat4& modelView)
+void ModelViewController::reset(const mat4& modelView)
 {
-	const auto inverse = glm::inverse(modelView);
+	const auto inverse = modelView.inserve();
 
-	_position = inverse * glm::vec4(0, 0, 0, 1);
-	_orientation = glm::mat4(glm::mat3(modelView));
+	_position = inverse * vec4(vec3(0, 0, 0),1);
+	_orientation = mat4(mat3(modelView));
 	
 	_cursorMovX = 0;
 	_cursorMovY = 0;
@@ -34,7 +34,7 @@ void ModelViewController::reset(const glm::mat4& modelView)
 
 glm::mat4 ModelViewController::getModelView() const
 {
-	const auto view = _orientation * glm::translate(glm::mat4(1), -glm::vec3(_position));
+	const auto view = _orientation * mat4(1).translate(-_position);
 
 	return view;
 }
@@ -77,14 +77,7 @@ void ModelViewController::onMouseButton(int button, int action, int mods)
 			_mouseMiddleButton = action == GLFW_PRESS;
 			if(action == GLFW_PRESS || action == GLFW_RELEASE)
 			{
-				if(auto w = _window.lock())
-				{
-					w->toggleCursorVisibility();
-				}
-				else
-				{
-					Log::warning("ModelViewController", "Window is expired, it was not possible to toggle cursor visibility");
-				}
+				_window->toggleCursorVisibility();
 			}
 			break;
 	}

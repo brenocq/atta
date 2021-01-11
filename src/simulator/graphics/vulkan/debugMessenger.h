@@ -4,11 +4,10 @@
 // Date: 2020-06-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef DEBUG_UTILS_MESSENGER_H
-#define DEBUG_UTILS_MESSENGER_H
+#ifndef ATTA_VK_DEBUG_UTILS_MESSENGER_H
+#define ATTA_VK_DEBUG_UTILS_MESSENGER_H
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include "vulkan.h"
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -17,26 +16,29 @@
 #include "instance.h"
 #include "debugCommon.h"
 
-class DebugMessenger
+namespace atta::vk
 {
-	public:
-		DebugMessenger(std::shared_ptr<Instance> instance);
-		~DebugMessenger();
+	class DebugMessenger
+	{
+		public:
+			DebugMessenger(std::shared_ptr<Instance> instance);
+			~DebugMessenger();
 
-	private:
-		VkResult CreateDebugUtilsMessengerEXT(
-				VkInstance instance,
-				const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-				const VkAllocationCallbacks* pAllocator,
-				VkDebugUtilsMessengerEXT* pDebugMessenger);
+		private:
+			VkResult CreateDebugUtilsMessengerEXT(
+					VkInstance instance,
+					const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+					const VkAllocationCallbacks* pAllocator,
+					VkDebugUtilsMessengerEXT* pDebugMessenger);
 
-		void DestroyDebugUtilsMessengerEXT(
-				VkInstance instance,
-				VkDebugUtilsMessengerEXT debugMessenger,
-				const VkAllocationCallbacks* pAllocator);
+			void DestroyDebugUtilsMessengerEXT(
+					VkInstance instance,
+					VkDebugUtilsMessengerEXT debugMessenger,
+					const VkAllocationCallbacks* pAllocator);
 
-		VkDebugUtilsMessengerEXT _debugMessenger;
-		std::shared_ptr<Instance> _instance;
-};
+			VkDebugUtilsMessengerEXT _debugMessenger;
+			std::shared_ptr<Instance> _instance;
+	};
+}
 
-#endif// DEBUG_UTILS_MESSENGER_H
+#endif// ATTA_VK_DEBUG_UTILS_MESSENGER_H

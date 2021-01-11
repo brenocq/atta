@@ -4,8 +4,8 @@
 // Date: 2020-06-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef COMMAND_BUFFERS_H
-#define COMMAND_BUFFERS_H
+#ifndef ATTA_VK_COMMAND_BUFFERS_H
+#define ATTA_VK_COMMAND_BUFFERS_H
 
 #include <iostream>
 #include <string.h>
@@ -15,23 +15,26 @@
 #include "commandPool.h"
 #include "frameBuffer.h"
 
-class CommandBuffers
+namespace atta::vk
 {
-	public:
-		CommandBuffers(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, uint32_t size);
-		~CommandBuffers();
+	class CommandBuffers
+	{
+		public:
+			CommandBuffers(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, uint32_t size);
+			~CommandBuffers();
 
-		std::vector<VkCommandBuffer> handle() const { return _commandBuffers; }
-		void setHandle(std::vector<VkCommandBuffer> newCommandBuffers) { _commandBuffers = newCommandBuffers; }
-		std::shared_ptr<Device> getDevice() const { return _device; }
+			std::vector<VkCommandBuffer> handle() const { return _commandBuffers; }
+			void setHandle(std::vector<VkCommandBuffer> newCommandBuffers) { _commandBuffers = newCommandBuffers; }
+			std::shared_ptr<Device> getDevice() const { return _device; }
 
-		VkCommandBuffer begin(size_t i);
-		void end(size_t i);
+			VkCommandBuffer begin(size_t i);
+			void end(size_t i);
 
-	private:
-		std::shared_ptr<Device> _device;
-		std::vector<VkCommandBuffer> _commandBuffers;
-		std::shared_ptr<CommandPool> _commandPool;
-};
+		private:
+			std::shared_ptr<Device> _device;
+			std::vector<VkCommandBuffer> _commandBuffers;
+			std::shared_ptr<CommandPool> _commandPool;
+	};
+}
 
-#endif// COMMAND_BUFFERS_H
+#endif// ATTA_VK_COMMAND_BUFFERS_H

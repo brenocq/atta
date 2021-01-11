@@ -7,38 +7,41 @@
 #include "descriptorSetManager.h"
 #include "simulator/helpers/log.h"
 
-DescriptorSetManager::DescriptorSetManager(
-		std::shared_ptr<Device> device, 
-		std::vector<DescriptorBinding> descriptorBindings, 
-		size_t maxSets):
-	_device(device)
+namespace atta::vk
 {
-	
-	// Sanity check to avoid binding different resources to the same binding point
-	std::map<uint32_t, VkDescriptorType> bindingTypes;
-
-	for(const auto& binding : descriptorBindings)
+	DescriptorSetManager::DescriptorSetManager(
+			std::shared_ptr<Device> device, 
+			std::vector<DescriptorBinding> descriptorBindings, 
+			size_t maxSets):
+		_device(device)
 	{
-		if(!bindingTypes.insert(std::make_pair(binding.binding, binding.type)).second)
+		
+		// Sanity check to avoid binding different resources to the same binding point
+		std::map<uint32_t, VkDescriptorType> bindingTypes;
+
+		for(const auto& binding : descriptorBindings)
 		{
-			Log::warning("DescriptorSetManager", "Binding collision detected!");
-			return;
+			if(!bindingTypes.insert(std::make_pair(binding.binding, binding.type)).second)
+			{
+				Log::warning("DescriptorSetManager", "Binding collision detected!");
+				return;
+			}
 		}
+
+		_descriptorPool = new DescriptorPool(_device, descriptorBindings, maxSets);
+		_descriptorSetLayout = new DescriptorSetLayout(_device, descriptorBindings);
+		_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, bindingTypes, maxSets);
 	}
 
-	_descriptorPool = new DescriptorPool(_device, descriptorBindings, maxSets);
-	_descriptorSetLayout = new DescriptorSetLayout(_device, descriptorBindings);
-	_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, bindingTypes, maxSets);
-}
+	DescriptorSetManager::~DescriptorSetManager()
+	{
+		delete _descriptorSets;
+		_descriptorSets = nullptr;
 
-DescriptorSetManager::~DescriptorSetManager()
-{
-	delete _descriptorSets;
-	_descriptorSets = nullptr;
+		delete _descriptorSetLayout;
+		_descriptorSetLayout = nullptr;
 
-	delete _descriptorSetLayout;
-	_descriptorSetLayout = nullptr;
-
-	delete _descriptorPool;
-	_descriptorPool = nullptr;
+		delete _descriptorPool;
+		_descriptorPool = nullptr;
+	}
 }

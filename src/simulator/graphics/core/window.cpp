@@ -121,7 +121,7 @@ namespace atta
 	//------------------------------//
 	void Window::keyCallback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods)
 	{
-		//printf("key: key:%c scan:%d ac:%d, mods:%d\n", key, scancode, action, mods);
+		//Log::debug("Window", "key -> key: [w]$0[], scancode: [w]$1[], action: [w]$2[], mods: [w]$3[]", key, scancode, action, mods);
 		Window* const _this = static_cast<Window*>(glfwGetWindowUserPointer(window));
 		if(_this->onKey)
 		{
@@ -131,7 +131,7 @@ namespace atta
 
 	void Window::cursorPositionCallback(GLFWwindow* window, const double xpos, const double ypos)
 	{
-		//printf("cursor pos: x:%lf y:%lf\n", xpos, ypos);
+		//Log::debug("Window", "cursorPosition -> xpos: [w]$0[], ypos: [w]$1[]", xpos, ypos);
 		Window* const _this = static_cast<Window*>(glfwGetWindowUserPointer(window));
 		if(_this->getCursorVisible())
 		{
@@ -147,7 +147,7 @@ namespace atta
 
 	void Window::mouseButtonCallback(GLFWwindow* window, const int button, const int action, const int mods)
 	{
-		//printf("mouse: bt:%d ac:%d mod:%d\n", button, action, mods);
+		//Log::debug("Window", "mouseButton -> button: [w]$0[], action: [w]$1[], mods: [w]$2[]", button, action, mods);
 		Window* const _this = static_cast<Window*>(glfwGetWindowUserPointer(window));
 		if(_this->onMouseButton)
 		{
@@ -157,8 +157,7 @@ namespace atta
 
 	void Window::scrollCallback(GLFWwindow* window, const double xoffset, const double yoffset)
 	{
-		//printf("scroll: xo:%lf yo:%lf\n", xoffset, yoffset);
-		//std::cout << std::flush;
+		//Log::debug("Window", "scrool -> xoffset: [w]$0[], yoffset: [w]$1[]", xoffset, yoffset);
 		Window* const _this = static_cast<Window*>(glfwGetWindowUserPointer(window));
 		if(_this->onScroll)
 		{

@@ -4,8 +4,8 @@
 // Date: 2020-07-23
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef MATERIAL_H
-#define MATERIAL_H
+#ifndef ATTA_VK_MATERIAL_H
+#define ATTA_VK_MATERIAL_H
 #include "glm.h"
 
 struct alignas(16) Material final
@@ -59,4 +59,4 @@ struct alignas(16) Material final
 	// Which material are we dealing with
 	Enum materialModel;
 };
-#endif// MATERIAL_H
+#endif// ATTA_VK_MATERIAL_H

@@ -22,7 +22,11 @@ namespace atta
 			ThreadPool(int qtyThreads = -1);
 			~ThreadPool();
 
+			void createGeneralistWorkers();
+			void createGuiWorker();
+
 		private:
+			unsigned _qtyWorkersToCreate;
 
 			// Syncronization structures
 			std::shared_ptr<Barrier> _generalistStateBarrier;

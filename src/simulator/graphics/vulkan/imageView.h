@@ -4,8 +4,8 @@
 // Date: 2020-06-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef IMAGE_VIEW_H
-#define IMAGE_VIEW_H
+#ifndef ATTA_VK_IMAGE_VIEW_H
+#define ATTA_VK_IMAGE_VIEW_H
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -16,21 +16,24 @@
 #include "defines.h"
 #include "device.h"
 
-class ImageView
+namespace atta::vk
 {
-	public:
-		ImageView(std::shared_ptr<Device> device, VkImage image, 
-				VkFormat format, VkImageAspectFlags aspectFlags, 
-				uint32_t mipLevels=1, bool isCubeMap=false);
-		~ImageView();
+	class ImageView
+	{
+		public:
+			ImageView(std::shared_ptr<Device> device, VkImage image, 
+					VkFormat format, VkImageAspectFlags aspectFlags, 
+					uint32_t mipLevels=1, bool isCubeMap=false);
+			~ImageView();
 
-		VkImageView handle() const { return _imageView; }
-		std::shared_ptr<Device> getDevice() const { return _device; }
+			VkImageView handle() const { return _imageView; }
+			std::shared_ptr<Device> getDevice() const { return _device; }
 
-	private:
-		VkImageView _imageView;
-		std::shared_ptr<Device> _device;
-		uint32_t _mipLevels;
-};
+		private:
+			VkImageView _imageView;
+			std::shared_ptr<Device> _device;
+			uint32_t _mipLevels;
+	};
+}
 
-#endif// IMAGE_VIEW_H
+#endif// ATTA_VK_IMAGE_VIEW_H

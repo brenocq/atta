@@ -10,7 +10,7 @@
 #include "accelerationStructure.h"
 #include <vector>
 #include "../../scene.h"
-#include "../buffer.h"
+#include "simulator/graphics/vulkan/buffer.h"
 
 class BottomLevelAccelerationStructure final : public AccelerationStructure
 {
