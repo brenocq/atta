@@ -10,9 +10,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "../vulkan.h"
+#include "simulator/graphics/vulkan/pipeline.h"
 #include "simulator/graphics/vulkan/renderPass.h"
-#include "pipeline.h"
 
 namespace atta::vk
 {

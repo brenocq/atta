@@ -10,9 +10,8 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
-
-#include "pipeline.h"
 #include "simulator/graphics/vulkan/renderPass.h"
+#include "simulator/graphics/vulkan/pipeline.h"
 
 namespace atta::vk
 {
@@ -30,9 +29,6 @@ namespace atta::vk
 			void render(VkCommandBuffer commandBuffer, int imageIndex=0);
 
 		private:
-			// Output image info
-			VkExtent2D _imageExtent;
-			VkFormat _imageFormat;
 	};
 }
 

@@ -55,6 +55,10 @@ namespace atta::vk
 			std::shared_ptr<DescriptorSetManager> _descriptorSetManager;
 			std::shared_ptr<ShaderModule> _vertShaderModule;
 			std::shared_ptr<ShaderModule> _fragShaderModule;
+
+			// Output image info
+			VkExtent2D _imageExtent;
+			VkFormat _imageFormat;
 	};
 }
 

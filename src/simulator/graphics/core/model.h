@@ -21,19 +21,23 @@ namespace atta
 			struct CreateInfo
 			{
 				std::string meshName = "atta::empty";// Can be the filename or "atta::{meshType}"
+				Material material = {};
 			};
 
 			Model(CreateInfo info);
 			~Model();
 
-		private:
 			// Store all loaded meshes to avoid duplicate meshes in memory
 			// map<fileName, Mesh*>
 			static std::map<std::string, std::weak_ptr<Mesh>> allMeshes;
 
+			//---------- Getters ----------//
+			Material getMaterial() const { return _material; }
+
+		private:
 			std::string _meshName;
 			std::shared_ptr<Mesh> _mesh;
-			std::shared_ptr<Material> _material;
+			Material _material;
 	};
 }
 

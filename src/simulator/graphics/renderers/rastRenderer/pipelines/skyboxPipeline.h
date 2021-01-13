@@ -10,9 +10,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "../vulkan.h"
 #include "simulator/graphics/vulkan/renderPass.h"
-#include "pipeline.h"
+#include "simulator/graphics/vulkan/pipeline.h"
 
 namespace atta::vk
 {
@@ -20,8 +19,9 @@ namespace atta::vk
 	{
 		public:
 			SkyboxPipeline(std::shared_ptr<Device> device, 
-					std::shared_ptr<SwapChain> swapChain, 
 					std::shared_ptr<RenderPass> renderPass,
+					VkExtent2D extent, VkFormat format,
+					std::vector<std::shared_ptr<ImageView>> imageViews, 
 					std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
 					std::shared_ptr<Scene> scene);
 			~SkyboxPipeline();

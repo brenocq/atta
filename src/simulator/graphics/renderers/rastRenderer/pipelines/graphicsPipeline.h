@@ -11,7 +11,7 @@
 #include <vector>
 #include <string.h>
 
-#include "pipeline.h"
+#include "simulator/graphics/vulkan/pipeline.h"
 #include "simulator/graphics/vulkan/renderPass.h"
 #include "simulator/graphics/vulkan/colorBuffer.h"
 #include "simulator/graphics/vulkan/depthBuffer.h"
@@ -35,10 +35,6 @@ namespace atta::vk
 		private:
 			std::shared_ptr<ColorBuffer> _colorBuffer;
 			std::shared_ptr<DepthBuffer> _depthBuffer;
-
-			// Output image info
-			VkExtent2D _imageExtent;
-			VkFormat _imageFormat;
 	};
 }
 

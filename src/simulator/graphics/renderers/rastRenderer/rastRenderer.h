@@ -8,6 +8,11 @@
 #define ATTA_GRAPHICS_RASTERIZATION_RENDERER_H
 
 #include "simulator/graphics/renderers/renderer.h"
+#include "simulator/graphics/renderers/rastRenderer/pipelines/graphicsPipeline.h"
+#include "simulator/graphics/renderers/rastRenderer/pipelines/linePipeline.h"
+#include "simulator/graphics/renderers/rastRenderer/pipelines/maskPipeline.h"
+#include "simulator/graphics/renderers/rastRenderer/pipelines/outlinePipeline.h"
+#include "simulator/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.h"
 #include "simulator/core/scene.h"
 
 namespace atta
@@ -21,6 +26,8 @@ namespace atta
 				float width;
 				float height;
 				std::shared_ptr<Scene> scene;
+				mat4 viewMat;
+				mat4 projectionMat;
 			};
 
 			RastRenderer(CreateInfo info);
@@ -30,6 +37,15 @@ namespace atta
 
 		private:
 			std::shared_ptr<Scene> _scene;
+			mat4 _viewMat;
+			mat4 _projectionMat;
+
+			// Pipelines
+			std::unique_ptr<vk::GraphicsPipeline> _graphicsPipeline;
+			std::unique_ptr<vk::LinePipeline> _linePipeline;
+			std::unique_ptr<vk::MaskPipeline> _maskPipeline;
+			std::unique_ptr<vk::OutlinePipeline> _outlinePipeline;
+			std::unique_ptr<vk::SkyboxPipeline> _skyboxPipeline;
 	};
 }
 
