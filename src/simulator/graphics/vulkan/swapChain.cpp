@@ -10,8 +10,8 @@
 
 namespace atta::vk
 {
-	SwapChain::SwapChain(std::shared_ptr<Device> device, std::shared_ptr<Window> window):
-		_device(device), _window(window)
+	SwapChain::SwapChain(std::shared_ptr<Device> device, std::shared_ptr<Surface> surface):
+		_device(device), _surface(surface)
 	{
 		std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
 
@@ -28,7 +28,7 @@ namespace atta::vk
 
 		VkSwapchainCreateInfoKHR createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-		createInfo.surface = physicalDevice->getSurface()->handle();
+		createInfo.surface = _surface->handle();
 
 		createInfo.minImageCount = imageCount;
 		createInfo.imageFormat = surfaceFormat.format;
@@ -77,15 +77,6 @@ namespace atta::vk
 
 	SwapChain::~SwapChain()
 	{
-		for(auto imageView : _imageViews) 
-		{
-			if(imageView != nullptr)
-			{
-				delete imageView;
-				imageView = nullptr;
-			}
-		}
-
 		if(_swapChain != nullptr)
 		{
 			vkDestroySwapchainKHR(_device->handle(), _swapChain, nullptr);
@@ -166,12 +157,7 @@ namespace atta::vk
 		} 
 		else 
 		{
-			// Get current window extent
-			VkExtent2D actualExtent = {0,0};
-			if(auto window = _window.lock())
-				actualExtent = window->getExtent();
-			else
-				Log::error("SwapChain", "Window is expired!");
+			VkExtent2D actualExtent = _surface->getWindow()->getExtent();
 
 			actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
 			actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
@@ -186,7 +172,7 @@ namespace atta::vk
 
 		for(size_t i = 0; i < _imageViews.size(); i++) 
 		{
-			_imageViews[i] = new ImageView(_device, _images[i], _imageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+			_imageViews[i] = std::make_shared<ImageView>(_device, _images[i], _imageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
 		}
 	}
 }

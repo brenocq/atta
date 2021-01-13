@@ -23,6 +23,7 @@ if (UNIX)
 	add_definitions(-DUNIX)
 	add_compile_options("-std=c++17")
 	add_compile_options("-Wall")
+	add_compile_options("-Wno-invalid-offsetof")
 endif ()
 
 #IF(CMAKE_BUILD_TYPE MATCHES DEBUG)

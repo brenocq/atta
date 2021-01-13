@@ -33,7 +33,6 @@ namespace atta::vk
 		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
 		layoutInfo.pBindings = bindings.data();
 
-
 		if(vkCreateDescriptorSetLayout(_device->handle(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
 		{
 			Log::error("DescriptorSetLayout", "Failed to create descriptor set layout!");
@@ -64,7 +63,7 @@ namespace atta::vk
 
 		if(vkCreateDescriptorSetLayout(_device->handle(), &layoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
 		{
-			std::cout << BOLDRED << "[DescriptorSetLayout]" << RESET << RED << " Failed to create descriptor set layout!" << RESET << std::endl;
+			Log::error("DescriptorSetLayout", "Failed to create descriptor set layout!");
 			exit(1);
 		}
 	}

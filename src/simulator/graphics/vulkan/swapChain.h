@@ -26,7 +26,7 @@ namespace atta::vk
 	class SwapChain
 	{
 		public:
-			SwapChain(std::shared_ptr<Device> device, std::shared_ptr<Window> window);
+			SwapChain(std::shared_ptr<Device> device, std::shared_ptr<Surface> surface);
 			~SwapChain();
 
 			void copyImage(VkCommandBuffer commandBuffer, int imageIndex, Image* src, VkExtent2D extent, VkExtent2D offset);
@@ -35,7 +35,7 @@ namespace atta::vk
 			VkSwapchainKHR handle() const { return _swapChain; }
 			VkExtent2D getExtent() const { return _extent; }
 			VkFormat getImageFormat() const { return _imageFormat; }
-			std::vector<ImageView*> getImageViews() const { return _imageViews; }
+			std::vector<std::shared_ptr<ImageView>> getImageViews() const { return _imageViews; }
 			std::vector<VkImage> getImages() const { return _images; }
 
 		private:
@@ -45,12 +45,11 @@ namespace atta::vk
 
 			void createImageViews();
 
-			std::shared_ptr<Device> _device;
-			std::weak_ptr<Window> _window;
-
 			VkSwapchainKHR _swapChain;
+			std::shared_ptr<Device> _device;
+			std::shared_ptr<Surface> _surface;
 			std::vector<VkImage> _images;
-			std::vector<ImageView*> _imageViews;
+			std::vector<std::shared_ptr<ImageView>> _imageViews;
 			VkFormat _imageFormat;
 			VkExtent2D _extent;
 	};

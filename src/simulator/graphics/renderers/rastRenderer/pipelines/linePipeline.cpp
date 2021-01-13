@@ -8,17 +8,19 @@
 
 namespace atta::vk
 {
-	LinePipeline::LinePipeline(std::shared_ptr<Device> device, 
-				std::shared_ptr<SwapChain> swapChain, 
-				RenderPass* renderPass,
-				std::vector<UniformBuffer*> uniformBuffers, 
-				Scene* scene):
-		Pipeline(device, swapChain->getImageViews(), scene)
+	LinePipeline::LinePipeline(
+				std::shared_ptr<Device> device, 
+				std::shared_ptr<RenderPass> renderPass,
+				VkExtent2D extent, VkFormat format,
+				std::vector<std::shared_ptr<ImageView>> imageViews, 
+				std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
+				std::shared_ptr<Scene> scene):
+		Pipeline(device, imageViews, scene), 
+		_imageExtent(extent), _imageFormat(format), _renderPass(renderPass)
 	{
-		_renderPass = renderPass;
 		//---------- Shaders ----------//
-		_vertShaderModule = new ShaderModule(_device, "src/shaders/shaders/lineShader.vert.spv");
-		_fragShaderModule = new ShaderModule(_device, "src/shaders/shaders/lineShader.frag.spv");
+		_vertShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/lineShader.vert.spv");
+		_fragShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/lineShader.frag.spv");
 
 		// Vert shader
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -59,14 +61,14 @@ namespace atta::vk
 		VkViewport viewport{};
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
-		viewport.width = (float) swapChain->getExtent().width;
-		viewport.height = (float) swapChain->getExtent().height;
+		viewport.width = (float) _imageExtent.width;
+		viewport.height = (float) _imageExtent.height;
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 
 		VkRect2D scissor{};
 		scissor.offset = {0, 0};
-		scissor.extent = swapChain->getExtent();
+		scissor.extent = _imageExtent;
 
 		VkPipelineViewportStateCreateInfo viewportState{};
 		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -145,7 +147,7 @@ namespace atta::vk
 		_descriptorSetManager = new DescriptorSetManager(_device, descriptorBindings, uniformBuffers.size());
 		DescriptorSets* descriptorSets = _descriptorSetManager->getDescriptorSets();
 
-		for(uint32_t i = 0; i != swapChain->getImages().size(); i++)
+		for(uint32_t i = 0; i != _imageViews.size(); i++)
 		{
 			// Uniform buffer
 			VkDescriptorBufferInfo uniformBufferInfo = {};

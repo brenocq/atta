@@ -9,11 +9,9 @@
 
 namespace atta::vk
 {
-	PipelineLayout::PipelineLayout(std::shared_ptr<Device> device, DescriptorSetLayout* descriptorSetLayout):
-		_device(device)
+	PipelineLayout::PipelineLayout(std::shared_ptr<Device> device, std::shared_ptr<DescriptorSetLayout> descriptorSetLayout):
+		_device(device), _descriptorSetLayout(descriptorSetLayout)
 	{
-		_descriptorSetLayout = descriptorSetLayout;
-
 		VkDescriptorSetLayout setLayouts[] = { descriptorSetLayout->handle() };
 		
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};

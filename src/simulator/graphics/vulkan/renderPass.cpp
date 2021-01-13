@@ -9,15 +9,14 @@
 
 namespace atta::vk
 {
-	RenderPass::RenderPass(std::shared_ptr<Device> device, DepthBuffer* depthBuffer, ColorBuffer* colorBuffer):
-		_device(device)
+	RenderPass::RenderPass(std::shared_ptr<Device> device, 
+					std::shared_ptr<ColorBuffer> colorBuffer, 
+					std::shared_ptr<DepthBuffer> depthBuffer):
+		_device(device), _colorBuffer(colorBuffer), _depthBuffer(depthBuffer)
 	{
-		_colorBuffer = colorBuffer;
-		_depthBuffer = depthBuffer;
-
 		//----------- Color attachment ------------//
 		VkAttachmentDescription colorAttachment{};
-		colorAttachment.format = _colorBuffer->getFormat();
+		colorAttachment.format = _colorBuffer->getImage()->getFormat();
 		colorAttachment.samples = _device->getMsaaSamples();	
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -32,7 +31,7 @@ namespace atta::vk
 
 		//----------- Depth attachment ------------//
 		VkAttachmentDescription depthAttachment{};
-		depthAttachment.format = _depthBuffer->getFormat();
+		depthAttachment.format = _depthBuffer->getImage()->getFormat();
 		depthAttachment.samples = _device->getMsaaSamples();
 		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -47,7 +46,7 @@ namespace atta::vk
 
 		//----------- Resolve attachment ------------//
 		VkAttachmentDescription colorAttachmentResolve{};
-		colorAttachmentResolve.format = _colorBuffer->getFormat();
+		colorAttachmentResolve.format = _colorBuffer->getImage()->getFormat();
 		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
 		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -90,7 +89,8 @@ namespace atta::vk
 		renderPassInfo.dependencyCount = 1;
 		renderPassInfo.pDependencies = &dependency;
 
-		if(vkCreateRenderPass(_device->handle(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS) {
+		if(vkCreateRenderPass(_device->handle(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS)
+		{
 			Log::error("RenderPass", "Failed to create render pass!");
 			exit(1);
 		}

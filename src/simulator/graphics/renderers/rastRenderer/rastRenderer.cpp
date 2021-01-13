@@ -8,9 +8,11 @@
 
 namespace atta
 {
-	RastRenderer::RastRenderer()
+	RastRenderer::RastRenderer(CreateInfo info):
+		Renderer({info.vkCore, info.width, info.height}), _scene(info.scene)
 	{
 
+		// Create pipelines
 	}
 
 	RastRenderer::~RastRenderer()

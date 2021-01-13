@@ -36,7 +36,12 @@ namespace atta
 		_vulkanCore = std::make_shared<vk::VulkanCore>();
 
 		// Create renderers
-		std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>();
+		RastRenderer::CreateInfo rastRendInfo {
+			.vkCore = _vulkanCore,
+			.width = 500,
+			.height = 500
+		};
+		std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
 		_renderers.push_back(rast);
 
 		// Initialize physics

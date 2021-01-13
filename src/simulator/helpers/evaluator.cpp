@@ -45,7 +45,7 @@ namespace atta
 	//------- LOCAL EVALUATOR ------//
 	//------------------------------//
 	LocalEvaluator::LocalEvaluator(std::string description):
-		_finished(false), _description(description)
+		_description(description), _finished(false)
 	{
 		_startTime = std::chrono::high_resolution_clock::now();
 	}

@@ -10,16 +10,16 @@
 #include <iostream>
 #include <string.h>
 #include "defines.h"
-#include "../device.h"
-#include "../descriptorSetLayout.h"
-#include "../helpers.h"
+#include "device.h"
+#include "descriptorSetLayout.h"
+#include "helpers.h"
 
 namespace atta::vk
 {
 	class PipelineLayout
 	{
 		public:
-			PipelineLayout(std::shared_ptr<Device> device, DescriptorSetLayout* descriptorSetLayout);
+			PipelineLayout(std::shared_ptr<Device> device, std::shared_ptr<DescriptorSetLayout> descriptorSetLayout);
 			~PipelineLayout();
 
 			VkPipelineLayout handle() const { return _pipelineLayout; }
@@ -27,7 +27,7 @@ namespace atta::vk
 		private:
 			VkPipelineLayout _pipelineLayout;
 			std::shared_ptr<Device> _device;
-			DescriptorSetLayout* _descriptorSetLayout;
+			std::shared_ptr<DescriptorSetLayout> _descriptorSetLayout;
 	};
 }
 

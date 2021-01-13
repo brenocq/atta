@@ -24,8 +24,8 @@ namespace atta::vk
 		public:
 			DescriptorSets(
 					std::shared_ptr<Device> device, 
-					DescriptorPool* descriptorPool, 
-					DescriptorSetLayout* descriptorSetLayout,
+					std::shared_ptr<DescriptorPool> descriptorPool, 
+					std::shared_ptr<DescriptorSetLayout> descriptorSetLayout,
 					std::map<uint32_t, VkDescriptorType> bindingTypes, 
 					size_t size);
 
@@ -42,12 +42,12 @@ namespace atta::vk
 		private:
 			VkDescriptorType getBindingType(uint32_t binding) const;
 
+			std::shared_ptr<Device> _device;
+			std::shared_ptr<DescriptorPool> _descriptorPool;
+			std::shared_ptr<DescriptorSetLayout> _descriptorSetLayout;
 			std::vector<VkDescriptorSet> _descriptorSets;
 			std::map<uint32_t, VkDescriptorType> _bindingTypes;
-			std::shared_ptr<Device> _device;
-			DescriptorPool* _descriptorPool;
-			DescriptorSetLayout* _descriptorSetLayout;
-			std::vector<UniformBuffer*> _uniformBuffers;
+			std::vector<std::shared_ptr<UniformBuffer>> _uniformBuffers;
 	};
 }
 

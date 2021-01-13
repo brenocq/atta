@@ -9,24 +9,25 @@
 
 #include "imageView.h"
 #include "renderPass.h"
+#include "device.h"
 
 namespace atta::vk
 {
 	class FrameBuffer
 	{
 		public:
-			FrameBuffer(ImageView* imageView, RenderPass* renderPass);
+			FrameBuffer(std::shared_ptr<Device> device, std::shared_ptr<ImageView> imageView, std::shared_ptr<RenderPass> renderPass);
 			~FrameBuffer();
 
 			VkFramebuffer handle() const { return _framebuffer; }
-			ImageView* getImageView() const { return _imageView; }
-			RenderPass* getRenderPass() const { return _renderPass; }
+			std::shared_ptr<ImageView> getImageView() const { return _imageView; }
+			std::shared_ptr<RenderPass> getRenderPass() const { return _renderPass; }
 
 		private:
-			ImageView* _imageView;
-			RenderPass* _renderPass;
-
 			VkFramebuffer _framebuffer;
+			std::shared_ptr<Device> _device;
+			std::shared_ptr<ImageView> _imageView;
+			std::shared_ptr<RenderPass> _renderPass;
 	};
 }
 

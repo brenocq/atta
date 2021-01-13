@@ -7,8 +7,8 @@
 #ifndef ATTA_VK_DESCRIPTOR_SET_MANAGER_H
 #define ATTA_VK_DESCRIPTOR_SET_MANAGER_H
 
-#include <iostream>
-#include <string.h>
+#include <string>
+#include <memory>
 #include "defines.h"
 #include "device.h"
 #include "descriptorBinding.h"
@@ -25,15 +25,15 @@ namespace atta::vk
 			~DescriptorSetManager();
 
 			std::shared_ptr<Device> getDevice() const { return _device; }
-			DescriptorPool* getDescriptorPool() const { return _descriptorPool; }
-			DescriptorSetLayout* getDescriptorSetLayout() const { return _descriptorSetLayout; }
-			DescriptorSets* getDescriptorSets() const { return _descriptorSets; }
+			std::shared_ptr<DescriptorPool> getDescriptorPool() const { return _descriptorPool; }
+			std::shared_ptr<DescriptorSetLayout> getDescriptorSetLayout() const { return _descriptorSetLayout; }
+			std::shared_ptr<DescriptorSets> getDescriptorSets() const { return _descriptorSets; }
 
 		private:
 			std::shared_ptr<Device> _device;
-			DescriptorPool* _descriptorPool;
-			DescriptorSetLayout* _descriptorSetLayout;
-			DescriptorSets* _descriptorSets;
+			std::shared_ptr<DescriptorPool> _descriptorPool;
+			std::shared_ptr<DescriptorSetLayout> _descriptorSetLayout;
+			std::shared_ptr<DescriptorSets> _descriptorSets;
 	};
 }
 

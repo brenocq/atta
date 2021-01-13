@@ -14,37 +14,13 @@
 
 namespace atta::vk
 {
-	// Outline Pipeline with swapchain
 	OutlinePipeline::OutlinePipeline(
 			std::shared_ptr<Device> device, 
-			std::shared_ptr<SwapChain> swapChain, 
-			RenderPass* renderPass, 
-			std::vector<UniformBuffer*> uniformBuffers, 
-			Scene* scene):
-		OutlinePipeline(device, renderPass, swapChain->getExtent(), swapChain->getImageFormat(), swapChain->getImageViews(), uniformBuffers, scene)
-	{
-	}
-
-	// Offline Outline Pipeline
-	OutlinePipeline::OutlinePipeline(
-			std::shared_ptr<Device> device, 
-			RenderPass* renderPass,
+			std::shared_ptr<RenderPass> renderPass,
 			VkExtent2D extent, VkFormat format,
-			ImageView* imageView,
-			UniformBuffer* uniformBuffer, 
-			Scene* scene):
-		OutlinePipeline(device, renderPass, extent, format, (std::vector<ImageView*>){imageView}, (std::vector<UniformBuffer*>){uniformBuffer}, scene)
-	{
-	}
-
-	// Base constructor
-	OutlinePipeline::OutlinePipeline(
-			std::shared_ptr<Device> device, 
-			RenderPass* renderPass,
-			VkExtent2D extent, VkFormat format,
-			std::vector<ImageView*> imageViews, 
-			std::vector<UniformBuffer*> uniformBuffers, 
-			Scene* scene):
+			std::vector<std::shared_ptr<ImageView>> imageViews, 
+			std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
+			std::shared_ptr<Scene> scene):
 		Pipeline(device, imageViews, scene), _imageExtent(extent), _imageFormat(format)
 	{
 		//---------- Render pass ----------//

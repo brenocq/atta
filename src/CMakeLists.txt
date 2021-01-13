@@ -58,32 +58,20 @@ set(src_files_simulator_parallel
 )
 
 #---------- simulator/graphics/core
-#file(GLOB graphicsCoreSrc
-#    "simulator/graphics/core/*.cpp"
-#)
-set(src_files_simulator_graphics_core
-	simulator/graphics/core/model.cpp
-	simulator/graphics/core/mesh.cpp
-	simulator/graphics/core/material.cpp
-	simulator/graphics/core/texture.cpp
-	simulator/graphics/core/vertex.cpp
-	simulator/graphics/core/window.cpp
+file(GLOB src_files_simulator_graphics_core
+    "simulator/graphics/core/*.cpp"
 )
 
 #---------- simulator/graphics/vulkan
-set(src_files_simulator_graphics_vulkan
-	simulator/graphics/vulkan/vulkanCore.cpp
-	simulator/graphics/vulkan/instance.cpp
-	simulator/graphics/vulkan/debugCommon.cpp
-	simulator/graphics/vulkan/debugMessenger.cpp
-	simulator/graphics/vulkan/physicalDevice.cpp
-	simulator/graphics/vulkan/device.cpp
+file(GLOB src_files_simulator_graphics_vulkan
+	"simulator/graphics/vulkan/*.cpp"
 )
 
 #---------- simulator/graphics/vulkan
-set(src_files_simulator_graphics_renderers
-	simulator/graphics/renderers/renderer.cpp
-	simulator/graphics/renderers/rastRenderer.cpp
+file(GLOB src_files_simulator_graphics_renderers
+	"simulator/graphics/renderers/*.cpp"
+	"simulator/graphics/renderers/rastRenderer/*.cpp"
+	"simulator/graphics/renderers/rastRenderer/**/*.cpp"
 )
 
 #---------- simulator/vulkan
