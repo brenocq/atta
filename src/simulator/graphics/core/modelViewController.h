@@ -7,21 +7,21 @@
 #ifndef ATTA_MODEL_VIEW_CONTROLLER_H
 #define ATTA_MODEL_VIEW_CONTROLLER_H
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 #include <memory>
+#include "simulator/graphics/vulkan/vulkan.h"
 #include "simulator/graphics/core/window.h"
 #include "simulator/helpers/log.h"
+#include "simulator/math/math.h"
 
 namespace atta
 {
 	class ModelViewController
 	{
 		public:
-			ModelViewController(std::shared_ptr<Window> window);
+			ModelViewController();
 			~ModelViewController();
 
-			void reset(const glm::mat4& modelView);
+			void reset(const mat4& modelView);
 			mat4 getModelView() const;
 
 			bool onKey(int key, int scancode, int action, int mods);
@@ -43,8 +43,6 @@ namespace atta
 			void rotate(float y, float x);
 			void updateVectors();
 
-			std::shared_ptr<Window> _window;
-
 			// Control states
 			bool _cameraMovingLeft{};
 			bool _cameraMovingRight{};
@@ -64,10 +62,8 @@ namespace atta
 			// Matrices and vectors.
 			mat4 _orientation{};
 
-			vec4 _position{};
-			vec4 _right{ 1, 0, 0, 0 };
-			vec4 _up{ 0, 1, 0, 0 };
-			vec4 _forward{ 0, 0, -1, 0 };
+			vec3 _position;
+			vec3 _right, _up, _forward;
 
 			double _mousePosX;
 			double _mousePosY;

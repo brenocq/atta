@@ -28,20 +28,12 @@ namespace atta::vk
 			}
 		}
 
-		_descriptorPool = new DescriptorPool(_device, descriptorBindings, maxSets);
-		_descriptorSetLayout = new DescriptorSetLayout(_device, descriptorBindings);
-		_descriptorSets = new DescriptorSets(_device, _descriptorPool, _descriptorSetLayout, bindingTypes, maxSets);
+		_descriptorPool = std::make_shared<DescriptorPool>(_device, descriptorBindings, maxSets);
+		_descriptorSetLayout = std::make_shared<DescriptorSetLayout>(_device, descriptorBindings);
+		_descriptorSets = std::make_shared<DescriptorSets>(_device, _descriptorPool, _descriptorSetLayout, bindingTypes, maxSets);
 	}
 
 	DescriptorSetManager::~DescriptorSetManager()
 	{
-		delete _descriptorSets;
-		_descriptorSets = nullptr;
-
-		delete _descriptorSetLayout;
-		_descriptorSetLayout = nullptr;
-
-		delete _descriptorPool;
-		_descriptorPool = nullptr;
 	}
 }

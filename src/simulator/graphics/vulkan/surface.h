@@ -22,15 +22,16 @@ namespace atta::vk
 	class Surface
 	{
 		public:
-		Surface(std::shared_ptr<Instance> instance, std::shared_ptr<Window> window);
-		~Surface();
+			Surface(std::shared_ptr<Instance> instance, std::shared_ptr<Window> window);
+			~Surface();
 
-		VkSurfaceKHR handle() const { return _surface; }
+			VkSurfaceKHR handle() const { return _surface; }
+			std::shared_ptr<Window> getWindow() { return _window; }
+
 		private:
-
-		VkSurfaceKHR _surface;
-		std::shared_ptr<Instance> _instance;
-		std::shared_ptr<Window> _window;
+			VkSurfaceKHR _surface;
+			std::shared_ptr<Instance> _instance;
+			std::shared_ptr<Window> _window;
 	};
 }
 

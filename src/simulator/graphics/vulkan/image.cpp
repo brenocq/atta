@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include "image.h"
 #include "simulator/helpers/log.h"
-#include "simulator/vulkan/imageMemoryBarrier.h"
+#include "simulator/graphics/vulkan/imageMemoryBarrier.h"
 
 namespace atta::vk
 {

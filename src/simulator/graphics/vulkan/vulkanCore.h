@@ -22,6 +22,10 @@ namespace atta::vk
 			VulkanCore();
 			~VulkanCore();
 
+			std::shared_ptr<Instance> getInstance() const { return _instance; }
+			std::shared_ptr<PhysicalDevice> getPhysicalDevice() const { return _physicalDevice; };
+			std::shared_ptr<Device> getDevice() const { return _device; }
+
 		private:
 			std::shared_ptr<Instance> _instance;
 			std::unique_ptr<DebugMessenger> _debugMessenger;

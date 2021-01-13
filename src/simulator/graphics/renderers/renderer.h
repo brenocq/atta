@@ -12,17 +12,30 @@
 
 #include "simulator/graphics/vulkan/image.h"
 #include "simulator/graphics/vulkan/imageView.h"
+#include "simulator/graphics/vulkan/vulkanCore.h"
 
 namespace atta
 {
 	class Renderer
 	{
 		public:
-			Renderer();
+			struct CreateInfo
+			{
+				std::shared_ptr<vk::VulkanCore> vkCore;
+				float width;
+				float height;
+			};
+
+			Renderer(CreateInfo info);
 
 			virtual void render() = 0;
 
 		protected:
+			void createOutputImage();
+
+			std::shared_ptr<vk::VulkanCore> _vkCore;
+			VkExtent2D _extent;
+
 			std::shared_ptr<vk::Image> _image;
 			std::shared_ptr<vk::ImageView> _imageView;
 	};

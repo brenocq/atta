@@ -21,9 +21,9 @@ namespace atta::vk
 		public:
 			SkyboxPipeline(std::shared_ptr<Device> device, 
 					std::shared_ptr<SwapChain> swapChain, 
-					RenderPass* renderPass,
-					std::vector<UniformBuffer*> uniformBuffers, 
-					Scene* scene);
+					std::shared_ptr<RenderPass> renderPass,
+					std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
+					std::shared_ptr<Scene> scene);
 			~SkyboxPipeline();
 
 			void render(VkCommandBuffer commandBuffer, int imageIndex=0);

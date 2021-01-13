@@ -12,16 +12,15 @@ namespace atta::vk
 {
 	DescriptorSets::DescriptorSets(
 			std::shared_ptr<Device> device, 
-			DescriptorPool* descriptorPool, 
-			DescriptorSetLayout* descriptorSetLayout,
+			std::shared_ptr<DescriptorPool> descriptorPool, 
+			std::shared_ptr<DescriptorSetLayout> descriptorSetLayout,
 			std::map<uint32_t, VkDescriptorType> bindingTypes, 
 			size_t size):
-		_device(device)
+		_device(device), 
+		_descriptorPool(descriptorPool),
+		_descriptorSetLayout(descriptorSetLayout),
+		_bindingTypes(bindingTypes)
 	{
-		_descriptorPool = descriptorPool;
-		_descriptorSetLayout = descriptorSetLayout;
-		_bindingTypes = bindingTypes;
-
 		std::vector<VkDescriptorSetLayout> layouts(size, _descriptorSetLayout->handle());
 
 		VkDescriptorSetAllocateInfo allocInfo = {};

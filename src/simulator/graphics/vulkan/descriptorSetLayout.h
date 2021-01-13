@@ -18,16 +18,16 @@ namespace atta::vk
 	class DescriptorSetLayout
 	{
 		public:
-		DescriptorSetLayout(std::shared_ptr<Device> device);
-		DescriptorSetLayout(std::shared_ptr<Device> device, std::vector<DescriptorBinding> descriptorBindings);
-		~DescriptorSetLayout();
+			DescriptorSetLayout(std::shared_ptr<Device> device);
+			DescriptorSetLayout(std::shared_ptr<Device> device, std::vector<DescriptorBinding> descriptorBindings);
+			~DescriptorSetLayout();
 
-		VkDescriptorSetLayout handle() const { return _descriptorSetLayout; }
-		std::shared_ptr<Device> getDevice() const { return _device; }
+			VkDescriptorSetLayout handle() const { return _descriptorSetLayout; }
+			std::shared_ptr<Device> getDevice() const { return _device; }
 
 		private:
-		VkDescriptorSetLayout _descriptorSetLayout;
-		std::shared_ptr<Device> _device;
+			VkDescriptorSetLayout _descriptorSetLayout;
+			std::shared_ptr<Device> _device;
 	};
 }
 

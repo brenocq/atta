@@ -21,26 +21,12 @@ namespace atta::vk
 	class OutlinePipeline : public Pipeline
 	{
 		public:
-			// Graphics Pipeline with swapchain
 			OutlinePipeline(std::shared_ptr<Device> device, 
-					std::shared_ptr<SwapChain> swapChain, 
-					RenderPass* renderPass,
-					std::vector<UniformBuffer*> uniformBuffers, 
-					Scene* scene);
-			// Offline Graphics Pipeline
-			OutlinePipeline(std::shared_ptr<Device> device, 
-					RenderPass* renderPass,
+					std::shared_ptr<RenderPass> renderPass,
 					VkExtent2D extent, VkFormat format,
-					ImageView* imageView,
-					UniformBuffer* uniformBuffer, 
-					Scene* scene);
-			// Base constructor
-			OutlinePipeline(std::shared_ptr<Device> device, 
-					RenderPass* renderPass,
-					VkExtent2D extent, VkFormat format,
-					std::vector<ImageView*> imageViews, 
-					std::vector<UniformBuffer*> uniformBuffers, 
-					Scene* scene);
+					std::vector<std::shared_ptr<ImageView>> imageViews, 
+					std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
+					std::shared_ptr<Scene> scene);
 			~OutlinePipeline();
 
 			void render(VkCommandBuffer commandBuffer, int imageIndex=0);

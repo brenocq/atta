@@ -10,11 +10,11 @@
 
 namespace atta::vk
 {
-	FrameBuffer::FrameBuffer(ImageView* imageView, RenderPass* renderPass)
+	FrameBuffer::FrameBuffer(std::shared_ptr<Device> device, 
+			std::shared_ptr<ImageView> imageView, 
+			std::shared_ptr<RenderPass> renderPass):
+		_device(device), _imageView(imageView), _renderPass(renderPass)
 	{
-		_imageView = imageView;
-		_renderPass = renderPass;
-
 		std::array<VkImageView, 3> attachments = {
 			_renderPass->getColorBuffer()->getImageView()->handle(),
 			_renderPass->getDepthBuffer()->getImageView()->handle(),
@@ -30,7 +30,7 @@ namespace atta::vk
 		framebufferInfo.height = _renderPass->getColorBuffer()->getExtent().height;
 		framebufferInfo.layers = 1;
 
-		if(vkCreateFramebuffer(_imageView->getDevice()->handle(), &framebufferInfo, nullptr, &_framebuffer) != VK_SUCCESS)
+		if(vkCreateFramebuffer(_device->handle(), &framebufferInfo, nullptr, &_framebuffer) != VK_SUCCESS)
 		{
 			Log::error("FrameBuffer", "Failed to create frame buffer!");
 			exit(1);
@@ -41,7 +41,7 @@ namespace atta::vk
 	{
 		if (_framebuffer != nullptr)
 		{
-			vkDestroyFramebuffer(_imageView->getDevice()->handle(), _framebuffer, nullptr);
+			vkDestroyFramebuffer(_device->handle(), _framebuffer, nullptr);
 			_framebuffer = nullptr;
 		}
 	}

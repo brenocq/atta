@@ -16,7 +16,7 @@
 #include "simulator/core/accelerator.h"
 #include "simulator/core/scene.h"
 #include "simulator/graphics/renderers/renderer.h"
-#include "simulator/graphics/renderers/rastRenderer.h"
+#include "simulator/graphics/renderers/rastRenderer/rastRenderer.h"
 //#include "simulator/helpers/drawer.h"
 
 namespace atta

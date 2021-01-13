@@ -20,10 +20,11 @@ namespace atta::vk
 	{
 		public:
 			LinePipeline(std::shared_ptr<Device> device, 
-					std::shared_ptr<SwapChain> swapChain, 
-					RenderPass* renderPass,
-					std::vector<UniformBuffer*> uniformBuffers, 
-					Scene* scene);
+					std::shared_ptr<RenderPass> renderPass,
+					VkExtent2D extent, VkFormat format,
+					std::vector<std::shared_ptr<ImageView>> imageViews, 
+					std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
+					std::shared_ptr<Scene> scene);
 			~LinePipeline();
 
 			void render(VkCommandBuffer commandBuffer, int imageIndex=0);
