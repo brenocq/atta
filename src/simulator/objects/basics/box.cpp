@@ -9,13 +9,14 @@
 namespace atta
 {
 	Box::Box(CreateInfo info):
-		Object({info.name, info.position, info.rotation, info.scale, info.mass}), _color(info.color)
+		Object({info.name, info.position, info.rotation, info.scale, info.mass})
 	{
 		Object::setType("Box");
 
 		//----- Create model -----//
 		Model::CreateInfo modelInfo = {
-			.meshName = "atta::box"
+			.meshName = "atta::box",
+			.material = info.material
 		};
 
 		std::shared_ptr<Model> model = std::make_shared<Model>(modelInfo);

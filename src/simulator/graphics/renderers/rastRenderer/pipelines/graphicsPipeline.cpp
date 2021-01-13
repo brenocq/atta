@@ -5,11 +5,6 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "graphicsPipeline.h"
-
-#include "simulator/objects/basics/basics.h"
-#include "simulator/objects/others/display/display.h"
-#include "simulator/objects/sensors/camera/camera.h"
-#include "simulator/physics/physicsEngine.h"
 #include "simulator/helpers/log.h"
 
 namespace atta::vk
@@ -20,8 +15,11 @@ namespace atta::vk
 			std::vector<std::shared_ptr<ImageView>> imageViews, 
 			std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
 			std::shared_ptr<Scene> scene):
-		Pipeline(device, imageViews, scene), _imageExtent(extent), _imageFormat(format)
+		Pipeline(device, imageViews, scene)
 	{
+		_imageExtent = extent;
+		_imageFormat = format;
+
 		//---------- Render pass ----------//
 		_colorBuffer = std::make_shared<ColorBuffer>(_device, _imageExtent, _imageFormat);
 		_depthBuffer = std::make_shared<DepthBuffer>(_device, _imageExtent);
@@ -155,13 +153,13 @@ namespace atta::vk
 		std::vector<DescriptorBinding> descriptorBindings =
 		{
 			{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
-			//{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
+			{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
 			//{2, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT},
 			//{3, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 		};
 
-		_descriptorSetManager = new DescriptorSetManager(_device, descriptorBindings, uniformBuffers.size());
-		DescriptorSets* descriptorSets = _descriptorSetManager->getDescriptorSets();
+		_descriptorSetManager = std::make_shared<DescriptorSetManager>(_device, descriptorBindings, uniformBuffers.size());
+		std::shared_ptr<DescriptorSets> descriptorSets = _descriptorSetManager->getDescriptorSets();
 
 		for(uint32_t i = 0; i < uniformBuffers.size(); i++)
 		{
@@ -171,9 +169,9 @@ namespace atta::vk
 			uniformBufferInfo.range = VK_WHOLE_SIZE;
 
 			// Material buffer
-			//VkDescriptorBufferInfo materialBufferInfo = {};
-			//materialBufferInfo.buffer = _scene->getMaterialBuffer()->handle();
-			//materialBufferInfo.range = VK_WHOLE_SIZE;
+			VkDescriptorBufferInfo materialBufferInfo = {};
+			materialBufferInfo.buffer = _scene->getMaterialBuffer()->handle();
+			materialBufferInfo.range = VK_WHOLE_SIZE;
 
 			//// Image and texture samplers
 			//std::vector<VkDescriptorImageInfo> imageInfos(_scene->getTextures().size());
@@ -195,7 +193,7 @@ namespace atta::vk
 			const std::vector<VkWriteDescriptorSet> descriptorWrites =
 			{
 				descriptorSets->bind(i, 0, uniformBufferInfo),
-				descriptorSets->bind(i, 1, materialBufferInfo),
+				descriptorSets->bind(i, 1, materialBufferInfo)
 				//descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
 				//descriptorSets->bind(i, 3, imageIrradianceMapInfo)
 			};
@@ -243,28 +241,25 @@ namespace atta::vk
 
 	void GraphicsPipeline::beginRender(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		//std::array<VkClearValue, 2> clearValues{};
-		//clearValues[0].color = {0.5f, 0.5f, 0.5f, 1.0f};
-		//clearValues[1].depthStencil = {1.0f, 0};
+		std::array<VkClearValue, 2> clearValues{};
+		clearValues[0].color = {0.5f, 0.5f, 0.5f, 1.0f};
+		clearValues[1].depthStencil = {1.0f, 0};
 
-		//VkRenderPassBeginInfo renderPassInfo{};
-		//renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		//renderPassInfo.renderPass = _renderPass->handle();
-		//renderPassInfo.framebuffer = _frameBuffers[imageIndex]->handle();
-		//renderPassInfo.renderArea.offset = {0, 0};
-		////if(!_splitRender)
-		//	renderPassInfo.renderArea.extent = _imageExtent;
-		////else
-		////	renderPassInfo.renderArea.extent = {_swapChain->getExtent().width/2, _swapChain->getExtent().height};
-		//renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-		//renderPassInfo.pClearValues = clearValues.data();
+		VkRenderPassBeginInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassInfo.renderPass = _renderPass->handle();
+		renderPassInfo.framebuffer = _frameBuffers[imageIndex]->handle();
+		renderPassInfo.renderArea.offset = {0, 0};
+		renderPassInfo.renderArea.extent = _imageExtent;
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
 
-		//vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 	}
 
 	void GraphicsPipeline::endRender(VkCommandBuffer commandBuffer)
 	{
-		//vkCmdEndRenderPass(commandBuffer);
+		vkCmdEndRenderPass(commandBuffer);
 	}
 
 	void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)

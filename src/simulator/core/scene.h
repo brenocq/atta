@@ -24,6 +24,8 @@ namespace atta
 			Scene(CreateInfo info);
 			~Scene();
 
+			//---------- Getters ----------//
+			std::vector<std::shared_ptr<Object>> getObjects() const { return _objects; }
 
 		private:
 			std::vector<std::shared_ptr<Object>> _objects;

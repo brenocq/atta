@@ -16,7 +16,9 @@ int main()
 		.rotation = {0,0,0},
 		.scale = {1,1,1},
 		.mass = 1.0f,
-		.color = {1,0,0}
+		.material = {
+			.color = {1,0,0}
+		}
 	};
 	objects.push_back(std::make_shared<atta::Box>(boxInfo));
 

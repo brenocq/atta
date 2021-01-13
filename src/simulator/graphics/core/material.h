@@ -7,13 +7,13 @@
 #ifndef ATTA_GRAPHICS_MATERIAL_H
 #define ATTA_GRAPHICS_MATERIAL_H
 
+#include "simulator/math/math.h"
+
 namespace atta
 {
-	class Material
+	struct Material
 	{
-		public:
-
-		private:
+		vec3 color = {0.6,0.2,0.2};
 	};
 }
 

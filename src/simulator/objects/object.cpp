@@ -12,7 +12,8 @@ namespace atta
 	int Object::_qtyIds = 0;
 	
 	Object::Object(CreateInfo info):
-		_type("Object"), _name(info.name), _selection(ObjectSelection::UNSELECTED)
+		_type("Object"), _name(info.name), 
+		_selection(ObjectSelection::UNSELECTED)
 	{
 		_id = _qtyIds++;
 	}

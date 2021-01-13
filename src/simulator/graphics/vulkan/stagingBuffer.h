@@ -20,11 +20,11 @@ namespace atta::vk
 	class StagingBuffer : public Buffer
 	{
 		public:
-		template <class T>
-		StagingBuffer(std::shared_ptr<Device> device, std::vector<T>& content);
+			//template <typename T>
+			//StagingBuffer(std::shared_ptr<Device> device, std::vector<T>& content);
 
-		StagingBuffer(std::shared_ptr<Device> device, void* dataToMap, VkDeviceSize size);
-		~StagingBuffer();
+			StagingBuffer(std::shared_ptr<Device> device, void* dataToMap, VkDeviceSize size);
+			~StagingBuffer();
 
 		private:
 	};

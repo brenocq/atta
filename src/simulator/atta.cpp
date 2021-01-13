@@ -34,6 +34,7 @@ namespace atta
 
 		// Create vulkan core
 		_vulkanCore = std::make_shared<vk::VulkanCore>();
+		_vulkanCore->createBuffers(_scene);
 
 		// Create renderers
 		RastRenderer::CreateInfo rastRendInfo {

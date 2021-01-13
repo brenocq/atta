@@ -76,6 +76,7 @@ namespace atta
 			
 			//----- Graphics -----//
 			std::shared_ptr<Model> _model;
+
 			// UI
 			ObjectSelection _selection;
 
