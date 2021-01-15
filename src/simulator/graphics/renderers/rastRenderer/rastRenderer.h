@@ -27,18 +27,19 @@ namespace atta
 				float height;
 				std::shared_ptr<Scene> scene;
 				mat4 viewMat;
-				mat4 projectionMat;
+				mat4 projMat;
 			};
 
 			RastRenderer(CreateInfo info);
 			~RastRenderer();
 
-			void render();
+			void render(VkCommandBuffer commandBuffer);
 
 		private:
 			std::shared_ptr<Scene> _scene;
-			mat4 _viewMat;
-			mat4 _projectionMat;
+			std::shared_ptr<vk::UniformBuffer> _uniformBuffer;
+			std::shared_ptr<vk::RenderPass> _renderPass;
+			std::shared_ptr<vk::FrameBuffer> _frameBuffer;
 
 			// Pipelines
 			std::unique_ptr<vk::GraphicsPipeline> _graphicsPipeline;

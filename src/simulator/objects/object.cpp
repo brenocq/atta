@@ -22,6 +22,11 @@ namespace atta
 	{
 	}
 
+	mat4 Object::getModelMat() const
+	{
+		return mat4(1);
+	}
+
 	//void Object::setSelection(ObjectSelection sel)
 	//{
 	//	_selection = sel;

@@ -15,30 +15,23 @@
 #include "device.h"
 #include "buffer.h"
 #include "helpers.h"
+#include "simulator/math/math.h"
 
 namespace atta::vk
 {
 	struct UniformBufferObject
 	{
-		glm::mat4 modelView;
-		glm::mat4 projection;
-		glm::mat4 modelViewInverse;
-		glm::mat4 projectionInverse;
-		float aperture;
-		float focusDistance;
-		uint32_t totalNumberOfSamples;
-		uint32_t numberOfSamples;
-		uint32_t numberOfBounces;
-		uint32_t randomSeed;
-		uint32_t gammaCorrection; // bool
-		uint32_t hasSky; // bool
+		mat4 viewMat;
+		mat4 projMat;
+		mat4 viewMatInverse;
+		mat4 projMatInverse;
 	};
 
 
 	class UniformBuffer : public Buffer
 	{
 		public:
-			UniformBuffer(std::shared_ptr<Device> device, VkDeviceSize size);
+			UniformBuffer(std::shared_ptr<Device> device);
 			~UniformBuffer();
 
 			void setValue(UniformBufferObject ubo);

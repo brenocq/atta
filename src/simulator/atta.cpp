@@ -16,7 +16,6 @@ namespace atta
 		// Create thread pool
 		_threadPool = std::make_shared<ThreadPool>();
 		_threadPool->createGeneralistWorkers();
-		_threadPool->createGuiWorker();
 
 		// Create scene
 		Scene::CreateInfo sceneInfo = 
@@ -47,12 +46,8 @@ namespace atta
 
 		// Initialize physics
 		
-		// Initialize renderer
-		//_renderer = std::make_shared<Renderer>(_window, _scene);
-
 		// Initialize objects
-
-		// Start simulator
+		_threadPool->createGuiWorker();
 	}
 
 	Atta::~Atta()
@@ -65,6 +60,15 @@ namespace atta
 		while(true)
 		{
 
+			//--------------------- Physics ---------------------//
+			
+			//-------------------- Rendering --------------------//
+			for(auto& render : _renderers)
+			{
+				//render->render();
+			}
+
+			//--------------------- Robots ----------------------//
 		}
 	}
 }

@@ -10,15 +10,16 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
-#include "simulator/graphics/vulkan/renderPass.h"
 #include "simulator/graphics/vulkan/pipeline.h"
+#include "simulator/graphics/vulkan/vulkanCore.h"
+#include "simulator/graphics/vulkan/renderPass.h"
 
 namespace atta::vk
 {
 	class MaskPipeline : public Pipeline
 	{
 		public:
-			MaskPipeline(std::shared_ptr<Device> device, 
+			MaskPipeline(std::shared_ptr<VulkanCore> vkCore, 
 					std::shared_ptr<RenderPass> renderPass,
 					VkExtent2D extent, VkFormat format,
 					std::vector<std::shared_ptr<ImageView>> imageViews, 

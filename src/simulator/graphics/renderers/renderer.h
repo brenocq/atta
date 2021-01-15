@@ -28,7 +28,7 @@ namespace atta
 
 			Renderer(CreateInfo info);
 
-			virtual void render() = 0;
+			virtual void render(VkCommandBuffer commandBuffer) = 0;
 
 		protected:
 			void createOutputImage();

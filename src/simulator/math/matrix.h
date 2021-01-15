@@ -82,6 +82,14 @@ namespace atta
 		result.setInverse(mat);
 		return result;
 	}
+
+	// Return the perspective matrix
+	inline mat4 perspective(float fov, float ratio, float near, float far)
+	{
+		// TODO
+		return mat4(1);
+	}
+
 	//------------------------------------------------------------//
 	//--------------------------- mat3 ---------------------------//
 	//------------------------------------------------------------//

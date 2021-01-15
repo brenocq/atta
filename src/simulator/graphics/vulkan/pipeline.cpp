@@ -9,10 +9,10 @@
 namespace atta::vk
 {
 	Pipeline::Pipeline(
-			std::shared_ptr<Device> device, 
+			std::shared_ptr<VulkanCore> vkCore, 
 			std::vector<std::shared_ptr<ImageView>> imageViews, 
 			std::shared_ptr<Scene> scene):
-			_device(device), _imageViews(imageViews), _scene(scene)
+			_vkCore(vkCore), _device(vkCore->getDevice()), _imageViews(imageViews), _scene(scene)
 	{
 	}
 
