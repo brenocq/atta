@@ -14,6 +14,7 @@
 
 #include "pipelineLayout.h"
 #include "device.h"
+#include "vulkanCore.h"
 #include "shaderModule.h"
 #include "imageView.h"
 #include "frameBuffer.h"
@@ -27,7 +28,7 @@ namespace atta::vk
 	class Pipeline
 	{
 		public:
-			Pipeline(std::shared_ptr<Device> device, 
+			Pipeline(std::shared_ptr<VulkanCore> vkCore, 
 					std::vector<std::shared_ptr<ImageView>> imageViews,
 					std::shared_ptr<Scene> scene);
 			virtual ~Pipeline();
@@ -45,6 +46,7 @@ namespace atta::vk
 
 		protected:
 			VkPipeline _pipeline;
+			std::shared_ptr<VulkanCore> _vkCore;
 			std::shared_ptr<Device> _device;
 			std::vector<std::shared_ptr<ImageView>> _imageViews;
 			std::vector<std::shared_ptr<FrameBuffer>> _frameBuffers;

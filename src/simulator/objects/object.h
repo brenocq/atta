@@ -38,13 +38,11 @@ namespace atta
 			Object(CreateInfo info);
 			~Object();
 
-			//void addChild(Object* child, atta::phy::Constraint* constraint);
-			//void removeChild(Object* child);
-
 			//---------- Getters ----------//
 			std::string getType() const { return _type; }
 			std::string getName() const { return _name; }
 			int getId() const { return _id; }
+			mat4 getModelMat() const;
 
 			// Graphics
 			std::shared_ptr<Model> getModel() const { return _model; }

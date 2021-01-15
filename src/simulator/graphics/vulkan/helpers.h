@@ -31,8 +31,6 @@ struct SwapChainSupportDetails
 struct ObjectInfo
 {
 	glm::mat4 modelMatrix;
-	glm::vec3 color = {1.0f,1.0f,1.0f};
-	int materialIndex = -1;
 };
 
 // TLAS instances (Ray tracing)

@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include "simulator/graphics/vulkan/pipeline.h"
+#include "simulator/graphics/vulkan/vulkanCore.h"
 #include "simulator/graphics/vulkan/renderPass.h"
 
 namespace atta::vk
@@ -18,7 +19,7 @@ namespace atta::vk
 	class LinePipeline : public Pipeline
 	{
 		public:
-			LinePipeline(std::shared_ptr<Device> device, 
+			LinePipeline(std::shared_ptr<VulkanCore> vkCore, 
 					std::shared_ptr<RenderPass> renderPass,
 					VkExtent2D extent, VkFormat format,
 					std::vector<std::shared_ptr<ImageView>> imageViews, 

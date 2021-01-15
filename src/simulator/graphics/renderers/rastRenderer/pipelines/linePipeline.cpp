@@ -10,13 +10,13 @@
 namespace atta::vk
 {
 	LinePipeline::LinePipeline(
-				std::shared_ptr<Device> device, 
-				std::shared_ptr<RenderPass> renderPass,
-				VkExtent2D extent, VkFormat format,
-				std::vector<std::shared_ptr<ImageView>> imageViews, 
-				std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
-				std::shared_ptr<Scene> scene):
-		Pipeline(device, imageViews, scene)
+			std::shared_ptr<VulkanCore> vkCore, 
+			std::shared_ptr<RenderPass> renderPass,
+			VkExtent2D extent, VkFormat format,
+			std::vector<std::shared_ptr<ImageView>> imageViews, 
+			std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
+			std::shared_ptr<Scene> scene):
+		Pipeline(vkCore, imageViews, scene)
 	{
 		_imageExtent = extent;
 		_imageFormat = format;

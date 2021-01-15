@@ -10,25 +10,17 @@
 namespace atta::vk
 {
 	GraphicsPipeline::GraphicsPipeline(
-			std::shared_ptr<Device> device, 
+			std::shared_ptr<VulkanCore> vkCore, 
+			std::shared_ptr<RenderPass> renderPass,
 			VkExtent2D extent, VkFormat format,
 			std::vector<std::shared_ptr<ImageView>> imageViews, 
 			std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
 			std::shared_ptr<Scene> scene):
-		Pipeline(device, imageViews, scene)
+		Pipeline(vkCore, imageViews, scene)
 	{
 		_imageExtent = extent;
 		_imageFormat = format;
-
-		//---------- Render pass ----------//
-		_colorBuffer = std::make_shared<ColorBuffer>(_device, _imageExtent, _imageFormat);
-		_depthBuffer = std::make_shared<DepthBuffer>(_device, _imageExtent);
-		_renderPass = std::make_shared<RenderPass>(_device, _colorBuffer, _depthBuffer);
-
-		//---------- Frame Buffers ----------//
-		_frameBuffers.resize(_imageViews.size());
-		for(int i = 0; i < (int)_frameBuffers.size(); i++) 
-			_frameBuffers[i] = std::make_shared<FrameBuffer>(_device, _imageViews[i], _renderPass);
+		_renderPass = renderPass;
 		
 		//---------- Shaders ----------//
 		_vertShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/graphicsShader.vert.spv");
@@ -170,7 +162,7 @@ namespace atta::vk
 
 			// Material buffer
 			VkDescriptorBufferInfo materialBufferInfo = {};
-			materialBufferInfo.buffer = _scene->getMaterialBuffer()->handle();
+			materialBufferInfo.buffer = _vkCore->getMaterialBuffer()->handle();
 			materialBufferInfo.range = VK_WHOLE_SIZE;
 
 			//// Image and texture samplers
@@ -239,97 +231,37 @@ namespace atta::vk
 	{
 	}
 
-	void GraphicsPipeline::beginRender(VkCommandBuffer commandBuffer, int imageIndex)
-	{
-		std::array<VkClearValue, 2> clearValues{};
-		clearValues[0].color = {0.5f, 0.5f, 0.5f, 1.0f};
-		clearValues[1].depthStencil = {1.0f, 0};
-
-		VkRenderPassBeginInfo renderPassInfo{};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = _renderPass->handle();
-		renderPassInfo.framebuffer = _frameBuffers[imageIndex]->handle();
-		renderPassInfo.renderArea.offset = {0, 0};
-		renderPassInfo.renderArea.extent = _imageExtent;
-		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-		renderPassInfo.pClearValues = clearValues.data();
-
-		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-	}
-
-	void GraphicsPipeline::endRender(VkCommandBuffer commandBuffer)
-	{
-		vkCmdEndRenderPass(commandBuffer);
-	}
-
 	void GraphicsPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		//VkBuffer vertexBuffers[] = { _scene->getVertexBuffer()->handle() };
-		//VkDeviceSize offsets[] = { 0 };
+		VkBuffer vertexBuffers[] = { _vkCore->getVertexBuffer()->handle() };
+		VkDeviceSize offsets[] = { 0 };
 
-		//vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-		//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
-		//vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		//vkCmdBindIndexBuffer(commandBuffer, _scene->getIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(commandBuffer, _vkCore->getIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
 
-		//for(auto abstractPtr : _scene->getObjects())
-		//{
-		//	Model* model;
-		//	if(abstractPtr->getType() == "ImportedObject")
-		//		model = ((ImportedObject*)abstractPtr)->getModel();
-		//	else if(abstractPtr->getType() == "Plane")
-		//		model = ((Plane*)abstractPtr)->getModel();
-		//	else if(abstractPtr->getType() == "Box")
-		//		model = ((Box*)abstractPtr)->getModel();
-		//	else if(abstractPtr->getType() == "Sphere")
-		//		model = ((Sphere*)abstractPtr)->getModel();
-		//	else if(abstractPtr->getType() == "Cylinder")
-		//		model = ((Cylinder*)abstractPtr)->getModel();
-		//	else if(abstractPtr->getType() == "Capsule")
-		//		model = ((Capsule*)abstractPtr)->getModel();
-		//	else if(abstractPtr->getType() == "Display")
-		//		model = ((Display*)abstractPtr)->getModel();
-		//	else continue;
+		for(auto object : _scene->getObjects())
+		{
+			auto model = object->getModel();
 
-		//	if(model == nullptr)
-		//		continue;
+			ObjectInfo objectInfo;
+			objectInfo.modelMatrix = object->getModelMat();
 
-		//	ObjectInfo objectInfo;
-		//	// Model matrix
-		//	objectInfo.modelMatrix = abstractPtr->getModelMat();
+			vkCmdPushConstants(
+					commandBuffer,
+					_pipelineLayout->handle(),
+					VK_SHADER_STAGE_VERTEX_BIT,
+					0,
+					sizeof(ObjectInfo),
+					&objectInfo);
 
-		//	// Color
-		//	if(abstractPtr->getType() == "Plane")
-		//		objectInfo.color = ((Plane*)abstractPtr)->getColor();
-		//	else if(abstractPtr->getType() == "Box")
-		//		objectInfo.color = ((Box*)abstractPtr)->getColor();
-		//	else if(abstractPtr->getType() == "Sphere")
-		//		objectInfo.color = ((Sphere*)abstractPtr)->getColor();
-		//	else if(abstractPtr->getType() == "Cylinder")
-		//		objectInfo.color = ((Cylinder*)abstractPtr)->getColor();
-		//	else if(abstractPtr->getType() == "Capsule")
-		//		objectInfo.color = ((Capsule*)abstractPtr)->getColor();
-		//	else 
-		//		objectInfo.color = {1,1,1};
+			//const uint32_t vertexCount = model->getVerticesSize();
+			const uint32_t indexCount = model->getMesh()->getIndicesSize();
+			const uint32_t vertexOffset = model->getMesh()->getVerticesOffset();
+			const uint32_t indexOffset = model->getMesh()->getIndicesOffset();
 
-		//	// Material index
-		//	if(abstractPtr->getType() == "Display")
-		//		objectInfo.materialIndex = ((Display*)abstractPtr)->getMaterialIndex();
-
-		//	vkCmdPushConstants(
-		//			commandBuffer,
-		//			_pipelineLayout->handle(),
-		//			VK_SHADER_STAGE_VERTEX_BIT,
-		//			0,
-		//			sizeof(ObjectInfo),
-		//			&objectInfo);
-
-		//	//const uint32_t vertexCount = model->getVerticesSize();
-		//	const uint32_t indexCount = model->getIndicesSize();
-		//	const uint32_t vertexOffset = model->getVertexOffset();
-		//	const uint32_t indexOffset = model->getIndexOffset();
-
-		//	vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
-		//}
+			vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
+		}
 	}
 }

@@ -10,8 +10,9 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
-#include "simulator/graphics/vulkan/renderPass.h"
 #include "simulator/graphics/vulkan/pipeline.h"
+#include "simulator/graphics/vulkan/vulkanCore.h"
+#include "simulator/graphics/vulkan/renderPass.h"
 #include "simulator/graphics/vulkan/colorBuffer.h"
 #include "simulator/graphics/vulkan/depthBuffer.h"
 
@@ -20,7 +21,7 @@ namespace atta::vk
 	class OutlinePipeline : public Pipeline
 	{
 		public:
-			OutlinePipeline(std::shared_ptr<Device> device, 
+			OutlinePipeline(std::shared_ptr<VulkanCore> vkCore, 
 					std::shared_ptr<RenderPass> renderPass,
 					VkExtent2D extent, VkFormat format,
 					std::vector<std::shared_ptr<ImageView>> imageViews, 

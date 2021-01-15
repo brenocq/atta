@@ -33,6 +33,7 @@ namespace atta
 
 			//---------- Getters ----------//
 			Material getMaterial() const { return _material; }
+			std::shared_ptr<Mesh> getMesh() const { return _mesh; }
 
 		private:
 			std::string _meshName;
