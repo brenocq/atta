@@ -9,6 +9,7 @@
 #include <cstdint>
 #include "vulkan.h"
 
+
 struct DescriptorBinding
 {
 	uint32_t binding;// Slot to which the descriptor will be bound, corresponding to the layout index in the shader

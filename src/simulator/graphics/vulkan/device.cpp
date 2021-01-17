@@ -15,7 +15,7 @@ namespace atta::vk
 		_msaaSamples = getMaxUsableSampleCount();
 
 		//----- Get queues -----//
-		QueueFamilyIndices indices = _physicalDevice->findQueueFamilies();
+		QueueFamilyIndices indices = _physicalDevice->getQueueFamilyIndices();
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};

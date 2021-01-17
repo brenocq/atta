@@ -9,9 +9,7 @@ layout(binding = 1) readonly buffer MaterialArray {
 	Material[] materials; 
 };
 layout(push_constant) uniform ObjectInfo {
-  mat4 modelView;
-  vec3 color;
-  int materialIndex;
+  mat4 modelMat;
 } objectInfo;
 
 layout(location = 0) in vec3 inPosition;
@@ -61,16 +59,16 @@ void main()
 {
 	Material m = materials[inMaterialIndex];
 
-	fragPos = vec3(objectInfo.modelView * vec4(inPosition, 1.0));
+	fragPos = vec3(objectInfo.modelMat * vec4(inPosition, 1.0));
 	viewPos = ExtractCameraPos(Camera.modelView);
-	fragNormal = vec3(transpose(inverse(objectInfo.modelView)) * vec4(inNormal, 1.0));
+	fragNormal = vec3(transpose(inverse(objectInfo.modelMat)) * vec4(inNormal, 1.0));
 
-    gl_Position = Camera.projection * Camera.modelView * objectInfo.modelView * vec4(inPosition, 1.0);
-    fragColor = m.diffuse.xyz * objectInfo.color;
+    gl_Position = Camera.projection * Camera.modelView * objectInfo.modelMat * vec4(inPosition, 1.0);
+    //fragColor = m.diffuse.xyz * objectInfo.color;
 
-	if(objectInfo.materialIndex >= 0)
-		fragMaterialIndex = objectInfo.materialIndex;
-	else
+	//if(objectInfo.materialIndex >= 0)
+	//	fragMaterialIndex = objectInfo.materialIndex;
+	//else
 		fragMaterialIndex = inMaterialIndex;
 
 	fragTexCoord = inTexCoord;

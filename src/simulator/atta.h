@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "simulator/parallel/threadPool.h"
+#include "simulator/parallel/threadManager.h"
 #include "simulator/objects/object.h"
 #include "simulator/graphics/vulkan/vulkanCore.h"
 #include "simulator/core/accelerator.h"
@@ -35,7 +35,7 @@ namespace atta
 			void run();
 
 		private:
-			std::shared_ptr<ThreadPool> _threadPool;
+			std::shared_ptr<ThreadManager> _threadManager;
 
 			std::shared_ptr<vk::VulkanCore> _vulkanCore;
 			std::shared_ptr<Scene> _scene;

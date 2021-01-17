@@ -19,6 +19,9 @@ namespace atta::vk
 			exit(1);
 		}
 
+		// Initialize glfw
+		glfwInit();
+
 		// Application info
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -77,6 +80,8 @@ namespace atta::vk
 	{
 		vkDestroyInstance(_instance, nullptr);
 		_instance = nullptr;
+
+		glfwTerminate();
 	}
 
 	void Instance::printExtensionSupport()

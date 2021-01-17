@@ -15,7 +15,7 @@ namespace atta::vk
 	{
 		std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
 
-		QueueFamilyIndices queueFamilyIndices = physicalDevice->findQueueFamilies();
+		QueueFamilyIndices queueFamilyIndices = physicalDevice->getQueueFamilyIndices();
 
 		VkCommandPoolCreateInfo poolInfo{};
 		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

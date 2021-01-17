@@ -30,11 +30,10 @@ namespace atta::vk
 			~PhysicalDevice();
 
 			VkPhysicalDevice handle() const { return _physicalDevice; }
-			QueueFamilyIndices findQueueFamilies();
-			SwapChainSupportDetails querySwapChainSupport();
 
 			//---------- Getters and Setters ----------//
 			std::shared_ptr<Instance> getInstance() const { return _instance; }
+			QueueFamilyIndices getQueueFamilyIndices() const { return _queueFamilyIndices; }
 			//std::vector<const char*> getDeviceExtensions() const { return _deviceExtensions; }
 
 			const std::vector<const char*> getDeviceExtensions() const {
@@ -44,11 +43,11 @@ namespace atta::vk
 			}
 
 		private:
-			bool isDeviceSuitable(VkPhysicalDevice device);
+			bool isDeviceSuitable(VkPhysicalDevice device, std::shared_ptr<Surface> surface_);
 			bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-			SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 			void printPhysicalDevices(std::vector<VkPhysicalDevice> physicalDevices);
-			QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+			QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, std::shared_ptr<Surface> surface_);
+
 			
 			// Printing
 			std::string getVersion(const uint32_t version);
@@ -56,6 +55,7 @@ namespace atta::vk
 
 			VkPhysicalDevice _physicalDevice;
 			std::shared_ptr<Instance> _instance;
+			QueueFamilyIndices _queueFamilyIndices;
 
 			// Extensions
 			std::vector<const char*> _deviceExtensions;
