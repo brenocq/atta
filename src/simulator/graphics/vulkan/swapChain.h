@@ -39,6 +39,7 @@ namespace atta::vk
 			std::vector<VkImage> getImages() const { return _images; }
 
 		private:
+			SwapChainSupportDetails querySwapChainSupport();
 			VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 			VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 			VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);

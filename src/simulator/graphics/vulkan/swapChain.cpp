@@ -15,7 +15,11 @@ namespace atta::vk
 	{
 		std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
 
-		SwapChainSupportDetails swapChainSupport = physicalDevice->querySwapChainSupport();
+		SwapChainSupportDetails swapChainSupport = querySwapChainSupport();
+		if(swapChainSupport.formats.empty() || swapChainSupport.presentModes.empty())
+		{
+			Log::error("SwapChain", "Failed to create swapChain, physical device does not have swap chain support!");
+		}
 
 		VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
 		VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -38,7 +42,7 @@ namespace atta::vk
 		// Added  VK_IMAGE_USAGE_TRANSFER_DST_BIT when using ray tracing
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;;
 
-		QueueFamilyIndices indices = physicalDevice->findQueueFamilies();
+		QueueFamilyIndices indices = physicalDevice->getQueueFamilyIndices();
 		uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
 		if(indices.graphicsFamily != indices.presentFamily)
@@ -60,8 +64,17 @@ namespace atta::vk
 		createInfo.clipped = VK_TRUE;
 		createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-		if (vkCreateSwapchainKHR(_device->handle(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS) {
-			std::cout << BOLDRED << "[Swap Chain]" << RESET << RED << " Failed to create swap chain!" << RESET << std::endl;
+		// Check surface present support before creating
+		VkBool32 presentSupport = false;
+		vkGetPhysicalDeviceSurfaceSupportKHR(_device->getPhysicalDevice()->handle(), indices.presentFamily.value(), _surface->handle(), &presentSupport);
+		if(!presentSupport) 
+		{
+			Log::error("SwapChain", "Current logical device does not support present to this surface!");
+		}
+
+		if(vkCreateSwapchainKHR(_device->handle(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
+		{
+			Log::error("SwapChain", "Failed to create swap chain!");
 			exit(1);
 		}
 
@@ -119,6 +132,37 @@ namespace atta::vk
 			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 			//0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 		// Change layouts back
+	}
+
+	SwapChainSupportDetails SwapChain::querySwapChainSupport()
+	{
+		SwapChainSupportDetails details;
+		VkSurfaceKHR surface = _surface->handle();
+		VkPhysicalDevice device = _device->getPhysicalDevice()->handle();
+
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+
+		// Surface formats
+		uint32_t formatCount;
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+
+		if(formatCount != 0) 
+		{
+			details.formats.resize(formatCount);
+			vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+		}
+
+		// Surface present modes
+		uint32_t presentModeCount;
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+
+		if(presentModeCount != 0) 
+		{
+			details.presentModes.resize(presentModeCount);
+			vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
+		}
+
+		return details;
 	}
 
 	VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)

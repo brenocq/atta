@@ -15,7 +15,6 @@ namespace atta
 	Window::Window():
 		_width(1200), _height(900), _cursorVisible(true), _lastX(0), _lastY(0)
 	{
-		glfwInit();
 		// To not create an OpenGL context
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		// Set window as not resizable
@@ -55,7 +54,6 @@ namespace atta
 	{
 		// Destroy the window and terminate glfw
 		glfwDestroyWindow(_window);
-		glfwTerminate();
 	}
 
 	void Window::loop()

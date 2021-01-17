@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "physicalDevice.h"
 #include "simulator/helpers/log.h"
+#include "simulator/graphics/core/window.h"
 
 namespace atta::vk
 {
@@ -31,14 +32,21 @@ namespace atta::vk
 		vkEnumeratePhysicalDevices(_instance->handle(), &deviceCount, devices.data());
 
 		printPhysicalDevices(devices);
+
+		// Create temporary surface to select physical device with surface support
+		std::shared_ptr<Window> window = std::make_shared<Window>();
+		std::shared_ptr<Surface> surface = std::make_shared<Surface>(_instance, window);
+
+		// TODO remake physical device selection
 		for(const auto& device : devices) 
 		{
-			if(isDeviceSuitable(device)) 
+			if(isDeviceSuitable(device, surface)) 
 			{
 				_physicalDevice = device;
 				break;
 			}
 		}
+
 		if(_physicalDevice == VK_NULL_HANDLE)
 		{
 			Log::warning("PhysicalDevice", "No physical device with ray tracing support, trying without it.");
@@ -52,7 +60,7 @@ namespace atta::vk
 
 			for(const auto& device : devices) 
 			{
-				if(isDeviceSuitable(device)) 
+				if(isDeviceSuitable(device, surface)) 
 				{
 					_physicalDevice = device;
 					break;
@@ -67,6 +75,8 @@ namespace atta::vk
 		}
 		else
 		{
+			_queueFamilyIndices = findQueueFamilies(_physicalDevice, surface);
+
 			Log::success("PhysicalDevice", "Found suitable GPU!");
 		}
 	}
@@ -75,19 +85,11 @@ namespace atta::vk
 	{
 	}
 
-	bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device) 
+	bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device, std::shared_ptr<Surface> surface_) 
 	{
-		QueueFamilyIndices indices = findQueueFamilies(device);
+		QueueFamilyIndices indices = findQueueFamilies(device, surface_);
 
 		bool extensionsSupported = checkDeviceExtensionSupport(device);
-
-		bool swapChainAdequate = false;
-		// Check swapChain support
-		//if(extensionsSupported) 
-		//{
-		//	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
-		//	swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-		//}
 
 		VkPhysicalDeviceFeatures supportedFeatures;
 		vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
@@ -115,7 +117,7 @@ namespace atta::vk
 		return requiredExtensions.empty();
 	}
 
-	QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice device) 
+	QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice device, std::shared_ptr<Surface> surface_) 
 	{
 		// Logic to find graphics queue family
 		QueueFamilyIndices indices;	
@@ -135,12 +137,12 @@ namespace atta::vk
 			}
 
 			// Check queueFamily surface support (present support)
-			//VkBool32 presentSupport = false;
-			//vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_->handle(), &presentSupport);
-			//if (presentSupport) 
-			//{
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_->handle(), &presentSupport);
+			if(presentSupport) 
+			{
 				indices.presentFamily = i;
-			//}
+			}
 
 
 			if(indices.isComplete()) 
@@ -152,52 +154,6 @@ namespace atta::vk
 		}
 
 		return indices;
-	}
-
-	SwapChainSupportDetails PhysicalDevice::querySwapChainSupport()
-	{
-		return querySwapChainSupport(_physicalDevice);
-	}
-
-	SwapChainSupportDetails PhysicalDevice::querySwapChainSupport(VkPhysicalDevice device)
-	{
-		SwapChainSupportDetails details;
-		//auto surface_ = _surface.lock();
-		//if(!surface_)
-		//{
-		//	Log::error("PhysicalDevice", "Surface is expired in the querySwapChainSupport!");
-		//	exit(1);
-		//}
-		//VkSurfaceKHR surface = surface_->handle();
-
-		//vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
-
-		//// Surface formats
-		//uint32_t formatCount;
-		//vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
-
-		//if(formatCount != 0) 
-		//{
-		//	details.formats.resize(formatCount);
-		//	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
-		//}
-
-		//// Surface present modes
-		//uint32_t presentModeCount;
-		//vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
-
-		//if(presentModeCount != 0) 
-		//{
-		//	details.presentModes.resize(presentModeCount);
-		//	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
-		//}
-
-		return details;
-	}
-
-	QueueFamilyIndices PhysicalDevice::findQueueFamilies()
-	{
-		return findQueueFamilies(_physicalDevice);
 	}
 
 	std::string PhysicalDevice::getVersion(const uint32_t version)
@@ -235,9 +191,7 @@ namespace atta::vk
 		bool showMemory = false;
 		bool showRayTracingInfo = true;
 
-		std::cout << std::endl << BOLDGREEN << "[PhysicalDevice] " << RESET;
-		std::cout  << "GPU with Vulkan support:"  << WHITE << std::endl;
-
+		Log::info("PhysicalDevice", "[w]GPU with Vulkan support ($0)", physicalDevices.size());
 		for(VkPhysicalDevice device : physicalDevices)
 		{
 			VkPhysicalDeviceProperties prop;

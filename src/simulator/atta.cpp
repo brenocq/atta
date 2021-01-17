@@ -13,10 +13,6 @@ namespace atta
 {
 	Atta::Atta(CreateInfo createInfo)
 	{
-		// Create thread pool
-		_threadPool = std::make_shared<ThreadPool>();
-		_threadPool->createGeneralistWorkers();
-
 		// Create scene
 		Scene::CreateInfo sceneInfo = 
 		{
@@ -46,8 +42,20 @@ namespace atta
 
 		// Initialize physics
 		
-		// Initialize objects
-		_threadPool->createGuiWorker();
+		//---------- Create thread manager ----------//
+		ThreadManager::PipelineSetup pipelineSetup = {
+			.generalConfig = {},
+			.physicsStage = {},
+			.renderingStage = {
+				.vkCore = _vulkanCore,
+				.renderers = renderers
+			},
+			.robotStage = {}
+		};
+
+		// Create thread pool
+		_threadManager = std::make_shared<ThreadManager>(pipelineSetup);
+
 	}
 
 	Atta::~Atta()
@@ -56,19 +64,6 @@ namespace atta
 
 	void Atta::run()
 	{
-		// Manage threadPool workers
-		while(true)
-		{
-
-			//--------------------- Physics ---------------------//
-			
-			//-------------------- Rendering --------------------//
-			for(auto& render : _renderers)
-			{
-				//render->render();
-			}
-
-			//--------------------- Robots ----------------------//
-		}
+		_threadManager->run();
 	}
 }

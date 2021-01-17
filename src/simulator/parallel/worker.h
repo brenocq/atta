@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Parrallel
+// Atta Parallel
 // threadPool.h
 // Date: 2021-01-07
 // By Breno Cunha Queiroz

@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Parrallel
+// Atta Parallel
 // workerGeneralist.cpp
 // Date: 2021-01-07
 // By Breno Cunha Queiroz

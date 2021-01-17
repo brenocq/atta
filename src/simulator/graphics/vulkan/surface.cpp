@@ -12,9 +12,12 @@ namespace atta::vk
 	Surface::Surface(std::shared_ptr<Instance> instance, std::shared_ptr<Window> window):
 		_instance(instance), _window(window)
 	{
-		if(glfwCreateWindowSurface(_instance->handle(), _window->handle(), nullptr, &_surface) != VK_SUCCESS) 
+		int result = 0;
+		if((result = glfwCreateWindowSurface(_instance->handle(), _window->handle(), nullptr, &_surface)) != VK_SUCCESS) 
 		{
-			Log::error("Surface", "Failed to create window surface!");
+			const char* description;
+			glfwGetError(&description);
+			Log::error("Surface", "Failed to create window surface! | Code: $0 | Message: $1", result, description);
 			exit(1);
 		}	
 	}
