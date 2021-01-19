@@ -496,6 +496,13 @@ namespace atta
 		return v;
 	}
 
+	// Dot
+	template <typename T>
+	float dot(const vector3<T> &v1, const vector3<T> &v2)
+	{
+		return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
+	}
+
 	//----------------------------------------//
 	//--------------- Vector 2 ---------------//
 	//----------------------------------------//

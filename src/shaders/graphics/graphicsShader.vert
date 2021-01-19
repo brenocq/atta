@@ -1,14 +1,21 @@
 #version 460
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_GOOGLE_include_directive : require
-#include "../rayTracing/material.glsl"
-#include "../rayTracing/uniformBufferObject.glsl"
+#include "../material.glsl"
+#include "../uniformBufferObject.glsl"
 
-layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject Camera; };
-layout(binding = 1) readonly buffer MaterialArray {
+layout(binding = 0) readonly uniform UniformBufferObjectStruct
+{ 
+	UniformBufferObject camera; 
+};
+
+layout(binding = 1) readonly buffer MaterialArray
+{
 	Material[] materials; 
 };
-layout(push_constant) uniform ObjectInfo {
+
+layout(push_constant) uniform ObjectInfo
+{
   mat4 modelMat;
 } objectInfo;
 
@@ -17,12 +24,11 @@ layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec2 inTexCoord;
 layout(location = 3) in int inMaterialIndex;
 
-layout(location = 0) out vec3 fragColor;
-layout(location = 1) out vec3 fragNormal;
-layout(location = 2) out vec2 fragTexCoord;
-layout(location = 3) out flat int fragMaterialIndex;
-layout(location = 4) out vec3 fragPos;
-layout(location = 5) out vec3 viewPos;
+layout(location = 1) out vec3 outPos;
+layout(location = 2) out vec3 outNormal;
+layout(location = 3) out vec2 outTexCoord;
+layout(location = 4) out flat int outMaterialIndex;
+layout(location = 5) out vec3 outViewPos;
 
 vec3 ExtractCameraPos(mat4 a_modelView)
 {
@@ -57,19 +63,12 @@ out gl_PerVertex
 
 void main() 
 {
-	Material m = materials[inMaterialIndex];
+    gl_Position = camera.projMat * camera.viewMat * objectInfo.modelMat * vec4(inPosition, 1.0);
 
-	fragPos = vec3(objectInfo.modelMat * vec4(inPosition, 1.0));
-	viewPos = ExtractCameraPos(Camera.modelView);
-	fragNormal = vec3(transpose(inverse(objectInfo.modelMat)) * vec4(inNormal, 1.0));
+	outPos = vec3(objectInfo.modelMat * vec4(inPosition, 1.0));
+	outNormal = vec3(transpose(inverse(objectInfo.modelMat)) * vec4(inNormal, 1.0));
+	outTexCoord = inTexCoord;
+	outMaterialIndex = inMaterialIndex;
 
-    gl_Position = Camera.projection * Camera.modelView * objectInfo.modelMat * vec4(inPosition, 1.0);
-    //fragColor = m.diffuse.xyz * objectInfo.color;
-
-	//if(objectInfo.materialIndex >= 0)
-	//	fragMaterialIndex = objectInfo.materialIndex;
-	//else
-		fragMaterialIndex = inMaterialIndex;
-
-	fragTexCoord = inTexCoord;
+	outViewPos = ExtractCameraPos(camera.viewMat);
 }

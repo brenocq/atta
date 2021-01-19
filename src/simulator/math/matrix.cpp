@@ -71,6 +71,33 @@ namespace atta
 		data[15] = 1;
 	}
 
+	// Create from base vector and global position
+	mat4 mat4::baseAndPos(const vec3 &X, const vec3 &Y, const vec3 &Z, const vec3 &pos)
+	{
+		mat4 res;
+		res.data[0] = X.x;
+		res.data[1] = Y.x;
+		res.data[2] = Z.x;
+		res.data[3] = dot(X, pos);
+
+		res.data[4] = X.y;
+		res.data[5] = Y.y;
+		res.data[6] = Z.y;
+		res.data[7] = dot(Y, pos);
+
+		res.data[8] = X.z;
+		res.data[9] = Y.z;
+		res.data[10] = Z.z;
+		res.data[11] = dot(Z, pos);
+
+		res.data[12] = 0.0f;
+		res.data[13] = 0.0f;
+		res.data[14] = 0.0f;
+		res.data[15] = 1.0f;
+
+		return res;
+	}
+
 	void mat4::setDiagonal(float a, float b, float c)
 	{
 		data[0] = a;

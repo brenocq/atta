@@ -12,11 +12,6 @@
 #include <memory>
 #include "simulator/parallel/threadManager.h"
 #include "simulator/objects/object.h"
-#include "simulator/graphics/vulkan/vulkanCore.h"
-#include "simulator/core/accelerator.h"
-#include "simulator/core/scene.h"
-#include "simulator/graphics/renderers/renderer.h"
-#include "simulator/graphics/renderers/rastRenderer/rastRenderer.h"
 //#include "simulator/helpers/drawer.h"
 
 namespace atta
@@ -36,15 +31,6 @@ namespace atta
 
 		private:
 			std::shared_ptr<ThreadManager> _threadManager;
-
-			std::shared_ptr<vk::VulkanCore> _vulkanCore;
-			std::shared_ptr<Scene> _scene;
-			std::shared_ptr<Accelerator> _accelerator;
-
-			std::vector<std::shared_ptr<Renderer>> _renderers;
-
-			//std::shared_ptr<Drawer> _drawer;
-			//std::shared_ptr<Application> _vulkanApp;
 	};
 }
 

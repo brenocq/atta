@@ -11,26 +11,33 @@ int main()
 	//---------- Create Scene ----------//
 	std::vector<std::shared_ptr<atta::Object>> objects = {};
 	atta::Box::CreateInfo boxInfo {
-		.name = "Box",
-		.position = {0,0,0},
+		.name = "Ground",
+		.position = {0,-0.5,0},
 		.rotation = {0,0,0},
-		.scale = {1,1,1},
-		.mass = 1.0f,
+		.scale = {100, 1, 100},
+		.mass = 0.0f,
 		.material = {
-			.color = {1,0,0}
+			.albedo = {.3,.3,1}
 		}
 	};
 	objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	atta::ImportedObject::CreateInfo wheel {
-		.name = "Wheel",
-		.fileName = "wheel",
-		.position = {0,0,0},
-		.rotation = {0,0,0},
-		.scale = {1,1,1},
-		.mass = 1.0f
-	};
-	objects.push_back(std::make_shared<atta::ImportedObject>(wheel));
+	boxInfo.name = "Box";
+	boxInfo.position = {0,0,0};
+	boxInfo.scale = {1,1,1};
+	boxInfo.mass = 1.0f,
+	boxInfo.material.albedo = {1,.3,.3};
+	objects.push_back(std::make_shared<atta::Box>(boxInfo));
+
+	//atta::ImportedObject::CreateInfo wheel {
+	//	.name = "Wheel",
+	//	.fileName = "wheel",
+	//	.position = {0,0,0},
+	//	.rotation = {0,0,0},
+	//	.scale = {1,1,1},
+	//	.mass = 1.0f
+	//};
+	//objects.push_back(std::make_shared<atta::ImportedObject>(wheel));
 
 	//---------- Create Atta Simulator ----------//
 	atta::Atta::CreateInfo attaCreateInfo = {

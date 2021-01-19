@@ -9,8 +9,11 @@
 
 namespace atta
 {
-	WorkerGeneralist::WorkerGeneralist(std::shared_ptr<Barrier> barrier):
-		_barrier(barrier)
+	WorkerGeneralist::WorkerGeneralist(CreateInfo createInfo):
+		_setupStageBarrier(createInfo.setupStageBarrier),
+		_physicsStageBarrier(createInfo.physicsStageBarrier),
+		_renderingStageBarrier(createInfo.renderingStageBarrier),
+		_robotStageBarrier(createInfo.robotStageBarrier)
 	{
 
 	}
@@ -22,16 +25,19 @@ namespace atta
 
 	void WorkerGeneralist::operator()()
 	{
-		//std::cout << "Generalist worker\n";
-		_barrier->wait();
-		//std::cout << "Generalist start\n";
-		_barrier->wait();
-		//std::cout << "Physics\n";
-		_barrier->wait();
-		//std::cout << "Render\n";
-		_barrier->wait();
-		//std::cout << "Robot\n";
-		return;
-		//std::cout << "Genralist Stop\n";
+		std::cout << "Setup\n";
+		_setupStageBarrier->wait();
+
+		while(true)
+		{
+			//std::cout << "Physics\n";
+			_physicsStageBarrier->wait();
+			//std::cout << "Rendering\n";
+			_renderingStageBarrier->wait();
+			//std::cout << "Robot\n";
+			_robotStageBarrier->wait();
+		}
+
+		std::cout << "Genralist Stop\n";
 	}
 }

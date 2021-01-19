@@ -12,10 +12,15 @@
 namespace atta
 {
 	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore):
-		_vkCore(vkCore)
+		_vkCore(vkCore), _currentFrame(0)
 	{
 		// Create window (GUI thread only)
 		_window = std::make_shared<Window>();
+		_window->windowResized = [this](){ };
+		_window->onKey = [this](const int key, const int scancode, const int action, const int mods) { onKey(key, scancode, action, mods); };
+		_window->onCursorPosition = [this](const double xpos, const double ypos) { onCursorPosition(xpos, ypos); };
+		_window->onMouseButton = [this](const int button, const int action, const int mods) { onMouseButton(button, action, mods); };
+		_window->onScroll = [this](const double xoffset, const double yoffset) { onScroll(xoffset, yoffset); };
 
 		// Vulkan objects
 		_surface = std::make_shared<vk::Surface>(_vkCore->getInstance(), _window);
@@ -44,18 +49,19 @@ namespace atta
 
 	void WorkerGui::operator()()
 	{
-		// TODO check _window->shouldClose();
-		while(true)
+		while(!_window->shouldClose())
 		{
 			render();
 			_window->poolEvents();
 		}
+		// Send signal to close atta simulator
 	}
 
 	void WorkerGui::render()
 	{
 		uint32_t imageIndex;
-		VkResult result = vkAcquireNextImageKHR(_vkCore->getDevice()->handle(), _swapChain->handle(), UINT64_MAX, _imageAvailableSemaphores[_currentFrame]->handle(), VK_NULL_HANDLE, &imageIndex);
+		VkResult result = vkAcquireNextImageKHR(_vkCore->getDevice()->handle(), _swapChain->handle(), 
+				UINT64_MAX, _imageAvailableSemaphores[_currentFrame]->handle(), VK_NULL_HANDLE, &imageIndex);
 
 		//---------- Check swapchain ----------//
 		if(result == VK_ERROR_OUT_OF_DATE_KHR)
@@ -130,11 +136,16 @@ namespace atta
 		}
 
 		//---------- Next frame ----------//
-		_currentFrame = (_currentFrame + 1) % _inFlightFences.size();
+		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	}
 
 	void WorkerGui::recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex)
 	{
+		//---------- Run commands (renderers) ----------//
+		for(auto command : _commands)
+			command(commandBuffer);
+
+		//---------- Copy images ----------//
 		VkImageSubresourceRange subresourceRange;
 		subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		subresourceRange.baseMipLevel = 0;
@@ -143,7 +154,83 @@ namespace atta
 		subresourceRange.layerCount = 1;
 
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+			0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		for(auto imageCopy : _imageCopies)
+			copyImageCommands(commandBuffer, imageIndex, imageCopy);
+
+		//---------- Change layout to present image ----------//
+		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			//0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-			0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+	}
+
+	void WorkerGui::copyImageCommands(VkCommandBuffer commandBuffer, unsigned imageIndex, ImageCopy imageCopy)
+	{
+		// Change src image layout to transfer src
+		VkImageSubresourceRange subresourceRange;
+		subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		subresourceRange.baseMipLevel = 0;
+		subresourceRange.levelCount = 1;
+		subresourceRange.baseArrayLayer = 0;
+		subresourceRange.layerCount = 1;
+
+		vk::ImageMemoryBarrier::insert(commandBuffer, imageCopy.image->handle(), subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+			0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+		// Copy src image to dst image
+		VkExtent2D srcExtent = imageCopy.image->getExtent();
+		VkExtent2D dstExtent = _swapChain->getExtent();
+		VkImageBlit blit{};
+		blit.srcOffsets[0] = {0, 0, 0};
+		blit.srcOffsets[1] = { srcExtent.width, srcExtent.height, 1 };
+		blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		blit.srcSubresource.mipLevel = 0;
+		blit.srcSubresource.baseArrayLayer = 0;
+		blit.srcSubresource.layerCount = 1;
+		blit.dstOffsets[0] = {0, 0, 0};
+		blit.dstOffsets[1] = { dstExtent.width, dstExtent.height, 1 };
+		blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		blit.dstSubresource.mipLevel = 0;
+		blit.dstSubresource.baseArrayLayer = 0;
+		blit.dstSubresource.layerCount = 1;
+
+		vkCmdBlitImage(commandBuffer,
+			imageCopy.image->handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+			_swapChain->getImages()[imageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			1, &blit,
+			VK_FILTER_LINEAR);
+	}
+
+	//------------------------------------------------------------------------------//
+	//------------------------------ Window Callbacks ------------------------------//
+	//------------------------------------------------------------------------------//
+	void WorkerGui::onKey(int key, int scancode, int action, int mods)
+	{
+		switch(key)
+		{
+			case GLFW_KEY_ESCAPE:
+				_window->close();
+				break;
+			case GLFW_KEY_F1:
+				if(action == GLFW_PRESS)
+					_window->toggleCursorVisibility();
+				break;
+		}
+	}
+
+	void WorkerGui::onCursorPosition(double xpos, double ypos)
+	{
+
+	}
+
+	void WorkerGui::onMouseButton(int button, int action, int mods)
+	{
+
+	}
+
+	void WorkerGui::onScroll(double xoffset, double yoffset)
+	{
+
 	}
 }

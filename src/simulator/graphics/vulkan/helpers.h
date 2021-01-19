@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <optional>
+#include "simulator/math/math.h"
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
@@ -30,7 +31,7 @@ struct SwapChainSupportDetails
 
 struct ObjectInfo
 {
-	glm::mat4 modelMatrix;
+	atta::mat4 modelMat;
 };
 
 // TLAS instances (Ray tracing)
