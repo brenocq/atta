@@ -29,6 +29,9 @@ namespace atta
         mat4(const vec3 &v0, const vec3 &v1, const vec3 &v2, const vec3 &v3);
         mat4(const mat3 &mat);
 
+		// Create from base vector and global position
+		static mat4 baseAndPos(const vec3 &X, const vec3 &Y, const vec3 &Z, const vec3 &pos);
+
         float getDeterminant() const;
         void setDiagonal(float a, float b, float c);
         void setInverse(const mat4 &m);
@@ -83,11 +86,38 @@ namespace atta
 		return result;
 	}
 
-	// Return the perspective matrix
+	// Calculate look at matrix
+	inline mat4 lookAt(vec3 eye, vec3 center, vec3 up)
+	{
+		// Calculate base vectors
+		vec3 X,Y,Z;
+  		Z = eye - center;
+		Z.normalize();
+		Y = up;
+		X = cross(Y, Z);
+		Y = cross(Z, X);
+		X.normalize();
+		Y.normalize();
+
+		// Return mat4 from base
+		return mat4::baseAndPos(X,Y,Z, center);
+	}
+
+	// Calculate perspective matrix
 	inline mat4 perspective(float fov, float ratio, float near, float far)
 	{
-		// TODO
-		return mat4(1);
+		mat4 res(1);
+		float frustumDepth = far - near;
+    	float oneOverDepth = 1 / frustumDepth;
+
+		res.data[5] = 1 / tan(0.5f * fov);
+		res.data[0] = -res.data[5] / ratio;// Right handed
+		res.data[10] = far * oneOverDepth;
+		res.data[14] = (-far * near) * oneOverDepth;
+		res.data[11] = 1;
+		res.data[15] = 0;
+
+		return res;
 	}
 
 	//------------------------------------------------------------//

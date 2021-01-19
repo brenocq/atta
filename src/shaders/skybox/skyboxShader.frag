@@ -2,9 +2,9 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_GOOGLE_include_directive : require
-#include "../rayTracing/material.glsl"
+#include "../material.glsl"
 
-layout (binding = 1) uniform sampler2D equirectangularEnvMap;
+//layout (binding = 1) uniform sampler2D equirectangularEnvMap;
 
 layout(location = 0) in vec3 FragColor;
 layout(location = 1) in vec3 FragPos;
@@ -24,7 +24,7 @@ vec2 sampleSphericalMap(vec3 v)
 void main() 
 {
 	vec2 uv = sampleSphericalMap(normalize(FragPos)); // make sure to normalize localPos
-    vec3 color = texture(equirectangularEnvMap, uv).rgb;
+    vec3 color = vec3(0,0,1);//texture(equirectangularEnvMap, uv).rgb;
 
 	float exposure = 3.0f;
 	OutColor.rgb = vec3(1.0) - exp(-color * exposure);

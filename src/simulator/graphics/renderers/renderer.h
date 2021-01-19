@@ -30,6 +30,10 @@ namespace atta
 
 			virtual void render(VkCommandBuffer commandBuffer) = 0;
 
+			//---------- Getters ----------//
+			std::shared_ptr<vk::Image> getImage() const { return _image; }
+			std::shared_ptr<vk::ImageView> getImageView() const { return _imageView; }
+
 		protected:
 			void createOutputImage();
 

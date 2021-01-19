@@ -3,19 +3,18 @@
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_GOOGLE_include_directive : require
 #define PI 3.1415926538
-#include "../rayTracing/material.glsl"
+#include "../material.glsl"
 
 layout(binding = 1) readonly buffer MaterialArray { Material[] materials; };
-layout(binding = 2) uniform sampler2D[] textureSamplers;
-layout(binding = 3) uniform sampler2D irradianceMap;
+//layout(binding = 2) uniform sampler2D[] textureSamplers;
+//layout(binding = 3) uniform sampler2D irradianceMap;
 
-layout(location = 0) in vec3 fragColor;
-layout(location = 1) in vec3 fragNormal;
-layout(location = 2) in vec2 fragTexCoord;
-layout(location = 3) in flat int fragMaterialIndex;
 
-layout(location = 4) in vec3 fragPos;
-layout(location = 5) in vec3 viewPos;
+layout(location = 1) in vec3 inPos;
+layout(location = 2) in vec3 inNormal;
+layout(location = 3) in vec2 inTexCoord;
+layout(location = 4) in flat int inMaterialIndex;
+layout(location = 5) in vec3 inViewPos;
 
 layout(location = 0) out vec4 outColor;
 
@@ -84,19 +83,21 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 
 void main() 
 {
+	Material material = materials[inMaterialIndex];
+
 	// Light
 	vec3 lightPos	 = vec3(0,3,2);
 	vec3 lightColor  = vec3(23.47, 21.31, 20.79);
 
 	// Surface color
-	vec3 albedo = fragColor;
-	float metallic = 0.3;
-	float roughness = 0.1;
-	float ao = 0.5;
+	vec3 albedo = material.albedo;
+	float metallic = material.metallic;
+	float roughness = material.roughness;
+	float ao = material.ao;
 
 	// Surface vectors
-	vec3 N = normalize(fragNormal);
-	vec3 V = normalize(viewPos - fragPos);
+	vec3 N = normalize(inNormal);
+	vec3 V = normalize(inViewPos - inPos);
 
 	vec3 F0 = vec3(0.04);
 	F0      = mix(F0, albedo, metallic);
@@ -105,10 +106,10 @@ void main()
 	// Calculate contribution for each light
 	for(int i=0; i<1; i++)
 	{
-		vec3 L = normalize(lightPos - fragPos);
+		vec3 L = normalize(lightPos - inPos);
 		vec3 H = normalize(V + L);
 	  
-		float distance    = length(lightPos - fragPos);
+		float distance    = length(lightPos - inPos);
 		float attenuation = 1.0 / (distance * distance);
 		vec3 radiance     = lightColor * attenuation; 
 
@@ -132,7 +133,7 @@ void main()
 	vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
 	vec3 kD = 1.0 - kS;
 	vec2 uvIrr = sampleSphericalMap(normalize(N));
-	vec3 irradiance = texture(irradianceMap, uvIrr).rgb;
+	vec3 irradiance = vec3(1,0,0);//texture(irradianceMap, uvIrr).rgb;
 	vec3 diffuse    = irradiance * albedo;
 	vec3 ambient = (kD*diffuse) * ao;
 	vec3 color   = ambient + Lo;  

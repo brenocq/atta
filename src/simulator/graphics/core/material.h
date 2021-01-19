@@ -13,7 +13,15 @@ namespace atta
 {
 	struct Material
 	{
-		vec3 color = {0.6,0.2,0.2};
+		vec3 albedo = {0.6,0.2,0.2};
+		float metallic = 0.5f;
+		float roughness = 0.5f;
+		float ao = 0.0;// Ambient occusion
+		int albedoIndex = -1;// TODO get value from albedo texture
+		int normalIndex = -1;// TODO get value from normal texture
+		int metallicIndex = -1;// TODO get value from metallic texture
+		int roughnessIndex = -1;// TODO get value from roughness texture
+		int aoIndex = -1;// TODO get value from ao texture
 	};
 }
 

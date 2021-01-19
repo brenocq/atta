@@ -33,19 +33,19 @@ vec2 getSphereTexCoord(const vec3 point)
 void main()
 {
 	// Get the material.
-	const uvec2 offsets = Offsets[gl_InstanceCustomIndexNV];
-	const uint indexOffset = offsets.x;
-	const uint vertexOffset = offsets.y;
-	const Vertex v0 = unpackVertex(vertexOffset + Indices[indexOffset]);
-	const Material material = Materials[v0.materialIndex];
+	//const uvec2 offsets = Offsets[gl_InstanceCustomIndexNV];
+	//const uint indexOffset = offsets.x;
+	//const uint vertexOffset = offsets.y;
+	//const Vertex v0 = unpackVertex(vertexOffset + Indices[indexOffset]);
+	//const Material material = Materials[v0.materialIndex];
 
-	// Compute the ray hit point properties.
-	const vec4 sphere = Spheres[gl_InstanceCustomIndexNV];
-	const vec3 center = sphere.xyz;
-	const float radius = sphere.w;
-	const vec3 point = gl_WorldRayOriginNV + gl_HitTNV * gl_WorldRayDirectionNV;
-	const vec3 normal = (point - center) / radius;
-	const vec2 texCoord = getSphereTexCoord(normal);
+	//// Compute the ray hit point properties.
+	//const vec4 sphere = Spheres[gl_InstanceCustomIndexNV];
+	//const vec3 center = sphere.xyz;
+	//const float radius = sphere.w;
+	//const vec3 point = gl_WorldRayOriginNV + gl_HitTNV * gl_WorldRayDirectionNV;
+	//const vec3 normal = (point - center) / radius;
+	//const vec2 texCoord = getSphereTexCoord(normal);
 
-	ray = scatter(material, gl_WorldRayDirectionNV, normal, texCoord, gl_HitTNV, ray.randomSeed);
+	//ray = scatter(material, gl_WorldRayDirectionNV, normal, texCoord, gl_HitTNV, ray.randomSeed);
 }

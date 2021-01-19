@@ -33,6 +33,7 @@ namespace atta::vk
 		std::vector<Material> materials;
 		std::vector<MeshOffset> offsets;
 
+		int meshMaterial = 0;
 		for(auto m : Model::allMeshes)
 		{
 			std::shared_ptr<Mesh> mesh = m.second.lock();
@@ -45,7 +46,12 @@ namespace atta::vk
 			mesh->setVerticesOffset(vertexOffset);
 			mesh->setIndicesOffset(indexOffset);
 
-			vertices.insert(vertices.end(), mesh->getVertices().begin(), mesh->getVertices().end());
+			std::vector<Vertex> meshVertices = mesh->getVertices();
+			for(auto vertex : meshVertices)
+				vertex.materialIndex+=meshMaterial;
+			meshMaterial++;
+
+			vertices.insert(vertices.end(), meshVertices.begin(), meshVertices.end());
 			indices.insert(indices.end(), mesh->getIndices().begin(), mesh->getIndices().end());
 		}
 

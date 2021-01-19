@@ -1,13 +1,17 @@
 #version 460
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_GOOGLE_include_directive : require
-#include "../rayTracing/material.glsl"
-#include "../rayTracing/uniformBufferObject.glsl"
+#include "../material.glsl"
+#include "../uniformBufferObject.glsl"
 
-layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject Camera; };
+layout(binding = 0) readonly uniform UniformBufferObjectStruct
+{ 
+	UniformBufferObject camera;
+};
+
 //layout(binding = 1) readonly buffer MaterialArray { Material[] Materials; };
 layout(push_constant) uniform ObjectInfo {
-  mat4 modelView;
+  mat4 modelMat;
 } objectInfo;
 
 layout(location = 0) in vec3 InPosition;
@@ -51,10 +55,10 @@ out gl_PerVertex
 
 void main() 
 {
-	const vec3 viewPos = ExtractCameraPos(Camera.modelView);
-	const vec4 fragPos = Camera.projection * Camera.modelView * objectInfo.modelView * vec4(InPosition*1000.0f, 1.0);
+	const vec3 viewPos = ExtractCameraPos(camera.viewMat);
+	const vec4 fragPos = camera.projMat * camera.viewMat * objectInfo.modelMat * vec4(InPosition*1000.0f, 1.0);
     gl_Position = fragPos;
 
     FragColor = InNormal;
-  	FragPos = (objectInfo.modelView * vec4(InPosition*10.0f, 1.0)).xyz;
+  	FragPos = (objectInfo.modelMat * vec4(InPosition*10.0f, 1.0)).xyz;
 }

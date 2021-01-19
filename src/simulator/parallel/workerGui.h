@@ -16,20 +16,38 @@
 #include "simulator/graphics/vulkan/commandBuffers.h"
 #include "simulator/graphics/vulkan/semaphore.h"
 #include "simulator/graphics/vulkan/fence.h"
+#include "simulator/graphics/vulkan/image.h"
 
 namespace atta
 {
 	class WorkerGui : public Worker
 	{
 		public:
+			struct ImageCopy {
+				std::shared_ptr<vk::Image> image;
+				VkExtent2D extent;
+				VkOffset2D offset;
+			};
+
 			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore);
 			~WorkerGui();
 
 			void operator()();
 
+			//---------- Setters ----------//
+			void setCommands(std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands) { _commands = commands; };
+			void setImageCopies(std::vector<ImageCopy> imageCopies) { _imageCopies = imageCopies; }
+
 		private:
 			void render();
 			void recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex);
+			void copyImageCommands(VkCommandBuffer commandBuffer, unsigned imageIndex, ImageCopy imageCopy);
+
+			// Window callbacks
+			void onKey(int key, int scancode, int action, int mods);
+			void onCursorPosition(double xpos, double ypos);
+			void onMouseButton(int button, int action, int mods);
+			void onScroll(double xoffset, double yoffset);
 
 			std::shared_ptr<Window> _window;
 			std::shared_ptr<vk::VulkanCore> _vkCore;
@@ -45,6 +63,12 @@ namespace atta
 			std::vector<std::shared_ptr<vk::Fence>> _inFlightFences;
 			std::vector<VkFence> _imagesInFlight;
 			int _currentFrame;
+
+			// Work to process
+			std::vector<std::function<void(VkCommandBuffer commandBuffer)>> _commands;
+
+			// Images to copy
+			std::vector<ImageCopy> _imageCopies;
 	};
 }
 

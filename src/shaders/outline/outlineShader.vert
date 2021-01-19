@@ -1,17 +1,22 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_GOOGLE_include_directive : require
-#include "../rayTracing/material.glsl"
-#include "../rayTracing/uniformBufferObject.glsl"
+#include "../material.glsl"
+#include "../uniformBufferObject.glsl"
 
-layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject Camera; };
-layout(binding = 1) readonly buffer MaterialArray {
+layout(binding = 0) readonly uniform UniformBufferObjectStruct
+{
+	UniformBufferObject camera;
+};
+
+layout(binding = 1) readonly buffer MaterialArray
+{
 	Material[] materials; 
 };
-layout(push_constant) uniform ObjectInfo {
-  mat4 modelView;
-  vec3 color;
-  int materialIndex;
+
+layout(push_constant) uniform ObjectInfo
+{
+  mat4 modelMat;
 } objectInfo;
 
 layout(location = 0) in vec3 inPosition;
@@ -52,13 +57,13 @@ vec3 ExtractCameraPos(mat4 a_modelView)
 
 void main() 
 {
-	vec3 viewPos = ExtractCameraPos(Camera.modelView);
+	vec3 viewPos = ExtractCameraPos(camera.viewMat);
 
-	vec3 fragPos = vec3(objectInfo.modelView * vec4(inPosition, 1.0));
-	vec3 fragNormal = normalize(vec3(transpose(inverse(objectInfo.modelView)) * vec4(inNormal, 1.0)));
+	vec3 fragPos = vec3(objectInfo.modelMat * vec4(inPosition, 1.0));
+	vec3 fragNormal = normalize(vec3(transpose(inverse(objectInfo.modelMat)) * vec4(inNormal, 1.0)));
 
 	// Extrude along normal
 	float off = length(viewPos-fragPos);
 	vec4 pos = vec4(fragPos.xyz + fragNormal * 0.005 * off, 1.0);
-	gl_Position = Camera.projection * Camera.modelView * pos;
+	gl_Position = camera.projMat * camera.viewMat * pos;
 }

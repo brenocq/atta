@@ -1,17 +1,20 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_GOOGLE_include_directive : require
-#include "../rayTracing/material.glsl"
-#include "../rayTracing/uniformBufferObject.glsl"
+#include "../material.glsl"
+#include "../uniformBufferObject.glsl"
 
-layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject Camera; };
+layout(binding = 0) readonly uniform UniformBufferObjectStruct 
+{ 
+	UniformBufferObject camera;
+};
+
 layout(binding = 1) readonly buffer MaterialArray {
 	Material[] materials; 
 };
+
 layout(push_constant) uniform ObjectInfo {
-  mat4 modelView;
-  vec3 color;
-  int materialIndex;
+  mat4 modelMat;
 } objectInfo;
 
 layout(location = 0) in vec3 inPosition;
@@ -26,9 +29,9 @@ out gl_PerVertex
 
 void main() 
 {
-	vec3 fragPos = vec3(objectInfo.modelView * vec4(inPosition, 1.0));
-	vec3 fragNormal = normalize(vec3(transpose(inverse(objectInfo.modelView)) * vec4(inNormal, 1.0)));
+	vec3 fragPos = vec3(objectInfo.modelMat * vec4(inPosition, 1.0));
+	vec3 fragNormal = normalize(vec3(transpose(inverse(objectInfo.modelMat)) * vec4(inNormal, 1.0)));
 
 	// Extrude along normal
-	gl_Position = Camera.projection * Camera.modelView * vec4(fragPos,1.0);
+	gl_Position = camera.projMat * camera.viewMat * vec4(fragPos,1.0);
 }
