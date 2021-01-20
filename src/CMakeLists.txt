@@ -140,7 +140,7 @@ add_executable(${exe_name}
 	${src_files_simulator_graphics_core} 
 	${src_files_simulator_graphics_vulkan} 
 	${src_files_simulator_graphics_renderers} 
-	#${src_files_simulator_physics} 
+	${src_files_simulator_physics} 
 	#${src_files_simulator_vulkan_gui} 
 	#${src_files_simulator_vulkan_gui_widgets} 
 	#${src_files_simulator_vulkan_raytracing} 

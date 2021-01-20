@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "box.h"
+#include "simulator/physics/shapes/boxShape.h"
 
 namespace atta
 {
@@ -19,8 +20,8 @@ namespace atta
 			.material = info.material
 		};
 
-		std::shared_ptr<Model> model = std::make_shared<Model>(modelInfo);
-		Object::setModel(model);
+		_model = std::make_shared<Model>(modelInfo);
+		_bodyPhysics->addShape(std::make_shared<phy::BoxShape>(vec3(), quat(), vec3(1,1,1)));
 	}
 
 	Box::~Box()

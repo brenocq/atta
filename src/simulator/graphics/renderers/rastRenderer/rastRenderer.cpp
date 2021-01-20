@@ -5,6 +5,8 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "rastRenderer.h"
+#include "simulator/helpers/log.h"
+//#include "glm.h"
 
 namespace atta
 {
@@ -22,6 +24,20 @@ namespace atta
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
 		ubo.projMatInverse = atta::inverse(ubo.projMat);
 		_uniformBuffer->setValue(ubo);
+
+		Log::debug("GraphicsPipeline", "view: $0proj: $1", ubo.viewMat, ubo.projMat);
+
+
+		//glm::mat4 view = glm::lookAt(glm::vec3(2,2,0), glm::vec3(0,0,0), glm::vec3(0,1,0));
+		//glm::mat4 proj =  glm::perspective((float)glm::radians(45.0), (float)1200.0/900, 0.01f, 1000.0f);
+
+		//for(int i=0; i<4; i++)
+		//{
+		//	for(int j=0; j<4; j++)
+		//		std::cout << proj[i][j] << ", ";
+		//	std::cout << "\n";
+		//}
+
 
 		//---------- Render pass ----------//
 		auto colorBuffer = std::make_shared<vk::ColorBuffer>(_vkCore->getDevice(), _image->getExtent(), _image->getFormat());
@@ -102,5 +118,13 @@ namespace atta
 			_outlinePipeline->render(commandBuffer);
 		}
 		vkCmdEndRenderPass(commandBuffer);
+	}
+
+	void RastRenderer::updateCameraMatrix(mat4 viewMatrix)
+	{
+		vk::UniformBufferObject  = _uniformBuffer->getValue();
+		ubo.viewMat = viewMatrix;
+		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
+		_uniformBuffer->setValue(ubo);
 	}
 }

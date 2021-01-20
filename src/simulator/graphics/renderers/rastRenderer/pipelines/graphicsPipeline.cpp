@@ -241,7 +241,6 @@ namespace atta::vk
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(commandBuffer, _vkCore->getIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
 
-		//Log::debug("GraphicsPipeline", "objects: $0", _scene->getObjects().size());
 		for(auto object : _scene->getObjects())
 		{
 			auto model = object->getModel();
