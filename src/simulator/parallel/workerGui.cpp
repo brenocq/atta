@@ -22,6 +22,9 @@ namespace atta
 		_window->onMouseButton = [this](const int button, const int action, const int mods) { onMouseButton(button, action, mods); };
 		_window->onScroll = [this](const double xoffset, const double yoffset) { onScroll(xoffset, yoffset); };
 
+		// Create model view controller
+		_modelViewController = std::make_shared<ModelViewController>();
+
 		// Vulkan objects
 		_surface = std::make_shared<vk::Surface>(_vkCore->getInstance(), _window);
 		_swapChain = std::make_shared<vk::SwapChain>(_vkCore->getDevice(), _surface);
@@ -161,7 +164,6 @@ namespace atta
 
 		//---------- Change layout to present image ----------//
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
-			//0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 	}
 
@@ -212,25 +214,30 @@ namespace atta
 			case GLFW_KEY_ESCAPE:
 				_window->close();
 				break;
-			case GLFW_KEY_F1:
-				if(action == GLFW_PRESS)
-					_window->toggleCursorVisibility();
-				break;
 		}
+
+		_modelViewController->onKey(key, scancode, action, mods);
 	}
 
 	void WorkerGui::onCursorPosition(double xpos, double ypos)
 	{
-
+		_modelViewController->onCursorPosition(xpos, ypos);
 	}
 
 	void WorkerGui::onMouseButton(int button, int action, int mods)
 	{
+		switch(button)
+		{
+			case GLFW_MOUSE_BUTTON_MIDDLE:
+				_window->toggleCursorVisibility();
+				break;
+		}
 
+		_modelViewController->onMouseButton(button, action, mods);
 	}
 
 	void WorkerGui::onScroll(double xoffset, double yoffset)
 	{
-
+		_modelViewController->onScroll(xoffset, yoffset);
 	}
 }

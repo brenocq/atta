@@ -23,18 +23,12 @@ namespace atta::phy
 		// TODO initialize inertia tensor from shape
 
 		_forceAccum = vec3(0,0,0);
+
+		calculateDerivedData();
 	}
 
 	Body::~Body()
 	{
-		for(auto& shape : _shapes)
-		{
-			if(shape != nullptr)
-			{
-				delete shape;
-				shape = nullptr;
-			}
-		}
 	}
 
 	void Body::addForce(vec3 force)

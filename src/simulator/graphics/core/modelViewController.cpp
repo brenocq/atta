@@ -78,9 +78,6 @@ namespace atta
 		{
 			case GLFW_MOUSE_BUTTON_MIDDLE:
 				_mouseMiddleButton = action == GLFW_PRESS;
-				if(action == GLFW_PRESS || action == GLFW_RELEASE)
-				{
-				}
 				break;
 		}
 	}

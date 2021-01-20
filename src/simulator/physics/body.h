@@ -8,6 +8,7 @@
 #define ATTA_PHY_BODY_H
 
 #include <vector>
+#include <memory>
 #include "simulator/math/math.h"
 #include "simulator/physics/shapes/shapes.h"
 
@@ -20,7 +21,7 @@ namespace atta::phy
 			~Body();
 
 			//---------- Shape ----------//
-			void addShape(Shape* shape) { _shapes.push_back(shape); }
+			void addShape(std::shared_ptr<Shape> shape) { _shapes.push_back(shape); }
 
 			//---------- Force/Torque ----------//
 			void addForce(vec3 force);
@@ -41,7 +42,7 @@ namespace atta::phy
 
 			quat getOrientation() const { return *_orientation; };
 
-			std::vector<Shape*> getShapes() const { return _shapes; }
+			std::vector<std::shared_ptr<Shape>> getShapes() const { return _shapes; }
 			mat4 getTransformMatrix() const { return _transformMatrix; };
 
 			//---------- Setters ----------//
@@ -58,7 +59,7 @@ namespace atta::phy
 			void transformInertiaTensor();
 
 			// Shape
-			std::vector<Shape*> _shapes;
+			std::vector<std::shared_ptr<Shape>> _shapes;
 
 			// Linear
 			float _inverseMass;

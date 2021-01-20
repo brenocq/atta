@@ -9,6 +9,7 @@
 
 #include "worker.h"
 #include "simulator/graphics/core/window.h"
+#include "simulator/graphics/core/modelViewController.h"
 #include "simulator/graphics/vulkan/vulkanCore.h"
 #include "simulator/graphics/vulkan/surface.h"
 #include "simulator/graphics/vulkan/swapChain.h"
@@ -40,6 +41,7 @@ namespace atta
 
 		private:
 			void render();
+			void updateMainRenderCamera();
 			void recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex);
 			void copyImageCommands(VkCommandBuffer commandBuffer, unsigned imageIndex, ImageCopy imageCopy);
 
@@ -50,6 +52,7 @@ namespace atta
 			void onScroll(double xoffset, double yoffset);
 
 			std::shared_ptr<Window> _window;
+			std::shared_ptr<ModelViewController> _modelViewController;
 			std::shared_ptr<vk::VulkanCore> _vkCore;
 
 			std::shared_ptr<vk::Surface> _surface;

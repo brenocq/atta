@@ -57,20 +57,25 @@ namespace atta
 			//std::shared_ptr<atta::phy::Constraint> getParentConstraint() const { return _parentConstraint; }
 
 		protected:
+			//void setParent(Object* parent) { _parent = parent; };
+			//void setParentConstraint(atta::phy::Constraint* constraint);
+
 			//---------- Setters ----------//
 			void setType(std::string type) { _type = type; }
 			void setModel(std::shared_ptr<Model> model) { _model = model; }
 
-			//void setParent(Object* parent) { _parent = parent; };
-			//void setParentConstraint(atta::phy::Constraint* constraint);
-
-		private:
+			//----- Identification -----//
 			std::string _type;
 
 			static int _qtyIds;
 			int _id;
 
 			std::string _name;
+
+			//----- Object data -----//
+			vec3 _position;
+			quat _orientation;
+			vec3 _scale;
 			
 			//----- Graphics -----//
 			std::shared_ptr<Model> _model;

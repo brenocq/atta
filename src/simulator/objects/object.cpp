@@ -16,6 +16,11 @@ namespace atta
 		_selection(ObjectSelection::UNSELECTED)
 	{
 		_id = _qtyIds++;
+		_position = info.position;
+		_orientation = atta::eulerToQuat(info.rotation);
+		_scale = info.scale;
+
+		_bodyPhysics = std::make_shared<phy::Body>(&_position, &_orientation, info.mass);
 	}
 
 	Object::~Object()
@@ -24,7 +29,10 @@ namespace atta
 
 	mat4 Object::getModelMat() const
 	{
-		return mat4(1);
+		mat4 res = mat4(1);
+		res.setPosOriScale(_position, _orientation, _scale);
+
+		return res;
 	}
 
 	//void Object::setSelection(ObjectSelection sel)

@@ -35,7 +35,10 @@ namespace atta::vk
 			~UniformBuffer();
 
 			void setValue(UniformBufferObject ubo);
+			UniformBufferObject getValue() const { return _ubo; }
+			
 		private:
+			UniformBufferObject _ubo;
 	};
 }
 
