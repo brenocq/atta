@@ -7,25 +7,29 @@
 #ifndef GUI_FRAME_BUFFER_H
 #define GUI_FRAME_BUFFER_H
 
-#include "../imageView.h"
+#include "simulator/graphics/vulkan/device.h"
+#include "simulator/graphics/vulkan/imageView.h"
 #include "guiRenderPass.h"
 
-class GuiFrameBuffer
+namespace atta
 {
-	public:
-		GuiFrameBuffer(ImageView* imageView, GuiRenderPass* guiRenderPass, VkExtent2D imageExtent);
-		~GuiFrameBuffer();
+	class GuiFrameBuffer
+	{
+		public:
+			GuiFrameBuffer(std::shared_ptr<vk::Device> device, std::shared_ptr<vk::ImageView> imageView, std::shared_ptr<GuiRenderPass> guiRenderPass, VkExtent2D imageExtent);
+			~GuiFrameBuffer();
 
-		VkFramebuffer handle() const { return _framebuffer; }
-		ImageView* getImageView() const { return _imageView; }
-		GuiRenderPass* getGuiRenderPass() const { return _guiRenderPass; }
+			VkFramebuffer handle() const { return _framebuffer; }
+			std::shared_ptr<vk::ImageView> getImageView() const { return _imageView; }
+			std::shared_ptr<GuiRenderPass> getGuiRenderPass() const { return _guiRenderPass; }
 
-	private:
-		ImageView* _imageView;
-		GuiRenderPass* _guiRenderPass;
+		private:
+			std::shared_ptr<vk::Device> _device;
+			std::shared_ptr<vk::ImageView> _imageView;
+			std::shared_ptr<GuiRenderPass> _guiRenderPass;
 
-		VkFramebuffer _framebuffer;
-		VkExtent2D _imageExtent;
-};
-
+			VkFramebuffer _framebuffer;
+			VkExtent2D _imageExtent;
+	};
+}
 #endif// GUI_FRAME_BUFFER_H

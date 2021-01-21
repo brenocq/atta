@@ -9,7 +9,7 @@
 #include <iostream>
 
 namespace guib {
-	FontLoader::FontLoader(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename):
+	FontLoader::FontLoader(std::shared_ptr<atta::vk::Device> device, std::shared_ptr<atta::vk::CommandPool> commandPool, std::string filename):
 		_filename(filename), _device(device), _commandPool(commandPool)
 	{
 		FT_Error error;
@@ -33,9 +33,9 @@ namespace guib {
 		}
 		else
 		{
-			Log::success("FontLoader", "Font file \""+filename+"\" loaded successfully.");
-			Log::success("FontLoader", "Qty glyphs: "+std::to_string(_face->num_glyphs), false);
-			Log::success("FontLoader", "Flags: "+std::to_string(_face->face_flags), false);
+			Log::success("FontLoader", "Font file \"$0\" loaded successfully.", filename);
+			Log::success("FontLoader", "Qty glyphs: $0", _face->num_glyphs);
+			Log::success("FontLoader", "Flags: $0", _face->face_flags);
 		}
 
 		// Set character size
@@ -66,7 +66,7 @@ namespace guib {
 		//testFontTerminal("test");
 		
 		// Load texture
-		_texture = new Texture(_device, _commandPool, _fontTexture.atlas.data, (VkExtent2D){_fontTexture.atlas.width, _fontTexture.atlas.height});
+		_texture = std::make_shared<atta::vk::Texture>(_device, _commandPool, _fontTexture.atlas.data, (VkExtent2D){_fontTexture.atlas.width, _fontTexture.atlas.height});
 	}
 
 	FontLoader::~FontLoader()

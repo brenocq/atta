@@ -8,74 +8,72 @@
 #define USER_INTERFACE_H
 
 #include <iostream>
-#include <string.h>
+#include <string>
 
 #include "defines.h"
-#include "simulator/vulkan/device.h"
-#include "simulator/vulkan/window.h"
-#include "simulator/vulkan/swapChain.h"
-#include "simulator/scene.h"
-#include "simulator/vulkan/commandPool.h"
-#include "simulator/vulkan/commandBuffers.h"
+#include "simulator/graphics/vulkan/device.h"
+#include "simulator/graphics/core/window.h"
+#include "simulator/graphics/vulkan/swapChain.h"
+#include "simulator/core/scene.h"
+#include "simulator/graphics/vulkan/commandPool.h"
+#include "simulator/graphics/vulkan/commandBuffers.h"
+#include "simulator/graphics/vulkan/image.h"
+#include "simulator/graphics/vulkan/imageView.h"
 #include "guiPipeline.h"
 #include "guiUniformBuffer.h"
 #include "guiRender.h"
 #include "widgets/widgets.h"
 #include "font/fontLoader.h"
 
-class UserInterface
+namespace atta
 {
-	public:
-		UserInterface(std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<SwapChain> swapChain, Scene* scene);
-		~UserInterface();
+	class UserInterface
+	{
+		public:
+			struct CreateInfo
+			{
+				std::shared_ptr<vk::Device> device;
+				std::shared_ptr<Window> window;
+			};
 
-		void draw();
-		void render(int i);
-		VkCommandBuffer getCommandBuffer(int i) const { return _guiCommandBuffers->handle()[i]; }
+			UserInterface(CreateInfo info);
+			~UserInterface();
 
-		// Topbar->View
-		bool getShowPhysicsDebugger() const { return _showPhysicsDebugger; }
+			void render();
+			void render(VkCommandBuffer commandBuffer);
 
-		// Set variables
-		void setEnableRayTacing(bool* enableRT) { _enableRayTracing = enableRT; }
-		void setSplitRender(bool* splitRender) { _splitRender = splitRender; }
+			std::shared_ptr<vk::Image> getImage() const { return _image; }
 
-		// Window callbacks
-		void onKey(int key, int scancode, int action, int mods);
-		void onCursorPosition(double xpos, double ypos);
-		void onMouseButton(int button, int action, int mods);
-		void onScroll(double xoffset, double yoffset);
+			// Window callbacks
+			void onKey(int key, int scancode, int action, int mods);
+			void onCursorPosition(double xpos, double ypos);
+			void onMouseButton(int button, int action, int mods);
+			void onScroll(double xoffset, double yoffset);
 
-	private:
-		void createWidgetTree();
-		static void checkResult(VkResult result);
+		private:
+			void createOutputImage();
+			void createWidgetTree();
 
-		std::map<Object*, bool> _showObjectInfo;
+			std::shared_ptr<vk::Device> _device;
+			std::shared_ptr<Window> _window;
 
-		std::shared_ptr<Device> _device;
-		std::shared_ptr<Window> _window;
-		std::shared_ptr<SwapChain> _swapChain;
-		Scene* _scene;
+			//---------- Rendering ----------//
+			std::shared_ptr<vk::CommandPool> _guiCommandPool;
+			std::shared_ptr<vk::CommandBuffers> _guiCommandBuffers;
+			std::shared_ptr<GuiUniformBuffer> _guiUniformBuffer;
+			std::shared_ptr<GuiPipeline> _guiPipeline;
+			std::shared_ptr<guib::GuiRender> _guiRender;
 
-		std::shared_ptr<CommandPool> _guiCommandPool;
-		CommandBuffers* _guiCommandBuffers;
-		std::vector<GuiUniformBuffer*> _guiUniformBuffers;
-		GuiPipeline* _guiPipeline;
-		guib::GuiRender* _guiRender;
+			std::shared_ptr<vk::Image> _image;
+			std::shared_ptr<vk::ImageView> _imageView;
 
+			//---------- GuiB root ----------//
+			guib::Widget* _rootWidget;
+			std::vector<guib::Window*> _windows;
 
-		//---------- GUI variables ----------//
-		guib::Widget* _rootWidget;
-		std::vector<guib::Window*> _windows;
-
-		// Topbar->Main
-		bool* _enableRayTracing;
-		bool* _splitRender;
-		// Topbar->View
-		bool _showPhysicsDebugger;
-
-		//---------- GuiB font render ----------//
-		guib::FontLoader* _fontLoader;
-};
+			//---------- GuiB font render ----------//
+			std::shared_ptr<guib::FontLoader> _fontLoader;
+	};
+}
 
 #endif// USER_INTERFACE_H

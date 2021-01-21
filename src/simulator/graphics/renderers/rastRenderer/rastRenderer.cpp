@@ -122,7 +122,7 @@ namespace atta
 
 	void RastRenderer::updateCameraMatrix(mat4 viewMatrix)
 	{
-		vk::UniformBufferObject  = _uniformBuffer->getValue();
+		vk::UniformBufferObject ubo = _uniformBuffer->getValue();
 		ubo.viewMat = viewMatrix;
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
 		_uniformBuffer->setValue(ubo);

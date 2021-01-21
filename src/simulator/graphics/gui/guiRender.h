@@ -7,10 +7,9 @@
 #ifndef GUI_RENDER_H
 #define GUI_RENDER_H
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 #include <vector>
 #include <string>
+#include "simulator/graphics/vulkan/vulkan.h"
 #include "guiPipelineLayout.h"
 #include "widgets/widgets.h"
 #include "font/fontLoader.h"
@@ -21,7 +20,7 @@ namespace guib
 	class GuiRender
 	{
 		public:
-			GuiRender(VkExtent2D _imageExtent, GuiPipelineLayout* _pipelineLayout, GLFWwindow* glfwWindow, guib::FontLoader* fontLoader);
+			GuiRender(VkExtent2D _imageExtent, std::shared_ptr<atta::GuiPipelineLayout> _pipelineLayout, GLFWwindow* glfwWindow, std::shared_ptr<guib::FontLoader> fontLoader);
 			~GuiRender();
 
 			void render(VkCommandBuffer commandBuffer);
@@ -34,7 +33,7 @@ namespace guib
 			void onScroll(double xoffset, double yoffset);
 
 			//---------- Getters and Setters ----------//
-			GuiPipelineLayout* getPipelineLayout() const { return _pipelineLayout; }
+			std::shared_ptr<atta::GuiPipelineLayout> getPipelineLayout() const { return _pipelineLayout; }
 			VkCommandBuffer getCommandBuffer() const { return _commandBuffer; }
 
 			void setRootWidget(guib::Widget* root);
@@ -44,7 +43,7 @@ namespace guib
 			//void preProcessWidgetTree(guib::Widget* root);
 			void updateCursor(CursorType cursorType);
 
-			GuiPipelineLayout* _pipelineLayout;
+			std::shared_ptr<atta::GuiPipelineLayout> _pipelineLayout;
 			VkCommandBuffer _commandBuffer;
 
 			//---------- GuiB window/viewport handling ----------//

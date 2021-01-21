@@ -10,20 +10,22 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "glm.h"
 #include "defines.h"
-#include "simulator/vulkan/device.h"
-#include "simulator/vulkan/buffer.h"
+#include "simulator/graphics/vulkan/device.h"
+#include "simulator/graphics/vulkan/buffer.h"
 #include "guiStructs.h"
 
-class GuiUniformBuffer : public Buffer
+namespace atta
 {
-	public:
-		GuiUniformBuffer(std::shared_ptr<Device> device, VkDeviceSize size);
-		~GuiUniformBuffer();
+	class GuiUniformBuffer : public vk::Buffer
+	{
+		public:
+			GuiUniformBuffer(std::shared_ptr<vk::Device> device, VkDeviceSize size);
+			~GuiUniformBuffer();
 
-		void setValue(GuiUniformBufferObject ubo);
-	private:
-};
+			void setValue(GuiUniformBufferObject ubo);
+		private:
+	};
+}
 
 #endif// GUI_UNIFORM_BUFFER_H

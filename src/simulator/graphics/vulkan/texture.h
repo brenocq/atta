@@ -27,9 +27,9 @@ namespace atta::vk
 			~Texture();
 
 			std::shared_ptr<Device> getDevice() const { return _device; }
-			Image* getImage() const { return _image; }
-			ImageView* getImageView() const { return _imageView; }
-			Sampler* getSampler() const { return _sampler; }
+			std::shared_ptr<Image> getImage() const { return _image; }
+			std::shared_ptr<ImageView> getImageView() const { return _imageView; }
+			std::shared_ptr<Sampler> getSampler() const { return _sampler; }
 
 			void updateTextureImage(std::vector<uint8_t> pixels);
 
@@ -42,9 +42,9 @@ namespace atta::vk
 
 			std::shared_ptr<Device> _device;
 			std::shared_ptr<CommandPool> _commandPool;
-			Image* _image;
-			ImageView* _imageView;
-			Sampler* _sampler;
+			std::shared_ptr<Image> _image;
+			std::shared_ptr<ImageView> _imageView;
+			std::shared_ptr<Sampler> _sampler;
 			uint32_t _mipLevels;
 			uint32_t _arrayLayers;
 			int32_t _width, _height;

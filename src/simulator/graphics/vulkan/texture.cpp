@@ -43,11 +43,7 @@ namespace atta::vk
 		// Check error while laoding
 		if(!pixels) 
 		{
-			std::cout << BOLDRED << "[Texture]" << RESET << RED << " Failed to load texture image! (float format)" << RESET;
-			std::cout << RED << " (Path: " << WHITE << filename << RED << ")";
-			if(stbi_failure_reason())
-				std::cout << RED  << " (Error: " << WHITE << stbi_failure_reason() << RED << ")";
-			std::cout << RESET << std::endl;
+			Log::error("Texture", "Failed to load texture image! (Path: [w]$0[]) (Error: $1)", filename, stbi_failure_reason());
 			exit(1);
 		}
 
@@ -71,7 +67,7 @@ namespace atta::vk
 			_arrayLayers = 1;
 
 			// Create 2D image
-			_image = new Image(_device, texWidth, texHeight, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels, VK_SAMPLE_COUNT_1_BIT);
+			_image = std::make_shared<Image>(_device, texWidth, texHeight, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels, VK_SAMPLE_COUNT_1_BIT);
 
 			transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
@@ -85,7 +81,7 @@ namespace atta::vk
 			_width = 400;// TODO TESTING
 			_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_height, _width)))) + 1;// TODO TESTING
 			// Create cube map image
-			_image = new Image(_device, _height, _width, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels, VK_SAMPLE_COUNT_1_BIT, true);
+			_image = std::make_shared<Image>(_device, _height, _width, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels, VK_SAMPLE_COUNT_1_BIT, true);
 
 			transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
@@ -99,10 +95,10 @@ namespace atta::vk
 		delete stagingBuffer;
 		stagingBuffer = nullptr;
 
-		_imageView = new ImageView(_device, _image->handle(), format, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels, _arrayLayers==6);
-		_sampler = new Sampler(_device, _mipLevels);
+		_imageView = std::make_shared<ImageView>(_device, _image->handle(), format, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels, _arrayLayers==6);
+		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
 
-		Log::success("Texture", filename + " loaded successfully: " + std::to_string(_width) + " x " + std::to_string(_height));
+		Log::success("Texture", "$0 loaded successfully: $1 x $2", filename, _width, _height);
 	}
 
 	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size):
@@ -117,7 +113,7 @@ namespace atta::vk
 
 		StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels.data(), imageSize);
 
-		_image = new Image(_device, _width, _height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
+		_image = std::make_shared<Image>(_device, _width, _height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
 
 		transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
@@ -127,8 +123,8 @@ namespace atta::vk
 		delete stagingBuffer;
 		stagingBuffer = nullptr;
 
-		_imageView = new ImageView(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
-		_sampler = new Sampler(_device, _mipLevels);
+		_imageView = std::make_shared<ImageView>(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
+		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
 	}
 
 	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, unsigned char buffer[],  VkExtent2D size):
@@ -156,7 +152,7 @@ namespace atta::vk
 
 		StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels.data(), imageSize);
 
-		_image = new Image(_device, _width, _height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
+		_image = std::make_shared<Image>(_device, _width, _height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
 
 		transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
@@ -166,8 +162,8 @@ namespace atta::vk
 		delete stagingBuffer;
 		stagingBuffer = nullptr;
 
-		_imageView = new ImageView(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
-		_sampler = new Sampler(_device, _mipLevels);
+		_imageView = std::make_shared<ImageView>(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
+		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
 	}
 
 	void Texture::updateTextureImage(std::vector<uint8_t> pixels)
@@ -220,23 +216,6 @@ namespace atta::vk
 
 	Texture::~Texture()
 	{
-		if(_image != nullptr)
-		{
-			delete _image;
-			_image = nullptr;
-		}
-
-		if(_imageView != nullptr)
-		{
-			delete _imageView;
-			_imageView = nullptr;
-		}
-		
-		if(_sampler != nullptr)
-		{
-			delete _sampler;
-			_sampler = nullptr;
-		}
 	}
 
 	void Texture::transitionImageLayout(VkImageLayout newLayout)
@@ -387,7 +366,7 @@ namespace atta::vk
 		vkGetPhysicalDeviceFormatProperties(_device->getPhysicalDevice()->handle(), _image->getFormat(), &formatProperties);
 		if(!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 		{
-			std::cout << BOLDRED << "[Texture]" << RESET << RED << " Texture image format does not support linear blitting!" << RESET << std::endl;
+			Log::error("Texture", "Texture image format does not support linear blitting!");
 			exit(1);
 		}
 

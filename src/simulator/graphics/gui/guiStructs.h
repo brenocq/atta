@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef GUI_STRUCTS_H
 #define GUI_STRUCTS_H
-#include <glm/glm.hpp>
+#include "simulator/math/math.h"
 #include <vector>
 
 struct GuiUniformBufferObject
@@ -17,13 +17,13 @@ struct GuiUniformBufferObject
 
 struct GuiObjectInfo
 {
-	glm::vec2 position = glm::vec2(0.0f, 0.0f);
-	glm::vec2 size = glm::vec2(0.5f, 0.5f);
-	glm::vec4 color = {1.0f,1.0f,1.0f,1.0f};
+	atta::vec2 position = atta::vec2(0.0f, 0.0f);
+	atta::vec2 size = atta::vec2(0.5f, 0.5f);
+	atta::vec4 color = {1.0f,1.0f,1.0f,1.0f};
 	float radius = 0.2f;
 	int isLetter = 0;
-	glm::vec2 offsetLetter = glm::vec2(0.0f, 0.0f);
-	glm::vec2 sizeLetter = glm::vec2(1.0f, 1.0f);
+	atta::vec2 offsetLetter = atta::vec2(0.0f, 0.0f);
+	atta::vec2 sizeLetter = atta::vec2(1.0f, 1.0f);
 };
 
 #endif// GUI_STRUCTS_H

@@ -96,6 +96,7 @@ namespace atta
 
 		_workerGui->setCommands(commands);
 		_workerGui->setImageCopies(imageCopies);
+		_workerGui->setMainRenderer(_renderers[0]);
 
 		// Create thread from callable workerGui
 		_threads.push_back(std::thread(*_workerGui));
