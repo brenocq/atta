@@ -11,13 +11,13 @@
 
 namespace guib
 {
-	GuiRender::GuiRender(VkExtent2D imageExtent, GuiPipelineLayout* pipelineLayout, GLFWwindow* glfwWindow, guib::FontLoader* fontLoader):
+	GuiRender::GuiRender(VkExtent2D imageExtent, std::shared_ptr<atta::GuiPipelineLayout> pipelineLayout, GLFWwindow* glfwWindow, std::shared_ptr<guib::FontLoader> fontLoader):
 		_imageExtent(imageExtent), _pipelineLayout(pipelineLayout), _glfwWindow(glfwWindow),
 		_root(nullptr)
 	{
 		state::guiRender = this;
 		state::screenSize = {imageExtent.width, imageExtent.height};
-		state::fontLoader = fontLoader;
+		state::fontLoader = fontLoader.get();
 
 		//---------- GLFW setup ----------//
 		_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
@@ -335,5 +335,4 @@ namespace guib
 			glfwSetCursor(_glfwWindow, _cursor);
 		}
 	}
-
 }

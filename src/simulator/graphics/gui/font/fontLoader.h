@@ -12,19 +12,19 @@
 #include <vector>
 #include <string>
 #include "fontStructs.h"
-#include "simulator/vulkan/texture.h"
-#include "simulator/vulkan/device.h"
-#include "simulator/vulkan/commandPool.h"
+#include "simulator/graphics/vulkan/texture.h"
+#include "simulator/graphics/vulkan/device.h"
+#include "simulator/graphics/vulkan/commandPool.h"
 
 namespace guib {
 	class FontLoader
 	{
 		public:
-			FontLoader(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename);
+			FontLoader(std::shared_ptr<atta::vk::Device> device, std::shared_ptr<atta::vk::CommandPool> commandPool, std::string filename);
 			~FontLoader();
 
 			//---------- Getters and Setters ----------//
-			Texture* getTexture() const { return _texture; }
+			std::shared_ptr<atta::vk::Texture> getTexture() const { return _texture; }
 			FontTexture getFontTexture() const { return _fontTexture; }
 		private:
 			void loadGlyphs();
@@ -37,9 +37,9 @@ namespace guib {
 			FontTexture _fontTexture;
 
 			// Vulkan specific
-			std::shared_ptr<Device> _device;
-			std::shared_ptr<CommandPool> _commandPool;
-			Texture* _texture;
+			std::shared_ptr<atta::vk::Device> _device;
+			std::shared_ptr<atta::vk::CommandPool> _commandPool;
+			std::shared_ptr<atta::vk::Texture> _texture;
 	};
 }
 

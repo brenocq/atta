@@ -5,11 +5,12 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "imageView.h"
+#include "simulator/helpers/log.h"
 
 namespace atta::vk
 {
 	ImageView::ImageView(std::shared_ptr<Device> device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, bool isCubeMap):
-		_device(device), _mipLevels(mipLevels)
+		_device(device), _mipLevels(mipLevels), _format(format)
 	{
 		VkImageViewCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -34,7 +35,7 @@ namespace atta::vk
 
 		if(vkCreateImageView(_device->handle(), &createInfo, nullptr, &_imageView) != VK_SUCCESS)
 		{
-			std::cout << BOLDRED << "[ImageView]" << RESET << RED << " Failed to create image view!" << RESET << std::endl;
+			Log::error("ImageView", "Failed to create image view!");
 			exit(1);
 		}
 	}

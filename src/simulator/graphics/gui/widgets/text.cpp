@@ -8,8 +8,8 @@
 #include "../guiStructs.h"
 #include "../guiState.h"
 #include "../guiRender.h"
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include "simulator/graphics/vulkan/vulkan.h"
+#include "simulator/math/math.h"
 
 namespace guib
 {
@@ -48,20 +48,20 @@ namespace guib
 
 			//std::cout << "offset " << (char)letter <<" "<< offsetTop << std::endl;
 
-			glm::vec2 textOffset = {currX, _offset.y};
+			atta::vec2 textOffset = {currX, _offset.y};
 			textOffset.y += _size.height*((1-heightPerc)+(1-offsetTop));
 
 			GuiObjectInfo objectInfo;
 			objectInfo.position = textOffset;
-			objectInfo.size = glm::vec2(_size.height*(tw/th)*heightPerc, _size.height*heightPerc);
-			objectInfo.color = glm::vec4(color.r, color.g, color.b, color.a);
+			objectInfo.size = atta::vec2(_size.height*(tw/th)*heightPerc, _size.height*heightPerc);
+			objectInfo.color = atta::vec4(color.r, color.g, color.b, color.a);
 			objectInfo.isLetter = 1;
-			objectInfo.offsetLetter = glm::vec2(tx, ty);
-			objectInfo.sizeLetter = glm::vec2(tw, th);
+			objectInfo.offsetLetter = atta::vec2(tx, ty);
+			objectInfo.sizeLetter = atta::vec2(tw, th);
 
 			vkCmdPushConstants(
-					(state::guiRender)->getCommandBuffer(),
-					(state::guiRender)->getPipelineLayout()->handle(),
+					state::guiRender->getCommandBuffer(),
+					state::guiRender->getPipelineLayout()->handle(),
 					VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 					0,
 					sizeof(GuiObjectInfo),

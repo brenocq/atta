@@ -18,6 +18,8 @@
 #include "simulator/graphics/vulkan/semaphore.h"
 #include "simulator/graphics/vulkan/fence.h"
 #include "simulator/graphics/vulkan/image.h"
+#include "simulator/graphics/renderers/renderer.h"
+#include "simulator/graphics/gui/userInterface.h"
 
 namespace atta
 {
@@ -38,10 +40,10 @@ namespace atta
 			//---------- Setters ----------//
 			void setCommands(std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands) { _commands = commands; };
 			void setImageCopies(std::vector<ImageCopy> imageCopies) { _imageCopies = imageCopies; }
+			void setMainRenderer(std::shared_ptr<Renderer> mainRenderer) { _mainRenderer = mainRenderer; }
 
 		private:
 			void render();
-			void updateMainRenderCamera();
 			void recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex);
 			void copyImageCommands(VkCommandBuffer commandBuffer, unsigned imageIndex, ImageCopy imageCopy);
 
@@ -53,6 +55,7 @@ namespace atta
 
 			std::shared_ptr<Window> _window;
 			std::shared_ptr<ModelViewController> _modelViewController;
+			std::shared_ptr<Renderer> _mainRenderer;
 			std::shared_ptr<vk::VulkanCore> _vkCore;
 
 			std::shared_ptr<vk::Surface> _surface;
@@ -72,6 +75,9 @@ namespace atta
 
 			// Images to copy
 			std::vector<ImageCopy> _imageCopies;
+
+			// User interface
+			std::shared_ptr<UserInterface> _ui;
 	};
 }
 

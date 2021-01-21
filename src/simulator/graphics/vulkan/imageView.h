@@ -28,11 +28,13 @@ namespace atta::vk
 
 			VkImageView handle() const { return _imageView; }
 			std::shared_ptr<Device> getDevice() const { return _device; }
+			VkFormat getFormat() const { return _format; }
 
 		private:
 			VkImageView _imageView;
 			std::shared_ptr<Device> _device;
 			uint32_t _mipLevels;
+			VkFormat _format;
 	};
 }
 

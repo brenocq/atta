@@ -25,5 +25,5 @@ namespace guib::state
 	Offset lastDraggingCursorPos;
 
 	//---------- GuiB font render ----------//
-	FontLoader* fontLoader = nullptr;
+	FontLoader* fontLoader;
 }

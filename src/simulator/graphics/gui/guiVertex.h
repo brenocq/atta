@@ -7,19 +7,14 @@
 #ifndef GUI_VERTEX_H
 #define GUI_VERTEX_H
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
-
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
-#include <glm/glm.hpp>
+#include "simulator/graphics/vulkan/vulkan.h"
+#include "simulator/math/vector.h"
 #include <array>
 
 struct GuiVertex 
 {
-	glm::vec3 pos;
-	glm::vec3 color;
+	atta::vec3 pos;
+	atta::vec3 color;
 
 	static VkVertexInputBindingDescription getBindingDescription() 
 	{
@@ -56,8 +51,8 @@ struct GuiVertex
 namespace std {
     template<> struct hash<GuiVertex> {
         size_t operator()(GuiVertex const& vertex) const {
-            return ((hash<glm::vec3>()(vertex.pos) ^
-                   (hash<glm::vec3>()(vertex.color) << 1)) >> 1);
+            return ((hash<atta::vec3>()(vertex.pos) ^
+                   (hash<atta::vec3>()(vertex.color) << 1)) >> 1);
         }
     };
 }

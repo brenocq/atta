@@ -13,6 +13,7 @@
 #include "simulator/graphics/vulkan/image.h"
 #include "simulator/graphics/vulkan/imageView.h"
 #include "simulator/graphics/vulkan/vulkanCore.h"
+#include "simulator/math/matrix.h"
 
 namespace atta
 {
@@ -29,6 +30,7 @@ namespace atta
 			Renderer(CreateInfo info);
 
 			virtual void render(VkCommandBuffer commandBuffer) = 0;
+			virtual void updateCameraMatrix(mat4 viewMatrix) = 0;
 
 			//---------- Getters ----------//
 			std::shared_ptr<vk::Image> getImage() const { return _image; }

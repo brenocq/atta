@@ -8,24 +8,27 @@
 #define GUI_RENDER_PASS_H
 
 #include <iostream>
-#include <string.h>
+#include <string>
 #include "defines.h"
-#include "../device.h"
-#include "../swapChain.h"
+#include "simulator/graphics/vulkan/device.h"
+#include "simulator/graphics/vulkan/swapChain.h"
 
-class GuiRenderPass
+namespace atta
 {
-	public:
-		GuiRenderPass(std::shared_ptr<Device> device, VkFormat colorFormat);
-		~GuiRenderPass();
+	class GuiRenderPass
+	{
+		public:
+			GuiRenderPass(std::shared_ptr<vk::Device> device, VkFormat colorFormat);
+			~GuiRenderPass();
 
-		VkRenderPass handle() const { return _renderPass; }
-		VkFormat getFormat() const { return _colorFormat; }
+			VkRenderPass handle() const { return _renderPass; }
+			VkFormat getFormat() const { return _colorFormat; }
 
-	private:
-		VkRenderPass _renderPass;
-		std::shared_ptr<Device> _device;
-		VkFormat _colorFormat;
-};
+		private:
+			VkRenderPass _renderPass;
+			std::shared_ptr<vk::Device> _device;
+			VkFormat _colorFormat;
+	};
+}
 
 #endif// GUI_RENDER_PASS_H

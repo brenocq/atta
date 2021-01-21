@@ -102,21 +102,14 @@ file(GLOB src_files_simulator_graphics_renderers
 #)
 #
 ## GUI
-#file(GLOB guibSrc
-#    "simulator/vulkan/gui/widgets/*.cpp"
-#    "simulator/vulkan/gui/font/*.cpp"
-#    "simulator/vulkan/gui/*.cpp"
-#)
-#set(src_files_simulator_vulkan_gui_widgets
-#	${guibSrc}
-#)
+file(GLOB src_files_simulator_graphics_gui
+    "simulator/graphics/gui/**/*.cpp"
+    "simulator/graphics/gui/*.cpp"
+)
 
 # Math
-file(GLOB mathSrc
+file(GLOB src_files_simulator_math
     "simulator/math/*.cpp"
-)
-set(src_files_simulator_math
-	${mathSrc}
 )
 
 include_directories(.)
@@ -140,9 +133,8 @@ add_executable(${exe_name}
 	${src_files_simulator_graphics_core} 
 	${src_files_simulator_graphics_vulkan} 
 	${src_files_simulator_graphics_renderers} 
+	${src_files_simulator_graphics_gui} 
 	${src_files_simulator_physics} 
-	#${src_files_simulator_vulkan_gui} 
-	#${src_files_simulator_vulkan_gui_widgets} 
 	#${src_files_simulator_vulkan_raytracing} 
 	#${src_files_simulator_vulkan_pipeline} 
 	#${src_files_examples}

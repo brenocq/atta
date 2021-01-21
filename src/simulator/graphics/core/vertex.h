@@ -7,10 +7,7 @@
 #ifndef ATTA_GRAPHICS_VERTEX_H
 #define ATTA_GRAPHICS_VERTEX_H
 
-//#define GLM_ENABLE_EXPERIMENTAL
-//#include <glm/gtx/hash.hpp>
 #include "simulator/math/vector.h"
-
 #include "simulator/graphics/vulkan/vulkan.h"
 #include <array>
 

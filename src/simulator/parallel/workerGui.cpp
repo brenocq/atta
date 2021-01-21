@@ -43,6 +43,14 @@ namespace atta
 			_renderFinishedSemaphores[i] = std::make_shared<vk::Semaphore>(_vkCore->getDevice());
 			_inFlightFences[i] = std::make_shared<vk::Fence>(_vkCore->getDevice());
 		}
+
+		// Create user interface objects
+		UserInterface::CreateInfo uiInfo =
+		{
+			.device = _vkCore->getDevice(),
+			.window = _window
+		};
+		_ui = std::make_shared<UserInterface>(uiInfo);
 	}
 
 	WorkerGui::~WorkerGui()
@@ -78,6 +86,10 @@ namespace atta
 			Log::error("WorkerGui", "Failed to acquire swap chain image!");
 			exit(1);
 		}
+
+		// Update main renderer camera`
+		// TODO think
+		_mainRenderer->updateCameraMatrix(_modelViewController->getModelView());
 
 		//---------- Record to command buffer ----------//
 		VkCommandBuffer commandBuffer = _commandBuffers->begin(imageIndex);
@@ -148,6 +160,9 @@ namespace atta
 		for(auto command : _commands)
 			command(commandBuffer);
 
+		// Render user interface
+		_ui->render(commandBuffer);
+
 		//---------- Copy images ----------//
 		VkImageSubresourceRange subresourceRange;
 		subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -161,6 +176,13 @@ namespace atta
 
 		for(auto imageCopy : _imageCopies)
 			copyImageCommands(commandBuffer, imageIndex, imageCopy);
+
+		// Copy user interface image
+		copyImageCommands(commandBuffer, imageIndex, (WorkerGui::ImageCopy){
+					.image = _ui->getImage(),
+					.extent = _ui->getImage()->getExtent(),
+					.offset = {0,0}
+					});
 
 		//---------- Change layout to present image ----------//
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -217,11 +239,13 @@ namespace atta
 		}
 
 		_modelViewController->onKey(key, scancode, action, mods);
+		_ui->onKey(key, scancode, action, mods);
 	}
 
 	void WorkerGui::onCursorPosition(double xpos, double ypos)
 	{
 		_modelViewController->onCursorPosition(xpos, ypos);
+		_ui->onCursorPosition(xpos, ypos);
 	}
 
 	void WorkerGui::onMouseButton(int button, int action, int mods)
@@ -234,10 +258,12 @@ namespace atta
 		}
 
 		_modelViewController->onMouseButton(button, action, mods);
+		_ui->onMouseButton(button, action, mods);
 	}
 
 	void WorkerGui::onScroll(double xoffset, double yoffset)
 	{
 		_modelViewController->onScroll(xoffset, yoffset);
+		_ui->onScroll(xoffset, yoffset);
 	}
 }

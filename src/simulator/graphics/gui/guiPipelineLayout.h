@@ -10,21 +10,24 @@
 #include <iostream>
 #include <string.h>
 #include "defines.h"
-#include "simulator/vulkan/device.h"
-#include "simulator/vulkan/descriptorSetLayout.h"
+#include "simulator/graphics/vulkan/device.h"
+#include "simulator/graphics/vulkan/descriptorSetLayout.h"
 
-class GuiPipelineLayout
+namespace atta
 {
-	public:
-		GuiPipelineLayout(std::shared_ptr<Device> device, DescriptorSetLayout* descriptorSetLayout);
-		~GuiPipelineLayout();
+	class GuiPipelineLayout
+	{
+		public:
+			GuiPipelineLayout(std::shared_ptr<vk::Device> device, std::shared_ptr<vk::DescriptorSetLayout> descriptorSetLayout);
+			~GuiPipelineLayout();
 
-		VkPipelineLayout handle() const { return _pipelineLayout; }
+			VkPipelineLayout handle() const { return _pipelineLayout; }
 
-	private:
-		VkPipelineLayout _pipelineLayout;
-		std::shared_ptr<Device> _device;
-		DescriptorSetLayout* _descriptorSetLayout;
-};
+		private:
+			VkPipelineLayout _pipelineLayout;
+			std::shared_ptr<vk::Device> _device;
+			std::shared_ptr<vk::DescriptorSetLayout> _descriptorSetLayout;
+	};
+}
 
 #endif// GUI_PIPELINE_LAYOUT_H

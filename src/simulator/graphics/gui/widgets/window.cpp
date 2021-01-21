@@ -43,7 +43,7 @@ namespace guib
 								.child = new guib::Box(
 								{
 									.color = {.8,.8,.3,1},
-									.radius = {.5, .5, .5, .5},
+									.radius = {1,1,1,1},
 									.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
 								}),
 							});
@@ -64,7 +64,7 @@ namespace guib
 								.child = new guib::Box(
 								{
 									.color = {.8,.3,.3,1},
-									.radius = {.5, .5, .5, .5},
+									.radius = {1,1,1,1},
 									.size  = {10,10, guib::UNIT_PIXEL, guib::UNIT_PIXEL}
 								}),
 							});
