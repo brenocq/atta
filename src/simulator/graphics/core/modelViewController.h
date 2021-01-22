@@ -21,7 +21,7 @@ namespace atta
 			ModelViewController();
 			~ModelViewController();
 
-			void reset(const mat4& modelView);
+			void reset(const mat4& viewMatrix);
 			mat4 getModelView() const;
 
 			bool onKey(int key, int scancode, int action, int mods);

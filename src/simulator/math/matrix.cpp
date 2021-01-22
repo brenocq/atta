@@ -28,6 +28,29 @@ namespace atta
 		data[0] = data[5] = data[10] = data[15] = diag;
 	}
 
+	mat4::mat4(float m00, float m01, float m02, float m03,
+		float m10, float m11, float m12, float m13,
+		float m20, float m21, float m22, float m23,
+		float m30, float m31, float m32, float m33)
+	{
+		data[0]  = m00;
+		data[1]  = m01;
+		data[2]  = m02;
+		data[3]  = m03;
+		data[4]  = m10;
+		data[5]  = m11;
+		data[6]  = m12;
+		data[7]  = m13;
+		data[8]  = m20;
+		data[9]  = m21;
+		data[10] = m22;
+		data[11] = m23;
+		data[12] = m30;
+		data[13] = m31;
+		data[14] = m32;
+		data[15] = m33;
+	}
+
 	// Create from column vectors
 	mat4::mat4(const vec3 &v0, const vec3 &v1, const vec3 &v2, const vec3 &v3)
 	{
@@ -43,11 +66,30 @@ namespace atta
 		data[9] = v1.z;
 		data[10] = v2.z;
 		data[11] = v3.z;
+		data[12] = 0.0f;
+		data[13] = 0.0f;
+		data[14] = 0.0f;
+		data[15] = 1.0f;
+	}
 
-		data[12] = 0;
-		data[13] = 0;
-		data[14] = 0;
-		data[15] = 1;
+	mat4::mat4(const vec4 &v0, const vec4 &v1, const vec4 &v2, const vec4 &v3)
+	{
+		data[0] = v0.x;
+		data[1] = v1.x;
+		data[2] = v2.x;
+		data[3] = v3.x;
+		data[4] = v0.y;
+		data[5] = v1.y;
+		data[6] = v2.y;
+		data[7] = v3.y;
+		data[8] = v0.z;
+		data[9] = v1.z;
+		data[10] = v2.z;
+		data[11] = v3.z;
+		data[12] = v0.w;
+		data[13] = v1.w;
+		data[14] = v2.w;
+		data[15] = v3.w;
 	}
 
 	mat4::mat4(const mat3 &mat)
@@ -119,24 +161,25 @@ namespace atta
 	mat4 mat4::operator*(const mat4 &o) const
 	{
 		mat4 result;
-		result.data[0] = (o.data[0]*data[0]) + (o.data[4]*data[1]) + (o.data[8]*data[2]);
-		result.data[4] = (o.data[0]*data[4]) + (o.data[4]*data[5]) + (o.data[8]*data[6]);
-		result.data[8] = (o.data[0]*data[8]) + (o.data[4]*data[9]) + (o.data[8]*data[10]);
-		//result.data[12] = (o.data[0]*data[12]) + (o.data[4]*data[13]) + (o.data[8]*data[14]);
+		result.data[0] = (o.data[0]*data[0]) + (o.data[4]*data[1]) + (o.data[8]*data[2]) + (o.data[12]*data[3]);
+		result.data[4] = (o.data[0]*data[4]) + (o.data[4]*data[5]) + (o.data[8]*data[6]) + (o.data[12]*data[7]);
+		result.data[8] = (o.data[0]*data[8]) + (o.data[4]*data[9]) + (o.data[8]*data[10])+ (o.data[12]*data[11]);
+		result.data[12] = (o.data[0]*data[12]) + (o.data[4]*data[13]) + (o.data[8]*data[14])+ (o.data[12]*data[15]);
 
-		result.data[1] = (o.data[1]*data[0]) + (o.data[5]*data[1]) + (o.data[9]*data[2]);
-		result.data[5] = (o.data[1]*data[4]) + (o.data[5]*data[5]) + (o.data[9]*data[6]);
-		result.data[9] = (o.data[1]*data[8]) + (o.data[5]*data[9]) + (o.data[9]*data[10]);
-		//result.data[13] = (o.data[1]*data[12]) + (o.data[5]*data[13]) + (o.data[9]*data[14]);
+		result.data[1] = (o.data[1]*data[0]) + (o.data[5]*data[1]) + (o.data[9]*data[2])+ (o.data[13]*data[3]);
+		result.data[5] = (o.data[1]*data[4]) + (o.data[5]*data[5]) + (o.data[9]*data[6])+ (o.data[13]*data[7]);
+		result.data[9] = (o.data[1]*data[8]) + (o.data[5]*data[9]) + (o.data[9]*data[10])+ (o.data[13]*data[11]);
+		result.data[13] = (o.data[1]*data[12]) + (o.data[5]*data[13]) + (o.data[9]*data[14])+ (o.data[13]*data[15]);
 
-		result.data[2] = (o.data[2]*data[0]) + (o.data[6]*data[1]) + (o.data[10]*data[2]);
-		result.data[6] = (o.data[2]*data[4]) + (o.data[6]*data[5]) + (o.data[10]*data[6]);
-		result.data[10] = (o.data[2]*data[8]) + (o.data[6]*data[9]) + (o.data[10]*data[10]);
-		//result.data[14] = (o.data[2]*data[12]) + (o.data[6]*data[13]) + (o.data[10]*data[14]);
+		result.data[2] = (o.data[2]*data[0]) + (o.data[6]*data[1]) + (o.data[10]*data[2])+ (o.data[14]*data[3]);
+		result.data[6] = (o.data[2]*data[4]) + (o.data[6]*data[5]) + (o.data[10]*data[6])+ (o.data[14]*data[7]);
+		result.data[10] = (o.data[2]*data[8]) + (o.data[6]*data[9]) + (o.data[10]*data[10])+ (o.data[14]*data[11]);
+		result.data[14] = (o.data[2]*data[12]) + (o.data[6]*data[13]) + (o.data[10]*data[14])+ (o.data[14]*data[15]);
 
-		result.data[3] = (o.data[3]*data[0]) + (o.data[7]*data[1]) + (o.data[11]*data[2]) + data[3];
-		result.data[7] = (o.data[3]*data[4]) + (o.data[7]*data[5]) + (o.data[11]*data[6]) + data[7];
-		result.data[11] = (o.data[3]*data[8]) + (o.data[7]*data[9]) + (o.data[11]*data[10]) + data[11];
+		result.data[3] = (o.data[3]*data[0]) + (o.data[7]*data[1]) + (o.data[11]*data[2]) + (o.data[15]*data[3]);
+		result.data[7] = (o.data[3]*data[4]) + (o.data[7]*data[5]) + (o.data[11]*data[6]) + (o.data[15]*data[7]);
+		result.data[11] = (o.data[3]*data[8]) + (o.data[7]*data[9]) + (o.data[11]*data[10]) + (o.data[15]*data[11]);
+		result.data[15] = (o.data[3]*data[12]) + (o.data[7]*data[13]) + (o.data[11]*data[14]) + (o.data[15]*data[15]);
 
 		return result;
 	}
@@ -163,6 +206,11 @@ namespace atta
 		result.data[9] = data[9]+o.data[9];
 		result.data[10] = data[10]+o.data[10];
 		result.data[11] = data[11]+o.data[11];
+
+		result.data[12] = data[12]+o.data[12];
+		result.data[13] = data[13]+o.data[13];
+		result.data[14] = data[14]+o.data[14];
+		result.data[15] = data[15]+o.data[15];
 
 		return result;
 	}
@@ -220,13 +268,14 @@ namespace atta
 	// Matrix translated by the vector
 	mat4 mat4::translate(const vec3 &vector) const
 	{
-		return (*this) + mat4(vec3(), vec3(), vec3(), vector);
+		return (*this) + mat4(vec4(), vec4(), vec4(), vec4(vector,0));
 	}
 
 	// Matrix rotated by the vector TODO
-	mat4 mat4::rotate(float angle, const vec3 &vector) const
+	mat4 mat4::rotate(const vec3 &w, float angle) const
 	{
-		return (*this);
+		mat4 rot = rotationFromAxisAngle(w, angle);
+		return rot*(*this);
 	}
 
 	// Return the inverse matrix
@@ -373,134 +422,169 @@ namespace atta
 	}
 
 
-    float mat4::getDeterminant() const
+    float mat4::determinant() const
 	{
-		return -data[8]*data[5]*data[2]+
-			data[4]*data[9]*data[2]+
-			data[8]*data[1]*data[6]-
-			data[0]*data[9]*data[6]-
-			data[4]*data[1]*data[10]+
-			data[0]*data[5]*data[10];
+		return 
+		 data[3] * data[6] * data[9] *  data[12] - data[2] * data[7] * data[9] * data[12] -
+         data[3] * data[5] * data[10] * data[12] + data[1] * data[7] * data[10] * data[12] +
+         data[2] * data[5] * data[11] * data[12] - data[1] * data[6] * data[11] * data[12] -
+         data[3] * data[6] * data[8]  * data[13] + data[2] * data[7] * data[8]  * data[13] +
+         data[3] * data[4] * data[10] * data[13] - data[0] * data[7] * data[10] * data[13] -
+         data[2] * data[4] * data[11] * data[13] + data[0] * data[6] * data[11] * data[13] +
+         data[3] * data[5] * data[8]  * data[14] - data[1] * data[7] * data[8]  * data[14] -
+         data[3] * data[4] * data[9]  * data[14] + data[0] * data[7] * data[9]  * data[14] +
+         data[1] * data[4] * data[11] * data[14] - data[0] * data[5] * data[11] * data[14] -
+         data[2] * data[5] * data[8]  * data[15] + data[1] * data[6] * data[8]  * data[15] +
+         data[2] * data[4] * data[9]  * data[15] - data[0] * data[6] * data[9]  * data[15] -
+         data[1] * data[4] * data[10] * data[15] + data[0] * data[5] * data[10] * data[15];
 	}
 
     void mat4::setInverse(const mat4 &m)
 	{
 		// Make sure the determinant is non-zero
-		float det = getDeterminant();
-		if (det == 0) return;
-		det = 1.0f/det;
+		float det = m.determinant();
+		if (det == 0)
+			return;
+		float idet = 1.0f/det;
 
  		data[0] = (m.data[5]  * m.data[10] * m.data[15] - 
 				 m.data[5]  * m.data[11] * m.data[14] - 
 				 m.data[9]  * m.data[6]  * m.data[15] + 
 				 m.data[9]  * m.data[7]  * m.data[14] +
 				 m.data[13] * m.data[6]  * m.data[11] - 
-				 m.data[13] * m.data[7]  * m.data[10])/det;
+				 m.data[13] * m.data[7]  * m.data[10])*idet;
 
 		data[4] = (-m.data[4]  * m.data[10] * m.data[15] +
               m.data[4]  * m.data[11] * m.data[14] +
               m.data[8]  * m.data[6]  * m.data[15] -
               m.data[8]  * m.data[7]  * m.data[14] -
               m.data[12] * m.data[6]  * m.data[11] +
-              m.data[12] * m.data[7]  * m.data[10])/det;
+              m.data[12] * m.data[7]  * m.data[10])*idet;
 
 		data[8] = (m.data[4]  * m.data[9] * m.data[15] -
 				 m.data[4]  * m.data[11] * m.data[13] -
 				 m.data[8]  * m.data[5] * m.data[15] +
 				 m.data[8]  * m.data[7] * m.data[13] +
 				 m.data[12] * m.data[5] * m.data[11] -
-				 m.data[12] * m.data[7] * m.data[9])/det;
+				 m.data[12] * m.data[7] * m.data[9])*idet;
 
 		data[12] = (-m.data[4]  * m.data[9] * m.data[14] +
 				   m.data[4]  * m.data[10] * m.data[13] +
 				   m.data[8]  * m.data[5] * m.data[14] -
 				   m.data[8]  * m.data[6] * m.data[13] -
 				   m.data[12] * m.data[5] * m.data[10] +
-				   m.data[12] * m.data[6] * m.data[9])/det;
+				   m.data[12] * m.data[6] * m.data[9])*idet;
 
 		data[1] = (-m.data[1]  * m.data[10] * m.data[15] +
 				  m.data[1]  * m.data[11] * m.data[14] +
 				  m.data[9]  * m.data[2] * m.data[15] -
 				  m.data[9]  * m.data[3] * m.data[14] -
 				  m.data[13] * m.data[2] * m.data[11] +
-				  m.data[13] * m.data[3] * m.data[10])/det;
+				  m.data[13] * m.data[3] * m.data[10])*idet;
 
 		data[5] = (m.data[0]  * m.data[10] * m.data[15] -
 				 m.data[0]  * m.data[11] * m.data[14] -
 				 m.data[8]  * m.data[2] * m.data[15] +
 				 m.data[8]  * m.data[3] * m.data[14] +
 				 m.data[12] * m.data[2] * m.data[11] -
-				 m.data[12] * m.data[3] * m.data[10])/det;
+				 m.data[12] * m.data[3] * m.data[10])*idet;
 
 		data[9] = (-m.data[0]  * m.data[9] * m.data[15] +
 				  m.data[0]  * m.data[11] * m.data[13] +
 				  m.data[8]  * m.data[1] * m.data[15] -
 				  m.data[8]  * m.data[3] * m.data[13] -
 				  m.data[12] * m.data[1] * m.data[11] +
-				  m.data[12] * m.data[3] * m.data[9])/det;
+				  m.data[12] * m.data[3] * m.data[9])*idet;
 
 		data[13] = (m.data[0]  * m.data[9] * m.data[14] -
 				  m.data[0]  * m.data[10] * m.data[13] -
 				  m.data[8]  * m.data[1] * m.data[14] +
 				  m.data[8]  * m.data[2] * m.data[13] +
 				  m.data[12] * m.data[1] * m.data[10] -
-				  m.data[12] * m.data[2] * m.data[9])/det;
+				  m.data[12] * m.data[2] * m.data[9])*idet;
 
 		data[2] = (m.data[1]  * m.data[6] * m.data[15] -
 				 m.data[1]  * m.data[7] * m.data[14] -
 				 m.data[5]  * m.data[2] * m.data[15] +
 				 m.data[5]  * m.data[3] * m.data[14] +
 				 m.data[13] * m.data[2] * m.data[7] -
-				 m.data[13] * m.data[3] * m.data[6])/det;
+				 m.data[13] * m.data[3] * m.data[6])*idet;
 
 		data[6] = (-m.data[0]  * m.data[6] * m.data[15] +
 				  m.data[0]  * m.data[7] * m.data[14] +
 				  m.data[4]  * m.data[2] * m.data[15] -
 				  m.data[4]  * m.data[3] * m.data[14] -
 				  m.data[12] * m.data[2] * m.data[7] +
-				  m.data[12] * m.data[3] * m.data[6])/det;
+				  m.data[12] * m.data[3] * m.data[6])*idet;
 
 		data[10] = (m.data[0]  * m.data[5] * m.data[15] -
 				  m.data[0]  * m.data[7] * m.data[13] -
 				  m.data[4]  * m.data[1] * m.data[15] +
 				  m.data[4]  * m.data[3] * m.data[13] +
 				  m.data[12] * m.data[1] * m.data[7] -
-				  m.data[12] * m.data[3] * m.data[5])/det;
+				  m.data[12] * m.data[3] * m.data[5])*idet;
 
 		data[14] = (-m.data[0]  * m.data[5] * m.data[14] +
 				   m.data[0]  * m.data[6] * m.data[13] +
 				   m.data[4]  * m.data[1] * m.data[14] -
 				   m.data[4]  * m.data[2] * m.data[13] -
 				   m.data[12] * m.data[1] * m.data[6] +
-				   m.data[12] * m.data[2] * m.data[5])/det;
+				   m.data[12] * m.data[2] * m.data[5])*idet;
 
 		data[3] = (-m.data[1] * m.data[6] * m.data[11] +
 				  m.data[1] * m.data[7] * m.data[10] +
 				  m.data[5] * m.data[2] * m.data[11] -
 				  m.data[5] * m.data[3] * m.data[10] -
 				  m.data[9] * m.data[2] * m.data[7] +
-				  m.data[9] * m.data[3] * m.data[6])/det;
+				  m.data[9] * m.data[3] * m.data[6])*idet;
 
 		data[7] = (m.data[0] * m.data[6] * m.data[11] -
 				 m.data[0] * m.data[7] * m.data[10] -
 				 m.data[4] * m.data[2] * m.data[11] +
 				 m.data[4] * m.data[3] * m.data[10] +
 				 m.data[8] * m.data[2] * m.data[7] -
-				 m.data[8] * m.data[3] * m.data[6])/det;
+				 m.data[8] * m.data[3] * m.data[6])*idet;
 
 		data[11] = (-m.data[0] * m.data[5] * m.data[11] +
 				   m.data[0] * m.data[7] * m.data[9] +
 				   m.data[4] * m.data[1] * m.data[11] -
 				   m.data[4] * m.data[3] * m.data[9] -
 				   m.data[8] * m.data[1] * m.data[7] +
-				   m.data[8] * m.data[3] * m.data[5])/det;
+				   m.data[8] * m.data[3] * m.data[5])*idet;
 
 		data[15] = (m.data[0] * m.data[5] * m.data[10] -
 				  m.data[0] * m.data[6] * m.data[9] -
 				  m.data[4] * m.data[1] * m.data[10] +
 				  m.data[4] * m.data[2] * m.data[9] +
 				  m.data[8] * m.data[1] * m.data[6] -
-				  m.data[8] * m.data[2] * m.data[5])/det;
+				  m.data[8] * m.data[2] * m.data[5])*idet;
+	}
+
+    vec3 mat4::rollPitchYaw()
+	{
+		// TODO wrong results when roll=yaw=0, pitch 2nd or 3rd quadrant
+		float roll = atan2(-data[6], data[10]);
+		float pitch = atan2(data[2], sqrt(data[6]*data[6] + data[10]*data[10]));
+		float yaw = atan2(-data[1], data[0]);
+
+		// Must be a rotation matrix to work properly
+		return vec3(roll,pitch,yaw);
+	}
+
+	std::string mat4::toString() const
+	{
+		std::string res = "\n[[" + std::to_string(data[0]) + ", " + std::to_string(data[1]) + ", "
+									+ std::to_string(data[2]) + ", " + std::to_string(data[3]) + "],";
+
+		res += "\n [" + std::to_string(data[4]) + ", " + std::to_string(data[5]) + ", "
+									+ std::to_string(data[6]) + ", " + std::to_string(data[7]) + "],";
+
+		res += "\n [" + std::to_string(data[8]) + ", " + std::to_string(data[9]) + ", "
+									+ std::to_string(data[10]) + ", " + std::to_string(data[11]) + "],";
+		res += "\n [" + std::to_string(data[12]) + ", " + std::to_string(data[13]) + ", "
+
+									+ std::to_string(data[14]) + ", " + std::to_string(data[15]) + "]]\n";
+		return res;
 	}
 
 	//------------------------------------------------------------//
@@ -700,30 +784,17 @@ namespace atta
 
 	void mat3::operator*=(const mat3 &o)
 	{
-		float t1;
-		float t2;
-		float t3;
+		data[0] = data[0]*o.data[0] + data[1]*o.data[3] + data[2]*o.data[6];
+		data[1] = data[0]*o.data[1] + data[1]*o.data[4] + data[2]*o.data[7];
+		data[2] = data[0]*o.data[2] + data[1]*o.data[5] + data[2]*o.data[8];
 
-		t1 = data[0]*o.data[0] + data[1]*o.data[3] + data[2]*o.data[6];
-		t2 = data[0]*o.data[1] + data[1]*o.data[4] + data[2]*o.data[7];
-		t3 = data[0]*o.data[2] + data[1]*o.data[5] + data[2]*o.data[8];
-		data[0] = t1;
-		data[1] = t2;
-		data[2] = t3;
+		data[3] = data[3]*o.data[0] + data[4]*o.data[3] + data[5]*o.data[6];
+		data[4] = data[3]*o.data[1] + data[4]*o.data[4] + data[5]*o.data[7];
+		data[5] = data[3]*o.data[2] + data[4]*o.data[5] + data[5]*o.data[8];
 
-		t1 = data[3]*o.data[0] + data[4]*o.data[3] + data[5]*o.data[6];
-		t2 = data[3]*o.data[1] + data[4]*o.data[4] + data[5]*o.data[7];
-		t3 = data[3]*o.data[2] + data[4]*o.data[5] + data[5]*o.data[8];
-		data[3] = t1;
-		data[4] = t2;
-		data[5] = t3;
-
-		t1 = data[6]*o.data[0] + data[7]*o.data[3] + data[8]*o.data[6];
-		t2 = data[6]*o.data[1] + data[7]*o.data[4] + data[8]*o.data[7];
-		t3 = data[6]*o.data[2] + data[7]*o.data[5] + data[8]*o.data[8];
-		data[6] = t1;
-		data[7] = t2;
-		data[8] = t3;
+		data[6] = data[6]*o.data[0] + data[7]*o.data[3] + data[8]*o.data[6];
+		data[7] = data[6]*o.data[1] + data[7]*o.data[4] + data[8]*o.data[7];
+		data[8] = data[6]*o.data[2] + data[7]*o.data[5] + data[8]*o.data[8];
 	}
 
 	// Multiply matrix with scalar
@@ -732,6 +803,25 @@ namespace atta
 		data[0] *= scalar; data[1] *= scalar; data[2] *= scalar;
 		data[3] *= scalar; data[4] *= scalar; data[5] *= scalar;
 		data[6] *= scalar; data[7] *= scalar; data[8] *= scalar;
+	}
+
+	// Component-wise addition
+	mat3 mat3::operator+(const mat3 &o) const
+	{
+		mat3 result;
+		result.data[0] = data[0]+o.data[0];
+		result.data[1] = data[1]+o.data[1];
+		result.data[2] = data[2]+o.data[2];
+
+		result.data[3] = data[3]+o.data[3];
+		result.data[4] = data[4]+o.data[4];
+		result.data[5] = data[5]+o.data[5];
+
+		result.data[6] = data[6]+o.data[6];
+		result.data[7] = data[7]+o.data[7];
+		result.data[8] = data[8]+o.data[8];
+
+		return result;
 	}
 
 	// Component-wise addition
@@ -790,4 +880,11 @@ namespace atta
 			0.3f*mass*(squares.x + squares.y));
 	}
 
+	std::string mat3::toString() const
+	{
+		std::string res = "\n[[" + std::to_string(data[0]) + ", " + std::to_string(data[1]) + ", " + std::to_string(data[2]) + "],";
+		res += "\n [" + std::to_string(data[3]) + ", " + std::to_string(data[4]) + ", " + std::to_string(data[5]) + "],";
+		res += "\n [" + std::to_string(data[6]) + ", " + std::to_string(data[7]) + ", " + std::to_string(data[8]) + "]]";
+		return res;
+	}
 }

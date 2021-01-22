@@ -83,6 +83,8 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 
 void main() 
 {
+    outColor = vec4(1,0,0,1);
+	return;
 	Material material = materials[inMaterialIndex];
 
 	// Light

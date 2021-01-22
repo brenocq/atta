@@ -35,12 +35,14 @@ namespace atta
 			//---------- Getters ----------//
 			std::shared_ptr<vk::Image> getImage() const { return _image; }
 			std::shared_ptr<vk::ImageView> getImageView() const { return _imageView; }
+			mat4 getViewMatrix() const { return _viewMatrix; }
 
 		protected:
 			void createOutputImage();
 
 			std::shared_ptr<vk::VulkanCore> _vkCore;
 			VkExtent2D _extent;
+			mat4 _viewMatrix;
 
 			std::shared_ptr<vk::Image> _image;
 			std::shared_ptr<vk::ImageView> _imageView;

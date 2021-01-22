@@ -228,6 +228,11 @@ namespace atta
 
 			// Glm conversion
 			operator glm::vec4() const { return glm::vec4(x,y,z,w); }
+
+			std::string toString() const
+			{
+				return "vec4{"+std::to_string(x)+", "+std::to_string(y)+", "+std::to_string(z)+", "+std::to_string(w)+"}";
+			}
 	};
 
 	template <typename T>
@@ -463,6 +468,11 @@ namespace atta
 
 			// Glm conversion
 			operator glm::vec3() const { return glm::vec3(x,y,z); }
+
+			std::string toString() const
+			{
+				return "vec3{"+std::to_string(x)+", "+std::to_string(y)+", "+std::to_string(z)+"}";
+			}
 	};
 
 	template <typename T>
@@ -694,6 +704,11 @@ namespace atta
 
 			// Glm conversion
 			operator glm::vec2() const { return glm::vec2(x,y); }
+
+			std::string toString() const
+			{
+				return "vec2{"+std::to_string(x)+", "+std::to_string(y)+"}";
+			}
 	};
 
 	typedef vector4<float> vec4;

@@ -261,6 +261,8 @@ namespace atta::vk
 			const uint32_t vertexOffset = model->getMesh()->getVerticesOffset();
 			const uint32_t indexOffset = model->getMesh()->getIndicesOffset();
 
+			Log::debug("GraphicsPipeline", "ind $0 - vert $1 - indo $2", indexCount, vertexOffset, indexOffset);
+
 			vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
 		}
 	}

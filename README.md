@@ -53,6 +53,7 @@ These values are unreliable and come from what I think is going on in the code (
 - [Game Physics Engine Development](https://www.amazon.com/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
 - [Real-Time Collision Detection](https://www.amazon.com/Real-Time-Collision-Detection-Interactive-Technology/dp/1558607323)
 - [Physically Based Rendering](http://www.pbr-book.org/)
+- [Computer Graphics Principles and Practice](http://cgpp.net/about.xml)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.

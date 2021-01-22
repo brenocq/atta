@@ -20,9 +20,7 @@ namespace atta::vk
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
 		ubo.projMatInverse = atta::inverse(ubo.projMat);
 
-		const auto data = mapMemory(0, sizeof(UniformBufferObject));
-		std::memcpy(data, &ubo, sizeof(ubo));
-		unmapMemory();
+		setValue(ubo);
 	}
 
 	UniformBuffer::~UniformBuffer()
@@ -31,6 +29,7 @@ namespace atta::vk
 
 	void UniformBuffer::setValue(UniformBufferObject ubo)
 	{
+		_ubo = ubo;
 		const auto data = mapMemory(0, sizeof(UniformBufferObject));
 		std::memcpy(data, &ubo, sizeof(ubo));
 		unmapMemory();

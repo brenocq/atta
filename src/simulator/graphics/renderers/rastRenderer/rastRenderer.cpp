@@ -17,6 +17,8 @@ namespace atta
 		//---------- Create uniform buffers ----------//
 		_uniformBuffer = std::make_shared<vk::UniformBuffer>(_vkCore->getDevice());
 
+		_viewMatrix = info.viewMat;
+
 		vk::UniformBufferObject ubo;
 		ubo.viewMat = info.viewMat;
 		ubo.projMat = info.projMat;
@@ -25,7 +27,7 @@ namespace atta
 		ubo.projMatInverse = atta::inverse(ubo.projMat);
 		_uniformBuffer->setValue(ubo);
 
-		Log::debug("GraphicsPipeline", "view: $0proj: $1", ubo.viewMat, ubo.projMat);
+		Log::debug("RastRenderer", "view: $0proj: $1", ubo.viewMat.toString(), ubo.projMat.toString());
 
 
 		//glm::mat4 view = glm::lookAt(glm::vec3(2,2,0), glm::vec3(0,0,0), glm::vec3(0,1,0));
@@ -103,19 +105,19 @@ namespace atta
 		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		{
 			// Skybox pipeline
-			_skyboxPipeline->render(commandBuffer);
+			//_skyboxPipeline->render(commandBuffer);
 
 			// Graphics pipeline
 			_graphicsPipeline->render(commandBuffer);
 
 			// Line pipeline
-			_linePipeline->render(commandBuffer);
+			//_linePipeline->render(commandBuffer);
 
 			// Mask pipeline
-			_maskPipeline->render(commandBuffer);
+			//_maskPipeline->render(commandBuffer);
 
 			// Outline pipeline
-			_outlinePipeline->render(commandBuffer);
+			//_outlinePipeline->render(commandBuffer);
 		}
 		vkCmdEndRenderPass(commandBuffer);
 	}
@@ -125,6 +127,10 @@ namespace atta
 		vk::UniformBufferObject ubo = _uniformBuffer->getValue();
 		ubo.viewMat = viewMatrix;
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
+		Log::debug("RastRenderer", "View: $0", ubo.viewMat.toString());
+		Log::debug("RastRenderer", "ViewInverse: $0", ubo.viewMatInverse.toString());
+		Log::debug("RastRenderer", "Proj: $0", ubo.projMat.toString());
+		Log::debug("RastRenderer", "ProjInverse: $0", ubo.projMatInverse.toString());
 		_uniformBuffer->setValue(ubo);
 	}
 }
