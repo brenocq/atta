@@ -17,40 +17,38 @@ void main()
 {
 	if(objectInfo.isLetter == 0)
 	{
-		// Is box
-		vec2 objPos = objectInfo.position*2-vec2(ubo.ratio,1.0);// [0,1][0,1] -> [-1,1][-1,1]
-		vec2 objSize = objectInfo.size*2;// New coord size
-		vec2 fragPosRatio = vec2(inFragPos.x*ubo.ratio, inFragPos.y);
-		vec2 objectPosRatio = vec2(objPos.x*ubo.ratio, objPos.y);
-		vec2 objectSizeRatio = vec2(objSize.x*ubo.ratio, objSize.y);
-		vec2 topLeft = objectPosRatio    + vec2(objectInfo.radius*ubo.ratio, objectInfo.radius);
-		vec2 topRight = objectPosRatio;//   + vec2(ubo.ratio*objectSizeRatio/2 - objectInfo.radius*ubo.ratio, objectInfo.radius);
-		vec2 bottomLeft = objectPosRatio + vec2(0,1)*objectSizeRatio		   + vec2(objectInfo.radius*ubo.ratio, -objectInfo.radius);
-		vec2 bottomRight = objectPosRatio+ vec2(1*ubo.ratio,1)*objectSizeRatio + vec2(-objectInfo.radius*ubo.ratio, -objectInfo.radius);
+		// Convert coordinates to [ratio, 1]
+		vec2 fragPos = ((inFragPos+vec2(1,1))/2.0)*vec2(ubo.ratio,1.0);
+		
+		vec2 objPos = objectInfo.position*vec2(ubo.ratio,1.0);// [0,1][0,1] -> [0,ratio][0,1]
+		vec2 objHalfSize = objectInfo.size*vec2(ubo.ratio,1.0)*0.5;// New coord size
+		vec2 objPosCenter = objPos+objHalfSize;
+
+		// Radius centers
+		vec2 topLeft 	 = 	objPosCenter + vec2(-objHalfSize.x, -objHalfSize.y)	+ vec2(objectInfo.radius,objectInfo.radius);
+		vec2 topRight 	 = 	objPosCenter + vec2(objHalfSize.x, -objHalfSize.y)	+ vec2(-objectInfo.radius,objectInfo.radius);
+		vec2 bottomLeft  = 	objPosCenter + vec2(-objHalfSize.x, objHalfSize.y)	+ vec2(objectInfo.radius,-objectInfo.radius);
+		vec2 bottomRight = 	objPosCenter + vec2(objHalfSize.x, objHalfSize.y)	+ vec2(-objectInfo.radius,-objectInfo.radius);
 
 		// Check distance to create round borders
-		if(inFragPos.x > topRight.x && inFragPos.y < topRight.y)
+		if(fragPos.x > topRight.x && fragPos.y < topRight.y)
 		{
-			bool inside = length(inFragPos-topRight)<objectInfo.radius;
-			inside = false;
+			bool inside = length(fragPos-topRight)<objectInfo.radius;
 			outColor = vec4(inFragColor.xyz, inside?inFragColor.w:0.0f);
 		}
-		else if(inFragPos.x > bottomRight.x && inFragPos.y > bottomRight.y)
+		else if(fragPos.x > bottomRight.x && fragPos.y > bottomRight.y)
 		{
-			bool inside = length(inFragPos-bottomRight)<objectInfo.radius;
-			inside = true;
+			bool inside = length(fragPos-bottomRight)<objectInfo.radius;
 			outColor = vec4(inFragColor.xyz, inside?inFragColor.w:0.0f);
 		}
-		else if(inFragPos.x < bottomLeft.x && inFragPos.y > bottomLeft.y)
+		else if(fragPos.x < bottomLeft.x && fragPos.y > bottomLeft.y)
 		{
-			bool inside = length(inFragPos-bottomLeft)<objectInfo.radius;
-			inside = true;
+			bool inside = length(fragPos-bottomLeft)<objectInfo.radius;
 			outColor = vec4(inFragColor.xyz, inside?inFragColor.w:0.0f);
 		}
-		else if(inFragPos.x < topLeft.x && inFragPos.y < topLeft.y)
+		else if(fragPos.x < topLeft.x && fragPos.y < topLeft.y)
 		{
-			bool inside = length(inFragPos-topLeft)<objectInfo.radius;
-			inside = true;
+			bool inside = length(fragPos-topLeft)<objectInfo.radius;
 			outColor = vec4(inFragColor.xyz, inside?inFragColor.w:0.0f);
 		}
 		else
