@@ -35,8 +35,7 @@ namespace guib
 		float minSize = std::min(_size.height, _size.width);
 		objectInfo.radius = _radius.topLeft*minSize/2.0f;
 
-		//if(_radius.topLeft>0)
-		//	Log::debug("Box", "Render [w]$0[] with [w]$1 []--[w] $2 and radius:$3", _type, _size.toString(), _offset.toString(), objectInfo.radius);
+		//Log::debug("Box", "Render [w]$0[] with [w]$1 []--[w] $2 and radius:$3", _type, _size.toString(), _offset.toString(), objectInfo.radius);
 
 		vkCmdPushConstants(
 				state::guiRender->getCommandBuffer(),
