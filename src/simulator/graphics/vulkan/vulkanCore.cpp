@@ -86,6 +86,7 @@ namespace atta::vk
 				size, 
 				VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, 
 				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
 		// Create staging buffer (host memory)
 		std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(_device, content.data(), size);
 

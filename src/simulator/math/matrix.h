@@ -11,6 +11,7 @@
 #include "point.h"
 #include "quaternion.h"
 #include "glm.h"
+#include "simulator/helpers/log.h"
 
 namespace atta
 {
@@ -26,13 +27,18 @@ namespace atta
 
         mat4();
         mat4(float diag);
-        mat4(const vec3 &v0, const vec3 &v1, const vec3 &v2, const vec3 &v3);
+        mat4(float m00, float m01, float m02, float m03,
+			float m10, float m11, float m12, float m13,
+			float m20, float m21, float m22, float m23,
+			float m30, float m31, float m32, float m33);
+        mat4(const vec3 &v0, const vec3 &v1, const vec3 &v2, const vec3 &v3=vec3(0,0,0));
+        mat4(const vec4 &v0, const vec4 &v1, const vec4 &v2, const vec4 &v3);
         mat4(const mat3 &mat);
 
 		// Create from base vector and global position
 		static mat4 baseAndPos(const vec3 &X, const vec3 &Y, const vec3 &Z, const vec3 &pos);
 
-        float getDeterminant() const;
+        float determinant() const;
         void setDiagonal(float a, float b, float c);
         void setInverse(const mat4 &m);
 		vec4 getCol(unsigned i) const;
@@ -56,7 +62,7 @@ namespace atta
 
         vec3 transform(const vec3 &vector) const;
         mat4 translate(const vec3 &vector) const;
-		mat4 rotate(float angle, const vec3 &vector) const;
+		mat4 rotate(const vec3 &w, float angle) const;
 		mat4 operator*(const float v) const;
 
         mat4 inverse() const;
@@ -71,12 +77,21 @@ namespace atta
         void setOrientationAndPos(const quat &q, const vec3 &pos);
         void setPosOriScale(const vec3 &pos, const quat &q, const vec3 &scale);
 
+        vec3 rollPitchYaw();
+
 		// Glm conversion
 		operator glm::mat4() const
 		{
 			return glm::make_mat4(data);
 		}
+
+		std::string toString() const;
     };
+
+	inline mat4 operator*(const float value, mat4 const &mat)
+	{
+		return mat*value;
+	}
 
 	// Return the inverse matrix
 	inline mat4 inverse(mat4 mat)
@@ -118,6 +133,16 @@ namespace atta
 		res.data[15] = 0;
 
 		return res;
+	}
+
+	// Calculate rotation matrix from euler angles
+	inline mat4 rotationFromEuler(float R, float P, float Y)
+	{
+		// Rx(Roll)*Ry(Pitch)*Rz(Yaw)
+		return mat4(cos(P)*cos(Y), 							-cos(P)*sin(Y),							sin(P),			0,
+					sin(R)*sin(P)*cos(Y)+cos(R)*sin(Y),		-sin(R)*sin(P)*sin(Y)+cos(R)*cos(Y),	-sin(R)*cos(P),	0,
+					-cos(R)*sin(P)*cos(Y)+sin(R)*sin(Y),	cos(R)*sin(P)*sin(Y)+sin(R)*cos(Y),		cos(R)*cos(P),	0,
+					0,										0,										0,				1);
 	}
 
 	//------------------------------------------------------------//
@@ -186,6 +211,9 @@ namespace atta
         void operator*=(const float scalar);
 
 		// Component-wise addition
+        mat3 operator+(const mat3 &o) const;
+
+		// Component-wise addition
         void operator+=(const mat3 &o);
 
 		// Set the matrix to be the rotation matrix to the given quaternion
@@ -204,7 +232,27 @@ namespace atta
 		// TODO calculate for each shape
         void setBlockInertiaTensor(const vec3 &halfSizes, float mass);
 
+		std::string toString() const;
     };
+
+	inline mat3 operator*(const float value, mat3 const &mat)
+	{
+		return mat*value;
+	}
+
+	//------------------------------------------------------------//
+	//-------------------------- Inline --------------------------//
+	//------------------------------------------------------------//
+
+
+	// Calculate rotation matrix from axis and angle
+	inline mat4 rotationFromAxisAngle(const vec3 &w, float angle)
+	{
+		// Rodrigues' formula
+		mat3 Jw = mat3(vec3(0, w.z, -w.y), vec3(-w.z, 0, w.x), vec3(w.y, -w.x, 0));
+
+		return mat4(mat3(1.0f) + sin(angle)*Jw + (1-cos(angle))*(Jw*Jw));
+	}
 
 }
 #endif// ATTA_MATRIX_H

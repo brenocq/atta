@@ -22,12 +22,13 @@ namespace atta
 
 	}
 
-	void ModelViewController::reset(const mat4& modelView)
+	void ModelViewController::reset(const mat4& viewMatrix)
 	{
-		const mat4 inverse = modelView.inverse();
+		const mat4 inverse = viewMatrix.inverse();
 
 		_position = vec3(inverse.getCol(2));
-		_orientation = mat4(mat3(modelView));
+		_orientation = mat4(mat3(viewMatrix));
+		Log::debug("MVC", "Reset: $0", _orientation.toString());
 		
 		_cursorMovX = 0;
 		_cursorMovY = 0;
@@ -37,7 +38,9 @@ namespace atta
 
 	mat4 ModelViewController::getModelView() const
 	{
-		const auto view = _orientation * mat4(1).translate(-_position);
+		const auto view = _orientation.translate(-_position);
+		//Log::debug("MVC", "orientation: $0", _orientation.toString());
+		//Log::debug("MVC", "view: $0", view.toString());
 
 		return view;
 	}
@@ -70,6 +73,8 @@ namespace atta
 			default: 
 				return false;
 		}
+		_cameraMovingForward = true;
+		//Log::debug("MVCkey", "ok");
 	}
 
 	void ModelViewController::onMouseButton(int button, int action, int mods)
@@ -80,6 +85,7 @@ namespace atta
 				_mouseMiddleButton = action == GLFW_PRESS;
 				break;
 		}
+		//Log::debug("MVC", "MouseMiddleButton: $0", _mouseMiddleButton);
 	}
 
 	void ModelViewController::onScroll(double xoffset, double yoffset)
@@ -104,26 +110,6 @@ namespace atta
 	{
 		const auto d = static_cast<float>(_speed * timeDelta);
 
-		// Testing movement like solidworks
-		//if(_mouseMiddleButton && _shiftKey)
-		//{
-		//	// Displacement movement
-		//	// TODO get window size
-		//	glm::vec4 movement = -_right*(float)(1200/2-_mousePosX) + _up*(float)(900/2-_mousePosY);
-		//	//glm::vec4 movement = _right*_cursorMovX - _up*_cursorMovY;
-		//	movement = glm::normalize(movement);
-		//	if(!isnan(movement[0]))
-		//		_position += d * movement;
-		//}
-		//else if(_mouseMiddleButton)
-		//{
-		//	// Rotational movement
-		////	glm::vec4 movement = _right*_cursorMovX - _up*_cursorMovY;
-		////	movement = glm::normalize(movement);
-		////	if(!isnan(movement[0]))
-		////		_position += d * movement;
-		//	rotate(_cursorMovX/300.0, _cursorMovY/300.0);
-		//}
 		if(_mouseMiddleButton)
 		{
 			if(_cameraMovingLeft) moveRight(-d);
@@ -145,6 +131,8 @@ namespace atta
 
 	void ModelViewController::moveForward(float d)
 	{
+		//Log::debug("MVC", "forwad $0", _forward.toString());
+		//Log::debug("MVC", "Old $0 - New $1", _position.toString(), (_forward).toString());
 		_position += d * _forward;
 	}
 
@@ -160,10 +148,15 @@ namespace atta
 
 	void ModelViewController::rotate(float y, float x)
 	{
+		//Log::debug("MVC", "first: $0", _orientation.toString());
+		//Log::debug("MVC", "rot x: $0", rotationFromAxisAngle(vec3(0,1,0), y).toString());
+		//Log::debug("MVC", "second: $0", (_orientation*rotationFromAxisAngle(vec3(0,1,0), y)).toString());
+		//Log::debug("MVC", "third: $0", (rotationFromAxisAngle(vec3(1,0,0), x)*(_orientation*rotationFromAxisAngle(vec3(0,1,0), y))).toString());
+
 		_orientation =
-			mat4(1).rotate(x, vec3(1,0,0)) *
-			_orientation *
-			mat4(1).rotate(y, vec3(0,1,0));
+			rotationFromAxisAngle(vec3(1,0,0), x) *
+			(_orientation *
+			rotationFromAxisAngle(vec3(0,1,0), y));
 
 		updateVectors();
 	}
@@ -171,10 +164,8 @@ namespace atta
 	void ModelViewController::updateVectors()
 	{
 		// Given the orientation matrix, find out the x,y,z vector orientation.
-		const auto inverse = atta::inverse(_orientation);
-		
-		_right = inverse * vec3(1, 0, 0);
-		_up = inverse * vec3(0, 1, 0);
-		_forward = inverse * vec3(0, 0, -1);
+		_right = _orientation * vec3(1, 0, 0);
+		_up = _orientation * vec3(0, 1, 0);
+		_forward = _orientation * vec3(0, 0, -1);
 	}
 }

@@ -40,7 +40,7 @@ namespace atta
 			//---------- Setters ----------//
 			void setCommands(std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands) { _commands = commands; };
 			void setImageCopies(std::vector<ImageCopy> imageCopies) { _imageCopies = imageCopies; }
-			void setMainRenderer(std::shared_ptr<Renderer> mainRenderer) { _mainRenderer = mainRenderer; }
+			void setMainRenderer(std::shared_ptr<Renderer> mainRenderer);
 
 		private:
 			void render();

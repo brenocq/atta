@@ -62,10 +62,17 @@ namespace atta
 	{
 		while(!_window->shouldClose())
 		{
+			_modelViewController->updateCamera(0.01);
 			render();
 			_window->poolEvents();
 		}
 		// Send signal to close atta simulator
+	}
+
+	void WorkerGui::setMainRenderer(std::shared_ptr<Renderer> mainRenderer)
+	{
+		_mainRenderer = mainRenderer;
+		_modelViewController->reset(mainRenderer->getViewMatrix());
 	}
 
 	void WorkerGui::render()
