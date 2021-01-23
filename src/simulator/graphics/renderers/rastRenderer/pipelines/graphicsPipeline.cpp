@@ -85,8 +85,8 @@ namespace atta::vk
 		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		rasterizer.depthClampEnable = VK_FALSE;
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
+		//rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-		//rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
 		rasterizer.lineWidth = 1.0f;
 		//rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
 		rasterizer.cullMode = VK_CULL_MODE_NONE;
@@ -261,9 +261,11 @@ namespace atta::vk
 			const uint32_t vertexOffset = model->getMesh()->getVerticesOffset();
 			const uint32_t indexOffset = model->getMesh()->getIndicesOffset();
 
-			Log::debug("GraphicsPipeline", "ind $0 - vert $1 - indo $2", indexCount, vertexOffset, indexOffset);
+			//Log::debug("GraphicsPipeline", "ind $0 - verto $1 - indo $2", indexCount, vertexOffset, indexOffset);
 
 			vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
+			//vkCmdDrawIndexed(commandBuffer, indexCount, 1, 3, 3, 0);
+			//vkCmdDrawIndexed(commandBuffer, 3, 1, 0, 0, 0);
 		}
 	}
 }

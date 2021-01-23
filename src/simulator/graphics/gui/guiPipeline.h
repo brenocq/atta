@@ -27,12 +27,12 @@ namespace atta
 		public:
 			GuiPipeline(std::shared_ptr<vk::Device> device, 
 					std::shared_ptr<Window> window,
-					std::shared_ptr<vk::ImageView> imageView,
+					std::shared_ptr<vk::SwapChain> swapChain,
 					std::shared_ptr<GuiUniformBuffer> uniformBuffer,
 					std::shared_ptr<guib::FontLoader> _fontLoader);
 			~GuiPipeline();
 
-			void beginRender(VkCommandBuffer commandBuffer);
+			void beginRender(VkCommandBuffer commandBuffer, int imageIndex);
 			void endRender(VkCommandBuffer commandBuffer);
 
 			//---------- Getters and Setters ----------//
@@ -40,17 +40,18 @@ namespace atta
 			std::shared_ptr<GuiPipelineLayout> getPipelineLayout() const { return _pipelineLayout; }
 			std::shared_ptr<vk::DescriptorSetManager> getDescriptorSetManager() const { return _descriptorSetManager; }
 			std::shared_ptr<vk::DescriptorSets> getDescriptorSets() const { return _descriptorSetManager->getDescriptorSets(); }
-			std::shared_ptr<vk::ImageView> getImageView() const { return _imageView; }
-			std::shared_ptr<GuiFrameBuffer> getFrameBuffer() const { return _frameBuffer; }
+			std::vector<std::shared_ptr<vk::ImageView>> getImageViews() const { return _imageViews; }
+			std::vector<std::shared_ptr<GuiFrameBuffer>> getFrameBuffers() const { return _frameBuffers; }
 			std::shared_ptr<GuiRenderPass> getRenderPass() const { return _renderPass; }
 
 		private:
 			VkPipeline _pipeline;
 			std::shared_ptr<vk::Device> _device;
-			std::shared_ptr<GuiFrameBuffer> _frameBuffer;
+			std::shared_ptr<vk::SwapChain> _swapChain;
+			std::vector<std::shared_ptr<GuiFrameBuffer>> _frameBuffers;
 			std::shared_ptr<GuiRenderPass> _renderPass;
 
-			std::shared_ptr<vk::ImageView> _imageView;
+			std::vector<std::shared_ptr<vk::ImageView>> _imageViews;
 			VkFormat _imageFormat;
 			VkExtent2D _imageExtent;
 

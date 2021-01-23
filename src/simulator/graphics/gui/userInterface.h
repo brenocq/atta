@@ -34,15 +34,14 @@ namespace atta
 			{
 				std::shared_ptr<vk::Device> device;
 				std::shared_ptr<Window> window;
+				std::shared_ptr<vk::SwapChain> swapChain;
 			};
 
 			UserInterface(CreateInfo info);
 			~UserInterface();
 
-			void render();
-			void render(VkCommandBuffer commandBuffer);
-
-			std::shared_ptr<vk::Image> getImage() const { return _image; }
+			void render(int imageIndex);
+			void render(VkCommandBuffer commandBuffer, int imageIndex);
 
 			// Window callbacks
 			void onKey(int key, int scancode, int action, int mods);
@@ -51,11 +50,11 @@ namespace atta
 			void onScroll(double xoffset, double yoffset);
 
 		private:
-			void createOutputImage();
 			void createWidgetTree();
 
 			std::shared_ptr<vk::Device> _device;
 			std::shared_ptr<Window> _window;
+			std::shared_ptr<vk::SwapChain> _swapChain;
 
 			//---------- Rendering ----------//
 			std::shared_ptr<vk::CommandPool> _guiCommandPool;
@@ -63,9 +62,6 @@ namespace atta
 			std::shared_ptr<GuiUniformBuffer> _guiUniformBuffer;
 			std::shared_ptr<GuiPipeline> _guiPipeline;
 			std::shared_ptr<guib::GuiRender> _guiRender;
-
-			std::shared_ptr<vk::Image> _image;
-			std::shared_ptr<vk::ImageView> _imageView;
 
 			//---------- GuiB root ----------//
 			guib::Widget* _rootWidget;

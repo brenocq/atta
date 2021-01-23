@@ -101,21 +101,42 @@ namespace atta
 		return result;
 	}
 
+	// Return the transposed matrix
+	inline mat4 transpose(mat4 mat)
+	{
+		mat4 result = mat;
+		result.transpose();
+		return result;
+	}
+
 	// Calculate look at matrix
 	inline mat4 lookAt(vec3 eye, vec3 center, vec3 up)
 	{
 		// Calculate base vectors
-		vec3 X,Y,Z;
-  		Z = eye - center;
-		Z.normalize();
-		Y = up;
-		X = cross(Y, Z);
-		Y = cross(Z, X);
-		X.normalize();
-		Y.normalize();
+		//vec3 X,Y,Z;
+  		//Z = eye - center;
+		//Z.normalize();
+		//Y = up;
+		//X = cross(Y, Z);
+		//Y = cross(Z, X);
+		//X.normalize();
+		//Y.normalize();
+
+		mat4 res;
+		glm::mat4 mat = glm::lookAt((glm::vec3)eye, (glm::vec3)center, (glm::vec3)up);
+		for(int i=0; i<4; i++)
+		{
+			for(int j=0; j<4; j++)
+			{
+				std::cout << mat[i][j] << ", ";
+				res.data[i*4+j] = mat[i][j];
+			}
+			std::cout << std::endl;
+		}
+		//res.data[5] *= -1;
 
 		// Return mat4 from base
-		return mat4::baseAndPos(X,Y,Z, center);
+		return res;//mat4::baseAndPos(X,Y,Z, center);
 	}
 
 	// Calculate perspective matrix
@@ -125,13 +146,34 @@ namespace atta
 		float frustumDepth = far - near;
     	float oneOverDepth = 1 / frustumDepth;
 
-		res.data[5] = 1 / tan(0.5f * fov);
-		res.data[0] = -res.data[5] / ratio;// Right handed
-		res.data[10] = far * oneOverDepth;
-		res.data[14] = (-far * near) * oneOverDepth;
-		res.data[11] = 1;
-		res.data[15] = 0;
+		//res.data[5] = 1 / tan(0.5f * fov);
+		//res.data[0] = res.data[5] / ratio;// Right handed
+		//res.data[10] = far * oneOverDepth;
+		//res.data[14] = (-far * near) * oneOverDepth;
+		//res.data[11] = 1;
+		//res.data[15] = 0;
 
+		glm::mat4 mat = glm::perspective(fov, ratio, near, far);
+		for(int i=0; i<4; i++)
+		{
+			for(int j=0; j<4; j++)
+			{
+				std::cout << mat[i][j] << ", ";
+				res.data[i*4+j] = mat[i][j];
+			}
+			std::cout << std::endl;
+		}
+
+		res.data[5] *= -1;
+
+		//res.data[5] = 1 / tan(0.5f * fov);
+		//res.data[0] = -res.data[5] / ratio;// Right handed
+		//res.data[10] = -(far + near) * oneOverDepth;
+		//res.data[11] = -2*far*near * oneOverDepth;
+		//res.data[14] = -1;
+		//res.data[15] = 0;
+
+		//return atta::transpose(res);
 		return res;
 	}
 

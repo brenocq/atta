@@ -18,7 +18,7 @@ namespace atta
 		vec3 pos;
 		vec3 normal;
 		vec2 texCoord;
-		int32_t materialIndex;
+		int32_t materialIndex = 0;
 
 		static VkVertexInputBindingDescription getBindingDescription() 
 		{

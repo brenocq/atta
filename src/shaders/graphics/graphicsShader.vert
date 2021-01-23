@@ -24,11 +24,11 @@ layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec2 inTexCoord;
 layout(location = 3) in int inMaterialIndex;
 
-layout(location = 1) out vec3 outPos;
-layout(location = 2) out vec3 outNormal;
-layout(location = 3) out vec2 outTexCoord;
-layout(location = 4) out flat int outMaterialIndex;
-layout(location = 5) out vec3 outViewPos;
+layout(location = 0) out vec3 outPos;
+layout(location = 1) out vec3 outNormal;
+layout(location = 2) out vec2 outTexCoord;
+layout(location = 3) out flat int outMaterialIndex;
+layout(location = 4) out vec3 outViewPos;
 
 vec3 ExtractCameraPos(mat4 a_modelView)
 {
@@ -63,8 +63,7 @@ out gl_PerVertex
 
 void main() 
 {
-	//if(inPosition.x == 0.5 && inPosition.y == )
-    gl_Position = /*camera.projMat * camera.viewMat * objectInfo.modelMat */ vec4(inPosition.xy, 0, 1.0);
+    gl_Position = camera.projMat * camera.viewMat * objectInfo.modelMat * vec4(inPosition, 1);
 
 	outPos = vec3(objectInfo.modelMat * vec4(inPosition, 1.0));
 	outNormal = vec3(transpose(inverse(objectInfo.modelMat)) * vec4(inNormal, 1.0));
