@@ -51,8 +51,7 @@ namespace atta::vk
 
 		private:
 			template <class T>
-			void createBufferMemory(
-					std::shared_ptr<Buffer>& buffer,
+			std::shared_ptr<Buffer> createBufferMemory(
 					const VkBufferUsageFlags usage, 
 					std::vector<T>& content);
 
@@ -68,7 +67,7 @@ namespace atta::vk
 			std::shared_ptr<Buffer> _materialBuffer;
 			//std::shared_ptr<Buffer> _offsetBuffer;
 			//std::shared_ptr<Buffer> _instanceBuffer;
-};
+	};
 }
 
 #endif// ATTA_GRAPHICS_VULKAN_CORE_H

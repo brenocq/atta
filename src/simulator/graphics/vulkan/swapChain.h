@@ -33,7 +33,7 @@ namespace atta::vk
 
 			//---------- Getters and Setters ----------//
 			VkSwapchainKHR handle() const { return _swapChain; }
-			VkExtent2D getExtent() const { return _extent; }
+			VkExtent2D getImageExtent() const { return _extent; }
 			VkFormat getImageFormat() const { return _imageFormat; }
 			std::vector<std::shared_ptr<ImageView>> getImageViews() const { return _imageViews; }
 			std::vector<VkImage> getImages() const { return _images; }

@@ -156,7 +156,7 @@ namespace atta
 			.materialIndex = 0
 		};
 
-		// Top
+		// Top (0-3)
 		for(int i=0; i<4; i++)
 		{
 			vertex.pos = vertices[i];
@@ -170,7 +170,7 @@ namespace atta
 		_indices.push_back(2);
 		_indices.push_back(3);
 
-		// Bottom
+		// Bottom (4-7)
 		for(int i=0; i<4; i++)
 		{
 			vertex.pos = vertices[4+i];
@@ -183,6 +183,78 @@ namespace atta
 		_indices.push_back(4);
 		_indices.push_back(6);
 		_indices.push_back(5);
+
+		// Right (8-11)
+		vertex.normal = normals[2];
+		vertex.pos = vertices[0];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[3];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[7];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[4];
+		_vertices.push_back(vertex);
+
+		_indices.push_back(8);
+		_indices.push_back(9);
+		_indices.push_back(10);
+		_indices.push_back(10);
+		_indices.push_back(11);
+		_indices.push_back(8);
+
+		// Left (12-15)
+		vertex.normal = normals[3];
+		vertex.pos = vertices[1];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[5];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[6];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[2];
+		_vertices.push_back(vertex);
+
+		_indices.push_back(12);
+		_indices.push_back(13);
+		_indices.push_back(14);
+		_indices.push_back(14);
+		_indices.push_back(15);
+		_indices.push_back(12);
+
+		// Front (16-19)
+		vertex.normal = normals[4];
+		vertex.pos = vertices[1];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[0];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[4];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[5];
+		_vertices.push_back(vertex);
+
+		_indices.push_back(16);
+		_indices.push_back(17);
+		_indices.push_back(18);
+		_indices.push_back(18);
+		_indices.push_back(19);
+		_indices.push_back(16);
+
+		// Back (20-23)
+		vertex.normal = normals[5];
+		vertex.pos = vertices[3];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[2];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[6];
+		_vertices.push_back(vertex);
+		vertex.pos = vertices[7];
+		_vertices.push_back(vertex);
+
+		_indices.push_back(20);
+		_indices.push_back(21);
+		_indices.push_back(22);
+		_indices.push_back(22);
+		_indices.push_back(23);
+		_indices.push_back(20);
 		
 		//---------- Finished generating ----------//
 		eval.stop();

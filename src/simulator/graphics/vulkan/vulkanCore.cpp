@@ -33,6 +33,18 @@ namespace atta::vk
 		std::vector<Material> materials;
 		std::vector<MeshOffset> offsets;
 
+		//Vertex vert;
+		//vert.pos = vec3(-0.5, 0.5, 0);
+		//vertices.push_back(vert);
+		//vert.pos = vec3(0.5, 0.5, 0);
+		//vertices.push_back(vert);
+		//vert.pos = vec3(0.0, -1.0, 0);
+		//vertices.push_back(vert);
+
+		//indices.push_back(0);
+		//indices.push_back(1);
+		//indices.push_back(2);
+
 		int meshMaterial = 0;
 		for(auto m : Model::allMeshes)
 		{
@@ -62,9 +74,9 @@ namespace atta::vk
 		}
 
 		//---------- Create device buffers ----------//
-		createBufferMemory(_vertexBuffer, 	VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, vertices);
-		createBufferMemory(_indexBuffer, 	VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, indices);
-		createBufferMemory(_materialBuffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,	materials);
+		_vertexBuffer = createBufferMemory(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, vertices);
+		_indexBuffer = createBufferMemory(VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, indices);
+		_materialBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
 	}
 
 	void VulkanCore::updateBuffers(std::shared_ptr<Scene> scene)
@@ -73,15 +85,14 @@ namespace atta::vk
 	}
 
 	template <class T>
-	void VulkanCore::createBufferMemory(
-			std::shared_ptr<Buffer>& buffer,
+	std::shared_ptr<Buffer> VulkanCore::createBufferMemory(
 			const VkBufferUsageFlags usage, 
 			std::vector<T>& content)
 	{
 		int size = sizeof(content[0]) * content.size();
 
 		// Create buffer (local memory)
-		buffer = std::make_shared<Buffer>(
+		std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(
 				_device, 
 				size, 
 				VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, 
@@ -92,5 +103,7 @@ namespace atta::vk
 
 		// Copy from host memory to device memory
 		buffer->copyFrom(_commandPool, stagingBuffer->handle(), size);
+
+		return buffer;
 	}
 }

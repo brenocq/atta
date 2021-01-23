@@ -13,21 +13,23 @@ namespace atta
 	GuiPipeline::GuiPipeline(
 					std::shared_ptr<vk::Device> device, 
 					std::shared_ptr<Window> window,
-					std::shared_ptr<vk::ImageView> imageView,
+					std::shared_ptr<vk::SwapChain> swapChain,
 					std::shared_ptr<GuiUniformBuffer> uniformBuffer,
 					std::shared_ptr<guib::FontLoader> _fontLoader):
-		_device(device),
-		_imageView(imageView)
+		_device(device)
 	{
 		//---------- Get swapchain images ----------//
-		_imageFormat = _imageView->getFormat();
-		_imageExtent = (VkExtent2D){window->getWidth(), window->getHeight()};
+		_imageViews = swapChain->getImageViews();
+		_imageFormat = swapChain->getImageFormat();
+		_imageExtent = swapChain->getImageExtent();
 
 		//---------- Render pass ----------//
-		_renderPass = std::make_shared<GuiRenderPass>(_device, imageView->getFormat());
+		_renderPass = std::make_shared<GuiRenderPass>(_device, _imageFormat);
 
 		//---------- FrameBuffers ----------//
-		_frameBuffer = std::make_shared<GuiFrameBuffer>(_device, _imageView, _renderPass, _imageExtent);
+		_frameBuffers.resize(_imageViews.size());
+		for(int i = 0; i < (int)_frameBuffers.size(); i++)
+			_frameBuffers[i] = std::make_shared<GuiFrameBuffer>(_device, _imageViews[i], _renderPass, _imageExtent);
 
 		//---------- Shaders ----------//
 		_vertShaderModule = std::make_shared<vk::ShaderModule>(_device, "src/shaders/shaders/guiShader.vert.spv");
@@ -212,15 +214,15 @@ namespace atta
 		}
 	}
 
-	void GuiPipeline::beginRender(VkCommandBuffer commandBuffer)
+	void GuiPipeline::beginRender(VkCommandBuffer commandBuffer, int imageIndex)
 	{
 		std::array<VkClearValue, 1> clearValues{};
-		clearValues[0].color = {0.5f, 0.5f, 0.5f, 0.0f};
+		clearValues[0].color = {0.0f, 0.0f, 0.0f, 0.0f};
 
 		VkRenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassInfo.renderPass = _renderPass->handle();
-		renderPassInfo.framebuffer = _frameBuffer->handle();
+		renderPassInfo.framebuffer = _frameBuffers[imageIndex]->handle();
 		renderPassInfo.renderArea.offset = {0, 0};
 		renderPassInfo.renderArea.extent = _imageExtent;
 		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());

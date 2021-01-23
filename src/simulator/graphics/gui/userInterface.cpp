@@ -13,11 +13,10 @@ namespace atta
 			CreateInfo info):
 		_device(info.device),
 		_window(info.window),
+		_swapChain(info.swapChain),
 		// Toggle variables
 		_rootWidget(nullptr)
 	{
-		createOutputImage();
-
 		//---------- Create gui objects ----------//
 		_guiCommandPool = std::make_shared<vk::CommandPool>(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 		_guiCommandBuffers = std::make_shared<vk::CommandBuffers>(_device, _guiCommandPool, 1);
@@ -34,7 +33,7 @@ namespace atta
 		_fontLoader = std::make_shared<guib::FontLoader>(_device, _guiCommandPool, "assets/fonts/Ubuntu-Medium.ttf");
 
 
-		_guiPipeline = std::make_shared<GuiPipeline>(_device, _window, _imageView, _guiUniformBuffer, _fontLoader);
+		_guiPipeline = std::make_shared<GuiPipeline>(_device, _window, _swapChain, _guiUniformBuffer, _fontLoader);
 		_guiRender = std::make_shared<guib::GuiRender>(
 				(VkExtent2D){_window->getWidth(),_window->getHeight()}, 
 				_guiPipeline->getPipelineLayout(), 
@@ -46,15 +45,6 @@ namespace atta
 
 	UserInterface::~UserInterface()
 	{
-	}
-
-	void UserInterface::createOutputImage()
-	{
-		_image = std::make_shared<vk::Image>(
-			_device, 
-			_window->getWidth(), _window->getHeight(), 
-			VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT|VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		_imageView = std::make_shared<vk::ImageView>(_device, _image->handle(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 
 	void UserInterface::createWidgetTree()
@@ -146,20 +136,20 @@ namespace atta
 		_guiRender->setWindowWidgets(_windows);
 	}
 
-	void UserInterface::render()
+	void UserInterface::render(int imageIndex)
 	{
 		VkCommandBuffer commandBuffer = _guiCommandBuffers->begin(0);
 		{
-			_guiPipeline->beginRender(commandBuffer);
+			_guiPipeline->beginRender(commandBuffer, imageIndex);
 			_guiRender->render(commandBuffer);
 			_guiPipeline->endRender(commandBuffer);
 		}
 		_guiCommandBuffers->end(0);
 	}
 
-	void UserInterface::render(VkCommandBuffer commandBuffer)
+	void UserInterface::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		_guiPipeline->beginRender(commandBuffer);
+		_guiPipeline->beginRender(commandBuffer, imageIndex);
 		_guiRender->render(commandBuffer);
 		_guiPipeline->endRender(commandBuffer);
 	}

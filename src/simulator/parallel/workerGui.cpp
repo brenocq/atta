@@ -48,7 +48,8 @@ namespace atta
 		UserInterface::CreateInfo uiInfo =
 		{
 			.device = _vkCore->getDevice(),
-			.window = _window
+			.window = _window,
+			.swapChain = _swapChain
 		};
 		_ui = std::make_shared<UserInterface>(uiInfo);
 	}
@@ -96,7 +97,7 @@ namespace atta
 
 		// Update main renderer camera`
 		// TODO think
-		_mainRenderer->updateCameraMatrix(_modelViewController->getModelView());
+		//_mainRenderer->updateCameraMatrix(_modelViewController->getModelView());
 
 		//---------- Record to command buffer ----------//
 		VkCommandBuffer commandBuffer = _commandBuffers->begin(imageIndex);
@@ -163,14 +164,6 @@ namespace atta
 
 	void WorkerGui::recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex)
 	{
-		//---------- Run commands (renderers) ----------//
-		for(auto command : _commands)
-			command(commandBuffer);
-
-		// Render user interface
-		_ui->render(commandBuffer);
-
-		//---------- Copy images ----------//
 		VkImageSubresourceRange subresourceRange;
 		subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		subresourceRange.baseMipLevel = 0;
@@ -178,22 +171,26 @@ namespace atta
 		subresourceRange.baseArrayLayer = 0;
 		subresourceRange.layerCount = 1;
 
+		//---------- Run commands (renderers) ----------//
+		for(auto command : _commands)
+			command(commandBuffer);
+
+		//---------- Copy main renderer image ----------//
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
 		for(auto imageCopy : _imageCopies)
 			copyImageCommands(commandBuffer, imageIndex, imageCopy);
 
-		// Copy user interface image
-		copyImageCommands(commandBuffer, imageIndex, (WorkerGui::ImageCopy){
-					.image = _ui->getImage(),
-					.extent = _ui->getImage()->getExtent(),
-					.offset = {0,0}
-					});
+		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+		//---------- Render user interface on top of it----------//
+		_ui->render(commandBuffer, imageIndex);
 
 		//---------- Change layout to present image ----------//
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
-			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+			0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 	}
 
 	void WorkerGui::copyImageCommands(VkCommandBuffer commandBuffer, unsigned imageIndex, ImageCopy imageCopy)
@@ -211,7 +208,7 @@ namespace atta
 
 		// Copy src image to dst image
 		VkExtent2D srcExtent = imageCopy.image->getExtent();
-		VkExtent2D dstExtent = _swapChain->getExtent();
+		VkExtent2D dstExtent = _swapChain->getImageExtent();
 		VkImageBlit blit{};
 		blit.srcOffsets[0] = {0, 0, 0};
 		blit.srcOffsets[1] = { srcExtent.width, srcExtent.height, 1 };

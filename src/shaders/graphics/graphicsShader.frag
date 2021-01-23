@@ -10,11 +10,11 @@ layout(binding = 1) readonly buffer MaterialArray { Material[] materials; };
 //layout(binding = 3) uniform sampler2D irradianceMap;
 
 
-layout(location = 1) in vec3 inPos;
-layout(location = 2) in vec3 inNormal;
-layout(location = 3) in vec2 inTexCoord;
-layout(location = 4) in flat int inMaterialIndex;
-layout(location = 5) in vec3 inViewPos;
+layout(location = 0) in vec3 inPos;
+layout(location = 1) in vec3 inNormal;
+layout(location = 2) in vec2 inTexCoord;
+layout(location = 3) in flat int inMaterialIndex;
+layout(location = 4) in vec3 inViewPos;
 
 layout(location = 0) out vec4 outColor;
 
@@ -80,12 +80,12 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 
-
 void main() 
 {
-    outColor = vec4(1,0,0,1);
-	return;
 	Material material = materials[inMaterialIndex];
+    //outColor = vec4(material.albedo,1);
+    ////outColor = vec4(1,0,.5,1);
+	//return;
 
 	// Light
 	vec3 lightPos	 = vec3(0,3,2);

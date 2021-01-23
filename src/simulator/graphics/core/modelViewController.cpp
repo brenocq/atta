@@ -73,7 +73,6 @@ namespace atta
 			default: 
 				return false;
 		}
-		_cameraMovingForward = true;
 		//Log::debug("MVCkey", "ok");
 	}
 
