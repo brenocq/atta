@@ -148,12 +148,12 @@ namespace atta
 		data[15] = 1;
 	}
 
-	vec4 mat4::getCol(unsigned i) const
+	vec4 mat4::col(unsigned i) const
 	{
 		return vec4(data[i], data[i+4], data[i+8], data[i+12]);
 	}
 
-	vec4 mat4::getRow(unsigned i) const
+	vec4 mat4::row(unsigned i) const
 	{
 		return vec4(data[4*i], data[4*i+1], data[4*i+2], data[4*i+3]);
 	}

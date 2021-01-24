@@ -50,40 +50,12 @@ namespace atta
 	void UserInterface::createWidgetTree()
 	{
 		_rootWidget = 
-			new guib::Box(
+			new guib::TopBar(
 			{
 				.color = {.2,.2,.2,1},
-				.size  = {300, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
-				.child = new guib::Align({
-					.hAlignment = guib::ALIGN_CENTER,
-					.vAlignment = guib::ALIGN_END,
-					.child = new guib::Box({
-						.color = {.8, .5, .3},
-						.size = {1, .8},
-						.child = new guib::Align({
-							.hAlignment = guib::ALIGN_CENTER,
-							.vAlignment = guib::ALIGN_CENTER,
-							.child = new guib::Visibility({
-								.visible = true,
-								.child = new guib::Column(
-								{
-									.hAlignment = guib::ALIGN_CENTER,
-									.vAlignment = guib::ALIGN_END,
-									.children = {
-										new guib::Box({
-											.color = {.1,.8,.3,1},
-											.size = {.3,.9},
-										}),
-										new guib::Box({
-											.color = {.8,.1,.3,1},
-											.size = {.99,.1},
-										})
-									}
-								})
-							})
-						})
-					})
-				})
+				.buttons = {
+
+				}
 			}); 
 
 		_windows.push_back(
@@ -93,7 +65,7 @@ namespace atta
 				.closable = false,
 				.minimizable = true,
 				.movable = false,
-				.offset = {0, 0},
+				.offset = {0, 20, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
 				.size = {200, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
 				.child = new guib::Align(
 					{
@@ -132,7 +104,7 @@ namespace atta
 			})	
 		);
 
-		//_guiRender->setRootWidget(_rootWidget);
+		_guiRender->setRootWidget(_rootWidget);
 		_guiRender->setWindowWidgets(_windows);
 	}
 

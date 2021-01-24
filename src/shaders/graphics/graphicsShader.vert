@@ -1,8 +1,9 @@
 #version 460
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_GOOGLE_include_directive : require
-#include "../material.glsl"
 #include "../uniformBufferObject.glsl"
+#include "../material.glsl"
+#include "../objectInfo.glsl"
 
 layout(binding = 0) readonly uniform UniformBufferObjectStruct
 { 
@@ -14,10 +15,10 @@ layout(binding = 1) readonly buffer MaterialArray
 	Material[] materials; 
 };
 
-layout(push_constant) uniform ObjectInfo
+layout(push_constant) uniform ObjectInfoStruct
 {
-  mat4 modelMat;
-} objectInfo;
+	ObjectInfo objectInfo;
+};
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inNormal;
@@ -45,7 +46,6 @@ vec3 ExtractCameraPos(mat4 a_modelView)
   float d3 = modelViewT[2].w;
 
   // Get the intersection of these 3 planes
-  // http://paulbourke.net/geometry/3planes/
   vec3 n2n3 = cross(n2, n3);
   vec3 n3n1 = cross(n3, n1);
   vec3 n1n2 = cross(n1, n2);
@@ -63,12 +63,13 @@ out gl_PerVertex
 
 void main() 
 {
-    gl_Position = camera.projMat * camera.viewMat * objectInfo.modelMat * vec4(inPosition, 1);
+	mat4 model = transpose(objectInfo.modelMat);
+    gl_Position = transpose(camera.projMat) * camera.viewMat * model * vec4(inPosition, 1);
 
-	outPos = vec3(objectInfo.modelMat * vec4(inPosition, 1.0));
-	outNormal = vec3(transpose(inverse(objectInfo.modelMat)) * vec4(inNormal, 1.0));
+	outPos = vec3(model * vec4(inPosition, 1.0));
+	outNormal = vec3(transpose(inverse(model)) * vec4(inNormal, 1.0));
 	outTexCoord = inTexCoord;
-	outMaterialIndex = inMaterialIndex;
+	outMaterialIndex = inMaterialIndex + objectInfo.materialOffset;
 
 	outViewPos = ExtractCameraPos(camera.viewMat);
 }

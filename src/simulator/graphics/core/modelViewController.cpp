@@ -12,7 +12,7 @@
 namespace atta
 {
 	ModelViewController::ModelViewController():
-		_mouseMiddleButton(false), _shiftKey(false), _speed(5.0f),
+		_mouseMiddleButton(false), _shiftKey(false), _speed(10.0f),
 		_right(vec3(1,0,0)), _up(vec3(0,1,0)), _forward(vec3(0,0,-1))
 	{
 	}
@@ -24,11 +24,13 @@ namespace atta
 
 	void ModelViewController::reset(const mat4& viewMatrix)
 	{
-		const mat4 inverse = viewMatrix.inverse();
+		//Log::debug("MVC", "View: $0", viewMatrix.toString());
+		const mat4 inverse = transpose(viewMatrix.inverse());
+		//Log::debug("MVC", "Inverse: $0", inverse.toString());
 
-		_position = vec3(inverse.getCol(2));
+		_position = vec3(inverse.col(3));
 		_orientation = mat4(mat3(viewMatrix));
-		Log::debug("MVC", "Reset: $0", _orientation.toString());
+		//Log::debug("MVC", "Reset: $0", _orientation.toString());
 		
 		_cursorMovX = 0;
 		_cursorMovY = 0;
@@ -42,7 +44,11 @@ namespace atta
 		//Log::debug("MVC", "orientation: $0", _orientation.toString());
 		//Log::debug("MVC", "view: $0", view.toString());
 
-		return view;
+		//mat4 res = mat4::baseAndPos(_orientation.col(0),_orientation.col(1),_orientation.col(2), -_position);
+		//res.data[14]=res.data[11];
+		//res.data[11]=0;
+		mat4 res = lookAt(_position, _position+_forward, _up);
+		return res;
 	}
 
 	bool ModelViewController::onKey(int key, int scancode, int action, int mods)
@@ -137,7 +143,7 @@ namespace atta
 
 	void ModelViewController::moveRight(float d)
 	{
-		_position += d * _right;
+		_position -= d * _right;
 	}
 
 	void ModelViewController::moveUp(float d)
@@ -152,10 +158,13 @@ namespace atta
 		//Log::debug("MVC", "second: $0", (_orientation*rotationFromAxisAngle(vec3(0,1,0), y)).toString());
 		//Log::debug("MVC", "third: $0", (rotationFromAxisAngle(vec3(1,0,0), x)*(_orientation*rotationFromAxisAngle(vec3(0,1,0), y))).toString());
 
+		//_orientation =
+		//	rotationFromAxisAngle(vec3(1,0,0), x) *
+		//	(_orientation *
+		//	rotationFromAxisAngle(vec3(0,1,0), y));
+
 		_orientation =
-			rotationFromAxisAngle(vec3(1,0,0), x) *
-			(_orientation *
-			rotationFromAxisAngle(vec3(0,1,0), y));
+			rotationFromAxisAngle(vec3(0,1,0), y) * _orientation * rotationFromAxisAngle(vec3(-1,0,0), x);
 
 		updateVectors();
 	}

@@ -20,5 +20,7 @@
 #include "button.h"
 #include "align.h"
 #include "text.h"
+#include "topBar.h"
+#include "menuButton.h"
 
 #endif// GUIB_WIDGETS_H

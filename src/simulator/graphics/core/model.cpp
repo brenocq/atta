@@ -12,7 +12,7 @@ namespace atta
 	std::map<std::string, std::weak_ptr<Mesh>> Model::allMeshes = {};
 
 	Model::Model(CreateInfo info):
-		_meshName(info.meshName), _material(info.material)
+		_meshName(info.meshName), _material(info.material), _materialOffset(0)
 	{
 		if(_meshName == "atta::empty")
 		{

@@ -247,6 +247,7 @@ namespace atta::vk
 
 			ObjectInfo objectInfo;
 			objectInfo.modelMat = object->getModelMat();
+			objectInfo.materialOffset = model->getMaterialOffset();
 
 			vkCmdPushConstants(
 					commandBuffer,
