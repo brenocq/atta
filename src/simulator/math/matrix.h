@@ -41,8 +41,8 @@ namespace atta
         float determinant() const;
         void setDiagonal(float a, float b, float c);
         void setInverse(const mat4 &m);
-		vec4 getCol(unsigned i) const;
-		vec4 getRow(unsigned i) const;
+		vec4 col(unsigned i) const;
+		vec4 row(unsigned i) const;
 
         mat4 operator*(const mat4 &o) const;
         mat4 operator()(const mat4 &o) const;
@@ -113,30 +113,44 @@ namespace atta
 	inline mat4 lookAt(vec3 eye, vec3 center, vec3 up)
 	{
 		// Calculate base vectors
-		//vec3 X,Y,Z;
-  		//Z = eye - center;
-		//Z.normalize();
-		//Y = up;
-		//X = cross(Y, Z);
-		//Y = cross(Z, X);
-		//X.normalize();
-		//Y.normalize();
+		vec3 X,Y,Z;
+  		Z = eye - center;
+		Z.normalize();
+		Y = up;
+		X = cross(Y, Z);
+		Y = cross(Z, X);
+		X.normalize();
+		Y.normalize();
+
+		//mat4 res = mat4::baseAndPos(X,Y,Z, -eye);
+		//res.data[14]=res.data[11];
+		//res.data[11]=0;
 
 		mat4 res;
-		glm::mat4 mat = glm::lookAt((glm::vec3)eye, (glm::vec3)center, (glm::vec3)up);
-		for(int i=0; i<4; i++)
-		{
-			for(int j=0; j<4; j++)
-			{
-				std::cout << mat[i][j] << ", ";
-				res.data[i*4+j] = mat[i][j];
-			}
-			std::cout << std::endl;
-		}
-		//res.data[5] *= -1;
+		res.data[0] = X.x;
+		res.data[1] = Y.x;
+		res.data[2] = Z.x;
+		res.data[3] = 0.0f;
+
+		res.data[4] = X.y;
+		res.data[5] = Y.y;
+		res.data[6] = Z.y;
+		res.data[7] = 0.0f;
+
+		res.data[8] = X.z;
+		res.data[9] = Y.z;
+		res.data[10] = Z.z;
+		res.data[11] = 0.0f;
+
+		res.data[12] = dot(X, -eye);
+		res.data[13] = dot(Y, -eye);
+		res.data[14] = dot(Z, -eye);
+		res.data[15] = 1.0f;
+
+		//Log::debug("MVC", "res: $0", res.toString());
 
 		// Return mat4 from base
-		return res;//mat4::baseAndPos(X,Y,Z, center);
+		return res;
 	}
 
 	// Calculate perspective matrix
@@ -146,34 +160,13 @@ namespace atta
 		float frustumDepth = far - near;
     	float oneOverDepth = 1 / frustumDepth;
 
-		//res.data[5] = 1 / tan(0.5f * fov);
-		//res.data[0] = res.data[5] / ratio;// Right handed
-		//res.data[10] = far * oneOverDepth;
-		//res.data[14] = (-far * near) * oneOverDepth;
-		//res.data[11] = 1;
-		//res.data[15] = 0;
+		res.data[5] = 1 / tan(0.5f * fov);
+		res.data[0] = -res.data[5] / ratio;
+		res.data[10] = -(far + near) * oneOverDepth;
+		res.data[11] = -2*far*near * oneOverDepth;
+		res.data[14] = -1;
+		res.data[15] = 0;
 
-		glm::mat4 mat = glm::perspective(fov, ratio, near, far);
-		for(int i=0; i<4; i++)
-		{
-			for(int j=0; j<4; j++)
-			{
-				std::cout << mat[i][j] << ", ";
-				res.data[i*4+j] = mat[i][j];
-			}
-			std::cout << std::endl;
-		}
-
-		res.data[5] *= -1;
-
-		//res.data[5] = 1 / tan(0.5f * fov);
-		//res.data[0] = -res.data[5] / ratio;// Right handed
-		//res.data[10] = -(far + near) * oneOverDepth;
-		//res.data[11] = -2*far*near * oneOverDepth;
-		//res.data[14] = -1;
-		//res.data[15] = 0;
-
-		//return atta::transpose(res);
 		return res;
 	}
 

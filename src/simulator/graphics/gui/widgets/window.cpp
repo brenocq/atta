@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "window.h"
 #include "widgets.h"
+#include "simulator/helpers/log.h"
 
 namespace guib
 {
@@ -37,8 +38,7 @@ namespace guib
 							{
 								.onClick = [&](){
 									_minimized = !_minimized;
-									//updateTree();
-									_windowChildVisibility->setVisible(_minimized);
+									_windowChildVisibility->setVisible(!_minimized);
 								},
 								.child = new guib::Box(
 								{
@@ -57,8 +57,7 @@ namespace guib
 			closeButton = new guib::ClickDetector(
 							{
 								.onClick = [&](){
-									//_closed = true;
-									//updateTree();
+									_closed = true;
 									((Visibility*)_root)->setVisible(false);
 								},
 								.child = new guib::Box(

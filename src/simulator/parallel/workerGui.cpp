@@ -97,7 +97,7 @@ namespace atta
 
 		// Update main renderer camera`
 		// TODO think
-		//_mainRenderer->updateCameraMatrix(_modelViewController->getModelView());
+		_mainRenderer->updateCameraMatrix(_modelViewController->getModelView());
 
 		//---------- Record to command buffer ----------//
 		VkCommandBuffer commandBuffer = _commandBuffers->begin(imageIndex);

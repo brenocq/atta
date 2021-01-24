@@ -13,7 +13,7 @@ namespace atta
 {
 	struct Material
 	{
-		vec3 albedo = {0.6,0.2,0.2};
+		vec3 albedo = {1.0,1.0,1.0};
 		float metallic = 0.5f;
 		float roughness = 0.5f;
 		float ao = 0.0;// Ambient occusion

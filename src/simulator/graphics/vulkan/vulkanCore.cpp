@@ -69,7 +69,9 @@ namespace atta::vk
 
 		for(auto object : scene->getObjects())
 		{
+			static int materialOffset = 0;
 			std::shared_ptr<Model> model = object->getModel();
+			model->setMaterialOffset(materialOffset++);
 			materials.push_back(model->getMaterial());
 		}
 

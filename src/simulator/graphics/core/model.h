@@ -31,14 +31,20 @@ namespace atta
 			// map<fileName, Mesh*>
 			static std::map<std::string, std::weak_ptr<Mesh>> allMeshes;
 
+			//---------- Setters ----------//
+			void setMaterialOffset(int materialOffset) { _materialOffset = materialOffset; }
+
 			//---------- Getters ----------//
 			Material getMaterial() const { return _material; }
+			int getMaterialOffset() const { return _materialOffset; }
+			std::string getMeshName() const { return _meshName; }
 			std::shared_ptr<Mesh> getMesh() const { return _mesh; }
 
 		private:
 			std::string _meshName;
 			std::shared_ptr<Mesh> _mesh;
 			Material _material;
+			int _materialOffset;
 	};
 }
 

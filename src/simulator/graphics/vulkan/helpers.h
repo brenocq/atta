@@ -32,6 +32,7 @@ struct SwapChainSupportDetails
 struct ObjectInfo
 {
 	atta::mat4 modelMat;
+	int materialOffset = 0;
 };
 
 // TLAS instances (Ray tracing)

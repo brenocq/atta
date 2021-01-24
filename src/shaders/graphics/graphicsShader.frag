@@ -83,9 +83,6 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 void main() 
 {
 	Material material = materials[inMaterialIndex];
-    //outColor = vec4(material.albedo,1);
-    ////outColor = vec4(1,0,.5,1);
-	//return;
 
 	// Light
 	vec3 lightPos	 = vec3(0,3,2);
@@ -135,7 +132,7 @@ void main()
 	vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
 	vec3 kD = 1.0 - kS;
 	vec2 uvIrr = sampleSphericalMap(normalize(N));
-	vec3 irradiance = vec3(1,0,0);//texture(irradianceMap, uvIrr).rgb;
+	vec3 irradiance = vec3(1,1,1);//texture(irradianceMap, uvIrr).rgb;
 	vec3 diffuse    = irradiance * albedo;
 	vec3 ambient = (kD*diffuse) * ao;
 	vec3 color   = ambient + Lo;  

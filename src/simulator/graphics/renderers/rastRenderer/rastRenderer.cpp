@@ -127,10 +127,10 @@ namespace atta
 		vk::UniformBufferObject ubo = _uniformBuffer->getValue();
 		ubo.viewMat = viewMatrix;
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
-		Log::debug("RastRenderer", "View: $0", ubo.viewMat.toString());
-		Log::debug("RastRenderer", "ViewInverse: $0", ubo.viewMatInverse.toString());
-		Log::debug("RastRenderer", "Proj: $0", ubo.projMat.toString());
-		Log::debug("RastRenderer", "ProjInverse: $0", ubo.projMatInverse.toString());
+		//Log::debug("RastRenderer", "View: $0", ubo.viewMat.toString());
+		//Log::debug("RastRenderer", "ViewInverse: $0", ubo.viewMatInverse.toString());
+		//Log::debug("RastRenderer", "Proj: $0", ubo.projMat.toString());
+		//Log::debug("RastRenderer", "ProjInverse: $0", ubo.projMatInverse.toString());
 		_uniformBuffer->setValue(ubo);
 	}
 }
