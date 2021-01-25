@@ -7,7 +7,6 @@
 #ifndef ATTA_PHY_DRAG_FORCE_H
 #define ATTA_PHY_DRAG_FORCE_H
 
-#include "glm.h"
 #include "force.h"
 #include "simulator/physics/body.h"
 
@@ -19,7 +18,7 @@ namespace atta::phy
 			DragForce(float k1, float k2);
 			~DragForce();
 
-			virtual void updateForce(Body* object, float dt);
+			virtual void updateForce(std::shared_ptr<Body> object, float dt);
 
 		private:
 			float _k1, _k2;

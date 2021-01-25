@@ -7,7 +7,6 @@
 #ifndef ATTA_PHY_FORCE_H
 #define ATTA_PHY_FORCE_H
 
-#include "glm.h"
 #include "simulator/physics/body.h"
 
 namespace atta::phy
@@ -16,7 +15,7 @@ namespace atta::phy
 	{
 		public:
 			// Overload this method to update the force applied to an object
-			virtual void updateForce(Body* object, float dt) = 0;
+			virtual void updateForce(std::shared_ptr<Body> object, float dt) = 0;
 
 		private:
 	};

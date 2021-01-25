@@ -8,7 +8,7 @@
 
 namespace atta::phy
 {
-	HingeConstraint::HingeConstraint(glm::vec3 position, glm::vec3 rotation):
+	HingeConstraint::HingeConstraint(vec3 position, vec3 rotation):
 		_position(position), _rotation(rotation)
 	{
 		_type = "HingeConstraint";

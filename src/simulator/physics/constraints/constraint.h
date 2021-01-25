@@ -22,8 +22,8 @@ namespace atta::phy
 
 		protected:
 			std::string _type;
-			Body* _objA;
-			Body* _objB;
+			std::shared_ptr<Body> _objA;
+			std::shared_ptr<Body> _objB;
 	};
 }
 

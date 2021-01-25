@@ -24,6 +24,9 @@ namespace atta
 			Accelerator(CreateInfo info);
 			~Accelerator();
 
+			//---------- Getters ----------//
+			std::vector<std::shared_ptr<Object>> getObjects() const { return _objects; }
+
 		private:
 			std::vector<std::shared_ptr<Object>> _objects;
 	};

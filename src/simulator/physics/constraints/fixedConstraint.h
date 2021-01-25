@@ -13,15 +13,15 @@ namespace atta::phy
 	class FixedConstraint : public Constraint
 	{
 		public:
-			FixedConstraint(glm::vec3 position, glm::vec3 rotation);
+			FixedConstraint(vec3 position, vec3 rotation);
 			~FixedConstraint();
 
-			glm::vec3 getPosition() const { return _position; };
-			glm::vec3 getRotation() const { return _rotation; };
+			vec3 getPosition() const { return _position; };
+			vec3 getRotation() const { return _rotation; };
 
 		private:
-			glm::vec3 _position;
-			glm::vec3 _rotation;
+			vec3 _position;
+			vec3 _rotation;
 	};
 }
 

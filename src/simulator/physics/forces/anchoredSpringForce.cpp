@@ -8,7 +8,7 @@
 
 namespace atta::phy
 {
-	AnchoredSpringForce::AnchoredSpringForce(glm::vec3 anchor, float k, float restLenght):
+	AnchoredSpringForce::AnchoredSpringForce(vec3 anchor, float k, float restLenght):
 		_anchor(anchor), _k(k), _restLenght(restLenght)
 	{
 
@@ -19,18 +19,18 @@ namespace atta::phy
 
 	}
 
-	void AnchoredSpringForce::updateForce(Body* object, float dt)
+	void AnchoredSpringForce::updateForce(std::shared_ptr<Body> object, float dt)
 	{
 		// Calculate anchoredSpring vector
-		glm::vec3 force = object->getPosition();
+		vec3 force = object->getPosition();
 		force -= _anchor;
 
 		// Calculate force magnitude
-		float magnitude = glm::length(force);
+		float magnitude = force.length();
 		magnitude = std::abs(magnitude-_restLenght)*_k;
 
 		// Apply anchored spring force
-		force = glm::normalize(force);
+		force.normalize();
 		force *= -magnitude;
 		object->addForce(force);
 	}

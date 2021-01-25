@@ -10,6 +10,7 @@
 #include "force.h"
 #include "simulator/physics/body.h"
 #include <vector>
+#include <memory>
 
 namespace atta::phy
 {
@@ -18,15 +19,15 @@ namespace atta::phy
 		public:
 			struct ForceRegistration
 			{
-				Body* object;
-				Force* force;
+				std::shared_ptr<Body> object;
+				std::shared_ptr<Force> force;
 			};
 
 			ForceGenerator();
 			~ForceGenerator();
 
-			void add(Body* object, Force* force);
-			void remove(Body* object, Force* force);
+			void add(std::shared_ptr<Body> object, std::shared_ptr<Force> force);
+			void remove(std::shared_ptr<Body> object, std::shared_ptr<Force> force);
 			void clear();
 			
 			void updateForces(float dt);

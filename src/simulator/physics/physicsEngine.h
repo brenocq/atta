@@ -10,6 +10,7 @@
 #include <vector>
 #include "body.h"
 #include "simulator/math/math.h"
+#include "simulator/core/accelerator.h"
 #include "forces/forceGenerator.h"
 #include "collisions/contactGenerator.h"
 #include "collisions/contactResolver.h"
@@ -19,21 +20,21 @@ namespace atta::phy
 	class PhysicsEngine
 	{
 		public:
-			PhysicsEngine();
+			struct CreateInfo {
+				std::shared_ptr<Accelerator> accelerator;
+			};
+
+			PhysicsEngine(CreateInfo info);
 			~PhysicsEngine();
 
 			void stepPhysics(float dt);
-			void addBody(Body* body);
 
-			bool raycast(vec3 startPosition, atta::vec3 direction);
-			//---------- Getters ----------//
-
-			//------- Static helpers ------//
-			static vec3 getMouseClickRay(int x, int y, int width, int height, vec3 camPos, vec3 camForward, vec3 camUp);
 		private:
-			std::vector<Body*> _bodies;
-			ForceGenerator* _forceGenerator;
-			ContactResolver* _contactResolver;
+			std::shared_ptr<Accelerator> _accelerator;
+
+			std::vector<std::shared_ptr<Body>> _bodies;
+			std::shared_ptr<ForceGenerator> _forceGenerator;
+			std::shared_ptr<ContactResolver> _contactResolver;
 			std::vector<ContactGenerator> _contactGenerators;
 			std::vector<Contact> _contacts;
 
