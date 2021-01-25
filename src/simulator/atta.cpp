@@ -11,6 +11,7 @@
 #include "simulator/core/accelerator.h"
 #include "simulator/core/scene.h"
 #include "simulator/graphics/renderers/rastRenderer/rastRenderer.h"
+#include "simulator/physics/physicsEngine.h"
 
 namespace atta
 {
@@ -32,6 +33,13 @@ namespace atta
 		std::shared_ptr<Accelerator> accelerator = std::make_shared<Accelerator>(accInfo);
 
 		//---------- Physics stage ----------//
+
+		// Create physics engine
+		phy::PhysicsEngine::CreateInfo phyEngInfo = 
+		{
+			.accelerator = accelerator
+		};
+		std::shared_ptr<phy::PhysicsEngine> physicsEngine = std::make_shared<phy::PhysicsEngine>(phyEngInfo);
 
 		//---------- Rendering stage ----------//
 		// Create vulkan core
@@ -55,7 +63,8 @@ namespace atta
 				.scene = scene
 			},
 			.physicsStage = {
-				.accelerator = accelerator
+				.accelerator = accelerator,
+				.physicsEngine = physicsEngine
 			},
 			.renderingStage = {
 				.vkCore = vulkanCore,

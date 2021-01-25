@@ -8,7 +8,7 @@
 
 namespace atta::phy
 {
-	GravityForce::GravityForce(glm::vec3 gravity):
+	GravityForce::GravityForce(vec3 gravity):
 		_gravity(gravity)
 	{
 
@@ -19,7 +19,7 @@ namespace atta::phy
 
 	}
 
-	void GravityForce::updateForce(Body* object, float dt)
+	void GravityForce::updateForce(std::shared_ptr<Body> object, float dt)
 	{
 		// Check infinity mass
 		if(object->getInverseMass()==0)

@@ -19,14 +19,14 @@ namespace atta::phy
 
 	}
 
-	void DragForce::updateForce(Body* object, float dt)
+	void DragForce::updateForce(std::shared_ptr<Body> object, float dt)
 	{
-		glm::vec3 force = object->getVelocity();
+		vec3 force = object->getVelocity();
 
-		float dragCoeff = glm::length(force);
+		float dragCoeff = force.length();
 		dragCoeff = _k1*dragCoeff + _k2*dragCoeff*dragCoeff; 
 
-		force = glm::normalize(force);
+		force = normalize(force);
 		force *= -dragCoeff;
 
 		// Apply drag

@@ -13,15 +13,15 @@ namespace atta::phy
 	class HingeConstraint : public Constraint
 	{
 		public:
-			HingeConstraint(glm::vec3 position, glm::vec3 rotation);
+			HingeConstraint(vec3 position, vec3 rotation);
 			~HingeConstraint();
 
-			glm::vec3 getPosition() const { return _position; };
-			glm::vec3 getRotation() const { return _rotation; };
+			vec3 getPosition() const { return _position; };
+			vec3 getRotation() const { return _rotation; };
 
 		private:
-			glm::vec3 _position;
-			glm::vec3 _rotation;
+			vec3 _position;
+			vec3 _rotation;
 	};
 }
 

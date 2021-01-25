@@ -17,6 +17,7 @@
 #include "simulator/core/accelerator.h"
 #include "simulator/graphics/renderers/renderer.h"
 #include "simulator/graphics/vulkan/vulkanCore.h"
+#include "simulator/physics/physicsEngine.h"
 
 namespace atta
 {
@@ -30,6 +31,7 @@ namespace atta
 
 			struct PhysicsStage {
 				std::shared_ptr<Accelerator> accelerator;
+				std::shared_ptr<phy::PhysicsEngine> physicsEngine;
 			};
 
 			struct RenderingStage {
@@ -82,6 +84,7 @@ namespace atta
 			std::shared_ptr<Accelerator> _accelerator;
 
 			//---------- Physics stage ----------//
+			std::shared_ptr<phy::PhysicsEngine> _physicsEngine;
 			
 			//---------- Rendering stage ----------//
 			std::shared_ptr<vk::VulkanCore> _vkCore;

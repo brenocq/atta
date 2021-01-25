@@ -34,6 +34,7 @@ namespace atta
 		_accelerator = pipelineSetup.physicsStage.accelerator;
 
 		//---------- Physics stage ----------//
+		_physicsEngine = pipelineSetup.physicsStage.physicsEngine;
 		
 		//---------- Rendering stage ----------//
 		_vkCore = pipelineSetup.renderingStage.vkCore;
@@ -128,9 +129,19 @@ namespace atta
 		_setupStageBarrier->wait();
 	
 		//-------------------- Pipeline stages ------------------//
+		auto lastTime = std::chrono::high_resolution_clock::now();
+		auto currTime = std::chrono::high_resolution_clock::now();
 		while(true)
 		{
+			currTime = std::chrono::high_resolution_clock::now();
+			auto start = std::chrono::time_point_cast<std::chrono::microseconds>(lastTime).time_since_epoch().count();
+			auto end = std::chrono::time_point_cast<std::chrono::microseconds>(currTime).time_since_epoch().count();
+			float dt = (end-start)/1000000.0;
+			dt/=10;
+			lastTime = currTime;
+
 			//-------------------- Physics ----------------------//
+			_physicsEngine->stepPhysics(dt);
 			
 			_physicsStageBarrier->wait();
 			//-------------------- Rendering --------------------//

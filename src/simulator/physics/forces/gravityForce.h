@@ -7,7 +7,6 @@
 #ifndef ATTA_PHY_GRAVITY_FORCE_H
 #define ATTA_PHY_GRAVITY_FORCE_H
 
-#include "glm.h"
 #include "force.h"
 #include "simulator/physics/body.h"
 
@@ -16,13 +15,13 @@ namespace atta::phy
 	class GravityForce : public Force
 	{
 		public:
-			GravityForce(glm::vec3 gravity);
+			GravityForce(vec3 gravity);
 			~GravityForce();
 
-			virtual void updateForce(Body* object, float dt);
+			virtual void updateForce(std::shared_ptr<Body> object, float dt);
 
 		private:
-			glm::vec3 _gravity;
+			vec3 _gravity;
 	};
 }
 

@@ -19,12 +19,12 @@ namespace atta::phy
 
 	}
 
-	void ForceGenerator::add(Body* object, Force* force)
+	void ForceGenerator::add(std::shared_ptr<Body> object, std::shared_ptr<Force> force)
 	{
 		_registrations.push_back({object, force});
 	}
 
-	void ForceGenerator::remove(Body* object, Force* force)
+	void ForceGenerator::remove(std::shared_ptr<Body> object, std::shared_ptr<Force> force)
 	{
 
 	}

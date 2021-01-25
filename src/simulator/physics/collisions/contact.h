@@ -18,7 +18,7 @@ namespace atta::phy
 	{
 		public:
 			// Bodies in contact, nullptr for contact with the scenery
-			std::pair<Body*, Body*> objects;
+			std::pair<std::shared_ptr<Body>, std::shared_ptr<Body>> objects;
 
 			// Normal restitutional coefficient at the contact
 			float restitution;

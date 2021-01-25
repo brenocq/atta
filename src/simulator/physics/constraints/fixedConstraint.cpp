@@ -8,7 +8,7 @@
 
 namespace atta::phy
 {
-	FixedConstraint::FixedConstraint(glm::vec3 position, glm::vec3 rotation):
+	FixedConstraint::FixedConstraint(vec3 position, vec3 rotation):
 		_position(position), _rotation(rotation)
 	{
 		_type = "FixedConstraint";

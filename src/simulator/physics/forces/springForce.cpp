@@ -8,7 +8,7 @@
 
 namespace atta::phy
 {
-	SpringForce::SpringForce(glm::vec3 connectionPoint, Body* other, glm::vec3 otherConnectionPoint, float k, float restLenght):
+	SpringForce::SpringForce(vec3 connectionPoint, std::shared_ptr<Body> other, vec3 otherConnectionPoint, float k, float restLenght):
 		_other(other), 
 		_connectionPoint(connectionPoint), _otherConnectionPoint(otherConnectionPoint),
 		_k(k), _restLenght(restLenght)
@@ -21,22 +21,22 @@ namespace atta::phy
 
 	}
 
-	void SpringForce::updateForce(Body* object, float dt)
+	void SpringForce::updateForce(std::shared_ptr<Body> object, float dt)
 	{
 		// Local and other connection points in world space
-		glm::vec3 lws = object->getPointInWorldSpace(_connectionPoint);
-		glm::vec3 ows = _other->getPointInWorldSpace(_otherConnectionPoint);
+		vec3 lws = object->getPointInWorldSpace(_connectionPoint);
+		vec3 ows = _other->getPointInWorldSpace(_otherConnectionPoint);
 
 		// Calculate spring vector
-		glm::vec3 force = lws-ows;
+		vec3 force = lws-ows;
 
 		// Calculate force magnitude
-		float magnitude = glm::length(force);
+		float magnitude = force.length();
 		magnitude = std::abs(magnitude-_restLenght);
 		magnitude*=_k;
 
 		// Apply spring force
-		force = glm::normalize(force);
+		force.normalize();
 		force *= -magnitude;
 		object->addForceAtPoint(force, lws);
 	}
