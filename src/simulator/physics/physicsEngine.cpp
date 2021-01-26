@@ -43,20 +43,19 @@ namespace atta::phy
 		// TODO After updating accelerator tree, get contacts from broadphase
 
 		// Simulating worst case
-		std::vector<std::pair<std::shared_ptr<Object>, std::shared_ptr<Object>>> possibleContacts;
-		std::vector<std::shared_ptr<Object>> objects = _accelerator->getObjects();
-		unsigned size = objects.size();
+		std::vector<std::pair<std::shared_ptr<Body>, std::shared_ptr<Body>>> possibleContacts;
+		unsigned size = _bodies.size();
 		for(unsigned i=0; i<size;i++)
 		{
 			for(unsigned j=i+1; j<size;j++)
 			{
 				if(i!=j)
 				{
-					possibleContacts.push_back(std::make_pair(objects[i], objects[j]));
+					possibleContacts.push_back(std::make_pair(_bodies[i], _bodies[j]));
 				}
 			}
 		}
-		Log::debug("PhysicsEngine", "BroadPhase: $0", possibleContacts.size());
+		//Log::debug("PhysicsEngine", "BroadPhase: $0", possibleContacts.size());
 
 		//---------- Narrow Phase ----------//
 		

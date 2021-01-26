@@ -375,7 +375,7 @@ namespace atta
 
 	// Sets this matrix to be the rotation matrix corresponding to
 	// the given quaternion.
-	void mat4::setOrientationAndPos(const quat &q, const vec3 &pos)
+    void mat4::setPosOri(const vec3 &pos, const quat &q)
 	{
 		data[0] = 1 - (2*q.j*q.j + 2*q.k*q.k);
 		data[1] = 2*q.i*q.j + 2*q.k*q.r;

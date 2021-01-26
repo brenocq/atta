@@ -18,16 +18,19 @@ namespace atta::phy
 	{
 		public:
 			// Bodies in contact, nullptr for contact with the scenery
-			std::pair<std::shared_ptr<Body>, std::shared_ptr<Body>> objects;
+			std::pair<Body*, Body*> bodies;
+
+			// Point of contact in world coordinates
+			vec3 contactPoint;
+
+			// Direction of the contact normal in world coordinates
+			vec3 contactNormal;
 
 			// Normal restitutional coefficient at the contact
 			float restitution;
 
 			// Depth of penetration at the contact
 			float penetration;
-
-			// Direction of the contact normal in world coordinates
-			vec3 contactNormal;
 		
 			void resolve(float dt);
 			float calculateSeparatingVelocity() const;

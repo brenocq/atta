@@ -9,7 +9,7 @@
 namespace atta::phy
 {
 	Shape::Shape(vec3 position, quat orientation, vec3 scale):
-		_position(position), _orientation(orientation), _scale(scale)
+		_body(nullptr), _position(position), _orientation(orientation), _scale(scale)
 
 	{
 

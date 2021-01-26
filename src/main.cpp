@@ -10,17 +10,17 @@ int main()
 	welcome();
 	//---------- Create Scene ----------//
 	std::vector<std::shared_ptr<atta::Object>> objects = {};
-	atta::Box::CreateInfo boxInfo {
+	atta::HalfSpace::CreateInfo groundInfo {
 		.name = "Ground",
-		.position = {0,-0.5,0},
-		.rotation = {0,0,0},
-		.scale = {10, 1, 10},
-		.mass = 0.0f,
+		.normal = {0.0,1.0,0},
+		.offset = 0,
 		.material = {
 			.albedo = {.1,.8,.9}
 		}
 	};
-	objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	objects.push_back(std::make_shared<atta::HalfSpace>(groundInfo));
+
+	atta::Box::CreateInfo boxInfo;
 
 	boxInfo.name = "Box";
 	boxInfo.position = {-3,0.5,0};

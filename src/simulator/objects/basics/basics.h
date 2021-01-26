@@ -11,6 +11,7 @@
 #include "cylinder.h"
 #include "importedObject.h"
 #include "plane.h"
+#include "halfSpace.h"
 #include "sphere.h"
 
 #endif// SIM_OBJECTS_BASICS_H

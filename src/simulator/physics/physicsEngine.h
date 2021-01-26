@@ -12,8 +12,8 @@
 #include "simulator/math/math.h"
 #include "simulator/core/accelerator.h"
 #include "forces/forceGenerator.h"
-#include "collisions/contactGenerator.h"
-#include "collisions/contactResolver.h"
+#include "contacts/contactGenerator.h"
+#include "contacts/contactResolver.h"
 
 namespace atta::phy
 {
@@ -35,8 +35,7 @@ namespace atta::phy
 			std::vector<std::shared_ptr<Body>> _bodies;
 			std::shared_ptr<ForceGenerator> _forceGenerator;
 			std::shared_ptr<ContactResolver> _contactResolver;
-			std::vector<ContactGenerator> _contactGenerators;
-			std::vector<Contact> _contacts;
+			std::vector<ContactGenerator> _contactGenerator;
 
 	};
 }

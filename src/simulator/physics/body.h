@@ -21,7 +21,7 @@ namespace atta::phy
 			~Body();
 
 			//---------- Shape ----------//
-			void addShape(std::shared_ptr<Shape> shape) { _shapes.push_back(shape); }
+			void addShape(std::shared_ptr<Shape> shape);
 
 			//---------- Force/Torque ----------//
 			void addForce(vec3 force);

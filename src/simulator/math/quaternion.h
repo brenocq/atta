@@ -56,14 +56,10 @@ namespace atta
         void operator *=(const quat &multiplier)
         {
             quat q = *this;
-            r = q.r*multiplier.r - q.i*multiplier.i -
-                q.j*multiplier.j - q.k*multiplier.k;
-            i = q.r*multiplier.i + q.i*multiplier.r +
-                q.j*multiplier.k - q.k*multiplier.j;
-            j = q.r*multiplier.j + q.j*multiplier.r +
-                q.k*multiplier.i - q.i*multiplier.k;
-            k = q.r*multiplier.k + q.k*multiplier.r +
-                q.i*multiplier.j - q.j*multiplier.i;
+            r = q.r*multiplier.r - q.i*multiplier.i - q.j*multiplier.j - q.k*multiplier.k;
+            i = q.r*multiplier.i + q.i*multiplier.r + q.j*multiplier.k - q.k*multiplier.j;
+            j = q.r*multiplier.j + q.j*multiplier.r + q.k*multiplier.i - q.i*multiplier.k;
+            k = q.r*multiplier.k + q.k*multiplier.r + q.i*multiplier.j - q.j*multiplier.i;
         }
 
         quat operator *(const quat &multiplier)

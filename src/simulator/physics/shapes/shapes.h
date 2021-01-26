@@ -12,5 +12,7 @@
 #include "sphereShape.h"
 #include "cylinderShape.h"
 #include "capsuleShape.h"
+#include "planeShape.h"
+#include "halfSpaceShape.h"
 
 #endif// ATTA_PHY_SHAPES_H
