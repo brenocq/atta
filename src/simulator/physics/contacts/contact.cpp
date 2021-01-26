@@ -16,9 +16,9 @@ namespace atta::phy
 
 	float Contact::calculateSeparatingVelocity() const
 	{
-		vec3 relativeVel = objects.first->getVelocity();
-		if(objects.second!=nullptr)
-			relativeVel -= objects.second->getVelocity();
+		vec3 relativeVel = bodies.first->getVelocity();
+		if(bodies.second!=nullptr)
+			relativeVel -= bodies.second->getVelocity();
 		return relativeVel.dot(contactNormal);
 	}
 
@@ -34,8 +34,8 @@ namespace atta::phy
 		float newSepVel	= -sepVel*restitution;
 		
 		// Check velocity buildup due to acceleration only
-		vec3 accCausedVelocity = objects.first->getAcceleration();
-		if(objects.second !=nullptr) accCausedVelocity -= objects.second->getAcceleration();
+		vec3 accCausedVelocity = bodies.first->getAcceleration();
+		if(bodies.second !=nullptr) accCausedVelocity -= bodies.second->getAcceleration();
 		float accCausedSepVel = accCausedVelocity.dot(contactNormal)*dt;
 		if(accCausedSepVel<0)
 		{
@@ -49,11 +49,11 @@ namespace atta::phy
 
 		// Apply change in velocity in proportion to their inverse mass
 		// Those with lower inverse mass (higher mass) get less change in velocity
-		float totalInverseMass = objects.first->getInverseMass();
-		if(objects.second!=nullptr)
-			totalInverseMass += objects.second->getInverseMass();
+		float totalInverseMass = bodies.first->getInverseMass();
+		if(bodies.second!=nullptr)
+			totalInverseMass += bodies.second->getInverseMass();
 
-		// All objects have infinity mass
+		// All bodies have infinity mass
 		if(totalInverseMass<=0)
 			return;
 
@@ -64,12 +64,12 @@ namespace atta::phy
 
 
 		// Apply impulses: In direction of the contact normal and proportional to the inverse mass
-		objects.first->setVelocity(objects.first->getVelocity()+
-				impulsePerIMass*objects.first->getInverseMass());
+		bodies.first->setVelocity(bodies.first->getVelocity()+
+				impulsePerIMass*bodies.first->getInverseMass());
 
-		if(objects.second!=nullptr)
-			objects.second->setVelocity(objects.second->getVelocity()
-					-impulsePerIMass*objects.second->getInverseMass());
+		if(bodies.second!=nullptr)
+			bodies.second->setVelocity(bodies.second->getVelocity()
+					-impulsePerIMass*bodies.second->getInverseMass());
 	}
 
 	void Contact::resolveInterpenetration(float dt)
@@ -79,11 +79,11 @@ namespace atta::phy
 
 		// Apply change in position in proportion to their inverse mass
 		// Those with lower inverse mass (higher mass) get less change in position
-		float totalInverseMass = objects.first->getInverseMass();
-		if(objects.second!=nullptr)
-			totalInverseMass += objects.second->getInverseMass();
+		float totalInverseMass = bodies.first->getInverseMass();
+		if(bodies.second!=nullptr)
+			totalInverseMass += bodies.second->getInverseMass();
 
-		// All objects have infinity mass
+		// All bodies have infinity mass
 		if(totalInverseMass<=0)
 			return;
 
@@ -91,11 +91,11 @@ namespace atta::phy
 		vec3 movePerIMass = contactNormal*(penetration/totalInverseMass);
 
 		// Apply penetration resolution
-		objects.first->setPosition(objects.first->getPosition()+
-				movePerIMass*objects.first->getInverseMass());
+		bodies.first->setPosition(bodies.first->getPosition()+
+				movePerIMass*bodies.first->getInverseMass());
 
-		if(objects.second!=nullptr)
-			objects.second->setPosition(objects.second->getPosition()-
-					movePerIMass*objects.second->getInverseMass());
+		if(bodies.second!=nullptr)
+			bodies.second->setPosition(bodies.second->getPosition()-
+					movePerIMass*bodies.second->getInverseMass());
 	}
 }

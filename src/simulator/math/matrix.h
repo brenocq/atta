@@ -74,7 +74,7 @@ namespace atta
 
         vec3 transformInverse(const vec3 &vector) const;
         vec3 getAxisVector(int i) const;
-        void setOrientationAndPos(const quat &q, const vec3 &pos);
+        void setPosOri(const vec3 &pos, const quat &q);
         void setPosOriScale(const vec3 &pos, const quat &q, const vec3 &scale);
 
         vec3 rollPitchYaw();
@@ -178,6 +178,24 @@ namespace atta
 					sin(R)*sin(P)*cos(Y)+cos(R)*sin(Y),		-sin(R)*sin(P)*sin(Y)+cos(R)*cos(Y),	-sin(R)*cos(P),	0,
 					-cos(R)*sin(P)*cos(Y)+sin(R)*sin(Y),	cos(R)*sin(P)*sin(Y)+sin(R)*cos(Y),		cos(R)*cos(P),	0,
 					0,										0,										0,				1);
+	}
+
+	// Calculate matrix from position and orientation 
+    inline mat4 posOri(const vec3 &pos, const quat &q)
+	{
+		mat4 res;
+		res.setPosOri(pos, q);
+
+		return res;
+	}
+
+	// Calculate matrix from position, orientation, and scale
+    inline mat4 posOriScale(const vec3 &pos, const quat &q, const vec3 &scale)
+	{
+		mat4 res;
+		res.setPosOriScale(pos, q, scale);
+
+		return res;
 	}
 
 	//------------------------------------------------------------//

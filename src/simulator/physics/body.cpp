@@ -31,6 +31,12 @@ namespace atta::phy
 	{
 	}
 
+	void Body::addShape(std::shared_ptr<Shape> shape)
+	{
+		shape->setBody(this);
+		_shapes.push_back(shape);
+	}
+
 	void Body::addForce(vec3 force)
 	{
 		_forceAccum += force;

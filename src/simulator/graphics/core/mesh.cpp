@@ -27,6 +27,10 @@ namespace atta
 			{
 				generateBoxMesh();
 			}
+			else if(meshName == "atta::plane")
+			{
+				generatePlaneMesh();
+			}
 		}
 	}
 
@@ -256,6 +260,41 @@ namespace atta
 		_indices.push_back(23);
 		_indices.push_back(20);
 		
+		//---------- Finished generating ----------//
+		eval.stop();
+		Log::info("Mesh", "Finished generating [b]$0[] - [w]$1ms ($2 vertices, $3 indices)", 
+				_meshName, eval.getMs(), _vertices.size(), _indices.size());
+	}
+
+	void Mesh::generatePlaneMesh()
+	{
+		LocalEvaluator eval;
+
+		std::vector<vec3> vertices = {	vec3(0.5, 0.0, 0.5), vec3(-0.5, 0.0, 0.5), 
+										vec3(-0.5, 0.0, -0.5), vec3(0.5, 0.0, -0.5)};
+		vec3 normal = vec3(0.0, 1.0, 0.0);
+
+		Vertex vertex = {
+			.pos = vertices[0],
+			.normal = normal,
+			.texCoord = vec2(0,0),
+			.materialIndex = 0
+		};
+
+		// Top (0-3)
+		for(int i=0; i<4; i++)
+		{
+			vertex.pos = vertices[i];
+			vertex.texCoord = vec2(vertices[i].x > 0.0f, vertices[i].z > 0.0f);
+			_vertices.push_back(vertex);
+		}
+		_indices.push_back(0);
+		_indices.push_back(1);
+		_indices.push_back(2);
+		_indices.push_back(0);
+		_indices.push_back(2);
+		_indices.push_back(3);
+
 		//---------- Finished generating ----------//
 		eval.stop();
 		Log::info("Mesh", "Finished generating [b]$0[] - [w]$1ms ($2 vertices, $3 indices)", 

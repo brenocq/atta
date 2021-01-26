@@ -35,6 +35,7 @@ namespace atta
 		private:
 			void loadMesh();
 			void generateBoxMesh();
+			void generatePlaneMesh();
 
 			std::string _meshName;
 			std::vector<Vertex> _vertices;
