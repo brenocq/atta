@@ -23,42 +23,42 @@ int main()
 	atta::Box::CreateInfo boxInfo;
 
 	boxInfo.name = "Box";
-	boxInfo.position = {-3,0.5,0};
+	boxInfo.position = {0,1.0,0};
 	boxInfo.scale = {1,1,1};
 	boxInfo.mass = 1.0f,
 	boxInfo.material.albedo = {1.0,.1,.1};
 	objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	boxInfo.name = "Box";
-	boxInfo.position = {-1,0.5,0};
-	boxInfo.scale = {1,1,1};
-	boxInfo.mass = 1.0f,
-	boxInfo.material.albedo = {1.0,.1,.1};
-	objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	//boxInfo.name = "Box";
+	//boxInfo.position = {-1,0.5,0};
+	//boxInfo.scale = {1,1,1};
+	//boxInfo.mass = 1.0f,
+	//boxInfo.material.albedo = {1.0,.1,.1};
+	//objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	boxInfo.name = "Box";
-	boxInfo.position = {1,0.5,0};
-	boxInfo.scale = {1,1,1};
-	boxInfo.mass = 1.0f,
-	boxInfo.material.albedo = {1.0,.1,.1};
-	objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	//boxInfo.name = "Box";
+	//boxInfo.position = {1,0.5,0};
+	//boxInfo.scale = {1,1,1};
+	//boxInfo.mass = 1.0f,
+	//boxInfo.material.albedo = {1.0,.1,.1};
+	//objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	boxInfo.name = "Box";
-	boxInfo.position = {3,0.5,0};
-	boxInfo.scale = {1,1,1};
-	boxInfo.mass = 1.0f,
-	boxInfo.material.albedo = {1.0,.1,.1};
-	objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	//boxInfo.name = "Box";
+	//boxInfo.position = {3,0.5,0};
+	//boxInfo.scale = {1,1,1};
+	//boxInfo.mass = 1.0f,
+	//boxInfo.material.albedo = {1.0,.1,.1};
+	//objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	atta::ImportedObject::CreateInfo wheel {
-		.name = "Wheel",
-		.fileName = "wheel",
-		.position = {0,1.2,0},
-		.rotation = {0,0,0},
-		.scale = {3,3,3},
-		.mass = 1.0f
-	};
-	objects.push_back(std::make_shared<atta::ImportedObject>(wheel));
+	//atta::ImportedObject::CreateInfo wheel {
+	//	.name = "Wheel",
+	//	.fileName = "wheel",
+	//	.position = {0,1.2,0},
+	//	.rotation = {0,0,0},
+	//	.scale = {3,3,3},
+	//	.mass = 1.0f
+	//};
+	//objects.push_back(std::make_shared<atta::ImportedObject>(wheel));
 
 	//---------- Create Atta Simulator ----------//
 	atta::Atta::CreateInfo attaCreateInfo = {

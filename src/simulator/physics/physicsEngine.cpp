@@ -13,6 +13,8 @@ namespace atta::phy
 		_accelerator(info.accelerator)
 	{
 		_forceGenerator = std::make_shared<ForceGenerator>();
+		_contactResolver = std::make_shared<ContactResolver>(100);
+		_contactGenerator = std::make_shared<ContactGenerator>();
 
 		// Get bodies from objects
 		for(auto object : _accelerator->getObjects())
@@ -58,6 +60,18 @@ namespace atta::phy
 		//Log::debug("PhysicsEngine", "BroadPhase: $0", possibleContacts.size());
 
 		//---------- Narrow Phase ----------//
+		_contactGenerator->clearContacts();
+		for(auto contact : possibleContacts)
+		{
+			for(auto shape1 : contact.first->getShapes())
+			{
+				for(auto shape2 : contact.second->getShapes())
+				{
+					_contactGenerator->testContact(shape1, shape2);
+				}
+			}
+		}
+		Log::debug("PhysicsEngine", "Qty contacts: $0", _contactGenerator->qtyContacts());
 		
 		//---------- Resolve contacts ----------//
 	}

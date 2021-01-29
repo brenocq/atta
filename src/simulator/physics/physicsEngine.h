@@ -35,7 +35,7 @@ namespace atta::phy
 			std::vector<std::shared_ptr<Body>> _bodies;
 			std::shared_ptr<ForceGenerator> _forceGenerator;
 			std::shared_ptr<ContactResolver> _contactResolver;
-			std::vector<ContactGenerator> _contactGenerator;
+			std::shared_ptr<ContactGenerator> _contactGenerator;
 
 	};
 }
