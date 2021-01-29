@@ -14,9 +14,74 @@ namespace atta::phy
 
 	}
 
+	void ContactGenerator::clearContacts()
+	{
+		_contacts.clear();
+		_contactsLeft = _maxContacts;
+	}
+
+	// Cast shape to right
+	unsigned ContactGenerator::testContact(std::shared_ptr<Shape> s1, std::shared_ptr<Shape> s2)
+	{
+		switch((100*s1->getType() + s2->getType()))
+		{
+			case SPHERE_SPHERE_PAIR:
+				testContact(std::static_pointer_cast<SphereShape>(s1), std::static_pointer_cast<SphereShape>(s2)); break;
+			//case SPHERE_BOX_PAIR:
+			case SPHERE_HALF_SPACE_PAIR:
+				testContact(std::static_pointer_cast<SphereShape>(s1), std::static_pointer_cast<HalfSpaceShape>(s2)); break;
+			case SPHERE_PLANE_PAIR:
+				testContact(std::static_pointer_cast<SphereShape>(s1), std::static_pointer_cast<PlaneShape>(s2)); break;
+			//case SPHERE_CYLINDER_PAIR:
+			//case SPHERE_CAPSULE_PAIR:
+
+			//case BOX_SPHERE_PAIR:
+			//case BOX_BOX_PAIR:
+			case BOX_HALF_SPACE_PAIR:
+				testContact(std::static_pointer_cast<BoxShape>(s1), std::static_pointer_cast<HalfSpaceShape>(s2)); break;
+			//case BOX_PLANE_PAIR:
+			//case BOX_CYLINDER_PAIR:
+			//case BOX_CAPSULE_PAIR:
+
+			case HALF_SPACE_SPHERE_PAIR:
+				testContact(std::static_pointer_cast<HalfSpaceShape>(s1), std::static_pointer_cast<SphereShape>(s2)); break;
+			case HALF_SPACE_BOX_PAIR:
+				testContact(std::static_pointer_cast<HalfSpaceShape>(s1), std::static_pointer_cast<BoxShape>(s2)); break;
+			//case HALF_SPACE_HALF_SPACE_PAIR:
+			//case HALF_SPACE_PLANE_PAIR:
+			//case HALF_SPACE_CYLINDER_PAIR:
+			//case HALF_SPACE_CAPSULE_PAIR:
+
+			//case PLANE_SPHERE_PAIR:
+			//case PLANE_BOX_PAIR:
+			//case PLANE_HALF_SPACE_PAIR:
+			//case PLANE_PLANE_PAIR:
+			//case PLANE_CYLINDER_PAIR:
+			//case PLANE_CAPSULE_PAIR:
+
+			//case CYLINDER_SPHERE_PAIR:
+			//case CYLINDER_BOX_PAIR:
+			//case CYLINDER_HALF_SPACE_PAIR:
+			//case CYLINDER_PLANE_PAIR:
+			//case CYLINDER_CYLINDER_PAIR:
+			//case CYLINDER_CAPSULE_PAIR:
+
+			//case CAPSULE_SPHERE_PAIR:
+			//case CAPSULE_BOX_PAIR:
+			//case CAPSULE_HALF_SPACE_PAIR:
+			//case CAPSULE_PLANE_PAIR:
+			//case CAPSULE_CYLINDER_PAIR:
+			//case CAPSULE_CAPSULE_PAIR:
+			default:
+				Log::warning("ContactGenerator", "Collision between uninplemented shapes! (SHAPE_PAIR= $0)", 
+						(100*s1->getType() + s2->getType()));
+		}
+
+		return 0;
+	}
 
 	//-------------------- Sphere-Sphere --------------------//
-	unsigned ContactGenerator::generateContact(std::shared_ptr<SphereShape> s1, std::shared_ptr<SphereShape> s2)
+	unsigned ContactGenerator::testContact(std::shared_ptr<SphereShape> s1, std::shared_ptr<SphereShape> s2)
 	{
 		if(_contactsLeft<=0) return 0;
 
@@ -46,12 +111,12 @@ namespace atta::phy
 	}
 
 	//-------------------- Sphere-HalfSpace --------------------//
-	unsigned ContactGenerator::generateContact(std::shared_ptr<HalfSpaceShape> p, std::shared_ptr<SphereShape> s)
+	unsigned ContactGenerator::testContact(std::shared_ptr<HalfSpaceShape> p, std::shared_ptr<SphereShape> s)
 	{
-		return generateContact(s, p);
+		return testContact(s, p);
 	}
 
-	unsigned ContactGenerator::generateContact(std::shared_ptr<SphereShape> s, std::shared_ptr<HalfSpaceShape> p)
+	unsigned ContactGenerator::testContact(std::shared_ptr<SphereShape> s, std::shared_ptr<HalfSpaceShape> p)
 	{
 		if(_contactsLeft<=0) return 0;
 
@@ -76,12 +141,12 @@ namespace atta::phy
 	}
 
 	//-------------------- Sphere-Plane --------------------//
-	unsigned ContactGenerator::generateContact(std::shared_ptr<PlaneShape> p, std::shared_ptr<SphereShape> s)
+	unsigned ContactGenerator::testContact(std::shared_ptr<PlaneShape> p, std::shared_ptr<SphereShape> s)
 	{
-		return generateContact(s, p);
+		return testContact(s, p);
 	}
 
-	unsigned ContactGenerator::generateContact(std::shared_ptr<SphereShape> s, std::shared_ptr<PlaneShape> p)
+	unsigned ContactGenerator::testContact(std::shared_ptr<SphereShape> s, std::shared_ptr<PlaneShape> p)
 	{
 		if(_contactsLeft<=0) return 0;
 
@@ -116,12 +181,12 @@ namespace atta::phy
 	}
 
 	//-------------------- Box-HalfSpace --------------------//
-	unsigned ContactGenerator::generateContact(std::shared_ptr<BoxShape> b, std::shared_ptr<HalfSpaceShape> p)
+	unsigned ContactGenerator::testContact(std::shared_ptr<BoxShape> b, std::shared_ptr<HalfSpaceShape> p)
 	{
-		return generateContact(p, b);
+		return testContact(p, b);
 	}
 
-	unsigned ContactGenerator::generateContact(std::shared_ptr<HalfSpaceShape> p, std::shared_ptr<BoxShape> b)
+	unsigned ContactGenerator::testContact(std::shared_ptr<HalfSpaceShape> p, std::shared_ptr<BoxShape> b)
 	{
 		if(_contactsLeft<=0) return 0;
 
@@ -165,12 +230,12 @@ namespace atta::phy
 	}
 
 	//-------------------- Box-Sphere --------------------//
-	unsigned ContactGenerator::generateContact(std::shared_ptr<BoxShape> b, std::shared_ptr<SphereShape> s)
+	unsigned ContactGenerator::testContact(std::shared_ptr<BoxShape> b, std::shared_ptr<SphereShape> s)
 	{
-		return generateContact(s, b);
+		return testContact(s, b);
 	}
 
-	unsigned ContactGenerator::generateContact(std::shared_ptr<SphereShape> s, std::shared_ptr<BoxShape> b)
+	unsigned ContactGenerator::testContact(std::shared_ptr<SphereShape> s, std::shared_ptr<BoxShape> b)
 	{
 		// Transform sphere center to box local space
 
@@ -182,7 +247,7 @@ namespace atta::phy
 	}
 
 	//-------------------- Box-Box --------------------//
-	unsigned ContactGenerator::generateContact(std::shared_ptr<BoxShape> b1, std::shared_ptr<BoxShape> b2)
+	unsigned ContactGenerator::testContact(std::shared_ptr<BoxShape> b1, std::shared_ptr<BoxShape> b2)
 	{
 		if(_contactsLeft<=0) return 0;
 
