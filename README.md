@@ -42,7 +42,7 @@ These values are unreliable and come from what I think is going on in the code (
  - RayTracing (Vulkan): 85%
  - RayTracing (CPU): 5%
  - Graphics user interface: 20%
- - Physics engine: 10%
+ - Physics engine: 60%
  - Threading: 30%
 
 ## References

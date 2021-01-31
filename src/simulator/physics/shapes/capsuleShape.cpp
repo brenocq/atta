@@ -12,6 +12,7 @@ namespace atta::phy
 		Shape(position, orientation, size)
 	{
 		setType(CAPSULE_SHAPE);
+		setTypeName("CAPSULE");
 	}
 
 	CapsuleShape::~CapsuleShape()

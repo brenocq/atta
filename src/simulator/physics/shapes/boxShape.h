@@ -17,7 +17,8 @@ namespace atta::phy
 			BoxShape(vec3 position = vec3(), quat orientation = quat(), vec3 size = vec3(1,1,1));
 			~BoxShape();
 
-			vec3 getSize() const { return getScale(); }
+			vec3 getSize() const { return _scale; }
+			mat3 calculateInertiaTensor(float mass);
 
 		private:
 	};

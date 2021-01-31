@@ -73,8 +73,8 @@ namespace atta::phy
 			//case CAPSULE_CYLINDER_PAIR:
 			//case CAPSULE_CAPSULE_PAIR:
 			default:
-				Log::warning("ContactGenerator", "Collision between uninplemented shapes! (SHAPE_PAIR= $0)", 
-						(100*s1->getType() + s2->getType()));
+				Log::warning("ContactGenerator", "Collision between uninplemented shapes! ($0_SHAPE and $1_SHAPE)", 
+						s1->getTypeName(), s2->getTypeName());
 		}
 
 		return 0;
@@ -102,7 +102,7 @@ namespace atta::phy
 		contact.contactPoint = pos1+middleLine*0.5f;
 		contact.contactNormal = normal;
 		contact.penetration = radSum-dist;
-		contact.bodies = std::make_pair(s1->getBody(), s2->getBody());
+		contact.setBodyData(s1->getBody(), s2->getBody());
 
 		_contacts.push_back(contact);
 		_contactsLeft--;
@@ -132,7 +132,7 @@ namespace atta::phy
 		contact.contactPoint = posS - planeNormal * distance;
 		contact.contactNormal = planeNormal;
 		contact.penetration = distance-s->getRadius();
-		contact.bodies = std::make_pair(s->getBody(), p->getBody());
+		contact.setBodyData(s->getBody(), p->getBody());
 
 		_contacts.push_back(contact);
 		_contactsLeft--;
@@ -172,7 +172,7 @@ namespace atta::phy
 		contact.contactPoint = posS - normal * distance;
 		contact.contactNormal = normal;
 		contact.penetration = penetration;
-		contact.bodies = std::make_pair(s->getBody(), p->getBody());
+		contact.setBodyData(s->getBody(), p->getBody());
 
 		_contacts.push_back(contact);
 		_contactsLeft--;
@@ -218,7 +218,7 @@ namespace atta::phy
 				contact.contactPoint = vertex + penetration*p->getNormal();// Middle point between vertex and plane
 				contact.contactNormal = p->getNormal();
 				contact.penetration = penetration;
-				contact.bodies = std::make_pair(b->getBody(), p->getBody());
+				contact.setBodyData(b->getBody(), p->getBody());
 
 				_contacts.push_back(contact);
 				_contactsLeft--;

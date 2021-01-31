@@ -678,6 +678,7 @@ namespace atta
 	}
 
 	// Transform the vector by the transpose of this matrix
+	// Example usage: When multiplying by the inverse of an orthogonal matrix (phy local->world to world->local)
 	vec3 mat3::transformTranspose(const vec3 &vector) const
 	{
 		return vec3(

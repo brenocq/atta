@@ -12,6 +12,7 @@ namespace atta::phy
 		Shape(position, orientation, size)
 	{
 		setType(CYLINDER_SHAPE);
+		setTypeName("CYLINDER");
 	}
 
 	CylinderShape::~CylinderShape()

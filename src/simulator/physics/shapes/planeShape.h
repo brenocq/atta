@@ -20,6 +20,7 @@ namespace atta::phy
 			//---------- Getters ----------//
 			vec3 getNormal() const { return _normal; }
 			float getOffset() const { return _offset; }
+			mat3 calculateInertiaTensor(float mass) { return mat3(); }
 
 		private:
 			vec3 _normal;

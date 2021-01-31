@@ -16,18 +16,20 @@ namespace atta::phy
 	class ContactResolver
 	{
 		public:
-			ContactResolver(unsigned int iterations);
+			ContactResolver();
 			~ContactResolver();
 
-			void resolveContacts(std::vector<Contact> contacts, float dt);
+			void resolveContacts(std::vector<Contact> &contacts, float dt);
 
-			//---------- Getters and Setters ----------//
-			unsigned int getIterations() const { return _iterations; }
-			void setIterations(unsigned int iterations) { _iterations=iterations; }
-		
 		private:
-			unsigned int _iterations;
-			unsigned int _iterationsUsed;// Performace tracking
+			void prepareContacts(std::vector<Contact> &contacts, float dt);
+			void adjustPositions(std::vector<Contact> &contacts, float dt);
+			void adjustVelocities(std::vector<Contact> &contacts, float dt);
+
+			unsigned int _positionIterations;
+			float _positionEpsilon;
+			unsigned int _velocityIterations;
+			float _velocityEpsilon;
 	};
 }
 
