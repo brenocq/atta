@@ -24,6 +24,7 @@ int main()
 
 	boxInfo.name = "Box";
 	boxInfo.position = {0,1.0,0};
+	boxInfo.rotation = {.707,0,0};
 	boxInfo.scale = {1,1,1};
 	boxInfo.mass = 1.0f,
 	boxInfo.material.albedo = {1.0,.1,.1};

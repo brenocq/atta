@@ -20,7 +20,8 @@ namespace atta::phy
 			ContactGenerator();
 
 			void clearContacts();
-			// Cast shape to right
+
+			// Cast shape to right one
 			unsigned testContact(std::shared_ptr<Shape> s1, std::shared_ptr<Shape> s2);
 
 			//---------- Test contact between shapes ----------//
@@ -44,6 +45,7 @@ namespace atta::phy
 
 			//---------- Getters ----------//
 			unsigned qtyContacts() { return _maxContacts-_contactsLeft; }
+			std::vector<Contact>& getContacts() { return _contacts; }
 
 		private:
 			std::vector<Contact> _contacts;

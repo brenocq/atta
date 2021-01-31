@@ -18,6 +18,8 @@ namespace atta::phy
 			~SphereShape();
 
 			float getRadius() const { return _radius; }
+			mat3 calculateInertiaTensor(float mass);
+
 		private:
 			float _radius;
 	};

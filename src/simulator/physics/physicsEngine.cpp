@@ -13,7 +13,7 @@ namespace atta::phy
 		_accelerator(info.accelerator)
 	{
 		_forceGenerator = std::make_shared<ForceGenerator>();
-		_contactResolver = std::make_shared<ContactResolver>(100);
+		_contactResolver = std::make_shared<ContactResolver>();
 		_contactGenerator = std::make_shared<ContactGenerator>();
 
 		// Get bodies from objects
@@ -71,9 +71,10 @@ namespace atta::phy
 				}
 			}
 		}
-		Log::debug("PhysicsEngine", "Qty contacts: $0", _contactGenerator->qtyContacts());
+		//Log::debug("PhysicsEngine", "Qty contacts: $0", _contactGenerator->qtyContacts());
 		
 		//---------- Resolve contacts ----------//
+		_contactResolver->resolveContacts(_contactGenerator->getContacts(), dt);
 	}
 
 	//---------- Static functions ----------//

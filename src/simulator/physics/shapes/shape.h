@@ -77,19 +77,22 @@ namespace atta::phy
 
 			//---------- Getters ----------//
 			ShapeType getType() const { return _type; }
+			std::string getTypeName() const { return _typeName; }
 			Body* getBody() const { return _body; }
 			vec3 getPosition() const { return _position; }
 			quat getOrientation() const { return _orientation; }
 			vec3 getScale() const { return _scale; }
+			virtual mat3 calculateInertiaTensor(float mass) = 0;
 
 			//---------- Setters ----------//
 			void setBody(Body* body) { _body = body; } 
 
 		protected:
 			void setType(ShapeType type) { _type = type; } 
+			void setTypeName(std::string typeName) { _typeName = typeName; } 
 
-		private:
 			ShapeType _type;
+			std::string _typeName;
 			Body* _body;
 
 			// Position and orientation in objectPhysics local space

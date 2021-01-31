@@ -29,6 +29,10 @@ namespace atta::phy
 			void addForceAtPoint(vec3 force, vec3 point);
 			void integrate(float dt);
 
+			//---------- Velocity ----------//
+			void addVelocity(vec3 vel) { _velocity+=vel; }
+			void addRotation(vec3 rot) { _rotation+=rot; }
+
 			//---------- Helpers ----------//
 			vec3 getPointInWorldSpace(vec3 point);
 
@@ -36,11 +40,14 @@ namespace atta::phy
 			vec3 getPosition() const { return *_position; };
 			vec3 getVelocity() const { return _velocity; };
 			vec3 getAcceleration() const { return _acceleration; };
+			vec3 getLastFrameAcceleration() const { return _lastFrameAcceleration; };
 			float getInverseMass() const { return _inverseMass; }
 			float getMass() const { return _inverseMass<=0 ? 0 : _inverseMass; };
 			float getDamping() const { return _damping; };
 
+			mat3 getInverseInertiaTensorWorld() const { return _inverseInertiaTensorWorld; }
 			quat getOrientation() const { return *_orientation; };
+			vec3 getRotation() const { return _rotation; };
 
 			std::vector<std::shared_ptr<Shape>> getShapes() const { return _shapes; }
 			mat4 getTransformMatrix() const { return _transformMatrix; };
@@ -50,6 +57,8 @@ namespace atta::phy
 			void setVelocity(vec3 velocity) { _velocity = velocity; };
 			void setAcceleration(vec3 acceleration) { _acceleration = acceleration; };
 			void setMass(float mass) { _inverseMass = mass>0 ? 1/mass : 0; };
+
+			void setOrientation(quat orientation) { (*_orientation) = orientation; }
 
 		private:
 			// Clear the forces
@@ -67,9 +76,11 @@ namespace atta::phy
 			vec3* _position;
 			vec3 _velocity;
 			vec3 _acceleration;
+			vec3 _lastFrameAcceleration;
 
 			// Angular
 			mat3 _inverseInertiaTensor;
+			mat3 _inverseInertiaTensorWorld;
 			float _angularDamping;
 			quat* _orientation;
 			vec3 _rotation;// Angular velocity

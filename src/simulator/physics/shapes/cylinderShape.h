@@ -17,6 +17,8 @@ namespace atta::phy
 			CylinderShape(vec3 position = vec3(), quat orientation = quat(), vec3 size = vec3(1,1,1));
 			~CylinderShape();
 
+			mat3 calculateInertiaTensor(float mass) { return mat3(); }
+
 		private:
 	};
 }

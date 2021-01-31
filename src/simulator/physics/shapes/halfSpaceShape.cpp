@@ -12,6 +12,7 @@ namespace atta::phy
 		Shape(vec3(), quat(), vec3()), _normal(normal), _offset(offset)
 	{
 		setType(HALF_SPACE_SHAPE);
+		setTypeName("HALF_SPACE");
 	}
 
 	HalfSpaceShape::~HalfSpaceShape()

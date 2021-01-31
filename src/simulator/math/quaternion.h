@@ -69,6 +69,17 @@ namespace atta
 			return result;
         }
 
+        void operator +=(const vec3 &vec)
+        {
+            quat q(0, vec.x, vec.y, vec.z);
+            q *= *this;
+
+            r += q.r * 0.5f;
+            i += q.i * 0.5f;
+            j += q.j * 0.5f;
+            k += q.k * 0.5f;
+        }
+
         void addScaledVector(const vec3& vector, float scale)
         {
             quat q(0,

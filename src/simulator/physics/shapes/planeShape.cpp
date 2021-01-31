@@ -12,6 +12,7 @@ namespace atta::phy
 		Shape(vec3(), quat(), vec3()), _normal(normal), _offset(offset)
 	{
 		setType(PLANE_SHAPE);
+		setTypeName("PLANE");
 	}
 
 	PlaneShape::~PlaneShape()
