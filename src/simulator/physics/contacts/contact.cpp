@@ -89,27 +89,30 @@ namespace atta::phy
 	{
 		Body* thisBody = bodies[bodyIndex];
 
-		// Calculate the velocity at contact
-		vec3 velocity = cross(thisBody->getRotation(), relativeContactPosition[bodyIndex]);// From point angular velocity
-		velocity += thisBody->getVelocity();// From object linear velocity
+		//----- Calculate linear velocity (world) at point of contact -----//
+		vec3 velocity;
+		// From point angular velocity
+		velocity += cross(thisBody->getRotation(), relativeContactPosition[bodyIndex]);
+		// From object linear velocity
+		velocity += thisBody->getVelocity();
 
-		// Turn the velocity into contact coordinates
+		//----- Transform from world coordinates to contact coordinates -----//
 		vec3 contactVelocity = contactToWorld.transformTranspose(velocity);
 
+		//----- Add planar velocities from last acc -----//
 		// Calculate the amount of velocity that is due to forces without reactions
-		//vec3 accVelocity = thisBody->getLastFrameAcceleration*dt;
+		vec3 accVelocity = thisBody->getLastFrameAcceleration()*dt;
 
-		//// Calculate the velocity in contact-coordinates.
-		//accVelocity = contactToWorld.transformTranspose(accVelocity);
+		// Calculate the velocity in contact-coordinates.
+		accVelocity = contactToWorld.transformTranspose(accVelocity);
 
-		// TODO FRICTION
-		//// We ignore any component of acceleration in the contact normal
-		//// direction, we are only interested in planar acceleration
-		//accVelocity.x = 0;
+		// We ignore any component of acceleration in the contact normal
+		// direction, we are only interested in planar acceleration
+		accVelocity.x = 0;
 
-		//// Add the planar velocities - if there's enough friction they will
-		//// be removed during velocity resolution
-		//contactVelocity += accVelocity;
+		// Add the planar velocities - if there's enough friction they will
+		// be removed during velocity resolution
+		contactVelocity += accVelocity;
 
 		return contactVelocity;
 	}
@@ -118,9 +121,12 @@ namespace atta::phy
 	{
     	const static float velocityLimit = 0.01f;
 
-		float velocityFromAcc = dot(bodies[0]->getLastFrameAcceleration(), contactNormal*dt);
-		if(bodies[1])
-			velocityFromAcc -= dot(bodies[1]->getLastFrameAcceleration(), contactNormal*dt);
+		float velocityFromAcc = 0;
+		if(bodies[0]->getIsAwake())
+			velocityFromAcc += dot(bodies[0]->getLastFrameAcceleration()*dt, contactNormal);
+
+		if(bodies[1] && bodies[1]->getIsAwake())
+			velocityFromAcc -= dot(bodies[1]->getLastFrameAcceleration()*dt, contactNormal);
 
 		// If the velocity is very slow, limit the restitution
 		float thisRestitution = restitution;
@@ -131,7 +137,9 @@ namespace atta::phy
 		}
 
 		// Combine the bounce velocity with the removed acceleration velocity
-		desiredDeltaVelocity = -contactVelocity.x - thisRestitution* (contactVelocity.x - velocityFromAcc);
+		desiredDeltaVelocity = 
+			-contactVelocity.x 
+			-thisRestitution * (contactVelocity.x - velocityFromAcc);
 	}
 
 	void Contact::applyPositionChange(vec3 linearChange[2], vec3 angularChange[2], float penetration)
@@ -151,10 +159,25 @@ namespace atta::phy
 		{
 			mat3 inverseInertiaTensor = bodies[i]->getInverseInertiaTensorWorld();
 
+			Log::debug("Contact", "ContactPos:$0", contactPoint.toString());
+			Log::debug("Contact", "RelContactPos:$0", relativeContactPosition[i].toString());
 			vec3 angularInertiaWorld = cross(relativeContactPosition[i], contactNormal);
+			Log::debug("Contact", "cross:$0", angularInertiaWorld.toString());
 			angularInertiaWorld = inverseInertiaTensor.transform(angularInertiaWorld);
+			Log::debug("Contact", "inerciaTensor:$0", inverseInertiaTensor.toString());
+			Log::debug("Contact", "transform:$0", angularInertiaWorld.toString());
 			angularInertiaWorld = cross(angularInertiaWorld, relativeContactPosition[i]);
+			Log::debug("Contact", "crossAgain:$0", angularInertiaWorld.toString());
 			angularInertia[i] = dot(angularInertiaWorld, contactNormal);
+			Log::debug("Contact", "angIn:$0", angularInertia[i]);
+			Log::debug("Contact", "------------");
+			//[Contact] ContactPos:vec3{0.500000, 0.000000, 0.500000} 
+			//[Contact] RelContactPos:vec3{0.500000, -0.498905, 0.500000} 
+			//[Contact] cross:vec3{-0.500000, 0.000000, 0.500000} 
+			//[Contact] transform:vec3{-11.999999, 0.000000, 11.999999} 
+			//[Contact] crossAgain:vec3{5.986863, 11.999999, 5.986863} 
+			//[Contact] angIn:11.999999 
+
 
 			// The linear component is simply the inverse mass
 			linearInertia[i] = bodies[i]->getInverseMass();
@@ -214,20 +237,22 @@ namespace atta::phy
 
 				// Work out the direction we'd need to rotate to achieve that
 				angularChange[i] = inverseInertiaTensor.transform(targetAngularDirection) * (angularMove[i] / angularInertia[i]);
+				//Log::debug("Contact", "($0)-> AngMove:$1 AngChg:$2 AngIn:$3", i, angularMove[i], angularChange[i].toString(), angularInertia[i]);
 			}
 
 			// Velocity change is easier - it is just the linear movement
 			// along the contact normal.
-			linearChange[i] = contactNormal * linearMove[i];
+			linearChange[i] = contactNormal*linearMove[i];
 
 			// Now we can start to apply the values we've calculated.
 			// Apply the linear movement
 			vec3 pos = bodies[i]->getPosition();
-			pos += contactNormal*linearMove[i];
+			pos += linearChange[i];
 			bodies[i]->setPosition(pos);
 
 			// And the change in orientation
 			quat q = bodies[i]->getOrientation();
+			//Log::debug("Contact", "Ori:$0", q.toString());
 			q += angularChange[i];
 			bodies[i]->setOrientation(q);
 
@@ -236,7 +261,7 @@ namespace atta::phy
 			// data. Otherwise the resolution will not change the position
 			// of the object, and the next collision detection round will
 			// have the same penetration.
-			//if (!body[i]->getAwake()) body[i]->calculateDerivedData();
+			if(!bodies[i]->getIsAwake()) bodies[i]->calculateDerivedData();
 		}
 	}
 
@@ -244,25 +269,25 @@ namespace atta::phy
 	{
 		// Get hold of the inverse mass and inverse inertia tensor, both in
 		// world coordinates.
-		mat3 inverseInertiaTensor[2] = {
-			bodies[0]->getInverseInertiaTensorWorld(),
-			bodies[1]->getInverseInertiaTensorWorld()
-		};
+		mat3 inverseInertiaTensor[2];
+		inverseInertiaTensor[0] = bodies[0]->getInverseInertiaTensorWorld();
+		if(bodies[1])
+			inverseInertiaTensor[1] = bodies[1]->getInverseInertiaTensorWorld();
 
 		// We will calculate the impulse for each contact axis
 		vec3 impulseContact;
 
-		//if(friction == (real)0.0)
-		//{
-		//	// Use the short format for frictionless contacts
-		//	impulseContact = calculateFrictionlessImpulse(inverseInertiaTensor);
-		//}
-		//else
-		//{
-		//	// Otherwise we may have impulses that aren't in the direction of the
-		//	// contact, so we need the more complex version.
-		//	impulseContact = calculateFrictionImpulse(inverseInertiaTensor);
-		//}
+		if(friction == 0.0f)
+		{
+			// Use the short format for frictionless contacts
+			impulseContact = calculateFrictionlessImpulse(inverseInertiaTensor);
+		}
+		else
+		{
+			// Otherwise we may have impulses that aren't in the direction of the
+			// contact, so we need the more complex version
+			impulseContact = calculateFrictionImpulse(inverseInertiaTensor);
+		}
 
 		// Convert impulse to world coordinates
 		vec3 impulse = contactToWorld.transform(impulseContact);
@@ -289,5 +314,138 @@ namespace atta::phy
 			bodies[1]->addVelocity(velocityChange[1]);
 			bodies[1]->addRotation(rotationChange[1]);
 		}
+	}
+
+	void Contact::matchAwakeState()
+	{
+		// Collisions with the world never cause a body to wake up.
+		if (!bodies[1]) return;
+
+		bool body0awake = bodies[0]->getIsAwake();
+		bool body1awake = bodies[1]->getIsAwake();
+
+		// Wake up only the sleeping one
+		if (body0awake ^ body1awake) {
+			if (body0awake) bodies[1]->setIsAwake();
+			else bodies[0]->setIsAwake();
+		}
+	}
+
+	vec3 Contact::calculateFrictionlessImpulse(mat3 *inverseInertiaTensor)
+	{
+		vec3 impulseContact;
+
+		// Build a vector that shows the change in velocity in
+		// world space for a unit impulse in the direction of the contact
+		// normal.
+		vec3 deltaVelWorld = cross(relativeContactPosition[0], contactNormal);
+		deltaVelWorld = inverseInertiaTensor[0].transform(deltaVelWorld);
+		deltaVelWorld = cross(deltaVelWorld, relativeContactPosition[0]);
+
+		// Work out the change in velocity in contact coordiantes.
+		float deltaVelocity = dot(deltaVelWorld, contactNormal);
+
+		// Add the linear component of velocity change
+		deltaVelocity += bodies[0]->getInverseMass();
+
+		// Check if we need to the second body's data
+		if(bodies[1])
+		{
+			// Go through the same transformation sequence again
+			vec3 deltaVelWorld = cross(relativeContactPosition[1], contactNormal);
+			deltaVelWorld = inverseInertiaTensor[1].transform(deltaVelWorld);
+			deltaVelWorld = cross(deltaVelWorld, relativeContactPosition[1]);
+
+			// Add the change in velocity due to rotation
+			deltaVelocity += dot(deltaVelWorld, contactNormal);
+
+			// Add the change in velocity due to linear motion
+			deltaVelocity += bodies[1]->getInverseMass();
+		}
+
+		// Calculate the required size of the impulse
+		impulseContact.x = desiredDeltaVelocity / deltaVelocity;
+		impulseContact.y = 0;
+		impulseContact.z = 0;
+		return impulseContact;
+	}
+
+	vec3 Contact::calculateFrictionImpulse(mat3 *inverseInertiaTensor)
+	{
+		vec3 impulseContact;
+		float inverseMass = bodies[0]->getInverseMass();
+
+		// The equivalent of a cross product in matrices is multiplication
+		// by a skew symmetric matrix - we build the matrix for converting
+		// between linear and angular quantities
+		mat3 impulseToTorque;
+		impulseToTorque.setSkewSymmetric(relativeContactPosition[0]);
+
+		// Build the matrix to convert contact impulse to change in velocity
+		// in world coordinates
+		mat3 deltaVelWorld = impulseToTorque;
+		deltaVelWorld *= inverseInertiaTensor[0];
+		deltaVelWorld *= impulseToTorque;
+		deltaVelWorld *= -1;
+
+		// Check if we need to add body two's data
+		if(bodies[1])
+		{
+			// Set the cross product matrix
+			impulseToTorque.setSkewSymmetric(relativeContactPosition[1]);
+
+			// Calculate the velocity change matrix
+			mat3 deltaVelWorld2 = impulseToTorque;
+			deltaVelWorld2 *= inverseInertiaTensor[1];
+			deltaVelWorld2 *= impulseToTorque;
+			deltaVelWorld2 *= -1;
+
+			// Add to the total delta velocity.
+			deltaVelWorld += deltaVelWorld2;
+
+			// Add to the inverse mass
+			inverseMass += bodies[1]->getInverseMass();
+		}
+
+		// Do a change of basis to convert into contact coordinates.
+		mat3 deltaVelocity = transpose(contactToWorld);
+		deltaVelocity *= deltaVelWorld;
+		deltaVelocity *= contactToWorld;
+
+		// Add in the linear velocity change
+		deltaVelocity.data[0] += inverseMass;
+		deltaVelocity.data[4] += inverseMass;
+		deltaVelocity.data[8] += inverseMass;
+
+		// Invert to get the impulse needed per unit velocity
+		mat3 impulseMatrix = inverse(deltaVelocity);
+
+		// Find the target velocities to kill
+		vec3 velKill(desiredDeltaVelocity,
+			-contactVelocity.y,
+			-contactVelocity.z);
+
+		// Find the impulse to kill target velocities
+		impulseContact = impulseMatrix.transform(velKill);
+
+		// Check for exceeding friction
+		float planarImpulse = sqrt(
+			impulseContact.y*impulseContact.y +
+			impulseContact.z*impulseContact.z
+			);
+		if(planarImpulse > impulseContact.x * friction)
+		{
+			// We need to use dynamic friction
+			impulseContact.y /= planarImpulse;
+			impulseContact.z /= planarImpulse;
+
+			impulseContact.x = deltaVelocity.data[0] +
+				deltaVelocity.data[1]*friction*impulseContact.y +
+				deltaVelocity.data[2]*friction*impulseContact.z;
+			impulseContact.x = desiredDeltaVelocity / impulseContact.x;
+			impulseContact.y *= friction * impulseContact.x;
+			impulseContact.z *= friction * impulseContact.x;
+		}
+		return impulseContact;
 	}
 }

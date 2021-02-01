@@ -9,9 +9,18 @@
 namespace atta
 {
 	Sphere::Sphere(CreateInfo info):
-		Object({info.name, info.position, info.rotation, {info.radius*2, info.radius*2, info.radius*2}, info.mass}), _color(info.color)
+		Object({info.name, info.position, vec3(0,0,0), {info.radius*2, info.radius*2, info.radius*2}, info.mass})
 	{
 		Object::setType("Sphere");
+
+		//----- Create model -----//
+		Model::CreateInfo modelInfo = {
+			.meshName = "atta::sphere",
+			.material = info.material
+		};
+
+		_model = std::make_shared<Model>(modelInfo);
+		_bodyPhysics->addShape(std::make_shared<phy::SphereShape>(vec3(), quat(), 1.0));
 	}
 
 	Sphere::~Sphere()

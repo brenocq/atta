@@ -137,7 +137,7 @@ namespace atta
 			auto start = std::chrono::time_point_cast<std::chrono::microseconds>(lastTime).time_since_epoch().count();
 			auto end = std::chrono::time_point_cast<std::chrono::microseconds>(currTime).time_since_epoch().count();
 			float dt = (end-start)/1000000.0;
-			dt/=10;
+			//dt/=10;
 			lastTime = currTime;
 
 			//-------------------- Physics ----------------------//

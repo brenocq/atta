@@ -80,17 +80,17 @@ namespace atta
             k += q.k * 0.5f;
         }
 
-        void addScaledVector(const vec3& vector, float scale)
+        void addScaledVector(const vec3& vec, float scale)
         {
             quat q(0,
-                vector.x * scale,
-                vector.y * scale,
-                vector.z * scale);
+                vec.x * scale,
+                vec.y * scale,
+                vec.z * scale);
             q *= *this;
-            r += q.r * ((float)0.5);
-            i += q.i * ((float)0.5);
-            j += q.j * ((float)0.5);
-            k += q.k * ((float)0.5);
+            r += q.r * 0.5f;
+            i += q.i * 0.5f;
+            j += q.j * 0.5f;
+            k += q.k * 0.5f;
         }
 
         void rotateByVector(const vec3& vector)
@@ -105,6 +105,11 @@ namespace atta
 			i = sin(e.x/2)*cos(e.y/2)*cos(e.z/2)-cos(e.x/2)*sin(e.y/2)*sin(e.z/2);
 			j = cos(e.x/2)*sin(e.y/2)*cos(e.z/2)+sin(e.x/2)*cos(e.y/2)*sin(e.z/2);
 			k = cos(e.x/2)*cos(e.y/2)*sin(e.z/2)-sin(e.x/2)*sin(e.y/2)*cos(e.z/2);
+		}
+
+		std::string toString() const
+		{
+			return "quat{r="+std::to_string(r)+", i="+std::to_string(i)+", j="+std::to_string(j)+", k="+std::to_string(k)+"}";
 		}
     };
 

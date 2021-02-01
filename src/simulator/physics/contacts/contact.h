@@ -30,6 +30,9 @@ namespace atta::phy
 			// Normal restitutional coefficient at the contact
 			float restitution;
 
+			// Lateral friction coefficient at the contact
+			float friction;
+
 			// Depth of penetration at the contact
 			float penetration;
 		
@@ -65,6 +68,11 @@ namespace atta::phy
 			// Performs an inertia weighted penetration resolution of this contact alone
 			void applyPositionChange(vec3 linearChange[2], vec3 angularChange[2], float penetration);
 			void applyVelocityChange(vec3 velocityChange[2], vec3 rotationChange[2]);
+
+			vec3 calculateFrictionlessImpulse(mat3 *inverseInertiaTensor);
+			vec3 calculateFrictionImpulse(mat3 *inverseInertiaTensor);
+
+			void matchAwakeState();
 	};
 }
 #endif// ATTA_PHY_CONTACT_H

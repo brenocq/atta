@@ -18,10 +18,9 @@ namespace atta
 			{
 				std::string name = "Sphere";
 				vec3 position = {0,0,0};
-				vec3 rotation = {0,0,0};
 				float radius = 0.5f;
 				float mass = 1.0f;
-				vec3 color = {0.3f, 0.3f, 0.3f};
+				Material material;
 			};
 
 			Sphere(CreateInfo info);
