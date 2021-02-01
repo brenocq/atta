@@ -22,13 +22,14 @@ namespace atta::phy
 
 	mat3 BoxShape::calculateInertiaTensor(float mass)
 	{
-		float dx = _scale.x*0.5;
-		float dy = _scale.y*0.5;
-		float dz = _scale.z*0.5;
-		float c = 1.0f/12;
-		mat3 inertiaTensor(c*mass*(dy*dy+dz*dz), 0, 0,
-							0, c*mass*(dx*dx+dz*dz), 0,
-							0, 0, c*mass*(dx*dx+dy*dy));
+		float dx = (_scale.x*0.5)*(_scale.x*0.5);
+		float dy = (_scale.y*0.5)*(_scale.y*0.5);
+		float dz = (_scale.z*0.5)*(_scale.z*0.5);
+		float c = 1.0f/12*mass;
+
+		mat3 inertiaTensor(c*(dy+dz),  0, 0,
+							0, c*(dx+dz), 0,
+							0, 0, c*(dx+dy));
 
 		return inertiaTensor;
 	}

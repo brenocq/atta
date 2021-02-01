@@ -12,7 +12,7 @@ int main()
 	std::vector<std::shared_ptr<atta::Object>> objects = {};
 	atta::HalfSpace::CreateInfo groundInfo {
 		.name = "Ground",
-		.normal = {0.0,1.0,0},
+		.normal = {0,1,0},
 		.offset = 0,
 		.material = {
 			.albedo = {.1,.8,.9}
@@ -21,14 +21,29 @@ int main()
 	objects.push_back(std::make_shared<atta::HalfSpace>(groundInfo));
 
 	atta::Box::CreateInfo boxInfo;
+	boxInfo.name = "Box";
+	boxInfo.position = {5,10.0,5};
+	boxInfo.rotation = {0,0,0};
+	boxInfo.scale = {1,1,1};
+	boxInfo.mass = 10.0f,
+	boxInfo.material.albedo = {0.6,.1,.1};
+	objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
 	boxInfo.name = "Box";
-	boxInfo.position = {0,1.0,0};
-	boxInfo.rotation = {.707,0,0};
+	boxInfo.position = {7,10.0,5};
+	boxInfo.rotation = {0,0,0};
 	boxInfo.scale = {1,1,1};
 	boxInfo.mass = 1.0f,
 	boxInfo.material.albedo = {1.0,.1,.1};
 	objects.push_back(std::make_shared<atta::Box>(boxInfo));
+
+	atta::Sphere::CreateInfo sphereInfo;
+	sphereInfo.name = "Sphere";
+	sphereInfo.position = {2,3,0};
+	sphereInfo.radius = 0.5f;
+	sphereInfo.mass = 1.0f;
+	sphereInfo.material.albedo = {0.1f,1.0f,0.1f};
+	//objects.push_back(std::make_shared<atta::Sphere>(sphereInfo));
 
 	//boxInfo.name = "Box";
 	//boxInfo.position = {-1,0.5,0};

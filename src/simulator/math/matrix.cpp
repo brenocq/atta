@@ -634,15 +634,15 @@ namespace atta
 
 
 	// Set skew symmetric matrix from vector
-	void mat3::setSkewSymmetric(const vec3 vector)
+	void mat3::setSkewSymmetric(const vec3 &vec)
 	{
 		data[0] = data[4] = data[8] = 0;
-		data[1] = -vector.z;
-		data[2] = vector.y;
-		data[3] = vector.z;
-		data[5] = -vector.x;
-		data[6] = -vector.y;
-		data[7] = vector.x;
+		data[1] = -vec.z;
+		data[2] = vec.y;
+		data[3] = vec.z;
+		data[5] = -vec.x;
+		data[6] = -vec.y;
+		data[7] = vec.x;
 	}
 
 	// Set matrix from three column vectors
@@ -743,26 +743,11 @@ namespace atta
 		setInverse(*this);
 	}
 
-	// Set matrix to be transpose of the given matrix
-	void mat3::setTranspose(const mat3 &m)
+	void mat3::transpose()
 	{
-		data[0] = m.data[0];
-		data[1] = m.data[3];
-		data[2] = m.data[6];
-		data[3] = m.data[1];
-		data[4] = m.data[4];
-		data[5] = m.data[7];
-		data[6] = m.data[2];
-		data[7] = m.data[5];
-		data[8] = m.data[8];
-	}
-
-	// Returns the transpose
-	mat3 mat3::transpose() const
-	{
-		mat3 result;
-		result.setTranspose(*this);
-		return result;
+		std::swap(data[1], data[3]);
+		std::swap(data[2], data[6]);
+		std::swap(data[5], data[7]);
 	}
 
 	// Multiply matrices
@@ -781,6 +766,11 @@ namespace atta
 			data[6]*o.data[1] + data[7]*o.data[4] + data[8]*o.data[7],
 			data[6]*o.data[2] + data[7]*o.data[5] + data[8]*o.data[8]
 			);
+	}
+
+    mat3 mat3::operator()(const mat3 &o) const
+	{
+		return (*this)*o;
 	}
 
 	void mat3::operator*=(const mat3 &o)
@@ -855,30 +845,6 @@ namespace atta
 			result.data[i] = a.data[i] * (1-prop) + b.data[i] * prop;
 		}
 		return result;
-	}
-
-	//---------- Physics tensor calculations ----------//
-	// Set matrix from inertia tensor values
-	void mat3::setInertiaTensorCoeffs(
-			float ix, float iy, float iz,
-			float ixy, float ixz, float iyz)
-	{
-		data[0] = ix;
-		data[1] = data[3] = -ixy;
-		data[2] = data[6] = -ixz;
-		data[4] = iy;
-		data[5] = data[7] = -iyz;
-		data[8] = iz;
-	}
-
-	// Set matrix as an inertia tensor of a rectangular block
-	// TODO calculate for each shape
-	void mat3::setBlockInertiaTensor(const vec3 &halfSizes, float mass)
-	{
-		vec3 squares = halfSizes*halfSizes;
-		setInertiaTensorCoeffs(0.3f*mass*(squares.y + squares.z),
-			0.3f*mass*(squares.x + squares.z),
-			0.3f*mass*(squares.x + squares.y));
 	}
 
 	std::string mat3::toString() const

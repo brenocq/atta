@@ -16,6 +16,7 @@ namespace atta::phy
 {
 	class Body
 	{
+		friend class Contact;
 		public:
 			Body(vec3* position, quat* orientation, float mass=1.0);
 			~Body();
@@ -51,6 +52,7 @@ namespace atta::phy
 
 			std::vector<std::shared_ptr<Shape>> getShapes() const { return _shapes; }
 			mat4 getTransformMatrix() const { return _transformMatrix; };
+			bool getIsAwake() const { return _isAwake; }
 
 			//---------- Setters ----------//
 			void setPosition(vec3 position) { *_position = position; };
@@ -59,6 +61,7 @@ namespace atta::phy
 			void setMass(float mass) { _inverseMass = mass>0 ? 1/mass : 0; };
 
 			void setOrientation(quat orientation) { (*_orientation) = orientation; }
+        	void setIsAwake(const bool awake=true);
 
 		private:
 			// Clear the forces
@@ -91,6 +94,8 @@ namespace atta::phy
 
 			// Physics optimizations
 			bool _isAwake;
+			bool _canSleep;
+			float _motion;// Stores the amount of kinect energy (if it is low, body will sleep)
 
 			// Useful while rendering and some calculations
 			mat4 _transformMatrix;

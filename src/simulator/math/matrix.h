@@ -93,22 +93,6 @@ namespace atta
 		return mat*value;
 	}
 
-	// Return the inverse matrix
-	inline mat4 inverse(mat4 mat)
-	{
-		mat4 result;
-		result.setInverse(mat);
-		return result;
-	}
-
-	// Return the transposed matrix
-	inline mat4 transpose(mat4 mat)
-	{
-		mat4 result = mat;
-		result.transpose();
-		return result;
-	}
-
 	// Calculate look at matrix
 	inline mat4 lookAt(vec3 eye, vec3 center, vec3 up)
 	{
@@ -217,9 +201,8 @@ namespace atta
 
         void setDiagonal(float a, float b, float c);
 
-
 		// Set skew symmetric matrix from vector
-        void setSkewSymmetric(const vec3 vector);
+        void setSkewSymmetric(const vec3 &vec);
 
 		// Set matrix from three column vectors
         void setComponents(const vec3 &compOne, const vec3 &compTwo,
@@ -249,14 +232,12 @@ namespace atta
 		// Inverts this matrix
         void invert();
 
-		// Set matrix to be transpose of the given matrix
-        void setTranspose(const mat3 &m);
-
-		// Returns the transpose
-        mat3 transpose() const;
+		// Transpose this matrix
+        void transpose();
 
 		// Multiply matrices
         mat3 operator*(const mat3 &o) const;
+        mat3 operator()(const mat3 &o) const;
 
         void operator*=(const mat3 &o);
 
@@ -275,16 +256,6 @@ namespace atta
 		// Interpolate two matrices
         static mat3 linearInterpolate(const mat3& a, const mat3& b, float prop);
 
-		//---------- Physics tensor calculations ----------//
-		// Set matrix from inertia tensor values
-        void setInertiaTensorCoeffs(
-				float ix, float iy, float iz,
-            	float ixy=0, float ixz=0, float iyz=0);
-
-		// Set matrix as an inertia tensor of a rectangular block
-		// TODO calculate for each shape
-        void setBlockInertiaTensor(const vec3 &halfSizes, float mass);
-
 		std::string toString() const;
     };
 
@@ -296,6 +267,33 @@ namespace atta
 	//------------------------------------------------------------//
 	//-------------------------- Inline --------------------------//
 	//------------------------------------------------------------//
+	inline mat4 transpose(mat4 mat)
+	{
+		mat4 result = mat;
+		result.transpose();
+		return result;
+	}
+
+	inline mat3 transpose(mat3 mat)
+	{
+		mat3 result = mat;
+		result.transpose();
+		return result;
+	}
+
+	inline mat4 inverse(mat4 mat)
+	{
+		mat4 result = mat;
+		result.inverse();
+		return result;
+	}
+
+	inline mat3 inverse(mat3 mat)
+	{
+		mat3 result = mat;
+		result.inverse();
+		return result;
+	}
 
 
 	// Calculate rotation matrix from axis and angle
