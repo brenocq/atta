@@ -44,9 +44,10 @@ namespace atta::phy
 
 	void Contact::calculateContactBasis()
 	{
+		// Create contact basis using the contact normal as X axis
 		vec3 contactTangent[2];
 
-		// Check whether the Z-axis is nearer to the X or Y axis
+		// Check whether the X-axis is nearer to the X or Y axis
 		if(abs(contactNormal.x) > abs(contactNormal.y))
 		{
 			// Scaling factor to ensure the results are normalised
@@ -83,6 +84,8 @@ namespace atta::phy
 			contactNormal,
 			contactTangent[0],
 			contactTangent[1]);
+
+		//Log::debug("Contact", "ContactToWorld-> $0", contactToWorld.toString());
 	}
 
 	vec3 Contact::calculateLocalVelocity(int bodyIndex, float dt)
@@ -159,18 +162,18 @@ namespace atta::phy
 		{
 			mat3 inverseInertiaTensor = bodies[i]->getInverseInertiaTensorWorld();
 
-			Log::debug("Contact", "ContactPos:$0", contactPoint.toString());
-			Log::debug("Contact", "RelContactPos:$0", relativeContactPosition[i].toString());
+			//Log::debug("Contact", "ContactPos:$0", contactPoint.toString());
+			//Log::debug("Contact", "RelContactPos:$0", relativeContactPosition[i].toString());
 			vec3 angularInertiaWorld = cross(relativeContactPosition[i], contactNormal);
-			Log::debug("Contact", "cross:$0", angularInertiaWorld.toString());
+			//Log::debug("Contact", "cross:$0", angularInertiaWorld.toString());
 			angularInertiaWorld = inverseInertiaTensor.transform(angularInertiaWorld);
-			Log::debug("Contact", "inerciaTensor:$0", inverseInertiaTensor.toString());
-			Log::debug("Contact", "transform:$0", angularInertiaWorld.toString());
+			//Log::debug("Contact", "inerciaTensor:$0", inverseInertiaTensor.toString());
+			//Log::debug("Contact", "transform:$0", angularInertiaWorld.toString());
 			angularInertiaWorld = cross(angularInertiaWorld, relativeContactPosition[i]);
-			Log::debug("Contact", "crossAgain:$0", angularInertiaWorld.toString());
+			//Log::debug("Contact", "crossAgain:$0", angularInertiaWorld.toString());
 			angularInertia[i] = dot(angularInertiaWorld, contactNormal);
-			Log::debug("Contact", "angIn:$0", angularInertia[i]);
-			Log::debug("Contact", "------------");
+			//Log::debug("Contact", "angIn:$0", angularInertia[i]);
+			//Log::debug("Contact", "------------");
 			//[Contact] ContactPos:vec3{0.500000, 0.000000, 0.500000} 
 			//[Contact] RelContactPos:vec3{0.500000, -0.498905, 0.500000} 
 			//[Contact] cross:vec3{-0.500000, 0.000000, 0.500000} 
@@ -237,7 +240,7 @@ namespace atta::phy
 
 				// Work out the direction we'd need to rotate to achieve that
 				angularChange[i] = inverseInertiaTensor.transform(targetAngularDirection) * (angularMove[i] / angularInertia[i]);
-				//Log::debug("Contact", "($0)-> AngMove:$1 AngChg:$2 AngIn:$3", i, angularMove[i], angularChange[i].toString(), angularInertia[i]);
+				//Log::debug("Contact", "($0)-> InvI: $1", i, inverseInertiaTensor.toString());
 			}
 
 			// Velocity change is easier - it is just the linear movement

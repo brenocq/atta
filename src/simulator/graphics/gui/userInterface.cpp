@@ -54,7 +54,10 @@ namespace atta
 			{
 				.color = {.2,.2,.2,1},
 				.buttons = {
-
+					new guib::MenuButton(
+					(guib::MenuButtonInfo){
+						.name = "Config"
+					})
 				}
 			}); 
 
@@ -94,7 +97,7 @@ namespace atta
 				.closable = true,
 				.minimizable = true,
 				.movable = true,
-				.offset = {0.8, 0},
+				.offset = {0.8, 20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 				.size = {.2, 200, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 				/*.child = new guib::Box(
 					{

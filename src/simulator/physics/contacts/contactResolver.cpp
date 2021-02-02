@@ -32,7 +32,7 @@ namespace atta::phy
 		adjustPositions(contacts, dt);
 
 		// Resolve the velocity problems with the contacts
-		adjustVelocities(contacts, dt);
+		//adjustVelocities(contacts, dt);
 	}
 
 	void ContactResolver::prepareContacts(std::vector<Contact> &contacts, float dt)
