@@ -218,8 +218,8 @@ namespace atta::phy
 				contact.contactPoint = vertex + penetration*p->getNormal();// Middle point between vertex and plane
 				contact.contactNormal = p->getNormal();
 				contact.penetration = penetration;
-				contact.friction = 0.3f;
-				contact.restitution = 0.2;
+				contact.friction = 0.0f;
+				contact.restitution = 0.0;
 				contact.setBodyData(b->getBody(), nullptr);
 
 				_contacts.push_back(contact);

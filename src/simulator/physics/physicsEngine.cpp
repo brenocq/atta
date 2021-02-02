@@ -71,7 +71,8 @@ namespace atta::phy
 				}
 			}
 		}
-		//Log::debug("PhysicsEngine", "Qty contacts: $0", _contactGenerator->qtyContacts());
+		//if(_contactGenerator->qtyContacts()>0)
+		//	Log::debug("PhysicsEngine", "Qty contacts: $0", _contactGenerator->qtyContacts());
 		
 		//---------- Resolve contacts ----------//
 		_contactResolver->resolveContacts(_contactGenerator->getContacts(), dt);

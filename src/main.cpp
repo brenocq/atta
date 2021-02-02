@@ -22,20 +22,20 @@ int main()
 
 	atta::Box::CreateInfo boxInfo;
 	boxInfo.name = "Box";
-	boxInfo.position = {5,10.0,5};
+	boxInfo.position = {1,10.0,1};
 	boxInfo.rotation = {0,0,0};
 	boxInfo.scale = {1,1,1};
-	boxInfo.mass = 10.0f,
+	boxInfo.mass = 8.0f,
 	boxInfo.material.albedo = {0.6,.1,.1};
 	objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
 	boxInfo.name = "Box";
-	boxInfo.position = {7,10.0,5};
+	boxInfo.position = {3,10.0,1};
 	boxInfo.rotation = {0,0,0};
 	boxInfo.scale = {1,1,1};
 	boxInfo.mass = 1.0f,
 	boxInfo.material.albedo = {1.0,.1,.1};
-	objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	//objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
 	atta::Sphere::CreateInfo sphereInfo;
 	sphereInfo.name = "Sphere";

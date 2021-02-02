@@ -13,7 +13,7 @@
 namespace guib {
 	struct TopBarInfo {
 		Color color = {.15,.15,.15,1};
-		std::vector<Widget> buttons;
+		std::vector<Widget*> buttons;
 	};
 
 	class TopBar : public Widget
@@ -22,8 +22,6 @@ namespace guib {
 			TopBar(TopBarInfo info);
 
 		private:
-			void updateTree();
-
 			Color _color;
 	};
 }
