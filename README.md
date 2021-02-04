@@ -13,7 +13,7 @@ For now, only Linux is supported, but I plan to add support for Windows in the f
 ## Installation (Linux)
 #### Download Vulkan SDK
 First we need to download the vulkan SDK, I'm using the release 1.2.154.0.
-You can download the vulkan SDK [here](https://vulkan.lunarg.com/sdk/home).
+You can download the Vulkan SDK [here](https://vulkan.lunarg.com/sdk/home).
 
 Extract the files to some folder.
 ``` shell
@@ -23,9 +23,12 @@ tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
 #### Installing
 ```shell
 git clone https://github.com/Brenocq/RobotSimulator.git
-# [!!] Change Atta/run.sh and Atta/debug.sh vulkan source to your path 
-# [!!] Change Atta/CMakeLists.txt vulkan path to your path
-./install.sh
+
+# I recommend adding the two lines below to your .bashrc (you can also source/export manually every time)
+# source <yourPathToVulkanFolder>/setup-env.sh
+# export Vulkan_INCLUDE_DIR="<yourPathToVulkanFolder>/x86_64/include"
+
+./install_linux.sh
 ```
 
 ## Running

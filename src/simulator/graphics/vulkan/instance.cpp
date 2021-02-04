@@ -69,9 +69,11 @@ namespace atta::vk
 
 		//printExtensionSupport();
 		//printLayersProperties();
-		if(vkCreateInstance(&createInfo, nullptr, &_instance) != VK_SUCCESS)
+
+		VkResult result;
+		if((result = vkCreateInstance(&createInfo, nullptr, &_instance)) != VK_SUCCESS)
 		{
-			Log::error("Instance", "Failed to create vulkan instance!");
+			Log::error("Instance", "Failed to create vulkan instance! Code:$0", result);
 			exit(1);
 		}
 	}
