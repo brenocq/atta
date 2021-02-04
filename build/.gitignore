@@ -1,2 +1,6 @@
 linux/
 vcpkg.linux/
+android/
+vcpkg.android/
+windows/
+vcpkg.windows/
