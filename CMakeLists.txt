@@ -30,6 +30,7 @@ endif ()
 		#ENDIF(CMAKE_COMPILER_IS_GNUCC)
 		#ENDIF()
 
+#---------- Find packages ----------#
 find_package(glfw3 REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
@@ -37,12 +38,15 @@ find_package(tinyobjloader CONFIG REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(Vulkan REQUIRED)
 
+#---------- Search vulkan ----------#
 message(STATUS "Searching Vulkan...")
-IF (NOT Vulkan_FOUND)
+if(NOT Vulkan_FOUND)
     message(FATAL_ERROR "Could not find Vulkan library!")
-ELSE()
-    message(STATUS ${Vulkan_LIBRARY})
-ENDIF()
+else()
+	message(STATUS "Vulkan FOUND = ${Vulkan_FOUND}")
+	message(STATUS "Vulkan Include = ${Vulkan_INCLUDE_DIR}")
+	message(STATUS "Vulkan Lib = ${Vulkan_LIBRARY}")
+endif()
 
 find_program(Vulkan_GLSLANG_VALIDATOR 
 	NAMES glslangValidator 
