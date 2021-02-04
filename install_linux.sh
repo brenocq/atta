@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-mkdir -p build
 cd build
 rm -rf vcpkg.linux
 git clone https://github.com/Microsoft/vcpkg.git vcpkg.linux

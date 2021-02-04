@@ -1,5 +1,3 @@
-set(exe_name ${MAIN_PROJECT})
-
 set(src_files
 	main.cpp
 )
@@ -122,7 +120,8 @@ link_directories(${Vulkan_LIBRARY})
 add_subdirectory(shaders)
 add_subdirectory(examples)
 
-add_executable(${exe_name} 
+set(exe_name atta)
+add_executable(${exe_name}
 	${src_files} 
 	${src_files_simulator} 
 	${src_files_simulator_core} 
@@ -147,6 +146,7 @@ if (UNIX)
 	set(extra_libs -lstdc++fs)
 endif()
 
+message("Vklibraries ${extra_libs}")
 set_target_properties(${exe_name} PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-target_link_libraries(${exe_name} PRIVATE glfw glm imgui::imgui tinyobjloader::tinyobjloader ${Vulkan_LIBRARIES} ${FREETYPE_LIBRARIES} ${extra_libs} robotSimLib)
+target_link_libraries(${exe_name} PRIVATE glfw glm imgui::imgui tinyobjloader::tinyobjloader ${Vulkan_LIBRARIES} ${FREETYPE_LIBRARIES} ${extra_libs} attaLib)
 add_dependencies(${exe_name} assets shaders)

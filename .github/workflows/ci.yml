@@ -1,0 +1,53 @@
+name: Atta CI
+
+on: [push]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    env: 
+      VULKAN_SDK_VERSION: 1.2.162
+      BUILD_TYPE: Release
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install ubuntu dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install curl unzip tar libxi-dev libxinerama-dev libxcursor-dev xorg-dev
+        sudo apt-get install gcc-10 g++-10
+
+    - name: Install Vulkan SDK
+      shell: bash
+      run: |
+        wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+        sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-${VULKAN_SDK_VERSION}-bionic.list http://packages.lunarg.com/vulkan/${VULKAN_SDK_VERSION}/lunarg-vulkan-${VULKAN_SDK_VERSION}-bionic.list
+        sudo apt-get update
+        sudo apt-get install vulkan-sdk
+
+    - name: Install vcpkg and packages
+      shell: bash
+      run: ./install_linux.sh
+
+    - name: Build
+      shell: bash
+      env:
+        CC:   gcc-10
+        CXX:  g++-10
+      run: ./build_linux.sh
+
+      #- name: Build
+      #  working-directory: ${{github.workspace}}/build
+      #  shell: bash
+      #  run: cmake --build . --config $BUILD_TYPE
+
+      #- name: Test
+      #  working-directory: ${{github.workspace}}/build
+      #  shell: bash
+      #  run: ctest -C $BUILD_TYPE
