@@ -70,7 +70,7 @@ namespace atta::vk
 		return descriptorWrite;
 	}
 
-	VkWriteDescriptorSet DescriptorSets::bind(uint32_t index, uint32_t binding, const VkWriteDescriptorSetAccelerationStructureNV& structureInfo, const uint32_t count) const
+	VkWriteDescriptorSet DescriptorSets::bind(uint32_t index, uint32_t binding, const VkWriteDescriptorSetAccelerationStructureKHR& structureInfo, const uint32_t count) const
 	{
 		VkWriteDescriptorSet descriptorWrite = {};
 		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

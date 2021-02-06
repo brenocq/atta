@@ -1,46 +1,39 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Ray Tracing Vulkan
 // bottomLevelAcceletationStructure.h
 // Date: 2020-07-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef BOTTOM_LEVEL_ACCELERATION_STRUCTURE_H
-#define BOTTOM_LEVEL_ACCELERATION_STRUCTURE_H
+#ifndef ATTA_RT_VK_BOTTOM_LEVEL_ACCELERATION_STRUCTURE_H
+#define ATTA_RT_VK_BOTTOM_LEVEL_ACCELERATION_STRUCTURE_H
 
-#include "accelerationStructure.h"
 #include <vector>
-#include "../../scene.h"
+#include "accelerationStructure.h"
+#include "bottomLevelGeometry.h"
 #include "simulator/graphics/vulkan/buffer.h"
+#include "simulator/graphics/vulkan/vulkanCore.h"
 
-class BottomLevelAccelerationStructure final : public AccelerationStructure
+namespace atta::rt::vk
 {
-	public:
-	BottomLevelAccelerationStructure(DeviceProcedures* deviceProcedures, const std::vector<VkGeometryNV>& geometries, bool allowUpdate);
-	~BottomLevelAccelerationStructure();
+	class BottomLevelAccelerationStructure final : public AccelerationStructure
+	{
+		public:
+			BottomLevelAccelerationStructure(
+					std::shared_ptr<DeviceProcedures> deviceProcedures, 
+					std::shared_ptr<RayTracingProperties> rayTracingProperties, 
+					std::shared_ptr<BottomLevelGeometry> geometries);
+			~BottomLevelAccelerationStructure();
 
-	void generate(
-		VkCommandBuffer commandBuffer,
-		Buffer* resultBuffer,
-		VkDeviceSize resultOffset,
-		Buffer* scratchBuffer,
-		VkDeviceSize scratchOffset,
-		bool updateOnly) const;
+			void generate(
+				VkCommandBuffer commandBuffer,
+				std::shared_ptr<atta::vk::Buffer> resultBuffer,
+				VkDeviceSize resultOffset,
+				std::shared_ptr<atta::vk::Buffer> scratchBuffer,
+				VkDeviceSize scratchOffset);
 
-	static VkGeometryNV createGeometry(
-		Scene* scene, 
-		uint32_t vertexOffset, uint32_t vertexCount,
-		uint32_t indexOffset, uint32_t indexCount,
-		bool isOpaque);
+		private:
+			std::shared_ptr<BottomLevelGeometry> _geometries;
+	};
+}
 
-	static VkGeometryNV createGeometryAabb(
-		Scene* scene,
-		uint32_t aabbOffset,
-		uint32_t aabbCount,
-		bool isOpaque);
-
-	private:
-
-	std::vector<VkGeometryNV> _geometries;
-};
-
-#endif// BOTTOM_LEVEL_ACCELERATION_STRUCTURE_H
+#endif// ATTA_RT_VK_BOTTOM_LEVEL_ACCELERATION_STRUCTURE_H

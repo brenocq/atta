@@ -65,47 +65,25 @@ file(GLOB src_files_simulator_graphics_vulkan
 	"simulator/graphics/vulkan/*.cpp"
 )
 
-#---------- simulator/graphics/vulkan
+#---------- simulator/graphics/renderers
 file(GLOB src_files_simulator_graphics_renderers
 	"simulator/graphics/renderers/*.cpp"
 	"simulator/graphics/renderers/rastRenderer/*.cpp"
 	"simulator/graphics/renderers/rastRenderer/**/*.cpp"
 )
 
-#---------- simulator/vulkan
-#file(GLOB VulkanSrc
-#	"simulator/vulkan/*.cpp"
-#)
-#set(src_files_simulator_vulkan
-#	${VulkanSrc}
-#)
-#
-##---------- simulator/vulkan/rayTracing
-#file(GLOB rtSrc
-#    "simulator/vulkan/rayTracing/**/*.cpp"
-#	"simulator/vulkan/rayTracing/*.cpp"
-#)
-#set(src_files_simulator_vulkan_raytracing
-#	${rtSrc}
-#)
-#
-#set(src_files_simulator_vulkan_pipeline
-#	simulator/vulkan/pipeline/graphicsPipeline.cpp
-#	simulator/vulkan/pipeline/linePipeline.cpp
-#	simulator/vulkan/pipeline/outlinePipeline.cpp
-#	simulator/vulkan/pipeline/skyboxPipeline.cpp
-#	simulator/vulkan/pipeline/maskPipeline.cpp
-#	simulator/vulkan/pipeline/pipeline.cpp
-#	simulator/vulkan/pipeline/pipelineLayout.cpp
-#)
-#
-## GUI
+#---------- simulator/graphics/rayTracing/rayTracingVulkan
+file(GLOB src_files_simulator_graphics_raytracing_vulkan
+    "simulator/graphics/rayTracing/rayTracingVulkan/*.cpp"
+)
+
+#---------- simulator/graphics/gui
 file(GLOB src_files_simulator_graphics_gui
     "simulator/graphics/gui/**/*.cpp"
     "simulator/graphics/gui/*.cpp"
 )
 
-# Math
+#---------- simulator/math
 file(GLOB src_files_simulator_math
     "simulator/math/*.cpp"
 )
@@ -134,8 +112,7 @@ add_executable(${exe_name}
 	${src_files_simulator_graphics_renderers} 
 	${src_files_simulator_graphics_gui} 
 	${src_files_simulator_physics} 
-	#${src_files_simulator_vulkan_raytracing} 
-	#${src_files_simulator_vulkan_pipeline} 
+	${src_files_simulator_graphics_raytracing_vulkan}
 	#${src_files_examples}
 )
 

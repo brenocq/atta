@@ -16,6 +16,7 @@
 #include "simulator/core/scene.h"
 #include "simulator/core/accelerator.h"
 #include "simulator/graphics/renderers/renderer.h"
+#include "simulator/graphics/rayTracing/rayTracingVulkan/rayTracing.h"
 #include "simulator/graphics/vulkan/vulkanCore.h"
 #include "simulator/physics/physicsEngine.h"
 
@@ -37,6 +38,7 @@ namespace atta
 			struct RenderingStage {
 				std::shared_ptr<vk::VulkanCore> vkCore;
 				std::shared_ptr<Renderer> mainRenderer;
+				std::shared_ptr<rt::vk::RayTracing> rayTracingVulkan;
 			};
 
 			struct RobotStage {

@@ -18,12 +18,13 @@ namespace atta::vk
 	class Buffer
 	{
 		public:
-			Buffer(std::shared_ptr<Device> device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+			Buffer(std::shared_ptr<Device> device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkMemoryAllocateFlags allocateFlags=0);
 			~Buffer();
 
 			VkBuffer handle() { return _buffer; }
 			std::shared_ptr<Device> getDevice() const { return _device; }
 			VkDeviceMemory getMemory() const { return _bufferMemory; }
+			VkDeviceAddress getDeviceAddress() const;
 
 			void copyFrom(std::shared_ptr<CommandPool> commandPool, VkBuffer srcBuffer, VkDeviceSize size);
 

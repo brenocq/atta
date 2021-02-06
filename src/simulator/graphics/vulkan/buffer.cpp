@@ -10,7 +10,7 @@
 namespace atta::vk
 {
 
-	Buffer::Buffer(std::shared_ptr<Device> device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties):
+	Buffer::Buffer(std::shared_ptr<Device> device, const int size, const VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkMemoryAllocateFlags allocateFlags):
 		_device(device)
 	{
 		_bufferInfo = {};
@@ -28,8 +28,14 @@ namespace atta::vk
 		VkMemoryRequirements memRequirements;
 		vkGetBufferMemoryRequirements(_device->handle(), _buffer, &memRequirements);
 
+		VkMemoryAllocateFlagsInfo flagsInfo = {};
+		flagsInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
+		flagsInfo.pNext = nullptr;
+		flagsInfo.flags = allocateFlags;
+
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		if(!allocateFlags) allocInfo.pNext = &flagsInfo;
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
@@ -54,6 +60,16 @@ namespace atta::vk
 			vkFreeMemory(_device->handle(), _bufferMemory, nullptr);
 			_bufferMemory = nullptr;
 		}
+	}
+
+	VkDeviceAddress Buffer::getDeviceAddress() const
+	{
+		VkBufferDeviceAddressInfo info = {};
+		info.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+		info.pNext = nullptr;
+		info.buffer = _buffer;
+
+		return vkGetBufferDeviceAddress(_device->handle(), &info);
 	}
 
 	uint32_t Buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 

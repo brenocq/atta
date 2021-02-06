@@ -39,6 +39,7 @@ namespace atta
 			int getMaterialOffset() const { return _materialOffset; }
 			std::string getMeshName() const { return _meshName; }
 			std::shared_ptr<Mesh> getMesh() const { return _mesh; }
+			unsigned getMeshIndex() const { return _mesh->getIndex(); }
 
 		private:
 			std::string _meshName;

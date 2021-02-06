@@ -12,9 +12,13 @@
 
 namespace atta
 {
+	std::vector<Mesh*> Mesh::allMeshes = {};
+
 	Mesh::Mesh(std::string meshName):
 		_meshName(meshName)
 	{
+		_index = allMeshes.size();
+		allMeshes.push_back(this);
 		if(meshName.find("atta::") == std::string::npos)
 		{
 			// Load from file

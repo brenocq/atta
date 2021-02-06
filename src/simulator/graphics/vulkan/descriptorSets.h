@@ -36,7 +36,7 @@ namespace atta::vk
 
 			VkWriteDescriptorSet bind(uint32_t index, uint32_t binding, const VkDescriptorBufferInfo& bufferInfo, uint32_t count = 1) const;
 			VkWriteDescriptorSet bind(uint32_t index, uint32_t binding, const VkDescriptorImageInfo& imageInfo, uint32_t count = 1) const;
-			VkWriteDescriptorSet bind(uint32_t index, uint32_t binding, const VkWriteDescriptorSetAccelerationStructureNV& structureInfo, uint32_t count = 1) const;
+			VkWriteDescriptorSet bind(uint32_t index, uint32_t binding, const VkWriteDescriptorSetAccelerationStructureKHR& structureInfo, uint32_t count = 1) const;
 			void updateDescriptors(uint32_t index, const std::vector<VkWriteDescriptorSet>& descriptorWrites);
 
 		private:

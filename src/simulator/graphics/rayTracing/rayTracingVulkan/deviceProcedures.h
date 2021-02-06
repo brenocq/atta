@@ -1,126 +1,104 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Ray Tracing Vulkan
 // deviceProcedures.h
 // Date: 2020-07-15
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef DEVICE_PROCEDURES_H
-#define DEVICE_PROCEDURES_H
+#ifndef ATTA_RT_VK_DEVICE_PROCEDURES_H
+#define ATTA_RT_VK_DEVICE_PROCEDURES_H
 #include <functional>
-#include "../device.h"
+#include "simulator/graphics/vulkan/device.h"
 
-class DeviceProcedures
+namespace atta::rt::vk
 {
-	public:
-		DeviceProcedures(std::shared_ptr<Device> device);
-		~DeviceProcedures();
+	class DeviceProcedures
+	{
+		public:
+			DeviceProcedures(std::shared_ptr<atta::vk::Device> device);
+			~DeviceProcedures();
 
-		std::shared_ptr<Device> getDevice() const { return _device; }
+			std::shared_ptr<atta::vk::Device> getDevice() const { return _device; }
 
-		const std::function<VkResult(
-			VkDevice device,
-			const VkAccelerationStructureCreateInfoNV* pCreateInfo,
-			const VkAllocationCallbacks* pAllocator,
-			VkAccelerationStructureNV* pAccelerationStructure)>
-		vkCreateAccelerationStructureNV;
+			const std::function<VkResult(
+				VkDevice device,
+				const VkAccelerationStructureCreateInfoKHR* pCreateInfo,
+				const VkAllocationCallbacks* pAllocator,
+				VkAccelerationStructureKHR* pAccelerationStructure)>
+			vkCreateAccelerationStructureKHR;
 
-		const std::function<void(
-			VkDevice device,
-			VkAccelerationStructureNV accelerationStructure,
-			const VkAllocationCallbacks* pAllocator)>
-		vkDestroyAccelerationStructureNV;
+			const std::function<void(
+				VkDevice device,
+				VkAccelerationStructureKHR accelerationStructure,
+				const VkAllocationCallbacks* pAllocator)>
+			vkDestroyAccelerationStructureKHR;
 
-		const std::function<void(
-			VkDevice device,
-			const VkAccelerationStructureMemoryRequirementsInfoNV* pInfo,
-			VkMemoryRequirements2KHR* pMemoryRequirements)>
-		vkGetAccelerationStructureMemoryRequirementsNV;
+			const std::function<void(
+				VkDevice device,
+				VkAccelerationStructureBuildTypeKHR buildType,
+				const VkAccelerationStructureBuildGeometryInfoKHR* pBuildInfo,
+				const uint32_t* pMaxPrimitiveCounts,
+				VkAccelerationStructureBuildSizesInfoKHR* pSizeInfo)>
+			vkGetAccelerationStructureBuildSizesKHR;
 
-		const std::function<VkResult(
-			VkDevice device,
-			uint32_t bindInfoCount,
-			const VkBindAccelerationStructureMemoryInfoNV* pBindInfos)>
-		vkBindAccelerationStructureMemoryNV;
+			const std::function<void(
+				VkCommandBuffer commandBuffer,
+				uint32_t infoCount,
+				const VkAccelerationStructureBuildGeometryInfoKHR* pInfos,
+				const VkAccelerationStructureBuildRangeInfoKHR* const* ppBuildRangeInfos)>
+			vkCmdBuildAccelerationStructuresKHR;
 
-		const std::function<void(
-			VkCommandBuffer commandBuffer,
-			const VkAccelerationStructureInfoNV* pInfo,
-			VkBuffer instanceData,
-			VkDeviceSize instanceOffset,
-			VkBool32 update,
-			VkAccelerationStructureNV dst,
-			VkAccelerationStructureNV src,
-			VkBuffer scratch,
-			VkDeviceSize scratchOffset)>
-		vkCmdBuildAccelerationStructureNV;
+			const std::function<void(
+				VkCommandBuffer commandBuffer,
+				const VkCopyAccelerationStructureInfoKHR* pInfo)>
+			vkCmdCopyAccelerationStructureKHR;
 
-		const std::function<void(
-			VkCommandBuffer commandBuffer,
-			VkAccelerationStructureNV dst,
-			VkAccelerationStructureNV src,
-			VkCopyAccelerationStructureModeNV mode)>
-		vkCmdCopyAccelerationStructureNV;
+			const std::function<void(
+				VkCommandBuffer commandBuffer,
+				const VkStridedDeviceAddressRegionKHR* pRaygenShaderBindingTable,
+				const VkStridedDeviceAddressRegionKHR* pMissShaderBindingTable,
+				const VkStridedDeviceAddressRegionKHR* pHitShaderBindingTable,
+				const VkStridedDeviceAddressRegionKHR* pCallableShaderBindingTable,
+				uint32_t width,
+				uint32_t height,
+				uint32_t depth)>
+			vkCmdTraceRaysKHR;
 
-		const std::function<void(
-			VkCommandBuffer commandBuffer,
-			VkBuffer raygenShaderBindingTableBuffer,
-			VkDeviceSize raygenShaderBindingOffset,
-			VkBuffer missShaderBindingTableBuffer,
-			VkDeviceSize missShaderBindingOffset,
-			VkDeviceSize missShaderBindingStride,
-			VkBuffer hitShaderBindingTableBuffer,
-			VkDeviceSize hitShaderBindingOffset,
-			VkDeviceSize hitShaderBindingStride,
-			VkBuffer callableShaderBindingTableBuffer,
-			VkDeviceSize callableShaderBindingOffset,
-			VkDeviceSize callableShaderBindingStride,
-			uint32_t width,
-			uint32_t height,
-			uint32_t depth)>
-		vkCmdTraceRaysNV;
+			const std::function<VkResult(
+				VkDevice device,
+				VkDeferredOperationKHR deferredOperation,
+				VkPipelineCache pipelineCache,
+				uint32_t createInfoCount,
+				const VkRayTracingPipelineCreateInfoKHR* pCreateInfos,
+				const VkAllocationCallbacks* pAllocator,
+				VkPipeline* pPipelines)>
+			vkCreateRayTracingPipelinesKHR;
 
-		const std::function<VkResult(
-			VkDevice device,
-			VkPipelineCache pipelineCache,
-			uint32_t createInfoCount,
-			const VkRayTracingPipelineCreateInfoNV* pCreateInfos,
-			const VkAllocationCallbacks* pAllocator,
-			VkPipeline* pPipelines)>
-		vkCreateRayTracingPipelinesNV;
+			const std::function<VkResult(
+				VkDevice device,
+				VkPipeline pipeline,
+				uint32_t firstGroup,
+				uint32_t groupCount,
+				size_t dataSize,
+				void* pData)>
+			vkGetRayTracingShaderGroupHandlesKHR;
 
-		const std::function<VkResult(
-			VkDevice device,
-			VkPipeline pipeline,
-			uint32_t firstGroup,
-			uint32_t groupCount,
-			size_t dataSize,
-			void* pData)>
-		vkGetRayTracingShaderGroupHandlesNV;
+			const std::function<VkDeviceAddress(
+				VkDevice device,
+				const VkAccelerationStructureDeviceAddressInfoKHR* pInfo)>
+			vkGetAccelerationStructureDeviceAddressKHR;
 
-		const std::function<VkResult(
-			VkDevice device,
-			VkAccelerationStructureNV accelerationStructure,
-			size_t dataSize,
-			void* pData)>
-		vkGetAccelerationStructureHandleNV;
+			const std::function<void(
+				VkCommandBuffer commandBuffer,
+				uint32_t accelerationStructureCount,
+				const VkAccelerationStructureKHR* pAccelerationStructures,
+				VkQueryType queryType,
+				VkQueryPool queryPool,
+				uint32_t firstQuery)>
+			vkCmdWriteAccelerationStructuresPropertiesKHR;
 
-		const std::function<void(
-			VkCommandBuffer commandBuffer,
-			uint32_t accelerationStructureCount,
-			const VkAccelerationStructureNV* pAccelerationStructures,
-			VkQueryType queryType,
-			VkQueryPool queryPool,
-			uint32_t firstQuery)>
-		vkCmdWriteAccelerationStructuresPropertiesNV;
+		private:
+			std::shared_ptr<atta::vk::Device> _device;
+	};
+}
 
-		const std::function<VkResult(
-			VkDevice device,
-			VkPipeline pipeline,
-			uint32_t shader)>
-		vkCompileDeferredNV;
-
-	private:
-		std::shared_ptr<Device> _device;
-};
-
-#endif// DEVICE_PROCEDURES_H
+#endif// ATTA_RT_VK_DEVICE_PROCEDURES_H

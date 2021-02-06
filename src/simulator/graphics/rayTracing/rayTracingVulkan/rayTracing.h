@@ -1,88 +1,96 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Ray Tracing Vulkan
 // rayTracing.h
 // Date: 2020-07-15
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef RAY_TRACING_H
-#define RAY_TRACING_H
+#ifndef ATTA_RT_VK_RAY_TRACING_H
+#define ATTA_RT_VK_RAY_TRACING_H
 
 #include <iostream>
 #include <string.h>
 #include <vector>
 
 #include "defines.h"
-#include "../device.h"
-#include "../commandPool.h"
-#include "../swapChain.h"
-#include "../uniformBuffer.h"
-#include "../image.h"
-#include "../imageView.h"
-#include "../../scene.h"
+#include "simulator/math/math.h"
+#include "simulator/graphics/vulkan/device.h"
+#include "simulator/graphics/vulkan/commandPool.h"
+#include "simulator/graphics/vulkan/swapChain.h"
+#include "simulator/graphics/vulkan/uniformBuffer.h"
+#include "simulator/graphics/vulkan/image.h"
+#include "simulator/graphics/vulkan/imageView.h"
+#include "simulator/core/scene.h"
 #include "deviceProcedures.h"
+#include "rayTracingProperties.h"
 #include "bottomLevelAccelerationStructure.h"
 #include "topLevelAccelerationStructure.h"
 #include "rayTracingPipeline.h"
 #include "shaderBindingTable.h"
 
-class RayTracing
+namespace atta::rt::vk
 {
-	public:
-		// Ray Tracing with swapchain
-		RayTracing(std::shared_ptr<Device> device, std::shared_ptr<SwapChain> swapChain, std::shared_ptr<CommandPool> commandPool, std::vector<UniformBuffer*> uniformBuffers, Scene* scene);
-		// Offline Ray Tracing
-		RayTracing(std::shared_ptr<Device> device, VkExtent2D extent, VkFormat format, std::shared_ptr<CommandPool> commandPool, UniformBuffer* uniformBuffer, Scene* scene);
-		// Base constructor
-		RayTracing(std::shared_ptr<Device> device, std::shared_ptr<SwapChain> swapChain, VkExtent2D extent, VkFormat format, std::shared_ptr<CommandPool> commandPool, std::vector<UniformBuffer*> uniformBuffer, Scene* scene);
-		~RayTracing();
+	class RayTracing
+	{
+		public:
+			struct CreateInfo
+			{
+				std::shared_ptr<atta::vk::VulkanCore> vkCore;
+				float width;
+				float height;
+				std::shared_ptr<Scene> scene;
+				mat4 viewMat = atta::lookAt(vec3(2,2,0), vec3(0,0,0), vec3(0,1,0));
+				mat4 projMat = atta::perspective(atta::radians(45.0), 1200.0/900, 0.01f, 1000.0f);
+			};
+			// Base constructor
+			RayTracing(CreateInfo info);
+			~RayTracing();
 
-		void createPipeline();
-		void deletePipeline();
-		void render(VkCommandBuffer commandBuffer, const uint32_t imageIndex=0, bool split=false);
-		void recreateTopLevelStructures();
+			void render(VkCommandBuffer commandBuffer);
+			void recreateTopLevelStructures();
 
-		//---------- Getters and Setters ----------//
-		Image* getAccumulationImage() const { return _accumulationImage; }
-		Image* getOutputImage() const { return _outputImage; }
+			//---------- Getters and Setters ----------//
+			std::shared_ptr<atta::vk::Image> getAccumulationImage() const { return _accumulationImage; }
+			std::shared_ptr<atta::vk::Image> getOutputImage() const { return _outputImage; }
 
-	private:
-		void getRTProperties();
-		void createAccelerationStructures();
-		void createBottomLevelStructures(VkCommandBuffer commandBuffer);
-		void createTopLevelStructures(VkCommandBuffer commandBuffer);
-		void createOutputImage();
+		private:
+			void createPipeline();
+			void createAccelerationStructures();
+			void createBottomLevelStructures(VkCommandBuffer commandBuffer);
+			void createTopLevelStructures(VkCommandBuffer commandBuffer);
+			void createOutputImage();
 
-		// Main auxiliary objects
-		std::shared_ptr<Device> _device;
-		std::shared_ptr<CommandPool> _commandPool;
-		std::shared_ptr<SwapChain> _swapChain;
-		std::vector<UniformBuffer*> _uniformBuffers;
-		Scene* _scene;
+			std::shared_ptr<atta::vk::VulkanCore> _vkCore;
+			std::shared_ptr<atta::vk::Device> _device;
+			std::shared_ptr<atta::vk::CommandPool> _commandPool;
+			std::shared_ptr<atta::vk::UniformBuffer> _uniformBuffer;
+			std::shared_ptr<Scene> _scene;
 
-		VkPhysicalDeviceRayTracingPropertiesNV _props = {};
-		DeviceProcedures* _deviceProcedures;
+			std::shared_ptr<RayTracingProperties> _rayTracingProperties;
+			std::shared_ptr<DeviceProcedures> _deviceProcedures;
 
-		// Ray Tracing objects
-		std::vector<BottomLevelAccelerationStructure*> _blas;
-		std::vector<TopLevelAccelerationStructure*> _tlas;
-		RayTracingPipeline* _rayTracingPipeline;
-		ShaderBindingTable* _shaderBindingTable;
+			// Ray Tracing objects
+			std::vector<std::shared_ptr<BottomLevelAccelerationStructure>> _blas;
+			std::vector<std::shared_ptr<TopLevelAccelerationStructure>> _tlas;
 
-		// Output images info
-		VkExtent2D _imageExtent;
-		VkFormat _imageFormat;
+			// Ray Tracing pipeline
+			std::shared_ptr<RayTracingPipeline> _rayTracingPipeline;
+			std::shared_ptr<ShaderBindingTable> _shaderBindingTable;
 
-		// Output images
-		Image* _accumulationImage;
-		ImageView* _accumulationImageView;
-		Image* _outputImage;
-		ImageView* _outputImageView;
-		
-		Buffer* _bottomBuffer;
-		Buffer* _bottomScratchBuffer;
-		Buffer* _topBuffer;
-		Buffer* _topScratchBuffer;
-		Buffer* _instancesBuffer;
-};
+			// Output images
+			VkExtent2D _imageExtent;
+			VkFormat _imageFormat;
+			std::shared_ptr<atta::vk::Image> _accumulationImage;
+			std::shared_ptr<atta::vk::ImageView> _accumulationImageView;
+			std::shared_ptr<atta::vk::Image> _outputImage;
+			std::shared_ptr<atta::vk::ImageView> _outputImageView;
+			
+			// Ray tracing buffers
+			std::shared_ptr<atta::vk::Buffer> _bottomBuffer;
+			std::shared_ptr<atta::vk::Buffer> _bottomScratchBuffer;
+			std::shared_ptr<atta::vk::Buffer> _topBuffer;
+			std::shared_ptr<atta::vk::Buffer> _topScratchBuffer;
+			std::shared_ptr<atta::vk::Buffer> _instancesBuffer;
+	};
+}
 
-#endif// RAY_TRACING_H
+#endif// ATTA_RT_VK_RAY_TRACING_H

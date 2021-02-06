@@ -27,10 +27,13 @@ namespace atta
 			unsigned getIndicesSize() const { return _indices.size(); }
 			unsigned getVerticesOffset() const { return _verticesOffset; }
 			unsigned getIndicesOffset() const { return _indicesOffset; }
+			unsigned getIndex() const { return _index; }
 
 			//---------- Setters ----------//
 			void setVerticesOffset(unsigned verticesOffset) { _verticesOffset = verticesOffset; }
 			void setIndicesOffset(unsigned indicesOffset) { _indicesOffset = indicesOffset; }
+
+			static std::vector<Mesh*> allMeshes;
 
 		private:
 			void loadMesh();
@@ -38,9 +41,10 @@ namespace atta
 			void generatePlaneMesh();
 
 			std::string _meshName;
+			unsigned _index;
 			std::vector<Vertex> _vertices;
 			std::vector<uint32_t> _indices;
-			unsigned _verticesOffset, _indicesOffset;
+			unsigned _verticesOffset, _indicesOffset;// TODO Remove them
 	};
 }
 

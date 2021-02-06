@@ -49,23 +49,25 @@ namespace atta::vk
 
 		if(_physicalDevice == VK_NULL_HANDLE)
 		{
-			Log::warning("PhysicalDevice", "No physical device with ray tracing support, trying without it.");
+			Log::warning("PhysicalDevice", "No physical device with ray tracing support. Support to GPUs without ray tracing support will be implemented in the future.");
+			exit(0);
+			// TODO support machines without ray tracing
 
-			for(unsigned int i=0; i<_deviceExtensions.size(); i++)
-				if(strcmp(_deviceExtensions[i],VK_NV_RAY_TRACING_EXTENSION_NAME)==0)
-				{
-					_deviceExtensions.erase(_deviceExtensions.begin()+i);
-					break;
-				}
+			//for(unsigned int i=0; i<_deviceExtensions.size(); i++)
+			//	if(strcmp(_deviceExtensions[i],VK_NV_RAY_TRACING_EXTENSION_NAME)==0)
+			//	{
+			//		_deviceExtensions.erase(_deviceExtensions.begin()+i);
+			//		break;
+			//	}
 
-			for(const auto& device : devices) 
-			{
-				if(isDeviceSuitable(device, surface)) 
-				{
-					_physicalDevice = device;
-					break;
-				}
-			}
+			//for(const auto& device : devices) 
+			//{
+			//	if(isDeviceSuitable(device, surface)) 
+			//	{
+			//		_physicalDevice = device;
+			//		break;
+			//	}
+			//}
 		}
 
 		if(_physicalDevice == VK_NULL_HANDLE) 
@@ -107,7 +109,7 @@ namespace atta::vk
 
 		std::set<std::string> requiredExtensions(_deviceExtensions.begin(), _deviceExtensions.end());
 
-		for (const auto& extension : availableExtensions) {
+		for(const auto& extension : availableExtensions) {
 			requiredExtensions.erase(extension.extensionName);
 		}
 
@@ -143,7 +145,6 @@ namespace atta::vk
 			{
 				indices.presentFamily = i;
 			}
-
 
 			if(indices.isComplete()) 
 			{
@@ -187,7 +188,7 @@ namespace atta::vk
 		bool showFeatures = false;
 		bool showLimits = false;
 		bool showAvailableLayers = false;
-		bool showAvailableExtensions = false;
+		bool showAvailableExtensions = true;
 		bool showMemory = false;
 		bool showRayTracingInfo = true;
 

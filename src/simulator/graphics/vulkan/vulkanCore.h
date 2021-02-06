@@ -38,6 +38,7 @@ namespace atta::vk
 			//---------- Getters ----------//
 			std::shared_ptr<Instance> getInstance() const { return _instance; }
 			std::shared_ptr<PhysicalDevice> getPhysicalDevice() const { return _physicalDevice; };
+			std::shared_ptr<CommandPool> getCommandPool() const { return _commandPool; };
 			std::shared_ptr<Device> getDevice() const { return _device; }
 
 			std::shared_ptr<Buffer> getVertexBuffer() const { return _vertexBuffer; }
