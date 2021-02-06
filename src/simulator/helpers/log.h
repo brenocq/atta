@@ -70,7 +70,7 @@ class Log
 		template<class...Args>
 		static void debug(std::string tag, std::string text, Args&&... args)
 		{
-			log(COLOR_BOLD_MAGENTA, tag, COLOR_MAGENTA, text, args...);
+			log(COLOR_BOLD_BLUE, tag, COLOR_BLUE, text, args...);
 		}
 
 		template<class...Args>

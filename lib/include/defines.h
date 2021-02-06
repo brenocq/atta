@@ -15,8 +15,11 @@ const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
 const std::vector<const char*> deviceExtensions = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-	VK_NV_RAY_TRACING_EXTENSION_NAME
+	"VK_KHR_swapchain",
+	"VK_KHR_acceleration_structure",
+	"VK_KHR_ray_tracing_pipeline",
+	"VK_KHR_deferred_host_operations"
+
 };
 const std::vector<const char*> instanceExtensions = {
 };

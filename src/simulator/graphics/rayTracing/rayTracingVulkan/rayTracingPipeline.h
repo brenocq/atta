@@ -1,59 +1,59 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Ray Tracing Vulkan
 // rayTracingPipeline.h
 // Date: 2020-07-22
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef RAY_TRACING_PIPELINE_H
-#define RAY_TRACING_PIPELINE_H
-
+#ifndef ATTA_RT_VK_RAY_TRACING_PIPELINE_H
+#define ATTA_RT_VK_RAY_TRACING_PIPELINE_H
 #include <vector>
-#include "../../scene.h"
-#include "../uniformBuffer.h"
-#include "../imageView.h"
-#include "../pipeline/pipelineLayout.h"
-#include "../swapChain.h"
-#include "../device.h"
-#include "../descriptorSetManager.h"
+#include "simulator/core/scene.h"
+#include "simulator/graphics/vulkan/uniformBuffer.h"
+#include "simulator/graphics/vulkan/imageView.h"
+#include "simulator/graphics/vulkan/pipelineLayout.h"
+#include "simulator/graphics/vulkan/swapChain.h"
+#include "simulator/graphics/vulkan/device.h"
+#include "simulator/graphics/vulkan/descriptorSetManager.h"
 #include "deviceProcedures.h"
 #include "topLevelAccelerationStructure.h"
 
-class RayTracingPipeline final
+namespace atta::rt::vk
 {
-	public:
-	RayTracingPipeline(
-		std::shared_ptr<Device> device,
-		DeviceProcedures* deviceProcedures,
-		uint32_t qtyImages,
-		TopLevelAccelerationStructure* accelerationStructure,
-		ImageView* accumulationImageView,
-		ImageView* outputImageView,
-		std::vector<UniformBuffer*> uniformBuffers,
-		Scene* scene);
-	~RayTracingPipeline();
+	class RayTracingPipeline final
+	{
+		public:
+			RayTracingPipeline(
+				std::shared_ptr<atta::vk::Device> device,
+				std::shared_ptr<DeviceProcedures> deviceProcedures,
+				std::shared_ptr<TopLevelAccelerationStructure> accelerationStructure,
+				std::shared_ptr<atta::vk::ImageView> accumulationImageView,
+				std::shared_ptr<atta::vk::ImageView> outputImageView,
+				std::shared_ptr<atta::vk::UniformBuffer> uniformBuffer,
+				std::shared_ptr<atta::vk::VulkanCore> vkCore);
+			~RayTracingPipeline();
 
-	uint32_t getRayGenShaderIndex() const { return _rayGenIndex; }
-	uint32_t getMissShaderIndex() const { return _missIndex; }
-	uint32_t getTriangleHitGroupIndex() const { return _triangleHitGroupIndex; }
-	uint32_t getProceduralHitGroupIndex() const { return _proceduralHitGroupIndex; }
+			uint32_t getRayGenShaderIndex() const { return _rayGenIndex; }
+			uint32_t getMissShaderIndex() const { return _missIndex; }
+			uint32_t getTriangleHitGroupIndex() const { return _triangleHitGroupIndex; }
+			uint32_t getProceduralHitGroupIndex() const { return _proceduralHitGroupIndex; }
 
-	VkDescriptorSet getDescriptorSet(uint32_t index) const;
-	PipelineLayout* getPipelineLayout() const { return _pipelineLayout; }
-	VkPipeline handle() const { return _pipeline; }
+			VkDescriptorSet getDescriptorSet(uint32_t index) const;
+			std::shared_ptr<atta::vk::PipelineLayout> getPipelineLayout() const { return _pipelineLayout; }
+			VkPipeline handle() const { return _pipeline; }
 
-	private:
-	VkPipeline _pipeline;
+		private:
+			VkPipeline _pipeline;
 
-	DescriptorSetManager* _descriptorSetManager;
-	PipelineLayout* _pipelineLayout;
-	std::shared_ptr<Device> _device;
-	uint32_t _qtyImages;
-	Scene* _scene;
+			std::shared_ptr<atta::vk::DescriptorSetManager> _descriptorSetManager;
+			std::shared_ptr<atta::vk::PipelineLayout> _pipelineLayout;
+			std::shared_ptr<atta::vk::Device> _device;
+			std::shared_ptr<atta::vk::VulkanCore> _vkCore;
 
-	uint32_t _rayGenIndex;
-	uint32_t _missIndex;
-	uint32_t _triangleHitGroupIndex;
-	uint32_t _proceduralHitGroupIndex;
-};
+			uint32_t _rayGenIndex;
+			uint32_t _missIndex;
+			uint32_t _triangleHitGroupIndex;
+			uint32_t _proceduralHitGroupIndex;
+	};
+}
 
-#endif// RAY_TRACING_PIPELINE_H
+#endif// ATTA_RT_VK_RAY_TRACING_PIPELINE_H

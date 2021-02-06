@@ -40,6 +40,11 @@ find_package(Vulkan REQUIRED)
 
 #---------- Search vulkan ----------#
 message(STATUS "Searching Vulkan...")
+if (NOT ${Vulkan_INCLUDE_DIRS} STREQUAL "")
+		set(VULKAN_PATH ${Vulkan_INCLUDE_DIRS})
+		STRING(REGEX REPLACE "/Include" "" VULKAN_PATH ${VULKAN_PATH})
+endif()
+
 if(NOT Vulkan_FOUND)
     message(FATAL_ERROR "Could not find Vulkan library!")
 else()
