@@ -10,7 +10,6 @@
 #include "vector.h"
 #include "point.h"
 #include "quaternion.h"
-#include "glm.h"
 #include "simulator/helpers/log.h"
 
 namespace atta
@@ -80,10 +79,10 @@ namespace atta
         vec3 rollPitchYaw();
 
 		// Glm conversion
-		operator glm::mat4() const
-		{
-			return glm::make_mat4(data);
-		}
+		//operator glm::mat4() const
+		//{
+		//	return glm::make_mat4(data);
+		//}
 
 		std::string toString() const;
     };

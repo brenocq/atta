@@ -17,6 +17,13 @@
 
 namespace atta
 {
+	enum RendererType
+	{
+		RENDERER_TYPE_RASTERIZATION = 0,
+		RENDERER_TYPE_RAY_TRACING_VULKAN,
+		RENDERER_TYPE_RAY_TRACING_CPU
+	};
+
 	class Renderer
 	{
 		public:
@@ -25,6 +32,8 @@ namespace atta
 				std::shared_ptr<vk::VulkanCore> vkCore;
 				float width;
 				float height;
+				mat4 viewMatrix;
+				RendererType type;
 			};
 
 			Renderer(CreateInfo info);
@@ -36,9 +45,12 @@ namespace atta
 			std::shared_ptr<vk::Image> getImage() const { return _image; }
 			std::shared_ptr<vk::ImageView> getImageView() const { return _imageView; }
 			mat4 getViewMatrix() const { return _viewMatrix; }
+			RendererType getType() const { return _type; }
 
 		protected:
 			void createOutputImage();
+
+			RendererType _type;
 
 			std::shared_ptr<vk::VulkanCore> _vkCore;
 			VkExtent2D _extent;

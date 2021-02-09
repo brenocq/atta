@@ -18,7 +18,7 @@ namespace atta::rt::vk
 		std::shared_ptr<TopLevelAccelerationStructure> accelerationStructure,
 		std::shared_ptr<atta::vk::ImageView> accumulationImageView,
 		std::shared_ptr<atta::vk::ImageView> outputImageView,
-		std::shared_ptr<atta::vk::UniformBuffer> uniformBuffer,
+		std::shared_ptr<rt::vk::UniformBuffer> uniformBuffer,
 		std::shared_ptr<atta::vk::VulkanCore> vkCore):
 		_device(device), _vkCore(vkCore)
 	{
@@ -221,7 +221,7 @@ namespace atta::rt::vk
 
 		if(deviceProcedures->vkCreateRayTracingPipelinesKHR(_device->handle(), nullptr, nullptr, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
 		{
-			Log::error("RayTracingPipeline", "Failed to create ray tracing pipeline!");
+			Log::error("rt::vk::RayTracingPipeline", "Failed to create ray tracing pipeline!");
 			exit(1);
 		}
 	}

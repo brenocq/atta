@@ -11,13 +11,10 @@
 namespace atta
 {
 	RastRenderer::RastRenderer(CreateInfo info):
-		Renderer({info.vkCore, info.width, info.height}), _scene(info.scene)
+		Renderer({info.vkCore, info.width, info.height, info.viewMat, RENDERER_TYPE_RASTERIZATION}), _scene(info.scene)
 	{
-		// Create uniform buffer
 		//---------- Create uniform buffers ----------//
 		_uniformBuffer = std::make_shared<vk::UniformBuffer>(_vkCore->getDevice());
-
-		_viewMatrix = info.viewMat;
 
 		vk::UniformBufferObject ubo;
 		ubo.viewMat = info.viewMat;
@@ -26,20 +23,6 @@ namespace atta
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
 		ubo.projMatInverse = atta::inverse(ubo.projMat);
 		_uniformBuffer->setValue(ubo);
-
-		Log::debug("RastRenderer", "view: $0proj: $1", ubo.viewMat.toString(), ubo.projMat.toString());
-
-
-		//glm::mat4 view = glm::lookAt(glm::vec3(2,2,0), glm::vec3(0,0,0), glm::vec3(0,1,0));
-		//glm::mat4 proj =  glm::perspective((float)glm::radians(45.0), (float)1200.0/900, 0.01f, 1000.0f);
-
-		//for(int i=0; i<4; i++)
-		//{
-		//	for(int j=0; j<4; j++)
-		//		std::cout << proj[i][j] << ", ";
-		//	std::cout << "\n";
-		//}
-
 
 		//---------- Render pass ----------//
 		auto colorBuffer = std::make_shared<vk::ColorBuffer>(_vkCore->getDevice(), _image->getExtent(), _image->getFormat());

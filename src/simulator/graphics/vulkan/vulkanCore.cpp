@@ -76,8 +76,12 @@ namespace atta::vk
 		}
 
 		//---------- Create device buffers ----------//
-		_vertexBuffer = createBufferMemory(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT|VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, vertices);
-		_indexBuffer = createBufferMemory(VK_BUFFER_USAGE_INDEX_BUFFER_BIT|VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, indices);
+		_vertexBuffer = createBufferMemory(
+				VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
+				vertices);
+		_indexBuffer = createBufferMemory(
+				VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
+				indices);
 		_materialBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
 	}
 
@@ -93,12 +97,17 @@ namespace atta::vk
 	{
 		int size = sizeof(content[0]) * content.size();
 
+		VkMemoryAllocateFlags allocateFlags = 0;
+		if(usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT)
+			allocateFlags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
+	
 		// Create buffer (local memory)
 		std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(
 				_device, 
 				size, 
 				VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, 
-				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+				allocateFlags);
 
 		// Create staging buffer (host memory)
 		std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(_device, content.data(), size);

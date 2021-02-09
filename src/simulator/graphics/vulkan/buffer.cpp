@@ -28,14 +28,14 @@ namespace atta::vk
 		VkMemoryRequirements memRequirements;
 		vkGetBufferMemoryRequirements(_device->handle(), _buffer, &memRequirements);
 
-		VkMemoryAllocateFlagsInfo flagsInfo = {};
-		flagsInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
-		flagsInfo.pNext = nullptr;
-		flagsInfo.flags = allocateFlags;
+		VkMemoryAllocateFlagsInfo allocFlagsInfo{};
+		allocFlagsInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
+		allocFlagsInfo.pNext = nullptr;
+		allocFlagsInfo.flags = allocateFlags;
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		if(!allocateFlags) allocInfo.pNext = &flagsInfo;
+		allocInfo.pNext = &allocFlagsInfo;
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 

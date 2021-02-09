@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "shaderModule.h"
+#include "simulator/helpers/log.h"
 
 namespace atta::vk
 {
@@ -20,7 +21,7 @@ namespace atta::vk
 
 		if(vkCreateShaderModule(_device->handle(), &createInfo, nullptr, &_shaderModule) != VK_SUCCESS) 
 		{
-			std::cout << BOLDRED << "[ShaderModule]" << RESET << RED << " Failed to create shader module!" << RESET << std::endl;
+			Log::error("ShaderModule", "Failed to create shader module!");
 			exit(1);
 		}
 	}
@@ -40,7 +41,7 @@ namespace atta::vk
 
 		if(!file.is_open()) 
 		{
-			std::cout << BOLDRED << "[ShaderModule]" << RESET << RED << " Failed to open file: " << filename << RESET << std::endl;
+			Log::error("ShaderModule", "Failed to open file: [w]$0[]!", filename);
 			exit(1);
 		}
 

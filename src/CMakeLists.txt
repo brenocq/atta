@@ -70,11 +70,8 @@ file(GLOB src_files_simulator_graphics_renderers
 	"simulator/graphics/renderers/*.cpp"
 	"simulator/graphics/renderers/rastRenderer/*.cpp"
 	"simulator/graphics/renderers/rastRenderer/**/*.cpp"
-)
-
-#---------- simulator/graphics/rayTracing/rayTracingVulkan
-file(GLOB src_files_simulator_graphics_raytracing_vulkan
-    "simulator/graphics/rayTracing/rayTracingVulkan/*.cpp"
+	"simulator/graphics/renderers/rayTracing/*.cpp"
+	"simulator/graphics/renderers/rayTracing/**/*.cpp"
 )
 
 #---------- simulator/graphics/gui
@@ -90,7 +87,7 @@ file(GLOB src_files_simulator_math
 
 include_directories(.)
 include_directories(${glfw3_INCLUDE_DIRS})
-include_directories(${glm_INCLUDE_DIRS})
+#include_directories(${glm_INCLUDE_DIRS})
 include_directories(${Vulkan_INCLUDE_DIRS})
 include_directories(${FREETYPE_INCLUDE_DIRS})
 message("Vulkan library ${Vulkan_LIBRARY}")
@@ -112,7 +109,6 @@ add_executable(${exe_name}
 	${src_files_simulator_graphics_renderers} 
 	${src_files_simulator_graphics_gui} 
 	${src_files_simulator_physics} 
-	${src_files_simulator_graphics_raytracing_vulkan}
 	#${src_files_examples}
 )
 
@@ -123,7 +119,7 @@ if (UNIX)
 	set(extra_libs -lstdc++fs)
 endif()
 
-message("Vklibraries ${extra_libs}")
 set_target_properties(${exe_name} PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-target_link_libraries(${exe_name} PRIVATE glfw glm imgui::imgui tinyobjloader::tinyobjloader ${Vulkan_LIBRARIES} ${FREETYPE_LIBRARIES} ${extra_libs} attaLib)
+target_link_libraries(${exe_name} PRIVATE glfw tinyobjloader::tinyobjloader ${Vulkan_LIBRARIES} ${FREETYPE_LIBRARIES} ${extra_libs} attaLib)
+#target_link_libraries(${exe_name} PRIVATE glfw glm imgui::imgui tinyobjloader::tinyobjloader ${Vulkan_LIBRARIES} ${FREETYPE_LIBRARIES} ${extra_libs} attaLib)
 add_dependencies(${exe_name} assets shaders)

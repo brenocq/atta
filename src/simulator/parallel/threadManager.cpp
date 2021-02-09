@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "threadManager.h"
 #include "simulator/helpers/log.h"
+#include "simulator/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h"
 
 namespace atta
 {
@@ -38,7 +39,7 @@ namespace atta
 		
 		//---------- Rendering stage ----------//
 		_vkCore = pipelineSetup.renderingStage.vkCore;
-		_renderers.push_back(pipelineSetup.renderingStage.mainRenderer);
+		_renderers = pipelineSetup.renderingStage.renderers;
 
 		createGeneralistWorkers();
 		createGuiWorker();
@@ -79,25 +80,37 @@ namespace atta
 	void ThreadManager::createGuiWorker()
 	{
 		_workerGui = std::make_shared<WorkerGui>(_vkCore);
-
+		_workerGui->setRenderers(_renderers);
 		// Create commands vector and images to copy vector
-		std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands;
-		std::vector<WorkerGui::ImageCopy> imageCopies;
+		//std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands;
+		//std::vector<WorkerGui::ImageCopy> imageCopies;
 
-		for(auto renderer : _renderers)
-		{
-			commands.push_back([renderer](VkCommandBuffer commandBuffer){ renderer->render(commandBuffer); });
+		//for(auto renderer : _renderers)
+		//{
+		//	commands.push_back([renderer](VkCommandBuffer commandBuffer){
+		//				switch(renderer->getType())
+		//				{
+		//				case RENDERER_TYPE_RASTERIZATION:
+		//					renderer->render(commandBuffer); 
+		//					break;
+		//				case RENDERER_TYPE_RAY_TRACING_VULKAN:
+		//					renderer->render(commandBuffer); 
+		//					break;
+		//				default:
+		//					renderer->render(commandBuffer); 
+		//				}
+		//			});
+		//}
 
-			imageCopies.push_back((WorkerGui::ImageCopy){
-					.image = renderer->getImage(),
-					.extent = renderer->getImage()->getExtent(),
-					.offset = {0,0}
-					});
-		}
+		//imageCopies.push_back((WorkerGui::ImageCopy){
+		//		.image = _renderers[1]->getImage(),
+		//		.extent = _renderers[1]->getImage()->getExtent(),
+		//		.offset = {0,0}
+		//		});
 
-		_workerGui->setCommands(commands);
-		_workerGui->setImageCopies(imageCopies);
-		_workerGui->setMainRenderer(_renderers[0]);
+		//_workerGui->setCommands(commands);
+		//_workerGui->setImageCopies(imageCopies);
+		//_workerGui->setMainRenderer(_renderers[1]);
 
 		// Create thread from callable workerGui
 		_threads.push_back(std::thread(*_workerGui));

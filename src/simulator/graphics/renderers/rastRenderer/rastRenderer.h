@@ -26,7 +26,7 @@ namespace atta
 				float width;
 				float height;
 				std::shared_ptr<Scene> scene;
-				mat4 viewMat = atta::lookAt(vec3(2,2,0), vec3(0,0,0), vec3(0,1,0));
+				mat4 viewMat = atta::lookAt(vec3(-10,-1,0), vec3(0,0,0), vec3(0,1,0));
 				mat4 projMat = atta::perspective(atta::radians(45.0), 1200.0/900, 0.01f, 1000.0f);
 			};
 

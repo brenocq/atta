@@ -10,7 +10,7 @@ git checkout 2020.07
 
 ./vcpkg install \
 	glfw3:x64-linux \
-	glm:x64-linux \
-	imgui:x64-linux \
 	stb:x64-linux \
 	tinyobjloader:x64-linux
+	#glm:x64-linux \
+	#imgui:x64-linux \

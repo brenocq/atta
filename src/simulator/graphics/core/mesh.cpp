@@ -118,7 +118,7 @@ namespace atta
 		// See https://stackoverflow.com/questions/12139840/obj-file-averaging-normals.
 		if(objAttrib.normals.empty())
 		{
-			std::vector<glm::vec3> normals(_vertices.size());
+			std::vector<vec3> normals(_vertices.size());
 			
 			for(size_t i = 0; i < _indices.size(); i += 3)
 			{

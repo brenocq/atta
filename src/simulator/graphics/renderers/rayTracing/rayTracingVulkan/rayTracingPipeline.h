@@ -8,12 +8,12 @@
 #define ATTA_RT_VK_RAY_TRACING_PIPELINE_H
 #include <vector>
 #include "simulator/core/scene.h"
-#include "simulator/graphics/vulkan/uniformBuffer.h"
 #include "simulator/graphics/vulkan/imageView.h"
 #include "simulator/graphics/vulkan/pipelineLayout.h"
 #include "simulator/graphics/vulkan/swapChain.h"
 #include "simulator/graphics/vulkan/device.h"
 #include "simulator/graphics/vulkan/descriptorSetManager.h"
+#include "uniformBuffer.h"
 #include "deviceProcedures.h"
 #include "topLevelAccelerationStructure.h"
 
@@ -28,7 +28,7 @@ namespace atta::rt::vk
 				std::shared_ptr<TopLevelAccelerationStructure> accelerationStructure,
 				std::shared_ptr<atta::vk::ImageView> accumulationImageView,
 				std::shared_ptr<atta::vk::ImageView> outputImageView,
-				std::shared_ptr<atta::vk::UniformBuffer> uniformBuffer,
+				std::shared_ptr<rt::vk::UniformBuffer> uniformBuffer,
 				std::shared_ptr<atta::vk::VulkanCore> vkCore);
 			~RayTracingPipeline();
 

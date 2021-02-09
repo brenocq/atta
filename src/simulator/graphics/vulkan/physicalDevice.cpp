@@ -14,7 +14,7 @@ namespace atta::vk
 		_instance(instance)
 	{
 		_physicalDevice = VK_NULL_HANDLE;
-		_deviceExtensions = deviceExtensions;
+		_deviceExtensions = getDeviceExtensions();
 
 		// Get device count
 		uint32_t deviceCount = 0;
@@ -188,7 +188,7 @@ namespace atta::vk
 		bool showFeatures = false;
 		bool showLimits = false;
 		bool showAvailableLayers = false;
-		bool showAvailableExtensions = true;
+		bool showAvailableExtensions = false;
 		bool showMemory = false;
 		bool showRayTracingInfo = true;
 
@@ -369,18 +369,18 @@ namespace atta::vk
 
 			if(showRayTracingInfo)
 			{
-				std::cout << "\t  - " << CYAN << "Ray tracing" << WHITE << std::endl;
+				std::cout << "\t  - " << CYAN << "Ray tracing KHR" << WHITE << std::endl;
 
-				VkPhysicalDeviceRayTracingPropertiesNV nvProps = {};
-				nvProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV;
+				VkPhysicalDeviceRayTracingPipelinePropertiesKHR rtProps = {};
+				rtProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
 
 				VkPhysicalDeviceProperties2 props = {};
 				props.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-				props.pNext = &nvProps;
+				props.pNext = &rtProps;
 				vkGetPhysicalDeviceProperties2(device, &props);
 
-				std::cout << "\t    - maxRecursionDepth: " << nvProps.maxRecursionDepth << std::endl;
-				std::cout << "\t    - shaderGroupBaseAlignment: " << nvProps.shaderGroupBaseAlignment << std::endl;
+				std::cout << "\t    - maxRecursionDepth: " << rtProps.maxRayRecursionDepth << std::endl;
+				std::cout << "\t    - shaderGroupBaseAlignment: " << rtProps.shaderGroupBaseAlignment << std::endl;
 			}
 		}
 	}

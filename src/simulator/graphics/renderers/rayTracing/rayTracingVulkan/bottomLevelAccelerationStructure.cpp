@@ -18,16 +18,21 @@ namespace atta::rt::vk
 		_geometries(geometries)
 	{
 		_buildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+		_buildGeometryInfo.pNext = nullptr;
+		_buildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
 		_buildGeometryInfo.flags = _flags;
+		_buildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+		_buildGeometryInfo.srcAccelerationStructure = nullptr;
+		_buildGeometryInfo.dstAccelerationStructure = nullptr;
 		_buildGeometryInfo.geometryCount = geometries->size();
 		_buildGeometryInfo.pGeometries = _geometries->geometry().data();
-		_buildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
-		_buildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
-		_buildGeometryInfo.srcAccelerationStructure = nullptr;
+		_buildGeometryInfo.ppGeometries = nullptr;
+		_buildGeometryInfo.scratchData = {};
+		
 
 		std::vector<uint32_t> maxPrimCount(_geometries->buildOffsetInfo().size());
 
-		for(size_t i = 0; i != maxPrimCount.size(); ++i)
+		for(size_t i = 0; i != maxPrimCount.size(); i++)
 		{
 			maxPrimCount[i] = _geometries->buildOffsetInfo()[i].primitiveCount;
 		}

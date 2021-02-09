@@ -39,8 +39,7 @@ namespace atta
 
 			//---------- Setters ----------//
 			void setCommands(std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands) { _commands = commands; };
-			void setImageCopies(std::vector<ImageCopy> imageCopies) { _imageCopies = imageCopies; }
-			void setMainRenderer(std::shared_ptr<Renderer> mainRenderer);
+			void setRenderers(std::vector<std::shared_ptr<Renderer>> renderers);
 
 		private:
 			void render();
@@ -55,7 +54,6 @@ namespace atta
 
 			std::shared_ptr<Window> _window;
 			std::shared_ptr<ModelViewController> _modelViewController;
-			std::shared_ptr<Renderer> _mainRenderer;
 			std::shared_ptr<vk::VulkanCore> _vkCore;
 
 			std::shared_ptr<vk::Surface> _surface;
@@ -70,10 +68,14 @@ namespace atta
 			std::vector<VkFence> _imagesInFlight;
 			int _currentFrame;
 
+			// Renderers
+			std::vector<std::shared_ptr<Renderer>> _renderers;
+			int _mainRendererIndex;// Renderer that the user will use to see the world
+
 			// Work to process
 			std::vector<std::function<void(VkCommandBuffer commandBuffer)>> _commands;
 
-			// Images to copy
+			// Images to copy (TODO show renderers images with guib)
 			std::vector<ImageCopy> _imageCopies;
 
 			// User interface

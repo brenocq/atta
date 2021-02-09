@@ -12,7 +12,7 @@
 namespace atta
 {
 	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore):
-		_vkCore(vkCore), _currentFrame(0)
+		_vkCore(vkCore), _currentFrame(0), _mainRendererIndex(-1)
 	{
 		// Create window (GUI thread only)
 		_window = std::make_shared<Window>();
@@ -61,19 +61,30 @@ namespace atta
 
 	void WorkerGui::operator()()
 	{
+		int counter = 0;
 		while(!_window->shouldClose())
 		{
 			_modelViewController->updateCamera(0.01);
 			render();
 			_window->poolEvents();
+			if(counter++>20)
+			{
+				counter = 0;
+				_mainRendererIndex = _mainRendererIndex?0:1;
+			}
 		}
 		// Send signal to close atta simulator
 	}
 
-	void WorkerGui::setMainRenderer(std::shared_ptr<Renderer> mainRenderer)
-	{
-		_mainRenderer = mainRenderer;
-		_modelViewController->reset(mainRenderer->getViewMatrix());
+
+	void WorkerGui::setRenderers(std::vector<std::shared_ptr<Renderer>> renderers)
+	{ 
+		_renderers = renderers;
+		if(_renderers.size()>0)
+		{
+			_modelViewController->reset(_renderers[0]->getViewMatrix());
+			_mainRendererIndex = 0;
+		}
 	}
 
 	void WorkerGui::render()
@@ -95,9 +106,8 @@ namespace atta
 			exit(1);
 		}
 
-		// Update main renderer camera`
-		// TODO think
-		_mainRenderer->updateCameraMatrix(_modelViewController->getModelView());
+		// Update main renderer camera
+		_renderers[_mainRendererIndex]->updateCameraMatrix(_modelViewController->getModelView());
 
 		//---------- Record to command buffer ----------//
 		VkCommandBuffer commandBuffer = _commandBuffers->begin(imageIndex);
@@ -171,16 +181,24 @@ namespace atta
 		subresourceRange.baseArrayLayer = 0;
 		subresourceRange.layerCount = 1;
 
-		//---------- Run commands (renderers) ----------//
-		for(auto command : _commands)
-			command(commandBuffer);
+		//---------- Run renderers ----------//
+		for(auto renderer : _renderers)
+		{
+			renderer->render(commandBuffer);
+		}
+			//command(commandBuffer);
 
 		//---------- Copy main renderer image ----------//
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-		for(auto imageCopy : _imageCopies)
-			copyImageCommands(commandBuffer, imageIndex, imageCopy);
+		//for(auto imageCopy : _imageCopies)
+		copyImageCommands(commandBuffer, imageIndex, {
+			.image = _renderers[_mainRendererIndex]->getImage(),
+			.extent = _renderers[_mainRendererIndex]->getImage()->getExtent(),
+			.offset = {0,0}
+			});
+			Log::debug("WorkerGui", "Main rend $0", _mainRendererIndex);
 
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
@@ -239,6 +257,14 @@ namespace atta
 		{
 			case GLFW_KEY_ESCAPE:
 				_window->close();
+				break;
+			case GLFW_KEY_R:
+				if(action == GLFW_PRESS)
+				{
+					// TODO Update _mainRendererIndex on gui thread?
+					_mainRendererIndex = _mainRendererIndex?0:1;
+					Log::debug("WorkerGui", "Changed main to $0", _mainRendererIndex);
+				}
 				break;
 		}
 

@@ -1,7 +1,7 @@
 #version 460
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_GOOGLE_include_directive : require
-#extension GL_NV_ray_tracing : require
+#extension GL_EXT_ray_tracing : require
 #include "material.glsl"
 #include "instanceInfo.glsl"
 
@@ -15,8 +15,8 @@ layout(binding = 9) uniform sampler2D[] TextureSamplers;
 #include "scatter.glsl"
 #include "vertex.glsl"
 
-hitAttributeNV vec3 hitAttributes;
-rayPayloadInNV RayPayload ray;
+hitAttributeEXT vec3 hitAttributes;
+rayPayloadInEXT RayPayload ray;
 
 vec2 mixNormals(vec2 a, vec2 b, vec2 c, vec3 barycentrics)
 {
@@ -51,7 +51,7 @@ void main()
 	//normal = normalize(vec3(Instances[gl_InstanceID].transformIT*vec4(normal, 0.0)));
 
 	//// Compute world pos
- 	//vec3 worldPos = gl_WorldRayOriginNV + gl_WorldRayDirectionNV * gl_HitTNV;	
+ 	vec3 worldPos = gl_WorldRayOriginEXT + gl_WorldRayDirectionEXT * gl_HitTEXT;	
 	//worldPos = vec3(Instances[gl_InstanceID].transform* vec4(worldPos, 1.0));
 
 	//const vec2 texCoord = mixNormals(v0.texCoord, v1.texCoord, v2.texCoord, barycentrics);
@@ -61,4 +61,5 @@ void main()
 	////vec4 diffuse = Instances[gl_InstanceID].diffuse;
 	////ray.colorAndDistance = vec4((transform>>2)%2,(transform>>1)%2,transform%2,0);
 	////ray.colorAndDistance = diffuse;
+	ray.colorAndDistance = vec4(worldPos,gl_HitTEXT);
 }
