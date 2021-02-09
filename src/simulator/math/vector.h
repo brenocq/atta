@@ -8,7 +8,8 @@
 #define ATTA_VECTOR_H
 
 #include <math.h>
-#include "glm.h"
+#include <string>
+//#include "glm.h"
 
 namespace atta
 {
@@ -227,7 +228,7 @@ namespace atta
 			}
 
 			// Glm conversion
-			operator glm::vec4() const { return glm::vec4(x,y,z,w); }
+			//operator glm::vec4() const { return glm::vec4(x,y,z,w); }
 
 			std::string toString() const
 			{
@@ -268,7 +269,7 @@ namespace atta
         	vector3(): x(0), y(0), z(0) {};
         	vector3(T _x, T _y, T _z): x(_x), y(_y), z(_z) {};
         	vector3(vector4<T> vector): x(vector.x), y(vector.y), z(vector.z) {};
-			vector3(glm::vec3 vector): x(vector.x), y(vector.y), z(vector.z) {};
+			//vector3(glm::vec3 vector): x(vector.x), y(vector.y), z(vector.z) {};
 
 			T operator[](unsigned i) const
 			{
@@ -467,7 +468,7 @@ namespace atta
 			}
 
 			// Glm conversion
-			operator glm::vec3() const { return glm::vec3(x,y,z); }
+			//operator glm::vec3() const { return glm::vec3(x,y,z); }
 
 			std::string toString() const
 			{
@@ -524,7 +525,7 @@ namespace atta
 
         	vector2(): x(0), y(0) {};
         	vector2(T _x, T _y): x(_x), y(_y) {};
-			vector2(glm::vec2 vector): x(vector.x), y(vector.y) {};
+			//vector2(glm::vec2 vector): x(vector.x), y(vector.y) {};
 
 			T operator[](unsigned i) const
 			{
@@ -703,7 +704,7 @@ namespace atta
 			}
 
 			// Glm conversion
-			operator glm::vec2() const { return glm::vec2(x,y); }
+			//operator glm::vec2() const { return glm::vec2(x,y); }
 
 			std::string toString() const
 			{

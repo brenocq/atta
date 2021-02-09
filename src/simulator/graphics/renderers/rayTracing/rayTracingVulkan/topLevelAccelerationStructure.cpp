@@ -18,16 +18,19 @@ namespace atta::rt::vk
 			_instancesCount(instancesCount)
 	{
 		// Create VkAccelerationStructureGeometryInstancesDataKHR. This wraps a device pointer to the above uploaded instances.
+		_instancesVk = {};
 		_instancesVk.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
 		_instancesVk.arrayOfPointers = VK_FALSE;
 		_instancesVk.data.deviceAddress = instanceAddress;
 
 		// Put the above into a VkAccelerationStructureGeometryKHR. We need to put the
 		// instances struct in a union and label it as instance data.
+		_topASGeometry = {};
 		_topASGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
 		_topASGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
 		_topASGeometry.geometry.instances = _instancesVk;
 
+		_buildGeometryInfo = {};
 		_buildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
 		_buildGeometryInfo.flags = _flags;
 		_buildGeometryInfo.geometryCount = 1;
@@ -35,6 +38,7 @@ namespace atta::rt::vk
 		_buildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
 		_buildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
 		_buildGeometryInfo.srcAccelerationStructure = nullptr;
+		_buildGeometryInfo.pNext = nullptr;
 
 		_buildSizesInfo = getBuildSizes(&instancesCount);
 	}
@@ -45,10 +49,10 @@ namespace atta::rt::vk
 
 	void TopLevelAccelerationStructure::generate(
 		VkCommandBuffer commandBuffer,
-		std::shared_ptr<atta::vk::Buffer> scratchBuffer,
-		VkDeviceSize scratchOffset,
 		std::shared_ptr<atta::vk::Buffer> resultBuffer,
-		VkDeviceSize resultOffset)
+		VkDeviceSize resultOffset,
+		std::shared_ptr<atta::vk::Buffer> scratchBuffer,
+		VkDeviceSize scratchOffset)
 	{
 		// Create the acceleration structure
 		createAccelerationStructure(resultBuffer, resultOffset);
@@ -91,6 +95,7 @@ namespace atta::rt::vk
 		// hence saving the last row that is anyway always (0,0,0,1).
 		// Since the matrix is row-major, we simply copy the first 12 values of the original 4x4 matrix
 		std::memcpy(&instance.transform, &transform, sizeof(instance.transform));
+		return instance;
 	}
 
 }

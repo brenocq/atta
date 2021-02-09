@@ -47,7 +47,7 @@ namespace atta::rt::vk
 	template <class TAccelerationStructure>
 	VkAccelerationStructureBuildSizesInfoKHR getTotalRequirements(const std::vector<std::shared_ptr<TAccelerationStructure>>& accelerationStructures)
 	{
-		VkAccelerationStructureBuildSizesInfoKHR total;
+		VkAccelerationStructureBuildSizesInfoKHR total = {};
 
 		for (const auto& accelerationStructure : accelerationStructures)
 		{

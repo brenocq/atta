@@ -1,12 +1,12 @@
 #version 460
 #extension GL_GOOGLE_include_directive : require
-#extension GL_NV_ray_tracing : require
+#extension GL_EXT_ray_tracing : require
 #include "rayPayload.glsl"
 #include "uniformBufferObject.glsl"
 
 layout(binding = 3) readonly uniform UniformBufferObjectStruct { UniformBufferObject camera; };
 
-layout(location = 0) rayPayloadInNV RayPayload ray;
+layout(location = 0) rayPayloadInEXT RayPayload ray;
 
 void main()
 {
@@ -22,4 +22,6 @@ void main()
 	//{
 	//	ray.colorAndDistance = vec4(0.8, 0.8, 0.8, -1);
 	//}
+
+	ray.colorAndDistance = vec4(1,0,0,0);
 }

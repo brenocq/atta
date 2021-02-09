@@ -38,9 +38,39 @@ namespace atta::vk
 		deviceFeatures.fillModeNonSolid = VK_TRUE;
 		deviceFeatures.wideLines = VK_TRUE;
 
+		// Acceleration Structure Features
+		VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures;
+		accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+		accelerationStructureFeatures.pNext = VK_NULL_HANDLE;
+		accelerationStructureFeatures.accelerationStructure = VK_TRUE;
+		accelerationStructureFeatures.accelerationStructureCaptureReplay = VK_FALSE;
+		accelerationStructureFeatures.accelerationStructureHostCommands = VK_FALSE;
+		accelerationStructureFeatures.accelerationStructureIndirectBuild = VK_FALSE;
+		accelerationStructureFeatures.descriptorBindingAccelerationStructureUpdateAfterBind = VK_TRUE;
+
+		// Ray Tracing Pipeline features
+		VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures;
+		rayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+		rayTracingPipelineFeatures.pNext = &accelerationStructureFeatures;
+		rayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
+		rayTracingPipelineFeatures.rayTracingPipelineShaderGroupHandleCaptureReplay = VK_FALSE;
+		rayTracingPipelineFeatures.rayTracingPipelineShaderGroupHandleCaptureReplayMixed = VK_FALSE;
+		rayTracingPipelineFeatures.rayTracingPipelineTraceRaysIndirect = VK_FALSE;
+		rayTracingPipelineFeatures.rayTraversalPrimitiveCulling = VK_FALSE;
+
+		// Buffer address features
+		VkPhysicalDeviceBufferDeviceAddressFeatures bufferAddressFeatures;
+		bufferAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
+		bufferAddressFeatures.pNext = &rayTracingPipelineFeatures;
+		bufferAddressFeatures.bufferDeviceAddress = VK_TRUE;
+		bufferAddressFeatures.bufferDeviceAddressCaptureReplay = VK_FALSE;
+		bufferAddressFeatures.bufferDeviceAddressMultiDevice = VK_FALSE;
+
+		// Indexing features
 		VkPhysicalDeviceDescriptorIndexingFeaturesEXT indexingFeatures = {};
 		indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
-		indexingFeatures.runtimeDescriptorArray = true;
+		indexingFeatures.runtimeDescriptorArray = VK_TRUE;
+		indexingFeatures.pNext = &bufferAddressFeatures;
 
 		//---------- Create logical device ----------//
 		VkDeviceCreateInfo createInfo{};
@@ -57,11 +87,11 @@ namespace atta::vk
 		//----- Enable extensions -----//
 		const std::vector<const char*> __deviceExtensions = _physicalDevice->getDeviceExtensions();
 		// Check ray tracing enabled
-		for(auto ext : __deviceExtensions)
-		{
-			if(strcmp(ext, VK_NV_RAY_TRACING_EXTENSION_NAME)==0)
-				_rayTracingEnabled = true;
-		}
+		//for(auto ext : __deviceExtensions)
+		//{
+		//	if(strcmp(ext, VK_NV_RAY_TRACING_EXTENSION_NAME)==0)
+		_rayTracingEnabled = true;
+		//}
 
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(__deviceExtensions.size());
 		createInfo.ppEnabledExtensionNames = __deviceExtensions.data();

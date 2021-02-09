@@ -22,7 +22,7 @@ int main()
 
 	atta::Box::CreateInfo boxInfo;
 	boxInfo.name = "Box";
-	boxInfo.position = {1,10.0,1};
+	boxInfo.position = {1,4.0,1};
 	boxInfo.rotation = {0,0,0};
 	boxInfo.scale = {1,1,1};
 	boxInfo.mass = 8.0f,

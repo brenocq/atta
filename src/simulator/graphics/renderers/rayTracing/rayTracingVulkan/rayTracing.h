@@ -13,10 +13,10 @@
 
 #include "defines.h"
 #include "simulator/math/math.h"
+#include "simulator/graphics/renderers/renderer.h"
 #include "simulator/graphics/vulkan/device.h"
 #include "simulator/graphics/vulkan/commandPool.h"
 #include "simulator/graphics/vulkan/swapChain.h"
-#include "simulator/graphics/vulkan/uniformBuffer.h"
 #include "simulator/graphics/vulkan/image.h"
 #include "simulator/graphics/vulkan/imageView.h"
 #include "simulator/core/scene.h"
@@ -26,10 +26,11 @@
 #include "topLevelAccelerationStructure.h"
 #include "rayTracingPipeline.h"
 #include "shaderBindingTable.h"
+#include "uniformBuffer.h"
 
 namespace atta::rt::vk
 {
-	class RayTracing
+	class RayTracing : public Renderer
 	{
 		public:
 			struct CreateInfo
@@ -46,23 +47,23 @@ namespace atta::rt::vk
 			~RayTracing();
 
 			void render(VkCommandBuffer commandBuffer);
-			void recreateTopLevelStructures();
+			void updateCameraMatrix(mat4 viewMatrix);
+
+			void recreateTLAS();
 
 			//---------- Getters and Setters ----------//
 			std::shared_ptr<atta::vk::Image> getAccumulationImage() const { return _accumulationImage; }
-			std::shared_ptr<atta::vk::Image> getOutputImage() const { return _outputImage; }
 
 		private:
 			void createPipeline();
 			void createAccelerationStructures();
 			void createBottomLevelStructures(VkCommandBuffer commandBuffer);
 			void createTopLevelStructures(VkCommandBuffer commandBuffer);
-			void createOutputImage();
+			void createAccumulationImage();
 
-			std::shared_ptr<atta::vk::VulkanCore> _vkCore;
 			std::shared_ptr<atta::vk::Device> _device;
 			std::shared_ptr<atta::vk::CommandPool> _commandPool;
-			std::shared_ptr<atta::vk::UniformBuffer> _uniformBuffer;
+			std::shared_ptr<rt::vk::UniformBuffer> _uniformBuffer;
 			std::shared_ptr<Scene> _scene;
 
 			std::shared_ptr<RayTracingProperties> _rayTracingProperties;
@@ -81,8 +82,6 @@ namespace atta::rt::vk
 			VkFormat _imageFormat;
 			std::shared_ptr<atta::vk::Image> _accumulationImage;
 			std::shared_ptr<atta::vk::ImageView> _accumulationImageView;
-			std::shared_ptr<atta::vk::Image> _outputImage;
-			std::shared_ptr<atta::vk::ImageView> _outputImageView;
 			
 			// Ray tracing buffers
 			std::shared_ptr<atta::vk::Buffer> _bottomBuffer;
