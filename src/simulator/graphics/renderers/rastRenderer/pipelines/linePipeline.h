@@ -13,9 +13,11 @@
 #include "simulator/graphics/vulkan/pipeline.h"
 #include "simulator/graphics/vulkan/vulkanCore.h"
 #include "simulator/graphics/vulkan/renderPass.h"
+#include "simulator/graphics/vulkan/stagingBuffer.h"
 
 namespace atta::vk
 {
+	// Used to draw lines from the Drawer (helpers/drawer)
 	class LinePipeline : public Pipeline
 	{
 		public:
@@ -30,6 +32,8 @@ namespace atta::vk
 			void render(VkCommandBuffer commandBuffer, int imageIndex=0);
 
 		private:
+			std::shared_ptr<Buffer> _lineBuffer;
+			std::shared_ptr<StagingBuffer> _stagingBuffer;
 	};
 }
 

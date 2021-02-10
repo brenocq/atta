@@ -26,6 +26,8 @@ namespace atta::vk
 			StagingBuffer(std::shared_ptr<Device> device, void* dataToMap, VkDeviceSize size);
 			~StagingBuffer();
 
+			void mapFromData(std::shared_ptr<Device> device, void* dataToMap, VkDeviceSize size);
+
 		private:
 	};
 }

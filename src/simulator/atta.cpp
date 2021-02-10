@@ -12,6 +12,7 @@
 #include "simulator/core/scene.h"
 #include "simulator/graphics/renderers/rastRenderer/rastRenderer.h"
 #include "simulator/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h"
+#include "simulator/graphics/renderers/rayTracing/rayTracingCPU/rayTracing.h"
 #include "simulator/physics/physicsEngine.h"
 
 namespace atta
@@ -34,7 +35,6 @@ namespace atta
 		std::shared_ptr<Accelerator> accelerator = std::make_shared<Accelerator>(accInfo);
 
 		//---------- Physics stage ----------//
-
 		// Create physics engine
 		phy::PhysicsEngine::CreateInfo phyEngInfo = 
 		{
@@ -69,6 +69,17 @@ namespace atta
 		};
 		std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
 
+		// Create ray tracing CPU render
+		rt::cpu::RayTracing::CreateInfo rtCPURendInfo {
+			.vkCore = vulkanCore,
+			.width = 1200,
+			.height = 900,
+			.scene = scene,
+			.viewMat = atta::lookAt(vec3(-5,1,-5), vec3(0,0,0), vec3(0,1,0)),
+			.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+		};
+		std::shared_ptr<rt::cpu::RayTracing> rtCPU = std::make_shared<rt::cpu::RayTracing>(rtCPURendInfo);
+
 		//---------- Create thread manager ----------//
 		ThreadManager::PipelineSetup pipelineSetup = {
 			.generalConfig = {
@@ -81,8 +92,8 @@ namespace atta
 			.renderingStage = {
 				.vkCore = vulkanCore,
 				.renderers = {
-					rast,
-					rtVk
+					rtCPU,
+					rast
 				}
 			},
 			.robotStage = {}

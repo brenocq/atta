@@ -94,7 +94,7 @@ namespace atta
 			_graphicsPipeline->render(commandBuffer);
 
 			// Line pipeline
-			//_linePipeline->render(commandBuffer);
+			_linePipeline->render(commandBuffer);
 
 			// Mask pipeline
 			//_maskPipeline->render(commandBuffer);

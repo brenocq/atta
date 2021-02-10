@@ -25,10 +25,10 @@ namespace atta
 	void ModelViewController::reset(const mat4& viewMatrix)
 	{
 		//Log::debug("MVC", "View: $0", viewMatrix.toString());
-		const mat4 inverse = transpose(viewMatrix.inverse());
-		//Log::debug("MVC", "Inverse: $0", inverse.toString());
+		const mat4 cameraToWorld = inverse(viewMatrix);
+		//Log::debug("MVC", "Inverse: $0", cameraToWorld.toString());
 
-		_position = vec3(inverse.col(3));
+		_position = vec3(cameraToWorld.col(3));
 		_orientation = mat4(mat3(viewMatrix));
 		//Log::debug("MVC", "Reset: $0", _orientation.toString());
 		
@@ -47,7 +47,9 @@ namespace atta
 		//mat4 res = mat4::baseAndPos(_orientation.col(0),_orientation.col(1),_orientation.col(2), -_position);
 		//res.data[14]=res.data[11];
 		//res.data[11]=0;
-		mat4 res = lookAt(_position, _position+_forward, _up);
+		//Log::debug("MVC", "Pos: $0, Fwd", _position.toString(), (_position+_forward).toString());
+		mat4 res = lookAt(_position, _position+_forward, vec3(0,1,0));
+		//Log::debug("MVC", "InvLookAt: $0", inverse(res).toString());
 		return res;
 	}
 
@@ -138,12 +140,12 @@ namespace atta
 	{
 		//Log::debug("MVC", "forwad $0", _forward.toString());
 		//Log::debug("MVC", "Old $0 - New $1", _position.toString(), (_forward).toString());
-		_position += d * _forward;
+		_position -= d * _forward;
 	}
 
 	void ModelViewController::moveRight(float d)
 	{
-		_position -= d * _right;
+		_position += d * _right;
 	}
 
 	void ModelViewController::moveUp(float d)
@@ -164,7 +166,7 @@ namespace atta
 		//	rotationFromAxisAngle(vec3(0,1,0), y));
 
 		_orientation =
-			rotationFromAxisAngle(vec3(0,1,0), y) * _orientation * rotationFromAxisAngle(vec3(-1,0,0), x);
+			rotationFromAxisAngle(vec3(0,-1,0), y) * _orientation * rotationFromAxisAngle(vec3(1,0,0), x);
 
 		updateVectors();
 	}
