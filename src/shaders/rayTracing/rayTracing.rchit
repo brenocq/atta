@@ -3,13 +3,11 @@
 #extension GL_GOOGLE_include_directive : require
 #extension GL_EXT_ray_tracing : require
 #include "material.glsl"
-#include "instanceInfo.glsl"
 
 layout(binding = 4) readonly buffer VertexArray { float Vertices[]; };
 layout(binding = 5) readonly buffer IndexArray { uint Indices[]; };
 layout(binding = 6) readonly buffer MaterialArray { Material[] Materials; };
 layout(binding = 7) readonly buffer OffsetArray { uvec2[] Offsets; };
-layout(binding = 8) readonly buffer InstanceArray { InstanceInfo[] Instances; };
 layout(binding = 9) uniform sampler2D[] TextureSamplers;
 
 #include "scatter.glsl"
@@ -61,5 +59,7 @@ void main()
 	////vec4 diffuse = Instances[gl_InstanceID].diffuse;
 	////ray.colorAndDistance = vec4((transform>>2)%2,(transform>>1)%2,transform%2,0);
 	////ray.colorAndDistance = diffuse;
-	ray.colorAndDistance = vec4(worldPos,gl_HitTEXT);
+	//ray.colorAndDistance = vec4(worldPos, gl_HitTEXT);
+	ray.colorAndDistance = vec4(0,0,1, gl_HitTEXT);
+	ray.scatterDirection = vec4(1,0,0,0);
 }

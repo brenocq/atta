@@ -270,7 +270,7 @@ namespace atta::rt::vk
 	void RayTracing::recreateTLAS()
 	{
 		// Called every time some object changes
-		Log::info("rt::vk::RayTracing", "Recreating top level acceleration structures...");
+		//Log::info("rt::vk::RayTracing", "Recreating top level acceleration structures...");
 		LocalEvaluator eval;
 
 		// Delete TLAS objects
@@ -297,7 +297,7 @@ namespace atta::rt::vk
 		createPipeline();
 
 		eval.stop();
-		Log::info("rt::vk::RayTracing", "Finished: [w]$0ms", eval.getMs());
+		//Log::info("rt::vk::RayTracing", "Finished: [w]$0ms", eval.getMs());
 	}
 
 	void RayTracing::updateCameraMatrix(mat4 viewMatrix)
@@ -306,8 +306,8 @@ namespace atta::rt::vk
 		recreateTLAS();
 		rt::vk::UniformBufferObject ubo = _uniformBuffer->getValue();
 		ubo.viewMat = viewMatrix;
-		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
-		Log::debug("RayTracing", "View: $0", ubo.viewMat.toString());
+		ubo.viewMatInverse = ubo.viewMat;
+		//Log::debug("RayTracing", "View: $0", (inverse(ubo.viewMat)).toString());
 		ubo.totalNumberOfSamples = 0;
 		_uniformBuffer->setValue(ubo);
 	}

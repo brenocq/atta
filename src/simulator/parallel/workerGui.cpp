@@ -7,6 +7,7 @@
 #include "workerGui.h"
 #include <iostream>
 #include "simulator/helpers/log.h"
+#include "simulator/helpers/drawer.h"
 #include "simulator/graphics/vulkan/imageMemoryBarrier.h"
 
 namespace atta
@@ -70,7 +71,7 @@ namespace atta
 			if(counter++>20)
 			{
 				counter = 0;
-				_mainRendererIndex = _mainRendererIndex?0:1;
+				//_mainRendererIndex = _mainRendererIndex?0:1;
 			}
 		}
 		// Send signal to close atta simulator
@@ -82,8 +83,9 @@ namespace atta
 		_renderers = renderers;
 		if(_renderers.size()>0)
 		{
-			_modelViewController->reset(_renderers[0]->getViewMatrix());
-			_mainRendererIndex = 0;
+			_mainRendererIndex = _renderers.size()-1;
+			// Start model view controller view matrix from main renderer
+			_modelViewController->reset(_renderers[_mainRendererIndex]->getViewMatrix());
 		}
 	}
 
@@ -108,6 +110,7 @@ namespace atta
 
 		// Update main renderer camera
 		_renderers[_mainRendererIndex]->updateCameraMatrix(_modelViewController->getModelView());
+		_renderers[0]->updateCameraMatrix(_modelViewController->getModelView());
 
 		//---------- Record to command buffer ----------//
 		VkCommandBuffer commandBuffer = _commandBuffers->begin(imageIndex);
@@ -170,6 +173,7 @@ namespace atta
 
 		//---------- Next frame ----------//
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+		Drawer::clear();// Clear drawer objects every frame
 	}
 
 	void WorkerGui::recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex)
@@ -198,7 +202,6 @@ namespace atta
 			.extent = _renderers[_mainRendererIndex]->getImage()->getExtent(),
 			.offset = {0,0}
 			});
-			Log::debug("WorkerGui", "Main rend $0", _mainRendererIndex);
 
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);

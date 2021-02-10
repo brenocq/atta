@@ -11,19 +11,13 @@ set(src_files_simulator
 )
 
 #---------- simulator/core
-file(GLOB simulatorCoreSrc
+file(GLOB src_files_simulator_core
     "simulator/core/*.cpp"
-)
-set(src_files_simulator_core
-	${simulatorCoreSrc}
 )
 
 #---------- simulator/helpers
-file(GLOB helpersSrc
+file(GLOB src_files_simulator_helpers
     "simulator/helpers/*.cpp"
-)
-set(src_files_simulator_helpers
-	${helpersSrc}
 )
 
 #---------- simulator/objects
@@ -72,6 +66,7 @@ file(GLOB src_files_simulator_graphics_renderers
 	"simulator/graphics/renderers/rastRenderer/**/*.cpp"
 	"simulator/graphics/renderers/rayTracing/*.cpp"
 	"simulator/graphics/renderers/rayTracing/**/*.cpp"
+	"simulator/graphics/renderers/rayTracing/**/**/*.cpp"
 )
 
 #---------- simulator/graphics/gui

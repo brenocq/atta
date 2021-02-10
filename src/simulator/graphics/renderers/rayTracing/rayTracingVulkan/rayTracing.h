@@ -14,11 +14,7 @@
 #include "defines.h"
 #include "simulator/math/math.h"
 #include "simulator/graphics/renderers/renderer.h"
-#include "simulator/graphics/vulkan/device.h"
 #include "simulator/graphics/vulkan/commandPool.h"
-#include "simulator/graphics/vulkan/swapChain.h"
-#include "simulator/graphics/vulkan/image.h"
-#include "simulator/graphics/vulkan/imageView.h"
 #include "simulator/core/scene.h"
 #include "deviceProcedures.h"
 #include "rayTracingProperties.h"
@@ -42,7 +38,7 @@ namespace atta::rt::vk
 				mat4 viewMat = atta::lookAt(vec3(2,2,0), vec3(0,0,0), vec3(0,1,0));
 				mat4 projMat = atta::perspective(atta::radians(45.0), 1200.0/900, 0.01f, 1000.0f);
 			};
-			// Base constructor
+
 			RayTracing(CreateInfo info);
 			~RayTracing();
 

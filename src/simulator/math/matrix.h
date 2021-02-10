@@ -22,7 +22,11 @@ namespace atta
     class mat4
     {
     public:
-        float data[16];
+		union
+		{
+        	float data[16];
+        	float mat[4][4];
+		};
 
         mat4();
         mat4(float diag);
@@ -43,9 +47,17 @@ namespace atta
 		vec4 col(unsigned i) const;
 		vec4 row(unsigned i) const;
 
+		// Assing matrix
+        void operator=(const mat4 &o);
+
+		// Multiply matrices
         mat4 operator*(const mat4 &o) const;
         mat4 operator()(const mat4 &o) const;
+
+		// Sum matrices
         mat4 operator+(const mat4 &o) const;
+
+		// Multiply by vec3
         vec3 operator*(const vec3 &vector) const;
 		template<typename T>
         point3<T> operator*(const point3<T> &p) const
@@ -64,7 +76,6 @@ namespace atta
 		mat4 rotate(const vec3 &w, float angle) const;
 		mat4 operator*(const float v) const;
 
-        mat4 inverse() const;
         void invert();
         void transpose();
 
@@ -105,35 +116,38 @@ namespace atta
 		X.normalize();
 		Y.normalize();
 
-		//mat4 res = mat4::baseAndPos(X,Y,Z, -eye);
-		//res.data[14]=res.data[11];
-		//res.data[11]=0;
+		mat4 cameraToWorld;
+		cameraToWorld.mat[0][0] = X.x;
+		cameraToWorld.mat[1][0] = X.y;
+		cameraToWorld.mat[2][0] = X.z;
+		cameraToWorld.mat[3][0] = 0.0f;
 
-		mat4 res;
-		res.data[0] = X.x;
-		res.data[1] = Y.x;
-		res.data[2] = Z.x;
-		res.data[3] = 0.0f;
+		cameraToWorld.mat[0][1] = Y.x;
+		cameraToWorld.mat[1][1] = Y.y;
+		cameraToWorld.mat[2][1] = Y.z;
+		cameraToWorld.mat[3][1] = 0.0f;
 
-		res.data[4] = X.y;
-		res.data[5] = Y.y;
-		res.data[6] = Z.y;
-		res.data[7] = 0.0f;
+		cameraToWorld.mat[0][2] = -Z.x;
+		cameraToWorld.mat[1][2] = -Z.y;
+		cameraToWorld.mat[2][2] = -Z.z;
+		cameraToWorld.mat[3][2] = 0.0f;
 
-		res.data[8] = X.z;
-		res.data[9] = Y.z;
-		res.data[10] = Z.z;
-		res.data[11] = 0.0f;
+		cameraToWorld.mat[0][3] = eye.x;
+		cameraToWorld.mat[1][3] = eye.y;
+		cameraToWorld.mat[2][3] = eye.z;
+		cameraToWorld.mat[3][3] = 1.0f;
 
-		res.data[12] = dot(X, -eye);
-		res.data[13] = dot(Y, -eye);
-		res.data[14] = dot(Z, -eye);
-		res.data[15] = 1.0f;
+		//Log::debug("Matrix", "CamToWorld: $0", cameraToWorld.toString());
+		mat4 worldToCamera;
+		worldToCamera.setInverse(cameraToWorld);
 
-		//Log::debug("MVC", "res: $0", res.toString());
+		//Log::debug("Matrix", "WorldToCamera: $0", worldToCamera.toString());
 
-		// Return mat4 from base
-		return res;
+		//cameraToWorld.setInverse(worldToCamera);
+
+		//Log::debug("MVC", "CamToWorldAgain: $0", cameraToWorld.toString());
+
+		return worldToCamera;
 	}
 
 	// Calculate perspective matrix
@@ -225,14 +239,14 @@ namespace atta
 		// Sets matrix to be the inverse of the another
         void setInverse(const mat3 &m);
 
-		// Get the inverse
-        mat3 inverse() const;
-
 		// Inverts this matrix
         void invert();
 
 		// Transpose this matrix
         void transpose();
+
+		// Assing matrix
+        //mat3 operator=(const mat3 &o);
 
 		// Multiply matrices
         mat3 operator*(const mat3 &o) const;
@@ -282,15 +296,15 @@ namespace atta
 
 	inline mat4 inverse(mat4 mat)
 	{
-		mat4 result = mat;
-		result.inverse();
+		mat4 result;
+		result.setInverse(mat);
 		return result;
 	}
 
 	inline mat3 inverse(mat3 mat)
 	{
-		mat3 result = mat;
-		result.inverse();
+		mat3 result;
+		result.setInverse(mat);
 		return result;
 	}
 

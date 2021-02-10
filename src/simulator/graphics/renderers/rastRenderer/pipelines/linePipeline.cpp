@@ -6,6 +6,8 @@
 //--------------------------------------------------
 #include "linePipeline.h"
 #include "simulator/helpers/log.h"
+#include "simulator/helpers/drawer.h"
+#include "simulator/graphics/vulkan/stagingBuffer.h"
 
 namespace atta::vk
 {
@@ -21,6 +23,20 @@ namespace atta::vk
 		_imageExtent = extent;
 		_imageFormat = format;
 		_renderPass = renderPass;
+
+		//---------- Create line buffer ----------//
+		unsigned size = Drawer::getMaxNumberOfLines()*sizeof(Drawer::Line);
+		_lineBuffer = std::make_shared<Buffer>(
+				_device, 
+				size, 
+				VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 
+				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		// Create staging buffer (host memory)
+		_stagingBuffer = std::make_shared<StagingBuffer>(_device, Drawer::getLines().data(), size);
+
+		// Copy from host memory to device memory
+		_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
 
 		//---------- Shaders ----------//
 		_vertShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/lineShader.vert.spv");
@@ -43,7 +59,6 @@ namespace atta::vk
 		VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
 		//---------- Fixed functions ----------//
-		
 		// Vertex input
 		auto bindingDescription = Vertex::getBindingDescription();
 		auto attributeDescriptions = Vertex::getAttributeDescriptions();
@@ -144,41 +159,28 @@ namespace atta::vk
 		std::vector<DescriptorBinding> descriptorBindings =
 		{
 			{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
-			//{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
-			//{2, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
+			{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT}
 		};
 
 		_descriptorSetManager = std::make_shared<DescriptorSetManager>(_device, descriptorBindings, uniformBuffers.size());
 		std::shared_ptr<DescriptorSets> descriptorSets = _descriptorSetManager->getDescriptorSets();
 
-		for(uint32_t i = 0; i != _imageViews.size(); i++)
+		for(uint32_t i = 0; i < uniformBuffers.size(); i++)
 		{
 			// Uniform buffer
 			VkDescriptorBufferInfo uniformBufferInfo = {};
 			uniformBufferInfo.buffer = uniformBuffers[i]->handle();
 			uniformBufferInfo.range = VK_WHOLE_SIZE;
 
-			//// Material buffer
-			//VkDescriptorBufferInfo materialBufferInfo = {};
-			//materialBufferInfo.buffer = _scene->getMaterialBuffer()->handle();
-			//materialBufferInfo.range = VK_WHOLE_SIZE;
-
-			//// Image and texture samplers
-			//std::vector<VkDescriptorImageInfo> imageInfos(_scene->getTextures().size());
-
-			//for (size_t t = 0; t != imageInfos.size(); ++t)
-			//{
-			//	auto& imageInfo = imageInfos[t];
-			//	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			//	imageInfo.imageView = _scene->getTextures()[t]->getImageView()->handle();
-			//	imageInfo.sampler = _scene->getTextures()[t]->getSampler()->handle();
-			//}
+			// Uniform buffer
+			VkDescriptorBufferInfo lineBufferInfo = {};
+			uniformBufferInfo.buffer = _lineBuffer->handle();
+			uniformBufferInfo.range = VK_WHOLE_SIZE;
 
 			const std::vector<VkWriteDescriptorSet> descriptorWrites =
 			{
 				descriptorSets->bind(i, 0, uniformBufferInfo),
-				//descriptorSets->bind(i, 1, materialBufferInfo),
-				//descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
+				descriptorSets->bind(i, 1, lineBufferInfo),
 			};
 
 			descriptorSets->updateDescriptors(i, descriptorWrites);
@@ -224,26 +226,16 @@ namespace atta::vk
 
 	void LinePipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		//VkBuffer lineVertexBuffers[] = { _scene->getLineVertexBuffer()->handle() };
-		//VkDeviceSize offsets[] = { 0 };
+		// Copy lines from vector to staging buffer
+		unsigned size = Drawer::getMaxNumberOfLines()*sizeof(Drawer::Line);
+		_stagingBuffer->mapFromData(_vkCore->getDevice(), Drawer::getLines().data(), size);
+		// Copy from host memory to device memory
+		_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
 
-		//vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-		//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
-		//vkCmdBindVertexBuffers(commandBuffer, 0, 1, lineVertexBuffers, offsets);
-		//vkCmdBindIndexBuffer(commandBuffer, _scene->getLineIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 
-		//ObjectInfo objectInfo;
-		//objectInfo.modelMatrix = glm::mat4(1);
-
-		//vkCmdPushConstants(
-		//		commandBuffer,
-		//		_pipelineLayout->handle(),
-		//		VK_SHADER_STAGE_VERTEX_BIT,
-		//		0,
-		//		sizeof(ObjectInfo),
-		//		&objectInfo);
-
-		//const uint32_t indexCount = static_cast<uint32_t>(_scene->getLineIndexCount());
-		//vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+		Log::debug("LinePipeline", "Qty lines = $0", Drawer::getCurrNumberOfLines());
+		vkCmdDraw(commandBuffer, Drawer::getCurrNumberOfLines()*2, 1, 0, 0);
 	}
 }

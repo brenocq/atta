@@ -158,6 +158,26 @@ namespace atta
 		return vec4(data[4*i], data[4*i+1], data[4*i+2], data[4*i+3]);
 	}
 
+    void mat4::operator=(const mat4 &o)
+	{
+		data[0] = o.data[0];
+		data[1] = o.data[1];
+		data[2] = o.data[2];
+		data[3] = o.data[3];
+		data[4] = o.data[4];
+		data[5] = o.data[5];
+		data[6] = o.data[6];
+		data[7] = o.data[7];
+		data[8] = o.data[8];
+		data[9] = o.data[9];
+		data[10] = o.data[10];
+		data[11] = o.data[11];
+		data[12] = o.data[12];
+		data[13] = o.data[13];
+		data[14] = o.data[14];
+		data[15] = o.data[15];
+	}
+
 	mat4 mat4::operator*(const mat4 &o) const
 	{
 		mat4 result;
@@ -278,18 +298,11 @@ namespace atta
 		return rot*(*this);
 	}
 
-	// Return the inverse matrix
-	mat4 mat4::inverse() const
-	{
-		mat4 result;
-		result.setInverse(*this);
-		return result;
-	}
-
 	// Invert this matrix
 	void mat4::invert()
 	{
-		setInverse(*this);
+		mat3 ori = *this;
+		setInverse(ori);
 	}
 
     void mat4::transpose()
@@ -444,7 +457,10 @@ namespace atta
 		// Make sure the determinant is non-zero
 		float det = m.determinant();
 		if (det == 0)
+		{
+			Log::warning("mat4", "Inverse not possible with zero determinant");
 			return;
+		}
 		float idet = 1.0f/det;
 
  		data[0] = (m.data[5]  * m.data[10] * m.data[15] - 
@@ -714,8 +730,13 @@ namespace atta
 		float t16 = (t4*m.data[8] - t6*m.data[7] - t8*m.data[8]+
 					t10*m.data[7] + t12*m.data[5] - t14*m.data[4]);
 
-		// Make sure the determinant is non-zero.
-		if (t16 == (float)0.0f) return;
+		// Make sure the determinant is non-zero
+		if(t16 == (float)0.0f)
+		{
+			Log::warning("mat3", "Inverse not possible with zero determinant");
+			return;
+		}
+
 		float t17 = 1/t16;
 
 		data[0] = (m.data[4]*m.data[8]-m.data[5]*m.data[7])*t17;
@@ -729,18 +750,11 @@ namespace atta
 		data[8] = (t4-t8)*t17;
 	}
 
-	// Get the inverse
-	mat3 mat3::inverse() const
-	{
-		mat3 result;
-		result.setInverse(*this);
-		return result;
-	}
-
 	// Inverts this matrix
 	void mat3::invert()
 	{
-		setInverse(*this);
+		mat3 ori = *this;
+		setInverse(ori);
 	}
 
 	void mat3::transpose()

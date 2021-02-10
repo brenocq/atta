@@ -1,14 +1,32 @@
 //--------------------------------------------------
-// Atta
+// Atta Drawer
 // drawer.cpp
-// Date: 2020-09-02
+// Date: 2021-02-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "drawer.h"
-#include "log.h"
 
 namespace atta
 {
+	void Drawer::addLineImpl(Line line)
+	{
+		if(_currNumberOfLines<_maxNumberOfLines)
+		{
+			_lines[_currNumberOfLines] = line;
+			_currNumberOfLines++;
+		}
+	}
+
+	std::vector<Drawer::Line>& Drawer::getLinesImpl()
+	{
+		return _lines;
+	}
+
+	void Drawer::clearImpl()
+	{
+		_lines.clear();
+		_currNumberOfLines = 0;
+	}
 	//Drawer::Drawer(Scene* scene):
 	//	_scene(scene)
 	//{

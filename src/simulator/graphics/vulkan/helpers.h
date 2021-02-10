@@ -8,7 +8,6 @@
 #define HELPERS_H
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include <vector>
 #include <optional>
 #include "simulator/math/math.h"
@@ -38,9 +37,9 @@ struct ObjectInfo
 // TLAS instances (Ray tracing)
 struct InstanceInfo
 {
-	glm::mat4 transform{1};    // Position of the instance
-	glm::mat4 transformIT{1};  // Inverse transpose
-	glm::vec4 diffuse;  // Inverse transpose
+	atta::mat4 transform{1};    // Position of the instance
+	atta::mat4 transformIT{1};  // Inverse transpose
+	atta::vec4 diffuse;  // Inverse transpose
 };
 
 #endif// HELPERS_H
