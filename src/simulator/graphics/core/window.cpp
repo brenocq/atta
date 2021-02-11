@@ -12,9 +12,13 @@
 
 namespace atta
 {
+	float Window::ratio = 1.0f;
+
 	Window::Window():
 		_width(1200), _height(900), _cursorVisible(true), _lastX(0), _lastY(0)
 	{
+		Window::ratio = float(_width)/_height;
+
 		// To not create an OpenGL context
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		// Set window as not resizable

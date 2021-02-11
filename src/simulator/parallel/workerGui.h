@@ -32,7 +32,13 @@ namespace atta
 				VkOffset2D offset;
 			};
 
-			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore);
+			enum CameraControlType
+			{
+				CAMERA_CONTROL_TYPE_2D,
+				CAMERA_CONTROL_TYPE_3D
+			};
+
+			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, CameraControlType cameraControlType);
 			~WorkerGui();
 
 			void operator()();

@@ -62,11 +62,9 @@ file(GLOB src_files_simulator_graphics_vulkan
 #---------- simulator/graphics/renderers
 file(GLOB src_files_simulator_graphics_renderers
 	"simulator/graphics/renderers/*.cpp"
-	"simulator/graphics/renderers/rastRenderer/*.cpp"
-	"simulator/graphics/renderers/rastRenderer/**/*.cpp"
-	"simulator/graphics/renderers/rayTracing/*.cpp"
-	"simulator/graphics/renderers/rayTracing/**/*.cpp"
-	"simulator/graphics/renderers/rayTracing/**/**/*.cpp"
+	"simulator/graphics/renderers/**/*.cpp"
+	"simulator/graphics/renderers/**/**/*.cpp"
+	"simulator/graphics/renderers/**/**/**/*.cpp"
 )
 
 #---------- simulator/graphics/gui

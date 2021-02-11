@@ -32,6 +32,7 @@ namespace atta
 
 		//---------- Core ----------//
 		_scene = pipelineSetup.generalConfig.scene;
+		_dimensionMode = pipelineSetup.generalConfig.dimensionMode;
 		_accelerator = pipelineSetup.physicsStage.accelerator;
 
 		//---------- Physics stage ----------//
@@ -79,7 +80,11 @@ namespace atta
 
 	void ThreadManager::createGuiWorker()
 	{
-		_workerGui = std::make_shared<WorkerGui>(_vkCore);
+		_workerGui = std::make_shared<WorkerGui>(_vkCore,
+			_dimensionMode == DIM_MODE_3D?
+					WorkerGui::CAMERA_CONTROL_TYPE_3D:
+					WorkerGui::CAMERA_CONTROL_TYPE_2D
+				);
 		_workerGui->setRenderers(_renderers);
 		// Create commands vector and images to copy vector
 		//std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands;
@@ -154,15 +159,16 @@ namespace atta
 			lastTime = currTime;
 
 			//-------------------- Physics ----------------------//
-			_physicsEngine->stepPhysics(dt);
+			if(_physicsEngine != nullptr)
+				_physicsEngine->stepPhysics(dt);
 			
 			_physicsStageBarrier->wait();
-			//-------------------- Rendering --------------------//
-
-			_renderingStageBarrier->wait();
 			//--------------------- Robots ----------------------//
 			
 			_robotStageBarrier->wait();
+			//-------------------- Rendering --------------------//
+
+			_renderingStageBarrier->wait();
 		}
 	}
 }

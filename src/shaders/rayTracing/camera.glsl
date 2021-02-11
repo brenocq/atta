@@ -9,10 +9,9 @@ const uint CAMERA_TYPE_ORTHOGRAPHIC = 1;
 
 CameraRay generateRayProjectiveCamera(mat4 proj, mat4 viewMat, vec2 xy)
 {
-	mat4 cameraToWorldT = transpose(inverse(viewMat));
 	CameraRay ray;
-	ray.origin = cameraToWorldT[3].xyz;
-	ray.direction = ray.origin+cameraToWorldT[2].xyz;//(inverse(viewMat)*normalize(inverse(proj)*vec4(xy,1,1))).xyz;
+	ray.origin = transpose(inverse(viewMat))[3].xyz;
+	ray.direction = normalize(vec3(proj*transpose(viewMat)*vec4(xy,1,0)));
 
 	return ray;
 }

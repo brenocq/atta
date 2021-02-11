@@ -11,8 +11,8 @@
 
 namespace atta
 {
-	ModelViewController::ModelViewController():
-		_mouseMiddleButton(false), _shiftKey(false), _speed(10.0f),
+	ModelViewController::ModelViewController(ControlType controlType):
+		_controlType(controlType), _mouseMiddleButton(false), _shiftKey(false), _speed(10.0f),
 		_right(vec3(1,0,0)), _up(vec3(0,1,0)), _forward(vec3(0,0,-1))
 	{
 	}
@@ -24,13 +24,10 @@ namespace atta
 
 	void ModelViewController::reset(const mat4& viewMatrix)
 	{
-		//Log::debug("MVC", "View: $0", viewMatrix.toString());
 		const mat4 cameraToWorld = inverse(viewMatrix);
-		//Log::debug("MVC", "Inverse: $0", cameraToWorld.toString());
 
 		_position = vec3(cameraToWorld.col(3));
-		_orientation = mat4(mat3(viewMatrix));
-		//Log::debug("MVC", "Reset: $0", _orientation.toString());
+		_orientation = mat4(mat3(cameraToWorld));
 		
 		_cursorMovX = 0;
 		_cursorMovY = 0;
@@ -40,47 +37,39 @@ namespace atta
 
 	mat4 ModelViewController::getModelView() const
 	{
-		const auto view = _orientation.translate(-_position);
-		//Log::debug("MVC", "orientation: $0", _orientation.toString());
-		//Log::debug("MVC", "view: $0", view.toString());
-
-		//mat4 res = mat4::baseAndPos(_orientation.col(0),_orientation.col(1),_orientation.col(2), -_position);
-		//res.data[14]=res.data[11];
-		//res.data[11]=0;
-		//Log::debug("MVC", "Pos: $0, Fwd", _position.toString(), (_position+_forward).toString());
-		mat4 res = lookAt(_position, _position+_forward, vec3(0,1,0));
-		//Log::debug("MVC", "InvLookAt: $0", inverse(res).toString());
+		//const auto view = _orientation.translate(-_position);
+		mat4 res = lookAt(_position, _position+_forward, _up);
 		return res;
 	}
 
 	bool ModelViewController::onKey(int key, int scancode, int action, int mods)
 	{
-		switch(key)
-		{
-			case GLFW_KEY_S: 
-				_cameraMovingBackward = action != GLFW_RELEASE; 
-				return true;
-			case GLFW_KEY_W: 
-				_cameraMovingForward = action != GLFW_RELEASE; 
-				return true;
-			case GLFW_KEY_A: 
-				_cameraMovingLeft = action != GLFW_RELEASE; 
-				return true;
-			case GLFW_KEY_D: 
-				_cameraMovingRight = action != GLFW_RELEASE; 
-				return true;
-			case GLFW_KEY_Q: 
-				_cameraMovingDown = action != GLFW_RELEASE; 
-				return true;
-			case GLFW_KEY_E: 
-				_cameraMovingUp = action != GLFW_RELEASE; 
-				return true;
-			case GLFW_KEY_LEFT_SHIFT:
-				_shiftKey  = action != GLFW_RELEASE;
-				return false;
-			default: 
-				return false;
-		}
+		//switch(key)
+		//{
+		//	case GLFW_KEY_S: 
+		//		_cameraMovingBackward = action != GLFW_RELEASE; 
+		//		return true;
+		//	case GLFW_KEY_W: 
+		//		_cameraMovingForward = action != GLFW_RELEASE; 
+		//		return true;
+		//	case GLFW_KEY_A: 
+		//		_cameraMovingLeft = action != GLFW_RELEASE; 
+		//		return true;
+		//	case GLFW_KEY_D: 
+		//		_cameraMovingRight = action != GLFW_RELEASE; 
+		//		return true;
+		//	case GLFW_KEY_Q: 
+		//		_cameraMovingDown = action != GLFW_RELEASE; 
+		//		return true;
+		//	case GLFW_KEY_E: 
+		//		_cameraMovingUp = action != GLFW_RELEASE; 
+		//		return true;
+		//	case GLFW_KEY_LEFT_SHIFT:
+		//		_shiftKey  = action != GLFW_RELEASE;
+		//		return false;
+		//	default: 
+		//		return false;
+		//}
 		//Log::debug("MVCkey", "ok");
 	}
 
@@ -90,6 +79,8 @@ namespace atta
 		{
 			case GLFW_MOUSE_BUTTON_MIDDLE:
 				_mouseMiddleButton = action == GLFW_PRESS;
+				_cursorMovX = 0;
+				_cursorMovY = 0;
 				break;
 		}
 		//Log::debug("MVC", "MouseMiddleButton: $0", _mouseMiddleButton);
@@ -97,7 +88,7 @@ namespace atta
 
 	void ModelViewController::onScroll(double xoffset, double yoffset)
 	{
-		moveForward(yoffset/3.f);
+		//moveForward(yoffset/3.f);
 	}
 
 	bool ModelViewController::onCursorPosition(double xpos, double ypos)
@@ -119,19 +110,25 @@ namespace atta
 
 		if(_mouseMiddleButton)
 		{
-			if(_cameraMovingLeft) moveRight(-d);
-			if(_cameraMovingRight) moveRight(d);
-			if(_cameraMovingBackward) moveForward(-d);
-			if(_cameraMovingForward) moveForward(d);
-			if(_cameraMovingDown) moveUp(-d);
-			if(_cameraMovingUp) moveUp(d);
+			if(_controlType == CONTROL_TYPE_2D)
+			{
+				const float speed2DFac = 0.1;
+				moveRight(d*_cursorMovX*speed2DFac);
+				moveUp(-d*_cursorMovY*speed2DFac);
 
-			const float rotationDiv = 300;
-			rotate(_cursorMovX / rotationDiv, _cursorMovY / rotationDiv);
+				_cursorMovX = 0;
+				_cursorMovY = 0;
+			}
+			//if(_cameraMovingLeft) moveRight(-d);
+			//if(_cameraMovingRight) moveRight(d);
+			//if(_cameraMovingBackward) moveForward(-d);
+			//if(_cameraMovingForward) moveForward(d);
+			//if(_cameraMovingDown) moveUp(-d);
+			//if(_cameraMovingUp) moveUp(d);
+
+			//const float rotationDiv = 300;
+			//rotate(_cursorMovX / rotationDiv, _cursorMovY / rotationDiv);
 		}
-
-		_cursorMovX = 0;
-		_cursorMovY = 0;
 
 		return true;
 	}

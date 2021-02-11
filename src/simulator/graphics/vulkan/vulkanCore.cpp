@@ -95,7 +95,7 @@ namespace atta::vk
 			const VkBufferUsageFlags usage, 
 			std::vector<T>& content)
 	{
-		int size = sizeof(content[0]) * content.size();
+		int size = sizeof(T) * content.size();
 
 		VkMemoryAllocateFlags allocateFlags = 0;
 		if(usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT)
@@ -104,16 +104,19 @@ namespace atta::vk
 		// Create buffer (local memory)
 		std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(
 				_device, 
-				size, 
+				size!=0?size:sizeof(T), 
 				VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, 
 				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 				allocateFlags);
 
-		// Create staging buffer (host memory)
-		std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(_device, content.data(), size);
+		if(size > 0)
+		{
+			// Create staging buffer (host memory)
+			std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(_device, content.data(), size);
 
-		// Copy from host memory to device memory
-		buffer->copyFrom(_commandPool, stagingBuffer->handle(), size);
+			// Copy from host memory to device memory
+			buffer->copyFrom(_commandPool, stagingBuffer->handle(), size);
+		}
 
 		return buffer;
 	}

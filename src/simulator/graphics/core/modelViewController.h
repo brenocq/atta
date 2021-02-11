@@ -18,7 +18,13 @@ namespace atta
 	class ModelViewController
 	{
 		public:
-			ModelViewController();
+			enum ControlType
+			{
+				CONTROL_TYPE_2D,
+				CONTROL_TYPE_3D
+			};
+
+			ModelViewController(ControlType controlType);
 			~ModelViewController();
 
 			void reset(const mat4& viewMatrix);
@@ -42,6 +48,8 @@ namespace atta
 			void moveUp(float d);
 			void rotate(float y, float x);
 			void updateVectors();
+
+			ControlType _controlType;
 
 			// Control states
 			bool _cameraMovingLeft{};

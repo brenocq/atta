@@ -127,9 +127,9 @@ namespace atta
 		cameraToWorld.mat[2][1] = Y.z;
 		cameraToWorld.mat[3][1] = 0.0f;
 
-		cameraToWorld.mat[0][2] = -Z.x;
-		cameraToWorld.mat[1][2] = -Z.y;
-		cameraToWorld.mat[2][2] = -Z.z;
+		cameraToWorld.mat[0][2] = Z.x;
+		cameraToWorld.mat[1][2] = Z.y;
+		cameraToWorld.mat[2][2] = Z.z;
 		cameraToWorld.mat[3][2] = 0.0f;
 
 		cameraToWorld.mat[0][3] = eye.x;
@@ -137,17 +137,10 @@ namespace atta
 		cameraToWorld.mat[2][3] = eye.z;
 		cameraToWorld.mat[3][3] = 1.0f;
 
-		//Log::debug("Matrix", "CamToWorld: $0", cameraToWorld.toString());
 		mat4 worldToCamera;
 		worldToCamera.setInverse(cameraToWorld);
 
-		//Log::debug("Matrix", "WorldToCamera: $0", worldToCamera.toString());
-
-		//cameraToWorld.setInverse(worldToCamera);
-
-		//Log::debug("MVC", "CamToWorldAgain: $0", cameraToWorld.toString());
-
-		return worldToCamera;
+		return worldToCamera;// Right-handed
 	}
 
 	// Calculate perspective matrix
@@ -163,6 +156,19 @@ namespace atta
 		res.data[11] = -2*far*near * oneOverDepth;
 		res.data[14] = -1;
 		res.data[15] = 0;
+
+		return res;
+	}
+
+	// Calculate orthographic matrix
+	inline mat4 orthographic(float height, float ratio, float depth=10)
+	{
+		mat4 res(1);
+		float width = ratio*height;
+
+		res.mat[0][0] = 2 / width;
+		res.mat[1][1] = 2 / height;
+		res.mat[2][2] = -1 / depth;
 
 		return res;
 	}

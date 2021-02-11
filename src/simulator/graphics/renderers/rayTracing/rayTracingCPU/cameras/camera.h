@@ -29,8 +29,9 @@ namespace atta::rt::cpu
 			Camera(CreateInfo info);
 
 			virtual CameraRay generateRay(vec2 xy) = 0;
+			void setViewMatrix(mat4 viewMatrix) { _viewMatrix = viewMatrix; }
 
-		private:
+		protected:
 			float _width;
 			float _height;
 			mat4 _viewMatrix;

@@ -31,6 +31,8 @@ namespace atta::vk
 			~GraphicsPipeline();
 
 			void render(VkCommandBuffer commandBuffer, int imageIndex=0);
+
+		private:
 	};
 }
 
