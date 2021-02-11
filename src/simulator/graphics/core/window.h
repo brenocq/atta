@@ -55,6 +55,7 @@ namespace atta
 			void setLastX(int x) { _lastX = x; }
 			void setLastY(int y) { _lastY = y; }
 
+			static float ratio;
 		private:
 			static void keyCallback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods);
 			static void cursorPositionCallback(GLFWwindow* window, const double xpos, const double ypos);

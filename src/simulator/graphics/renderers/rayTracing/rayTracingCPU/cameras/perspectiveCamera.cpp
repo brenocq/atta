@@ -16,9 +16,11 @@ namespace atta::rt::cpu
 
 	CameraRay PerspectiveCamera::generateRay(vec2 xy)
 	{
+		vec3 target = _projMatrix*transpose(_viewMatrix)*vec4((xy.x-0.5)*2, (xy.y-0.5)*2, 1, 0);
+
 		CameraRay cr;
-		cr.r.o = pnt3(0,0,0);
-		cr.r.d = vec3(0,0,1);
+		cr.r.o = pnt3(vec3(inverse(_viewMatrix).col(3)));
+		cr.r.d = normalize(target);
 
 		return cr;
 	}

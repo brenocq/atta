@@ -19,17 +19,40 @@ namespace atta
 	class Atta
 	{
 		public:
-			struct CreateInfo
+			enum DimMode 
 			{
-				std::vector<std::shared_ptr<Object>> objects;
+				DIM_MODE_2D = 0,
+				DIM_MODE_3D
 			};
 
-			Atta(CreateInfo createInfo);
+			enum PhysicsMode 
+			{
+				PHY_MODE_DISABLED = 0,
+				PHY_MODE_2D,
+				PHY_MODE_3D
+			};
+
+			struct CreateInfo
+			{
+				DimMode dimensionMode = DIM_MODE_2D;
+				PhysicsMode physicsMode = PHY_MODE_DISABLED;
+				bool createWindow = true;
+				std::vector<std::shared_ptr<Object>> objects = {};
+			};
+
+			Atta(CreateInfo info);
 			~Atta();
 
 			void run();
 
 		private:
+			ThreadManager::GeneralConfig populateTMGeneralConfig();
+			ThreadManager::PhysicsStage populateTMPhysicsStage();
+			ThreadManager::RobotStage populateTMRobotStage();
+			ThreadManager::RenderingStage populateTMRenderingStage();
+
+			CreateInfo _info;
+			std::shared_ptr<Scene> _scene;
 			std::shared_ptr<ThreadManager> _threadManager;
 	};
 }

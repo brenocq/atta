@@ -65,6 +65,7 @@ void main()
 			// Trace hit
 			origin = origin + t * direction;
 			direction = vec4(ray.scatterDirection.xyz, 0);
+			break;
 		}
 
 		pixelColor += rayColor;

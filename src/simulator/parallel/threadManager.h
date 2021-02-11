@@ -25,14 +25,25 @@ namespace atta
 	class ThreadManager
 	{
 		public:
+			enum DimMode
+			{
+				DIM_MODE_2D = 0,
+				DIM_MODE_3D
+			};
+
 			struct GeneralConfig {
 				int qtyThreads = -1;
 				std::shared_ptr<Scene> scene;
+				DimMode dimensionMode = DIM_MODE_3D;
 			};
 
 			struct PhysicsStage {
-				std::shared_ptr<Accelerator> accelerator;
-				std::shared_ptr<phy::PhysicsEngine> physicsEngine;
+				std::shared_ptr<Accelerator> accelerator = nullptr;
+				std::shared_ptr<phy::PhysicsEngine> physicsEngine = nullptr;
+			};
+
+			struct RobotStage {
+				
 			};
 
 			struct RenderingStage {
@@ -40,15 +51,11 @@ namespace atta
 				std::vector<std::shared_ptr<Renderer>> renderers;
 			};
 
-			struct RobotStage {
-				
-			};
-
 			struct PipelineSetup {
 				GeneralConfig generalConfig;
 				PhysicsStage physicsStage;	
-				RenderingStage renderingStage;	
 				RobotStage robotStage;	
+				RenderingStage renderingStage;	
 			};
 
 			ThreadManager(PipelineSetup pipelineSetup);
@@ -70,8 +77,8 @@ namespace atta
 			// Syncronization structures
 			std::shared_ptr<Barrier> _setupStageBarrier;
 			std::shared_ptr<Barrier> _physicsStageBarrier;
-			std::shared_ptr<Barrier> _renderingStageBarrier;
 			std::shared_ptr<Barrier> _robotStageBarrier;
+			std::shared_ptr<Barrier> _renderingStageBarrier;
 
 			// Threads
 			std::vector<std::thread> _threads;
@@ -83,6 +90,7 @@ namespace atta
 			//---------- Core ----------//
 			std::shared_ptr<Scene> _scene;
 			std::shared_ptr<Accelerator> _accelerator;
+			DimMode _dimensionMode;
 
 			//---------- Physics stage ----------//
 			std::shared_ptr<phy::PhysicsEngine> _physicsEngine;

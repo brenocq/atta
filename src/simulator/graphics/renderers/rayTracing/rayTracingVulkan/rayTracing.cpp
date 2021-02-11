@@ -192,12 +192,12 @@ namespace atta::rt::vk
 		VkAccelerationStructureBuildSizesInfoKHR total = getTotalRequirements(_blas);
 
 		_bottomBuffer = std::make_shared<atta::vk::Buffer>(
-				_device, total.accelerationStructureSize, 
+				_device, total.accelerationStructureSize>0?total.accelerationStructureSize:1, 
 				VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR, 
 				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
 				VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT);
 		_bottomScratchBuffer = std::make_shared<atta::vk::Buffer>(
-				_device, total.buildScratchSize, 
+				_device, total.buildScratchSize>0?total.buildScratchSize:1, 
 				VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR, 
 				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
 				VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT);
@@ -206,7 +206,7 @@ namespace atta::rt::vk
 		VkDeviceSize resultOffset = 0;
 		VkDeviceSize scratchOffset = 0;
 
-		for(size_t i = 0; i != _blas.size(); i++)
+		for(size_t i = 0; i < _blas.size(); i++)
 		{
 			_blas[i]->generate(commandBuffer, _bottomBuffer, resultOffset, _bottomScratchBuffer, scratchOffset);
 			resultOffset += _blas[i]->getBuildSizes().accelerationStructureSize;
@@ -237,15 +237,18 @@ namespace atta::rt::vk
 				_blas[model->getMeshIndex()], transformation, model->getMeshIndex(), 0/*procedural?*/));
 		}
 
-		size_t size = instances.size()*sizeof(instances[0]);
-		_instancesBuffer = std::make_shared<atta::vk::Buffer>(_device, size, 
+		size_t size = instances.size()*sizeof(VkAccelerationStructureInstanceKHR);
+		_instancesBuffer = std::make_shared<atta::vk::Buffer>(_device, size>0?size:1, 
 				VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
 				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
 				VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT);
-		// Copy data to instances buffer
-		std::shared_ptr<atta::vk::StagingBuffer> stagingBuffer = std::make_shared<atta::vk::StagingBuffer>(_device, instances.data(), size);
-		_instancesBuffer->copyFrom(_commandPool, stagingBuffer->handle(), size);
-		stagingBuffer.reset();
+		if(size>0)
+		{
+			// Copy data to instances buffer
+			std::shared_ptr<atta::vk::StagingBuffer> stagingBuffer = std::make_shared<atta::vk::StagingBuffer>(_device, instances.data(), size);
+			_instancesBuffer->copyFrom(_commandPool, stagingBuffer->handle(), size);
+			stagingBuffer.reset();
+		}
 		
 		AccelerationStructure::memoryBarrier(commandBuffer);
 
@@ -255,10 +258,10 @@ namespace atta::rt::vk
 		// Calculate total memory size to allocate
 		VkAccelerationStructureBuildSizesInfoKHR total = getTotalRequirements(_tlas);
 
-		_topBuffer = std::make_shared<atta::vk::Buffer>(_device, total.accelerationStructureSize, 
+		_topBuffer = std::make_shared<atta::vk::Buffer>(_device, total.accelerationStructureSize>0?total.accelerationStructureSize:1, 
 				VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR, 
 				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		_topScratchBuffer = std::make_shared<atta::vk::Buffer>(_device, total.buildScratchSize, 
+		_topScratchBuffer = std::make_shared<atta::vk::Buffer>(_device, total.buildScratchSize>0?total.buildScratchSize:1, 
 				VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR,
 				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 				VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT);

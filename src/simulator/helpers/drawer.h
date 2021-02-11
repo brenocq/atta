@@ -44,7 +44,7 @@ namespace atta
 
 		private:
 			Drawer(): 
-				_maxNumberOfLines(10000),
+				_maxNumberOfLines(100000),
 				_currNumberOfLines(0)
 			{
 				_lines.resize(_maxNumberOfLines);

@@ -12,7 +12,7 @@
 
 namespace atta
 {
-	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore):
+	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, CameraControlType cameraControlType):
 		_vkCore(vkCore), _currentFrame(0), _mainRendererIndex(-1)
 	{
 		// Create window (GUI thread only)
@@ -24,7 +24,11 @@ namespace atta
 		_window->onScroll = [this](const double xoffset, const double yoffset) { onScroll(xoffset, yoffset); };
 
 		// Create model view controller
-		_modelViewController = std::make_shared<ModelViewController>();
+		_modelViewController = std::make_shared<ModelViewController>(
+				cameraControlType == CAMERA_CONTROL_TYPE_2D?
+					ModelViewController::CONTROL_TYPE_2D:
+					ModelViewController::CONTROL_TYPE_3D
+					);
 
 		// Vulkan objects
 		_surface = std::make_shared<vk::Surface>(_vkCore->getInstance(), _window);
@@ -68,11 +72,6 @@ namespace atta
 			_modelViewController->updateCamera(0.01);
 			render();
 			_window->poolEvents();
-			if(counter++>20)
-			{
-				counter = 0;
-				//_mainRendererIndex = _mainRendererIndex?0:1;
-			}
 		}
 		// Send signal to close atta simulator
 	}
@@ -110,7 +109,6 @@ namespace atta
 
 		// Update main renderer camera
 		_renderers[_mainRendererIndex]->updateCameraMatrix(_modelViewController->getModelView());
-		_renderers[0]->updateCameraMatrix(_modelViewController->getModelView());
 
 		//---------- Record to command buffer ----------//
 		VkCommandBuffer commandBuffer = _commandBuffers->begin(imageIndex);

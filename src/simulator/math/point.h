@@ -24,6 +24,7 @@ namespace atta
 		public:
         	point3(): x(0), y(0), z(0) {};
         	point3(T _x, T _y, T _z): x(_x), y(_y), z(_z) {};
+        	point3(vector3<T> v): x(v.x), y(v.y), z(v.z) {};
 			template <typename U>
 			explicit point3(point3<U> &p): x((T)p.x), y((T)p.y), z((T)p.z) {}
 

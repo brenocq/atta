@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Ray Tracing Vulkan
 // uniformBuffer.h
 // Date: 2021-02-08
 // By Breno Cunha Queiroz
