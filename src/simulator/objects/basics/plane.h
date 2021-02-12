@@ -21,7 +21,7 @@ namespace atta
 				vec3 rotation = {0,0,0};
 				vec2 size = {1,1};
 				float mass = 1.0f;
-				vec3 color = {0.3f, 0.3f, 0.3f};
+				Material material;
 			};
 
 			Plane(CreateInfo info);

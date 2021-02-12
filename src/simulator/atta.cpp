@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "atta.h"
-
+#include "project.h"
 #include "simulator/helpers/log.h"
 #include "simulator/graphics/vulkan/vulkanCore.h"
 #include "simulator/core/accelerator.h"
@@ -21,10 +21,15 @@ namespace atta
 	Atta::Atta(CreateInfo info):
 		_info(info)
 	{
+		// Add robot objects to scene
+		for(auto robot : _info.robots)
+			_info.objects.push_back(robot->getRootObject());
+
 		// Create scene
 		Scene::CreateInfo sceneInfo = 
 		{
-			.objects = _info.objects
+			.objects = _info.objects,
+			.robots = _info.robots
 		};
 		_scene = std::make_shared<Scene>(sceneInfo);
 
@@ -40,6 +45,12 @@ namespace atta
 
 	Atta::~Atta()
 	{
+	}
+
+	Atta Atta::createFromProject(Project project)
+	{
+		Atta atta = Atta(project.getAttaCreateInfo());
+		return atta;
 	}
 
 	void Atta::run()
@@ -140,7 +151,7 @@ namespace atta
 			renderingStage = {
 				.vkCore = vkCore,
 				.renderers = {
-					rtVk,
+					//rtVk,
 					rast
 				}
 			};

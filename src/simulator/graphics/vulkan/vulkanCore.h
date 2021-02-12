@@ -14,6 +14,7 @@
 #include "simulator/graphics/vulkan/physicalDevice.h"
 #include "simulator/graphics/vulkan/device.h"
 #include "simulator/graphics/vulkan/buffer.h"
+#include "simulator/graphics/vulkan/texture.h"
 #include "simulator/core/scene.h"
 
 namespace atta::vk
@@ -47,6 +48,8 @@ namespace atta::vk
 			//std::shared_ptr<Buffer> getOffsetBuffer() const { return _offsetBuffer; }
 			//std::shared_ptr<Buffer> getInstanceBuffer() const { return _instanceBuffer; }
 
+			std::shared_ptr<vk::Texture> getTextures() const { return _textures; }
+
 			void createBuffers(std::shared_ptr<Scene> scene);
 			void updateBuffers(std::shared_ptr<Scene> scene);
 
@@ -68,6 +71,9 @@ namespace atta::vk
 			std::shared_ptr<Buffer> _materialBuffer;
 			//std::shared_ptr<Buffer> _offsetBuffer;
 			//std::shared_ptr<Buffer> _instanceBuffer;
+
+			// Texture images
+			std::shared_ptr<vk::Texture> _textures;
 	};
 }
 

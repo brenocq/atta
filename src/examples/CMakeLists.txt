@@ -1,6 +1,7 @@
-set(dir "examples/")
+file(GLOB_RECURSE src_examples
+	cleaningRobots2D/*.cpp
+)
 
 set(src_files_examples
-	${dir}cleaningRobots/miniCleaner.cpp
-	PARENT_SCOPE
-)
+	${src_examples}
+	PARENT_SCOPE)

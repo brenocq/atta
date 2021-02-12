@@ -164,6 +164,8 @@ namespace atta
 			
 			_physicsStageBarrier->wait();
 			//--------------------- Robots ----------------------//
+			for(auto robot : _scene->getRobots())
+				robot->run(dt);
 			
 			_robotStageBarrier->wait();
 			//-------------------- Rendering --------------------//

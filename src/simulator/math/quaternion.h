@@ -99,7 +99,7 @@ namespace atta
             (*this) *= q;
         }
 
-		void fromEuler(vec3 e)
+		void fromEuler(const vec3 &e)
 		{
 			r = cos(e.x/2)*cos(e.y/2)*cos(e.z/2)+sin(e.x/2)*sin(e.y/2)*sin(e.z/2);
 			i = sin(e.x/2)*cos(e.y/2)*cos(e.z/2)-cos(e.x/2)*sin(e.y/2)*sin(e.z/2);
@@ -113,14 +113,10 @@ namespace atta
 		}
     };
 
-	inline quat eulerToQuat(vec3 &e)
+	inline quat eulerToQuat(const vec3 &e)
 	{
 		quat q;
-		q.r = cos(e.x/2)*cos(e.y/2)*cos(e.z/2)+sin(e.x/2)*sin(e.y/2)*sin(e.z/2);
-		q.i = sin(e.x/2)*cos(e.y/2)*cos(e.z/2)-cos(e.x/2)*sin(e.y/2)*sin(e.z/2);
-		q.j = cos(e.x/2)*sin(e.y/2)*cos(e.z/2)+sin(e.x/2)*cos(e.y/2)*sin(e.z/2);
-		q.k = cos(e.x/2)*cos(e.y/2)*sin(e.z/2)-sin(e.x/2)*sin(e.y/2)*cos(e.z/2);
-
+		q.fromEuler(e);
 		return q;
 	}
 }

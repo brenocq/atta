@@ -8,8 +8,8 @@
 
 namespace atta::phy
 {
-	PlaneShape::PlaneShape(vec3 normal, float offset):
-		Shape(vec3(), quat(), vec3()), _normal(normal), _offset(offset)
+	PlaneShape::PlaneShape(vec3 position, quat orientation, vec2 size):
+		Shape(position, orientation, vec3(size.x, 1, size.y))
 	{
 		setType(PLANE_SHAPE);
 		setTypeName("PLANE");

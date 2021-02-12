@@ -31,6 +31,10 @@ namespace atta
 			{
 				generateBoxMesh();
 			}
+			if(meshName == "atta::cylinder")
+			{
+				generateCylinderMesh();
+			}
 			else if(meshName == "atta::plane")
 			{
 				generatePlaneMesh();
@@ -265,6 +269,43 @@ namespace atta
 		_indices.push_back(20);
 		
 		//---------- Finished generating ----------//
+		eval.stop();
+		Log::info("Mesh", "Finished generating [b]$0[] - [w]$1ms ($2 vertices, $3 indices)", 
+				_meshName, eval.getMs(), _vertices.size(), _indices.size());
+	}
+
+	void Mesh::generateCylinderMesh()
+	{
+		const int circleFaces = 32;
+		LocalEvaluator eval;
+		//---------- Calculate vertices ----------//
+
+		// TODO texture
+		Vertex vertex = {
+			.pos = vec3(0,.5,0),
+			.normal = vec3(0,1,0),
+			.texCoord = vec2(0,0),
+			.materialIndex = 0
+		};
+
+		// Create top disk
+		_vertices.push_back(vertex);
+		for(int i=0; i<circleFaces; i++)
+		{
+			float theta = (i/float(circleFaces))*2*M_PI;
+			vertex.pos = vec3(cos(theta), 0.5, sin(theta));
+			_vertices.push_back(vertex);
+
+			_indices.push_back(0);
+			_indices.push_back((i+1)%circleFaces+1);
+			_indices.push_back(i+1);
+		}
+
+		// Create bottom disk
+		
+		// Create faces
+
+		// TODO finish shape creating
 		eval.stop();
 		Log::info("Mesh", "Finished generating [b]$0[] - [w]$1ms ($2 vertices, $3 indices)", 
 				_meshName, eval.getMs(), _vertices.size(), _indices.size());

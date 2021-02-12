@@ -80,7 +80,6 @@ file(GLOB src_files_simulator_math
 
 include_directories(.)
 include_directories(${glfw3_INCLUDE_DIRS})
-#include_directories(${glm_INCLUDE_DIRS})
 include_directories(${Vulkan_INCLUDE_DIRS})
 include_directories(${FREETYPE_INCLUDE_DIRS})
 message("Vulkan library ${Vulkan_LIBRARY}")
@@ -102,7 +101,7 @@ add_executable(${exe_name}
 	${src_files_simulator_graphics_renderers} 
 	${src_files_simulator_graphics_gui} 
 	${src_files_simulator_physics} 
-	#${src_files_examples}
+	${src_files_examples}
 )
 
 if (UNIX)

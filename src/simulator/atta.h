@@ -12,10 +12,11 @@
 #include <memory>
 #include "simulator/parallel/threadManager.h"
 #include "simulator/objects/object.h"
-//#include "simulator/helpers/drawer.h"
+#include "simulator/core/robot.h"
 
 namespace atta
 {
+	class Project;
 	class Atta
 	{
 		public:
@@ -38,10 +39,12 @@ namespace atta
 				PhysicsMode physicsMode = PHY_MODE_DISABLED;
 				bool createWindow = true;
 				std::vector<std::shared_ptr<Object>> objects = {};
+				std::vector<std::shared_ptr<Robot>> robots = {};
 			};
 
 			Atta(CreateInfo info);
 			~Atta();
+			static Atta createFromProject(Project project);
 
 			void run();
 

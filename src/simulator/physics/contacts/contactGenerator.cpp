@@ -30,8 +30,8 @@ namespace atta::phy
 			//case SPHERE_BOX_PAIR:
 			case SPHERE_HALF_SPACE_PAIR:
 				testContact(std::static_pointer_cast<SphereShape>(s1), std::static_pointer_cast<HalfSpaceShape>(s2)); break;
-			case SPHERE_PLANE_PAIR:
-				testContact(std::static_pointer_cast<SphereShape>(s1), std::static_pointer_cast<PlaneShape>(s2)); break;
+			//case SPHERE_PLANE_PAIR:
+			//	testContact(std::static_pointer_cast<SphereShape>(s1), std::static_pointer_cast<PlaneShape>(s2)); break;
 			//case SPHERE_CYLINDER_PAIR:
 			//case SPHERE_CAPSULE_PAIR:
 
@@ -141,44 +141,44 @@ namespace atta::phy
 	}
 
 	//-------------------- Sphere-Plane --------------------//
-	unsigned ContactGenerator::testContact(std::shared_ptr<PlaneShape> p, std::shared_ptr<SphereShape> s)
-	{
-		return testContact(s, p);
-	}
+	//unsigned ContactGenerator::testContact(std::shared_ptr<PlaneShape> p, std::shared_ptr<SphereShape> s)
+	//{
+	//	return testContact(s, p);
+	//}
 
-	unsigned ContactGenerator::testContact(std::shared_ptr<SphereShape> s, std::shared_ptr<PlaneShape> p)
-	{
-		if(_contactsLeft<=0) return 0;
+	//unsigned ContactGenerator::testContact(std::shared_ptr<SphereShape> s, std::shared_ptr<PlaneShape> p)
+	//{
+	//	if(_contactsLeft<=0) return 0;
 
-		vec3 posS = s->getPosition()+s->getBody()->getPosition();
-		vec3 normal = p->getNormal();
+	//	vec3 posS = s->getPosition()+s->getBody()->getPosition();
+	//	vec3 normal = p->getNormal();
 
-		float distance = dot(posS, normal) - p->getOffset();
+	//	float distance = dot(posS, normal) - p->getOffset();
 
-		if(distance*distance  >= s->getRadius()*s->getRadius())
-			return 0;
+	//	if(distance*distance  >= s->getRadius()*s->getRadius())
+	//		return 0;
 
-		float penetration = -distance;
+	//	float penetration = -distance;
 
-		// Check which side of the plane
-		if(distance < 0)
-		{
-			normal*=-1;
-			penetration = -penetration;
-		}
-		penetration += s->getRadius();
+	//	// Check which side of the plane
+	//	if(distance < 0)
+	//	{
+	//		normal*=-1;
+	//		penetration = -penetration;
+	//	}
+	//	penetration += s->getRadius();
 
-		Contact contact;
-		contact.contactPoint = posS - normal * distance;
-		contact.contactNormal = normal;
-		contact.penetration = penetration;
-		contact.setBodyData(s->getBody(), p->getBody());
+	//	Contact contact;
+	//	contact.contactPoint = posS - normal * distance;
+	//	contact.contactNormal = normal;
+	//	contact.penetration = penetration;
+	//	contact.setBodyData(s->getBody(), p->getBody());
 
-		_contacts.push_back(contact);
-		_contactsLeft--;
+	//	_contacts.push_back(contact);
+	//	_contactsLeft--;
 
-		return 1;
-	}
+	//	return 1;
+	//}
 
 	//-------------------- Box-HalfSpace --------------------//
 	unsigned ContactGenerator::testContact(std::shared_ptr<BoxShape> b, std::shared_ptr<HalfSpaceShape> p)
