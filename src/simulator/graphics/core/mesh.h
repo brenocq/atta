@@ -38,6 +38,7 @@ namespace atta
 		private:
 			void loadMesh();
 			void generateBoxMesh();
+			void generateCylinderMesh();
 			void generatePlaneMesh();
 
 			std::string _meshName;

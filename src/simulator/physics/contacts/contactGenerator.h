@@ -30,8 +30,8 @@ namespace atta::phy
 			unsigned testContact(std::shared_ptr<SphereShape> s, std::shared_ptr<HalfSpaceShape> p);
 			unsigned testContact(std::shared_ptr<HalfSpaceShape> p, std::shared_ptr<SphereShape> s);
 
-			unsigned testContact(std::shared_ptr<SphereShape> s, std::shared_ptr<PlaneShape> p);
-			unsigned testContact(std::shared_ptr<PlaneShape> p, std::shared_ptr<SphereShape> s);
+			//unsigned testContact(std::shared_ptr<SphereShape> s, std::shared_ptr<PlaneShape> p);
+			//unsigned testContact(std::shared_ptr<PlaneShape> p, std::shared_ptr<SphereShape> s);
 
 			unsigned testContact(std::shared_ptr<BoxShape> b, std::shared_ptr<HalfSpaceShape> p);
 			unsigned testContact(std::shared_ptr<HalfSpaceShape> p, std::shared_ptr<BoxShape> b);

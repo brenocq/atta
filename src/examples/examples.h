@@ -7,6 +7,6 @@
 #ifndef EXAMPLES_H
 #define EXAMPLES_H
 
-#include "cleaningRobots/miniCleaner.h"
+#include "cleaningRobots2D/cleaningRobots2D.h"
 
 #endif// EXAMPLES_H

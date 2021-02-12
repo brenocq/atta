@@ -14,17 +14,13 @@ namespace atta::phy
 	class PlaneShape : public Shape
 	{
 		public:
-			PlaneShape(vec3 normal, float offset);
+			PlaneShape(vec3 position = vec3(), quat orientation = quat(), vec2 size = vec2(1,1));
 			~PlaneShape();
 
 			//---------- Getters ----------//
-			vec3 getNormal() const { return _normal; }
-			float getOffset() const { return _offset; }
 			mat3 calculateInertiaTensor(float mass) { return mat3(); }
 
 		private:
-			vec3 _normal;
-			float _offset;
 	};
 }
 

@@ -32,10 +32,10 @@ namespace atta
 		{
 			//std::cout << "Physics\n";
 			_physicsStageBarrier->wait();
-			//std::cout << "Rendering\n";
-			_renderingStageBarrier->wait();
 			//std::cout << "Robot\n";
 			_robotStageBarrier->wait();
+			//std::cout << "Rendering\n";
+			_renderingStageBarrier->wait();
 		}
 
 		std::cout << "Genralist Stop\n";

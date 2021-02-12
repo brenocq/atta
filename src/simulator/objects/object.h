@@ -56,6 +56,11 @@ namespace atta
 			//std::vector<std::shared_ptr<Object>> getChildren() const { return _children; }
 			//std::shared_ptr<atta::phy::Constraint> getParentConstraint() const { return _parentConstraint; }
 
+
+			//---------- Setters ----------//
+			void setPosition(vec3 position) { _position = position; }
+			void setOrientation(quat orientation) { _orientation = orientation; }
+
 		protected:
 			//void setParent(Object* parent) { _parent = parent; };
 			//void setParentConstraint(atta::phy::Constraint* constraint);

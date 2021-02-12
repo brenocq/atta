@@ -22,7 +22,7 @@ namespace atta
 				float height = 1.0f;
 				float radius = 0.5f;
 				float mass = 1.0f;
-				vec3 color = {0.3f, 0.3f, 0.3f};
+				Material material;
 			};
 
 			Cylinder(CreateInfo info);

@@ -21,6 +21,8 @@ namespace atta
 		};
 
 		_model = std::make_shared<Model>(modelInfo);
+
+		//----- Physics -----//
 		_bodyPhysics->addShape(std::make_shared<phy::BoxShape>(vec3(), quat(), vec3(1,1,1)));
 	}
 
