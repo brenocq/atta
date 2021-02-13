@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include "simulator/math/math.h"
+#include "simulator/graphics/vulkan/texture.h"
 
 namespace atta
 {
@@ -21,12 +22,14 @@ namespace atta
 		public:
 			enum BufferType {
 				BUFFER_TYPE_NONE = 0,
-				BUFFER_TYPE_VEC4,
+				BUFFER_TYPE_BYTE_4,
 			};
 
-			static int fromBuffer(const void* data, unsigned width, unsigned height, BufferType bufferType = BUFFER_TYPE_VEC4);
+			// Create texture linked to a buffer
+			static int fromBuffer(const void* data, unsigned width, unsigned height, BufferType bufferType = BUFFER_TYPE_BYTE_4);
+			// Update texture from the buffer (copy from host memory to device memory)
+			static int updateTexture(int textureIndex);
 
-		private:
 			struct TextureInfo
 			{
 				int textureId;
@@ -39,9 +42,12 @@ namespace atta
 
 				// Texture from file
 				std::string fileName = "";
+
+				// Pointer to the created vulkan texture
+				std::weak_ptr<vk::Texture> vkTexture;
 			};
 
-			static std::vector<TextureInfo> _textureInfos;
+			static std::vector<TextureInfo> textureInfos;
 	};
 }
 

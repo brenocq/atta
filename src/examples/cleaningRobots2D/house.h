@@ -17,12 +17,15 @@ class House
 		~House();
 
 		std::vector<std::shared_ptr<atta::Object>> getObjects() const { return _objects; }
-
-	private:
 		void writeFloorDataToTexture();
 
-		std::vector<uint8_t> _floorData;
-		std::vector<atta::vec4> _floorTexture;
+		std::vector<uint8_t> floorData;// Used in the simulation to store the amount of dirt on the floor (0->clean, 255->very dirty)
+	private:
+
 		std::vector<std::shared_ptr<atta::Object>> _objects;
+
+		// Floor texture data
+		std::vector<uint8_t> _floorTexture;// Store the floor color (used to update the floor texture as the robots move)
+		int _floorTextureId; // Floor albedo texture id (necessary to update the texture)
 };
 #endif// ATTA_EXAMPLE_CLEANING_ROBOTS_2D_HOUSE

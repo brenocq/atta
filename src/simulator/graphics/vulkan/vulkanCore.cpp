@@ -7,6 +7,7 @@
 #include "vulkanCore.h"
 #include "simulator/helpers/log.h"
 #include "simulator/graphics/core/model.h"
+#include "simulator/graphics/core/material.h"
 #include "simulator/graphics/vulkan/stagingBuffer.h"
 
 namespace atta::vk
@@ -31,21 +32,7 @@ namespace atta::vk
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 		std::vector<Material> materials;
-		std::vector<MeshOffset> offsets;
 
-		//Vertex vert;
-		//vert.pos = vec3(-0.5, 0.5, 0);
-		//vertices.push_back(vert);
-		//vert.pos = vec3(0.5, 0.5, 0);
-		//vertices.push_back(vert);
-		//vert.pos = vec3(0.0, -1.0, 0);
-		//vertices.push_back(vert);
-
-		//indices.push_back(0);
-		//indices.push_back(1);
-		//indices.push_back(2);
-
-		int meshMaterial = 0;
 		for(auto m : Model::allMeshes)
 		{
 			std::shared_ptr<Mesh> mesh = m.second.lock();
@@ -53,18 +40,18 @@ namespace atta::vk
 			// Remember the vertex and index offsets
 			const uint32_t vertexOffset = static_cast<uint32_t>(vertices.size());
 			const uint32_t indexOffset = static_cast<uint32_t>(indices.size());
-
-			offsets.push_back({vertexOffset, indexOffset});
 			mesh->setVerticesOffset(vertexOffset);
 			mesh->setIndicesOffset(indexOffset);
 
+			// TODO vertex.materialIndex not supported yet
 			std::vector<Vertex> meshVertices = mesh->getVertices();
-			for(auto vertex : meshVertices)
-				vertex.materialIndex+=meshMaterial;
-			meshMaterial++;
+			std::vector<uint32_t> meshIndices = mesh->getIndices();
+			//for(auto vertex : meshVertices)
+			//	vertex.materialIndex+=meshMaterial;
+			//meshMaterial++;
 
 			vertices.insert(vertices.end(), meshVertices.begin(), meshVertices.end());
-			indices.insert(indices.end(), mesh->getIndices().begin(), mesh->getIndices().end());
+			indices.insert(indices.end(), meshIndices.begin(), meshIndices.end());
 		}
 
 		for(auto object : scene->getObjects())
@@ -83,6 +70,16 @@ namespace atta::vk
 				VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
 				indices);
 		_materialBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
+
+		//---------- Create textures ----------//
+		for(auto& textureInfo : atta::Texture::textureInfos)
+		{
+			if(textureInfo.bufferType == atta::Texture::BUFFER_TYPE_BYTE_4)
+			{
+				_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, (uint8_t*)textureInfo.data, (VkExtent2D){textureInfo.width, textureInfo.height}, vk::Texture::BUFFER_RGBA));
+				textureInfo.vkTexture = _textures.back();
+			}
+		}
 	}
 
 	void VulkanCore::updateBuffers(std::shared_ptr<Scene> scene)

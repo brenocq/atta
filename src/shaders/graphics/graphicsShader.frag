@@ -166,6 +166,12 @@ void main()
 	color = color / (color + vec3(1.0));
 	color = pow(color, vec3(1.0/2.2)); 
 
+	color = material.albedo; 
+	//color = inPos;
+	//if(material.albedoIndex<0)
+	//else
+	//	color = texture(textures[m.albedoIndex], inTexCoord);
+
 	// Ouput
     outColor = vec4(color,1);
 }

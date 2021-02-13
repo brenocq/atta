@@ -13,21 +13,17 @@ House::House()
 {
 	float floorSize = 10;
 	//----- Allocate floorData buffer
-	_floorData.resize(floorSize*floorSize*10000);//10x10m floor -> squares of 10x10cm
-	_floorTexture.resize(floorSize*floorSize*10000);
+	floorData.resize(floorSize*floorSize*10000, 255);//10x10m floor -> squares of 10x10cm
+	_floorTexture.resize(floorSize*floorSize*10000*4);
 
-	//----- Floor
-	atta::Plane::CreateInfo groundInfo {
-		.name = "Floor",
-		.size = {floorSize,floorSize},
-		.mass = 0.0f,
-		.material = {
-			.albedo = atta::vec3(1,1,1),
-			// Create albedo texture from floorData buffer and defines function to map from uint8_t to the texture color
-			.albedoIndex = atta::Texture::fromBuffer(_floorTexture.data(), floorSize*100, floorSize*100)
-		}
-	};
-	_objects.push_back(std::make_shared<atta::Plane>(groundInfo));
+	for(unsigned i=0; i<floorData.size(); i++)
+	{
+		uint8_t data = floorData[i];
+		_floorTexture[i*4] = data*0.8;
+		_floorTexture[i*4+1] = data*0.75;
+		_floorTexture[i*4+2] = 0;
+		_floorTexture[i*4+3] = 255;
+	}
 
 	//----- Left Wall
 	atta::Box::CreateInfo boxInfo {
@@ -59,6 +55,26 @@ House::House()
 	boxInfo.position = {0,1.5,5};
 	boxInfo.scale = {9.85,3,.15};
 	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+
+	//----- Floor
+	//atta::Plane::CreateInfo groundInfo {
+	//	.name = "Floor",
+	//	.size = {floorSize,floorSize},
+	//	.mass = 0.0f,
+	//	.material = {
+	//		.albedo = atta::vec3(.3,.4,.8),
+	//		//.albedoIndex = (_floorTextureId = atta::Texture::fromBuffer(_floorTexture.data(), floorSize*100, floorSize*100, atta::Texture::BUFFER_TYPE_BYTE_4)),
+	//		// Create albedo texture from floorData buffer and defines function to map from uint8_t to the texture color
+	//	}
+	//};
+	//_objects.push_back(std::make_shared<atta::Plane>(groundInfo));
+
+	boxInfo.name = "Floor";
+	boxInfo.position = {0,-.01,0};
+	boxInfo.scale = {10,.01,10};
+	boxInfo.material.albedo = atta::vec3(.3, .4, .8);
+	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+
 }
 
 House::~House()
@@ -68,9 +84,14 @@ House::~House()
 
 void House::writeFloorDataToTexture()
 {
-	for(unsigned i=0; i<_floorTexture.size(); i++)
+	for(unsigned i=0; i<floorData.size(); i++)
 	{
-		uint8_t data = _floorData[i];
-		_floorTexture[i] = atta::vec4(data*0.0039, data*0.0039, 0, 1);
+		uint8_t data = floorData[i];
+		_floorTexture[i*4] = data*0.8;
+		_floorTexture[i*4+1] = data*0.75;
+		_floorTexture[i*4+2] = 0;
+		_floorTexture[i*4+3] = 255;
 	}
+
+	atta::Texture::updateTexture(_floorTextureId);
 }

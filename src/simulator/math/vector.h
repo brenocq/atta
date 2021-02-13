@@ -262,8 +262,8 @@ namespace atta
 	{
 		public:
 			T x, y, z;
-		private:
-			T pad;// 4 word alignment
+		//private:
+		//	T pad;// 4 word alignment
 
 		public:
         	vector3(): x(0), y(0), z(0) {};

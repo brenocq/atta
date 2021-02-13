@@ -29,12 +29,12 @@ namespace atta::rt::vk
 		// Create uniform buffer
 		_uniformBuffer = std::make_shared<rt::vk::UniformBuffer>(_vkCore->getDevice());
 		rt::vk::UniformBufferObject ubo;
-		ubo.viewMat = info.viewMat;
-		ubo.projMat = info.projMat;
+		ubo.viewMat = transpose(info.viewMat);
+		ubo.projMat = transpose(info.projMat);
 		ubo.projMat.data[5] *= -1;
-		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
-		ubo.projMatInverse = atta::inverse(ubo.projMat);
-		ubo.samplesPerFrame = 8;
+		ubo.viewMatInverse = inverse(ubo.viewMat);
+		ubo.projMatInverse = inverse(ubo.projMat);
+		ubo.samplesPerFrame = 4;
 		ubo.totalNumberOfSamples = 0;// The total is increased every render() call
 		ubo.numberOfBounces = 8;
 		_uniformBuffer->setValue(ubo);
@@ -72,7 +72,7 @@ namespace atta::rt::vk
 
 		const std::vector<ShaderBindingTable::Entry> rayGenPrograms = { {_rayTracingPipeline->getRayGenShaderIndex(), {}} };
 		const std::vector<ShaderBindingTable::Entry> missPrograms = { {_rayTracingPipeline->getMissShaderIndex(), {}} };
-		const std::vector<ShaderBindingTable::Entry> hitGroups = { {_rayTracingPipeline->getTriangleHitGroupIndex(), {}}, {_rayTracingPipeline->getProceduralHitGroupIndex(), {}}};
+		const std::vector<ShaderBindingTable::Entry> hitGroups = { {_rayTracingPipeline->getTriangleHitGroupIndex(), {}}/*, {_rayTracingPipeline->getProceduralHitGroupIndex(), {}}*/};
 
 		_shaderBindingTable = std::make_shared<ShaderBindingTable>(_device, _deviceProcedures, _rayTracingPipeline, _rayTracingProperties, rayGenPrograms, missPrograms, hitGroups);
 	}
@@ -161,31 +161,32 @@ namespace atta::rt::vk
 	void RayTracing::createBottomLevelStructures(VkCommandBuffer commandBuffer)
 	{
 		// Bottom level acceleration structure
-		// Triangles via vertex buffers. Procedurals via AABBs.
-		unsigned vertexOffset = 0;
-		unsigned indexOffset = 0;
-		uint32_t aabbOffset = 0;
+		// Triangles via vertex buffers 
 
 		// Create blas object for each model
 		for(Mesh* mesh : Mesh::allMeshes)
 		{
+			static unsigned vertexOffset = 0;
+			static unsigned indexOffset = 0;
+
 			if(mesh==nullptr)
 				continue;
+
 			const uint32_t vertexCount = mesh->getVerticesSize();
 			const uint32_t indexCount = mesh->getIndicesSize();
 
 			std::shared_ptr<BottomLevelGeometry> geometries = std::make_shared<BottomLevelGeometry>();
 
-			//false// getProcedural
-			//	? geometries.AddGeometryAabb(_vkCore, aabbOffset, 1, true)
-			geometries->addGeometry(_vkCore, vertexOffset, vertexCount, indexOffset, indexCount, true);
+			geometries->addGeometry(
+					_vkCore, 
+					vertexOffset, vertexCount, 
+					indexOffset, indexCount, true);
 
 			std::shared_ptr<BottomLevelAccelerationStructure> blas = std::make_shared<BottomLevelAccelerationStructure>(_deviceProcedures, _rayTracingProperties, geometries);
 			_blas.push_back(blas);
 
 			vertexOffset += vertexCount*sizeof(Vertex);
 			indexOffset += indexCount*sizeof(uint32_t);
-			aabbOffset += sizeof(VkAabbPositionsKHR);
 		}
 
 		// Calculate total memory size to allocate
@@ -224,17 +225,16 @@ namespace atta::rt::vk
 		// Hit group 1: procedurals
 		for(std::shared_ptr<Object> object : _scene->getObjects())
 		{
+			static unsigned _instanceId = 0;
 			std::shared_ptr<Model> model = object->getModel();
 			if(model == nullptr)
 				continue;
-
-			mat4 transformation = atta::transpose(mat4(object->getModelMat()));
 
 			//_blas[model->getModelIndex()]->getDevice();
 			//std::cout << "INDEX: " << model->getMeshIndex() << std::endl;
 			//std::cout << "Size: " << _blas.size() << std::endl;
 			instances.push_back(TopLevelAccelerationStructure::createInstance(
-				_blas[model->getMeshIndex()], transformation, model->getMeshIndex(), 0/*procedural?*/));
+				_blas[model->getMeshIndex()], object->getModelMat(), _instanceId++, 0/*procedural?*/));
 		}
 
 		size_t size = instances.size()*sizeof(VkAccelerationStructureInstanceKHR);
@@ -308,8 +308,8 @@ namespace atta::rt::vk
 		vkDeviceWaitIdle(_device->handle());
 		recreateTLAS();
 		rt::vk::UniformBufferObject ubo = _uniformBuffer->getValue();
-		ubo.viewMat = viewMatrix;
-		ubo.viewMatInverse = ubo.viewMat;
+		ubo.viewMat = transpose(viewMatrix);
+		ubo.viewMatInverse = inverse(ubo.viewMat);
 		//Log::debug("RayTracing", "View: $0", (inverse(ubo.viewMat)).toString());
 		ubo.totalNumberOfSamples = 0;
 		_uniformBuffer->setValue(ubo);

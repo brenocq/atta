@@ -10,7 +10,7 @@
 CleaningRobots2D::CleaningRobots2D():
 	_qtyRobots(9)
 {
-	_attaCreateInfo.dimensionMode = atta::Atta::DIM_MODE_2D;
+	_attaCreateInfo.dimensionMode = atta::Atta::DIM_MODE_3D;
 	_attaCreateInfo.physicsMode = atta::Atta::PHY_MODE_DISABLED;
 	_attaCreateInfo.createWindow = true;
 
@@ -20,6 +20,7 @@ CleaningRobots2D::CleaningRobots2D():
 
 	createRobots();
 	_attaCreateInfo.robots = cleanersToRobots();
+	_attaCreateInfo.runAfterRobots = [this](){ runAfterRobots(); };
 }
 
 CleaningRobots2D::~CleaningRobots2D()
@@ -27,6 +28,16 @@ CleaningRobots2D::~CleaningRobots2D()
 
 }
 
+void CleaningRobots2D::runAfterRobots()
+{
+	for(size_t x=100; x<300; x++)
+		for(size_t y=200; y<600; y++)
+			house.floorData[x+y*1000] = 0;
+
+	// TODO Need to syncronize gpu queue access between threads to change image layout
+	// Executes after all robots.run() are finished
+	//house.writeFloorDataToTexture();
+}
 
 void CleaningRobots2D::createRobots()
 {

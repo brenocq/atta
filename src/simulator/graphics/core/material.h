@@ -13,15 +13,22 @@ namespace atta
 {
 	struct Material
 	{
-		vec3 albedo = {1.0,1.0,1.0};
-		float metallic = 0.5f;
-		float roughness = 0.5f;
-		float ao = 0.0;// Ambient occusion
-		int albedoIndex = -1;// TODO get value from albedo texture
-		int normalIndex = -1;// TODO get value from normal texture
-		int metallicIndex = -1;// TODO get value from metallic texture
-		int roughnessIndex = -1;// TODO get value from roughness texture
-		int aoIndex = -1;// TODO get value from ao texture
+		alignas(16) vec3 albedo = {1.0,1.0,1.0};
+		alignas(4) float metallic = 0.5f;
+		alignas(4) float roughness = 0.5f;
+		alignas(4) float ao = 0.0;// Ambient occusion
+		alignas(4) int albedoIndex = -1;
+		alignas(4) int normalIndex = -1;// TODO get value from normal texture
+		alignas(4) int metallicIndex = -1;// TODO get value from metallic texture
+		alignas(4) int roughnessIndex = -1;// TODO get value from roughness texture
+		alignas(4) int aoIndex = -1;// TODO get value from ao texture
+
+		std::string toString()
+		{
+			return std::string("Material{albedo=")+albedo.toString()+
+				", albedoIndex="+std::to_string(albedoIndex)+
+				"}";
+		}
 	};
 }
 

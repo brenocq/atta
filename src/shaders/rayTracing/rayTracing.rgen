@@ -56,16 +56,16 @@ void main()
 			const float t = ray.colorAndDistance.w;
 			const bool isScattered = ray.scatterDirection.w > 0;
 
-			rayColor *= hitColor;
-
 			// Trace missed, or end of trace
-			if(t<0 || !isScattered)
+			if(t<0)// || !isScattered)
 				break;
+
+			rayColor *= hitColor;
+			break;
 
 			// Trace hit
 			origin = origin + t * direction;
 			direction = vec4(ray.scatterDirection.xyz, 0);
-			break;
 		}
 
 		pixelColor += rayColor;

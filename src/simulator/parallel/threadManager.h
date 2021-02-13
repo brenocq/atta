@@ -10,6 +10,7 @@
 #include <vector>
 #include <thread>
 #include <memory>
+#include <functional>
 #include "barrier.h"
 #include "workerGeneralist.h"
 #include "workerGui.h"
@@ -43,7 +44,7 @@ namespace atta
 			};
 
 			struct RobotStage {
-				
+				std::function<void(void)> runAfterRobots;
 			};
 
 			struct RenderingStage {
@@ -94,12 +95,13 @@ namespace atta
 
 			//---------- Physics stage ----------//
 			std::shared_ptr<phy::PhysicsEngine> _physicsEngine;
+
+			//---------- Robot stage ----------//
+			std::function<void(void)> _runAfterRobots;
 			
 			//---------- Rendering stage ----------//
 			std::shared_ptr<vk::VulkanCore> _vkCore;
 			std::vector<std::shared_ptr<Renderer>> _renderers;
-
-			//---------- Robot stage ----------//
 	};
 }
 

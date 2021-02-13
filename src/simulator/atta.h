@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <functional>
 #include "simulator/parallel/threadManager.h"
 #include "simulator/objects/object.h"
 #include "simulator/core/robot.h"
@@ -40,6 +41,8 @@ namespace atta
 				bool createWindow = true;
 				std::vector<std::shared_ptr<Object>> objects = {};
 				std::vector<std::shared_ptr<Robot>> robots = {};
+
+				std::function<void(void)> runAfterRobots;
 			};
 
 			Atta(CreateInfo info);

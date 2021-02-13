@@ -280,6 +280,32 @@ namespace atta
 	}
 
 	// Transform the vector by this matrix
+	vec4 mat4::operator*(const vec4 &vector) const
+	{
+		return vec4(
+			vector.x * data[0] +
+			vector.y * data[1] +
+			vector.z * data[2] +
+			vector.w * data[3],
+
+			vector.x * data[4] +
+			vector.y * data[5] +
+			vector.z * data[6] +
+			vector.w * data[7],
+
+			vector.x * data[8] +
+			vector.y * data[9] +
+			vector.z * data[10] +
+			vector.w * data[11],
+
+			vector.x * data[12] +
+			vector.y * data[13] +
+			vector.z * data[14] +
+			vector.w * data[15]
+		);
+	}
+
+	// Transform the vector by this matrix
 	vec3 mat4::transform(const vec3 &vector) const
 	{
 		return (*this)*vector;

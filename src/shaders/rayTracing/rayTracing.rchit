@@ -2,16 +2,17 @@
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_GOOGLE_include_directive : require
 #extension GL_EXT_ray_tracing : require
-#include "material.glsl"
+
+#include "../material.glsl"
+#include "rayPayload.glsl"
+//#include "scatter.glsl"
+//#include "vertex.glsl"
 
 layout(binding = 4) readonly buffer VertexArray { float Vertices[]; };
 layout(binding = 5) readonly buffer IndexArray { uint Indices[]; };
 layout(binding = 6) readonly buffer MaterialArray { Material[] Materials; };
-layout(binding = 7) readonly buffer OffsetArray { uvec2[] Offsets; };
-layout(binding = 9) uniform sampler2D[] TextureSamplers;
-
-#include "scatter.glsl"
-#include "vertex.glsl"
+//layout(binding = 7) readonly buffer OffsetArray { uvec2[] Offsets; };
+//layout(binding = 9) uniform sampler2D[] TextureSamplers;
 
 hitAttributeEXT vec3 hitAttributes;
 rayPayloadInEXT RayPayload ray;
@@ -35,7 +36,7 @@ void main()
 	//const Vertex v0 = unpackVertex(vertexOffset + Indices[indexOffset + gl_PrimitiveID * 3 + 0]);
 	//const Vertex v1 = unpackVertex(vertexOffset + Indices[indexOffset + gl_PrimitiveID * 3 + 1]);
 	//const Vertex v2 = unpackVertex(vertexOffset + Indices[indexOffset + gl_PrimitiveID * 3 + 2]);
-	//Material material = Materials[v0.materialIndex];
+	Material material = Materials[gl_InstanceID];// Change to materialOffset from Instance buffer
 	//if(Instances[gl_InstanceID].diffuse.x != -1)
 	//{
 	//	material.diffuse = Instances[gl_InstanceID].diffuse;
@@ -60,6 +61,6 @@ void main()
 	////ray.colorAndDistance = vec4((transform>>2)%2,(transform>>1)%2,transform%2,0);
 	////ray.colorAndDistance = diffuse;
 	//ray.colorAndDistance = vec4(worldPos, gl_HitTEXT);
-	ray.colorAndDistance = vec4(0,0,1, gl_HitTEXT);
-	ray.scatterDirection = vec4(1,0,0,0);
+	ray.colorAndDistance = vec4(material.albedo, gl_HitTEXT);
+	ray.scatterDirection = vec4(0,0,0,0);
 }
