@@ -246,7 +246,7 @@ namespace atta::vk
 			auto model = object->getModel();
 
 			ObjectInfo objectInfo;
-			objectInfo.modelMat = object->getModelMat();
+			objectInfo.modelMat = transpose(object->getModelMat());
 			objectInfo.materialOffset = model->getMaterialOffset();
 
 			vkCmdPushConstants(
@@ -265,8 +265,6 @@ namespace atta::vk
 			//Log::debug("GraphicsPipeline", "ind $0 - verto $1 - indo $2", indexCount, vertexOffset, indexOffset);
 
 			vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
-			//vkCmdDrawIndexed(commandBuffer, indexCount, 1, 3, 3, 0);
-			//vkCmdDrawIndexed(commandBuffer, 3, 1, 0, 0, 0);
 		}
 	}
 }

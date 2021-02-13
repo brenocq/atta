@@ -38,7 +38,7 @@ namespace atta::rt::vk
 			// Vertex buffer, Index buffer, Material buffer, Offset buffer
 			{4, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
 			{5, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-			//{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
+			{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
 			//{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
 
 			// Textures and image samplers
@@ -85,10 +85,10 @@ namespace atta::rt::vk
 		indexBufferInfo.buffer = _vkCore->getIndexBuffer()->handle();
 		indexBufferInfo.range = VK_WHOLE_SIZE;
 
-		//// Material buffer
-		//VkDescriptorBufferInfo materialBufferInfo = {};
-		//materialBufferInfo.buffer = _vkCore->getMaterialBuffer()->handle();
-		//materialBufferInfo.range = VK_WHOLE_SIZE;
+		// Material buffer
+		VkDescriptorBufferInfo materialBufferInfo = {};
+		materialBufferInfo.buffer = _vkCore->getMaterialBuffer()->handle();
+		materialBufferInfo.range = VK_WHOLE_SIZE;
 
 		//// Offsets buffer
 		//VkDescriptorBufferInfo offsetsBufferInfo = {};
@@ -118,8 +118,8 @@ namespace atta::rt::vk
 			descriptorSets->bind(0, 2, outputImageInfo),
 			descriptorSets->bind(0, 3, uniformBufferInfo),
 			descriptorSets->bind(0, 4, vertexBufferInfo),
-			descriptorSets->bind(0, 5, indexBufferInfo)
-			//descriptorSets->bind(0, 6, materialBufferInfo),
+			descriptorSets->bind(0, 5, indexBufferInfo),
+			descriptorSets->bind(0, 6, materialBufferInfo),
 			//descriptorSets->bind(0, 7, offsetsBufferInfo),
 			//descriptorSets->bind(0, 8, instanceBufferInfo),
 			//descriptorSets->bind(0, 9, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
@@ -144,16 +144,16 @@ namespace atta::rt::vk
 		const atta::vk::ShaderModule rayGenShader(_device, "src/shaders/shaders/rayTracing.rgen.spv");
 		const atta::vk::ShaderModule missShader(_device, "src/shaders/shaders/rayTracing.rmiss.spv");
 		const atta::vk::ShaderModule closestHitShader(_device, "src/shaders/shaders/rayTracing.rchit.spv");
-		const atta::vk::ShaderModule proceduralClosestHitShader(_device, "src/shaders/shaders/rayTracing.procedural.rchit.spv");
-		const atta::vk::ShaderModule proceduralIntersectionShader(_device, "src/shaders/shaders/rayTracing.procedural.rint.spv");
+		//const atta::vk::ShaderModule proceduralClosestHitShader(_device, "src/shaders/shaders/rayTracing.procedural.rchit.spv");
+		//const atta::vk::ShaderModule proceduralIntersectionShader(_device, "src/shaders/shaders/rayTracing.procedural.rint.spv");
 
 		std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 		{
 			rayGenShader.createShaderStage(VK_SHADER_STAGE_RAYGEN_BIT_KHR),
 			missShader.createShaderStage(VK_SHADER_STAGE_MISS_BIT_KHR),
 			closestHitShader.createShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
-			proceduralClosestHitShader.createShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
-			proceduralIntersectionShader.createShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
+			//proceduralClosestHitShader.createShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+			//proceduralIntersectionShader.createShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
 		};
 
 		// Shader groups
@@ -187,22 +187,22 @@ namespace atta::rt::vk
 		triangleHitGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
 		_triangleHitGroupIndex = 2;
 
-		VkRayTracingShaderGroupCreateInfoKHR proceduralHitGroupInfo = {};
-		proceduralHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-		proceduralHitGroupInfo.pNext = nullptr;
-		proceduralHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
-		proceduralHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
-		proceduralHitGroupInfo.closestHitShader = 3;
-		proceduralHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-		proceduralHitGroupInfo.intersectionShader = 4;
-		_proceduralHitGroupIndex = 3;
+		//VkRayTracingShaderGroupCreateInfoKHR proceduralHitGroupInfo = {};
+		//proceduralHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+		//proceduralHitGroupInfo.pNext = nullptr;
+		//proceduralHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
+		//proceduralHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
+		//proceduralHitGroupInfo.closestHitShader = 3;
+		//proceduralHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
+		//proceduralHitGroupInfo.intersectionShader = 4;
+		//_proceduralHitGroupIndex = 3;
 
 		std::vector<VkRayTracingShaderGroupCreateInfoKHR> groups =
 		{
 			rayGenGroupInfo, 
 			missGroupInfo, 
 			triangleHitGroupInfo, 
-			proceduralHitGroupInfo,
+			//proceduralHitGroupInfo,
 		};
 
 		// Create graphic pipeline

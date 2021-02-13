@@ -37,6 +37,9 @@ namespace atta
 
 		//---------- Physics stage ----------//
 		_physicsEngine = pipelineSetup.physicsStage.physicsEngine;
+
+		//---------- Robot stage ----------//
+		_runAfterRobots = pipelineSetup.robotStage.runAfterRobots;
 		
 		//---------- Rendering stage ----------//
 		_vkCore = pipelineSetup.renderingStage.vkCore;
@@ -47,8 +50,6 @@ namespace atta
 		createCoreObjects();
 		createPhysicsObjects();
 		createRenderingObjects();
-
-		//---------- Robot stage ----------//
 
 		populateThreadsWork();
 	}
@@ -166,7 +167,9 @@ namespace atta
 			//--------------------- Robots ----------------------//
 			for(auto robot : _scene->getRobots())
 				robot->run(dt);
-			
+
+			if(_runAfterRobots)
+				_runAfterRobots();
 			_robotStageBarrier->wait();
 			//-------------------- Rendering --------------------//
 

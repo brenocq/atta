@@ -57,6 +57,9 @@ namespace atta
 		// Sum matrices
         mat4 operator+(const mat4 &o) const;
 
+		// Multiply by vec4
+		vec4 operator*(const vec4 &vector) const;
+
 		// Multiply by vec3
         vec3 operator*(const vec3 &vector) const;
 		template<typename T>
@@ -70,6 +73,7 @@ namespace atta
 			if(wp == 1) return point3<T>(xp, yp, zp);
 			else return point3<T>(xp, yp, zp)/wp;
 		}
+
 
         vec3 transform(const vec3 &vector) const;
         mat4 translate(const vec3 &vector) const;
@@ -146,16 +150,14 @@ namespace atta
 	// Calculate perspective matrix
 	inline mat4 perspective(float fov, float ratio, float near, float far)
 	{
-		mat4 res(1);
-		float frustumDepth = far - near;
-    	float oneOverDepth = 1 / frustumDepth;
+		mat4 res(0);
+    	float oneOverDepth = 1 / (far - near);
 
-		res.data[5] = 1 / tan(0.5f * fov);
-		res.data[0] = -res.data[5] / ratio;
-		res.data[10] = -(far + near) * oneOverDepth;
-		res.data[11] = -2*far*near * oneOverDepth;
-		res.data[14] = -1;
-		res.data[15] = 0;
+		res.mat[1][1] = 1 / tan(0.5f * fov);
+		res.mat[0][0] = res.mat[1][1] / ratio;
+		res.mat[2][2] = -(far + near) * oneOverDepth;
+		res.mat[2][3] = -2*far*near * oneOverDepth;
+		res.mat[3][2] = -1;
 
 		return res;
 	}

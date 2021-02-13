@@ -21,9 +21,14 @@ namespace atta::vk
 	class Texture
 	{
 		public:
+			enum BufferType {
+				BUFFER_A,
+				BUFFER_RGBA
+			};
+
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format=VK_FORMAT_R8G8B8A8_SRGB);
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size);
-			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, unsigned char buffer[],  VkExtent2D size);
+			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, uint8_t* buffer,  VkExtent2D size, BufferType bufferType=BUFFER_A);
 			~Texture();
 
 			std::shared_ptr<Device> getDevice() const { return _device; }
@@ -31,7 +36,7 @@ namespace atta::vk
 			std::shared_ptr<ImageView> getImageView() const { return _imageView; }
 			std::shared_ptr<Sampler> getSampler() const { return _sampler; }
 
-			void updateTextureImage(std::vector<uint8_t> pixels);
+			void updateImage(const void* buffer, BufferType bufferType);
 
 		private:
 			void transitionImageLayout(VkImageLayout newLayout);

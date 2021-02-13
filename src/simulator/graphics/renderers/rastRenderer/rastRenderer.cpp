@@ -17,8 +17,8 @@ namespace atta
 		_uniformBuffer = std::make_shared<vk::UniformBuffer>(_vkCore->getDevice());
 
 		vk::UniformBufferObject ubo;
-		ubo.viewMat = info.viewMat;
-		ubo.projMat = info.projMat;
+		ubo.viewMat = atta::transpose(info.viewMat);
+		ubo.projMat = atta::transpose(info.projMat);
 		ubo.projMat.data[5] *= -1;
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
 		ubo.projMatInverse = atta::inverse(ubo.projMat);
@@ -108,9 +108,9 @@ namespace atta
 	void RastRenderer::updateCameraMatrix(mat4 viewMatrix)
 	{
 		vk::UniformBufferObject ubo = _uniformBuffer->getValue();
-		ubo.viewMat = viewMatrix;
+		ubo.viewMat = atta::transpose(viewMatrix);
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
-		//Log::debug("RastRenderer", "View: $0", ubo.viewMat.toString());
+
 		//Log::debug("RastRenderer", "ViewInverse: $0", ubo.viewMatInverse.toString());
 		//Log::debug("RastRenderer", "Proj: $0", ubo.projMat.toString());
 		//Log::debug("RastRenderer", "ProjInverse: $0", ubo.projMatInverse.toString());

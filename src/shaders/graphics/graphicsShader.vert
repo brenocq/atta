@@ -63,15 +63,14 @@ out gl_PerVertex
 
 void main() 
 {
-	mat4 projection = transpose(camera.projMat);
-	mat4 view = transpose(camera.viewMat);
-	mat4 model = transpose(objectInfo.modelMat);
-    gl_Position = (projection * (view * model)) * vec4(inPosition, 1);
+	vec4 posTest = camera.projMat * camera.viewMat * objectInfo.modelMat * vec4(inPosition,1);
 
-	outPos = vec3(model * vec4(inPosition, 1.0));
-	outNormal = vec3(transpose(inverse(model)) * vec4(inNormal, 1.0));
+    gl_Position = posTest;//(/**/ (camera.viewMat /* objectInfo.modelMat*/)) * vec4(inPosition, 1);
+
+	outPos = vec3(objectInfo.modelMat * vec4(inPosition, 1.0));
+	outNormal = vec3(transpose(inverse(objectInfo.modelMat)) * vec4(inNormal, 1.0));
 	outTexCoord = inTexCoord;
-	outMaterialIndex = inMaterialIndex + objectInfo.materialOffset;
+	outMaterialIndex = /*inMaterialIndex +*/ objectInfo.materialOffset;
 
 	outViewPos = ExtractCameraPos(camera.viewMat);
 }

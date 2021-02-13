@@ -46,7 +46,7 @@ namespace atta
 			void moveForward(float d);
 			void moveRight(float d);
 			void moveUp(float d);
-			void rotate(float y, float x);
+			void rotate(float x, float y);
 			void updateVectors();
 
 			ControlType _controlType;

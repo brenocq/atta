@@ -39,37 +39,41 @@ namespace atta
 	{
 		//const auto view = _orientation.translate(-_position);
 		mat4 res = lookAt(_position, _position+_forward, _up);
+		//return res;
 		return res;
 	}
 
 	bool ModelViewController::onKey(int key, int scancode, int action, int mods)
 	{
-		//switch(key)
-		//{
-		//	case GLFW_KEY_S: 
-		//		_cameraMovingBackward = action != GLFW_RELEASE; 
-		//		return true;
-		//	case GLFW_KEY_W: 
-		//		_cameraMovingForward = action != GLFW_RELEASE; 
-		//		return true;
-		//	case GLFW_KEY_A: 
-		//		_cameraMovingLeft = action != GLFW_RELEASE; 
-		//		return true;
-		//	case GLFW_KEY_D: 
-		//		_cameraMovingRight = action != GLFW_RELEASE; 
-		//		return true;
-		//	case GLFW_KEY_Q: 
-		//		_cameraMovingDown = action != GLFW_RELEASE; 
-		//		return true;
-		//	case GLFW_KEY_E: 
-		//		_cameraMovingUp = action != GLFW_RELEASE; 
-		//		return true;
-		//	case GLFW_KEY_LEFT_SHIFT:
-		//		_shiftKey  = action != GLFW_RELEASE;
-		//		return false;
-		//	default: 
-		//		return false;
-		//}
+		if(_controlType == CONTROL_TYPE_3D)
+		{
+			switch(key)
+			{
+				case GLFW_KEY_S: 
+					_cameraMovingBackward = action != GLFW_RELEASE; 
+					return true;
+				case GLFW_KEY_W: 
+					_cameraMovingForward = action != GLFW_RELEASE; 
+					return true;
+				case GLFW_KEY_A: 
+					_cameraMovingLeft = action != GLFW_RELEASE; 
+					return true;
+				case GLFW_KEY_D: 
+					_cameraMovingRight = action != GLFW_RELEASE; 
+					return true;
+				case GLFW_KEY_Q: 
+					_cameraMovingDown = action != GLFW_RELEASE; 
+					return true;
+				case GLFW_KEY_E: 
+					_cameraMovingUp = action != GLFW_RELEASE; 
+					return true;
+				case GLFW_KEY_LEFT_SHIFT:
+					_shiftKey  = action != GLFW_RELEASE;
+					return false;
+				default: 
+					return false;
+			}
+		}
 		//Log::debug("MVCkey", "ok");
 	}
 
@@ -115,19 +119,22 @@ namespace atta
 				const float speed2DFac = 0.1;
 				moveRight(d*_cursorMovX*speed2DFac);
 				moveUp(-d*_cursorMovY*speed2DFac);
-
-				_cursorMovX = 0;
-				_cursorMovY = 0;
 			}
-			//if(_cameraMovingLeft) moveRight(-d);
-			//if(_cameraMovingRight) moveRight(d);
-			//if(_cameraMovingBackward) moveForward(-d);
-			//if(_cameraMovingForward) moveForward(d);
-			//if(_cameraMovingDown) moveUp(-d);
-			//if(_cameraMovingUp) moveUp(d);
+			else if(_controlType == CONTROL_TYPE_3D)
+			{
+				if(_cameraMovingLeft) moveRight(-d);
+				if(_cameraMovingRight) moveRight(d);
+				if(_cameraMovingBackward) moveForward(-d);
+				if(_cameraMovingForward) moveForward(d);
+				if(_cameraMovingDown) moveUp(-d);
+				if(_cameraMovingUp) moveUp(d);
 
-			//const float rotationDiv = 300;
-			//rotate(_cursorMovX / rotationDiv, _cursorMovY / rotationDiv);
+				const float rotationDiv = 300;
+				rotate(_cursorMovX / rotationDiv, _cursorMovY / rotationDiv);
+			}
+
+			_cursorMovX = 0;
+			_cursorMovY = 0;
 		}
 
 		return true;
@@ -135,9 +142,7 @@ namespace atta
 
 	void ModelViewController::moveForward(float d)
 	{
-		//Log::debug("MVC", "forwad $0", _forward.toString());
-		//Log::debug("MVC", "Old $0 - New $1", _position.toString(), (_forward).toString());
-		_position -= d * _forward;
+		_position += d * _forward;
 	}
 
 	void ModelViewController::moveRight(float d)
@@ -150,20 +155,11 @@ namespace atta
 		_position += d * _up;
 	}
 
-	void ModelViewController::rotate(float y, float x)
+	void ModelViewController::rotate(float x, float y)
 	{
-		//Log::debug("MVC", "first: $0", _orientation.toString());
-		//Log::debug("MVC", "rot x: $0", rotationFromAxisAngle(vec3(0,1,0), y).toString());
-		//Log::debug("MVC", "second: $0", (_orientation*rotationFromAxisAngle(vec3(0,1,0), y)).toString());
-		//Log::debug("MVC", "third: $0", (rotationFromAxisAngle(vec3(1,0,0), x)*(_orientation*rotationFromAxisAngle(vec3(0,1,0), y))).toString());
-
-		//_orientation =
-		//	rotationFromAxisAngle(vec3(1,0,0), x) *
-		//	(_orientation *
-		//	rotationFromAxisAngle(vec3(0,1,0), y));
-
 		_orientation =
-			rotationFromAxisAngle(vec3(0,-1,0), y) * _orientation * rotationFromAxisAngle(vec3(1,0,0), x);
+			rotationFromAxisAngle(vec3(0,-1,0), x) * 
+			(_orientation * rotationFromAxisAngle(vec3(-1,0,0), y));
 
 		updateVectors();
 	}

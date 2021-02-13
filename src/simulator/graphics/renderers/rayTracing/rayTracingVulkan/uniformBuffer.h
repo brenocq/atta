@@ -18,14 +18,14 @@ namespace atta::rt::vk
 {
 	struct UniformBufferObject
 	{
-		mat4 viewMat;
-		mat4 projMat;
-		mat4 viewMatInverse;
-		mat4 projMatInverse;
+		alignas(16) mat4 viewMat;
+		alignas(16) mat4 projMat;
+		alignas(16) mat4 viewMatInverse;
+		alignas(16) mat4 projMatInverse;
 
-		unsigned samplesPerFrame;
-		unsigned totalNumberOfSamples;
-		unsigned numberOfBounces;
+		alignas(4) unsigned samplesPerFrame;
+		alignas(4) unsigned totalNumberOfSamples;
+		alignas(4) unsigned numberOfBounces;
 	};
 
 

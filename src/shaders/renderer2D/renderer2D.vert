@@ -19,6 +19,7 @@ layout(location = 2) in vec2 inTexCoord;
 layout(location = 3) in int inMaterialIndex;
 
 layout(location = 0) out flat int outMaterialIndex;
+layout(location = 1) out vec2 outTexCoord;
 
 out gl_PerVertex
 {
@@ -31,5 +32,7 @@ void main()
 
 	fragPos.y = -fragPos.y;// Invert Y because vulkan Y coord points down
 	gl_Position = vec4(fragPos.xyz, 1);
+
+	outTexCoord = inTexCoord;
 	outMaterialIndex = objectInfo.materialOffset;
 }

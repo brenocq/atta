@@ -17,6 +17,8 @@ class CleaningRobots2D : public atta::Project
 		~CleaningRobots2D();
 
 	private:
+		void runAfterRobots();
+
 		void createRobots();
 		std::vector<std::shared_ptr<atta::Robot>> cleanersToRobots();
 

@@ -326,10 +326,9 @@ namespace atta
 			.materialIndex = 0
 		};
 
-		// Top (0-3)
 		for(int i=0; i<4; i++)
 		{
-			vertex.pos = vertices[i];
+			vertex.pos = vertices[i]*5;
 			vertex.texCoord = vec2(vertices[i].x > 0.0f, vertices[i].z > 0.0f);
 			_vertices.push_back(vertex);
 		}

@@ -72,6 +72,12 @@ namespace atta
 			_modelViewController->updateCamera(0.01);
 			render();
 			_window->poolEvents();
+
+			if(counter++>20)
+			{
+				_mainRendererIndex = !_mainRendererIndex;
+				counter=0;
+			}
 		}
 		// Send signal to close atta simulator
 	}

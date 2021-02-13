@@ -101,6 +101,7 @@ namespace atta::vk
 		Log::success("Texture", "$0 loaded successfully: $1 x $2", filename, _width, _height);
 	}
 
+	//--------------------
 	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size):
 		_device(device), _commandPool(commandPool), _arrayLayers(1)
 	{
@@ -127,7 +128,8 @@ namespace atta::vk
 		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
 	}
 
-	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, unsigned char buffer[],  VkExtent2D size):
+	//--------------------
+	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, u_int8_t* buffer,  VkExtent2D size, BufferType bufferType):
 		_device(device), _commandPool(commandPool), _arrayLayers(1)
 	{
 		_width = size.width;
@@ -137,17 +139,24 @@ namespace atta::vk
 
 		VkDeviceSize imageSize = _width * _height * 4;
 		std::vector<uint8_t> pixels(imageSize);
-
-		// Copy from buffer to image pixels buffer
-		for(int y=0; y<_height; y++)
+		switch(bufferType)
 		{
-			for(int x=0; x<_width; x++)
-			{
-				pixels[(x+y*_width)*4+0] = 255;
-				pixels[(x+y*_width)*4+1] = 255;
-				pixels[(x+y*_width)*4+2] = 255;
-				pixels[(x+y*_width)*4+3] = buffer[x+y*_width];
-			}
+			case BUFFER_A:
+				for(int y=0; y<_height; y++)
+				{
+					for(int x=0; x<_width; x++)
+					{
+						pixels[(x+y*_width)*4+0] = 255;
+						pixels[(x+y*_width)*4+1] = 255;
+						pixels[(x+y*_width)*4+2] = 255;
+						pixels[(x+y*_width)*4+3] = buffer[x+y*_width];
+					}
+				}
+				break;
+			case BUFFER_RGBA:
+				for(size_t i=0;i<imageSize;i++)
+					pixels[i] = buffer[i];
+				break;
 		}
 
 		StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels.data(), imageSize);
@@ -165,50 +174,44 @@ namespace atta::vk
 		_imageView = std::make_shared<ImageView>(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
 		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
 	}
-
-	void Texture::updateTextureImage(std::vector<uint8_t> pixels)
+	//--------------------
+	void Texture::updateImage(const void* buffer, BufferType bufferType)
 	{
 		std::vector<uint8_t> data(_width*_height*4);
 
-		// Convert pixels to data (RGBA format)
-		if((int)pixels.size() == _width*_height*4)
-			data = pixels;
-		else if((int)pixels.size() == _width*_height*3)
+		switch(bufferType)
 		{
-			for(int x=0; x<_width; x++)
-			{
-				for(int y=0; y<_height; y++)
+			case BUFFER_A:
 				{
-					data[y*_width*4 + x*4+0] = pixels[y*_width*3 + x*3+0];
-					data[y*_width*4 + x*4+1] = pixels[y*_width*3 + x*3+1];
-					data[y*_width*4 + x*4+2] = pixels[y*_width*3 + x*3+2];
-					data[y*_width*4 + x*4+3] = 255;
+					uint8_t* bytes = (uint8_t*)buffer;
+					for(int y=0; y<_height; y++)
+					{
+						for(int x=0; x<_width; x++)
+						{
+							data[(x+y*_width)*4+0] = 255;
+							data[(x+y*_width)*4+1] = 255;
+							data[(x+y*_width)*4+2] = 255;
+							data[(x+y*_width)*4+3] = bytes[x+y*_width];
+						}
+					}
 				}
-			}
+				break;
+			case BUFFER_RGBA:
+				{
+					uint8_t* bytes = (uint8_t*)buffer;
+					for(size_t i=0;i<data.size();i++)
+						data[i] = bytes[i];
+				}
+				break;
 		}
-		else
-		{
-			Log::warning("Texture", "Pixels size not supported by updateTextureImage.");
-			return;
-		}
-
-		//for(int x=0; x<_width; x++)
-		//{
-		//	for(int y=0; y<_height; y++)
-		//	{
-		//		data[y*_width*4 + x*4+0] = 0;
-		//		data[y*_width*4 + x*4+1] = 255;
-		//		data[y*_width*4 + x*4+2] = 255;
-		//		data[y*_width*4 + x*4+3] = 255;
-		//	}
-		//}
 
 		VkDeviceSize imageSize = _width * _height * 4;
 		StagingBuffer* stagingBuffer = new StagingBuffer(_device, data.data(), imageSize);
 
-		transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
-		generateMipmaps();
+		//transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		//copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
+		//generateMipmaps();
+		//transitionImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		delete stagingBuffer;
 		stagingBuffer = nullptr;
@@ -266,8 +269,9 @@ namespace atta::vk
 			} 
 			else 
 			{
-				std::cout << BOLDRED << "[Texture]" << RESET << RED << " Unsupported layout transition!" << RESET << std::endl;
-				exit(1);
+				//std::cout << BOLDRED << "[Texture]" << RESET << RED << " Unsupported layout transition!" << RESET << std::endl;
+				//exit(1);
+				return;
 			}
 
 			vkCmdPipelineBarrier(

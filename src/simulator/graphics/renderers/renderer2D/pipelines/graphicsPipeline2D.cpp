@@ -143,7 +143,8 @@ namespace atta
 		std::vector<DescriptorBinding> descriptorBindings =
 		{
 			{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
-			{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT}
+			{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT},
+			{2, static_cast<uint32_t>(_vkCore->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 		};
 
 		_descriptorSetManager = std::make_shared<vk::DescriptorSetManager>(_device, descriptorBindings, 1);
@@ -159,10 +160,21 @@ namespace atta
 		materialBufferInfo.buffer = _vkCore->getMaterialBuffer()->handle();
 		materialBufferInfo.range = VK_WHOLE_SIZE;
 
+		// Image and texture samplers
+		std::vector<VkDescriptorImageInfo> imageInfos(_vkCore->getTextures().size());
+		for(size_t t = 0; t < imageInfos.size(); t++)
+		{
+			VkDescriptorImageInfo& imageInfo = imageInfos[t];
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = _vkCore->getTextures()[t]->getImageView()->handle();
+			imageInfo.sampler = _vkCore->getTextures()[t]->getSampler()->handle();
+		}
+
 		const std::vector<VkWriteDescriptorSet> descriptorWrites =
 		{
 			descriptorSets->bind(0, 0, uniformBufferInfo),
 			descriptorSets->bind(0, 1, materialBufferInfo),
+			descriptorSets->bind(0, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
 		};
 
 		descriptorSets->updateDescriptors(0, descriptorWrites);
@@ -222,6 +234,8 @@ namespace atta
 			ObjectInfo objectInfo;
 			objectInfo.modelMat = transpose(object->getModelMat());
 			objectInfo.materialOffset = model->getMaterialOffset();
+
+			//Log::debug("VkCore", "Model $0: $1", model->getMeshName(), model->getMaterialOffset());
 
 			vkCmdPushConstants(
 					commandBuffer,
