@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Atta Ray Tracing Vulkan GLSL
+// rayTracing.rchit
+// Date: 2021-02-09
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 #version 460
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_GOOGLE_include_directive : require
@@ -11,8 +17,7 @@
 layout(binding = 4) readonly buffer VertexArray { float Vertices[]; };
 layout(binding = 5) readonly buffer IndexArray { uint Indices[]; };
 layout(binding = 6) readonly buffer MaterialArray { Material[] Materials; };
-//layout(binding = 7) readonly buffer OffsetArray { uvec2[] Offsets; };
-//layout(binding = 9) uniform sampler2D[] TextureSamplers;
+layout(binding = 7) uniform sampler2D[] textures;
 
 hitAttributeEXT vec3 hitAttributes;
 rayPayloadInEXT RayPayload ray;

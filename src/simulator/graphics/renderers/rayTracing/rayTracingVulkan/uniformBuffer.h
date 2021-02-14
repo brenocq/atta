@@ -23,9 +23,11 @@ namespace atta::rt::vk
 		alignas(16) mat4 viewMatInverse;
 		alignas(16) mat4 projMatInverse;
 
-		alignas(4) unsigned samplesPerFrame;
-		alignas(4) unsigned totalNumberOfSamples;
-		alignas(4) unsigned numberOfBounces;
+		alignas(4) unsigned samplesPerPixel;
+		alignas(4) unsigned nAccSamples;
+		alignas(4) unsigned maxDepth;
+
+		alignas(4) unsigned seed;
 	};
 
 

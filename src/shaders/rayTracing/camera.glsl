@@ -1,20 +1,44 @@
+//--------------------------------------------------
+// Atta Ray Tracing Vulkan GLSL
+// camera.glsl
+// Date: 2021-02-09
+// By Breno Cunha Queiroz
+//--------------------------------------------------
+#include "samplers/random.glsl"
+
 struct CameraRay
 {
 	vec3 origin;
 	vec3 direction;
 };
 
-const uint CAMERA_TYPE_PROJECTIVE = 0;
-const uint CAMERA_TYPE_ORTHOGRAPHIC = 1;
-
-CameraRay generateRayProjectiveCamera(mat4 proj, mat4 viewMat, vec2 xy)
+CameraRay generateRayProjectiveCamera(
+		// Basic
+		mat4 projInv, mat4 viewInv, vec2 xy, 
+		// Thin Lens Model variables (lensRadius=0 to use ideal pinhole camera)
+		float lensRadius, float focusDistance, vec2 sampleLens)
 {
-	mat4 projInv = inverse(proj);
-	mat4 viewInv = inverse(viewMat);
-	
 	CameraRay ray;
-	ray.origin = viewInv[3].xyz;
-	ray.direction = normalize((viewInv*projInv*vec4(xy,1,1)).xyz);
+	// Calculate origin and direction (camera space)
+	vec3 origin = vec3(0,0,0);
+	vec3 direction = (projInv*vec4(xy,1,1)).xyz;
+
+	if(lensRadius > 0)	
+	{
+		// Sample point in lens
+		vec2 pLens = lensRadius*concentricSampleDisk(sampleLens);
+
+		// Compute point on plane of focus
+		vec3 pFocus = focusDistance*direction;
+
+		// Update ray for effect of lens
+		origin = vec3(pLens, 0);
+		direction = pFocus-origin;
+	}
+
+	// Camera space to world space
+	ray.origin = (viewInv*vec4(origin,1)).xyz;
+	ray.direction = (viewInv*vec4(normalize(direction), 0)).xyz;
 
 	return ray;
 }
@@ -26,19 +50,4 @@ CameraRay generateRayOrthographicCamera(mat4 viewMat, vec2 xy)
 	ray.direction =  vec3(0, -1, 0);
 
 	return ray;
-}
-
-CameraRay generateCameraRay(uint cameraType, mat4 viewMat, vec2 xy)
-{
-	switch(cameraType)
-	{
-	case CAMERA_TYPE_PROJECTIVE:
-		//return generateRayProjectiveCamera(viewMat, xy);
-		break;
-	case CAMERA_TYPE_ORTHOGRAPHIC:
-		return generateRayOrthographicCamera(viewMat, xy);
-		break;
-	default:
-		//return generateRayProjectiveCamera(viewMat, xy);
-	}
 }

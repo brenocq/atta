@@ -1,3 +1,9 @@
+//--------------------------------------------------
+// Atta Ray Tracing Vulkan GLSL
+// uniformBufferObject.glsl
+// Date: 2021-02-09
+// By Breno Cunha Queiroz
+//--------------------------------------------------
 struct UniformBufferObject
 {
 	mat4 viewMat;
@@ -5,7 +11,10 @@ struct UniformBufferObject
 	mat4 viewMatInverse;
 	mat4 projMatInverse;
 
-	uint samplesPerFrame;
-	uint totalNumberOfSamples;
-	uint numberOfBounces;
+	uint samplesPerPixel;//uint samplesPerPixel
+	uint nAccSamples;// Number of accumulated samples
+	
+	uint maxDepth;
+
+	uint seed;
 };
