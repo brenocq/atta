@@ -34,9 +34,10 @@ namespace atta::rt::vk
 		ubo.projMat.data[5] *= -1;
 		ubo.viewMatInverse = inverse(ubo.viewMat);
 		ubo.projMatInverse = inverse(ubo.projMat);
-		ubo.samplesPerFrame = 4;
-		ubo.totalNumberOfSamples = 0;// The total is increased every render() call
-		ubo.numberOfBounces = 8;
+		ubo.samplesPerPixel = 100;
+		ubo.nAccSamples = 0;// The number of accumulated samples is increased every render() call
+		ubo.maxDepth = 8;
+		ubo.seed = rand();
 		_uniformBuffer->setValue(ubo);
 
 		// Create ray tracing specific
@@ -107,7 +108,8 @@ namespace atta::rt::vk
 	{
 		// Increate total number of samples
 		rt::vk::UniformBufferObject ubo = _uniformBuffer->getValue();
-		ubo.totalNumberOfSamples += ubo.samplesPerFrame;
+		ubo.nAccSamples += ubo.samplesPerPixel;
+		ubo.seed = rand();// Update seed
 		_uniformBuffer->setValue(ubo);
 
 		// Prepare for rendering
@@ -310,8 +312,9 @@ namespace atta::rt::vk
 		rt::vk::UniformBufferObject ubo = _uniformBuffer->getValue();
 		ubo.viewMat = transpose(viewMatrix);
 		ubo.viewMatInverse = inverse(ubo.viewMat);
-		//Log::debug("RayTracing", "View: $0", (inverse(ubo.viewMat)).toString());
-		ubo.totalNumberOfSamples = 0;
+		ubo.seed = rand();
+		ubo.nAccSamples = 0;// Reset accumulator
+
 		_uniformBuffer->setValue(ubo);
 	}
 }
