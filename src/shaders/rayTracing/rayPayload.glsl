@@ -1,12 +1,17 @@
 //--------------------------------------------------
 // Atta Ray Tracing Vulkan GLSL
-// rayPayload.rchit
+// rayPayload.glsl
 // Date: 2021-02-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#ifndef RAY_PAYLOAD_GLSL
+#define RAY_PAYLOAD_GLSL
+#include "lights/base.glsl"
+
 struct RayPayload
 {
-	vec4 colorAndDistance;// rgb + t
-	vec4 scatterDirection;// xyz + w (is scatter needed)
-	uint randomSeed;
+	float t;
+	Interaction it;
 };
+
+#endif// RAY_PAYLOAD_GLSL

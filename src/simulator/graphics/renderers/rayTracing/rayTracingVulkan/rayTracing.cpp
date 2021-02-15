@@ -36,7 +36,7 @@ namespace atta::rt::vk
 		ubo.projMatInverse = inverse(ubo.projMat);
 		ubo.samplesPerPixel = 100;
 		ubo.nAccSamples = 0;// The number of accumulated samples is increased every render() call
-		ubo.maxDepth = 8;
+		ubo.maxDepth = 5;
 		ubo.seed = rand();
 		_uniformBuffer->setValue(ubo);
 
@@ -229,8 +229,8 @@ namespace atta::rt::vk
 		{
 			static unsigned _instanceId = 0;
 			std::shared_ptr<Model> model = object->getModel();
-			if(model == nullptr)
-				continue;
+			//if(model == nullptr)
+			//	continue;
 
 			//_blas[model->getModelIndex()]->getDevice();
 			//std::cout << "INDEX: " << model->getMeshIndex() << std::endl;

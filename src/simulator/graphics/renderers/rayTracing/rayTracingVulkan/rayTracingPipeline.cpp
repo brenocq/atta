@@ -35,17 +35,16 @@ namespace atta::rt::vk
 			// Camera information & co
 			{3, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR},
 
-			// Vertex buffer, Index buffer, Material buffer, Offset buffer
+			// Vertex buffer, Index buffer, Material buffer, Object info buffer
 			{4, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
 			{5, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-			{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
-			//{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV},
+			{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
+			{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR}
 
 			// Textures and image samplers
-			//{8, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV}
+			//{7, static_cast<uint32_t>(_vkCore->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
 
-			// The Procedural buffer
-			//{9, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV | VK_SHADER_STAGE_INTERSECTION_BIT_NV}
+			// Light buffer
 		};
 
 		_descriptorSetManager = std::make_shared<atta::vk::DescriptorSetManager>(device, descriptorBindings, 1);
@@ -90,25 +89,19 @@ namespace atta::rt::vk
 		materialBufferInfo.buffer = _vkCore->getMaterialBuffer()->handle();
 		materialBufferInfo.range = VK_WHOLE_SIZE;
 
-		//// Offsets buffer
-		//VkDescriptorBufferInfo offsetsBufferInfo = {};
-		//offsetsBufferInfo.buffer = _vkCore->getOffsetBuffer()->handle();
-		//offsetsBufferInfo.range = VK_WHOLE_SIZE;
+		// Object info buffer
+		VkDescriptorBufferInfo objInfoBufferInfo = {};
+		objInfoBufferInfo.buffer = _vkCore->getObjectInfoBuffer()->handle();
+		objInfoBufferInfo.range = VK_WHOLE_SIZE;
 
-		//// Instance buffer
-		//VkDescriptorBufferInfo instanceBufferInfo = {};
-		//instanceBufferInfo.buffer = _vkCore->getInstanceBuffer()->handle();
-		//instanceBufferInfo.range = VK_WHOLE_SIZE;
-
-		// Image and texture samplers.
-		//std::vector<VkDescriptorImageInfo> imageInfos(_scene->getTextures().size());
-
-		//for(size_t t = 0; t != imageInfos.size(); t++)
+		// Image and texture samplers
+		//std::vector<VkDescriptorImageInfo> imageInfos(_vkCore->getTextures().size());
+		//for(size_t t = 0; t < imageInfos.size(); t++)
 		//{
-		//	auto& imageInfo = imageInfos[t];
+		//	VkDescriptorImageInfo& imageInfo = imageInfos[t];
 		//	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		//	imageInfo.imageView = _scene->getTextures()[t]->getImageView()->handle();
-		//	imageInfo.sampler = _scene->getTextures()[t]->getSampler()->handle();
+		//	imageInfo.imageView = _vkCore->getTextures()[t]->getImageView()->handle();
+		//	imageInfo.sampler = _vkCore->getTextures()[t]->getSampler()->handle();
 		//}
 
 		const std::vector<VkWriteDescriptorSet> descriptorWrites =
@@ -120,9 +113,8 @@ namespace atta::rt::vk
 			descriptorSets->bind(0, 4, vertexBufferInfo),
 			descriptorSets->bind(0, 5, indexBufferInfo),
 			descriptorSets->bind(0, 6, materialBufferInfo),
-			//descriptorSets->bind(0, 7, offsetsBufferInfo),
-			//descriptorSets->bind(0, 8, instanceBufferInfo),
-			//descriptorSets->bind(0, 9, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
+			descriptorSets->bind(0, 7, objInfoBufferInfo)
+			//descriptorSets->bind(0, 7, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
 		};
 
 		// Procedural buffer (optional)

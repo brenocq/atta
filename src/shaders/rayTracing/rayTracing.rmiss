@@ -29,5 +29,5 @@ void main()
 	//	ray.colorAndDistance = vec4(0.8, 0.8, 0.8, -1);
 	//}
 
-	ray.colorAndDistance = vec4(1,0,0,-1);
+	ray.t = -1;
 }

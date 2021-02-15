@@ -1,4 +1,4 @@
-struct Material
+struct MaterialData
 {
 	vec3 albedo;
 	float metallic;
