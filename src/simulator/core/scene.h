@@ -11,6 +11,7 @@
 #include <memory>
 #include "simulator/objects/object.h"
 #include "simulator/core/robot.h"
+#include "simulator/graphics/core/light.h"
 
 namespace atta
 {
@@ -29,10 +30,12 @@ namespace atta
 			//---------- Getters ----------//
 			std::vector<std::shared_ptr<Object>> getObjects() const { return _objects; }
 			std::vector<std::shared_ptr<Robot>> getRobots() const { return _robots; }
+			std::vector<Light> getLights() const { return _lights; }
 
 		private:
 			std::vector<std::shared_ptr<Object>> _objects;
 			std::vector<std::shared_ptr<Robot>> _robots;
+			std::vector<Light> _lights;// Populated based on light objects (emissive objects not included)
 	};
 }
 

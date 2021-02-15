@@ -9,7 +9,6 @@
 #extension GL_EXT_ray_tracing : require
 
 #include "samplers/random.glsl"
-#include "lights/light.glsl"
 #include "bxdf/bxdf.glsl"
 #include "bxdf/bsdf.glsl"
 #include "rayPayload.glsl"
@@ -17,15 +16,15 @@
 #include "uniformBufferObject.glsl"
 #include "base.glsl"
 
-//...
-
 layout(binding = 0, set = 0) uniform accelerationStructureEXT scene;
 layout(binding = 1, rgba32f) uniform image2D accumulationImage;
 layout(binding = 2, rgba8) uniform image2D outputImage;
 layout(binding = 3) readonly uniform UniformBufferObjectStruct { UniformBufferObject ubo; };
-layout(binding = 8) readonly buffer LightStruct { Light[] lights; };
+layout(binding = 8) readonly buffer LightStruct { Light[] lightBuffer; };
 
 layout(location = 0) rayPayloadEXT RayPayload ray;
+
+#include "lights/light.glsl"// Need to access the light buffer
 
 void main() 
 {
@@ -50,7 +49,7 @@ void main()
 		vec3 direction = rayFromCamera.direction;
 
 		//---------- Path integrator ----------//
-		vec3 L = vec3(0.f);// Radiance value (starting as 1 but should start with 0 and get from lights)
+		vec3 L = vec3(0.f);// Radiance value
 		vec3 beta = vec3(1.f);// Path throughput weight (BSDF*Geometry) (fraction of radiance from the light source that arrives at the camera)
 		bool specularBounce = false;// Handle special case when the ray reflects in only one direction
 		uint bounces;
@@ -68,7 +67,6 @@ void main()
 
 			BSDF bsdf = ray.it.bsdf;
 			const bool foundIntersection = (ray.t>=0);
-			//beta *= vec3(0,0,.8);
 
 			// Add emitted light
 			if(bounces == 0 || specularBounce)
@@ -82,7 +80,7 @@ void main()
 				{
 					// TODO Add environment light (Infinity lights not supported yet)
 					// Search infinity lights
-					L += beta * vec3(1,1,1);
+					L += beta * vec3(.4,.4,.4);
 				}
 			}
 
@@ -90,9 +88,10 @@ void main()
 			if(!foundIntersection || bounces>=ubo.maxDepth)
 				break;
 
+			float uLightIndex = randomFloat(pixelSeed);
 			vec2 uLight = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
 			vec2 uScattering = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
-			vec3 Ld = beta*Light_uniformSampleOneLight(1, ray.it, uLight, uScattering);
+			vec3 Ld = beta*Light_uniformSampleOneLight(ubo.nLights, ray.it, uLightIndex, uLight, uScattering);
 			L += Ld;
 
 			// Update next ray origin from intersection

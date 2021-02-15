@@ -9,18 +9,18 @@
 #extension GL_GOOGLE_include_directive : require
 #extension GL_EXT_ray_tracing : require
 
-#include "../material.glsl"
 #include "../objectInfo.glsl"
+#include "../material.glsl"
 #include "rayPayload.glsl"
-#include "materials/material.glsl"
 #include "lights/base.glsl"
 
-layout(binding = 4) readonly buffer VertexArray { float Vertices[]; };
-layout(binding = 5) readonly buffer IndexArray { uint Indices[]; };
-layout(binding = 6) readonly buffer MaterialArray { MaterialData[] Materials; };
+layout(binding = 4) readonly buffer VertexBuffer { float Vertices[]; };
+layout(binding = 5) readonly buffer IndexBuffer { uint Indices[]; };
+layout(binding = 6) readonly buffer MaterialBuffer { Material[] materialBuffer; };
 //layout(binding = 7) uniform sampler2D[] textures;
-layout(binding = 7) readonly buffer ObjectInfoArray { ObjectInfo[] Objects; };
+layout(binding = 7) readonly buffer ObjectInfoBuffer { ObjectInfo[] Objects; };
 
+#include "materials/material.glsl"
 #include "vertex.glsl"
 
 hitAttributeEXT vec3 hitAttributes;
@@ -38,14 +38,16 @@ vec3 mixNormals(vec3 a, vec3 b, vec3 c, vec3 barycentrics)
 
 void main()
 {
-	//const ObjectInfo object = Objects[gl_InstanceCustomIndexEXT];
+	// Get primitive and object data
 	const ObjectInfo object = Objects[gl_InstanceID];
 	const uint indexOffset = object.indexOffset;
 	const uint vertexOffset = object.vertexOffset;
 	const Vertex v0 = unpackVertex(vertexOffset + Indices[indexOffset + gl_PrimitiveID * 3 + 0]);
 	const Vertex v1 = unpackVertex(vertexOffset + Indices[indexOffset + gl_PrimitiveID * 3 + 1]);
 	const Vertex v2 = unpackVertex(vertexOffset + Indices[indexOffset + gl_PrimitiveID * 3 + 2]);
-	MaterialData material = Materials[object.materialOffset];// Change to materialOffset from Instance buffer
+
+	// Get material
+	Material material = materialBuffer[object.materialOffset];
 
 	// Compute the ray hit point properties
 	const vec3 barycentrics = vec3(1.0 - hitAttributes.x - hitAttributes.y, hitAttributes.x, hitAttributes.y);
@@ -70,8 +72,7 @@ void main()
 	bsdf.ns = normal;
 	bsdf.ss = v0.position - v1.position;
 	bsdf.ts = v1.position - v2.position;
-	//bsdf.bxdf.type = BXDF_TYPE_LAMBERTIAN_REFLECTION;
-	bsdf.bxdf.type = BXDF_TYPE_OREN_NAYAR;
+	bsdf.bxdf = Material_computeScatteringFunctions(material);
 
 	Interaction it;
 	it.point = worldPos;

@@ -89,10 +89,10 @@ void main()
 	vec3 lightColor  = vec3(23.47, 21.31, 20.79);
 
 	// Surface color
-	vec3 albedo = material.albedo;
-	float metallic = material.metallic;
-	float roughness = material.roughness;
-	float ao = material.ao;
+	vec3 albedo = vec3(.4, .8, .4);//material.albedo;
+	float metallic = .8;//material.metallic;
+	float roughness = .3;//material.roughness;
+	float ao = 1;
 
 	// Surface vectors
 	vec3 N = normalize(inNormal);
@@ -166,7 +166,7 @@ void main()
 	color = color / (color + vec3(1.0));
 	color = pow(color, vec3(1.0/2.2)); 
 
-	color = material.albedo; 
+	color = vec3(.8, 0.3, .5);//material.albedo; 
 	//color = inPos;
 	//if(material.albedoIndex<0)
 	//else

@@ -63,12 +63,12 @@ out gl_PerVertex
 
 void main() 
 {
-	vec4 posTest = camera.projMat * camera.viewMat * objectInfo.modelMat * vec4(inPosition,1);
+	vec4 posTest = camera.projMat * camera.viewMat * objectInfo.transform * vec4(inPosition,1);
 
     gl_Position = posTest;//(/**/ (camera.viewMat /* objectInfo.modelMat*/)) * vec4(inPosition, 1);
 
-	outPos = vec3(objectInfo.modelMat * vec4(inPosition, 1.0));
-	outNormal = vec3(transpose(inverse(objectInfo.modelMat)) * vec4(inNormal, 1.0));
+	outPos = vec3(objectInfo.transform * vec4(inPosition, 1.0));
+	outNormal = vec3(transpose(inverse(objectInfo.transform)) * vec4(inNormal, 1.0));
 	outTexCoord = inTexCoord;
 	outMaterialIndex = /*inMaterialIndex +*/ objectInfo.materialOffset;
 

@@ -27,6 +27,8 @@ namespace atta::rt::vk
 		alignas(4) unsigned nAccSamples;
 		alignas(4) unsigned maxDepth;
 
+		alignas(4) unsigned nLights;
+
 		alignas(4) unsigned seed;
 	};
 

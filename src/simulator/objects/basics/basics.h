@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Robot Simulator
+// Atta Robot Simulator
 // basics.h
 // Date: 2020-11-24
 // By Breno Cunha Queiroz

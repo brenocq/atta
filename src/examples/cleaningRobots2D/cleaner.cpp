@@ -16,9 +16,7 @@ Cleaner::Cleaner(atta::vec3 position, atta::vec3 rotation):
 		.rotation = rotation,
 		.height = 0.05,
 		.radius = 0.1,
-		.material = {
-			.albedo = {.2,.2,.2}
-		}
+		.material = atta::Material::diffuse({.2,.2,.2}, 20)
 	};
 	std::shared_ptr<atta::Cylinder> cylinder = std::make_shared<atta::Cylinder>(cylinderInfo);
 

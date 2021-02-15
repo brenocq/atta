@@ -6,13 +6,13 @@
 </p>
 
 Atta is a robot simulator for 2D and 3D applications. For now, the core is still under development, which includes:
- - **Ray Tracing:** For now, I am developing a physically based ray tracer based on the pbrt-v3 using the Vulkan khronos ray tracing extension for ray calculations. In the future I will also implement it on CPU.
+ - **Ray Tracing:** My implementation of a physically based ray tracer based on the pbrt-v3 using the Vulkan khronos ray tracing extension for ray calculations. In the future I will also implement it on CPU.
  - **GUI:** The graphics user interface is being developed using a widget tree model (only basic widgets are finished).
  - **Physics Engine:** It is in its early stages. (I am debbuging it)
  - **Robotics:** After finishing the basics of the three above, I will start to implement the sensors/actuators/common algorithms.
  - **Examples:** There is an example folder where I am developing some exemples of simulations using the Atta.
 
-For now, only Linux is supported, but I plan to add support for Windows in the following months.\
+Today only Linux is supported, but I plan to add support for Windows in the following months.\
 This project is not yet well documented, after finishing some examples I am planning to create an website explaning its details and design decisions.
 
 This week I am focusing on developing the GPU ray tracing renderer.

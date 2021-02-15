@@ -34,7 +34,9 @@ namespace atta::vk
 		std::vector<uint32_t> indices;
 		std::vector<Material> materials;
 		std::vector<ObjectInfo> objectInfos;
+		std::vector<Light> lights;
 
+		// Populate vertices/indices
 		for(auto m : Model::allMeshes)
 		{
 			std::shared_ptr<Mesh> mesh = m.second.lock();
@@ -56,13 +58,16 @@ namespace atta::vk
 			indices.insert(indices.end(), meshIndices.begin(), meshIndices.end());
 		}
 
-		// Populate materials and instances
+		// Populate materials/objectInfos
 		for(auto object : scene->getObjects())
 		{
+			if(object->isLight()) continue;
+
 			static int materialOffset = 0;
 			std::shared_ptr<Model> model = object->getModel();
 			model->setMaterialOffset(materialOffset);
 			materials.push_back(model->getMaterial());
+			Log::debug("VulkanCode", "Added $0", model->getMaterial().toString());
 
 			ObjectInfo obji;
 			obji.indexOffset = model->getMesh()->getIndicesOffset();
@@ -74,6 +79,9 @@ namespace atta::vk
 			materialOffset++;
 		}
 
+		// Populate lights
+		lights = scene->getLights();
+
 		//---------- Create device buffers ----------//
 		_vertexBuffer = createBufferMemory(
 				VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
@@ -83,6 +91,7 @@ namespace atta::vk
 				indices);
 		_materialBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
 		_objectInfoBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, objectInfos);
+		_lightBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, lights);
 
 		//---------- Create textures ----------//
 		for(auto& textureInfo : atta::Texture::textureInfos)

@@ -69,15 +69,15 @@ namespace atta
 		int counter = 0;
 		while(!_window->shouldClose())
 		{
-			_modelViewController->updateCamera(0.01);
+			_modelViewController->updateCamera(0.1);
 			render();
 			_window->poolEvents();
 
-			if(counter++>20)
-			{
-				_mainRendererIndex = !_mainRendererIndex;
-				counter=0;
-			}
+			//if(counter++>20)
+			//{
+			//	_mainRendererIndex = !_mainRendererIndex;
+			//	counter=0;
+			//}
 		}
 		// Send signal to close atta simulator
 	}

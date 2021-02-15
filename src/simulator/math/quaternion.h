@@ -99,6 +99,8 @@ namespace atta
             (*this) *= q;
         }
 
+		void transformVector(const vec3& before, const vec3& after);
+
 		void fromEuler(const vec3 &e)
 		{
 			r = cos(e.x/2)*cos(e.y/2)*cos(e.z/2)+sin(e.x/2)*sin(e.y/2)*sin(e.z/2);

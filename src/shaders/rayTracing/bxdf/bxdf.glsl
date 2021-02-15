@@ -27,13 +27,13 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 	{
 		case BXDF_TYPE_LAMBERTIAN_REFLECTION:
 			{
-				vec3 R = vec3(.1, .2, .8);
+				vec3 R = bxdf.datav[0];
 				return BXDF_LambertianReflection_f(R);
 			}
 		case BXDF_TYPE_OREN_NAYAR:
 			{
-				vec3 R = vec3(.2, .6, .8);
-				float sigma = 20;// Standard deviation of the microfacet orientation angle (degrees)
+				vec3 R = bxdf.datav[0];
+				float sigma = bxdf.dataf[0];// Standard deviation of the microfacet orientation angle (degrees)
 				return BXDF_OrenNayar_f(wo, wi, R, sigma);
 			}
 		default:

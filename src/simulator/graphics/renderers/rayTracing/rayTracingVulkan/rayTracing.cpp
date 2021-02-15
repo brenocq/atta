@@ -34,9 +34,10 @@ namespace atta::rt::vk
 		ubo.projMat.data[5] *= -1;
 		ubo.viewMatInverse = inverse(ubo.viewMat);
 		ubo.projMatInverse = inverse(ubo.projMat);
-		ubo.samplesPerPixel = 100;
+		ubo.samplesPerPixel = 400;
 		ubo.nAccSamples = 0;// The number of accumulated samples is increased every render() call
 		ubo.maxDepth = 5;
+		ubo.nLights = _scene->getLights().size();
 		ubo.seed = rand();
 		_uniformBuffer->setValue(ubo);
 
@@ -228,6 +229,8 @@ namespace atta::rt::vk
 		for(std::shared_ptr<Object> object : _scene->getObjects())
 		{
 			static unsigned _instanceId = 0;
+
+			if(object->isLight()) continue;
 			std::shared_ptr<Model> model = object->getModel();
 			//if(model == nullptr)
 			//	continue;

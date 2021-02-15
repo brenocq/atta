@@ -41,11 +41,13 @@ namespace atta
 			//---------- Getters ----------//
 			std::string getType() const { return _type; }
 			std::string getName() const { return _name; }
+			bool isLight() const { return _isLight; }
 			int getId() const { return _id; }
 			mat4 getModelMat() const;
 
 			// Graphics
 			std::shared_ptr<Model> getModel() const { return _model; }
+			vec3 getPosition() const { return _position; }
 			ObjectSelection getSelection() const { return _selection; }
 
 			// Physics
@@ -76,6 +78,7 @@ namespace atta
 			int _id;
 
 			std::string _name;
+			bool _isLight;
 
 			//----- Object data -----//
 			vec3 _position;

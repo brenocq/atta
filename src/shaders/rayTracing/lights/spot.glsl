@@ -8,12 +8,12 @@
 #define LIGHTS_SPOT_GLSL
 #include "base.glsl"
 
-float SpotLight_falloff(Light light, vec3 w, float cosTotalWidth, float cosFalloffStart);
+float SpotLight_falloff(Light light, vec3 w, float cosFalloffStart, float cosTotalWidth);
 
 vec3 SpotLight_sampleLi(
 		Light light, Interaction ref, vec2 u, 
 		out vec3 wi, out float pdf, out VisibilityTester vis, 
-		vec3 I, float cosTotalWidth, float cosFalloffStart)
+		vec3 I, float cosFalloffStart, float cosTotalWidth)
 {
 	vec3 pLight = (light.lightToWorld * vec4(0,0,0,1)).xyz;
 	
@@ -23,10 +23,11 @@ vec3 SpotLight_sampleLi(
 	vis.p1.point = pLight;
 
 	vec3 p = pLight-ref.point;
-	return I*SpotLight_falloff(light, -wi, cosTotalWidth, cosFalloffStart)/dot(p,p);
+	float squareDist = dot(p,p);
+	return I*SpotLight_falloff(light, -wi, cosFalloffStart, cosTotalWidth)/squareDist;
 }
 
-vec3 SpotLight_power(vec3 I, float cosTotalWidth, float cosFalloffStart)
+vec3 SpotLight_power(vec3 I, float cosFalloffStart, float cosTotalWidth)
 {
 	return I * 2 * 3.1415926535f * (1 - 0.5f * (cosFalloffStart+cosTotalWidth));
 }
@@ -36,9 +37,9 @@ uint SpotLight_flags()
 	return LIGHT_FLAG_DELTA_POSITION;
 }
 
-float SpotLight_falloff(Light light, vec3 w, float cosTotalWidth, float cosFalloffStart)
+float SpotLight_falloff(Light light, vec3 w, float cosFalloffStart, float cosTotalWidth)
 {
-	vec3 wl = normalize((light.worldToLight * vec4(w,1)).xyz);
+	vec3 wl = normalize((light.worldToLight * vec4(w,0)).xyz);
 	float cosTheta = wl.z;
 	if(cosTheta < cosTotalWidth) return 0;
 	if(cosTheta >= cosFalloffStart) return 1;
