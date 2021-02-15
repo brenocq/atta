@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "house.h"
 #include "simulator/objects/basics/basics.h"
+#include "simulator/objects/lights/lights.h"
 #include "simulator/graphics/core/texture.h"
 #include "simulator/math/math.h"
 
@@ -32,9 +33,7 @@ House::House()
 		.rotation = {0,0,0},
 		.scale = {.15,3,10.15},
 		.mass = 0.0f,
-		.material = {
-			.albedo = {0,0,0}
-		}
+		.material = atta::Material::diffuse({.1,.5,.7}, 20)
 	};
 	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
@@ -72,9 +71,27 @@ House::House()
 	boxInfo.name = "Floor";
 	boxInfo.position = {0,-.01,0};
 	boxInfo.scale = {10,.01,10};
-	boxInfo.material.albedo = atta::vec3(.3, .4, .8);
+	boxInfo.material = atta::Material::diffuse({.7,.7,.4}, 10);
 	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
+	//----- Lights -----//
+	atta::PointLight::CreateInfo plInfo = {};
+	plInfo.position = {2, .1, 2};
+	plInfo.intensity = {0, 1, 1};
+	_objects.push_back(std::make_shared<atta::PointLight>(plInfo));
+
+	atta::SpotLight::CreateInfo slInfo = {};
+	slInfo.position = {-1, 3, -1};
+	slInfo.direction = {0, -1, 0};
+	slInfo.intensity = {10, 10, 10};
+	slInfo.maxAngle = 60.f;
+	slInfo.falloffStartAngle = 30.f;
+	_objects.push_back(std::make_shared<atta::SpotLight>(slInfo));
+
+	atta::DistantLight::CreateInfo dlInfo = {};
+	dlInfo.radiance = {1, 1, 1};
+	dlInfo.direction = {1, 1, 1};
+	_objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
 }
 
 House::~House()

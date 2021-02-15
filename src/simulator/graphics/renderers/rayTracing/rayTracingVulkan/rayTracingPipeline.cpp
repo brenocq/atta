@@ -39,7 +39,10 @@ namespace atta::rt::vk
 			{4, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
 			{5, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
 			{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-			{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR}
+			{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
+
+			// Light buffer
+			{8, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR }
 
 			// Textures and image samplers
 			//{7, static_cast<uint32_t>(_vkCore->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
@@ -94,6 +97,11 @@ namespace atta::rt::vk
 		objInfoBufferInfo.buffer = _vkCore->getObjectInfoBuffer()->handle();
 		objInfoBufferInfo.range = VK_WHOLE_SIZE;
 
+		// Light buffer
+		VkDescriptorBufferInfo lightBufferInfo = {};
+		lightBufferInfo.buffer = _vkCore->getLightBuffer()->handle();
+		lightBufferInfo.range = VK_WHOLE_SIZE;
+
 		// Image and texture samplers
 		//std::vector<VkDescriptorImageInfo> imageInfos(_vkCore->getTextures().size());
 		//for(size_t t = 0; t < imageInfos.size(); t++)
@@ -113,7 +121,8 @@ namespace atta::rt::vk
 			descriptorSets->bind(0, 4, vertexBufferInfo),
 			descriptorSets->bind(0, 5, indexBufferInfo),
 			descriptorSets->bind(0, 6, materialBufferInfo),
-			descriptorSets->bind(0, 7, objInfoBufferInfo)
+			descriptorSets->bind(0, 7, objInfoBufferInfo),
+			descriptorSets->bind(0, 8, lightBufferInfo)
 			//descriptorSets->bind(0, 7, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
 		};
 

@@ -8,11 +8,12 @@
 #define BXDF_BASE_GLSL
 #include "../samplers/random.glsl"
 
-const uint BXDF_TYPE_SPECULAR_REFLECTION 		= 0;
-const uint BXDF_TYPE_SPECULAR_TRANSMISSION 		= 1;
-const uint BXDF_TYPE_LAMBERTIAN_REFLECTION	 	= 2;
-const uint BXDF_TYPE_LAMBERTIAN_TRANSMISSION	= 3;
-const uint BXDF_TYPE_OREN_NAYAR					= 4;
+const uint BXDF_TYPE_NONE				 		= 0;
+const uint BXDF_TYPE_SPECULAR_REFLECTION 		= 1;
+const uint BXDF_TYPE_SPECULAR_TRANSMISSION 		= 2;
+const uint BXDF_TYPE_LAMBERTIAN_REFLECTION	 	= 3;
+const uint BXDF_TYPE_LAMBERTIAN_TRANSMISSION	= 4;
+const uint BXDF_TYPE_OREN_NAYAR					= 5;
 
 const uint BXDF_FLAG_NONE		 	= 0x00000000u;
 const uint BXDF_FLAG_REFLECTION 	= 0x00000001u;
@@ -25,7 +26,11 @@ const uint BXDF_FLAG_ALL			= BXDF_FLAG_REFLECTION | BXDF_FLAG_TRANSMISSION | BXD
 struct BXDF
 {
 	uint type;
-	// TODO implement bxdf data
+
+	// General data about the BXDF
+	uint datai[1];
+	float dataf[1];
+	vec3 datav[1];
 };
 
 struct BSDF

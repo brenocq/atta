@@ -13,21 +13,39 @@ namespace atta
 {
 	struct Material
 	{
-		alignas(16) vec3 albedo = {1.0,1.0,1.0};
-		alignas(4) float metallic = 0.5f;
-		alignas(4) float roughness = 0.5f;
-		alignas(4) float ao = 0.0;// Ambient occusion
-		alignas(4) int albedoIndex = -1;
-		alignas(4) int normalIndex = -1;// TODO get value from normal texture
-		alignas(4) int metallicIndex = -1;// TODO get value from metallic texture
-		alignas(4) int roughnessIndex = -1;// TODO get value from roughness texture
-		alignas(4) int aoIndex = -1;// TODO get value from ao texture
+		unsigned type[8] = {MATERIAL_TYPE_NONE};
+		int datai[16];
+		float dataf[16];
+		vec4 datav[16];
+
+		enum Type
+		{
+			MATERIAL_TYPE_NONE = 0,
+			MATERIAL_TYPE_DIFFUSE,
+			MATERIAL_TYPE_MIRROR,
+		};
+
+		static Material diffuse(vec3 Kd, float sigma)
+		{
+			Material m;
+			m.type[0] = MATERIAL_TYPE_DIFFUSE;
+			m.datav[0] = vec4(Kd,-1);
+			m.dataf[0] = sigma;
+
+			return m;
+		}
 
 		std::string toString()
 		{
-			return std::string("Material{albedo=")+albedo.toString()+
-				", albedoIndex="+std::to_string(albedoIndex)+
-				"}";
+			switch(type[0])
+			{
+				case MATERIAL_TYPE_DIFFUSE:
+					return std::string("Material{type=DIFFUSE")+
+						", Kd="+datav[0].toString()+
+						", sigma="+std::to_string(dataf[0])+"}";
+				default:
+					return std::string("Material{type=")+std::to_string(type[0])+"}";
+			}
 		}
 	};
 }

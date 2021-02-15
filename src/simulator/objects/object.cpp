@@ -13,6 +13,7 @@ namespace atta
 	
 	Object::Object(CreateInfo info):
 		_type("Object"), _name(info.name), 
+		_isLight(false),
 		_selection(ObjectSelection::UNSELECTED)
 	{
 		_id = _qtyIds++;

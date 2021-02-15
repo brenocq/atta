@@ -27,21 +27,20 @@ vec3 Light_sampleLi(Light light, Interaction ref, vec2 u, out vec3 wi, out float
 	{
 		case LIGHT_TYPE_POINT:
 			{
-				// I - Light intensity (amount of power per unit solid angle, constant for isotropic point lights)
-				vec3 I = vec3(1,1,1);
+				vec3 I = light.datav[0].xyz;
 				return PointLight_sampleLi(light, ref, u, wi, pdf, vis, I);
 			}
 		case LIGHT_TYPE_SPOT:
 			{
-				vec3 I = vec3(1,1,1);
-				float cosFalloffStart = 0.5;
-				float cosTotalWidth = 0.6;
+				vec3 I = light.datav[0].xyz;
+				float cosFalloffStart = light.dataf[0];
+				float cosTotalWidth = light.dataf[1];
 				return SpotLight_sampleLi(light, ref, u, wi, pdf, vis, I, cosFalloffStart, cosTotalWidth);
 			}
 		case LIGHT_TYPE_DISTANT:
 			{
-				vec3 L = vec3(1,1,1);
-				vec3 wLight = normalize(vec3(1, 2, 1));
+				vec3 L = light.datav[0].xyz;
+				vec3 wLight = light.datav[1].xyz;
 				return DistantLight_sampleLi(light, ref, u, wi, pdf, vis, L, wLight);
 			}
 		default:
@@ -77,19 +76,19 @@ vec3 Light_power(Light light)
 	{
 		case LIGHT_TYPE_POINT:
 			{
-				vec3 I = vec3(1,1,1);
+				vec3 I = light.datav[0].xyz;
 				return PointLight_power(I);
 			}
 		case LIGHT_TYPE_SPOT:
 			{
-				vec3 I = vec3(1,1,1);
-				float cosFalloffStart = 0.5;
-				float cosTotalWidth = 0.8;
+				vec3 I = light.datav[0].xyz;
+				float cosFalloffStart = light.dataf[0];
+				float cosTotalWidth = light.dataf[1];
 				return SpotLight_power(I, cosFalloffStart, cosTotalWidth);
 			}
 		case LIGHT_TYPE_DISTANT:
 			{
-				vec3 L = vec3(1,1,1);
+				vec3 L = light.datav[0].xyz;
 				return DistantLight_power(L);
 			}
 		default:
@@ -121,7 +120,7 @@ bool Light_isDeltaLight(Light light)
 }
 
 //---------- Sampling lights ----------//
-vec3 Light_estimateDirect(int nLights, Light light, Interaction it, vec2 uLight, vec2 uScattering)
+vec3 Light_estimateDirect(uint nLights, Light light, Interaction it, vec2 uLight, vec2 uScattering)
 {
 	uint bsdfFlags = BXDF_FLAG_ALL;
 	vec3 Ld = vec3(0,0,0);
@@ -179,21 +178,22 @@ vec3 Light_estimateDirect(int nLights, Light light, Interaction it, vec2 uLight,
 	return Ld;
 }
 
-vec3 Light_uniformSampleOneLight(int nLights, Interaction it, vec2 uLight, vec2 uScattering)
+vec3 Light_uniformSampleOneLight(uint nLights, Interaction it, float uLightIndex, vec2 uLight, vec2 uScattering)
 {
 	// TODO Choose one light form the light buffer
-	Light l;
+	uint lightIndex = min(int(uLightIndex * nLights), nLights - 1);
+	Light l = lightBuffer[lightIndex];
 	//l.type = LIGHT_TYPE_SPOT;
 	//l.type = LIGHT_TYPE_POINT;
-	l.type = LIGHT_TYPE_DISTANT;
-	l.lightToWorld = mat4(1.0, 0.0, 0.0, 0.0,
-						  0.0, 1.0, 0.0, 0.0,
-						  0.0, 0.0, 1.0, 0.0,
-						  0.0, 0.3, 0.0, 1.0);
-	l.worldToLight = mat4(1.0, 0.0, 0.0, 0.0,
-						  0.0, 1.0, 0.0, 0.0,
-						  0.0, 0.0, 1.0, 0.0,
-						  0.0, -0.3, 0.0, 1.0);
+	//l.type = LIGHT_TYPE_DISTANT;
+	//l.lightToWorld = mat4(1.0, 0.0, 0.0, 0.0,
+	//					  0.0, 1.0, 0.0, 0.0,
+	//					  0.0, 0.0, 1.0, 0.0,
+	//					  0.0, 0.3, 0.0, 1.0);
+	//l.worldToLight = mat4(1.0, 0.0, 0.0, 0.0,
+	//					  0.0, 1.0, 0.0, 0.0,
+	//					  0.0, 0.0, 1.0, 0.0,
+	//					  0.0, -0.3, 0.0, 1.0);
 
 	return nLights * Light_estimateDirect(nLights, l, it, uLight, uScattering);
 }

@@ -2,6 +2,7 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_GOOGLE_include_directive : require
 #include "../material.glsl"
+#include "../objectInfo.glsl"
 #include "../uniformBufferObject.glsl"
 
 layout(binding = 0) readonly uniform UniformBufferObjectStruct
@@ -10,8 +11,9 @@ layout(binding = 0) readonly uniform UniformBufferObjectStruct
 };
 
 //layout(binding = 1) readonly buffer MaterialArray { Material[] Materials; };
-layout(push_constant) uniform ObjectInfo {
-  mat4 modelMat;
+layout(push_constant) uniform ObjectInfoStruct {
+  //ObjectInfo objectInfo;
+  mat4 transform;
 } objectInfo;
 
 layout(location = 0) in vec3 InPosition;
@@ -56,9 +58,9 @@ out gl_PerVertex
 void main() 
 {
 	const vec3 viewPos = ExtractCameraPos(camera.viewMat);
-	const vec4 fragPos = camera.projMat * camera.viewMat * objectInfo.modelMat * vec4(InPosition*1000.0f, 1.0);
+	const vec4 fragPos = camera.projMat * camera.viewMat * objectInfo.transform * vec4(InPosition*1000.0f, 1.0);
     gl_Position = fragPos;
 
     FragColor = InNormal;
-  	FragPos = (objectInfo.modelMat * vec4(InPosition*10.0f, 1.0)).xyz;
+  	FragPos = (objectInfo.transform * vec4(InPosition*10.0f, 1.0)).xyz;
 }

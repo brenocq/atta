@@ -13,8 +13,9 @@ struct UniformBufferObject
 
 	uint samplesPerPixel;//uint samplesPerPixel
 	uint nAccSamples;// Number of accumulated samples
-	
 	uint maxDepth;
+
+	uint nLights;
 
 	uint seed;
 };

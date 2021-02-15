@@ -154,7 +154,7 @@ namespace atta
 				.vkCore = vkCore,
 				.renderers = {
 					rtVk,
-					rast
+					//rast
 				}
 			};
 		}

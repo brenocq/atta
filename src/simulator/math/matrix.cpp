@@ -416,25 +416,25 @@ namespace atta
 	// the given quaternion.
     void mat4::setPosOri(const vec3 &pos, const quat &q)
 	{
-		data[0] = 1 - (2*q.j*q.j + 2*q.k*q.k);
-		data[1] = 2*q.i*q.j + 2*q.k*q.r;
-		data[2] = 2*q.i*q.k - 2*q.j*q.r;
-		data[3] = pos.x;
+		mat[0][0] = 1 - (2*q.j*q.j + 2*q.k*q.k);
+		mat[0][1] = 2*q.i*q.j - 2*q.k*q.r;
+		mat[0][2] = 2*q.i*q.k + 2*q.j*q.r;
+		mat[0][3] = pos.x;
 
-		data[4] = 2*q.i*q.j - 2*q.k*q.r;
-		data[5] = 1 - (2*q.i*q.i  + 2*q.k*q.k);
-		data[6] = 2*q.j*q.k + 2*q.i*q.r;
-		data[7] = pos.y;
+		mat[1][0] = 2*q.i*q.j + 2*q.k*q.r;
+		mat[1][1] = 1 - (2*q.i*q.i  + 2*q.k*q.k);
+		mat[1][2] = 2*q.j*q.k - 2*q.i*q.r;
+		mat[1][3] = pos.y;
 
-		data[8] = 2*q.i*q.k + 2*q.j*q.r;
-		data[9] = 2*q.j*q.k - 2*q.i*q.r;
-		data[10] = 1 - (2*q.i*q.i  + 2*q.j*q.j);
-		data[11] = pos.z;
+		mat[2][0] = 2*q.i*q.k - 2*q.j*q.r;
+		mat[2][1] = 2*q.j*q.k + 2*q.i*q.r;
+		mat[2][2] = 1 - (2*q.i*q.i  + 2*q.j*q.j);
+		mat[2][3] = pos.z;
 
-		data[12] = 0;
-		data[13] = 0;
-		data[14] = 0;
-		data[15] = 1;
+		mat[3][0] = 0;
+		mat[3][1] = 0;
+		mat[3][2] = 0;
+		mat[3][3] = 1;
 	}
 
     void mat4::setPosOriScale(const vec3 &pos, const quat &q, const vec3 &scale)

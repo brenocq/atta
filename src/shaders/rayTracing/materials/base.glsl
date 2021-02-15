@@ -7,12 +7,6 @@
 #ifndef MATERIALS_BASE_GLSL
 #define MATERIALS_BASE_GLSL
 
-const uint MATERIAL_TYPE_MATTE	 		= 0;
-const uint MATERIAL_TYPE_MIRROR	 		= 1;
-
-struct Material 
-{
-	uint type;
-};
+#include "../../material.glsl"
 
 #endif// MATERIALS_BASE_GLSL

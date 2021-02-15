@@ -47,6 +47,7 @@ namespace atta::vk
 			std::shared_ptr<Buffer> getIndexBuffer() const { return _indexBuffer; }
 			std::shared_ptr<Buffer> getMaterialBuffer() const { return _materialBuffer; }
 			std::shared_ptr<Buffer> getObjectInfoBuffer() const { return _objectInfoBuffer; }
+			std::shared_ptr<Buffer> getLightBuffer() const { return _lightBuffer; }
 
 			std::vector<std::shared_ptr<vk::Texture>> getTextures() const { return _textures; }
 
@@ -70,6 +71,7 @@ namespace atta::vk
 			std::shared_ptr<Buffer> _indexBuffer;
 			std::shared_ptr<Buffer> _materialBuffer;
 			std::shared_ptr<Buffer> _objectInfoBuffer;
+			std::shared_ptr<Buffer> _lightBuffer;
 
 			// Texture images
 			std::vector<std::shared_ptr<vk::Texture>> _textures;
