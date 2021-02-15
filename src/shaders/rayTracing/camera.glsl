@@ -4,6 +4,8 @@
 // Date: 2021-02-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#ifndef CAMERA_GLSL
+#define CAMERA_GLSL
 #include "samplers/random.glsl"
 
 struct CameraRay
@@ -51,3 +53,5 @@ CameraRay generateRayOrthographicCamera(mat4 viewMat, vec2 xy)
 
 	return ray;
 }
+
+#endif// CAMERA_GLSL

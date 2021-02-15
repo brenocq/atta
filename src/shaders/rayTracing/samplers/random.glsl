@@ -6,8 +6,7 @@
 //--------------------------------------------------
 #ifndef RANDOM_GLSL
 #define RANDOM_GLSL
-const float piOver4 = 3.14159265358979f*0.25f;
-const float piOver2 = 3.14159265358979f*0.5f;
+#include "../base.glsl"
 
 // Generate a random unsigned int from two unsigned int values, using 16 pairs
 // of rounds of the Tiny Encryption Algorithm. See Zafar, Olano, and Curtis,

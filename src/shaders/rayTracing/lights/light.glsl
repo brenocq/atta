@@ -6,6 +6,8 @@
 //--------------------------------------------------
 #ifndef LIGHTS_LIGHT_GLSL
 #define LIGHTS_LIGHT_GLSL
+#include "../base.glsl"
+#include "../bxdf/bsdf.glsl"
 #include "base.glsl"
 #include "point.glsl"
 #include "spot.glsl"
@@ -33,13 +35,13 @@ vec3 Light_sampleLi(Light light, Interaction ref, vec2 u, out vec3 wi, out float
 			{
 				vec3 I = vec3(1,1,1);
 				float cosFalloffStart = 0.5;
-				float cosTotalWidth = 0.8;
+				float cosTotalWidth = 0.6;
 				return SpotLight_sampleLi(light, ref, u, wi, pdf, vis, I, cosFalloffStart, cosTotalWidth);
 			}
 		case LIGHT_TYPE_DISTANT:
 			{
 				vec3 L = vec3(1,1,1);
-				vec3 wLight = normalize(vec3(1, -2, 1));
+				vec3 wLight = normalize(vec3(1, 2, 1));
 				return DistantLight_sampleLi(light, ref, u, wi, pdf, vis, L, wLight);
 			}
 		default:
@@ -58,13 +60,13 @@ vec3 Light_Le(Light light)
 	return vec3(0,0,0);
 }
 
-float Light_PdfLi(Light light)
+float Light_pdfLi(Light light)
 {
 
 	return 0.f;
 }
 
-void Light_PdfLe(Light light)
+void Light_pdfLe(Light light)
 {
 
 }
@@ -110,5 +112,91 @@ uint Light_flags(Light light)
 			return 0;
 	}
 }
+
+bool Light_isDeltaLight(Light light)
+{
+	uint lFlags = Light_flags(light);
+	return (lFlags & LIGHT_FLAG_DELTA_POSITION)!=0 ||
+			(lFlags & LIGHT_FLAG_DELTA_DIRECTION)!=0;
+}
+
+//---------- Sampling lights ----------//
+vec3 Light_estimateDirect(int nLights, Light light, Interaction it, vec2 uLight, vec2 uScattering)
+{
+	uint bsdfFlags = BXDF_FLAG_ALL;
+	vec3 Ld = vec3(0,0,0);
+
+	// Sample Light source with multiple importance sampling
+	vec3 wi;
+	float lightPdf = 0, scatteringPdf = 0;
+	VisibilityTester vis;
+	vec3 Li = Light_sampleLi(light, it, uLight, wi, lightPdf, vis);
+	if(lightPdf>0 && !isBlack(Li))
+	{
+		// Compute BSDF or phase function’s value for light sample
+		vec3 f;
+		if(isSurfaceInteraction(it))
+		{
+			// Evaluate BSDF for light sampling strategy
+			f = BSDF_f(it.bsdf, it.wo, wi, bsdfFlags);
+			//scatteringPdf = BSDF_pdf(it.bsdf, it.wo, wi, bsdfFlags);// TODO implement
+		}
+		else
+		{
+			// TODO Evaluate phase function for light sampling strategy (Medium)
+			
+		}
+
+		if(!isBlack(f))
+		{
+			// Compute effect of visibility for light source sample
+			// TODO check for occlusion
+			// if(occluded) Li = vec3(0,0,0)
+
+			// Add light contribution to reflected radiance
+			if(!isBlack(Li))
+			{
+				if(Light_isDeltaLight(light))
+				{
+					Ld += f*Li/lightPdf;
+				}
+				else
+				{
+					// TODO area lights
+					//float weight = powerHeuristic(1, lightPdf, 1, scatteringPdf);
+					//Ld += f*Li*wight/lightPdf;
+				}
+			}
+		}
+	}
+
+	// TODO sample bsdf with multiple importance sampling
+	if(!Light_isDeltaLight(light))
+	{
+
+	}
+
+	return Ld;
+}
+
+vec3 Light_uniformSampleOneLight(int nLights, Interaction it, vec2 uLight, vec2 uScattering)
+{
+	// TODO Choose one light form the light buffer
+	Light l;
+	//l.type = LIGHT_TYPE_SPOT;
+	//l.type = LIGHT_TYPE_POINT;
+	l.type = LIGHT_TYPE_DISTANT;
+	l.lightToWorld = mat4(1.0, 0.0, 0.0, 0.0,
+						  0.0, 1.0, 0.0, 0.0,
+						  0.0, 0.0, 1.0, 0.0,
+						  0.0, 0.3, 0.0, 1.0);
+	l.worldToLight = mat4(1.0, 0.0, 0.0, 0.0,
+						  0.0, 1.0, 0.0, 0.0,
+						  0.0, 0.0, 1.0, 0.0,
+						  0.0, -0.3, 0.0, 1.0);
+
+	return nLights * Light_estimateDirect(nLights, l, it, uLight, uScattering);
+}
+
 
 #endif// LIGHTS_LIGHT_GLSL

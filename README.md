@@ -5,10 +5,17 @@
  <img src="./img/2020-12-04.gif" height="200">
 </p>
 
-Atta is a robot simulator for 2D and 3D applications made with Vulkan (optional Ray Tracing for Nvidia GPUs). Now I am developing mainly the physics engine and CPU ray tracing renderer.
-This simulator also has an implementation of a user interface library based on a widget tree, but it is in its early stages.
-After finishing the core (renderers, gui library, physics engine), I will start to implement specific robotic simulation code, such as motors, common sensors, common algorithms.
-For now, only Linux is supported, but I plan to add support for Windows in the following months.
+Atta is a robot simulator for 2D and 3D applications. For now, the core is still under development, which includes:
+ - **Ray Tracing:** For now, I am developing a physically based ray tracer based on the pbrt-v3 using the Vulkan khronos ray tracing extension for ray calculations. In the future I will also implement it on CPU.
+ - **GUI:** The graphics user interface is being developed using a widget tree model (only basic widgets are finished).
+ - **Physics Engine:** It is in its early stages. (I am debbuging it)
+ - **Robotics:** After finishing the basics of the three above, I will start to implement the sensors/actuators/common algorithms.
+ - **Examples:** There is an example folder where I am developing some exemples of simulations using the Atta.
+
+For now, only Linux is supported, but I plan to add support for Windows in the following months.\
+This project is not yet well documented, after finishing some examples I am planning to create an website explaning its details and design decisions.
+
+This week I am focusing on developing the GPU ray tracing renderer.
 
 ## Installation (Linux)
 #### Download Vulkan SDK
@@ -42,21 +49,21 @@ These values are unreliable and come from what I think is going on in the code (
 
 #### Core
  - Vulkan specific: 100%
- - RayTracing (Vulkan): 85%
- - RayTracing (CPU): 5%
- - Graphics user interface: 20%
+ - Renderers
+	 - RayTracing (GPU/vulkan): 35%
+	 - RayTracing (CPU): 5%
+	 - Rasterization: 50%
+	 - 2D: 60%
+ - GUI: 20%
  - Physics engine: 60%
- - Threading: 30%
+ - Multithreading: 30%
 
 ## References
-- [Alexander Overvoorde's Vulkan Tutorial](https://vulkan-tutorial.com/)
-- [Vulkan documentation](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/index.html)
-- [GPSnoopy's Ray Tracing implementation](https://github.com/GPSnoopy/RayTracingInVulkan)
-- [Nvidia Vulkan Ray Tracing Tutorial](https://nvpro-samples.github.io/vk_raytracing_tutorial_KHR/)
-- [Game Physics Engine Development](https://www.amazon.com/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
-- [Real-Time Collision Detection](https://www.amazon.com/Real-Time-Collision-Detection-Interactive-Technology/dp/1558607323)
-- [Physically Based Rendering](http://www.pbr-book.org/)
-- [Computer Graphics Principles and Practice](http://cgpp.net/about.xml)
+- [(Book) Physically Based Rendering](http://www.pbr-book.org/)
+- [(Book) Game Physics Engine Development](https://www.amazon.com/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
+- [(Book) Real-Time Collision Detection](https://www.amazon.com/Real-Time-Collision-Detection-Interactive-Technology/dp/1558607323)
+- [(Book) Computer Graphics Principles and Practice](http://cgpp.net/about.xml)
+- [(Repo) GPSnoopy's Ray Tracing implementation](https://github.com/GPSnoopy/RayTracingInVulkan)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.

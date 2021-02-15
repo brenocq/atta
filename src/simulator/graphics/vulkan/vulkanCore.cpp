@@ -8,6 +8,7 @@
 #include "simulator/helpers/log.h"
 #include "simulator/graphics/core/model.h"
 #include "simulator/graphics/core/material.h"
+#include "simulator/graphics/core/objectInfo.h"
 #include "simulator/graphics/vulkan/stagingBuffer.h"
 
 namespace atta::vk
@@ -32,6 +33,7 @@ namespace atta::vk
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 		std::vector<Material> materials;
+		std::vector<ObjectInfo> objectInfos;
 
 		for(auto m : Model::allMeshes)
 		{
@@ -54,12 +56,22 @@ namespace atta::vk
 			indices.insert(indices.end(), meshIndices.begin(), meshIndices.end());
 		}
 
+		// Populate materials and instances
 		for(auto object : scene->getObjects())
 		{
 			static int materialOffset = 0;
 			std::shared_ptr<Model> model = object->getModel();
-			model->setMaterialOffset(materialOffset++);
+			model->setMaterialOffset(materialOffset);
 			materials.push_back(model->getMaterial());
+
+			ObjectInfo obji;
+			obji.indexOffset = model->getMesh()->getIndicesOffset();
+			obji.vertexOffset = model->getMesh()->getVerticesOffset();
+			obji.materialOffset = materialOffset;
+			obji.transform = transpose(object->getModelMat());
+			objectInfos.push_back(obji);
+
+			materialOffset++;
 		}
 
 		//---------- Create device buffers ----------//
@@ -70,6 +82,7 @@ namespace atta::vk
 				VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
 				indices);
 		_materialBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
+		_objectInfoBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, objectInfos);
 
 		//---------- Create textures ----------//
 		for(auto& textureInfo : atta::Texture::textureInfos)

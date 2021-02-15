@@ -10,18 +10,20 @@
 
 #include "samplers/random.glsl"
 #include "lights/light.glsl"
+#include "bxdf/bxdf.glsl"
+#include "bxdf/bsdf.glsl"
 #include "rayPayload.glsl"
 #include "camera.glsl"
 #include "uniformBufferObject.glsl"
+#include "base.glsl"
+
+//...
 
 layout(binding = 0, set = 0) uniform accelerationStructureEXT scene;
 layout(binding = 1, rgba32f) uniform image2D accumulationImage;
 layout(binding = 2, rgba8) uniform image2D outputImage;
 layout(binding = 3) readonly uniform UniformBufferObjectStruct { UniformBufferObject ubo; };
-layout(binding = 8) readonly buffer LightStruct
-{ 
-	Light[] lights;
-};
+layout(binding = 8) readonly buffer LightStruct { Light[] lights; };
 
 layout(location = 0) rayPayloadEXT RayPayload ray;
 
@@ -44,11 +46,11 @@ void main()
 		rayFromCamera = generateRayProjectiveCamera(
 			ubo.projMatInverse, ubo.viewMatInverse, uv, 
 			lensRadius, focusDistance, vec2(randomFloat(pixelSeed), randomFloat(pixelSeed)));
-		vec4 origin = vec4(rayFromCamera.origin, 1);
-		vec4 direction = vec4(rayFromCamera.direction, 0);
+		vec3 origin = rayFromCamera.origin;
+		vec3 direction = rayFromCamera.direction;
 
-		// Path integrator
-		vec3 L = vec3(0.f);// Radiance value
+		//---------- Path integrator ----------//
+		vec3 L = vec3(0.f);// Radiance value (starting as 1 but should start with 0 and get from lights)
 		vec3 beta = vec3(1.f);// Path throughput weight (BSDF*Geometry) (fraction of radiance from the light source that arrives at the camera)
 		bool specularBounce = false;// Handle special case when the ray reflects in only one direction
 		uint bounces;
@@ -62,11 +64,11 @@ void main()
 			traceRayEXT(
 				scene, gl_RayFlagsOpaqueEXT, 0xff, 
 				0 /*sbtRecordOffset*/, 0 /*sbtRecordStride*/, 0 /*missIndex*/, 
-				origin.xyz, tMin, direction.xyz, tMax, 0 /*payload*/);
+				origin, tMin, direction, tMax, 0 /*payload*/);
 
-			const vec3 hitColor = ray.colorAndDistance.rgb;
-			const float t = ray.colorAndDistance.w;
-			const bool foundIntersection = (t>=0);
+			BSDF bsdf = ray.it.bsdf;
+			const bool foundIntersection = (ray.t>=0);
+			//beta *= vec3(0,0,.8);
 
 			// Add emitted light
 			if(bounces == 0 || specularBounce)
@@ -74,13 +76,13 @@ void main()
 				if(foundIntersection)
 				{
 					// TODO Add emitted light at path vertex (Emissive objects not supported yet)
-					L += beta * vec3(0,0,0);
+					//L += beta * vec3(.2,.2,.2);
 				}
 				else
 				{
 					// TODO Add environment light (Infinity lights not supported yet)
 					// Search infinity lights
-					L += beta * vec3(0,0,0);
+					L += beta * vec3(1,1,1);
 				}
 			}
 
@@ -88,32 +90,36 @@ void main()
 			if(!foundIntersection || bounces>=ubo.maxDepth)
 				break;
 
-			// TODO Uniform sample one light (Ld = beta*qtyLights*estimateDirect)
-			// vec3 Ld = beta*uniformSampleOneLight(origin, lights)
-			// L += Ld
+			vec2 uLight = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
+			vec2 uScattering = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
+			vec3 Ld = beta*Light_uniformSampleOneLight(1, ray.it, uLight, uScattering);
+			L += Ld;
 
 			// Update next ray origin from intersection
-			origin = origin + t * direction;
 			// Update next ray direction from BSDF sample
-			direction = vec4(ray.scatterDirection.xyz, 0);
-			// f = ?
-			// pdf = ?
-			// specularBounce = ? // Specular brdf -> solve delta distribution (special case)
-			// beta *= f * abs(dot())/pdf
+			//direction = vec4(ray.scatterDirection.xyz, 0);
+			vec3 wo = -direction, wi;
+			float pdf;
+			uint flags;
+			vec2 u = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
+			vec3 f = BSDF_sampleF(bsdf, wo, wi, u, pdf, BXDF_FLAG_ALL, flags);
+			if(isBlack(f) || pdf == 0) break;
+			beta *= f * abs(dot(wi, bsdf.ns))/pdf;
+
+			specularBounce = (flags & BXDF_FLAG_SPECULAR)!=0;
 
 			// Possibly terminate the path with Russian roulette
 			if(bounces > 3)
 			{
-				float q = max(0.05, 1-beta.y);
-				//if(rand1D < q)
-				//	break;
-				//beta /= 1-q
+				float q = max(0.05, 1-maxComponentValue(beta));
+				if(randomFloat(pixelSeed) < q) break;
+				beta /= 1-q;
 			}
 
-			beta *= hitColor;
+			origin = origin + ray.t * direction;
+			direction = wo;
 		}
-
-		pixelColor += beta;
+		pixelColor += L;
 	}
 
 	//const bool accumulate = camera.numberOfSamples != camera.totalNumberOfSamples;

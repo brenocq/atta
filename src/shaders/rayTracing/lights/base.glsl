@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef LIGHTS_BASE_GLSL
 #define LIGHTS_BASE_GLSL
+#include "../bxdf/base.glsl"
 
 const uint LIGHT_TYPE_DIFFUSE 		= 0;
 const uint LIGHT_TYPE_DISTANT 		= 1;
@@ -24,7 +25,6 @@ struct Light
 {
 	uint type;
 
-	uint flags;
 	uint nSamples;
 
 	mat4 lightToWorld;// It must not be scaled!
@@ -36,6 +36,9 @@ struct Interaction
 	vec3 point;// Point of interaction
 	vec3 wo;
 	vec3 n;// Surface normal
+
+	// Surface iteraction
+	BSDF bsdf;
 };
 
 struct VisibilityTester
@@ -43,5 +46,10 @@ struct VisibilityTester
 	Interaction p0;
 	Interaction p1;
 };
+
+bool isSurfaceInteraction(Interaction it)
+{
+	return !(it.n.x==0 && it.n.y==0 && it.n.z==0);
+}
 
 #endif// LIGHTS_BASE_GLSL
