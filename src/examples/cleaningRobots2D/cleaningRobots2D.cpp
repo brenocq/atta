@@ -44,7 +44,7 @@ void CleaningRobots2D::createRobots()
 	// Create robots
 	for(unsigned i=0; i<_qtyRobots; i++)
 	{
-		auto cleaner = std::make_shared<Cleaner>(atta::vec3(i%3, 0, i/3));
+		auto cleaner = std::make_shared<Cleaner>(atta::vec3(i%3, .5, i/3));
 		_cleaners.push_back(cleaner);
 	}
 }
