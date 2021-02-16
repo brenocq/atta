@@ -21,6 +21,7 @@ vec3 SpotLight_sampleLi(
 	pdf = 1.f;
 	vis.p0 = ref;
 	vis.p1.point = pLight;
+	vis.p1.point = vec3(-1, 3, -1);
 
 	vec3 p = pLight-ref.point;
 	float squareDist = dot(p,p);

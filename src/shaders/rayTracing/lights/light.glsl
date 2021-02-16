@@ -120,6 +120,28 @@ bool Light_isDeltaLight(Light light)
 }
 
 //---------- Sampling lights ----------//
+bool Light_occluded(vec3 origin, vec3 direction, float tMax)
+{
+	float tMin = 0.001;
+
+	isShadowed = true;	
+	uint flags = gl_RayFlagsTerminateOnFirstHitEXT | gl_RayFlagsOpaqueEXT | gl_RayFlagsSkipClosestHitShaderEXT;
+	traceRayEXT(scene,   // acceleration structure
+            flags,       // rayFlags
+            0xFF,        // cullMask
+            0,           // sbtRecordOffset
+            0,           // sbtRecordStride
+            1,           // missIndex
+            origin,      // ray origin
+            tMin,        // ray min range
+            direction,   // ray direction
+            tMax,        // ray max range
+            1            // payload (location = 1)
+    );
+
+	return isShadowed;
+}
+
 vec3 Light_estimateDirect(uint nLights, Light light, Interaction it, vec2 uLight, vec2 uScattering)
 {
 	uint bsdfFlags = BXDF_FLAG_ALL;
@@ -130,6 +152,7 @@ vec3 Light_estimateDirect(uint nLights, Light light, Interaction it, vec2 uLight
 	float lightPdf = 0, scatteringPdf = 0;
 	VisibilityTester vis;
 	vec3 Li = Light_sampleLi(light, it, uLight, wi, lightPdf, vis);
+
 	if(lightPdf>0 && !isBlack(Li))
 	{
 		// Compute BSDF or phase function’s value for light sample
@@ -138,7 +161,7 @@ vec3 Light_estimateDirect(uint nLights, Light light, Interaction it, vec2 uLight
 		{
 			// Evaluate BSDF for light sampling strategy
 			f = BSDF_f(it.bsdf, it.wo, wi, bsdfFlags);
-			//scatteringPdf = BSDF_pdf(it.bsdf, it.wo, wi, bsdfFlags);// TODO implement
+			//scatteringPdf = BSDF_pdf(it.bsdf, it.wo, wi, bsdfFlags);// TODO implement (used only for area lights)
 		}
 		else
 		{
@@ -149,8 +172,11 @@ vec3 Light_estimateDirect(uint nLights, Light light, Interaction it, vec2 uLight
 		if(!isBlack(f))
 		{
 			// Compute effect of visibility for light source sample
-			// TODO check for occlusion
-			// if(occluded) Li = vec3(0,0,0)
+			vec3 origin = vis.p0.point;
+			vec3 direction = normalize(vis.p1.point - vis.p0.point);
+			float tMax = length(vis.p1.point - vis.p0.point);
+			if(Light_occluded(origin, direction, tMax))
+				Li = vec3(0,0,0);
 
 			// Add light contribution to reflected radiance
 			if(!isBlack(Li))
@@ -180,20 +206,8 @@ vec3 Light_estimateDirect(uint nLights, Light light, Interaction it, vec2 uLight
 
 vec3 Light_uniformSampleOneLight(uint nLights, Interaction it, float uLightIndex, vec2 uLight, vec2 uScattering)
 {
-	// TODO Choose one light form the light buffer
 	uint lightIndex = min(int(uLightIndex * nLights), nLights - 1);
 	Light l = lightBuffer[lightIndex];
-	//l.type = LIGHT_TYPE_SPOT;
-	//l.type = LIGHT_TYPE_POINT;
-	//l.type = LIGHT_TYPE_DISTANT;
-	//l.lightToWorld = mat4(1.0, 0.0, 0.0, 0.0,
-	//					  0.0, 1.0, 0.0, 0.0,
-	//					  0.0, 0.0, 1.0, 0.0,
-	//					  0.0, 0.3, 0.0, 1.0);
-	//l.worldToLight = mat4(1.0, 0.0, 0.0, 0.0,
-	//					  0.0, 1.0, 0.0, 0.0,
-	//					  0.0, 0.0, 1.0, 0.0,
-	//					  0.0, -0.3, 0.0, 1.0);
 
 	return nLights * Light_estimateDirect(nLights, l, it, uLight, uScattering);
 }

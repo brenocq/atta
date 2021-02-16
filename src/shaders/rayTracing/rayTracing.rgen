@@ -23,6 +23,7 @@ layout(binding = 3) readonly uniform UniformBufferObjectStruct { UniformBufferOb
 layout(binding = 8) readonly buffer LightStruct { Light[] lightBuffer; };
 
 layout(location = 0) rayPayloadEXT RayPayload ray;
+layout(location = 1) rayPayloadEXT bool isShadowed;
 
 #include "lights/light.glsl"// Need to access the light buffer
 

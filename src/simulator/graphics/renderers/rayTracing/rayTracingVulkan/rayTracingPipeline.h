@@ -34,6 +34,7 @@ namespace atta::rt::vk
 
 			uint32_t getRayGenShaderIndex() const { return _rayGenIndex; }
 			uint32_t getMissShaderIndex() const { return _missIndex; }
+			uint32_t getMissShadowShaderIndex() const { return _missShadowIndex; }
 			uint32_t getTriangleHitGroupIndex() const { return _triangleHitGroupIndex; }
 			uint32_t getProceduralHitGroupIndex() const { return _proceduralHitGroupIndex; }
 
@@ -51,6 +52,7 @@ namespace atta::rt::vk
 
 			uint32_t _rayGenIndex;
 			uint32_t _missIndex;
+			uint32_t _missShadowIndex;
 			uint32_t _triangleHitGroupIndex;
 			uint32_t _proceduralHitGroupIndex;
 	};

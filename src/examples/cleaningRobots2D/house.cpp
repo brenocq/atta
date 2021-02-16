@@ -76,20 +76,20 @@ House::House()
 
 	//----- Lights -----//
 	atta::PointLight::CreateInfo plInfo = {};
-	plInfo.position = {2, .1, 2};
-	plInfo.intensity = {0, 1, 1};
+	plInfo.position = {-2, .1, -2};
+	plInfo.intensity = {0, .3, .3};
 	_objects.push_back(std::make_shared<atta::PointLight>(plInfo));
 
 	atta::SpotLight::CreateInfo slInfo = {};
-	slInfo.position = {-1, 3, -1};
-	slInfo.direction = {0, -1, 0};
+	slInfo.position = {-1, 2, -1};
+	slInfo.direction = {1, -1, 1};
 	slInfo.intensity = {10, 10, 10};
 	slInfo.maxAngle = 60.f;
 	slInfo.falloffStartAngle = 30.f;
 	_objects.push_back(std::make_shared<atta::SpotLight>(slInfo));
 
 	atta::DistantLight::CreateInfo dlInfo = {};
-	dlInfo.radiance = {1, 1, 1};
+	dlInfo.radiance = {.3, .3, .3};
 	dlInfo.direction = {1, 1, 1};
 	_objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
 }

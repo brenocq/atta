@@ -34,9 +34,9 @@ namespace atta::rt::vk
 		ubo.projMat.data[5] *= -1;
 		ubo.viewMatInverse = inverse(ubo.viewMat);
 		ubo.projMatInverse = inverse(ubo.projMat);
-		ubo.samplesPerPixel = 400;
+		ubo.samplesPerPixel = 1000;
 		ubo.nAccSamples = 0;// The number of accumulated samples is increased every render() call
-		ubo.maxDepth = 5;
+		ubo.maxDepth = 4;
 		ubo.nLights = _scene->getLights().size();
 		ubo.seed = rand();
 		_uniformBuffer->setValue(ubo);
@@ -73,7 +73,7 @@ namespace atta::rt::vk
 				_tlas[0], _accumulationImageView, _imageView, _uniformBuffer, _vkCore);
 
 		const std::vector<ShaderBindingTable::Entry> rayGenPrograms = { {_rayTracingPipeline->getRayGenShaderIndex(), {}} };
-		const std::vector<ShaderBindingTable::Entry> missPrograms = { {_rayTracingPipeline->getMissShaderIndex(), {}} };
+		const std::vector<ShaderBindingTable::Entry> missPrograms = { {_rayTracingPipeline->getMissShaderIndex(), {}}, {_rayTracingPipeline->getMissShadowShaderIndex(), {}} };
 		const std::vector<ShaderBindingTable::Entry> hitGroups = { {_rayTracingPipeline->getTriangleHitGroupIndex(), {}}/*, {_rayTracingPipeline->getProceduralHitGroupIndex(), {}}*/};
 
 		_shaderBindingTable = std::make_shared<ShaderBindingTable>(_device, _deviceProcedures, _rayTracingPipeline, _rayTracingProperties, rayGenPrograms, missPrograms, hitGroups);
