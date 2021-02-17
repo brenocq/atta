@@ -31,13 +31,17 @@ namespace atta
 			{
 				generateBoxMesh();
 			}
-			if(meshName == "atta::cylinder")
+			else if(meshName == "atta::cylinder")
 			{
 				generateCylinderMesh();
 			}
 			else if(meshName == "atta::plane")
 			{
 				generatePlaneMesh();
+			}
+			else if(meshName == "atta::sphere")
+			{
+				generateSphereMesh();
 			}
 		}
 	}
@@ -338,6 +342,51 @@ namespace atta
 		_indices.push_back(0);
 		_indices.push_back(2);
 		_indices.push_back(3);
+
+		//---------- Finished generating ----------//
+		eval.stop();
+		Log::info("Mesh", "Finished generating [b]$0[] - [w]$1ms ($2 vertices, $3 indices)", 
+				_meshName, eval.getMs(), _vertices.size(), _indices.size());
+	}
+
+	void Mesh::generateSphereMesh()
+	{
+		LocalEvaluator eval;
+
+		int qtyLong = 32;
+		int qtyLat = 16;
+		float radius = 0.5;
+		//---------- Create vertices ----------//
+		for(int p=0; p<qtyLat+1; p++)
+		{
+			for(int t=0; t<qtyLong; t++)
+			{
+				float phi = -M_PI+p*(M_PI/qtyLat);
+				float theta = t*(2*M_PI/qtyLong);
+
+				Vertex vertex;
+				vertex.pos = {radius*cos(theta)*sin(phi), radius*cos(phi), radius*sin(theta)*sin(phi)};
+				vertex.normal = normalize(vertex.pos);
+				vertex.materialIndex = 0;
+				vertex.texCoord = {theta/2*M_PI,(phi+M_PI/2)/M_PI};
+				_vertices.push_back(vertex);
+			}
+		}
+
+		//---------- Create indices ----------//
+		for(int j=0; j<qtyLat; j++)
+		{
+			for(int i=0; i<qtyLong; i++)
+			{
+				_indices.push_back(j*qtyLong+i);
+				_indices.push_back(j*qtyLong+i+1);
+				_indices.push_back((j+1)*qtyLong+i);
+
+				_indices.push_back((j+1)*qtyLong+i);
+				_indices.push_back((j+1)*qtyLong+i+1);
+				_indices.push_back(j*qtyLong+i+1);
+			}
+		}
 
 		//---------- Finished generating ----------//
 		eval.stop();

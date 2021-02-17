@@ -133,7 +133,7 @@ namespace atta
 				.width = 1200,
 				.height = 900,
 				.scene = _scene,
-				.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
+				.viewMat = atta::lookAt(vec3(-5,5,-5), vec3(0,0,0), vec3(0,1,0)),
 				.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
 			};
 			std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);

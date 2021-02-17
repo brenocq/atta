@@ -47,5 +47,17 @@ struct Light
 // - datav
 // 		[0](vec3) - L: Emitted radiance by a disk illuminating the scene (5km radius)
 // 		[1](vec3) - w: Incident ray from the object being illuminated to the disk
+//
+// Infinite light
+// - datav
+// 		[0](vec3) - World center
+//		[1](vec3) - Precomputed power approximation
+// - dataf
+//		[0] - World radius
+// - datai
+//		[0] - Texture index
+//		[1] - Precomputed 2D Pdf texture index
+//		[2] - Precomputed 2D Pdf texture width
+//		[3] - Precomputed 2D Pdf texture height
 
 #endif// LIGHT_GLSL

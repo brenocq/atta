@@ -28,16 +28,6 @@ vec3 SpotLight_sampleLi(
 	return I*SpotLight_falloff(light, -wi, cosFalloffStart, cosTotalWidth)/squareDist;
 }
 
-vec3 SpotLight_power(vec3 I, float cosFalloffStart, float cosTotalWidth)
-{
-	return I * 2 * 3.1415926535f * (1 - 0.5f * (cosFalloffStart+cosTotalWidth));
-}
-
-uint SpotLight_flags()
-{
-	return LIGHT_FLAG_DELTA_POSITION;
-}
-
 float SpotLight_falloff(Light light, vec3 w, float cosFalloffStart, float cosTotalWidth)
 {
 	vec3 wl = normalize((light.worldToLight * vec4(w,0)).xyz);
@@ -48,6 +38,16 @@ float SpotLight_falloff(Light light, vec3 w, float cosFalloffStart, float cosTot
 	// Calculate falloff inside transition area
 	float delta = (cosTheta - cosTotalWidth)/(cosFalloffStart - cosTotalWidth);
 	return (delta*delta) * (delta*delta);
+}
+
+vec3 SpotLight_power(vec3 I, float cosFalloffStart, float cosTotalWidth)
+{
+	return I * 2 * 3.1415926535f * (1 - 0.5f * (cosFalloffStart+cosTotalWidth));
+}
+
+uint SpotLight_flags()
+{
+	return LIGHT_FLAG_DELTA_POSITION;
 }
 
 #endif// LIGHTS_SPOT_GLSL

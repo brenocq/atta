@@ -8,7 +8,7 @@
 
 namespace atta::vk
 {
-	Sampler::Sampler(std::shared_ptr<Device> device, uint32_t mipLevels):
+	Sampler::Sampler(std::shared_ptr<Device> device, uint32_t mipLevels, bool unnormalizedCoordinates):
 		_device(device)
 	{
 
@@ -17,25 +17,23 @@ namespace atta::vk
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
 		samplerInfo.minFilter = VK_FILTER_LINEAR;
 
-		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeU = unnormalizedCoordinates?VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE:VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeV = unnormalizedCoordinates?VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE:VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeW = unnormalizedCoordinates?VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE:VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
-		samplerInfo.anisotropyEnable = VK_TRUE;
+		samplerInfo.anisotropyEnable = unnormalizedCoordinates?VK_FALSE:VK_TRUE;
 		samplerInfo.maxAnisotropy = 16.0f;
 
 		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-		// VK_TRUE: [0,imageWidth)
-		// VK_FALSE: [0,1)
-		samplerInfo.unnormalizedCoordinates = VK_FALSE;
+		samplerInfo.unnormalizedCoordinates = false;//unnormalizedCoordinates; TODO Fix
 
 		samplerInfo.compareEnable = VK_FALSE;
 		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 
-		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		samplerInfo.mipmapMode = unnormalizedCoordinates?VK_SAMPLER_MIPMAP_MODE_NEAREST:VK_SAMPLER_MIPMAP_MODE_LINEAR;
 		samplerInfo.minLod = 0.0f; // Optional
 		//samplerInfo.minLod = static_cast<float>(mipLevels / 2); // Test mipmap (low resolution)
-		samplerInfo.maxLod = static_cast<float>(mipLevels);
+		samplerInfo.maxLod = unnormalizedCoordinates?0:static_cast<float>(mipLevels);
 		samplerInfo.mipLodBias = 0.0f; // Optional
 
 		if(vkCreateSampler(_device->handle(), &samplerInfo, nullptr, &_sampler) != VK_SUCCESS)

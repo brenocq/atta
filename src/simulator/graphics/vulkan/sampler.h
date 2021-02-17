@@ -17,7 +17,7 @@ namespace atta::vk
 	class Sampler
 	{
 		public:
-			Sampler(std::shared_ptr<Device> device, uint32_t mipLevels=1);
+			Sampler(std::shared_ptr<Device> device, uint32_t mipLevels=1, bool unnormalizedCoordinates=false);
 			~Sampler();
 
 			std::shared_ptr<Device> getDevice() const { return _device; }

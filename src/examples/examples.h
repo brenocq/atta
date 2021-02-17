@@ -8,5 +8,6 @@
 #define EXAMPLES_H
 
 #include "cleaningRobots2D/cleaningRobots2D.h"
+#include "materialsDemo/materialsDemo.h"
 
 #endif// EXAMPLES_H
