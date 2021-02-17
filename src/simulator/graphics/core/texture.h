@@ -20,28 +20,32 @@ namespace atta
 	class Texture
 	{
 		public:
-			enum BufferType {
-				BUFFER_TYPE_NONE = 0,
-				BUFFER_TYPE_BYTE_4,
+			enum Type {
+				TYPE_NONE = 0,
+				TYPE_FILE,
+				TYPE_BUFFER_BYTE_4,
+				TYPE_BUFFER_FLOAT_3,
 			};
 
+			// Create texture from file
+			static int fromFile(std::string fileName);
 			// Create texture linked to a buffer
-			static int fromBuffer(const void* data, unsigned width, unsigned height, BufferType bufferType = BUFFER_TYPE_BYTE_4);
+			static int fromBuffer(const void* data, unsigned width, unsigned height, Type type = TYPE_BUFFER_BYTE_4);
 			// Update texture from the buffer (copy from host memory to device memory)
 			static int updateTexture(int textureIndex);
 
 			struct TextureInfo
 			{
 				int textureId;
-
-				// Texture from buffer
-				BufferType bufferType=BUFFER_TYPE_NONE;
-				const void* data=nullptr;
-				unsigned width=0;
-				unsigned height=0;
+				Type type=TYPE_NONE;
 
 				// Texture from file
 				std::string fileName = "";
+
+				// Texture from buffer
+				const void* data=nullptr;
+				unsigned width=0;
+				unsigned height=0;
 
 				// Pointer to the created vulkan texture
 				std::weak_ptr<vk::Texture> vkTexture;

@@ -32,6 +32,11 @@ namespace atta
 					std::shared_ptr<DistantLight> l = std::static_pointer_cast<DistantLight>(object);
 					_lights.push_back(Light::distant(l->getRadiance(), l->getDirection()));
 				}
+				if(type == "InfiniteLight")
+				{
+					std::shared_ptr<InfiniteLight> l = std::static_pointer_cast<InfiniteLight>(object);
+					_lights.push_back(Light::infinite(l->getPosition(), l->getOrientation(), l->getPrecomputedPower(), l->getWorldRadius(), l->getTextureIndex(), l->getPdfTextureIndex(), l->getPdfTextureWidth(), l->getPdfTextureHeight()));
+				}
 			}
 		}
 	}

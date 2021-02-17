@@ -42,12 +42,10 @@ namespace atta::rt::vk
 			{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
 
 			// Light buffer
-			{8, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR }
+			{8, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR },
 
 			// Textures and image samplers
-			//{7, static_cast<uint32_t>(_vkCore->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-
-			// Light buffer
+			{9, static_cast<uint32_t>(_vkCore->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_RAYGEN_BIT_KHR},
 		};
 
 		_descriptorSetManager = std::make_shared<atta::vk::DescriptorSetManager>(device, descriptorBindings, 1);
@@ -103,14 +101,14 @@ namespace atta::rt::vk
 		lightBufferInfo.range = VK_WHOLE_SIZE;
 
 		// Image and texture samplers
-		//std::vector<VkDescriptorImageInfo> imageInfos(_vkCore->getTextures().size());
-		//for(size_t t = 0; t < imageInfos.size(); t++)
-		//{
-		//	VkDescriptorImageInfo& imageInfo = imageInfos[t];
-		//	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		//	imageInfo.imageView = _vkCore->getTextures()[t]->getImageView()->handle();
-		//	imageInfo.sampler = _vkCore->getTextures()[t]->getSampler()->handle();
-		//}
+		std::vector<VkDescriptorImageInfo> imageInfos(_vkCore->getTextures().size());
+		for(size_t t = 0; t < imageInfos.size(); t++)
+		{
+			VkDescriptorImageInfo& imageInfo = imageInfos[t];
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = _vkCore->getTextures()[t]->getImageView()->handle();
+			imageInfo.sampler = _vkCore->getTextures()[t]->getSampler()->handle();
+		}
 
 		const std::vector<VkWriteDescriptorSet> descriptorWrites =
 		{
@@ -122,8 +120,8 @@ namespace atta::rt::vk
 			descriptorSets->bind(0, 5, indexBufferInfo),
 			descriptorSets->bind(0, 6, materialBufferInfo),
 			descriptorSets->bind(0, 7, objInfoBufferInfo),
-			descriptorSets->bind(0, 8, lightBufferInfo)
-			//descriptorSets->bind(0, 7, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
+			descriptorSets->bind(0, 8, lightBufferInfo),
+			descriptorSets->bind(0, 9, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
 		};
 
 		// Procedural buffer (optional)

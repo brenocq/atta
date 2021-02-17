@@ -12,6 +12,8 @@
 #include "lambertianReflection.glsl"
 #include "orenNayar.glsl"
 
+uint BXDF_flags(BXDF bxdf);
+
 float BXDF_pdf(BXDF bxdf, vec3 wo, vec3 wi)
 {
 	switch(bxdf.type)
@@ -41,7 +43,7 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 	}
 }
 
-vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, uint sampledType)
+vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, out uint sampledType)
 {
 	switch(bxdf.type)
 	{
@@ -73,6 +75,7 @@ vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, uint s
 		}
 		case BXDF_TYPE_LAMBERTIAN_REFLECTION:
 		case BXDF_TYPE_OREN_NAYAR:
+			sampledType = BXDF_flags(bxdf);
 			wi = cosineSampleHemisphere(u);
 			if(wo.z<0) wi.z*=-1;
 			pdf = BXDF_pdf(bxdf, wo, wi);
@@ -115,9 +118,13 @@ uint BXDF_flags(BXDF bxdf)
 	switch(bxdf.type)
 	{
 		case BXDF_TYPE_SPECULAR_REFLECTION:
-		{
 			return BXDF_SpecularReflection_flags();
-		}
+		case BXDF_TYPE_LAMBERTIAN_REFLECTION:
+			return BXDF_LambertianReflection_flags();
+		case BXDF_TYPE_OREN_NAYAR:
+			return BXDF_OrenNayar_flags();
+		default:
+			return 0;
 	}
 }
 

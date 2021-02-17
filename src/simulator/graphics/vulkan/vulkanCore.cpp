@@ -96,10 +96,30 @@ namespace atta::vk
 		//---------- Create textures ----------//
 		for(auto& textureInfo : atta::Texture::textureInfos)
 		{
-			if(textureInfo.bufferType == atta::Texture::BUFFER_TYPE_BYTE_4)
+			switch(textureInfo.type)
 			{
-				_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, (uint8_t*)textureInfo.data, (VkExtent2D){textureInfo.width, textureInfo.height}, vk::Texture::BUFFER_RGBA));
-				textureInfo.vkTexture = _textures.back();
+				case atta::Texture::TYPE_FILE:
+					{
+						_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, textureInfo.fileName));
+						textureInfo.vkTexture = _textures.back();
+					}
+					break;
+				case atta::Texture::TYPE_BUFFER_BYTE_4:
+					{
+						_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, (void*)textureInfo.data, (VkExtent2D){textureInfo.width, textureInfo.height}, vk::Texture::BUFFER_RGBA));
+						textureInfo.vkTexture = _textures.back();
+					}
+					break;
+				case atta::Texture::TYPE_BUFFER_FLOAT_3:
+					{
+						_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, (void*)textureInfo.data, (VkExtent2D){textureInfo.width, textureInfo.height}, vk::Texture::BUFFER_FLOAT3_NO_NORM));
+						textureInfo.vkTexture = _textures.back();
+					}
+					break;
+				default:
+					{
+
+					}
 			}
 		}
 	}

@@ -18,7 +18,7 @@ namespace atta
 		alignas(4) unsigned nSamples = 1;
 		alignas(16) mat4 lightToWorld = mat4(1);
 		alignas(16) mat4 worldToLight = mat4(1);
-		int datai[8];
+		unsigned datai[8];
 		float dataf[8];
 		vec4 datav[8];
 
@@ -71,6 +71,22 @@ namespace atta
 			l.datav[1] = vec4(normalize(direction), -1);
 			l.lightToWorld = mat4(1);
 			l.worldToLight = mat4(1);
+
+			return l;
+		}
+
+		static Light infinite(vec3 worldCenter, quat orientation, vec3 precomputedPower, float worldRadius, int textureIndex, int pdfIndex, int pdfWidth, int pdfHeight)
+		{
+			Light l;
+			l.type = LIGHT_TYPE_INFINITE;
+			l.datav[0] = vec4(worldCenter, -1);
+			l.datav[1] = vec4(precomputedPower, -1);
+			l.datai[0] = textureIndex;
+			l.datai[1] = pdfIndex;
+			l.datai[2] = pdfWidth;
+			l.datai[3] = pdfHeight;
+			l.lightToWorld = transpose(posOri(worldCenter, orientation));
+			l.worldToLight = inverse(l.lightToWorld);
 
 			return l;
 		}

@@ -40,6 +40,7 @@ namespace atta
 			void generateBoxMesh();
 			void generateCylinderMesh();
 			void generatePlaneMesh();
+			void generateSphereMesh();
 
 			std::string _meshName;
 			unsigned _index;

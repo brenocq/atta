@@ -10,5 +10,6 @@
 #include "point.h"
 #include "spot.h"
 #include "distant.h"
+#include "infinite.h"
 
 #endif// SIM_OBJECTS_LIGHTS_H

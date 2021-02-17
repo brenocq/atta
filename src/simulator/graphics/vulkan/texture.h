@@ -23,12 +23,14 @@ namespace atta::vk
 		public:
 			enum BufferType {
 				BUFFER_A,
-				BUFFER_RGBA
+				BUFFER_RGBA,
+				BUFFER_FLOAT_NO_NORM,
+				BUFFER_FLOAT3_NO_NORM,
 			};
 
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format=VK_FORMAT_R8G8B8A8_SRGB);
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size);
-			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, uint8_t* buffer,  VkExtent2D size, BufferType bufferType=BUFFER_A);
+			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer,  VkExtent2D size, BufferType bufferType=BUFFER_A);
 			~Texture();
 
 			std::shared_ptr<Device> getDevice() const { return _device; }

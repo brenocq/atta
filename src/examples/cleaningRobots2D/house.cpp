@@ -9,6 +9,7 @@
 #include "simulator/objects/lights/lights.h"
 #include "simulator/graphics/core/texture.h"
 #include "simulator/math/math.h"
+#include "simulator/helpers/log.h"
 
 House::House()
 {
@@ -78,7 +79,7 @@ House::House()
 	atta::PointLight::CreateInfo plInfo = {};
 	plInfo.position = {-2, .1, -2};
 	plInfo.intensity = {0, .3, .3};
-	_objects.push_back(std::make_shared<atta::PointLight>(plInfo));
+	//_objects.push_back(std::make_shared<atta::PointLight>(plInfo));
 
 	atta::SpotLight::CreateInfo slInfo = {};
 	slInfo.position = {-1, 2, -1};
@@ -86,12 +87,20 @@ House::House()
 	slInfo.intensity = {10, 10, 10};
 	slInfo.maxAngle = 60.f;
 	slInfo.falloffStartAngle = 30.f;
-	_objects.push_back(std::make_shared<atta::SpotLight>(slInfo));
+	//_objects.push_back(std::make_shared<atta::SpotLight>(slInfo));
 
 	atta::DistantLight::CreateInfo dlInfo = {};
-	dlInfo.radiance = {.3, .3, .3};
+	dlInfo.radiance = {.5, .5, .5};
 	dlInfo.direction = {1, 1, 1};
-	_objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
+	//_objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
+
+	atta::InfiniteLight::CreateInfo ilInfo {
+		.position = {0, 0, 0},
+		.rotation = {atta::radians(-90), 0, 0},
+		//.texture = atta::Texture::fromFile("14-Hamarikyu_Bridge_B_3k.hdr"),
+		.texture = atta::Texture::fromFile("WinterForest_Ref.hdr"),
+	};
+	_objects.push_back(std::make_shared<atta::InfiniteLight>(ilInfo));
 }
 
 House::~House()

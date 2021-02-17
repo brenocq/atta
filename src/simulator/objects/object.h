@@ -44,6 +44,7 @@ namespace atta
 			bool isLight() const { return _isLight; }
 			int getId() const { return _id; }
 			mat4 getModelMat() const;
+			quat getOrientation() const { return _orientation; }
 
 			// Graphics
 			std::shared_ptr<Model> getModel() const { return _model; }

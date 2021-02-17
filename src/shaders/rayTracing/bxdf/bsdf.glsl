@@ -58,8 +58,6 @@ vec3 BSDF_sampleF(BSDF bsdf, vec3 woW, out vec3 wiW, vec2 u, out float pdf, uint
 	// Sample BXDF
 	vec3 wi, wo = BSDF_worldToLocal(bsdf, woW);
 	pdf = 0.f;
-
-	sampledType = BXDF_flags(bxdf);
 	vec3 f = BXDF_sampleF(bxdf, wo, wi, u, pdf, sampledType);
 
 	if(pdf == 0)
@@ -72,10 +70,17 @@ vec3 BSDF_sampleF(BSDF bsdf, vec3 woW, out vec3 wiW, vec2 u, out float pdf, uint
 	return f;
 }
 
-float BSDF_pdf(vec3 wo, vec3 wi, uint bxdfFlags)
+float BSDF_pdf(BSDF bsdf, vec3 woW, vec3 wiW, uint bxdfFlags)
 {
-	// TODO
-	return 0.f;
+	vec3 wo = BSDF_worldToLocal(bsdf, woW), wi = BSDF_worldToLocal(bsdf, wiW);
+	if(wo.z == 0) return 0;
+	float pdf = 0;
+
+	BXDF bxdf = bsdf.bxdf;
+	if(BXDF_matchesFlags(bxdf, bxdfFlags))
+		pdf += BXDF_pdf(bxdf, wo, wi);
+
+	return pdf;
 }
 
 // Hemispherical-directional reflectance

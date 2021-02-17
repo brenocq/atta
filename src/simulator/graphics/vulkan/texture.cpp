@@ -12,18 +12,24 @@
 
 namespace atta::vk
 {
+	// TODO remove format
 	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format):
 		_device(device), _commandPool(commandPool), _arrayLayers(1)
 	{
+		std::string filePath = "assets/textures/"+filename;
 		int texWidth, texHeight, texChannels;
 		void* pixels = nullptr;
+
+		if(filename.find(".hdr") != std::string::npos)
+			format = VK_FORMAT_R32G32B32A32_SFLOAT;
 
 		// Load image to memory
 		if(format == VK_FORMAT_R32G32B32A32_SFLOAT)
 		{
-			stbi_set_flip_vertically_on_load(true);
-			float* helper = stbi_loadf(filename.c_str(), &texWidth, &texHeight, &texChannels, 0);
-			stbi_set_flip_vertically_on_load(false);
+			//stbi_set_flip_vertically_on_load(true);
+			float* helper = stbi_loadf(filePath.c_str(), &texWidth, &texHeight, &texChannels, 0);
+
+			//stbi_set_flip_vertically_on_load(false);
 			pixels = new float[texWidth*texHeight*4];
 			float* data = (float*)pixels;
 			for(int x=0; x<texWidth; x++)
@@ -38,7 +44,7 @@ namespace atta::vk
 			}
 		}
 		else
-			pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+			pixels = stbi_load(filePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
 		// Check error while laoding
 		if(!pixels) 
@@ -129,7 +135,7 @@ namespace atta::vk
 	}
 
 	//--------------------
-	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, u_int8_t* buffer,  VkExtent2D size, BufferType bufferType):
+	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer,  VkExtent2D size, BufferType bufferType):
 		_device(device), _commandPool(commandPool), _arrayLayers(1)
 	{
 		_width = size.width;
@@ -138,7 +144,10 @@ namespace atta::vk
 		_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_width, _height)))) + 1;
 
 		VkDeviceSize imageSize = _width * _height * 4;
+		if(bufferType == BUFFER_FLOAT3_NO_NORM)
+			imageSize = _width * _height * 4 * sizeof(float);
 		std::vector<uint8_t> pixels(imageSize);
+		float* pixelsFloat = (float*)&pixels[0];
 		switch(bufferType)
 		{
 			case BUFFER_A:
@@ -149,19 +158,37 @@ namespace atta::vk
 						pixels[(x+y*_width)*4+0] = 255;
 						pixels[(x+y*_width)*4+1] = 255;
 						pixels[(x+y*_width)*4+2] = 255;
-						pixels[(x+y*_width)*4+3] = buffer[x+y*_width];
+						pixels[(x+y*_width)*4+3] = ((uint8_t*)buffer)[x+y*_width];
 					}
 				}
 				break;
 			case BUFFER_RGBA:
 				for(size_t i=0;i<imageSize;i++)
-					pixels[i] = buffer[i];
+					pixels[i] = ((uint8_t*)buffer)[i];
+				break;
+			case BUFFER_FLOAT3_NO_NORM:
+				float* bufferFloat = (float*)buffer;
+				float* pixelsFloat = (float*)&pixels[0];
+				for(int y=0; y<_height; y++)
+				{
+					for(int x=0; x<_width; x++)
+					{
+						pixelsFloat[(x+y*_width)*4+0] = bufferFloat[(x+y*_width)*3+0];
+						pixelsFloat[(x+y*_width)*4+1] = bufferFloat[(x+y*_width)*3+1];
+						pixelsFloat[(x+y*_width)*4+2] = bufferFloat[(x+y*_width)*3+2];
+						pixelsFloat[(x+y*_width)*4+3] = 0;
+					}
+				}
 				break;
 		}
 
 		StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels.data(), imageSize);
 
-		_image = std::make_shared<Image>(_device, _width, _height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
+		if(bufferType != BUFFER_FLOAT3_NO_NORM)
+			_image = std::make_shared<Image>(_device, _width, _height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
+		else
+			_image = std::make_shared<Image>(_device, _width, _height, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
+
 
 		transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
@@ -171,8 +198,16 @@ namespace atta::vk
 		delete stagingBuffer;
 		stagingBuffer = nullptr;
 
-		_imageView = std::make_shared<ImageView>(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
-		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
+		if(bufferType != BUFFER_FLOAT3_NO_NORM)
+		{
+			_imageView = std::make_shared<ImageView>(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
+			_sampler = std::make_shared<Sampler>(_device, _mipLevels);
+		}
+		else
+		{
+			_imageView = std::make_shared<ImageView>(_device, _image->handle(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
+			_sampler = std::make_shared<Sampler>(_device, _mipLevels, true);// Normalized coordinates
+		}
 	}
 	//--------------------
 	void Texture::updateImage(const void* buffer, BufferType bufferType)

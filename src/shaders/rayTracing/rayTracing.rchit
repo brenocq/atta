@@ -17,7 +17,6 @@
 layout(binding = 4) readonly buffer VertexBuffer { float Vertices[]; };
 layout(binding = 5) readonly buffer IndexBuffer { uint Indices[]; };
 layout(binding = 6) readonly buffer MaterialBuffer { Material[] materialBuffer; };
-//layout(binding = 7) uniform sampler2D[] textures;
 layout(binding = 7) readonly buffer ObjectInfoBuffer { ObjectInfo[] Objects; };
 
 #include "materials/material.glsl"
