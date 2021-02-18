@@ -77,6 +77,7 @@ namespace atta
 			// Renderers
 			std::vector<std::shared_ptr<Renderer>> _renderers;
 			int _mainRendererIndex;// Renderer that the user will use to see the world
+			bool _cameraUpdated;// Used mainly by ray tracing renderers to create acceleration structures
 
 			// Work to process
 			std::vector<std::function<void(VkCommandBuffer commandBuffer)>> _commands;

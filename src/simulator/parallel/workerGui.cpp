@@ -13,7 +13,7 @@
 namespace atta
 {
 	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, CameraControlType cameraControlType):
-		_vkCore(vkCore), _currentFrame(0), _mainRendererIndex(-1)
+		_vkCore(vkCore), _currentFrame(0), _mainRendererIndex(-1), _cameraUpdated(false)
 	{
 		// Create window (GUI thread only)
 		_window = std::make_shared<Window>();
@@ -69,7 +69,7 @@ namespace atta
 		int counter = 0;
 		while(!_window->shouldClose())
 		{
-			_modelViewController->updateCamera(0.1);
+			_cameraUpdated = _modelViewController->updateCamera(0.1);
 			render();
 			_window->poolEvents();
 
@@ -114,7 +114,12 @@ namespace atta
 		}
 
 		// Update main renderer camera
-		_renderers[_mainRendererIndex]->updateCameraMatrix(_modelViewController->getModelView());
+		if(_cameraUpdated)
+		{
+			_renderers[_mainRendererIndex]->updateCameraMatrix(_modelViewController->getModelView());
+			_cameraUpdated = false;
+		}
+
 
 		//---------- Record to command buffer ----------//
 		VkCommandBuffer commandBuffer = _commandBuffers->begin(imageIndex);

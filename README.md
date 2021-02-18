@@ -1,7 +1,7 @@
 # Atta - Robot Simulator
 <p align="center">
  <img src="./img/2020-08-16.gif" height="200">
- <img src="./img/2020-09-12.png" height="200">
+ <img src="./img/2021-02-18.png" height="200">
  <img src="./img/2020-12-04.gif" height="200">
 </p>
 

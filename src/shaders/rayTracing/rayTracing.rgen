@@ -74,16 +74,9 @@ void main()
 			// Add emitted light
 			if(bounces == 0 || specularBounce)
 			{
-				//if(specularBounce)
-				//{
-				//	// TODO Add emitted light at path vertex (Emissive objects not supported yet)
-				//	L = vec3(1000,.2,.2);
-				//	break;
-
-				//}
-
 				if(foundIntersection)
 				{
+					// TODO Add emitted light at path vertex (Emissive objects not supported yet)
 
 				}
 				else
@@ -121,7 +114,7 @@ void main()
 			vec3 f = BSDF_sampleF(bsdf, wo, wi, u, pdf, BXDF_FLAG_ALL, flags);
 
 			if(isBlack(f) || pdf == 0) break;
-			beta *= f * abs(dot(wi, bsdf.ns))/pdf;
+			beta *= f * abs(dot(wi, ray.it.n))/pdf;
 
 			specularBounce = (flags & BXDF_FLAG_SPECULAR)!=0;
 
@@ -139,10 +132,10 @@ void main()
 		pixelColor += L;
 	}
 
-	//const bool accumulate = camera.numberOfSamples != camera.totalNumberOfSamples;
-	//const vec3 accumulatedColor = imageLoad(accumulationImage, ivec2(gl_LaunchIDEXT.xy)).xyz + pixelColor;
-	//pixelColor = accumulatedColor/ubo.totalNumberOfSamples;
-	pixelColor = pixelColor/ubo.samplesPerPixel;
+	const bool accumulate = ubo.samplesPerPixel != ubo.nAccSamples;
+	const vec3 accumulatedColor = accumulate ? imageLoad(accumulationImage, ivec2(gl_LaunchIDEXT.xy)).xyz + pixelColor : pixelColor;
+	pixelColor = accumulatedColor/ubo.nAccSamples;
+	//pixelColor = pixelColor/ubo.samplesPerPixel;
 
 	//if(camera.gammaCorrection)
 	//{
@@ -150,6 +143,6 @@ void main()
 	//	pixelColor = sqrt(pixelColor);
 	//}
 
-	//imageStore(accumulationImage, ivec2(gl_LaunchIDEXT.xy), vec4(accumulatedColor, 0));
+	imageStore(accumulationImage, ivec2(gl_LaunchIDEXT.xy), vec4(accumulatedColor, 0));
     imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(pixelColor, 0));
 }

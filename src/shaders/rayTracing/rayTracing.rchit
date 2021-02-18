@@ -70,10 +70,18 @@ void main()
 	bsdf.eta = 1;
 	bsdf.ng = normal;
 	bsdf.ns = normal;
-	bsdf.ss = v0.position - v1.position;
-	bsdf.ts = v1.position - v2.position;
-	bsdf.bxdf = Material_computeScatteringFunctions(material, texCoord);
+	if((normal.x>=normal.y && normal.x>=normal.z) || (normal.y>=normal.x && normal.y>=normal.z))
+	{
+		bsdf.ss = cross(vec3(0,0,1), normal);
+		bsdf.ts = cross(normal, bsdf.ss);
+	}
+	else
+	{
+		bsdf.ss = cross(vec3(1,0,0), normal);
+		bsdf.ts = cross(normal, bsdf.ss);
+	}
 
+	bsdf.bxdf = Material_computeScatteringFunctions(material, texCoord);
 
 	Interaction it;
 	it.point = worldPos;
