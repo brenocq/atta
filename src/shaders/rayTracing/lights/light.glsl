@@ -212,7 +212,7 @@ vec3 Light_estimateDirect(uint nLights, Light light, Interaction it, vec2 uLight
 	}
 
 	// TODO sample bsdf with multiple importance sampling
-	if(!Light_isDeltaLight(light) && false)
+	if(!Light_isDeltaLight(light))
 	{
 		vec3 f;
 		bool sampledSpecular = false;

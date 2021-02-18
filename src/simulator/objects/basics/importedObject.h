@@ -22,6 +22,7 @@ namespace atta
 				vec3 rotation = {0,0,0};
 				vec3 scale = {1,1,1};
 				float mass = 1.0f;
+				Material material;
 			};
 
 			ImportedObject(CreateInfo info);

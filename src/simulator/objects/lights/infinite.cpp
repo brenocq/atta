@@ -161,17 +161,18 @@ namespace atta
 				{
 					float val = _distributionTexture[row*(_width+1)+i];
 					if(i>1)
-						pdfRow = val-_distributionTexture[row*(_width+1)+(i-1)];
+						pdfCol = val-_distributionTexture[row*(_width+1)+(i-1)];
 					if(val>vNorm)
 					{
 						col = i;
 						break;
 					}
 				}
+				//Log::debug("inf", "r:$0, c:$1", pdfRow, pdfCol);
 
 				_distributionAccess[(v*_width+u)*3] = float(col)/_width;
 				_distributionAccess[(v*_width+u)*3+1] = float(row)/_height;
-				_distributionAccess[(v*_width+u)*3+1] = pdfRow*pdfCol;
+				_distributionAccess[(v*_width+u)*3+2] = pdfRow*pdfCol*_width*_height;
 			}
 		}
 

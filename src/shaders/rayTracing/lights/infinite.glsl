@@ -12,47 +12,12 @@
 vec2 sampleContinuous(inout Light light, vec2 u, out float pdf)
 {
 	uint distribIndex = light.datai[1];
-	vec2 res;
-	res.x = texture(textures[distribIndex], u).x;
-	res.y = texture(textures[distribIndex], u).y;
-	pdf = texture(textures[distribIndex], u).z;
-	//pdf = 1;
-	return u;
-	uint width = light.datai[2];
-	uint height = light.datai[3];
+	vec3 distributionData = texture(textures[distribIndex], u).xyz;
+	//pdf = .8;
+	//return u;
 
-	uint row = height-1;
-	for(uint i=0; i<height; i++)
-	{
-		float val = texture(textures[distribIndex], vec2(0,float(i)/height)).r;
-		if(val>u.x)
-		{
-			row = i;
-			break;
-		}
-	}
-
-	uint col = width-1;
-	for(uint i=1; i<width; i++)
-	{
-		float val = texture(textures[distribIndex], vec2(float(i)/height,float(row)/width)).r;
-		if(val>u.y)
-		{
-			col = i;
-			break;
-		}
-	}
-	
-	if(row == 0)
-		pdf = texture(textures[distribIndex], vec2(0, float(row)/height)).r;
-	else
-	{
-		float pdf0 = texture(textures[distribIndex], vec2(0, float(row)/height)).r-texture(textures[distribIndex], vec2(0, float(row-1)/height)).r;
-		float pdf1 = texture(textures[distribIndex], vec2(float(col)/width, float(row)/height)).r-texture(textures[distribIndex], vec2(float(col-1)/width, float(row)/height)).r;
-		pdf = pdf0*pdf1;
-	}
-
-	return vec2(float(col-1)/float(width-1), float(row)/float(height));
+	pdf = distributionData.z;
+	return distributionData.xy;
 }
 
 vec3 InfiniteLight_sampleLi(
@@ -87,6 +52,7 @@ vec3 InfiniteLight_Le(inout Light light, vec3 rayDirection)
 	vec3 w = normalize((light.worldToLight*vec4(rayDirection,0)).xyz);
 	vec2 st = vec2(sphericalPhi(w)*inv2Pi, sphericalTheta(w)*invPi);
 	return texture(textures[textureIndex], st).rgb;
+	//return texture(textures[light.datai[1]], st).rgb;
 }
 
 float InfiniteLight_pdfLi(Light light, Interaction it, vec3 wi)

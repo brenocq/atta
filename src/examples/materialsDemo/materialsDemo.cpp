@@ -22,7 +22,7 @@ MaterialsDemo::MaterialsDemo()
 		.position = {0,-.01,0},
 		.scale = {10,.01,10},
 		.mass = 0.0f,
-		.material = atta::Material::diffuse({1,1,1}, 10)
+		.material = atta::Material::diffuse({.7,.7,.7}, 0)
 	};
 	objects.push_back(std::make_shared<atta::Box>(floorInfo));
 
@@ -34,24 +34,44 @@ MaterialsDemo::MaterialsDemo()
 	};
 	objects.push_back(std::make_shared<atta::InfiniteLight>(ilInfo));
 
-	atta::Sphere::CreateInfo sphereInfo {
-		.name = "Sphere 1",
-		.position = {-1,1,0},
-		.radius = 1.0f,
-		.mass = 0.0f,
-		.material = atta::Material::diffuse({.3,.3,1}, 10)
-	};
-	objects.push_back(std::make_shared<atta::Sphere>(sphereInfo));
+	//atta::Sphere::CreateInfo sphereInfo {
+	//	.name = "Sphere 1",
+	//	.position = {-3,1,0},
+	//	.radius = 1.0f,
+	//	.mass = 0.0f,
+	//	.material = atta::Material::diffuse({.3,.3,1}, 0)
+	//};
+	//objects.push_back(std::make_shared<atta::Sphere>(sphereInfo));
 
-	atta::Box::CreateInfo boxInfo {
-		.name = "Box1",
-		.position = {0,3,0},
-		.rotation = {0,0,0},
-		.scale = {2,2,2},
+	//sphereInfo.position = {0,1,0},
+	//sphereInfo.material = atta::Material::diffuse({.3,.3,1}, 40);
+	//objects.push_back(std::make_shared<atta::Sphere>(sphereInfo));
+
+	atta::ImportedObject::CreateInfo bunny {
+		.name = "Bunny 1",
+		.fileName = "bunny/bunny.obj",
+		.position = {0,0,0},
+		.scale = {10,10,10},
 		.mass = 0.0f,
-		.material = atta::Material::diffuse({.3,.7,.3}, 10)
+		.material = atta::Material::diffuse({.3,.3,1}, 0)
 	};
-	objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
+
+	bunny.position = {-2,0,0};
+	bunny.material = atta::Material::mirror(atta::vec3(1,1,1));
+	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
+
+	bunny.position = {2,0,0};
+	bunny.material = atta::Material::metal({
+		// Al
+		//.eta = {2,1.2,0.44},
+		//.k = {6,5,4},
+		// Au
+		.eta = {.2,1.4,1.8},
+		.k = {4.3,2.8,1.8},
+		.roughness = 0.3f
+	});
+	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
 
 	_attaCreateInfo.objects = objects;
 }

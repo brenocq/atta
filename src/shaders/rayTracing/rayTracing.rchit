@@ -18,6 +18,7 @@ layout(binding = 4) readonly buffer VertexBuffer { float Vertices[]; };
 layout(binding = 5) readonly buffer IndexBuffer { uint Indices[]; };
 layout(binding = 6) readonly buffer MaterialBuffer { Material[] materialBuffer; };
 layout(binding = 7) readonly buffer ObjectInfoBuffer { ObjectInfo[] Objects; };
+layout(binding = 9) uniform sampler2D[] textures; 
 
 #include "materials/material.glsl"
 #include "vertex.glsl"
@@ -71,7 +72,8 @@ void main()
 	bsdf.ns = normal;
 	bsdf.ss = v0.position - v1.position;
 	bsdf.ts = v1.position - v2.position;
-	bsdf.bxdf = Material_computeScatteringFunctions(material);
+	bsdf.bxdf = Material_computeScatteringFunctions(material, texCoord);
+
 
 	Interaction it;
 	it.point = worldPos;
