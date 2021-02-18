@@ -15,7 +15,7 @@ Atta is a robot simulator for 2D and 3D applications. For now, the core is still
 Today only Linux is supported, but I plan to add support for Windows in the following months.\
 This project is not yet well documented, after finishing some examples I am planning to create an website explaning its details and design decisions.
 
-This week I am focusing on developing the GPU ray tracing renderer.
+(2021/02/14) This week I am focusing on developing the GPU ray tracing renderer.
 
 ## Installation (Linux)
 #### Download Vulkan SDK
@@ -28,17 +28,22 @@ tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
 ```
 
 #### Installing
+
 ```shell
-git clone https://github.com/Brenocq/RobotSimulator.git
-
-# I recommend adding the two lines below to your .bashrc (you can also source/export manually every time)
-# source <yourPathToVulkanFolder>/setup-env.sh
-# export Vulkan_INCLUDE_DIR="<yourPathToVulkanFolder>/x86_64/include"
-
+git clone https://github.com/Brenocq/Atta.git
+cd Atta
 ./install_linux.sh
 ```
 
+Consider sourcing vulkan variables if you get problems running
+```
+# I recommend adding the two lines below to your .bashrc (you can also source/export manually every time)
+# source <yourPathToVulkanFolder>/setup-env.sh
+# export Vulkan_INCLUDE_DIR="<yourPathToVulkanFolder>/x86_64/include"
+```
+
 ## Running
+(Please make sure you are using g++-10)
 ```shell
 ./run.sh # Release
 ./debug.sh # Debug with gdb
@@ -50,7 +55,7 @@ These values are unreliable and come from what I think is going on in the code (
 #### Core
  - Vulkan specific: 100%
  - Renderers
-	 - RayTracing (GPU/vulkan): 35%
+	 - RayTracing (GPU/vulkan): 50%
 	 - RayTracing (CPU): 5%
 	 - Rasterization: 50%
 	 - 2D: 60%

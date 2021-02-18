@@ -12,59 +12,45 @@
 #include "../../bxdf/fresnel.glsl"
 #include "../../bxdf/microfacetDistribution.glsl"
 
+//----- DISNEY MATERIAL -----
+// - datai
+// 		[0](vec3 texture) color texture index
+// 		[1](vec3 texture) metallic texture index
+// 		[2](float texture) eta texture index
+// 		[3](float texture) roughness texture index
+// 		[4](float texture) specularTint texture index
+// 		[5](float texture) anisotropic texture index
+// 		[6](float texture) sheen texture index
+// 		[7](float texture) sheenTint texture index
+// 		[8](float texture) clearCoat texture index
+// 		[9](float texture) clearCoatGloss texture index
+// 		[10](float texture) specTrans texture index
+// 		[11](vec3 texture) scatterDistance texture index
+// 		[12](bool) thin
+// 		[13](float texture) flatness texture index
+// 		[14](float texture) diffTrans texture index
+// 		[15](float texture) bumpMap texture index
+// - dataf
+// 		[0] uniform eta
+// 		[1] uniform roughness
+// 		[2] uniform specularTint
+// 		[3] uniform anisotropic
+// 		[4] uniform sheen
+// 		[5] uniform sheenTint
+// 		[6] uniform clearCoat
+// 		[7] uniform clearCoatGloss
+// 		[8] uniform specTrans
+// 		[9] uniform flatness
+// 		[10] uniform diffTrans
+// 		[11] uniform bumpMap
+// - datav
+// 		[0] uniform color
+// 		[1] uniform metallic
+// 		[2] uniform scatterDistance
+
 BXDF Material_Disney_computeScatteringFunctions(inout Material material, vec2 uv)
 {
 	BXDF bxdf;
-	bxdf.type = BXDF_TYPE_MICROFACET_REFLECTION;
-	bxdf.datav[0] = vec3(1,1,1);// R (not used)
-
-	int etaTexIndex = material.datai[0];
-	int kTexIndex = material.datai[1];
-	int roughTexIndex = material.datai[2];
-	int uroughTexIndex = material.datai[3];
-	int vroughTexIndex = material.datai[4];
-	int bumpTexIndex = material.datai[5];
-	bool remapRoughness = material.datai[6]==1;
-
-	// TODO bumpMap not supported yet
-	
-	float uRough;
-	float vRough;
-
-	//---------- Roughness ----------//
-	if(roughTexIndex!=-1 || material.dataf[0]!=-1)// Isotropic roughness
-	{
-		float rough = roughTexIndex==-1 ? material.dataf[0] : texture(textures[roughTexIndex], uv).x;
-		uRough = rough;
-		vRough = rough;
-	}
-	else// Anisotropic roughness
-	{
-		uRough = uroughTexIndex==-1 ? material.dataf[1] : texture(textures[uroughTexIndex], uv).x;
-		vRough = vroughTexIndex==-1 ? material.dataf[2] : texture(textures[vroughTexIndex], uv).x;
-	}
-
-	if(remapRoughness)
-	{
-		uRough = BXDF_BXDF_MicrofacetDistribution_TrowbridgeReitz_roughnessToAlpha(uRough);
-		vRough = BXDF_BXDF_MicrofacetDistribution_TrowbridgeReitz_roughnessToAlpha(vRough);
-	}
-
-	//---------- Roughness ----------//
-	vec3 eta = etaTexIndex==-1 ? material.datav[0].xyz : texture(textures[etaTexIndex], uv).xyz;
-	vec3 k = kTexIndex==-1 ? material.datav[1].xyz : texture(textures[kTexIndex], uv).xyz;
-
-	//---------- Fresnel ----------//
-	bxdf.datai[0] = BXDF_FRESNEL_TYPE_CONDUCTOR;// Fresnel type
-	bxdf.datav[1] = vec3(1,1,1);// etaI
-	bxdf.datav[2] = eta;// etaT
-	bxdf.datav[3] = k;// k
-	
-	//---------- Microfacet Distribution ----------//
-	bxdf.datai[1] = BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ;// Microfacet Distribution type
-	bxdf.datai[2] = 1;// sampleVisibleArea
-	bxdf.dataf[0] = uRough;// alphaX
-	bxdf.dataf[1] = vRough;// alphaY
 
 	return bxdf;
 }
