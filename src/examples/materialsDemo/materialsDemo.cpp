@@ -34,6 +34,11 @@ MaterialsDemo::MaterialsDemo()
 	};
 	objects.push_back(std::make_shared<atta::InfiniteLight>(ilInfo));
 
+	atta::DistantLight::CreateInfo dlInfo = {};
+	dlInfo.radiance = {.5, .5, .5};
+	dlInfo.direction = {1, 1, 1};
+	objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
+
 	//atta::Sphere::CreateInfo sphereInfo {
 	//	.name = "Sphere 1",
 	//	.position = {-3,1,0},
@@ -53,7 +58,7 @@ MaterialsDemo::MaterialsDemo()
 		.position = {0,0,0},
 		.scale = {10,10,10},
 		.mass = 0.0f,
-		.material = atta::Material::diffuse({.3,.3,1}, 0)
+		.material = atta::Material::diffuse({.3,.3,1}, 30)
 	};
 	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
 
@@ -63,15 +68,38 @@ MaterialsDemo::MaterialsDemo()
 
 	bunny.position = {2,0,0};
 	bunny.material = atta::Material::metal({
-		// Al
-		//.eta = {2,1.2,0.44},
-		//.k = {6,5,4},
 		// Au
 		.eta = {.2,1.4,1.8},
 		.k = {4.3,2.8,1.8},
-		.roughness = 0.3f
+		.roughness = 0.1
 	});
 	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
+
+	bunny.position = {2,2,0};
+	bunny.material = atta::Material::metal({
+		// Al
+		.eta = {2,1.2,0.44},
+		.k = {6,5,4},
+		.roughness = .5
+	});
+	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
+
+	atta::ImportedObject::CreateInfo nut {
+		.name = "NUT",
+		.fileName = "nut_LOW/nut_LOW.obj",
+		.position = {0,3,0},
+		.scale = {1.5,1.5,1.5},
+		.mass = 0.0f,
+		.material = atta::Material::metal({
+				// Al
+				//.kTexture = atta::Texture::fromFile("col.jpg"),
+				//.roughnessTexture = atta::Texture::fromFile("spec.jpg"),
+				.eta = {2,1.2,0.44},
+				.k = {6,5,4},
+				.roughness = .1
+			}),
+	};
+	objects.push_back(std::make_shared<atta::ImportedObject>(nut));
 
 	_attaCreateInfo.objects = objects;
 }

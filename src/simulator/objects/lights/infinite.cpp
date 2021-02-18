@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "infinite.h"
 #include "simulator/graphics/core/texture.h"
+#include "simulator/helpers/evaluator.h"
 #include "stbImage.h"
 #include "simulator/helpers/log.h"
 
@@ -25,6 +26,32 @@ namespace atta
 	{
 	}
 
+	int findInterval(float* start, int size, float value)
+	{
+		int first = 0, len = size;
+		while(len > 0)
+		{
+			int half = len >> 1;
+			int middle = first + half;
+			//Log::debug("Inf", "-> $0 ($1, $2)", middle, start[middle], value);
+			if(start[middle]<=value)
+			{
+				first = middle + 1;
+				len -= half + 1;
+			}
+			else
+				len = half;
+		}
+
+		// Return first occurence inside the bound [0, size-2]
+		first--;
+		if(first<0)
+			return 0;
+		else if(first>=size-2)
+			return size-2;
+		return first;
+	}
+
 	void InfiniteLight::generateDistribution2DTexture()
 	{
 		// The distribution texture is used to sample points in the environment texture 
@@ -35,6 +62,7 @@ namespace atta
 		// The first column stores the marginal cumulative density function for each row in the image
 		// Excuding the first column, each row stores the cumulative density function for each pixels in the row being selected
 
+		LocalEvaluator eval;
 		//---------- Load image data to temporary buffer ----------//
 		std::string filePath = 	"assets/textures/"+Texture::textureInfos[_textureIndex].fileName;
 
@@ -106,27 +134,24 @@ namespace atta
 
 		//----- Create marginal sampling distribution -----//
 		// Compute setp function
-		_distributionTexture[0] = 0;
+		std::vector<float> marginal(_height);
+		marginal[0] = 0;
 		for(int v=1; v<_height; v++)
 		{
-			_distributionTexture[v*(_width+1)] = _distributionTexture[(v-1)*(_width+1)] + rowIntegral[v-1]/_height;
+			marginal[v] = marginal[v-1] + rowIntegral[v-1]/_height;
 		}
-		float colInt = _distributionTexture[(_height-1)*(_width+1)] + rowIntegral[_height-1]/_height;
+		float colInt = marginal[_height-1] + rowIntegral[_height-1]/_height;
 		if(colInt==0)
 		{
 			// Equally distributed 
 			for(int i=0; i<_height; i++)
-			{
-				_distributionTexture[i*(_width+1)] = float(i)/_height;
-			}
+				marginal[i] = float(i)/_height;
 		}
 		else
 		{
 			// Divide by integral to get CDF
-			for(int i=0; i<_width; i++)
-			{
-				_distributionTexture[i*(_width+1)] /= colInt;
-			}
+			for(int i=0; i<_height; i++)
+				marginal[i] /= colInt;
 		}
 
 		//----- Generate distribution access from distribution texture -----//
@@ -138,17 +163,10 @@ namespace atta
 			// Find row 
 			int row = _height-1;
 			float pdfRow = 0;
-			for(int i=0; i<_height; i++)
-			{
-				float val = _distributionTexture[i*(_width+1)];
-				if(i>0)
-					pdfRow = val-_distributionTexture[(i-1)*(_width+1)];
-				if(val>vNorm)
-				{
-					row = i;
-					break;
-				}
-			}
+
+			int firstRow = findInterval(marginal.data(), marginal.size(), vNorm);
+			row = firstRow+1;
+			pdfRow = marginal[firstRow+1]-marginal[firstRow];
 
 			// Fow each possible column
 			for(int u=0; u<_width; u++)
@@ -157,18 +175,11 @@ namespace atta
 
 				int col = _width-1;
 				float pdfCol = 0;
-				for(int i=1; i<_width; i++)
-				{
-					float val = _distributionTexture[row*(_width+1)+i];
-					if(i>1)
-						pdfCol = val-_distributionTexture[row*(_width+1)+(i-1)];
-					if(val>vNorm)
-					{
-						col = i;
-						break;
-					}
-				}
-				//Log::debug("inf", "r:$0, c:$1", pdfRow, pdfCol);
+
+				float* colStart = &_distributionTexture[row*(_width+1)+1];
+				int firstCol = findInterval(colStart, _width, uNorm);
+				col = firstCol+1;
+				pdfCol = colStart[firstCol+1]-colStart[firstCol];
 
 				_distributionAccess[(v*_width+u)*3] = float(col)/_width;
 				_distributionAccess[(v*_width+u)*3+1] = float(row)/_height;
@@ -178,6 +189,10 @@ namespace atta
 
 		//---------- Add texture and store index ----------//
 		_pdfTextureIndex = Texture::fromBuffer(_distributionAccess.data(), _width, _height, Texture::TYPE_BUFFER_FLOAT_3);
+
+		//---------- Finished ----------//
+		eval.stop();
+		Log::info("InfiniteLight", "Completed preprocessed data calculations - [w]$0ms",  eval.getMs());
 	}
 
 	vec3 InfiniteLight::filter(float* pixels, int u, int v)

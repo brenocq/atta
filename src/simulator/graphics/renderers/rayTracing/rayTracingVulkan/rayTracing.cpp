@@ -34,7 +34,7 @@ namespace atta::rt::vk
 		ubo.projMat.data[5] *= -1;
 		ubo.viewMatInverse = inverse(ubo.viewMat);
 		ubo.projMatInverse = inverse(ubo.projMat);
-		ubo.samplesPerPixel = 3000;
+		ubo.samplesPerPixel = 1;
 		ubo.nAccSamples = 0;// The number of accumulated samples is increased every render() call
 		ubo.maxDepth = 4;
 		ubo.nLights = _scene->getLights().size();

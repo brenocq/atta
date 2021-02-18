@@ -177,8 +177,7 @@ vec3 Light_estimateDirect(uint nLights, Light light, Interaction it, vec2 uLight
 		{
 			// Evaluate BSDF for light sampling strategy
 			f = BSDF_f(it.bsdf, it.wo, wi, bsdfFlags) * abs(dot(wi, it.n));// TODO use shading normal
-			//scatteringPdf = BSDF_pdf(it.bsdf, it.wo, wi, bsdfFlags);
-			scatteringPdf = 0;
+			scatteringPdf = BSDF_pdf(it.bsdf, it.wo, wi, bsdfFlags);
 		}
 		else
 		{

@@ -111,6 +111,7 @@ namespace atta
 	bool ModelViewController::updateCamera(double timeDelta)
 	{
 		const auto d = static_cast<float>(_speed * timeDelta);
+		bool changed = false;
 
 		if(_mouseMiddleButton)
 		{
@@ -129,6 +130,10 @@ namespace atta
 				if(_cameraMovingDown) moveUp(-d);
 				if(_cameraMovingUp) moveUp(d);
 
+				changed = changed || _cameraMovingLeft || _cameraMovingRight || _cameraMovingBackward ||
+				_cameraMovingForward || _cameraMovingDown || _cameraMovingUp ||
+				_cursorMovX!=0 || _cursorMovY!=0;
+
 				const float rotationDiv = 300;
 				rotate(_cursorMovX / rotationDiv, _cursorMovY / rotationDiv);
 			}
@@ -137,7 +142,7 @@ namespace atta
 			_cursorMovY = 0;
 		}
 
-		return true;
+		return changed;
 	}
 
 	void ModelViewController::moveForward(float d)
