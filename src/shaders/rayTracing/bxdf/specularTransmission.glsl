@@ -10,13 +10,15 @@
 #include "fresnel.glsl"
 
 vec3 BXDF_SpecularTransmission_sampleF(
-		vec3 wo, out vec3 wi, vec2 u, out float pdf, uint sampledType,
+		vec3 wo, out vec3 wi, vec2 u, out float pdf,
 		Fresnel fresnel, vec3 T)
 {
 	// Figure out which n is incident and which is transmitted
 	bool entering = cosTheta(wo)>0;
-	float etaI = entering ? fresnel.etaI.x : fresnel.etaT.x;
-	float etaT = entering ? fresnel.etaT.x : fresnel.etaI.x;
+	float etaI = fresnel.data0.x;
+	float etaT = fresnel.data1.x;
+	etaI = entering ? etaI : etaT;
+	etaT = entering ? etaT : etaI;
 
 	// Normal face forward
 	vec3 n = (wo.z < 0.f) ? vec3(0,0,-1) : vec3(0,0,1);

@@ -48,6 +48,7 @@ vec3 BSDF_f(BSDF bsdf, vec3 woW, vec3 wiW, uint flags)
 vec3 BSDF_sampleF(BSDF bsdf, vec3 woW, out vec3 wiW, vec2 u, out float pdf, uint type, out uint sampledType)
 {
 	BXDF bxdf = bsdf.bxdf;
+
 	if(!BXDF_matchesFlags(bxdf, type))
 	{
 		sampledType = 0;

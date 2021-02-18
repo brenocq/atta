@@ -54,7 +54,7 @@ namespace atta
 	void Mesh::loadMesh()
 	{
 		LocalEvaluator eval;
-		std::string objPath = "assets/models/"+_meshName+"/"+_meshName+".obj";
+		std::string objPath = "assets/models/"+_meshName;
 
 		//---------- Parse file ----------//
 		tinyobj::ObjReader objReader;
@@ -354,7 +354,7 @@ namespace atta
 		LocalEvaluator eval;
 
 		int qtyLong = 32;
-		int qtyLat = 16;
+		int qtyLat = 32;
 		float radius = 0.5;
 		//---------- Create vertices ----------//
 		for(int p=0; p<qtyLat+1; p++)

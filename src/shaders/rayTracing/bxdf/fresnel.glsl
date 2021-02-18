@@ -8,35 +8,45 @@
 #define BXDF_FRESNEL_GLSL
 #include "base.glsl"
 
-uint BXDF_FRESNEL_TYPE_DIELETRIC = 0;
-uint BXDF_FRESNEL_TYPE_CONDUCTOR = 1;
-uint BXDF_FRESNEL_TYPE_NOOP 	 = 2;
+const uint BXDF_FRESNEL_TYPE_DIELETRIC 	= 0;
+const uint BXDF_FRESNEL_TYPE_CONDUCTOR 	= 1;
+const uint BXDF_FRESNEL_TYPE_NOOP 	 	= 2;
+const uint BXDF_FRESNEL_TYPE_SPECULAR	= 3;
 
 struct Fresnel
 {
 	uint type;
 
-	// Dieletric -> Only use etaI[0] and etaT[0] for the coefficients of refraction
-	// Conductor -> Use all variables
-	vec3 etaI;
-	vec3 etaT;
-	vec3 k;
+	// Dieletric -> Only use data0.x and data1.x for the coefficients of refraction
+	// Conductor -> data0 as etaI, data1 as etaT, data2 as k
+	// Specular -> data0 as R, data1 as T, data2.x as etaA, data2.y as etaB
+	vec3 data0;
+	vec3 data1;
+	vec3 data2;
 };
 
 vec3 BXDF_Fresnel_evaluate(Fresnel fresnel, float cosThetaI)
 {
-	if(fresnel.type == BXDF_FRESNEL_TYPE_DIELETRIC)
+	switch(fresnel.type)
 	{
-		float Fr = FrDieletric(cosThetaI, fresnel.etaI.x, fresnel.etaT.x);
-		return vec3(Fr, Fr, Fr);
-	}
-	else if(fresnel.type == BXDF_FRESNEL_TYPE_CONDUCTOR)
-	{
-		return FrConductor(cosThetaI, fresnel.etaI, fresnel.etaT, fresnel.k);
-	}
-	else
-	{
-		return vec3(1,1,1);
+		case BXDF_FRESNEL_TYPE_DIELETRIC:
+			{
+				float etaI = fresnel.data0.x;
+				float etaT = fresnel.data1.x;
+				float Fr = FrDieletric(cosThetaI, etaI, etaT);
+				return vec3(Fr, Fr, Fr);
+			}
+		case BXDF_FRESNEL_TYPE_CONDUCTOR:
+			{
+				vec3 etaI = fresnel.data0;
+				vec3 etaT = fresnel.data1;
+				vec3 k = fresnel.data2;
+				return FrConductor(cosThetaI, etaI, etaT, k);
+			}
+		case BXDF_FRESNEL_TYPE_SPECULAR:
+		case BXDF_FRESNEL_TYPE_NOOP:
+		default:
+			return vec3(1,1,1);
 	}
 }
 

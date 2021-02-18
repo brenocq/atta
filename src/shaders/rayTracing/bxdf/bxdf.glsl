@@ -11,6 +11,7 @@
 #include "specularTransmission.glsl"
 #include "lambertianReflection.glsl"
 #include "orenNayar.glsl"
+#include "microfacetReflection.glsl"
 
 uint BXDF_flags(BXDF bxdf);
 
@@ -18,6 +19,15 @@ float BXDF_pdf(BXDF bxdf, vec3 wo, vec3 wi)
 {
 	switch(bxdf.type)
 	{
+		case BXDF_TYPE_MICROFACET_REFLECTION:
+			{
+				MicrofacetDistribution distribution;
+				distribution.type = bxdf.datai[1];
+				distribution.alphaX = bxdf.dataf[0];
+				distribution.alphaY = bxdf.dataf[1];
+				distribution.sampleVisibleArea = bxdf.datai[2];
+				return BXDF_MicrofacetReflection_pdf(wo, wi, distribution);
+			}
 		default:
 			return sameHemisphere(wo, wi) ? absCosTheta(wi)*invPi : 0;
 	}
@@ -38,6 +48,23 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 				float sigma = bxdf.dataf[0];// Standard deviation of the microfacet orientation angle (degrees)
 				return BXDF_OrenNayar_f(wo, wi, R, sigma);
 			}
+		case BXDF_TYPE_MICROFACET_REFLECTION:
+			{
+				vec3 R = bxdf.datav[0];
+
+				Fresnel fresnel;
+				fresnel.type = bxdf.datai[0];
+				fresnel.data0 = bxdf.datav[1];
+				fresnel.data1 = bxdf.datav[2];
+				fresnel.data2 = bxdf.datav[3];
+
+				MicrofacetDistribution distribution;
+				distribution.type = bxdf.datai[1];
+				distribution.alphaX = bxdf.dataf[0];
+				distribution.alphaY = bxdf.dataf[1];
+				distribution.sampleVisibleArea = bxdf.datai[2];
+				return BXDF_MicrofacetReflection_f(wo, wi, R, fresnel, distribution);
+			}
 		default:
 			return vec3(0,0,0);
 	}
@@ -45,37 +72,57 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 
 vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, out uint sampledType)
 {
+	sampledType = BXDF_flags(bxdf);
 	switch(bxdf.type)
 	{
 		case BXDF_TYPE_SPECULAR_REFLECTION:
 		{
 			Fresnel fresnel;
-			fresnel.type = BXDF_FRESNEL_TYPE_DIELETRIC;
-			fresnel.etaI = vec3(1,1,1);
-			fresnel.etaT = vec3(1.52,1.52,1.52);// Simulate glass
+			fresnel.type = bxdf.datai[0];
+			fresnel.data0 = bxdf.datav[1];
+			fresnel.data1 = bxdf.datav[2];
+			fresnel.data2 = bxdf.datav[3];
 
-			vec3 R = vec3(2,.5, .8);
+			vec3 R = bxdf.datav[0];
 
 			return BXDF_SpecularReflection_sampleF(
-				wo, wi, u, pdf, sampledType,
+				wo, wi, u, pdf,
 				fresnel, R);
 		}
-		case BXDF_TYPE_SPECULAR_TRANSMISSION:
-		{
-			Fresnel fresnel;
-			fresnel.type = BXDF_FRESNEL_TYPE_DIELETRIC;
-			fresnel.etaI = vec3(1,1,1);
-			fresnel.etaT = vec3(1.52,1.52,1.52);// Simulate glass
+		//case BXDF_TYPE_SPECULAR_TRANSMISSION:
+		//{
+		//	Fresnel fresnel;
+		//	fresnel.type = bxdf.datai[0];
+		//	fresnel.data0 = bxdf.datav[1];
+		//	fresnel.data1 = bxdf.datav[2];
+		//	fresnel.data2 = bxdf.datav[3];
 
-			vec3 T = vec3(2,.5, .8);
+		//	vec3 T = bxdf.datav[0];
 
-			return BXDF_SpecularReflection_sampleF(
-				wo, wi, u, pdf, sampledType,
-				fresnel, T);
-		}
+		//	return BXDF_SpecularReflection_sampleF(
+		//		wo, wi, u, pdf,
+		//		fresnel, T);
+		//}
+		case BXDF_TYPE_MICROFACET_REFLECTION:
+			{
+				vec3 R = bxdf.datav[0];
+
+				Fresnel fresnel;
+				fresnel.type = bxdf.datai[0];
+				fresnel.data0 = bxdf.datav[1];
+				fresnel.data1 = bxdf.datav[2];
+				fresnel.data2 = bxdf.datav[3];
+
+				MicrofacetDistribution distribution;
+				distribution.type = bxdf.datai[1];
+				distribution.alphaX = bxdf.dataf[0];
+				distribution.alphaY = bxdf.dataf[1];
+				distribution.sampleVisibleArea = bxdf.datai[2];
+				return BXDF_MicrofacetReflection_sampleF(wo, wi, u, pdf, R, fresnel, distribution);
+			}
 		case BXDF_TYPE_LAMBERTIAN_REFLECTION:
 		case BXDF_TYPE_OREN_NAYAR:
-			sampledType = BXDF_flags(bxdf);
+		default:
 			wi = cosineSampleHemisphere(u);
 			if(wo.z<0) wi.z*=-1;
 			pdf = BXDF_pdf(bxdf, wo, wi);
@@ -119,10 +166,14 @@ uint BXDF_flags(BXDF bxdf)
 	{
 		case BXDF_TYPE_SPECULAR_REFLECTION:
 			return BXDF_SpecularReflection_flags();
+		case BXDF_TYPE_SPECULAR_TRANSMISSION:
+			return BXDF_SpecularTransmission_flags();
 		case BXDF_TYPE_LAMBERTIAN_REFLECTION:
 			return BXDF_LambertianReflection_flags();
 		case BXDF_TYPE_OREN_NAYAR:
 			return BXDF_OrenNayar_flags();
+		case BXDF_TYPE_MICROFACET_REFLECTION:
+			return BXDF_MicrofacetReflection_flags();
 		default:
 			return 0;
 	}

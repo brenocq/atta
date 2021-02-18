@@ -14,6 +14,7 @@ const uint BXDF_TYPE_SPECULAR_TRANSMISSION 		= 2;
 const uint BXDF_TYPE_LAMBERTIAN_REFLECTION	 	= 3;
 const uint BXDF_TYPE_LAMBERTIAN_TRANSMISSION	= 4;
 const uint BXDF_TYPE_OREN_NAYAR					= 5;
+const uint BXDF_TYPE_MICROFACET_REFLECTION		= 6;
 
 const uint BXDF_FLAG_NONE		 	= 0x00000000u;
 const uint BXDF_FLAG_REFLECTION 	= 0x00000001u;
@@ -28,10 +29,42 @@ struct BXDF
 	uint type;
 
 	// General data about the BXDF
-	uint datai[1];
-	float dataf[1];
-	vec3 datav[1];
+	uint datai[3];
+	float dataf[3];
+	vec3 datav[4];
 };
+
+//---------- BXDF data description ----------//
+// BXDF_TYPE_LAMBERTIAN_REFLECTION
+// - datav
+// 		[0](vec3) - Kd
+// BXDF_TYPE_OREN_NAYAR
+// - dataf
+// 		[0] - sigma
+// - datav
+// 		[0](vec3) - Kd
+// BXDF_TYPE_SPECULAR_REFLECTION
+// - datai
+// 		[0] - Fresnel type
+// - datav
+// 		[0](vec3) - R
+// 		[1](vec3) - Fresnel data
+// 		[2](vec3) - Fresnel data
+// 		[3](vec3) - Fresnel data
+// BXDF_TYPE_MICROFACET_REFLECTION
+// - datai
+// 		[0] - Fresnel type
+// 		[1] - Microfacet Distribution type
+// 		[2] - Microfacet Distribution data
+// - dataf
+// 		[0] - Microfacet Distribution data
+// 		[1] - Microfacet Distribution data
+// - datav
+// 		[0](vec3) - R
+// 		[1](vec3) - Fresnel data
+// 		[2](vec3) - Fresnel data
+// 		[3](vec3) - Fresnel data
+
 
 struct BSDF
 {
@@ -148,6 +181,18 @@ vec3 cosineSampleHemisphere(vec2 u)
 bool sameHemisphere(vec3 w, vec3 wp)
 {
     return w.z * wp.z > 0;
+}
+
+vec3 faceForward(vec3 n, vec3 v)
+{
+	return (dot(n,v)<0.f)? -n : n;
+}
+
+vec3 sphericalDirection(float sinTh, float cosTh, float phi)
+{
+    return vec3(sinTh * cos(phi),
+                sinTh * sin(phi),
+                cosTh);
 }
 
 #endif// BXDF_BASE_GLSL
