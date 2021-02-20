@@ -10,6 +10,7 @@
 #include "specularReflection.glsl"
 #include "specularTransmission.glsl"
 #include "lambertianReflection.glsl"
+#include "lambertianTransmission.glsl"
 #include "orenNayar.glsl"
 #include "microfacetReflection.glsl"
 #include "microfacetTransmission.glsl"
@@ -43,6 +44,8 @@ float BXDF_pdf(BXDF bxdf, vec3 wo, vec3 wi)
 
 				return BXDF_MicrofacetTransmission_pdf(wo, wi, etaA, etaB, distribution);
 			}
+		case BXDF_TYPE_LAMBERTIAN_TRANSMISSION:
+			return BXDF_LambertianTransmission_pdf(wo, wi);
 		default:
 			return sameHemisphere(wo, wi) ? absCosTheta(wi)*invPi : 0;
 	}
@@ -56,6 +59,11 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 			{
 				vec3 R = bxdf.datav[0];
 				return BXDF_LambertianReflection_f(R);
+			}
+		case BXDF_TYPE_LAMBERTIAN_TRANSMISSION:
+			{
+				vec3 T = bxdf.datav[0];
+				return BXDF_LambertianTransmission_f(T);
 			}
 		case BXDF_TYPE_OREN_NAYAR:
 			{
@@ -84,12 +92,6 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 			{
 				vec3 T = bxdf.datav[0];
 
-				Fresnel fresnel;
-				fresnel.type = bxdf.datai[0];
-				fresnel.data0 = bxdf.datav[1];
-				fresnel.data1 = bxdf.datav[2];
-				fresnel.data2 = bxdf.datav[3];
-
 				MicrofacetDistribution distribution;
 				distribution.type = bxdf.datai[1];
 				distribution.alphaX = bxdf.dataf[0];
@@ -99,7 +101,7 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 				float etaA = bxdf.dataf[2];
 				float etaB = bxdf.dataf[3];
 
-				return BXDF_MicrofacetTransmission_f(wo, wi, T, etaA, etaB, fresnel, distribution);
+				return BXDF_MicrofacetTransmission_f(wo, wi, T, etaA, etaB, distribution);
 			}
 		case BXDF_TYPE_DISNEY:
 			return BXDF_Disney_f(wo, wi, bxdf);
@@ -131,12 +133,6 @@ vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, out ui
 		{
 			vec3 T = bxdf.datav[0];
 
-			Fresnel fresnel;
-			fresnel.type = bxdf.datai[0];
-			fresnel.data0 = bxdf.datav[1];
-			fresnel.data1 = bxdf.datav[2];
-			fresnel.data2 = bxdf.datav[3];
-
 			MicrofacetDistribution distribution;
 			distribution.type = bxdf.datai[1];
 			distribution.alphaX = bxdf.dataf[0];
@@ -148,7 +144,7 @@ vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, out ui
 
 			return BXDF_MicrofacetTransmission_sampleF(
 				wo, wi, u, pdf,
-				T, etaA, etaB, fresnel, distribution);
+				T, etaA, etaB, distribution);
 		}
 		case BXDF_TYPE_MICROFACET_REFLECTION:
 			{
@@ -169,6 +165,11 @@ vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, out ui
 			}
 		case BXDF_TYPE_DISNEY:
 			return BXDF_Disney_sampleF(wo, wi, u, pdf, bxdf);
+		case BXDF_TYPE_LAMBERTIAN_TRANSMISSION:
+			{
+				vec3 T = bxdf.datav[0];
+				return BXDF_LambertianTransmission_sampleF(wo, wi, u, pdf, T);
+			}
 		case BXDF_TYPE_LAMBERTIAN_REFLECTION:
 		case BXDF_TYPE_OREN_NAYAR:
 		default:
@@ -225,6 +226,8 @@ uint BXDF_flags(BXDF bxdf)
 			return BXDF_MicrofacetReflection_flags();
 		case BXDF_TYPE_MICROFACET_TRANSMISSION:
 			return BXDF_MicrofacetTransmission_flags();
+		case BXDF_TYPE_LAMBERTIAN_TRANSMISSION:
+			return BXDF_LambertianTransmission_flags();
 		case BXDF_TYPE_DISNEY:
 			return BXDF_Disney_flags();
 		default:

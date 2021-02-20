@@ -19,6 +19,9 @@ const uint BXDF_TYPE_MICROFACET_TRANSMISSION	= 7;
 // Disney
 const uint BXDF_TYPE_DISNEY						= 8;
 const uint BXDF_TYPE_DISNEY_CLEARCOAT			= 9;
+const uint BXDF_TYPE_DISNEY_RETRO				= 10;
+const uint BXDF_TYPE_DISNEY_DIFFUSE				= 11;
+const uint BXDF_TYPE_DISNEY_SHEEN				= 12;
 
 const uint BXDF_FLAG_NONE		 	= 0x00000000u;
 const uint BXDF_FLAG_REFLECTION 	= 0x00000001u;

@@ -58,7 +58,6 @@ void main()
 		bool specularBounce = false;// Handle special case when the ray reflects in only one direction
 		uint bounces;
 
-
 		for(bounces = 0;; bounces++)
 		{
 			const float tMin = 0.001;
@@ -69,6 +68,7 @@ void main()
 				scene, gl_RayFlagsOpaqueEXT, 0xff, 
 				0 /*sbtRecordOffset*/, 0 /*sbtRecordStride*/, 0 /*missIndex*/, 
 				origin, tMin, direction, tMax, 0 /*payload*/);
+
 
 			BSDF bsdf = ray.it.bsdf;
 			const bool foundIntersection = (ray.t>=0);
@@ -105,7 +105,6 @@ void main()
 			vec2 uScattering = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
 			vec3 Ld = beta*Light_uniformSampleOneLight(ubo.nLights, uLightIndex, uLight, uScattering);
 			L += Ld;
-
 
 
 			// Update next ray origin from intersection

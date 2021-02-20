@@ -7,7 +7,6 @@
 #ifndef BXDF_DISNEY_CLEARCOAT_GLSL
 #define BXDF_DISNEY_CLEARCOAT_GLSL
 #include "../base.glsl"
-#include "base.glsl"
 
 float GTR1(float cosTheta, float alpha)
 {

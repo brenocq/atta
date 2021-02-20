@@ -67,24 +67,57 @@ MaterialsDemo::MaterialsDemo()
 	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
 
 	bunny.position = {2,0,0};
-	bunny.material = atta::Material::metal({
-		// Au
-		.eta = {.2,1.4,1.8},
-		.k = {4.3,2.8,1.8},
-		.roughness = 0.1
+	bunny.material = atta::Material::disney({
+		.color = atta::vec3(0,1,1),
+		.metallic = 1.0f,
+		.eta = 3,
+		.roughness = 0.9f,
+		.specularTint = 1.0f,
+		.anisotropic = 0.0f,
+		.sheen = 1.0f,
+		.sheenTint = 1.0f,
+		.clearCoat = 0.0f,
+		.clearCoatGloss = 0.0f,
+		.specularTrans = 0.0f,
+		.scatterDistance = atta::vec3(0,0,0),
+		.flatness = 0.0f,
+		.diffTrans = 0.0f,
+		.bumpMap = 0.0f,
+		.thin = false,
 	});
 	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
 
-	bunny.position = {2,2,0};
+	bunny.position = {0,2,0};
 	bunny.material = atta::Material::disney({
-		.color = atta::vec3(1,0,1),
+		.color = atta::vec3(1.1,1.1,1.1),
 		.metallic = 0.0f,
-		.eta = 1.5f,
+		.eta = .99,
 		.roughness = 0.5f,
 		.specularTint = 1.0f,
 		.anisotropic = 0.0f,
 		.sheen = 0.0f,
 		.sheenTint = 0.0f,
+		.clearCoat = 0.0f,
+		.clearCoatGloss = 0.0f,
+		.specularTrans = 1.0f,
+		.scatterDistance = atta::vec3(0,0,0),
+		.flatness = 1.0f,
+		.diffTrans = 2.0f,
+		.bumpMap = 0.0f,
+		.thin = true,
+	});
+	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
+
+	bunny.position = {2,2,0};
+	bunny.material = atta::Material::disney({
+		.color = atta::vec3(1,1,1),
+		.metallic = 0.0f,
+		.eta = 1.5,
+		.roughness = 1.0f,
+		.specularTint = 0.0f,
+		.anisotropic = 0.0f,
+		.sheen = 1.0f,
+		.sheenTint = 0.5f,
 		.clearCoat = 0.0f,
 		.clearCoatGloss = 0.0f,
 		.specularTrans = 0.0f,
@@ -98,10 +131,10 @@ MaterialsDemo::MaterialsDemo()
 
 	bunny.position = {-2,2,0};
 	bunny.material = atta::Material::disney({
-		.color = atta::vec3(0,.2,0),
+		.color = atta::vec3(0,1,0),
 		.metallic = 1.0f,
 		.eta = 0.7f,
-		.roughness = 0.5f,
+		.roughness = 0.8f,
 		.specularTint = 0.0f,
 		.anisotropic = 0.0f,
 		.sheen = 0.0f,
@@ -117,21 +150,33 @@ MaterialsDemo::MaterialsDemo()
 	});
 	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
 
-	//atta::ImportedObject::CreateInfo nut {
-	//	.name = "NUT",
-	//	.fileName = "nut_LOW/nut_LOW.obj",
-	//	.position = {0,3,0},
-	//	.scale = {1.5,1.5,1.5},
-	//	.mass = 0.0f,
-	//	.material = atta::Material::metal({
-	//			// Al
-	//			//.kTexture = atta::Texture::fromFile("col.jpg"),
-	//			//.roughnessTexture = atta::Texture::fromFile("spec.jpg"),
-	//			.eta = {2,1.2,0.44},
-	//			.k = {6,5,4},
-	//			.roughness = .5
-	//		}),
-	//};
+	atta::ImportedObject::CreateInfo nut {
+		.name = "NUT",
+		.fileName = "nut_LOW/nut_LOW.obj",
+		.position = {0,.75,1},
+		.scale = {1.5,1.5,1.5},
+		.mass = 0.0f,
+		.material = atta::Material::disney({
+				.colorTexture = atta::Texture::fromFile("col.jpg"),
+				.specularTransTexture = atta::Texture::fromFile("spec.jpg"),
+				//.color = vec3(1,0,0).
+				.metallic = 1.0f,
+				.eta = 0.7f,
+				.roughness = 0.0f,
+				.specularTint = 0.0f,
+				.anisotropic = 0.0f,
+				.sheen = 0.0f,
+				.sheenTint = 0.0f,
+				.clearCoat = 1.0f,
+				.clearCoatGloss = 0.9f,
+				//.specularTrans = 1.0f,
+				.scatterDistance = atta::vec3(0,0,0),
+				.flatness = 0.0f,
+				.diffTrans = 0.0f,
+				.bumpMap = 0.0f,
+				.thin = false,
+			}),
+	};
 	//objects.push_back(std::make_shared<atta::ImportedObject>(nut));
 
 	_attaCreateInfo.objects = objects;

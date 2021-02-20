@@ -12,7 +12,7 @@
 #include "microfacetDistribution.glsl"
 
 vec3 BXDF_MicrofacetTransmission_f(vec3 wo, vec3 wi, 
-		vec3 T, float etaA, float etaB, Fresnel fresnel, MicrofacetDistribution distribution)
+		vec3 T, float etaA, float etaB, MicrofacetDistribution distribution)
 {
 	if(sameHemisphere(wo, wi)) return vec3(0,0,0);  // transmission only 
 
@@ -27,6 +27,11 @@ vec3 BXDF_MicrofacetTransmission_f(vec3 wo, vec3 wi,
 
 	// Same side?          
 	if(dot(wo, wh) * dot(wi, wh) > 0) return vec3(0,0,0);
+
+	Fresnel fresnel;
+	fresnel.type = BXDF_FRESNEL_TYPE_DIELETRIC;
+	fresnel.data0.x = etaA;
+	fresnel.data1.x = etaB;
 
 	vec3 F = BXDF_Fresnel_evaluate(fresnel, dot(wo, wh));
 	float D = BXDF_MicrofacetDistribution_D(distribution, wh);
@@ -60,7 +65,7 @@ float BXDF_MicrofacetTransmission_pdf(vec3 wo, vec3 wi, float etaA, float etaB, 
 
 
 vec3 BXDF_MicrofacetTransmission_sampleF(vec3 wo, out vec3 wi, vec2 u, out float pdf, 
-		vec3 T, float etaA, float etaB, Fresnel fresnel, MicrofacetDistribution distribution)
+		vec3 T, float etaA, float etaB, MicrofacetDistribution distribution)
 {
 	if (wo.z == 0) return vec3(0,0,0);
 	vec3 wh = BXDF_MicrofacetDistribution_sampleWh(distribution, wo, u);
@@ -69,7 +74,7 @@ vec3 BXDF_MicrofacetTransmission_sampleF(vec3 wo, out vec3 wi, vec2 u, out float
 	float eta = cosTheta(wo) > 0 ? (etaA / etaB) : (etaB / etaA);
 	if (!refractWi(wo, wh, eta, wi)) return vec3(0,0,0);
 	pdf = BXDF_MicrofacetTransmission_pdf(wo, wi, etaA, etaB, distribution);
-	return BXDF_MicrofacetTransmission_f(wo, wi, T, etaA, etaB, fresnel, distribution);
+	return BXDF_MicrofacetTransmission_f(wo, wi, T, etaA, etaB, distribution);
 }
 
 uint BXDF_MicrofacetTransmission_flags()
