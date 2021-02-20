@@ -12,7 +12,7 @@
 #include "../bxdf/fresnel.glsl"
 #include "../bxdf/microfacetDistribution.glsl"
 
-BXDF Material_Metal_computeScatteringFunctions(inout Material material, vec2 uv)
+BSDF Material_Metal_computeScatteringFunctions(inout Material material, vec2 uv)
 {
 	BXDF bxdf;
 	bxdf.type = BXDF_TYPE_MICROFACET_REFLECTION;	
@@ -66,7 +66,11 @@ BXDF Material_Metal_computeScatteringFunctions(inout Material material, vec2 uv)
 	bxdf.dataf[0] = uRough;// alphaX
 	bxdf.dataf[1] = vRough;// alphaY
 
-	return bxdf;
+	BSDF bsdf;
+	bsdf.bxdf[0] = bxdf;
+	bsdf.nBxdf = 1;
+
+	return bsdf;
 }
 
 #endif// MATERIALS_METAL_GLSL

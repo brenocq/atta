@@ -9,22 +9,21 @@
 #include "base.glsl"
 #include "../base.glsl"
 
-vec2 sampleContinuous(inout Light light, vec2 u, out float pdf)
+vec2 sampleContinuous(Light light, vec2 u, out float pdf)
 {
 	uint distribIndex = light.datai[1];
 	vec3 distributionData = texture(textures[distribIndex], u).xyz;
-	//pdf = .8;
-	//return u;
 
 	pdf = distributionData.z;
 	return distributionData.xy;
 }
 
 vec3 InfiniteLight_sampleLi(
-		inout Light light, Interaction ref, vec2 u, 
+		Light light, VisibilityPoint ref, vec2 u, 
 		out vec3 wi, out float pdf, out VisibilityTester vis)
 {
 	float mapPdf;
+
 	vec2 uv = sampleContinuous(light, u, mapPdf);
 	if(mapPdf == 0) return vec3(0,0,0);
 
@@ -43,6 +42,7 @@ vec3 InfiniteLight_sampleLi(
 	vis.p0 = ref;
 	vis.p1.point = ref.point+wi*(2*worldRadius);
 
+	//return texture(textures[light.datai[0]], uv).rgb;
 	return texture(textures[light.datai[0]], uv).rgb;
 }
 

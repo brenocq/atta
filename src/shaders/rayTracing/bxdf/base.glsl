@@ -15,6 +15,10 @@ const uint BXDF_TYPE_LAMBERTIAN_REFLECTION	 	= 3;
 const uint BXDF_TYPE_LAMBERTIAN_TRANSMISSION	= 4;
 const uint BXDF_TYPE_OREN_NAYAR					= 5;
 const uint BXDF_TYPE_MICROFACET_REFLECTION		= 6;
+const uint BXDF_TYPE_MICROFACET_TRANSMISSION	= 7;
+// Disney
+const uint BXDF_TYPE_DISNEY						= 8;
+const uint BXDF_TYPE_DISNEY_CLEARCOAT			= 9;
 
 const uint BXDF_FLAG_NONE		 	= 0x00000000u;
 const uint BXDF_FLAG_REFLECTION 	= 0x00000001u;
@@ -29,8 +33,8 @@ struct BXDF
 	uint type;
 
 	// General data about the BXDF
-	uint datai[3];
-	float dataf[3];
+	uint datai[4];
+	float dataf[12];
 	vec3 datav[4];
 };
 
@@ -64,11 +68,32 @@ struct BXDF
 // 		[1](vec3) - Fresnel data
 // 		[2](vec3) - Fresnel data
 // 		[3](vec3) - Fresnel data
+// BXDF_TYPE_DISNEY
+// - datai
+// 		[0](bool) thin
+// - dataf
+// 		[0] metallic
+// 		[1] eta
+// 		[2] roughness
+// 		[3] specularTint
+// 		[4] anisotropic
+// 		[5] sheen
+// 		[6] sheenTint
+// 		[7] clearCoat
+// 		[8] clearCoatGloss
+// 		[9] specTrans
+// 		[10] flatness
+// 		[11] diffTrans
+// - datav
+// 		[0] color
+// 		[1] scatterDistance
 
 
 struct BSDF
 {
-	BXDF bxdf;
+	BXDF bxdf[1];
+	int nBxdf;
+
 	float eta;
 	vec3 ng;// Normal geometry (from mesh)
 	vec3 ns;// Normal shading (TODO implement from bump map)
@@ -194,5 +219,31 @@ vec3 sphericalDirection(float sinTh, float cosTh, float phi)
                 sinTh * sin(phi),
                 cosTh);
 }
+
+float lum_y(vec3 rgb)
+{
+	return 0.212671f*rgb.x + 0.715160f*rgb.y + 0.072169f*rgb.z;
+}
+
+// Schlick
+float schlickWeight(float cosTheta)
+{
+    float m = clamp(1 - cosTheta, 0, 1);
+    return (m * m) * (m * m) * m;
+}
+
+float FrSchlick(float R0, float cosTheta)
+{
+    return mix(R0, 1, schlickWeight(cosTheta));
+}
+
+vec3 FrSchlick(vec3 R0, float cosTheta)
+{
+    return mix(R0, vec3(1,1,1), schlickWeight(cosTheta));
+}
+
+float sqr(float x) { return x * x; }
+float schlickR0FromEta(float eta) { return sqr(eta - 1) / sqr(eta + 1); }
+
 
 #endif// BXDF_BASE_GLSL

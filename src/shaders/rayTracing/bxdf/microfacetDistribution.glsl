@@ -13,6 +13,7 @@
 const uint BXDF_MICROFACET_DISTRIBUTION_TYPE_NONE 				= 0;
 const uint BXDF_MICROFACET_DISTRIBUTION_TYPE_BECKMANN 			= 1;
 const uint BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ	= 2;
+const uint BXDF_MICROFACET_DISTRIBUTION_TYPE_DISNEY				= 3;
 
 struct MicrofacetDistribution
 {
@@ -38,6 +39,7 @@ float BXDF_MicrofacetDistribution_D(MicrofacetDistribution dist, vec3 wh)
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_BECKMANN:
 			return BXDF_MicrofacetDistribution_Beckmann_D(dist, wh);
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ:
+		case BXDF_MICROFACET_DISTRIBUTION_TYPE_DISNEY:
 			return BXDF_MicrofacetDistribution_TrowbridgeReitz_D(dist, wh);
 		default:
 			return 0;
@@ -51,6 +53,7 @@ float BXDF_MicrofacetDistribution_lambda(MicrofacetDistribution dist, vec3 w)
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_BECKMANN:
 			return BXDF_MicrofacetDistribution_Beckmann_lambda(dist, w);
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ:
+		case BXDF_MICROFACET_DISTRIBUTION_TYPE_DISNEY:
 			return BXDF_MicrofacetDistribution_TrowbridgeReitz_lambda(dist, w);
 		default:
 			return 0;
@@ -59,9 +62,18 @@ float BXDF_MicrofacetDistribution_lambda(MicrofacetDistribution dist, vec3 w)
 
 float BXDF_MicrofacetDistribution_G(MicrofacetDistribution dist, vec3 wo, vec3 wi)
 {
-	float lambdaWo = BXDF_MicrofacetDistribution_lambda(dist, wo);
-	float lambdaWi = BXDF_MicrofacetDistribution_lambda(dist, wi);
-	return 1/(1+lambdaWo+lambdaWi);
+	if(dist.type == BXDF_MICROFACET_DISTRIBUTION_TYPE_DISNEY)
+	{
+		float G1Wo = 1/(1+BXDF_MicrofacetDistribution_lambda(dist, wo));
+		float G1Wi = 1/(1+BXDF_MicrofacetDistribution_lambda(dist, wi));
+		return G1Wo*G1Wi;
+	}
+	else
+	{
+		float lambdaWo = BXDF_MicrofacetDistribution_lambda(dist, wo);
+		float lambdaWi = BXDF_MicrofacetDistribution_lambda(dist, wi);
+		return 1/(1+lambdaWo+lambdaWi);
+	}
 }
 
 vec3 BXDF_MicrofacetDistribution_sampleWh(MicrofacetDistribution dist, vec3 wo, vec2 u)
@@ -71,6 +83,7 @@ vec3 BXDF_MicrofacetDistribution_sampleWh(MicrofacetDistribution dist, vec3 wo, 
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_BECKMANN:
 			return BXDF_MicrofacetDistribution_Beckmann_sampleWh(dist, wo, u);
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ:
+		case BXDF_MICROFACET_DISTRIBUTION_TYPE_DISNEY:
 			return BXDF_MicrofacetDistribution_TrowbridgeReitz_sampleWh(dist, wo, u);
 		default:
 			return vec3(0,0,0);

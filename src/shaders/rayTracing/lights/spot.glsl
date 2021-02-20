@@ -19,7 +19,9 @@ vec3 SpotLight_sampleLi(
 	
 	wi = normalize(pLight - ref.point);
 	pdf = 1.f;
-	vis.p0 = ref;
+	vis.p0.point = ref.point;
+	vis.p0.wo = ref.wo;
+	vis.p0.n = ref.n;
 	vis.p1.point = pLight;
 	vis.p1.point = vec3(-1, 3, -1);
 

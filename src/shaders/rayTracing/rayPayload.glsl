@@ -14,4 +14,16 @@ struct RayPayload
 	Interaction it;
 };
 
+struct RayPayload1
+{
+	float t;
+	vec3 gn;
+	vec3 sn;
+	vec3 point;
+	vec3 direction;
+
+	uint materialType;
+	float materialData[20];
+};
+
 #endif// RAY_PAYLOAD_GLSL

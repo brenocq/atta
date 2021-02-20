@@ -10,10 +10,10 @@
 #include "../base.glsl"
 #include "../bxdf/base.glsl"
 
-BXDF Material_Diffuse_computeScatteringFunctions(inout Material material)
+BSDF Material_Diffuse_computeScatteringFunctions(inout Material material)
 {
-	BXDF bxdf;
-	bxdf.type = BXDF_TYPE_NONE;
+	BSDF bsdf;
+	bsdf.nBxdf = 1;
 
 	vec3 Kd = material.datav[0].xyz;
 	float sigma = material.dataf[0];
@@ -23,18 +23,18 @@ BXDF Material_Diffuse_computeScatteringFunctions(inout Material material)
 		if(sigma == 0)
 		{
 			// Add Lambertian
-			bxdf.type = BXDF_TYPE_LAMBERTIAN_REFLECTION;	
-			bxdf.datav[0] = Kd;// R
+			bsdf.bxdf[0].type = BXDF_TYPE_LAMBERTIAN_REFLECTION;	
+			bsdf.bxdf[0].datav[0] = Kd;// R
 		}
 		else
 		{
 			// Add Oren Nayar
-			bxdf.type = BXDF_TYPE_OREN_NAYAR;
-			bxdf.datav[0] = Kd;// R
-			bxdf.dataf[0] = sigma;// Sigma
+			bsdf.bxdf[0].type = BXDF_TYPE_OREN_NAYAR;
+			bsdf.bxdf[0].datav[0] = Kd;// R
+			bsdf.bxdf[0].dataf[0] = sigma;// Sigma
 		}
 	}
-	return bxdf;
+	return bsdf;
 }
 
 #endif// MATERIALS_DIFFUSE_GLSL

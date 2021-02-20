@@ -7,7 +7,6 @@
 #ifndef LIGHTS_BASE_GLSL
 #define LIGHTS_BASE_GLSL
 #include "../bxdf/base.glsl"
-#include "../../light.glsl"
 #include "../base.glsl"
 
 const uint LIGHT_FLAG_DELTA_POSITION 	= 0x00000001u;
@@ -25,16 +24,18 @@ struct Interaction
 	BSDF bsdf;
 };
 
-struct VisibilityTester
+struct VisibilityPoint
 {
-	Interaction p0;
-	Interaction p1;
+	vec3 point;// Point of interaction
+	vec3 wo;
+	vec3 n;// Surface normal (TODO shading normal)
 };
 
-bool isSurfaceInteraction(Interaction it)
+struct VisibilityTester
 {
-	return !(it.n.x==0 && it.n.y==0 && it.n.z==0);
-}
+	VisibilityPoint p0;
+	VisibilityPoint p1;
+};
 
 float sphericalTheta(vec3 v)
 {

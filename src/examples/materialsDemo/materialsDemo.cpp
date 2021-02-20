@@ -76,30 +76,63 @@ MaterialsDemo::MaterialsDemo()
 	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
 
 	bunny.position = {2,2,0};
-	bunny.material = atta::Material::metal({
-		// Al
-		.eta = {2,1.2,0.44},
-		.k = {6,5,4},
-		.roughness = .5
+	bunny.material = atta::Material::disney({
+		.color = atta::vec3(1,0,1),
+		.metallic = 0.0f,
+		.eta = 1.5f,
+		.roughness = 0.5f,
+		.specularTint = 1.0f,
+		.anisotropic = 0.0f,
+		.sheen = 0.0f,
+		.sheenTint = 0.0f,
+		.clearCoat = 0.0f,
+		.clearCoatGloss = 0.0f,
+		.specularTrans = 0.0f,
+		.scatterDistance = atta::vec3(0,0,0),
+		.flatness = 0.0f,
+		.diffTrans = 0.0f,
+		.bumpMap = 0.0f,
+		.thin = false,
 	});
 	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
 
-	atta::ImportedObject::CreateInfo nut {
-		.name = "NUT",
-		.fileName = "nut_LOW/nut_LOW.obj",
-		.position = {0,3,0},
-		.scale = {1.5,1.5,1.5},
-		.mass = 0.0f,
-		.material = atta::Material::metal({
-				// Al
-				//.kTexture = atta::Texture::fromFile("col.jpg"),
-				//.roughnessTexture = atta::Texture::fromFile("spec.jpg"),
-				.eta = {2,1.2,0.44},
-				.k = {6,5,4},
-				.roughness = .1
-			}),
-	};
-	objects.push_back(std::make_shared<atta::ImportedObject>(nut));
+	bunny.position = {-2,2,0};
+	bunny.material = atta::Material::disney({
+		.color = atta::vec3(0,.2,0),
+		.metallic = 1.0f,
+		.eta = 0.7f,
+		.roughness = 0.5f,
+		.specularTint = 0.0f,
+		.anisotropic = 0.0f,
+		.sheen = 0.0f,
+		.sheenTint = 0.0f,
+		.clearCoat = 1.0f,
+		.clearCoatGloss = 0.9f,
+		.specularTrans = 0.0f,
+		.scatterDistance = atta::vec3(0,0,0),
+		.flatness = 0.0f,
+		.diffTrans = 0.0f,
+		.bumpMap = 0.0f,
+		.thin = false,
+	});
+	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
+
+	//atta::ImportedObject::CreateInfo nut {
+	//	.name = "NUT",
+	//	.fileName = "nut_LOW/nut_LOW.obj",
+	//	.position = {0,3,0},
+	//	.scale = {1.5,1.5,1.5},
+	//	.mass = 0.0f,
+	//	.material = atta::Material::metal({
+	//			// Al
+	//			//.kTexture = atta::Texture::fromFile("col.jpg"),
+	//			//.roughnessTexture = atta::Texture::fromFile("spec.jpg"),
+	//			.eta = {2,1.2,0.44},
+	//			.k = {6,5,4},
+	//			.roughness = .5
+	//		}),
+	//};
+	//objects.push_back(std::make_shared<atta::ImportedObject>(nut));
 
 	_attaCreateInfo.objects = objects;
 }

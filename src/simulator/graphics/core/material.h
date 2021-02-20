@@ -24,8 +24,10 @@ namespace atta
 			MATERIAL_TYPE_DIFFUSE,
 			MATERIAL_TYPE_MIRROR,
 			MATERIAL_TYPE_METAL,
+			MATERIAL_TYPE_DISNEY,
 		};
 
+		//------------------- Diffuse ---------------------//
 		static Material diffuse(vec3 Kd, float sigma)
 		{
 			Material m;
@@ -36,6 +38,7 @@ namespace atta
 			return m;
 		}
 
+		//------------------- Mirror ---------------------//
 		static Material mirror(vec3 R=vec3(1,1,1))
 		{
 			Material m;
@@ -45,6 +48,7 @@ namespace atta
 			return m;
 		}
 
+		//------------------- Metal ---------------------//
 		struct MetalInfo {
 			int etaTexture = -1;
 			int kTexture = -1;
@@ -81,6 +85,83 @@ namespace atta
 
 			m.datav[0] = vec4(info.eta,-1);
 			m.datav[1] = vec4(info.k,-1);
+
+			return m;
+		}
+
+		//------------------- Disney ---------------------//
+		struct DisneyInfo {
+			int colorTexture = -1;
+			int metallicTexture = -1;
+			int etaTexture = -1;
+			int roughnessTexture = -1;
+			int specularTintTexture = -1;
+			int anisotropicTexture = -1;
+			int sheenTexture = -1;
+			int sheenTintTexture = -1;
+			int clearCoatTexture = -1;
+			int clearCoatGlossTexture = -1;
+			int specularTransTexture = -1;
+			int scatterDistanceTexture = -1;
+			int flatnessTexture = -1;
+			int diffTransTexture = -1;
+			int bumpMapTexture = -1;
+
+			vec3 color;
+			float metallic;
+			float eta;
+			float roughness;
+			float specularTint;
+			float anisotropic;
+			float sheen;
+			float sheenTint;
+			float clearCoat;
+			float clearCoatGloss;
+			float specularTrans;
+			vec3 scatterDistance;
+			float flatness;
+			float diffTrans;
+			float bumpMap;
+			bool thin;
+		};
+		static Material disney(DisneyInfo info)
+		{
+			Material m;
+			m.type[0] = MATERIAL_TYPE_DISNEY;
+
+			m.datai[0]  = info.colorTexture;
+			m.datai[1]  = info.metallicTexture;
+			m.datai[2]  = info.etaTexture;
+			m.datai[3]  = info.roughnessTexture;
+			m.datai[4]  = info.specularTintTexture;
+			m.datai[5]  = info.anisotropicTexture;
+			m.datai[6]  = info.sheenTexture;
+			m.datai[7]  = info.sheenTintTexture;
+			m.datai[8]  = info.clearCoatTexture;
+			m.datai[9]  = info.clearCoatGlossTexture;
+			m.datai[10] = info.specularTransTexture;
+			m.datai[11] = info.scatterDistanceTexture;
+			m.datai[12] = info.thin?1:0;
+			m.datai[13] = info.flatnessTexture;
+			m.datai[14] = info.diffTransTexture;
+			m.datai[15] = info.bumpMapTexture;
+
+			m.dataf[0]  = info.metallic;
+			m.dataf[1]  = info.eta;
+			m.dataf[2]  = info.roughness;
+			m.dataf[3]  = info.specularTint;
+			m.dataf[4]  = info.anisotropic;
+			m.dataf[5]  = info.sheen;
+			m.dataf[6]  = info.sheenTint;
+			m.dataf[7]  = info.clearCoat;
+			m.dataf[8]  = info.clearCoatGloss;
+			m.dataf[9]  = info.specularTrans;
+			m.dataf[10]  = info.flatness;
+			m.dataf[11] = info.diffTrans;
+			m.dataf[12] = info.bumpMap;
+
+			m.datav[0] = vec4(info.color, -1);
+			m.datav[1] = vec4(info.scatterDistance, -1);
 
 			return m;
 		}
