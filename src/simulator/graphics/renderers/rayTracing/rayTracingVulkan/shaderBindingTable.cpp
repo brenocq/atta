@@ -20,7 +20,7 @@ namespace atta::rt::vk
 		// Find the maximum number of parameters used by a single entry
 		size_t maxArgs = 0;
 
-		for (const auto& entry : entries)
+		for(const auto& entry : entries)
 		{
 			maxArgs = std::max(maxArgs, entry.inlineData.size());
 		}

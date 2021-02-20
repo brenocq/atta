@@ -1,7 +1,7 @@
 # Atta - Robot Simulator
 <p align="center">
  <img src="./img/2020-08-16.gif" height="200">
- <img src="./img/2021-02-18.png" height="200">
+ <img src="./img/2021-02-20.png" height="200">
  <img src="./img/2020-12-04.gif" height="200">
 </p>
 
@@ -14,8 +14,6 @@ Atta is a robot simulator for 2D and 3D applications. For now, the core is still
 
 Today only Linux is supported, but I plan to add support for Windows in the following months.\
 This project is not yet well documented, after finishing some examples I am planning to create an website explaning its details and design decisions.
-
-(2021/02/14) This week I am focusing on developing the GPU ray tracing renderer.
 
 ## Installation (Linux)
 #### Download Vulkan SDK
@@ -55,7 +53,7 @@ These values are unreliable and come from what I think is going on in the code (
 #### Core
  - Vulkan specific: 100%
  - Renderers
-	 - RayTracing (GPU/vulkan): 50%
+	 - RayTracing (GPU/vulkan): 65%
 	 - RayTracing (CPU): 5%
 	 - Rasterization: 50%
 	 - 2D: 60%
