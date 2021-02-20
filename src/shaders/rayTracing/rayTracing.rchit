@@ -65,11 +65,13 @@ void main()
 
 	ray.t = gl_HitTEXT;
 
+
 	// Populate BSDF from intersection point
-	BSDF bsdf;
+	BSDF bsdf = Material_computeScatteringFunctions(material, texCoord);
 	bsdf.eta = 1;
 	bsdf.ng = normal;
 	bsdf.ns = normal;
+	bsdf.nBxdf = 1;
 	if((normal.x>=normal.y && normal.x>=normal.z) || (normal.y>=normal.x && normal.y>=normal.z))
 	{
 		bsdf.ss = cross(vec3(0,0,1), normal);
@@ -80,8 +82,6 @@ void main()
 		bsdf.ss = cross(vec3(1,0,0), normal);
 		bsdf.ts = cross(normal, bsdf.ss);
 	}
-
-	bsdf.bxdf = Material_computeScatteringFunctions(material, texCoord);
 
 	Interaction it;
 	it.point = worldPos;

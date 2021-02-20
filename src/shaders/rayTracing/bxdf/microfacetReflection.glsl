@@ -46,7 +46,7 @@ vec3 BXDF_MicrofacetReflection_sampleF(vec3 wo, out vec3 wi, vec2 u, out float p
 
 float BXDF_MicrofacetReflection_pdf(vec3 wo, vec3 wi, MicrofacetDistribution distribution)
 {
-	if(sameHemisphere(wo, wi)) return 0;
+	if(!sameHemisphere(wo, wi)) return 0;
 	vec3 wh = normalize(wo + wi);
 	return BXDF_MicrofacetDistribution_pdf(distribution, wo, wh) / (4 * dot(wo, wh));
 }

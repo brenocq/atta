@@ -100,6 +100,7 @@ namespace atta
 		// TODO create aux function to calculate 1D distribution returning integral
 		//----- Create conditional sampling distributions -----//
 		std::vector<float> rowIntegral(_width);
+		float rowInt;
 		for(int v=0; v<_height; v++)
 		{
 			// Compute integral of step function at xi
@@ -110,7 +111,7 @@ namespace atta
 			{
 				distRow[u] = distRow[u-1] + imgRow[u-1]/_width;
 			}
-			float rowInt = distRow[_width-1] + imgRow[_width-1]/_width;
+			rowInt = distRow[_width-1] + imgRow[_width-1]/_width;
 			rowIntegral.push_back(rowInt);
 
 			//  Transform step function integral to CDF
@@ -166,7 +167,7 @@ namespace atta
 
 			int firstRow = findInterval(marginal.data(), marginal.size(), vNorm);
 			row = firstRow+1;
-			pdfRow = marginal[firstRow+1]-marginal[firstRow];
+			pdfRow = rowInt>0?marginal[firstRow+1]/rowInt : 0;
 
 			// Fow each possible column
 			for(int u=0; u<_width; u++)
@@ -179,11 +180,11 @@ namespace atta
 				float* colStart = &_distributionTexture[row*(_width+1)+1];
 				int firstCol = findInterval(colStart, _width, uNorm);
 				col = firstCol+1;
-				pdfCol = colStart[firstCol+1]-colStart[firstCol];
+				pdfCol = colInt>0 ? colStart[firstCol+1]/colInt : 0;
 
 				_distributionAccess[(v*_width+u)*3] = float(col)/_width;
 				_distributionAccess[(v*_width+u)*3+1] = float(row)/_height;
-				_distributionAccess[(v*_width+u)*3+2] = pdfRow*pdfCol*_width*_height;
+				_distributionAccess[(v*_width+u)*3+2] = pdfRow*pdfCol;
 			}
 		}
 

@@ -11,8 +11,9 @@
 #include "diffuse.glsl"
 #include "mirror.glsl"
 #include "metal.glsl"
+#include "disney/disney.glsl"
 
-BXDF Material_computeScatteringFunctions(inout Material material, vec2 uv)
+BSDF Material_computeScatteringFunctions(inout Material material, vec2 uv)
 {
 	switch(material.type[0])
 	{
@@ -22,11 +23,13 @@ BXDF Material_computeScatteringFunctions(inout Material material, vec2 uv)
 			return Material_Mirror_computeScatteringFunctions(material);
 		case MATERIAL_TYPE_METAL:
 			return Material_Metal_computeScatteringFunctions(material, uv);
+		case MATERIAL_TYPE_DISNEY:
+			return Material_Disney_computeScatteringFunctions(material, uv);
 	}
 
-	BXDF bxdf;
-	bxdf.type = BXDF_TYPE_NONE;
-	return bxdf;
+	BSDF bsdf;
+	bsdf.nBxdf = 0;
+	return bsdf;
 }
 
 #endif// MATERIALS_MATERIAL_GLSL

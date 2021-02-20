@@ -11,7 +11,7 @@
 #include "../bxdf/base.glsl"
 #include "../bxdf/fresnel.glsl"
 
-BXDF Material_Mirror_computeScatteringFunctions(inout Material material)
+BSDF Material_Mirror_computeScatteringFunctions(inout Material material)
 {
 	BXDF bxdf;
 
@@ -20,7 +20,11 @@ BXDF Material_Mirror_computeScatteringFunctions(inout Material material)
 	bxdf.datai[0] = BXDF_FRESNEL_TYPE_NOOP;
 	bxdf.datav[0] = material.datav[0].xyz;
 
-	return bxdf;
+	BSDF bsdf;
+	bsdf.bxdf[0] = bxdf;
+	bsdf.nBxdf = 1;
+
+	return bsdf;
 }
 
 #endif// MATERIALS_MIRROR_GLSL

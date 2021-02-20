@@ -15,6 +15,7 @@
 #include "camera.glsl"
 #include "uniformBufferObject.glsl"
 #include "base.glsl"
+#include "../light.glsl"
 
 layout(binding = 0, set = 0) uniform accelerationStructureEXT scene;
 layout(binding = 1, rgba32f) uniform image2D accumulationImage;
@@ -26,7 +27,7 @@ layout(binding = 9) uniform sampler2D[] textures;
 layout(location = 0) rayPayloadEXT RayPayload ray;
 layout(location = 1) rayPayloadEXT bool isShadowed;
 
-#include "lights/light.glsl"// Need to access the light and texture buffer
+#include "lights/light.glsl"// Need to access the light buffer,  texture buffer, and ray RayPayload
 #include "bxdf/bsdf.glsl"// Need to access the texture buffer
 
 void main() 
@@ -56,6 +57,7 @@ void main()
 		vec3 beta = vec3(1.f);// Path throughput weight (BSDF*Geometry) (fraction of radiance from the light source that arrives at the camera)
 		bool specularBounce = false;// Handle special case when the ray reflects in only one direction
 		uint bounces;
+
 
 		for(bounces = 0;; bounces++)
 		{
@@ -93,16 +95,18 @@ void main()
 				}
 			}
 
-
 			// Terminate path if ray miss or maxDepth reached
 			if(!foundIntersection || bounces>=ubo.maxDepth)
 				break;
 
+
 			float uLightIndex = randomFloat(pixelSeed);
 			vec2 uLight = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
 			vec2 uScattering = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
-			vec3 Ld = beta*Light_uniformSampleOneLight(ubo.nLights, ray.it, uLightIndex, uLight, uScattering);
+			vec3 Ld = beta*Light_uniformSampleOneLight(ubo.nLights, uLightIndex, uLight, uScattering);
 			L += Ld;
+
+
 
 			// Update next ray origin from intersection
 			// Update next ray direction from BSDF sample

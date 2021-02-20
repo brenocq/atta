@@ -8,6 +8,7 @@
 #include <iostream>
 #include "simulator/helpers/log.h"
 #include "simulator/helpers/drawer.h"
+#include "simulator/helpers/evaluator.h"
 #include "simulator/graphics/vulkan/imageMemoryBarrier.h"
 
 namespace atta
@@ -96,6 +97,9 @@ namespace atta
 
 	void WorkerGui::render()
 	{
+		LocalEvaluator eval("fps");
+
+
 		uint32_t imageIndex;
 		VkResult result = vkAcquireNextImageKHR(_vkCore->getDevice()->handle(), _swapChain->handle(), 
 				UINT64_MAX, _imageAvailableSemaphores[_currentFrame]->handle(), VK_NULL_HANDLE, &imageIndex);
@@ -119,7 +123,6 @@ namespace atta
 			_renderers[_mainRendererIndex]->updateCameraMatrix(_modelViewController->getModelView());
 			_cameraUpdated = false;
 		}
-
 
 		//---------- Record to command buffer ----------//
 		VkCommandBuffer commandBuffer = _commandBuffers->begin(imageIndex);
@@ -183,6 +186,7 @@ namespace atta
 		//---------- Next frame ----------//
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 		Drawer::clear();// Clear drawer objects every frame
+
 	}
 
 	void WorkerGui::recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex)

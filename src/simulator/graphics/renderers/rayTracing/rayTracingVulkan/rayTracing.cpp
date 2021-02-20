@@ -34,9 +34,9 @@ namespace atta::rt::vk
 		ubo.projMat.data[5] *= -1;
 		ubo.viewMatInverse = inverse(ubo.viewMat);
 		ubo.projMatInverse = inverse(ubo.projMat);
-		ubo.samplesPerPixel = 1;
+		ubo.samplesPerPixel = 3;
 		ubo.nAccSamples = 0;// The number of accumulated samples is increased every render() call
-		ubo.maxDepth = 4;
+		ubo.maxDepth = 6;
 		ubo.nLights = _scene->getLights().size();
 		ubo.seed = rand();
 		_uniformBuffer->setValue(ubo);
@@ -282,27 +282,27 @@ namespace atta::rt::vk
 		LocalEvaluator eval;
 
 		// Delete TLAS objects
-		_tlas.clear();
-		_instancesBuffer.reset();
-		_topBuffer.reset();
-		_topScratchBuffer.reset();
+		//_tlas.clear();
+		//_instancesBuffer.reset();
+		//_topBuffer.reset();
+		//_topScratchBuffer.reset();
 
 		// Delete accumulation image
-		_accumulationImage.reset();
-		_accumulationImageView.reset();
+		//_accumulationImage.reset();
+		//_accumulationImageView.reset();
 
-		// Delete pipeline objects
-		_rayTracingPipeline.reset();
-		_shaderBindingTable.reset();
+		//// Delete pipeline objects
+		//_rayTracingPipeline.reset();
+		//_shaderBindingTable.reset();
 
-		VkCommandBuffer commandBuffer = _commandPool->beginSingleTimeCommands();
-		{
-			createTopLevelStructures(commandBuffer);
-		}
-		_commandPool->endSingleTimeCommands(commandBuffer);
+		//VkCommandBuffer commandBuffer = _commandPool->beginSingleTimeCommands();
+		//{
+		//	createTopLevelStructures(commandBuffer);
+		//}
+		//_commandPool->endSingleTimeCommands(commandBuffer);
 
-		createAccumulationImage();
-		createPipeline();
+		//createAccumulationImage();
+		//createPipeline();
 
 		eval.stop();
 		//Log::info("rt::vk::RayTracing", "Finished: [w]$0ms", eval.getMs());
@@ -310,7 +310,7 @@ namespace atta::rt::vk
 
 	void RayTracing::updateCameraMatrix(mat4 viewMatrix)
 	{
-		vkDeviceWaitIdle(_device->handle());
+		//vkDeviceWaitIdle(_device->handle());
 		recreateTLAS();
 		rt::vk::UniformBufferObject ubo = _uniformBuffer->getValue();
 		ubo.viewMat = transpose(viewMatrix);
