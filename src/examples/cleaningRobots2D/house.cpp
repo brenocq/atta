@@ -27,34 +27,44 @@ House::House()
 		_floorTexture[i*4+3] = 255;
 	}
 
-	//----- Left Wall
 	atta::Box::CreateInfo boxInfo {
 		.name = "Left wall",
-		.position = {-5,1.5,0},
+		.position = {0,2,0},
 		.rotation = {0,0,0},
-		.scale = {.15,3,10.15},
+		.scale = {1,1,1},
 		.mass = 0.0f,
 		.material = atta::Material::diffuse({.1,.5,.7}, 20)
 	};
-	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+
+	//----- Left Wall
+	//atta::Box::CreateInfo boxInfo {
+	//	.name = "Left wall",
+	//	.position = {-5,1.5,0},
+	//	.rotation = {0,0,0},
+	//	.scale = {.15,3,10.15},
+	//	.mass = 0.0f,
+	//	.material = atta::Material::diffuse({.1,.5,.7}, 20)
+	//};
+	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
 	//----- Right Wall
-	boxInfo.name = "Right wall";
-	boxInfo.position = {5,1.5,0};
-	boxInfo.scale = {.15,3,10.15};
-	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	//boxInfo.name = "Right wall";
+	//boxInfo.position = {5,1.5,0};
+	//boxInfo.scale = {.15,3,10.15};
+	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	//----- Top Wall
-	boxInfo.name = "Top wall";
-	boxInfo.position = {0,1.5,-5};
-	boxInfo.scale = {9.85,3,.15};
-	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	////----- Top Wall
+	//boxInfo.name = "Top wall";
+	//boxInfo.position = {0,1.5,-5};
+	//boxInfo.scale = {9.85,3,.15};
+	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	//----- Bottom Wall
-	boxInfo.name = "Bottom wall";
-	boxInfo.position = {0,1.5,5};
-	boxInfo.scale = {9.85,3,.15};
-	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	////----- Bottom Wall
+	//boxInfo.name = "Bottom wall";
+	//boxInfo.position = {0,1.5,5};
+	//boxInfo.scale = {9.85,3,.15};
+	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
 	//----- Floor
 	//atta::Plane::CreateInfo groundInfo {
@@ -69,38 +79,38 @@ House::House()
 	//};
 	//_objects.push_back(std::make_shared<atta::Plane>(groundInfo));
 
-	boxInfo.name = "Floor";
-	boxInfo.position = {0,-.01,0};
-	boxInfo.scale = {10,.01,10};
-	boxInfo.material = atta::Material::diffuse({.7,.7,.4}, 10);
-	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	//boxInfo.name = "Floor";
+	//boxInfo.position = {0,-.01,0};
+	//boxInfo.scale = {10,.01,10};
+	//boxInfo.material = atta::Material::diffuse({.7,.7,.4}, 10);
+	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	//----- Lights -----//
-	atta::PointLight::CreateInfo plInfo = {};
-	plInfo.position = {-2, .1, -2};
-	plInfo.intensity = {0, .3, .3};
-	//_objects.push_back(std::make_shared<atta::PointLight>(plInfo));
+	////----- Lights -----//
+	//atta::PointLight::CreateInfo plInfo = {};
+	//plInfo.position = {-2, .1, -2};
+	//plInfo.intensity = {0, .3, .3};
+	////_objects.push_back(std::make_shared<atta::PointLight>(plInfo));
 
-	atta::SpotLight::CreateInfo slInfo = {};
-	slInfo.position = {-1, 2, -1};
-	slInfo.direction = {1, -1, 1};
-	slInfo.intensity = {10, 10, 10};
-	slInfo.maxAngle = 60.f;
-	slInfo.falloffStartAngle = 30.f;
-	//_objects.push_back(std::make_shared<atta::SpotLight>(slInfo));
+	//atta::SpotLight::CreateInfo slInfo = {};
+	//slInfo.position = {-1, 2, -1};
+	//slInfo.direction = {1, -1, 1};
+	//slInfo.intensity = {10, 10, 10};
+	//slInfo.maxAngle = 60.f;
+	//slInfo.falloffStartAngle = 30.f;
+	////_objects.push_back(std::make_shared<atta::SpotLight>(slInfo));
 
-	atta::DistantLight::CreateInfo dlInfo = {};
-	dlInfo.radiance = {.5, .5, .5};
-	dlInfo.direction = {1, 1, 1};
-	//_objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
+	//atta::DistantLight::CreateInfo dlInfo = {};
+	//dlInfo.radiance = {.5, .5, .5};
+	//dlInfo.direction = {1, 1, 1};
+	////_objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
 
-	atta::InfiniteLight::CreateInfo ilInfo {
-		.position = {0, 0, 0},
-		.rotation = {atta::radians(-90), 0, 0},
-		//.texture = atta::Texture::fromFile("14-Hamarikyu_Bridge_B_3k.hdr"),
-		.texture = atta::Texture::fromFile("WinterForest_Ref.hdr"),
-	};
-	_objects.push_back(std::make_shared<atta::InfiniteLight>(ilInfo));
+	//atta::InfiniteLight::CreateInfo ilInfo {
+	//	.position = {0, 0, 0},
+	//	.rotation = {atta::radians(-90), 0, 0},
+	//	//.texture = atta::Texture::fromFile("14-Hamarikyu_Bridge_B_3k.hdr"),
+	//	.texture = atta::Texture::fromFile("WinterForest_Ref.hdr"),
+	//};
+	//_objects.push_back(std::make_shared<atta::InfiniteLight>(ilInfo));
 }
 
 House::~House()

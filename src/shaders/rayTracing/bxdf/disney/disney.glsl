@@ -136,6 +136,8 @@ void BXDF_Disney_preprocess(BXDF bxdf,
 		clearCoat = true;
 		ccGloss = mix(.1, .001, bxdf.dataf[8]);
 	}
+	else
+		clearCoat = false;
 
 	//---------- Microfacet Transmission ----------//
 	if(strans > 0)

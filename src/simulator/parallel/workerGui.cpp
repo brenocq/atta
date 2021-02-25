@@ -97,8 +97,7 @@ namespace atta
 
 	void WorkerGui::render()
 	{
-		LocalEvaluator eval("fps");
-
+		//LocalEvaluator eval("time per frame");
 
 		uint32_t imageIndex;
 		VkResult result = vkAcquireNextImageKHR(_vkCore->getDevice()->handle(), _swapChain->handle(), 

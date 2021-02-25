@@ -1,5 +1,5 @@
 file(GLOB model_files models/*/*.obj models/*/*.mtl models/*/*.png models/*/*.jpg)
-file(GLOB texture_files textures/**/*.jpg textures/**/*.png textures/**/*.txt textures/**/*.hdr)
+file(GLOB texture_files textures/**/*.jpg textures/**/*.png textures/**/*.txt textures/**/*.hdr textures/*.jpg textures/*.png textures/*.txt textures/*.hdr)
 file(GLOB font_files fonts/**/*.ttf)
 
 macro(copy_models asset_files dir_name copied_files)

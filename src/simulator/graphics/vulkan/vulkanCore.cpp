@@ -122,6 +122,11 @@ namespace atta::vk
 					}
 			}
 		}
+		if(_textures.size()==0)
+		{
+			// Texture buffer can't be empty, push one texture
+			_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, "icon.png"));
+		}
 	}
 
 	void VulkanCore::updateBuffers(std::shared_ptr<Scene> scene)

@@ -17,11 +17,21 @@ layout(location = 0) out vec4 outFragColor;
 
 void main() 
 {
-	//Material m = materials[inMaterialIndex];
+	Material m = materials[inMaterialIndex];
+
+	// TODO only diffuse material supported
+	if(m.type[0] == MATERIAL_TYPE_DIFFUSE)
+	{
+		outFragColor = vec4(m.datav[0].xyz, 1);
+	}
+	else
+	{
+	}
+	//outFragColor = vec4(1, 0, 1, 1);
+
 	//if(m.albedoIndex >= 0)
 	//	outFragColor = texture(textures[m.albedoIndex], inTexCoord);
 	//else
 	//	outFragColor = vec4(m.albedo, 1.0); 
 	//	TODO show color from material
-	outFragColor = vec4(0.8, 0.6, 0.4, 1.0);
 }
