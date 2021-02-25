@@ -10,7 +10,7 @@
 CleaningRobots2D::CleaningRobots2D():
 	_qtyRobots(9)
 {
-	_attaCreateInfo.dimensionMode = atta::Atta::DIM_MODE_3D;
+	_attaCreateInfo.dimensionMode = atta::Atta::DIM_MODE_2D;
 	_attaCreateInfo.physicsMode = atta::Atta::PHY_MODE_DISABLED;
 	_attaCreateInfo.createWindow = true;
 
@@ -19,7 +19,7 @@ CleaningRobots2D::CleaningRobots2D():
 	_attaCreateInfo.objects = objects;
 
 	createRobots();
-	_attaCreateInfo.robots = cleanersToRobots();
+	//_attaCreateInfo.robots = cleanersToRobots();
 	_attaCreateInfo.runAfterRobots = [this](){ runAfterRobots(); };
 }
 

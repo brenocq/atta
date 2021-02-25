@@ -28,6 +28,8 @@ namespace atta
 
 		_position = vec3(cameraToWorld.col(3));
 		_orientation = mat4(mat3(cameraToWorld));
+
+		Log::debug("MVC", "ori:$0pos:$1", _orientation.toString(), _position.toString());
 		
 		_cursorMovX = 0;
 		_cursorMovY = 0;
@@ -39,7 +41,6 @@ namespace atta
 	{
 		//const auto view = _orientation.translate(-_position);
 		mat4 res = lookAt(_position, _position+_forward, _up);
-		//return res;
 		return res;
 	}
 
@@ -120,6 +121,8 @@ namespace atta
 				const float speed2DFac = 0.1;
 				moveRight(d*_cursorMovX*speed2DFac);
 				moveUp(-d*_cursorMovY*speed2DFac);
+
+				changed = changed || _cursorMovX!=0 || _cursorMovY!=0;
 			}
 			else if(_controlType == CONTROL_TYPE_3D)
 			{

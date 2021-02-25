@@ -70,11 +70,14 @@ namespace atta
 		UniformBuffer2D::Data data = _uniformBuffer->getValue();
 		data.viewMatrix = transpose(viewMatrix);
 
-		//mat4 ortho = transpose(data.orthoMatrix);
-		//vec3 test(0.5,1.0,0.5);
-		//vec3 afterView = viewMatrix * test;
-		//vec3 afterOrtho = ortho * afterView;
-		//Log::debug("Renderer2D", "view:$0ortho:$1res:$2\n$3\n$4", inverse(viewMatrix).toString(), ortho.toString(), test.toString(), afterView.toString(), afterOrtho.toString());
+		//Log::debug("R2D", "changed view: $0", inverse(viewMatrix).toString());
+
+		mat4 ortho = transpose(data.orthoMatrix);
+		mat4 view = transpose(data.viewMatrix);
+		vec3 test(.5,.5,.5);
+		vec3 afterView = view * test;
+		vec3 afterOrtho = ortho * afterView;
+		Log::debug("Renderer2D", "view:$0ortho:$1res:$2\n$3\n$4", inverse(view).toString(), ortho.toString(), test.toString(), afterView.toString(), afterOrtho.toString());
 
 		_uniformBuffer->setValue(data);
 	}

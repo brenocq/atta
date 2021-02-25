@@ -20,16 +20,6 @@
 
 namespace atta::vk
 {
-	struct MeshOffset
-	{
-		unsigned vertexOffset;
-		unsigned indexOffset;
-	};
-
-	struct InstanceInfo
-	{
-		mat4 transform;
-	};
 
 	class VulkanCore
 	{
