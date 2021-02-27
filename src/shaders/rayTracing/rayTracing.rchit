@@ -72,16 +72,17 @@ void main()
 	bsdf.ng = normal;
 	bsdf.ns = normal;
 	bsdf.nBxdf = 1;
-	if((normal.x>=normal.y && normal.x>=normal.z) || (normal.y>=normal.x && normal.y>=normal.z))
-	{
+
+	// Choose best vector to create orthonormal base
+	float absx = abs(normal.x), absy = abs(normal.y), absz = abs(normal.z);
+	if(absz<absy && absz<absx)
 		bsdf.ss = cross(vec3(0,0,1), normal);
-		bsdf.ts = cross(normal, bsdf.ss);
-	}
+	else if(absy<absx)
+		bsdf.ss = cross(vec3(0,1,0), normal);
 	else
-	{
 		bsdf.ss = cross(vec3(1,0,0), normal);
-		bsdf.ts = cross(normal, bsdf.ss);
-	}
+	bsdf.ts = cross(normal, bsdf.ss);
+	bsdf.ss = cross(normal, bsdf.ts);
 
 	Interaction it;
 	it.point = worldPos;
