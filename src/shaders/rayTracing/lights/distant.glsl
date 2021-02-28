@@ -13,16 +13,16 @@
 float DistantLight_falloff(Light light, vec3 w, float cosTotalWidth, float cosFalloffStart);
 
 vec3 DistantLight_sampleLi(
-		Light light, Interaction ref, vec2 u, 
+		Light light, VisibilityPoint vp, vec2 u, 
 		out vec3 wi, out float pdf, out VisibilityTester vis, 
 		vec3 L, vec3 wLight)
 {
 	wi = wLight;
 	pdf = 1.f;
-	vec3 pOutside = ref.point + wLight*10000;
-	vis.p0.point = ref.point;
-	vis.p0.wo = ref.wo;
-	vis.p0.n = ref.n;
+	vec3 pOutside = vp.point + wLight*10000;
+	vis.p0.point = vp.point;
+	vis.p0.wo = vp.wo;
+	vis.p0.n = vp.n;
 	vis.p1.point = pOutside;
 
 	return L;

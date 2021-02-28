@@ -168,8 +168,10 @@ namespace atta
 			for(auto robot : _scene->getRobots())
 				robot->run(dt);
 
+			Log::debug("TM", "BeforeAfterRobots");
 			if(_runAfterRobots)
 				_runAfterRobots();
+			Log::debug("TM", "AfterRobots");
 			_robotStageBarrier->wait();
 			//-------------------- Rendering --------------------//
 

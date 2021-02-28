@@ -104,21 +104,20 @@ namespace atta::vk
 						textureInfo.vkTexture = _textures.back();
 					}
 					break;
-				case atta::Texture::TYPE_BUFFER_BYTE_4:
+				case atta::Texture::TYPE_BUFFER:
 					{
-						_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, (void*)textureInfo.data, (VkExtent2D){textureInfo.width, textureInfo.height}, vk::Texture::BUFFER_RGBA));
-						textureInfo.vkTexture = _textures.back();
-					}
-					break;
-				case atta::Texture::TYPE_BUFFER_FLOAT_3:
-					{
-						_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, (void*)textureInfo.data, (VkExtent2D){textureInfo.width, textureInfo.height}, vk::Texture::BUFFER_FLOAT3_NO_NORM));
+						_textures.push_back(std::make_shared<vk::Texture>(
+									_device, 
+									_commandPool, 
+									(void*)textureInfo.data, 
+									(VkExtent2D){textureInfo.width, textureInfo.height}, 
+									textureInfo.format));
 						textureInfo.vkTexture = _textures.back();
 					}
 					break;
 				default:
 					{
-
+						Log::warning("VulkanCore", "Textures should not have NONE type.");
 					}
 			}
 		}

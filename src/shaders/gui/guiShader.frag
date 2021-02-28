@@ -57,6 +57,6 @@ void main()
 	else
 	{
 		// Is letter
-		outColor = objectInfo.color*texture(textureSamplers[0], inTexCoord).rgba;
+		outColor = objectInfo.color*vec4(1,1,1,texture(textureSamplers[0], inTexCoord).r);
 	}
 }

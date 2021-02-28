@@ -13,6 +13,7 @@
 #include "device.h"
 #include "descriptorSetLayout.h"
 #include "helpers.h"
+#include "simulator/graphics/core/objectInfo.h"
 
 namespace atta::vk
 {

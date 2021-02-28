@@ -11,21 +11,21 @@
 float SpotLight_falloff(Light light, vec3 w, float cosFalloffStart, float cosTotalWidth);
 
 vec3 SpotLight_sampleLi(
-		Light light, Interaction ref, vec2 u, 
+		Light light, VisibilityPoint vp, vec2 u, 
 		out vec3 wi, out float pdf, out VisibilityTester vis, 
 		vec3 I, float cosFalloffStart, float cosTotalWidth)
 {
 	vec3 pLight = (light.lightToWorld * vec4(0,0,0,1)).xyz;
 	
-	wi = normalize(pLight - ref.point);
+	wi = normalize(pLight - vp.point);
 	pdf = 1.f;
-	vis.p0.point = ref.point;
-	vis.p0.wo = ref.wo;
-	vis.p0.n = ref.n;
+	vis.p0.point = vp.point;
+	vis.p0.wo = vp.wo;
+	vis.p0.n = vp.n;
 	vis.p1.point = pLight;
 	vis.p1.point = vec3(-1, 3, -1);
 
-	vec3 p = pLight-ref.point;
+	vec3 p = pLight-vp.point;
 	float squareDist = dot(p,p);
 	return I*SpotLight_falloff(light, -wi, cosFalloffStart, cosTotalWidth)/squareDist;
 }

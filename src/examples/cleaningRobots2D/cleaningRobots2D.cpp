@@ -10,16 +10,18 @@
 CleaningRobots2D::CleaningRobots2D():
 	_qtyRobots(9)
 {
+	// Setup simulator
 	_attaCreateInfo.dimensionMode = atta::Atta::DIM_MODE_2D;
 	_attaCreateInfo.physicsMode = atta::Atta::PHY_MODE_DISABLED;
 	_attaCreateInfo.createWindow = true;
 
-	// House objects (floor, walls, furniture...)
+	// Setup house objects (floor, walls, furniture...)
 	std::vector<std::shared_ptr<atta::Object>> objects = house.getObjects();
 	_attaCreateInfo.objects = objects;
 
+	// Setup robots (cleaners)
 	createRobots();
-	//_attaCreateInfo.robots = cleanersToRobots();
+	_attaCreateInfo.robots = cleanersToRobots();
 	_attaCreateInfo.runAfterRobots = [this](){ runAfterRobots(); };
 }
 
@@ -36,7 +38,7 @@ void CleaningRobots2D::runAfterRobots()
 
 	// TODO Need to syncronize gpu queue access between threads to change image layout
 	// Executes after all robots.run() are finished
-	//house.writeFloorDataToTexture();
+	house.writeFloorDataToTexture();
 }
 
 void CleaningRobots2D::createRobots()

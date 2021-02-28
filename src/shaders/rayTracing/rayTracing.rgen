@@ -69,7 +69,6 @@ void main()
 				0 /*sbtRecordOffset*/, 0 /*sbtRecordStride*/, 0 /*missIndex*/, 
 				origin, tMin, direction, tMax, 0 /*payload*/);
 
-
 			BSDF bsdf = ray.it.bsdf;
 			const bool foundIntersection = (ray.t>=0);
 
@@ -99,13 +98,11 @@ void main()
 			if(!foundIntersection || bounces>=ubo.maxDepth)
 				break;
 
-
 			float uLightIndex = randomFloat(pixelSeed);
 			vec2 uLight = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
 			vec2 uScattering = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
 			vec3 Ld = beta*Light_uniformSampleOneLight(ubo.nLights, uLightIndex, uLight, uScattering);
 			L += Ld;
-
 
 			// Update next ray origin from intersection
 			// Update next ray direction from BSDF sample

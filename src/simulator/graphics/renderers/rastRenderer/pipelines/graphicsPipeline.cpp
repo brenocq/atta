@@ -248,7 +248,7 @@ namespace atta::vk
 			auto model = object->getModel();
 
 			ObjectInfo objectInfo;
-			objectInfo.modelMat = transpose(object->getModelMat());
+			objectInfo.transform = transpose(object->getModelMat());
 			objectInfo.materialOffset = model->getMaterialOffset();
 
 			vkCmdPushConstants(

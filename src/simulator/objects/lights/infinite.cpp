@@ -189,7 +189,8 @@ namespace atta
 		}
 
 		//---------- Add texture and store index ----------//
-		_pdfTextureIndex = Texture::fromBuffer(_distributionAccess.data(), _width, _height, Texture::TYPE_BUFFER_FLOAT_3);
+		//_pdfTextureIndex = Texture::fromBuffer(_distributionAccess.data(), _width, _height, Texture::TYPE_RGB_FLOAT_3);
+		_pdfTextureIndex = -1;
 
 		//---------- Finished ----------//
 		eval.stop();

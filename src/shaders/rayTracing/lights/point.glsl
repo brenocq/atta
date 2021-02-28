@@ -9,20 +9,20 @@
 #include "base.glsl"
 
 vec3 PointLight_sampleLi(
-		Light light, Interaction ref, vec2 u, 
+		Light light, VisibilityPoint vp, vec2 u, 
 		out vec3 wi, out float pdf, out VisibilityTester vis, 
 		vec3 I)
 {
 	vec3 pLight = (light.lightToWorld * vec4(0,0,0,1)).xyz;
 	
-	wi = normalize(pLight - ref.point);
+	wi = normalize(pLight - vp.point);
 	pdf = 1.f;
-	vis.p0.point = ref.point;
-	vis.p0.wo = ref.wo;
-	vis.p0.n = ref.n;
+	vis.p0.point = vp.point;
+	vis.p0.wo = vp.wo;
+	vis.p0.n = vp.n;
 	vis.p1.point = pLight;
 
-	vec3 p = pLight-ref.point;
+	vec3 p = pLight-vp.point;
 	return I/dot(p,p);
 }
 

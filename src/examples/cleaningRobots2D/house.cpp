@@ -10,10 +10,12 @@
 #include "simulator/graphics/core/texture.h"
 #include "simulator/math/math.h"
 #include "simulator/helpers/log.h"
+#include <thread>
+#include <sstream>
 
 House::House()
 {
-	float floorSize = 10;
+	float floorSize = 8;
 	//----- Allocate floorData buffer
 	floorData.resize(floorSize*floorSize*10000, 255);//10x10m floor -> squares of 10x10cm
 	_floorTexture.resize(floorSize*floorSize*10000*4);
@@ -21,96 +23,85 @@ House::House()
 	for(unsigned i=0; i<floorData.size(); i++)
 	{
 		uint8_t data = floorData[i];
-		_floorTexture[i*4] = data*0.8;
-		_floorTexture[i*4+1] = data*0.75;
+		_floorTexture[i*4+0] = data*0.7;
+		_floorTexture[i*4+1] = data*0.65;
 		_floorTexture[i*4+2] = 0;
 		_floorTexture[i*4+3] = 255;
 	}
 
-	atta::Box::CreateInfo boxInfo {
-		.name = "Left wall",
-		.position = {0,2,0},
-		.rotation = {0,0,0},
-		.scale = {1,1,1},
+	//----- Floor
+	atta::Plane::CreateInfo groundInfo {
+		.name = "Floor",
+		.size = {floorSize,floorSize},
 		.mass = 0.0f,
-		.material = atta::Material::diffuse({.1,.5,.7}, 20)
+		.material = atta::Material::diffuse({
+			// Create diffuse texture from floorTexture buffer (RGBA unsigned byte (from 0 to 255))
+			.kdTexture = (_floorTextureId = atta::Texture::fromBuffer(_floorTexture.data(), floorSize*100, floorSize*100, atta::Texture::FORMAT_RGBA_UBYTE)), 
+			.sigma=10
+		})
 	};
-	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	_objects.push_back(std::make_shared<atta::Plane>(groundInfo));
 
 	//----- Left Wall
-	//atta::Box::CreateInfo boxInfo {
-	//	.name = "Left wall",
-	//	.position = {-5,1.5,0},
-	//	.rotation = {0,0,0},
-	//	.scale = {.15,3,10.15},
-	//	.mass = 0.0f,
-	//	.material = atta::Material::diffuse({.1,.5,.7}, 20)
-	//};
-	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	atta::Box::CreateInfo boxInfo {
+		.name = "Left wall",
+		.position = {-floorSize/2,1.5,0},
+		.rotation = {0,0,0},
+		.scale = {.15,3,floorSize+0.15},
+		.mass = 0.0f,
+		.material = atta::Material::diffuse({.kd={.8,.8,.8}, .sigma=20})
+	};
+	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
 	//----- Right Wall
-	//boxInfo.name = "Right wall";
-	//boxInfo.position = {5,1.5,0};
-	//boxInfo.scale = {.15,3,10.15};
-	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	boxInfo.name = "Right wall";
+	boxInfo.position = {4,1.5,0};
+	boxInfo.scale = {.15,3,floorSize+0.15};
+	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	////----- Top Wall
-	//boxInfo.name = "Top wall";
-	//boxInfo.position = {0,1.5,-5};
-	//boxInfo.scale = {9.85,3,.15};
-	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	//----- Top Wall
+	boxInfo.name = "Top wall";
+	boxInfo.position = {0,1.5,-4};
+	boxInfo.scale = {floorSize-.15,3,.15};
+	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	////----- Bottom Wall
-	//boxInfo.name = "Bottom wall";
-	//boxInfo.position = {0,1.5,5};
-	//boxInfo.scale = {9.85,3,.15};
-	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	//----- Bottom Wall
+	boxInfo.name = "Bottom wall";
+	boxInfo.position = {0,1.5,4};
+	boxInfo.scale = {floorSize-0.15,3,.15};
+	_objects.push_back(std::make_shared<atta::Box>(boxInfo));
 
-	//----- Floor
-	//atta::Plane::CreateInfo groundInfo {
-	//	.name = "Floor",
-	//	.size = {floorSize,floorSize},
-	//	.mass = 0.0f,
-	//	.material = {
-	//		.albedo = atta::vec3(.3,.4,.8),
-	//		//.albedoIndex = (_floorTextureId = atta::Texture::fromBuffer(_floorTexture.data(), floorSize*100, floorSize*100, atta::Texture::BUFFER_TYPE_BYTE_4)),
-	//		// Create albedo texture from floorData buffer and defines function to map from uint8_t to the texture color
-	//	}
-	//};
-	//_objects.push_back(std::make_shared<atta::Plane>(groundInfo));
+	//----- Lights -----//
+	atta::PointLight::CreateInfo plInfo = {};
+	plInfo.position = {-2, .1, -2};
+	plInfo.intensity = {0, .3, .3};
+	_objects.push_back(std::make_shared<atta::PointLight>(plInfo));
 
-	//boxInfo.name = "Floor";
-	//boxInfo.position = {0,-.01,0};
-	//boxInfo.scale = {10,.01,10};
-	//boxInfo.material = atta::Material::diffuse({.7,.7,.4}, 10);
-	//_objects.push_back(std::make_shared<atta::Box>(boxInfo));
+	atta::SpotLight::CreateInfo slInfo = {};
+	slInfo.position = {-1, 2, -1};
+	slInfo.direction = {1, -1, 1};
+	slInfo.intensity = {10, 10, 10};
+	slInfo.maxAngle = 60.f;
+	slInfo.falloffStartAngle = 30.f;
+	_objects.push_back(std::make_shared<atta::SpotLight>(slInfo));
 
-	////----- Lights -----//
-	//atta::PointLight::CreateInfo plInfo = {};
-	//plInfo.position = {-2, .1, -2};
-	//plInfo.intensity = {0, .3, .3};
-	////_objects.push_back(std::make_shared<atta::PointLight>(plInfo));
+	atta::DistantLight::CreateInfo dlInfo = {};
+	dlInfo.radiance = {.5, .5, .5};
+	dlInfo.direction = {1, 1, 1};
+	_objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
 
-	//atta::SpotLight::CreateInfo slInfo = {};
-	//slInfo.position = {-1, 2, -1};
-	//slInfo.direction = {1, -1, 1};
-	//slInfo.intensity = {10, 10, 10};
-	//slInfo.maxAngle = 60.f;
-	//slInfo.falloffStartAngle = 30.f;
-	////_objects.push_back(std::make_shared<atta::SpotLight>(slInfo));
+	atta::InfiniteLight::CreateInfo ilInfo {
+		.position = {0, 0, 0},
+		.rotation = {atta::radians(-90), 0, 0},
+		//.texture = atta::Texture::fromFile("14-Hamarikyu_Bridge_B_3k.hdr"),
+		.texture = atta::Texture::fromFile("WinterForest_Ref.hdr"),
+	};
+	_objects.push_back(std::make_shared<atta::InfiniteLight>(ilInfo));
 
-	//atta::DistantLight::CreateInfo dlInfo = {};
-	//dlInfo.radiance = {.5, .5, .5};
-	//dlInfo.direction = {1, 1, 1};
-	////_objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
-
-	//atta::InfiniteLight::CreateInfo ilInfo {
-	//	.position = {0, 0, 0},
-	//	.rotation = {atta::radians(-90), 0, 0},
-	//	//.texture = atta::Texture::fromFile("14-Hamarikyu_Bridge_B_3k.hdr"),
-	//	.texture = atta::Texture::fromFile("WinterForest_Ref.hdr"),
-	//};
-	//_objects.push_back(std::make_shared<atta::InfiniteLight>(ilInfo));
+	std::stringstream ss;
+	ss << std::this_thread::get_id();
+	uint64_t id = std::stoull(ss.str());
+	Log::debug("House", "Starting with thread $0", id);
 }
 
 House::~House()
@@ -129,5 +120,9 @@ void House::writeFloorDataToTexture()
 		_floorTexture[i*4+3] = 255;
 	}
 
+	std::stringstream ss;
+	ss << std::this_thread::get_id();
+	uint64_t id = std::stoull(ss.str());
+	Log::debug("House", "Im thread $0 and tex:$1", id, _floorTextureId);
 	atta::Texture::updateTexture(_floorTextureId);
 }
