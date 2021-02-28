@@ -18,7 +18,7 @@ BSDF Material_computeScatteringFunctions(inout Material material, vec2 uv)
 	switch(material.type[0])
 	{
 		case MATERIAL_TYPE_DIFFUSE:
-			return Material_Diffuse_computeScatteringFunctions(material);
+			return Material_Diffuse_computeScatteringFunctions(material, uv);
 		case MATERIAL_TYPE_MIRROR:
 			return Material_Mirror_computeScatteringFunctions(material);
 		case MATERIAL_TYPE_METAL:

@@ -35,33 +35,33 @@ vec3 Light_sampleLi(Light light, vec2 u, out vec3 wi, out float pdf, out Visibil
 	vp.wo = ray.it.wo;
 	vp.n = ray.it.n;
 	
-	return InfiniteLight_sampleLi(light, vp, u, wi, pdf, vis);
+	//return InfiniteLight_sampleLi(light, vp, u, wi, pdf, vis);
 	//return vec3(0,0,0);
-	//switch(light.type)
-	//{
-	//	case LIGHT_TYPE_POINT:
-	//		{
-	//			vec3 I = light.datav[0].xyz;
-	//			return PointLight_sampleLi(light, ref, u, wi, pdf, vis, I);
-	//		}
-	//	case LIGHT_TYPE_SPOT:
-	//		{
-	//			vec3 I = light.datav[0].xyz;
-	//			float cosFalloffStart = light.dataf[0];
-	//			float cosTotalWidth = light.dataf[1];
-	//			return SpotLight_sampleLi(light, ref, u, wi, pdf, vis, I, cosFalloffStart, cosTotalWidth);
-	//		}
-	//	case LIGHT_TYPE_DISTANT:
-	//		{
-	//			vec3 L = light.datav[0].xyz;
-	//			vec3 wLight = light.datav[1].xyz;
-	//			return DistantLight_sampleLi(light, ref, u, wi, pdf, vis, L, wLight);
-	//		}
-	//	case LIGHT_TYPE_INFINITE:
-	//		return InfiniteLight_sampleLi(light, ref, u, wi, pdf, vis);
-	//	default:
-	//		return vec3(0,0,0);
-	//}
+	switch(light.type)
+	{
+		case LIGHT_TYPE_POINT:
+			{
+				vec3 I = light.datav[0].xyz;
+				return PointLight_sampleLi(light, vp, u, wi, pdf, vis, I);
+			}
+		case LIGHT_TYPE_SPOT:
+			{
+				vec3 I = light.datav[0].xyz;
+				float cosFalloffStart = light.dataf[0];
+				float cosTotalWidth = light.dataf[1];
+				return SpotLight_sampleLi(light, vp, u, wi, pdf, vis, I, cosFalloffStart, cosTotalWidth);
+			}
+		case LIGHT_TYPE_DISTANT:
+			{
+				vec3 L = light.datav[0].xyz;
+				vec3 wLight = light.datav[1].xyz;
+				return DistantLight_sampleLi(light, vp, u, wi, pdf, vis, L, wLight);
+			}
+		case LIGHT_TYPE_INFINITE:
+			return InfiniteLight_sampleLi(light, vp, u, wi, pdf, vis);
+		default:
+			return vec3(0,0,0);
+	}
 }
 
 vec3 Light_sampleLe(Light light)

@@ -66,7 +66,12 @@ namespace guib {
 		//testFontTerminal("test");
 		
 		// Load texture
-		_texture = std::make_shared<atta::vk::Texture>(_device, _commandPool, _fontTexture.atlas.data, (VkExtent2D){_fontTexture.atlas.width, _fontTexture.atlas.height});
+		_texture = std::make_shared<atta::vk::Texture>(
+				_device, 
+				_commandPool, 
+				_fontTexture.atlas.data, 
+				(VkExtent2D){_fontTexture.atlas.width, _fontTexture.atlas.height},
+				atta::Texture::FORMAT_R_UBYTE);
 	}
 
 	FontLoader::~FontLoader()

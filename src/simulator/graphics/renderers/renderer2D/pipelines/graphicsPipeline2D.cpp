@@ -233,10 +233,8 @@ namespace atta
 			auto model = object->getModel();
 
 			ObjectInfo objectInfo;
-			objectInfo.modelMat = transpose(object->getModelMat());
+			objectInfo.transform = transpose(object->getModelMat());
 			objectInfo.materialOffset = model->getMaterialOffset();
-
-			//Log::debug("VkCore", "Model $0: $1", model->getMeshName(), model->getMaterialOffset());
 
 			vkCmdPushConstants(
 					commandBuffer,
@@ -246,7 +244,6 @@ namespace atta
 					sizeof(ObjectInfo),
 					&objectInfo);
 
-			//const uint32_t vertexCount = model->getVerticesSize();
 			const uint32_t indexCount = model->getMesh()->getIndicesSize();
 			const uint32_t vertexOffset = model->getMesh()->getVerticesOffset();
 			const uint32_t indexOffset = model->getMesh()->getIndicesOffset();
@@ -254,8 +251,6 @@ namespace atta
 			//Log::debug("GraphicsPipeline", "ind $0 - verto $1 - indo $2", indexCount, vertexOffset, indexOffset);
 
 			vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
-			//vkCmdDrawIndexed(commandBuffer, indexCount, 1, 3, 3, 0);
-			//vkCmdDrawIndexed(commandBuffer, 3, 1, 0, 0, 0);
 		}
 	}
 }

@@ -19,7 +19,7 @@ vec2 sampleContinuous(Light light, vec2 u, out float pdf)
 }
 
 vec3 InfiniteLight_sampleLi(
-		Light light, VisibilityPoint ref, vec2 u, 
+		Light light, VisibilityPoint vp, vec2 u, 
 		out vec3 wi, out float pdf, out VisibilityTester vis)
 {
 	float mapPdf;
@@ -39,8 +39,10 @@ vec3 InfiniteLight_sampleLi(
 
 	// Populate visibility tester and return texture value
 	float worldRadius = light.dataf[0];
-	vis.p0 = ref;
-	vis.p1.point = ref.point+wi*(2*worldRadius);
+	vis.p0.point = vp.point;
+	vis.p0.wo = vp.wo;
+	vis.p0.n = vp.n;
+	vis.p1.point = vp.point+wi*(2*worldRadius);
 
 	//return texture(textures[light.datai[0]], uv).rgb;
 	return texture(textures[light.datai[0]], uv).rgb;

@@ -26,6 +26,9 @@ struct Material
 
 //---------- Data description ----------//
 //----- DIFFUSE MATERIAL -----
+// - datai
+// 		[0](vec3 texture) kd texture index
+// 		[1](float texture) sigma texture index
 // - dataf
 // 		[0] - sigma
 // - datav

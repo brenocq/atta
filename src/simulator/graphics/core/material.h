@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_MATERIAL_H
 
 #include "simulator/math/math.h"
+#include "simulator/helpers/log.h"
 
 namespace atta
 {
@@ -28,12 +29,20 @@ namespace atta
 		};
 
 		//------------------- Diffuse ---------------------//
-		static Material diffuse(vec3 Kd, float sigma)
+		struct DiffuseInfo {
+			int kdTexture = -1;
+			int sigmaTexture = -1;
+			vec3 kd = {1,0,1};
+			float sigma = 20;
+		};
+		static Material diffuse(DiffuseInfo info)
 		{
 			Material m;
 			m.type[0] = MATERIAL_TYPE_DIFFUSE;
-			m.datav[0] = vec4(Kd,-1);
-			m.dataf[0] = sigma;
+			m.datai[0] = info.kdTexture;
+			m.datai[1] = info.sigmaTexture;
+			m.datav[0] = vec4(info.kd,-1);
+			m.dataf[0] = info.sigma;
 
 			return m;
 		}

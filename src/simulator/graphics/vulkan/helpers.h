@@ -28,18 +28,12 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
-struct ObjectInfo
-{
-	atta::mat4 modelMat;
-	int materialOffset = 0;
-};
-
 // TLAS instances (Ray tracing)
-struct InstanceInfo
-{
-	atta::mat4 transform{1};    // Position of the instance
-	atta::mat4 transformIT{1};  // Inverse transpose
-	atta::vec4 diffuse;  // Inverse transpose
-};
+//struct InstanceInfo
+//{
+//	atta::mat4 transform{1};    // Position of the instance
+//	atta::mat4 transformIT{1};  // Inverse transpose
+//	atta::vec4 diffuse;  // Inverse transpose
+//};
 
 #endif// HELPERS_H

@@ -15,22 +15,16 @@
 #include "image.h"
 #include "imageView.h"
 #include "sampler.h"
+#include "simulator/graphics/core/texture.h"
 
 namespace atta::vk
 {
 	class Texture
 	{
 		public:
-			enum BufferType {
-				BUFFER_A,
-				BUFFER_RGBA,
-				BUFFER_FLOAT_NO_NORM,
-				BUFFER_FLOAT3_NO_NORM,
-			};
-
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format=VK_FORMAT_R8G8B8A8_SRGB);
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size);
-			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer,  VkExtent2D size, BufferType bufferType=BUFFER_A);
+			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer, VkExtent2D size, atta::Texture::Format format);
 			~Texture();
 
 			std::shared_ptr<Device> getDevice() const { return _device; }
@@ -38,7 +32,7 @@ namespace atta::vk
 			std::shared_ptr<ImageView> getImageView() const { return _imageView; }
 			std::shared_ptr<Sampler> getSampler() const { return _sampler; }
 
-			void updateImage(const void* buffer, BufferType bufferType);
+			void updateImage(void* data);
 
 		private:
 			void transitionImageLayout(VkImageLayout newLayout);
@@ -55,6 +49,7 @@ namespace atta::vk
 			uint32_t _mipLevels;
 			uint32_t _arrayLayers;
 			int32_t _width, _height;
+			size_t _size;
 	};
 }
 

@@ -165,6 +165,10 @@ namespace atta
 	// Calculate orthographic matrix
 	inline mat4 orthographic(float height, float ratio, float depth=10)
 	{
+		// height: how many meters will appear vertically on the screen 
+		// ratio: window ratio (width/height)
+		// depth: maximum depth to render (in meters)
+
 		mat4 res(1);
 		float width = ratio*height;
 

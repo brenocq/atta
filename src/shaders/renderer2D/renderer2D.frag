@@ -22,7 +22,7 @@ void main()
 	// TODO only diffuse material supported
 	if(m.type[0] == MATERIAL_TYPE_DIFFUSE)
 	{
-		outFragColor = vec4(m.datav[0].xyz, 1);
+		outFragColor = m.datai[0]==-1 ? vec4(m.datav[0].xyz, 1) : texture(textures[m.datai[0]], inTexCoord).rgba;
 	}
 	else
 	{

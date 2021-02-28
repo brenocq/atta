@@ -22,7 +22,10 @@ MaterialsDemo::MaterialsDemo()
 		.position = {0,-.01,0},
 		.scale = {10,.01,10},
 		.mass = 0.0f,
-		.material = atta::Material::diffuse({.7,.7,.7}, 0)
+		.material = atta::Material::diffuse({
+			.kd = {.7,.7,.7},
+			.sigma = 0
+		})
 	};
 	objects.push_back(std::make_shared<atta::Box>(floorInfo));
 
@@ -58,7 +61,10 @@ MaterialsDemo::MaterialsDemo()
 		.position = {0,0,0},
 		.scale = {10,10,10},
 		.mass = 0.0f,
-		.material = atta::Material::diffuse({.3,.3,1}, 30)
+		.material = atta::Material::diffuse({
+			.kd = {.3,.3,1},
+			.sigma = 30
+		})
 	};
 	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
 

@@ -13,6 +13,9 @@
 namespace atta::vk
 {
 	// TODO remove format
+	//----------------------------------------//
+	//-------------- From file ---------------//
+	//----------------------------------------//
 	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format):
 		_device(device), _commandPool(commandPool), _arrayLayers(1)
 	{
@@ -59,12 +62,11 @@ namespace atta::vk
 
 		// Create staging buffer to copy data
 		StagingBuffer* stagingBuffer;
-		VkDeviceSize imageSize;
 		if(format == VK_FORMAT_R32G32B32A32_SFLOAT)
-			imageSize = texWidth * texHeight * 4 * sizeof(float);
+			_size = texWidth * texHeight * 4 * sizeof(float);
 		else
-			imageSize = texWidth * texHeight * 4;
-		stagingBuffer = new StagingBuffer(_device, pixels, imageSize);
+			_size = texWidth * texHeight * 4;
+		stagingBuffer = new StagingBuffer(_device, pixels, _size);
 		stbi_image_free(pixels);
 
 		// Create texture image and allocate memory (check if normal image or cube map)
@@ -107,7 +109,9 @@ namespace atta::vk
 		Log::success("Texture", "$0 loaded successfully: $1 x $2", filename, _width, _height);
 	}
 
-	//--------------------
+	//----------------------------------------//
+	//------------ Empty texture -------------//
+	//----------------------------------------//
 	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size):
 		_device(device), _commandPool(commandPool), _arrayLayers(1)
 	{
@@ -115,10 +119,10 @@ namespace atta::vk
 		_height = size.height;
 		_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_width, _height)))) + 1;
 
-		VkDeviceSize imageSize = _width * _height * 4;
-		std::vector<uint8_t> pixels(imageSize);
+		_size = _width * _height * 4;
+		std::vector<uint8_t> pixels(_size);
 
-		StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels.data(), imageSize);
+		StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels.data(), _size);
 
 		_image = std::make_shared<Image>(_device, _width, _height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
 
@@ -134,61 +138,35 @@ namespace atta::vk
 		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
 	}
 
-	//--------------------
-	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer,  VkExtent2D size, BufferType bufferType):
+	//----------------------------------------//
+	//-------------- From buffer -------------//
+	//----------------------------------------//
+	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer,  VkExtent2D size, atta::Texture::Format format):
 		_device(device), _commandPool(commandPool), _arrayLayers(1)
 	{
-		_width = size.width;
-		_height = size.height;
-
-		_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_width, _height)))) + 1;
-
-		VkDeviceSize imageSize = _width * _height * 4;
-		if(bufferType == BUFFER_FLOAT3_NO_NORM)
-			imageSize = _width * _height * 4 * sizeof(float);
-		std::vector<uint8_t> pixels(imageSize);
-		float* pixelsFloat = (float*)&pixels[0];
-		switch(bufferType)
+		if(format == atta::Texture::FORMAT_NONE)
 		{
-			case BUFFER_A:
-				for(int y=0; y<_height; y++)
-				{
-					for(int x=0; x<_width; x++)
-					{
-						pixels[(x+y*_width)*4+0] = 255;
-						pixels[(x+y*_width)*4+1] = 255;
-						pixels[(x+y*_width)*4+2] = 255;
-						pixels[(x+y*_width)*4+3] = ((uint8_t*)buffer)[x+y*_width];
-					}
-				}
-				break;
-			case BUFFER_RGBA:
-				for(size_t i=0;i<imageSize;i++)
-					pixels[i] = ((uint8_t*)buffer)[i];
-				break;
-			case BUFFER_FLOAT3_NO_NORM:
-				float* bufferFloat = (float*)buffer;
-				float* pixelsFloat = (float*)&pixels[0];
-				for(int y=0; y<_height; y++)
-				{
-					for(int x=0; x<_width; x++)
-					{
-						pixelsFloat[(x+y*_width)*4+0] = bufferFloat[(x+y*_width)*3+0];
-						pixelsFloat[(x+y*_width)*4+1] = bufferFloat[(x+y*_width)*3+1];
-						pixelsFloat[(x+y*_width)*4+2] = bufferFloat[(x+y*_width)*3+2];
-						pixelsFloat[(x+y*_width)*4+3] = 0;
-					}
-				}
-				break;
+			Log::warning("vk::Texture", "Texture::format must not be NONE to create the texture. Texture not created.");
+			return;
 		}
 
-		StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels.data(), imageSize);
+		_width = size.width;
+		_height = size.height;
+		_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_width, _height)))) + 1;
+		_size = _width * _height * atta::Texture::sizeInBytes.at(format);
 
-		if(bufferType != BUFFER_FLOAT3_NO_NORM)
-			_image = std::make_shared<Image>(_device, _width, _height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
-		else
-			_image = std::make_shared<Image>(_device, _width, _height, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
+		Log::debug("vk::Tex", "creating from buffer $0 $1 = $2", _width, _height, _size);
 
+		StagingBuffer* stagingBuffer = new StagingBuffer(_device, buffer, _size);
+
+		VkFormat vulkanFormat = atta::Texture::toVulkan.at(format);
+		_image = std::make_shared<Image>(
+				_device, 
+				_width, _height, 
+				vulkanFormat, VK_IMAGE_TILING_OPTIMAL, 
+				VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+				VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
+				_mipLevels);
 
 		transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
@@ -198,50 +176,16 @@ namespace atta::vk
 		delete stagingBuffer;
 		stagingBuffer = nullptr;
 
-		if(bufferType != BUFFER_FLOAT3_NO_NORM)
-		{
-			_imageView = std::make_shared<ImageView>(_device, _image->handle(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
-			_sampler = std::make_shared<Sampler>(_device, _mipLevels);
-		}
-		else
-		{
-			_imageView = std::make_shared<ImageView>(_device, _image->handle(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
-			_sampler = std::make_shared<Sampler>(_device, _mipLevels, true);// Normalized coordinates
-		}
+		_imageView = std::make_shared<ImageView>(_device, _image->handle(), vulkanFormat, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
+		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
 	}
-	//--------------------
-	void Texture::updateImage(const void* buffer, BufferType bufferType)
+
+	//----------------------------------------//
+	//------------- Update image -------------//
+	//----------------------------------------//
+	void Texture::updateImage(void* data)
 	{
-		std::vector<uint8_t> data(_width*_height*4);
-
-		switch(bufferType)
-		{
-			case BUFFER_A:
-				{
-					uint8_t* bytes = (uint8_t*)buffer;
-					for(int y=0; y<_height; y++)
-					{
-						for(int x=0; x<_width; x++)
-						{
-							data[(x+y*_width)*4+0] = 255;
-							data[(x+y*_width)*4+1] = 255;
-							data[(x+y*_width)*4+2] = 255;
-							data[(x+y*_width)*4+3] = bytes[x+y*_width];
-						}
-					}
-				}
-				break;
-			case BUFFER_RGBA:
-				{
-					uint8_t* bytes = (uint8_t*)buffer;
-					for(size_t i=0;i<data.size();i++)
-						data[i] = bytes[i];
-				}
-				break;
-		}
-
-		VkDeviceSize imageSize = _width * _height * 4;
-		StagingBuffer* stagingBuffer = new StagingBuffer(_device, data.data(), imageSize);
+		StagingBuffer* stagingBuffer = new StagingBuffer(_device, data, _size);
 
 		//transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		//copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
