@@ -56,10 +56,10 @@ These values are unreliable and come from what I think is going on in the code (
 	 - RayTracing (GPU/vulkan): 65%
 	 - RayTracing (CPU): 5%
 	 - Rasterization: 50%
-	 - 2D: 60%
+	 - 2D: 65%
  - GUI: 20%
  - Physics engine: 60%
- - Multithreading: 30%
+ - Multithreading: 50%
 
 ## References
 - [(Book) Physically Based Rendering](http://www.pbr-book.org/)

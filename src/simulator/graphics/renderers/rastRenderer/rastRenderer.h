@@ -23,6 +23,7 @@ namespace atta
 			struct CreateInfo
 			{
 				std::shared_ptr<vk::VulkanCore> vkCore;
+				std::shared_ptr<vk::CommandPool> commandPool;
 				float width;
 				float height;
 				std::shared_ptr<Scene> scene;

@@ -11,7 +11,7 @@
 namespace atta
 {
 	RastRenderer::RastRenderer(CreateInfo info):
-		Renderer({info.vkCore, info.width, info.height, info.viewMat, RENDERER_TYPE_RASTERIZATION}), _scene(info.scene)
+		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_RASTERIZATION}), _scene(info.scene)
 	{
 		//---------- Create uniform buffers ----------//
 		_uniformBuffer = std::make_shared<vk::UniformBuffer>(_vkCore->getDevice());

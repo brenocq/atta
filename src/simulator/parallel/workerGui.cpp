@@ -34,7 +34,7 @@ namespace atta
 		// Vulkan objects
 		_surface = std::make_shared<vk::Surface>(_vkCore->getInstance(), _window);
 		_swapChain = std::make_shared<vk::SwapChain>(_vkCore->getDevice(), _surface);
-		_commandPool = std::make_shared<vk::CommandPool>(_vkCore->getDevice(), VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+		_commandPool = std::make_shared<vk::CommandPool>(_vkCore->getDevice(), vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_GUI, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 		_commandBuffers = std::make_shared<vk::CommandBuffers>(_vkCore->getDevice(), _commandPool, _swapChain->getImages().size());
 
 		// Create render sync objects
@@ -154,7 +154,7 @@ namespace atta
 
 		_inFlightFences[_currentFrame]->reset();
 
-		if(vkQueueSubmit(_vkCore->getDevice()->getGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currentFrame]->handle()) != VK_SUCCESS)
+		if(vkQueueSubmit(_vkCore->getDevice()->getGraphicsQueueGUI(), 1, &submitInfo, _inFlightFences[_currentFrame]->handle()) != VK_SUCCESS)
 		{
 			Log::error("WorkerGui", "Failed to submit draw command buffer!");
 			exit(1);
@@ -170,7 +170,7 @@ namespace atta
 		presentInfo.pSwapchains = swapChains;
 		presentInfo.pImageIndices = &imageIndex;
 
-		result = vkQueuePresentKHR(_vkCore->getDevice()->getPresentQueue(), &presentInfo);
+		result = vkQueuePresentKHR(_vkCore->getDevice()->getPresentQueueGUI(), &presentInfo);
 		if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			// TODO update frameBufferResized variable

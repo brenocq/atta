@@ -101,6 +101,7 @@ namespace atta
 			
 			//---------- Rendering stage ----------//
 			std::shared_ptr<vk::VulkanCore> _vkCore;
+			std::shared_ptr<vk::CommandPool> _commandPool;
 			std::vector<std::shared_ptr<Renderer>> _renderers;
 	};
 }

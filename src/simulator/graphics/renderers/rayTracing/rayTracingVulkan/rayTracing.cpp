@@ -15,11 +15,9 @@
 namespace atta::rt::vk
 {
 	RayTracing::RayTracing(CreateInfo info):
-		Renderer({info.vkCore, info.width, info.height, info.viewMat, RENDERER_TYPE_RAY_TRACING_VULKAN}), 
-		_scene(info.scene)
+		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_RAY_TRACING_VULKAN}), _scene(info.scene)
 	{
 		_device = _vkCore->getDevice();
-		_commandPool = _vkCore->getCommandPool();
 
 		_deviceProcedures = std::make_shared<DeviceProcedures>(_device);
 		_rayTracingProperties  = std::make_shared<RayTracingProperties>(_device);

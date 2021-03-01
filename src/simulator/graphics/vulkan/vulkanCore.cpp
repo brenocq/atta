@@ -19,7 +19,7 @@ namespace atta::vk
 		_debugMessenger = std::make_unique<DebugMessenger>(_instance);
 		_physicalDevice = std::make_shared<PhysicalDevice>(_instance);
 		_device = std::make_shared<Device>(_physicalDevice);
-		_commandPool = std::make_shared<CommandPool>(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+		//_commandPool = std::make_shared<CommandPool>(_device, CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, CommandPool::QUEUE_THREAD_MANAGER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 	}
 
 	VulkanCore::~VulkanCore()
@@ -27,7 +27,7 @@ namespace atta::vk
 
 	}
 
-	void VulkanCore::createBuffers(std::shared_ptr<Scene> scene)
+	void VulkanCore::createBuffers(std::shared_ptr<Scene> scene, std::shared_ptr<CommandPool> commandPool)
 	{
 		// Concatenate objects to populate host memory buffers 
 		std::vector<Vertex> vertices;
@@ -83,24 +83,24 @@ namespace atta::vk
 		lights = scene->getLights();
 
 		//---------- Create device buffers ----------//
-		_vertexBuffer = createBufferMemory(
+		_vertexBuffer = createBufferMemory(commandPool,
 				VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
 				vertices);
-		_indexBuffer = createBufferMemory(
+		_indexBuffer = createBufferMemory(commandPool,
 				VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
 				indices);
-		_materialBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
-		_objectInfoBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, objectInfos);
-		_lightBuffer = createBufferMemory(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, lights);
+		_materialBuffer = createBufferMemory(commandPool,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
+		_objectInfoBuffer = createBufferMemory(commandPool,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, objectInfos);
+		_lightBuffer = createBufferMemory(commandPool,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, lights);
 
 		//---------- Create textures ----------//
-		for(auto& textureInfo : atta::Texture::textureInfos)
+		for(auto& textureInfo : atta::Texture::textureInfos())
 		{
 			switch(textureInfo.type)
 			{
 				case atta::Texture::TYPE_FILE:
 					{
-						_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, textureInfo.fileName));
+						_textures.push_back(std::make_shared<vk::Texture>(_device, commandPool, textureInfo.fileName));
 						textureInfo.vkTexture = _textures.back();
 					}
 					break;
@@ -108,7 +108,7 @@ namespace atta::vk
 					{
 						_textures.push_back(std::make_shared<vk::Texture>(
 									_device, 
-									_commandPool, 
+									commandPool, 
 									(void*)textureInfo.data, 
 									(VkExtent2D){textureInfo.width, textureInfo.height}, 
 									textureInfo.format));
@@ -124,17 +124,17 @@ namespace atta::vk
 		if(_textures.size()==0)
 		{
 			// Texture buffer can't be empty, push one texture
-			_textures.push_back(std::make_shared<vk::Texture>(_device, _commandPool, "icon.png"));
+			_textures.push_back(std::make_shared<vk::Texture>(_device, commandPool, "icon.png"));
 		}
 	}
 
-	void VulkanCore::updateBuffers(std::shared_ptr<Scene> scene)
+	void VulkanCore::updateBuffers(std::shared_ptr<Scene> scene, std::shared_ptr<CommandPool> commandPool)
 	{
 
 	}
 
 	template <class T>
-	std::shared_ptr<Buffer> VulkanCore::createBufferMemory(
+	std::shared_ptr<Buffer> VulkanCore::createBufferMemory(std::shared_ptr<CommandPool> commandPool,
 			const VkBufferUsageFlags usage, 
 			std::vector<T>& content)
 	{
@@ -158,7 +158,7 @@ namespace atta::vk
 			std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(_device, content.data(), size);
 
 			// Copy from host memory to device memory
-			buffer->copyFrom(_commandPool, stagingBuffer->handle(), size);
+			buffer->copyFrom(commandPool, stagingBuffer->handle(), size);
 		}
 
 		return buffer;

@@ -14,7 +14,6 @@ namespace atta::vk
 		_instance(instance)
 	{
 		_physicalDevice = VK_NULL_HANDLE;
-		_deviceExtensions = getDeviceExtensions();
 
 		// Get device count
 		uint32_t deviceCount = 0;
@@ -33,53 +32,55 @@ namespace atta::vk
 
 		printPhysicalDevices(devices);
 
-		// Create temporary surface to select physical device with surface support
-		std::shared_ptr<Window> window = std::make_shared<Window>();
-		std::shared_ptr<Surface> surface = std::make_shared<Surface>(_instance, window);
-
-		// TODO remake physical device selection
+		std::vector<PhysicalDeviceSupportInfo> supportInfo;
 		for(const auto& device : devices) 
 		{
-			if(isDeviceSuitable(device, surface)) 
+			supportInfo = checkDeviceSupport(device);
+			bool suitable = true;
+			for(const auto& info : supportInfo)
+			{
+				// Check if is error
+				if(info>=1000)
+					suitable = false;
+			}
+
+			if(suitable) 
 			{
 				_physicalDevice = device;
-				break;
+				checkDeviceExtensionsSupport(_physicalDevice);// Call again to update _deviceSupportedExtensions
+				break;// Select the first suitable GPU
 			}
 		}
 
 		if(_physicalDevice == VK_NULL_HANDLE)
 		{
-			Log::warning("PhysicalDevice", "No physical device with ray tracing support. Support to GPUs without ray tracing support will be implemented in the future.");
+			Log::error("PhysicalDevice", "Sorry, no suitable GPU found. Please create an issue at https://github.com/Brenocq/Atta/issues for Atta to support your GPU in the future.");
 			exit(0);
-			// TODO support machines without ray tracing
-
-			//for(unsigned int i=0; i<_deviceExtensions.size(); i++)
-			//	if(strcmp(_deviceExtensions[i],VK_NV_RAY_TRACING_EXTENSION_NAME)==0)
-			//	{
-			//		_deviceExtensions.erase(_deviceExtensions.begin()+i);
-			//		break;
-			//	}
-
-			//for(const auto& device : devices) 
-			//{
-			//	if(isDeviceSuitable(device, surface)) 
-			//	{
-			//		_physicalDevice = device;
-			//		break;
-			//	}
-			//}
-		}
-
-		if(_physicalDevice == VK_NULL_HANDLE) 
-		{
-			Log::error("PhysicalDevice", "Failed to find a suitable GPU!");
-			exit(1);
 		}
 		else
 		{
-			_queueFamilyIndices = findQueueFamilies(_physicalDevice, surface);
+			findQueueFamilies(_physicalDevice, _queueFamilyIndices);
+			Log::success("PhysicalDevice", "Found suitable GPU! (for now, Atta only uses one GPU)");
 
-			Log::success("PhysicalDevice", "Found suitable GPU!");
+			// Warn about support and populate physical device support
+			_support.vulkanRayTracing = true;
+			_support.differentQueuesThreadManagerGUI = _queueFamilyIndices.graphicsFamily.value() != _queueFamilyIndices.transferFamily.value();
+			_support.samplerAnisotropyFeature = true;
+			for(const auto& info : supportInfo)
+			{
+				switch(info)
+				{
+					case WARN_NO_VULKAN_RAY_TRACING_SUPPORT:
+						Log::warning("PhysicalDevice", "The selected GPU does not support Vulkan Ray Tracing");
+						_support.vulkanRayTracing = false;
+						break;
+					case WARN_NO_SAMPLER_ANISOTROPY_FEATURE_SUPPORT:
+						Log::warning("PhysicalDevice", "The selected GPU does not support sampler anisotropy");
+						_support.samplerAnisotropyFeature = false;
+					default:
+						break;
+				}
+			}
 		}
 	}
 
@@ -87,42 +88,78 @@ namespace atta::vk
 	{
 	}
 
-	bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device, std::shared_ptr<Surface> surface_) 
+	std::vector<PhysicalDevice::PhysicalDeviceSupportInfo> PhysicalDevice::checkDeviceSupport(VkPhysicalDevice device)
 	{
-		QueueFamilyIndices indices = findQueueFamilies(device, surface_);
+		std::vector<PhysicalDeviceSupportInfo> supportInfo;
 
-		bool extensionsSupported = checkDeviceExtensionSupport(device);
+		QueueFamilyIndices indices;
+		std::vector<PhysicalDeviceSupportInfo> queueFamilySupport = findQueueFamilies(device, indices);
+		supportInfo.insert(supportInfo.end(), queueFamilySupport.begin(), queueFamilySupport.end());
 
-		VkPhysicalDeviceFeatures supportedFeatures;
-		vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+		std::vector<PhysicalDeviceSupportInfo> extensionSupport = checkDeviceExtensionsSupport(device);
+		supportInfo.insert(supportInfo.end(), extensionSupport.begin(), extensionSupport.end());
 
-		return indices.isComplete() && extensionsSupported /*&& swapChainAdequate */&& supportedFeatures.samplerAnisotropy;
+		std::vector<PhysicalDeviceSupportInfo> featuresSupport = checkDeviceFeaturesSupport(device);
+		supportInfo.insert(supportInfo.end(), featuresSupport.begin(), featuresSupport.end());
+
+		return supportInfo;
 	}
 
-	bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) 
+	std::vector<PhysicalDevice::PhysicalDeviceSupportInfo> PhysicalDevice::checkDeviceExtensionsSupport(VkPhysicalDevice device) 
 	{
+		std::vector<PhysicalDeviceSupportInfo> supportInfo;
+
 		// Get device extensions
 		uint32_t extensionCount;
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-		std::set<std::string> requiredExtensions(_deviceExtensions.begin(), _deviceExtensions.end());
+		const std::vector<const char*> deviceExtensions = getDeviceExtensions();
+		_deviceSupportedExtensions = deviceExtensions;
+		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
-		for(const auto& extension : availableExtensions) {
+		// Erase supported extensions
+		for(const auto& extension : availableExtensions)
 			requiredExtensions.erase(extension.extensionName);
+
+		// Populate support info and update device supported extensions
+		for(const auto& extension : requiredExtensions)
+		{
+			for(unsigned i=0; i<_deviceSupportedExtensions.size(); i++)
+			{
+				if(extension == _deviceSupportedExtensions[i])
+				{
+					_deviceSupportedExtensions.erase(_deviceSupportedExtensions.begin()+i);
+					break;
+				}
+			}
+			if(extension == VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME)
+			{
+				supportInfo.push_back(WARN_NO_VULKAN_RAY_TRACING_SUPPORT);
+			}
+			//Log::warning("PhysicalDevice", "This device does not support "+std::string(extension));
 		}
 
-		for(auto extension : requiredExtensions)
-			Log::warning("PhysicalDevice", "This device does not support "+std::string(extension));
-
-		return requiredExtensions.empty();
+		return supportInfo;
 	}
 
-	QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice device, std::shared_ptr<Surface> surface_) 
+	std::vector<PhysicalDevice::PhysicalDeviceSupportInfo> PhysicalDevice::checkDeviceFeaturesSupport(VkPhysicalDevice device)
 	{
-		// Logic to find graphics queue family
-		QueueFamilyIndices indices;	
+		std::vector<PhysicalDeviceSupportInfo> supportInfo;
+
+		VkPhysicalDeviceFeatures supportedFeatures;
+		vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
+		if(!supportedFeatures.samplerAnisotropy)
+			supportInfo.push_back(WARN_NO_SAMPLER_ANISOTROPY_FEATURE_SUPPORT);
+
+		return supportInfo;
+	}
+
+	std::vector<PhysicalDevice::PhysicalDeviceSupportInfo> PhysicalDevice::findQueueFamilies(VkPhysicalDevice device, QueueFamilyIndices& indices ) 
+	{
+		std::vector<PhysicalDeviceSupportInfo> supportInfo;
 
 		// Get queue families
 		uint32_t queueFamilyCount = 0;
@@ -130,31 +167,49 @@ namespace atta::vk
 		std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
+		// Find queue families
 		int i = 0;
 		for(const auto& queueFamily : queueFamilies) 
 		{
 			if(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) 
-			{
 				indices.graphicsFamily = i;
-			}
 
 			// Check queueFamily surface support (present support)
-			VkBool32 presentSupport = false;
-			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_->handle(), &presentSupport);
+			VkBool32 presentSupport = glfwGetPhysicalDevicePresentationSupport(_instance->handle(), device, i);
 			if(presentSupport) 
-			{
 				indices.presentFamily = i;
-			}
+
+			// Find queue family dedicated to tranfer
+			if((int)(queueFamily.queueFlags & (VK_QUEUE_GRAPHICS_BIT|VK_QUEUE_TRANSFER_BIT)) == (int)VK_QUEUE_TRANSFER_BIT) 
+				indices.transferFamily = i;
 
 			if(indices.isComplete()) 
-			{
 				break;
-			}
 
 			i++;
 		}
 
-		return indices;
+		// If can't find dedicated tranfer queue family, choose the first that has transfer support
+		if(!indices.transferFamily.has_value())
+		{
+			supportInfo.push_back(WARN_NO_DEDICATED_TRANSFER_QUEUE_FAMILY);
+
+			int i = 0;
+			for(const auto& queueFamily : queueFamilies) 
+			{
+				if(queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) 
+				{
+					indices.transferFamily = i;
+					break;
+				}
+				i++;
+			}
+		}
+
+		if(!indices.isComplete())
+			supportInfo.push_back(ERROR_REQUIRED_QUEUE_FAMILIES_NOT_FOUND);
+
+		return supportInfo;
 	}
 
 	std::string PhysicalDevice::getVersion(const uint32_t version)

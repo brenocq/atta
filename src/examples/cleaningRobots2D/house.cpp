@@ -114,15 +114,14 @@ void House::writeFloorDataToTexture()
 	for(unsigned i=0; i<floorData.size(); i++)
 	{
 		uint8_t data = floorData[i];
-		_floorTexture[i*4] = data*0.8;
-		_floorTexture[i*4+1] = data*0.75;
-		_floorTexture[i*4+2] = 0;
+		_floorTexture[i*4] = 0;
+		_floorTexture[i*4+1] = 0;
+		_floorTexture[i*4+2] = data*0.8;
 		_floorTexture[i*4+3] = 255;
 	}
 
 	std::stringstream ss;
 	ss << std::this_thread::get_id();
 	uint64_t id = std::stoull(ss.str());
-	Log::debug("House", "Im thread $0 and tex:$1", id, _floorTextureId);
 	atta::Texture::updateTexture(_floorTextureId);
 }
