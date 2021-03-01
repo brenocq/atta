@@ -18,7 +18,7 @@ namespace atta
 		_rootWidget(nullptr)
 	{
 		//---------- Create gui objects ----------//
-		_guiCommandPool = std::make_shared<vk::CommandPool>(_device, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+		_guiCommandPool = std::make_shared<vk::CommandPool>(_device, vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_GUI, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 		_guiCommandBuffers = std::make_shared<vk::CommandBuffers>(_device, _guiCommandPool, 1);
 
 		// Uniform buffer

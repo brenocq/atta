@@ -29,7 +29,6 @@ namespace atta
 		_renderingStageBarrier = std::make_shared<Barrier>(_qtyWorkersToCreate);
 		_robotStageBarrier = std::make_shared<Barrier>(_qtyWorkersToCreate);
 
-
 		//---------- Core ----------//
 		_scene = pipelineSetup.generalConfig.scene;
 		_dimensionMode = pipelineSetup.generalConfig.dimensionMode;
@@ -43,6 +42,7 @@ namespace atta
 		
 		//---------- Rendering stage ----------//
 		_vkCore = pipelineSetup.renderingStage.vkCore;
+		_commandPool = std::make_shared<vk::CommandPool>(_vkCore->getDevice(), vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_THREAD_MANAGER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 		_renderers = pipelineSetup.renderingStage.renderers;
 
 		createGeneralistWorkers();
@@ -168,10 +168,8 @@ namespace atta
 			for(auto robot : _scene->getRobots())
 				robot->run(dt);
 
-			Log::debug("TM", "BeforeAfterRobots");
 			if(_runAfterRobots)
 				_runAfterRobots();
-			Log::debug("TM", "AfterRobots");
 			_robotStageBarrier->wait();
 			//-------------------- Rendering --------------------//
 

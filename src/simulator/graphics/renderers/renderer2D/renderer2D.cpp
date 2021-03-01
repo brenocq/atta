@@ -12,7 +12,7 @@
 namespace atta
 {
 	Renderer2D::Renderer2D(CreateInfo info):
-		Renderer({info.vkCore, info.width, info.height, info.viewMat, RENDERER_TYPE_2D}), _scene(info.scene)
+		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_2D}), _scene(info.scene)
 	{
 		//---------- Create uniform buffers ----------//
 		_uniformBuffer = std::make_shared<UniformBuffer2D>(_vkCore->getDevice());

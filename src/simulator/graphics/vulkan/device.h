@@ -27,22 +27,25 @@ namespace atta::vk
 			VkDevice handle() const { return _device; }
 			std::shared_ptr<PhysicalDevice> getPhysicalDevice() const { return _physicalDevice; }
 			VkQueue getGraphicsQueue() const { return _graphicsQueue; }
-			VkQueue getPresentQueue() const { return _presentQueue; }
+			VkQueue getTransferQueue() const { return _transferQueue; }
+			VkQueue getPresentQueueGUI() const { return _presentQueueGUI; }
+			VkQueue getGraphicsQueueGUI() const { return _graphicsQueueGUI; }
+			VkQueue getTransferQueueGUI() const { return _transferQueueGUI; }
 
 			VkSampleCountFlagBits getMsaaSamples() const { return _msaaSamples; }
-			bool getRayTracingEnabled() const { return _rayTracingEnabled; }
 
 		private:
 			VkSampleCountFlagBits getMaxUsableSampleCount();
 
 			VkDevice _device;
 			VkQueue _graphicsQueue;
-			VkQueue _presentQueue;
+			VkQueue _transferQueue;
+			VkQueue _presentQueueGUI;
+			VkQueue _graphicsQueueGUI;
+			VkQueue _transferQueueGUI;
+
 			std::shared_ptr<PhysicalDevice> _physicalDevice;
 			VkSampleCountFlagBits _msaaSamples;
-
-			//---------- Device properties ----------//
-			bool _rayTracingEnabled;
 	};
 }
 

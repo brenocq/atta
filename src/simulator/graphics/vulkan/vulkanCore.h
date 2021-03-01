@@ -30,7 +30,7 @@ namespace atta::vk
 			//---------- Getters ----------//
 			std::shared_ptr<Instance> getInstance() const { return _instance; }
 			std::shared_ptr<PhysicalDevice> getPhysicalDevice() const { return _physicalDevice; };
-			std::shared_ptr<CommandPool> getCommandPool() const { return _commandPool; };
+			//std::shared_ptr<CommandPool> getCommandPool() const { return _commandPool; };
 			std::shared_ptr<Device> getDevice() const { return _device; }
 
 			std::shared_ptr<Buffer> getVertexBuffer() const { return _vertexBuffer; }
@@ -41,12 +41,12 @@ namespace atta::vk
 
 			std::vector<std::shared_ptr<vk::Texture>> getTextures() const { return _textures; }
 
-			void createBuffers(std::shared_ptr<Scene> scene);
-			void updateBuffers(std::shared_ptr<Scene> scene);
+			void createBuffers(std::shared_ptr<Scene> scene, std::shared_ptr<CommandPool> commandPool);
+			void updateBuffers(std::shared_ptr<Scene> scene, std::shared_ptr<CommandPool> commandPool);
 
 		private:
 			template <class T>
-			std::shared_ptr<Buffer> createBufferMemory(
+			std::shared_ptr<Buffer> createBufferMemory(std::shared_ptr<CommandPool> commandPool,
 					const VkBufferUsageFlags usage, 
 					std::vector<T>& content);
 
@@ -54,7 +54,7 @@ namespace atta::vk
 			std::unique_ptr<DebugMessenger> _debugMessenger;
 			std::shared_ptr<PhysicalDevice> _physicalDevice;
 			std::shared_ptr<Device> _device;
-			std::shared_ptr<CommandPool> _commandPool;
+			//std::shared_ptr<CommandPool> _commandPool;
 
 			// Buffers
 			std::shared_ptr<Buffer> _vertexBuffer;

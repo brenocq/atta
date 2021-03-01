@@ -12,7 +12,7 @@
 namespace atta::rt::cpu
 {
 	RayTracing::RayTracing(CreateInfo info):
-		Renderer({info.vkCore, info.width, info.height, info.viewMat, RENDERER_TYPE_RAY_TRACING_CPU}), 
+		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_RAY_TRACING_CPU}), 
 		_scene(info.scene)
 	{
 		_film.resize(info.width*info.height*4);// VK_FORMAT_R32G32B32A32_SFLOAT
@@ -33,12 +33,12 @@ namespace atta::rt::cpu
 		subresourceRange.baseArrayLayer = 0;
 		subresourceRange.layerCount = 1;
 
-		VkCommandBuffer commandBuffer = _vkCore->getCommandPool()->beginSingleTimeCommands();
+		VkCommandBuffer commandBuffer = info.commandPool->beginSingleTimeCommands();
 		{
 			atta::vk::ImageMemoryBarrier::insert(commandBuffer, _image->handle(), subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 				0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 		}
-		_vkCore->getCommandPool()->endSingleTimeCommands(commandBuffer);
+		info.commandPool->endSingleTimeCommands(commandBuffer);
 
 		Log::success("rt::cpu::RayTracing", "CPU Raytracing was successfully initialized");
 	}

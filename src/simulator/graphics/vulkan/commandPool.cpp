@@ -10,16 +10,56 @@
 
 namespace atta::vk
 {
-	CommandPool::CommandPool(std::shared_ptr<Device> device, VkCommandPoolCreateFlags flags):
-		_device(device)
+	CommandPool::CommandPool(std::shared_ptr<Device> device, DeviceQueueFamily deviceQueueFamily, SubmitQueueType submitQueueType, VkCommandPoolCreateFlags flags):
+		_device(device), _deviceQueueFamily(deviceQueueFamily), _submitQueueType(submitQueueType)
 	{
 		std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
-
 		QueueFamilyIndices queueFamilyIndices = physicalDevice->getQueueFamilyIndices();
 
 		VkCommandPoolCreateInfo poolInfo{};
 		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+		switch(_deviceQueueFamily)
+		{
+			case DEVICE_QUEUE_FAMILY_GRAPHICS:
+				// Select queue family
+				poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+
+				// Select queue from queue family
+				switch(_submitQueueType)
+				{
+					case QUEUE_THREAD_MANAGER:
+						_submitQueue = _device->getGraphicsQueue();
+						break;
+					case QUEUE_GUI:
+						_submitQueue = _device->getGraphicsQueueGUI();
+						break;
+					default:
+						Log::error("CommandPool", "Command pool(graphics) submit queue must be THREAD_MANAGER or GUI!");
+						exit(1);
+				}
+				break;
+			case DEVICE_QUEUE_FAMILY_TRANSFER:
+				// Select queue family
+				poolInfo.queueFamilyIndex = queueFamilyIndices.transferFamily.value();
+
+				// Select queue from queue family
+				switch(_submitQueueType)
+				{
+					case QUEUE_THREAD_MANAGER:
+						_submitQueue = _device->getTransferQueue();
+						break;
+					case QUEUE_GUI:
+						_submitQueue = _device->getTransferQueueGUI();
+						break;
+					default:
+						Log::error("CommandPool", "Command pool(transfer) submit queue must be THREAD_MANAGER or GUI!");
+						exit(1);
+				}
+				break;
+			default:
+				Log::error("CommandPool", "Command pool device queue family must be graphics or transfer!");
+				exit(1);
+		}
 		poolInfo.flags = flags;
 
 		if(vkCreateCommandPool(_device->handle(), &poolInfo, nullptr, &_commandPool) != VK_SUCCESS)
@@ -68,10 +108,8 @@ namespace atta::vk
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &commandBuffer;
 
-		VkQueue graphicsQueue = _device->getGraphicsQueue();
-
-		vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(graphicsQueue);
+		vkQueueSubmit(_submitQueue, 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(_submitQueue);
 
 		vkFreeCommandBuffers(_device->handle(), _commandPool, 1, &commandBuffer);
 	}

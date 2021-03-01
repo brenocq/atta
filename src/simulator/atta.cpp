@@ -108,7 +108,8 @@ namespace atta
 	{
 		// Create vulkan core
 		std::shared_ptr<vk::VulkanCore> vkCore = std::make_shared<vk::VulkanCore>();
-		vkCore->createBuffers(_scene);
+		std::shared_ptr<vk::CommandPool> commandPool = std::make_shared<vk::CommandPool>(vkCore->getDevice(), vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_THREAD_MANAGER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+		vkCore->createBuffers(_scene, commandPool);
 
 		ThreadManager::RenderingStage renderingStage;
 
@@ -118,6 +119,7 @@ namespace atta
 			// Create rasterization render
 			RastRenderer::CreateInfo rastRendInfo = {
 				.vkCore = vkCore,
+				.commandPool = commandPool,
 				.width = 1200,
 				.height = 900,
 				.scene = _scene,
@@ -130,6 +132,7 @@ namespace atta
 			rt::vk::RayTracing::CreateInfo rtVkRendInfo = 
 			{
 				.vkCore = vkCore,
+				.commandPool = commandPool,
 				.width = 1200,
 				.height = 900,
 				.scene = _scene,
@@ -141,6 +144,7 @@ namespace atta
 			// Create ray tracing CPU render
 			rt::cpu::RayTracing::CreateInfo rtCPURendInfo = {
 				.vkCore = vkCore,
+				.commandPool = commandPool,
 				.width = 1200,
 				.height = 900,
 				.scene = _scene,
@@ -162,6 +166,7 @@ namespace atta
 		{
 			Renderer2D::CreateInfo rend2DInfo = {
 				.vkCore = vkCore,
+				.commandPool = commandPool,
 				.width = 1200,
 				.height = 900,
 				.scene = _scene

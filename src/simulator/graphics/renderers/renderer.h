@@ -13,6 +13,7 @@
 #include "simulator/graphics/vulkan/image.h"
 #include "simulator/graphics/vulkan/imageView.h"
 #include "simulator/graphics/vulkan/vulkanCore.h"
+#include "simulator/graphics/vulkan/commandPool.h"
 #include "simulator/math/matrix.h"
 
 namespace atta
@@ -31,6 +32,7 @@ namespace atta
 			struct CreateInfo
 			{
 				std::shared_ptr<vk::VulkanCore> vkCore;
+				std::shared_ptr<vk::CommandPool> commandPool;
 				float width;
 				float height;
 				mat4 viewMatrix;
@@ -54,6 +56,7 @@ namespace atta
 			RendererType _type;
 
 			std::shared_ptr<vk::VulkanCore> _vkCore;
+			std::shared_ptr<vk::CommandPool> _commandPool;
 			VkExtent2D _extent;
 			mat4 _viewMatrix;
 

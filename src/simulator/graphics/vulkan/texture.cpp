@@ -8,6 +8,7 @@
 #include "stagingBuffer.h"
 #include "commandPool.h"
 #include "stbImage.h"
+#include "imageMemoryBarrier.h"
 #include "simulator/helpers/log.h"
 
 namespace atta::vk
@@ -153,13 +154,13 @@ namespace atta::vk
 		_width = size.width;
 		_height = size.height;
 		_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_width, _height)))) + 1;
-		_size = _width * _height * atta::Texture::sizeInBytes.at(format);
+		_size = _width * _height * atta::Texture::sizeInBytes(format);
 
 		Log::debug("vk::Tex", "creating from buffer $0 $1 = $2", _width, _height, _size);
 
 		StagingBuffer* stagingBuffer = new StagingBuffer(_device, buffer, _size);
 
-		VkFormat vulkanFormat = atta::Texture::toVulkan.at(format);
+		VkFormat vulkanFormat = atta::Texture::toVulkan(format);
 		_image = std::make_shared<Image>(
 				_device, 
 				_width, _height, 
@@ -187,10 +188,35 @@ namespace atta::vk
 	{
 		StagingBuffer* stagingBuffer = new StagingBuffer(_device, data, _size);
 
-		//transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		//copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
+		// TODO wait right image layout before using image (mutex?)
+
+		//VkImageSubresourceRange subresourceRange;
+		//subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		//subresourceRange.baseMipLevel = 0;
+		//subresourceRange.levelCount = 1;
+		//subresourceRange.baseArrayLayer = 0;
+		//subresourceRange.layerCount = 1;
+
+		transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		
+		//VkCommandBuffer commandBuffer = _commandPool->beginSingleTimeCommands();
+		//{
+		//	ImageMemoryBarrier::insert(commandBuffer, _image->handle(), subresourceRange, 0,
+		//		VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		//}
+		//_commandPool->endSingleTimeCommands(commandBuffer);
+
+		copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
 		//generateMipmaps();
-		//transitionImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+		//commandBuffer = _commandPool->beginSingleTimeCommands();
+		//{
+		//	ImageMemoryBarrier::insert(commandBuffer, _image->handle(), subresourceRange, 0,
+		//		VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		//}
+		//_commandPool->endSingleTimeCommands(commandBuffer);
+
+		transitionImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		delete stagingBuffer;
 		stagingBuffer = nullptr;

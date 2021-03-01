@@ -9,7 +9,7 @@
 namespace atta
 {
 	Renderer::Renderer(CreateInfo info):
-		_vkCore(info.vkCore), _extent({info.width, info.height}), _viewMatrix(info.viewMatrix), _type(info.type)
+		_vkCore(info.vkCore), _commandPool(info.commandPool), _extent({info.width, info.height}), _viewMatrix(info.viewMatrix), _type(info.type)
 	{
 		createOutputImage();
 	}

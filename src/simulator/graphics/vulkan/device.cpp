@@ -10,7 +10,7 @@
 namespace atta::vk
 {
 	Device::Device(std::shared_ptr<PhysicalDevice> physicalDevice):
-		_physicalDevice(physicalDevice), _msaaSamples(VK_SAMPLE_COUNT_1_BIT), _rayTracingEnabled(false)
+		_physicalDevice(physicalDevice), _msaaSamples(VK_SAMPLE_COUNT_1_BIT)
 	{
 		_msaaSamples = getMaxUsableSampleCount();
 
@@ -18,25 +18,26 @@ namespace atta::vk
 		QueueFamilyIndices indices = _physicalDevice->getQueueFamilyIndices();
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value(), indices.transferFamily.value()};
 
+		// TODO check if there are 2 queues in the family queue
 		float queuePriority = 1.0f;
 		for(uint32_t queueFamily : uniqueQueueFamilies) {
 			VkDeviceQueueCreateInfo queueCreateInfo{};
 			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			queueCreateInfo.flags = 0;
 			queueCreateInfo.queueFamilyIndex = queueFamily;
-			queueCreateInfo.queueCount = 1;
+			queueCreateInfo.queueCount = 2;// Always asking for 2 queues (one for the thread manager and another to the GUI)
 			queueCreateInfo.pQueuePriorities = &queuePriority;
 			queueCreateInfos.push_back(queueCreateInfo);
 		}
 
 		//----- Get features -----//
 		VkPhysicalDeviceFeatures deviceFeatures{};
-		// TODO check for support and store supported features
-		deviceFeatures.samplerAnisotropy = VK_TRUE;
-		deviceFeatures.fillModeNonSolid = VK_TRUE;
-		deviceFeatures.wideLines = VK_TRUE;
+		if(_physicalDevice->getSupport().samplerAnisotropyFeature)
+			deviceFeatures.samplerAnisotropy = VK_TRUE;
+		//deviceFeatures.fillModeNonSolid = VK_TRUE;
+		//deviceFeatures.wideLines = VK_TRUE;
 
 		// Acceleration Structure Features
 		VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures;
@@ -61,7 +62,8 @@ namespace atta::vk
 		// Buffer address features
 		VkPhysicalDeviceBufferDeviceAddressFeatures bufferAddressFeatures;
 		bufferAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
-		bufferAddressFeatures.pNext = &rayTracingPipelineFeatures;
+		if(_physicalDevice->getSupport().vulkanRayTracing)
+			bufferAddressFeatures.pNext = &rayTracingPipelineFeatures;
 		bufferAddressFeatures.bufferDeviceAddress = VK_TRUE;
 		bufferAddressFeatures.bufferDeviceAddressCaptureReplay = VK_FALSE;
 		bufferAddressFeatures.bufferDeviceAddressMultiDevice = VK_FALSE;
@@ -85,23 +87,19 @@ namespace atta::vk
 		createInfo.pEnabledFeatures = &deviceFeatures;
 
 		//----- Enable extensions -----//
-		const std::vector<const char*> __deviceExtensions = _physicalDevice->getDeviceExtensions();
-		// Check ray tracing enabled
-		//for(auto ext : __deviceExtensions)
-		//{
-		//	if(strcmp(ext, VK_NV_RAY_TRACING_EXTENSION_NAME)==0)
-		_rayTracingEnabled = true;
-		//}
-
-		createInfo.enabledExtensionCount = static_cast<uint32_t>(__deviceExtensions.size());
-		createInfo.ppEnabledExtensionNames = __deviceExtensions.data();
+		const std::vector<const char*> deviceSupportedExtensions = _physicalDevice->getDeviceSupportedExtensions();
+		createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceSupportedExtensions.size());
+		createInfo.ppEnabledExtensionNames = deviceSupportedExtensions.data();
 
 		//----- Enable layers -----//
-		if(ENABLE_VALIDATION_LAYERS) {
+		if(ENABLE_VALIDATION_LAYERS)
+		{
 			Log::warning("Device", "Validation layers activated.");
 			createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 			createInfo.ppEnabledLayerNames = validationLayers.data();
-		} else {
+		}
+		else
+		{
 			createInfo.enabledLayerCount = 0;
 		}
 
@@ -111,8 +109,12 @@ namespace atta::vk
 			Log::error("Device", "Failed to create device.");
 			exit(1);
 		}
+
 		vkGetDeviceQueue(_device, indices.graphicsFamily.value(), 0, &_graphicsQueue);	
-		vkGetDeviceQueue(_device, indices.presentFamily.value(), 0, &_presentQueue);
+		vkGetDeviceQueue(_device, indices.transferFamily.value(), 0, &_transferQueue);	
+		vkGetDeviceQueue(_device, indices.graphicsFamily.value(), 1, &_graphicsQueueGUI);	
+		vkGetDeviceQueue(_device, indices.presentFamily.value(), 1, &_presentQueueGUI);
+		vkGetDeviceQueue(_device, indices.transferFamily.value(), 1, &_transferQueueGUI);
 	}
 
 	Device::~Device()

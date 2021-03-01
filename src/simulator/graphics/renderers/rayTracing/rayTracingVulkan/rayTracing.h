@@ -32,6 +32,7 @@ namespace atta::rt::vk
 			struct CreateInfo
 			{
 				std::shared_ptr<atta::vk::VulkanCore> vkCore;
+				std::shared_ptr<atta::vk::CommandPool> commandPool;
 				float width;
 				float height;
 				std::shared_ptr<Scene> scene;
@@ -58,7 +59,6 @@ namespace atta::rt::vk
 			void createAccumulationImage();
 
 			std::shared_ptr<atta::vk::Device> _device;
-			std::shared_ptr<atta::vk::CommandPool> _commandPool;
 			std::shared_ptr<rt::vk::UniformBuffer> _uniformBuffer;
 			std::shared_ptr<Scene> _scene;
 

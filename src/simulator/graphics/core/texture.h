@@ -53,9 +53,6 @@ namespace atta
 				std::weak_ptr<vk::Texture> vkTexture;
 			};
 
-			static const std::map<Format, VkFormat> toVulkan;
-			static const std::map<Format, size_t> sizeInBytes;
-
 			static Texture& get()
 			{
 				static Texture texture;
@@ -63,23 +60,39 @@ namespace atta
 			}
 
 			// Create texture from file
-			static int fromFile(std::string fileName);
+			static int fromFile(std::string fileName) { return get().fromFileImpl(fileName); }
 			// Create texture linked to a buffer
-			static int fromBuffer(const void* data, unsigned width, unsigned height, Format format = FORMAT_RGBA_UBYTE);
+			static int fromBuffer(const void* data, unsigned width, unsigned height, Format format = FORMAT_RGBA_UBYTE) { return get().fromBufferImpl(data, width, height, format); }
 			// Update texture from the buffer (copy from host memory to device memory)
-			static int updateTexture(int textureIndex) { return updateTextureImpl(textureIndex); }
+			static void updateTexture(int textureIndex) { get().updateTextureImpl(textureIndex); }
+
+			static VkFormat toVulkan(Format format) { return get()._toVulkan.at(format); }
+			static size_t sizeInBytes(Format format) { return get()._sizeInBytes.at(format); }
+			static std::vector<TextureInfo>& textureInfos() { return get()._textureInfos; }
 
 		private:
-			Texture()
+			Texture(){};
+			~Texture(){};
+			Texture(const Texture&) = delete;
+  			Texture& operator=(const Texture&) = delete;
+
+			int fromFileImpl(std::string fileName);
+			int fromBufferImpl(const void* data, unsigned width, unsigned height, Format format);
+			void updateTextureImpl(int textureIndex);
+
+			std::vector<TextureInfo> _textureInfos;
+
+			const std::map<Format, VkFormat> _toVulkan = 
 			{
+				{FORMAT_R_UBYTE, VK_FORMAT_R8_UNORM},
+				{FORMAT_RGBA_UBYTE, VK_FORMAT_R8G8B8A8_UNORM}
+			};
 
-			}
-
-			static int fromFileImpl(std::string fileName);
-			static int fromBufferImpl(const void* data, unsigned width, unsigned height, Format format);
-			static int updateTextureImpl(int textureIndex);
-
-			std::vector<TextureInfo> textureInfos;
+			const std::map<Format, size_t> _sizeInBytes =
+			{
+				{FORMAT_R_UBYTE, sizeof(uint8_t)},
+				{FORMAT_RGBA_UBYTE, sizeof(uint8_t)*4}
+			};
 	};
 }
 

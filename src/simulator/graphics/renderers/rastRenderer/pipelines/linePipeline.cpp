@@ -35,8 +35,8 @@ namespace atta::vk
 		// Create staging buffer (host memory)
 		_stagingBuffer = std::make_shared<StagingBuffer>(_device, Drawer::getLines().data(), size);
 
-		// Copy from host memory to device memory
-		_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
+		// TODO Copy from host memory to device memory
+		//_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
 
 		//---------- Shaders ----------//
 		_vertShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/lineShader.vert.spv");
@@ -226,11 +226,11 @@ namespace atta::vk
 
 	void LinePipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		// Copy lines from vector to staging buffer
-		unsigned size = Drawer::getMaxNumberOfLines()*sizeof(Drawer::Line);
-		_stagingBuffer->mapFromData(_vkCore->getDevice(), Drawer::getLines().data(), size);
+		// TODO Copy lines from vector to staging buffer
+		//unsigned size = Drawer::getMaxNumberOfLines()*sizeof(Drawer::Line);
+		//_stagingBuffer->mapFromData(_vkCore->getDevice(), Drawer::getLines().data(), size);
 		// Copy from host memory to device memory
-		_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
+		//_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
