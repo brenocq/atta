@@ -18,7 +18,7 @@ namespace atta::vk
 	//-------------- From file ---------------//
 	//----------------------------------------//
 	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format):
-		_device(device), _commandPool(commandPool), _arrayLayers(1)
+		_device(device), _commandPool(commandPool), _arrayLayers(1), _editable(false)
 	{
 		std::string filePath = "assets/textures/"+filename;
 		int texWidth, texHeight, texChannels;
@@ -114,7 +114,7 @@ namespace atta::vk
 	//------------ Empty texture -------------//
 	//----------------------------------------//
 	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size):
-		_device(device), _commandPool(commandPool), _arrayLayers(1)
+		_device(device), _commandPool(commandPool), _arrayLayers(1), _editable(false)
 	{
 		_width = size.width;
 		_height = size.height;
@@ -142,8 +142,8 @@ namespace atta::vk
 	//----------------------------------------//
 	//-------------- From buffer -------------//
 	//----------------------------------------//
-	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer,  VkExtent2D size, atta::Texture::Format format):
-		_device(device), _commandPool(commandPool), _arrayLayers(1)
+	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer,  VkExtent2D size, atta::Texture::Format format, bool editable):
+		_device(device), _commandPool(commandPool), _arrayLayers(1), _editable(editable)
 	{
 		if(format == atta::Texture::FORMAT_NONE)
 		{
@@ -186,6 +186,11 @@ namespace atta::vk
 	//----------------------------------------//
 	void Texture::updateImage(void* data)
 	{
+		if(!_editable)
+		{
+			Log::warning("vk::Texture", "Trying to edit non editable texture.");
+			return;
+		}
 		StagingBuffer* stagingBuffer = new StagingBuffer(_device, data, _size);
 
 		// TODO wait right image layout before using image (mutex?)
@@ -197,7 +202,13 @@ namespace atta::vk
 		//subresourceRange.baseArrayLayer = 0;
 		//subresourceRange.layerCount = 1;
 
-		transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		{
+			std::lock_guard<std::mutex>guard(_mtx);
+			transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+			copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
+			generateMipmaps();
+			//transitionImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		}
 		
 		//VkCommandBuffer commandBuffer = _commandPool->beginSingleTimeCommands();
 		//{
@@ -206,8 +217,6 @@ namespace atta::vk
 		//}
 		//_commandPool->endSingleTimeCommands(commandBuffer);
 
-		copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
-		//generateMipmaps();
 
 		//commandBuffer = _commandPool->beginSingleTimeCommands();
 		//{
@@ -216,7 +225,6 @@ namespace atta::vk
 		//}
 		//_commandPool->endSingleTimeCommands(commandBuffer);
 
-		transitionImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		delete stagingBuffer;
 		stagingBuffer = nullptr;

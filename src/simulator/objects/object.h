@@ -50,6 +50,7 @@ namespace atta
 			std::shared_ptr<Model> getModel() const { return _model; }
 			vec3 getPosition() const { return _position; }
 			ObjectSelection getSelection() const { return _selection; }
+			vec3 getScale() const { return _scale; }
 
 			// Physics
 			std::shared_ptr<phy::Body> getBodyPhysics() const { return _bodyPhysics; }

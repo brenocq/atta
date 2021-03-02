@@ -154,10 +154,26 @@ namespace atta
 
 		_inFlightFences[_currentFrame]->reset();
 
+		for(auto texture : Texture::textureInfos())
+		{
+			if(auto vkTex = texture.vkTexture.lock())
+			{
+				vkTex->lock();
+			}
+		}
+
 		if(vkQueueSubmit(_vkCore->getDevice()->getGraphicsQueueGUI(), 1, &submitInfo, _inFlightFences[_currentFrame]->handle()) != VK_SUCCESS)
 		{
 			Log::error("WorkerGui", "Failed to submit draw command buffer!");
 			exit(1);
+		}
+
+		for(auto texture : Texture::textureInfos())
+		{
+			if(auto vkTex = texture.vkTexture.lock())
+			{
+				vkTex->unlock();
+			}
 		}
 
 		//---------- Submit do present queue ----------//

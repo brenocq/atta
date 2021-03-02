@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string>
+#include <mutex>
 #include "defines.h"
 #include "device.h"
 #include "commandPool.h"
@@ -24,7 +25,7 @@ namespace atta::vk
 		public:
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format=VK_FORMAT_R8G8B8A8_SRGB);
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size);
-			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer, VkExtent2D size, atta::Texture::Format format);
+			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer, VkExtent2D size, atta::Texture::Format format, bool editable=true);
 			~Texture();
 
 			std::shared_ptr<Device> getDevice() const { return _device; }
@@ -33,6 +34,8 @@ namespace atta::vk
 			std::shared_ptr<Sampler> getSampler() const { return _sampler; }
 
 			void updateImage(void* data);
+			void lock() { if(_editable) _mtx.lock(); }
+			void unlock() { if(_editable) _mtx.unlock(); }
 
 		private:
 			void transitionImageLayout(VkImageLayout newLayout);
@@ -50,6 +53,10 @@ namespace atta::vk
 			uint32_t _arrayLayers;
 			int32_t _width, _height;
 			size_t _size;
+
+			// Texture syncronization (needed when GUI thread tries to draw the texture on the screen and the thread manager wants to edit it)
+			bool _editable;
+			std::mutex _mtx;
 	};
 }
 
