@@ -18,8 +18,19 @@ class Cleaner : public atta::Robot
 
 		void run(float dt);
 
+		//---------- Getters ----------//
+		float getRadius() const { return _radius; }
+		atta::vec3 getPosition() const { return _position; }
+		float getTheta() const { return _theta; }
+		float getVel() const { return _vel; }
+
+		//---------- Setters ----------//
+		void setTheta(float theta) { _theta = theta; }
+
 	private:
 		void updateRootObject();
+
+		float _radius;
 
 		atta::vec3 _position;
 		float _theta;// Angle in radians

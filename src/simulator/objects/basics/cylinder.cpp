@@ -10,7 +10,7 @@
 namespace atta
 {
 	Cylinder::Cylinder(CreateInfo info):
-		Object({info.name, info.position, info.rotation, vec3(info.radius/0.5f, info.height, info.radius/0.5f), info.mass})
+		Object({info.name, info.position, info.rotation, vec3(info.radius*2, info.height, info.radius*2), info.mass})
 	{
 		Object::setType("Cylinder");
 
