@@ -7,10 +7,10 @@ void welcome();
 int main()
 {
 	welcome();
-	CleaningRobots2D cleaningRobots2D;
-	atta::Atta simulator = atta::Atta::createFromProject(cleaningRobots2D);
-	//MaterialsDemo materialsDemo;
-	//atta::Atta simulator = atta::Atta::createFromProject(materialsDemo);
+	//CleaningRobots2D cleaningRobots2D;
+	//atta::Atta simulator = atta::Atta::createFromProject(cleaningRobots2D);
+	MaterialsDemo materialsDemo;
+	atta::Atta simulator = atta::Atta::createFromProject(materialsDemo);
 	simulator.run();
 
     return EXIT_SUCCESS;

@@ -11,8 +11,8 @@
 
 MaterialsDemo::MaterialsDemo()
 {
-	_attaCreateInfo.dimensionMode = atta::Atta::DIM_MODE_3D;
-	_attaCreateInfo.physicsMode = atta::Atta::PHY_MODE_DISABLED;
+	_attaCreateInfo.dimensionMode = atta::DIM_MODE_3D;
+	_attaCreateInfo.physicsMode = atta::PHY_MODE_DISABLED;
 	_attaCreateInfo.createWindow = true;
 
 	std::vector<std::shared_ptr<atta::Object>> objects;

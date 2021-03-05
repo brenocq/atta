@@ -3,7 +3,7 @@
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_GOOGLE_include_directive : require
 #define PI 3.1415926538
-#include "../material.glsl"
+#include "materials/material.glsl"
 
 layout(binding = 1) readonly buffer MaterialArray { Material[] materials; };
 //layout(binding = 2) uniform sampler2D[] textureSamplers;
@@ -85,57 +85,57 @@ void main()
 	Material material = materials[inMaterialIndex];
 
 	// Light
-	vec3 lightPos	 = vec3(0,3,2);
-	vec3 lightColor  = vec3(23.47, 21.31, 20.79);
+	//vec3 lightPos	 = vec3(0,3,2);
+	//vec3 lightColor  = vec3(23.47, 21.31, 20.79);
 
-	// Surface color
-	vec3 albedo = vec3(.4, .8, .4);//material.albedo;
-	float metallic = .8;//material.metallic;
-	float roughness = .3;//material.roughness;
-	float ao = 1;
+	//// Surface color
+	//vec3 albedo = vec3(.4, .8, .4);//material.albedo;
+	//float metallic = .8;//material.metallic;
+	//float roughness = .3;//material.roughness;
+	//float ao = 1;
 
-	// Surface vectors
-	vec3 N = normalize(inNormal);
-	vec3 V = normalize(inViewPos - inPos);
+	//// Surface vectors
+	//vec3 N = normalize(inNormal);
+	//vec3 V = normalize(inViewPos - inPos);
 
-	vec3 F0 = vec3(0.04);
-	F0      = mix(F0, albedo, metallic);
+	//vec3 F0 = vec3(0.04);
+	//F0      = mix(F0, albedo, metallic);
 
-	vec3 Lo = vec3(0.0);
-	// Calculate contribution for each light
-	for(int i=0; i<1; i++)
-	{
-		vec3 L = normalize(lightPos - inPos);
-		vec3 H = normalize(V + L);
-	  
-		float distance    = length(lightPos - inPos);
-		float attenuation = 1.0 / (distance * distance);
-		vec3 radiance     = lightColor * attenuation; 
+	//vec3 Lo = vec3(0.0);
+	//// Calculate contribution for each light
+	//for(int i=0; i<1; i++)
+	//{
+	//	vec3 L = normalize(lightPos - inPos);
+	//	vec3 H = normalize(V + L);
+	//  
+	//	float distance    = length(lightPos - inPos);
+	//	float attenuation = 1.0 / (distance * distance);
+	//	vec3 radiance     = lightColor * attenuation; 
 
-		vec3 F  = fresnelSchlick(max(dot(H, V), 0.0), F0);
-		float NDF = distributionGGX(N, H, roughness);
-		float G   = geometrySmith(N, V, L, roughness);
+	//	vec3 F  = fresnelSchlick(max(dot(H, V), 0.0), F0);
+	//	float NDF = distributionGGX(N, H, roughness);
+	//	float G   = geometrySmith(N, V, L, roughness);
 
-		vec3 numerator    = NDF * G * F;
-		float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-		vec3 specular     = numerator / max(denominator, 0.001);
+	//	vec3 numerator    = NDF * G * F;
+	//	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+	//	vec3 specular     = numerator / max(denominator, 0.001);
 
-		vec3 kS = F;// Specular contribution (reflected light energy)
-		vec3 kD = vec3(1.0) - kS;// Rate of reflaction
-		kD *= 1.0 - metallic;
+	//	vec3 kS = F;// Specular contribution (reflected light energy)
+	//	vec3 kD = vec3(1.0) - kS;// Rate of reflaction
+	//	kD *= 1.0 - metallic;
 
-		//float PI = 3.14159265359;
-		float NdotL = max(dot(N, L), 0.0);
-		Lo += (kD * albedo / PI + specular) * radiance * NdotL;
-	}
+	//	//float PI = 3.14159265359;
+	//	float NdotL = max(dot(N, L), 0.0);
+	//	Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+	//}
 
-	vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
-	vec3 kD = 1.0 - kS;
-	vec2 uvIrr = sampleSphericalMap(normalize(N));
-	vec3 irradiance = vec3(1,1,1);//texture(irradianceMap, uvIrr).rgb;
-	vec3 diffuse    = irradiance * albedo;
-	vec3 ambient = (kD*diffuse) * ao;
-	vec3 color   = ambient + Lo;  
+	//vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
+	//vec3 kD = 1.0 - kS;
+	//vec2 uvIrr = sampleSphericalMap(normalize(N));
+	//vec3 irradiance = vec3(1,1,1);//texture(irradianceMap, uvIrr).rgb;
+	//vec3 diffuse    = irradiance * albedo;
+	//vec3 ambient = (kD*diffuse) * ao;
+	//vec3 color   = ambient + Lo;  
 
 
 	//int textureId = -1;
@@ -163,14 +163,15 @@ void main()
 	//vec3 color = fragColor;
 	
 	// Gamma correction
-	color = color / (color + vec3(1.0));
-	color = pow(color, vec3(1.0/2.2)); 
+	//color = color / (color + vec3(1.0));
+	//color = pow(color, vec3(1.0/2.2)); 
 
-	color = vec3(.8, 0.3, .5);//material.albedo; 
+	//color = vec3(.8, 0.3, .5);//material.albedo; 
 	//color = inPos;
 	//if(material.albedoIndex<0)
 	//else
 	//	color = texture(textures[m.albedoIndex], inTexCoord);
+	vec3 color = Material_computeColor(material, inTexCoord);
 
 	// Ouput
     outColor = vec4(color,1);

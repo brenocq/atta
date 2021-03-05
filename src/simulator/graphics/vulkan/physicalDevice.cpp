@@ -66,6 +66,7 @@ namespace atta::vk
 			_support.vulkanRayTracing = true;
 			_support.differentQueuesThreadManagerGUI = _queueFamilyIndices.graphicsFamily.value() != _queueFamilyIndices.transferFamily.value();
 			_support.samplerAnisotropyFeature = true;
+			_support.fillModeNonSolidFeature = true;
 			for(const auto& info : supportInfo)
 			{
 				switch(info)
@@ -77,6 +78,9 @@ namespace atta::vk
 					case WARN_NO_SAMPLER_ANISOTROPY_FEATURE_SUPPORT:
 						Log::warning("PhysicalDevice", "The selected GPU does not support sampler anisotropy");
 						_support.samplerAnisotropyFeature = false;
+					case WARN_NO_FILL_MODE_NON_SOLID_FEATURE_SUPPORT:
+						Log::warning("PhysicalDevice", "The selected GPU does not support fill mode non solid");
+						_support.fillModeNonSolidFeature = false;
 					default:
 						break;
 				}
@@ -153,6 +157,9 @@ namespace atta::vk
 
 		if(!supportedFeatures.samplerAnisotropy)
 			supportInfo.push_back(WARN_NO_SAMPLER_ANISOTROPY_FEATURE_SUPPORT);
+
+		if(!supportedFeatures.fillModeNonSolid)
+			supportInfo.push_back(WARN_NO_FILL_MODE_NON_SOLID_FEATURE_SUPPORT);
 
 		return supportInfo;
 	}

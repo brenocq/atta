@@ -49,6 +49,9 @@ namespace atta
 			std::unique_ptr<vk::MaskPipeline> _maskPipeline;
 			std::unique_ptr<vk::OutlinePipeline> _outlinePipeline;
 			std::unique_ptr<vk::SkyboxPipeline> _skyboxPipeline;
+
+			// Support
+			bool _linePipelineSupport;
 	};
 }
 

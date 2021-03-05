@@ -33,6 +33,7 @@ namespace atta
 				FORMAT_NONE=0,
 				FORMAT_RGBA_UBYTE,// 4 unsigned bytes [0,255]
 				FORMAT_R_UBYTE,// 1 unsigned byte [0,255]
+				FORMAT_RGBA_FLOAT,// 3 floats [0,1]
 			};
 
 			struct TextureInfo
@@ -85,13 +86,15 @@ namespace atta
 			const std::map<Format, VkFormat> _toVulkan = 
 			{
 				{FORMAT_R_UBYTE, VK_FORMAT_R8_UNORM},
-				{FORMAT_RGBA_UBYTE, VK_FORMAT_R8G8B8A8_UNORM}
+				{FORMAT_RGBA_UBYTE, VK_FORMAT_R8G8B8A8_UNORM},
+				{FORMAT_RGBA_FLOAT, VK_FORMAT_R32G32B32A32_SFLOAT}
 			};
 
 			const std::map<Format, size_t> _sizeInBytes =
 			{
 				{FORMAT_R_UBYTE, sizeof(uint8_t)},
-				{FORMAT_RGBA_UBYTE, sizeof(uint8_t)*4}
+				{FORMAT_RGBA_UBYTE, sizeof(uint8_t)*4},
+				{FORMAT_RGBA_FLOAT, sizeof(float)*4}
 			};
 	};
 }

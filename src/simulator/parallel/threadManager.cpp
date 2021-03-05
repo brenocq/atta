@@ -38,6 +38,7 @@ namespace atta
 		_physicsEngine = pipelineSetup.physicsStage.physicsEngine;
 
 		//---------- Robot stage ----------//
+		_robotProcessing = pipelineSetup.robotStage.robotProcessing;
 		_runAfterRobots = pipelineSetup.robotStage.runAfterRobots;
 		
 		//---------- Rendering stage ----------//
@@ -87,36 +88,6 @@ namespace atta
 					WorkerGui::CAMERA_CONTROL_TYPE_2D
 				);
 		_workerGui->setRenderers(_renderers);
-		// Create commands vector and images to copy vector
-		//std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands;
-		//std::vector<WorkerGui::ImageCopy> imageCopies;
-
-		//for(auto renderer : _renderers)
-		//{
-		//	commands.push_back([renderer](VkCommandBuffer commandBuffer){
-		//				switch(renderer->getType())
-		//				{
-		//				case RENDERER_TYPE_RASTERIZATION:
-		//					renderer->render(commandBuffer); 
-		//					break;
-		//				case RENDERER_TYPE_RAY_TRACING_VULKAN:
-		//					renderer->render(commandBuffer); 
-		//					break;
-		//				default:
-		//					renderer->render(commandBuffer); 
-		//				}
-		//			});
-		//}
-
-		//imageCopies.push_back((WorkerGui::ImageCopy){
-		//		.image = _renderers[1]->getImage(),
-		//		.extent = _renderers[1]->getImage()->getExtent(),
-		//		.offset = {0,0}
-		//		});
-
-		//_workerGui->setCommands(commands);
-		//_workerGui->setImageCopies(imageCopies);
-		//_workerGui->setMainRenderer(_renderers[1]);
 
 		// Create thread from callable workerGui
 		_threads.push_back(std::thread(*_workerGui));
@@ -140,6 +111,7 @@ namespace atta
 
 	void ThreadManager::populateThreadsWork()
 	{
+
 	}
 
 	void ThreadManager::run()
@@ -165,11 +137,22 @@ namespace atta
 			
 			_physicsStageBarrier->wait();
 			//--------------------- Robots ----------------------//
-			for(auto robot : _scene->getRobots())
-				robot->run(dt);
+			switch(_robotProcessing)
+			{
+				case ROBOT_PROCESSING_SEQUENTIAL:
+					for(auto robot : _scene->getRobots())
+						robot->run(dt);
+					break;
+				case ROBOT_PROCESSING_PARALLEL_CPU:
+					// Populate work to the threads
+					break;
+				case ROBOT_PROCESSING_PARALLEL_GPU:
+					break;
+			}
 
 			if(_runAfterRobots)
 				_runAfterRobots();
+			
 			_robotStageBarrier->wait();
 			//-------------------- Rendering --------------------//
 

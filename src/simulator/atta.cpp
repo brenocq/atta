@@ -63,7 +63,7 @@ namespace atta
 		// Populate return
 		ThreadManager::GeneralConfig config = {
 			.scene = _scene,
-			.dimensionMode = _info.dimensionMode == DIM_MODE_3D ? ThreadManager::DIM_MODE_3D : ThreadManager::DIM_MODE_2D  
+			.dimensionMode = _info.dimensionMode
 		};
 
 		return config;
@@ -100,6 +100,7 @@ namespace atta
 	ThreadManager::RobotStage Atta::populateTMRobotStage()
 	{
 		return {
+			.robotProcessing = _info.robotProcessing,
 			.runAfterRobots = _info.runAfterRobots
 		};
 	}
@@ -114,7 +115,7 @@ namespace atta
 		ThreadManager::RenderingStage renderingStage;
 
 		//---------- Create renderers from dimension info ----------//
-		if(_info.dimensionMode == DIM_MODE_3D)
+		if(_info.dimensionMode == atta::DIM_MODE_3D)
 		{
 			// Create rasterization render
 			RastRenderer::CreateInfo rastRendInfo = {
@@ -142,16 +143,16 @@ namespace atta
 			std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
 
 			// Create ray tracing CPU render
-			rt::cpu::RayTracing::CreateInfo rtCPURendInfo = {
-				.vkCore = vkCore,
-				.commandPool = commandPool,
-				.width = 1200,
-				.height = 900,
-				.scene = _scene,
-				.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
-				.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
-			};
-			std::shared_ptr<rt::cpu::RayTracing> rtCPU = std::make_shared<rt::cpu::RayTracing>(rtCPURendInfo);
+			//rt::cpu::RayTracing::CreateInfo rtCPURendInfo = {
+			//	.vkCore = vkCore,
+			//	.commandPool = commandPool,
+			//	.width = 1200,
+			//	.height = 900,
+			//	.scene = _scene,
+			//	.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
+			//	.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+			//};
+			//std::shared_ptr<rt::cpu::RayTracing> rtCPU = std::make_shared<rt::cpu::RayTracing>(rtCPURendInfo);
 
 			// Populate return
 			renderingStage = {
@@ -162,7 +163,7 @@ namespace atta
 				}
 			};
 		}
-		else if(_info.dimensionMode == DIM_MODE_2D)
+		else if(_info.dimensionMode == atta::DIM_MODE_2D)
 		{
 			Renderer2D::CreateInfo rend2DInfo = {
 				.vkCore = vkCore,

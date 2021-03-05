@@ -53,8 +53,8 @@ vec3 InfiniteLight_Le(inout Light light, vec3 rayDirection)
 	uint textureIndex = light.datai[0];
 	vec3 w = normalize((light.worldToLight*vec4(rayDirection,0)).xyz);
 	vec2 st = vec2(sphericalPhi(w)*inv2Pi, sphericalTheta(w)*invPi);
+	//return vec3(0,0,texture(textures[light.datai[1]], st).b);
 	return texture(textures[textureIndex], st).rgb;
-	//return texture(textures[light.datai[1]], st).rgb;
 }
 
 float InfiniteLight_pdfLi(Light light, Interaction it, vec3 wi)
