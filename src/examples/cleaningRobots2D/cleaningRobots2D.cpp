@@ -12,8 +12,9 @@ CleaningRobots2D::CleaningRobots2D():
 	_qtyRobots(20)
 {
 	// Setup simulator
-	_attaCreateInfo.dimensionMode = atta::Atta::DIM_MODE_2D;
-	_attaCreateInfo.physicsMode = atta::Atta::PHY_MODE_DISABLED;
+	_attaCreateInfo.dimensionMode = atta::DIM_MODE_3D;
+	_attaCreateInfo.physicsMode = atta::PHY_MODE_DISABLED;
+	_attaCreateInfo.robotProcessing = atta::ROBOT_PROCESSING_SEQUENTIAL;
 	_attaCreateInfo.createWindow = true;
 
 	// Setup house objects (floor, walls, furniture...)

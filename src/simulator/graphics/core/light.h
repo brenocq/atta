@@ -77,6 +77,7 @@ namespace atta
 
 		static Light infinite(vec3 worldCenter, quat orientation, vec3 precomputedPower, float worldRadius, int textureIndex, int pdfIndex, int pdfWidth, int pdfHeight)
 		{
+			//Log::debug("LIGHT INF", "tex:$0 pdf:$1", textureIndex, pdfIndex);
 			Light l;
 			l.type = LIGHT_TYPE_INFINITE;
 			l.datav[0] = vec4(worldCenter, -1);

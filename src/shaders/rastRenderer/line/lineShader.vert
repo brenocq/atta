@@ -1,7 +1,7 @@
 #version 460
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_GOOGLE_include_directive : require
-#include "../uniformBufferObject.glsl"
+#include "../../uniformBufferObject.glsl"
 #include "line.glsl"
 
 layout(binding = 0) readonly uniform UniformBufferObjectStruct 

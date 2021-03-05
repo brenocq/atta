@@ -14,6 +14,7 @@
 #include "barrier.h"
 #include "workerGeneralist.h"
 #include "workerGui.h"
+#include "simulator/core/common.h"
 #include "simulator/core/scene.h"
 #include "simulator/core/accelerator.h"
 #include "simulator/graphics/renderers/renderer.h"
@@ -26,12 +27,6 @@ namespace atta
 	class ThreadManager
 	{
 		public:
-			enum DimMode
-			{
-				DIM_MODE_2D = 0,
-				DIM_MODE_3D
-			};
-
 			struct GeneralConfig {
 				int qtyThreads = -1;
 				std::shared_ptr<Scene> scene;
@@ -44,6 +39,7 @@ namespace atta
 			};
 
 			struct RobotStage {
+				RobotProcessing robotProcessing = ROBOT_PROCESSING_SEQUENTIAL;
 				std::function<void(void)> runAfterRobots;
 			};
 
@@ -97,6 +93,7 @@ namespace atta
 			std::shared_ptr<phy::PhysicsEngine> _physicsEngine;
 
 			//---------- Robot stage ----------//
+			RobotProcessing _robotProcessing;
 			std::function<void(void)> _runAfterRobots;
 			
 			//---------- Rendering stage ----------//

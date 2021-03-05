@@ -36,7 +36,8 @@ namespace atta::vk
 	struct PhysicalDeviceSupport {
 		bool vulkanRayTracing = false;// true -> Can render using vulkan ray tracing
 		bool differentQueuesThreadManagerGUI = false;// true -> Thread manager and GUI do not need synchronization (TODO not being used)
-		bool samplerAnisotropyFeature;
+		bool samplerAnisotropyFeature = false;// true -> Samplers can do anisotropic filtering
+		bool fillModeNonSolidFeature = false;// true -> Can draw lines and points
 	};
 
 
@@ -48,6 +49,7 @@ namespace atta::vk
 			WARN_NO_VULKAN_RAY_TRACING_SUPPORT = 0,
 			WARN_NO_DEDICATED_TRANSFER_QUEUE_FAMILY,
 			WARN_NO_SAMPLER_ANISOTROPY_FEATURE_SUPPORT,
+			WARN_NO_FILL_MODE_NON_SOLID_FEATURE_SUPPORT,
 			ERROR_REQUIRED_QUEUE_FAMILIES_NOT_FOUND=1000,
 		};
 

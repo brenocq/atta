@@ -1,6 +1,8 @@
-file(GLOB shader_files */*.vert */*.frag */*.rgen */*.rchit */*.rint */*.rmiss)
+file(GLOB_RECURSE shader_files *.vert *.frag *.rgen *.rchit *.rint *.rmiss *.vert *.frag *.rgen *.rchit *.rint *.rmiss)
 
-file(GLOB shader_extra_files */*.glsl *.glsl)
+message(${shader_files})
+
+file(GLOB shader_extra_files **/*.glsl *.glsl)
 set_source_files_properties(${shader_extra_files} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 # Shader compilation

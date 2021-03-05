@@ -40,8 +40,8 @@ namespace atta::vk
 			{
 				for(int y=0; y<texHeight; y++)
 				{
-					data[y*texWidth*4+x*4+1] = helper[y*texWidth*3+x*3+1];
 					data[y*texWidth*4+x*4+0] = helper[y*texWidth*3+x*3+0];
+					data[y*texWidth*4+x*4+1] = helper[y*texWidth*3+x*3+1];
 					data[y*texWidth*4+x*4+2] = helper[y*texWidth*3+x*3+2];
 					data[y*texWidth*4+x*4+3] = 1;
 				}
@@ -85,9 +85,9 @@ namespace atta::vk
 		}
 		else
 		{
-			_arrayLayers = 6;
-			_height = 400;// TODO TESTING
-			_width = 400;// TODO TESTING
+			//_arrayLayers = 6;
+			//_height = 400;// TODO TESTING
+			//_width = 400;// TODO TESTING
 			_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_height, _width)))) + 1;// TODO TESTING
 			// Create cube map image
 			_image = std::make_shared<Image>(_device, _height, _width, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels, VK_SAMPLE_COUNT_1_BIT, true);

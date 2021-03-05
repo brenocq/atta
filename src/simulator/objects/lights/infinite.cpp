@@ -156,7 +156,7 @@ namespace atta
 		}
 
 		//----- Generate distribution access from distribution texture -----//
-		_distributionAccess.resize(_width*_height*3);
+		_distributionAccess.resize(_width*_height*4);
 		for(int v=0; v<_height; v++)
 		{
 			float vNorm = float(v)/_height;
@@ -182,15 +182,16 @@ namespace atta
 				col = firstCol+1;
 				pdfCol = colInt>0 ? colStart[firstCol+1]/colInt : 0;
 
-				_distributionAccess[(v*_width+u)*3] = float(col)/_width;
-				_distributionAccess[(v*_width+u)*3+1] = float(row)/_height;
-				_distributionAccess[(v*_width+u)*3+2] = pdfRow*pdfCol;
+				_distributionAccess[(v*_width+u)*4] = float(col)/_width;
+				_distributionAccess[(v*_width+u)*4+1] = float(row)/_height;
+				_distributionAccess[(v*_width+u)*4+2] = pdfRow*pdfCol;
+				_distributionAccess[(v*_width+u)*4+3] = 1;
 			}
 		}
 
 		//---------- Add texture and store index ----------//
-		//_pdfTextureIndex = Texture::fromBuffer(_distributionAccess.data(), _width, _height, Texture::TYPE_RGB_FLOAT_3);
-		_pdfTextureIndex = -1;
+		_pdfTextureIndex = Texture::fromBuffer(_distributionAccess.data(), _width, _height, Texture::FORMAT_RGBA_FLOAT);
+		//_pdfTextureIndex = -1;
 
 		//---------- Finished ----------//
 		eval.stop();

@@ -13,6 +13,8 @@ namespace atta
 	RastRenderer::RastRenderer(CreateInfo info):
 		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_RASTERIZATION}), _scene(info.scene)
 	{
+		_linePipelineSupport = _vkCore->getDevice()->getPhysicalDevice()->getSupport().fillModeNonSolidFeature;
+
 		//---------- Create uniform buffers ----------//
 		_uniformBuffer = std::make_shared<vk::UniformBuffer>(_vkCore->getDevice());
 
@@ -39,12 +41,15 @@ namespace atta
 				std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
 				std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
 				_scene);
-		_linePipeline = std::make_unique<vk::LinePipeline>(
-				_vkCore, _renderPass,
-				_image->getExtent(), _image->getFormat(), 
-				std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
-				std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
-				_scene);
+		if(_linePipelineSupport)
+			_linePipeline = std::make_unique<vk::LinePipeline>(
+					_vkCore, _renderPass,
+					_image->getExtent(), _image->getFormat(), 
+					std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
+					std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
+					_scene);
+		else
+			_linePipeline = nullptr;
 		_maskPipeline = std::make_unique<vk::MaskPipeline>(
 				_vkCore, _renderPass,
 				_image->getExtent(), _image->getFormat(), 
@@ -94,7 +99,8 @@ namespace atta
 			_graphicsPipeline->render(commandBuffer);
 
 			// Line pipeline
-			_linePipeline->render(commandBuffer);
+			if(_linePipelineSupport)
+				_linePipeline->render(commandBuffer);
 
 			// Mask pipeline
 			//_maskPipeline->render(commandBuffer);

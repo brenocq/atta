@@ -36,7 +36,8 @@ namespace atta::vk
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		if(_physicalDevice->getSupport().samplerAnisotropyFeature)
 			deviceFeatures.samplerAnisotropy = VK_TRUE;
-		//deviceFeatures.fillModeNonSolid = VK_TRUE;
+		if(_physicalDevice->getSupport().fillModeNonSolidFeature)
+			deviceFeatures.fillModeNonSolid = VK_TRUE;
 		//deviceFeatures.wideLines = VK_TRUE;
 
 		// Acceleration Structure Features

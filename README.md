@@ -66,7 +66,7 @@ These values are unreliable and come from what I think is going on in the code (
 - [(Book) Game Physics Engine Development](https://www.amazon.com/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
 - [(Book) Real-Time Collision Detection](https://www.amazon.com/Real-Time-Collision-Detection-Interactive-Technology/dp/1558607323)
 - [(Book) Computer Graphics Principles and Practice](http://cgpp.net/about.xml)
-- [(Repo) GPSnoopy's Ray Tracing implementation](https://github.com/GPSnoopy/RayTracingInVulkan)
+- [(Book) Programming Massively Parallel Processors](https://www.amazon.com/Programming-Massively-Parallel-Processors-Hands/dp/0128119861)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.

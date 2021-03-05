@@ -85,10 +85,8 @@ namespace atta::vk
 		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		rasterizer.depthClampEnable = VK_FALSE;
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
-		//rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
-		//rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
 		rasterizer.cullMode = VK_CULL_MODE_NONE;
 		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
@@ -146,7 +144,7 @@ namespace atta::vk
 		{
 			{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
 			{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
-			//{2, static_cast<uint32_t>(scene->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT},
+			{2, static_cast<uint32_t>(_vkCore->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT},
 			//{3, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 		};
 
@@ -165,16 +163,15 @@ namespace atta::vk
 			materialBufferInfo.buffer = _vkCore->getMaterialBuffer()->handle();
 			materialBufferInfo.range = VK_WHOLE_SIZE;
 
-			//// Image and texture samplers
-			//std::vector<VkDescriptorImageInfo> imageInfos(_scene->getTextures().size());
-
-			//for (size_t t = 0; t != imageInfos.size(); ++t)
-			//{
-			//	VkDescriptorImageInfo& imageInfo = imageInfos[t];
-			//	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			//	imageInfo.imageView = _scene->getTextures()[t]->getImageView()->handle();
-			//	imageInfo.sampler = _scene->getTextures()[t]->getSampler()->handle();
-			//}
+			// Image and texture samplers
+			std::vector<VkDescriptorImageInfo> imageInfos(_vkCore->getTextures().size());
+			for(size_t t = 0; t < imageInfos.size(); t++)
+			{
+				VkDescriptorImageInfo& imageInfo = imageInfos[t];
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = _vkCore->getTextures()[t]->getImageView()->handle();
+				imageInfo.sampler = _vkCore->getTextures()[t]->getSampler()->handle();
+			}
 
 			//// Irradiance map
 			//VkDescriptorImageInfo imageIrradianceMapInfo;
@@ -185,8 +182,8 @@ namespace atta::vk
 			const std::vector<VkWriteDescriptorSet> descriptorWrites =
 			{
 				descriptorSets->bind(i, 0, uniformBufferInfo),
-				descriptorSets->bind(i, 1, materialBufferInfo)
-				//descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
+				descriptorSets->bind(i, 1, materialBufferInfo),
+				descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
 				//descriptorSets->bind(i, 3, imageIrradianceMapInfo)
 			};
 
@@ -244,7 +241,6 @@ namespace atta::vk
 		for(auto object : _scene->getObjects())
 		{
 			if(object->isLight()) continue;
-
 			auto model = object->getModel();
 
 			ObjectInfo objectInfo;
