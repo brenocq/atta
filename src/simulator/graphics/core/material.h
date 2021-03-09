@@ -14,10 +14,10 @@ namespace atta
 {
 	struct Material
 	{
-		unsigned type[8] = {MATERIAL_TYPE_NONE};
-		int datai[16];
-		float dataf[16];
-		vec4 datav[16];
+		alignas(4)	unsigned type[1] = {MATERIAL_TYPE_NONE};
+		alignas(4)	int datai[16];
+		alignas(4)	float dataf[16];
+		alignas(16)	vec4 datav[2];
 
 		enum Type
 		{
