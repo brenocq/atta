@@ -42,19 +42,6 @@ MaterialsDemo::MaterialsDemo()
 	dlInfo.direction = {1, 1, 1};
 	objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
 
-	//atta::Sphere::CreateInfo sphereInfo {
-	//	.name = "Sphere 1",
-	//	.position = {-3,1,0},
-	//	.radius = 1.0f,
-	//	.mass = 0.0f,
-	//	.material = atta::Material::diffuse({.3,.3,1}, 0)
-	//};
-	//objects.push_back(std::make_shared<atta::Sphere>(sphereInfo));
-
-	//sphereInfo.position = {0,1,0},
-	//sphereInfo.material = atta::Material::diffuse({.3,.3,1}, 40);
-	//objects.push_back(std::make_shared<atta::Sphere>(sphereInfo));
-
 	atta::ImportedObject::CreateInfo bunny {
 		.name = "Bunny 1",
 		.fileName = "bunny/bunny.obj",

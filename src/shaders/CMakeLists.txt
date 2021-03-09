@@ -1,8 +1,8 @@
 file(GLOB_RECURSE shader_files *.vert *.frag *.rgen *.rchit *.rint *.rmiss *.vert *.frag *.rgen *.rchit *.rint *.rmiss)
 
-message(${shader_files})
+#message(${shader_files})
 
-file(GLOB shader_extra_files **/*.glsl *.glsl)
+file(GLOB_RECURSE shader_extra_files *.glsl)
 set_source_files_properties(${shader_extra_files} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 # Shader compilation
@@ -19,11 +19,11 @@ foreach(shader ${shader_files})
             OUTPUT ${output_file}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${output_dir}
             COMMAND ${Vulkan_GLSLANG_VALIDATOR} --target-env vulkan1.2 -V ${full_path} -o ${output_file}
-            DEPENDS ${full_path}
+            DEPENDS ${full_path} ${shader_extra_files}
         )
 endforeach()
 
 add_custom_target(
-	shaders 
+	shaders
 	DEPENDS ${compiled_shaders}
-	SOURCES ${shader_files} ${shader_extra_files})
+	SOURCES ${shader_files})

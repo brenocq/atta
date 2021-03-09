@@ -5,20 +5,9 @@
 #include "../../material.glsl"
 #include "../../objectInfo.glsl"
 
-layout(binding = 0) readonly uniform UniformBufferObjectStruct
-{ 
-	UniformBufferObject camera; 
-};
-
-layout(binding = 1) readonly buffer MaterialArray
-{
-	Material[] materials; 
-};
-
-layout(push_constant) uniform ObjectInfoStruct
-{
-	ObjectInfo objectInfo;
-};
+layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject camera; };
+layout(binding = 1) readonly buffer MaterialArray { Material[] materials; };
+layout(push_constant) uniform ObjectInfoStruct { ObjectInfo objectInfo; };
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inNormal;

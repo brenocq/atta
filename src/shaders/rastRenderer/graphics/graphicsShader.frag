@@ -2,13 +2,15 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_GOOGLE_include_directive : require
-#define PI 3.1415926538
-#include "materials/material.glsl"
+
+#include "../../material.glsl"
+#include "base.glsl"
 
 layout(binding = 1) readonly buffer MaterialArray { Material[] materials; };
-//layout(binding = 2) uniform sampler2D[] textureSamplers;
+layout(binding = 2) uniform sampler2D[] textures; 
 //layout(binding = 3) uniform sampler2D irradianceMap;
 
+#include "materials/material.glsl"
 
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec3 inNormal;
@@ -18,6 +20,7 @@ layout(location = 4) in vec3 inViewPos;
 
 layout(location = 0) out vec4 outColor;
 
+//#define PI 3.1415926538
 //const vec3 ambientColor = vec3(.1,.1,.1);
 //const vec3 lightColor = vec3(.4,.4,.4);
 //const vec3 lightPos = vec3(0, 10, 0);
@@ -26,59 +29,59 @@ layout(location = 0) out vec4 outColor;
 //const vec3 dirLightColor = vec3(.6,.6,.6);
 //const vec3 dirLight = vec3(0,1,1);
 
-const vec2 invAtan = vec2(0.15915, 0.3183);
-vec2 sampleSphericalMap(vec3 v)
-{
-    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
-    uv *= invAtan;
-    uv += 0.5;
-    return uv;
-}
-
-
-float calculateAttenuation(vec3 pos, vec3 lightPos)
-{
-	return 1.0;
-}
-
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
-{
-    return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
-}
-
-float distributionGGX(vec3 N, vec3 H, float roughness)
-{
-    float a      = roughness*roughness;
-    float a2     = a*a;
-    float NdotH  = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH*NdotH;
-
-    float num   = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = PI * denom * denom;
-
-    return num / denom;
-}
-
-float geometrySchlickGGX(float NdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;
-
-    float num   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return num / denom;
-}
-float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2  = geometrySchlickGGX(NdotV, roughness);
-    float ggx1  = geometrySchlickGGX(NdotL, roughness);
-
-    return ggx1 * ggx2;
-}
+//const vec2 invAtan = vec2(0.15915, 0.3183);
+//vec2 sampleSphericalMap(vec3 v)
+//{
+//    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
+//    uv *= invAtan;
+//    uv += 0.5;
+//    return uv;
+//}
+//
+//
+//float calculateAttenuation(vec3 pos, vec3 lightPos)
+//{
+//	return 1.0;
+//}
+//
+//vec3 fresnelSchlick(float cosTheta, vec3 F0)
+//{
+//    return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
+//}
+//
+//float distributionGGX(vec3 N, vec3 H, float roughness)
+//{
+//    float a      = roughness*roughness;
+//    float a2     = a*a;
+//    float NdotH  = max(dot(N, H), 0.0);
+//    float NdotH2 = NdotH*NdotH;
+//
+//    float num   = a2;
+//    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+//    denom = PI * denom * denom;
+//
+//    return num / denom;
+//}
+//
+//float geometrySchlickGGX(float NdotV, float roughness)
+//{
+//    float r = (roughness + 1.0);
+//    float k = (r*r) / 8.0;
+//
+//    float num   = NdotV;
+//    float denom = NdotV * (1.0 - k) + k;
+//
+//    return num / denom;
+//}
+//float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+//{
+//    float NdotV = max(dot(N, V), 0.0);
+//    float NdotL = max(dot(N, L), 0.0);
+//    float ggx2  = geometrySchlickGGX(NdotV, roughness);
+//    float ggx1  = geometrySchlickGGX(NdotL, roughness);
+//
+//    return ggx1 * ggx2;
+//}
 
 void main() 
 {

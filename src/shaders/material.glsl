@@ -16,12 +16,12 @@ const uint MATERIAL_TYPE_DISNEY	 		= 4;
 struct Material 
 {
 	// Support to up to 8 materials
-	uint type[8];
+	uint type[1];
 
 	// General data about the material
 	int datai[16];
 	float dataf[16];
-	vec4 datav[16];
+	vec4 datav[2];
 };
 
 //---------- Data description ----------//
