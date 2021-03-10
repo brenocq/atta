@@ -24,6 +24,7 @@ namespace atta
 		ubo.projMat.data[5] *= -1;
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
 		ubo.projMatInverse = atta::inverse(ubo.projMat);
+		ubo.nLights = _scene->getLights().size();
 		_uniformBuffer->setValue(ubo);
 
 		//---------- Render pass ----------//
@@ -78,7 +79,7 @@ namespace atta
 	void RastRenderer::render(VkCommandBuffer commandBuffer)
 	{
 		std::array<VkClearValue, 2> clearValues{};
-		clearValues[0].color = {0.5f, 0.5f, 0.8f, 1.0f};
+		clearValues[0].color = {0.5f, 0.5f, 0.5f, 1.0f};
 		clearValues[1].depthStencil = {1.0f, 0};
 
 		VkRenderPassBeginInfo renderPassInfo{};
@@ -93,7 +94,7 @@ namespace atta
 		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		{
 			// Skybox pipeline
-			//_skyboxPipeline->render(commandBuffer);
+			_skyboxPipeline->render(commandBuffer);
 
 			// Graphics pipeline
 			_graphicsPipeline->render(commandBuffer);

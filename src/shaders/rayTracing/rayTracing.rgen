@@ -137,11 +137,8 @@ void main()
 	pixelColor = accumulatedColor/ubo.nAccSamples;
 	//pixelColor = pixelColor/ubo.samplesPerPixel;
 
-	//if(camera.gammaCorrection)
-	//{
-	//	// Apply raytracing-in-one-weekend gamma correction.
-	//	pixelColor = sqrt(pixelColor);
-	//}
+	// Gamma correction
+    pixelColor = pow(pixelColor, vec3(1.0/2.2));
 
 	imageStore(accumulationImage, ivec2(gl_LaunchIDEXT.xy), vec4(accumulatedColor, 0));
     imageStore(outputImage, ivec2(gl_LaunchIDEXT.xy), vec4(pixelColor, 0));

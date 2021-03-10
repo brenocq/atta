@@ -22,13 +22,13 @@ struct Light
 
 	uint nSamples;
 
-	mat4 lightToWorld;// It must not be scaled!
+	mat4 lightToWorld;
 	mat4 worldToLight;
 
 	// General data about the light
-	uint datai[8];
-	float dataf[8];
-	vec4 datav[8];
+	uint datai[5];
+	float dataf[2];
+	vec4 datav[2];
 };
 
 //---------- Data description ----------//
@@ -56,8 +56,9 @@ struct Light
 //		[0] - World radius
 // - datai
 //		[0] - Texture index
-//		[1] - Precomputed 2D Pdf texture index
-//		[2] - Precomputed 2D Pdf texture width
-//		[3] - Precomputed 2D Pdf texture height
+//		[1] - Precomputed 2D Pdf texture index (rt)
+//		[2] - Precomputed IBL diffuse (rast)
+//		[3] - Precomputed IBL specular (rast)
+//		[4] - Precomputed brdfLUT (rast)
 
 #endif// LIGHT_GLSL

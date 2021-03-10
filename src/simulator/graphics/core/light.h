@@ -9,6 +9,7 @@
 
 #include "simulator/math/math.h"
 #include "simulator/helpers/log.h"
+#include "texture.h"
 
 namespace atta
 {
@@ -18,9 +19,9 @@ namespace atta
 		alignas(4) unsigned nSamples = 1;
 		alignas(16) mat4 lightToWorld = mat4(1);
 		alignas(16) mat4 worldToLight = mat4(1);
-		unsigned datai[8];
-		float dataf[8];
-		vec4 datav[8];
+		alignas(4) unsigned datai[5];
+		alignas(4) float dataf[2];
+		alignas(16) vec4 datav[2];
 
 		enum Type
 		{
@@ -75,7 +76,7 @@ namespace atta
 			return l;
 		}
 
-		static Light infinite(vec3 worldCenter, quat orientation, vec3 precomputedPower, float worldRadius, int textureIndex, int pdfIndex, int pdfWidth, int pdfHeight)
+		static Light infinite(vec3 worldCenter, quat orientation, vec3 precomputedPower, float worldRadius, int textureIndex, int pdfIndex, int irradianceMapIndex)
 		{
 			//Log::debug("LIGHT INF", "tex:$0 pdf:$1", textureIndex, pdfIndex);
 			Light l;
@@ -84,8 +85,9 @@ namespace atta
 			l.datav[1] = vec4(precomputedPower, -1);
 			l.datai[0] = textureIndex;
 			l.datai[1] = pdfIndex;
-			l.datai[2] = pdfWidth;
-			l.datai[3] = pdfHeight;
+			l.datai[2] = irradianceMapIndex;
+			l.datai[3] = textureIndex;
+			l.datai[4] = Texture::fromFile("ibl_brdf_lut.png");
 			l.lightToWorld = transpose(posOri(worldCenter, orientation));
 			l.worldToLight = inverse(l.lightToWorld);
 

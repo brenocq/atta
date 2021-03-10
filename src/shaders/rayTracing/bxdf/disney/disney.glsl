@@ -55,7 +55,7 @@ void BXDF_Disney_preprocess(BXDF bxdf,
 	bool thin = bxdf.datai[0]==1;
 
 	float sheenWeight = bxdf.dataf[5];
-	vec3 colorSheen;
+	vec3 colorSheen = vec3(0,0,0);
 	if(sheenWeight>0)
 	{
 		float sTint = bxdf.dataf[6];

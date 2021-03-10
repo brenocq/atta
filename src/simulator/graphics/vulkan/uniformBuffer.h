@@ -18,10 +18,12 @@ namespace atta::vk
 {
 	struct UniformBufferObject
 	{
-		mat4 viewMat;
-		mat4 projMat;
-		mat4 viewMatInverse;
-		mat4 projMatInverse;
+		alignas(16) mat4 viewMat;
+		alignas(16) mat4 projMat;
+		alignas(16) mat4 viewMatInverse;
+		alignas(16) mat4 projMatInverse;
+
+		alignas(4) int nLights;
 	};
 
 

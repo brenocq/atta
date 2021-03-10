@@ -142,10 +142,12 @@ namespace atta::vk
 		//---------- Descriptors ----------//
 		std::vector<DescriptorBinding> descriptorBindings =
 		{
-			{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
+			{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
 			{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT},
+			// Images samplers
 			{2, static_cast<uint32_t>(_vkCore->getTextures().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT},
-			//{3, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
+			// Lights
+			{3, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT},
 		};
 
 		_descriptorSetManager = std::make_shared<DescriptorSetManager>(_device, descriptorBindings, uniformBuffers.size());
@@ -162,6 +164,11 @@ namespace atta::vk
 			VkDescriptorBufferInfo materialBufferInfo = {};
 			materialBufferInfo.buffer = _vkCore->getMaterialBuffer()->handle();
 			materialBufferInfo.range = VK_WHOLE_SIZE;
+
+			// Light buffer
+			VkDescriptorBufferInfo lightBufferInfo = {};
+			lightBufferInfo.buffer = _vkCore->getLightBuffer()->handle();
+			lightBufferInfo.range = VK_WHOLE_SIZE;
 
 			// Image and texture samplers
 			std::vector<VkDescriptorImageInfo> imageInfos(_vkCore->getTextures().size());
@@ -184,7 +191,7 @@ namespace atta::vk
 				descriptorSets->bind(i, 0, uniformBufferInfo),
 				descriptorSets->bind(i, 1, materialBufferInfo),
 				descriptorSets->bind(i, 2, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size())),
-				//descriptorSets->bind(i, 3, imageIrradianceMapInfo)
+				descriptorSets->bind(i, 3, lightBufferInfo)
 			};
 
 			descriptorSets->updateDescriptors(i, descriptorWrites);
