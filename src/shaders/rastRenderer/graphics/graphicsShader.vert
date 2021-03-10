@@ -3,6 +3,7 @@
 #extension GL_GOOGLE_include_directive : require
 #include "../../uniformBufferObject.glsl"
 #include "../../material.glsl"
+#include "../../light.glsl"
 #include "../../objectInfo.glsl"
 
 layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject camera; };
@@ -20,31 +21,6 @@ layout(location = 2) out vec2 outTexCoord;
 layout(location = 3) out flat int outMaterialIndex;
 layout(location = 4) out vec3 outViewPos;
 
-vec3 ExtractCameraPos(mat4 a_modelView)
-{
-  mat4 modelViewT = transpose(a_modelView);
-
-  // Get plane normals
-  vec3 n1 = modelViewT[0].xyz;
-  vec3 n2 = modelViewT[1].xyz;
-  vec3 n3 = modelViewT[2].xyz;
-
-  // Get plane distances
-  float d1 = modelViewT[0].w;
-  float d2 = modelViewT[1].w;
-  float d3 = modelViewT[2].w;
-
-  // Get the intersection of these 3 planes
-  vec3 n2n3 = cross(n2, n3);
-  vec3 n3n1 = cross(n3, n1);
-  vec3 n1n2 = cross(n1, n2);
-
-  vec3 top = (n2n3 * d1) + (n3n1 * d2) + (n1n2 * d3);
-  float denom = dot(n1, n2n3);
-
-  return top / -denom;
-}
-
 out gl_PerVertex
 {
 	vec4 gl_Position;
@@ -59,5 +35,5 @@ void main()
 	outTexCoord = inTexCoord;
 	outMaterialIndex = objectInfo.materialOffset;
 
-	outViewPos = ExtractCameraPos(camera.viewMat);
+	outViewPos = camera.viewMatInverse[3].xyz;
 }

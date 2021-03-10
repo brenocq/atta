@@ -26,6 +26,7 @@ namespace atta
 			MATERIAL_TYPE_MIRROR,
 			MATERIAL_TYPE_METAL,
 			MATERIAL_TYPE_DISNEY,
+			MATERIAL_TYPE_UNREAL_ENGINE_4,
 		};
 
 		//------------------- Diffuse ---------------------//
@@ -171,6 +172,37 @@ namespace atta
 
 			m.datav[0] = vec4(info.color, -1);
 			m.datav[1] = vec4(info.scatterDistance, -1);
+
+			return m;
+		}
+
+		//------------------- Disney ---------------------//
+		struct UnrealEngine4Info {
+			int albedoTexture = -1;
+			int metallicTexture = -1;
+			int roughnessTexture = -1;
+			int aoTexture = -1;
+
+			vec3 albedo;
+			float metallic;
+			float roughness;
+			float ao;
+		};
+		static Material unrealEngine4(UnrealEngine4Info info)
+		{
+			Material m;
+			m.type[0] = MATERIAL_TYPE_UNREAL_ENGINE_4;
+
+			m.datai[0]  = info.albedoTexture;
+			m.datai[1]  = info.metallicTexture;
+			m.datai[2]  = info.roughnessTexture;
+			m.datai[3]  = info.aoTexture;
+
+			m.dataf[0]  = info.metallic;
+			m.dataf[1]  = info.roughness;
+			m.dataf[2]  = info.ao;
+
+			m.datav[0] = vec4(info.albedo, -1);
 
 			return m;
 		}

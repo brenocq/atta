@@ -14,12 +14,18 @@ namespace atta
 {
 	InfiniteLight::InfiniteLight(CreateInfo info):
 		Object({info.name, info.position, info.rotation, {1,1,1}, 0}),
-		_textureIndex(info.texture), _worldRadius(info.worldRadius)
+		_textureIndex(info.texture), _irradianceTextureIndex(info.irradianceTexture ), _worldRadius(info.worldRadius)
 	{
 		Object::setType("InfiniteLight");
 		_isLight = true;
 
 		generateDistribution2DTexture();
+
+		if(_irradianceTextureIndex==-1)
+		{
+			Log::warning("InfiniteLight", "Irradiance map generation from environment map is not implemented yet.");
+			_irradianceTextureIndex = _textureIndex;
+		}
 	}
 
 	InfiniteLight::~InfiniteLight()

@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include "skyboxPipeline.h"
 #include "simulator/helpers/log.h"
+#include "simulator/graphics/core/texture.h"
 
 namespace atta::vk
 {
@@ -16,7 +17,8 @@ namespace atta::vk
 			std::vector<std::shared_ptr<ImageView>> imageViews, 
 			std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
 			std::shared_ptr<Scene> scene):
-		Pipeline(vkCore, imageViews, scene)
+		Pipeline(vkCore, imageViews, scene),
+		_environmentMapExists(false)
 	{	
 		_imageExtent = extent;
 		_imageFormat = format;
@@ -50,10 +52,10 @@ namespace atta::vk
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 1;
-		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+		vertexInputInfo.vertexBindingDescriptionCount = 0;
+		vertexInputInfo.pVertexBindingDescriptions = nullptr;
+		vertexInputInfo.vertexAttributeDescriptionCount = 0;
+		vertexInputInfo.pVertexAttributeDescriptions = nullptr;
 
 		// Input assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
@@ -143,8 +145,8 @@ namespace atta::vk
 		//---------- Descriptors ----------//
 		std::vector<DescriptorBinding> descriptorBindings =
 		{
-			{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT},
-			//{1, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
+			{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT|VK_SHADER_STAGE_FRAGMENT_BIT},
+			{1, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 		};
 
 		_descriptorSetManager = std::make_shared<DescriptorSetManager>(_device, descriptorBindings, uniformBuffers.size());
@@ -158,21 +160,30 @@ namespace atta::vk
 			uniformBufferInfo.range = VK_WHOLE_SIZE;
 
 			// Image and texture samplers
-			//std::vector<VkDescriptorImageInfo> imageInfos(1);
 
-			//for (size_t t = 0; t != imageInfos.size(); ++t)
-			//{
-			//	auto& imageInfo = imageInfos[t];
-			//	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			//	imageInfo.imageView = _scene->getEnvTexture()->getImageView()->handle();
-			//	imageInfo.sampler = _scene->getEnvTexture()->getSampler()->handle();
-			//}
-
-			const std::vector<VkWriteDescriptorSet> descriptorWrites =
+			std::vector<VkWriteDescriptorSet> descriptorWrites =
 			{
-				descriptorSets->bind(i, 0, uniformBufferInfo),
-				//descriptorSets->bind(i, 1, *imageInfos.data(), 1)
+				descriptorSets->bind(i, 0, uniformBufferInfo)
 			};
+
+			// Get first environment map texture
+			for(auto light : _scene->getLights())
+			{
+				if(light.type == atta::Light::LIGHT_TYPE_INFINITE)
+				{
+					int texIndex = light.datai[0];// High resulution background (environment map texture)
+					//int texIndex = light.datai[2];// Blurred background (preprocessed irradiance map)
+					std::shared_ptr<vk::Texture> texture = atta::Texture::textureInfos()[texIndex].vkTexture.lock();
+					VkDescriptorImageInfo imageInfo;
+					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageInfo.imageView = texture->getImageView()->handle();
+					imageInfo.sampler = texture->getSampler()->handle();
+					descriptorWrites.push_back(descriptorSets->bind(i, 1, imageInfo, 1));
+
+					_environmentMapExists = true;
+					break;
+				}
+			}
 
 			descriptorSets->updateDescriptors(i, descriptorWrites);
 		}
@@ -217,26 +228,11 @@ namespace atta::vk
 
 	void SkyboxPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		//VkBuffer skyboxVertexBuffers[] = { _scene->getSkyboxVertexBuffer()->handle() };
-		//VkDeviceSize offsets[] = { 0 };
-
-		//vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-		//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
-		//vkCmdBindVertexBuffers(commandBuffer, 0, 1, skyboxVertexBuffers, offsets);
-		//vkCmdBindIndexBuffer(commandBuffer, _scene->getSkyboxIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
-
-		//ObjectInfo objectInfo;
-		//objectInfo.modelMatrix = glm::mat4(1);
-
-		//vkCmdPushConstants(
-		//		commandBuffer,
-		//		_pipelineLayout->handle(),
-		//		VK_SHADER_STAGE_VERTEX_BIT,
-		//		0,
-		//		sizeof(ObjectInfo),
-		//		&objectInfo);
-
-		//const uint32_t indexCount = static_cast<uint32_t>(_scene->getSkyboxIndexCount());
-		//vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+		if(_environmentMapExists)
+		{
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
+			vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+		}
 	}
 }

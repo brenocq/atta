@@ -12,6 +12,7 @@ const uint MATERIAL_TYPE_DIFFUSE	 	= 1;
 const uint MATERIAL_TYPE_MIRROR	 		= 2;
 const uint MATERIAL_TYPE_METAL	 		= 3;
 const uint MATERIAL_TYPE_DISNEY	 		= 4;
+const uint MATERIAL_TYPE_UNREAL_ENGINE_4= 5;
 
 struct Material 
 {
@@ -61,7 +62,7 @@ struct Material
 //----- DISNEY MATERIAL -----
 // - datai
 // 		[0](vec3 texture) color texture index
-// 		[1](flaot texture) metallic texture index
+// 		[1](float texture) metallic texture index
 // 		[2](float texture) eta texture index
 // 		[3](float texture) roughness texture index
 // 		[4](float texture) specularTint texture index
@@ -93,5 +94,18 @@ struct Material
 // - datav
 // 		[0] uniform color
 // 		[1] uniform scatterDistance
+//
+//----- UNREAL ENGINE 4 MATERIAL -----
+// - datai
+// 		[0](vec3 texture) albedo texture index
+// 		[1](float texture) metallic texture index
+// 		[2](float texture) roughness texture index
+// 		[3](float texture) ao texture index
+// - dataf
+// 		[0] uniform metallic
+// 		[1] uniform roughness
+// 		[2] uniform ao
+// - datav
+// 		[0] uniform albedo
 
 #endif// MATERIAL_GLSL

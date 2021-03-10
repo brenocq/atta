@@ -22,9 +22,11 @@ MaterialsDemo::MaterialsDemo()
 		.position = {0,-.01,0},
 		.scale = {10,.01,10},
 		.mass = 0.0f,
-		.material = atta::Material::diffuse({
-			.kd = {.7,.7,.7},
-			.sigma = 0
+		.material = atta::Material::unrealEngine4({
+			.albedo = atta::vec3(.5,.5,.5),
+			.metallic = 0.0f,
+			.roughness = 0.5,
+			.ao = 1.0f,
 		})
 	};
 	objects.push_back(std::make_shared<atta::Box>(floorInfo));
@@ -34,143 +36,71 @@ MaterialsDemo::MaterialsDemo()
 		.rotation = {atta::radians(-90), 0, 0},
 		//.texture = atta::Texture::fromFile("14-Hamarikyu_Bridge_B_3k.hdr"),
 		.texture = atta::Texture::fromFile("WinterForest_Ref.hdr"),
+		.irradianceTexture = atta::Texture::fromFile("WinterForest_Env.hdr"),
 	};
 	objects.push_back(std::make_shared<atta::InfiniteLight>(ilInfo));
 
 	atta::DistantLight::CreateInfo dlInfo = {};
 	dlInfo.radiance = {.5, .5, .5};
-	dlInfo.direction = {1, 1, 1};
+	dlInfo.direction = {-1, 1, -1};
 	objects.push_back(std::make_shared<atta::DistantLight>(dlInfo));
 
-	atta::ImportedObject::CreateInfo bunny {
-		.name = "Bunny 1",
-		.fileName = "bunny/bunny.obj",
-		.position = {0,0,0},
-		.scale = {10,10,10},
+	atta::PointLight::CreateInfo plInfo = {};
+	plInfo.position = {-2, .4, -2};
+	plInfo.intensity = {0, 15, 15};
+	objects.push_back(std::make_shared<atta::PointLight>(plInfo));
+
+	//---------- Diffuse material (Oren Nayar) ----------//
+	atta::ImportedObject::CreateInfo mat {
+		.name = "Diffuse material",
+		.fileName = "material_ball/material_ball.obj",
+		.position = {0,2.8,0},
+		.rotation = {0,atta::radians(180),0},
+		.scale = {.1,.1,.1},
 		.mass = 0.0f,
 		.material = atta::Material::diffuse({
 			.kd = {.3,.3,1},
 			.sigma = 30
 		})
 	};
-	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
+	objects.push_back(std::make_shared<atta::ImportedObject>(mat));
 
-	bunny.position = {-2,0,0};
-	bunny.material = atta::Material::mirror(atta::vec3(1,1,1));
-	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
+	//---------- Diffuse material (Lambertian) ----------//
+	
+	//---------- Mirror material ----------//
+	//mat.position = {-2,0,0};
+	//mat.material = atta::Material::mirror(atta::vec3(1,1,1));
+	//objects.push_back(std::make_shared<atta::ImportedObject>(mat));
 
-	bunny.position = {2,0,0};
-	bunny.material = atta::Material::disney({
-		.color = atta::vec3(0,1,1),
-		.metallic = 1.0f,
-		.eta = 3,
-		.roughness = 0.9f,
-		.specularTint = 1.0f,
-		.anisotropic = 0.0f,
-		.sheen = 1.0f,
-		.sheenTint = 1.0f,
-		.clearCoat = 0.0f,
-		.clearCoatGloss = 0.0f,
-		.specularTrans = 0.0f,
-		.scatterDistance = atta::vec3(0,0,0),
-		.flatness = 0.0f,
-		.diffTrans = 0.0f,
-		.bumpMap = 0.0f,
-		.thin = false,
+	//---------- Ea4 material (Custom) ----------//
+	mat.position = {2,.8,0};
+	mat.material = atta::Material::unrealEngine4({
+		.albedoTexture = atta::Texture::fromFile("../models/material_ball_color/material_ball_color.png"),
+		.metallicTexture = atta::Texture::fromFile("../models/material_ball_metalness/material_ball_metalness.png"),
+		.roughnessTexture = atta::Texture::fromFile("../models/material_ball_gloss/material_ball_gloss.png"),
+		.aoTexture = atta::Texture::fromFile("../models/material_ball_ao/material_ball_ao.png"),
 	});
-	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
+	objects.push_back(std::make_shared<atta::ImportedObject>(mat));
 
-	bunny.position = {0,2,0};
-	bunny.material = atta::Material::disney({
-		.color = atta::vec3(1.1,1.1,1.1),
-		.metallic = 0.0f,
-		.eta = .99,
-		.roughness = 0.5f,
-		.specularTint = 1.0f,
-		.anisotropic = 0.0f,
-		.sheen = 0.0f,
-		.sheenTint = 0.0f,
-		.clearCoat = 0.0f,
-		.clearCoatGloss = 0.0f,
-		.specularTrans = 1.0f,
-		.scatterDistance = atta::vec3(0,0,0),
-		.flatness = 1.0f,
-		.diffTrans = 2.0f,
-		.bumpMap = 0.0f,
-		.thin = true,
+	//---------- Ea4 material (Wood) ----------//
+	mat.position = {0,.8,0};
+	mat.material = atta::Material::unrealEngine4({
+		.albedoTexture = atta::Texture::fromFile("bambooWoodSemigloss-albedo.png"),
+		.metallicTexture = atta::Texture::fromFile("bambooWoodSemigloss-metallic.png"),
+		.roughnessTexture = atta::Texture::fromFile("bambooWoodSemigloss-roughness.png"),
+		.aoTexture = atta::Texture::fromFile("bambooWoodSemigloss-ao.png"),
 	});
-	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
-
-	bunny.position = {2,2,0};
-	bunny.material = atta::Material::disney({
-		.color = atta::vec3(1,1,1),
-		.metallic = 0.0f,
-		.eta = 1.5,
-		.roughness = 1.0f,
-		.specularTint = 0.0f,
-		.anisotropic = 0.0f,
-		.sheen = 1.0f,
-		.sheenTint = 0.5f,
-		.clearCoat = 0.0f,
-		.clearCoatGloss = 0.0f,
-		.specularTrans = 0.0f,
-		.scatterDistance = atta::vec3(0,0,0),
-		.flatness = 0.0f,
-		.diffTrans = 0.0f,
-		.bumpMap = 0.0f,
-		.thin = false,
+	objects.push_back(std::make_shared<atta::ImportedObject>(mat));
+	
+	//---------- Ea4 material (Rust) ----------//
+	mat.position = {-2,.8,0};
+	mat.material = atta::Material::unrealEngine4({
+		.albedoTexture = atta::Texture::fromFile("rustedIron-albedo.png"),
+		.metallicTexture = atta::Texture::fromFile("rustedIron-metallic.png"),
+		.roughnessTexture = atta::Texture::fromFile("rustedIron-roughness.png"),
+		.ao = 1.0
 	});
-	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
-
-	bunny.position = {-2,2,0};
-	bunny.material = atta::Material::disney({
-		.color = atta::vec3(0,1,0),
-		.metallic = 1.0f,
-		.eta = 0.7f,
-		.roughness = 0.8f,
-		.specularTint = 0.0f,
-		.anisotropic = 0.0f,
-		.sheen = 0.0f,
-		.sheenTint = 0.0f,
-		.clearCoat = 1.0f,
-		.clearCoatGloss = 0.9f,
-		.specularTrans = 0.0f,
-		.scatterDistance = atta::vec3(0,0,0),
-		.flatness = 0.0f,
-		.diffTrans = 0.0f,
-		.bumpMap = 0.0f,
-		.thin = false,
-	});
-	objects.push_back(std::make_shared<atta::ImportedObject>(bunny));
-
-	atta::ImportedObject::CreateInfo nut {
-		.name = "NUT",
-		.fileName = "nut_LOW/nut_LOW.obj",
-		.position = {0,.75,1},
-		.scale = {1.5,1.5,1.5},
-		.mass = 0.0f,
-		.material = atta::Material::disney({
-				.colorTexture = atta::Texture::fromFile("col.jpg"),
-				.specularTransTexture = atta::Texture::fromFile("spec.jpg"),
-				//.color = vec3(1,0,0).
-				.metallic = 1.0f,
-				.eta = 0.7f,
-				.roughness = 0.0f,
-				.specularTint = 0.0f,
-				.anisotropic = 0.0f,
-				.sheen = 0.0f,
-				.sheenTint = 0.0f,
-				.clearCoat = 1.0f,
-				.clearCoatGloss = 0.9f,
-				//.specularTrans = 1.0f,
-				.scatterDistance = atta::vec3(0,0,0),
-				.flatness = 0.0f,
-				.diffTrans = 0.0f,
-				.bumpMap = 0.0f,
-				.thin = false,
-			}),
-	};
-	//objects.push_back(std::make_shared<atta::ImportedObject>(nut));
+	objects.push_back(std::make_shared<atta::ImportedObject>(mat));
 
 	_attaCreateInfo.objects = objects;
 }

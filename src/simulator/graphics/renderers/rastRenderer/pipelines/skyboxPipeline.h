@@ -30,6 +30,7 @@ namespace atta::vk
 			void render(VkCommandBuffer commandBuffer, int imageIndex=0);
 
 		private:
+			bool _environmentMapExists;
 	};
 }
 
