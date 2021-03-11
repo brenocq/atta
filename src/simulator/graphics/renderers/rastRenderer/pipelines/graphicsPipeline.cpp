@@ -253,6 +253,7 @@ namespace atta::vk
 			ObjectInfo objectInfo;
 			objectInfo.transform = transpose(object->getModelMat());
 			objectInfo.materialOffset = model->getMaterialOffset();
+			//Log::error("RastGraphicsPipeline", "model: $0 $1", object->getModelMat().toString(), object->getOrientation().toString());
 
 			vkCmdPushConstants(
 					commandBuffer,

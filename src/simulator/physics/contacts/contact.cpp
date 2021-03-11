@@ -14,6 +14,17 @@ namespace atta::phy
 		bodies[1] = b1;
 	}
 
+	std::string Contact::toString()
+	{
+		return 
+			"{contactPoint: "+contactPoint.toString()+
+			", contactNormal: "+contactNormal.toString()+
+			", restitution: "+std::to_string(restitution)+
+			", friction: "+std::to_string(friction)+
+			", penetration: "+std::to_string(penetration)+
+			"}";
+	}
+
 	void Contact::calculateInternals(float dt)
 	{
 		if(!bodies[0]) swapBodies();
@@ -33,6 +44,7 @@ namespace atta::phy
 
 		// Calculate desired change in velocity for resolution
 		calculateDesiredDeltaVelocity(dt);
+		Log::debug("Contact", "contactVel:$0\t\t\tdesiredVel:$1", contactVelocity.toString(), desiredDeltaVelocity);
 	}
 
 	void Contact::swapBodies()
@@ -186,78 +198,75 @@ namespace atta::phy
 			linearInertia[i] = bodies[i]->getInverseMass();
 
 			// Keep track of the total inertia from all components
-			totalInertia += linearInertia[i] + angularInertia[i];
+			totalInertia += linearInertia[i];// + angularInertia[i];
 
 			// We break the loop here so that the totalInertia value is
 			// completely calculated (by both iterations) before
 			// continuing.
 		}
 
-		//---------- Apply changes ----------//
+		//---------- Apply changes to bodies ----------//
 		// Loop through again calculating and applying the changes
 		for(unsigned i = 0; i < 2; i++) if(bodies[i])
 		{
 			// The linear and angular movements required are in proportion to the two inverse inertias
 			float sign = (i == 0)?1:-1;
-			angularMove[i] = sign * penetration * (angularInertia[i] / totalInertia);
+			//angularMove[i] = sign * penetration * (angularInertia[i] / totalInertia);
 			linearMove[i]  = sign * penetration * (linearInertia[i]  / totalInertia);
+			//Log::debug("Contact","linearMove: $0", linearMove[i]);
 
 			// To avoid angular projections that are too great (when mass is large but inertia tensor is small) limit the angular move
-			vec3 projection = relativeContactPosition[i] + contactNormal*dot(-relativeContactPosition[i], contactNormal);
+			//vec3 projection = relativeContactPosition[i] + contactNormal*dot(-relativeContactPosition[i], contactNormal);
 
 			// Use the small angle approximation for the sine of the angle (i.e.
 			// the magnitude would be sine(angularLimit) * projection.magnitude
 			// but we approximate sine(angularLimit) to angularLimit).
-			float maxMagnitude = angularLimit * projection.length();
+			//float maxMagnitude = angularLimit * projection.length();
 
-			if(angularMove[i] < -maxMagnitude)
-			{
-				float totalMove = angularMove[i] + linearMove[i];
-				angularMove[i] = -maxMagnitude;
-				linearMove[i] = totalMove - angularMove[i];
-			}
-			else if(angularMove[i] > maxMagnitude)
-			{
-				float totalMove = angularMove[i] + linearMove[i];
-				angularMove[i] = maxMagnitude;
-				linearMove[i] = totalMove - angularMove[i];
-			}
+			//if(angularMove[i] < -maxMagnitude)
+			//{
+			//	float totalMove = angularMove[i] + linearMove[i];
+			//	angularMove[i] = -maxMagnitude;
+			//	linearMove[i] = totalMove - angularMove[i];
+			//}
+			//else if(angularMove[i] > maxMagnitude)
+			//{
+			//	float totalMove = angularMove[i] + linearMove[i];
+			//	angularMove[i] = maxMagnitude;
+			//	linearMove[i] = totalMove - angularMove[i];
+			//}
 
 			// We have the linear amount of movement required by turning
 			// the rigid body (in angularMove[i]). We now need to
 			// calculate the desired rotation to achieve that.
-			if(angularMove[i] == 0)
-			{
-				// Easy case - no angular movement means no rotation.
-				angularChange[i].clear();
-			}
-			else
-			{
-				// Work out the direction we'd like to rotate in.
-				vec3 targetAngularDirection = cross(relativeContactPosition[i], contactNormal);
+			//if(angularMove[i] == 0)
+			//{
+			//	// Easy case - no angular movement means no rotation.
+			//	angularChange[i].clear();
+			//}
+			//else
+			//{
+			//	// Work out the direction we'd like to rotate in.
+			//	vec3 targetAngularDirection = cross(relativeContactPosition[i], contactNormal);
 
-				mat3 inverseInertiaTensor = bodies[i]->getInverseInertiaTensorWorld();
+			//	mat3 inverseInertiaTensor = bodies[i]->getInverseInertiaTensorWorld();
 
-				// Work out the direction we'd need to rotate to achieve that
-				angularChange[i] = inverseInertiaTensor.transform(targetAngularDirection) * (angularMove[i] / angularInertia[i]);
-				//Log::debug("Contact", "($0)-> InvI: $1", i, inverseInertiaTensor.toString());
-			}
+			//	// Work out the direction we'd need to rotate to achieve that
+			//	angularChange[i] = inverseInertiaTensor.transform(targetAngularDirection) * (angularMove[i] / angularInertia[i]);
+			//	//Log::debug("Contact", "($0)-> InvI: $1", i, inverseInertiaTensor.toString());
+			//}
 
-			// Velocity change is easier - it is just the linear movement
-			// along the contact normal.
+
+			// Apply linear change
 			linearChange[i] = contactNormal*linearMove[i];
-
-			// Now we can start to apply the values we've calculated.
-			// Apply the linear movement
 			vec3 pos = bodies[i]->getPosition();
 			pos += linearChange[i];
 			bodies[i]->setPosition(pos);
 
-			// And the change in orientation
-			quat q = bodies[i]->getOrientation();
-			//Log::debug("Contact", "Ori:$0", q.toString());
-			q += angularChange[i];
-			bodies[i]->setOrientation(q);
+			// Apply orientation change 
+			//quat q = bodies[i]->getOrientation();
+			//q += angularChange[i];
+			//bodies[i]->setOrientation(q);
 
 			// We need to calculate the derived data for any body that is
 			// asleep, so that the changes are reflected in the object's

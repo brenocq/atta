@@ -8,12 +8,15 @@
 #define ATTA_EXAMPLE_MATERIALS_DEMO
 #include "simulator/project.h"
 
-class MaterialsDemo : public atta::Project
+namespace example
 {
-	public:
-		MaterialsDemo();
-		~MaterialsDemo();
+	class MaterialsDemo : public atta::Project
+	{
+		public:
+			MaterialsDemo();
+			~MaterialsDemo();
 
-	private:
-};
+		private:
+	};
+}
 #endif// ATTA_EXAMPLE_MATERIALS_DEMO

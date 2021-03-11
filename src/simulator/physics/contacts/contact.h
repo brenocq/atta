@@ -37,6 +37,8 @@ namespace atta::phy
 			float penetration;
 		
 			void setBodyData(Body* b0, Body* b1);
+
+			std::string toString();
 		protected:
 			//----- Data stored to resolve the contact -----//
 			// Transform matrix from contact's frame of reference to world coordinates

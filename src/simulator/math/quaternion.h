@@ -109,6 +109,15 @@ namespace atta
 			k = cos(e.x/2)*cos(e.y/2)*sin(e.z/2)-sin(e.x/2)*sin(e.y/2)*cos(e.z/2);
 		}
 
+		vec3 toEuler() const
+		{
+			vec3 e;
+			e.x = atan2(2*(r*i+j*k), 1-2*(i*i+j*j));
+			e.y = asin(2*(r*j-k*i));
+			e.z = atan2(2*(r*k+i*j), 1-2*(j*j+k*k));
+			return e;
+		}
+
 		std::string toString() const
 		{
 			return "quat{r="+std::to_string(r)+", i="+std::to_string(i)+", j="+std::to_string(j)+", k="+std::to_string(k)+"}";
@@ -120,6 +129,12 @@ namespace atta
 		quat q;
 		q.fromEuler(e);
 		return q;
+	}
+
+	inline vec3 quatToEuler(const quat &q)
+	{
+		vec3 e = q.toEuler();
+		return e;
 	}
 }
 #endif// ATTA_QUATERNION_H
