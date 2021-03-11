@@ -19,6 +19,7 @@ namespace atta::phy
 		// Get bodies from objects
 		for(auto object : _accelerator->getObjects())
 		{
+			if(object->isLight()) continue;
 			if(object->getBodyPhysics())
 			{
 				_bodies.push_back(object->getBodyPhysics());
@@ -62,20 +63,15 @@ namespace atta::phy
 		//---------- Narrow Phase ----------//
 		_contactGenerator->clearContacts();
 		for(auto contact : possibleContacts)
-		{
 			for(auto shape1 : contact.first->getShapes())
-			{
 				for(auto shape2 : contact.second->getShapes())
-				{
 					_contactGenerator->testContact(shape1, shape2);
-				}
-			}
-		}
 		//if(_contactGenerator->qtyContacts()>0)
-		//	Log::debug("PhysicsEngine", "Qty contacts: $0", _contactGenerator->qtyContacts());
+		//	Log::debug("PhysicsEngine", "Contacts: $0", _contactGenerator->getContacts());
 		
 		//---------- Resolve contacts ----------//
-		_contactResolver->resolveContacts(_contactGenerator->getContacts(), dt);
+		if(_contactGenerator->qtyContacts()==2)
+			_contactResolver->resolveContacts(_contactGenerator->getContacts(), dt);
 	}
 
 	//---------- Static functions ----------//

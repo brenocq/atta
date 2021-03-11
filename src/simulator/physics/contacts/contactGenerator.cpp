@@ -200,14 +200,16 @@ namespace atta::phy
 		// Calculate transform matrix
 		mat4 modelShape = posOriScale(b->getPosition(), b->getOrientation(), b->getScale());
 		Body* body = b->getBody();
-		mat4 modelBody = posOri(body->getPosition(), body->getOrientation());
+		mat4 modelBody = posOriScale(body->getPosition(), body->getOrientation(), {1,1,1});
 		mat4 model = modelBody*modelShape;
+		//Log::debug("ContactGen", "model: $0 from $1 $2", modelBody.toString(), body->getPosition().toString(), degrees(quatToEuler(body->getOrientation())).toString());
 
 		unsigned contactsUsed = 0;
 		// Generate contacts (each box vertex with the half space)
 		for(auto& vertex : vertices)
 		{
-			vertex = vec3(model*vec4(vertex,0));
+			vertex = vec3(model*vec4(vertex,1));
+			//Log::debug("ContactGen", "dot: $0 * $1 = $2",vertex.toString(), p->getNormal().toString(), dot(vertex, p->getNormal()));
 			float vertexDistance = dot(vertex, p->getNormal());
 
 			if(vertexDistance <= p->getOffset())// Behind half space
@@ -215,12 +217,13 @@ namespace atta::phy
 				float penetration = p->getOffset()-vertexDistance;
 
 				Contact contact;
-				contact.contactPoint = vertex + penetration*p->getNormal();// Middle point between vertex and plane
+				contact.contactPoint = vertex + penetration*p->getNormal();// Vertex point projected to the plane
 				contact.contactNormal = p->getNormal();
 				contact.penetration = penetration;
 				contact.friction = 0.0f;
 				contact.restitution = 0.0;
 				contact.setBodyData(b->getBody(), nullptr);
+				//Log::debug("ContactGen", "Contact: $0", contact.toString());
 
 				_contacts.push_back(contact);
 				_contactsLeft--;
@@ -228,6 +231,9 @@ namespace atta::phy
 				if(_contactsLeft==0) return contactsUsed;
 			}
 		}
+		if(contactsUsed==2)
+			Log::debug("ContactGen", "Contacts:\n$0\n$1", _contacts[_contacts.size()-1].toString(), _contacts[_contacts.size()-2].toString());
+
 		return contactsUsed;
 	}
 

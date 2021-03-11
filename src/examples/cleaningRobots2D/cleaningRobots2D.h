@@ -10,23 +10,26 @@
 #include "house.h"
 #include "cleaner.h"
 
-class CleaningRobots2D : public atta::Project
+namespace example
 {
-	public:
-		CleaningRobots2D();
-		~CleaningRobots2D();
+	class CleaningRobots2D : public atta::Project
+	{
+		public:
+			CleaningRobots2D();
+			~CleaningRobots2D();
 
-	private:
-		void runAfterRobots();
-		void robotCleanPosition(std::shared_ptr<Cleaner> cleaner);
+		private:
+			void runAfterRobots();
+			void robotCleanPosition(std::shared_ptr<Cleaner> cleaner);
 
-		void createRobots();
-		std::vector<std::shared_ptr<atta::Robot>> cleanersToRobots();
+			void createRobots();
+			std::vector<std::shared_ptr<atta::Robot>> cleanersToRobots();
 
-		House house;
-		std::vector<std::shared_ptr<Cleaner>> _cleaners;
+			House house;
+			std::vector<std::shared_ptr<Cleaner>> _cleaners;
 
-		// Simulation parameters
-		unsigned _qtyRobots;
-};
+			// Simulation parameters
+			unsigned _qtyRobots;
+	};
+}
 #endif// ATTA_EXAMPLE_CLEANING_ROBOTS_2D

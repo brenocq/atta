@@ -9,5 +9,6 @@
 
 #include "cleaningRobots2D/cleaningRobots2D.h"
 #include "materialsDemo/materialsDemo.h"
+#include "physicsDemo/physicsDemo.h"
 
 #endif// EXAMPLES_H

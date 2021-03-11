@@ -10,8 +10,8 @@
 namespace atta::phy
 {
 	ContactResolver::ContactResolver():
-		_positionIterations(1000), _positionEpsilon(0.01f),
-		_velocityIterations(1000), _velocityEpsilon(0.01f)
+		_positionIterations(10), _positionEpsilon(0.001f),
+		_velocityIterations(10), _velocityEpsilon(0.001f)
 	{
 
 	}
@@ -28,10 +28,10 @@ namespace atta::phy
 		// Prepare the contacts for processing
 		prepareContacts(contacts, dt);
 
-		// Resolve the interpenetration problems with the contacts
+		// Resolve bodies interpenetrations from contacts
 		adjustPositions(contacts, dt);
 
-		// Resolve the velocity problems with the contacts
+		// Resolve bodies velocities from contacts
 		//adjustVelocities(contacts, dt);
 	}
 
@@ -68,6 +68,7 @@ namespace atta::phy
 				}
 			}
 			if(index == numContacts) break;
+			Log::debug("ContactResolver", "maxPen:$0", contacts[index].penetration);
 
 			// Match the awake state at the contact
 			contacts[index].matchAwakeState();
@@ -77,6 +78,7 @@ namespace atta::phy
 				linearChange,
 				angularChange,
 				max);
+			Log::debug("ContactResolver", "linChange:$0\tangChange:$1", linearChange[0].toString(), angularChange[0].toString());
 
 			//----- Update contacts for other bodies -----//
 			for(i = 0; i < numContacts; i++)
@@ -104,6 +106,9 @@ namespace atta::phy
 			}
 			positionIterationsUsed++;
 		}
+
+		if(positionIterationsUsed>=2)
+			exit(0);
 	}
 
 	void ContactResolver::adjustVelocities(std::vector<Contact> &contacts, float dt)
