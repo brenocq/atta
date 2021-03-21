@@ -26,6 +26,7 @@ tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
 ```
 
 #### Installing
+### Atta installation is being refactored -> This week I am refactoring the code to provide atta as a cmake package
 
 ```shell
 git clone https://github.com/Brenocq/Atta.git
