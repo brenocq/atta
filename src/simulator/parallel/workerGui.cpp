@@ -235,7 +235,7 @@ namespace atta
 			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		//---------- Render user interface on top of it----------//
-		_ui->render(commandBuffer, imageIndex);
+		//_ui->render(commandBuffer, imageIndex);
 
 		//---------- Change layout to present image ----------//
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,

@@ -83,11 +83,12 @@ include_directories(${glfw3_INCLUDE_DIRS})
 include_directories(${Vulkan_INCLUDE_DIRS})
 include_directories(${FREETYPE_INCLUDE_DIRS})
 message("Vulkan library ${Vulkan_LIBRARY}")
+message("Vulkan libraries ${Vulkan_LIBRARIES}")
 link_directories(${Vulkan_LIBRARY})
 add_subdirectory(shaders)
 add_subdirectory(examples)
 
-set(exe_name atta)
+set(exe_name attaExe)
 add_executable(${exe_name}
 	${src_files} 
 	${src_files_simulator} 

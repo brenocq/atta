@@ -7,11 +7,11 @@ void welcome();
 int main()
 {
 	welcome();
-	//example::CleaningRobots2D cleaningRobots2D;
-	//atta::Atta simulator = atta::Atta::createFromProject(cleaningRobots2D);
+	example::CleaningRobots2D cleaningRobots2D;
+	atta::Atta simulator = atta::Atta::createFromProject(cleaningRobots2D);
 	
-	example::MaterialsDemo materialsDemo;
-	atta::Atta simulator = atta::Atta::createFromProject(materialsDemo);
+	//example::MaterialsDemo materialsDemo;
+	//atta::Atta simulator = atta::Atta::createFromProject(materialsDemo);
 	
 	//example::PhysicsDemo physicsDemo;
 	//atta::Atta simulator = atta::Atta::createFromProject(physicsDemo);

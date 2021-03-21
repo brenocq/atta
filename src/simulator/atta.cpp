@@ -130,17 +130,17 @@ namespace atta
 			std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
 
 			// Create ray tracing vulkan render
-			//rt::vk::RayTracing::CreateInfo rtVkRendInfo = 
-			//{
-			//	.vkCore = vkCore,
-			//	.commandPool = commandPool,
-			//	.width = 1200,
-			//	.height = 900,
-			//	.scene = _scene,
-			//	.viewMat = atta::lookAt(vec3(0,5,7), vec3(0,0,0), vec3(0,1,0)),
-			//	.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
-			//};
-			//std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
+			rt::vk::RayTracing::CreateInfo rtVkRendInfo = 
+			{
+				.vkCore = vkCore,
+				.commandPool = commandPool,
+				.width = 1200,
+				.height = 900,
+				.scene = _scene,
+				.viewMat = atta::lookAt(vec3(0,5,7), vec3(0,0,0), vec3(0,1,0)),
+				.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+			};
+			std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
 
 			// Create ray tracing CPU render
 			//rt::cpu::RayTracing::CreateInfo rtCPURendInfo = {

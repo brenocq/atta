@@ -1,19 +1,19 @@
 //--------------------------------------------------
-// Atta Project
-// project.h
+// Atta Robot Simulator
+// robot.cpp
 // Date: 2021-02-11
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include "simulator/project.h"
+#include <atta/core/robot.h>
 
 namespace atta
 {
-	Project::Project()
+	Robot::Robot()
 	{
 
 	}
 
-	Project::~Project()
+	Robot::~Robot()
 	{
 
 	}
