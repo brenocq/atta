@@ -11,7 +11,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
-//#include "simulator/parallel/threadManager.h"
+#include <atta/parallel/threadManager.h>
 #include <atta/objects/object.h>
 #include <atta/core/robot.h>
 #include <atta/core/scene.h>
@@ -42,14 +42,14 @@ namespace atta
 			void run();
 
 		private:
-			//ThreadManager::GeneralConfig populateTMGeneralConfig();
-			//ThreadManager::PhysicsStage populateTMPhysicsStage();
-			//ThreadManager::RobotStage populateTMRobotStage();
-			//ThreadManager::RenderingStage populateTMRenderingStage();
+			ThreadManager::GeneralConfig populateTMGeneralConfig();
+			ThreadManager::PhysicsStage populateTMPhysicsStage();
+			ThreadManager::RobotStage populateTMRobotStage();
+			ThreadManager::RenderingStage populateTMRenderingStage();
 
 			CreateInfo _info;
 			std::shared_ptr<Scene> _scene;
-			//std::shared_ptr<ThreadManager> _threadManager;
+			std::shared_ptr<ThreadManager> _threadManager;
 	};
 }
 

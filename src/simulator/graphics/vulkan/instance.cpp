@@ -20,7 +20,7 @@ namespace atta::vk
 		}
 
 		// Initialize glfw
-		glfwInit();
+		//glfwInit();
 
 		// Application info
 		VkApplicationInfo appInfo{};

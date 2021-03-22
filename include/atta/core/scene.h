@@ -10,8 +10,8 @@
 #include <vector>
 #include <memory>
 #include <atta/core/robot.h>
-#include "atta/objects/object.h"
-//#include "atta/graphics/core/light.h"
+#include <atta/objects/object.h>
+#include <atta/graphics/core/light.h>
 
 namespace atta
 {
@@ -30,12 +30,12 @@ namespace atta
 			//---------- Getters ----------//
 			std::vector<std::shared_ptr<Object>> getObjects() const { return _objects; }
 			std::vector<std::shared_ptr<Robot>> getRobots() const { return _robots; }
-			//std::vector<Light> getLights() const { return _lights; }
+			std::vector<Light> getLights() const { return _lights; }
 
 		private:
 			std::vector<std::shared_ptr<Object>> _objects;
 			std::vector<std::shared_ptr<Robot>> _robots;
-			//std::vector<Light> _lights;// Populated based on light objects (emissive objects not included)
+			std::vector<Light> _lights;// Populated based on light objects (emissive objects not included)
 	};
 }
 
