@@ -11,9 +11,9 @@
 #include <vector>
 #include <memory>
 #include <atta/math/math.h>
-//#include "simulator/physics/body.h"
-//#include "simulator/physics/constraints/constraints.h"
-//#include "simulator/graphics/core/model.h"
+#include <atta/physics/body.h>
+#include <atta/physics/constraints/constraints.h>
+#include <atta/graphics/core/model.h>
 
 namespace atta
 {
@@ -47,13 +47,13 @@ namespace atta
 			quat getOrientation() const { return _orientation; }
 
 			// Graphics
-			//std::shared_ptr<Model> getModel() const { return _model; }
+			std::shared_ptr<Model> getModel() const { return _model; }
 			vec3 getPosition() const { return _position; }
 			ObjectSelection getSelection() const { return _selection; }
 			vec3 getScale() const { return _scale; }
 
-			//// Physics
-			//std::shared_ptr<phy::Body> getBodyPhysics() const { return _bodyPhysics; }
+			// Physics
+			std::shared_ptr<phy::Body> getBodyPhysics() const { return _bodyPhysics; }
 
 			// Object hierarchy
 			std::shared_ptr<Object> getParent() const { return _parent.lock(); }
@@ -71,7 +71,7 @@ namespace atta
 
 			//---------- Setters ----------//
 			void setType(std::string type) { _type = type; }
-			//void setModel(std::shared_ptr<Model> model) { _model = model; }
+			void setModel(std::shared_ptr<Model> model) { _model = model; }
 
 			//----- Identification -----//
 			std::string _type;
@@ -88,13 +88,13 @@ namespace atta
 			vec3 _scale;
 			
 			//----- Graphics -----//
-			//std::shared_ptr<Model> _model;
+			std::shared_ptr<Model> _model;
 
 			// UI
 			ObjectSelection _selection;
 
 			//----- Physics -----//
-			//std::shared_ptr<phy::Body> _bodyPhysics;
+			std::shared_ptr<phy::Body> _bodyPhysics;
 			//std::weak_ptr<phy::Constraint> _parentConstraint;
 
 			//----- Object hierarchy -----//
