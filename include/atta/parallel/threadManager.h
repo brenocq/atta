@@ -17,8 +17,7 @@
 #include <atta/core/common.h>
 #include <atta/core/scene.h>
 #include <atta/core/accelerator.h>
-//#include "simulator/graphics/renderers/renderer.h"
-//#include "simulator/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h"
+#include <atta/graphics/renderers/renderer.h>
 #include <atta/graphics/vulkan/vulkanCore.h>
 #include <atta/physics/physicsEngine.h>
 
@@ -45,7 +44,7 @@ namespace atta
 
 			struct RenderingStage {
 				std::shared_ptr<vk::VulkanCore> vkCore;
-				//std::vector<std::shared_ptr<Renderer>> renderers;
+				std::vector<std::shared_ptr<Renderer>> renderers;
 			};
 
 			struct PipelineSetup {
@@ -99,7 +98,7 @@ namespace atta
 			//---------- Rendering stage ----------//
 			std::shared_ptr<vk::VulkanCore> _vkCore;
 			std::shared_ptr<vk::CommandPool> _commandPool;
-			//std::vector<std::shared_ptr<Renderer>> _renderers;
+			std::vector<std::shared_ptr<Renderer>> _renderers;
 	};
 }
 

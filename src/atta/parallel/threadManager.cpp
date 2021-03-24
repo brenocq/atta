@@ -45,7 +45,7 @@ namespace atta
 		//---------- Rendering stage ----------//
 		_vkCore = pipelineSetup.renderingStage.vkCore;
 		_commandPool = std::make_shared<vk::CommandPool>(_vkCore->getDevice(), vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_THREAD_MANAGER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-		//_renderers = pipelineSetup.renderingStage.renderers;
+		_renderers = pipelineSetup.renderingStage.renderers;
 
 		createGeneralistWorkers();
 		createGuiWorker();
@@ -104,7 +104,7 @@ namespace atta
 					WorkerGui::CAMERA_CONTROL_TYPE_3D:
 					WorkerGui::CAMERA_CONTROL_TYPE_2D
 				);
-		//_workerGui->setRenderers(_renderers);
+		_workerGui->setRenderers(_renderers);
 
 		// Create thread from callable workerGui
 		_threads.push_back(std::thread(std::ref(*_workerGui)));

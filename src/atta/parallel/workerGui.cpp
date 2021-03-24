@@ -86,16 +86,16 @@ namespace atta
 	}
 
 
-	//void WorkerGui::setRenderers(std::vector<std::shared_ptr<Renderer>> renderers)
-	//{ 
-	//	_renderers = renderers;
-	//	if(_renderers.size()>0)
-	//	{
-	//		_mainRendererIndex = _renderers.size()-1;
-	//		// Start model view controller view matrix from main renderer
-	//		_modelViewController->reset(_renderers[_mainRendererIndex]->getViewMatrix());
-	//	}
-	//}
+	void WorkerGui::setRenderers(std::vector<std::shared_ptr<Renderer>> renderers)
+	{ 
+		_renderers = renderers;
+		if(_renderers.size()>0)
+		{
+			_mainRendererIndex = _renderers.size()-1;
+			// Start model view controller view matrix from main renderer
+			_modelViewController->reset(_renderers[_mainRendererIndex]->getViewMatrix());
+		}
+	}
 
 	void WorkerGui::render()
 	{
@@ -121,7 +121,8 @@ namespace atta
 		// Update main renderer camera
 		if(_cameraUpdated)
 		{
-			//_renderers[_mainRendererIndex]->updateCameraMatrix(_modelViewController->getModelView());
+			if(_renderers.size()>0)
+				_renderers[_mainRendererIndex]->updateCameraMatrix(_modelViewController->getModelView());
 			_cameraUpdated = false;
 		}
 
@@ -216,10 +217,10 @@ namespace atta
 		subresourceRange.layerCount = 1;
 
 		//---------- Run renderers ----------//
-		//for(auto renderer : _renderers)
-		//{
-		//	renderer->render(commandBuffer);
-		//}
+		for(auto renderer : _renderers)
+		{
+			renderer->render(commandBuffer);
+		}
 
 		//---------- Copy main renderer image ----------//
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -227,11 +228,14 @@ namespace atta
 
 		//	//for(auto imageCopy : _imageCopies)
 		
-		//copyImageCommands(commandBuffer, imageIndex, {
-		//	.image = _renderers[_mainRendererIndex]->getImage(),
-		//	.extent = _renderers[_mainRendererIndex]->getImage()->getExtent(),
-		//	.offset = {0,0}
-		//	});
+		if(_renderers.size()>0)
+		{
+			copyImageCommands(commandBuffer, imageIndex, {
+				.image = _renderers[_mainRendererIndex]->getImage(),
+				.extent = _renderers[_mainRendererIndex]->getImage()->getExtent(),
+				.offset = {0,0}
+				});
+		}
 
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);

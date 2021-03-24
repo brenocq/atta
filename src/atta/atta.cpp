@@ -11,7 +11,7 @@
 #include <atta/graphics/vulkan/vulkanCore.h>
 #include <atta/core/accelerator.h>
 #include <atta/core/scene.h>
-//#include "simulator/graphics/renderers/rastRenderer/rastRenderer.h"
+#include <atta/graphics/renderers/rastRenderer/rastRenderer.h>
 //#include "simulator/graphics/renderers/renderer2D/renderer2D.h"
 //#include "simulator/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h"
 //#include "simulator/graphics/renderers/rayTracing/rayTracingCPU/rayTracing.h"
@@ -118,16 +118,16 @@ namespace atta
 		if(_info.dimensionMode == atta::DIM_MODE_3D)
 		{
 			// Create rasterization render
-			//RastRenderer::CreateInfo rastRendInfo = {
-			//	.vkCore = vkCore,
-			//	.commandPool = commandPool,
-			//	.width = 1200,
-			//	.height = 900,
-			//	.scene = _scene,
-			//	.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
-			//	.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
-			//};
-			//std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
+			RastRenderer::CreateInfo rastRendInfo = {
+				.vkCore = vkCore,
+				.commandPool = commandPool,
+				.width = 1200,
+				.height = 900,
+				.scene = _scene,
+				.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
+				.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+			};
+			std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
 
 			//// Create ray tracing vulkan render
 			//rt::vk::RayTracing::CreateInfo rtVkRendInfo = 
@@ -157,10 +157,10 @@ namespace atta
 			// Populate return
 			renderingStage = {
 				.vkCore = vkCore,
-				//.renderers = {
-				//	//rtVk,
-				//	rast
-				//}
+				.renderers = {
+					//rtVk,
+					rast
+				}
 			};
 		}
 		else if(_info.dimensionMode == atta::DIM_MODE_2D)
