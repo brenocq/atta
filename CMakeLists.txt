@@ -86,6 +86,15 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"src/atta/graphics/core/texture.cpp"
 		"src/atta/graphics/core/vertex.cpp"
 		"src/atta/graphics/core/window.cpp"
+		# graphics/renderers
+		"src/atta/graphics/renderers/renderer.cpp"
+		# graphics/renderers/rastRenderer
+		"src/atta/graphics/renderers/rastRenderer/pipelines/graphicsPipeline.cpp"
+		"src/atta/graphics/renderers/rastRenderer/pipelines/linePipeline.cpp"
+		"src/atta/graphics/renderers/rastRenderer/pipelines/maskPipeline.cpp"
+		"src/atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.cpp"
+		"src/atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.cpp"
+		"src/atta/graphics/renderers/rastRenderer/rastRenderer.cpp"
 		# graphics/vulkan
 		"src/atta/graphics/vulkan/buffer.cpp"
         "src/atta/graphics/vulkan/colorBuffer.cpp"
@@ -206,7 +215,16 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/graphics/core/texture.h"
 		"include/atta/graphics/core/vertex.h"
 		"include/atta/graphics/core/window.h"
-		#graphics/vulkan
+		# graphics/renderers
+		"include/atta/graphics/renderers/renderer.h"
+		# graphics/renderers/rastRenderer
+		"include/atta/graphics/renderers/rastRenderer/pipelines/graphicsPipeline.h"
+		"include/atta/graphics/renderers/rastRenderer/pipelines/linePipeline.h"
+		"include/atta/graphics/renderers/rastRenderer/pipelines/maskPipeline.h"
+		"include/atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.h"
+		"include/atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.h"
+		"include/atta/graphics/renderers/rastRenderer/rastRenderer.h"
+		# graphics/vulkan
 		"include/atta/graphics/vulkan/buffer.h"
         "include/atta/graphics/vulkan/colorBuffer.h"
         "include/atta/graphics/vulkan/commandBuffers.h"

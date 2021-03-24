@@ -18,7 +18,7 @@
 #include <atta/graphics/vulkan/semaphore.h>
 #include <atta/graphics/vulkan/fence.h>
 #include <atta/graphics/vulkan/image.h>
-//#include <atta/graphics/renderers/renderer.h>
+#include <atta/graphics/renderers/renderer.h>
 //#include <atta/graphics/gui/userInterface.h>
 
 namespace atta
@@ -45,7 +45,7 @@ namespace atta
 
 			//---------- Setters ----------//
 			void setCommands(std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands) { _commands = commands; };
-			//void setRenderers(std::vector<std::shared_ptr<Renderer>> renderers);
+			void setRenderers(std::vector<std::shared_ptr<Renderer>> renderers);
 
 		private:
 			void render();
@@ -75,7 +75,7 @@ namespace atta
 			int _currentFrame;
 
 			// Renderers
-			//std::vector<std::shared_ptr<Renderer>> _renderers;
+			std::vector<std::shared_ptr<Renderer>> _renderers;
 			int _mainRendererIndex;// Renderer that the user will use to see the world
 			bool _cameraUpdated;// Used mainly by ray tracing renderers to create acceleration structures
 
@@ -85,7 +85,7 @@ namespace atta
 			// Images to copy (TODO show renderers images with guib)
 			std::vector<ImageCopy> _imageCopies;
 
-			//// User interface
+			// User interface
 			//std::shared_ptr<UserInterface> _ui;
 	};
 }

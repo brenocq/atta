@@ -1,6 +1,7 @@
 #include <iostream>
 #include <atta/atta.h>
 #include <atta/helpers/log.h>
+//#include "examples/atta.h"
 
 void welcome();
 
@@ -9,7 +10,9 @@ int main()
 	welcome();
 
 	atta::Atta::CreateInfo attaInfo {
-		.createWindow=true,
+		.dimensionMode = atta::DIM_MODE_3D,
+		.physicsMode = atta::PHY_MODE_DISABLED,
+		.createWindow = true,
 	};
 	atta::Atta atta(attaInfo);
 	atta.run();
