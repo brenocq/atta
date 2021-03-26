@@ -60,7 +60,7 @@ if (NOT Vulkan_GLSLANG_VALIDATOR)
 	message(FATAL_ERROR "Could not find glslangValidator!")
 endif()
 
-#add_subdirectory(assets)
+add_subdirectory(src/shaders)
 #add_subdirectory(lib)
 
 #---------- Package install ----------#
@@ -86,15 +86,65 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"src/atta/graphics/core/texture.cpp"
 		"src/atta/graphics/core/vertex.cpp"
 		"src/atta/graphics/core/window.cpp"
+		# graphics/gui/
+			# graphics/gui/font/
+			"src/atta/graphics/gui/font/fontLoader.cpp"
+			# graphics/gui/widgets/
+            "src/atta/graphics/gui/widgets/align.cpp"
+            "src/atta/graphics/gui/widgets/box.cpp"
+            "src/atta/graphics/gui/widgets/button.cpp"
+            "src/atta/graphics/gui/widgets/clickDetector.cpp"
+            "src/atta/graphics/gui/widgets/column.cpp"
+            "src/atta/graphics/gui/widgets/draggable.cpp"
+            "src/atta/graphics/gui/widgets/menuButton.cpp"
+            "src/atta/graphics/gui/widgets/padding.cpp"
+            "src/atta/graphics/gui/widgets/protect.cpp"
+            "src/atta/graphics/gui/widgets/row.cpp"
+            "src/atta/graphics/gui/widgets/text.cpp"
+            "src/atta/graphics/gui/widgets/topBar.cpp"
+            "src/atta/graphics/gui/widgets/visibility.cpp"
+            "src/atta/graphics/gui/widgets/widget.cpp"
+            "src/atta/graphics/gui/widgets/widgetStructs.cpp"
+            "src/atta/graphics/gui/widgets/window.cpp"
+    	"src/atta/graphics/gui/guiFrameBuffer.cpp"
+        "src/atta/graphics/gui/guiPipeline.cpp"
+        "src/atta/graphics/gui/guiPipelineLayout.cpp"
+        "src/atta/graphics/gui/guiRender.cpp"
+        "src/atta/graphics/gui/guiRenderPass.cpp"
+        "src/atta/graphics/gui/guiState.cpp"
+        "src/atta/graphics/gui/guiStructs.cpp"
+        "src/atta/graphics/gui/guiUniformBuffer.cpp"
+        "src/atta/graphics/gui/guiVertex.cpp"
+        "src/atta/graphics/gui/userInterface.cpp"
 		# graphics/renderers
 		"src/atta/graphics/renderers/renderer.cpp"
-		# graphics/renderers/rastRenderer
-		"src/atta/graphics/renderers/rastRenderer/pipelines/graphicsPipeline.cpp"
-		"src/atta/graphics/renderers/rastRenderer/pipelines/linePipeline.cpp"
-		"src/atta/graphics/renderers/rastRenderer/pipelines/maskPipeline.cpp"
-		"src/atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.cpp"
-		"src/atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.cpp"
-		"src/atta/graphics/renderers/rastRenderer/rastRenderer.cpp"
+			# graphics/renderers/rastRenderer
+			"src/atta/graphics/renderers/rastRenderer/pipelines/graphicsPipeline.cpp"
+			"src/atta/graphics/renderers/rastRenderer/pipelines/linePipeline.cpp"
+			"src/atta/graphics/renderers/rastRenderer/pipelines/maskPipeline.cpp"
+			"src/atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.cpp"
+			"src/atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.cpp"
+			"src/atta/graphics/renderers/rastRenderer/rastRenderer.cpp"
+			# graphics/renderers/rayTracing/rayTracingCPU/
+		  	"src/atta/graphics/renderers/rayTracing/rayTracingCPU/cameras/camera.cpp"
+        	"src/atta/graphics/renderers/rayTracing/rayTracingCPU/cameras/perspectiveCamera.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingCPU/geometry/surfaceInteraction.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingCPU/rayTracing.cpp"
+			# graphics/renderers/rayTracing/rayTracingVulkan/
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/accelerationStructure.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/bottomLevelAccelerationStructure.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/bottomLevelGeometry.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/deviceProcedures.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracingPipeline.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracingProperties.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/shaderBindingTable.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/topLevelAccelerationStructure.cpp"
+            "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/uniformBuffer.cpp"
+			# graphics/renderers/renderer2D/
+			"src/atta/graphics/renderers/renderer2D/pipelines/graphicsPipeline2D.cpp"
+			"src/atta/graphics/renderers/renderer2D/renderer2D.cpp"
+			"src/atta/graphics/renderers/renderer2D/uniformBuffer2D.cpp"
 		# graphics/vulkan
 		"src/atta/graphics/vulkan/buffer.cpp"
         "src/atta/graphics/vulkan/colorBuffer.cpp"
@@ -215,15 +265,68 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/graphics/core/texture.h"
 		"include/atta/graphics/core/vertex.h"
 		"include/atta/graphics/core/window.h"
+		# graphics/gui/
+			# graphics/gui/font/
+			"include/atta/graphics/gui/font/fontLoader.h"
+			"include/atta/graphics/gui/font/fontStructs.h"
+			# graphics/gui/widgets/
+            "include/atta/graphics/gui/widgets/align.h"
+            "include/atta/graphics/gui/widgets/box.h"
+            "include/atta/graphics/gui/widgets/button.h"
+            "include/atta/graphics/gui/widgets/clickDetector.h"
+            "include/atta/graphics/gui/widgets/column.h"
+            "include/atta/graphics/gui/widgets/draggable.h"
+            "include/atta/graphics/gui/widgets/menuButton.h"
+            "include/atta/graphics/gui/widgets/padding.h"
+            "include/atta/graphics/gui/widgets/protect.h"
+            "include/atta/graphics/gui/widgets/row.h"
+            "include/atta/graphics/gui/widgets/text.h"
+            "include/atta/graphics/gui/widgets/topBar.h"
+            "include/atta/graphics/gui/widgets/visibility.h"
+            "include/atta/graphics/gui/widgets/widget.h"
+            "include/atta/graphics/gui/widgets/widgets.h"
+            "include/atta/graphics/gui/widgets/widgetStructs.h"
+            "include/atta/graphics/gui/widgets/window.h"
+        "include/atta/graphics/gui/guiFrameBuffer.h"
+        "include/atta/graphics/gui/guiPipeline.h"
+        "include/atta/graphics/gui/guiPipelineLayout.h"
+        "include/atta/graphics/gui/guiRender.h"
+        "include/atta/graphics/gui/guiRenderPass.h"
+        "include/atta/graphics/gui/guiState.h"
+        "include/atta/graphics/gui/guiStructs.h"
+        "include/atta/graphics/gui/guiUniformBuffer.h"
+        "include/atta/graphics/gui/guiVertex.h"
+        "include/atta/graphics/gui/userInterface.h"
 		# graphics/renderers
 		"include/atta/graphics/renderers/renderer.h"
-		# graphics/renderers/rastRenderer
-		"include/atta/graphics/renderers/rastRenderer/pipelines/graphicsPipeline.h"
-		"include/atta/graphics/renderers/rastRenderer/pipelines/linePipeline.h"
-		"include/atta/graphics/renderers/rastRenderer/pipelines/maskPipeline.h"
-		"include/atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.h"
-		"include/atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.h"
-		"include/atta/graphics/renderers/rastRenderer/rastRenderer.h"
+			# graphics/renderers/rastRenderer
+			"include/atta/graphics/renderers/rastRenderer/pipelines/graphicsPipeline.h"
+			"include/atta/graphics/renderers/rastRenderer/pipelines/linePipeline.h"
+			"include/atta/graphics/renderers/rastRenderer/pipelines/maskPipeline.h"
+			"include/atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.h"
+			"include/atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.h"
+			"include/atta/graphics/renderers/rastRenderer/rastRenderer.h"
+			# graphics/renderers/rayTracing/rayTracingCPU/
+		  	"include/atta/graphics/renderers/rayTracing/rayTracingCPU/cameras/camera.h"
+        	"include/atta/graphics/renderers/rayTracing/rayTracingCPU/cameras/cameras.h"
+        	"include/atta/graphics/renderers/rayTracing/rayTracingCPU/cameras/perspectiveCamera.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingCPU/geometry/surfaceInteraction.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingCPU/rayTracing.h"
+			# graphics/renderers/rayTracing/rayTracingVulkan/
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/accelerationStructure.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/bottomLevelAccelerationStructure.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/bottomLevelGeometry.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/deviceProcedures.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracingPipeline.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracingProperties.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/shaderBindingTable.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/topLevelAccelerationStructure.h"
+            "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/uniformBuffer.h"
+			# graphics/renderers/renderer2D/
+			"include/atta/graphics/renderers/renderer2D/pipelines/graphicsPipeline2D.h"
+			"include/atta/graphics/renderers/renderer2D/renderer2D.h"
+			"include/atta/graphics/renderers/renderer2D/uniformBuffer2D.h"
 		# graphics/vulkan
 		"include/atta/graphics/vulkan/buffer.h"
         "include/atta/graphics/vulkan/colorBuffer.h"
@@ -279,6 +382,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/math/vector.h"
 		# objects
 		"include/atta/objects/object.h"
+        "include/atta/objects/basics/basics.h"
         "include/atta/objects/basics/box.h"
         "include/atta/objects/basics/cylinder.h"
         "include/atta/objects/basics/halfSpace.h"
@@ -287,6 +391,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
         "include/atta/objects/basics/sphere.h"
         "include/atta/objects/lights/distant.h"
         "include/atta/objects/lights/infinite.h"
+        "include/atta/objects/lights/lights.h"
         "include/atta/objects/lights/point.h"
         "include/atta/objects/lights/spot.h"
         "include/atta/objects/others/display/display.h"
@@ -326,12 +431,51 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/project.h"
 	)
 
+	set(attacore_SHADERS
+		# gui
+		"include/atta/assets/shaders/gui/guiShader.frag.spv"
+        "include/atta/assets/shaders/gui/guiShader.vert.spv"
+		# rastRenderer/
+			# rastRenderer/graphics
+			"include/atta/assets/shaders/rastRenderer/graphics/graphicsShader.frag.spv"
+			"include/atta/assets/shaders/rastRenderer/graphics/graphicsShader.vert.spv"
+			# rastRenderer/line
+			"include/atta/assets/shaders/rastRenderer/line/lineShader.frag.spv"
+			"include/atta/assets/shaders/rastRenderer/line/lineShader.vert.spv"
+			# rastRenderer/mask
+			"include/atta/assets/shaders/rastRenderer/mask/maskShader.frag.spv"
+			"include/atta/assets/shaders/rastRenderer/mask/maskShader.vert.spv"
+			# rastRenderer/outline
+			"include/atta/assets/shaders/rastRenderer/outline/outlineShader.frag.spv"
+			"include/atta/assets/shaders/rastRenderer/outline/outlineShader.vert.spv"
+			# rastRenderer/skybox
+			"include/atta/assets/shaders/rastRenderer/skybox/skyboxShader.frag.spv"
+			"include/atta/assets/shaders/rastRenderer/skybox/skyboxShader.vert.spv"
+		# rayTracing
+        "include/atta/assets/shaders/rayTracing/rayTracing.rchit.spv"
+        "include/atta/assets/shaders/rayTracing/rayTracing.rgen.spv"
+        "include/atta/assets/shaders/rayTracing/rayTracing.rmiss.spv"
+        "include/atta/assets/shaders/rayTracing/rayTracingShadow.rmiss.spv"
+		# renderer2D
+		"include/atta/assets/shaders/renderer2D/renderer2D.frag.spv"
+        "include/atta/assets/shaders/renderer2D/renderer2D.vert.spv"
+	)
+
+	set(attacore_TEXTURES
+		"include/atta/assets/textures/icon.png"
+		"include/atta/assets/textures/WinterForest_Env.hdr"
+		"include/atta/assets/textures/WinterForest_Ref.hdr"
+		"include/atta/assets/textures/attaIBL/ibl_brdf_lut.png"
+		"include/atta/assets/fonts/Ubuntu/Ubuntu-Medium.ttf"
+	)
+
 	add_library(attacore ${attacore_HEADERS} ${attacore_SRCS})
 
 	# Include directories
 	target_include_directories(attacore PUBLIC ${Vulkan_INCLUDE_DIRS})
 	target_include_directories(attacore PUBLIC ${FREETYPE_INCLUDE_DIRS})
 	target_link_libraries(attacore PRIVATE glfw tinyobjloader::tinyobjloader  ${Vulkan_LIBRARIES} ${FREETYPE_LIBRARIES})
+	add_dependencies(attacore shaders)
 	target_include_directories(attacore PUBLIC 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
@@ -342,7 +486,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 	install(TARGETS attacore EXPORT attacore-targets DESTINATION "${ATTA_LIB_LOCATION}")
 
 	# Install header files to system include directory
-	foreach( file ${attacore_HEADERS})
+	foreach( file ${attacore_HEADERS};${attacore_SHADERS};${attacore_TEXTURES})
 		get_filename_component(dir ${file} DIRECTORY)
 		string(REPLACE "include/atta" ${ATTA_INCLUDE_LOCATION} dir_to_install ${dir})
 		install(FILES ${file} DESTINATION ${dir_to_install} )

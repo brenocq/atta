@@ -39,8 +39,8 @@ namespace atta::vk
 		//_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
 
 		//---------- Shaders ----------//
-		_vertShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/lineShader.vert.spv");
-		_fragShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/lineShader.frag.spv");
+		_vertShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/line/lineShader.vert.spv");
+		_fragShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/line/lineShader.frag.spv");
 
 		// Vert shader
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

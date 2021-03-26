@@ -33,17 +33,17 @@ namespace atta
 		glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
 
 		//----- Icon -----//
-		GLFWimage icon;
-		icon.pixels = stbi_load("assets/textures/icon.png", &icon.width, &icon.height, nullptr, 4);
+		//GLFWimage icon;
+		//icon.pixels = stbi_load("assets/textures/icon.png", &icon.width, &icon.height, nullptr, 4);
 
-		if(icon.pixels == nullptr)
-		{
-			Log::error("Window", "Failed to load icon!");
-			exit(1);
-		}
+		//if(icon.pixels == nullptr)
+		//{
+		//	Log::error("Window", "Failed to load icon!");
+		//	exit(1);
+		//}
 
-		glfwSetWindowIcon(_window, 1, &icon);
-		stbi_image_free(icon.pixels);
+		//glfwSetWindowIcon(_window, 1, &icon);
+		//stbi_image_free(icon.pixels);
 
 		//----- Callbacks -----//
 		glfwSetWindowUserPointer(_window, this);

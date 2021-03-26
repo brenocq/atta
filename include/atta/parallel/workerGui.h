@@ -19,7 +19,7 @@
 #include <atta/graphics/vulkan/fence.h>
 #include <atta/graphics/vulkan/image.h>
 #include <atta/graphics/renderers/renderer.h>
-//#include <atta/graphics/gui/userInterface.h>
+#include <atta/graphics/gui/userInterface.h>
 
 namespace atta
 {
@@ -86,7 +86,7 @@ namespace atta
 			std::vector<ImageCopy> _imageCopies;
 
 			// User interface
-			//std::shared_ptr<UserInterface> _ui;
+			std::shared_ptr<UserInterface> _ui;
 	};
 }
 

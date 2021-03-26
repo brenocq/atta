@@ -21,7 +21,7 @@ namespace atta
 		_orientation = atta::eulerToQuat(info.rotation);
 		_scale = info.scale;
 
-		//_bodyPhysics = std::make_shared<phy::Body>(&_position, &_orientation, info.mass);
+		_bodyPhysics = std::make_shared<phy::Body>(&_position, &_orientation, info.mass);
 	}
 
 	Object::~Object()

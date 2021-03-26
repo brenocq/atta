@@ -170,7 +170,7 @@ namespace atta
 
 			_renderingStageBarrier->wait();
 
-			_shouldFinish = true;
+			//_shouldFinish = true;
 		}
 	}
 }
