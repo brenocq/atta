@@ -23,8 +23,8 @@ namespace atta::vk
 		_renderPass = renderPass;
 		
 		//---------- Shaders ----------//
-		_vertShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/graphicsShader.vert.spv");
-		_fragShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/graphicsShader.frag.spv");
+		_vertShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/graphics/graphicsShader.vert.spv");
+		_fragShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/graphics/graphicsShader.frag.spv");
 
 		// Vert shader
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

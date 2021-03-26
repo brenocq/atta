@@ -12,9 +12,9 @@
 #include <atta/core/accelerator.h>
 #include <atta/core/scene.h>
 #include <atta/graphics/renderers/rastRenderer/rastRenderer.h>
-//#include "simulator/graphics/renderers/renderer2D/renderer2D.h"
-//#include "simulator/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h"
-//#include "simulator/graphics/renderers/rayTracing/rayTracingCPU/rayTracing.h"
+#include <atta/graphics/renderers/renderer2D/renderer2D.h>
+#include <atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h>
+#include <atta/graphics/renderers/rayTracing/rayTracingCPU/rayTracing.h>
 #include <atta/physics/physicsEngine.h>
 
 namespace atta
@@ -129,7 +129,7 @@ namespace atta
 			};
 			std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
 
-			//// Create ray tracing vulkan render
+			// Create ray tracing vulkan render
 			//rt::vk::RayTracing::CreateInfo rtVkRendInfo = 
 			//{
 			//	.vkCore = vkCore,
@@ -165,20 +165,20 @@ namespace atta
 		}
 		else if(_info.dimensionMode == atta::DIM_MODE_2D)
 		{
-			//Renderer2D::CreateInfo rend2DInfo = {
-			//	.vkCore = vkCore,
-			//	.commandPool = commandPool,
-			//	.width = 1200,
-			//	.height = 900,
-			//	.scene = _scene
-			//};
-			//std::shared_ptr<Renderer2D> renderer2D = std::make_shared<Renderer2D>(rend2DInfo);
+			Renderer2D::CreateInfo rend2DInfo = {
+				.vkCore = vkCore,
+				.commandPool = commandPool,
+				.width = 1200,
+				.height = 900,
+				.scene = _scene
+			};
+			std::shared_ptr<Renderer2D> renderer2D = std::make_shared<Renderer2D>(rend2DInfo);
 
 			renderingStage = {
 				.vkCore = vkCore,
-				//.renderers = {
-				//	renderer2D
-				//}
+				.renderers = {
+					renderer2D
+				}
 			};
 		}
 

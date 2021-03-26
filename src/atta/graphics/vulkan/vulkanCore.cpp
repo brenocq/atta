@@ -124,7 +124,7 @@ namespace atta::vk
 		if(_textures.size()==0)
 		{
 			// Texture buffer can't be empty, push one texture
-			_textures.push_back(std::make_shared<vk::Texture>(_device, commandPool, "icon.png"));
+			_textures.push_back(std::make_shared<vk::Texture>(_device, commandPool, "/usr/include/atta/assets/textures/icon.png"));
 		}
 	}
 

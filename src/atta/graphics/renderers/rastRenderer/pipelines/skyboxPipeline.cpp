@@ -25,8 +25,8 @@ namespace atta::vk
 		_renderPass = renderPass;
 
 		//---------- Shaders ----------//
-		_vertShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/skyboxShader.vert.spv");
-		_fragShaderModule = std::make_shared<ShaderModule>(_device, "src/shaders/shaders/skyboxShader.frag.spv");
+		_vertShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/skybox/skyboxShader.vert.spv");
+		_fragShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/skybox/skyboxShader.frag.spv");
 
 		// Vert shader
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};

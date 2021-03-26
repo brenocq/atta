@@ -87,7 +87,7 @@ namespace atta
 			l.datai[1] = pdfIndex;
 			l.datai[2] = irradianceMapIndex;
 			l.datai[3] = textureIndex;
-			l.datai[4] = Texture::fromFile("ibl_brdf_lut.png");
+			l.datai[4] = Texture::fromFile("/usr/include/atta/assets/textures/attaIBL/ibl_brdf_lut.png");
 			l.lightToWorld = transpose(posOri(worldCenter, orientation));
 			l.worldToLight = inverse(l.lightToWorld);
 

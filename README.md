@@ -10,42 +10,50 @@ Atta is a robot simulator for 2D and 3D applications. For now, the core is still
  - **GUI:** The graphics user interface is being developed using a widget tree model (only basic widgets are finished).
  - **Physics Engine:** It is in its early stages. (I am debbuging it)
  - **Robotics:** After finishing the basics of the three above, I will start to implement the sensors/actuators/common algorithms.
- - **Examples:** There is an example folder where I am developing some exemples of simulations using the Atta.
+ - **Examples:** There will be an example repository that is still in development.
 
 Today only Linux is supported, but I plan to add support for Windows in the following months.\
-This project is not yet well documented, after finishing some examples I am planning to create an website explaning its details and design decisions.
+This project is not yet well documented, I am creating a website in parallel to document the source code and project examples, but it is not yet available.
 
 ## Installation (Linux)
-#### Download Vulkan SDK
+##### Download Vulkan SDK
 First we need to download the vulkan SDK, I'm using the release 1.2.162.1.
 You can download the Vulkan SDK [here](https://vulkan.lunarg.com/sdk/home).
 
 Extract the files to some folder.
-``` shell
+``` bash
 tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
+cd xxx
+./setup-env.sh
+```
+Be sure that vulkan environment variables are defined in your system (VULKAN_SDK) when instaling atta and running atta projects
+
+##### Install dependencies
+
+Ubuntu:
+``` bash
+sudo apt-get install libglfw3-dev libtinyobjloader1 freetype
 ```
 
-#### Installing
-### Atta installation is being refactored -> This week I am refactoring the code to provide atta as a cmake package
+AUR:
+``` bash
+sudo pacman -S glfw3 tinyobjloader freetype
+```
 
-```shell
+##### Install atta
+
+```bash
 git clone https://github.com/Brenocq/Atta.git
 cd Atta
-./install_linux.sh
+sudo -E ./scripts/install.sh
 ```
-
-Consider sourcing vulkan variables if you get problems running
-```
-# I recommend adding the two lines below to your .bashrc (you can also source/export manually every time)
-# source <yourPathToVulkanFolder>/setup-env.sh
-# export Vulkan_INCLUDE_DIR="<yourPathToVulkanFolder>/x86_64/include"
-```
+Obs: The -E flag is required to access vulkan environment variables
 
 ## Running
+No examples will appear during the atta execution because they are in development. (You will only see a black screen with the GUI)\
 (Please make sure you are using g++-10)
-```shell
-./run.sh # Release
-./debug.sh # Debug with gdb
+```bash
+atta
 ```
 
 ## Progress

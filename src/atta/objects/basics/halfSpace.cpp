@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/objects/basics/halfSpace.h>
+#include <atta/physics/shapes/halfSpaceShape.h>
 
 namespace atta
 {

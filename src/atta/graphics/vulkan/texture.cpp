@@ -20,7 +20,7 @@ namespace atta::vk
 	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format):
 		_device(device), _commandPool(commandPool), _arrayLayers(1), _editable(false)
 	{
-		std::string filePath = "assets/textures/"+filename;
+		std::string filePath = filename;
 		int texWidth, texHeight, texChannels;
 		void* pixels = nullptr;
 

@@ -52,13 +52,13 @@ namespace atta
 		}
 
 		// Create user interface objects
-		//UserInterface::CreateInfo uiInfo =
-		//{
-		//	.device = _vkCore->getDevice(),
-		//	.window = _window,
-		//	.swapChain = _swapChain
-		//};
-		//_ui = std::make_shared<UserInterface>(uiInfo);
+		UserInterface::CreateInfo uiInfo =
+		{
+			.device = _vkCore->getDevice(),
+			.window = _window,
+			.swapChain = _swapChain
+		};
+		_ui = std::make_shared<UserInterface>(uiInfo);
 	}
 
 	WorkerGui::~WorkerGui()
@@ -241,7 +241,7 @@ namespace atta
 			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		//---------- Render user interface on top of it----------//
-		//_ui->render(commandBuffer, imageIndex);
+		_ui->render(commandBuffer, imageIndex);
 
 		//---------- Change layout to present image ----------//
 		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -306,13 +306,13 @@ namespace atta
 		}
 
 		_modelViewController->onKey(key, scancode, action, mods);
-		//_ui->onKey(key, scancode, action, mods);
+		_ui->onKey(key, scancode, action, mods);
 	}
 
 	void WorkerGui::onCursorPosition(double xpos, double ypos)
 	{
 		_modelViewController->onCursorPosition(xpos, ypos);
-		//_ui->onCursorPosition(xpos, ypos);
+		_ui->onCursorPosition(xpos, ypos);
 	}
 
 	void WorkerGui::onMouseButton(int button, int action, int mods)
@@ -325,12 +325,12 @@ namespace atta
 		}
 
 		_modelViewController->onMouseButton(button, action, mods);
-		//_ui->onMouseButton(button, action, mods);
+		_ui->onMouseButton(button, action, mods);
 	}
 
 	void WorkerGui::onScroll(double xoffset, double yoffset)
 	{
 		_modelViewController->onScroll(xoffset, yoffset);
-		//_ui->onScroll(xoffset, yoffset);
+		_ui->onScroll(xoffset, yoffset);
 	}
 }

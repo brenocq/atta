@@ -70,7 +70,7 @@ namespace atta
 
 		LocalEvaluator eval;
 		//---------- Load image data to temporary buffer ----------//
-		std::string filePath = 	"assets/textures/"+Texture::textureInfos()[_textureIndex].fileName;
+		std::string filePath = Texture::textureInfos()[_textureIndex].fileName;
 
 		if(filePath.find(".hdr") == std::string::npos)
 		{
