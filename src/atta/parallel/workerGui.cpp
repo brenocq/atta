@@ -266,7 +266,7 @@ namespace atta
 		VkExtent2D dstExtent = _swapChain->getImageExtent();
 		VkImageBlit blit{};
 		blit.srcOffsets[0] = {0, 0, 0};
-		blit.srcOffsets[1] = { std::static_cast<int32_t>(srcExtent.width), std::static_cast<int32_t>(srcExtent.height), 1 };
+		blit.srcOffsets[1] = { static_cast<int32_t>(srcExtent.width), static_cast<int32_t>(srcExtent.height), 1 };
 		blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		blit.srcSubresource.mipLevel = 0;
 		blit.srcSubresource.baseArrayLayer = 0;
