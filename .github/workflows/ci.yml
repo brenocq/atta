@@ -33,7 +33,10 @@ jobs:
 
     - name: Install dependencies
       shell: bash
-      run: sudo apt-get install libglfw3-dev libtinyobjloader1 freetype
+      run:  |
+        sudo apt-get install libglfw3-dev
+        sudo add-apt-repository ppa:glasen/freetype2
+        sudo apt update && sudo apt install freetype2-demos
 
     - name: Install atta
       shell: bash

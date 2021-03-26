@@ -33,7 +33,7 @@ endif()
 		#link_directories(${Vulkan_LIBRARY})
 #---------- Find packages ----------#
 find_package(glfw3 REQUIRED)
-find_package(tinyobjloader CONFIG REQUIRED)
+#find_package(tinyobjloader CONFIG REQUIRED)
 find_package(Freetype REQUIRED)
 # Help: If vulkan was not found please check the environment variable VULKAN_SDK
 # Make sure that this variable is defined to the right path
@@ -255,6 +255,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/extern/stbImage.h"
 		"include/atta/extern/stbImage.cpp"
 		"include/atta/extern/tiny_obj_loader.h"
+		"include/atta/extern/tinyObjLoader.h"
 		# graphics/core
 		"include/atta/graphics/core/light.h"
 		"include/atta/graphics/core/material.h"
@@ -474,7 +475,8 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 	# Include directories
 	target_include_directories(attacore PUBLIC ${Vulkan_INCLUDE_DIRS})
 	target_include_directories(attacore PUBLIC ${FREETYPE_INCLUDE_DIRS})
-	target_link_libraries(attacore PRIVATE glfw tinyobjloader::tinyobjloader  ${Vulkan_LIBRARIES} ${FREETYPE_LIBRARIES})
+	target_link_libraries(attacore PRIVATE glfw ${Vulkan_LIBRARIES} ${FREETYPE_LIBRARIES})
+	#tinyobjloader::tinyobjloader  
 	add_dependencies(attacore shaders)
 	target_include_directories(attacore PUBLIC 
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
