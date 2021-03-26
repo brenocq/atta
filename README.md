@@ -16,7 +16,7 @@ Today only Linux is supported, but I plan to add support for Windows in the foll
 This project is not yet well documented, I am creating a website in parallel to document the source code and project examples, but it is not yet available.
 
 ## Installation (Linux)
-##### Download Vulkan SDK
+#### Download Vulkan SDK (must)
 First we need to download the vulkan SDK, I'm using the release 1.2.162.1.
 You can download the Vulkan SDK [here](https://vulkan.lunarg.com/sdk/home).
 
@@ -28,14 +28,16 @@ cd xxx
 ```
 Be sure that vulkan environment variables are defined in your system (VULKAN_SDK) when instaling atta and running atta projects
 
-##### Install dependencies
+#### Install from AUR package
+``` bash
+sudo pacman -S atta
+```
 
+#### Or install from source
+**Install dependencies**\
 Ubuntu:
 ``` bash
-sudo apt-get install libglfw3-dev
-sudo add-apt-repository ppa:glasen/freetype2
-sudo apt-get update && sudo apt-get install freetype2-demos
-sudo apt-get install vulkan-sdk
+sudo apt-get install libglfw3-dev freetype2-demos vulkan-sdk
 ```
 
 AUR:
@@ -43,18 +45,18 @@ AUR:
 sudo pacman -S glfw freetype vulkan-headers
 ```
 
-##### Install atta
-
+**Install atta**\
+Obs: The -E flag is required to access vulkan environment variables
 ```bash
 git clone https://github.com/Brenocq/Atta.git
 cd Atta
 sudo -E ./scripts/install.sh
 ```
-Obs: The -E flag is required to access vulkan environment variables
 
 ## Running
 No examples will appear during the atta execution because they are in development. (You will only see a black screen with the GUI)\
 (Please make sure you are using g++-10)
+(Some errors have been reported when using clang, I will solve them soon)
 ```bash
 atta
 ```
