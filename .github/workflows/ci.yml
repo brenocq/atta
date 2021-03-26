@@ -33,10 +33,7 @@ jobs:
 
     - name: Install dependencies
       shell: bash
-      run:  |
-        sudo apt-get install libglfw3-dev
-        sudo add-apt-repository ppa:glasen/freetype2
-        sudo apt update && sudo apt install freetype2-demos
+      run: sudo apt-get install libglfw3-dev freetype2-demos
 
     - name: Install atta
       shell: bash

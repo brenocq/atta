@@ -136,7 +136,7 @@ namespace atta
 			// Length
 			float length() const
 			{
-				return std::sqrt(squareLength());
+				return sqrt(squareLength());
 			}
 
 			float squareLength() const
@@ -377,7 +377,7 @@ namespace atta
 			// Length
 			float length() const
 			{
-				return std::sqrt(squareLength());
+				return sqrt(squareLength());
 			}
 
 			float squareLength() const
@@ -614,7 +614,7 @@ namespace atta
 			// Length
 			float length() const
 			{
-				return std::sqrt(squareLength());
+				return sqrt(squareLength());
 			}
 
 			float squareLength() const

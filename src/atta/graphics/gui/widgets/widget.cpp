@@ -8,6 +8,7 @@
 #include <atta/graphics/gui/guiState.h>
 #include <atta/helpers/log.h>
 #include <math.h>
+#include <cmath>
 
 namespace guib
 {
