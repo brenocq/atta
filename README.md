@@ -32,12 +32,15 @@ Be sure that vulkan environment variables are defined in your system (VULKAN_SDK
 
 Ubuntu:
 ``` bash
-sudo apt-get install libglfw3-dev libtinyobjloader1 freetype
+sudo apt-get install libglfw3-dev
+sudo add-apt-repository ppa:glasen/freetype2
+sudo apt-get update && sudo apt-get install freetype2-demos
+sudo apt-get install vulkan-sdk
 ```
 
 AUR:
 ``` bash
-sudo pacman -S glfw3 tinyobjloader freetype
+sudo pacman -S glfw freetype vulkan-headers
 ```
 
 ##### Install atta

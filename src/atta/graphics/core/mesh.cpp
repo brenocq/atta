@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <unordered_map>
 #include <atta/graphics/core/mesh.h>
-#include <atta/extern/tiny_obj_loader.h>
+#include <atta/extern/tinyObjLoader.h>
 #include <atta/helpers/evaluator.h>
 #include <atta/helpers/log.h>
 
