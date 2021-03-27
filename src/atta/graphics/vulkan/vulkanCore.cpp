@@ -10,6 +10,7 @@
 #include <atta/graphics/core/material.h>
 #include <atta/graphics/core/objectInfo.h>
 #include <atta/graphics/vulkan/stagingBuffer.h>
+#include <queue>
 
 namespace atta::vk
 {
@@ -50,33 +51,67 @@ namespace atta::vk
 			// TODO vertex.materialIndex not supported yet
 			std::vector<Vertex> meshVertices = mesh->getVertices();
 			std::vector<uint32_t> meshIndices = mesh->getIndices();
-			//for(auto vertex : meshVertices)
-			//	vertex.materialIndex+=meshMaterial;
-			//meshMaterial++;
 
 			vertices.insert(vertices.end(), meshVertices.begin(), meshVertices.end());
 			indices.insert(indices.end(), meshIndices.begin(), meshIndices.end());
 		}
 
 		// Populate materials/objectInfos
-		for(auto object : scene->getObjects())
+		for(auto parentObject : scene->getObjects())
 		{
-			if(object->isLight()) continue;
+			// Queue with object and its children
+			std::queue<std::shared_ptr<Object>> objects;
+			objects.push(parentObject);
+			while(!objects.empty())
+			{
+				// Get next object
+				std::shared_ptr<Object> object = objects.front();
+				objects.pop();
 
-			static int materialOffset = 0;
-			std::shared_ptr<Model> model = object->getModel();
-			model->setMaterialOffset(materialOffset);
-			materials.push_back(model->getMaterial());
-			Log::debug("VulkanCode", "Added $0", model->getMaterial().toString());
+				// Populate queue with its children
+				std::vector<std::shared_ptr<Object>> children = object->getChildren();
+				for(auto& child : children)
+					objects.push(child);
 
-			ObjectInfo obji;
-			obji.indexOffset = model->getMesh()->getIndicesOffset();
-			obji.vertexOffset = model->getMesh()->getVerticesOffset();
-			obji.materialOffset = materialOffset;
-			obji.transform = transpose(object->getModelMat());
-			objectInfos.push_back(obji);
+				// Get object materials and set materialOffset
+				if(object->isLight()) continue;
 
-			materialOffset++;
+				static int materialOffset = 0;
+				std::shared_ptr<Model> model = object->getModel();
+				model->setMaterialOffset(materialOffset);
+
+				int qtyMaterials;
+				auto modelMaterialMap = model->getMaterials();
+				// Only one material
+				if(modelMaterialMap.count("atta::material"))
+				{
+					qtyMaterials = 1;
+					materials.push_back(modelMaterialMap["atta::material"]);
+				}
+				// Multiple materials
+				else
+				{
+					qtyMaterials = model->getMesh()->getMaterialNames().size();
+					// For each material name in the .mtl file (loaded by mesh), 
+					// try to push one material (if material with name not defined, load default material)
+					for(const auto& materialName : model->getMesh()->getMaterialNames())
+					{
+						if(modelMaterialMap.count(materialName))
+							materials.push_back(modelMaterialMap[materialName]);
+						else
+							materials.push_back(Material::diffuse({}));
+					}
+				}
+
+				ObjectInfo obji;
+				obji.indexOffset = model->getMesh()->getIndicesOffset();
+				obji.vertexOffset = model->getMesh()->getVerticesOffset();
+				obji.materialOffset = materialOffset;
+				obji.transform = transpose(object->getModelMat());
+				objectInfos.push_back(obji);
+
+				materialOffset+=qtyMaterials;
+			}
 		}
 
 		// Populate lights

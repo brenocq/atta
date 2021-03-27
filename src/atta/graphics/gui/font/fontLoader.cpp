@@ -89,14 +89,8 @@ namespace guib {
 		unsigned int currY = 0;
 		unsigned int maxY = 0;// Maximum y in the last line of caracters
 
-		// If want to load only some characters
-		//std::string charactersToLoad = std::string("abcdefghijklmnopqrstuvwxyz")+
-		//								"ABCDEFGHIJKLMNOPQRSTUVWXYZ"+
-		//								"1234567890"+
-		//								"!@#$%^&*()-_=+{}[];:'\"\\|<>,.?/~` ";
-
 		// Try to load all characters
-		for(unsigned char i = 0; i<255; i++)//: charactersToLoad)//
+		for(unsigned char i = 0; i<255; i++)
 		{
 			// Load current character
 			int glyphIndex = FT_Get_Char_Index(_face, i);
@@ -117,7 +111,6 @@ namespace guib {
 			int glyphLeft  = slot->bitmap_left;
 			int glyphAdvance  = slot->bitmap_left;
 
-
 			//Log::warning("FontLoader", "Glyph loaded: ("+std::to_string(i)+") h:"+
 			//			std::to_string(bitmap.rows)+" w:"+std::to_string(bitmap.width));
 
@@ -129,7 +122,7 @@ namespace guib {
 
 				if(currY+bitmap.rows>_fontTexture.atlas.height)
 				{
-					Log::error("FontLoader", "Error to filling font atlas glyph: Not enough space!");
+					Log::error("FontLoader", "Not enough space to fill font atlas glyph!");
 					exit(1);
 				}
 			}
@@ -142,13 +135,6 @@ namespace guib {
 				memcpy(dstPtr, srcPtr, bitmap.width);
 				dstPtr += _fontTexture.atlas.width;
 				srcPtr += bitmap.pitch;
-
-				// Uncomment to see the glyphs
-				//for(int k=0; k<bitmap.width;k++)
-				//{
-				//	std::cout << (char)((int)srcPtr[k]<=127?' ':'*');
-				//}
-				//std::cout << std::endl;
 			}
 
 			// Save glyph info
@@ -167,18 +153,6 @@ namespace guib {
 			maxY = std::max(maxY, currY+bitmap.rows+_fontTexture.padding);
 
 		}
-
-		// Uncomment to the an atlas region
-    	//unsigned char *ptr = _fontTexture.atlas.data;
-		//for(int i=0; i<200; i++)
-		//{
-		//	for(int j=0; j<150;j++)
-		//	{
-		//		std::cout << (char)((int)ptr[j]<=127?'-':'*');
-		//	}
-		//	ptr+=_fontTexture.atlas.width;
-		//	std::cout << std::endl;
-		//}
 	}
 
 	void FontLoader::testFontTerminal(std::string text)

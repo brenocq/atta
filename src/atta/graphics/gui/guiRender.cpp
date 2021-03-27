@@ -44,12 +44,11 @@ namespace guib
 
 	void GuiRender::render(VkCommandBuffer commandBuffer)//, guib::Widget* root, std::vector<guib::Window*> windows)
 	{
-		guib::Offset currOffset = {0,0};
-		guib::Size currSize = {1,1};
+		//guib::Offset currOffset = {0,0};
+		//guib::Size currSize = {1,1};
 
 		_commandBuffer = commandBuffer;// Widgets access this commandBuffer when necessary (box, text, ...)
 
-		//Log::debug("GuiRender", "--------------");
 		if(_root!=nullptr)
 			_root->render();
 

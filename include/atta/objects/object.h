@@ -32,6 +32,7 @@ namespace atta
 				vec3 rotation = {0,0,0};
 				vec3 scale = {1,1,1};
 				float mass = 1.0f;
+				std::vector<std::shared_ptr<Object>> children = {};
 			};
 
 
@@ -56,7 +57,7 @@ namespace atta
 			std::shared_ptr<phy::Body> getBodyPhysics() const { return _bodyPhysics; }
 
 			// Object hierarchy
-			std::shared_ptr<Object> getParent() const { return _parent.lock(); }
+			Object* getParent() const { return _parent; }
 			std::vector<std::shared_ptr<Object>> getChildren() const { return _children; }
 			//std::shared_ptr<atta::phy::Constraint> getParentConstraint() const { return _parentConstraint; }
 
@@ -66,7 +67,7 @@ namespace atta
 			void setOrientation(quat orientation) { _orientation = orientation; }
 
 		protected:
-			//void setParent(Object* parent) { _parent = parent; };
+			void setParent(Object* parent) { _parent = parent; };
 			//void setParentConstraint(atta::phy::Constraint* constraint);
 
 			//---------- Setters ----------//
@@ -98,7 +99,7 @@ namespace atta
 			//std::weak_ptr<phy::Constraint> _parentConstraint;
 
 			//----- Object hierarchy -----//
-			std::weak_ptr<Object> _parent;
+			Object* _parent;
 			std::vector<std::shared_ptr<Object>> _children;
 	};
 }

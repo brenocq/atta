@@ -12,7 +12,7 @@ namespace atta
 	std::map<std::string, std::weak_ptr<Mesh>> Model::allMeshes = {};
 
 	Model::Model(CreateInfo info):
-		_meshName(info.meshName), _material(info.material), _materialOffset(0)
+		_meshName(info.meshName), _materialOffset(0)
 	{
 		if(_meshName == "atta::empty")
 		{
@@ -32,6 +32,14 @@ namespace atta
 			_mesh = std::make_shared<Mesh>(_meshName);
 			// Save mesh for future reference if another object uses this mesh
 			allMeshes[_meshName] = _mesh;
+		}
+
+		//----- Populate model materials -----//
+		if(info.material.type[0] != Material::MATERIAL_TYPE_NONE)
+			_materials["atta::material"] = info.material;
+		else
+		{
+			_materials.insert(info.materials.begin(), info.materials.end());
 		}
 	}
 

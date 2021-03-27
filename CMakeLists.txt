@@ -468,6 +468,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/assets/textures/WinterForest_Ref.hdr"
 		"include/atta/assets/textures/attaIBL/ibl_brdf_lut.png"
 		"include/atta/assets/fonts/Ubuntu/Ubuntu-Medium.ttf"
+		"include/atta/assets/fonts/BFont/bfont.ttf"
 	)
 
 	add_library(attacore ${attacore_HEADERS} ${attacore_SRCS})

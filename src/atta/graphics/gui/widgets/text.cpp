@@ -28,33 +28,38 @@ namespace guib
 	void Text::render()
 	{
 		guib::Color color = _color;
+		float atlasHeight = state::fontLoader->getFontTexture().atlas.height;
+		float atlasWidth = state::fontLoader->getFontTexture().atlas.width;
+		float atlasPercentToScreenPercentH = atlasHeight/state::screenSize.height;
+		float atlasPercentToScreenPercentW = atlasWidth/state::screenSize.width;
 
+		// {currX, currY} is the glyph origin
 		float currX = _offset.x;
-		//std::cout << "Render text: " << text->getText() << std::endl;
-		//std::cout << "Size: " << currSize.toString() << std::endl;
-		//std::cout << "Offset: " << currOffset.toString() << std::endl;
+		float currY = _offset.y;
 		for(auto letter : _text)
 		{
-			
 			guib::GlyphInfo gInfo = state::fontLoader->getFontTexture().glyphsInfo[letter];
 			float tw = gInfo.width;
 			float th = gInfo.height;
 			float tx = gInfo.x;
 			float ty = gInfo.y;
-			float heightPerc = gInfo.height*state::fontLoader->getFontTexture().atlas.height/100.0f;
-			float offsetLeft = gInfo.left/gInfo.width;
-			float offsetTop = (gInfo.top/gInfo.height);
-			float advance = gInfo.advance/gInfo.width;
+			// Height, left, top, advanced calculated in [0,1]^2 screen coordinate
+			float heightPercent = gInfo.height*atlasPercentToScreenPercentH;
+			float leftPercent = gInfo.left*atlasPercentToScreenPercentW;
+			float topPercent = gInfo.top*atlasPercentToScreenPercentH;
+			float advancePercent = gInfo.advance*atlasPercentToScreenPercentW;
+
+			// TODO New percents are specified in pixels, need to transform from px to  pt
 
 			//std::cout << "offset " << (char)letter <<" "<< offsetTop << std::endl;
 
-			atta::vec2 textOffset = {currX, _offset.y};
-			textOffset.y += _size.height*((1-heightPerc)+(1-offsetTop));
+			atta::vec2 textOffset = {currX+leftPercent, currY-topPercent};
 
 			GuiObjectInfo objectInfo;
 			objectInfo.position = textOffset;
-			objectInfo.size = atta::vec2(_size.height*(tw/th)*heightPerc, _size.height*heightPerc);
+			objectInfo.size = atta::vec2((tw/th)*heightPercent, heightPercent);
 			objectInfo.color = atta::vec4(color.r, color.g, color.b, color.a);
+			// Atlas texture position and size (%)
 			objectInfo.isLetter = 1;
 			objectInfo.offsetLetter = atta::vec2(tx, ty);
 			objectInfo.sizeLetter = atta::vec2(tw, th);
@@ -69,7 +74,7 @@ namespace guib
 
 			vkCmdDraw(state::guiRender->getCommandBuffer(), 6, 1, 0, 0);
 
-			currX += _size.height*(tw/th)*heightPerc;
+			currX += advancePercent;
 		}
 	}
 }

@@ -54,7 +54,7 @@ namespace atta
 	void Mesh::loadMesh()
 	{
 		LocalEvaluator eval;
-		std::string objPath = "assets/models/"+_meshName;
+		std::string objPath = _meshName;
 
 		//---------- Parse file ----------//
 		tinyobj::ObjReader objReader;
@@ -69,7 +69,11 @@ namespace atta
 			Log::warning("Mesh", "Warning while parsing [w]$0[]: $1", objPath, objReader.Warning());
 		}
 		//---------- Materials ----------//
-		// TODO
+		for(const auto& material : objReader.GetMaterials())
+		{
+			Log::info("Mesh", "Found material: $0", material.name);
+			_materialNames.push_back(material.name);
+		}
 
 		//---------- Geometry ----------//
 		const auto& objAttrib = objReader.GetAttrib();
@@ -89,7 +93,7 @@ namespace atta
 					objAttrib.vertices[3 * index.vertex_index + 2],
 				};
 
-				if (!objAttrib.normals.empty())
+				if(!objAttrib.normals.empty())
 				{
 					vertex.normal =
 					{
@@ -99,7 +103,7 @@ namespace atta
 					};
 				}
 
-				if (!objAttrib.texcoords.empty())
+				if(!objAttrib.texcoords.empty())
 				{
 					vertex.texCoord =
 					{
@@ -118,6 +122,7 @@ namespace atta
 
 				_indices.push_back(uniqueVertices[vertex]);
 			}
+			faceId = 0;
 		}
 
 		// If the model did not specify normals, then create smooth normals that conserve the same number of vertices.
