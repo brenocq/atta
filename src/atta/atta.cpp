@@ -38,8 +38,9 @@ namespace atta
 		ThreadManager::PipelineSetup pipelineSetup = {
 			.generalConfig = populateTMGeneralConfig(),
 			.physicsStage = populateTMPhysicsStage(),
+			.sensorStage = populateTMSensorStage(),
 			.robotStage = populateTMRobotStage(),
-			.renderingStage = populateTMRenderingStage()
+			.uiConfig = populateTMUiConfig()
 		};
 		_threadManager = std::make_shared<ThreadManager>(pipelineSetup);
 	}
@@ -61,9 +62,15 @@ namespace atta
 
 	ThreadManager::GeneralConfig Atta::populateTMGeneralConfig()
 	{
+		// Create vulkan core
+		std::shared_ptr<vk::VulkanCore> vkCore = std::make_shared<vk::VulkanCore>();
+		std::shared_ptr<vk::CommandPool> commandPool = std::make_shared<vk::CommandPool>(vkCore->getDevice(), vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_THREAD_MANAGER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+		vkCore->createBuffers(_scene, commandPool);
+
 		ThreadManager::GeneralConfig config = {
 			.scene = _scene,
-			.dimensionMode = _info.dimensionMode
+			.dimensionMode = _info.dimensionMode,
+			.vkCore = vkCore,	
 		};
 
 		return config;
@@ -97,6 +104,12 @@ namespace atta
 		return physicsStage;
 	}
 
+	ThreadManager::SensorStage Atta::populateTMSensorStage()
+	{
+		ThreadManager::SensorStage sensorStage {};
+		return sensorStage;
+	}
+
 	ThreadManager::RobotStage Atta::populateTMRobotStage()
 	{
 		return {
@@ -105,83 +118,84 @@ namespace atta
 		};
 	}
 
-	ThreadManager::RenderingStage Atta::populateTMRenderingStage()
+	ThreadManager::UiConfig Atta::populateTMUiConfig()
 	{
-		// Create vulkan core
-		std::shared_ptr<vk::VulkanCore> vkCore = std::make_shared<vk::VulkanCore>();
-		std::shared_ptr<vk::CommandPool> commandPool = std::make_shared<vk::CommandPool>(vkCore->getDevice(), vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_THREAD_MANAGER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-		vkCore->createBuffers(_scene, commandPool);
-
-		ThreadManager::RenderingStage renderingStage;
-
-		//---------- Create renderers from dimension info ----------//
-		if(_info.dimensionMode == atta::DIM_MODE_3D)
-		{
-			// Create rasterization render
-			RastRenderer::CreateInfo rastRendInfo = {
-				.vkCore = vkCore,
-				.commandPool = commandPool,
-				.width = 1200,
-				.height = 900,
-				.scene = _scene,
-				.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
-				.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
-			};
-			std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
-
-			// Create ray tracing vulkan render
-			//rt::vk::RayTracing::CreateInfo rtVkRendInfo = 
-			//{
-			//	.vkCore = vkCore,
-			//	.commandPool = commandPool,
-			//	.width = 1200,
-			//	.height = 900,
-			//	.scene = _scene,
-			//	.viewMat = atta::lookAt(vec3(0,5,7), vec3(0,0,0), vec3(0,1,0)),
-			//	.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
-			//};
-			//std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
-
-			// Create ray tracing CPU render
-			//rt::cpu::RayTracing::CreateInfo rtCPURendInfo = {
-			//	.vkCore = vkCore,
-			//	.commandPool = commandPool,
-			//	.width = 1200,
-			//	.height = 900,
-			//	.scene = _scene,
-			//	.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
-			//	.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
-			//};
-			//std::shared_ptr<rt::cpu::RayTracing> rtCPU = std::make_shared<rt::cpu::RayTracing>(rtCPURendInfo);
-
-			// Populate return
-			renderingStage = {
-				.vkCore = vkCore,
-				.renderers = {
-					//rtVk,
-					rast
-				}
-			};
-		}
-		else if(_info.dimensionMode == atta::DIM_MODE_2D)
-		{
-			Renderer2D::CreateInfo rend2DInfo = {
-				.vkCore = vkCore,
-				.commandPool = commandPool,
-				.width = 1200,
-				.height = 900,
-				.scene = _scene
-			};
-			std::shared_ptr<Renderer2D> renderer2D = std::make_shared<Renderer2D>(rend2DInfo);
-
-			renderingStage = {
-				.vkCore = vkCore,
-				.renderers = {
-					renderer2D
-				}
-			};
-		}
-
-		return renderingStage;
+		ThreadManager::UiConfig uiConfig {};
+		return uiConfig;
 	}
+
+	//ThreadManager::RenderingStage Atta::populateTMRenderingStage()
+	//{
+	//	ThreadManager::RenderingStage renderingStage;
+
+	//	//---------- Create renderers from dimension info ----------//
+	//	if(_info.dimensionMode == atta::DIM_MODE_3D)
+	//	{
+	//		// Create rasterization render
+	//		RastRenderer::CreateInfo rastRendInfo = {
+	//			.vkCore = vkCore,
+	//			.commandPool = commandPool,
+	//			.width = 1200,
+	//			.height = 900,
+	//			.scene = _scene,
+	//			.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
+	//			.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+	//		};
+	//		std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
+
+	//		// Create ray tracing vulkan render
+	//		//rt::vk::RayTracing::CreateInfo rtVkRendInfo = 
+	//		//{
+	//		//	.vkCore = vkCore,
+	//		//	.commandPool = commandPool,
+	//		//	.width = 1200,
+	//		//	.height = 900,
+	//		//	.scene = _scene,
+	//		//	.viewMat = atta::lookAt(vec3(0,5,7), vec3(0,0,0), vec3(0,1,0)),
+	//		//	.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+	//		//};
+	//		//std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
+
+	//		// Create ray tracing CPU render
+	//		//rt::cpu::RayTracing::CreateInfo rtCPURendInfo = {
+	//		//	.vkCore = vkCore,
+	//		//	.commandPool = commandPool,
+	//		//	.width = 1200,
+	//		//	.height = 900,
+	//		//	.scene = _scene,
+	//		//	.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
+	//		//	.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+	//		//};
+	//		//std::shared_ptr<rt::cpu::RayTracing> rtCPU = std::make_shared<rt::cpu::RayTracing>(rtCPURendInfo);
+
+	//		// Populate return
+	//		renderingStage = {
+	//			.vkCore = vkCore,
+	//			.renderers = {
+	//				//rtVk,
+	//				rast
+	//			}
+	//		};
+	//	}
+	//	else if(_info.dimensionMode == atta::DIM_MODE_2D)
+	//	{
+	//		Renderer2D::CreateInfo rend2DInfo = {
+	//			.vkCore = vkCore,
+	//			.commandPool = commandPool,
+	//			.width = 1200,
+	//			.height = 900,
+	//			.scene = _scene
+	//		};
+	//		std::shared_ptr<Renderer2D> renderer2D = std::make_shared<Renderer2D>(rend2DInfo);
+
+	//		renderingStage = {
+	//			.vkCore = vkCore,
+	//			.renderers = {
+	//				renderer2D
+	//			}
+	//		};
+	//	}
+
+	//	return renderingStage;
+	//}
 }

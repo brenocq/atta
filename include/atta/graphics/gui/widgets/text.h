@@ -14,7 +14,7 @@ namespace guib {
 	struct TextInfo {
 		Color color = {1,1,1,1};
 		std::string text = "text";
-		int textSize = 20;
+		int textSize = 16;
 	};
 
 	class Text : public Widget

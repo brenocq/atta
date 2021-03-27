@@ -6,6 +6,8 @@
 //--------------------------------------------------
 #include <atta/parallel/threadManager.h>
 #include <atta/helpers/log.h>
+#include <atta/graphics/renderers/rastRenderer/rastRenderer.h>
+#include <atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h>
 //#include "simulator/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h"
 
 namespace atta
@@ -27,26 +29,30 @@ namespace atta
 		// Barrier to syncronize generalist workers + main thread (start -> physics -> render -> robots -> end)
 		_setupStageBarrier = std::make_shared<Barrier>(_qtyWorkersToCreate);
 		_physicsStageBarrier = std::make_shared<Barrier>(_qtyWorkersToCreate);
-		_renderingStageBarrier = std::make_shared<Barrier>(_qtyWorkersToCreate);
+		_sensorStageBarrier = std::make_shared<Barrier>(_qtyWorkersToCreate);
 		_robotStageBarrier = std::make_shared<Barrier>(_qtyWorkersToCreate);
 
 		//---------- Core ----------//
 		_scene = pipelineSetup.generalConfig.scene;
 		_dimensionMode = pipelineSetup.generalConfig.dimensionMode;
-		_accelerator = pipelineSetup.physicsStage.accelerator;
+		_vkCore = pipelineSetup.generalConfig.vkCore;
 
 		//---------- Physics stage ----------//
 		_physicsEngine = pipelineSetup.physicsStage.physicsEngine;
+		_accelerator = pipelineSetup.physicsStage.accelerator;
+
+		//---------- Sensor stage ----------//
+		_commandPool = std::make_shared<vk::CommandPool>(_vkCore->getDevice(), vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_THREAD_MANAGER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+		// TODO Use multiple command buffers to render in parallel?
+		_commandBuffers = std::make_shared<vk::CommandBuffers>(_vkCore->getDevice(), _commandPool, 1);
 
 		//---------- Robot stage ----------//
 		_robotProcessing = pipelineSetup.robotStage.robotProcessing;
 		_runAfterRobots = pipelineSetup.robotStage.runAfterRobots;
-		
-		//---------- Rendering stage ----------//
-		_vkCore = pipelineSetup.renderingStage.vkCore;
-		_commandPool = std::make_shared<vk::CommandPool>(_vkCore->getDevice(), vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_THREAD_MANAGER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-		_renderers = pipelineSetup.renderingStage.renderers;
 
+		//---------- UI config ----------//
+		
+		//---------- Create objects ----------//
 		createGeneralistWorkers();
 		createGuiWorker();
 		createCoreObjects();
@@ -59,7 +65,7 @@ namespace atta
 		Log::info("ThreadManager", "Execution finished, stopping workers...");
 		// Wait barriers to finish thread loop (to evaluate _shouldFinish)
 		_physicsStageBarrier->wait();
-		_robotStageBarrier->wait();
+		_sensorStageBarrier->wait();
 
 		// Ask threads to stop
 		// If you ask to finish before waiting for the physics barriers some threads 
@@ -69,7 +75,7 @@ namespace atta
 		_workerGui->setShouldFinish(true);
 
 		// Wait last barrier (doing this ensured that all threads are in this stage)
-		_renderingStageBarrier->wait();
+		_robotStageBarrier->wait();
 
 		for(auto& w : _workersGen)
 			w->setShouldFinish(true);
@@ -85,7 +91,7 @@ namespace atta
 		{
 			.setupStageBarrier = _setupStageBarrier,
 			.physicsStageBarrier = _physicsStageBarrier,
-			.renderingStageBarrier = _renderingStageBarrier,
+			.sensorStageBarrier = _sensorStageBarrier,
 			.robotStageBarrier = _robotStageBarrier
 		};
 
@@ -99,12 +105,11 @@ namespace atta
 
 	void ThreadManager::createGuiWorker()
 	{
-		_workerGui = std::make_shared<WorkerGui>(_vkCore,
+		_workerGui = std::make_shared<WorkerGui>(_vkCore, _scene,
 			_dimensionMode == DIM_MODE_3D?
 					WorkerGui::CAMERA_CONTROL_TYPE_3D:
 					WorkerGui::CAMERA_CONTROL_TYPE_2D
 				);
-		_workerGui->setRenderers(_renderers);
 
 		// Create thread from callable workerGui
 		_threads.push_back(std::thread(std::ref(*_workerGui)));
@@ -123,7 +128,27 @@ namespace atta
 
 	void ThreadManager::createRenderingObjects()
 	{
+		for(auto& object : _scene->getObjectsFlat())
+		{
+			if(object->getType() == "Camera")
+			{
+				std::shared_ptr<Camera> camera = std::static_pointer_cast<Camera>(object);
 
+				// Create rasterization render
+				RastRenderer::CreateInfo rastRendInfo = {
+					.vkCore = _vkCore,
+					.commandPool = _commandPool,
+					.width = camera->getWidth(),
+					.height =  camera->getHeight(),
+					.scene = _scene,
+					.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
+					.projMat = atta::perspective(atta::radians(camera->getFov()), camera->getWidth()/camera->getHeight(), 0.01f, 1000.0f)
+				};
+				std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
+				_cameraRenderers.push_back(std::static_pointer_cast<Renderer>(rast));
+				_cameras.push_back(camera);
+			}
+		}
 	}
 
 	void ThreadManager::run()
@@ -148,6 +173,28 @@ namespace atta
 				_physicsEngine->stepPhysics(dt);
 
 			_physicsStageBarrier->wait();
+			//-------------------- Sensor --------------------//
+			{
+				// Update camera renderers view matrix
+				for(int i=0;i<_cameraRenderers.size();i++)
+					_cameraRenderers[i]->updateCameraMatrix(atta::inverse(atta::posOri(_cameras[i]->getPosition(), _cameras[i]->getOrientation())));
+
+				// Render images
+				VkCommandBuffer commandBuffer = _commandPool->beginSingleTimeCommands();
+				{
+					for(int i=0;i<_cameraRenderers.size();i++)
+						_cameraRenderers[i]->render(commandBuffer);
+				}
+				_commandPool->endSingleTimeCommands(commandBuffer);
+				// Copy image to buffer
+				for(int i=0;i<_cameras.size();i++)
+				{
+					auto buffer = _cameraRenderers[i]->getImage()->getBuffer(_commandPool);
+					_cameras[i]->setBuffer(buffer);
+				}
+			}
+
+			_sensorStageBarrier->wait();
 			//--------------------- Robots ----------------------//
 			switch(_robotProcessing)
 			{
@@ -166,9 +213,6 @@ namespace atta
 				_runAfterRobots();
 
 			_robotStageBarrier->wait();
-			//-------------------- Rendering --------------------//
-
-			_renderingStageBarrier->wait();
 
 			//_shouldFinish = true;
 		}

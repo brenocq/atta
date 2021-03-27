@@ -213,6 +213,8 @@ namespace atta
 			{
 				case MATERIAL_TYPE_DIFFUSE:
 					return std::string("Material{type=DIFFUSE")+
+						", KdTexture="+std::to_string(datai[0])+
+						", sigmaTexture="+std::to_string(datai[1])+
 						", Kd="+datav[0].toString()+
 						", sigma="+std::to_string(dataf[0])+"}";
 				case MATERIAL_TYPE_MIRROR:

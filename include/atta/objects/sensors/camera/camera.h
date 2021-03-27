@@ -24,47 +24,40 @@ namespace atta
 
 			struct CreateInfo
 			{
-				std::string name = "Box";
+				std::string name = "Camera";
 				vec3 position = {0,0,0};
 				vec3 rotation = {0,0,0};
 				vec3 scale = {1,1,1};
 				float mass = 1.0f;
 
-				RenderingType renderingType = RAY_TRACING;
-				unsigned width = 200;
-				unsigned height = 200;
-				float fov = 30.0f;
+				RenderingType renderingType = RASTERIZATION;
+				unsigned width = 240;
+				unsigned height = 240;
+				float fov = 24.0f;
+
+				std::vector<std::shared_ptr<Object>> children = {};
 			};
 
 			Camera(CreateInfo info);
 			~Camera();
 
-			void takePicture();
-
 			//---------- Getters ----------//
-			int getRayTracingPipelineIndex() const { return _rayTracingPipelineIndex; }
-			int getRasterizationPipelineIndex() const { return _rasterizationPipelineIndex; }
-			int getUniformBufferIndex() const { return _uniformBufferIndex; }
 			RenderingType getRenderingType() const { return _renderingType; }
-			std::vector<uint8_t> getCameraBuffer() const { return _buffer; }
-
-			//---------- Setters ----------//
-			void setRayTracingPipelineIndex(int index) { _rayTracingPipelineIndex = index; }
-			void setRasterizationPipelineIndex(int index) { _rasterizationPipelineIndex = index; }
-			void setUniformBufferIndex(int index) { _uniformBufferIndex = index; }
-			void setCameraBuffer(std::vector<uint8_t> buffer) { _buffer=buffer; }
+			unsigned getWidth() const { return _width; }
+			unsigned getHeight() const { return _height; }
+			float getFov() const { return _fov; }
+			std::vector<uint8_t> getBuffer() const { return _buffer; }
 
 		private:
+			friend class ThreadManager;
+			// The Thread Manager changes the camera buffer after rendering is complete
+			void setBuffer(std::vector<uint8_t> buffer) { _buffer=buffer; }
+
 			// Camera parameters
 			RenderingType _renderingType;
 			unsigned _width;
 			unsigned _height;
 			float _fov;
-
-			// Simulation parameters
-			int _rayTracingPipelineIndex;
-			int _rasterizationPipelineIndex;
-			int _uniformBufferIndex;
 
 			// Image buffer
 			std::vector<uint8_t> _buffer;

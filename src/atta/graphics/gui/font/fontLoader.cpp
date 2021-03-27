@@ -39,13 +39,16 @@ namespace guib {
 		}
 
 		// Set character size
-		error = FT_Set_Char_Size(
-          _face,
-          0,// 		Width equal height
-          24*64,// 	Height of 16 pixels (TODO understand)
-          300,//	Horizontal device resolution
-          300//		Vertical device resolution
-		  );
+		//error = FT_Set_Char_Size(
+        //  _face,
+        //  0,// 		Width equal height
+        //  3*64,// 	Height in 1/64th of points (16pt)
+        //  300,//	Horizontal device resolution
+        //  300//		Vertical device resolution
+		//  );
+		error = FT_Set_Pixel_Sizes( _face,   /* handle to face object */
+                            0,      /* pixel_width           */
+                            16 );   /* pixel_height          */
 		if(error)
 		{
 			Log::error("FontLoader", "Error when setting char size!");
@@ -109,10 +112,7 @@ namespace guib {
 			FT_Bitmap bitmap = slot->bitmap;
 			int glyphTop  = slot->bitmap_top;
 			int glyphLeft  = slot->bitmap_left;
-			int glyphAdvance  = slot->bitmap_left;
-
-			//Log::warning("FontLoader", "Glyph loaded: ("+std::to_string(i)+") h:"+
-			//			std::to_string(bitmap.rows)+" w:"+std::to_string(bitmap.width));
+			int glyphAdvance  = slot->advance.x;
 
 			// Check possible atlas region
 			if(currX+bitmap.width>=_fontTexture.atlas.width)
@@ -139,14 +139,19 @@ namespace guib {
 
 			// Save glyph info
 			_fontTexture.glyphsInfo[i] = {
-				.width = bitmap.width/(float)_fontTexture.atlas.width,
-				.height = bitmap.rows/(float)_fontTexture.atlas.height,
-				.x =	currX/(float)_fontTexture.atlas.width,
-				.y =	currY/(float)_fontTexture.atlas.height,
-				.left =	glyphLeft/(float)_fontTexture.atlas.width,
-				.top =	glyphTop/(float)_fontTexture.atlas.height,
-				.advance = glyphAdvance/(float)_fontTexture.atlas.width
+				.width = (float)bitmap.width,
+				.height = (float)bitmap.rows,
+				.x =	(float)currX,
+				.y =	(float)currY,
+				.left =	(float)glyphLeft,
+				.top =	(float)glyphTop,
+				.advance = (float)(glyphAdvance>>6),
 			};
+			//Log::debug("FontLoader", "Letter: $0 wh($1,$2), xy($3,$4) lt($5,$6) ad $7", char(i), 
+			//		_fontTexture.glyphsInfo[i].width, _fontTexture.glyphsInfo[i].height, 
+			//		_fontTexture.glyphsInfo[i].x, _fontTexture.glyphsInfo[i].y, 
+			//		_fontTexture.glyphsInfo[i].left, _fontTexture.glyphsInfo[i].top, 
+			//		_fontTexture.glyphsInfo[i].advance);
 
 			// Move currX currY
 			currX += bitmap.width+_fontTexture.padding;

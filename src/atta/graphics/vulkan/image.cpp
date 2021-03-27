@@ -89,6 +89,8 @@ namespace atta::vk
 			// Change transfer layouts
 			ImageMemoryBarrier::insert(commandBuffer, _image, subresourceRange, 
 				VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, _layout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+			//vk::ImageMemoryBarrier::insert(commandBuffer, _image, subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+			//	0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 			ImageMemoryBarrier::insert(commandBuffer, dstImg->handle(), subresourceRange, 
 				0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
@@ -127,23 +129,31 @@ namespace atta::vk
 		//		std::string(" rowpitch ")+std::to_string(subResourceLayout.rowPitch) + 
 		//		std::string(" arraypitch ")+std::to_string(subResourceLayout.arrayPitch));
 
-		char* data;
-		vkMapMemory(_device->handle(), dstImg->getMemory(), 0, VK_WHOLE_SIZE, 0, (void**)&data);
+		uint8_t* data;
+		if(vkMapMemory(_device->handle(), dstImg->getMemory(), 0, VK_WHOLE_SIZE, 0, (void**)&data) != VK_SUCCESS)
+		{
+			Log::error("Image", "Failed to map memory when getting buffer!");
+			exit(1);
+		}
 		data += subResourceLayout.offset;
-
-		delete dstImg;
-		dstImg = nullptr;
+		//for(int i=0; i<20; i+=4)
+		//	std::cout << "(" << int(data[i]) << ","<< int(data[i+1])<< ","<< int(data[i+2])<< ") ";
+		//std::cout << std::endl;
 
 		std::vector<uint8_t> buffer(_extent.width*_extent.height*3);
 		for(unsigned int y=0; y<_extent.height; y++)
 		{
 			for(unsigned int x=0; x<_extent.width; x++)
 			{
-				buffer[y*_extent.width*3 + x*3 + 2]	= data[y*(_extent.width*4) + x*4 + 0];
-				buffer[y*_extent.width*3 + x*3 + 1]	= data[y*(_extent.width*4) + x*4 + 1];
-				buffer[y*_extent.width*3 + x*3 + 0]	= data[y*(_extent.width*4) + x*4 + 2];
+				buffer[(y*_extent.width + x)*3 + 0]	= data[(y*_extent.width + x)*4 + 0];
+				buffer[(y*_extent.width + x)*3 + 1]	= data[(y*_extent.width + x)*4 + 1];
+				buffer[(y*_extent.width + x)*3 + 2]	= data[(y*_extent.width + x)*4 + 2];
 			}
 		}
+
+		delete dstImg;
+		dstImg = nullptr;
+
 		return buffer;
 	}
 

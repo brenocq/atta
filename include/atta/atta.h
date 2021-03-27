@@ -44,8 +44,9 @@ namespace atta
 		private:
 			ThreadManager::GeneralConfig populateTMGeneralConfig();
 			ThreadManager::PhysicsStage populateTMPhysicsStage();
+			ThreadManager::SensorStage populateTMSensorStage();
 			ThreadManager::RobotStage populateTMRobotStage();
-			ThreadManager::RenderingStage populateTMRenderingStage();
+			ThreadManager::UiConfig populateTMUiConfig();
 
 			CreateInfo _info;
 			std::shared_ptr<Scene> _scene;

@@ -229,8 +229,8 @@ namespace atta
 
 		for(auto object : _scene->getObjects())
 		{
-			if(object->isLight()) continue;
 			auto model = object->getModel();
+			if(model==nullptr) continue;
 
 			ObjectInfo objectInfo;
 			objectInfo.transform = transpose(object->getModelMat());

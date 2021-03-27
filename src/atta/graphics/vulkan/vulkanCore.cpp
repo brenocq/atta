@@ -74,10 +74,10 @@ namespace atta::vk
 					objects.push(child);
 
 				// Get object materials and set materialOffset
-				if(object->isLight()) continue;
-
 				static int materialOffset = 0;
 				std::shared_ptr<Model> model = object->getModel();
+				if(model==nullptr)
+					continue;
 				model->setMaterialOffset(materialOffset);
 
 				int qtyMaterials;
@@ -96,6 +96,7 @@ namespace atta::vk
 					// try to push one material (if material with name not defined, load default material)
 					for(const auto& materialName : model->getMesh()->getMaterialNames())
 					{
+						Log::debug("VulkanCore", "mat: $0", modelMaterialMap[materialName].toString());
 						if(modelMaterialMap.count(materialName))
 							materials.push_back(modelMaterialMap[materialName]);
 						else

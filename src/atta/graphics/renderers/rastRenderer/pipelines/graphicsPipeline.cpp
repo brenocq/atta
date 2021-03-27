@@ -251,8 +251,8 @@ namespace atta::vk
 
 	void GraphicsPipeline::renderObjectAndChildren(VkCommandBuffer commandBuffer, std::shared_ptr<Object> object)
 	{
-		if(object->isLight()) return;
 		auto model = object->getModel();
+		if(model==nullptr) return;
 
 		ObjectInfo objectInfo;
 		objectInfo.transform = transpose(object->getModelMat());

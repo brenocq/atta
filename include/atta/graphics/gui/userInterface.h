@@ -33,6 +33,7 @@ namespace atta
 			{
 				std::shared_ptr<vk::Device> device;
 				std::shared_ptr<Window> window;
+				std::shared_ptr<Scene> scene;
 				std::shared_ptr<vk::SwapChain> swapChain;
 			};
 
@@ -53,6 +54,7 @@ namespace atta
 
 			std::shared_ptr<vk::Device> _device;
 			std::shared_ptr<Window> _window;
+			std::shared_ptr<Scene> _scene;
 			std::shared_ptr<vk::SwapChain> _swapChain;
 
 			//---------- Rendering ----------//
