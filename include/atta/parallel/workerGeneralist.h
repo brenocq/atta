@@ -19,7 +19,7 @@ namespace atta
 			{
 				std::shared_ptr<Barrier> setupStageBarrier;
 				std::shared_ptr<Barrier> physicsStageBarrier;
-				std::shared_ptr<Barrier> renderingStageBarrier;
+				std::shared_ptr<Barrier> sensorStageBarrier;
 				std::shared_ptr<Barrier> robotStageBarrier;
 			};
 			WorkerGeneralist(CreateInfo createInfo);
@@ -30,7 +30,7 @@ namespace atta
 		private:
 			std::shared_ptr<Barrier> _setupStageBarrier;
 			std::shared_ptr<Barrier> _physicsStageBarrier;
-			std::shared_ptr<Barrier> _renderingStageBarrier;
+			std::shared_ptr<Barrier> _sensorStageBarrier;
 			std::shared_ptr<Barrier> _robotStageBarrier;
 	};
 }

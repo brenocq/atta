@@ -8,6 +8,7 @@
 #define ATTA_PARALLEL_WORKER_GUI_H
 
 #include "worker.h"
+#include <atta/core/scene.h>
 #include <atta/graphics/core/window.h>
 #include <atta/graphics/core/modelViewController.h>
 #include <atta/graphics/vulkan/vulkanCore.h>
@@ -38,14 +39,14 @@ namespace atta
 				CAMERA_CONTROL_TYPE_3D
 			};
 
-			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, CameraControlType cameraControlType);
+			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, CameraControlType cameraControlType);
 			~WorkerGui();
 
 			void operator()();
 
 			//---------- Setters ----------//
 			void setCommands(std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands) { _commands = commands; };
-			void setRenderers(std::vector<std::shared_ptr<Renderer>> renderers);
+			void createRenderers();
 
 		private:
 			void render();
@@ -61,6 +62,7 @@ namespace atta
 			std::shared_ptr<Window> _window;
 			std::shared_ptr<ModelViewController> _modelViewController;
 			std::shared_ptr<vk::VulkanCore> _vkCore;
+			std::shared_ptr<Scene> _scene;
 
 			std::shared_ptr<vk::Surface> _surface;
 			std::shared_ptr<vk::SwapChain> _swapChain;

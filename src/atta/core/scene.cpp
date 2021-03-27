@@ -6,13 +6,36 @@
 //--------------------------------------------------
 #include <atta/core/scene.h>
 #include <atta/objects/lights/lights.h>
+#include <queue>
 
 namespace atta
 {
 	Scene::Scene(CreateInfo info):
 		_objects(info.objects), _robots(info.robots)
 	{
-		for(auto object : _objects)
+		//---------- Create flat objects list ----------//
+		for(auto& rootObject : _objects)
+		{
+			std::queue<std::shared_ptr<Object>> objects;
+			objects.push(rootObject);
+
+			while(!objects.empty())
+			{
+				// Get next object
+				std::shared_ptr<Object> object = objects.front();
+				objects.pop();
+
+				// Populate queue with its children
+				std::vector<std::shared_ptr<Object>> children = object->getChildren();
+				for(auto& child : children)
+					objects.push(child);
+
+				_objectsFlat.push_back(object);
+			}
+		}
+
+		//---------- Process objects ----------//
+		for(auto object : _objectsFlat)
 		{
 			//---------- Create lights from light objects ----------//
 			// Light structs are sent to the GPU memory

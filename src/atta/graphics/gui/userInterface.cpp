@@ -13,6 +13,7 @@ namespace atta
 			CreateInfo info):
 		_device(info.device),
 		_window(info.window),
+		_scene(info.scene),
 		_swapChain(info.swapChain),
 		// Toggle variables
 		_rootWidget(nullptr)
@@ -61,6 +62,25 @@ namespace atta
 				}
 			}); 
 
+		std::vector<guib::Widget*> sceneTreeWidgets;
+		for(auto object : _scene->getObjects())
+		{
+			sceneTreeWidgets.push_back(
+				new guib::Button(
+				{
+					.onClick = [&](){
+					},
+					.size = {1, 20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+					.child = new guib::Text(
+					{
+						.color = {1,1,1,1},
+						.text = object->getName(),
+						.textSize = 16
+					})
+				})
+			);
+		}
+
 		_windows.push_back(
 			new guib::Window(
 			{
@@ -70,22 +90,11 @@ namespace atta
 				.movable = false,
 				.offset = {0, 20, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
 				.size = {200, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
-				.child = new guib::Align(
+				.child = new guib::Column(
 					{
 						.hAlignment = guib::ALIGN_CENTER,
 						.vAlignment = guib::ALIGN_START,
-						.child = new guib::Button(
-						{
-							.onClick = [&](){
-							},
-							.size = {1, 20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
-							.child = new guib::Text(
-							{
-								.color = {1,1,1,1},
-								.text = "Motor left",
-								.textSize = 16
-							})
-						})
+						.children = sceneTreeWidgets
 					})
 			})	
 		);

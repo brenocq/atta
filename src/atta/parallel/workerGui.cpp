@@ -10,12 +10,13 @@
 #include <atta/helpers/drawer.h>
 #include <atta/helpers/evaluator.h>
 #include <atta/graphics/vulkan/imageMemoryBarrier.h>
+#include <atta/graphics/renderers/rastRenderer/rastRenderer.h>
 
 namespace atta
 {
 	const int MAX_FRAMES_IN_FLIGHT = 2;
-	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, CameraControlType cameraControlType):
-		_vkCore(vkCore), _currentFrame(0), _mainRendererIndex(-1), _cameraUpdated(false)
+	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, CameraControlType cameraControlType):
+		_vkCore(vkCore), _scene(scene), _currentFrame(0), _mainRendererIndex(-1), _cameraUpdated(false)
 	{
 		// Create window (GUI thread only)
 		_window = std::make_shared<Window>();
@@ -56,9 +57,12 @@ namespace atta
 		{
 			.device = _vkCore->getDevice(),
 			.window = _window,
+			.scene = _scene,
 			.swapChain = _swapChain
 		};
 		_ui = std::make_shared<UserInterface>(uiInfo);
+
+		createRenderers();
 	}
 
 	WorkerGui::~WorkerGui()
@@ -86,9 +90,21 @@ namespace atta
 	}
 
 
-	void WorkerGui::setRenderers(std::vector<std::shared_ptr<Renderer>> renderers)
+	void WorkerGui::createRenderers()
 	{ 
-		_renderers = renderers;
+		// Create rasterization render
+		RastRenderer::CreateInfo rastRendInfo = {
+			.vkCore = _vkCore,
+			.commandPool = _commandPool,
+			.width = 1200,
+			.height = 900,
+			.scene = _scene,
+			.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
+			.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+		};
+		std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
+		_renderers.push_back(std::static_pointer_cast<Renderer>(rast));
+
 		if(_renderers.size()>0)
 		{
 			_mainRendererIndex = _renderers.size()-1;
@@ -204,7 +220,6 @@ namespace atta
 		//---------- Next frame ----------//
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 		Drawer::clear();// Clear drawer objects every frame
-
 	}
 
 	void WorkerGui::recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex)

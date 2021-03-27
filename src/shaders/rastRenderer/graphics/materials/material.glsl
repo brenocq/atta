@@ -45,12 +45,13 @@ vec3 Material_IBL(Material material, vec3 n, vec3 v, Light light)
 			//  - Dielectric material
 			//  - No specular brdf
 
+			vec3 color = material.datai[0]==-1 ? material.datav[0].xyz : texture(textures[material.datai[0]], inTexCoord).xyz;
 			//----- IBL diffuse -----//
 			vec3 F0 = vec3(0.04); 
 			vec3 F = fresnelSchlickRoughness(max(dot(n, v), 0.0), F0, 0.9f);
     		vec3 kD = 1.0 - F;
 			vec3 wi;
-			vec3 diffuse = kD*Light_sampleLi(light, wi)*material.datav[0].xyz;
+			vec3 diffuse = kD*Light_sampleLi(light, wi)*color;
 
 			return diffuse;
 	}

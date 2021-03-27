@@ -16,7 +16,7 @@ Today only Linux is supported, but I plan to add support for Windows in the foll
 This project is not yet well documented, I am creating a website in parallel to document the source code and project examples, but it is not yet available.
 
 ## Installation (Linux)
-#### Download Vulkan SDK (must)
+### Download Vulkan SDK
 First we need to download the vulkan SDK, I'm using the release 1.2.162.1.
 You can download the Vulkan SDK [here](https://vulkan.lunarg.com/sdk/home).
 
@@ -24,16 +24,16 @@ Extract the files to some folder.
 ``` bash
 tar -xzf vulkansdk-linux-x86_64-xxx.tar.gz
 cd xxx
-./setup-env.sh
+. ./setup-env.sh
 ```
 Be sure that vulkan environment variables are defined in your system (VULKAN_SDK) when instaling atta and running atta projects
 
-#### Install from AUR package
+### Install from AUR package
 ``` bash
 sudo pacman -S atta
 ```
 
-#### Or install from source
+### Or install from source
 **Install dependencies**\
 Ubuntu:
 ``` bash

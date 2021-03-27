@@ -228,8 +228,8 @@ namespace atta::rt::vk
 		{
 			static unsigned _instanceId = 0;
 
-			if(object->isLight()) continue;
 			std::shared_ptr<Model> model = object->getModel();
+			if(model==nullptr) continue;
 			//if(model == nullptr)
 			//	continue;
 

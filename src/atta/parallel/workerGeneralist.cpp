@@ -13,7 +13,7 @@ namespace atta
 	WorkerGeneralist::WorkerGeneralist(CreateInfo createInfo):
 		_setupStageBarrier(createInfo.setupStageBarrier),
 		_physicsStageBarrier(createInfo.physicsStageBarrier),
-		_renderingStageBarrier(createInfo.renderingStageBarrier),
+		_sensorStageBarrier(createInfo.sensorStageBarrier),
 		_robotStageBarrier(createInfo.robotStageBarrier)
 	{
 
@@ -33,10 +33,10 @@ namespace atta
 		{
 			//std::cout << "Physics\n";
 			_physicsStageBarrier->wait();
+			//std::cout << "Sensor\n";
+			_sensorStageBarrier->wait();
 			//std::cout << "Robot\n";
 			_robotStageBarrier->wait();
-			//std::cout << "Rendering\n";
-			_renderingStageBarrier->wait();
 			//std::cout << "Evaluate\n";
 		}
 		//std::cout << "Finished\n";

@@ -13,13 +13,12 @@ namespace atta
 	{
 		Object::setType("ImportedObject");
 
-		//----- Create model -----//
+		//----- Model -----//
 		Model::CreateInfo modelInfo = {
 			.meshName = info.fileName,
 			.material = info.material,
 			.materials = info.materials
 		};
-
 		_model = std::make_shared<Model>(modelInfo);
 
 		//----- Physics -----//
