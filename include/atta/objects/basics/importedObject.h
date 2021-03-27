@@ -8,6 +8,9 @@
 #define ATTA_OBJECTS_BASICS_IMPORTED_OBJECT_H
 
 #include <atta/objects/object.h>
+#include <vector>
+#include <memory>
+#include <map>
 
 namespace atta
 {
@@ -22,7 +25,14 @@ namespace atta
 				vec3 rotation = {0,0,0};
 				vec3 scale = {1,1,1};
 				float mass = 1.0f;
-				Material material;
+
+				// Only material or materials show be used
+				// .material should be used to provide only one material to the model
+				// .materials should be used when the model have more than one material in the .mtl file
+				Material material = {};
+				std::map<std::string, Material> materials = {};
+
+				std::vector<std::shared_ptr<Object>> children = {};
 			};
 
 			ImportedObject(CreateInfo info);

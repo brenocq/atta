@@ -22,6 +22,7 @@ namespace atta
 			{
 				std::string meshName = "atta::empty";// Can be the filename or "atta::{meshType}"
 				Material material = {};
+				std::map<std::string, Material> materials = {};
 			};
 
 			Model(CreateInfo info);
@@ -35,7 +36,7 @@ namespace atta
 			void setMaterialOffset(int materialOffset) { _materialOffset = materialOffset; }
 
 			//---------- Getters ----------//
-			Material getMaterial() const { return _material; }
+			std::map<std::string, Material> getMaterials() const { return _materials; }
 			int getMaterialOffset() const { return _materialOffset; }
 			std::string getMeshName() const { return _meshName; }
 			std::shared_ptr<Mesh> getMesh() const { return _mesh; }
@@ -44,7 +45,7 @@ namespace atta
 		private:
 			std::string _meshName;
 			std::shared_ptr<Mesh> _mesh;
-			Material _material;
+			std::map<std::string, Material> _materials;
 			int _materialOffset;
 	};
 }

@@ -23,6 +23,7 @@ namespace atta
 			std::string getMeshName() const { return _meshName; }
 			const std::vector<Vertex>& getVertices() const { return _vertices; }
 			const std::vector<uint32_t>& getIndices() const { return _indices; }
+			std::vector<std::string> getMaterialNames() const { return _materialNames; }
 			unsigned getVerticesSize() const { return _vertices.size(); }
 			unsigned getIndicesSize() const { return _indices.size(); }
 			unsigned getVerticesOffset() const { return _verticesOffset; }
@@ -46,6 +47,7 @@ namespace atta
 			unsigned _index;
 			std::vector<Vertex> _vertices;
 			std::vector<uint32_t> _indices;
+			std::vector<std::string> _materialNames;
 			unsigned _verticesOffset, _indicesOffset;// TODO Remove them
 	};
 }

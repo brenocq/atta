@@ -30,7 +30,7 @@ namespace atta
 		_guiUniformBuffer->setValue(ubo);
 
 		// Load font to texture
-		_fontLoader = std::make_shared<guib::FontLoader>(_device, _guiCommandPool, "/usr/include/atta/assets/fonts/Ubuntu/Ubuntu-Medium.ttf");
+		_fontLoader = std::make_shared<guib::FontLoader>(_device, _guiCommandPool, "/usr/include/atta/assets/fonts/BFont/bfont.ttf");
 
 
 		_guiPipeline = std::make_shared<GuiPipeline>(_device, _window, _swapChain, _guiUniformBuffer, _fontLoader);
@@ -64,7 +64,7 @@ namespace atta
 		_windows.push_back(
 			new guib::Window(
 			{
-				.name = "Main",
+				.name = "Scene",
 				.closable = false,
 				.minimizable = true,
 				.movable = false,
@@ -78,11 +78,11 @@ namespace atta
 						{
 							.onClick = [&](){
 							},
-							.size = {100, 20, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+							.size = {1, 20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 							.child = new guib::Text(
 							{
 								.color = {1,1,1,1},
-								.text = "abcdefghi",
+								.text = "Motor left",
 								.textSize = 16
 							})
 						})

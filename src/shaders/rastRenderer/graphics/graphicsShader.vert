@@ -33,7 +33,7 @@ void main()
 	outPos = vec3(objectInfo.transform * vec4(inPosition, 1.0));
 	outNormal = vec3(transpose(inverse(objectInfo.transform)) * vec4(inNormal, 1.0));
 	outTexCoord = inTexCoord;
-	outMaterialIndex = objectInfo.materialOffset;
+	outMaterialIndex = objectInfo.materialOffset+inMaterialIndex;
 
 	outViewPos = camera.viewMatInverse[3].xyz;
 }

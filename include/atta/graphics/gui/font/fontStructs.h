@@ -17,6 +17,22 @@ namespace guib {
     	unsigned char* data;
 	};
 
+	// GLYPH INFO DESCRIPTION
+	//
+	//  |left						 |
+	//  |<---->+---------+ ^         |
+	//  |   ^  |         | |         |
+	//  |   |  |         | |         |
+	//  |top|  |         | |         |
+	//  |   |  |  glyph  | | height  |
+	//  |   v  |         | |         |
+	//--o------|         | |---------o--...
+	//  |      |         | |         |
+	//  |      +---------+ v         |
+	//  |      <--------->			 |
+	//  |         width       advance|
+	//  |--------------------------->|
+
 	struct GlyphInfo
 	{
 		// Info about each glyph stored in the atlas [0,1]

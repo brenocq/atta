@@ -14,6 +14,7 @@
 #include <atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.h>
 #include <atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.h>
 #include <atta/core/scene.h>
+#include <atta/objects/object.h>
 
 namespace atta
 {

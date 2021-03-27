@@ -246,31 +246,37 @@ namespace atta::vk
 		vkCmdBindIndexBuffer(commandBuffer, _vkCore->getIndexBuffer()->handle(), 0, VK_INDEX_TYPE_UINT32);
 
 		for(auto object : _scene->getObjects())
-		{
-			if(object->isLight()) continue;
-			auto model = object->getModel();
+			renderObjectAndChildren(commandBuffer, object);
+	}
 
-			ObjectInfo objectInfo;
-			objectInfo.transform = transpose(object->getModelMat());
-			objectInfo.materialOffset = model->getMaterialOffset();
-			//Log::error("RastGraphicsPipeline", "model: $0 $1", object->getModelMat().toString(), object->getOrientation().toString());
+	void GraphicsPipeline::renderObjectAndChildren(VkCommandBuffer commandBuffer, std::shared_ptr<Object> object)
+	{
+		if(object->isLight()) return;
+		auto model = object->getModel();
 
-			vkCmdPushConstants(
-					commandBuffer,
-					_pipelineLayout->handle(),
-					VK_SHADER_STAGE_VERTEX_BIT,
-					0,
-					sizeof(ObjectInfo),
-					&objectInfo);
+		ObjectInfo objectInfo;
+		objectInfo.transform = transpose(object->getModelMat());
+		objectInfo.materialOffset = model->getMaterialOffset();
+		//Log::error("RastGraphicsPipeline", "model: $0 $1", object->getModelMat().toString(), object->getOrientation().toString());
 
-			//const uint32_t vertexCount = model->getVerticesSize();
-			const uint32_t indexCount = model->getMesh()->getIndicesSize();
-			const uint32_t vertexOffset = model->getMesh()->getVerticesOffset();
-			const uint32_t indexOffset = model->getMesh()->getIndicesOffset();
+		vkCmdPushConstants(
+				commandBuffer,
+				_pipelineLayout->handle(),
+				VK_SHADER_STAGE_VERTEX_BIT,
+				0,
+				sizeof(ObjectInfo),
+				&objectInfo);
 
-			//Log::debug("GraphicsPipeline", "ind $0 - verto $1 - indo $2", indexCount, vertexOffset, indexOffset);
+		//const uint32_t vertexCount = model->getVerticesSize();
+		const uint32_t indexCount = model->getMesh()->getIndicesSize();
+		const uint32_t vertexOffset = model->getMesh()->getVerticesOffset();
+		const uint32_t indexOffset = model->getMesh()->getIndicesOffset();
 
-			vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
-		}
+		//Log::debug("GraphicsPipeline", "ind $0 - verto $1 - indo $2", indexCount, vertexOffset, indexOffset);
+
+		vkCmdDrawIndexed(commandBuffer, indexCount, 1, indexOffset, vertexOffset, 0);
+
+		for(auto child : object->getChildren())
+			renderObjectAndChildren(commandBuffer, child);
 	}
 }

@@ -9,14 +9,15 @@
 namespace atta
 {
 	ImportedObject::ImportedObject(CreateInfo info):
-		Object({info.name, info.position, info.rotation, info.scale, info.mass})
+		Object({info.name, info.position, info.rotation, info.scale, info.mass, std::move(info.children)})
 	{
 		Object::setType("ImportedObject");
 
 		//----- Create model -----//
 		Model::CreateInfo modelInfo = {
 			.meshName = info.fileName,
-			.material = info.material
+			.material = info.material,
+			.materials = info.materials
 		};
 
 		_model = std::make_shared<Model>(modelInfo);

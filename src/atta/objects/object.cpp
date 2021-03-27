@@ -22,6 +22,12 @@ namespace atta
 		_scale = info.scale;
 
 		_bodyPhysics = std::make_shared<phy::Body>(&_position, &_orientation, info.mass);
+
+		for(auto child : info.children)
+		{
+			child->setParent(this);
+			_children.push_back(child);
+		}
 	}
 
 	Object::~Object()
