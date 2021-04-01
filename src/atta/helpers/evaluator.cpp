@@ -63,8 +63,8 @@ namespace atta
 	{
 		auto endTime = std::chrono::high_resolution_clock::now();
 
-		auto start = std::chrono::time_point_cast<std::chrono::microseconds>(_startTime).time_since_epoch().count();
-		auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTime).time_since_epoch().count();
+		auto start = std::chrono::time_point_cast<std::chrono::nanoseconds>(_startTime).time_since_epoch().count();
+		auto end = std::chrono::time_point_cast<std::chrono::nanoseconds>(endTime).time_since_epoch().count();
 		_duration = end-start;
 
 		_finished = true;

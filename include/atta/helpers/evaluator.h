@@ -51,13 +51,13 @@ namespace atta
 
 			void stop();
 			void print();
-			double getMs() const { return _duration*0.001; }
+			double getMs() const { return _duration*0.000001; }
 
 		private:
 			std::string _description;
 			bool _finished;
 			std::chrono::time_point<std::chrono::high_resolution_clock> _startTime;
-			long int _duration;
+			long long int _duration;
 	};
 }
 #endif// ATTA_HELPERS_EVALUATOR_H
