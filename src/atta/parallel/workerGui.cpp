@@ -219,7 +219,6 @@ namespace atta
 
 		//---------- Next frame ----------//
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-		Drawer::clear();// Clear drawer objects every frame
 	}
 
 	void WorkerGui::recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex)

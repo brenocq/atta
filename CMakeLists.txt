@@ -123,6 +123,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 			"src/atta/graphics/renderers/rastRenderer/pipelines/linePipeline.cpp"
 			"src/atta/graphics/renderers/rastRenderer/pipelines/maskPipeline.cpp"
 			"src/atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.cpp"
+			"src/atta/graphics/renderers/rastRenderer/pipelines/pointPipeline.cpp"
 			"src/atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.cpp"
 			"src/atta/graphics/renderers/rastRenderer/rastRenderer.cpp"
 			# graphics/renderers/rayTracing/rayTracingCPU/
@@ -305,6 +306,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 			"include/atta/graphics/renderers/rastRenderer/pipelines/linePipeline.h"
 			"include/atta/graphics/renderers/rastRenderer/pipelines/maskPipeline.h"
 			"include/atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.h"
+			"include/atta/graphics/renderers/rastRenderer/pipelines/pointPipeline.h"
 			"include/atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.h"
 			"include/atta/graphics/renderers/rastRenderer/rastRenderer.h"
 			# graphics/renderers/rayTracing/rayTracingCPU/
@@ -449,6 +451,9 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 			# rastRenderer/outline
 			"include/atta/assets/shaders/rastRenderer/outline/outlineShader.frag.spv"
 			"include/atta/assets/shaders/rastRenderer/outline/outlineShader.vert.spv"
+			# rastRenderer/point
+			"include/atta/assets/shaders/rastRenderer/point/pointShader.frag.spv"
+			"include/atta/assets/shaders/rastRenderer/point/pointShader.vert.spv"
 			# rastRenderer/skybox
 			"include/atta/assets/shaders/rastRenderer/skybox/skyboxShader.frag.spv"
 			"include/atta/assets/shaders/rastRenderer/skybox/skyboxShader.vert.spv"

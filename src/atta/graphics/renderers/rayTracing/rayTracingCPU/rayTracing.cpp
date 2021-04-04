@@ -68,8 +68,8 @@ namespace atta::rt::cpu
 				_film[pixelPos+2] = 0.0f;
 				_film[pixelPos+3] = 1.0f;
 
-				if(x%100==0 && y%100==0)
-					Drawer::addLine({cr.r.o, cr.r.o+cr.r.d, vec3(xNorm,yNorm,0), vec3(xNorm,yNorm,0)});
+				//if(x%100==0 && y%100==0)
+				//	Drawer::addLine({cr.r.o, cr.r.o+cr.r.d, vec3(xNorm,yNorm,0), vec3(xNorm,yNorm,0)});
 			}
 		}
 

@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/graphics/vulkan/vulkanCore.h>
 #include <atta/helpers/log.h>
+#include <atta/helpers/drawer.h>
 #include <atta/graphics/core/model.h>
 #include <atta/graphics/core/material.h>
 #include <atta/graphics/core/objectInfo.h>
@@ -20,7 +21,6 @@ namespace atta::vk
 		_debugMessenger = std::make_unique<DebugMessenger>(_instance);
 		_physicalDevice = std::make_shared<PhysicalDevice>(_instance);
 		_device = std::make_shared<Device>(_physicalDevice);
-		//_commandPool = std::make_shared<CommandPool>(_device, CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, CommandPool::QUEUE_THREAD_MANAGER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 	}
 
 	VulkanCore::~VulkanCore()
@@ -128,6 +128,10 @@ namespace atta::vk
 		_materialBuffer = createBufferMemory(commandPool,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, materials);
 		_objectInfoBuffer = createBufferMemory(commandPool,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, objectInfos);
 		_lightBuffer = createBufferMemory(commandPool,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, lights);
+
+		// Aux/Debug buffers
+		_lineBuffer = createBufferMemory(commandPool,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, Drawer::getLines());
+		_pointBuffer = createBufferMemory(commandPool,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, Drawer::getPoints());
 
 		//---------- Create textures ----------//
 		for(auto& textureInfo : atta::Texture::textureInfos())
