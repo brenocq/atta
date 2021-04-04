@@ -40,6 +40,7 @@ namespace atta::vk
 		if(_physicalDevice->getSupport().fillModeNonSolidFeature)
 			deviceFeatures.fillModeNonSolid = VK_TRUE;
 		//deviceFeatures.wideLines = VK_TRUE;
+		//deviceFeatures.largePoints = VK_TRUE;
 
 		// Acceleration Structure Features
 		VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures;

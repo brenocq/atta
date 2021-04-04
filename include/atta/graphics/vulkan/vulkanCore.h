@@ -29,7 +29,6 @@ namespace atta::vk
 			//---------- Getters ----------//
 			std::shared_ptr<Instance> getInstance() const { return _instance; }
 			std::shared_ptr<PhysicalDevice> getPhysicalDevice() const { return _physicalDevice; };
-			//std::shared_ptr<CommandPool> getCommandPool() const { return _commandPool; };
 			std::shared_ptr<Device> getDevice() const { return _device; }
 
 			std::shared_ptr<Buffer> getVertexBuffer() const { return _vertexBuffer; }
@@ -37,6 +36,8 @@ namespace atta::vk
 			std::shared_ptr<Buffer> getMaterialBuffer() const { return _materialBuffer; }
 			std::shared_ptr<Buffer> getObjectInfoBuffer() const { return _objectInfoBuffer; }
 			std::shared_ptr<Buffer> getLightBuffer() const { return _lightBuffer; }
+			std::shared_ptr<Buffer> getLineBuffer() const { return _lineBuffer; }
+			std::shared_ptr<Buffer> getPointBuffer() const { return _pointBuffer; }
 
 			std::vector<std::shared_ptr<vk::Texture>> getTextures() const { return _textures; }
 
@@ -53,7 +54,6 @@ namespace atta::vk
 			std::unique_ptr<DebugMessenger> _debugMessenger;
 			std::shared_ptr<PhysicalDevice> _physicalDevice;
 			std::shared_ptr<Device> _device;
-			//std::shared_ptr<CommandPool> _commandPool;
 
 			// Buffers
 			std::shared_ptr<Buffer> _vertexBuffer;
@@ -61,6 +61,10 @@ namespace atta::vk
 			std::shared_ptr<Buffer> _materialBuffer;
 			std::shared_ptr<Buffer> _objectInfoBuffer;
 			std::shared_ptr<Buffer> _lightBuffer;
+
+			// Aux/Debug buffers
+			std::shared_ptr<Buffer> _lineBuffer;
+			std::shared_ptr<Buffer> _pointBuffer;
 
 			// Texture images
 			std::vector<std::shared_ptr<vk::Texture>> _textures;

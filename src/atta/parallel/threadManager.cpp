@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/parallel/threadManager.h>
 #include <atta/helpers/log.h>
+#include <atta/helpers/drawer.h>
 #include <atta/graphics/renderers/rastRenderer/rastRenderer.h>
 #include <atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h>
 //#include "simulator/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h"
@@ -196,6 +197,8 @@ namespace atta
 
 			_sensorStageBarrier->wait();
 			//--------------------- Robots ----------------------//
+			Drawer::updateBufferMemory(_vkCore, _commandPool);// Send drawer data to GPU
+			Drawer::clear();// Clear drawer data to receive new lines/points
 			switch(_robotProcessing)
 			{
 				case ROBOT_PROCESSING_SEQUENTIAL:

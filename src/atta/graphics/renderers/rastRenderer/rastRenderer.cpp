@@ -51,6 +51,14 @@ namespace atta
 					_scene);
 		else
 			_linePipeline = nullptr;
+
+		_pointPipeline = std::make_unique<vk::PointPipeline>(
+				_vkCore, _renderPass,
+				_image->getExtent(), _image->getFormat(), 
+				std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
+				std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
+				_scene);
+
 		_maskPipeline = std::make_unique<vk::MaskPipeline>(
 				_vkCore, _renderPass,
 				_image->getExtent(), _image->getFormat(), 
@@ -98,6 +106,9 @@ namespace atta
 
 			// Graphics pipeline
 			_graphicsPipeline->render(commandBuffer);
+
+			// Point pipeline
+			_pointPipeline->render(commandBuffer);
 
 			// Line pipeline
 			if(_linePipelineSupport)

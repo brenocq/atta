@@ -9,6 +9,7 @@
 
 #include <atta/graphics/renderers/renderer.h>
 #include <atta/graphics/renderers/rastRenderer/pipelines/graphicsPipeline.h>
+#include <atta/graphics/renderers/rastRenderer/pipelines/pointPipeline.h>
 #include <atta/graphics/renderers/rastRenderer/pipelines/linePipeline.h>
 #include <atta/graphics/renderers/rastRenderer/pipelines/maskPipeline.h>
 #include <atta/graphics/renderers/rastRenderer/pipelines/outlinePipeline.h>
@@ -46,6 +47,7 @@ namespace atta
 
 			// Pipelines
 			std::unique_ptr<vk::GraphicsPipeline> _graphicsPipeline;
+			std::unique_ptr<vk::PointPipeline> _pointPipeline;
 			std::unique_ptr<vk::LinePipeline> _linePipeline;
 			std::unique_ptr<vk::MaskPipeline> _maskPipeline;
 			std::unique_ptr<vk::OutlinePipeline> _outlinePipeline;

@@ -5,9 +5,29 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/helpers/drawer.h>
+#include <atta/helpers/log.h>
+#include <atta/graphics/vulkan/stagingBuffer.h>
 
 namespace atta
 {
+	// Core impl
+	void Drawer::clearImpl()
+	{
+		Log::debug("Drawer", "Clear");
+		_currNumberOfLines = 0;
+		_currNumberOfPoints = 0;
+	}
+
+	void Drawer::updateBufferMemoryImpl(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<vk::CommandPool> commandPool)
+	{
+		// Update point buffer
+		size_t size = _points.size()*sizeof(Drawer::Point);
+		std::shared_ptr<vk::StagingBuffer> stagingBuffer = std::make_shared<vk::StagingBuffer>(vkCore->getDevice(), _points.data(), size);
+		vkCore->getPointBuffer()->copyFrom(commandPool, stagingBuffer->handle(), size);
+		_currNumberOfPointsMemory = _currNumberOfPoints;
+	}
+
+	// Line impl
 	void Drawer::addLineImpl(Line line)
 	{
 		if(_currNumberOfLines<_maxNumberOfLines)
@@ -15,28 +35,25 @@ namespace atta
 			_lines[_currNumberOfLines] = line;
 			_currNumberOfLines++;
 		}
+		else
+		{
+			Log::debug("Drawer", "Maximum number of lines reached! Not drawing new ones.");
+		}
 	}
 
-	std::vector<Drawer::Line>& Drawer::getLinesImpl()
+	// Point impl
+	void Drawer::addPointImpl(Point point)
 	{
-		return _lines;
+		if(_currNumberOfPoints<_maxNumberOfPoints)
+		{
+			_points[_currNumberOfPoints] = point;
+			_currNumberOfPoints++;
+		}
+		else
+		{
+			Log::debug("Drawer", "Maximum number of points reached! Not drawing new ones.");
+		}
 	}
-
-	void Drawer::clearImpl()
-	{
-		_lines.clear();
-		_currNumberOfLines = 0;
-	}
-	//Drawer::Drawer(Scene* scene):
-	//	_scene(scene)
-	//{
-
-	//}
-
-	//Drawer::~Drawer()
-	//{
-
-	//}
 
 	//void Drawer::drawPhysicsShapes()
 	//{

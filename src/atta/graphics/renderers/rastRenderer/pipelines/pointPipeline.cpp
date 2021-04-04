@@ -1,17 +1,17 @@
 //--------------------------------------------------
 // Robot Simulator
-// linePipeline.cpp
+// pointPipeline.cpp
 // Date: 2020-08-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/renderers/rastRenderer/pipelines/linePipeline.h>
+#include <atta/graphics/renderers/rastRenderer/pipelines/pointPipeline.h>
 #include <atta/helpers/log.h>
 #include <atta/helpers/drawer.h>
 #include <atta/graphics/vulkan/stagingBuffer.h>
 
 namespace atta::vk
 {
-	LinePipeline::LinePipeline(
+	PointPipeline::PointPipeline(
 			std::shared_ptr<VulkanCore> vkCore, 
 			std::shared_ptr<RenderPass> renderPass,
 			VkExtent2D extent, VkFormat format,
@@ -25,22 +25,22 @@ namespace atta::vk
 		_renderPass = renderPass;
 
 		//---------- Create line buffer ----------//
-		//unsigned size = Drawer::getMaxNumberOfLines()*sizeof(Drawer::Line);
-		//_lineBuffer = std::make_shared<Buffer>(
+		//unsigned size = Drawer::getMaxNumberOfPoints()*sizeof(Drawer::Point);
+		//_pointBuffer = std::make_shared<Buffer>(
 		//		_device, 
 		//		size, 
 		//		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 
 		//		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 		// Create staging buffer (host memory)
-		//_stagingBuffer = std::make_shared<StagingBuffer>(_device, Drawer::getLines().data(), size);
+		//_stagingBuffer = std::make_shared<StagingBuffer>(_device, Drawer::getPoints().data(), size);
 
 		// TODO Copy from host memory to device memory
-		//_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
+		//_pointBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
 
 		//---------- Shaders ----------//
-		_vertShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/line/lineShader.vert.spv");
-		_fragShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/line/lineShader.frag.spv");
+		_vertShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/point/pointShader.vert.spv");
+		_fragShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/point/pointShader.frag.spv");
 
 		// Vert shader
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -73,7 +73,7 @@ namespace atta::vk
 		// Input assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 		// Viewport
@@ -101,7 +101,7 @@ namespace atta::vk
 		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		rasterizer.depthClampEnable = VK_FALSE;
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
-		rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
+		rasterizer.polygonMode = VK_POLYGON_MODE_POINT;
 		rasterizer.lineWidth = 1.0f;
 		rasterizer.cullMode = VK_CULL_MODE_NONE;
 		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
@@ -173,14 +173,14 @@ namespace atta::vk
 			uniformBufferInfo.range = VK_WHOLE_SIZE;
 
 			// Uniform buffer
-			VkDescriptorBufferInfo lineBufferInfo = {};
-			lineBufferInfo.buffer = _vkCore->getLineBuffer()->handle();
-			lineBufferInfo.range = VK_WHOLE_SIZE;
+			VkDescriptorBufferInfo pointBufferInfo = {};
+			pointBufferInfo.buffer = _vkCore->getPointBuffer()->handle();
+			pointBufferInfo.range = VK_WHOLE_SIZE;
 
 			const std::vector<VkWriteDescriptorSet> descriptorWrites =
 			{
 				descriptorSets->bind(i, 0, uniformBufferInfo),
-				descriptorSets->bind(i, 1, lineBufferInfo),
+				descriptorSets->bind(i, 1, pointBufferInfo),
 			};
 
 			descriptorSets->updateDescriptors(i, descriptorWrites);
@@ -214,28 +214,23 @@ namespace atta::vk
 
 		if(vkCreateGraphicsPipelines(_device->handle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS) 
 		{
-			Log::error("LinePipeline", "Failed to create line pipeline!");
+			Log::error("PointPipeline", "Failed to create point pipeline!");
 			exit(1);
 		}
 	}
 
-	LinePipeline::~LinePipeline()
+	PointPipeline::~PointPipeline()
 	{
 		
 	}
 
-	void LinePipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
+	void PointPipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		// TODO Copy lines from vector to staging buffer
-		//unsigned size = Drawer::getMaxNumberOfLines()*sizeof(Drawer::Line);
-		//_stagingBuffer->mapFromData(_vkCore->getDevice(), Drawer::getLines().data(), size);
-		// Copy from host memory to device memory
-		//_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
-
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 
-		//Log::debug("LinePipeline", "Qty lines = $0", Drawer::getCurrNumberOfLines());
-		vkCmdDraw(commandBuffer, Drawer::getCurrNumberOfLines()*2, 1, 0, 0);
+		Log::debug("PointPipeline", "Qty points = $0", Drawer::getCurrNumberOfPointsMemory());
+		vkCmdDraw(commandBuffer, Drawer::getCurrNumberOfPointsMemory(), 1, 0, 0);
+		//vkCmdDraw(commandBuffer, Drawe, 1, 0, 0);
 	}
 }
