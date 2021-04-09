@@ -26,7 +26,8 @@ namespace atta
 						.sigma = 20,
 					}),
 		};
-		_model = std::make_shared<Model>(modelInfo);
+		if(info.createModel)
+			_model = std::make_shared<Model>(modelInfo);
 
 		//----- Physics -----//
 		_bodyPhysics = nullptr;

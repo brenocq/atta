@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/gui/widgets/padding.h>
-#include <atta/helpers/log.h>
+#include <atta/graphics/gui/guiState.h>
 
 namespace guib
 {
@@ -16,81 +16,37 @@ namespace guib
 
 	}
 
-
-	void Padding::startPreProcess()
-	{
-		Widget::startPreProcess();
-		// Convert padding UNIT_PIXEL ro UNIT_SCREEN
-
-		// Convert padding UNIT_PERCENT ro UNIT_SCREEN
-	}
-
 	void Padding::preProcessSizeOffset()
 	{
-		Log::warning("Padding", "Padding was not implemented yet!");
+		// Padding implemented as margin
 		Widget::fillParent();
-		if(_child)
-		{
-			Size childSize;
-			Offset childOffset;
-			_child->parentAsksSizeOffset(childSize, childOffset);
-			//else if(type=="Padding")
-			//{
-			//	guib::Padding* padding = (guib::Padding*)widget;
-			//	guib::PaddingValues pad = padding->getPadding();
-			//	guib::Widget* child = padding->getChild();
-			//	if(child!=nullptr)
-			//	{
-			//		currOffset.x+=currSize.width*pad.left;
-			//		currOffset.y+=currSize.height*pad.top;
 
-			//		currSize.width-=(currSize.width*pad.left+currSize.width*pad.right);
-			//		currSize.height-=(currSize.height*pad.top+currSize.height*pad.bottom);
-			//		renderWidget(commandBuffer, currOffset, currSize, child);
-			//	}
-			//}
+		// Convert padding values from pixel to screen
+		float invWidth = 1.0f/state::screenSize.width;
+		float invHeight = 1.0f/state::screenSize.height;
+		if(_padding.unitT == UNIT_PIXEL)
+			_padding.top*=invWidth;
+		if(_padding.unitR == UNIT_PIXEL)
+			_padding.right*=invWidth;
+		if(_padding.unitB == UNIT_PIXEL)
+			_padding.bottom*=invWidth;
+		if(_padding.unitL == UNIT_PIXEL)
+			_padding.left*=invWidth;
 
-			//switch(_hAlignment)
-			//{
-			//	case guib::ALIGN_START:
-			//		{
-			//		}
-			//		break;
-			//	case guib::ALIGN_CENTER:
-			//		{
-			//			float offset = (_size.width-childSize.width)*0.5f;
-			//			_offset.x = _offset.x+offset;
-			//		}
-			//		break;
-			//	case guib::ALIGN_END:
-			//		{
-			//			float offset = _size.width-childSize.width;
-			//			_offset.x = _offset.x+offset;
-			//		}
-			//		break;
-			//}
+		// Convert padding values from percent to screen
+		if(_padding.unitT == UNIT_PERCENT)
+			_padding.top*=_size.height;
+		if(_padding.unitR == UNIT_PERCENT)
+			_padding.right*=_size.width;
+		if(_padding.unitB == UNIT_PERCENT)
+			_padding.bottom*=_size.height;
+		if(_padding.unitL == UNIT_PERCENT)
+			_padding.left*=_size.width;
 
-			//switch(_vAlignment)
-			//{
-			//	case guib::ALIGN_START:
-			//		{
-			//		}
-			//		break;
-			//	case guib::ALIGN_CENTER:
-			//		{
-			//			float offset = (_size.height-childSize.height)*0.5f;
-			//			_offset.y = _offset.y+offset;
-			//		}
-			//		break;
-			//	case guib::ALIGN_END:
-			//		{
-			//			float offset = _size.height-childSize.height;
-			//			_offset.y = _offset.y+offset;
-			//		}
-			//		break;
-			//}
-
-			_size = childSize;
-		}
+		// Update offset and size with padding values
+		_offset.x	 += _padding.left;
+		_offset.y	 += _padding.top;
+		_size.width	 -= _padding.left+_padding.right;
+		_size.height -= _padding.top+_padding.bottom;
 	}
 }

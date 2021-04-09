@@ -10,7 +10,8 @@
 
 namespace guib {
 	FontLoader::FontLoader(std::shared_ptr<atta::vk::Device> device, std::shared_ptr<atta::vk::CommandPool> commandPool, std::string filename):
-		_filename(filename), _device(device), _commandPool(commandPool)
+		_filename(filename), _baseHeight(18),
+		_device(device), _commandPool(commandPool)
 	{
 		FT_Error error;
 
@@ -25,30 +26,23 @@ namespace guib {
 		error = FT_New_Face(_library, filename.c_str(), 0, &_face);
 		if(error == FT_Err_Unknown_File_Format)
 		{
-			Log::error("FontLoader", "This font format is unsupported! "+filename);
+			Log::error("FontLoader", "This font format is unsupported! [w]"+filename);
 		}
 		else if (error)
 		{
-			Log::error("FontLoader", "Error when loading font file! "+filename);
+			Log::error("FontLoader", "Error when loading font file! [w]"+filename);
 		}
 		else
 		{
 			Log::success("FontLoader", "Font file \"$0\" loaded successfully.", filename);
 			Log::success("FontLoader", "Qty glyphs: $0", _face->num_glyphs);
-			Log::success("FontLoader", "Flags: $0", _face->face_flags);
+			//Log::success("FontLoader", "Flags: $0", _face->face_flags);
 		}
 
 		// Set character size
-		//error = FT_Set_Char_Size(
-        //  _face,
-        //  0,// 		Width equal height
-        //  3*64,// 	Height in 1/64th of points (16pt)
-        //  300,//	Horizontal device resolution
-        //  300//		Vertical device resolution
-		//  );
-		error = FT_Set_Pixel_Sizes( _face,   /* handle to face object */
-                            0,      /* pixel_width           */
-                            16 );   /* pixel_height          */
+		error = FT_Set_Pixel_Sizes( _face,// handle to face object
+                            0,  		 // pixel_width
+                            _baseHeight);// pixel_height
 		if(error)
 		{
 			Log::error("FontLoader", "Error when setting char size!");
@@ -57,7 +51,7 @@ namespace guib {
 		// Create font texture
 		_fontTexture.atlas.width = 1024;
 		_fontTexture.atlas.height = 1024;
-		_fontTexture.padding = 3;
+		_fontTexture.padding = 5;
 
 		// Allocate font texture buffer
 		unsigned size = _fontTexture.atlas.width*_fontTexture.atlas.height;
@@ -75,6 +69,10 @@ namespace guib {
 				_fontTexture.atlas.data, 
 				(VkExtent2D){_fontTexture.atlas.width, _fontTexture.atlas.height},
 				atta::Texture::FORMAT_R_UBYTE);
+
+		// Clear FreeType resources
+		FT_Done_Face(_face);
+		FT_Done_FreeType(_library);
 	}
 
 	FontLoader::~FontLoader()

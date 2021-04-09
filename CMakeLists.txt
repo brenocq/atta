@@ -197,7 +197,6 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"src/atta/math/point.cpp"
 		"src/atta/math/quaternion.cpp"
 		"src/atta/math/ray.cpp"
-		"src/atta/math/vector.cpp"
 		# objects
 		"src/atta/objects/object.cpp"
         "src/atta/objects/basics/box.cpp"
@@ -378,10 +377,12 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/math/bounds.h"
 		"include/atta/math/common.h"
 		"include/atta/math/math.h"
+		"include/atta/math/matrix.cpp"
 		"include/atta/math/matrix.h"
 		"include/atta/math/point.h"
 		"include/atta/math/quaternion.h"
 		"include/atta/math/ray.h"
+		"include/atta/math/vector.cpp"
 		"include/atta/math/vector.h"
 		# objects
 		"include/atta/objects/object.h"
@@ -473,7 +474,14 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/assets/textures/WinterForest_Ref.hdr"
 		"include/atta/assets/textures/attaIBL/ibl_brdf_lut.png"
 		"include/atta/assets/fonts/Ubuntu/Ubuntu-Medium.ttf"
-		"include/atta/assets/fonts/BFont/bfont.ttf"
+		"include/atta/assets/fonts/Roboto/Roboto-Light.ttf"
+		"include/atta/assets/fonts/Roboto/Roboto-Regular.ttf"
+		"include/atta/assets/fonts/Roboto/Roboto-Medium.ttf"
+	)
+
+	set(attacore_SRCS_math
+		#"include/atta/math/matrix.cpp"
+		#"include/atta/math/vector.cpp"
 	)
 
 	add_library(attacore ${attacore_HEADERS} ${attacore_SRCS})
@@ -494,7 +502,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 	install(TARGETS attacore EXPORT attacore-targets DESTINATION "${ATTA_LIB_LOCATION}")
 
 	# Install header files to system include directory
-	foreach( file ${attacore_HEADERS};${attacore_SHADERS};${attacore_TEXTURES})
+	foreach( file ${attacore_HEADERS};${attacore_SHADERS};${attacore_TEXTURES};${attacore_SRCS_math})
 		get_filename_component(dir ${file} DIRECTORY)
 		string(REPLACE "include/atta" ${ATTA_INCLUDE_LOCATION} dir_to_install ${dir})
 		install(FILES ${file} DESTINATION ${dir_to_install} )

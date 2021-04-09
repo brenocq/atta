@@ -89,11 +89,14 @@ namespace guib
 									{
 										.color = {1,0,1,0},
 										.size  = {.5,1},
-										.child = new guib::Text(
-										{
-											.color = {0.8, 0.8, 0.8, 1.0},
-											.text = _name,
-											.textSize = 14
+										.child = new guib::Padding({
+											.padding = {.left=10.0f, .unitL=guib::UNIT_PIXEL},
+											.child = new guib::Text(
+											{
+												.color = {1,1,1,1},
+												.text = _name,
+												.textSize = 14
+											})
 										})
 									}),
 									new guib::Box(
@@ -125,40 +128,40 @@ namespace guib
 						});
 
 		_root = new guib::Visibility(
+		{
+			.visible = !_closed,
+			.child = new guib::Draggable(
 			{
-				.visible = !_closed,
-				.child = new guib::Draggable(
+				.active = _movable,
+				.widgetToHover = topBar,
+				.widgetToDrag = this,
+				.child = new guib::Box(
 				{
-					.active = _movable,
-					.widgetToHover = topBar,
-					.widgetToDrag = this,
-					.child = new guib::Box(
+					.color = {0,0,0,0},
+					.size  = {1, 1, guib::UNIT_PERCENT, guib::UNIT_PERCENT},
+					.child = new guib::Column(
 					{
-						.color = {.2,.2,.2,0},
-						.size  = {1, 1, guib::UNIT_PERCENT, guib::UNIT_PERCENT},
-						.child = new guib::Column(
-						{
-							.hAlignment = guib::ALIGN_CENTER,
-							.vAlignment = guib::ALIGN_START,
-							.children = {
-								topBar,
-								_windowChildVisibility=new Visibility(
+						.hAlignment = guib::ALIGN_CENTER,
+						.vAlignment = guib::ALIGN_START,
+						.children = {
+							topBar,
+							_windowChildVisibility=new Visibility(
+							{
+								.visible = !_minimized,
+								.child= new Box(
 								{
-									.visible = !_minimized,
-									.child= new Box(
+									.color = _color,
+									.child = new Protect(
 									{
-										.color = _color,
-										.child = new Protect(
-										{
-											.child=_windowChild
-										})
+										.child=_windowChild
 									})
 								})
-							}
-						})
+							})
+						}
 					})
 				})
-			}); 
+			})
+		}); 
 		Widget::setChild(_root);
 	}
 }

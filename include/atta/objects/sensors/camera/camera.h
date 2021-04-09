@@ -35,6 +35,7 @@ namespace atta
 				unsigned height = 240;
 				float fov = 24.0f;
 
+				bool createModel = false;
 				std::vector<std::shared_ptr<Object>> children = {};
 			};
 

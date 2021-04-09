@@ -9,8 +9,7 @@
 
 namespace atta
 {
-	UserInterface::UserInterface(
-			CreateInfo info):
+	UserInterface::UserInterface(CreateInfo info):
 		_device(info.device),
 		_window(info.window),
 		_scene(info.scene),
@@ -31,7 +30,7 @@ namespace atta
 		_guiUniformBuffer->setValue(ubo);
 
 		// Load font to texture
-		_fontLoader = std::make_shared<guib::FontLoader>(_device, _guiCommandPool, "/usr/include/atta/assets/fonts/BFont/bfont.ttf");
+		_fontLoader = std::make_shared<guib::FontLoader>(_device, _guiCommandPool, "/usr/include/atta/assets/fonts/Roboto/Roboto-Light.ttf");
 
 
 		_guiPipeline = std::make_shared<GuiPipeline>(_device, _window, _swapChain, _guiUniformBuffer, _fontLoader);
@@ -53,7 +52,7 @@ namespace atta
 		_rootWidget = 
 			new guib::TopBar(
 			{
-				.color = {.2,.2,.2,1},
+				.color = {.125,.125,.125,1},
 				.buttons = {
 					new guib::MenuButton(
 					(guib::MenuButtonInfo){
@@ -71,11 +70,13 @@ namespace atta
 					.onClick = [&](){
 					},
 					.size = {1, 20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
-					.child = new guib::Text(
-					{
-						.color = {1,1,1,1},
-						.text = object->getName(),
-						.textSize = 16
+					.child = new guib::Padding({
+						.child = new guib::Text(
+						{
+							.color = {1,1,1,1},
+							.text = object->getName(),
+							.textSize = 14
+						})
 					})
 				})
 			);

@@ -13,7 +13,7 @@ namespace atta
 	// Core impl
 	void Drawer::clearImpl()
 	{
-		Log::debug("Drawer", "Clear");
+		//Log::debug("Drawer", "Clear");
 		_currNumberOfLines = 0;
 		_currNumberOfPoints = 0;
 	}
@@ -21,10 +21,13 @@ namespace atta
 	void Drawer::updateBufferMemoryImpl(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<vk::CommandPool> commandPool)
 	{
 		// Update point buffer
-		size_t size = _points.size()*sizeof(Drawer::Point);
-		std::shared_ptr<vk::StagingBuffer> stagingBuffer = std::make_shared<vk::StagingBuffer>(vkCore->getDevice(), _points.data(), size);
-		vkCore->getPointBuffer()->copyFrom(commandPool, stagingBuffer->handle(), size);
-		_currNumberOfPointsMemory = _currNumberOfPoints;
+		if(_currNumberOfPoints*sizeof(Drawer::Point)>0)
+		{
+			size_t size = _currNumberOfPoints*sizeof(Drawer::Point);
+			std::shared_ptr<vk::StagingBuffer> stagingBuffer = std::make_shared<vk::StagingBuffer>(vkCore->getDevice(), _points.data(), size);
+			vkCore->getPointBuffer()->copyFrom(commandPool, stagingBuffer->handle(), size);
+			_currNumberOfPointsMemory = _currNumberOfPoints;
+		}
 	}
 
 	// Line impl

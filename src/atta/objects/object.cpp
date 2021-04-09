@@ -14,7 +14,8 @@ namespace atta
 	Object::Object(CreateInfo info):
 		_type("Object"), _name(info.name), 
 		_isLight(false),
-		_selection(ObjectSelection::UNSELECTED)
+		_selection(ObjectSelection::UNSELECTED),
+		_parent(nullptr)
 	{
 		_id = _qtyIds++;
 		_position = info.position;
@@ -38,6 +39,14 @@ namespace atta
 	{
 		mat4 res = mat4(1);
 		res.setPosOriScale(_position, _orientation, _scale);
+
+		Object* parent = _parent;
+		if(parent!=nullptr)
+		{
+			res = parent->getModelMat()*res;
+			//parent = parent->getParent();
+			
+		}
 
 		return res;
 	}
