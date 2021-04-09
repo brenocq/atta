@@ -8,6 +8,7 @@
 #define ATTA_PARALLEL_WORKER_GUI_H
 
 #include "worker.h"
+#include <functional>
 #include <atta/core/scene.h>
 #include <atta/graphics/core/window.h>
 #include <atta/graphics/core/modelViewController.h>
@@ -39,7 +40,8 @@ namespace atta
 				CAMERA_CONTROL_TYPE_3D
 			};
 
-			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, CameraControlType cameraControlType);
+			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, CameraControlType cameraControlType,
+				std::function<void(int key, int action)> handleKeyboard);
 			~WorkerGui();
 
 			void operator()();
@@ -59,6 +61,7 @@ namespace atta
 			void onMouseButton(int button, int action, int mods);
 			void onScroll(double xoffset, double yoffset);
 
+			// Core objects
 			std::shared_ptr<Window> _window;
 			std::shared_ptr<ModelViewController> _modelViewController;
 			std::shared_ptr<vk::VulkanCore> _vkCore;
@@ -89,6 +92,9 @@ namespace atta
 
 			// User interface
 			std::shared_ptr<UserInterface> _ui;
+
+			// User parameters
+			std::function<void(int key, int action)> _handleKeyboard;
 	};
 }
 

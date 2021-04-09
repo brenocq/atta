@@ -229,7 +229,7 @@ namespace atta::vk
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 
-		Log::debug("PointPipeline", "Qty points = $0", Drawer::getCurrNumberOfPointsMemory());
+		//Log::debug("PointPipeline", "Qty points = $0", Drawer::getCurrNumberOfPointsMemory());
 		vkCmdDraw(commandBuffer, Drawer::getCurrNumberOfPointsMemory(), 1, 0, 0);
 		//vkCmdDraw(commandBuffer, Drawe, 1, 0, 0);
 	}

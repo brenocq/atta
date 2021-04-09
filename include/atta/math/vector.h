@@ -9,6 +9,7 @@
 
 #include <math.h>
 #include <string>
+#include <vector>
 
 namespace atta
 {
@@ -507,7 +508,7 @@ namespace atta
 
 	// Dot
 	template <typename T>
-	float dot(const vector3<T> &v1, const vector3<T> &v2)
+	inline float dot(const vector3<T> &v1, const vector3<T> &v2)
 	{
 		return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 	}
@@ -709,6 +710,53 @@ namespace atta
 			}
 	};
 
+	//----------------------------------------//
+	//---------------- Vector ----------------//
+	//----------------------------------------//
+	template <typename T>
+	class vector
+	{
+		public:
+			std::vector<T> data;
+			size_t n;
+
+        	vector();
+        	vector(size_t _n);
+        	vector(size_t _n, T val);
+			~vector();
+
+			T& operator[](size_t i);
+			T at(size_t i) const;
+
+			// Basic operations
+			// +
+			template <typename U>
+			vector<T> operator+(const vector<U>& v) const;
+			template <typename U>
+			void operator+=(const vector<U>& v);
+			// -
+			template <typename U>
+			vector<T> operator-(const vector<U>& v) const;
+			template <typename U>
+			void operator-=(const vector<U>& v);
+			// *
+			template <typename U>
+			vector<T> operator*(const vector<U>& v) const;
+			template <typename U>
+			void operator*=(const vector<U>& v);
+			// /
+			template <typename U>
+			vector<T> operator/(const vector<U>& v) const;
+			template <typename U>
+			void operator/=(const vector<U>& v);
+
+			std::string toString();
+	};
+
+	// Dot
+	template <typename T, typename U>
+	inline T dot(const vector<T> &v1, const vector<U> &v2);
+
 	typedef vector4<float> vec4;
 	typedef vector4<float> vec4f;
 	typedef vector4<double> vec4d;
@@ -723,6 +771,8 @@ namespace atta
 	typedef vector2<float> vec2f;
 	typedef vector2<double> vec2d;
 	typedef vector2<int> vec2i;
+
+	typedef vector<float> vec;
 
 }
 

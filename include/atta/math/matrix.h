@@ -4,12 +4,13 @@
 // Date: 2020-12-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_MATH_MATRIX_H
-#define ATTA_MATH_MATRIX_H
+#ifndef ATTA_MATH_MATRIX_HH
+#define ATTA_MATH_MATRIX_HH
 
 #include <atta/math/vector.h>
 #include <atta/math/point.h>
 #include <atta/math/quaternion.h>
+#include <vector>
 
 namespace atta
 {
@@ -91,12 +92,6 @@ namespace atta
         void setPosOriScale(const vec3 &pos, const quat &q, const vec3 &scale);
 
         vec3 rollPitchYaw();
-
-		// Glm conversion
-		//operator glm::mat4() const
-		//{
-		//	return glm::make_mat4(data);
-		//}
 
 		std::string toString() const;
     };
@@ -282,15 +277,58 @@ namespace atta
 
 		std::string toString() const;
     };
+	//------------------------------------------------------------//
+	//--------------------------- mat ---------------------------//
+	//------------------------------------------------------------//
+	template <typename T>
+	class matrix
+	{
+		public:
+			size_t m, n;
+			std::vector<vector<T>> rows;
 
+			matrix(size_t _m, size_t _n);
+			matrix(size_t _m, size_t _n, T val);
+			~matrix();
+
+			// Access
+			vector<T>& operator[](size_t i);
+
+			// Basic operations
+			// +
+			template <typename U>
+			matrix<T> operator+(const matrix<U>& o) const;
+			template <typename U>
+			void operator+=(const matrix<U>& o);
+			// -
+			template <typename U>
+			matrix<T> operator-(const matrix<U>& o) const;
+			template <typename U>
+			void operator-=(const matrix<U>& o);
+			// *
+			template <typename U>
+			matrix<T> operator*(const matrix<U>& o);
+			template <typename U>
+			void operator*=(const matrix<U>& o);
+
+			// Matrix operations
+			matrix<T>& transpose();
+
+			std::string toString();
+
+	};
+
+	template <typename T>
+	inline matrix<T> transpose(const matrix<T>& m);
+
+	//------------------------------------------------------------//
+	//-------------------------- Inline --------------------------//
+	//------------------------------------------------------------//
 	inline mat3 operator*(const float value, mat3 const &mat)
 	{
 		return mat*value;
 	}
 
-	//------------------------------------------------------------//
-	//-------------------------- Inline --------------------------//
-	//------------------------------------------------------------//
 	inline mat4 transpose(mat4 mat)
 	{
 		mat4 result = mat;
@@ -319,7 +357,6 @@ namespace atta
 		return result;
 	}
 
-
 	// Calculate rotation matrix from axis and angle
 	inline mat4 rotationFromAxisAngle(const vec3 &w, float angle)
 	{
@@ -329,5 +366,6 @@ namespace atta
 		return mat4(mat3(1.0f) + sin(angle)*Jw + (1-cos(angle))*(Jw*Jw));
 	}
 
+	typedef matrix<float> mat;
 }
 #endif// ATTA_MATH_MATRIX_H

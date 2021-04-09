@@ -33,6 +33,7 @@ namespace atta
 				std::vector<std::shared_ptr<Robot>> robots = {};
 
 				std::function<void(void)> runAfterRobots;
+				std::function<void(int key, int action)> handleKeyboard;
 			};
 
 			Atta(CreateInfo info);

@@ -48,6 +48,7 @@ namespace atta
 			};
 
 			struct UiConfig {
+				std::function<void(int key, int action)> handleKeyboard;
 			};
 
 
@@ -109,6 +110,7 @@ namespace atta
 			std::function<void(void)> _runAfterRobots;
 
 			//---------- UI ----------//
+			std::function<void(int key, int action)> _handleKeyboard;
 	};
 }
 

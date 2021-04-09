@@ -120,7 +120,9 @@ namespace atta
 
 	ThreadManager::UiConfig Atta::populateTMUiConfig()
 	{
-		ThreadManager::UiConfig uiConfig {};
+		ThreadManager::UiConfig uiConfig {
+			.handleKeyboard = _info.handleKeyboard,
+		};
 		return uiConfig;
 	}
 

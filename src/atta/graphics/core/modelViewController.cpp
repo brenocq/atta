@@ -12,7 +12,7 @@
 namespace atta
 {
 	ModelViewController::ModelViewController(ControlType controlType):
-		_controlType(controlType), _mouseMiddleButton(false), _shiftKey(false), _speed(1.0f),
+		_controlType(controlType), _mouseMiddleButton(false), _shiftKey(false), _speed(0.1f),
 		_right(vec3(1,0,0)), _up(vec3(0,1,0)), _forward(vec3(0,0,-1))
 	{
 	}
@@ -29,7 +29,7 @@ namespace atta
 		_position = vec3(cameraToWorld.col(3));
 		_orientation = mat4(mat3(cameraToWorld));
 
-		Log::debug("MVC", "ori:$0pos:$1", _orientation.toString(), _position.toString());
+		//Log::debug("MVC", "ori:$0pos:$1", _orientation.toString(), _position.toString());
 		
 		_cursorMovX = 0;
 		_cursorMovY = 0;

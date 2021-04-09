@@ -16,10 +16,6 @@ namespace guib
 		_size(widgetInfo.size), _offset(widgetInfo.offset), _child(widgetInfo.child), _parent(nullptr), _type("Widget"),
 		_widgetInfo(widgetInfo)
 	{
-
-		// Convert from UNIT_PIXEL to UNIT_SCREEN
-		solveDimensionsPixel();
-		// Conversion from UNIT_PERCENT to UNIT_SCREEN occurs in preProcess or called by parent
 	}
 
 	Widget::~Widget()
@@ -71,46 +67,43 @@ namespace guib
 	//--------------------------------//
 	//---------- PreProcess ----------//
 	//--------------------------------//
+	void Widget::treePreProcess()
+	{
+		startPreProcess();
+		{
+			preProcessSizeOffset();
+			// Local to global offset (local+parent)
+			if(_parent) _offset += _parent->getOffset();
+			preProcess();
+		}
+		endPreProcess();
+	}
+
 	void Widget::startPreProcess()
 	{
-		// Convert from UNIT_PERCENT to UNIT_SCREEN
-		// It is made in pre preocess because it needs to have a reference to the parent, which occurs after the tree is created
-		solveDimensionsPercent();
-
 		if(_child)
 			_child->setParent(this);
 	}
 
 	void Widget::endPreProcess()
 	{
-		//Log::debug("Widget", "End PreProcess [w]$0[] with [w]$1 []--[w] $2", _type, _size.toString(), _offset.toString());
+		// Finish this widget pre process and call child pre process
 		if(_child)
 			_child->treePreProcess();
 	}
 
-
 	void Widget::preProcessSizeOffset()
 	{
-		// Executes when defining tree widgets size and offset
+		// Convert from UNIT_PIXEL to UNIT_SCREEN
+		solveDimensionsPixel();
+		// Convert from UNIT_PERCENT to UNIT_SCREEN
+		solveDimensionsPercent();
 	}
 
 	void Widget::preProcess()
 	{
-		// Executes one time after the tree is created
-	}
-
-	void Widget::treePreProcess()
-	{
-		startPreProcess();
-		{
-			preProcessSizeOffset();
-
-			// Local to global offset (local+parent)
-			if(_parent) _offset += _parent->getOffset();
-
-			preProcess();
-		}
-		endPreProcess();
+		// Executes one time after while the tree is being created
+		// NOTE: child not preprocessed yet
 	}
 
 	//--------------------------------//
@@ -118,28 +111,26 @@ namespace guib
 	//--------------------------------//
 	void Widget::wrapChild()
 	{
-		// Sometimes the child needs to now the parent size/offset to calculate your own size/offset
+		// Sometimes the child of this widget needs to now the parent of this widget size/offset to calculate your own size/offset
+		//--------
+		// parent
+		//   |
+		//  this
+		//   |
+		// child
 		fillParent();
 
 		// Wrap child if it exists
 		if(_child)
 		{
-			Size parentSize;
-			Offset parentOffset;
-			getParentSizeOffset(parentSize, parentOffset);
-
+			Log::debug("Widget", "parent size:$0 offset:$1", _size.toString(), _offset.toString());
 			Size childSize;
 			Offset childOffset;
 			_child->parentAsksSizeOffset(childSize, childOffset);
 
-			if(std::isnan(childSize.width) || std::isnan(childSize.height) || std::isnan(childOffset.x) || std::isnan(childOffset.y))
-			{
-				Log::error("guib::Widget", "[w](wrapChild)[] Child size/offset must be possible to calculate!");
-				return;
-			}
-
 			_size = childSize;
-			_offset = _offset+childOffset;
+			_offset = childOffset;
+			Log::debug("Widget", "child size:$0 offset:$1", _size.toString(), _offset.toString());
 		}
 	}
 

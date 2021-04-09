@@ -24,7 +24,6 @@ namespace atta
 			pipelineSetup.generalConfig.qtyThreads;
 
 		Log::info("ThreadManager", "Detected $0 cores, $1 workers will be created", maxSystemCores, _qtyWorkersToCreate);
-
 		//                                                             ,-------------------.
 		//                                                             v                   |
 		// Barrier to syncronize generalist workers + main thread (start -> physics -> render -> robots -> end)
@@ -52,6 +51,7 @@ namespace atta
 		_runAfterRobots = pipelineSetup.robotStage.runAfterRobots;
 
 		//---------- UI config ----------//
+		_handleKeyboard = pipelineSetup.uiConfig.handleKeyboard;
 		
 		//---------- Create objects ----------//
 		createGeneralistWorkers();
@@ -109,7 +109,8 @@ namespace atta
 		_workerGui = std::make_shared<WorkerGui>(_vkCore, _scene,
 			_dimensionMode == DIM_MODE_3D?
 					WorkerGui::CAMERA_CONTROL_TYPE_3D:
-					WorkerGui::CAMERA_CONTROL_TYPE_2D
+					WorkerGui::CAMERA_CONTROL_TYPE_2D,
+				_handleKeyboard
 				);
 
 		// Create thread from callable workerGui
@@ -178,7 +179,7 @@ namespace atta
 			{
 				// Update camera renderers view matrix
 				for(int i=0;i<_cameraRenderers.size();i++)
-					_cameraRenderers[i]->updateCameraMatrix(atta::inverse(atta::posOri(_cameras[i]->getPosition(), _cameras[i]->getOrientation())));
+					_cameraRenderers[i]->updateCameraMatrix(atta::inverse(_cameras[i]->getModelMat()));
 
 				// Render images
 				VkCommandBuffer commandBuffer = _commandPool->beginSingleTimeCommands();

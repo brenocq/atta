@@ -15,8 +15,10 @@
 namespace atta
 {
 	const int MAX_FRAMES_IN_FLIGHT = 2;
-	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, CameraControlType cameraControlType):
-		_vkCore(vkCore), _scene(scene), _currentFrame(0), _mainRendererIndex(-1), _cameraUpdated(false)
+	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, CameraControlType cameraControlType,
+			std::function<void(int key, int action)> handleKeyboard):
+		_vkCore(vkCore), _scene(scene), _currentFrame(0), _mainRendererIndex(-1), _cameraUpdated(false),
+		_handleKeyboard(handleKeyboard)
 	{
 		// Create window (GUI thread only)
 		_window = std::make_shared<Window>();
@@ -99,7 +101,7 @@ namespace atta
 			.width = 1200,
 			.height = 900,
 			.scene = _scene,
-			.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
+			.viewMat = atta::lookAt(vec3(-.5,.5,-.5), vec3(0,0,0), vec3(0,1,0)),
 			.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
 		};
 		std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
@@ -321,6 +323,8 @@ namespace atta
 
 		_modelViewController->onKey(key, scancode, action, mods);
 		_ui->onKey(key, scancode, action, mods);
+		if(_handleKeyboard)
+			_handleKeyboard(key, action);
 	}
 
 	void WorkerGui::onCursorPosition(double xpos, double ypos)

@@ -43,7 +43,6 @@ namespace guib {
 		public:
 			Padding(PaddingInfo paddingInfo);
 
-			void startPreProcess() override;
 			void preProcessSizeOffset() override;
 
 			//---------- Getters and Setters ----------//

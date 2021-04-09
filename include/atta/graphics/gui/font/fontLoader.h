@@ -26,6 +26,7 @@ namespace guib {
 			//---------- Getters and Setters ----------//
 			std::shared_ptr<atta::vk::Texture> getTexture() const { return _texture; }
 			FontTexture getFontTexture() const { return _fontTexture; }
+			int getBaseHeight() const { return _baseHeight; }
 		private:
 			void loadGlyphs();
 			void testFontTerminal(std::string text);
@@ -35,6 +36,7 @@ namespace guib {
 			FT_Face    _face;
 
 			FontTexture _fontTexture;
+			int _baseHeight;// Base glyph height in pixels
 
 			// Vulkan specific
 			std::shared_ptr<atta::vk::Device> _device;

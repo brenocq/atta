@@ -32,7 +32,7 @@ namespace guib
 		float atlasWidth = state::fontLoader->getFontTexture().atlas.width;
 		float atlasPercentToScreenPercentH = atlasHeight/state::screenSize.height;
 		float atlasPercentToScreenPercentW = atlasWidth/state::screenSize.width;
-		float sizeTransform = 0.0625*_textSize;
+		float sizeTransform = (1.0f/state::fontLoader->getBaseHeight())*_textSize;// Scale glyph pixels to desired pixel size
 
 		// {currX, currY} is the glyph origin
 		float currX = _offset.x;
@@ -50,11 +50,6 @@ namespace guib
 		for(auto letter : _text)
 		{
 			guib::GlyphInfo gInfo = state::fontLoader->getFontTexture().glyphsInfo[letter];
-			if(letter==' ')
-			{
-				currX += _textSize*0.6/state::screenSize.width;
-				continue;
-			}
 			float tw = gInfo.width/atlasWidth;
 			float th = gInfo.height/atlasHeight;
 			float tx = gInfo.x/atlasWidth;
@@ -63,12 +58,19 @@ namespace guib
 			float heightPercent = gInfo.height/state::screenSize.height;
 			float leftPercent = gInfo.left/state::screenSize.width;
 			float topPercent = gInfo.top/state::screenSize.height;
-			float advancePercent = (gInfo.advance)/state::screenSize.width;
+			float advancePercent = gInfo.advance/state::screenSize.width*1.3;
 
 			heightPercent *= sizeTransform;
 			leftPercent *= sizeTransform;
 			topPercent *= sizeTransform;
 			advancePercent *= sizeTransform;
+
+			if(letter==' ')
+			{
+			//	currX += _textSize*0.6/state::screenSize.width;
+				currX += advancePercent;
+				continue;
+			}
 
 			atta::vec2 textOffset = {currX+leftPercent, currY-topPercent};
 
@@ -91,8 +93,8 @@ namespace guib
 
 			vkCmdDraw(state::guiRender->getCommandBuffer(), 6, 1, 0, 0);
 
-			currX += (gInfo.width/gInfo.height)*heightPercent;
-			//currX += advancePercent;
+			//currX += (gInfo.width/gInfo.height)*heightPercent;
+			currX += advancePercent;
 		}
 	}
 }
