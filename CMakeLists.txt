@@ -71,12 +71,25 @@ set(ATTA_EXECUTABLE_LOCATION "bin")
 if(ATTA_GENERATE_PACKAGE_INSTALL)
 	#---------- Install library and package ----------#
 	set(attacore_SRCS
-		# core
+		# algorithms/
+			# linAlg/
+				# elimination/
+				"src/atta/algorithms/linAlg/elimination/gaussianElimination.cpp"
+				"src/atta/algorithms/linAlg/elimination/gaussJordanFull.cpp"
+				# LU/
+				"src/atta/algorithms/linAlg/LU/LU.cpp"
+				# SVD/
+				"src/atta/algorithms/linAlg/SVD/SVD.cpp"
+		# communication/
+			# socket/
+			"src/atta/communication/socket/client.cpp"
+			"src/atta/communication/socket/server.cpp"
+		# core/
 		"src/atta/core/accelerator.cpp"
 		"src/atta/core/common.cpp"
 		"src/atta/core/robot.cpp"
 		"src/atta/core/scene.cpp"
-		# graphics/core
+		# graphics/core/
 		"src/atta/graphics/core/light.cpp"
 		"src/atta/graphics/core/material.cpp"
 		"src/atta/graphics/core/mesh.cpp"
@@ -245,6 +258,19 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 	)
 
 	set(attacore_HEADERS
+		# algorithms/
+			# linAlg/
+				# elimination/
+				"include/atta/algorithms/linAlg/elimination/gaussianElimination.h"
+				"include/atta/algorithms/linAlg/elimination/gaussJordanFull.h"
+				# LU/
+				"include/atta/algorithms/linAlg/LU/LU.h"
+				# SVD/
+				"include/atta/algorithms/linAlg/SVD/SVD.h"
+		# communication/
+			# socket/
+			"include/atta/communication/socket/client.h"
+			"include/atta/communication/socket/server.h"
 		# core
 		"include/atta/core/accelerator.h"
 		"include/atta/core/common.h"
@@ -479,11 +505,6 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/assets/fonts/Roboto/Roboto-Medium.ttf"
 	)
 
-	set(attacore_SRCS_math
-		#"include/atta/math/matrix.cpp"
-		#"include/atta/math/vector.cpp"
-	)
-
 	add_library(attacore ${attacore_HEADERS} ${attacore_SRCS})
 
 	# Include directories
@@ -502,7 +523,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 	install(TARGETS attacore EXPORT attacore-targets DESTINATION "${ATTA_LIB_LOCATION}")
 
 	# Install header files to system include directory
-	foreach( file ${attacore_HEADERS};${attacore_SHADERS};${attacore_TEXTURES};${attacore_SRCS_math})
+	foreach( file ${attacore_HEADERS};${attacore_SHADERS};${attacore_TEXTURES})
 		get_filename_component(dir ${file} DIRECTORY)
 		string(REPLACE "include/atta" ${ATTA_INCLUDE_LOCATION} dir_to_install ${dir})
 		install(FILES ${file} DESTINATION ${dir_to_install} )

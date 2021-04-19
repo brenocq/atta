@@ -51,6 +51,12 @@ namespace atta
 	}
 
 	template <typename T>
+	void vector<T>::operator=(std::vector<T> d)
+	{
+		data = d;
+	}
+
+	template <typename T>
 	std::string vector<T>::toString()
 	{
 		std::string res = "[";

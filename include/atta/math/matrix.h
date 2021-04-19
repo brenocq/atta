@@ -284,11 +284,11 @@ namespace atta
 	class matrix
 	{
 		public:
-			size_t m, n;
+			size_t nrows, ncols;
 			std::vector<vector<T>> rows;
 
-			matrix(size_t _m, size_t _n);
-			matrix(size_t _m, size_t _n, T val);
+			matrix(size_t _nrows, size_t _ncols);
+			matrix(size_t _nrows, size_t _ncols, T val);
 			~matrix();
 
 			// Access
