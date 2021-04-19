@@ -727,6 +727,7 @@ namespace atta
 
 			T& operator[](size_t i);
 			T at(size_t i) const;
+			void operator=(std::vector<T> d);
 
 			// Basic operations
 			// +
@@ -757,22 +758,25 @@ namespace atta
 	template <typename T, typename U>
 	inline T dot(const vector<T> &v1, const vector<U> &v2);
 
-	typedef vector4<float> vec4;
-	typedef vector4<float> vec4f;
-	typedef vector4<double> vec4d;
-	typedef vector4<int> vec4i;
+	typedef vector2<float> vec2;
+	typedef vector2<float> vec2f;
+	typedef vector2<double> vec2d;
+	typedef vector2<int> vec2i;
 
 	typedef vector3<float> vec3;
 	typedef vector3<float> vec3f;
 	typedef vector3<double> vec3d;
 	typedef vector3<int> vec3i;
 
-	typedef vector2<float> vec2;
-	typedef vector2<float> vec2f;
-	typedef vector2<double> vec2d;
-	typedef vector2<int> vec2i;
+	typedef vector4<float> vec4;
+	typedef vector4<float> vec4f;
+	typedef vector4<double> vec4d;
+	typedef vector4<int> vec4i;
 
 	typedef vector<float> vec;
+	typedef vector<float> vecf;
+	typedef vector<double> vecd;
+	typedef vector<int> veci;
 
 }
 

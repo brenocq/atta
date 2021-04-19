@@ -81,6 +81,7 @@ These values are unreliable and come from what I think is going on in the code (
 - [(Book) Real-Time Collision Detection](https://www.amazon.com/Real-Time-Collision-Detection-Interactive-Technology/dp/1558607323)
 - [(Book) Computer Graphics Principles and Practice](http://cgpp.net/about.xml)
 - [(Book) Programming Massively Parallel Processors](https://www.amazon.com/Programming-Massively-Parallel-Processors-Hands/dp/0128119861)
+- [(Book) Numerical Recipes: The Art of Scientific Computing](http://numerical.recipes/com/storefront.html)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.

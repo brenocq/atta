@@ -164,11 +164,8 @@ class Log
 				replace(text, "$"+std::to_string(i), argsStr[i]);
 
 			// Print [tag] text
-			std::cout << tagColor << "[" << tag << "] ";
-			std::cout << textColor << text << " ";
-
-			// Finish
-			std::cout << COLOR_RESET << std::endl;
+			std::string output = std::string(tagColor) + "[" + tag + "] " + textColor + text + COLOR_RESET + "\n";
+			std::cout << output;
 		}
 };
 
