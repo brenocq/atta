@@ -31,7 +31,7 @@ void main()
     gl_Position = camera.projMat * camera.viewMat * objectInfo.transform * vec4(inPosition,1);
 
 	outPos = vec3(objectInfo.transform * vec4(inPosition, 1.0));
-	outNormal = vec3(transpose(inverse(objectInfo.transform)) * vec4(inNormal, 1.0));
+	outNormal = vec3(transpose(inverse(objectInfo.transform)) * vec4(inNormal, 0.0));
 	outTexCoord = inTexCoord;
 	outMaterialIndex = objectInfo.materialOffset+inMaterialIndex;
 

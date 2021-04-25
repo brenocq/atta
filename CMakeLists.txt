@@ -78,6 +78,8 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 				"src/atta/algorithms/linAlg/elimination/gaussJordanFull.cpp"
 				# LU/
 				"src/atta/algorithms/linAlg/LU/LU.cpp"
+				# QR/
+				"src/atta/algorithms/linAlg/QR/QR.cpp"
 				# SVD/
 				"src/atta/algorithms/linAlg/SVD/SVD.cpp"
 		# communication/
@@ -265,6 +267,8 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 				"include/atta/algorithms/linAlg/elimination/gaussJordanFull.h"
 				# LU/
 				"include/atta/algorithms/linAlg/LU/LU.h"
+				# QR/
+				"include/atta/algorithms/linAlg/QR/QR.h"
 				# SVD/
 				"include/atta/algorithms/linAlg/SVD/SVD.h"
 		# communication/

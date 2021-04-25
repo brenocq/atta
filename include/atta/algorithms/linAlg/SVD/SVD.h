@@ -26,5 +26,6 @@ namespace atta::linalg
 		private: 
 			void decompose();
 			void reorder();
+			double pythag(const double a, const double b);
 	};
 }
