@@ -289,6 +289,8 @@ namespace atta
 
 			matrix(size_t _nrows, size_t _ncols);
 			matrix(size_t _nrows, size_t _ncols, T val);
+			template <typename U>
+			matrix(const matrix<U>& m);
 			~matrix();
 
 			// Access
@@ -313,6 +315,10 @@ namespace atta
 
 			// Matrix operations
 			matrix<T>& transpose();
+
+			// Vector operations
+			template <typename U>
+			vector<U> operator*(const vector<U>& v);
 
 			std::string toString();
 
@@ -367,5 +373,8 @@ namespace atta
 	}
 
 	typedef matrix<float> mat;
+	typedef matrix<float> matf;
+	typedef matrix<double> matd;
+	typedef matrix<int> mati;
 }
 #endif// ATTA_MATH_MATRIX_H

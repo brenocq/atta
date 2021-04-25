@@ -28,6 +28,20 @@ namespace atta
 	}
 
 	template <typename T>
+	template <typename U>
+	matrix<T>::matrix(const matrix<U>& m):
+		nrows(m.nrows), ncols(m.ncols)
+	{
+		rows = std::vector<atta::vector<T>>(nrows);
+		for(int i=0;i<nrows;i++)
+			rows[i] = atta::vector<T>(ncols);
+
+		for(int i=0;i<nrows;i++)
+			for(int j=0;j<ncols;j++)
+				rows[i][j] = m.rows.at(i).at(j);
+	}
+
+	template <typename T>
 	matrix<T>::~matrix()
 	{
 	}
@@ -103,6 +117,21 @@ namespace atta
 		nrows = res.nrows;
 		ncols = res.ncols;
 		rows = res.rows;
+	}
+
+	template <typename T>
+	template <typename U>
+	vector<U> matrix<T>::operator*(const vector<U>& v)
+	{
+		vector<U> res(nrows);
+		for(int i=0;i<nrows;i++)
+		{
+			U sum = 0;
+			for(int j=0;j<ncols;j++)
+				sum += rows[i][j]*v.at(j);
+			res[i] = sum;
+		}
+		return res;
 	}
 
 	template <typename T>
