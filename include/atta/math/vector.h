@@ -269,6 +269,10 @@ namespace atta
         	vector3(): x(0), y(0), z(0) {};
         	vector3(T _x, T _y, T _z): x(_x), y(_y), z(_z) {};
         	vector3(vector4<T> vector): x(vector.x), y(vector.y), z(vector.z) {};
+			template <typename U>
+        	vector3(vector2<U> v, T _z): x(v.x), y(v.y), z(_z) {};
+			template <typename U>
+        	vector3(T _x, vector2<U> v): x(_x), y(v.x), z(v.y) {};
 
 			T operator[](unsigned i) const
 			{
@@ -524,6 +528,24 @@ namespace atta
 
         	vector2(): x(0), y(0) {};
         	vector2(T _x, T _y): x(_x), y(_y) {};
+			template <typename U>
+        	vector2(vector3<U> v): x(v.x), y(v.y) {};
+
+			template <typename U>
+			void operator=(vector2<U> v)
+			{
+				x = v.x;
+				y = v.y;
+			}
+
+			template <typename U>
+			operator vector2<U>()
+			{
+				vector2<U> u;
+				u.x = (U)x;
+				u.y = (U)y;
+				return u;
+			}
 
 			T operator[](unsigned i) const
 			{
@@ -727,7 +749,9 @@ namespace atta
 
 			T& operator[](size_t i);
 			T at(size_t i) const;
-			void operator=(std::vector<T> d);
+
+			template <typename U>
+			void operator=(std::vector<U> d);
 
 			// Basic operations
 			// +
