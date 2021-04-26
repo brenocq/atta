@@ -51,7 +51,8 @@ namespace atta
 	}
 
 	template <typename T>
-	void vector<T>::operator=(std::vector<T> d)
+	template <typename U>
+	void vector<T>::operator=(std::vector<U> d)
 	{
 		data = d;
 	}

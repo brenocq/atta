@@ -72,6 +72,9 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 	#---------- Install library and package ----------#
 	set(attacore_SRCS
 		# algorithms/
+			# imgProc/
+			"src/atta/algorithms/imgProc/fundamentalMatrix.cpp"
+			"src/atta/algorithms/imgProc/homography.cpp"
 			# linAlg/
 				# elimination/
 				"src/atta/algorithms/linAlg/elimination/gaussianElimination.cpp"
@@ -261,6 +264,9 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 
 	set(attacore_HEADERS
 		# algorithms/
+			# imgProc/
+			"include/atta/algorithms/imgProc/fundamentalMatrix.h"
+			"include/atta/algorithms/imgProc/homography.h"
 			# linAlg/
 				# elimination/
 				"include/atta/algorithms/linAlg/elimination/gaussianElimination.h"

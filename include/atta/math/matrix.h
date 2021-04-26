@@ -208,7 +208,11 @@ namespace atta
     class mat3
     {
     public:
-        float data[9];
+		union
+		{
+        	float data[9];
+        	float mat[3][3];
+		};
 
         mat3();
         mat3(float diag);
