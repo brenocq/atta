@@ -16,6 +16,7 @@ namespace atta::imgproc
 			Homography();
 
 			void solveDLT(std::vector<std::pair<vec2i, vec2i>> points);
+			void solveRANSAC(std::vector<std::pair<vec2i, vec2i>> points, size_t width, size_t height);
 
 		private: 
 	};
