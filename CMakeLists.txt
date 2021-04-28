@@ -72,6 +72,8 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 	#---------- Install library and package ----------#
 	set(attacore_SRCS
 		# algorithms/
+			# cv/
+			"src/atta/algorithms/cv/bundleAdjustment/bundleAdjustment.cpp"
 			# imgProc/
 			"src/atta/algorithms/imgProc/fundamentalMatrix.cpp"
 			"src/atta/algorithms/imgProc/homography.cpp"
@@ -264,6 +266,8 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 
 	set(attacore_HEADERS
 		# algorithms/
+			# cv/
+			"include/atta/algorithms/cv/bundleAdjustment/bundleAdjustment.h"
 			# imgProc/
 			"include/atta/algorithms/imgProc/fundamentalMatrix.h"
 			"include/atta/algorithms/imgProc/homography.h"

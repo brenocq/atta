@@ -15,8 +15,8 @@ namespace atta::linalg
 		// Info:
 		// 	Solving Ax = b with x and b being matrices (A1x1 = b1, A2x2 = b2, A3x3 = b3, ...)
 		// 	Performing row and column operations:
-		// 		(R2R1R0A)x = R2R1R0b -> Ix = R2R1R0b
-		// 		(AC2C1C0)Ci2Ci1Ci0x = b -> Ix = C0C1C2b
+		// 		(R2R1R0A)x = R2R1R0b -> Ix = R2R1R0b (row operations)
+		// 		(AC2C1C0)Ci2Ci1Ci0x = b -> Ix = C0C1C2b (column operations)
 		// 		So, we perform row and column operations on A until A turns to I
 		// 		When we perform row operations on A, we perform the same row operations no I
 		// 		When we perform column operations on A, we perform the same column operations no I *in reverse order*

@@ -155,7 +155,7 @@ namespace atta::imgproc
 
 		if(tileIndexes.size()<4)
 		{
-			Log::warning("Homography", "Could not distribute points in at least four tiles");
+			//Log::warning("Homography", "Could not distribute points in at least four tiles");
 			return;
 		}
 
@@ -243,7 +243,7 @@ namespace atta::imgproc
 			}
 		}
 
-		Log::debug("Homogrpahy", "N: $0 ($1/$2)", N, bestNumInliers, points.size());
+		//Log::debug("Homogrpahy", "N: $0 ($1/$2)", N, bestNumInliers, points.size());
 		//---------- Second stage (Refines homography with inliers) ----------//
 	
 		
