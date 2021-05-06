@@ -17,7 +17,7 @@ namespace atta
 	class GuiRenderPass
 	{
 		public:
-			GuiRenderPass(std::shared_ptr<vk::Device> device, VkFormat colorFormat);
+			GuiRenderPass(std::shared_ptr<vk::Device> device, VkFormat colorFormat, VkFormat depthFormat);
 			~GuiRenderPass();
 
 			VkRenderPass handle() const { return _renderPass; }
@@ -27,6 +27,7 @@ namespace atta
 			VkRenderPass _renderPass;
 			std::shared_ptr<vk::Device> _device;
 			VkFormat _colorFormat;
+			VkFormat _depthFormat;
 	};
 }
 

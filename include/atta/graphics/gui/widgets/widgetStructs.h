@@ -135,10 +135,10 @@ namespace guib
 		float bottomLeft = 0.0f;
 		float bottomRight = 0.0f;
 		float topRight = 0.0f;
-		Unit unitTL = UNIT_PERCENT;
-		Unit unitBL = UNIT_PERCENT;
-		Unit unitBR = UNIT_PERCENT;
-		Unit unitTR = UNIT_PERCENT;
+		Unit unitTL = UNIT_PIXEL;
+		Unit unitBL = UNIT_PIXEL;
+		Unit unitBR = UNIT_PIXEL;
+		Unit unitTR = UNIT_PIXEL;
 
 		std::string toString()
 		{

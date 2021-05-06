@@ -46,11 +46,22 @@ namespace guib
 	{
 		_commandBuffer = commandBuffer;// Widgets access this commandBuffer when necessary (box, text, ...)
 
+		// Render from root
 		if(_root!=nullptr)
 			_root->render();
 
+		// Render each window
 		for(auto& window : _windows)
 			window->render();
+
+		// Render focused widget (menus, popups, ...)
+		if(state::focusedWidget != nullptr)
+		{
+			float buttonRenderDepth = state::renderDepth;
+			state::renderDepth = 0.1;// Focus render depth
+			state::focusedWidget->render();
+			state::renderDepth = buttonRenderDepth;
+		}
 	}
 
 	//----------------------------------------//

@@ -21,14 +21,15 @@ namespace guib {
 	};
 
 	struct MenuButtonInfo {
-		std::string name = "MenuButton";
+		std::string text = "";
+		std::string image = "";
+		Color imageColor = {1,1,1,1};
 		Color color = {.3,.3,.3,1};
 		Color hoverColor = {.35,.35,.35,1};
 		Color clickColor = {.4,.4,.4,1};
-		BoxRadius radius = {.0,.0,.0,.0};
+		BoxRadius radius = {.4,.4,.4,.4};
 
 		MenuButtonOpen open = MENU_BUTTON_OPEN_BOTTOM;
-		Size buttonSize = {100, 1, UNIT_PIXEL};
 		Size menuSize = {.2, .3};
 		std::vector<Widget*> children;
 	};
@@ -38,6 +39,8 @@ namespace guib {
 		public:
 			MenuButton(MenuButtonInfo info);
 
+			void preProcessSizeOffset() override;
+
 		private:
 			// MenuButton parameters
 			Color _color;
@@ -45,7 +48,7 @@ namespace guib {
 			Color _clickColor;
 			BoxRadius _radius;
 
-			Box* _boxChild;
+			Box* _menu;
 	};
 }
 

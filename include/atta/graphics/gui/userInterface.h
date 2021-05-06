@@ -51,6 +51,7 @@ namespace atta
 
 		private:
 			void createWidgetTree();
+			void createTextures();
 
 			std::shared_ptr<vk::Device> _device;
 			std::shared_ptr<Window> _window;

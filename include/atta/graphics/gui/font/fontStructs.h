@@ -36,13 +36,13 @@ namespace guib {
 	struct GlyphInfo
 	{
 		// Info about each glyph stored in the atlas [0,1]
-		float width=0;
-		float height=0;
-		float x=0;
-		float y=0;
-		float left=0;
-		float top=0;
-		float advance=0;
+		unsigned width=0;
+		unsigned height=0;
+		unsigned x=0;
+		unsigned y=0;
+		unsigned left=0;
+		unsigned top=0;
+		unsigned advance=0;
 	};
 
 

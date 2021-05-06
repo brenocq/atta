@@ -7,7 +7,9 @@
 #ifndef GUI_STATE_H
 #define GUI_STATE_H
 #include <vector>
+#include <map>
 #include <atta/graphics/gui/widgets/widgetStructs.h>
+#include <atta/graphics/vulkan/texture.h>
 
 namespace guib
 {
@@ -24,6 +26,7 @@ namespace guib
 	class FontLoader;
 	class GuiRender;
 	class Draggable;
+	class Widget;
 
 	namespace state
 	{
@@ -33,6 +36,10 @@ namespace guib
 		//---------- GuiB window/viewport handling ----------//
 		extern guib::Offset cursorPos;
 		extern CursorType cursorType;
+
+		//---------- GuiB current drawing state ----------//
+		extern float renderDepth;
+		extern guib::Widget* focusedWidget;// Last one to render to apply right transparency 
 
 		//---------- GuiB special widget handler ----------//
 		// Handling ClickDetector
@@ -46,6 +53,13 @@ namespace guib
 
 		//---------- GuiB font render ----------//
 		extern guib::FontLoader* fontLoader;
+
+		//---------- Palette ----------//
+		extern std::map<std::string, guib::Color> palette;
+
+		//---------- Textures ----------//
+		extern std::map<std::string, unsigned> textureIndex;
+		extern std::vector<atta::vk::Texture*> textures;
 	}
 }
 

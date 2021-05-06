@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/gui/userInterface.h>
+#include <atta/graphics/gui/guiState.h>
 #include <atta/helpers/log.h>
 
 namespace atta
@@ -32,7 +33,7 @@ namespace atta
 		// Load font to texture
 		_fontLoader = std::make_shared<guib::FontLoader>(_device, _guiCommandPool, "/usr/include/atta/assets/fonts/Roboto/Roboto-Light.ttf");
 
-
+		createTextures();
 		_guiPipeline = std::make_shared<GuiPipeline>(_device, _window, _swapChain, _guiUniformBuffer, _fontLoader);
 		_guiRender = std::make_shared<guib::GuiRender>(
 				(VkExtent2D){_window->getWidth(),_window->getHeight()}, 
@@ -45,6 +46,7 @@ namespace atta
 
 	UserInterface::~UserInterface()
 	{
+		// TODO release textures
 	}
 
 	void UserInterface::createWidgetTree()
@@ -52,11 +54,37 @@ namespace atta
 		_rootWidget = 
 			new guib::TopBar(
 			{
-				.color = {.125,.125,.125,1},
+				.color = guib::state::palette["background"],
 				.buttons = {
+					new guib::Box((guib::BoxInfo){.color = guib::state::palette["background"], .size = {5, 1, guib::UNIT_PIXEL}}),
 					new guib::MenuButton(
 					(guib::MenuButtonInfo){
-						.name = "Config"
+						.image = "logo16",
+						.imageColor = guib::state::palette["main"],
+						.color = guib::state::palette["background"],
+						.hoverColor = guib::state::palette["light"],
+						.clickColor = guib::state::palette["lightLight"],
+					}),
+					new guib::MenuButton(
+					(guib::MenuButtonInfo){
+						.text = "Rendering",
+						.color = guib::state::palette["background"],
+						.hoverColor = guib::state::palette["light"],
+						.clickColor = guib::state::palette["lightLight"],
+					}),
+					new guib::MenuButton(
+					(guib::MenuButtonInfo){
+						.text = "Physics",
+						.color = guib::state::palette["background"],
+						.hoverColor = guib::state::palette["light"],
+						.clickColor = guib::state::palette["lightLight"],
+					}),
+					new guib::MenuButton(
+					(guib::MenuButtonInfo){
+						.text = "Help",
+						.color = guib::state::palette["background"],
+						.hoverColor = guib::state::palette["light"],
+						.clickColor = guib::state::palette["lightLight"],
 					})
 				}
 			}); 
@@ -75,7 +103,7 @@ namespace atta
 						{
 							.color = {1,1,1,1},
 							.text = object->getName(),
-							.textSize = 14
+							.textSize = 10
 						})
 					})
 				})
@@ -89,7 +117,7 @@ namespace atta
 				.closable = false,
 				.minimizable = true,
 				.movable = false,
-				.offset = {0, 20, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+				.offset = {0, 28, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
 				.size = {200, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
 				.child = new guib::Column(
 					{
@@ -107,7 +135,7 @@ namespace atta
 				.closable = true,
 				.minimizable = true,
 				.movable = true,
-				.offset = {0.8, 20, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+				.offset = {0.8, 28, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 				.size = {.2, 200, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 				/*.child = new guib::Box(
 					{
@@ -119,6 +147,20 @@ namespace atta
 
 		_guiRender->setRootWidget(_rootWidget);
 		_guiRender->setWindowWidgets(_windows);
+	}
+
+	void UserInterface::createTextures()
+	{
+		std::vector<std::pair<std::string, std::string>> logos = {
+			{"logo16", "/usr/include/atta/assets/icons/logo16.png"},
+			{"logo50", "/usr/include/atta/assets/icons/logo50.png"},
+		};
+
+		for(auto logo : logos)
+		{
+			guib::state::textureIndex[logo.first] = guib::state::textures.size();
+			guib::state::textures.push_back(new atta::vk::Texture(_device, _guiCommandPool, logo.second));
+		}
 	}
 
 	void UserInterface::render(int imageIndex)

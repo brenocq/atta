@@ -5,8 +5,10 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/gui/widgets/menuButton.h>
-#include <atta/graphics/gui/widgets/button.h>
-#include <atta/graphics/gui/widgets/text.h>
+#include <atta/graphics/gui/widgets/buttonText.h>
+#include <atta/graphics/gui/widgets/buttonImage.h>
+#include <atta/graphics/gui/widgets/column.h>
+#include <atta/graphics/gui/guiState.h>
 
 namespace guib
 {
@@ -17,24 +19,60 @@ namespace guib
 	{
 		Widget::setType("MenuButton");
 
-		Widget::setChild(new Button(
-			{
-				.color = info.color,
-				.hoverColor = {.35,.35,.35,1},
-				.clickColor = {.4,.4,.4,1},
-				.onClick = [&](){
+		Color menuColor = state::palette["background"];
+		menuColor.a = 0.8;
+		_menu = new Box(
+					(BoxInfo){
+						.color = menuColor,
+						.offset = {0, 0, UNIT_PIXEL, UNIT_PIXEL},
+						.size = {1000, 100, UNIT_PIXEL, UNIT_PIXEL}
+					});
 
-				},
-				.radius = {.0,.0,.0,.0},
-				.size = info.buttonSize,
-				.child = new Text(
+		Widget* button=nullptr;
+
+		if(info.text!="")
+		{
+			button = new ButtonText(
 				{
-					.color = {0.8, 0.8, 0.8, 1.0},
-					.text = info.name,
-					.textSize = 14
-				})
-			})
-		);
+					.text = info.text,
+					.color = info.color,
+					.hoverColor = info.hoverColor,
+					.clickColor = info.clickColor,
+					.onClick = [&](){
+						if(state::focusedWidget == (Widget*)_menu)
+							state::focusedWidget = nullptr;
+						else
+							state::focusedWidget = (Widget*)_menu;
+					},
+					.radius = info.radius,
+				});
+		}
+		else if(info.image != "")
+		{
+			button = new ButtonImage(
+				{
+					.image = info.image,
+					.imageColor = info.imageColor,
+					.color = info.color,
+					.hoverColor = info.hoverColor,
+					.clickColor = info.clickColor,
+					.onClick = [&](){
+						if(state::focusedWidget == (Widget*)_menu)
+							state::focusedWidget = nullptr;
+						else
+							state::focusedWidget = (Widget*)_menu;
+					},
+					.radius = info.radius,
+				});
+		}
+
+		Widget::setChild(button);
+	}
+
+	void MenuButton::preProcessSizeOffset()
+	{
+		Widget::wrapChild();
+		_menu->preProcessSizeOffset();// Solve menu size -> convert from pixel to screen coordinate system
 	}
 }
 

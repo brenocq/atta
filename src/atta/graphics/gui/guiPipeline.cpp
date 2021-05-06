@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/graphics/gui/guiPipeline.h>
 #include <atta/graphics/gui/guiVertex.h>
+#include <atta/graphics/gui/guiState.h>
 #include <atta/helpers/log.h>
 
 namespace atta
@@ -23,13 +24,18 @@ namespace atta
 		_imageFormat = swapChain->getImageFormat();
 		_imageExtent = swapChain->getImageExtent();
 
+		//---------- Depth buffers ----------//
+		_depthBuffers.resize(_imageViews.size());
+		for(size_t i=0; i<_depthBuffers.size(); i++)
+			_depthBuffers[i] = std::make_shared<vk::DepthBuffer>(_device, _imageExtent);
+
 		//---------- Render pass ----------//
-		_renderPass = std::make_shared<GuiRenderPass>(_device, _imageFormat);
+		_renderPass = std::make_shared<GuiRenderPass>(_device, _imageFormat, _depthBuffers[0]->getFormat());
 
 		//---------- FrameBuffers ----------//
 		_frameBuffers.resize(_imageViews.size());
 		for(int i = 0; i < (int)_frameBuffers.size(); i++)
-			_frameBuffers[i] = std::make_shared<GuiFrameBuffer>(_device, _imageViews[i], _renderPass, _imageExtent);
+			_frameBuffers[i] = std::make_shared<GuiFrameBuffer>(_device, _imageViews[i], _depthBuffers[i]->getImageView(), _renderPass, _imageExtent);
 
 		//---------- Shaders ----------//
 		_vertShaderModule = std::make_shared<vk::ShaderModule>(_device, "/usr/include/atta/assets/shaders/gui/guiShader.vert.spv");
@@ -139,15 +145,19 @@ namespace atta
 		// Depth stencil
 		VkPipelineDepthStencilStateCreateInfo depthStencil{};
 		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-		depthStencil.depthTestEnable = VK_FALSE;
-		depthStencil.depthWriteEnable = VK_FALSE;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.minDepthBounds = 0.0f; // Optional
+		depthStencil.maxDepthBounds = 1.0f; // Optional
 		depthStencil.stencilTestEnable = VK_FALSE;
 		
 		//---------- Descriptors ----------//
 		std::vector<DescriptorBinding> descriptorBindings =
 		{
 			{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT|VK_SHADER_STAGE_FRAGMENT_BIT},
-			{1, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
+			{1, static_cast<uint32_t>(guib::state::textures.size()+1), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT}
 		};
 
 		_descriptorSetManager = std::make_shared<vk::DescriptorSetManager>(_device, descriptorBindings, 1);
@@ -160,12 +170,19 @@ namespace atta
 
 		//---------- Bind descriptor sets ----------//
 		// Image and texture samplers (font)
-		std::vector<VkDescriptorImageInfo> imageInfos(1);
+		std::vector<VkDescriptorImageInfo> imageInfos(1+guib::state::textures.size());
 
-		auto& imageInfo = imageInfos[0];
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = _fontLoader->getTexture()->getImageView()->handle();
-		imageInfo.sampler = _fontLoader->getTexture()->getSampler()->handle();
+		// Load font texture
+		imageInfos[0].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfos[0].imageView = _fontLoader->getTexture()->getImageView()->handle();
+		imageInfos[0].sampler = _fontLoader->getTexture()->getSampler()->handle();
+		// Font state textures (icons, use images, ...)
+		for(size_t i=1;i<imageInfos.size(); i++)
+		{
+			imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfos[i].imageView = guib::state::textures[i-1]->getImageView()->handle();
+			imageInfos[i].sampler = guib::state::textures[i-1]->getSampler()->handle();
+		}
 
 		const std::vector<VkWriteDescriptorSet> descriptorWrites =
 		{
@@ -216,8 +233,9 @@ namespace atta
 
 	void GuiPipeline::beginRender(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		std::array<VkClearValue, 1> clearValues{};
+		std::array<VkClearValue, 2> clearValues{};
 		clearValues[0].color = {0.0f, 0.0f, 0.0f, 0.0f};
+		clearValues[1].depthStencil = {1.0f, 0};
 
 		VkRenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

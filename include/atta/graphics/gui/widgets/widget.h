@@ -45,13 +45,13 @@ namespace guib {
 			Offset& getOffset() { return _offset; }
 
 			virtual void parentAsksSizeOffset(Size &size, Offset &offset);
+			virtual void preProcessSizeOffset();
 
 		protected:
 			void setType(std::string type) { _type=type; }
 			Widget** getChildPtr() { return &_child; }
 			void getParentSizeOffset(Size &pSize, Offset &pOffset);
 
-			virtual void preProcessSizeOffset();
 			virtual void preProcess();
 			virtual void startPreProcess();
 			virtual void endPreProcess();

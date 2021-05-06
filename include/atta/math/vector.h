@@ -34,6 +34,9 @@ namespace atta
         	vector4(T _x, T _y, T _z, T _w): x(_x), y(_y), z(_z), w(_w) {};
 			vector4(vector3<T> vector, T _w): x(vector.x), y(vector.y), z(vector.z), w(_w) {};
 			vector4(T _x, vector3<T> vector): x(_x), y(vector.x), z(vector.y), w(vector.z) {};
+			vector4(vector2<T> vector, T _z, T _w): x(vector.x), y(vector.y), z(_z), w(_w) {};
+			vector4(T _x, vector2<T> vector, T _w): x(_x), y(vector.x), z(vector.y), w(_w) {};
+			vector4(T _x, T _y, vector2<T> vector): x(_x), y(_y), z(vector.x), w(vector.y) {};
 
 			T operator[](unsigned i) const
 			{
