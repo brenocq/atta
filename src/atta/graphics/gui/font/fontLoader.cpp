@@ -10,7 +10,7 @@
 
 namespace guib {
 	FontLoader::FontLoader(std::shared_ptr<atta::vk::Device> device, std::shared_ptr<atta::vk::CommandPool> commandPool, std::string filename):
-		_filename(filename), _baseHeight(18),
+		_filename(filename), _baseHeight(13),
 		_device(device), _commandPool(commandPool)
 	{
 		FT_Error error;
@@ -49,9 +49,8 @@ namespace guib {
 		}
 
 		// Create font texture
-		_fontTexture.atlas.width = 1024;
-		_fontTexture.atlas.height = 1024;
-		_fontTexture.padding = 5;
+		_fontTexture.atlas.width = 1024; _fontTexture.atlas.height = 1024;
+		_fontTexture.padding = 10;
 
 		// Allocate font texture buffer
 		unsigned size = _fontTexture.atlas.width*_fontTexture.atlas.height;
@@ -137,19 +136,19 @@ namespace guib {
 
 			// Save glyph info
 			_fontTexture.glyphsInfo[i] = {
-				.width = (float)bitmap.width,
-				.height = (float)bitmap.rows,
-				.x =	(float)currX,
-				.y =	(float)currY,
-				.left =	(float)glyphLeft,
-				.top =	(float)glyphTop,
-				.advance = (float)(glyphAdvance>>6),
+				.width = bitmap.width,
+				.height = bitmap.rows,
+				.x =	currX,
+				.y =	currY,
+				.left =	glyphLeft,
+				.top =	glyphTop,
+				.advance = (glyphAdvance>>6),
 			};
-			//Log::debug("FontLoader", "Letter: $0 wh($1,$2), xy($3,$4) lt($5,$6) ad $7", char(i), 
-			//		_fontTexture.glyphsInfo[i].width, _fontTexture.glyphsInfo[i].height, 
-			//		_fontTexture.glyphsInfo[i].x, _fontTexture.glyphsInfo[i].y, 
-			//		_fontTexture.glyphsInfo[i].left, _fontTexture.glyphsInfo[i].top, 
-			//		_fontTexture.glyphsInfo[i].advance);
+			Log::debug("FontLoader", "Letter: $0 wh($1,$2), xy($3,$4) lt($5,$6) ad $7", char(i), 
+					_fontTexture.glyphsInfo[i].width, _fontTexture.glyphsInfo[i].height, 
+					_fontTexture.glyphsInfo[i].x, _fontTexture.glyphsInfo[i].y, 
+					_fontTexture.glyphsInfo[i].left, _fontTexture.glyphsInfo[i].top, 
+					_fontTexture.glyphsInfo[i].advance);
 
 			// Move currX currY
 			currX += bitmap.width+_fontTexture.padding;
@@ -166,21 +165,22 @@ namespace guib {
 
 			unsigned w = _fontTexture.atlas.width;
 			unsigned h = _fontTexture.atlas.height;
-    		unsigned char *ptr = _fontTexture.atlas.data+int(gInfo.x*w)+int(gInfo.y*h*w);
-			for(int i=0; i<gInfo.height*h; i++)
+    		unsigned char *ptr = _fontTexture.atlas.data+int(gInfo.x)+int(gInfo.y*w);
+			for(int i=0; i<gInfo.height; i++)
 			{
-				for(int j=0; j<gInfo.width*w;j++)
+				for(int j=0; j<gInfo.width;j++)
 				{
 					char c = 'o';
 					if(ptr[j]==0)
 						c = ' ';
-					else if(ptr[j]<=200)
+					else if(ptr[j]<=127)
 						c = '*';
 					std::cout << c;
 				}
 				ptr+=w;
 				std::cout << std::endl;
 			}
+			std::cout << std::endl;
 		}
 	}
 }

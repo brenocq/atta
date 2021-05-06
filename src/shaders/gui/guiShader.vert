@@ -21,10 +21,10 @@ vec2 positions[6] = vec2[](
 
 void main() 
 {
-	vec2 objPos = objectInfo.position*2-vec2(1.0,1.0);// [0,1] to [-1,1] (top left position)
+	vec2 objPos = objectInfo.position.xy*2-vec2(1.0,1.0);// [0,1] to [-1,1] (top left position)
 	vec2 objSize = objectInfo.size*2;// width from 1 to 2
 	vec2 rectCorner = objPos+positions[gl_VertexIndex]*objSize;
-    gl_Position = vec4(rectCorner,0,1);
+    gl_Position = vec4(rectCorner,objectInfo.position.z,1);
 
     outFragColor = objectInfo.color;
     outFragPos = rectCorner;
@@ -32,5 +32,5 @@ void main()
 	if(objectInfo.isLetter == 1)
     	outTexCoord = objectInfo.offsetLetter+positions[gl_VertexIndex]*objectInfo.sizeLetter;
 	else
-		outTexCoord = vec2(-1,-1);
+    	outTexCoord = positions[gl_VertexIndex];
 }

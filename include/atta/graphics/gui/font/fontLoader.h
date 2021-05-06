@@ -27,6 +27,7 @@ namespace guib {
 			std::shared_ptr<atta::vk::Texture> getTexture() const { return _texture; }
 			FontTexture getFontTexture() const { return _fontTexture; }
 			int getBaseHeight() const { return _baseHeight; }
+
 		private:
 			void loadGlyphs();
 			void testFontTerminal(std::string text);

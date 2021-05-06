@@ -1,10 +1,10 @@
 //--------------------------------------------------
 // GuiB
-// box.cpp
-// Date: 2020-11-28
+// image.cpp
+// Date: 2021-05-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/gui/widgets/box.h>
+#include <atta/graphics/gui/widgets/image.h>
 #include <atta/graphics/gui/guiStructs.h>
 #include <atta/graphics/gui/guiState.h>
 #include <atta/graphics/gui/guiRender.h>
@@ -14,13 +14,13 @@
 
 namespace guib
 {
-	Box::Box(BoxInfo boxInfo):
-		Widget({.offset=boxInfo.offset, .size=boxInfo.size, .child=boxInfo.child}), _color(boxInfo.color), _radius(boxInfo.radius)
+	Image::Image(ImageInfo info):
+		Widget({.offset=info.offset, .size=info.size, .child=info.child}), _color(info.color), _radius(info.radius), _name(info.name)
 	{
-		Widget::setType("Box");
+		Widget::setType("Image");
 	}
 
-	void Box::render()
+	void Image::render()
 	{
 		guib::Color color = getColor();
 
@@ -29,13 +29,13 @@ namespace guib
 		objectInfo.size = atta::vec2(_size.width, _size.height);
 		objectInfo.color = atta::vec4(color.r, color.g, color.b, color.a);
 		objectInfo.isLetter = 0;
-		objectInfo.textureIndex = -1;
+		objectInfo.textureIndex = _name!="" ? state::textureIndex[_name]+1 : -1;
 
 		// Calculate radius
 		float minSize = std::min(_size.height, _size.width);
 		objectInfo.radius = _radius.topLeft*minSize/2.0f;
 
-		//Log::debug("Box", "Render [w]$0[] with [w]$1 []--[w] $2 and radius:$3", _type, _size.toString(), _offset.toString(), objectInfo.radius);
+		//Log::debug("Image", "Render texture [w]$0[] with [w]$1 []--[w] $2 and radius:$3", _name, _size.toString(), _offset.toString(), objectInfo.radius);
 
 		vkCmdPushConstants(
 				state::guiRender->getCommandBuffer(),

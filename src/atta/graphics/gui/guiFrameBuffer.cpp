@@ -12,20 +12,22 @@ namespace atta
 	GuiFrameBuffer::GuiFrameBuffer(
 			std::shared_ptr<vk::Device> device, 
 			std::shared_ptr<vk::ImageView> imageView, 
+			std::shared_ptr<vk::ImageView> depthImageView, 
 			std::shared_ptr<GuiRenderPass> guiRenderPass, 
 			VkExtent2D imageExtent):
 		_device(device),
 		_imageView(imageView),
+		_depthImageView(depthImageView),
 		_guiRenderPass(guiRenderPass),
 		_imageExtent(imageExtent)
 	{
 
-		VkImageView attachment[1] = {_imageView->handle()};
+		std::array<VkImageView, 2> attachments = {_imageView->handle(), _depthImageView->handle()};
 		VkFramebufferCreateInfo framebufferInfo = {};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = _guiRenderPass->handle();
-		framebufferInfo.attachmentCount = 1;
-		framebufferInfo.pAttachments = attachment;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferInfo.pAttachments = attachments.data();
 		framebufferInfo.width = _imageExtent.width;
 		framebufferInfo.height = _imageExtent.height;
 		framebufferInfo.layers = 1;

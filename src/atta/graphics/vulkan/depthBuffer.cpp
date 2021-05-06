@@ -24,7 +24,7 @@ namespace atta::vk
 				, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 				1, _device->getMsaaSamples());
-		_imageView = new ImageView(_device, _image->handle(), _format, VK_IMAGE_ASPECT_DEPTH_BIT | (_stencilAvailable?VK_IMAGE_ASPECT_STENCIL_BIT:0));
+		_imageView = std::make_shared<ImageView>(_device, _image->handle(), _format, VK_IMAGE_ASPECT_DEPTH_BIT | (_stencilAvailable?VK_IMAGE_ASPECT_STENCIL_BIT:0));
 	}
 
 	DepthBuffer::~DepthBuffer()
@@ -33,12 +33,6 @@ namespace atta::vk
 		{
 			delete _image;
 			_image = nullptr;
-		}
-
-		if(_imageView != nullptr)
-		{
-			delete _imageView;
-			_imageView = nullptr;
 		}
 	}
 

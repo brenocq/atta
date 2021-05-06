@@ -14,7 +14,8 @@ namespace guib {
 	struct TextInfo {
 		Color color = {1,1,1,1};
 		std::string text = "text";
-		int textSize = 16;
+		int textSize = 13;
+		Offset offset = {0,0};
 	};
 
 	class Text : public Widget
@@ -22,7 +23,7 @@ namespace guib {
 		public:
 			Text(TextInfo info);
 
-			void preProcessSizeOffset() override;
+			//void preProcessSizeOffset() override;
 			void render() override;
 
 			//---------- Getters and Setters ----------//
@@ -32,6 +33,8 @@ namespace guib {
 			int getTextSize() const { return _textSize; }
 
 		private:
+			Size calculateTextSize(std::string text, unsigned textSize);
+
 			Color _color;
 			std::string _text;
 			int _textSize;

@@ -6,11 +6,12 @@ struct GuiUniformBufferObject
 
 struct GuiObjectInfo
 {
-	vec2 position;
+	vec4 position;
 	vec2 size;
 	vec4 color;
 	float radius;
 	int isLetter;
+	int textureIndex;
 	vec2 offsetLetter;
 	vec2 sizeLetter;
 };

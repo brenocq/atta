@@ -1,28 +1,29 @@
 //--------------------------------------------------
 // GuiB
-// box.h
-// Date: 2020-11-28
+// image.h
+// Date: 2021-05-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef GUIB_BOX_H
-#define GUIB_BOX_H
+#ifndef GUIB_IMAGE_H
+#define GUIB_IMAGE_H
 
 #include <atta/graphics/gui/widgets/widget.h>
 #include <atta/graphics/gui/widgets/widgetStructs.h>
 
 namespace guib {
-	struct BoxInfo {
-		Color color = {.3,.3,.3,1};
+	struct ImageInfo {
+		std::string name = "";
+		Color color = {1,1,1,1};
 		BoxRadius radius = {.0,.0,.0,.0};
-		Offset offset = {0,0};
 		Size size = {1,1};
+		Offset offset = {0,0};
 		Widget* child = nullptr;
 	};
 
-	class Box : public Widget
+	class Image : public Widget
 	{
 		public:
-			Box(BoxInfo boxInfo);
+			Image(ImageInfo info);
 
 			void render() override;
 
@@ -34,7 +35,8 @@ namespace guib {
 		private:
 			Color _color;
 			BoxRadius _radius;
+			std::string _name;
 	};
 }
 
-#endif// GUIB_BOX_H
+#endif// GUIB_IMAGE_H
