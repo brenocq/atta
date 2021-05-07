@@ -113,4 +113,11 @@ namespace atta::vk
 
 		vkFreeCommandBuffers(_device->handle(), _commandPool, 1, &commandBuffer);
 	}
+
+	void CommandPool::waitCompletion()
+	{
+		// Useful to call before starting to destroy objects to avoid trying to destroy some
+		// object that is in use by a command buffer
+		vkQueueWaitIdle(_submitQueue);
+	}
 }

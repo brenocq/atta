@@ -28,7 +28,7 @@ namespace atta
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		//----- Create Window -----//
-		_window = glfwCreateWindow(_width, _height, "Atta Robot Simulator - by Brenocq", nullptr, nullptr);
+		_window = glfwCreateWindow(_width, _height, "Atta - by Brenocq", nullptr, nullptr);
 		glfwSetWindowUserPointer(_window, this);
 		glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
 
@@ -84,15 +84,6 @@ namespace atta
 		return {(uint32_t)_width, (uint32_t)_height}; 
 	} 
 
-	void Window::framebufferResizeCallback(GLFWwindow* window, int width, int height)
-	{
-		Window* win = (Window*) glfwGetWindowUserPointer(window);
-		if(win->windowResized)
-		{
-			win->windowResized();
-		}
-	}
-
 	void Window::waitIfMinimized()
 	{
 		// Wait until window isnt minimized
@@ -123,9 +114,26 @@ namespace atta
 			glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
+	void Window::setWindowSize(int w, int h)
+	{
+		_width = w;
+		_height = h;
+		Window::ratio = float(_width)/_height;
+	}
+
 	//------------------------------//
 	//--------- Callbacks ----------//
 	//------------------------------//
+	void Window::framebufferResizeCallback(GLFWwindow* window, int width, int height)
+	{
+		Window* win = (Window*) glfwGetWindowUserPointer(window);
+		win->setWindowSize(width, height);
+		if(win->windowResized)
+		{
+			win->windowResized(width, height);
+		}
+	}
+
 	void Window::keyCallback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods)
 	{
 		//Log::debug("Window", "key -> key: [w]$0[], scancode: [w]$1[], action: [w]$2[], mods: [w]$3[]", key, scancode, action, mods);

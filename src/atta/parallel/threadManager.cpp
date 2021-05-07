@@ -81,8 +81,8 @@ namespace atta
 		for(auto& w : _workersGen)
 			w->setShouldFinish(true);
 
-		for(auto& t : _threads)
-			t.join();
+		for(size_t i=0;i<_threads.size();i++)
+			_threads[i].join();
 	}
 
 
@@ -115,7 +115,7 @@ namespace atta
 
 		// Create thread from callable workerGui
 		_threads.push_back(std::thread(std::ref(*_workerGui)));
-		Log::success("ThreadManager", "Created 1 GUI worker.");
+		Log::success("ThreadManager", "Created GUI worker.");
 	}
 
 	void ThreadManager::createCoreObjects()
@@ -218,7 +218,8 @@ namespace atta
 
 			_robotStageBarrier->wait();
 
-			//_shouldFinish = true;
+			if(_workerGui->getShouldFinish())
+				_shouldFinish = true;
 		}
 	}
 }

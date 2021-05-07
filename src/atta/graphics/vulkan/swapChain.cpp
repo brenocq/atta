@@ -212,10 +212,7 @@ namespace atta::vk
 	void SwapChain::createImageViews()
 	{
 		_imageViews.resize(_images.size());
-
-		for(size_t i = 0; i < _imageViews.size(); i++) 
-		{
+		for(size_t i=0; i<_imageViews.size(); i++) 
 			_imageViews[i] = std::make_shared<ImageView>(_device, _images[i], _imageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
-		}
 	}
 }

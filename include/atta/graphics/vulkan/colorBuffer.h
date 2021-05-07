@@ -24,14 +24,14 @@ namespace atta::vk
 
 			std::shared_ptr<Device> getDevice() const { return _device; }
 			Image* getImage() const { return _image; }
-			ImageView* getImageView() const { return _imageView; }
+			std::shared_ptr<ImageView> getImageView() const { return _imageView; }
 			VkExtent2D getExtent() const { return _extent; }
 			VkFormat getFormat() const { return _format; }
 
 		private:
 			std::shared_ptr<Device> _device;
 			Image* _image;
-			ImageView* _imageView;
+			std::shared_ptr<ImageView> _imageView;
 			VkExtent2D _extent;
 			VkFormat _format;
 	};

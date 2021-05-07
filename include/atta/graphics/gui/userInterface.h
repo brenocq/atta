@@ -44,10 +44,16 @@ namespace atta
 			void render(VkCommandBuffer commandBuffer, int imageIndex);
 
 			// Window callbacks
+			void onWindowResized(int width, int height);
 			void onKey(int key, int scancode, int action, int mods);
 			void onCursorPosition(double xpos, double ypos);
 			void onMouseButton(int button, int action, int mods);
 			void onScroll(double xoffset, double yoffset);
+
+			bool shouldClose() const { return _shouldClose; }
+
+			std::shared_ptr<GuiPipeline> getGuiPipeline() const { return _guiPipeline; };
+			std::shared_ptr<guib::GuiRender> getGuiRender() const { return _guiRender; };
 
 		private:
 			void createWidgetTree();
@@ -64,6 +70,9 @@ namespace atta
 			std::shared_ptr<GuiUniformBuffer> _guiUniformBuffer;
 			std::shared_ptr<GuiPipeline> _guiPipeline;
 			std::shared_ptr<guib::GuiRender> _guiRender;
+			
+			//---------- UI state ----------//
+			bool _shouldClose;
 
 			//---------- GuiB root ----------//
 			guib::Widget* _rootWidget;

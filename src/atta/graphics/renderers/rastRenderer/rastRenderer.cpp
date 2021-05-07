@@ -59,18 +59,18 @@ namespace atta
 				std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
 				_scene);
 
-		_maskPipeline = std::make_unique<vk::MaskPipeline>(
-				_vkCore, _renderPass,
-				_image->getExtent(), _image->getFormat(), 
-				std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
-				std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
-				_scene);
-		_outlinePipeline = std::make_unique<vk::OutlinePipeline>(
-				_vkCore, _renderPass,
-				_image->getExtent(), _image->getFormat(), 
-				std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
-				std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
-				_scene);
+		//_maskPipeline = std::make_unique<vk::MaskPipeline>(
+		//		_vkCore, _renderPass,
+		//		_image->getExtent(), _image->getFormat(), 
+		//		std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
+		//		std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
+		//		_scene);
+		//_outlinePipeline = std::make_unique<vk::OutlinePipeline>(
+		//		_vkCore, _renderPass,
+		//		_image->getExtent(), _image->getFormat(), 
+		//		std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
+		//		std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
+		//		_scene);
 		_skyboxPipeline = std::make_unique<vk::SkyboxPipeline>(
 				_vkCore, _renderPass,
 				_image->getExtent(), _image->getFormat(), 

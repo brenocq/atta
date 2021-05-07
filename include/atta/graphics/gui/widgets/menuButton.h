@@ -30,7 +30,7 @@ namespace guib {
 		BoxRadius radius = {.4,.4,.4,.4};
 
 		MenuButtonOpen open = MENU_BUTTON_OPEN_BOTTOM;
-		Size menuSize = {.2, .3};
+		Size menuSize = {200, 300, UNIT_PIXEL, UNIT_PIXEL};
 		std::vector<Widget*> children;
 	};
 
@@ -40,6 +40,7 @@ namespace guib {
 			MenuButton(MenuButtonInfo info);
 
 			void preProcessSizeOffset() override;
+			void preProcess() override;
 
 		private:
 			// MenuButton parameters
@@ -47,6 +48,7 @@ namespace guib {
 			Color _hoverColor;
 			Color _clickColor;
 			BoxRadius _radius;
+			MenuButtonOpen _menuOpenDirection;
 
 			Box* _menu;
 	};
