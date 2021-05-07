@@ -22,7 +22,7 @@ namespace atta
 	{
 		// Create window (GUI thread only)
 		_window = std::make_shared<Window>();
-		_window->windowResized = [this](){ };
+		_window->windowResized = [this](const int width, const int height){ onWindowResized(width, height); };
 		_window->onKey = [this](const int key, const int scancode, const int action, const int mods) { onKey(key, scancode, action, mods); };
 		_window->onCursorPosition = [this](const double xpos, const double ypos) { onCursorPosition(xpos, ypos); };
 		_window->onMouseButton = [this](const int button, const int action, const int mods) { onMouseButton(button, action, mods); };
@@ -69,26 +69,19 @@ namespace atta
 
 	WorkerGui::~WorkerGui()
 	{
-		//Log::info("WorkerGui", "Destroyed");
+		_commandPool->waitCompletion();
 	}
 
 	void WorkerGui::operator()()
 	{
-		//int counter = 0;
-		// 
-		while(!_window->shouldClose() && !_shouldFinish)
+		while(!_window->shouldClose() && !_shouldFinish && !_ui->shouldClose())
 		{
 			_cameraUpdated = _modelViewController->updateCamera(0.1);
 			render();
 			_window->poolEvents();
-
-			//if(counter++>20)
-			//{
-			//	_mainRendererIndex = !_mainRendererIndex;
-			//	counter=0;
-			//}
 		}
 		// Send signal to close atta simulator
+		_shouldFinish = true;
 	}
 
 
@@ -173,8 +166,6 @@ namespace atta
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphores;// Signal image rendered
 
-		_inFlightFences[_currentFrame]->reset();
-
 		for(auto texture : Texture::textureInfos())
 		{
 			if(auto vkTex = texture.vkTexture.lock())
@@ -239,11 +230,11 @@ namespace atta
 		}
 
 		//---------- Copy main renderer image ----------//
-		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+		//vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+		//	0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		vk::ImageMemoryBarrier::insert(commandBuffer, _ui->getGuiPipeline()->getColorBuffers()[imageIndex]->getImage()->handle(), subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-		//	//for(auto imageCopy : _imageCopies)
-		
 		if(_renderers.size()>0)
 		{
 			copyImageCommands(commandBuffer, imageIndex, {
@@ -253,15 +244,15 @@ namespace atta
 				});
 		}
 
-		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+		//vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+		//	0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+		vk::ImageMemoryBarrier::insert(commandBuffer, _ui->getGuiPipeline()->getColorBuffers()[imageIndex]->getImage()->handle(), subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		//---------- Render user interface on top of it----------//
+		// The ui resolve subpass change the layout to present
 		_ui->render(commandBuffer, imageIndex);
-
-		//---------- Change layout to present image ----------//
-		vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
-			0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 	}
 
 	void WorkerGui::copyImageCommands(VkCommandBuffer commandBuffer, unsigned imageIndex, ImageCopy imageCopy)
@@ -279,31 +270,37 @@ namespace atta
 
 		// Copy src image to dst image
 		VkExtent2D srcExtent = imageCopy.image->getExtent();
-		VkExtent2D dstExtent = _swapChain->getImageExtent();
-		VkImageBlit blit{};
-		blit.srcOffsets[0] = {0, 0, 0};
-		blit.srcOffsets[1] = { static_cast<int32_t>(srcExtent.width), static_cast<int32_t>(srcExtent.height), 1 };
-		blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		blit.srcSubresource.mipLevel = 0;
-		blit.srcSubresource.baseArrayLayer = 0;
-		blit.srcSubresource.layerCount = 1;
-		blit.dstOffsets[0] = {0, 0, 0};
-		blit.dstOffsets[1] = { dstExtent.width, dstExtent.height, 1 };
-		blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		blit.dstSubresource.mipLevel = 0;
-		blit.dstSubresource.baseArrayLayer = 0;
-		blit.dstSubresource.layerCount = 1;
+		VkImageCopy region;
+		region.srcOffset = {0, 0, 0};
+		//region.srcOffsets = { static_cast<int32_t>(srcExtent.width), static_cast<int32_t>(srcExtent.height), 1 };
+		region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		region.srcSubresource.mipLevel = 0;
+		region.srcSubresource.baseArrayLayer = 0;
+		region.srcSubresource.layerCount = 1;
+		region.dstOffset = {0, 0, 0};
+		//region.dstOffsets[1] = { dstExtent.width, dstExtent.height, 1 };
+		region.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		region.dstSubresource.mipLevel = 0;
+		region.dstSubresource.baseArrayLayer = 0;
+		region.dstSubresource.layerCount = 1;
+		region.extent = { srcExtent.width, srcExtent.height, 1 };
 
-		vkCmdBlitImage(commandBuffer,
+		vkCmdCopyImage(commandBuffer,
 			imageCopy.image->handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-			_swapChain->getImages()[imageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-			1, &blit,
-			VK_FILTER_LINEAR);
+			_ui->getGuiPipeline()->getColorBuffers()[imageIndex]->getImage()->handle(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			1, 
+			&region);
 	}
 
 	//------------------------------------------------------------------------------//
 	//------------------------------ Window Callbacks ------------------------------//
 	//------------------------------------------------------------------------------//
+	void WorkerGui::onWindowResized(int width, int height)
+	{
+		// TODO recreate renderers
+		_ui->onWindowResized(width, height);
+	}
+
 	void WorkerGui::onKey(int key, int scancode, int action, int mods)
 	{
 		switch(key)

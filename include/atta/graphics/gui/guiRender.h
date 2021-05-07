@@ -27,6 +27,7 @@ namespace guib
 			//void renderWidget(VkCommandBuffer commandBuffer, guib::Offset currOffset, guib::Size currSize, guib::Widget* widget);
 
 			// Window callbacks
+			void onWindowResized(int width, int height);
 			void onKey(int key, int scancode, int action, int mods);
 			void onCursorPosition(double xpos, double ypos);
 			void onMouseButton(int button, int action, int mods);

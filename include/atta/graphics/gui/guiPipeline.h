@@ -12,6 +12,7 @@
 #include <atta/graphics/vulkan/device.h>
 #include <atta/graphics/vulkan/imageView.h>
 #include <atta/graphics/vulkan/depthBuffer.h>
+#include <atta/graphics/vulkan/colorBuffer.h>
 #include <atta/graphics/vulkan/shaderModule.h>
 #include <atta/graphics/vulkan/descriptorSetManager.h>
 #include <atta/graphics/gui/guiRenderPass.h>
@@ -44,12 +45,14 @@ namespace atta
 			std::vector<std::shared_ptr<vk::ImageView>> getImageViews() const { return _imageViews; }
 			std::vector<std::shared_ptr<GuiFrameBuffer>> getFrameBuffers() const { return _frameBuffers; }
 			std::shared_ptr<GuiRenderPass> getRenderPass() const { return _renderPass; }
+			std::vector<std::shared_ptr<vk::ColorBuffer>> getColorBuffers() const { return _colorBuffers; }
 
 		private:
 			VkPipeline _pipeline;
 			std::shared_ptr<vk::Device> _device;
 			std::shared_ptr<vk::SwapChain> _swapChain;
 			std::vector<std::shared_ptr<vk::DepthBuffer>> _depthBuffers;
+			std::vector<std::shared_ptr<vk::ColorBuffer>> _colorBuffers;
 			std::vector<std::shared_ptr<GuiFrameBuffer>> _frameBuffers;
 			std::shared_ptr<GuiRenderPass> _renderPass;
 

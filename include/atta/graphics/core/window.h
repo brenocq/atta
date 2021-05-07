@@ -25,12 +25,11 @@ namespace atta
 
 			GLFWwindow* handle() const { return _window; }
 			VkExtent2D getExtent();
-			static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 			void waitIfMinimized();
 
 			// Callbacks
 			std::function<void()> drawFrame;
-			std::function<void()> windowResized;
+			std::function<void(int width, int height)> windowResized;
 
 			// Glfw callbacks
 			std::function<void(int key, int scancode, int action, int mods)> onKey;
@@ -54,9 +53,11 @@ namespace atta
 			//------------ Setters ------------//
 			void setLastX(int x) { _lastX = x; }
 			void setLastY(int y) { _lastY = y; }
+			void setWindowSize(int w, int h);
 
 			static float ratio;
 		private:
+			static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 			static void keyCallback(GLFWwindow* window, const int key, const int scancode, const int action, const int mods);
 			static void cursorPositionCallback(GLFWwindow* window, const double xpos, const double ypos);
 			static void mouseButtonCallback(GLFWwindow* window, const int button, const int action, const int mods);

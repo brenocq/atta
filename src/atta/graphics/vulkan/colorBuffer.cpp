@@ -13,10 +13,10 @@ namespace atta::vk
 	{
 		_image = new Image(_device, _extent.width, _extent.height, _format
 				, VK_IMAGE_TILING_OPTIMAL
-				, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+				, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT
 				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 				, 1, device->getMsaaSamples());
-		_imageView = new ImageView(_device, _image->handle(), _format, VK_IMAGE_ASPECT_COLOR_BIT);
+		_imageView = std::make_shared<ImageView>(_device, _image->handle(), _format, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 
 	ColorBuffer::~ColorBuffer()
@@ -25,12 +25,6 @@ namespace atta::vk
 		{
 			delete _image;
 			_image = nullptr;
-		}
-
-		if(_imageView != nullptr)
-		{
-			delete _imageView;
-			_imageView = nullptr;
 		}
 	}
 }

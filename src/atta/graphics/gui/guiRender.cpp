@@ -67,6 +67,12 @@ namespace guib
 	//----------------------------------------//
 	//-------------- Callbacks ---------------//
 	//----------------------------------------//
+	void GuiRender::onWindowResized(int width, int height)
+	{
+		_imageExtent = { width, height };
+		state::screenSize = {width, height};
+	}
+
 	void GuiRender::onKey(int key, int scancode, int action, int mods)
 	{
 	}
@@ -258,6 +264,11 @@ namespace guib
 				}
 			}
 		}
+
+		// Remove focus from widgets
+		if(state::currClickArea.second == false)
+			state::focusedWidget = nullptr;
+				
 
 		//---------- Check draggable ----------//
 		if(state::currDragging != nullptr)

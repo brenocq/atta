@@ -33,6 +33,9 @@ namespace guib
 		extern GuiRender* guiRender;
 		extern Size screenSize;
 
+		//---------- GuiB current ui state ----------//
+		extern bool shouldClose;
+
 		//---------- GuiB window/viewport handling ----------//
 		extern guib::Offset cursorPos;
 		extern CursorType cursorType;

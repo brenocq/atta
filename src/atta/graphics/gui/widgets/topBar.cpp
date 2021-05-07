@@ -9,6 +9,8 @@
 #include <atta/graphics/gui/widgets/column.h>
 #include <atta/graphics/gui/widgets/row.h>
 #include <atta/graphics/gui/widgets/clickDetector.h>
+#include <atta/graphics/gui/guiState.h>
+#include <atta/helpers/log.h>
 
 namespace guib
 {
@@ -35,6 +37,7 @@ namespace guib
 		Widget* closeButton = new guib::ClickDetector(
 							{
 								.onClick = [&](){
+									state::shouldClose = true;
 								},
 								.child = new guib::Box(
 								{

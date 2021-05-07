@@ -56,6 +56,7 @@ namespace atta
 			void copyImageCommands(VkCommandBuffer commandBuffer, unsigned imageIndex, ImageCopy imageCopy);
 
 			// Window callbacks
+			void onWindowResized(int width, int height);
 			void onKey(int key, int scancode, int action, int mods);
 			void onCursorPosition(double xpos, double ypos);
 			void onMouseButton(int button, int action, int mods);

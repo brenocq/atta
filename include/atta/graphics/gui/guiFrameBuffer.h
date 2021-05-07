@@ -20,6 +20,7 @@ namespace atta
 					std::shared_ptr<vk::Device> device, 
 					std::shared_ptr<vk::ImageView> imageView, 
 					std::shared_ptr<vk::ImageView> depthImageView, 
+					std::shared_ptr<vk::ImageView> colorImageView, 
 					std::shared_ptr<GuiRenderPass> guiRenderPass, 
 					VkExtent2D imageExtent);
 			~GuiFrameBuffer();
@@ -32,6 +33,7 @@ namespace atta
 			std::shared_ptr<vk::Device> _device;
 			std::shared_ptr<vk::ImageView> _imageView;
 			std::shared_ptr<vk::ImageView> _depthImageView;
+			std::shared_ptr<vk::ImageView> _colorImageView;
 			std::shared_ptr<GuiRenderPass> _guiRenderPass;
 
 			VkFramebuffer _framebuffer;

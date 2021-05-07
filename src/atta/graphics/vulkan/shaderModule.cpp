@@ -24,6 +24,10 @@ namespace atta::vk
 			Log::error("ShaderModule", "Failed to create shader module!");
 			exit(1);
 		}
+		else
+		{
+			//Log::success("ShaderModule", "Shader module with handle $0 created from file $1!", (long)_shaderModule, filename);
+		}
 	}
 
 	ShaderModule::~ShaderModule()

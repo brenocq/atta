@@ -16,7 +16,8 @@ namespace atta
 		_scene(info.scene),
 		_swapChain(info.swapChain),
 		// Toggle variables
-		_rootWidget(nullptr)
+		_rootWidget(nullptr),
+		_shouldClose(false)
 	{
 		//---------- Create gui objects ----------//
 		_guiCommandPool = std::make_shared<vk::CommandPool>(_device, vk::CommandPool::DEVICE_QUEUE_FAMILY_GRAPHICS, vk::CommandPool::QUEUE_GUI, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
@@ -64,6 +65,11 @@ namespace atta
 						.color = guib::state::palette["background"],
 						.hoverColor = guib::state::palette["light"],
 						.clickColor = guib::state::palette["lightLight"],
+						.children = {
+							new guib::MenuItem((guib::MenuItemInfo){.text = "Welcome!"}),
+							new guib::MenuItem((guib::MenuItemInfo){.text = "Atta main menu"}),
+							new guib::MenuItem((guib::MenuItemInfo){.text = "Test"})
+						}
 					}),
 					new guib::MenuButton(
 					(guib::MenuButtonInfo){
@@ -177,13 +183,17 @@ namespace atta
 	void UserInterface::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
 		_guiPipeline->beginRender(commandBuffer, imageIndex);
-		_guiRender->render(commandBuffer);
+		//_guiRender->render(commandBuffer);
 		_guiPipeline->endRender(commandBuffer);
 	}
 
 	//---------------------------------------------//
-	//-------------- DRAW FUNCTIONS ---------------//
+	//---------------- CALLBACKS ------------------//
 	//---------------------------------------------//
+	void UserInterface::onWindowResized(int width, int height)
+	{
+		_guiRender ->onWindowResized(width, height);
+	}
 
 	// Window callbacks
 	void UserInterface::onKey(int key, int scancode, int action, int mods)
@@ -199,6 +209,14 @@ namespace atta
 	void UserInterface::onMouseButton(int button, int action, int mods)
 	{
 		_guiRender->onMouseButton(button, action, mods);
+
+		// Check if window closed by UI
+		if(guib::state::shouldClose)
+		{
+			// This signal is propagated to userInterface->workerGui->threadManager
+			// to finish execution
+			_shouldClose = true;
+		}
 	}
 
 	void UserInterface::onScroll(double xoffset, double yoffset)

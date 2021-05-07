@@ -25,5 +25,6 @@
 #include <atta/graphics/gui/widgets/text.h>
 #include <atta/graphics/gui/widgets/topBar.h>
 #include <atta/graphics/gui/widgets/menuButton.h>
+#include <atta/graphics/gui/widgets/menuItem.h>
 
 #endif// GUIB_WIDGETS_H

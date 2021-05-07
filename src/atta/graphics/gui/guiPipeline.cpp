@@ -28,6 +28,9 @@ namespace atta
 		_depthBuffers.resize(_imageViews.size());
 		for(size_t i=0; i<_depthBuffers.size(); i++)
 			_depthBuffers[i] = std::make_shared<vk::DepthBuffer>(_device, _imageExtent);
+		_colorBuffers.resize(_imageViews.size());
+		for(size_t i=0; i<_colorBuffers.size(); i++)
+			_colorBuffers[i] = std::make_shared<vk::ColorBuffer>(_device, _imageExtent, _imageFormat);
 
 		//---------- Render pass ----------//
 		_renderPass = std::make_shared<GuiRenderPass>(_device, _imageFormat, _depthBuffers[0]->getFormat());
@@ -35,7 +38,10 @@ namespace atta
 		//---------- FrameBuffers ----------//
 		_frameBuffers.resize(_imageViews.size());
 		for(int i = 0; i < (int)_frameBuffers.size(); i++)
-			_frameBuffers[i] = std::make_shared<GuiFrameBuffer>(_device, _imageViews[i], _depthBuffers[i]->getImageView(), _renderPass, _imageExtent);
+			_frameBuffers[i] = std::make_shared<GuiFrameBuffer>(
+					_device, 
+					_imageViews[i], _depthBuffers[i]->getImageView(), _colorBuffers[i]->getImageView(), 
+					_renderPass, _imageExtent);
 
 		//---------- Shaders ----------//
 		_vertShaderModule = std::make_shared<vk::ShaderModule>(_device, "/usr/include/atta/assets/shaders/gui/guiShader.vert.spv");
@@ -114,7 +120,7 @@ namespace atta
 		VkPipelineMultisampleStateCreateInfo multisampling{};
 		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 		multisampling.sampleShadingEnable = VK_FALSE;
-		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+		multisampling.rasterizationSamples = _device->getMsaaSamples();
 		multisampling.minSampleShading = 1.0f; // Optional
 		multisampling.pSampleMask = nullptr; // Optional
 		multisampling.alphaToCoverageEnable = VK_FALSE; // Optional

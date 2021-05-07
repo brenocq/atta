@@ -38,6 +38,8 @@ namespace atta::vk
 
 			VkCommandBuffer beginSingleTimeCommands();
 			void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+			void waitCompletion();
+
 		private:
 			VkCommandPool _commandPool;
 			std::shared_ptr<Device> _device;

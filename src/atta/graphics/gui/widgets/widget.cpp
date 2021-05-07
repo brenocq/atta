@@ -123,14 +123,12 @@ namespace guib
 		// Wrap child if it exists
 		if(_child)
 		{
-			Log::debug("Widget", "parent size:$0 offset:$1", _size.toString(), _offset.toString());
 			Size childSize;
 			Offset childOffset;
 			_child->parentAsksSizeOffset(childSize, childOffset);
 
 			_size = childSize;
 			_offset = childOffset;
-			Log::debug("Widget", "child size:$0 offset:$1", _size.toString(), _offset.toString());
 		}
 	}
 

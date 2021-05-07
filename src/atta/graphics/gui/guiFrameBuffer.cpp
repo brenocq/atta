@@ -13,16 +13,18 @@ namespace atta
 			std::shared_ptr<vk::Device> device, 
 			std::shared_ptr<vk::ImageView> imageView, 
 			std::shared_ptr<vk::ImageView> depthImageView, 
+			std::shared_ptr<vk::ImageView> colorImageView, 
 			std::shared_ptr<GuiRenderPass> guiRenderPass, 
 			VkExtent2D imageExtent):
 		_device(device),
 		_imageView(imageView),
 		_depthImageView(depthImageView),
+		_colorImageView(colorImageView),
 		_guiRenderPass(guiRenderPass),
 		_imageExtent(imageExtent)
 	{
 
-		std::array<VkImageView, 2> attachments = {_imageView->handle(), _depthImageView->handle()};
+		std::array<VkImageView, 3> attachments = {_colorImageView->handle(), _depthImageView->handle(), _imageView->handle()};
 		VkFramebufferCreateInfo framebufferInfo = {};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = _guiRenderPass->handle();

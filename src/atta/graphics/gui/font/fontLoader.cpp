@@ -144,11 +144,11 @@ namespace guib {
 				.top =	glyphTop,
 				.advance = (glyphAdvance>>6),
 			};
-			Log::debug("FontLoader", "Letter: $0 wh($1,$2), xy($3,$4) lt($5,$6) ad $7", char(i), 
-					_fontTexture.glyphsInfo[i].width, _fontTexture.glyphsInfo[i].height, 
-					_fontTexture.glyphsInfo[i].x, _fontTexture.glyphsInfo[i].y, 
-					_fontTexture.glyphsInfo[i].left, _fontTexture.glyphsInfo[i].top, 
-					_fontTexture.glyphsInfo[i].advance);
+			//Log::debug("FontLoader", "Letter: $0 wh($1,$2), xy($3,$4) lt($5,$6) ad $7", char(i), 
+			//		_fontTexture.glyphsInfo[i].width, _fontTexture.glyphsInfo[i].height, 
+			//		_fontTexture.glyphsInfo[i].x, _fontTexture.glyphsInfo[i].y, 
+			//		_fontTexture.glyphsInfo[i].left, _fontTexture.glyphsInfo[i].top, 
+			//		_fontTexture.glyphsInfo[i].advance);
 
 			// Move currX currY
 			currX += bitmap.width+_fontTexture.padding;

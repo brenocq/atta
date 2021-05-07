@@ -11,6 +11,9 @@ namespace guib::state
 	GuiRender* guiRender = nullptr;
 	Size screenSize = {0,0, UNIT_SCREEN, UNIT_SCREEN};
 
+	//---------- GuiB current ui state ----------//
+	bool shouldClose = false;
+
 	//---------- GuiB window/viewport handling ----------//
 	Offset cursorPos = {0,0, UNIT_SCREEN, UNIT_SCREEN};
 	CursorType cursorType = CURSOR_TYPE_ARROW;

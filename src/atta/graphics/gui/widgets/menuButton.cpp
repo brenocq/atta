@@ -9,23 +9,28 @@
 #include <atta/graphics/gui/widgets/buttonImage.h>
 #include <atta/graphics/gui/widgets/column.h>
 #include <atta/graphics/gui/guiState.h>
+#include <atta/helpers/log.h>
 
 namespace guib
 {
 	MenuButton::MenuButton(MenuButtonInfo info):
 		Widget({}),
 		_color(info.color), _hoverColor(info.hoverColor), _clickColor(info.clickColor),
-		_radius(info.radius)
+		_radius(info.radius), _menuOpenDirection(info.open)
 	{
 		Widget::setType("MenuButton");
 
 		Color menuColor = state::palette["background"];
-		menuColor.a = 0.8;
+		menuColor.a = 0.97;
 		_menu = new Box(
 					(BoxInfo){
 						.color = menuColor,
 						.offset = {0, 0, UNIT_PIXEL, UNIT_PIXEL},
-						.size = {1000, 100, UNIT_PIXEL, UNIT_PIXEL}
+						.size = info.menuSize,
+						.child = new Column(
+							{
+								.children = info.children
+							})
 					});
 
 		Widget* button=nullptr;
@@ -71,8 +76,41 @@ namespace guib
 
 	void MenuButton::preProcessSizeOffset()
 	{
+		// Wrap child size/offset
 		Widget::wrapChild();
 		_menu->preProcessSizeOffset();// Solve menu size -> convert from pixel to screen coordinate system
+	}
+
+	void MenuButton::preProcess()
+	{
+		//---------- Update menu offset from menu button position ----------//
+		// Here we are also preprocessing the menu and its children
+		_menu->startPreProcess();
+		{
+			// Size already convertes to UNIT_SCREEN
+			Size menuSize = _menu->getSize();
+
+			// Calculate menu offset
+			switch(_menuOpenDirection)
+			{
+				case MENU_BUTTON_OPEN_TOP:
+					_menu->setOffset({_offset.x, _offset.y-menuSize.height, UNIT_SCREEN, UNIT_SCREEN});
+				break;
+				case MENU_BUTTON_OPEN_RIGHT:
+					_menu->setOffset({_offset.x+_size.width, _offset.y, UNIT_SCREEN, UNIT_SCREEN});
+				break;
+				case MENU_BUTTON_OPEN_BOTTOM:
+					_menu->setOffset({_offset.x, _offset.y+_size.height, UNIT_SCREEN, UNIT_SCREEN});
+				break;
+				case MENU_BUTTON_OPEN_LEFT:
+					_menu->setOffset({_offset.x-menuSize.width, _offset.y, UNIT_SCREEN, UNIT_SCREEN});
+				default:
+				break;
+			}
+		}
+		// Preprocess menu tree
+		_menu->preProcess();
+		_menu->endPreProcess();
 	}
 }
 
