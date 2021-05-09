@@ -230,24 +230,23 @@ namespace atta
 		}
 
 		//---------- Copy main renderer image ----------//
-		//vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
-		//	0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		vk::ImageMemoryBarrier::insert(commandBuffer, _ui->getGuiPipeline()->getColorBuffers()[imageIndex]->getImage()->handle(), subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+		VkImage imageToRender = //_vkCore->getDevice()->getMsaaSamples() > VK_SAMPLE_COUNT_1_BIT ? 
+			//_ui->getGuiPipeline()->getColorBuffers()[imageIndex]->getImage()->handle() :
+			_swapChain->getImages()[imageIndex];
+
+		vk::ImageMemoryBarrier::insert(commandBuffer, imageToRender, subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
 		if(_renderers.size()>0)
 		{
-			copyImageCommands(commandBuffer, imageIndex, {
+			copyImageCommands(commandBuffer, imageToRender, {
 				.image = _renderers[_mainRendererIndex]->getImage(),
 				.extent = _renderers[_mainRendererIndex]->getImage()->getExtent(),
 				.offset = {0,0}
 				});
 		}
 
-		//vk::ImageMemoryBarrier::insert(commandBuffer, _swapChain->getImages()[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
-		//	0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-
-		vk::ImageMemoryBarrier::insert(commandBuffer, _ui->getGuiPipeline()->getColorBuffers()[imageIndex]->getImage()->handle(), subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+		vk::ImageMemoryBarrier::insert(commandBuffer, imageToRender, subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		//---------- Render user interface on top of it----------//
@@ -255,7 +254,7 @@ namespace atta
 		_ui->render(commandBuffer, imageIndex);
 	}
 
-	void WorkerGui::copyImageCommands(VkCommandBuffer commandBuffer, unsigned imageIndex, ImageCopy imageCopy)
+	void WorkerGui::copyImageCommands(VkCommandBuffer commandBuffer, VkImage dstImage, ImageCopy imageCopy)
 	{
 		// Change src image layout to transfer src
 		VkImageSubresourceRange subresourceRange;
@@ -287,7 +286,7 @@ namespace atta
 
 		vkCmdCopyImage(commandBuffer,
 			imageCopy.image->handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-			_ui->getGuiPipeline()->getColorBuffers()[imageIndex]->getImage()->handle(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			1, 
 			&region);
 	}

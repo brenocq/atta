@@ -14,6 +14,8 @@ namespace atta::vk
 					std::shared_ptr<DepthBuffer> depthBuffer):
 		_device(device), _colorBuffer(colorBuffer), _depthBuffer(depthBuffer)
 	{
+		bool useMultisampling = _device->getMsaaSamples() > VK_SAMPLE_COUNT_1_BIT;
+
 		//----------- Color attachment ------------//
 		VkAttachmentDescription colorAttachment{};
 		colorAttachment.format = _colorBuffer->getImage()->getFormat();
@@ -46,18 +48,21 @@ namespace atta::vk
 
 		//----------- Resolve attachment ------------//
 		VkAttachmentDescription colorAttachmentResolve{};
-		colorAttachmentResolve.format = _colorBuffer->getImage()->getFormat();
-		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
 		VkAttachmentReference colorAttachmentResolveRef{};
-		colorAttachmentResolveRef.attachment = 2;
-		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		if(useMultisampling)
+		{
+			colorAttachmentResolve.format = _colorBuffer->getImage()->getFormat();
+			colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
+			colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+			colorAttachmentResolveRef.attachment = 2;
+			colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		}
 
 		//----------- Subpass ------------//
 		VkSubpassDescription subpass{};
@@ -65,7 +70,8 @@ namespace atta::vk
 		subpass.colorAttachmentCount = 1;
 		subpass.pColorAttachments = &colorAttachmentRef;
 		subpass.pDepthStencilAttachment = &depthAttachmentRef;
-		subpass.pResolveAttachments = &colorAttachmentResolveRef;
+		if(useMultisampling)
+			subpass.pResolveAttachments = &colorAttachmentResolveRef;
 
 		//----------- SubpassDependecy ------------//
 		VkSubpassDependency dependency{};
@@ -77,7 +83,10 @@ namespace atta::vk
 		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
 		//----------- RenderPassInfo ------------//
-		std::array<VkAttachmentDescription, 3> attachments = {colorAttachment, depthAttachment, colorAttachmentResolve};
+		std::vector<VkAttachmentDescription> attachments = {colorAttachment, depthAttachment};
+		if(useMultisampling)
+			attachments.push_back(colorAttachmentResolve);
+
 		VkRenderPassCreateInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());

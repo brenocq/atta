@@ -183,7 +183,7 @@ namespace atta
 	void UserInterface::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
 		_guiPipeline->beginRender(commandBuffer, imageIndex);
-		//_guiRender->render(commandBuffer);
+		_guiRender->render(commandBuffer);
 		_guiPipeline->endRender(commandBuffer);
 	}
 

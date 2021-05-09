@@ -15,11 +15,22 @@ namespace atta::vk
 			std::shared_ptr<RenderPass> renderPass):
 		_device(device), _imageView(imageView), _renderPass(renderPass)
 	{
-		std::array<VkImageView, 3> attachments = {
-			_renderPass->getColorBuffer()->getImageView()->handle(),
-			_renderPass->getDepthBuffer()->getImageView()->handle(),
-			_imageView->handle(),
-		};
+		bool useMultisampling = _device->getMsaaSamples() > VK_SAMPLE_COUNT_1_BIT;
+
+		std::vector<VkImageView> attachments;
+		if(useMultisampling)
+		{
+			// Render to color and depth images, then save multisampling result to final image
+			attachments.push_back(_renderPass->getColorBuffer()->getImageView()->handle());
+			attachments.push_back(_renderPass->getDepthBuffer()->getImageView()->handle());
+			attachments.push_back(_imageView->handle());
+		}
+		else
+		{
+			// Render directly to the final image
+			attachments.push_back(_imageView->handle());
+			attachments.push_back(_renderPass->getDepthBuffer()->getImageView()->handle());
+		}
 
 		VkFramebufferCreateInfo framebufferInfo = {};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

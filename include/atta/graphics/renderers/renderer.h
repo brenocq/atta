@@ -37,6 +37,10 @@ namespace atta
 				float height;
 				mat4 viewMatrix;
 				RendererType type;
+
+				// Image creation
+				VkImageUsageFlagBits imageUsageFlags = (VkImageUsageFlagBits)0;
+				bool forceNoMultisampling = false;
 			};
 
 			Renderer(CreateInfo info);
@@ -62,6 +66,10 @@ namespace atta
 
 			std::shared_ptr<vk::Image> _image;
 			std::shared_ptr<vk::ImageView> _imageView;
+
+			// Image creation
+			VkImageUsageFlagBits _imageUsageFlags;
+			bool _forceNoMultisampling;
 	};
 }
 #endif// ATTA_GRAPHICS_RENDERERS_RENDERER_H
