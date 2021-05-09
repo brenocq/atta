@@ -10,7 +10,7 @@
 
 namespace atta::vk
 {
-	DepthBuffer::DepthBuffer(std::shared_ptr<Device> device, VkExtent2D extent):
+	DepthBuffer::DepthBuffer(std::shared_ptr<Device> device, VkExtent2D extent, bool disableMultisampling):
 		_device(device), _extent(extent)
 	{
 		_format = findSupportedFormat(
@@ -23,7 +23,7 @@ namespace atta::vk
 				, VK_IMAGE_TILING_OPTIMAL
 				, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-				1, _device->getMsaaSamples());
+				1, disableMultisampling?VK_SAMPLE_COUNT_1_BIT:_device->getMsaaSamples());
 		_imageView = std::make_shared<ImageView>(_device, _image->handle(), _format, VK_IMAGE_ASPECT_DEPTH_BIT | (_stencilAvailable?VK_IMAGE_ASPECT_STENCIL_BIT:0));
 	}
 

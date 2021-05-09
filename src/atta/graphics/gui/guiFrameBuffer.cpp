@@ -23,8 +23,23 @@ namespace atta
 		_guiRenderPass(guiRenderPass),
 		_imageExtent(imageExtent)
 	{
+		// For now the GUI will not have multisampling and images with VK_1_SAMPLE_BIT will be copy to the swapchain image
+		bool useMultisampling = false;
 
-		std::array<VkImageView, 3> attachments = {_colorImageView->handle(), _depthImageView->handle(), _imageView->handle()};
+		std::vector<VkImageView> attachments;
+		if(useMultisampling)
+		{
+			// Render to color and depth images, then save multisampling result to swapchain image
+			attachments.push_back(_colorImageView->handle());
+			attachments.push_back(_depthImageView->handle());
+			attachments.push_back(_imageView->handle());
+		}
+		else
+		{
+			// Render directly to the swapchain image
+			attachments.push_back(_imageView->handle());
+			attachments.push_back(_depthImageView->handle());
+		}
 		VkFramebufferCreateInfo framebufferInfo = {};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = _guiRenderPass->handle();

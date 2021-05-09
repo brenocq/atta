@@ -27,7 +27,9 @@ namespace atta
 		//---------- Depth buffers ----------//
 		_depthBuffers.resize(_imageViews.size());
 		for(size_t i=0; i<_depthBuffers.size(); i++)
-			_depthBuffers[i] = std::make_shared<vk::DepthBuffer>(_device, _imageExtent);
+			_depthBuffers[i] = std::make_shared<vk::DepthBuffer>(_device, _imageExtent, true);// Depth buffer with disabled multisampling
+
+		// Not using colors buffer because no multisampling is being performed
 		_colorBuffers.resize(_imageViews.size());
 		for(size_t i=0; i<_colorBuffers.size(); i++)
 			_colorBuffers[i] = std::make_shared<vk::ColorBuffer>(_device, _imageExtent, _imageFormat);
@@ -120,7 +122,7 @@ namespace atta
 		VkPipelineMultisampleStateCreateInfo multisampling{};
 		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 		multisampling.sampleShadingEnable = VK_FALSE;
-		multisampling.rasterizationSamples = _device->getMsaaSamples();
+		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;//_device->getMsaaSamples();
 		multisampling.minSampleShading = 1.0f; // Optional
 		multisampling.pSampleMask = nullptr; // Optional
 		multisampling.alphaToCoverageEnable = VK_FALSE; // Optional

@@ -19,7 +19,7 @@ namespace atta::vk
 	class DepthBuffer
 	{
 		public:
-			DepthBuffer(std::shared_ptr<Device> device, VkExtent2D extent);
+			DepthBuffer(std::shared_ptr<Device> device, VkExtent2D extent, bool disableMultisampling=false);
 			~DepthBuffer();
 
 			std::shared_ptr<Device> getDevice() const { return _device; }

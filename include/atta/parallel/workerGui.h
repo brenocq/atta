@@ -53,7 +53,7 @@ namespace atta
 		private:
 			void render();
 			void recordCommands(VkCommandBuffer commandBuffer, unsigned imageIndex);
-			void copyImageCommands(VkCommandBuffer commandBuffer, unsigned imageIndex, ImageCopy imageCopy);
+			void copyImageCommands(VkCommandBuffer commandBuffer, VkImage dstImage, ImageCopy imageCopy);
 
 			// Window callbacks
 			void onWindowResized(int width, int height);

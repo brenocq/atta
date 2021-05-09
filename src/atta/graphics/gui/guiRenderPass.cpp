@@ -12,16 +12,19 @@ namespace atta
 	GuiRenderPass::GuiRenderPass(std::shared_ptr<vk::Device> device, VkFormat colorFormat, VkFormat depthFormat):
 		_device(device), _colorFormat(colorFormat), _depthFormat(depthFormat)
 	{
+		// For now the GUI will not have multisampling and images with VK_1_SAMPLE_BIT will be copy to the swapchain image
+		bool useMultisampling = false;
+
 		//----------- Color attachment ------------//
 		VkAttachmentDescription colorAttachment{};
 		colorAttachment.format = _colorFormat;
-		colorAttachment.samples = _device->getMsaaSamples();
+		colorAttachment.samples = useMultisampling?_device->getMsaaSamples():VK_SAMPLE_COUNT_1_BIT;
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		colorAttachment.finalLayout = useMultisampling ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 		VkAttachmentReference colorAttachmentRef{};
 		colorAttachmentRef.attachment = 0;
@@ -30,7 +33,7 @@ namespace atta
 		//----------- Depth attachment ------------//
 		VkAttachmentDescription depthAttachment{};
 		depthAttachment.format = _depthFormat;
-		depthAttachment.samples = _device->getMsaaSamples();
+		depthAttachment.samples = useMultisampling?_device->getMsaaSamples():VK_SAMPLE_COUNT_1_BIT;
 		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -44,18 +47,21 @@ namespace atta
 
 		//----------- Resolve attachment ------------//
 		VkAttachmentDescription colorAttachmentResolve{};
-		colorAttachmentResolve.format = _colorFormat;
-		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
 		VkAttachmentReference colorAttachmentResolveRef{};
-		colorAttachmentResolveRef.attachment = 2;
-		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		if(useMultisampling)
+		{
+			colorAttachmentResolve.format = _colorFormat;
+			colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
+			colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+			colorAttachmentResolveRef.attachment = 2;
+			colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		}
 
 		//----------- Subpass ------------//
 		VkSubpassDescription subpass = {};
@@ -63,7 +69,8 @@ namespace atta
 		subpass.colorAttachmentCount = 1;
 		subpass.pColorAttachments = &colorAttachmentRef;
 		subpass.pDepthStencilAttachment = &depthAttachmentRef;
-		subpass.pResolveAttachments = &colorAttachmentResolveRef;
+		if(useMultisampling)
+			subpass.pResolveAttachments = &colorAttachmentResolveRef;
 
 		//----------- SubpassDependecy ------------//
 		VkSubpassDependency dependency = {};
@@ -75,7 +82,10 @@ namespace atta
 		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
 		//----------- RenderPassInfo ------------//
-		std::array<VkAttachmentDescription, 3> attachments = {colorAttachment, depthAttachment, colorAttachmentResolve};
+		std::vector<VkAttachmentDescription> attachments = {colorAttachment, depthAttachment};
+		if(useMultisampling)
+			attachments.push_back(colorAttachmentResolve);
+
 		VkRenderPassCreateInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
