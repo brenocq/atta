@@ -71,12 +71,12 @@ namespace atta
 		//		std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
 		//		std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
 		//		_scene);
-		_skyboxPipeline = std::make_unique<vk::SkyboxPipeline>(
-				_vkCore, _renderPass,
-				_image->getExtent(), _image->getFormat(), 
-				std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
-				std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
-				_scene);
+		//_skyboxPipeline = std::make_unique<vk::SkyboxPipeline>(
+		//		_vkCore, _renderPass,
+		//		_image->getExtent(), _image->getFormat(), 
+		//		std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
+		//		std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
+		//		_scene);
 	}
 
 	RastRenderer::~RastRenderer()
@@ -102,7 +102,7 @@ namespace atta
 		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		{
 			// Skybox pipeline
-			_skyboxPipeline->render(commandBuffer);
+			//_skyboxPipeline->render(commandBuffer);
 
 			// Graphics pipeline
 			_graphicsPipeline->render(commandBuffer);

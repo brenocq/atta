@@ -22,6 +22,8 @@ namespace atta
 				vec3 scale = {1,1,1};
 				float mass = 1.0f;
 				Material material;
+
+				std::vector<std::shared_ptr<Object>> children = {};
 			};
 
 			Box(CreateInfo info);

@@ -28,7 +28,7 @@ struct Light
 	// General data about the light
 	uint datai[5];
 	float dataf[2];
-	vec4 datav[2];
+	vec4 datav[3];
 };
 
 //---------- Data description ----------//

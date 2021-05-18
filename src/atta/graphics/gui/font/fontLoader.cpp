@@ -34,8 +34,8 @@ namespace guib {
 		}
 		else
 		{
-			Log::success("FontLoader", "Font file \"$0\" loaded successfully.", filename);
-			Log::success("FontLoader", "Qty glyphs: $0", _face->num_glyphs);
+			Log::verbose("FontLoader", "Font file \"$0\" loaded successfully.", filename);
+			//Log::verbose("FontLoader", "Qty glyphs: $0", _face->num_glyphs);
 			//Log::success("FontLoader", "Flags: $0", _face->face_flags);
 		}
 

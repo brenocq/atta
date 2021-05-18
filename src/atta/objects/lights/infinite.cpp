@@ -14,14 +14,14 @@ namespace atta
 {
 	InfiniteLight::InfiniteLight(CreateInfo info):
 		Object({info.name, info.position, info.rotation, {1,1,1}, 0}),
-		_textureIndex(info.texture), _irradianceTextureIndex(info.irradianceTexture ), _worldRadius(info.worldRadius)
+		_textureIndex(info.texture), _irradianceTextureIndex(info.irradianceTexture ), _radiance(info.radiance), _worldRadius(info.worldRadius)
 	{
 		Object::setType("InfiniteLight");
 		_isLight = true;
 
 		generateDistribution2DTexture();
 
-		if(_irradianceTextureIndex==-1)
+		if(_irradianceTextureIndex==-1 && _textureIndex!=-1)
 		{
 			Log::warning("InfiniteLight", "Irradiance map generation from environment map is not implemented yet.");
 			_irradianceTextureIndex = _textureIndex;
@@ -60,6 +60,9 @@ namespace atta
 
 	void InfiniteLight::generateDistribution2DTexture()
 	{
+		if(_textureIndex == -1)
+			return;// If using uniform color, do not need to generate the distribution 
+
 		// The distribution texture is used to sample points in the environment texture 
 		// according to the luminance of each pixels, pixels with higher luminance
 		// are more likely to be selected when sampling the infinite light

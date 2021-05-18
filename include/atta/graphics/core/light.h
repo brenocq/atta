@@ -21,7 +21,7 @@ namespace atta
 		alignas(16) mat4 worldToLight = mat4(1);
 		alignas(4) unsigned datai[5];
 		alignas(4) float dataf[2];
-		alignas(16) vec4 datav[2];
+		alignas(16) vec4 datav[3];
 
 		enum Type
 		{
@@ -76,13 +76,14 @@ namespace atta
 			return l;
 		}
 
-		static Light infinite(vec3 worldCenter, quat orientation, vec3 precomputedPower, float worldRadius, int textureIndex, int pdfIndex, int irradianceMapIndex)
+		static Light infinite(vec3 radiance, vec3 worldCenter, quat orientation, vec3 precomputedPower, float worldRadius, int textureIndex, int pdfIndex, int irradianceMapIndex)
 		{
 			//Log::debug("LIGHT INF", "tex:$0 pdf:$1", textureIndex, pdfIndex);
 			Light l;
 			l.type = LIGHT_TYPE_INFINITE;
 			l.datav[0] = vec4(worldCenter, -1);
 			l.datav[1] = vec4(precomputedPower, -1);
+			l.datav[2] = vec4(radiance,-1);
 			l.datai[0] = textureIndex;
 			l.datai[1] = pdfIndex;
 			l.datai[2] = irradianceMapIndex;

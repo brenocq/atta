@@ -19,6 +19,7 @@ namespace atta
 				std::string name = "InfiniteLight";
 				vec3 position = {0,0,0};
 				vec3 rotation = {0,0,0};
+				vec3 radiance = {1,1,1};
 				int texture = -1;// Texture index
 				int irradianceTexture = -1;// It is possible to  load an irradiance map texture to avoid precomputing
 				float worldRadius = 5000;// World radius in meters
@@ -32,6 +33,7 @@ namespace atta
 			int getPdfTextureIndex() const { return _pdfTextureIndex; }
 			int getIrradianceTextureIndex() const { return _irradianceTextureIndex; }
 			vec3 getPrecomputedPower() const { return _precomputedPower; }
+			vec3 getRadiance() const { return _radiance; }
 			float getWorldRadius() const { return _worldRadius; }
 
 		private:
@@ -43,6 +45,7 @@ namespace atta
 			int _pdfTextureIndex;
 			int _irradianceTextureIndex;
 			vec3 _precomputedPower;
+			vec3 _radiance;
 			float _worldRadius;
 			int _width;
 			int _height;

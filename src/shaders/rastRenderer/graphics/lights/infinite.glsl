@@ -14,7 +14,7 @@ vec3 InfiniteLight_sampleLi(Light light, out vec3 wi)
 
 	vec3 w = normalize((light.worldToLight*vec4(wi,0)).xyz);
 	vec2 st = vec2(sphericalPhi(w)*inv2Pi, sphericalTheta(w)*invPi);
-	return texture(textures[light.datai[2]], st).rgb;
+	return light.datai[2]!=-1 ? texture(textures[light.datai[2]], st).rgb : light.datav[2].rgb;
 }
 
 #endif// ATTA_RAST_LIGHTS_INFINITE_GLSL

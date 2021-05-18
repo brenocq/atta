@@ -30,9 +30,9 @@ namespace atta::vk
 			~GraphicsPipeline();
 
 			void render(VkCommandBuffer commandBuffer, int imageIndex=0);
-			void renderObjectAndChildren(VkCommandBuffer commandBuffer, std::shared_ptr<Object> object);
 
 		private:
+			void renderObjectAndChildren(VkCommandBuffer commandBuffer, std::shared_ptr<Object> object);
 	};
 }
 

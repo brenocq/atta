@@ -40,7 +40,6 @@ namespace atta
 
 				// Image creation
 				VkImageUsageFlagBits imageUsageFlags = (VkImageUsageFlagBits)0;
-				bool forceNoMultisampling = false;
 			};
 
 			Renderer(CreateInfo info);
