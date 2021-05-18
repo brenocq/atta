@@ -11,6 +11,7 @@
 #include <atta/helpers/evaluator.h>
 #include <atta/graphics/vulkan/imageMemoryBarrier.h>
 #include <atta/graphics/renderers/rastRenderer/rastRenderer.h>
+#include <atta/graphics/renderers/renderer2D/renderer2D.h>
 
 namespace atta
 {
@@ -18,6 +19,7 @@ namespace atta
 	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, CameraControlType cameraControlType,
 			std::function<void(int key, int action)> handleKeyboard):
 		_vkCore(vkCore), _scene(scene), _currentFrame(0), _mainRendererIndex(-1), _cameraUpdated(false),
+		_cameraControlType(cameraControlType),
 		_handleKeyboard(handleKeyboard)
 	{
 		// Create window (GUI thread only)
@@ -87,18 +89,34 @@ namespace atta
 
 	void WorkerGui::createRenderers()
 	{ 
-		// Create rasterization render
-		RastRenderer::CreateInfo rastRendInfo = {
-			.vkCore = _vkCore,
-			.commandPool = _commandPool,
-			.width = 1200,
-			.height = 900,
-			.scene = _scene,
-			.viewMat = atta::lookAt(vec3(-.5,.5,-.5), vec3(0,0,0), vec3(0,1,0)),
-			.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
-		};
-		std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
-		_renderers.push_back(std::static_pointer_cast<Renderer>(rast));
+		if(_cameraControlType == CAMERA_CONTROL_TYPE_3D)
+		{
+			// Create rasterization render
+			RastRenderer::CreateInfo rastRendInfo = {
+				.vkCore = _vkCore,
+				.commandPool = _commandPool,
+				.width = 1200,
+				.height = 900,
+				.scene = _scene,
+				.viewMat = atta::lookAt(vec3(-.5,.5,-.5), vec3(0,0,0), vec3(0,1,0)),
+				.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+			};
+			std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
+			_renderers.push_back(std::static_pointer_cast<Renderer>(rast));
+		}
+		else
+		{
+			Renderer2D::CreateInfo rend2DInfo = {
+				.vkCore = _vkCore,
+				.commandPool = _commandPool,
+				.width = 1200,
+				.height = 900,
+				.scene = _scene
+			};
+
+			std::shared_ptr<Renderer2D> renderer2D = std::make_shared<Renderer2D>(rend2DInfo);
+			_renderers.push_back(std::static_pointer_cast<Renderer>(renderer2D));
+		}
 
 		if(_renderers.size()>0)
 		{

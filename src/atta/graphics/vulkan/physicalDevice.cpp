@@ -62,7 +62,7 @@ namespace atta::vk
 		else
 		{
 			findQueueFamilies(_physicalDevice, _queueFamilyIndices);
-			Log::success("PhysicalDevice", "Found suitable GPU! (for now, Atta only uses one GPU)");
+			Log::verbose("PhysicalDevice", "Found suitable GPU! (for now, Atta only uses one GPU)");
 
 			// Warn about support and populate physical device support
 			_support.vulkanRayTracing = true;

@@ -23,7 +23,7 @@ namespace atta
 			maxSystemCores-1 : 
 			pipelineSetup.generalConfig.qtyThreads;
 
-		Log::info("ThreadManager", "Detected $0 cores, $1 workers will be created", maxSystemCores, _qtyWorkersToCreate);
+		Log::verbose("ThreadManager", "Detected $0 cores, $1 workers will be created", maxSystemCores, _qtyWorkersToCreate);
 		//                                                             ,-------------------.
 		//                                                             v                   |
 		// Barrier to syncronize generalist workers + main thread (start -> physics -> render -> robots -> end)
@@ -63,7 +63,7 @@ namespace atta
 
 	ThreadManager::~ThreadManager()
 	{
-		Log::info("ThreadManager", "Execution finished, stopping workers...");
+		Log::verbose("ThreadManager", "Execution finished, stopping workers...");
 		// Wait barriers to finish thread loop (to evaluate _shouldFinish)
 		_physicsStageBarrier->wait();
 		_sensorStageBarrier->wait();
@@ -101,7 +101,7 @@ namespace atta
 			_workersGen.push_back(std::make_shared<WorkerGeneralist>(info));
 			_threads.push_back(std::thread(std::ref(*_workersGen[i])));
 		}
-		Log::success("ThreadManager", "Created $0 generalist workers.", _qtyWorkersToCreate-1);
+		Log::verbose("ThreadManager", "Created $0 generalist workers.", _qtyWorkersToCreate-1);
 	}
 
 	void ThreadManager::createGuiWorker()
@@ -115,7 +115,7 @@ namespace atta
 
 		// Create thread from callable workerGui
 		_threads.push_back(std::thread(std::ref(*_workerGui)));
-		Log::success("ThreadManager", "Created GUI worker.");
+		Log::verbose("ThreadManager", "Created GUI worker.");
 	}
 
 	void ThreadManager::createCoreObjects()

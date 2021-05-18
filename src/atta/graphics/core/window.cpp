@@ -55,7 +55,7 @@ namespace atta
 		//----- Window config -----//
 		glfwSetInputMode(_window, GLFW_CURSOR, _cursorVisible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED );
 
-		Log::success("Window", "Window created!");
+		Log::verbose("Window", "Window created");
 	}
 
 	Window::~Window()

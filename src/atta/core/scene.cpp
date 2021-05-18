@@ -60,7 +60,7 @@ namespace atta
 				if(type == "InfiniteLight")
 				{
 					std::shared_ptr<InfiniteLight> l = std::static_pointer_cast<InfiniteLight>(object);
-					_lights.push_back(Light::infinite(l->getPosition(), l->getOrientation(), l->getPrecomputedPower(), l->getWorldRadius(), l->getTextureIndex(), l->getPdfTextureIndex(), l->getIrradianceTextureIndex()));
+					_lights.push_back(Light::infinite(l->getRadiance(), l->getPosition(), l->getOrientation(), l->getPrecomputedPower(), l->getWorldRadius(), l->getTextureIndex(), l->getPdfTextureIndex(), l->getIrradianceTextureIndex()));
 				}
 			}
 		}

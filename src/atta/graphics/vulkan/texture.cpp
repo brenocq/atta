@@ -107,7 +107,7 @@ namespace atta::vk
 		_imageView = std::make_shared<ImageView>(_device, _image->handle(), format, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels, _arrayLayers==6);
 		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
 
-		Log::success("Texture", "$0 loaded successfully: $1 x $2", filename, _width, _height);
+		Log::verbose("Texture", "$0 loaded successfully: $1 x $2", filename, _width, _height);
 	}
 
 	//----------------------------------------//
@@ -155,8 +155,6 @@ namespace atta::vk
 		_height = size.height;
 		_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_width, _height)))) + 1;
 		_size = _width * _height * atta::Texture::sizeInBytes(format);
-
-		Log::debug("vk::Tex", "creating from buffer $0 $1 = $2", _width, _height, _size);
 
 		StagingBuffer* stagingBuffer = new StagingBuffer(_device, buffer, _size);
 

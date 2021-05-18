@@ -10,7 +10,7 @@
 namespace atta
 {
 	Box::Box(CreateInfo info):
-		Object({info.name, info.position, info.rotation, info.scale, info.mass})
+		Object({info.name, info.position, info.rotation, info.scale, info.mass, std::move(info.children)})
 	{
 		Object::setType("Box");
 
@@ -19,7 +19,6 @@ namespace atta
 			.meshName = "atta::box",
 			.material = info.material
 		};
-
 		_model = std::make_shared<Model>(modelInfo);
 
 		//----- Physics -----//

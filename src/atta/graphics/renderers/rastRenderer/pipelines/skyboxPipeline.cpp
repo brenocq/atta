@@ -172,6 +172,8 @@ namespace atta::vk
 				if(light.type == atta::Light::LIGHT_TYPE_INFINITE)
 				{
 					int texIndex = light.datai[0];// High resulution background (environment map texture)
+					if(texIndex==0)
+						continue;
 					//int texIndex = light.datai[2];// Blurred background (preprocessed irradiance map)
 					std::shared_ptr<vk::Texture> texture = atta::Texture::textureInfos()[texIndex].vkTexture.lock();
 					VkDescriptorImageInfo imageInfo;

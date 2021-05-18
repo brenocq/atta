@@ -67,40 +67,57 @@
 class Log
 {
 	public:
-		template<class...Args>
-		static void debug(std::string tag, std::string text, Args&&... args)
-		{
-			log(COLOR_BOLD_BLUE, tag, COLOR_BLUE, text, args...);
-		}
+		enum LogLevel {
+			LOG_LEVEL_VERBOSE = 0,
+			LOG_LEVEL_DEBUG,
+			LOG_LEVEL_SUCCESS,
+			LOG_LEVEL_INFO,
+			LOG_LEVEL_WARNING,
+			LOG_LEVEL_ERROR,
+			LOG_LEVEL_NONE,
+		};
+		const static LogLevel logLevel = LOG_LEVEL_DEBUG;
 
 		template<class...Args>
 		static void verbose(std::string tag, std::string text, Args&&... args)
 		{
-			log(COLOR_BOLD_WHITE, tag, COLOR_WHITE, text, args...);
+			if(logLevel<=LOG_LEVEL_VERBOSE)
+				log(COLOR_BOLD_WHITE, tag, COLOR_WHITE, text, args...);
+		}
+
+		template<class...Args>
+		static void debug(std::string tag, std::string text, Args&&... args)
+		{
+			if(logLevel<=LOG_LEVEL_DEBUG)
+				log(COLOR_BOLD_BLUE, tag, COLOR_BLUE, text, args...);
 		}
 
 		template<class...Args>
 		static void success(std::string tag, std::string text, Args&&... args)
 		{
-			log(COLOR_BOLD_GREEN, tag, COLOR_GREEN, text, args...);
+			if(logLevel<=LOG_LEVEL_SUCCESS)
+				log(COLOR_BOLD_GREEN, tag, COLOR_GREEN, text, args...);
 		}
 
 		template<class...Args>
 		static void info(std::string tag, std::string text, Args&&... args)
 		{
-			log(COLOR_BOLD_CYAN, tag, COLOR_CYAN, text, args...);
+			if(logLevel<=LOG_LEVEL_INFO)
+				log(COLOR_BOLD_CYAN, tag, COLOR_CYAN, text, args...);
 		}
 
 		template<class...Args>
 		static void warning(std::string tag, std::string text, Args&&... args)
 		{
-			log(COLOR_BOLD_YELLOW, tag, COLOR_YELLOW, text, args...);
+			if(logLevel<=LOG_LEVEL_WARNING)
+				log(COLOR_BOLD_YELLOW, tag, COLOR_YELLOW, text, args...);
 		}
 
 		template<class...Args>
 		static void error(std::string tag, std::string text, Args&&... args)
 		{
-			log(COLOR_BOLD_RED, tag, COLOR_RED, text, args...);
+			if(logLevel<=LOG_LEVEL_ERROR)
+				log(COLOR_BOLD_RED, tag, COLOR_RED, text, args...);
 		}
 
 	private:

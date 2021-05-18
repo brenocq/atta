@@ -79,8 +79,7 @@ vec3 Material_UnrealEngine4_IBL(Material material, vec3 n, vec3 v, Light light)
 	vec3 r = reflect(-v, n);
 	vec3 rLocal = normalize((light.worldToLight*vec4(r,0)).xyz);
 	vec2 st = vec2(sphericalPhi(rLocal)*inv2Pi, sphericalTheta(rLocal)*invPi);
-	
-	vec3 prefilteredColor = textureLod(textures[light.datai[3]], st, roughness*5.0f).rgb;    
+	vec3 prefilteredColor = light.datai[3]!=-1 ? textureLod(textures[light.datai[3]], st, roughness*5.0f).rgb : light.datav[2].rgb;
     vec2 brdf  = texture(textures[light.datai[4]], vec2(max(dot(n, v), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
