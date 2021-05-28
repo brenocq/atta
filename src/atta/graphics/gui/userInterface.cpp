@@ -116,40 +116,40 @@ namespace atta
 			);
 		}
 
-		_windows.push_back(
-			new guib::Window(
-			{
-				.name = "Scene",
-				.closable = false,
-				.minimizable = true,
-				.movable = false,
-				.offset = {0, 28, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
-				.size = {200, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
-				.child = new guib::Column(
-					{
-						.hAlignment = guib::ALIGN_CENTER,
-						.vAlignment = guib::ALIGN_START,
-						.children = sceneTreeWidgets
-					})
-			})	
-		);
+		//_windows.push_back(
+		//	new guib::Window(
+		//	{
+		//		.name = "Scene",
+		//		.closable = false,
+		//		.minimizable = true,
+		//		.movable = false,
+		//		.offset = {0, 28, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+		//		.size = {200, 1, guib::UNIT_PIXEL, guib::UNIT_PERCENT},
+		//		.child = new guib::Column(
+		//			{
+		//				.hAlignment = guib::ALIGN_CENTER,
+		//				.vAlignment = guib::ALIGN_START,
+		//				.children = sceneTreeWidgets
+		//			})
+		//	})	
+		//);
 
-		_windows.push_back(
-			new guib::Window(
-			{
-				.name = "Draggable",
-				.closable = true,
-				.minimizable = true,
-				.movable = true,
-				.offset = {0.8, 28, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
-				.size = {.2, 200, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
-				/*.child = new guib::Box(
-					{
-						.color = {1,0,1,1},
-						.size  = {1,.7}
-					})*/
-			})	
-		);
+		//_windows.push_back(
+		//	new guib::Window(
+		//	{
+		//		.name = "Draggable",
+		//		.closable = true,
+		//		.minimizable = true,
+		//		.movable = true,
+		//		.offset = {0.8, 28, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+		//		.size = {.2, 200, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+		//		/*.child = new guib::Box(
+		//			{
+		//				.color = {1,0,1,1},
+		//				.size  = {1,.7}
+		//			})*/
+		//	})	
+		//);
 
 		_guiRender->setRootWidget(_rootWidget);
 		_guiRender->setWindowWidgets(_windows);

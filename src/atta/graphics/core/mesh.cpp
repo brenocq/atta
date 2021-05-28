@@ -79,10 +79,11 @@ namespace atta
 		const auto& objAttrib = objReader.GetAttrib();
 
 		std::unordered_map<Vertex, uint32_t> uniqueVertices(objAttrib.vertices.size());
-		size_t faceId = 0;
 		for(const auto& shape : objReader.GetShapes())
 		{
 			const auto& mesh = shape.mesh;
+			size_t faceId = 0;
+			Log::debug("Mesh", "Material id: $0", mesh.material_ids[0]);
 			for (const auto& index : mesh.indices)
 			{
 				Vertex vertex = {};
@@ -122,7 +123,6 @@ namespace atta
 
 				_indices.push_back(uniqueVertices[vertex]);
 			}
-			faceId = 0;
 		}
 
 		// If the model did not specify normals, then create smooth normals that conserve the same number of vertices.

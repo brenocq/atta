@@ -75,6 +75,8 @@ vec3 Light_Le(Light light, vec3 rayDirection)
 	{
 		case LIGHT_TYPE_INFINITE:
 			return InfiniteLight_Le(light, rayDirection);
+		case LIGHT_TYPE_DISTANT:
+			return DistantLight_Le(light, rayDirection);
 		default:
 			return vec3(0,0,0);
 	}

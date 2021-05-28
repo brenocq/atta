@@ -28,6 +28,18 @@ vec3 DistantLight_sampleLi(
 	return L;
 }
 
+vec3 DistantLight_Le(Light light, vec3 rayDirection)
+{
+	vec3 color = light.datav[0].xyz;
+	vec3 dir = light.datav[1].xyz;
+	float d = dot(rayDirection, dir);
+	d-=0.98;
+	if(d<0)d=0;
+	d*=50;
+
+	return color + vec3(.2,.2,.2)*d;
+}
+
 vec3 DistantLight_power(vec3 L)
 {
 	return L * 3.1415926535f * 5000*5000;
@@ -35,7 +47,7 @@ vec3 DistantLight_power(vec3 L)
 
 uint DistantLight_flags()
 {
-	return LIGHT_FLAG_DELTA_POSITION;
+	return LIGHT_FLAG_DELTA_POSITION | LIGHT_FLAG_INFINITE;
 }
 
 #endif// LIGHTS_DISTANT_GLSL
