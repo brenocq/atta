@@ -11,6 +11,7 @@
 #include <atta/helpers/evaluator.h>
 #include <atta/graphics/vulkan/imageMemoryBarrier.h>
 #include <atta/graphics/renderers/rastRenderer/rastRenderer.h>
+#include <atta/graphics/renderers/rayTracing/rayTracingVulkan/rayTracing.h>
 #include <atta/graphics/renderers/renderer2D/renderer2D.h>
 
 namespace atta
@@ -92,17 +93,30 @@ namespace atta
 		if(_cameraControlType == CAMERA_CONTROL_TYPE_3D)
 		{
 			// Create rasterization render
-			RastRenderer::CreateInfo rastRendInfo = {
+			//RastRenderer::CreateInfo rastRendInfo = {
+			//	.vkCore = _vkCore,
+			//	.commandPool = _commandPool,
+			//	.width = 1200,
+			//	.height = 900,
+			//	.scene = _scene,
+			//	.viewMat = atta::lookAt(vec3(-.5,.5,-.5), vec3(0,0,0), vec3(0,1,0)),
+			//	.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+			//};
+			//std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
+			//_renderers.push_back(std::static_pointer_cast<Renderer>(rast));
+
+			rt::vk::RayTracing::CreateInfo rtVkRendInfo = 
+			{
 				.vkCore = _vkCore,
 				.commandPool = _commandPool,
 				.width = 1200,
 				.height = 900,
 				.scene = _scene,
-				.viewMat = atta::lookAt(vec3(-.5,.5,-.5), vec3(0,0,0), vec3(0,1,0)),
-				.projMat = atta::perspective(atta::radians(60.0), 1200.0/900, 0.01f, 1000.0f)
+				.viewMat = atta::lookAt(vec3(-10,1,-10), vec3(0,0,0), vec3(0,1,0)),
+				.projMat = atta::perspective(atta::radians(60), 1200.0/900, 0.01f, 1000.0f)//39.430485
 			};
-			std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
-			_renderers.push_back(std::static_pointer_cast<Renderer>(rast));
+			std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
+			_renderers.push_back(std::static_pointer_cast<Renderer>(rtVk));
 		}
 		else
 		{

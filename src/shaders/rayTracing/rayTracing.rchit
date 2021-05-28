@@ -47,7 +47,7 @@ void main()
 	const Vertex v2 = unpackVertex(vertexOffset + Indices[indexOffset + gl_PrimitiveID * 3 + 2]);
 
 	// Get material
-	Material material = materialBuffer[object.materialOffset];
+	Material material = materialBuffer[object.materialOffset+v0.materialIndex];
 
 	// Compute the ray hit point properties
 	const vec3 barycentrics = vec3(1.0 - hitAttributes.x - hitAttributes.y, hitAttributes.x, hitAttributes.y);

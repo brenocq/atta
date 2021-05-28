@@ -12,7 +12,7 @@
 namespace atta
 {
 	ModelViewController::ModelViewController(ControlType controlType):
-		_controlType(controlType), _mouseMiddleButton(false), _shiftKey(false), _speed(0.1f),
+		_controlType(controlType), _mouseMiddleButton(false), _shiftKey(false), _speed(1.0f),
 		_right(vec3(1,0,0)), _up(vec3(0,1,0)), _forward(vec3(0,0,-1))
 	{
 	}
