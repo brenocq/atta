@@ -16,6 +16,7 @@ const uint BXDF_TYPE_LAMBERTIAN_TRANSMISSION	= 4;
 const uint BXDF_TYPE_OREN_NAYAR					= 5;
 const uint BXDF_TYPE_MICROFACET_REFLECTION		= 6;
 const uint BXDF_TYPE_MICROFACET_TRANSMISSION	= 7;
+const uint BXDF_TYPE_UBER						= 13;
 // Disney
 const uint BXDF_TYPE_DISNEY						= 8;
 const uint BXDF_TYPE_DISNEY_CLEARCOAT			= 9;
@@ -38,7 +39,7 @@ struct BXDF
 	// General data about the BXDF
 	uint datai[4];
 	float dataf[12];
-	vec3 datav[4];
+	vec3 datav[5];
 };
 
 //---------- BXDF data description ----------//
@@ -90,7 +91,18 @@ struct BXDF
 // - datav
 // 		[0] color
 // 		[1] scatterDistance
-
+// BXDF_TYPE_UBER
+// - dataf
+// 		[0] roughnessu
+// 		[1] roughnessv
+// 		[2] eta
+// 		[3] bumpMap
+// - datav
+// 		[0] Kd
+// 		[1] Ks
+// 		[2] Kr
+// 		[3] Kt
+// 		[4] opacity
 
 struct BSDF
 {
