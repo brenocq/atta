@@ -17,7 +17,7 @@ namespace atta
 		alignas(4)	unsigned type[1] = {MATERIAL_TYPE_NONE};
 		alignas(4)	int datai[16];
 		alignas(4)	float dataf[16];
-		alignas(16)	vec4 datav[2];
+		alignas(16)	vec4 datav[8];
 
 		enum Type
 		{
@@ -27,6 +27,7 @@ namespace atta
 			MATERIAL_TYPE_METAL,
 			MATERIAL_TYPE_DISNEY,
 			MATERIAL_TYPE_UNREAL_ENGINE_4,
+			MATERIAL_TYPE_UBER,
 		};
 
 		//------------------- Diffuse ---------------------//
@@ -95,6 +96,63 @@ namespace atta
 
 			m.datav[0] = vec4(info.eta,-1);
 			m.datav[1] = vec4(info.k,-1);
+
+			return m;
+		}
+
+		//------------------- Uber ---------------------//
+		struct UberInfo {
+			int kdTexture = -1;
+			int ksTexture = -1;
+			int krTexture = -1;
+			int ktTexture = -1;
+			int roughnessTexture = -1;
+			int uroughnessTexture = -1;
+			int vroughnessTexture = -1;
+			int opacityTexture = -1;
+			int etaTexture = -1;
+			int bumpTexture = -1;
+			bool remapRoughness = true;
+
+			vec3 kd = {.25f,.25f,.25f};
+			vec3 ks = {.25f,.25f,.25f};
+			vec3 kr = {0,0,0};
+			vec3 kt = {0,0,0};
+			vec3 opacity = {1,1,1};
+			float roughness = 1.0f;
+			float uroughness = -1;
+			float vroughness = -1;
+			float eta = 1.5f;
+			float bump = 0;
+		};
+		static Material uber(UberInfo info)
+		{
+			Material m;
+			m.type[0] = MATERIAL_TYPE_UBER;
+
+			m.datai[0] = info.kdTexture;
+			m.datai[1] = info.ksTexture;
+			m.datai[2] = info.krTexture;
+			m.datai[3] = info.ktTexture;
+			m.datai[4] = info.roughnessTexture;
+			m.datai[5] = info.uroughnessTexture;
+			m.datai[6] = info.vroughnessTexture;
+			m.datai[7] = info.opacityTexture;
+			m.datai[8] = info.etaTexture;
+			m.datai[9] = info.bumpTexture;
+			m.datai[10] = info.remapRoughness?1:0;
+
+			m.dataf[0] = info.roughness;
+			m.dataf[1] = info.uroughness;
+			m.dataf[2] = info.vroughness;
+			m.dataf[3] = info.eta;
+			m.dataf[4] = info.bump;
+
+			m.datav[0] = vec4(info.kd,-1);
+			m.datav[1] = vec4(info.ks,-1);
+			m.datav[2] = vec4(info.kr,-1);
+			m.datav[3] = vec4(info.kt,-1);
+			m.datav[4] = vec4(info.opacity,-1);
 
 			return m;
 		}

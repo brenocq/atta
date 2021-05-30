@@ -13,6 +13,7 @@ const uint MATERIAL_TYPE_MIRROR	 		= 2;
 const uint MATERIAL_TYPE_METAL	 		= 3;
 const uint MATERIAL_TYPE_DISNEY	 		= 4;
 const uint MATERIAL_TYPE_UNREAL_ENGINE_4= 5;
+const uint MATERIAL_TYPE_UBER			= 6;
 
 struct Material 
 {
@@ -22,7 +23,7 @@ struct Material
 	// General data about the material
 	int datai[16];
 	float dataf[16];
-	vec4 datav[2];
+	vec4 datav[8];
 };
 
 //---------- Data description ----------//
@@ -107,5 +108,31 @@ struct Material
 // 		[2] uniform ao
 // - datav
 // 		[0] uniform albedo
+//
+//----- UBER MATERIAL -----
+// - datai
+// 		[0](vec3 texture) Kd texture index
+// 		[1](vec3 texture) Ks texture index
+// 		[2](vec3 texture) Kr texture index
+// 		[3](vec3 texture) Kt texture index
+// 		[4](float texture) roughness texture index
+// 		[5](float texture) roughnessu texture index
+// 		[6](float texture) roughnessv texture index
+// 		[7](vec3 texture) opacity texture index
+// 		[8](float texture) eta texture index
+// 		[9](float texture) bumpMap texture index
+// 		[10](bool) active->remap urough and vrough from [0,1] to expected alpha
+// - dataf
+// 		[0] uniform roughness
+// 		[1] uniform roughnessu
+// 		[2] uniform roughnessv
+// 		[3] uniform eta
+// 		[4] uniform bumpMap
+// - datav
+// 		[0] uniform Kd
+// 		[1] uniform Ks
+// 		[2] uniform Kr
+// 		[3] uniform Kt
+// 		[4] uniform opacity
 
 #endif// MATERIAL_GLSL
