@@ -15,6 +15,7 @@
 #include "microfacetReflection.glsl"
 #include "microfacetTransmission.glsl"
 #include "disney/disney.glsl"
+#include "uber.glsl"
 
 uint BXDF_flags(BXDF bxdf);
 
@@ -105,6 +106,8 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 			}
 		case BXDF_TYPE_DISNEY:
 			return BXDF_Disney_f(wo, wi, bxdf);
+		case BXDF_TYPE_UBER:
+			return BXDF_Uber_f(wo, wi, bxdf);
 		default:
 			return vec3(0,0,0);
 	}
@@ -165,12 +168,18 @@ vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, out ui
 			}
 		case BXDF_TYPE_DISNEY:
 			return BXDF_Disney_sampleF(wo, wi, u, pdf, bxdf);
+		case BXDF_TYPE_UBER:
+			return BXDF_Uber_sampleF(wo, wi, u, pdf, bxdf);
 		case BXDF_TYPE_LAMBERTIAN_TRANSMISSION:
 			{
 				vec3 T = bxdf.datav[0];
 				return BXDF_LambertianTransmission_sampleF(wo, wi, u, pdf, T);
 			}
 		case BXDF_TYPE_LAMBERTIAN_REFLECTION:
+			{
+				vec3 R = bxdf.datav[0];
+				return BXDF_LambertianReflection_sampleF(wo, wi, u, pdf, R);
+			}
 		case BXDF_TYPE_OREN_NAYAR:
 		default:
 			wi = cosineSampleHemisphere(u);
@@ -230,6 +239,8 @@ uint BXDF_flags(BXDF bxdf)
 			return BXDF_LambertianTransmission_flags();
 		case BXDF_TYPE_DISNEY:
 			return BXDF_Disney_flags();
+		case BXDF_TYPE_UBER:
+			return BXDF_Uber_flags();
 		default:
 			return 0;
 	}

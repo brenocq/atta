@@ -44,7 +44,7 @@ void main()
 
 		// Calculate camera ray (TODO use specific 2D sampler algorithm to improve results)
 		CameraRay rayFromCamera;
-		float lensRadius = 0.0125;
+		float lensRadius = 0.000125;
 		float focusDistance = 17.32/2;
 		rayFromCamera = generateRayProjectiveCamera(
 			ubo.projMatInverse, ubo.viewMatInverse, uv, 

@@ -9,6 +9,11 @@
 #include "base.glsl"
 #include "fresnel.glsl"
 
+vec3 BXDF_SpecularReflection_f()
+{
+	return vec3(0,0,0);
+}
+
 vec3 BXDF_SpecularReflection_sampleF(
 		vec3 wo, out vec3 wi, vec2 u, out float pdf, 
 		Fresnel fresnel, vec3 R)
