@@ -13,6 +13,7 @@
 #include "metal.glsl"
 #include "disney/disney.glsl"
 #include "uber.glsl"
+#include "glass.glsl"
 
 BSDF Material_computeScatteringFunctions(inout Material material, vec2 uv)
 {
@@ -28,6 +29,8 @@ BSDF Material_computeScatteringFunctions(inout Material material, vec2 uv)
 			return Material_Disney_computeScatteringFunctions(material, uv);
 		case MATERIAL_TYPE_UBER:
 			return Material_Uber_computeScatteringFunctions(material, uv);
+		case MATERIAL_TYPE_GLASS:
+			return Material_Glass_computeScatteringFunctions(material, uv);
 	}
 
 	BSDF bsdf;

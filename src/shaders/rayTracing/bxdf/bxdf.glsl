@@ -16,6 +16,7 @@
 #include "microfacetTransmission.glsl"
 #include "disney/disney.glsl"
 #include "uber.glsl"
+#include "glass.glsl"
 
 uint BXDF_flags(BXDF bxdf);
 
@@ -108,6 +109,8 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 			return BXDF_Disney_f(wo, wi, bxdf);
 		case BXDF_TYPE_UBER:
 			return BXDF_Uber_f(wo, wi, bxdf);
+		case BXDF_TYPE_GLASS:
+			return BXDF_Glass_f(wo, wi, bxdf);
 		default:
 			return vec3(0,0,0);
 	}
@@ -170,6 +173,8 @@ vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, out ui
 			return BXDF_Disney_sampleF(wo, wi, u, pdf, bxdf);
 		case BXDF_TYPE_UBER:
 			return BXDF_Uber_sampleF(wo, wi, u, pdf, bxdf);
+		case BXDF_TYPE_GLASS:
+			return BXDF_Glass_sampleF(wo, wi, u, pdf, bxdf);
 		case BXDF_TYPE_LAMBERTIAN_TRANSMISSION:
 			{
 				vec3 T = bxdf.datav[0];
@@ -240,6 +245,8 @@ uint BXDF_flags(BXDF bxdf)
 		case BXDF_TYPE_DISNEY:
 			return BXDF_Disney_flags();
 		case BXDF_TYPE_UBER:
+			return BXDF_Uber_flags();
+		case BXDF_TYPE_GLASS:
 			return BXDF_Uber_flags();
 		default:
 			return 0;

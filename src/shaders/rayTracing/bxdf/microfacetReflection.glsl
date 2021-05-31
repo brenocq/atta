@@ -17,6 +17,7 @@ vec3 BXDF_MicrofacetReflection_f(vec3 wo, vec3 wi,
 	float cosThetaO = absCosTheta(wo), cosThetaI = absCosTheta(wi);
 	vec3 wh = wi+wo;
 
+	// Handle degenerate cases
 	if(cosThetaI == 0 || cosThetaO == 0) return vec3(0,0,0);
 	if(wh.x == 0 && wh.y==0 && wh.z==0) return vec3(0,0,0);
 	wh = normalize(wh);
