@@ -17,6 +17,20 @@ vec3 BXDF_LambertianReflection_f(vec3 R)
 	return R * invPi;
 }
 
+float BXDF_LambertianReflection_pdf(vec3 wo, vec3 wi)
+{
+	return sameHemisphere(wo, wi) ? absCosTheta(wi)*invPi : 0;
+}
+
+vec3 BXDF_LambertianReflection_sampleF(vec3 wo, out vec3 wi, vec2 u, out float pdf, vec3 R) 
+{
+	wi = cosineSampleHemisphere(u);
+	if(wo.z<0) wi.z*=-1;
+	pdf = BXDF_LambertianReflection_pdf(wo, wi);
+
+	return BXDF_LambertianReflection_f(R);
+}
+
 vec3 BXDF_LambertianReflection_rho(vec3 R)
 {
 	return R;
