@@ -28,6 +28,7 @@ namespace atta
 			MATERIAL_TYPE_DISNEY,
 			MATERIAL_TYPE_UNREAL_ENGINE_4,
 			MATERIAL_TYPE_UBER,
+			MATERIAL_TYPE_GLASS,
 		};
 
 		//------------------- Diffuse ---------------------//
@@ -71,7 +72,7 @@ namespace atta
 
 			vec3 eta = {1,1,1};
 			vec3 k = {1,1,1};
-			float roughness = 0.5f;
+			float roughness = 0.01f;
 			float uroughness = -1;
 			float vroughness = -1;
 			float bump = 0;
@@ -153,6 +154,51 @@ namespace atta
 			m.datav[2] = vec4(info.kr,-1);
 			m.datav[3] = vec4(info.kt,-1);
 			m.datav[4] = vec4(info.opacity,-1);
+
+			return m;
+		}
+
+		//------------------- Glass ---------------------//
+		struct GlassInfo {
+			int krTexture = -1;
+			int ktTexture = -1;
+			int roughnessTexture = -1;
+			int uroughnessTexture = -1;
+			int vroughnessTexture = -1;
+			int etaTexture = -1;
+			int bumpTexture = -1;
+			bool remapRoughness = true;
+
+			vec3 kr = {1,1,1};
+			vec3 kt = {1,1,1};
+			float roughness = 0.0f;
+			float uroughness = -1;
+			float vroughness = -1;
+			float eta = 1.5f;
+			float bump = 0;
+		};
+		static Material glass(GlassInfo info)
+		{
+			Material m;
+			m.type[0] = MATERIAL_TYPE_GLASS;
+
+			m.datai[0] = info.krTexture;
+			m.datai[1] = info.ktTexture;
+			m.datai[2] = info.roughnessTexture;
+			m.datai[3] = info.uroughnessTexture;
+			m.datai[4] = info.vroughnessTexture;
+			m.datai[5] = info.etaTexture;
+			m.datai[6] = info.bumpTexture;
+			m.datai[7] = info.remapRoughness?1:0;
+
+			m.dataf[0] = info.roughness;
+			m.dataf[1] = info.uroughness;
+			m.dataf[2] = info.vroughness;
+			m.dataf[3] = info.eta;
+			m.dataf[4] = info.bump;
+
+			m.datav[0] = vec4(info.kr,-1);
+			m.datav[1] = vec4(info.kt,-1);
 
 			return m;
 		}

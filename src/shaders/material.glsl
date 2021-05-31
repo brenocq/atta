@@ -14,6 +14,7 @@ const uint MATERIAL_TYPE_METAL	 		= 3;
 const uint MATERIAL_TYPE_DISNEY	 		= 4;
 const uint MATERIAL_TYPE_UNREAL_ENGINE_4= 5;
 const uint MATERIAL_TYPE_UBER			= 6;
+const uint MATERIAL_TYPE_GLASS			= 7;
 
 struct Material 
 {
@@ -134,5 +135,24 @@ struct Material
 // 		[2] uniform Kr
 // 		[3] uniform Kt
 // 		[4] uniform opacity
+//----- GLASS MATERIAL -----
+// - datai
+// 		[0](vec3 texture) Kr texture index
+// 		[1](vec3 texture) Kt texture index
+// 		[2](float texture) roughness texture index
+// 		[3](float texture) roughnessu texture index
+// 		[4](float texture) roughnessv texture index
+// 		[5](float texture) eta texture index
+// 		[6](float texture) bumpMap texture index
+// 		[7](bool) active->remap urough and vrough from [0,1] to expected alpha
+// - dataf
+// 		[0] uniform roughness
+// 		[1] uniform roughnessu
+// 		[2] uniform roughnessv
+// 		[3] uniform eta
+// 		[4] uniform bumpMap
+// - datav
+// 		[0] uniform Kr
+// 		[1] uniform Kt
 
 #endif// MATERIAL_GLSL
