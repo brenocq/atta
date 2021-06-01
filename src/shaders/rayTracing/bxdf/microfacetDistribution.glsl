@@ -38,8 +38,8 @@ float BXDF_MicrofacetDistribution_D(MicrofacetDistribution dist, vec3 wh)
 	{
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_BECKMANN:
 			return BXDF_MicrofacetDistribution_Beckmann_D(dist, wh);
-		case BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ:
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_DISNEY:
+		case BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ:
 			return BXDF_MicrofacetDistribution_TrowbridgeReitz_D(dist, wh);
 		default:
 			return 0;
@@ -52,8 +52,8 @@ float BXDF_MicrofacetDistribution_lambda(MicrofacetDistribution dist, vec3 w)
 	{
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_BECKMANN:
 			return BXDF_MicrofacetDistribution_Beckmann_lambda(dist, w);
-		case BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ:
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_DISNEY:
+		case BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ:
 			return BXDF_MicrofacetDistribution_TrowbridgeReitz_lambda(dist, w);
 		default:
 			return 0;
@@ -82,8 +82,8 @@ vec3 BXDF_MicrofacetDistribution_sampleWh(MicrofacetDistribution dist, vec3 wo, 
 	{
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_BECKMANN:
 			return BXDF_MicrofacetDistribution_Beckmann_sampleWh(dist, wo, u);
-		case BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ:
 		case BXDF_MICROFACET_DISTRIBUTION_TYPE_DISNEY:
+		case BXDF_MICROFACET_DISTRIBUTION_TYPE_TROWBRIDGE_REITZ:
 			return BXDF_MicrofacetDistribution_TrowbridgeReitz_sampleWh(dist, wo, u);
 		default:
 			return vec3(0,0,0);
@@ -185,7 +185,7 @@ float BXDF_MicrofacetDistribution_TrowbridgeReitz_D(MicrofacetDistribution dist,
 	float tan2Th = tan2Theta(wh);
 	if(isinf(tan2Th)) return 0;
 	float cos4Th = cos2Theta(wh)*cos2Theta(wh);
-	float e = (cos2Phi(wh)/(alphaX*alphaX)+sin2Phi(wh)/(alphaY*alphaY))*tan2Th;
+	float e = (cos2Phi(wh)/(alphaX*alphaX) + sin2Phi(wh)/(alphaY*alphaY))*tan2Th;
 	return 1/(pi*alphaX*alphaY*cos4Th*(1+e)*(1+e));
 }
 
@@ -214,7 +214,7 @@ vec3 BXDF_MicrofacetDistribution_TrowbridgeReitz_sampleWh(MicrofacetDistribution
 		}
 		else
 		{
-			phi = atan(alphaY / alphaX * tan(2 * pi * u.y + .5f * pi));
+			phi = atan(alphaY / alphaX * tan(2 * pi * u.y + 0.5f * pi));
 			if(u.y > .5f) phi += pi;
 			float sinPh = sin(phi), cosPh = cos(phi);
 			const float alphax2 = alphaX * alphaX, alphay2 = alphaY * alphaY;

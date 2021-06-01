@@ -18,6 +18,7 @@ const uint BXDF_TYPE_MICROFACET_REFLECTION		= 6;
 const uint BXDF_TYPE_MICROFACET_TRANSMISSION	= 7;
 const uint BXDF_TYPE_UBER						= 13;
 const uint BXDF_TYPE_GLASS						= 14;
+const uint BXDF_TYPE_SUBSTRATE					= 15;
 // Disney
 const uint BXDF_TYPE_DISNEY						= 8;
 const uint BXDF_TYPE_DISNEY_CLEARCOAT			= 9;
@@ -113,6 +114,14 @@ struct BXDF
 // - datav
 // 		[0] Kr
 // 		[1] Kt
+// BXDF_TYPE_SUBSTRATE
+// - dataf
+// 		[0] roughnessu
+// 		[1] roughnessv
+// 		[2] bumpMap
+// - datav
+// 		[0] Kd
+// 		[1] Ks
 
 struct BSDF
 {

@@ -29,6 +29,7 @@ namespace atta
 			MATERIAL_TYPE_UNREAL_ENGINE_4,
 			MATERIAL_TYPE_UBER,
 			MATERIAL_TYPE_GLASS,
+			MATERIAL_TYPE_SUBSTRATE,
 		};
 
 		//------------------- Diffuse ---------------------//
@@ -199,6 +200,47 @@ namespace atta
 
 			m.datav[0] = vec4(info.kr,-1);
 			m.datav[1] = vec4(info.kt,-1);
+
+			return m;
+		}
+
+		//------------------- Substrate ---------------------//
+		struct SubstrateInfo {
+			int kdTexture = -1;
+			int ksTexture = -1;
+			int roughnessTexture = -1;
+			int uroughnessTexture = -1;
+			int vroughnessTexture = -1;
+			int bumpTexture = -1;
+			bool remapRoughness = true;
+
+			vec3 kd = {.5,.5,.5};
+			vec3 ks = {.5,.5,.5};
+			float roughness = 0.1f;
+			float uroughness = -1;
+			float vroughness = -1;
+			float bump = 0;
+		};
+		static Material substrate(SubstrateInfo info)
+		{
+			Material m;
+			m.type[0] = MATERIAL_TYPE_SUBSTRATE;
+
+			m.datai[0] = info.kdTexture;
+			m.datai[1] = info.ksTexture;
+			m.datai[2] = info.roughnessTexture;
+			m.datai[3] = info.uroughnessTexture;
+			m.datai[4] = info.vroughnessTexture;
+			m.datai[5] = info.bumpTexture;
+			m.datai[6] = info.remapRoughness?1:0;
+
+			m.dataf[0] = info.roughness;
+			m.dataf[1] = info.uroughness;
+			m.dataf[2] = info.vroughness;
+			m.dataf[3] = info.bump;
+
+			m.datav[0] = vec4(info.kd,-1);
+			m.datav[1] = vec4(info.ks,-1);
 
 			return m;
 		}

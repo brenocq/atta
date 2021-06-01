@@ -36,7 +36,7 @@ vec3 BXDF_Glass_f(vec3 wo, vec3 wi, BXDF bxdf)
 	float eta = bxdf.dataf[2];
 
 	bool isSpecular = roughu==0 && roughv==0;
-	bool allowMultipleLobes = false;
+	bool allowMultipleLobes = true;
 	if(isSpecular && allowMultipleLobes)
 	{
 		f += BXDF_FresnelSpecular_f();
@@ -103,7 +103,7 @@ vec3 BXDF_Glass_sampleF(vec3 wo, out vec3 wi, vec2 u, out float pdf, BXDF bxdf)
 	int qtyBXDF = int(!isBlack(R)) + int(!isBlack(T));
 	int count = min(int(random*qtyBXDF), qtyBXDF-1);
 
-	bool allowMultipleLobes = false;
+	bool allowMultipleLobes = true;
 	if(isSpecular && allowMultipleLobes)
 	{
 		return BXDF_FresnelSpecular_sampleF(wo, wi, u, pdf, R, T, 1.0f, eta); 

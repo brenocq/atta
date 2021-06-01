@@ -32,16 +32,16 @@ BSDF Material_Metal_computeScatteringFunctions(inout Material material, vec2 uv)
 	float vRough;
 
 	//---------- Roughness ----------//
-	if(roughTexIndex!=-1 || material.dataf[0]!=-1)// Isotropic roughness
+	uRough = uroughTexIndex==-1 ? material.dataf[1] : texture(textures[uroughTexIndex], uv).x;
+	vRough = vroughTexIndex==-1 ? material.dataf[2] : texture(textures[vroughTexIndex], uv).x;
+	// Substitute -1 by default roughness
+	if(roughTexIndex!=-1 || material.dataf[0]!=-1)
 	{
 		float rough = roughTexIndex==-1 ? material.dataf[0] : texture(textures[roughTexIndex], uv).x;
-		uRough = rough;
-		vRough = rough;
-	}
-	else// Anisotropic roughness
-	{
-		uRough = uroughTexIndex==-1 ? material.dataf[1] : texture(textures[uroughTexIndex], uv).x;
-		vRough = vroughTexIndex==-1 ? material.dataf[2] : texture(textures[vroughTexIndex], uv).x;
+		if(uRough == -1)
+			uRough = rough;
+		if(vRough == -1)
+			vRough = rough;
 	}
 
 	if(remapRoughness)
