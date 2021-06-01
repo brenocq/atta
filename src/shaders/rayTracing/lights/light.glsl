@@ -192,7 +192,12 @@ vec3 Light_estimateDirect(uint nLights, Light light, vec2 uLight, vec2 uScatteri
 		{
 			// Evaluate BSDF for light sampling strategy
 			f = BSDF_f(ray.it.wo, wi, bsdfFlags) * abs(dot(wi, ray.it.n));// TODO use shading normal
-			scatteringPdf = BSDF_pdf(ray.it.bsdf, ray.it.wo, wi, bsdfFlags);
+
+			// Scattering pdf is used only when the light is not delta light
+			if(!Light_isDeltaLight(light))
+				scatteringPdf = BSDF_pdf(ray.it.bsdf, ray.it.wo, wi, bsdfFlags);
+			else
+				scatteringPdf = 1;
 		}
 		else
 		{
@@ -226,7 +231,7 @@ vec3 Light_estimateDirect(uint nLights, Light light, vec2 uLight, vec2 uScatteri
 	}
 
 	// TODO sample bsdf with multiple importance sampling
-	if(!Light_isDeltaLight(light))
+	if(!Light_isDeltaLight(light) && false)
 	{
 		vec3 f;
 		bool sampledSpecular = false;

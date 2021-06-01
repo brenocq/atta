@@ -43,7 +43,7 @@ vec3 BXDF_Fresnel_evaluate(Fresnel fresnel, float cosThetaI)
 				vec3 etaI = fresnel.data0;
 				vec3 etaT = fresnel.data1;
 				vec3 k = fresnel.data2;
-				return FrConductor(cosThetaI, etaI, etaT, k);
+				return FrConductor(abs(cosThetaI), etaI, etaT, k);
 			}
 		case BXDF_FRESNEL_TYPE_DISNEY:
 			{

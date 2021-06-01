@@ -17,6 +17,7 @@
 #include "disney/disney.glsl"
 #include "uber.glsl"
 #include "glass.glsl"
+#include "substrate.glsl"
 
 uint BXDF_flags(BXDF bxdf);
 
@@ -48,6 +49,8 @@ float BXDF_pdf(BXDF bxdf, vec3 wo, vec3 wi)
 			}
 		case BXDF_TYPE_LAMBERTIAN_TRANSMISSION:
 			return BXDF_LambertianTransmission_pdf(wo, wi);
+		case BXDF_TYPE_SUBSTRATE:
+			return BXDF_Substrate_pdf(wo, wi, bxdf);
 		default:
 			return sameHemisphere(wo, wi) ? absCosTheta(wi)*invPi : 0;
 	}
@@ -111,6 +114,8 @@ vec3 BXDF_f(BXDF bxdf, vec3 wo, vec3 wi)
 			return BXDF_Uber_f(wo, wi, bxdf);
 		case BXDF_TYPE_GLASS:
 			return BXDF_Glass_f(wo, wi, bxdf);
+		case BXDF_TYPE_SUBSTRATE:
+			return BXDF_Substrate_f(wo, wi, bxdf);
 		default:
 			return vec3(0,0,0);
 	}
@@ -175,6 +180,8 @@ vec3 BXDF_sampleF(BXDF bxdf, vec3 wo, out vec3 wi, vec2 u, out float pdf, out ui
 			return BXDF_Uber_sampleF(wo, wi, u, pdf, bxdf);
 		case BXDF_TYPE_GLASS:
 			return BXDF_Glass_sampleF(wo, wi, u, pdf, bxdf);
+		case BXDF_TYPE_SUBSTRATE:
+			return BXDF_Substrate_sampleF(wo, wi, u, pdf, bxdf);
 		case BXDF_TYPE_LAMBERTIAN_TRANSMISSION:
 			{
 				vec3 T = bxdf.datav[0];
@@ -247,7 +254,9 @@ uint BXDF_flags(BXDF bxdf)
 		case BXDF_TYPE_UBER:
 			return BXDF_Uber_flags();
 		case BXDF_TYPE_GLASS:
-			return BXDF_Uber_flags();
+			return BXDF_Glass_flags();
+		case BXDF_TYPE_SUBSTRATE:
+			return BXDF_Substrate_flags();
 		default:
 			return 0;
 	}
