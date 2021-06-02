@@ -62,6 +62,15 @@ namespace atta
 					std::shared_ptr<InfiniteLight> l = std::static_pointer_cast<InfiniteLight>(object);
 					_lights.push_back(Light::infinite(l->getRadiance(), l->getPosition(), l->getOrientation(), l->getPrecomputedPower(), l->getWorldRadius(), l->getTextureIndex(), l->getPdfTextureIndex(), l->getIrradianceTextureIndex()));
 				}
+				if(type == "TriangleMeshLight")
+				{
+					std::shared_ptr<TriangleMeshLight> l = std::static_pointer_cast<TriangleMeshLight>(object);
+					std::vector<vec3> vertices = l->getVertices();
+					for(int i=0;i<vertices.size()/3;i++)
+					{
+						_lights.push_back(Light::areaTriangle(l->getRadiance(), vertices[i*3], vertices[i*3+1], vertices[i*3+2]));
+					}
+				}
 			}
 		}
 	}

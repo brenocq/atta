@@ -12,6 +12,7 @@
 #include "spot.glsl"
 #include "distant.glsl"
 #include "infinite.glsl"
+#include "areaTriangle.glsl"
 
 //---------- Helpers ----------//
 bool isSurfaceInteraction()
@@ -59,6 +60,8 @@ vec3 Light_sampleLi(Light light, vec2 u, out vec3 wi, out float pdf, out Visibil
 			}
 		case LIGHT_TYPE_INFINITE:
 			return InfiniteLight_sampleLi(light, vp, u, wi, pdf, vis);
+		case LIGHT_TYPE_AREA_TRIANGLE:
+			return AreaTriangleLight_sampleLi(light, vp, u, wi, pdf, vis);
 		default:
 			return vec3(0,0,0);
 	}
@@ -88,6 +91,8 @@ float Light_pdfLi(Light light, Interaction it, vec3 wi)
 	{
 		case LIGHT_TYPE_INFINITE:
 			return InfiniteLight_pdfLi(light, it, wi);
+		case LIGHT_TYPE_AREA_TRIANGLE:
+			return AreaTriangleLight_pdfLi(light, it, wi);
 		default:
 			return 0.0f;
 	}
@@ -120,7 +125,9 @@ vec3 Light_power(Light light)
 				return DistantLight_power(L);
 			}
 		case LIGHT_TYPE_INFINITE:
-				return InfiniteLight_power(light);
+			return InfiniteLight_power(light);
+		case LIGHT_TYPE_AREA_TRIANGLE:
+			return AreaTriangleLight_power(light);
 		default:
 			return vec3(0,0,0);
 	}
@@ -138,6 +145,8 @@ uint Light_flags(Light light)
 			return DistantLight_flags();
 		case LIGHT_TYPE_INFINITE:
 			return InfiniteLight_flags();
+		case LIGHT_TYPE_AREA_TRIANGLE:
+			return AreaTriangleLight_flags();
 		default:
 			return 0;
 	}
@@ -184,6 +193,7 @@ vec3 Light_estimateDirect(uint nLights, Light light, vec2 uLight, vec2 uScatteri
 	VisibilityTester vis;
 	vec3 Li = Light_sampleLi(light, uLight, wi, lightPdf, vis);
 
+	// Sample wi from light
 	if(lightPdf>0 && !isBlack(Li))
 	{
 		// Compute BSDF or phase function’s value for light sample
@@ -230,8 +240,9 @@ vec3 Light_estimateDirect(uint nLights, Light light, vec2 uLight, vec2 uScatteri
 		}
 	}
 
-	// TODO sample bsdf with multiple importance sampling
-	if(!Light_isDeltaLight(light) && false)
+	// Sample wi from bsdf
+	if(lightPdf>0 && !isBlack(Li))
+	if(!Light_isDeltaLight(light))
 	{
 		vec3 f;
 		bool sampledSpecular = false;
