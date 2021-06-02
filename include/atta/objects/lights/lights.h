@@ -11,5 +11,6 @@
 #include <atta/objects/lights/spot.h>
 #include <atta/objects/lights/distant.h>
 #include <atta/objects/lights/infinite.h>
+#include <atta/objects/lights/triangleMesh.h>
 
 #endif// ATTA_OBJECTS_LIGHTS_LIGHTS_H

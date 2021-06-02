@@ -15,6 +15,7 @@ const uint LIGHT_TYPE_PROJECTION 	= 4;
 const uint LIGHT_TYPE_INFINITE 		= 5;
 const uint LIGHT_TYPE_GONIOMETRIC 	= 6;
 const uint LIGHT_TYPE_DIFFUSE 		= 7;
+const uint LIGHT_TYPE_AREA_TRIANGLE = 8;
 
 struct Light 
 {
@@ -28,7 +29,7 @@ struct Light
 	// General data about the light
 	uint datai[5];
 	float dataf[2];
-	vec4 datav[3];
+	vec4 datav[4];
 };
 
 //---------- Data description ----------//
@@ -60,5 +61,12 @@ struct Light
 //		[2] - Precomputed IBL diffuse (rast)
 //		[3] - Precomputed IBL specular (rast)
 //		[4] - Precomputed brdfLUT (rast)
+//
+// Area Triangle light
+// - datav
+// 		[0](vec3) -  I: Light Intensity
+// 		[1](vec3) -  v0: Vertex 0
+// 		[2](vec3) -  v1: Vertex 1
+// 		[3](vec3) -  v2: Vertex 2
 
 #endif// LIGHT_GLSL

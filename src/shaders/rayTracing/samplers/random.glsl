@@ -68,4 +68,10 @@ vec2 concentricSampleDisk(vec2 u)
 	return r * vec2(cos(theta), sin(theta));
 }
 
+vec2 uniformSampleTriangle(vec2 u)
+{
+	float su0 = sqrt(u.x);
+	return vec2(1-su0, u.y*su0);
+}
+
 #endif// RANDOM_GLSL

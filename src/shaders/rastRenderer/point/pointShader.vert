@@ -27,5 +27,5 @@ void main()
     gl_Position = fragPos;
     //gl_Position = vec4(0,0,.5,1);
     outFragColor = color;
-	gl_PointSize = 2.0f;
+	gl_PointSize = 10.0f;
 }

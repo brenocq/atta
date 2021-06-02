@@ -21,7 +21,7 @@ namespace atta
 		alignas(16) mat4 worldToLight = mat4(1);
 		alignas(4) unsigned datai[5];
 		alignas(4) float dataf[2];
-		alignas(16) vec4 datav[3];
+		alignas(16) vec4 datav[4];
 
 		enum Type
 		{
@@ -33,6 +33,7 @@ namespace atta
 			LIGHT_TYPE_INFINITE,
 			LIGHT_TYPE_GONIOMETRIC,
 			LIGHT_TYPE_DIFFUSE,
+			LIGHT_TYPE_AREA_TRIANGLE,
 		};
 
 		static Light point(vec3 position, vec3 intensity)
@@ -91,6 +92,18 @@ namespace atta
 			l.datai[4] = Texture::fromFile("/usr/include/atta/assets/textures/attaIBL/ibl_brdf_lut.png");
 			l.lightToWorld = transpose(posOri(worldCenter, orientation));
 			l.worldToLight = inverse(l.lightToWorld);
+
+			return l;
+		}
+
+		static Light areaTriangle(vec3 radiance, vec3 v0, vec3 v1, vec3 v2)
+		{
+			Light l;
+			l.type = LIGHT_TYPE_AREA_TRIANGLE;
+			l.datav[0] = vec4(radiance, -1);
+			l.datav[1] = vec4(v0, -1);
+			l.datav[2] = vec4(v1, -1);
+			l.datav[3] = vec4(v2, -1);
 
 			return l;
 		}

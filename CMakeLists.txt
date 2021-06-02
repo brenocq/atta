@@ -233,6 +233,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
         "src/atta/objects/lights/infinite.cpp"
         "src/atta/objects/lights/point.cpp"
         "src/atta/objects/lights/spot.cpp"
+		"src/atta/objects/lights/triangleMesh.cpp"
         "src/atta/objects/others/display/display.cpp"
         "src/atta/objects/sensors/camera/camera.cpp"
 		# parallel
@@ -446,6 +447,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
         "include/atta/objects/lights/lights.h"
         "include/atta/objects/lights/point.h"
         "include/atta/objects/lights/spot.h"
+		"include/atta/objects/lights/triangleMesh.h"
         "include/atta/objects/others/display/display.h"
         "include/atta/objects/sensors/camera/camera.h"
 		# parallel
