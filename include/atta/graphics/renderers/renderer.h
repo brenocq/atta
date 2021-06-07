@@ -46,6 +46,7 @@ namespace atta
 
 			virtual void render(VkCommandBuffer commandBuffer) = 0;
 			virtual void updateCameraMatrix(mat4 viewMatrix) = 0;
+			virtual void resize(unsigned width, unsigned height) = 0;
 
 			//---------- Getters ----------//
 			std::shared_ptr<vk::Image> getImage() const { return _image; }

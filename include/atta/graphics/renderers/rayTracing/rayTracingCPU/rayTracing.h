@@ -39,6 +39,7 @@ namespace atta::rt::cpu
 
 			void render(VkCommandBuffer commandBuffer);
 			void updateCameraMatrix(mat4 viewMatrix);
+			void resize(unsigned width, unsigned height) {}
 
 		private:
 			std::vector<float> _film;

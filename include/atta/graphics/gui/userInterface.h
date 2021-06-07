@@ -16,6 +16,7 @@
 #include <atta/core/scene.h>
 #include <atta/graphics/vulkan/commandPool.h>
 #include <atta/graphics/vulkan/commandBuffers.h>
+#include <atta/graphics/renderers/renderer.h>
 #include <atta/graphics/vulkan/image.h>
 #include <atta/graphics/vulkan/imageView.h>
 #include <atta/graphics/gui/guiPipeline.h>
@@ -43,6 +44,9 @@ namespace atta
 			void render(int imageIndex);
 			void render(VkCommandBuffer commandBuffer, int imageIndex);
 
+			// Renderer images
+			void addRenderer(std::string name, std::shared_ptr<Renderer> renderer){ _renderers[name]=renderer; }
+
 			// Window callbacks
 			void onWindowResized(int width, int height);
 			void onKey(int key, int scancode, int action, int mods);
@@ -58,6 +62,7 @@ namespace atta
 		private:
 			void createWidgetTree();
 			void createTextures();
+			void copyRendererImage(VkCommandBuffer commandBuffer, int imageIndex, std::string rendererName, VkOffset2D dstOffset={0,0});
 
 			std::shared_ptr<vk::Device> _device;
 			std::shared_ptr<Window> _window;
@@ -70,6 +75,7 @@ namespace atta
 			std::shared_ptr<GuiUniformBuffer> _guiUniformBuffer;
 			std::shared_ptr<GuiPipeline> _guiPipeline;
 			std::shared_ptr<guib::GuiRender> _guiRender;
+			std::map<std::string, std::shared_ptr<Renderer>> _renderers;// Renderer image from its name
 			
 			//---------- UI state ----------//
 			bool _shouldClose;

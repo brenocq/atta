@@ -38,8 +38,13 @@ namespace atta
 
 			void render(VkCommandBuffer commandBuffer);
 			void updateCameraMatrix(mat4 viewMatrix);
+			void resize(unsigned width, unsigned height);
 
 		private:
+			void createRenderPass();
+			void createFrameBuffers();
+			void createPipelines();
+
 			std::shared_ptr<Scene> _scene;
 			std::shared_ptr<vk::UniformBuffer> _uniformBuffer;
 			std::shared_ptr<vk::RenderPass> _renderPass;

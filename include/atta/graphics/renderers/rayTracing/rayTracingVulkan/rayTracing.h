@@ -44,6 +44,7 @@ namespace atta::rt::vk
 
 			void render(VkCommandBuffer commandBuffer);
 			void updateCameraMatrix(mat4 viewMatrix);
+			void resize(unsigned width, unsigned height) {}
 
 			void recreateTLAS();
 

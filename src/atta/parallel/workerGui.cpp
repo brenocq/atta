@@ -108,6 +108,7 @@ namespace atta
 			};
 			std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
 			_renderers.push_back(std::static_pointer_cast<Renderer>(rast));
+			_ui->addRenderer("mainRast", _renderers.back());
 		} 
 		else if(_guiRenderer == GUI_RENDERER_RAY_TRACING_VULKAN)
 		{
@@ -123,6 +124,7 @@ namespace atta
 			};
 			std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
 			_renderers.push_back(std::static_pointer_cast<Renderer>(rtVk));
+			_ui->addRenderer("mainRT", _renderers.back());
 		}
 		else if(_guiRenderer == GUI_RENDERER_2D)
 		{
@@ -135,6 +137,7 @@ namespace atta
 			};
 			std::shared_ptr<Renderer2D> renderer2D = std::make_shared<Renderer2D>(rend2DInfo);
 			_renderers.push_back(std::static_pointer_cast<Renderer>(renderer2D));
+			_ui->addRenderer("main2D", _renderers.back());
 		}
 		else
 		{
@@ -264,72 +267,11 @@ namespace atta
 		subresourceRange.baseArrayLayer = 0;
 		subresourceRange.layerCount = 1;
 
-		//---------- Run renderers ----------//
-		for(auto renderer : _renderers)
-		{
-			renderer->render(commandBuffer);
-		}
-
-		//---------- Copy main renderer image ----------//
-		VkImage imageToRender = //_vkCore->getDevice()->getMsaaSamples() > VK_SAMPLE_COUNT_1_BIT ? 
-			//_ui->getGuiPipeline()->getColorBuffers()[imageIndex]->getImage()->handle() :
-			_swapChain->getImages()[imageIndex];
-
-		vk::ImageMemoryBarrier::insert(commandBuffer, imageToRender, subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
-			0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
-		if(_renderers.size()>0)
-		{
-			copyImageCommands(commandBuffer, imageToRender, {
-				.image = _renderers[_mainRendererIndex]->getImage(),
-				.extent = _renderers[_mainRendererIndex]->getImage()->getExtent(),
-				.offset = {0,0}
-				});
-		}
-
-		vk::ImageMemoryBarrier::insert(commandBuffer, imageToRender, subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
-			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-
-		//---------- Render user interface on top of it----------//
+		//---------- Render user interface ----------//
 		// The ui resolve subpass change the layout to present
+		// Render renderers and copy their images if necessary
+		// It also updates the renderer extent if necessary
 		_ui->render(commandBuffer, imageIndex);
-	}
-
-	void WorkerGui::copyImageCommands(VkCommandBuffer commandBuffer, VkImage dstImage, ImageCopy imageCopy)
-	{
-		// Change src image layout to transfer src
-		VkImageSubresourceRange subresourceRange;
-		subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		subresourceRange.baseMipLevel = 0;
-		subresourceRange.levelCount = 1;
-		subresourceRange.baseArrayLayer = 0;
-		subresourceRange.layerCount = 1;
-
-		vk::ImageMemoryBarrier::insert(commandBuffer, imageCopy.image->handle(), subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
-			0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-
-		// Copy src image to dst image
-		VkExtent2D srcExtent = imageCopy.image->getExtent();
-		VkImageCopy region;
-		region.srcOffset = {0, 0, 0};
-		//region.srcOffsets = { static_cast<int32_t>(srcExtent.width), static_cast<int32_t>(srcExtent.height), 1 };
-		region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		region.srcSubresource.mipLevel = 0;
-		region.srcSubresource.baseArrayLayer = 0;
-		region.srcSubresource.layerCount = 1;
-		region.dstOffset = {0, 0, 0};
-		//region.dstOffsets[1] = { dstExtent.width, dstExtent.height, 1 };
-		region.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		region.dstSubresource.mipLevel = 0;
-		region.dstSubresource.baseArrayLayer = 0;
-		region.dstSubresource.layerCount = 1;
-		region.extent = { srcExtent.width, srcExtent.height, 1 };
-
-		vkCmdCopyImage(commandBuffer,
-			imageCopy.image->handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-			dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-			1, 
-			&region);
 	}
 
 	//------------------------------------------------------------------------------//
