@@ -48,6 +48,8 @@ namespace atta
 			};
 
 			struct UiConfig {
+				GuiRenderer guiRenderer;
+				std::function<void(WorkerGui*)> runBeforeWorkerGuiRender;
 				std::function<void(int key, int action)> handleKeyboard;
 			};
 
@@ -107,9 +109,11 @@ namespace atta
 
 			//---------- Robot stage ----------//
 			RobotProcessing _robotProcessing;
+			std::function<void(WorkerGui*)> _runBeforeWorkerGuiRender;
 			std::function<void(void)> _runAfterRobots;
 
 			//---------- UI ----------//
+			GuiRenderer _guiRenderer;
 			std::function<void(int key, int action)> _handleKeyboard;
 	};
 }

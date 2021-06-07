@@ -18,6 +18,7 @@ namespace guib {
 		Color hoverColor = {.45,.45,.45,1};
 		Color clickColor = {.5,.5,.5,1};
 		std::function<void()> onClick;
+		Size size = {.8,.8};
 		BoxRadius radius = {.5,.5,.5,.5};
 	};
 

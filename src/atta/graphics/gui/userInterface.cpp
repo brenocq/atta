@@ -53,44 +53,138 @@ namespace atta
 	void UserInterface::createWidgetTree()
 	{
 		_rootWidget = 
-			new guib::TopBar(
+			new guib::Column(
 			{
-				.color = guib::state::palette["background"],
-				.buttons = {
-					new guib::Box((guib::BoxInfo){.color = guib::state::palette["background"], .size = {5, 1, guib::UNIT_PIXEL}}),
-					new guib::MenuButton(
-					(guib::MenuButtonInfo){
-						.image = "logo16",
-						.imageColor = guib::state::palette["main"],
+				.children = {
+					new guib::TopBar(
+					{
 						.color = guib::state::palette["background"],
-						.hoverColor = guib::state::palette["light"],
-						.clickColor = guib::state::palette["lightLight"],
-						.children = {
-							new guib::MenuItem((guib::MenuItemInfo){.text = "Welcome!"}),
-							new guib::MenuItem((guib::MenuItemInfo){.text = "Atta main menu"}),
-							new guib::MenuItem((guib::MenuItemInfo){.text = "Test"})
+						.buttons = {
+							new guib::Box((guib::BoxInfo){.color = guib::state::palette["background"], .size = {5, 1, guib::UNIT_PIXEL}}),
+							new guib::MenuButton(
+							(guib::MenuButtonInfo){
+								.image = "logo16",
+								.imageColor = guib::state::palette["main"],
+								.color = guib::state::palette["background"],
+								.hoverColor = guib::state::palette["light"],
+								.clickColor = guib::state::palette["lightLight"],
+								.children = {
+									new guib::MenuItem((guib::MenuItemInfo){.text = "Welcome!"}),
+									new guib::MenuItem((guib::MenuItemInfo){.text = "Atta main menu"}),
+									new guib::MenuItem((guib::MenuItemInfo){.text = "Test"})
+								}
+							}),
+							new guib::MenuButton(
+							(guib::MenuButtonInfo){
+								.text = "Rendering",
+								.color = guib::state::palette["background"],
+								.hoverColor = guib::state::palette["light"],
+								.clickColor = guib::state::palette["lightLight"],
+							}),
+							new guib::MenuButton(
+							(guib::MenuButtonInfo){
+								.text = "Physics",
+								.color = guib::state::palette["background"],
+								.hoverColor = guib::state::palette["light"],
+								.clickColor = guib::state::palette["lightLight"],
+							}),
+							new guib::MenuButton(
+							(guib::MenuButtonInfo){
+								.text = "Help",
+								.color = guib::state::palette["background"],
+								.hoverColor = guib::state::palette["light"],
+								.clickColor = guib::state::palette["lightLight"],
+							})
 						}
 					}),
-					new guib::MenuButton(
-					(guib::MenuButtonInfo){
-						.text = "Rendering",
+					new guib::Box({
 						.color = guib::state::palette["background"],
-						.hoverColor = guib::state::palette["light"],
-						.clickColor = guib::state::palette["lightLight"],
-					}),
-					new guib::MenuButton(
-					(guib::MenuButtonInfo){
-						.text = "Physics",
-						.color = guib::state::palette["background"],
-						.hoverColor = guib::state::palette["light"],
-						.clickColor = guib::state::palette["lightLight"],
-					}),
-					new guib::MenuButton(
-					(guib::MenuButtonInfo){
-						.text = "Help",
-						.color = guib::state::palette["background"],
-						.hoverColor = guib::state::palette["light"],
-						.clickColor = guib::state::palette["lightLight"],
+						.size  = {1, 1, guib::UNIT_PERCENT, guib::UNIT_PERCENT},
+						.child = new guib::Row({
+							.children = {
+								new guib::Box({.color = {0,0,0,0}, .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PIXEL}}),
+								// Left menu
+								new guib::Box({
+									.color = guib::state::palette["lightDark"],
+									.radius = {.3,.3,.3,.3},
+									.size  = {35, 210, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+									.child = new guib::Column({
+										.children = {
+											new guib::ButtonImage((guib::ButtonImageInfo){
+												.image = "moveIcon",
+												.imageColor = guib::state::palette["main"],
+												.color = guib::state::palette["lightDark"],
+												.hoverColor = guib::state::palette["light"],
+												.clickColor = guib::state::palette["lightLight"],
+												.size = {35, 35, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+											}),
+											new guib::ButtonImage((guib::ButtonImageInfo){
+												.image = "rotateIcon",
+												.imageColor = guib::state::palette["main"],
+												.color = guib::state::palette["lightDark"],
+												.hoverColor = guib::state::palette["light"],
+												.clickColor = guib::state::palette["lightLight"],
+												.size = {35, 35, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+											}),
+											new guib::ButtonImage((guib::ButtonImageInfo){
+												.image = "scaleIcon",
+												.imageColor = guib::state::palette["main"],
+												.color = guib::state::palette["lightDark"],
+												.hoverColor = guib::state::palette["light"],
+												.clickColor = guib::state::palette["lightLight"],
+												.size = {35, 35, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+											}),
+										}
+									})
+								}),
+								new guib::Box({.color = {0,0,0,0}, .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PIXEL}}),
+								// Center viewports
+								new guib::Box({
+									.color = {0,0,0,0}, 
+									.size = {guib::state::screenSize.width-250-35-4*3,1,guib::UNIT_PIXEL,guib::UNIT_PERCENT},
+									.child = new guib::Column({
+										// Viewport buttons
+										.children = {
+											new guib::Box({
+												.color = {0,0,0,0},
+												.size = {1,22, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+												.child = new guib::Row({
+													.children = {
+														new guib::ButtonText((guib::ButtonTextInfo){
+															.text = "Main",
+															.color = guib::state::palette["lightDark"],
+															.hoverColor = guib::state::palette["light"],
+															.clickColor = guib::state::palette["lightLight"],
+														}),
+														new guib::ButtonText((guib::ButtonTextInfo){
+															.text = "Explore",
+															.color = guib::state::palette["lightDark"],
+															.hoverColor = guib::state::palette["light"],
+															.clickColor = guib::state::palette["lightLight"],
+														}),
+													}
+												}),
+											}),
+											// Viewport
+											new guib::Box({
+												.color = guib::state::palette["light"],
+												.size = {1,guib::state::screenSize.height-26-22-3, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
+											}),
+										},
+									}),
+								}),
+								new guib::Box({.color = {0,0,0,0}, .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PIXEL}}),
+								// Left scene tree
+								new guib::Box({
+										.color = {0,0,0,0}, 
+										.size={250,1,guib::UNIT_PIXEL,guib::UNIT_PERCENT},
+										.child = new guib::Column({
+
+										}),
+								}),
+								new guib::Box({.color = {0,0,0,0}, .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PIXEL}}),
+							}
+						})
 					})
 				}
 			}); 
@@ -157,15 +251,18 @@ namespace atta
 
 	void UserInterface::createTextures()
 	{
-		std::vector<std::pair<std::string, std::string>> logos = {
+		std::vector<std::pair<std::string, std::string>> icons = {
 			{"logo16", "/usr/include/atta/assets/icons/logo16.png"},
 			{"logo50", "/usr/include/atta/assets/icons/logo50.png"},
+			{"moveIcon", "/usr/include/atta/assets/icons/move100.png"},
+			{"rotateIcon", "/usr/include/atta/assets/icons/rotate100.png"},
+			{"scaleIcon", "/usr/include/atta/assets/icons/scale100.png"},
 		};
 
-		for(auto logo : logos)
+		for(auto icon : icons)
 		{
-			guib::state::textureIndex[logo.first] = guib::state::textures.size();
-			guib::state::textures.push_back(new atta::vk::Texture(_device, _guiCommandPool, logo.second));
+			guib::state::textureIndex[icon.first] = guib::state::textures.size();
+			guib::state::textures.push_back(new atta::vk::Texture(_device, _guiCommandPool, icon.second));
 		}
 	}
 

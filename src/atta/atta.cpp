@@ -121,6 +121,8 @@ namespace atta
 	ThreadManager::UiConfig Atta::populateTMUiConfig()
 	{
 		ThreadManager::UiConfig uiConfig {
+			.guiRenderer = _info.guiRenderer,
+			.runBeforeWorkerGuiRender = _info.runBeforeWorkerGuiRender,
 			.handleKeyboard = _info.handleKeyboard,
 		};
 		return uiConfig;

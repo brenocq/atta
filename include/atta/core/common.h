@@ -14,6 +14,14 @@ namespace atta
 		DIM_MODE_3D
 	};
 
+	enum GuiRenderer 
+	{
+		GUI_RENDERER_RAST = 0,
+		GUI_RENDERER_RAY_TRACING_VULKAN,
+		GUI_RENDERER_RAY_TRACING_CPU,
+		GUI_RENDERER_2D,
+	};
+
 	enum PhysicsMode 
 	{
 		PHY_MODE_DISABLED = 0,

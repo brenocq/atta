@@ -12,7 +12,9 @@
 namespace atta
 {
 	ModelViewController::ModelViewController(ControlType controlType):
-		_controlType(controlType), _mouseMiddleButton(false), _shiftKey(false), _speed(1.0f),
+		_controlType(controlType), _mouseMiddleButton(false), _shiftKey(false), 
+		_cameraUpdated(false),
+		_speed(1.0f),
 		_right(vec3(1,0,0)), _up(vec3(0,1,0)), _forward(vec3(0,0,-1))
 	{
 	}
@@ -35,6 +37,7 @@ namespace atta
 		_cursorMovY = 0;
 
 		updateVectors();
+		_cameraUpdated = true;
 	}
 
 	mat4 ModelViewController::getModelView() const
@@ -112,7 +115,8 @@ namespace atta
 	bool ModelViewController::updateCamera(double timeDelta)
 	{
 		const auto d = static_cast<float>(_speed * timeDelta);
-		bool changed = false;
+		bool changed = _cameraUpdated;
+		_cameraUpdated = false;
 
 		if(_mouseMiddleButton)
 		{

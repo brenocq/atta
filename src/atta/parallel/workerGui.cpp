@@ -17,11 +17,13 @@
 namespace atta
 {
 	const int MAX_FRAMES_IN_FLIGHT = 2;
-	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, CameraControlType cameraControlType,
+	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, 
+			CameraControlType cameraControlType, GuiRenderer guiRenderer,
+			std::function<void(WorkerGui*)> runBeforeWorkerGuiRender,
 			std::function<void(int key, int action)> handleKeyboard):
 		_vkCore(vkCore), _scene(scene), _currentFrame(0), _mainRendererIndex(-1), _cameraUpdated(false),
-		_cameraControlType(cameraControlType),
-		_handleKeyboard(handleKeyboard)
+		_cameraControlType(cameraControlType), _guiRenderer(guiRenderer),
+		_runBeforeWorkerGuiRender(runBeforeWorkerGuiRender), _handleKeyboard(handleKeyboard)
 	{
 		// Create window (GUI thread only)
 		_window = std::make_shared<Window>();
@@ -79,6 +81,8 @@ namespace atta
 	{
 		while(!_window->shouldClose() && !_shouldFinish && !_ui->shouldClose())
 		{
+			if(_runBeforeWorkerGuiRender)
+				_runBeforeWorkerGuiRender(this);
 			_cameraUpdated = _modelViewController->updateCamera(0.1);
 			render();
 			_window->poolEvents();
@@ -90,21 +94,23 @@ namespace atta
 
 	void WorkerGui::createRenderers()
 	{ 
-		if(_cameraControlType == CAMERA_CONTROL_TYPE_3D)
+		if(_guiRenderer == GUI_RENDERER_RAST)
 		{
 			// Create rasterization render
-			//RastRenderer::CreateInfo rastRendInfo = {
-			//	.vkCore = _vkCore,
-			//	.commandPool = _commandPool,
-			//	.width = 1200,
-			//	.height = 900,
-			//	.scene = _scene,
-			//	.viewMat = atta::lookAt(vec3(3,1.7,3), vec3(0,1,0), vec3(0,1,0)),
-			//	.projMat = atta::perspective(atta::radians(39.430485), 1200.0/900, 0.01f, 1000.0f)
-			//};
-			//std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
-			//_renderers.push_back(std::static_pointer_cast<Renderer>(rast));
-
+			RastRenderer::CreateInfo rastRendInfo = {
+				.vkCore = _vkCore,
+				.commandPool = _commandPool,
+				.width = 1200,
+				.height = 900,
+				.scene = _scene,
+				.viewMat = atta::lookAt(vec3(1,1,1), vec3(0,0,0), vec3(0,1,0)),
+				.projMat = atta::perspective(atta::radians(60), 1200.0/900, 0.01f, 1000.0f)
+			};
+			std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
+			_renderers.push_back(std::static_pointer_cast<Renderer>(rast));
+		} 
+		else if(_guiRenderer == GUI_RENDERER_RAY_TRACING_VULKAN)
+		{
 			rt::vk::RayTracing::CreateInfo rtVkRendInfo = 
 			{
 				.vkCore = _vkCore,
@@ -112,13 +118,13 @@ namespace atta
 				.width = 1200,
 				.height = 900,
 				.scene = _scene,
-				.viewMat = atta::lookAt(vec3(3,1.7,3), vec3(0,1,0), vec3(0,1,0)),
-				.projMat = atta::perspective(atta::radians(39.430485), 1200.0/900, 0.01f, 1000.0f)
+				.viewMat = atta::lookAt(vec3(1,1,1), vec3(0,0,0), vec3(0,1,0)),
+				.projMat = atta::perspective(atta::radians(60), 1200.0/900, 0.01f, 1000.0f)
 			};
 			std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
 			_renderers.push_back(std::static_pointer_cast<Renderer>(rtVk));
 		}
-		else
+		else if(_guiRenderer == GUI_RENDERER_2D)
 		{
 			Renderer2D::CreateInfo rend2DInfo = {
 				.vkCore = _vkCore,
@@ -127,9 +133,12 @@ namespace atta
 				.height = 900,
 				.scene = _scene
 			};
-
 			std::shared_ptr<Renderer2D> renderer2D = std::make_shared<Renderer2D>(rend2DInfo);
 			_renderers.push_back(std::static_pointer_cast<Renderer>(renderer2D));
+		}
+		else
+		{
+			Log::warning("WorkerGui", "This renderer is not implemented yet");
 		}
 
 		if(_renderers.size()>0)

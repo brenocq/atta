@@ -10,6 +10,7 @@
 #include "worker.h"
 #include <functional>
 #include <atta/core/scene.h>
+#include <atta/core/common.h>
 #include <atta/graphics/core/window.h>
 #include <atta/graphics/core/modelViewController.h>
 #include <atta/graphics/vulkan/vulkanCore.h>
@@ -40,15 +41,20 @@ namespace atta
 				CAMERA_CONTROL_TYPE_3D
 			};
 
-			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, CameraControlType cameraControlType,
-				std::function<void(int key, int action)> handleKeyboard);
+			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, 
+					CameraControlType cameraControlType, GuiRenderer guiRenderer, 
+					std::function<void(WorkerGui*)> runBeforeWorkerGuiRender,
+					std::function<void(int key, int action)> handleKeyboard);
 			~WorkerGui();
 
 			void operator()();
 
+			void createRenderers();
+
 			//---------- Setters ----------//
 			void setCommands(std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands) { _commands = commands; };
-			void createRenderers();
+			//---------- Getters ----------//
+			std::shared_ptr<ModelViewController> getModelViewController() const { return _modelViewController; }
 
 		private:
 			void render();
@@ -85,6 +91,7 @@ namespace atta
 			int _mainRendererIndex;// Renderer that the user will use to see the world
 			bool _cameraUpdated;// Used mainly by ray tracing renderers to create acceleration structures
 			CameraControlType _cameraControlType;
+			GuiRenderer _guiRenderer;
 
 			// Work to process
 			std::vector<std::function<void(VkCommandBuffer commandBuffer)>> _commands;
@@ -95,7 +102,8 @@ namespace atta
 			// User interface
 			std::shared_ptr<UserInterface> _ui;
 
-			// User parameters
+			// User functions
+			std::function<void(WorkerGui*)> _runBeforeWorkerGuiRender;
 			std::function<void(int key, int action)> _handleKeyboard;
 	};
 }

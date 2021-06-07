@@ -25,7 +25,9 @@ namespace atta
 		public:
 			struct CreateInfo
 			{
+				// Graphics
 				DimMode dimensionMode = DIM_MODE_2D;
+				GuiRenderer guiRenderer = GUI_RENDERER_RAST;
 				PhysicsMode physicsMode = PHY_MODE_DISABLED;
 				RobotProcessing robotProcessing = ROBOT_PROCESSING_SEQUENTIAL;
 				bool createWindow = true;
@@ -33,6 +35,7 @@ namespace atta
 				std::vector<std::shared_ptr<Robot>> robots = {};
 
 				std::function<void(void)> runAfterRobots;
+				std::function<void(WorkerGui*)> runBeforeWorkerGuiRender;
 				std::function<void(int key, int action)> handleKeyboard;
 			};
 
