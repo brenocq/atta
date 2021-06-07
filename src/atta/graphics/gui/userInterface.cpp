@@ -7,6 +7,7 @@
 #include <atta/graphics/gui/userInterface.h>
 #include <atta/graphics/gui/guiState.h>
 #include <atta/helpers/log.h>
+#include <atta/graphics/vulkan/imageMemoryBarrier.h>
 
 namespace atta
 {
@@ -98,46 +99,50 @@ namespace atta
 						}
 					}),
 					new guib::Box({
-						.color = guib::state::palette["background"],
+						.color = {0,0,0,0},//guib::state::palette["background"],
 						.size  = {1, 1, guib::UNIT_PERCENT, guib::UNIT_PERCENT},
 						.child = new guib::Row({
 							.children = {
-								new guib::Box({.color = {0,0,0,0}, .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PIXEL}}),
+								new guib::Box({.color = guib::state::palette["background"], .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PERCENT}}),
 								// Left menu
 								new guib::Box({
-									.color = guib::state::palette["lightDark"],
-									.radius = {.3,.3,.3,.3},
-									.size  = {35, 210, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
-									.child = new guib::Column({
-										.children = {
-											new guib::ButtonImage((guib::ButtonImageInfo){
-												.image = "moveIcon",
-												.imageColor = guib::state::palette["main"],
-												.color = guib::state::palette["lightDark"],
-												.hoverColor = guib::state::palette["light"],
-												.clickColor = guib::state::palette["lightLight"],
-												.size = {35, 35, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
-											}),
-											new guib::ButtonImage((guib::ButtonImageInfo){
-												.image = "rotateIcon",
-												.imageColor = guib::state::palette["main"],
-												.color = guib::state::palette["lightDark"],
-												.hoverColor = guib::state::palette["light"],
-												.clickColor = guib::state::palette["lightLight"],
-												.size = {35, 35, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
-											}),
-											new guib::ButtonImage((guib::ButtonImageInfo){
-												.image = "scaleIcon",
-												.imageColor = guib::state::palette["main"],
-												.color = guib::state::palette["lightDark"],
-												.hoverColor = guib::state::palette["light"],
-												.clickColor = guib::state::palette["lightLight"],
-												.size = {35, 35, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
-											}),
-										}
+									.color = guib::state::palette["background"],
+									.size={35,1,guib::UNIT_PIXEL,guib::UNIT_PERCENT},
+									.child = new guib::Box({
+										.color = guib::state::palette["lightDark"],
+										.radius = {.3,.3,.3,.3},
+										.size  = {35, 210, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+										.child = new guib::Column({
+											.children = {
+												new guib::ButtonImage((guib::ButtonImageInfo){
+													.image = "moveIcon",
+													.imageColor = guib::state::palette["main"],
+													.color = guib::state::palette["lightDark"],
+													.hoverColor = guib::state::palette["light"],
+													.clickColor = guib::state::palette["lightLight"],
+													.size = {35, 35, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+												}),
+												new guib::ButtonImage((guib::ButtonImageInfo){
+													.image = "rotateIcon",
+													.imageColor = guib::state::palette["main"],
+													.color = guib::state::palette["lightDark"],
+													.hoverColor = guib::state::palette["light"],
+													.clickColor = guib::state::palette["lightLight"],
+													.size = {35, 35, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+												}),
+												new guib::ButtonImage((guib::ButtonImageInfo){
+													.image = "scaleIcon",
+													.imageColor = guib::state::palette["main"],
+													.color = guib::state::palette["lightDark"],
+													.hoverColor = guib::state::palette["light"],
+													.clickColor = guib::state::palette["lightLight"],
+													.size = {35, 35, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
+												}),
+											}
+										})
 									})
 								}),
-								new guib::Box({.color = {0,0,0,0}, .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PIXEL}}),
+								new guib::Box({.color = guib::state::palette["background"], .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PERCENT}}),
 								// Center viewports
 								new guib::Box({
 									.color = {0,0,0,0}, 
@@ -146,7 +151,7 @@ namespace atta
 										// Viewport buttons
 										.children = {
 											new guib::Box({
-												.color = {0,0,0,0},
+												.color = guib::state::palette["background"],
 												.size = {1,22, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 												.child = new guib::Row({
 													.children = {
@@ -167,22 +172,23 @@ namespace atta
 											}),
 											// Viewport
 											new guib::Box({
-												.color = guib::state::palette["light"],
+												.color = {0,0,0,0},
 												.size = {1,guib::state::screenSize.height-26-22-3, guib::UNIT_PERCENT, guib::UNIT_PIXEL},
 											}),
+											new guib::Box({.color = guib::state::palette["background"], .size={1,3,guib::UNIT_PERCENT,guib::UNIT_PIXEL}}),
 										},
 									}),
 								}),
-								new guib::Box({.color = {0,0,0,0}, .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PIXEL}}),
+								new guib::Box({.color = guib::state::palette["background"], .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PERCENT}}),
 								// Left scene tree
 								new guib::Box({
-										.color = {0,0,0,0}, 
+										.color = guib::state::palette["background"],
 										.size={250,1,guib::UNIT_PIXEL,guib::UNIT_PERCENT},
 										.child = new guib::Column({
 
 										}),
 								}),
-								new guib::Box({.color = {0,0,0,0}, .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PIXEL}}),
+								new guib::Box({.color = guib::state::palette["background"], .size={3,1,guib::UNIT_PIXEL,guib::UNIT_PERCENT}}),
 							}
 						})
 					})
@@ -279,9 +285,65 @@ namespace atta
 
 	void UserInterface::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
+		static bool firstResize = true;
+		if(firstResize)
+		{
+			_renderers.begin()->second->resize(
+					guib::state::screenSize.width-250-35-4*3,
+					guib::state::screenSize.height-26-22-3);
+			firstResize = false;
+		}
+
+		_renderers.begin()->second->render(commandBuffer);
+
+		copyRendererImage(commandBuffer, imageIndex, _renderers.begin()->first, {35+2*3,26+22});
 		_guiPipeline->beginRender(commandBuffer, imageIndex);
 		_guiRender->render(commandBuffer);
 		_guiPipeline->endRender(commandBuffer);
+	}
+
+	void UserInterface::copyRendererImage(VkCommandBuffer commandBuffer, int imageIndex, std::string rendererName, VkOffset2D dstOffset)
+	{
+		VkImageSubresourceRange subresourceRange;
+		subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		subresourceRange.baseMipLevel = 0;
+		subresourceRange.levelCount = 1;
+		subresourceRange.baseArrayLayer = 0;
+		subresourceRange.layerCount = 1;
+		VkImage dstImage = _swapChain->getImages()[imageIndex];
+		VkImage srcImage = _renderers[rendererName]->getImage()->handle();
+
+		vk::ImageMemoryBarrier::insert(commandBuffer, dstImage, subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+			0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		vk::ImageMemoryBarrier::insert(commandBuffer, srcImage, subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+			0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+		// Copy src image to dst image
+		VkExtent2D srcExtent = _renderers[rendererName]->getImage()->getExtent();
+		VkImageCopy region;
+		region.srcOffset = {0, 0, 0};
+		//region.srcOffsets = { static_cast<int32_t>(srcExtent.width), static_cast<int32_t>(srcExtent.height), 1 };
+		region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		region.srcSubresource.mipLevel = 0;
+		region.srcSubresource.baseArrayLayer = 0;
+		region.srcSubresource.layerCount = 1;
+		region.dstOffset = {dstOffset.x, dstOffset.y, 0};
+		//region.dstOffsets[1] = { dstExtent.width, dstExtent.height, 1 };
+		region.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		region.dstSubresource.mipLevel = 0;
+		region.dstSubresource.baseArrayLayer = 0;
+		region.dstSubresource.layerCount = 1;
+		region.extent = { srcExtent.width, srcExtent.height, 1 };
+
+		vkCmdCopyImage(commandBuffer,
+			srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+			dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			1, 
+			&region);
+
+		vk::ImageMemoryBarrier::insert(commandBuffer, dstImage, subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
+			0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 	}
 
 	//---------------------------------------------//

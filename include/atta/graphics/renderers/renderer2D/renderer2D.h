@@ -33,6 +33,7 @@ namespace atta
 
 			void render(VkCommandBuffer commandBuffer);
 			void updateCameraMatrix(mat4 viewMatrix);
+			void resize(unsigned width, unsigned height) {}
 
 		private:
 			std::shared_ptr<Scene> _scene;

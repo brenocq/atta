@@ -27,15 +27,31 @@ namespace atta
 		ubo.nLights = _scene->getLights().size();
 		_uniformBuffer->setValue(ubo);
 
-		//---------- Render pass ----------//
+		//---------- Create pipelines ----------//
+		createRenderPass();
+		createFrameBuffers();
+		createPipelines();
+	}
+
+	RastRenderer::~RastRenderer()
+	{
+
+	}
+
+	void RastRenderer::createRenderPass()
+	{
 		auto colorBuffer = std::make_shared<vk::ColorBuffer>(_vkCore->getDevice(), _image->getExtent(), _image->getFormat());
 		auto depthBuffer = std::make_shared<vk::DepthBuffer>(_vkCore->getDevice(), _image->getExtent());
 		_renderPass = std::make_shared<vk::RenderPass>(_vkCore->getDevice(), colorBuffer, depthBuffer);
+	}
 
-		//---------- Frame Buffers ----------//
+	void RastRenderer::createFrameBuffers()
+	{
 		_frameBuffer = std::make_shared<vk::FrameBuffer>(_vkCore->getDevice(), _imageView, _renderPass);
+	}
 
-		//---------- Create pipelines ----------//
+	void RastRenderer::createPipelines()
+	{
 		_graphicsPipeline = std::make_unique<vk::GraphicsPipeline>(
 				_vkCore, _renderPass,
 				_image->getExtent(), _image->getFormat(), 
@@ -77,11 +93,6 @@ namespace atta
 		//		std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
 		//		std::vector<std::shared_ptr<vk::UniformBuffer>>({_uniformBuffer}), 
 		//		_scene);
-	}
-
-	RastRenderer::~RastRenderer()
-	{
-
 	}
 
 	void RastRenderer::render(VkCommandBuffer commandBuffer)
@@ -133,5 +144,24 @@ namespace atta
 		//Log::debug("RastRenderer", "Proj: $0", ubo.projMat.toString());
 		//Log::debug("RastRenderer", "ProjInverse: $0", ubo.projMatInverse.toString());
 		_uniformBuffer->setValue(ubo);
+	}
+
+	void RastRenderer::resize(unsigned width, unsigned height)
+	{
+		_extent.width = width;
+		_extent.height = height;
+
+		_linePipeline.reset();
+		_pointPipeline.reset();
+		_graphicsPipeline.reset();
+		_frameBuffer.reset();
+		_renderPass.reset();
+		_imageView.reset();
+		_image.reset();
+
+		createOutputImage();
+		createRenderPass();
+		createFrameBuffers();
+		createPipelines();
 	}
 }
