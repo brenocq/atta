@@ -96,7 +96,7 @@ namespace atta::vk
 					// try to push one material (if material with name not defined, load default material)
 					for(const auto& materialName : model->getMesh()->getMaterialNames())
 					{
-						Log::debug("VulkanCore", "mat: $0", modelMaterialMap[materialName].toString());
+						//Log::debug("VulkanCore", "mat: $0", modelMaterialMap[materialName].toString());
 						if(modelMaterialMap.count(materialName))
 							materials.push_back(modelMaterialMap[materialName]);
 						else

@@ -79,7 +79,7 @@ vec3 BXDF_Glass_f(vec3 wo, vec3 wi, BXDF bxdf)
 			else
 			{
 				// Sample microfacet transmission
-				f += BXDF_MicrofacetTransmission_f(wo, wi, R, 1.f, eta, distribution);
+				f += BXDF_MicrofacetTransmission_f(wo, wi, T, 1.f, eta, distribution);
 			}
 		}
 	}

@@ -67,6 +67,7 @@ namespace guib
 						else
 							state::focusedWidget = (Widget*)_menu;
 					},
+					.size = {20, 20, guib::UNIT_PIXEL, guib::UNIT_PIXEL},
 					.radius = info.radius,
 				});
 		}

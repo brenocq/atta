@@ -51,6 +51,8 @@ namespace atta
 		_runAfterRobots = pipelineSetup.robotStage.runAfterRobots;
 
 		//---------- UI config ----------//
+		_guiRenderer = pipelineSetup.uiConfig.guiRenderer;
+		_runBeforeWorkerGuiRender = pipelineSetup.uiConfig.runBeforeWorkerGuiRender;
 		_handleKeyboard = pipelineSetup.uiConfig.handleKeyboard;
 		
 		//---------- Create objects ----------//
@@ -110,6 +112,8 @@ namespace atta
 			_dimensionMode == DIM_MODE_3D?
 					WorkerGui::CAMERA_CONTROL_TYPE_3D:
 					WorkerGui::CAMERA_CONTROL_TYPE_2D,
+				_guiRenderer,
+				_runBeforeWorkerGuiRender,
 				_handleKeyboard
 				);
 

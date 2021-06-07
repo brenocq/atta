@@ -12,7 +12,7 @@
 namespace guib
 {
 	ButtonImage::ButtonImage(ButtonImageInfo info):
-		Widget((WidgetInfo){.size = {20, 20, UNIT_PIXEL, UNIT_PIXEL}})
+		Widget((WidgetInfo){.size = info.size})
 	{
 		Widget::setType("ButtonImage");
 		// Calculate text maximum width

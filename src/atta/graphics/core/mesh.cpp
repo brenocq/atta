@@ -83,7 +83,6 @@ namespace atta
 		{
 			const auto& mesh = shape.mesh;
 			size_t faceId = 0;
-			Log::debug("Mesh", "Material id: $0", mesh.material_ids[0]);
 			for (const auto& index : mesh.indices)
 			{
 				Vertex vertex = {};

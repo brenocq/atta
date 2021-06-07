@@ -62,6 +62,7 @@ namespace atta
 			// Movement buttons
 			bool _mouseMiddleButton;
 			bool _shiftKey;
+			bool _cameraUpdated;
 
 			float _cursorMovX{};
 			float _cursorMovY{};
