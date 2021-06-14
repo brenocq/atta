@@ -55,6 +55,7 @@ namespace atta
 			void setCommands(std::vector<std::function<void(VkCommandBuffer commandBuffer)>> commands) { _commands = commands; };
 			//---------- Getters ----------//
 			std::shared_ptr<ModelViewController> getModelViewController() const { return _modelViewController; }
+			std::vector<std::shared_ptr<Renderer>> getRenderers() const { return _renderers; }
 
 		private:
 			void render();
