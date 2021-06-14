@@ -11,7 +11,8 @@
 namespace atta
 {
 	RastRenderer::RastRenderer(CreateInfo info):
-		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_RASTERIZATION}), _scene(info.scene)
+		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_RASTERIZATION}), _scene(info.scene),
+		_fov(info.fov)
 	{
 		_linePipelineSupport = _vkCore->getDevice()->getPhysicalDevice()->getSupport().fillModeNonSolidFeature;
 
@@ -20,7 +21,7 @@ namespace atta
 
 		vk::UniformBufferObject ubo;
 		ubo.viewMat = atta::transpose(info.viewMat);
-		ubo.projMat = atta::transpose(info.projMat);
+		ubo.projMat = atta::transpose(atta::perspective(atta::radians(info.fov), info.width/info.height, 0.01f, 1000.0f));
 		ubo.projMat.data[5] *= -1;
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
 		ubo.projMatInverse = atta::inverse(ubo.projMat);
@@ -163,5 +164,12 @@ namespace atta
 		createRenderPass();
 		createFrameBuffers();
 		createPipelines();
+
+		// Update uniform buffer projection matrix
+		vk::UniformBufferObject ubo  = _uniformBuffer->getValue();
+		ubo.projMat = atta::transpose(atta::perspective(atta::radians(_fov), width/(float)height, 0.01f, 1000.0f));
+		ubo.projMat.data[5] *= -1;
+		ubo.projMatInverse = atta::inverse(ubo.projMat);
+		_uniformBuffer->setValue(ubo);
 	}
 }

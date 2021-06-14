@@ -12,23 +12,49 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <vector>
+#include <thread>
+#include <functional>
 
 namespace atta
 {
 	class Server
 	{
 		public:
-			Server(unsigned maxClients=10, unsigned port=4114);
+			enum Domain {
+				IPV4,
+				IPV6
+			};
+			enum Protocol {
+				TCP,
+				UDP
+			};
+			struct CreateInfo {
+				unsigned maxClients=10;
+				unsigned port=4114;
+				Domain domain = IPV4;
+				Protocol protocol = TCP;
+				bool createClientThreads = false;
+			};
+
+			Server(CreateInfo info);
 			~Server();
 
-			void loop();
+			//std::function<void(int clientId, std::vector<uint8_t> buffer)> received()
 
 		private:
+			void createMainThread();
+			void mainThreadLoop();
+
 			void checkMasterSocket();
 			void checkClientSockets();
 
 			unsigned _maxClients;
 			unsigned _port;
+			Domain _domain;
+			Protocol _protocol;
+
+			// Main thread + optional client threads
+			std::vector<std::thread> _threads;
 			bool _shouldFinish;
 
 			// Server info

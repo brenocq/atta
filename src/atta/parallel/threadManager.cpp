@@ -146,9 +146,9 @@ namespace atta
 					.commandPool = _commandPool,
 					.width = camera->getWidth(),
 					.height =  camera->getHeight(),
+					.fov = camera->getFov(),
 					.scene = _scene,
 					.viewMat = atta::lookAt(vec3(-10,10,-10), vec3(0,0,0), vec3(0,1,0)),
-					.projMat = atta::perspective(atta::radians(camera->getFov()), camera->getWidth()/camera->getHeight(), 0.01f, 1000.0f)
 				};
 				std::shared_ptr<RastRenderer> rast = std::make_shared<RastRenderer>(rastRendInfo);
 				_cameraRenderers.push_back(std::static_pointer_cast<Renderer>(rast));

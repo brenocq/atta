@@ -9,13 +9,28 @@
 
 namespace atta
 {
-	Server::Server(unsigned maxClients, unsigned port):
-		_maxClients(maxClients), _port(port), _shouldFinish(false)
+	Server::Server(CreateInfo info):
+		_maxClients(info.maxClients), _port(info.port), _domain(info.domain), _protocol(info.protocol),
+		_shouldFinish(false)
 	{
 		_clientSockets.resize(_maxClients);
 
-		// Create TCP socket(SOCK_STREAM) using ipv4(AF_INET)
-		if((_serverFd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+		int domain, type;
+
+		// Select protocol family (communication domain)
+		if(_domain == IPV4)
+			domain = AF_INET;
+		else if(_domain == IPV6)
+			domain = AF_INET6;
+	
+		// Select protocol family type
+		if(_protocol == TCP)
+			type = SOCK_STREAM;
+		else if(_protocol == UDP)
+			type = SOCK_DGRAM;
+
+		_serverFd = socket(domain, type, 0);
+		if(_serverFd == 0)
 		{
 			Log::error("Server", "Failed to create socket!");
 			exit(1);
@@ -30,7 +45,7 @@ namespace atta
 		}
 
 		// Populate socket address
-		_address.sin_family = AF_INET;
+		_address.sin_family = domain;
 		_address.sin_addr.s_addr = INADDR_ANY;
 		_address.sin_port = htons(_port);
 
@@ -42,12 +57,14 @@ namespace atta
 		}
 		Log::info("Server", "Listening on port $0", _port);
 
-		// Specify maximum number of pending connections
+		// Set socket fd as a passive and specify maximum number of pending connections
 		if(listen(_serverFd, 3) < 0)
 		{
 			Log::error("Server", "Failed to set listen!");
 			exit(1);
 		}
+
+		createMainThread();
 	}
 
 	Server::~Server()
@@ -55,7 +72,12 @@ namespace atta
 
 	}
 
-	void Server::loop()
+	void Server::createMainThread()
+	{
+
+	}
+
+	void Server::mainThreadLoop()
 	{
 		while(!_shouldFinish)
 		{
