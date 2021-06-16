@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <vector>
+#include <string>
 #include <thread>
 #include <functional>
 
@@ -34,12 +35,11 @@ namespace atta
 				Domain domain = IPV4;
 				Protocol protocol = TCP;
 				bool createClientThreads = false;
+				std::function<void(unsigned clientId, std::vector<uint8_t> buffer)> clientReadCallback;
 			};
 
 			Server(CreateInfo info);
 			~Server();
-
-			//std::function<void(int clientId, std::vector<uint8_t> buffer)> received()
 
 		private:
 			void createMainThread();
@@ -56,6 +56,7 @@ namespace atta
 			// Main thread + optional client threads
 			std::vector<std::thread> _threads;
 			bool _shouldFinish;
+			bool _createClientThreads;
 
 			// Server info
 			int _serverFd;
@@ -63,7 +64,15 @@ namespace atta
 			fd_set _fdSet;// File descriptor set
 
 			// Clients info
-			std::vector<int> _clientSockets;// Client sockets file descriptors
+			struct ClientInfo {
+				int fd = -1;
+				std::string ip = "";
+				unsigned port = 0;
+			};
+			std::vector<ClientInfo> _clientSockets;// Client sockets file descriptors
+
+			// Callbacks
+			std::function<void(unsigned clientId, std::vector<uint8_t> buffer)> _clientReadCallback;
 	};
 }
 
