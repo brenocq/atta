@@ -242,6 +242,8 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"src/atta/parallel/worker.cpp"
 		"src/atta/parallel/workerGeneralist.cpp"
 		"src/atta/parallel/workerGui.cpp"
+		# peripheral
+		"src/atta/peripheral/camera.cpp"
 		# physics
 		"src/atta/physics/constraints/constraint.cpp"
 		"src/atta/physics/constraints/fixedConstraint.cpp"
@@ -456,6 +458,8 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		"include/atta/parallel/worker.h"
 		"include/atta/parallel/workerGeneralist.h"
 		"include/atta/parallel/workerGui.h"
+		# peripheral
+		"include/atta/peripheral/camera.h"
 		# physics
 		"include/atta/physics/constraints/constraint.h"
 		"include/atta/physics/constraints/constraints.h"
