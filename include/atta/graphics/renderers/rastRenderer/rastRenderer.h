@@ -61,6 +61,8 @@ namespace atta
 
 			// Support
 			bool _linePipelineSupport;
+
+			// Perspective projection matrix info
 			float _fov;
 	};
 }

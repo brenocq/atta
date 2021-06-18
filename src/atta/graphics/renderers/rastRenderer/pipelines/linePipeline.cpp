@@ -226,16 +226,9 @@ namespace atta::vk
 
 	void LinePipeline::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		// TODO Copy lines from vector to staging buffer
-		//unsigned size = Drawer::getMaxNumberOfLines()*sizeof(Drawer::Line);
-		//_stagingBuffer->mapFromData(_vkCore->getDevice(), Drawer::getLines().data(), size);
-		// Copy from host memory to device memory
-		//_lineBuffer->copyFrom(_vkCore->getCommandPool(), _stagingBuffer->handle(), size);
-
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 
-		//Log::debug("LinePipeline", "Qty lines = $0", Drawer::getCurrNumberOfLines());
 		vkCmdDraw(commandBuffer, Drawer::getCurrNumberOfLines()*2, 1, 0, 0);
 	}
 }
