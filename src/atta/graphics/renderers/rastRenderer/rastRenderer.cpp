@@ -28,7 +28,7 @@ namespace atta
 		ubo.nLights = _scene->getLights().size();
 		_uniformBuffer->setValue(ubo);
 
-		//---------- Create pipelines ----------//
+		//---------- Create renderer objects ----------//
 		createRenderPass();
 		createFrameBuffers();
 		createPipelines();
@@ -141,9 +141,6 @@ namespace atta
 		ubo.viewMat = atta::transpose(viewMatrix);
 		ubo.viewMatInverse = atta::inverse(ubo.viewMat);
 
-		//Log::debug("RastRenderer", "ViewInverse: $0", ubo.viewMatInverse.toString());
-		//Log::debug("RastRenderer", "Proj: $0", ubo.projMat.toString());
-		//Log::debug("RastRenderer", "ProjInverse: $0", ubo.projMatInverse.toString());
 		_uniformBuffer->setValue(ubo);
 	}
 

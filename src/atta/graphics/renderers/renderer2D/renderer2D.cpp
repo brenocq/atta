@@ -12,35 +12,49 @@
 namespace atta
 {
 	Renderer2D::Renderer2D(CreateInfo info):
-		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_2D}), _scene(info.scene)
+		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_2D}), 
+		_orthoHeight(info.orthoHeight), _orthoDepth(info.orthoDepth), 
+		_scene(info.scene)
 	{
 		//---------- Create uniform buffers ----------//
 		_uniformBuffer = std::make_shared<UniformBuffer2D>(_vkCore->getDevice());
 
 		UniformBuffer2D::Data data;
 		data.viewMatrix = transpose(info.viewMat);
-		data.orthoMatrix = transpose(info.orthoMat); 
+		data.orthoMatrix = transpose(orthographic(_orthoHeight, info.width/info.height, _orthoDepth));
 		_uniformBuffer->setValue(data);
 
-		//---------- Render pass ----------//
-		auto colorBuffer = std::make_shared<vk::ColorBuffer>(_vkCore->getDevice(), _image->getExtent(), _image->getFormat());
-		auto depthBuffer = std::make_shared<vk::DepthBuffer>(_vkCore->getDevice(), _image->getExtent());
-		_renderPass = std::make_shared<vk::RenderPass>(_vkCore->getDevice(), colorBuffer, depthBuffer);
-
-		//---------- Frame Buffers ----------//
-		_frameBuffer = std::make_shared<vk::FrameBuffer>(_vkCore->getDevice(), _imageView, _renderPass);
-
-		//---------- Create pipelines ----------//
-		_graphicsPipeline = std::make_unique<GraphicsPipeline2D>(
-				_vkCore, _renderPass,
-				_image->getExtent(), _image->getFormat(), 
-				_imageView, _uniformBuffer, 
-				_scene);
+		//---------- Create renderer objects ----------//
+		createRenderPass();
+		createFrameBuffers();
+		createPipelines();
 	}
 
 	Renderer2D::~Renderer2D()
 	{
 
+	}
+
+	void Renderer2D::createRenderPass()
+	{
+		auto colorBuffer = std::make_shared<vk::ColorBuffer>(_vkCore->getDevice(), _image->getExtent(), _image->getFormat());
+		auto depthBuffer = std::make_shared<vk::DepthBuffer>(_vkCore->getDevice(), _image->getExtent());
+		_renderPass = std::make_shared<vk::RenderPass>(_vkCore->getDevice(), colorBuffer, depthBuffer);
+
+	}
+
+	void Renderer2D::createFrameBuffers()
+	{
+		_frameBuffer = std::make_shared<vk::FrameBuffer>(_vkCore->getDevice(), _imageView, _renderPass);
+	}
+
+	void Renderer2D::createPipelines()
+	{
+		_graphicsPipeline = std::make_unique<GraphicsPipeline2D>(
+				_vkCore, _renderPass,
+				_image->getExtent(), _image->getFormat(), 
+				_imageView, _uniformBuffer, 
+				_scene);
 	}
 
 	void Renderer2D::render(VkCommandBuffer commandBuffer)
@@ -82,5 +96,27 @@ namespace atta
 		//Log::debug("Renderer2D", "view:$0", inverse(view).toString());
 
 		_uniformBuffer->setValue(data);
+	}
+
+	void Renderer2D::resize(unsigned width, unsigned height)
+	{
+		_extent.width = width;
+		_extent.height = height;
+
+		_graphicsPipeline.reset();
+		_frameBuffer.reset();
+		_renderPass.reset();
+		_imageView.reset();
+		_image.reset();
+
+		createOutputImage();
+		createRenderPass();
+		createFrameBuffers();
+		createPipelines();
+
+		// Update uniform buffer projection matrix
+		UniformBuffer2D::Data ubo = _uniformBuffer->getValue();
+		ubo.orthoMatrix = atta::transpose(atta::orthographic(_orthoHeight, width/(float)height, _orthoDepth));
+		_uniformBuffer->setValue(ubo);
 	}
 }

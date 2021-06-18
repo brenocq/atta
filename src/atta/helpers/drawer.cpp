@@ -21,12 +21,21 @@ namespace atta
 	void Drawer::updateBufferMemoryImpl(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<vk::CommandPool> commandPool)
 	{
 		// Update point buffer
-		if(_currNumberOfPoints*sizeof(Drawer::Point)>0)
+		if(_currNumberOfPoints>0)
 		{
 			size_t size = _currNumberOfPoints*sizeof(Drawer::Point);
 			std::shared_ptr<vk::StagingBuffer> stagingBuffer = std::make_shared<vk::StagingBuffer>(vkCore->getDevice(), _points.data(), size);
 			vkCore->getPointBuffer()->copyFrom(commandPool, stagingBuffer->handle(), size);
 			_currNumberOfPointsMemory = _currNumberOfPoints;
+		}
+
+		// Update line buffer
+		if(_currNumberOfLines>0)
+		{
+			size_t size = _currNumberOfLines*sizeof(Drawer::Line);
+			std::shared_ptr<vk::StagingBuffer> stagingBuffer = std::make_shared<vk::StagingBuffer>(vkCore->getDevice(), _lines.data(), size);
+			vkCore->getLineBuffer()->copyFrom(commandPool, stagingBuffer->handle(), size);
+			_currNumberOfLinesMemory = _currNumberOfLines;
 		}
 	}
 

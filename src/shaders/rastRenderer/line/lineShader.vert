@@ -24,12 +24,12 @@ out gl_PerVertex
 void main() 
 {
 	vec3 point = gl_VertexIndex%2==0 ? linesToDraw[gl_VertexIndex/2].p0 : linesToDraw[gl_VertexIndex/2].p1;
-	//vec3 point = gl_VertexIndex%2==0 ? vec3(-2,1,0) : vec3(2,1,0);
+	//vec3 point = gl_VertexIndex%2==0 ? vec3(0,0,0) : vec3(1,1,0);
 	vec3 color = gl_VertexIndex%2==0 ? linesToDraw[gl_VertexIndex/2].c0 : linesToDraw[gl_VertexIndex/2].c1;
 	//vec3 color = gl_VertexIndex%2==0 ? vec3(1,0,0) : vec3(0,0,1);
 
-	mat4 projection = transpose(camera.projMat);
-	mat4 view = transpose(camera.viewMat);
+	mat4 projection = camera.projMat;
+	mat4 view = camera.viewMat;
 	const vec4 fragPos = (projection * view) * vec4(point, 1.0);
 
     gl_Position = fragPos;
