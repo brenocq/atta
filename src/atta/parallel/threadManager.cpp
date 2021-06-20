@@ -204,6 +204,7 @@ namespace atta
 			//--------------------- Robots ----------------------//
 			Drawer::updateBufferMemory(_vkCore, _commandPool);// Send drawer data to GPU
 			Drawer::clear();// Clear drawer data to receive new lines/points
+
 			switch(_robotProcessing)
 			{
 				case ROBOT_PROCESSING_SEQUENTIAL:

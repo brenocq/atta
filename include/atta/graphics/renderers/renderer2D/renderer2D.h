@@ -9,6 +9,7 @@
 
 #include <atta/graphics/renderers/renderer.h>
 #include <atta/graphics/renderers/renderer2D/pipelines/graphicsPipeline2D.h>
+#include <atta/graphics/renderers/renderer2D/pipelines/linePipeline.h>
 #include <atta/graphics/renderers/renderer2D/uniformBuffer2D.h>
 #include <atta/core/scene.h>
 
@@ -49,6 +50,10 @@ namespace atta
 
 			// Pipelines
 			std::unique_ptr<GraphicsPipeline2D> _graphicsPipeline;
+			std::unique_ptr<LinePipeline> _linePipeline;
+
+			// Support
+			bool _linePipelineSupport;
 
 			// Orthographic projection matrix info
 			float _orthoHeight;
