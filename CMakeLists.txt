@@ -168,6 +168,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
             "src/atta/graphics/renderers/rayTracing/rayTracingVulkan/uniformBuffer.cpp"
 			# graphics/renderers/renderer2D/
 			"src/atta/graphics/renderers/renderer2D/pipelines/graphicsPipeline2D.cpp"
+			"src/atta/graphics/renderers/renderer2D/pipelines/linePipeline.cpp"
 			"src/atta/graphics/renderers/renderer2D/renderer2D.cpp"
 			"src/atta/graphics/renderers/renderer2D/uniformBuffer2D.cpp"
 		# graphics/vulkan
@@ -378,6 +379,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
             "include/atta/graphics/renderers/rayTracing/rayTracingVulkan/uniformBuffer.h"
 			# graphics/renderers/renderer2D/
 			"include/atta/graphics/renderers/renderer2D/pipelines/graphicsPipeline2D.h"
+			"include/atta/graphics/renderers/renderer2D/pipelines/linePipeline.h"
 			"include/atta/graphics/renderers/renderer2D/renderer2D.h"
 			"include/atta/graphics/renderers/renderer2D/uniformBuffer2D.h"
 		# graphics/vulkan
@@ -518,6 +520,9 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
         "include/atta/assets/shaders/rayTracing/rayTracing.rmiss.spv"
         "include/atta/assets/shaders/rayTracing/rayTracingShadow.rmiss.spv"
 		# renderer2D
+			# renderer2D/line
+			"include/atta/assets/shaders/renderer2D/line/lineShader.frag.spv"
+			"include/atta/assets/shaders/renderer2D/line/lineShader.vert.spv"
 		"include/atta/assets/shaders/renderer2D/renderer2D.frag.spv"
         "include/atta/assets/shaders/renderer2D/renderer2D.vert.spv"
 	)

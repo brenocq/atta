@@ -16,6 +16,8 @@ namespace atta
 		_orthoHeight(info.orthoHeight), _orthoDepth(info.orthoDepth), 
 		_scene(info.scene)
 	{
+		_linePipelineSupport = _vkCore->getDevice()->getPhysicalDevice()->getSupport().fillModeNonSolidFeature;
+
 		//---------- Create uniform buffers ----------//
 		_uniformBuffer = std::make_shared<UniformBuffer2D>(_vkCore->getDevice());
 
@@ -55,6 +57,16 @@ namespace atta
 				_image->getExtent(), _image->getFormat(), 
 				_imageView, _uniformBuffer, 
 				_scene);
+
+		if(_linePipelineSupport)
+			_linePipeline = std::make_unique<LinePipeline>(
+					_vkCore, _renderPass,
+					_image->getExtent(), _image->getFormat(), 
+					std::vector<std::shared_ptr<vk::ImageView>>({_imageView}), 
+					std::vector<std::shared_ptr<UniformBuffer2D>>({_uniformBuffer}), 
+					_scene);
+		else
+			_linePipeline = nullptr;
 	}
 
 	void Renderer2D::render(VkCommandBuffer commandBuffer)
@@ -76,6 +88,10 @@ namespace atta
 		{
 			// Graphics pipeline
 			_graphicsPipeline->render(commandBuffer);
+
+			// Line pipeline
+			if(_linePipelineSupport)
+				_linePipeline->render(commandBuffer);
 		}
 		vkCmdEndRenderPass(commandBuffer);
 	}

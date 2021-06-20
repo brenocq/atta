@@ -4,19 +4,19 @@
 // Date: 2020-08-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/renderers/rastRenderer/pipelines/linePipeline.h>
+#include <atta/graphics/renderers/renderer2D/pipelines/linePipeline.h>
 #include <atta/helpers/log.h>
 #include <atta/helpers/drawer.h>
 #include <atta/graphics/vulkan/stagingBuffer.h>
 
-namespace atta::vk
+namespace atta
 {
 	LinePipeline::LinePipeline(
-			std::shared_ptr<VulkanCore> vkCore, 
-			std::shared_ptr<RenderPass> renderPass,
+			std::shared_ptr<vk::VulkanCore> vkCore, 
+			std::shared_ptr<vk::RenderPass> renderPass,
 			VkExtent2D extent, VkFormat format,
-			std::vector<std::shared_ptr<ImageView>> imageViews, 
-			std::vector<std::shared_ptr<UniformBuffer>> uniformBuffers, 
+			std::vector<std::shared_ptr<vk::ImageView>> imageViews, 
+			std::vector<std::shared_ptr<UniformBuffer2D>> uniformBuffers, 
 			std::shared_ptr<Scene> scene):
 		Pipeline(vkCore, imageViews, scene)
 	{
@@ -25,8 +25,8 @@ namespace atta::vk
 		_renderPass = renderPass;
 
 		//---------- Shaders ----------//
-		_vertShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/line/lineShader.vert.spv");
-		_fragShaderModule = std::make_shared<ShaderModule>(_device, "/usr/include/atta/assets/shaders/rastRenderer/line/lineShader.frag.spv");
+		_vertShaderModule = std::make_shared<vk::ShaderModule>(_device, "/usr/include/atta/assets/shaders/renderer2D/line/lineShader.vert.spv");
+		_fragShaderModule = std::make_shared<vk::ShaderModule>(_device, "/usr/include/atta/assets/shaders/renderer2D/line/lineShader.frag.spv");
 
 		// Vert shader
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -148,8 +148,8 @@ namespace atta::vk
 			{1, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT}
 		};
 
-		_descriptorSetManager = std::make_shared<DescriptorSetManager>(_device, descriptorBindings, uniformBuffers.size());
-		std::shared_ptr<DescriptorSets> descriptorSets = _descriptorSetManager->getDescriptorSets();
+		_descriptorSetManager = std::make_shared<vk::DescriptorSetManager>(_device, descriptorBindings, uniformBuffers.size());
+		std::shared_ptr<vk::DescriptorSets> descriptorSets = _descriptorSetManager->getDescriptorSets();
 
 		for(uint32_t i = 0; i < uniformBuffers.size(); i++)
 		{
@@ -173,7 +173,7 @@ namespace atta::vk
 		}
 
 		//---------- PipelineLayout ----------//
-		_pipelineLayout = std::make_shared<PipelineLayout>(_device, _descriptorSetManager->getDescriptorSetLayout());
+		_pipelineLayout = std::make_shared<vk::PipelineLayout>(_device, _descriptorSetManager->getDescriptorSetLayout());
 
 		//---------- Create Pipeline ----------//
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
