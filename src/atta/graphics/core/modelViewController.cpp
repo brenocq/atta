@@ -15,7 +15,8 @@ namespace atta
 		_controlType(controlType), _mouseMiddleButton(false), _shiftKey(false), 
 		_cameraUpdated(false),
 		_speed(1.0f),
-		_right(vec3(1,0,0)), _up(vec3(0,1,0)), _forward(vec3(0,0,-1))
+		_right(vec3(1,0,0)), _up(vec3(0,1,0)), _forward(vec3(0,0,-1)),
+		_totalScroll(0)
 	{
 	}
 
@@ -96,7 +97,12 @@ namespace atta
 
 	void ModelViewController::onScroll(double xoffset, double yoffset)
 	{
-		//moveForward(yoffset/3.f);
+		if(_controlType == CONTROL_TYPE_2D)
+		{
+			_totalScroll += yoffset;
+			_totalScroll += xoffset;
+			_cameraUpdated = true;
+		}
 	}
 
 	bool ModelViewController::onCursorPosition(double xpos, double ypos)

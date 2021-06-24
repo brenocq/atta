@@ -135,4 +135,13 @@ namespace atta
 		ubo.orthoMatrix = atta::transpose(atta::orthographic(_orthoHeight, width/(float)height, _orthoDepth));
 		_uniformBuffer->setValue(ubo);
 	}
+
+	void Renderer2D::setOrthoHeight(float orthoHeight)
+	{
+		_orthoHeight = orthoHeight;
+
+		UniformBuffer2D::Data ubo = _uniformBuffer->getValue();
+		ubo.orthoMatrix = atta::transpose(atta::orthographic(_orthoHeight, _extent.width/(float)_extent.height, _orthoDepth));
+		_uniformBuffer->setValue(ubo);
+	}
 }

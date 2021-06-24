@@ -38,6 +38,9 @@ namespace atta
 			void updateCameraMatrix(mat4 viewMatrix);
 			void resize(unsigned width, unsigned height);
 
+			float getOrthoHeight() const { return _orthoHeight; }
+			void setOrthoHeight(float orthoHeight);
+
 		private:
 			void createRenderPass();
 			void createFrameBuffers();

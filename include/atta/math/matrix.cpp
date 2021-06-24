@@ -121,6 +121,13 @@ namespace atta
 
 	template <typename T>
 	template <typename U>
+	void matrix<T>::operator*=(U v)
+	{
+		(*this) = (*this)*v;
+	}
+
+	template <typename T>
+	template <typename U>
 	vector<U> matrix<T>::operator*(const vector<U>& v)
 	{
 		vector<U> res(nrows);
@@ -131,6 +138,18 @@ namespace atta
 				sum += rows[i][j]*v.at(j);
 			res[i] = sum;
 		}
+		return res;
+	}
+
+	template <typename T>
+	template <typename U>
+	matrix<T> matrix<T>::operator*(U v)
+	{
+		matrix<T> res = matrix<T>(nrows, ncols);
+		for(int i=0;i<res.nrows;i++)
+			for(int j=0;j<res.ncols;j++)
+				res.rows[i][j] = rows[i][j]*v;
+
 		return res;
 	}
 

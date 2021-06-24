@@ -767,6 +767,8 @@ namespace atta
 			vector<T> operator-(const vector<U>& v) const;
 			template <typename U>
 			void operator-=(const vector<U>& v);
+			// -
+			vector<T>& operator-();
 			// *
 			template <typename U>
 			vector<T> operator*(const vector<U>& v) const;
@@ -777,6 +779,9 @@ namespace atta
 			vector<T> operator/(const vector<U>& v) const;
 			template <typename U>
 			void operator/=(const vector<U>& v);
+
+			void normalize();
+			T length();
 
 			std::string toString();
 	};
