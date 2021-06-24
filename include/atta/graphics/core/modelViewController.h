@@ -41,6 +41,11 @@ namespace atta
 			vec3 getPosition() const { return _position; }
 			vec3 getForward() const { return _forward; }
 			vec3 getUp() const { return _up; }
+			float getSpeed() const { return _speed; }
+
+			//---------- Setters ----------//
+			float collectTotalScroll() { float t=_totalScroll; _totalScroll=0; return t; }
+			void setSpeed(float speed) { _speed=speed; }
 
 		private:
 			void moveForward(float d);
@@ -68,7 +73,7 @@ namespace atta
 			float _cursorMovY{};
 			float _speed;
 
-			// Matrices and vectors.
+			// Matrices and vectors
 			mat4 _orientation{};
 
 			vec3 _position;
@@ -76,6 +81,7 @@ namespace atta
 
 			double _mousePosX;
 			double _mousePosY;
+			double _totalScroll;
 	};
 }
 

@@ -178,6 +178,18 @@ namespace atta
 		{
 			if(_renderers.size()>0)
 				_renderers[_mainRendererIndex]->updateCameraMatrix(_modelViewController->getModelView());
+			if(_renderers[_mainRendererIndex]->getType()==RENDERER_TYPE_2D)
+			{
+				// Update projection matrix with scale (mouse scroll)
+				std::shared_ptr<Renderer2D> rend2D = std::static_pointer_cast<Renderer2D>(_renderers[_mainRendererIndex]);
+				float totalScroll = _modelViewController->collectTotalScroll();
+				float orthoHeight = rend2D->getOrthoHeight();
+				float newOrthoHeight = orthoHeight-totalScroll/10;
+				if(newOrthoHeight<0.1)
+					newOrthoHeight = 0.1;
+				rend2D->setOrthoHeight(newOrthoHeight);
+				_modelViewController->setSpeed(_modelViewController->getSpeed()*(newOrthoHeight/orthoHeight));
+			}
 			_cameraUpdated = false;
 		}
 

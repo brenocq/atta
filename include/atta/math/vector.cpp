@@ -105,6 +105,14 @@ namespace atta
 			data[i]-=v.data[i];
 	}
 
+	template <typename T>
+	vector<T>& vector<T>::operator-()
+	{
+		for(size_t i=0;i<n;i++)
+			data[i]*=-1;
+		return (*this);
+	}
+
 	// **********
 	template <typename T>
 	template <typename U>
@@ -151,5 +159,24 @@ namespace atta
 		for(size_t i=0;i<v1.n;i++)
 			res += v1.data[i]*v2.data[i];
 		return res;
+	}
+
+	template <typename T>
+	void vector<T>::normalize()
+	{
+		T sum=0;
+		for(const T& val : data)
+			sum+=val*val;
+		for(T& val : data)
+			val/=sqrt(sum);
+	}
+
+	template <typename T>
+	T vector<T>::length()
+	{
+		T sum=0;
+		for(const T& val : data)
+			sum+=val*val;
+		return sqrt(sum);
 	}
 }

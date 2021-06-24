@@ -315,7 +315,11 @@ namespace atta
 			template <typename U>
 			matrix<T> operator*(const matrix<U>& o);
 			template <typename U>
+			matrix<T> operator*(U v);
+			template <typename U>
 			void operator*=(const matrix<U>& o);
+			template <typename U>
+			void operator*=(U v);
 
 			// Matrix operations
 			matrix<T>& transpose();
