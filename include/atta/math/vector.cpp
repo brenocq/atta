@@ -80,10 +80,28 @@ namespace atta
 
 	template <typename T>
 	template <typename U>
+	vector<T> vector<T>::operator+(const U v) const
+	{
+		vector<T> res(n);
+		for(size_t i=0;i<n;i++)
+			res[i]=data[i]+v;
+		return res;
+	}
+
+	template <typename T>
+	template <typename U>
 	void vector<T>::operator+=(const vector<U>& v)
 	{
 		for(size_t i=0;i<n;i++)
 			data[i]+=v.data[i];
+	}
+
+	template <typename T>
+	template <typename U>
+	void vector<T>::operator+=(const U v)
+	{
+		for(size_t i=0;i<n;i++)
+			data[i]+=v;
 	}
 
 	// ----------
@@ -99,10 +117,28 @@ namespace atta
 
 	template <typename T>
 	template <typename U>
+	vector<T> vector<T>::operator-(const U v) const
+	{
+		vector<T> res(n);
+		for(size_t i=0;i<n;i++)
+			res[i]=data[i]-v;
+		return res;
+	}
+
+	template <typename T>
+	template <typename U>
 	void vector<T>::operator-=(const vector<U>& v)
 	{
 		for(size_t i=0;i<n;i++)
 			data[i]-=v.data[i];
+	}
+
+	template <typename T>
+	template <typename U>
+	void vector<T>::operator-=(const U v)
+	{
+		for(size_t i=0;i<n;i++)
+			data[i]-=v;
 	}
 
 	template <typename T>
@@ -126,10 +162,28 @@ namespace atta
 
 	template <typename T>
 	template <typename U>
+	vector<T> vector<T>::operator*(const U v) const
+	{
+		vector<T> res(n);
+		for(size_t i=0;i<n;i++)
+			res[i]=data[i]*v;
+		return res;
+	}
+
+	template <typename T>
+	template <typename U>
 	void vector<T>::operator*=(const vector<U>& v)
 	{
 		for(size_t i=0;i<n;i++)
 			data[i]*=v.data[i];
+	}
+
+	template <typename T>
+	template <typename U>
+	void vector<T>::operator*=(const U v)
+	{
+		for(size_t i=0;i<n;i++)
+			data[i]*=v;
 	}
 	
 	// //////////
@@ -145,10 +199,28 @@ namespace atta
 
 	template <typename T>
 	template <typename U>
+	vector<T> vector<T>::operator/(const U v) const
+	{
+		vector<T> res(n);
+		for(size_t i=0;i<n;i++)
+			res[i]=data[i]/v;
+		return res;
+	}
+
+	template <typename T>
+	template <typename U>
 	void vector<T>::operator/=(const vector<U>& v)
 	{
 		for(size_t i=0;i<n;i++)
 			data[i]/=v.data[i];
+	}
+
+	template <typename T>
+	template <typename U>
+	void vector<T>::operator/=(const U v)
+	{
+		for(size_t i=0;i<n;i++)
+			data[i]/=v;
 	}
 
 	// Dot

@@ -761,24 +761,40 @@ namespace atta
 			template <typename U>
 			vector<T> operator+(const vector<U>& v) const;
 			template <typename U>
+			vector<T> operator+(const U v) const;
+			template <typename U>
 			void operator+=(const vector<U>& v);
+			template <typename U>
+			void operator+=(const U v);
 			// -
 			template <typename U>
 			vector<T> operator-(const vector<U>& v) const;
 			template <typename U>
+			vector<T> operator-(const U v) const;
+			template <typename U>
 			void operator-=(const vector<U>& v);
+			template <typename U>
+			void operator-=(const U v);
 			// -
 			vector<T>& operator-();
 			// *
 			template <typename U>
 			vector<T> operator*(const vector<U>& v) const;
 			template <typename U>
+			vector<T> operator*(const U v) const;
+			template <typename U>
 			void operator*=(const vector<U>& v);
+			template <typename U>
+			void operator*=(const U v);
 			// /
 			template <typename U>
 			vector<T> operator/(const vector<U>& v) const;
 			template <typename U>
+			vector<T> operator/(const U v) const;
+			template <typename U>
 			void operator/=(const vector<U>& v);
+			template <typename U>
+			void operator/=(const U v);
 
 			void normalize();
 			T length();
