@@ -39,9 +39,9 @@ namespace atta
 	// Keyboard handler
 	enum KeyboardAction
 	{
-		RELEASE = 0,
-		PRESS = 1,
-		REPEAT = 2,
+		KEY_RELEASE = 0,
+		KEY_PRESS = 1,
+		KEY_REPEAT = 2,
 	};
 
 	enum KeyboardKey
@@ -72,6 +72,20 @@ namespace atta
 		KEY_X,
 		KEY_Y,
 		KEY_Z,
+	};
+
+	// Mouse handler
+	enum MouseAction
+	{
+		MOUSE_RELEASE = 0,
+		MOUSE_PRESS
+	};  
+
+	enum MouseButton
+	{
+		MOUSE_LEFT = 0,
+		MOUSE_RIGHT,
+		MOUSE_MIDDLE
 	};
 }
 #endif// ATTA_CORE_COMMON_H

@@ -37,6 +37,9 @@ namespace atta
 				std::function<void(void)> runAfterRobots;
 				std::function<void(WorkerGui*)> runBeforeWorkerGuiRender;
 				std::function<void(int key, int action)> handleKeyboard;
+				std::function<void(double xpos, double ypos)> handleMousePosition;
+				std::function<void(int button, int action)> handleMouseButton;
+				std::function<void(double xoffset, double yoffset)> handleMouseScroll;
 			};
 
 			Atta(CreateInfo info);

@@ -124,6 +124,9 @@ namespace atta
 			.guiRenderer = _info.guiRenderer,
 			.runBeforeWorkerGuiRender = _info.runBeforeWorkerGuiRender,
 			.handleKeyboard = _info.handleKeyboard,
+			.handleMousePosition = _info.handleMousePosition,
+			.handleMouseButton = _info.handleMouseButton,
+			.handleMouseScroll = _info.handleMouseScroll,
 		};
 		return uiConfig;
 	}

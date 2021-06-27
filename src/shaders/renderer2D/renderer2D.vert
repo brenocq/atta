@@ -30,7 +30,7 @@ void main()
 {
 	vec3 fragPos = vec3(camera.orthoMatrix * camera.viewMatrix * objectInfo.transform * vec4(inPosition, 1.0));
 
-	fragPos.y = -fragPos.y;// Invert Y because vulkan Y coord points down
+	//fragPos.y = -fragPos.y;// Invert Y because vulkan Y coord points down
 	gl_Position = vec4(fragPos.xyz, 1);
 
 	outTexCoord = inTexCoord;

@@ -51,6 +51,9 @@ namespace atta
 				GuiRenderer guiRenderer;
 				std::function<void(WorkerGui*)> runBeforeWorkerGuiRender;
 				std::function<void(int key, int action)> handleKeyboard;
+				std::function<void(double xpos, double ypos)> handleMousePosition;
+				std::function<void(int button, int action)> handleMouseButton;
+				std::function<void(double xoffset, double yoffset)> handleMouseScroll;
 			};
 
 
@@ -115,6 +118,9 @@ namespace atta
 			//---------- UI ----------//
 			GuiRenderer _guiRenderer;
 			std::function<void(int key, int action)> _handleKeyboard;
+			std::function<void(double xpos, double ypos)> _handleMousePosition;
+			std::function<void(int button, int action)> _handleMouseButton;
+			std::function<void(double xoffset, double yoffset)> _handleMouseScroll;
 	};
 }
 

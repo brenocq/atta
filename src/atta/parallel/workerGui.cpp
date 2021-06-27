@@ -17,13 +17,13 @@
 namespace atta
 {
 	const int MAX_FRAMES_IN_FLIGHT = 2;
-	WorkerGui::WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, 
-			CameraControlType cameraControlType, GuiRenderer guiRenderer,
-			std::function<void(WorkerGui*)> runBeforeWorkerGuiRender,
-			std::function<void(int key, int action)> handleKeyboard):
-		_vkCore(vkCore), _scene(scene), _currentFrame(0), _mainRendererIndex(-1), _cameraUpdated(false),
-		_cameraControlType(cameraControlType), _guiRenderer(guiRenderer),
-		_runBeforeWorkerGuiRender(runBeforeWorkerGuiRender), _handleKeyboard(handleKeyboard)
+	WorkerGui::WorkerGui(CreateInfo info):
+		_vkCore(info.vkCore), _scene(info.scene), _currentFrame(0), _mainRendererIndex(-1), _cameraUpdated(false),
+		_cameraControlType(info.cameraControlType), _guiRenderer(info.guiRenderer),
+		_mouseInsideViewport(false),
+		_runBeforeWorkerGuiRender(info.runBeforeWorkerGuiRender), 
+		_handleKeyboard(info.handleKeyboard), _handleMousePosition(info.handleMousePosition),
+		_handleMouseButton(info.handleMouseButton), _handleMouseScroll(info.handleMouseScroll)
 	{
 		// Create window (GUI thread only)
 		_window = std::make_shared<Window>();
@@ -35,7 +35,7 @@ namespace atta
 
 		// Create model view controller
 		_modelViewController = std::make_shared<ModelViewController>(
-				cameraControlType == CAMERA_CONTROL_TYPE_2D?
+				_cameraControlType == CAMERA_CONTROL_TYPE_2D?
 					ModelViewController::CONTROL_TYPE_2D:
 					ModelViewController::CONTROL_TYPE_3D
 					);
@@ -314,14 +314,23 @@ namespace atta
 
 		_modelViewController->onKey(key, scancode, action, mods);
 		_ui->onKey(key, scancode, action, mods);
-		if(_handleKeyboard)
-			_handleKeyboard(key, action);
+		if(_handleKeyboard) _handleKeyboard(key, action);
 	}
 
 	void WorkerGui::onCursorPosition(double xpos, double ypos)
 	{
 		_modelViewController->onCursorPosition(xpos, ypos);
 		_ui->onCursorPosition(xpos, ypos);
+
+		// TODO hardcoded offsets
+		float xposViewport = xpos-(35+2*3);
+		float yposViewport = ypos-(26+22);
+		VkExtent2D extent = _ui->getViewportRenderer()->getImage()->getExtent();
+		xposViewport/=extent.width;
+		yposViewport/=extent.height;
+
+		_mouseInsideViewport = xposViewport>=0 && xposViewport<=1 && yposViewport>=0 && yposViewport<=1;
+		if(_handleMousePosition && _mouseInsideViewport) _handleMousePosition(xposViewport, yposViewport);
 	}
 
 	void WorkerGui::onMouseButton(int button, int action, int mods)
@@ -335,11 +344,13 @@ namespace atta
 
 		_modelViewController->onMouseButton(button, action, mods);
 		_ui->onMouseButton(button, action, mods);
+		if(_handleMouseButton && _mouseInsideViewport) _handleMouseButton(button, action);
 	}
 
 	void WorkerGui::onScroll(double xoffset, double yoffset)
 	{
 		_modelViewController->onScroll(xoffset, yoffset);
 		_ui->onScroll(xoffset, yoffset);
+		if(_handleMouseScroll && _mouseInsideViewport) _handleMouseScroll(xoffset, yoffset);
 	}
 }
