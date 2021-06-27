@@ -29,7 +29,7 @@ void main()
 	//vec3 color = gl_VertexIndex%2==0 ? vec3(1,0,0) : vec3(0,0,1);
 
 	vec4 fragPos = (camera.orthoMatrix * camera.viewMatrix) * vec4(point, 1.0);
-	fragPos.y = -fragPos.y;// Invert Y because vulkan Y coord points down
+	//fragPos.y = -fragPos.y;// Invert Y because vulkan Y coord points down
 
     gl_Position = fragPos;
     outFragColor = color;

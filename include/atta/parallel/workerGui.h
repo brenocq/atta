@@ -41,10 +41,19 @@ namespace atta
 				CAMERA_CONTROL_TYPE_3D
 			};
 
-			WorkerGui(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<Scene> scene, 
-					CameraControlType cameraControlType, GuiRenderer guiRenderer, 
-					std::function<void(WorkerGui*)> runBeforeWorkerGuiRender,
-					std::function<void(int key, int action)> handleKeyboard);
+			struct CreateInfo {
+				std::shared_ptr<vk::VulkanCore> vkCore;
+				std::shared_ptr<Scene> scene;
+				CameraControlType cameraControlType;
+				GuiRenderer guiRenderer;
+				std::function<void(WorkerGui*)> runBeforeWorkerGuiRender;
+				std::function<void(int key, int action)> handleKeyboard;
+				std::function<void(double xpos, double ypos)> handleMousePosition;
+				std::function<void(int button, int action)> handleMouseButton;
+				std::function<void(double xoffset, double yoffset)> handleMouseScroll;
+			};
+
+			WorkerGui(CreateInfo info);
 			~WorkerGui();
 
 			void operator()();
@@ -56,6 +65,7 @@ namespace atta
 			//---------- Getters ----------//
 			std::shared_ptr<ModelViewController> getModelViewController() const { return _modelViewController; }
 			std::vector<std::shared_ptr<Renderer>> getRenderers() const { return _renderers; }
+			std::shared_ptr<Renderer> getMainRenderer() const { return _renderers[_mainRendererIndex]; }
 
 		private:
 			void render();
@@ -103,8 +113,12 @@ namespace atta
 			std::shared_ptr<UserInterface> _ui;
 
 			// User functions
+			bool _mouseInsideViewport;
 			std::function<void(WorkerGui*)> _runBeforeWorkerGuiRender;
 			std::function<void(int key, int action)> _handleKeyboard;
+			std::function<void(double xpos, double ypos)> _handleMousePosition;
+			std::function<void(int button, int action)> _handleMouseButton;
+			std::function<void(double xoffset, double yoffset)> _handleMouseScroll;
 	};
 }
 

@@ -54,6 +54,9 @@ namespace atta
 		_guiRenderer = pipelineSetup.uiConfig.guiRenderer;
 		_runBeforeWorkerGuiRender = pipelineSetup.uiConfig.runBeforeWorkerGuiRender;
 		_handleKeyboard = pipelineSetup.uiConfig.handleKeyboard;
+		_handleMousePosition = pipelineSetup.uiConfig.handleMousePosition;
+		_handleMouseButton = pipelineSetup.uiConfig.handleMouseButton;
+		_handleMouseScroll = pipelineSetup.uiConfig.handleMouseScroll;
 		
 		//---------- Create objects ----------//
 		createGeneralistWorkers();
@@ -108,14 +111,20 @@ namespace atta
 
 	void ThreadManager::createGuiWorker()
 	{
-		_workerGui = std::make_shared<WorkerGui>(_vkCore, _scene,
+		WorkerGui::CreateInfo workerGuiInfo = {
+			_vkCore, _scene,
 			_dimensionMode == DIM_MODE_3D?
 					WorkerGui::CAMERA_CONTROL_TYPE_3D:
 					WorkerGui::CAMERA_CONTROL_TYPE_2D,
-				_guiRenderer,
-				_runBeforeWorkerGuiRender,
-				_handleKeyboard
-				);
+			_guiRenderer,
+			_runBeforeWorkerGuiRender,
+			_handleKeyboard,
+			_handleMousePosition,
+			_handleMouseButton,
+			_handleMouseScroll
+		};
+
+		_workerGui = std::make_shared<WorkerGui>(workerGuiInfo);
 
 		// Create thread from callable workerGui
 		_threads.push_back(std::thread(std::ref(*_workerGui)));

@@ -130,7 +130,7 @@ namespace atta
 			{
 				const float speed2DFac = 0.1;
 				moveRight(d*_cursorMovX*speed2DFac);
-				moveUp(-d*_cursorMovY*speed2DFac);
+				moveUp(d*_cursorMovY*speed2DFac);
 
 				changed = changed || _cursorMovX!=0 || _cursorMovY!=0;
 			}
