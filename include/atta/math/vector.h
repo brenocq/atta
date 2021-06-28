@@ -556,7 +556,7 @@ namespace atta
 				return y;
 			}
 
-			// Add vector
+			// Add
 			template <typename U>
 			void operator+=(const vector2<U>& v)
 			{
@@ -570,7 +570,20 @@ namespace atta
 				return vector2<T>(x+v.x, y+v.y);
 			}
 
-			// Subtract vector
+			template <typename U>
+			void operator+=(const U v)
+			{
+				x += v;
+				y += v;
+			}
+
+			template <typename U>
+			vector2<T> operator+(const U v) const
+			{
+				return vector2<T>(x+v, y+v);
+			}
+
+			// Subtract
 			template <typename U>
 			void operator-=(const vector2<U>& v)
 			{
@@ -582,6 +595,19 @@ namespace atta
 			vector2<T> operator-(const vector2<U>& v) const
 			{
 				return vector2<T>(x-v.x, y-v.y);
+			}
+
+			template <typename U>
+			void operator-=(const U v)
+			{
+				x -= v;
+				y -= v;
+			}
+
+			template <typename U>
+			vector2<T> operator-(const U v) const
+			{
+				return vector2<T>(x-v, y-v);
 			}
 
 			vector2<T> operator-() const

@@ -212,7 +212,7 @@ namespace atta
 			_sensorStageBarrier->wait();
 			//--------------------- Robots ----------------------//
 			Drawer::updateBufferMemory(_vkCore, _commandPool);// Send drawer data to GPU
-			Drawer::clear();// Clear drawer data to receive new lines/points
+			//Drawer::clear();// Clear drawer data to receive new lines/points
 
 			switch(_robotProcessing)
 			{
