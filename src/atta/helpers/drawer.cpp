@@ -13,9 +13,10 @@ namespace atta
 	// Core impl
 	void Drawer::clearImpl()
 	{
-		//Log::debug("Drawer", "Clear");
+		Log::debug("Drawer", "Clear");
 		_currNumberOfLines = 0;
 		_currNumberOfPoints = 0;
+		_lineGroups.clear();
 	}
 
 	void Drawer::updateBufferMemoryImpl(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<vk::CommandPool> commandPool)
@@ -30,8 +31,12 @@ namespace atta
 		}
 
 		// Update line buffer
-		if(_currNumberOfLines>0)
+		if(_currNumberOfLines>0 && _linesChanged)
 		{
+			_lines.clear();
+			for(auto& lineGroup : _lineGroups)
+				_lines.insert(_lines.end(), lineGroup.second.begin(), lineGroup.second.end());
+
 			size_t size = _currNumberOfLines*sizeof(Drawer::Line);
 			std::shared_ptr<vk::StagingBuffer> stagingBuffer = std::make_shared<vk::StagingBuffer>(vkCore->getDevice(), _lines.data(), size);
 			vkCore->getLineBuffer()->copyFrom(commandPool, stagingBuffer->handle(), size);
@@ -44,8 +49,24 @@ namespace atta
 	{
 		if(_currNumberOfLines<_maxNumberOfLines)
 		{
-			_lines[_currNumberOfLines] = line;
+			//_lines[_currNumberOfLines] = line;
+			_lineGroups["atta"].push_back(line);
 			_currNumberOfLines++;
+			_linesChanged = true;
+		}
+		else
+		{
+			Log::debug("Drawer", "Maximum number of lines reached! Not drawing new ones.");
+		}
+	}
+
+	void Drawer::addLineImpl(std::string group, Line line)
+	{
+		if(_currNumberOfLines<_maxNumberOfLines)
+		{
+			_lineGroups[group].push_back(line);
+			_currNumberOfLines++;
+			_linesChanged = true;
 		}
 		else
 		{

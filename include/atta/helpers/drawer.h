@@ -44,6 +44,7 @@ namespace atta
 
 			// Drawer for debugging
 			static void addLine(Line line) { get().addLineImpl(line); }
+			static void addLine(std::string group, Line line) { get().addLineImpl(group, line); }
 			static void addPoint(Point point) { get().addPointImpl(point); }
 			static void clear() { get().clearImpl(); }
 
@@ -68,6 +69,7 @@ namespace atta
 				_maxNumberOfPoints(1000000),
 				_currNumberOfLines(0),
 				_currNumberOfLinesMemory(0),
+				_linesChanged(false),
 				_currNumberOfPoints(0),
 				_currNumberOfPointsMemory(0)
 			{
@@ -81,6 +83,7 @@ namespace atta
 
 			// Line impl
 			void addLineImpl(Line line);
+			void addLineImpl(std::string group, Line line);
 			std::vector<Line>& getLinesImpl() { return _lines; }
 			unsigned getMaxNumberOfLinesImpl() { return _maxNumberOfLines; }
 			unsigned getCurrNumberOfLinesImpl() { return _currNumberOfLines; }
@@ -94,9 +97,11 @@ namespace atta
 			unsigned getCurrNumberOfPointsMemoryImpl() { return _currNumberOfPointsMemory; }
 
 			std::vector<Line> _lines;
+			std::map<std::string, std::vector<Line>> _lineGroups;
 			unsigned _maxNumberOfLines;
 			unsigned _currNumberOfLines;
 			unsigned _currNumberOfLinesMemory;
+			bool _linesChanged;
 			std::vector<Point> _points;
 			unsigned _maxNumberOfPoints;
 			unsigned _currNumberOfPoints;
