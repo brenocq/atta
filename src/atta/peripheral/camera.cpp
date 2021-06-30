@@ -20,12 +20,10 @@
 namespace atta::peripheral
 {
 	Camera::Camera(CreateInfo info):
-		_deviceName(info.deviceName)
+		_deviceName(info.deviceName),
+		_pixelFormat(info.pixelFormat), _resolution(info.resolution), _fps(info.fps)
 	{
 		openDevice();
-		initDevice();
-		startCapturing();
-		Log::info("peripheral::Camera", "Camera $0 initialized", _deviceName);
 	}
 
 	Camera::~Camera()
@@ -40,6 +38,168 @@ namespace atta::peripheral
 			Log::warning("peripheral::Camera", "Could not close camera file descriptor");
 
         _fd = -1;
+	}
+
+	void Camera::start()
+	{
+		initDevice();
+		startCapturing();
+		Log::info("peripheral::Camera", "Camera $0 initialized", _deviceName);
+	}
+
+	bool Camera::setFormat(PixelFormat pixelFormat, Resolution resolution)
+	{
+		struct v4l2_format fmt;
+		memset(&(fmt), 0, sizeof(fmt));
+		fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		fmt.fmt.pix.width = resolution.width;
+		fmt.fmt.pix.height = resolution.height;
+
+		if(pixelFormat == PIXEL_FORMAT_MJPEG)
+			fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+		else if(pixelFormat == V4L2_PIX_FMT_YUYV)
+			fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+		else
+		{
+			Log::warning("peripheral::Camera", "[w](setFormat)[] Invalid pixel format");
+			return false;
+		}
+		fmt.fmt.pix.field = V4L2_FIELD_NONE;
+
+		// Use default image format
+		if(ioctl(_fd, VIDIOC_S_FMT, &fmt) == -1)
+		{
+			Log::warning("peripheral::Camera", "[w](setFormat)[] Could not set new format");
+			return false;
+		}
+
+		_pixelFormat = pixelFormat;
+		_resolution = resolution;
+
+		return true;
+	}
+
+	bool Camera::setFps(unsigned fps)
+	{
+		struct v4l2_streamparm param;
+		memset(&param, 0, sizeof(param));
+		param.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		param.parm.capture.timeperframe.numerator = 1;
+		param.parm.capture.timeperframe.denominator = fps;  
+
+		if(ioctl(_fd, VIDIOC_S_PARM, &param) == -1)
+		{
+			Log::warning("peripheral::Camera", "[w](setFps)[] Unable to change fps");
+			return false;
+		}
+
+		if(param.parm.capture.timeperframe.numerator)
+		{
+			double newFps = param.parm.capture.timeperframe.denominator
+						 / param.parm.capture.timeperframe.numerator;
+			if((double)fps != newFps)
+			{
+				Log::warning("peripheral::Camera", "[w](setFps)[] Unsupported fps $0. New fps is $1", fps, newFps);
+				return false;
+			}
+			//else
+			//{
+			//	Log::debug("peripheral::Camera", "[w](setFps)[] New fps is $0 ($1/$2)", fps, 
+			//	param.parm.capture.timeperframe.denominator,
+			//	param.parm.capture.timeperframe.numerator);
+			//}
+		}
+		return true;
+	}
+
+	std::vector<Camera::FormatInfo> Camera::getAvailableFormats()
+	{
+		struct v4l2_fmtdesc fmtEnum;
+		memset(&(fmtEnum), 0, sizeof(fmtEnum));
+		fmtEnum.index = 0;
+		fmtEnum.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+		std::vector<Camera::FormatInfo> availableFormats;
+
+		while(true)
+		{
+			// Request supported format
+			int ret = ioctl(_fd, VIDIOC_ENUM_FMT, &fmtEnum);
+			if(ret<0 && errno == EINVAL) break;
+			if(ret<0)
+			{
+				Log::error("peripheral::Camera", "Could not enumerate available formats");
+				exit(1);
+			}
+
+			Camera::FormatInfo fmtInfo;
+			std::string desc((char*)fmtEnum.description);
+			if(fmtEnum.pixelformat == V4L2_PIX_FMT_MJPEG)
+			{
+				fmtInfo.pixelFormat = PIXEL_FORMAT_MJPEG;
+				fmtInfo.pixelFormatName = "MJPEG ("+desc+")";
+			}
+			else if(fmtEnum.pixelformat == V4L2_PIX_FMT_YUYV)
+			{
+				fmtInfo.pixelFormat = PIXEL_FORMAT_YUYV;
+				fmtInfo.pixelFormatName = "YUYV ("+desc+")";
+			}
+			else
+			{
+				fmtInfo.pixelFormat = PIXEL_FORMAT_UNKNOWN;
+				fmtInfo.pixelFormatName = "UNKNOWN ("+desc+")";
+			}
+
+			// Request resolutions
+			struct v4l2_frmsizeenum frmSizeEnum;
+			memset(&(frmSizeEnum), 0, sizeof(frmSizeEnum));
+			frmSizeEnum.index = 0;
+			frmSizeEnum.pixel_format = fmtEnum.pixelformat;
+			while(true)
+			{
+				int ret = ioctl(_fd, VIDIOC_ENUM_FRAMESIZES, &frmSizeEnum);
+				if(ret<0 && errno == EINVAL) break;
+				if(ret<0)
+				{
+					Log::error("peripheral::Camera", "Could not enumerate frame sizes");
+					exit(1);
+				}
+
+				if(frmSizeEnum.type == V4L2_FRMSIZE_TYPE_DISCRETE)
+				{
+					fmtInfo.resolutions.push_back({frmSizeEnum.discrete.width, frmSizeEnum.discrete.height});
+					fmtInfo.fps.push_back(std::vector<unsigned>());
+
+					struct v4l2_frmivalenum frmIvalEnum;
+					memset(&(frmIvalEnum), 0, sizeof(frmIvalEnum));
+					frmIvalEnum.index = 0;
+					frmIvalEnum.pixel_format = fmtEnum.pixelformat;
+					frmIvalEnum.width = frmSizeEnum.discrete.width;
+					frmIvalEnum.height = frmSizeEnum.discrete.height;
+					while(true)
+					{
+						int ret = ioctl(_fd, VIDIOC_ENUM_FRAMEINTERVALS, &frmIvalEnum);
+						if(ret<0 && errno == EINVAL) break;
+						if(ret<0)
+						{
+							Log::error("peripheral::Camera", "Could not enumerate frame intervals");
+							exit(1);
+						}
+						if(frmIvalEnum.type == V4L2_FRMIVAL_TYPE_DISCRETE)
+							fmtInfo.fps.back().push_back((unsigned)(frmIvalEnum.discrete.denominator/(float)frmIvalEnum.discrete.numerator));
+
+						frmIvalEnum.index++;
+					}
+				}
+
+				frmSizeEnum.index++;
+			}
+
+			fmtEnum.index++;
+			availableFormats.push_back(fmtInfo);
+		}
+
+		return availableFormats;
 	}
 
 	void Camera::openDevice()
@@ -85,7 +245,7 @@ namespace atta::peripheral
 			exit(1);
         }
 
-		// Check if it is a video capture device
+		// Check if it is a device capable of video capturing
         if(!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE))
 		{
 			Log::error("peripheral::Camera", "'$0' is not a video capture device", _deviceName);
@@ -95,12 +255,18 @@ namespace atta::peripheral
 		//---------- Image format ----------//
 		memset(&(fmt), 0, sizeof(fmt));
 		fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		fmt.fmt.pix.width = 1280;
-		fmt.fmt.pix.height = 720;
-		fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_Y6;//V4L2_PIX_FMT_MJPEG;
+		fmt.fmt.pix.width = _resolution.width;
+		fmt.fmt.pix.height = _resolution.height;
+
+		if(_pixelFormat == PIXEL_FORMAT_MJPEG)
+			fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+		else if(_pixelFormat == V4L2_PIX_FMT_YUYV)
+			fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+		else
+			Log::warning("peripheral::Camera", "Invalid pixel format");
+
 		fmt.fmt.pix.field = V4L2_FIELD_NONE;
 
-		// Use default image format
 		if(ioctl(_fd, VIDIOC_S_FMT, &fmt) == -1)
 			Log::warning("peripheral::Camera", "Could not set format, using default");
 
