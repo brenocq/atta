@@ -13,10 +13,11 @@ namespace atta
 	// Core impl
 	void Drawer::clearImpl()
 	{
-		Log::debug("Drawer", "Clear");
+		//Log::debug("Drawer", "Clear");
 		_currNumberOfLines = 0;
 		_currNumberOfPoints = 0;
 		_lineGroups.clear();
+		_linesChanged = true;
 	}
 
 	void Drawer::updateBufferMemoryImpl(std::shared_ptr<vk::VulkanCore> vkCore, std::shared_ptr<vk::CommandPool> commandPool)
