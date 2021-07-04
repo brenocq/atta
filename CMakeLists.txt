@@ -77,6 +77,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 			# imgProc/
 			"src/atta/algorithms/imgProc/fundamentalMatrix.cpp"
 			"src/atta/algorithms/imgProc/homography.cpp"
+			"src/atta/algorithms/imgProc/jpeg.cpp"
 			# linAlg/
 				# elimination/
 				"src/atta/algorithms/linAlg/elimination/gaussianElimination.cpp"
@@ -279,6 +280,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 			# imgProc/
 			"include/atta/algorithms/imgProc/fundamentalMatrix.h"
 			"include/atta/algorithms/imgProc/homography.h"
+			"include/atta/algorithms/imgProc/jpeg.h"
 			# linAlg/
 				# elimination/
 				"include/atta/algorithms/linAlg/elimination/gaussianElimination.h"
