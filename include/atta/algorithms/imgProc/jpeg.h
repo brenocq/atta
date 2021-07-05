@@ -10,6 +10,7 @@
 
 namespace atta::imgproc {
 
+class BitReader;
 class JPEG {
 	public:
 		JPEG();
@@ -27,6 +28,7 @@ class JPEG {
 		struct HuffmanTable {
 			uint8_t offsets[17] = {0};
 			uint8_t symbols[162] = {0};
+			unsigned codes[162] = {0};
 			bool defined = false;
 		};
 
@@ -39,6 +41,34 @@ class JPEG {
 			bool defined = false;
 		};
 
+		struct MCU {
+			union {
+				int y[64] = {0};
+				int r[64];
+			};
+			union {
+				int cb[64] = {0};
+				int g[64];
+			};
+			union {
+				int cr[64] = {0};
+				int b[64];
+			};
+
+			int* operator[](unsigned i) {
+				switch(i) {
+					case 0:
+						return y;
+					case 1:
+						return cb;
+					case 2:
+						return cr;
+					default:
+						return nullptr;
+				}
+			}
+		};
+
 		bool readApplicationSegment(const std::vector<uint8_t>& data, size_t& i);
 		bool readComment(const std::vector<uint8_t>& data, size_t& i);
 		bool readQuantizationTable(const std::vector<uint8_t>& data, size_t& i);
@@ -47,6 +77,10 @@ class JPEG {
 		bool readStartOfFrame(const std::vector<uint8_t>& data, size_t& i);
 		bool readRestartInterval(const std::vector<uint8_t>& data, size_t& i);
 		bool loopScan(const std::vector<uint8_t>& data, size_t& i);
+		bool decodeHuffmanData();
+		void generateHuffmanCodes(HuffmanTable& table);
+		bool decodeMCUComponent(BitReader &b, int* const component, int& previousDC, const HuffmanTable& dcTable, const HuffmanTable& acTable);
+		uint8_t getNextSymbol(BitReader &b, const HuffmanTable& table);
 
 		unsigned _width;
 		unsigned _height;
@@ -63,6 +97,7 @@ class JPEG {
 		uint8_t _successiveApproximationLow;
 
 		std::vector<uint8_t> _huffmanData;
+		std::vector<MCU> _mcus;
 		std::vector<uint8_t> _decoded;
 
 		// Definitions
@@ -118,10 +153,24 @@ class JPEG {
 			MARKER_JPG11 = 0xfffb,
 			MARKER_JPG12 = 0xfffc,
 			MARKER_JPG13 = 0xfffd,
-			MARKER_COM = 0xfffe,// Comment
+			MARKER_COMMENT = 0xfffe,// Comment
 			MARKER_TEM = 0xff01,
 		};
 
+};
+
+class BitReader {
+	public:	
+		BitReader(const std::vector<uint8_t>& d);
+
+		int readBit();
+		int readBits(const unsigned length);
+		void align();
+
+	private:
+		unsigned _nextByte;
+		unsigned _nextBit;
+		const std::vector<uint8_t>& _data;
 };
 
 }
