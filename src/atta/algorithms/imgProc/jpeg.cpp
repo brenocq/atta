@@ -6,8 +6,26 @@
 //--------------------------------------------------
 #include <atta/algorithms/imgProc/jpeg.h>
 #include <atta/helpers/log.h>
+#include <cmath>
 
 namespace atta::imgproc {
+
+// IDCT scaling factors
+const float m0 = 2.0*std::cos(1.0/16.0*2.0*M_PI);
+const float m1 = 2.0*std::cos(2.0/16.0*2.0*M_PI);
+const float m3 = 2.0*std::cos(2.0/16.0*2.0*M_PI);
+const float m5 = 2.0*std::cos(3.0/16.0*2.0*M_PI);
+const float m2 = m0-m5;
+const float m4 = m0+m5;
+
+const float s0 = std::cos(0.0/16.0*M_PI)/std::sqrt(8);
+const float s1 = std::cos(1.0/16.0*M_PI)/2.0;
+const float s2 = std::cos(2.0/16.0*M_PI)/2.0;
+const float s3 = std::cos(3.0/16.0*M_PI)/2.0;
+const float s4 = std::cos(4.0/16.0*M_PI)/2.0;
+const float s5 = std::cos(5.0/16.0*M_PI)/2.0;
+const float s6 = std::cos(6.0/16.0*M_PI)/2.0;
+const float s7 = std::cos(7.0/16.0*M_PI)/2.0;
 
 const size_t zigZagMap [] = {
 	0,  1,   8, 16,  9,  2,  3, 10,
@@ -23,7 +41,9 @@ const size_t zigZagMap [] = {
 JPEG::JPEG()
 	: _width(0), _height(0), _numComponents(0), _restartInterval(0), _zeroBased(false),
 	_startOfSelection(0), _endOfSelection(63),
-	_successiveApproximationHigh(0), _successiveApproximationLow(0)
+	_successiveApproximationHigh(0), _successiveApproximationLow(0),
+	_horizontalSamplingFactor(1), _verticalSamplingFactor(1),
+	_mcuWidth(0), _mcuHeight(0), _mcuWidthReal(0), _mcuHeightReal(0)
 {
 
 }
@@ -34,11 +54,11 @@ const std::vector<uint8_t>& JPEG::decode(const std::vector<uint8_t>& data) {
     bool finished = false;
     while(!finished && i<data.size()) {
         unsigned marker = data[i++]<<8 | data[i++];
-        Log::debug("imgproc::JPEG", "Marker $0", marker);
+        //Log::debug("imgproc::JPEG", "Marker $0", marker);
 		if(marker == MARKER_START_OF_IMAGE) {
-            Log::debug("imgproc::JPEG", "Marker MARKER_START_OF_IMAGE");
+            //Log::debug("imgproc::JPEG", "Marker MARKER_START_OF_IMAGE");
 		} else if(marker == MARKER_END_OF_IMAGE) {
-            Log::debug("imgproc::JPEG", "Marker MARKER_END_OF_IMAGE");
+            //Log::debug("imgproc::JPEG", "Marker MARKER_END_OF_IMAGE");
 			finished = true;
 		} else if(marker >= MARKER_APP0 && marker <= MARKER_APP15) {
 			if(!readApplicationSegment(data, i)) {
@@ -60,7 +80,10 @@ const std::vector<uint8_t>& JPEG::decode(const std::vector<uint8_t>& data) {
 				Log::error("imgproc::JPEG", "Could not read start of scan segment");
 				return _decoded;
 			}
-			loopScan(data, i);
+			if(!loopScan(data, i)) {
+				Log::error("imgproc::JPEG", "Could not run loop scan");
+				return _decoded;
+			}
 		} else if(marker == MARKER_START_OF_FRAME) {
 			if(!readStartOfFrame(data, i)) {
 				Log::error("imgproc::JPEG", "Could not read start of frame segment");
@@ -114,13 +137,26 @@ const std::vector<uint8_t>& JPEG::decode(const std::vector<uint8_t>& data) {
 		return _decoded;
 	}
 
+	// Dequantize MCU coefficients
+	dequantizeMCUs();
+
+	// Inverse Discrete Cosine Transform
+	inverseDCT();
+
+	// Color conversion YCbCr -> RGB
+	YCbCrToRBG();
+
+	// MCUs to decoded
+	MCUToDecoded();
+
     return _decoded;
 }
 
 bool JPEG::readQuantizationTable(const std::vector<uint8_t>& data, size_t& i) {
-	Log::debug("imgproc::JPEG", "Marker MARKER_QUANTIZATION_TABLE");
+	//Log::debug("imgproc::JPEG", "Marker MARKER_QUANTIZATION_TABLE");
 	int length = (data[i++]<<8) | data[i++];
 	length-=2;
+
 	while(length > 0) {
 		uint8_t infoQT = data[i++];
 		length--;
@@ -130,18 +166,19 @@ bool JPEG::readQuantizationTable(const std::vector<uint8_t>& data, size_t& i) {
 			return false;
 		}
 		_quantizationTables[idxQT].defined = true;
-		Log::debug("imgproc::JPEG", "Reading quantization table $0", idxQT);
+		//Log::debug("imgproc::JPEG", "Reading quantization table $0", idxQT);
 
 		if(infoQT>>4 != 0) {
-			for(size_t j=0;j<64;j++)
-				_quantizationTables[idxQT].table[zigZagMap[j]] = data[i++]<<8 | data[i++];
+			for(size_t j = 0; j < 64; j++)
+				_quantizationTables[idxQT].table[zigZagMap[j]] = (data[i++]<<8) | data[i++];
 			length-=128;
 		} else {
-			for(size_t j=0;j<64;j++)
+			for(size_t j = 0; j < 64; j++)
 				_quantizationTables[idxQT].table[zigZagMap[j]] = data[i++];
 			length-=64;
 		}
 	}
+
 	if(length != 0) {
 		Log::error("imgproc::JPEG", "Unexpected quantization table length");
 		return false;
@@ -161,15 +198,15 @@ bool JPEG::readQuantizationTable(const std::vector<uint8_t>& data, size_t& i) {
 }
 
 bool JPEG::readApplicationSegment(const std::vector<uint8_t>& data, size_t& i) {
-	Log::debug("imgproc::JPEG", "Marker MARKER_APPLICATION_SEGMENT");
+	//Log::debug("imgproc::JPEG", "Marker MARKER_APPLICATION_SEGMENT");
 	unsigned length = (data[i++]<<8) | data[i++];
 	i+=length-2;
-	Log::debug("imgproc::JPEG", "Marker MARKER_APPLICATION_SEGMENT $0", (data[i]<<8)|data[i+1]);
+	//Log::debug("imgproc::JPEG", "Marker MARKER_APPLICATION_SEGMENT $0", (data[i]<<8)|data[i+1]);
 	return true;
 }
 
 bool JPEG::readComment(const std::vector<uint8_t>& data, size_t& i) {
-	Log::debug("imgproc::JPEG", "Marker MARKER_COMMENT (or ignored)");
+	//Log::debug("imgproc::JPEG", "Marker MARKER_COMMENT (or ignored)");
 	unsigned length = (data[i++]<<8) | data[i++];
 	i+=length-2;
 	return true;
@@ -236,12 +273,12 @@ bool JPEG::readHuffmanTable(const std::vector<uint8_t>& data, size_t& i) {
 			symbolsStr += "]\n";
 		}
 	}*/
-	Log::debug("imgproc::JPEG", "Marker MARKER_DEFINE_HUFFMAN_TABLE \n$0", symbolsStr);
+	//Log::debug("imgproc::JPEG", "Marker MARKER_DEFINE_HUFFMAN_TABLE \n$0", symbolsStr);
 	return true;
 }
 
 bool JPEG::readStartOfScan(const std::vector<uint8_t>& data, size_t& i) {
-	Log::debug("imgproc::JPEG", "Marker MARKER_START_OF_SCAN");
+	//Log::debug("imgproc::JPEG", "Marker MARKER_START_OF_SCAN");
 	if(_numComponents == 0) {
 		Log::error("imgproc::JPEG", "Start of Scan before Start of Frame");
 		return false;
@@ -307,7 +344,7 @@ bool JPEG::readStartOfScan(const std::vector<uint8_t>& data, size_t& i) {
 }
 
 bool JPEG::readStartOfFrame(const std::vector<uint8_t>& data, size_t& i) {
-	Log::debug("imgproc::JPEG", "Marker MARKER_START_OF_FRAME");
+	//Log::debug("imgproc::JPEG", "Marker MARKER_START_OF_FRAME");
 	if(_numComponents != 0) {
 		Log::error("imgproc::JPEG", "Multiple start of frame found!");
 		return false;
@@ -325,7 +362,11 @@ bool JPEG::readStartOfFrame(const std::vector<uint8_t>& data, size_t& i) {
 	//----- Width/Height -----//
 	_height = data[i++]<<8 | data[i++];
 	_width = data[i++]<<8 | data[i++];
-	Log::error("imgproc::JPEG", "Start of frame: $0x$1", _width, _height);
+	_mcuHeight = (_height+7)/8;
+	_mcuWidth = (_width+7)/8;
+	_mcuHeightReal = _mcuHeight;
+	_mcuWidthReal = _mcuWidth;
+	//Log::info("imgproc::JPEG", "Start of frame: $0x$1", _width, _height);
 
 	if(_height == 0 || _width == 0) {
 		Log::error("imgproc::JPEG", "Invalid size: $0x$1", _width, _height);
@@ -368,12 +409,34 @@ bool JPEG::readStartOfFrame(const std::vector<uint8_t>& data, size_t& i) {
 		component->horizontalSamplingFactor = samplingFactor>>4;
 		component->verticalSamplingFactor = samplingFactor&0x0f;
 		component->quantizationTableId = data[i++];
-		if(component->quantizationTableId>3) {
+
+		if(componentId == 1) {
+			if((component->horizontalSamplingFactor != 1 && component->horizontalSamplingFactor != 2) ||
+				(component->verticalSamplingFactor != 1 && component->verticalSamplingFactor != 2)) {
+				Log::error("imgproc::JPEG", "Luma sampling factors not supported: h:$0 v:$1", component->horizontalSamplingFactor, component->verticalSamplingFactor);
+				return false;
+			}
+			// Add padding if necessary
+			if(component->horizontalSamplingFactor == 2 && _mcuWidth%2 == 1)
+				_mcuWidthReal++;
+			if(component->verticalSamplingFactor == 2 && _mcuHeight%2 == 1)
+				_mcuHeightReal++;
+			_horizontalSamplingFactor = component->horizontalSamplingFactor;
+			_verticalSamplingFactor = component->verticalSamplingFactor;
+		} else {
+			if(component->horizontalSamplingFactor != 1 || component->verticalSamplingFactor != 1) {
+				Log::error("imgproc::JPEG", "Chroma channel sampling factors not supported: h:$0 v:$1", component->horizontalSamplingFactor, component->verticalSamplingFactor);
+				return false;
+			}
+		}
+
+		if(component->quantizationTableId > 3) {
 			Log::error("imgproc::JPEG", "Invalid quantization table id($0) in frame components($1)", component->quantizationTableId, componentId);
 			return false;
 		}
-		Log::debug("imgproc::JPEG", "ComponentId: $0, hor:$1, ver:$2, table:$3 $4", componentId, 
-			component->horizontalSamplingFactor, component->verticalSamplingFactor, component->quantizationTableId, _numComponents);
+
+		//Log::debug("imgproc::JPEG", "ComponentId: $0, hor:$1, ver:$2, table:$3 $4", componentId, 
+			//component->horizontalSamplingFactor, component->verticalSamplingFactor, component->quantizationTableId, _numComponents);
 	}
 
 	if(length != (8+(3*_numComponents))) {
@@ -393,13 +456,13 @@ bool JPEG::readRestartInterval(const std::vector<uint8_t>& data, size_t& i) {
 
 	_restartInterval = (data[i++]<<8) | data[i++];
 
-	if(_restartInterval == 0) {
-		_restartInterval = (unsigned)-1;
-		Log::warning("imgproc::JPEG", "Restart interval read as 0");
-		//return false;
-	}
+	//if(_restartInterval == 0) {
+	//	_restartInterval = (unsigned)-1;
+	//	Log::warning("imgproc::JPEG", "Restart interval read as 0");
+	//	//return false;
+	//}
 
-	Log::debug("imgproc::JPEG", "Marker MARKER_RESTART_INTERVAL value:$0", _restartInterval);
+	//Log::debug("imgproc::JPEG", "Marker MARKER_RESTART_INTERVAL value:$0", _restartInterval);
 	return true;
 }
 
@@ -413,21 +476,21 @@ bool JPEG::loopScan(const std::vector<uint8_t>& data, size_t& i) {
 		if(last == 0xff) {
 			if(current == uint8_t(MARKER_END_OF_IMAGE&0x00ff)) {
 				i-=2;
-				Log::info("imgproc::JPEG", "Loop scan end");
+				////Log::info("imgproc::JPEG", "Loop scan end");
 				return true;
 			} else if(current == 0x00) {
 				_huffmanData.push_back(last);
 				// Overwrite 0x00 with next byte
 				current = data[i++];
-				Log::info("imgproc::JPEG", "Loop scan actual ff");
-			} else if(current >= (MARKER_RESET0&0x00ff) && current <= (MARKER_RESET7&0x00ff)) {
-				Log::info("imgproc::JPEG", "Loop scan marker found");
+				////Log::info("imgproc::JPEG", "Loop scan actual ff");
+			}else if(current >= (MARKER_RESET0&0x00ff) && current <= (MARKER_RESET7&0x00ff)) {
+				////Log::info("imgproc::JPEG", "Loop scan marker found");
 				current = data[i++];
 			} else if(current == 0xff) {
-				Log::info("imgproc::JPEG", "Loop scan ignore multiple ff");
+				////Log::info("imgproc::JPEG", "Loop scan ignore multiple ff");
 				continue;
 			} else {
-				Log::error("imgproc::JPEG", "Invalid marker during compressed data scan: $0", current);
+				//Log::error("imgproc::JPEG", "Invalid marker during compressed data scan: $0", current);
 				return false;
 			}
 		} else {
@@ -445,9 +508,7 @@ bool JPEG::loopScan(const std::vector<uint8_t>& data, size_t& i) {
 
 bool JPEG::decodeHuffmanData() {
 	// Decode all Huffman data and fill all MCUs
-	const unsigned mcuHeight = (_height+7)/8;
-	const unsigned mcuWidth = (_width+7)/8;
-	_mcus.resize(mcuHeight*mcuWidth);
+	_mcus.resize(_mcuHeightReal*_mcuWidthReal);
 
 	for(size_t i = 0; i < 4; i++) {
 		if(_huffmanDCTables[i].defined)
@@ -460,26 +521,36 @@ bool JPEG::decodeHuffmanData() {
 
 	BitReader b(_huffmanData);
 
-	Log::debug("JPEG", "Num mcus: $0", _mcus.size());
-	for(size_t i = 0; i < _mcus.size(); i++) {
-		Log::debug("JPEG", "curr mcu: $0", i);
-		// Restart previousDC
-		if(_restartInterval != 0 && i%_restartInterval == 0) {
-			previousDCs[0] = 0;
-			previousDCs[1] = 0;
-			previousDCs[2] = 0;
-			b.align();
-		}
+	// Restarting taking into account MCU blocks bigger than 8x8
+	unsigned restartInterval = _restartInterval*_horizontalSamplingFactor*_verticalSamplingFactor;
 
-		for(size_t j = 0; j < _numComponents; j++) {
-			if(!decodeMCUComponent(
-					b, 
-					_mcus[i][j],
-					previousDCs[j],
-					_huffmanDCTables[_colorComponents[j].huffmanDCTableId],
-					_huffmanACTables[_colorComponents[j].huffmanACTableId])) {
-				return false;
-		 	}
+	//Log::debug("JPEG", "Num mcus: $0", _mcus.size());
+	for(size_t y = 0; y < _mcuHeight; y+=_verticalSamplingFactor) {
+		for(size_t x = 0; x < _mcuWidth; x+=_horizontalSamplingFactor) {
+			////Log::debug("JPEG", "curr mcu: $0", (y*_mcuWidthReal+x));
+			// Restart previousDC
+			if(restartInterval != 0 && (y*_mcuWidthReal+x)%restartInterval == 0) {
+				////Log::debug("JPEG", "Reset now");
+				previousDCs[0] = 0;
+				previousDCs[1] = 0;
+				previousDCs[2] = 0;
+				b.align();
+			}
+
+			for(size_t i = 0; i < _numComponents; i++) {
+				for(size_t v = 0; v < _colorComponents[i].verticalSamplingFactor; v++) {
+					for(size_t h = 0; h < _colorComponents[i].horizontalSamplingFactor; h++) {
+						if(!decodeMCUComponent(
+							b, 
+							_mcus[(y+v)*_mcuWidthReal+(x+h)][i],
+							previousDCs[i],
+							_huffmanDCTables[_colorComponents[i].huffmanDCTableId],
+							_huffmanACTables[_colorComponents[i].huffmanACTableId])) {
+								return false;
+						}
+					}
+				}
+			}
 		}
 	}
 	return true;
@@ -591,13 +662,234 @@ uint8_t JPEG::getNextSymbol(BitReader &b, const HuffmanTable& table) {
 		currentCode = (currentCode<<1)|bit;
 		// Test if found a match with that length
 		for(size_t j = table.offsets[i]; j < table.offsets[i+1]; j++) {
-			if(currentCode == table.codes[j])
+			if(currentCode == table.codes[j]) {
+				//Log::success("imgproc::JPEG", "Found $0", currentCode);
 				return table.symbols[j];
+			}
 		}
 	}
 
-	Log::warning("imgproc::JPEG", "Could not match the symbol");
+	Log::warning("imgproc::JPEG", "Could not match the symbol $0", currentCode);
 	return -1;
+}
+
+void JPEG::dequantizeMCUs() {
+	for(size_t y = 0; y < _mcuHeight; y+=_verticalSamplingFactor)
+		for(size_t x = 0; x < _mcuWidth; x+=_horizontalSamplingFactor)
+			for(size_t i = 0; i < _numComponents; i++)
+				for(size_t v = 0; v < _colorComponents[i].verticalSamplingFactor; v++)
+					for(size_t h = 0; h < _colorComponents[i].horizontalSamplingFactor; h++)
+						dequantizeMCUComponent(_quantizationTables[_colorComponents[i].quantizationTableId], _mcus[(y+v)*_mcuWidthReal+(x+h)][i]);
+}
+
+void JPEG::dequantizeMCUComponent(const QuantizationTable& qTable, int* const component) {
+	for(size_t i = 0; i < 64; i++)
+		component[i] *= qTable.table[i];
+}
+
+void JPEG::inverseDCT() {
+	for(size_t y = 0; y < _mcuHeight; y+=_verticalSamplingFactor)
+		for(size_t x = 0; x < _mcuWidth; x+=_horizontalSamplingFactor)
+			for(size_t i = 0; i < _numComponents; i++)
+				for(size_t v = 0; v < _colorComponents[i].verticalSamplingFactor; v++)
+					for(size_t h = 0; h < _colorComponents[i].horizontalSamplingFactor; h++)
+						inverseDCTComponent(_mcus[(y+v)*_mcuWidthReal+(x+h)][i]);
+}
+
+void JPEG::inverseDCTComponent(int* const component) {
+	float result[64] = {0};
+	// Compute inverse DCT using AAN algorithm
+	
+	// For each column
+	for(size_t i = 0; i < 8; i++) {
+		const float g0 = component[0*8+i]*s0;
+		const float g1 = component[4*8+i]*s4;
+		const float g2 = component[2*8+i]*s2;
+		const float g3 = component[6*8+i]*s6;
+		const float g4 = component[5*8+i]*s5;
+		const float g5 = component[1*8+i]*s1;
+		const float g6 = component[7*8+i]*s7;
+		const float g7 = component[3*8+i]*s3;
+
+		const float f0 = g0;
+		const float f1 = g1;
+		const float f2 = g2;
+		const float f3 = g3;
+		const float f4 = g4-g7;
+		const float f5 = g5+g6;
+		const float f6 = g5-g6;
+		const float f7 = g4+g7;
+
+		const float e0 = f0;
+		const float e1 = f1;
+		const float e2 = f2-f3;
+		const float e3 = f2+f3;
+		const float e4 = f4;
+		const float e5 = f5-f7;
+		const float e6 = f6;
+		const float e7 = f5+f7;
+		const float e8 = f4+f6;
+
+		const float d0 = e0;
+		const float d1 = e1;
+		const float d2 = e2*m1;
+		const float d3 = e3;
+		const float d4 = e4*m2;
+		const float d5 = e5*m3;
+		const float d6 = e6*m4;
+		const float d7 = e7;
+		const float d8 = e8*m5;
+
+		const float c0 = d0+d1;
+		const float c1 = d0-d1;
+		const float c2 = d2-d3;
+		const float c3 = d3;
+		const float c4 = d4+d8;
+		const float c5 = d5+d7;
+		const float c6 = d6-d8;
+		const float c7 = d7;
+		const float c8 = c5-c6;
+
+		const float b0 = c0+c3;
+		const float b1 = c1+c2;
+		const float b2 = c1-c2;
+		const float b3 = c0-c3;
+		const float b4 = c4-c8;
+		const float b5 = c8;
+		const float b6 = c6-c7;
+		const float b7 = c7;
+
+		component[0*8+i] = b0+b7;
+		component[1*8+i] = b1+b6;
+		component[2*8+i] = b2+b5;
+		component[3*8+i] = b3+b4;
+		component[4*8+i] = b3-b4;
+		component[5*8+i] = b2-b5;
+		component[6*8+i] = b1-b6;
+		component[7*8+i] = b0-b7;
+	}
+
+	// For each row
+	for(size_t i = 0; i < 8; i++) {
+		const float g0 = component[i*8+0]*s0;
+		const float g1 = component[i*8+4]*s4;
+		const float g2 = component[i*8+2]*s2;
+		const float g3 = component[i*8+6]*s6;
+		const float g4 = component[i*8+5]*s5;
+		const float g5 = component[i*8+1]*s1;
+		const float g6 = component[i*8+7]*s7;
+		const float g7 = component[i*8+3]*s3;
+
+		const float f0 = g0;
+		const float f1 = g1;
+		const float f2 = g2;
+		const float f3 = g3;
+		const float f4 = g4-g7;
+		const float f5 = g5+g6;
+		const float f6 = g5-g6;
+		const float f7 = g4+g7;
+
+		const float e0 = f0;
+		const float e1 = f1;
+		const float e2 = f2-f3;
+		const float e3 = f2+f3;
+		const float e4 = f4;
+		const float e5 = f5-f7;
+		const float e6 = f6;
+		const float e7 = f5+f7;
+		const float e8 = f4+f6;
+
+		const float d0 = e0;
+		const float d1 = e1;
+		const float d2 = e2*m1;
+		const float d3 = e3;
+		const float d4 = e4*m2;
+		const float d5 = e5*m3;
+		const float d6 = e6*m4;
+		const float d7 = e7;
+		const float d8 = e8*m5;
+
+		const float c0 = d0+d1;
+		const float c1 = d0-d1;
+		const float c2 = d2-d3;
+		const float c3 = d3;
+		const float c4 = d4+d8;
+		const float c5 = d5+d7;
+		const float c6 = d6-d8;
+		const float c7 = d7;
+		const float c8 = c5-c6;
+
+		const float b0 = c0+c3;
+		const float b1 = c1+c2;
+		const float b2 = c1-c2;
+		const float b3 = c0-c3;
+		const float b4 = c4-c8;
+		const float b5 = c8;
+		const float b6 = c6-c7;
+		const float b7 = c7;
+
+		component[i*8+0] = b0+b7;
+		component[i*8+1] = b1+b6;
+		component[i*8+2] = b2+b5;
+		component[i*8+3] = b3+b4;
+		component[i*8+4] = b3-b4;
+		component[i*8+5] = b2-b5;
+		component[i*8+6] = b1-b6;
+		component[i*8+7] = b0-b7;
+	}
+}
+
+void JPEG::YCbCrToRBG() {
+	for(size_t y = 0; y < _mcuHeight; y+=_verticalSamplingFactor) { 
+		for(size_t x = 0; x < _mcuWidth; x+=_horizontalSamplingFactor) {
+			const MCU& cbcr = _mcus[y*_mcuWidthReal+x];
+			for(size_t v = _verticalSamplingFactor-1; v<_verticalSamplingFactor; v--) {
+				for(size_t h = _horizontalSamplingFactor-1; h<_horizontalSamplingFactor; h--) {
+					MCU& mcu = _mcus[(y+v)*_mcuWidthReal+(x+h)];
+					YCbCrToRGBMCU(mcu, cbcr, v, h);
+				}
+			}
+		}
+	}
+}
+
+void JPEG::YCbCrToRGBMCU(MCU& mcu, const MCU& cbcr, const size_t v, const size_t h) {
+	for(unsigned y = 7; y < 8; y--) {
+		for(unsigned x = 7; x < 8; x--) {
+			const size_t pixel = y*8+x;
+			const size_t cbcrPixelRow = y/_verticalSamplingFactor + 4*v;
+			const size_t cbcrPixelColumn = x/_horizontalSamplingFactor + 4*h;
+			const size_t cbcrPixel = cbcrPixelRow*8 + cbcrPixelColumn;
+
+
+			int r = mcu.y[pixel]                             + 1.402f*cbcr.cr[cbcrPixel] + 128;
+			int g = mcu.y[pixel] - 0.344f*cbcr.cb[cbcrPixel] - 0.714f*cbcr.cr[cbcrPixel] + 128;
+			int b = mcu.y[pixel] + 1.772f*cbcr.cb[cbcrPixel]                             + 128;
+
+			if(r < 0) r = 0;
+			if(g < 0) g = 0;
+			if(b < 0) b = 0;
+			if(r > 255) r = 255;
+			if(g > 255) g = 255;
+			if(b > 255) b = 255;
+
+			mcu.r[pixel] = r;
+			mcu.g[pixel] = g;
+			mcu.b[pixel] = b;
+		}
+	}
+}
+
+void JPEG::MCUToDecoded() {
+	_decoded.resize(_width*_height*_numComponents);
+	for(size_t y = 0; y < _height; y++)
+		for(size_t x = 0; x < _width; x++) {
+			MCU& mcu = _mcus[(y/8)*_mcuWidthReal+(x/8)];
+			unsigned i = x%8 + y%8*8;
+			_decoded[y*_width*3+x*3] = mcu.r[i];
+			_decoded[y*_width*3+x*3+1] = mcu.g[i];
+			_decoded[y*_width*3+x*3+2] = mcu.b[i];
+		}
 }
 
 BitReader::BitReader(const std::vector<uint8_t>& d)

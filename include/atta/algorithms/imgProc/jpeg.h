@@ -21,7 +21,7 @@ class JPEG {
 
 	private: 
 		struct QuantizationTable {
-			uint8_t table[64] = {0};
+			unsigned table[64] = {0};
 			bool defined = false;
 		};
 
@@ -41,6 +41,8 @@ class JPEG {
 			bool defined = false;
 		};
 
+		// TODO An MCU can have more than 64 values when using sampling
+		// Maybe change the name to block
 		struct MCU {
 			union {
 				int y[64] = {0};
@@ -77,10 +79,19 @@ class JPEG {
 		bool readStartOfFrame(const std::vector<uint8_t>& data, size_t& i);
 		bool readRestartInterval(const std::vector<uint8_t>& data, size_t& i);
 		bool loopScan(const std::vector<uint8_t>& data, size_t& i);
+
 		bool decodeHuffmanData();
 		void generateHuffmanCodes(HuffmanTable& table);
 		bool decodeMCUComponent(BitReader &b, int* const component, int& previousDC, const HuffmanTable& dcTable, const HuffmanTable& acTable);
 		uint8_t getNextSymbol(BitReader &b, const HuffmanTable& table);
+
+		void dequantizeMCUs();
+		void dequantizeMCUComponent(const QuantizationTable& qTable, int* const component);
+		void inverseDCT();
+		void inverseDCTComponent(int* const component);
+		void YCbCrToRBG();
+		void YCbCrToRGBMCU(MCU& mcu, const MCU& cbcr, const size_t v, const size_t h);
+		void MCUToDecoded();
 
 		unsigned _width;
 		unsigned _height;
@@ -95,9 +106,15 @@ class JPEG {
 		uint8_t _endOfSelection;
 		uint8_t _successiveApproximationHigh;
 		uint8_t _successiveApproximationLow;
+		uint8_t _horizontalSamplingFactor;
+		uint8_t _verticalSamplingFactor;
 
 		std::vector<uint8_t> _huffmanData;
 		std::vector<MCU> _mcus;
+		unsigned _mcuWidth;
+		unsigned _mcuHeight;
+		unsigned _mcuWidthReal;
+		unsigned _mcuHeightReal;
 		std::vector<uint8_t> _decoded;
 
 		// Definitions

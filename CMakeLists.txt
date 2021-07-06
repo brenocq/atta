@@ -74,9 +74,9 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		# algorithms/
 			# cv/
 			"src/atta/algorithms/cv/bundleAdjustment/bundleAdjustment.cpp"
+			"src/atta/algorithms/cv/fundamentalMatrix.cpp"
+			"src/atta/algorithms/cv/homography.cpp"
 			# imgProc/
-			"src/atta/algorithms/imgProc/fundamentalMatrix.cpp"
-			"src/atta/algorithms/imgProc/homography.cpp"
 			"src/atta/algorithms/imgProc/jpeg.cpp"
 			# linAlg/
 				# elimination/
@@ -277,9 +277,9 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		# algorithms/
 			# cv/
 			"include/atta/algorithms/cv/bundleAdjustment/bundleAdjustment.h"
+			"include/atta/algorithms/cv/fundamentalMatrix.h"
+			"include/atta/algorithms/cv/homography.h"
 			# imgProc/
-			"include/atta/algorithms/imgProc/fundamentalMatrix.h"
-			"include/atta/algorithms/imgProc/homography.h"
 			"include/atta/algorithms/imgProc/jpeg.h"
 			# linAlg/
 				# elimination/
