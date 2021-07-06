@@ -279,8 +279,8 @@ namespace atta::peripheral
 			exit(1);
 		}
 
-		Log::debug("peripheral::Camera", "Allocating width:$0 height:$1 total:$2", 
-			fmt.fmt.pix.width, fmt.fmt.pix.height, fmt.fmt.pix.sizeimage);
+		//Log::debug("peripheral::Camera", "Allocating width:$0 height:$1 total:$2", 
+		//	fmt.fmt.pix.width, fmt.fmt.pix.height, fmt.fmt.pix.sizeimage);
 
 		//---------- Allocate image buffers (mmap) ----------//
         struct v4l2_requestbuffers req;
@@ -309,7 +309,7 @@ namespace atta::peripheral
 			exit(1);
         }
 
-		Log::debug("peripheral::Camera", "We will allocate $0", req.count);
+		//Log::debug("peripheral::Camera", "We will allocate $0", req.count);
 
 		_buffers.resize(req.count);
 		for(size_t i=0; i<_buffers.size(); i++)	

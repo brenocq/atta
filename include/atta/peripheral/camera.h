@@ -51,6 +51,7 @@ namespace atta::peripheral
 				std::vector<std::vector<unsigned>> fps;// Fps supported by each resolution
 			};
 			std::vector<FormatInfo> getAvailableFormats();
+			Resolution getResolution() const { return _resolution; }
 
 		private:
 			void openDevice();
