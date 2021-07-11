@@ -95,11 +95,14 @@ float SmithG_GGX_aniso(float NDotV, float VDotX, float VDotY, float ax, float ay
     return 1.0 / (NDotV + sqrt(a * a + b * b + c * c));
 }
 
-// Unreal Engine 4 aux
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
+vec3 fresnelSchlick(float VdotH, vec3 F0)
 {
-    float m = max(1.0 - cosTheta, 0.0);
-    return F0 + (1-F0)*(m*m)*(m*m)*m;
+	// Schlick's approximation using Spherical Gaussian approximation
+	// [1] Real Shading inUnreal Engine 4. SIGGRAPH 2013.
+    //float m = max(1.0 - cosTheta, 0.0);
+    //return F0 + (1-F0)*(m*m)*(m*m)*m;
+	float p = (-5.55473*VdotH-6.98316)*VdotH;
+    return F0+(1-F0)*pow(2, p);
 }
 
 vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
@@ -108,38 +111,35 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * (m*m)*(m*m)*m;
 }
 
-float distributionGGX(vec3 N, vec3 H, float roughness)
+float distributionGGX(vec3 n, vec3 h, float roughness)
 {
-    float a      = roughness*roughness;
-    float a2     = a*a;
-    float NdotH  = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH*NdotH;
+	// Normal distribution function (GGX/Trowbridge-Reitz)
+    float a = roughness*roughness;
+    float a2 = a*a;
+    float NdotH  = max(dot(n, h), 0.0);
 
-    float num   = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = pi * denom * denom;
+    float denom = ((NdotH*NdotH) * (a2 - 1.0) + 1.0);
+    denom = pi*denom*denom;
 
-    return num / denom;
+    return a2/denom;
 }
 
 float geometrySchlickGGX(float NdotV, float roughness)
 {
     float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;
+    float k = (r*r)/8.0;
 
-    float num   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return num / denom;
+    return NdotV / (NdotV*(1.0-k)+k);
 }
-float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+
+float geometrySmith(vec3 n, vec3 v, vec3 l, float roughness)
 {
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
+    float NdotV = max(dot(n, v), 0.0);
+    float NdotL = max(dot(n, l), 0.0);
     float ggx2  = geometrySchlickGGX(NdotV, roughness);
     float ggx1  = geometrySchlickGGX(NdotL, roughness);
 
-    return ggx1 * ggx2;
+    return ggx1*ggx2;
 }
 
 #endif// ATTA_RAST_MATERIALS_BASE_GLSL

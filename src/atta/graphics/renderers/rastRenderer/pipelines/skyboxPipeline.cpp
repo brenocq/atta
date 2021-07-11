@@ -172,9 +172,8 @@ namespace atta::vk
 				if(light.type == atta::Light::LIGHT_TYPE_INFINITE)
 				{
 					int texIndex = light.datai[0];// High resulution background (environment map texture)
-					if(texIndex==0)
+					if(texIndex==-1)
 						continue;
-					//int texIndex = light.datai[2];// Blurred background (preprocessed irradiance map)
 					std::shared_ptr<vk::Texture> texture = atta::Texture::textureInfos()[texIndex].vkTexture.lock();
 					VkDescriptorImageInfo imageInfo;
 					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -235,6 +234,8 @@ namespace atta::vk
 			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
 			vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+		}else{
+			Log::warning("SkyboxPipeline", "Could not find env map texture");
 		}
 	}
 }

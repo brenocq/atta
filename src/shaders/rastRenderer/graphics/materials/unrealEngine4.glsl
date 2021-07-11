@@ -13,8 +13,6 @@
 // [1] https://blog.selfshadow.com/publications/s2015-shading-course/burley/s2015_pbs_disney_bsdf_notes.pdf
 // [2] https://learnopengl.com/PBR/Theory
 
-// TODO get parameters only first time
-
 vec3 Material_UnrealEngine4_computeColor(Material material, vec3 wi, vec3 wo)
 {
 	vec2 uv = inTexCoord;
@@ -22,8 +20,14 @@ vec3 Material_UnrealEngine4_computeColor(Material material, vec3 wi, vec3 wo)
 	float metallic = material.datai[1]!=-1 ? texture(textures[material.datai[1]], uv).x : material.dataf[0];
 	float roughness = material.datai[2]!=-1 ? texture(textures[material.datai[2]], uv).x : material.dataf[1];
 	float ao = material.datai[3]!=-1 ? texture(textures[material.datai[3]], uv).x : material.dataf[2];
-	vec3 albedo = material.datai[0]!=-1 ? texture(textures[material.datai[0]], uv).xyz : material.datav[0].xyz;
-	roughness = 1-roughness;
+	vec3 albedo;
+	if(material.datai[0]!=-1) {
+		albedo = texture(textures[material.datai[0]], uv).xyz;
+		// Compile error when albedo = pow(albedo, 2.2f);
+		albedo = vec3(pow(albedo.x, 2.2f), pow(albedo.y, 2.2f), pow(albedo.z, 2.2f));
+	}
+	else
+		albedo = material.datav[0].xyz;
 
 	vec3 v = wo;
 	vec3 l = wi;
@@ -31,16 +35,16 @@ vec3 Material_UnrealEngine4_computeColor(Material material, vec3 wi, vec3 wo)
 	vec3 n = normalize(inNormal);
 
 	// Fresnel reflectance
-	vec3 F0 = vec3(0.04); 
-	F0      = mix(F0, albedo, metallic);
+	vec3 F0 = vec3(0.04);// Assumption that 0.04 is a good value for dielectric surfaces
+	F0 = mix(F0, albedo, metallic);
 
-	// Cook-Torrance BRDF
-	float NDF = distributionGGX(n, h, roughness);   
-    float G = geometrySmith(n, v, l, roughness);
+	// Cook-Torrance microfacet specular shading model
+	float NDF = distributionGGX(n, h, roughness);// Normal distribution function
+    float G = geometrySmith(n, v, l, roughness);// Specular geometric attenuation
 	vec3 F = fresnelSchlick(max(dot(h, v), 0.0), F0);
 	vec3 nominator = NDF * G * F;
-	float denominator = 4 * max(dot(n, v), 0.0) * max(dot(n, l), 0.0) + 0.001;
-	vec3 specular = nominator/denominator;
+	float denominator = 4 * max(dot(n, v), 0.0) * max(dot(n, l), 0.0);
+	vec3 specular = nominator/max(denominator, 0.001);
 
 	vec3 kS = F;
 	vec3 kD = vec3(1.0)-kS;

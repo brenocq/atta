@@ -24,7 +24,7 @@ vec3 Material_f(Material material, vec3 wi, vec3 wo)
 		case MATERIAL_TYPE_MIRROR:
 		case MATERIAL_TYPE_METAL:
 		default:
-			return vec3(1,0,1);
+			return vec3(1,1,1);
 	}
 }
 

@@ -27,6 +27,7 @@ namespace atta
 				TYPE_NONE = 0,
 				TYPE_FILE,
 				TYPE_BUFFER,
+				TYPE_PROCESSED,// Generated from another texture
 			};
 
 			enum Format {
@@ -36,11 +37,19 @@ namespace atta
 				FORMAT_RGBA_FLOAT,// 3 floats [0,1]
 			};
 
+			// Create another texture with the operation
+			enum Process {
+				PROCESS_NONE = 0,
+				PROCESS_CUBEMAP,// Generate cubemap texture using this as input (equirectangular to cubemap)
+				PROCESS_ENV_IRRADIANCE,// Generate convoluted cubemap texture
+			};
+
 			struct TextureInfo
 			{
 				int textureId;
 				Type type=TYPE_NONE;
 				Format format=FORMAT_NONE;
+				std::pair<Process, int> process;// Texture that will be processed to generate this texture
 				unsigned width=0;
 				unsigned height=0;
 
@@ -64,6 +73,9 @@ namespace atta
 			static int fromFile(std::string fileName) { return get().fromFileImpl(fileName); }
 			// Create texture linked to a buffer
 			static int fromBuffer(const void* data, unsigned width, unsigned height, Format format = FORMAT_RGBA_UBYTE) { return get().fromBufferImpl(data, width, height, format); }
+			// Create texture derived from another texture
+			static void addTextureProcess(size_t id, Process process) { return get().addTextureProcessImpl(id, process); }
+
 			// Update texture from the buffer (copy from host memory to device memory)
 			static void updateTexture(int textureIndex) { get().updateTextureImpl(textureIndex); }
 
@@ -80,6 +92,7 @@ namespace atta
 			int fromFileImpl(std::string fileName);
 			int fromBufferImpl(const void* data, unsigned width, unsigned height, Format format);
 			void updateTextureImpl(int textureIndex);
+			void addTextureProcessImpl(size_t id, Process process);
 
 			std::vector<TextureInfo> _textureInfos;
 

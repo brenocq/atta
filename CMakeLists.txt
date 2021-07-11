@@ -173,6 +173,8 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 			"src/atta/graphics/renderers/renderer2D/renderer2D.cpp"
 			"src/atta/graphics/renderers/renderer2D/uniformBuffer2D.cpp"
 		# graphics/vulkan
+			# graphics/vulkan/compute/
+			"src/atta/graphics/vulkan/compute/envIrradiance.cpp"
 		"src/atta/graphics/vulkan/buffer.cpp"
         "src/atta/graphics/vulkan/colorBuffer.cpp"
         "src/atta/graphics/vulkan/commandBuffers.cpp"
@@ -352,7 +354,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
         "include/atta/graphics/gui/guiUniformBuffer.h"
         "include/atta/graphics/gui/guiVertex.h"
         "include/atta/graphics/gui/userInterface.h"
-		# graphics/renderers
+		# graphics/renderers/
 		"include/atta/graphics/renderers/renderer.h"
 			# graphics/renderers/rastRenderer
 			"include/atta/graphics/renderers/rastRenderer/pipelines/graphicsPipeline.h"
@@ -384,7 +386,9 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 			"include/atta/graphics/renderers/renderer2D/pipelines/linePipeline.h"
 			"include/atta/graphics/renderers/renderer2D/renderer2D.h"
 			"include/atta/graphics/renderers/renderer2D/uniformBuffer2D.h"
-		# graphics/vulkan
+		# graphics/vulkan/
+			# graphics/vulkan/compute/
+			"include/atta/graphics/vulkan/compute/envIrradiance.h"
 		"include/atta/graphics/vulkan/buffer.h"
         "include/atta/graphics/vulkan/colorBuffer.h"
         "include/atta/graphics/vulkan/commandBuffers.h"
@@ -494,6 +498,8 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 	)
 
 	set(attacore_SHADERS
+		# compute
+		"include/atta/assets/shaders/compute/envIrradiance.comp.spv"
 		# gui
 		"include/atta/assets/shaders/gui/guiShader.frag.spv"
         "include/atta/assets/shaders/gui/guiShader.vert.spv"

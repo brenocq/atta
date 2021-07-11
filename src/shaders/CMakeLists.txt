@@ -1,4 +1,4 @@
-file(GLOB_RECURSE shader_files *.vert *.frag *.rgen *.rchit *.rint *.rmiss *.vert *.frag *.rgen *.rchit *.rint *.rmiss)
+file(GLOB_RECURSE shader_files *.vert *.frag *.comp *.rgen *.rchit *.rint *.rmiss *.vert *.frag *.rgen *.rchit *.rint *.rmiss)
 
 #message(${shader_files})
 

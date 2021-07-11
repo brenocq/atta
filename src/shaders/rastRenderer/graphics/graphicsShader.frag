@@ -44,14 +44,14 @@ void main()
 			vec3 wi;// Incident direction
 			vec3 Li = Light_sampleLi(lights[i], wi);
 			vec3 f = Material_f(material, wi, wo);
-			Ld += f*Li*max(0, dot(wi, n));// *1/pdf
+			Ld += f*Li*max(0, dot(wi, n));
 		}
 	}
 
 	//----- Output -----//
 	vec3 color = Ld;
 	// HDR tonemapping
-    //color = color / (color + vec3(1.0));
+    color = color / (color + vec3(1.0));
 	// Gamma correction
     color = pow(color, vec3(1.0/2.2));
     outColor = vec4(color,1);
