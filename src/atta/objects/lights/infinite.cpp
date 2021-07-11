@@ -14,29 +14,29 @@ namespace atta
 {
 	InfiniteLight::InfiniteLight(CreateInfo info):
 		Object({info.name, info.position, info.rotation, {1,1,1}, 0}),
-		_textureIndex(info.texture), _irradianceTextureIndex(info.irradianceTexture ), _radiance(info.radiance), _worldRadius(info.worldRadius)
+		_textureIndex(info.radianceTexture),
+		_worldRadius(info.worldRadius), _blurSky(info.blurSky)
 	{
 		Object::setType("InfiniteLight");
 		_isLight = true;
 
-		generateDistribution2DTexture();
-
-		if(_irradianceTextureIndex==-1 && _textureIndex!=-1)
-		{
-			Log::warning("InfiniteLight", "Irradiance map generation from environment map is not implemented yet.");
-			_irradianceTextureIndex = _textureIndex;
+		if(_textureIndex == -1) {
+			Log::warning("InfiniteLight", "Texture index not provided, infinite light will not be generated");
+			return;
 		}
+
+		// Add texture process to genereate cubemap
+		//Texture::textureInfos()[_textureIndex].process.push_back(std::make_pair(Texture::PROCESS_CUBEMAP, -1));
+		Texture::addTextureProcess(_textureIndex, Texture::PROCESS_ENV_IRRADIANCE);
 	}
 
-	InfiniteLight::~InfiniteLight()
-	{
+	InfiniteLight::~InfiniteLight() {
+
 	}
 
-	int findInterval(float* start, int size, float value)
-	{
+	int findInterval(float* start, int size, float value) {
 		int first = 0, len = size;
-		while(len > 0)
-		{
+		while(len > 0){
 			int half = len >> 1;
 			int middle = first + half;
 			//Log::debug("Inf", "-> $0 ($1, $2)", middle, start[middle], value);
@@ -58,8 +58,7 @@ namespace atta
 		return first;
 	}
 
-	void InfiniteLight::generateDistribution2DTexture()
-	{
+	void InfiniteLight::generateDistribution2DTexture(){
 		if(_textureIndex == -1)
 			return;// If using uniform color, do not need to generate the distribution 
 
@@ -75,8 +74,7 @@ namespace atta
 		//---------- Load image data to temporary buffer ----------//
 		std::string filePath = Texture::textureInfos()[_textureIndex].fileName;
 
-		if(filePath.find(".hdr") == std::string::npos)
-		{
+		if(filePath.find(".hdr") == std::string::npos){
 			Log::error("InfiniteLight", "Today only .hdr textures are supported to create infinite lights. ($0)", filePath);
 			exit(1);
 		}
@@ -87,7 +85,7 @@ namespace atta
 
 		if(channels != 3)
 		{
-			Log::error("InfiniteLight", "Today only textures with 3 channels are supported. ($0)", filePath);
+			Log::error("InfiniteLight", "Today only textures with 3 channels are supported, found $1 ($0)", filePath, channels);
 			exit(1);
 		}
 

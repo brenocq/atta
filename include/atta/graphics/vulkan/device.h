@@ -27,6 +27,7 @@ namespace atta::vk
 			std::shared_ptr<PhysicalDevice> getPhysicalDevice() const { return _physicalDevice; }
 			VkQueue getGraphicsQueue() const { return _graphicsQueue; }
 			VkQueue getTransferQueue() const { return _transferQueue; }
+			VkQueue getComputeQueue() const { return _computeQueue; }
 			VkQueue getPresentQueueGUI() const { return _presentQueueGUI; }
 			VkQueue getGraphicsQueueGUI() const { return _graphicsQueueGUI; }
 			VkQueue getTransferQueueGUI() const { return _transferQueueGUI; }
@@ -39,6 +40,7 @@ namespace atta::vk
 			VkDevice _device;
 			VkQueue _graphicsQueue;
 			VkQueue _transferQueue;
+			VkQueue _computeQueue;
 			VkQueue _presentQueueGUI;
 			VkQueue _graphicsQueueGUI;
 			VkQueue _transferQueueGUI;

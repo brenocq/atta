@@ -115,6 +115,7 @@ namespace atta::vk
 
 		vkGetDeviceQueue(_device, indices.graphicsFamily.value(), 0, &_graphicsQueue);	
 		vkGetDeviceQueue(_device, indices.transferFamily.value(), 0, &_transferQueue);	
+		vkGetDeviceQueue(_device, indices.computeFamily.value(), 0, &_computeQueue);	
 		vkGetDeviceQueue(_device, indices.graphicsFamily.value(), 1, &_graphicsQueueGUI);	
 		vkGetDeviceQueue(_device, indices.presentFamily.value(), 1, &_presentQueueGUI);
 		vkGetDeviceQueue(_device, indices.transferFamily.value(), 1, &_transferQueueGUI);

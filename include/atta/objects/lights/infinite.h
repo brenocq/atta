@@ -19,10 +19,9 @@ namespace atta
 				std::string name = "InfiniteLight";
 				vec3 position = {0,0,0};
 				vec3 rotation = {0,0,0};
-				vec3 radiance = {1,1,1};
-				int texture = -1;// Texture index
-				int irradianceTexture = -1;// It is possible to  load an irradiance map texture to avoid precomputing
+				int radianceTexture = -1;// Texture index
 				float worldRadius = 5000;// World radius in meters
+				bool blurSky = false;// Select between texture or irradiance texture
 			};
 
 			InfiniteLight(CreateInfo info);
@@ -47,6 +46,8 @@ namespace atta
 			vec3 _precomputedPower;
 			vec3 _radiance;
 			float _worldRadius;
+			bool _blurSky;
+
 			int _width;
 			int _height;
 			std::vector<float> _distributionTexture;

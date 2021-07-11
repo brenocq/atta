@@ -329,10 +329,10 @@ namespace atta
 			int roughnessTexture = -1;
 			int aoTexture = -1;
 
-			vec3 albedo;
-			float metallic;
-			float roughness;
-			float ao;
+			vec3 albedo = vec3(1,1,1);
+			float metallic = 0.0f;
+			float roughness = 0.5f;
+			float ao = 1.0;
 		};
 		static Material unrealEngine4(UnrealEngine4Info info)
 		{

@@ -192,6 +192,9 @@ namespace atta::vk
 			if((int)(queueFamily.queueFlags & (VK_QUEUE_GRAPHICS_BIT|VK_QUEUE_TRANSFER_BIT)) == (int)VK_QUEUE_TRANSFER_BIT) 
 				indices.transferFamily = i;
 
+			if(queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)
+				indices.computeFamily = i;
+
 			if(indices.isComplete()) 
 				break;
 

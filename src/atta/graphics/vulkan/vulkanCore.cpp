@@ -11,6 +11,7 @@
 #include <atta/graphics/core/material.h>
 #include <atta/graphics/core/objectInfo.h>
 #include <atta/graphics/vulkan/stagingBuffer.h>
+#include <atta/graphics/vulkan/compute/envIrradiance.h>
 #include <queue>
 
 namespace atta::vk
@@ -96,7 +97,7 @@ namespace atta::vk
 					// try to push one material (if material with name not defined, load default material)
 					for(const auto& materialName : model->getMesh()->getMaterialNames())
 					{
-						//Log::debug("VulkanCore", "mat: $0", modelMaterialMap[materialName].toString());
+						Log::debug("VulkanCore", "Material($0): $1", materialName, modelMaterialMap[materialName].toString());
 						if(modelMaterialMap.count(materialName))
 							materials.push_back(modelMaterialMap[materialName]);
 						else
@@ -114,8 +115,6 @@ namespace atta::vk
 				materialOffset+=qtyMaterials;
 			}
 		}
-
-		// Populate lights
 		lights = scene->getLights();
 
 		//---------- Create device buffers ----------//
@@ -134,6 +133,7 @@ namespace atta::vk
 		_pointBuffer = createBufferMemory(commandPool,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, Drawer::getPoints());
 
 		//---------- Create textures ----------//
+		// Create main texture
 		for(auto& textureInfo : atta::Texture::textureInfos())
 		{
 			switch(textureInfo.type)
@@ -155,12 +155,40 @@ namespace atta::vk
 						textureInfo.vkTexture = _textures.back();
 					}
 					break;
+				case atta::Texture::TYPE_PROCESSED:
+					{
+						switch(textureInfo.process.first) {
+							case atta::Texture::PROCESS_CUBEMAP:
+									// TODO
+								break;
+							case atta::Texture::PROCESS_ENV_IRRADIANCE:
+								{
+									// Compute env irradiance from another texture
+									compute::EnvIrradiance::CreateInfo envIrrInfo {
+										.device = _device,
+										.commandPool = commandPool,
+										.input = atta::Texture::textureInfos()[textureInfo.process.second].vkTexture.lock()
+									};
+									compute::EnvIrradiance envIrr(envIrrInfo);
+									envIrr.compute();
+
+									// Add to textures buffer
+									_textures.push_back(envIrr.getOutput());
+									textureInfo.vkTexture = _textures.back();
+								}
+								break;
+							default:
+								Log::warning("VulkanCore", "Textures process should not have NONE type");
+						}
+					}
+					break;
 				default:
 					{
-						Log::warning("VulkanCore", "Textures should not have NONE type.");
+						Log::warning("VulkanCore", "Textures should not have NONE type");
 					}
 			}
 		}
+		
 		if(_textures.size()==0)
 		{
 			// Texture buffer can't be empty, push one texture

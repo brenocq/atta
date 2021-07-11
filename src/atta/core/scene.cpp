@@ -38,7 +38,7 @@ namespace atta
 		for(auto object : _objectsFlat)
 		{
 			//---------- Create lights from light objects ----------//
-			// Light structs are sent to the GPU memory
+			// Light structs to send to the GPU memory
 			if(object->isLight())
 			{
 				std::string type = object->getType();

@@ -23,7 +23,11 @@ namespace atta::vk
 	{
 		public:
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, std::string filename, VkFormat format=VK_FORMAT_R8G8B8A8_SRGB);
-			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size);
+			Texture(std::shared_ptr<Device> device, 
+					std::shared_ptr<CommandPool> commandPool, 
+					VkExtent2D size, 
+					VkFormat format = VK_FORMAT_R8G8B8A8_SRGB, 
+					VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
 			Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, void* buffer, VkExtent2D size, atta::Texture::Format format, bool editable=true);
 			~Texture();
 
