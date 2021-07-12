@@ -74,7 +74,7 @@ namespace atta
 			// Create texture linked to a buffer
 			static int fromBuffer(const void* data, unsigned width, unsigned height, Format format = FORMAT_RGBA_UBYTE) { return get().fromBufferImpl(data, width, height, format); }
 			// Create texture derived from another texture
-			static void addTextureProcess(size_t id, Process process) { return get().addTextureProcessImpl(id, process); }
+			static int addTextureProcess(size_t id, Process process) { return get().addTextureProcessImpl(id, process); }
 
 			// Update texture from the buffer (copy from host memory to device memory)
 			static void updateTexture(int textureIndex) { get().updateTextureImpl(textureIndex); }
@@ -91,8 +91,8 @@ namespace atta
 
 			int fromFileImpl(std::string fileName);
 			int fromBufferImpl(const void* data, unsigned width, unsigned height, Format format);
+			int addTextureProcessImpl(size_t id, Process process);
 			void updateTextureImpl(int textureIndex);
-			void addTextureProcessImpl(size_t id, Process process);
 
 			std::vector<TextureInfo> _textureInfos;
 

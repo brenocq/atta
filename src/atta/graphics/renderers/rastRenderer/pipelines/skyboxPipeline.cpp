@@ -7,6 +7,7 @@
 #include <atta/graphics/renderers/rastRenderer/pipelines/skyboxPipeline.h>
 #include <atta/helpers/log.h>
 #include <atta/graphics/core/texture.h>
+#include <atta/objects/lights/infinite.h>
 
 namespace atta::vk
 {
@@ -169,9 +170,10 @@ namespace atta::vk
 			// Get first environment map texture
 			for(auto light : _scene->getLights())
 			{
-				if(light.type == atta::Light::LIGHT_TYPE_INFINITE)
+				if(light->getType() == "InfiniteLight")
 				{
-					int texIndex = light.datai[0];// High resulution background (environment map texture)
+					std::shared_ptr<InfiniteLight> l = std::static_pointer_cast<InfiniteLight>(light);
+					int texIndex = l->getBlurSky() ? l->getIrradianceTextureIndex() : l->getTextureIndex();
 					if(texIndex==-1)
 						continue;
 					std::shared_ptr<vk::Texture> texture = atta::Texture::textureInfos()[texIndex].vkTexture.lock();

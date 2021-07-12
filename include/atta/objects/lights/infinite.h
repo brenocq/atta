@@ -34,6 +34,7 @@ namespace atta
 			vec3 getPrecomputedPower() const { return _precomputedPower; }
 			vec3 getRadiance() const { return _radiance; }
 			float getWorldRadius() const { return _worldRadius; }
+			bool getBlurSky() const { return _blurSky; }
 
 		private:
 			void generateDistribution2DTexture();
