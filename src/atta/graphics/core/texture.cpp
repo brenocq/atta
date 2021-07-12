@@ -35,12 +35,12 @@ namespace atta
 		return info.textureId;
 	}
 
-	void Texture::addTextureProcessImpl(size_t id, Process process)
+	int Texture::addTextureProcessImpl(size_t id, Process process)
 	{
 		if(id >= _textureInfos.size())
 		{
 			Log::warning("atta::Texture", "Invalid texture id to process");
-			return;
+			return -1;
 		}
 
 		TextureInfo& texInfoToProcess = _textureInfos[id];
@@ -53,6 +53,7 @@ namespace atta
 			.height = texInfoToProcess.height,
 		};
 		_textureInfos.push_back(newInfo);
+		return newInfo.textureId;
 	}
 
 	void Texture::updateTextureImpl(int textureIndex)

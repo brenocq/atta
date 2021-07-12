@@ -39,7 +39,9 @@ namespace atta::rt::vk
 		ubo.seed = rand();
 		_uniformBuffer->setValue(ubo);
 
+
 		// Create ray tracing specific
+		LocalEvaluator eval;
 		createAccelerationStructures();
 		createAccumulationImage();
 		createPipeline();
@@ -58,10 +60,34 @@ namespace atta::rt::vk
 		//		0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 		//}
 		//_commandPool->endSingleTimeCommands(commandBuffer);
+		eval.stop();
+		Log::info("rt::vk::RayTracing", "Ray tracing pipeline created: [w]$0ms", eval.getMs());
 	}
 
 	RayTracing::~RayTracing()
 	{
+	}
+
+	void RayTracing::createAccelerationStructures()
+	{
+		//LocalEvaluator eval("Create Acceleration Strucutres");
+		VkCommandBuffer commandBuffer = _commandPool->beginSingleTimeCommands();
+		{
+			createBottomLevelStructures(commandBuffer);
+			createTopLevelStructures(commandBuffer);
+		}
+		_commandPool->endSingleTimeCommands(commandBuffer);
+	}
+
+	void RayTracing::createAccumulationImage()
+	{
+		//LocalEvaluator eval("Create Accumulation Image");
+		const auto tiling = VK_IMAGE_TILING_OPTIMAL;
+
+		_accumulationImage = std::make_shared<atta::vk::Image>(_device, 
+				_imageExtent.width, _imageExtent.height, _imageFormat, 
+				tiling, VK_IMAGE_USAGE_STORAGE_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		_accumulationImageView = std::make_shared<atta::vk::ImageView>(_device, _accumulationImage->handle(), _imageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 
 	void RayTracing::createPipeline()
@@ -74,33 +100,8 @@ namespace atta::rt::vk
 		const std::vector<ShaderBindingTable::Entry> missPrograms = { {_rayTracingPipeline->getMissShaderIndex(), {}}, {_rayTracingPipeline->getMissShadowShaderIndex(), {}} };
 		const std::vector<ShaderBindingTable::Entry> hitGroups = { {_rayTracingPipeline->getTriangleHitGroupIndex(), {}}/*, {_rayTracingPipeline->getProceduralHitGroupIndex(), {}}*/};
 
+		LocalEvaluator eval("ShaderBindingTable");
 		_shaderBindingTable = std::make_shared<ShaderBindingTable>(_device, _deviceProcedures, _rayTracingPipeline, _rayTracingProperties, rayGenPrograms, missPrograms, hitGroups);
-	}
-
-	void RayTracing::createAccelerationStructures()
-	{
-		Log::info("rt::vk::RayTracing", "Building acceleration structures...");
-		LocalEvaluator eval;
-
-		VkCommandBuffer commandBuffer = _commandPool->beginSingleTimeCommands();
-		{
-			createBottomLevelStructures(commandBuffer);
-			createTopLevelStructures(commandBuffer);
-		}
-		_commandPool->endSingleTimeCommands(commandBuffer);
-
-		eval.stop();
-		Log::info("rt::vk::RayTracing", "Finished: [w]$0ms", eval.getMs());
-	}
-
-	void RayTracing::createAccumulationImage()
-	{
-		const auto tiling = VK_IMAGE_TILING_OPTIMAL;
-
-		_accumulationImage = std::make_shared<atta::vk::Image>(_device, 
-				_imageExtent.width, _imageExtent.height, _imageFormat, 
-				tiling, VK_IMAGE_USAGE_STORAGE_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		_accumulationImageView = std::make_shared<atta::vk::ImageView>(_device, _accumulationImage->handle(), _imageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 
 	void RayTracing::render(VkCommandBuffer commandBuffer)

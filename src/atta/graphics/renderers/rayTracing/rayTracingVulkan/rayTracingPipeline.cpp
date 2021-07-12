@@ -9,6 +9,7 @@
 #include <atta/graphics/vulkan/descriptorSets.h>
 #include <atta/graphics/vulkan/shaderModule.h>
 #include <atta/helpers/log.h>
+#include <atta/helpers/evaluator.h>
 
 namespace atta::rt::vk
 {
@@ -159,41 +160,37 @@ namespace atta::rt::vk
 		rayGenGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
 		rayGenGroupInfo.pNext = nullptr;
 		rayGenGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-		rayGenGroupInfo.generalShader = 0;
+		rayGenGroupInfo.generalShader = _rayGenIndex = 0;
 		rayGenGroupInfo.closestHitShader = VK_SHADER_UNUSED_KHR;
 		rayGenGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
 		rayGenGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
-		_rayGenIndex = 0;
 
 		VkRayTracingShaderGroupCreateInfoKHR missGroupInfo = {};
 		missGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
 		missGroupInfo.pNext = nullptr;
 		missGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-		missGroupInfo.generalShader = 1;
+		missGroupInfo.generalShader = _missIndex = 1;
 		missGroupInfo.closestHitShader = VK_SHADER_UNUSED_KHR;
 		missGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
 		missGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
-		_missIndex = 1;
 
 		VkRayTracingShaderGroupCreateInfoKHR missShadowGroupInfo = {};
 		missShadowGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
 		missShadowGroupInfo.pNext = nullptr;
 		missShadowGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR;
-		missShadowGroupInfo.generalShader = 2;
+		missShadowGroupInfo.generalShader = _missShadowIndex = 2;
 		missShadowGroupInfo.closestHitShader = VK_SHADER_UNUSED_KHR;
 		missShadowGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
 		missShadowGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
-		_missShadowIndex = 2;
 
 		VkRayTracingShaderGroupCreateInfoKHR triangleHitGroupInfo = {};
 		triangleHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
 		triangleHitGroupInfo.pNext = nullptr;
 		triangleHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
 		triangleHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
-		triangleHitGroupInfo.closestHitShader = 3;
+		triangleHitGroupInfo.closestHitShader = _triangleHitGroupIndex = 3;
 		triangleHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
 		triangleHitGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
-		_triangleHitGroupIndex = 3;
 
 		std::vector<VkRayTracingShaderGroupCreateInfoKHR> groups =
 		{
@@ -217,6 +214,7 @@ namespace atta::rt::vk
 		pipelineInfo.basePipelineHandle = nullptr;
 		pipelineInfo.basePipelineIndex = 0;
 
+		LocalEvaluator eval("vkCreateRayTracingPipelinesKHR");
 		if(deviceProcedures->vkCreateRayTracingPipelinesKHR(_device->handle(), nullptr, nullptr, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
 		{
 			Log::error("rt::vk::RayTracingPipeline", "Failed to create ray tracing pipeline!");
