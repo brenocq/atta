@@ -74,4 +74,17 @@ vec2 uniformSampleTriangle(vec2 u)
 	return vec2(1-su0, u.y*su0);
 }
 
+vec3 uniformSampleHemisphere(vec2 u)
+{
+    // generate a random z value
+    float z = u.x;
+    float w = sqrt(1.0f-z*z);
+
+    float phi = 2*pi*u.y;
+    float x = cos(phi)*w;
+    float y = sin(phi)*w;
+
+    return vec3(x, y, z);
+}
+
 #endif// RANDOM_GLSL

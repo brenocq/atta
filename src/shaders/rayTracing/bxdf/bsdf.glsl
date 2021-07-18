@@ -12,7 +12,7 @@
 //---------- Helpers ---------- //
 vec3 BSDF_worldToLocal(BSDF bsdf, vec3 v)
 {
-	return vec3(dot(v, bsdf.ss), dot(v, bsdf.ts), dot(v, bsdf.ns));
+	return vec3(dot(v, bsdf.ss), dot(v, bsdf.ts), dot(v, bsdf.sn));
 }
 
 vec3 BSDF_localToWorld(BSDF bsdf, vec3 v)

@@ -210,7 +210,7 @@ namespace atta::vk
 										.input = atta::Texture::textureInfos()[textureInfo.process.second].vkTexture.lock()
 									};
 									compute::EnvIrradiance envIrr(envIrrInfo);
-									envIrr.compute();
+									//envIrr.compute();
 
 									// Add to textures buffer
 									_textures.push_back(envIrr.getOutput());

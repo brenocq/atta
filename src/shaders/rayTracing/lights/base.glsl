@@ -14,15 +14,15 @@ const uint LIGHT_FLAG_DELTA_DIRECTION 	= 0x00000002u;
 const uint LIGHT_FLAG_AREA 				= 0x00000004u;
 const uint LIGHT_FLAG_INFINITE 			= 0x00000008u;
 
-struct Interaction
-{
-	vec3 point;// Point of interaction
-	vec3 wo;
-	vec3 n;// Surface normal (TODO shading normal)
-
-	// Surface iteraction
-	BSDF bsdf;
-};
+//struct Interaction
+//{
+//	vec3 point;// Point of interaction
+//	vec3 wo;
+//	vec3 n;// Surface normal (TODO shading normal)
+//
+//	// Surface iteraction
+//	BSDF bsdf;
+//};
 
 struct VisibilityPoint
 {

@@ -34,6 +34,11 @@ namespace atta::rt::vk
 		vkGetRayTracingShaderGroupHandlesKHR(getProcedure<PFN_vkGetRayTracingShaderGroupHandlesKHR>(device, "vkGetRayTracingShaderGroupHandlesKHR")),
 		vkGetAccelerationStructureDeviceAddressKHR(getProcedure<PFN_vkGetAccelerationStructureDeviceAddressKHR>(device, "vkGetAccelerationStructureDeviceAddressKHR")),
 		vkCmdWriteAccelerationStructuresPropertiesKHR(getProcedure<PFN_vkCmdWriteAccelerationStructuresPropertiesKHR>(device, "vkCmdWriteAccelerationStructuresPropertiesKHR")),
+		vkGetDeferredOperationMaxConcurrencyKHR(getProcedure<PFN_vkGetDeferredOperationMaxConcurrencyKHR>(device, "vkGetDeferredOperationMaxConcurrencyKHR")),
+		vkCreateDeferredOperationKHR(getProcedure<PFN_vkCreateDeferredOperationKHR>(device, "vkCreateDeferredOperationKHR")),
+		vkDeferredOperationJoinKHR(getProcedure<PFN_vkDeferredOperationJoinKHR>(device, "vkDeferredOperationJoinKHR")),
+		vkGetDeferredOperationResultKHR(getProcedure<PFN_vkGetDeferredOperationResultKHR>(device, "vkGetDeferredOperationResultKHR")),
+		vkDestroyDeferredOperationKHR(getProcedure<PFN_vkDestroyDeferredOperationKHR>(device, "vkDestroyDeferredOperationKHR")),
 		_device(device)
 	{
 	}

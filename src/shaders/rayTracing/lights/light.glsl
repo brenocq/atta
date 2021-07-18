@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #ifndef LIGHTS_LIGHT_GLSL
 #define LIGHTS_LIGHT_GLSL
-#include "../bxdf/bsdf.glsl"
 #include "base.glsl"
 #include "point.glsl"
 #include "spot.glsl"
@@ -15,13 +14,13 @@
 #include "areaTriangle.glsl"
 
 //---------- Helpers ----------//
-bool isSurfaceInteraction()
-{
-	return !(ray.it.n.x==0 && ray.it.n.y==0 && ray.it.n.z==0);
-}
+//bool isSurfaceInteraction()
+//{
+//	return !(ray.it.n.x==0 && ray.it.n.y==0 && ray.it.n.z==0);
+//}
 
 //---------- Light methods ----------//
-vec3 Light_sampleLi(Light light, vec2 u, out vec3 wi, out float pdf, out VisibilityTester vis)
+vec3 Light_sampleLi(Light light, vec2 u, out vec3 wi, out float pdf, Interaction it, out VisibilityTester vis)
 {
 	// [in]  light - Light info from light buffer
 	// [in]  ref - Interaction info at the reference point (surface)
@@ -32,9 +31,9 @@ vec3 Light_sampleLi(Light light, vec2 u, out vec3 wi, out float pdf, out Visibil
 	// [out] return - RGB spectrum from sample
 	
 	VisibilityPoint vp;
-	vp.point = ray.it.point;
-	vp.wo = ray.it.wo;
-	vp.n = ray.it.n;
+	vp.point = it.worldPos;
+	vp.wo = it.wo;
+	vp.n = it.ns;
 	
 	//return InfiniteLight_sampleLi(light, vp, u, wi, pdf, vis);
 	//return vec3(0,0,0);
@@ -85,18 +84,18 @@ vec3 Light_Le(Light light, vec3 rayDirection)
 	}
 }
 
-float Light_pdfLi(Light light, Interaction it, vec3 wi)
-{
-	switch(light.type)
-	{
-		case LIGHT_TYPE_INFINITE:
-			return InfiniteLight_pdfLi(light, it, wi);
-		case LIGHT_TYPE_AREA_TRIANGLE:
-			return AreaTriangleLight_pdfLi(light, it, wi);
-		default:
-			return 0.0f;
-	}
-}
+//float Light_pdfLi(Light light, Interaction it, vec3 wi)
+//{
+//	switch(light.type)
+//	{
+//		case LIGHT_TYPE_INFINITE:
+//			return InfiniteLight_pdfLi(light, it, wi);
+//		case LIGHT_TYPE_AREA_TRIANGLE:
+//			return AreaTriangleLight_pdfLi(light, it, wi);
+//		default:
+//			return 0.0f;
+//	}
+//}
 
 void Light_pdfLe(Light light)
 {
@@ -182,7 +181,7 @@ bool Light_occluded(vec3 origin, vec3 direction, float tMax)
 	return isShadowed;
 }
 
-vec3 Light_estimateDirect(uint nLights, Light light, vec2 uLight, vec2 uScattering)
+vec3 Light_estimateDirect(BSDF bsdf, Interaction it, uint nLights, Light light, vec2 uLight, vec2 uScattering)
 {
 	uint bsdfFlags = BXDF_FLAG_ALL;
 	vec3 Ld = vec3(0,0,0);
@@ -191,29 +190,19 @@ vec3 Light_estimateDirect(uint nLights, Light light, vec2 uLight, vec2 uScatteri
 	vec3 wi;
 	float lightPdf = 0, scatteringPdf = 0;
 	VisibilityTester vis;
-	vec3 Li = Light_sampleLi(light, uLight, wi, lightPdf, vis);
+	vec3 Li = Light_sampleLi(light, uLight, wi, lightPdf, it, vis);
 
 	// Sample wi from light
 	if(lightPdf>0 && !isBlack(Li))
 	{
 		// Compute BSDF or phase function’s value for light sample
-		vec3 f;
-		if(isSurfaceInteraction())
-		{
-			// Evaluate BSDF for light sampling strategy
-			f = BSDF_f(ray.it.wo, wi, bsdfFlags) * abs(dot(wi, ray.it.n));// TODO use shading normal
+		vec3 f = BSDF_f(bsdf, it.wo, wi, bsdfFlags) * abs(dot(wi, it.ns));// TODO use shading normal
 
-			// Scattering pdf is used only when the light is not delta light
-			if(!Light_isDeltaLight(light))
-				scatteringPdf = BSDF_pdf(ray.it.bsdf, ray.it.wo, wi, bsdfFlags);
-			else
-				scatteringPdf = 1;
-		}
+		// Scattering pdf is used only when the light is not delta light
+		if(!Light_isDeltaLight(light))
+			scatteringPdf = BSDF_pdf(bsdf, it.wo, wi, bsdfFlags);
 		else
-		{
-			// TODO Evaluate phase function for light sampling strategy (Medium)
-			
-		}
+			scatteringPdf = 1;
 
 		if(!isBlack(f))
 		{
@@ -241,25 +230,24 @@ vec3 Light_estimateDirect(uint nLights, Light light, vec2 uLight, vec2 uScatteri
 	}
 
 	// Sample wi from bsdf
-	if(lightPdf>0 && !isBlack(Li))
-	if(!Light_isDeltaLight(light))
+	/*if(!Light_isDeltaLight(light))
 	{
 		vec3 f;
 		bool sampledSpecular = false;
 
-		if(isSurfaceInteraction())
-		{
+		//if(isSurfaceInteraction())
+		//{
 			// Sample scattered direction for surface interactions
 			uint sampledType;
-			f = BSDF_sampleF(ray.it.bsdf, ray.it.wo, wi, uScattering, scatteringPdf, bsdfFlags, sampledType);
-			f *= abs(dot(wi, ray.it.n));// TODO use shading normal
-			sampledSpecular = (sampledType&BXDF_FLAG_SPECULAR)!=0;
-		}
-		else
-		{
-			// TODO Sample scattered direction for medium interactions
-			
-		}
+			f = BSDF_sampleF(bsdf, ray.it.wo, wi, uScattering, scatteringPdf, bsdfFlags, sampledType);
+			f *= abs(dot(wi, bsdf.ns));
+			sampledSpecular = (sampledType & BXDF_FLAG_SPECULAR)!=0;
+		//}
+		//else
+		//{
+		//	// TODO Sample scattered direction for medium interactions
+		//	
+		//}
 
 		if(!isBlack(f) && scatteringPdf>0)
 		{
@@ -273,7 +261,7 @@ vec3 Light_estimateDirect(uint nLights, Light light, vec2 uLight, vec2 uScatteri
 			}
 
 			// Find intersection and compute transmittance
-			vec3 origin = ray.it.point;
+			vec3 origin = ray.origin;
 			vec3 direction = wi;
 			float tMax = 10000;
 			bool foundSurfaceInteraction = Light_occluded(origin, direction, tMax);
@@ -288,19 +276,19 @@ vec3 Light_estimateDirect(uint nLights, Light light, vec2 uLight, vec2 uScatteri
 			if(!isBlack(Li))
 				Ld += f*Li*weight/scatteringPdf;
 		}
-	}
+	}*/
 
 	return Ld;
 }
 
-vec3 Light_uniformSampleOneLight(uint nLights, float uLightIndex, vec2 uLight, vec2 uScattering)
+vec3 Light_uniformSampleOneLight(BSDF bsdf, Interaction it, uint nLights, float uLightIndex, vec2 uLight, vec2 uScattering)
 {
 	uint lightIndex = min(int(uLightIndex * nLights), nLights - 1);
 	Light l = lightBuffer[lightIndex];
 
 	float lightPdf = 1.0f/nLights;
 	// TODO Get light pdf from light distribution
-	return Light_estimateDirect(nLights, l, uLight, uScattering)/lightPdf;
+	return Light_estimateDirect(bsdf, it, nLights, l, uLight, uScattering)/lightPdf;
 }
 
 

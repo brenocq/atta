@@ -86,7 +86,7 @@ namespace atta::rt::vk
 
 		VkAccelerationStructureInstanceKHR instance = {};
 		instance.instanceCustomIndex = instanceId;
-		instance.mask = 0xFF; // The visibility mask is always set of 0xFF, but if some instances would need to be ignored in some cases, this flag should be passed by the application.
+		instance.mask = 0xff; // The visibility mask is always set of 0xFF, but if some instances would need to be ignored in some cases, this flag should be passed by the application.
 		instance.instanceShaderBindingTableRecordOffset = hitGroupId; // Set the hit group index, that will be used to find the shader code to execute when hitting the geometry.
 		instance.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR; // Disable culling - more fine control could be provided by the application
 		instance.accelerationStructureReference = address;

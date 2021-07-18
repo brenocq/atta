@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #ifndef LIGHTS_POINT_GLSL
 #define LIGHTS_POINT_GLSL
-#include "base.glsl"
 
 vec3 PointLight_sampleLi(
 		Light light, VisibilityPoint vp, vec2 u, 

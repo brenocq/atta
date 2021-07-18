@@ -11,7 +11,6 @@
 #include "uniformBufferObject.glsl"
 
 layout(binding = 3) readonly uniform UniformBufferObjectStruct { UniformBufferObject camera; };
-
 layout(location = 0) rayPayloadInEXT RayPayload ray;
 
 void main()
@@ -30,4 +29,5 @@ void main()
 	//}
 
 	ray.t = -1;
+	ray.radiance = ray.pathThroughput*vec3(0.5,0.5,0.5);
 }

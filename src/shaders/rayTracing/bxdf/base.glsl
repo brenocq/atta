@@ -75,24 +75,21 @@ struct BXDF
 // 		[2](vec3) - Fresnel data
 // 		[3](vec3) - Fresnel data
 // BXDF_TYPE_DISNEY
-// - datai
-// 		[0](bool) thin
 // - dataf
 // 		[0] metallic
-// 		[1] eta
-// 		[2] roughness
-// 		[3] specularTint
-// 		[4] anisotropic
-// 		[5] sheen
-// 		[6] sheenTint
-// 		[7] clearCoat
-// 		[8] clearCoatGloss
-// 		[9] specTrans
-// 		[10] flatness
-// 		[11] diffTrans
+// 		[1] roughness
+// 		[2] subsurface
+// 		[3] specular
+// 		[4] specular tint
+// 		[5] eta
+// 		[6] anisotropic
+// 		[7] sheen
+// 		[8] sheen tint
+// 		[9] clear coat
+// 		[10] clear coat gloss
+// 		[11] transmission
 // - datav
 // 		[0] color
-// 		[1] scatterDistance
 // BXDF_TYPE_UBER
 // - dataf
 // 		[0] roughnessu
@@ -125,7 +122,7 @@ struct BXDF
 
 struct BSDF
 {
-	BXDF bxdf[1];
+	BXDF bxdf;
 	int nBxdf;
 
 	float eta;

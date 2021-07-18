@@ -7,23 +7,23 @@
 #ifndef CAMERA_GLSL
 #define CAMERA_GLSL
 #include "samplers/random.glsl"
+ 
+const int CAMERA_THIN_LENS = 1;
 
-struct CameraRay
+void generateCameraRayThinLens(inout uint pixelSeed, out vec3 origin, out vec3 direction)
 {
-	vec3 origin;
-	vec3 direction;
-};
+	// Thin Lens Model variables (lensRadius=0 to use ideal pinhole camera)
+	float lensRadius = 0.00125;
+	float focusDistance = 17.32/2;
 
-CameraRay generateRayProjectiveCamera(
-		// Basic
-		mat4 projInv, mat4 viewInv, vec2 xy, 
-		// Thin Lens Model variables (lensRadius=0 to use ideal pinhole camera)
-		float lensRadius, float focusDistance, vec2 sampleLens)
-{
-	CameraRay ray;
+	// Sample pixel (TODO use specific 2D sampler algorithm to improve results)
+	const vec2 pixel = vec2(gl_LaunchIDEXT.x+randomFloat(pixelSeed)-0.5, gl_LaunchIDEXT.y+randomFloat(pixelSeed)-0.5);
+	const vec2 xy = (pixel / gl_LaunchSizeEXT.xy) * 2.0 - 1.0;
+	const vec2 sampleLens = vec2(randomFloat(pixelSeed), randomFloat(pixelSeed));
+
 	// Calculate origin and direction (camera space)
-	vec3 origin = vec3(0,0,0);
-	vec3 direction = (projInv*vec4(xy,1,1)).xyz;
+	origin = vec3(0,0,0);
+	direction = (ubo.projMatInverse*vec4(xy,1,1)).xyz;
 
 	if(lensRadius > 0)	
 	{
@@ -39,19 +39,16 @@ CameraRay generateRayProjectiveCamera(
 	}
 
 	// Camera space to world space
-	ray.origin = (viewInv*vec4(origin,1)).xyz;
-	ray.direction = (viewInv*vec4(normalize(direction), 0)).xyz;
-
-	return ray;
+	origin = (ubo.viewMatInverse*vec4(origin,1)).xyz;
+	direction = (ubo.viewMatInverse*vec4(normalize(direction), 0)).xyz;
 }
 
-CameraRay generateRayOrthographicCamera(mat4 viewMat, vec2 xy)
+void generateCameraRay(inout uint pixelSeed, out vec3 origin, out vec3 direction)
 {
-	CameraRay ray;
-	ray.origin = vec3(1,1,0);
-	ray.direction =  vec3(0, -1, 0);
-
-	return ray;
+	if(CAMERA_THIN_LENS == 1)
+	{
+		generateCameraRayThinLens(pixelSeed, origin, direction);
+	}
 }
 
 #endif// CAMERA_GLSL

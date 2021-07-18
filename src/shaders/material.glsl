@@ -66,37 +66,34 @@ struct Material
 // - datai
 // 		[0](vec3 texture) color texture index
 // 		[1](float texture) metallic texture index
-// 		[2](float texture) eta texture index
-// 		[3](float texture) roughness texture index
-// 		[4](float texture) specularTint texture index
-// 		[5](float texture) anisotropic texture index
-// 		[6](float texture) sheen texture index
-// 		[7](float texture) sheenTint texture index
-// 		[8](float texture) clearCoat texture index
-// 		[9](float texture) clearCoatGloss texture index
-// 		[10](float texture) specTrans texture index
-// 		[11](vec3 texture) scatterDistance texture index
-// 		[12](bool) thin
-// 		[13](float texture) flatness texture index
-// 		[14](float texture) diffTrans texture index
-// 		[15](float texture) bumpMap texture index
+// 		[2](float texture) roughness texture index
+// 		[3](float texture) subsurface texture index
+// 		[4](float texture) specular texture index
+// 		[5](float texture) specular tint texture index
+// 		[6](float texture) eta texture index
+// 		[7](float texture) anisotropic texture index
+// 		[8](float texture) sheen texture index
+// 		[9](float texture) sheen tint texture index
+// 		[10](float texture) clear coat texture index
+// 		[11](float texture) clear coat gloss texture index
+// 		[12](float texture) transmission texture index
+// 		[13](float texture) bumpMap texture index
 // - dataf
 // 		[0] uniform metallic
-// 		[1] uniform eta
-// 		[2] uniform roughness
-// 		[3] uniform specularTint
-// 		[4] uniform anisotropic
-// 		[5] uniform sheen
-// 		[6] uniform sheenTint
-// 		[7] uniform clearCoat
-// 		[8] uniform clearCoatGloss
-// 		[9] uniform specTrans
-// 		[10] uniform flatness
-// 		[11] uniform diffTrans
+// 		[1] uniform roughness
+// 		[2] uniform subsurface
+// 		[3] uniform specular
+// 		[4] uniform specular tint
+// 		[5] uniform eta
+// 		[6] uniform anisotropic
+// 		[7] uniform sheen
+// 		[8] uniform sheen tint
+// 		[9] uniform clear coat
+// 		[10] uniform clear coat gloss
+// 		[11] uniform transmission
 // 		[12] uniform bumpMap
 // - datav
 // 		[0] uniform color
-// 		[1] uniform scatterDistance
 //
 //----- UNREAL ENGINE 4 MATERIAL -----
 // - datai

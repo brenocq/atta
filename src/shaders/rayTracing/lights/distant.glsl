@@ -19,7 +19,7 @@ vec3 DistantLight_sampleLi(
 {
 	wi = wLight;
 	pdf = 1.f;
-	vec3 pOutside = vp.point + wLight*10000;
+	vec3 pOutside = vp.point + wLight*5000;
 	vis.p0.point = vp.point;
 	vis.p0.wo = vp.wo;
 	vis.p0.n = vp.n;

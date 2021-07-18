@@ -59,6 +59,7 @@ namespace atta
 			std::shared_ptr<GuiPipeline> getGuiPipeline() const { return _guiPipeline; };
 			std::shared_ptr<guib::GuiRender> getGuiRender() const { return _guiRender; };
 			std::shared_ptr<Renderer> getViewportRenderer() const { return _renderers.begin()->second; }
+			guib::Size getViewportRendererSize() const;
 
 		private:
 			void createWidgetTree();
