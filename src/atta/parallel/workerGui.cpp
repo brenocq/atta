@@ -81,10 +81,13 @@ namespace atta
 	{
 		while(!_window->shouldClose() && !_shouldFinish && !_ui->shouldClose())
 		{
+			LocalEvaluator eval("WorkerGui->render");
+
 			if(_runBeforeWorkerGuiRender)
 				_runBeforeWorkerGuiRender(this);
 			_cameraUpdated = _modelViewController->updateCamera(0.1);
 			render();
+		
 			_window->poolEvents();
 		}
 		// Send signal to close atta simulator
@@ -100,8 +103,8 @@ namespace atta
 			RastRenderer::CreateInfo rastRendInfo = {
 				.vkCore = _vkCore,
 				.commandPool = _commandPool,
-				.width = 1200,
-				.height = 900,
+				.width = _ui->getViewportRendererSize().width,
+				.height = _ui->getViewportRendererSize().height,
 				.fov = 60,
 				.scene = _scene,
 				.viewMat = atta::lookAt(vec3(1,1,1), vec3(0,0,0), vec3(0,1,0)),
@@ -116,11 +119,11 @@ namespace atta
 			{
 				.vkCore = _vkCore,
 				.commandPool = _commandPool,
-				.width = 1200,
-				.height = 900,
+				.width = _ui->getViewportRendererSize().width,
+				.height = _ui->getViewportRendererSize().height,
+				.fov = 60,
 				.scene = _scene,
-				.viewMat = atta::lookAt(vec3(1,1,1), vec3(0,0,0), vec3(0,1,0)),
-				.projMat = atta::perspective(atta::radians(60), 1200.0/900, 0.01f, 1000.0f)
+				.viewMat = atta::lookAt(vec3(1,1,1), vec3(0,0,0), vec3(0,1,0))
 			};
 			std::shared_ptr<rt::vk::RayTracing> rtVk = std::make_shared<rt::vk::RayTracing>(rtVkRendInfo);
 			_renderers.push_back(std::static_pointer_cast<Renderer>(rtVk));
@@ -131,8 +134,8 @@ namespace atta
 			Renderer2D::CreateInfo rend2DInfo = {
 				.vkCore = _vkCore,
 				.commandPool = _commandPool,
-				.width = 1200,
-				.height = 900,
+				.width = _ui->getViewportRendererSize().width,
+				.height = _ui->getViewportRendererSize().height,
 				.scene = _scene
 			};
 			std::shared_ptr<Renderer2D> renderer2D = std::make_shared<Renderer2D>(rend2DInfo);

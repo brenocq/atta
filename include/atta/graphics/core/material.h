@@ -249,36 +249,33 @@ namespace atta
 		struct DisneyInfo {
 			int colorTexture = -1;
 			int metallicTexture = -1;
-			int etaTexture = -1;
 			int roughnessTexture = -1;
+			int subsurfaceTexture = -1;
+			int specularTexture = -1;
 			int specularTintTexture = -1;
+			int etaTexture = -1;
 			int anisotropicTexture = -1;
 			int sheenTexture = -1;
 			int sheenTintTexture = -1;
 			int clearCoatTexture = -1;
 			int clearCoatGlossTexture = -1;
-			int specularTransTexture = -1;
-			int scatterDistanceTexture = -1;
-			int flatnessTexture = -1;
-			int diffTransTexture = -1;
+			int transmissionTexture = -1;
 			int bumpMapTexture = -1;
 
-			vec3 color;
-			float metallic;
-			float eta;
-			float roughness;
-			float specularTint;
-			float anisotropic;
-			float sheen;
-			float sheenTint;
-			float clearCoat;
-			float clearCoatGloss;
-			float specularTrans;
-			vec3 scatterDistance;
-			float flatness;
-			float diffTrans;
-			float bumpMap;
-			bool thin;
+			vec3 color = vec3(1,1,1);
+			float metallic = 0.0f;
+			float roughness = 0.5f;
+			float subsurface = 0.0f;
+			float specular = 0.5f;
+			float specularTint = 0.0f;
+			float eta = 1.45;
+			float anisotropic = 0.0f;
+			float sheen = 0.0f;
+			float sheenTint = 0.0f;
+			float clearCoat = 0.0f;
+			float clearCoatGloss = 1.0f;
+			float transmission = 0.0f;
+			float bumpMap = 0.0f;
 		};
 		static Material disney(DisneyInfo info)
 		{
@@ -287,37 +284,34 @@ namespace atta
 
 			m.datai[0]  = info.colorTexture;
 			m.datai[1]  = info.metallicTexture;
-			m.datai[2]  = info.etaTexture;
-			m.datai[3]  = info.roughnessTexture;
-			m.datai[4]  = info.specularTintTexture;
-			m.datai[5]  = info.anisotropicTexture;
-			m.datai[6]  = info.sheenTexture;
-			m.datai[7]  = info.sheenTintTexture;
-			m.datai[8]  = info.clearCoatTexture;
-			m.datai[9]  = info.clearCoatGlossTexture;
-			m.datai[10] = info.specularTransTexture;
-			m.datai[11] = info.scatterDistanceTexture;
-			m.datai[12] = info.thin?1:0;
-			m.datai[13] = info.flatnessTexture;
-			m.datai[14] = info.diffTransTexture;
-			m.datai[15] = info.bumpMapTexture;
+			m.datai[2]  = info.roughnessTexture;
+			m.datai[3]  = info.subsurfaceTexture;
+			m.datai[4]  = info.specularTexture;
+			m.datai[5]  = info.specularTintTexture;
+			m.datai[6]  = info.etaTexture;
+			m.datai[7]  = info.anisotropicTexture;
+			m.datai[8]  = info.sheenTexture;
+			m.datai[9]  = info.sheenTintTexture;
+			m.datai[10] = info.clearCoatTexture;
+			m.datai[11] = info.clearCoatGlossTexture;
+			m.datai[12] = info.transmissionTexture;
+			m.datai[13] = info.bumpMapTexture;
 
 			m.dataf[0]  = info.metallic;
-			m.dataf[1]  = info.eta;
-			m.dataf[2]  = info.roughness;
-			m.dataf[3]  = info.specularTint;
-			m.dataf[4]  = info.anisotropic;
-			m.dataf[5]  = info.sheen;
-			m.dataf[6]  = info.sheenTint;
-			m.dataf[7]  = info.clearCoat;
-			m.dataf[8]  = info.clearCoatGloss;
-			m.dataf[9]  = info.specularTrans;
-			m.dataf[10]  = info.flatness;
-			m.dataf[11] = info.diffTrans;
+			m.dataf[1]  = info.roughness;
+			m.dataf[2]  = info.subsurface;
+			m.dataf[3]  = info.specular;
+			m.dataf[4]  = info.specularTint;
+			m.dataf[5]  = info.eta;
+			m.dataf[6]  = info.anisotropic;
+			m.dataf[7]  = info.sheen;
+			m.dataf[8]  = info.sheenTint;
+			m.dataf[9]  = info.clearCoat;
+			m.dataf[10] = info.clearCoatGloss;
+			m.dataf[11] = info.transmission;
 			m.dataf[12] = info.bumpMap;
 
 			m.datav[0] = vec4(info.color, -1);
-			m.datav[1] = vec4(info.scatterDistance, -1);
 
 			return m;
 		}

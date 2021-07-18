@@ -523,10 +523,12 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 			"include/atta/assets/shaders/rastRenderer/skybox/skyboxShader.frag.spv"
 			"include/atta/assets/shaders/rastRenderer/skybox/skyboxShader.vert.spv"
 		# rayTracing
-        "include/atta/assets/shaders/rayTracing/rayTracing.rchit.spv"
         "include/atta/assets/shaders/rayTracing/rayTracing.rgen.spv"
         "include/atta/assets/shaders/rayTracing/rayTracing.rmiss.spv"
         "include/atta/assets/shaders/rayTracing/rayTracingShadow.rmiss.spv"
+			# rayTracing/hitShaders
+			"include/atta/assets/shaders/rayTracing/hitShaders/diffuse.rchit.spv"
+			"include/atta/assets/shaders/rayTracing/hitShaders/disney.rchit.spv"
 		# renderer2D
 			# renderer2D/line
 			"include/atta/assets/shaders/renderer2D/line/lineShader.frag.spv"

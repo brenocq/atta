@@ -15,7 +15,8 @@
 namespace atta::rt::vk
 {
 	RayTracing::RayTracing(CreateInfo info):
-		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_RAY_TRACING_VULKAN, VK_IMAGE_USAGE_STORAGE_BIT}), _scene(info.scene)
+		Renderer({info.vkCore, info.commandPool, info.width, info.height, info.viewMat, RENDERER_TYPE_RAY_TRACING_VULKAN, VK_IMAGE_USAGE_STORAGE_BIT}), 
+		_scene(info.scene), _fov(info.fov)
 	{
 		_device = _vkCore->getDevice();
 
@@ -28,7 +29,7 @@ namespace atta::rt::vk
 		_uniformBuffer = std::make_shared<rt::vk::UniformBuffer>(_vkCore->getDevice());
 		rt::vk::UniformBufferObject ubo;
 		ubo.viewMat = transpose(info.viewMat);
-		ubo.projMat = transpose(info.projMat);
+		ubo.projMat = atta::transpose(atta::perspective(atta::radians(info.fov), info.width/info.height, 0.01f, 1000.0f));
 		ubo.projMat.data[5] *= -1;
 		ubo.viewMatInverse = inverse(ubo.viewMat);
 		ubo.projMatInverse = inverse(ubo.projMat);
@@ -97,10 +98,14 @@ namespace atta::rt::vk
 				_tlas[0], _accumulationImageView, _imageView, _uniformBuffer, _vkCore);
 
 		const std::vector<ShaderBindingTable::Entry> rayGenPrograms = { {_rayTracingPipeline->getRayGenShaderIndex(), {}} };
-		const std::vector<ShaderBindingTable::Entry> missPrograms = { {_rayTracingPipeline->getMissShaderIndex(), {}}, {_rayTracingPipeline->getMissShadowShaderIndex(), {}} };
-		const std::vector<ShaderBindingTable::Entry> hitGroups = { {_rayTracingPipeline->getTriangleHitGroupIndex(), {}}/*, {_rayTracingPipeline->getProceduralHitGroupIndex(), {}}*/};
+		const std::vector<ShaderBindingTable::Entry> missPrograms = { 
+			{_rayTracingPipeline->getMissShaderIndex(), {}}, 
+			{_rayTracingPipeline->getMissShadowShaderIndex(), {}}};
+		const std::vector<ShaderBindingTable::Entry> hitGroups = { 
+			{_rayTracingPipeline->getDiffuseHitGroupIndex(), {}}, 
+			{_rayTracingPipeline->getDisneyHitGroupIndex(), {}}};
 
-		LocalEvaluator eval("ShaderBindingTable");
+		//LocalEvaluator eval("ShaderBindingTable");
 		_shaderBindingTable = std::make_shared<ShaderBindingTable>(_device, _deviceProcedures, _rayTracingPipeline, _rayTracingProperties, rayGenPrograms, missPrograms, hitGroups);
 	}
 
@@ -132,7 +137,7 @@ namespace atta::rt::vk
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, _rayTracingPipeline->handle());
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, _rayTracingPipeline->getPipelineLayout()->handle(), 0, 1, descriptorSets, 0, nullptr);
 
-		// Describe the shader binding table.
+		// Describe the shader binding table
 		VkStridedDeviceAddressRegionKHR raygenShaderBindingTable = {};
 		raygenShaderBindingTable.deviceAddress = _shaderBindingTable->rayGenDeviceAddress();
 		raygenShaderBindingTable.stride = _shaderBindingTable->rayGenEntrySize();
@@ -158,6 +163,30 @@ namespace atta::rt::vk
 		// Change output image format to the expected by the workerGui thread
 		atta::vk::ImageMemoryBarrier::insert(commandBuffer, _image->handle(), subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT,
 			0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+	}
+
+	void RayTracing::resize(unsigned width, unsigned height)
+	{
+		_extent.width = width;
+		_extent.height = height;
+		_imageExtent = {width, height};// TODO use only one?
+
+		_rayTracingPipeline.reset();
+		_imageView.reset();
+		_image.reset();
+		_accumulationImage.reset();
+		_accumulationImageView.reset();
+
+		createOutputImage();
+		createAccumulationImage();
+		createPipeline();
+
+		// Update uniform buffer projection matrix
+		rt::vk::UniformBufferObject ubo  = _uniformBuffer->getValue();
+		ubo.projMat = atta::transpose(atta::perspective(atta::radians(_fov), width/(float)height, 0.01f, 1000.0f));
+		ubo.projMat.data[5] *= -1;
+		ubo.projMatInverse = atta::inverse(ubo.projMat);
+		_uniformBuffer->setValue(ubo);
 	}
 
 	void RayTracing::createBottomLevelStructures(VkCommandBuffer commandBuffer)
@@ -223,22 +252,19 @@ namespace atta::rt::vk
 		// Top level acceleration structure
 		std::vector<VkAccelerationStructureInstanceKHR> instances;
 
-		// Hit group 0: triangles
-		// Hit group 1: procedurals
 		for(std::shared_ptr<Object> object : _scene->getObjects())
 		{
 			static unsigned _instanceId = 0;
 
 			std::shared_ptr<Model> model = object->getModel();
+			int hitGroup = 1;// Disney
+
 			if(model==nullptr) continue;
 			//if(model == nullptr)
 			//	continue;
 
-			//_blas[model->getModelIndex()]->getDevice();
-			//std::cout << "INDEX: " << model->getMeshIndex() << std::endl;
-			//std::cout << "Size: " << _blas.size() << std::endl;
 			instances.push_back(TopLevelAccelerationStructure::createInstance(
-				_blas[model->getMeshIndex()], object->getModelMat(), _instanceId++, 0/*procedural?*/));
+				_blas[model->getMeshIndex()], object->getModelMat(), _instanceId++, hitGroup));
 		}
 
 		size_t size = instances.size()*sizeof(VkAccelerationStructureInstanceKHR);

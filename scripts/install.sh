@@ -6,6 +6,6 @@ set -e
 
 mkdir --parents build/linux
 cd build/linux
-cmake -D CMAKE_BUILD_TYPE=Release -D ATTA_GENERATE_PACKAGE_INSTALL=1 -D CMAKE_INSTALL_PREFIX=/usr ../.. 
+cmake -D CMAKE_BUILD_TYPE=Debug -D ATTA_GENERATE_PACKAGE_INSTALL=1 -D CMAKE_INSTALL_PREFIX=/usr ../.. 
 make -j
 make install

@@ -34,9 +34,9 @@ namespace atta::rt::vk
 				std::shared_ptr<atta::vk::CommandPool> commandPool;
 				float width;
 				float height;
+				float fov;
 				std::shared_ptr<Scene> scene;
 				mat4 viewMat = atta::lookAt(vec3(2,2,0), vec3(0,0,0), vec3(0,1,0));
-				mat4 projMat = atta::perspective(atta::radians(45.0), 1200.0/900, 0.01f, 1000.0f);
 			};
 
 			RayTracing(CreateInfo info);
@@ -44,7 +44,7 @@ namespace atta::rt::vk
 
 			void render(VkCommandBuffer commandBuffer);
 			void updateCameraMatrix(mat4 viewMatrix);
-			void resize(unsigned width, unsigned height) {}
+			void resize(unsigned width, unsigned height);
 
 			void recreateTLAS();
 
@@ -85,6 +85,9 @@ namespace atta::rt::vk
 			std::shared_ptr<atta::vk::Buffer> _topBuffer;
 			std::shared_ptr<atta::vk::Buffer> _topScratchBuffer;
 			std::shared_ptr<atta::vk::Buffer> _instancesBuffer;
+
+			// Perspective projection matrix info
+			float _fov;
 	};
 }
 

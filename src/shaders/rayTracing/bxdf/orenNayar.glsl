@@ -49,6 +49,20 @@ vec3 BXDF_OrenNayar_f(vec3 wo, vec3 wi, vec3 R, float sigma)
 	return R * invPi * (A + B * maxCos * sinAlpha * tanBeta); 
 }
 
+float BXDF_OrenNayar_pdf(vec3 wo, vec3 wi)
+{
+	return sameHemisphere(wo, wi) ? absCosTheta(wi)*invPi : 0;
+}
+
+vec3 BXDF_OrenNayar_sampleF(vec3 wo, out vec3 wi, vec2 u, out float pdf, vec3 R, float sigma) 
+{
+	wi = cosineSampleHemisphere(u);
+	if(wo.z<0) wi.z*=-1;
+	pdf = BXDF_OrenNayar_pdf(wo, wi);
+
+	return BXDF_OrenNayar_f(wo, wi, R, sigma);
+}
+
 uint BXDF_OrenNayar_flags()
 {
 	return BXDF_FLAG_REFLECTION | BXDF_FLAG_DIFFUSE;

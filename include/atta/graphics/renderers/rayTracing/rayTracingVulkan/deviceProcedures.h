@@ -96,6 +96,34 @@ namespace atta::rt::vk
 				uint32_t firstQuery)>
 			vkCmdWriteAccelerationStructuresPropertiesKHR;
 
+			// Deferred operations (Maybe send to vulkan folder as a global proceduce)
+			const std::function<uint32_t(
+				VkDevice device,
+    			VkDeferredOperationKHR operation)>
+			vkGetDeferredOperationMaxConcurrencyKHR;
+
+			const std::function<VkResult(
+			 	VkDevice device,
+				const VkAllocationCallbacks* pAllocator,
+				VkDeferredOperationKHR* pDeferredOperation)>
+			vkCreateDeferredOperationKHR;
+
+			const std::function<VkResult(
+ 				VkDevice device,
+    			VkDeferredOperationKHR operation)>
+			vkDeferredOperationJoinKHR;
+
+			const std::function<VkResult(
+ 				VkDevice device,
+    			VkDeferredOperationKHR operation)>
+			vkGetDeferredOperationResultKHR;
+
+			const std::function<void(
+				VkDevice device,
+				VkDeferredOperationKHR operation,
+				const VkAllocationCallbacks* pAllocator)>
+  			vkDestroyDeferredOperationKHR;
+
 		private:
 			std::shared_ptr<atta::vk::Device> _device;
 	};

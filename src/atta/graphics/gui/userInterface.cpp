@@ -283,16 +283,22 @@ namespace atta
 		_guiCommandBuffers->end(0);
 	}
 
+	guib::Size UserInterface::getViewportRendererSize() const
+	{
+		return {guib::state::screenSize.width-250-35-4*3,
+				guib::state::screenSize.height-26-22-3};
+	}
+
 	void UserInterface::render(VkCommandBuffer commandBuffer, int imageIndex)
 	{
-		static bool firstResize = true;
-		if(firstResize)
-		{
-			_renderers.begin()->second->resize(
-					guib::state::screenSize.width-250-35-4*3,
-					guib::state::screenSize.height-26-22-3);
-			firstResize = false;
-		}
+		//static bool firstResize = true;
+		//if(firstResize)
+		//{
+		//	_renderers.begin()->second->resize(
+		//			guib::state::screenSize.width-250-35-4*3,
+		//			guib::state::screenSize.height-26-22-3);
+		//	firstResize = false;
+		//}
 
 		_renderers.begin()->second->render(commandBuffer);
 

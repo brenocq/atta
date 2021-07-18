@@ -75,20 +75,20 @@ namespace atta::rt::vk
 		_missSize(missPrograms.size() * _missEntrySize),
 		_hitGroupSize(hitGroups.size() * _hitGroupEntrySize)
 	{
-		// Compute the size of the table.
+		// Compute the size of the table
 		const size_t sbtSize =
 			rayGenPrograms.size() * _rayGenEntrySize +
 			missPrograms.size() * _missEntrySize +
 			hitGroups.size() * _hitGroupEntrySize;
 
-		// Allocate buffer & memory.
+		// Allocate buffer & memory
 		_buffer = std::make_shared<atta::vk::Buffer>(_device, sbtSize, 
-				VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+				VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 				VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT
 				);
 
-		// Generate the table.
+		// Generate the table
 		const uint32_t handleSize = rayTracingProperties->shaderGroupHandleSize();
 		const size_t groupCount = rayGenPrograms.size() + missPrograms.size() + hitGroups.size();
 		std::vector<uint8_t> shaderHandleStorage(groupCount * handleSize);
