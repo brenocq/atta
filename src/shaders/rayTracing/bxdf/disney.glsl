@@ -45,9 +45,9 @@ float Fr(float VDotN, float etaI, float etaT)
     return 0.5f*(sqr(r1) + sqr(r2));
 }
 
-bool refractEta(vec3 wo, vec3 N, float eta, inout vec3 wi)
+bool refractEta(vec3 wo, vec3 N, float eta, out vec3 wi)
 {
-    float cosThetaI = dot(N, wi);
+    float cosThetaI = dot(N, wo);
     float sin2ThetaI = max(0.0f, float(1.0f - cosThetaI * cosThetaI));
     float sin2ThetaT = eta * eta * sin2ThetaI;
 
@@ -56,7 +56,7 @@ bool refractEta(vec3 wo, vec3 N, float eta, inout vec3 wi)
         return false;
 
     float cosThetaT = sqrt(1.0f - sin2ThetaT);
-    wi = eta * -wi + (eta * cosThetaI - cosThetaT) * N;
+    wi = eta * -wo + (eta * cosThetaI - cosThetaT) * N;
     return true;
 }
 
@@ -313,21 +313,22 @@ vec3 BXDF_Disney_sampleF(vec3 wo, out vec3 wi, vec2 u, out float pdf, BXDF bxdf)
             float r1 = randomFloat(ray.seed);
             float r2 = randomFloat(ray.seed);
 
-             const float a = max(0.001f, roughness);
-             const float phiHalf = r1*2*pi;
+            const float a = max(0.001f, roughness);
+            const float phiHalf = r1*2*pi;
 
-             const float cosThetaHalf = sqrt((1.0f-r2)/(1.0f + ((a*a)-1.0f)*r2));
-             const float sinThetaHalf = sqrt(max(0.0f, 1.0f-(cosThetaHalf*cosThetaHalf)));
-             const float sinPhiHalf = sin(phiHalf);
-             const float cosPhiHalf = cos(phiHalf);
+            const float cosThetaHalf = sqrt((1.0f-r2)/(1.0f + ((a*a)-1.0f)*r2));
+            const float sinThetaHalf = sqrt(max(0.0f, 1.0f-(cosThetaHalf*cosThetaHalf)));
+            const float sinPhiHalf = sin(phiHalf);
+            const float cosPhiHalf = cos(phiHalf);
 
-             vec3 Half = U*sinThetaHalf*cosPhiHalf + V*sinThetaHalf*sinPhiHalf + N*cosThetaHalf;
+            vec3 h = vec3(sinThetaHalf*cosPhiHalf, sinThetaHalf*sinPhiHalf, cosThetaHalf);
 
-             // ensure Half angle in same hemisphere as incoming light vector
-             if(wo.z <= 0.0f)
-                 Half *= -1.0f;
+            // ensure Half angle in same hemisphere as incoming light vector
+			if(dot(h, wo) <= 0.0f)
+               h *= -1.0f;
 
-             wi = 2.0f*dot(wo, Half)*Half - wo;
+            wi = reflect(wo, h);
+			// TODO reflected
 
          }
          else
@@ -350,56 +351,52 @@ vec3 BXDF_Disney_sampleF(vec3 wo, out vec3 wi, vec2 u, out float pdf, BXDF bxdf)
      {
          float r1 = randomFloat(ray.seed);
          float r2 = randomFloat(ray.seed);
- 
-         // Sample BRDF
-         float randomD = randomFloat(ray.seed);
-         if(randomD<0.5f)
-         {
-             float randomS = randomFloat(ray.seed);
-             // Sample diffuse
-             if(randomS < subsurface)
-             {
-               	vec3 d = uniformSampleHemisphere(vec2(r1,r2));
- 
-                // Negate z coordinate to sample inside the surface
-               	wi = U*d.x + wo*d.y - vec3(0,0,1)*d.z;
-				// TODO flag transmitted
-             }
-             else
-             {
-               vec3 d = cosineSampleHemisphere(vec2(r1, r2));
-               if(d.z<0) d.z*=-1;
-               wi = d;
-				// TODO flag reflected
-             }
-         }
-         else
-         {
-             // Sample specular
-             const float a = max(0.001f, roughness);
- 
-             const float phiHalf = r1*2*pi;
- 
-             const float cosThetaHalf = sqrt((1.0f-r2)/(1.0f + (sqr(a)-1.0f)*r2));
-             const float sinThetaHalf = sqrt(max(0.0f, 1.0f-sqr(cosThetaHalf)));
-             const float sinPhiHalf = sin(phiHalf);
-             const float cosPhiHalf = cos(phiHalf);
- 
-             vec3 h = vec3(sinThetaHalf*cosPhiHalf, sinThetaHalf*sinPhiHalf, cosThetaHalf);
-             // ensure half angle in same hemisphere as incoming light vector
-             //if(h.z <= 0.0f)
-             //    h *= -1.0f;
-             //if(wo.z <= 0.0f)
-             //    wo *= -1.0f;
- 
-             wi = reflect(wo, h);//2.0f*dot(wo, h)*h - wo;
-			 if(wi.z<=0) wi *= -1;
+
+		 // Sample BRDF
+		 float randomD = randomFloat(ray.seed);
+		 if(randomD<0.5f)
+		 {
+			 // Sample diffuse
+			 float randomS = randomFloat(ray.seed);
+			 if(randomS < subsurface)
+			 {
+				 vec3 d = uniformSampleHemisphere(vec2(r1,r2));
+
+				 // Negate z coordinate to sample inside the surface
+				 wi = U*d.x + wo*d.y - vec3(0,0,1)*d.z;
+				 // TODO flag transmitted
+			 }
+			 else
+			 {
+				 vec3 d = cosineSampleHemisphere(vec2(r1, r2));
+				 wi = d;
+				 // TODO flag reflected
+			 }
+		 }
+		 else
+		 {
+			 // Sample specular
+			 const float a = max(0.001f, roughness);
+			 const float phiHalf = r1*2*pi;
+
+			 const float cosThetaHalf = sqrt((1.0f-r2)/(1.0f + (sqr(a)-1.0f)*r2));
+			 const float sinThetaHalf = sqrt(max(0.0f, 1.0f-sqr(cosThetaHalf)));
+			 const float sinPhiHalf = sin(phiHalf);
+			 const float cosPhiHalf = cos(phiHalf);
+
+			 vec3 h = vec3(sinThetaHalf*cosPhiHalf, sinThetaHalf*sinPhiHalf, cosThetaHalf);
+			 // Ensure half angle in same hemisphere as incoming light vector
+			 if(dot(h, wo) <= 0.0f)
+                h *= -1.0f;
+			 wi = reflect(wo, h);
+			if(wi.z<0) wi.z*=-1;
+
 			 // TODO flag reflected
-         }
-     }
- 
-    pdf = BXDF_Disney_pdf(wo, wi, bxdf);
-    return BXDF_Disney_f(wo, wi, bxdf);
+		 }
+	 }
+
+	 pdf = BXDF_Disney_pdf(wo, wi, bxdf);
+	 return BXDF_Disney_f(wo, wi, bxdf);
 }
 
 uint BXDF_Disney_flags()
