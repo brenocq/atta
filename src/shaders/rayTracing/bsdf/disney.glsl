@@ -40,7 +40,13 @@ vec3 BSDF_f(BSDF bsdf, vec3 woW, vec3 wiW, uint flags)
 	vec3 wi = BSDF_worldToLocal(bsdf, wiW), wo = BSDF_worldToLocal(bsdf, woW);
 	if(wo.z == 0) return vec3(0,0,0);
 
-	return BXDF_Disney_f(wo, wi, bsdf.bxdf);
+	vec3 f = BXDF_Disney_f(wo, wi, bsdf.bxdf);
+	if(isnan(f.x)||isnan(f.y)||isnan(f.z))
+		return vec3(1,0,0);
+	if(isinf(f.x)||isinf(f.y)||isinf(f.z))
+		return vec3(0,1,0);
+
+	return f;
 }
 
 vec3 BSDF_sampleF(BSDF bsdf, vec3 woW, out vec3 wiW, vec2 u, out float pdf, inout uint sampledType)
@@ -55,6 +61,11 @@ vec3 BSDF_sampleF(BSDF bsdf, vec3 woW, out vec3 wiW, vec2 u, out float pdf, inou
 	sampledType = BXDF_Disney_flags();
 
 	wiW = BSDF_localToWorld(bsdf, wi);
+	if(isnan(f.x)||isnan(f.y)||isnan(f.z))
+		return vec3(1,0,0);
+	if(isinf(f.x)||isinf(f.y)||isinf(f.z))
+		return vec3(0,1,0);
+
 	return f;
 }
 
@@ -62,7 +73,6 @@ float BSDF_pdf(BSDF bsdf, vec3 woW, vec3 wiW, uint bxdfFlags)
 {
 	vec3 wo = BSDF_worldToLocal(bsdf, woW), wi = BSDF_worldToLocal(bsdf, wiW);
 	if(wo.z == 0) return 0;
-	float pdf = 0;
 
 	return BXDF_Disney_pdf(wo, wi, bsdf.bxdf);
 }

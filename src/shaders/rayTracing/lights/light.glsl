@@ -196,7 +196,7 @@ vec3 Light_estimateDirect(BSDF bsdf, Interaction it, uint nLights, Light light, 
 	if(lightPdf>0 && !isBlack(Li))
 	{
 		// Compute BSDF or phase function’s value for light sample
-		vec3 f = BSDF_f(bsdf, it.wo, wi, bsdfFlags) * abs(dot(wi, it.ns));// TODO use shading normal
+		vec3 f = BSDF_f(bsdf, it.wo, wi, bsdfFlags) * abs(dot(wi, it.ns));
 
 		// Scattering pdf is used only when the light is not delta light
 		if(!Light_isDeltaLight(light))
