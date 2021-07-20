@@ -257,11 +257,9 @@ namespace atta::rt::vk
 			static unsigned _instanceId = 0;
 
 			std::shared_ptr<Model> model = object->getModel();
-			int hitGroup = 1;// Disney
+			int hitGroup = 0;// Diffuse
 
 			if(model==nullptr) continue;
-			//if(model == nullptr)
-			//	continue;
 
 			instances.push_back(TopLevelAccelerationStructure::createInstance(
 				_blas[model->getMeshIndex()], object->getModelMat(), _instanceId++, hitGroup));

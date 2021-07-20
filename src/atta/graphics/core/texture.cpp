@@ -13,7 +13,7 @@ namespace atta
 	int Texture::fromFileImpl(std::string fileName)
 	{
 		TextureInfo info {
-			.textureId = _textureInfos.size(),
+			.textureId = ++_lastId,
 			.type = TYPE_FILE,
 			.fileName = fileName
 		};
@@ -24,7 +24,7 @@ namespace atta
 	int Texture::fromBufferImpl(const void* data, unsigned width, unsigned height, Format format)
 	{
 		TextureInfo info {
-			.textureId = _textureInfos.size(),
+			.textureId = ++_lastId,
 			.type = TYPE_BUFFER,
 			.format = format,
 			.width = width,
@@ -45,7 +45,8 @@ namespace atta
 
 		TextureInfo& texInfoToProcess = _textureInfos[id];
 		TextureInfo newInfo {
-			.textureId = _textureInfos.size(),
+			.textureId = ++_lastIdCubeMap,
+			.isCubeMap = true,
 			.type = TYPE_PROCESSED,
 			.format = texInfoToProcess.format,
 			.process = std::make_pair(process, id),
@@ -58,7 +59,10 @@ namespace atta
 
 	void Texture::updateTextureImpl(int textureIndex)
 	{
-		TextureInfo info = _textureInfos[textureIndex];
+		TextureInfo info;
+		for(auto& tex : _textureInfos)
+			if(tex.textureId == textureIndex && tex.isCubeMap == false)
+		 		info = tex;
 
 		if(auto texture = info.vkTexture.lock())
 		{
@@ -70,4 +74,12 @@ namespace atta
 		}
 	}
 
+	std::shared_ptr<vk::Texture> Texture::getCubeMapTextureByIdImpl(int id)
+	{
+		TextureInfo info;
+		for(auto& tex : _textureInfos)
+			if(tex.textureId == id && tex.isCubeMap == true)
+				return tex.vkTexture.lock();
+		return nullptr;
+	}
 }

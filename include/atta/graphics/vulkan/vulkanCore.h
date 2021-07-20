@@ -40,6 +40,7 @@ namespace atta::vk
 			std::shared_ptr<Buffer> getPointBuffer() const { return _pointBuffer; }
 
 			std::vector<std::shared_ptr<vk::Texture>> getTextures() const { return _textures; }
+			std::vector<std::shared_ptr<vk::Texture>> getTexturesCubeMap() const { return _texturesCubeMap; }
 
 			void createBuffers(std::shared_ptr<Scene> scene, std::shared_ptr<CommandPool> commandPool);
 			void updateBuffers(std::shared_ptr<Scene> scene, std::shared_ptr<CommandPool> commandPool);
@@ -68,6 +69,7 @@ namespace atta::vk
 
 			// Texture images
 			std::vector<std::shared_ptr<vk::Texture>> _textures;
+			std::vector<std::shared_ptr<vk::Texture>> _texturesCubeMap;
 	};
 }
 

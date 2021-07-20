@@ -12,6 +12,7 @@
 #include <atta/graphics/core/objectInfo.h>
 #include <atta/graphics/vulkan/stagingBuffer.h>
 #include <atta/graphics/vulkan/compute/envIrradiance.h>
+#include <atta/graphics/vulkan/compute/equiToCubeMap.h>
 #include <atta/objects/lights/lights.h>
 #include <queue>
 
@@ -198,8 +199,20 @@ namespace atta::vk
 				case atta::Texture::TYPE_PROCESSED:
 					{
 						switch(textureInfo.process.first) {
-							case atta::Texture::PROCESS_CUBEMAP:
-									// TODO
+							case atta::Texture::PROCESS_CUBE_MAP:
+								{
+									compute::EquiToCubeMap::CreateInfo equiToCubeMapInfo {
+										.device = _device,
+										.commandPool = commandPool,
+										.input = _textures[textureInfo.process.second]
+									};
+									compute::EquiToCubeMap eToC(equiToCubeMapInfo);
+									eToC.compute();
+
+									// Add to textures buffer
+									_texturesCubeMap.push_back(eToC.getOutput());
+									textureInfo.vkTexture = _texturesCubeMap.back();
+								}
 								break;
 							case atta::Texture::PROCESS_ENV_IRRADIANCE:
 								{
@@ -207,14 +220,14 @@ namespace atta::vk
 									compute::EnvIrradiance::CreateInfo envIrrInfo {
 										.device = _device,
 										.commandPool = commandPool,
-										.input = atta::Texture::textureInfos()[textureInfo.process.second].vkTexture.lock()
+										.input = _texturesCubeMap[textureInfo.process.second]
 									};
 									compute::EnvIrradiance envIrr(envIrrInfo);
-									//envIrr.compute();
+									envIrr.compute();
 
 									// Add to textures buffer
-									_textures.push_back(envIrr.getOutput());
-									textureInfo.vkTexture = _textures.back();
+									_texturesCubeMap.push_back(envIrr.getOutput());
+									textureInfo.vkTexture = _texturesCubeMap.back();
 								}
 								break;
 							default:

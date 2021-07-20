@@ -175,6 +175,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		# graphics/vulkan
 			# graphics/vulkan/compute/
 			"src/atta/graphics/vulkan/compute/envIrradiance.cpp"
+			"src/atta/graphics/vulkan/compute/equiToCubeMap.cpp"
 		"src/atta/graphics/vulkan/buffer.cpp"
         "src/atta/graphics/vulkan/colorBuffer.cpp"
         "src/atta/graphics/vulkan/commandBuffers.cpp"
@@ -389,6 +390,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 		# graphics/vulkan/
 			# graphics/vulkan/compute/
 			"include/atta/graphics/vulkan/compute/envIrradiance.h"
+			"include/atta/graphics/vulkan/compute/equiToCubeMap.h"
 		"include/atta/graphics/vulkan/buffer.h"
         "include/atta/graphics/vulkan/colorBuffer.h"
         "include/atta/graphics/vulkan/commandBuffers.h"
@@ -500,6 +502,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
 	set(attacore_SHADERS
 		# compute
 		"include/atta/assets/shaders/compute/envIrradiance.comp.spv"
+		#"include/atta/assets/shaders/compute/equiToCubeMap.comp.spv"
 		# gui
 		"include/atta/assets/shaders/gui/guiShader.frag.spv"
         "include/atta/assets/shaders/gui/guiShader.vert.spv"
@@ -528,7 +531,7 @@ if(ATTA_GENERATE_PACKAGE_INSTALL)
         "include/atta/assets/shaders/rayTracing/rayTracingShadow.rmiss.spv"
 			# rayTracing/hitShaders
 			"include/atta/assets/shaders/rayTracing/hitShaders/diffuse.rchit.spv"
-			"include/atta/assets/shaders/rayTracing/hitShaders/disney.rchit.spv"
+			#"include/atta/assets/shaders/rayTracing/hitShaders/disney.rchit.spv"
 		# renderer2D
 			# renderer2D/line
 			"include/atta/assets/shaders/renderer2D/line/lineShader.frag.spv"

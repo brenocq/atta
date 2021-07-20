@@ -26,8 +26,8 @@ namespace atta
 		}
 
 		// Add texture process to genereate cubemap
-		//Texture::textureInfos()[_textureIndex].process.push_back(std::make_pair(Texture::PROCESS_CUBEMAP, -1));
-		_irradianceTextureIndex = Texture::addTextureProcess(_textureIndex, Texture::PROCESS_ENV_IRRADIANCE);
+		_cubeMapTextureIndex = Texture::addTextureProcess(_textureIndex, Texture::PROCESS_CUBE_MAP);// Change texture index to cubemap texture
+		//_irradianceTextureIndex = Texture::addTextureProcess(_textureIndex, Texture::PROCESS_ENV_IRRADIANCE);
 	}
 
 	InfiniteLight::~InfiniteLight() {

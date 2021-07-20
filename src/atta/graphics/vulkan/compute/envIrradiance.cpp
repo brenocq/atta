@@ -17,7 +17,8 @@ namespace atta::vk::compute
 		_output = std::make_shared<vk::Texture>(_device, _commandPool, 
 				_input->getImage()->getExtent(), 
 				_input->getImage()->getFormat(), 
-				VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+				VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+				true/*isCubemap*/);
 
 		//---------- Create shader module ----------//
 		_shaderModule = std::make_shared<vk::ShaderModule>(_device, "/usr/include/atta/assets/shaders/compute/envIrradiance.comp.spv");

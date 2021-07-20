@@ -29,6 +29,7 @@ namespace atta
 
 			//---------- Getters ----------//
 			int getTextureIndex() const { return _textureIndex; }
+			int getCubeMapTextureIndex() const { return _cubeMapTextureIndex; }
 			int getPdfTextureIndex() const { return _pdfTextureIndex; }
 			int getIrradianceTextureIndex() const { return _irradianceTextureIndex; }
 			vec3 getPrecomputedPower() const { return _precomputedPower; }
@@ -42,8 +43,10 @@ namespace atta
 			float luminance(vec3 rgb);
 
 			int _textureIndex;
-			int _pdfTextureIndex;
+			int _cubeMapTextureIndex;
 			int _irradianceTextureIndex;
+
+			int _pdfTextureIndex;
 			vec3 _precomputedPower;
 			vec3 _radiance;
 			float _worldRadius;

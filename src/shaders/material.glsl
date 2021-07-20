@@ -9,23 +9,23 @@
 
 const uint MATERIAL_TYPE_NONE		 	= 0;
 const uint MATERIAL_TYPE_DIFFUSE	 	= 1;
-const uint MATERIAL_TYPE_MIRROR	 		= 2;
-const uint MATERIAL_TYPE_METAL	 		= 3;
-const uint MATERIAL_TYPE_DISNEY	 		= 4;
-const uint MATERIAL_TYPE_UNREAL_ENGINE_4= 5;
-const uint MATERIAL_TYPE_UBER			= 6;
-const uint MATERIAL_TYPE_GLASS			= 7;
-const uint MATERIAL_TYPE_SUBSTRATE		= 8;
+const uint MATERIAL_TYPE_UBER			= 2;
+//const uint MATERIAL_TYPE_MIRROR	 		= 2;
+//const uint MATERIAL_TYPE_METAL	 		= 3;
+//const uint MATERIAL_TYPE_DISNEY	 		= 4;
+//const uint MATERIAL_TYPE_UNREAL_ENGINE_4= 5;
+//const uint MATERIAL_TYPE_GLASS			= 7;
+//const uint MATERIAL_TYPE_SUBSTRATE		= 8;
 
 struct Material 
 {
 	// Support to up to 8 materials
-	uint type[1];
+	uint type;
 
 	// General data about the material
-	int datai[16];
-	float dataf[16];
-	vec4 datav[8];
+	int datai[4];
+	float dataf[4];
+	vec4 datav[2];
 };
 
 //---------- Data description ----------//
