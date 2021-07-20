@@ -81,8 +81,6 @@ namespace atta
 	{
 		while(!_window->shouldClose() && !_shouldFinish && !_ui->shouldClose())
 		{
-			LocalEvaluator eval("WorkerGui->render");
-
 			if(_runBeforeWorkerGuiRender)
 				_runBeforeWorkerGuiRender(this);
 			_cameraUpdated = _modelViewController->updateCamera(0.1);

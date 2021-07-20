@@ -1,20 +1,10 @@
 #version 460
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_GOOGLE_include_directive : require
-#include "../../uniformBufferObject.glsl"
+#include "../uniformBufferObject.glsl"
 
 layout(binding = 0) readonly uniform UniformBufferObjectStruct { UniformBufferObject ubo; };
-layout(location = 0) out vec3 outUVW;
-
-//vec3(1.0, 1.0, -1.0),
-//vec3(1.0, -1.0, -1.0),
-//vec3(1.0, 1.0, 1.0),
-//vec3(1.0, -1.0, 1.0),
-//vec3(-1.0, 1.0, -1.0),
-//vec3(-1.0, -1.0, -1.0),
-//vec3(-1.0, 1.0, 1.0),
-//vec3(-1.0, -1.0, 1.0),
-//
+layout(location = 0) out vec3 outPos;
 
 vec3 positions[36] = vec3[](
 	vec3(1.0, 1.0, -1.0),
@@ -63,8 +53,8 @@ vec3 positions[36] = vec3[](
 void main() 
 {
 	vec3 inPos = positions[gl_VertexIndex];
-	outUVW = inPos;
-	outUVW.xy *= -1.0;
+	outPos = inPos;
+	outPos.xy *= -1.0;
 
 	mat4 view = ubo.viewMat;
 	view[3][0] = 0;

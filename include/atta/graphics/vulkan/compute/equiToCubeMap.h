@@ -1,11 +1,11 @@
 //--------------------------------------------------
 // Atta Graphics
-// equiToCubemap.h
+// equiToCubeMap.h
 // Date: 2021-07-11
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_VULKAN_COMPUTE_EQUI_TO_CUBEMAP_H
-#define ATTA_GRAPHICS_VULKAN_COMPUTE_EQUI_TO_CUBEMAP_H
+#ifndef ATTA_GRAPHICS_VULKAN_COMPUTE_EQUI_TO_CUBE_MAP_H
+#define ATTA_GRAPHICS_VULKAN_COMPUTE_EQUI_TO_CUBE_MAP_H
 
 #include <memory>
 #include <vector>
@@ -17,7 +17,7 @@
 
 namespace atta::vk::compute
 {
-	class EquiToCubemap
+	class EquiToCubeMap
 	{
 		public:
 			struct CreateInfo
@@ -26,8 +26,8 @@ namespace atta::vk::compute
 				std::shared_ptr<vk::CommandPool> commandPool;
 				std::shared_ptr<vk::Texture> input;
 			};
-			EquiToCubemap(CreateInfo info);
-			~EquiToCubemap();
+			EquiToCubeMap(CreateInfo info);
+			~EquiToCubeMap();
 
 			void compute();
 			std::shared_ptr<vk::Texture> getOutput() const { return _output; }
@@ -44,4 +44,4 @@ namespace atta::vk::compute
 			VkPipeline _pipeline;
 	};
 }
-#endif// ATTA_GRAPHICS_VULKAN_COMPUTE_EQUI_TO_CUBEMAP_H
+#endif// ATTA_GRAPHICS_VULKAN_COMPUTE_EQUI_TO_CUBE_MAP_H

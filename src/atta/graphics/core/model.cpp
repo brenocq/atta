@@ -35,7 +35,7 @@ namespace atta
 		}
 
 		//----- Populate model materials -----//
-		if(info.material.type[0] != Material::MATERIAL_TYPE_NONE)
+		if(info.material.type != Material::MATERIAL_TYPE_NONE)
 			_materials["atta::material"] = info.material;
 		else
 		{

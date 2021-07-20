@@ -40,13 +40,14 @@ namespace atta
 			// Create another texture with the operation
 			enum Process {
 				PROCESS_NONE = 0,
-				PROCESS_CUBEMAP,// Generate cubemap texture using this as input (equirectangular to cubemap)
+				PROCESS_CUBE_MAP,// Generate cubemap texture (equirectangular to cubemap)
 				PROCESS_ENV_IRRADIANCE,// Generate convoluted cubemap texture
 			};
 
 			struct TextureInfo
 			{
 				int textureId;
+				bool isCubeMap = false;
 				Type type=TYPE_NONE;
 				Format format=FORMAT_NONE;
 				std::pair<Process, int> process;// Texture that will be processed to generate this texture
@@ -83,8 +84,10 @@ namespace atta
 			static size_t sizeInBytes(Format format) { return get()._sizeInBytes.at(format); }
 			static std::vector<TextureInfo>& textureInfos() { return get()._textureInfos; }
 
+			static std::shared_ptr<vk::Texture> getCubeMapTextureById(int id) { return get().getCubeMapTextureByIdImpl(id); }
+
 		private:
-			Texture(){};
+			Texture(): _lastId(-1), _lastIdCubeMap(-1){};
 			~Texture(){};
 			Texture(const Texture&) = delete;
   			Texture& operator=(const Texture&) = delete;
@@ -93,8 +96,11 @@ namespace atta
 			int fromBufferImpl(const void* data, unsigned width, unsigned height, Format format);
 			int addTextureProcessImpl(size_t id, Process process);
 			void updateTextureImpl(int textureIndex);
+			std::shared_ptr<vk::Texture> getCubeMapTextureByIdImpl(int id);
 
 			std::vector<TextureInfo> _textureInfos;
+			int _lastId;
+			int _lastIdCubeMap;
 
 			const std::map<Format, VkFormat> _toVulkan = 
 			{

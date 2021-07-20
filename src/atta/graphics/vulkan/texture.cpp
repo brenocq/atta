@@ -112,28 +112,20 @@ namespace atta::vk
 	//----------------------------------------//
 	//------------ Empty texture -------------//
 	//----------------------------------------//
-	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size, VkFormat format, VkImageUsageFlags usage):
-		_device(device), _commandPool(commandPool), _arrayLayers(1), _editable(false)
+	Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkExtent2D size, VkFormat format, VkImageUsageFlags usage, bool isCubemap):
+		_device(device), _commandPool(commandPool), _arrayLayers(isCubemap?6:1), _editable(false)
 	{
 		_width = size.width;
 		_height = size.height;
 		_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(_width, _height)))) + 1;
 
 		_size = _width * _height * 4;
-		//std::vector<uint8_t> pixels(_size);
-		//StagingBuffer* stagingBuffer = new StagingBuffer(_device, pixels.data(), _size);
-
-		_image = std::make_shared<Image>(_device, _width, _height, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels);
+		_image = std::make_shared<Image>(_device, _width, _height, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _mipLevels, VK_SAMPLE_COUNT_1_BIT, isCubemap);
 
 		transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		//copyBufferToImage(stagingBuffer->handle(), static_cast<uint32_t>(_width), static_cast<uint32_t>(_height));
-		// Transition to read only while generating mipmaps
 		generateMipmaps();
 
-		//delete stagingBuffer;
-		//stagingBuffer = nullptr;
-
-		_imageView = std::make_shared<ImageView>(_device, _image->handle(), format, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels);
+		_imageView = std::make_shared<ImageView>(_device, _image->handle(), format, VK_IMAGE_ASPECT_COLOR_BIT, _mipLevels, isCubemap);
 		_sampler = std::make_shared<Sampler>(_device, _mipLevels);
 	}
 

@@ -1,11 +1,11 @@
 //--------------------------------------------------
 // Atta Rasterization Renderer GLSL
-// unrealEngine4.glsl
+// uber.glsl
 // Date: 2021-03-04
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_RAST_MATERIALS_UNREAL_ENGINE_4_GLSL
-#define ATTA_RAST_MATERIALS_UNREAL_ENGINE_4_GLSL
+#ifndef ATTA_RAST_MATERIALS_UBER_GLSL
+#define ATTA_RAST_MATERIALS_UBER_GLSL
 #include "base.glsl"
 #include "../lights/light.glsl"
 
@@ -13,7 +13,7 @@
 // [1] https://blog.selfshadow.com/publications/s2015-shading-course/burley/s2015_pbs_disney_bsdf_notes.pdf
 // [2] https://learnopengl.com/PBR/Theory
 
-vec3 Material_UnrealEngine4_computeColor(Material material, vec3 wi, vec3 wo)
+vec3 Material_Uber_computeColor(Material material, vec3 wi, vec3 wo)
 {
 	vec2 uv = inTexCoord;
 	// Parameters
@@ -53,7 +53,7 @@ vec3 Material_UnrealEngine4_computeColor(Material material, vec3 wi, vec3 wo)
 	return kD*albedo*invPi + specular;
 }
 
-vec3 Material_UnrealEngine4_IBL(Material material, vec3 n, vec3 v, Light light)
+vec3 Material_Uber_IBL(Material material, vec3 n, vec3 v, Light light)
 {
 	vec3 wi;
 	vec3 irradiance = Light_sampleLi(light, wi);
@@ -92,4 +92,4 @@ vec3 Material_UnrealEngine4_IBL(Material material, vec3 n, vec3 v, Light light)
     return (kD * diffuse + specular) * ao;
 }
 
-#endif// ATTA_RAST_MATERIALS_UNREAL_ENGINE_4_GLSL
+#endif// ATTA_RAST_MATERIALS_UBER_GLSL

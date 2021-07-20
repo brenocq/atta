@@ -20,7 +20,7 @@ void main()
 	Material m = materials[inMaterialIndex];
 
 	// TODO only diffuse material supported
-	if(m.type[0] == MATERIAL_TYPE_DIFFUSE)
+	if(m.type == MATERIAL_TYPE_DIFFUSE)
 	{
 		outFragColor = m.datai[0]==-1 ? vec4(m.datav[0].xyz, 1) : texture(textures[m.datai[0]], inTexCoord).rgba;
 	}

@@ -149,7 +149,7 @@ namespace atta::rt::vk
 		const atta::vk::ShaderModule missShader(_device, "/usr/include/atta/assets/shaders/rayTracing/rayTracing.rmiss.spv");
 		const atta::vk::ShaderModule missShadowShader(_device, "/usr/include/atta/assets/shaders/rayTracing/rayTracingShadow.rmiss.spv");
 		const atta::vk::ShaderModule diffuseCHitShader(_device, "/usr/include/atta/assets/shaders/rayTracing/hitShaders/diffuse.rchit.spv");
-		const atta::vk::ShaderModule disneyCHitShader(_device, "/usr/include/atta/assets/shaders/rayTracing/hitShaders/disney.rchit.spv");
+		//const atta::vk::ShaderModule disneyCHitShader(_device, "/usr/include/atta/assets/shaders/rayTracing/hitShaders/disney.rchit.spv");
 
 		std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 		{
@@ -157,7 +157,7 @@ namespace atta::rt::vk
 			missShader.createShaderStage(VK_SHADER_STAGE_MISS_BIT_KHR),
 			missShadowShader.createShaderStage(VK_SHADER_STAGE_MISS_BIT_KHR),
 			diffuseCHitShader.createShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
-			disneyCHitShader.createShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+			//disneyCHitShader.createShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		};
 
 		// Shader groups
@@ -197,14 +197,14 @@ namespace atta::rt::vk
 		diffuseHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
 		diffuseHitGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
 
-		VkRayTracingShaderGroupCreateInfoKHR disneyHitGroupInfo = {};
-		disneyHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-		disneyHitGroupInfo.pNext = nullptr;
-		disneyHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
-		disneyHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
-		disneyHitGroupInfo.closestHitShader = _disneyHitGroupIndex = 4;
-		disneyHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-		disneyHitGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
+		//VkRayTracingShaderGroupCreateInfoKHR disneyHitGroupInfo = {};
+		//disneyHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+		//disneyHitGroupInfo.pNext = nullptr;
+		//disneyHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
+		//disneyHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
+		//disneyHitGroupInfo.closestHitShader = _disneyHitGroupIndex = 4;
+		//disneyHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
+		//disneyHitGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
 
 		std::vector<VkRayTracingShaderGroupCreateInfoKHR> groups =
 		{
@@ -212,7 +212,7 @@ namespace atta::rt::vk
 			missGroupInfo, 
 			missShadowGroupInfo, 
 			diffuseHitGroupInfo, 
-			disneyHitGroupInfo, 
+			//disneyHitGroupInfo, 
 		};
 
 		// Create graphic pipeline

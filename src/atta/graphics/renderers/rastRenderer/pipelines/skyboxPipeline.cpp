@@ -48,9 +48,6 @@ namespace atta::vk
 		//---------- Fixed functions ----------//
 		
 		// Vertex input
-		auto bindingDescription = Vertex::getBindingDescription();
-		auto attributeDescriptions = Vertex::getAttributeDescriptions();
-
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertexInputInfo.vertexBindingDescriptionCount = 0;
@@ -173,10 +170,10 @@ namespace atta::vk
 				if(light->getType() == "InfiniteLight")
 				{
 					std::shared_ptr<InfiniteLight> l = std::static_pointer_cast<InfiniteLight>(light);
-					int texIndex = l->getBlurSky() ? l->getIrradianceTextureIndex() : l->getTextureIndex();
+					int texIndex = /*l->getBlurSky() ? l->getIrradianceTextureIndex() :*/ l->getCubeMapTextureIndex();
 					if(texIndex==-1)
 						continue;
-					std::shared_ptr<vk::Texture> texture = atta::Texture::textureInfos()[texIndex].vkTexture.lock();
+					std::shared_ptr<vk::Texture> texture = atta::Texture::getCubeMapTextureById(texIndex);
 					VkDescriptorImageInfo imageInfo;
 					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 					imageInfo.imageView = texture->getImageView()->handle();
@@ -235,9 +232,7 @@ namespace atta::vk
 		{
 			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->handle(), 0, 1, &_descriptorSetManager->getDescriptorSets()->handle()[imageIndex], 0, nullptr);
-			vkCmdDraw(commandBuffer, 6, 1, 0, 0);
-		}else{
-			Log::warning("SkyboxPipeline", "Could not find env map texture");
+			vkCmdDraw(commandBuffer, 36, 1, 0, 0);
 		}
 	}
 }
