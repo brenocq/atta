@@ -208,9 +208,9 @@ namespace atta::peripheral
 		// Get information about the file
         if(stat(_deviceName.c_str(), &st) == -1)
 		{
-			Log::error("peripheral::Camera", "Cannot identify '$0' ($1)",
+			Log::warning("peripheral::Camera", "Cannot identify '$0' ($1)",
 				_deviceName, errno);
-            exit(1);
+            //exit(1);
         }
 
 		// Check if it is a device (video is a character device file)

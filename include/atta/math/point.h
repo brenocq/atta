@@ -143,15 +143,15 @@ namespace atta
 		return point3<T>(std::max(p1.x, p2.x), std::max(p1.y, p2.y));
 	}
 
-	typedef point3<float> pnt3;
-	typedef point3<float> pnt3f;
-	typedef point3<double> pnt3d;
-	typedef point3<int> pnt3i;
+	using pnt3 = point3<float>;
+	using pnt3f = point3<float>;
+	using pnt3d = point3<double>;
+	using pnt3i = point3<int>;
 
-	typedef point2<float> pnt2;
-	typedef point2<float> pnt2f;
-	typedef point2<double> pnt2d;
-	typedef point2<int> pnt2i;
+	using pnt2 = point2<float>;
+	using pnt2f = point2<float>;
+	using pnt2d = point2<double>;
+	using pnt2i = point2<int>;
 }
 
 #endif// ATTA_MATH_POINT_H
