@@ -832,25 +832,25 @@ namespace atta
 	template <typename T, typename U>
 	inline T dot(const vector<T> &v1, const vector<U> &v2);
 
-	typedef vector2<float> vec2;
-	typedef vector2<float> vec2f;
-	typedef vector2<double> vec2d;
-	typedef vector2<int> vec2i;
+	using vec2 = vector2<float>;
+	using vec2f = vector2<float>;
+	using vec2d = vector2<double>;
+	using vec2i = vector2<int>;
 
-	typedef vector3<float> vec3;
-	typedef vector3<float> vec3f;
-	typedef vector3<double> vec3d;
-	typedef vector3<int> vec3i;
+	using vec3 = vector3<float>;
+	using vec3f = vector3<float>;
+	using vec3d = vector3<double>;
+	using vec3i = vector3<int>;
 
-	typedef vector4<float> vec4;
-	typedef vector4<float> vec4f;
-	typedef vector4<double> vec4d;
-	typedef vector4<int> vec4i;
+	using vec4 = vector4<float>;
+	using vec4f = vector4<float>;
+	using vec4d = vector4<double>;
+	using vec4i = vector4<int>;
 
-	typedef vector<float> vec;
-	typedef vector<float> vecf;
-	typedef vector<double> vecd;
-	typedef vector<int> veci;
+	using vec = vector<float>;
+	using vecf = vector<float>;
+	using vecd = vector<double>;
+	using veci = vector<int>;
 
 }
 

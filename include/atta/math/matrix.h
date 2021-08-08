@@ -380,9 +380,9 @@ namespace atta
 		return mat4(mat3(1.0f) + sin(angle)*Jw + (1-cos(angle))*(Jw*Jw));
 	}
 
-	typedef matrix<float> mat;
-	typedef matrix<float> matf;
-	typedef matrix<double> matd;
-	typedef matrix<int> mati;
+	using mat =  matrix<float>;
+	using matf = matrix<float>;
+	using matd = matrix<double>;
+	using mati = matrix<int>;
 }
 #endif// ATTA_MATH_MATRIX_H
