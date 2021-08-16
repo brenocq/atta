@@ -1,7 +1,0 @@
-@PACKAGE_INIT@
-
-get_filename_component(SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-include(${SELF_DIR}/attacore-targets.cmake)
-
-set(ATTA_INCLUDE_DIRS "@PACKAGE_ATTA_INCLUDE_LOCATION@")
-set(ATTA_LIBRARIES "@PACKAGE_ATTA_LIB_LOCATION@/libattacore.a")

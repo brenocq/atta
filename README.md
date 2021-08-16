@@ -12,8 +12,9 @@ Atta is a robot simulator for 2D and 3D applications. For now, the core is still
  - **Robotics:** After finishing the basics of the three above, I will start to implement the sensors/actuators/common algorithms.
  - **Examples:** There will be an example repository that is still in development.
 
-Today only Linux is supported, but I plan to add support for Windows in the following months.\
 This project is not yet well documented, I am creating a website in parallel to document the source code and project examples, but it is not yet available.
+
+** Now I am refactoring the hole atta software architecture to be able to perform high-performance simulations and be easier to add new features (decoupling components), please check the 0.0.1.0 branch if you want to test the previous version**
 
 ## Installation (Linux)
 ### Download Vulkan SDK
