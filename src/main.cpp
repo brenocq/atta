@@ -1,33 +1,29 @@
 #include <iostream>
-#include <atta/atta.h>
-#include <atta/helpers/log.h>
-//#include "examples/atta.h"
+#include "atta/core/assert.h"
+#include "atta/core/log.h"
 
-void welcome();
-
-int main()
+int main(int argc, char *argv[])
 {
-	welcome();
+	if(argc == 1)
+	{
 
-	atta::Atta::CreateInfo attaInfo {
-		.dimensionMode = atta::DIM_MODE_3D,
-		.physicsMode = atta::PHY_MODE_DISABLED,
-		.createWindow = true,
-	};
-	atta::Atta atta(attaInfo);
-	atta.run();
+	}
+	else
+	{
+		if(std::string(argv[1]) == "--version")
+		{
+			std::cout << "Atta Simulator 0.0.2.0" <<
+				"\nThis project is licensed under the MIT License\n";
+		}
+	}
+
+	int x = 1;
+	ATTA_ASSERT(x == 2);
+	LOG_VERBOSE("main", "T[g]e[r]s[]ting: $0", 1);
+	LOG_DEBUG("main", "T[g]e[r]s[]ting: $0", 1);
+	LOG_INFO("main", "T[g]e[r]s[]ting: $0", 1);
+	LOG_WARN("main", "T[g]e[r]s[]ting: $0", 1);
+	LOG_ERROR("main", "T[g]e[r]s[]ting: $0", 1);
+
 	return EXIT_SUCCESS;
-}
-
-void welcome()
-{
-	std::cout << 
-		COLOR_BOLD_GREEN << 
-		"    ┌───────────────────────────────────┐\n"
-		"    │░░░░░░░░░░█▀█░▀█▀░▀█▀░█▀█░░░░░░░░░░│\n"
-		"    │░░░░░░░░░░█▀█░░█░░░█░░█▀█░░░░░░░░░░│\n"
-		"    │░▀░░▀░░▀░░▀░▀░░▀░░░▀░░▀░▀░░▀░░▀░░▀░│\n"
-		"    └───────────────────────────────────┘\n" <<
-		"Welcome to Atta Robot Simulator! - by BrenoCQ\n\n"
-		COLOR_RESET;
 }

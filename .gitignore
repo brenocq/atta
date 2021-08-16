@@ -5,9 +5,5 @@
 # Compiled shaders
 *.spv
 
-# Object files
-*.o
-
-# Program
-bin/simulator
-
+# Build
+build/
