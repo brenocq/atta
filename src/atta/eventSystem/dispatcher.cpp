@@ -9,12 +9,12 @@
 namespace atta
 {
 
-	void Dispatcher::subscribe(const EventType& type, Slot&& slot)
+	void Dispatcher::subscribe(const EventType& type, Callback&& callback)
 	{
-		_observers[type].push_back(slot);
+		_observers[type].push_back(callback);
 	}
 
-	void Dispatcher::post(const Event& event) const
+	void Dispatcher::publish(Event& event) const
 	{
 		EventType type = event.getType();
 

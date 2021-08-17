@@ -34,7 +34,7 @@ namespace atta
 		virtual const char* getName() const = 0;
 		virtual std::string toString() const { return getName(); }
 
-		bool handled;
+		bool handled = false;
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const Event& e)

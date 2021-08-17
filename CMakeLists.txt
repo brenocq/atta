@@ -25,6 +25,7 @@ endif()
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "" FORCE)
 set(TESTS_OUTPUT_DIR ${EXECUTABLE_OUTPUT_PATH}/tests CACHE INTERNAL "" FORCE)
+set(ATTA_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 
 ########## Precompiled Headers ##########
 list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
@@ -44,6 +45,6 @@ add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp" "${CMAKE_CURRENT_
 target_compile_definitions(atta PRIVATE ${ATTA_DEFINITIONS})
 target_precompile_headers(atta PRIVATE ${ATTA_PCH})
 target_include_directories(atta PUBLIC
-  src
+	${ATTA_PATH}/src
 )
 target_compile_definitions(atta PRIVATE ${ATTA_DEFINITIONS})

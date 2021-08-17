@@ -14,13 +14,13 @@ namespace atta
 	class Dispatcher
 	{
 	public:
-		using Slot = std::function<void(const Event&)>;
+		using Callback = std::function<void(Event&)>;
 
-		void subscribe(const EventType& type, Slot&& slot);
-  		void post(const Event& event) const;
+		void subscribe(const EventType& type, Callback&& callback);
+  		void publish(Event& event) const;
 
 	private:
-		std::unordered_map<EventType, std::vector<Slot>> _observers;
+		std::unordered_map<EventType, std::vector<Callback>> _observers;
 	};
 
 }
