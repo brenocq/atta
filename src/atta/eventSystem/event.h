@@ -9,7 +9,6 @@
 
 namespace atta
 {
-
 	enum class EventType {
 		NONE = 0,
 		// Window
