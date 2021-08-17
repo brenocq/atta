@@ -9,7 +9,7 @@ jobs:
     name: ${{ matrix.config.name }} - Build and Test
     runs-on: ${{ matrix.config.os }}
     strategy:
-      fail-test: false
+      fail-fest: false
       matrix:
         config:
         - {

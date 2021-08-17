@@ -16,7 +16,7 @@ namespace atta
 
 	void Dispatcher::post(const Event& event) const
 	{
-		EventyType type = event.getType();
+		EventType type = event.getType();
 
 		// If there are no observers
 		if(_observers.find(type) == _observers.end())
