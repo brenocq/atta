@@ -12,6 +12,7 @@
 #include <memory>
 #include <functional>
 #include <iostream>
+#include <unordered_map>
 
 #include "core/common.h"
 #include "core/log.h"

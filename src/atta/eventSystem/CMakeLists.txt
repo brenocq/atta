@@ -18,4 +18,7 @@ set_target_properties(
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${TESTS_OUTPUT_DIR}
 )
+target_include_directories(atta_event_system_test PUBLIC
+	${ATTA_PATH}/src
+)
 gtest_discover_tests(atta_event_system_test)
