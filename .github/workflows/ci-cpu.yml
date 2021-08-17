@@ -9,7 +9,7 @@ jobs:
     name: ${{ matrix.config.name }} - Build and Test
     runs-on: ${{ matrix.config.os }}
     strategy:
-      fail-fest: false
+      fail-fast: false
       matrix:
         config:
         - {
@@ -63,5 +63,15 @@ jobs:
         ninja --version
         cmake --version
 
+    - name: Configure
+      run: |
+        cd build
+        cmake ..
+
     - name: Build
       run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
+
+    - name: Test (Ubuntu/MacOS)
+      if: ${{ startsWith(matrix.config.os, 'ubuntu') || startsWith(matrix.config.os, 'macos') }}
+      run: ctest
+      working-directory: build
