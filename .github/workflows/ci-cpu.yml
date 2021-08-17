@@ -1,0 +1,67 @@
+name: Atta CI CPU
+on: [push, pull_request, release]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }} - Build and Test
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-test: false
+      matrix:
+        config:
+        - {
+          name: "Ubuntu Latest gcc",
+          os: ubuntu-latest,
+          cc: "gcc",
+          cxx: "g++",
+          build_type: "Release"
+        }
+        - {
+          name: "MacOS Latest clang",
+          os: macos-latest,
+          cc: "clang",
+          cxx: "clang++",
+          build_type: "Release"
+        }
+        - {
+          name: "Windows Latest gcc",
+          os: windows-latest,
+          cc: "gcc",
+          cxx: "g++",
+          build_type: "Release"
+        }
+
+    steps:
+    - name: Checkout atta
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Install dependencies on ubuntu
+      if: startsWith(matrix.config.os, 'ubuntu')
+      run: |
+        sudo apt-get update
+        sudo apt-get install ninja-build cmake
+        ninja --version
+        cmake --version
+        gcc --version
+
+    - name: Install dependencies on macos
+      if: startsWith(matrix.config.os, 'macos')
+      run: |
+        brew install cmake ninja
+        ninja --version
+        cmake --version
+
+    - name: Install dependencies on windows
+      if: startsWith(matrix.config.os, 'windows')
+      run: |
+        choco install ninja cmake
+        ninja --version
+        cmake --version
+
+    - name: Build
+      run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
