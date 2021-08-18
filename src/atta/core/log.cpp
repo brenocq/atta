@@ -4,7 +4,7 @@
 // Date: 2021-08-16
 // By Breno Cunha Queiroz
 //----------------------------------------
-#include "log.h"
+#include <atta/core/log.h>
 
 namespace atta
 {

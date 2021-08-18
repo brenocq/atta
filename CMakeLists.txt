@@ -39,6 +39,7 @@ enable_testing()
 
 ########## Subsystems ##########
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/eventSystem)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/core)
 
 ########## Extern ##########
 add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/core/log.cpp")

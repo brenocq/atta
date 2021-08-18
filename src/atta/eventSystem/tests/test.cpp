@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Event System
+// Atta Event System Tests
 // test.cpp
 // Date: 2021-08-17
 // By Breno Cunha Queiroz
@@ -83,11 +83,11 @@ TEST(EventSystemTest, MultipleEventsObservers)
 	// Event will be discarted because no one was subscribed to it, will not be handled
 	dispatcher.publish(e0);
 
-	// observer0 should not receive testEvents, so its sum stays in 0
+	// The observer0 should not receive testEvents, so its sum stays in 0
 	dispatcher.subscribe(EventType::WINDOW_MOUSE_MOVE, std::bind(&TestObserver::handle, &observer0, _1));
-	// observer1 receives all testEvents after subscription
+	// The observer1 receives all testEvents after subscription
 	dispatcher.subscribe(EventType::NONE, std::bind(&TestObserver::handle, &observer1, _1));
-	// because observer1 will consume the events, observer2 will not receive any event
+	// Because observer1 will consume the events, observer2 will not receive any event
 	dispatcher.subscribe(EventType::NONE, std::bind(&TestObserver::handle, &observer2, _1));
 
 	// Publish more two events, 2+4=6
