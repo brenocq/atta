@@ -7,7 +7,10 @@ set(ATTA_EVENT_SYSTEM_SOURCE
 add_library(atta_event_system_lib STATIC
 	${ATTA_EVENT_SYSTEM_SOURCE}
 )
-target_precompile_headers(atta_event_system_lib PRIVATE ${ATTA_PCH})
+target_precompile_headers(atta_event_system_lib PUBLIC ${ATTA_PCH})
+target_include_directories(atta_event_system_lib PUBLIC
+	${ATTA_PATH}/src
+)
 
 ########## Testing ##########
 add_executable(atta_event_system_test tests/test.cpp)
@@ -17,8 +20,5 @@ set_target_properties(
     atta_event_system_test 
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${TESTS_OUTPUT_DIR}
-)
-target_include_directories(atta_event_system_test PUBLIC
-	${ATTA_PATH}/src
 )
 gtest_discover_tests(atta_event_system_test)
