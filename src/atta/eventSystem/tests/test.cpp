@@ -14,7 +14,7 @@ class TestEvent : public Event
 {
 public:
 	TestEvent(int value): _value(value) {}
-  	~TestEvent() {};
+  	~TestEvent() {}
 
 	EventType getType() const { return EventType::NONE; }
 	const char* getName() const { return "TestEvent"; }
@@ -46,7 +46,7 @@ private:
 	int _sum;
 };
 
-TEST(EventSystemTest, Publish)
+TEST(EventSystem, Publish)
 {
 	TestEvent e {2};
 	Dispatcher dispatcher;
@@ -56,7 +56,7 @@ TEST(EventSystemTest, Publish)
 	EXPECT_EQ(e.getValue(), 2);
 }
 
-TEST(EventSystemTest, Subscribe)
+TEST(EventSystem, Subscribe)
 {
 	using namespace std::placeholders;
 
@@ -68,7 +68,7 @@ TEST(EventSystemTest, Subscribe)
 	EXPECT_EQ(observer.getSum(), 0);
 }
 
-TEST(EventSystemTest, MultipleEventsObservers)
+TEST(EventSystem, MultipleEventsObservers)
 {
 	using namespace std::placeholders;
 

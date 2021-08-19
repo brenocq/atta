@@ -24,7 +24,6 @@ endif()
 ########## Output Directories ##########
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "" FORCE)
-set(TESTS_OUTPUT_DIR ${EXECUTABLE_OUTPUT_PATH}/tests CACHE INTERNAL "" FORCE)
 set(ATTA_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 
 ########## Precompiled Headers ##########
@@ -33,19 +32,43 @@ list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
 ########## Extern ##########
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/extern)
 
+########## Macros ##########
+macro(atta_add_libs)
+	foreach(_lib ${ARGN})
+		list(APPEND ATTA_LIBS ${_lib})
+	endforeach()
+	set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)
+endmacro()
+
+macro(atta_add_tests)
+	foreach(_test ${ARGN})
+		list(APPEND ATTA_TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_test}")
+	endforeach()
+    set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
+endmacro()
+
+macro(atta_target_common target)
+	target_precompile_headers(${target} PUBLIC ${ATTA_PCH})
+	target_include_directories(${target} PUBLIC
+		${ATTA_PATH}/src
+	)
+endmacro()
+
+########## Subsystems ##########
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/core)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/eventSystem)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/serviceLocator)
+
 ########## Testing ##########
 include(GoogleTest)
 enable_testing()
 
-########## Subsystems ##########
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/eventSystem)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/core)
+add_executable(atta_test ${ATTA_TEST_SOURCES})
+target_link_libraries(atta_test PRIVATE ${ATTA_LIBS} gtest_main)
+target_compile_definitions(atta_test PRIVATE ${ATTA_DEFINITIONS})
+gtest_discover_tests(atta_test)
 
 ########## Extern ##########
 add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/core/log.cpp")
 target_compile_definitions(atta PRIVATE ${ATTA_DEFINITIONS})
-target_precompile_headers(atta PRIVATE ${ATTA_PCH})
-target_include_directories(atta PUBLIC
-	${ATTA_PATH}/src
-)
-target_compile_definitions(atta PRIVATE ${ATTA_DEFINITIONS})
+target_link_libraries(atta PRIVATE ${ATTA_LIBS})

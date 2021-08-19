@@ -8,7 +8,6 @@
 
 namespace atta
 {
-
 	void Dispatcher::subscribe(const EventType& type, Callback&& callback)
 	{
 		_observers[type].push_back(callback);
@@ -30,5 +29,4 @@ namespace atta
 				return;
 		}
 	}
-
 }
