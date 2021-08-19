@@ -9,14 +9,14 @@
 
 using namespace atta;
 
-TEST(CoreStringIdTest, ConstexprLiteral)
+TEST(Core_StringId, ConstexprLiteral)
 {
 	EXPECT_EQ(SID("test string"), "test string"_id);
 	EXPECT_NE(SID("test"), SID("string"));
 	EXPECT_NE("test"_id, "string"_id);
 }
 
-TEST(CoreStringIdTest, StringTable)
+TEST(Core_StringId, StringTable)
 {
 	StringId sid0 {"test0"};
 	StringId sid1 {"test1"};

@@ -41,7 +41,6 @@ namespace atta
 	{
 		return os << e.toString();
 	}
-
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENT_H

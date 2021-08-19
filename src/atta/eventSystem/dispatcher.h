@@ -6,11 +6,10 @@
 //--------------------------------------------------
 #ifndef ATTA_EVENT_SYSTEM_DISPATCHER_H
 #define ATTA_EVENT_SYSTEM_DISPATCHER_H
-#include "event.h"
+#include <atta/eventSystem/event.h>
 
 namespace atta
 {
-
 	class Dispatcher
 	{
 	public:
@@ -22,7 +21,6 @@ namespace atta
 	private:
 		std::unordered_map<EventType, std::vector<Callback>> _observers;
 	};
-
 }
 
 #endif// ATTA_EVENT_SYSTEM_DISPATCHER_H
