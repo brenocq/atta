@@ -6,12 +6,12 @@
 //--------------------------------------------------
 namespace atta
 {
-	constexpr hashId StringId::crc32b(const char* str)
+	constexpr stringHash StringId::crc32b(const char* str)
 	{
 		// Reference: Book Hacker's Delight 2nd Edition
 		const unsigned char* message = (const unsigned char*)(str);
 		int i = 0, j = 0;
-		hashId byte = 0, crc = 0xFFFFFFFF, mask = 0;
+		stringHash byte = 0, crc = 0xFFFFFFFF, mask = 0;
 
 		while(message[i] != 0)
 		{

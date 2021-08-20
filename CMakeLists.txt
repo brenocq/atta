@@ -58,6 +58,7 @@ endmacro()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/core)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/eventSystem)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/serviceLocator)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/memory)
 
 ########## Testing ##########
 include(GoogleTest)

@@ -8,7 +8,7 @@
 
 namespace atta
 {
-	static std::unordered_map<hashId, std::string> stringIdTable;
+	static std::unordered_map<stringHash, std::string> stringIdTable;
 
 	StringId::StringId(std::string str):
 		_id(crc32b(str.c_str()))
@@ -21,7 +21,7 @@ namespace atta
 		return stringIdTable[_id];
 	}
 
-	hashId StringId::getId()
+	stringHash StringId::getId()
 	{
 		return _id;	
 	}
