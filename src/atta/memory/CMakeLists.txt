@@ -18,5 +18,6 @@ atta_add_libs(atta_memory_lib)
 atta_add_tests(
 	"tests/stackAllocator.cpp"
 	"tests/allocatedObject.cpp"
+	"tests/speed.cpp"
 )
 
