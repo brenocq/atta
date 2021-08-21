@@ -11,8 +11,7 @@
 namespace atta
 {
 	// Allocator to objects of variable size. To deallocate can return stack to saved marker.
-	// After performing rollback, the application must not use the freed objects. 
-	// For now, the stackAllocator can't pop objects
+	// Can free the memory using rollback or deallocate
 	class StackAllocator : public Allocator
 	{
 	public:
@@ -21,10 +20,17 @@ namespace atta
 		StackAllocator(size_t size);
 		~StackAllocator();
 
+		// Simplified alloc/free
 		template<typename T>
-		T* allocate(size_t size = 1);
+		T* alloc(size_t size = 1);
 		template<typename T>
-		void free(T* object);
+		void free(T* ptr);
+		template<typename T>
+		void free(T* ptr, size_t size);
+
+		// Default alloc/free
+		void* allocBytes(size_t size, size_t align) override;
+		void freeBytes(void* ptr, size_t size, size_t align) override;
 
 		// Return stack to the marker (free up to the marker)
 		void rollback(Marker marker) { _current = marker; }

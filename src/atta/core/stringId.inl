@@ -6,21 +6,21 @@
 //--------------------------------------------------
 namespace atta
 {
-	constexpr stringHash StringId::crc32b(const char* str)
+	constexpr StringHash StringId::crc32b(const char* str)
 	{
 		// Reference: Book Hacker's Delight 2nd Edition
-		const unsigned char* message = (const unsigned char*)(str);
+		const char* message = str;
 		int i = 0, j = 0;
-		stringHash byte = 0, crc = 0xFFFFFFFF, mask = 0;
+		StringHash byte = 0, crc = 0xFFFFFFFF, mask = 0;
 
 		while(message[i] != 0)
 		{
-			// Get next byte.
-			byte = message[i];            
+			// Get next byte
+			byte = message[i];
 			crc = crc ^ byte;
 			for(j = 7; j >= 0; j--)
 			{
-				// Do eight times.
+				// Do eight times
 				mask = -(crc & 1);
 				crc = (crc >> 1) ^ (0xEDB88320 & mask);
 			}

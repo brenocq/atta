@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
 	}
 
 	int x = 1;
-	ATTA_ASSERT(x == 1);
-	ATTA_ASSERT(x == 1, "Testing");
+	ASSERT(x == 1);
+	ASSERT(x == 1, "Testing");
 	LOG_VERBOSE("main", "T[g]e[r]s[]ting: $0", 1);
 	LOG_DEBUG("main", "T[g]e[r]s[]ting: $0", 1);
 	LOG_INFO("main", "T[g]e[r]s[]ting: $0", 1);

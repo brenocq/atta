@@ -19,6 +19,7 @@ namespace atta
 
 		static constexpr int getHash() { return typeid(T).hash_code(); }
 
+		// TODO Rethink how to set the null service (default service)
 		static T* nullService;
 	};
 }
