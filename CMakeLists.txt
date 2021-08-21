@@ -69,7 +69,7 @@ target_link_libraries(atta_test PRIVATE ${ATTA_LIBS} gtest_main)
 target_compile_definitions(atta_test PRIVATE ${ATTA_DEFINITIONS})
 gtest_discover_tests(atta_test)
 
-########## Extern ##########
+########## Executable ##########
 add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/core/log.cpp")
 target_compile_definitions(atta PRIVATE ${ATTA_DEFINITIONS})
 target_link_libraries(atta PRIVATE ${ATTA_LIBS})

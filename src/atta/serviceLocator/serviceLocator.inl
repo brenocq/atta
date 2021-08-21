@@ -12,8 +12,7 @@ namespace atta
 	template<typename T>
 	void ServiceLocator::provide(T* service)
 	{
-		int hash = T::getHash();
-		_services[hash] = service;
+		_services[T::getHash()] = service;
 	}
 
 	template<typename T>
@@ -29,7 +28,7 @@ namespace atta
 		else
 		{
 			// Register null service and provide it
-			ATTA_DASSERT(Service<T>::nullService != nullptr, "Every service must have a nullService defined");
+			DASSERT(Service<T>::nullService != nullptr, "Every service must have a nullService defined");
 			_services[hash] = Service<T>::nullService;
 			return (const T**)(&_services[hash]);
 		}

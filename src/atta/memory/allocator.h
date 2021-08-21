@@ -14,13 +14,16 @@ namespace atta
 	public:
 		virtual ~Allocator() = default;
 
-		// How many objects to allocate
-		//template<typename T>
-		//virtual T* allocate(size_t size = 1) = 0;
+		// How many bytes to allocate
+		// size: number of bytes
+		// align: byte alignment
+		virtual void* allocBytes(size_t size, size_t align = 0) = 0;
 
-		//// Free object at the pointer
-		//template<typename T>
-		//virtual void free(T* object) = 0;
+		// Free object at the pointer
+		// ptr: ptr at the start
+		// size: number of bytes
+		// align: byte alignment
+		virtual void freeBytes(void* ptr, size_t size, size_t align = 0) = 0;
 	};
 }
 

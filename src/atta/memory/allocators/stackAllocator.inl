@@ -7,23 +7,20 @@
 namespace atta
 {
 	template<typename T>
-	T* StackAllocator::allocate(size_t size)
+	T* StackAllocator::alloc(size_t size)
 	{
-		if(_current + sizeof(T)*size > _size)
-			return nullptr;
-		else
-		{
-			T* ptr = reinterpret_cast<T*>(_memory + _current);
-			_current += sizeof(T)*size;
-			return ptr;
-		}
+		return static_cast<T*>(allocBytes(size*sizeof(T), sizeof(T)));
 	}
 
 	template<typename T>
-	void StackAllocator::free(T* object)
+	void StackAllocator::free(T* ptr)
 	{
-		// Free only if object is at the top of the stack
-		if(reinterpret_cast<uint8_t*>(object+1) == &_memory[_current])
-			_current -= sizeof(T);
+		freeBytes(reinterpret_cast<void*>(ptr), sizeof(T), sizeof(T));
+	}
+
+	template<typename T>
+	void StackAllocator::free(T* ptr, size_t size)
+	{
+		freeBytes(reinterpret_cast<void*>(ptr), sizeof(T)*size, sizeof(T));
 	}
 }

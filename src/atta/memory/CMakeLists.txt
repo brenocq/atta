@@ -1,17 +1,22 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(ATTA_CORE_SOURCE
+set(ATTA_MEMORY_SOURCE
 	memoryManager.cpp
 	allocator.cpp
+	allocatedObject.cpp
 	allocators/stackAllocator.cpp
+	allocators/poolAllocator.cpp
 )
 
 add_library(atta_memory_lib STATIC
-	${ATTA_CORE_SOURCE}
+	${ATTA_MEMORY_SOURCE}
 )
 atta_target_common(atta_memory_lib)
 atta_add_libs(atta_memory_lib)
 
 ########## Testing ##########
-atta_add_tests("tests/allocators.cpp")
+atta_add_tests(
+	"tests/stackAllocator.cpp"
+	"tests/allocatedObject.cpp"
+)
 

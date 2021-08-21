@@ -15,6 +15,9 @@ namespace atta
 	public:
 		PoolAllocator(size_t size);
 		~PoolAllocator();
+
+		void* allocBytes(size_t size, size_t align) override { return nullptr; }
+		void freeBytes(void* ptr, size_t size, size_t align) override {}
 	};
 }
 

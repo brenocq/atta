@@ -10,7 +10,7 @@
 
 namespace atta
 {
-	using stringHash = std::uint32_t;
+	using StringHash = std::uint32_t;
 
 	class StringId
 	{
@@ -20,18 +20,18 @@ namespace atta
 			const std::string& getString();
 			uint32_t getId();
 
-			static constexpr stringHash crc32b(const char* str);
+			static constexpr StringHash crc32b(const char* str);
 		
 		private:
-			stringHash _id;
+			StringHash _id;
 	};
 
-	constexpr stringHash SID(const char* str)
+	constexpr StringHash SID(const char* str)
 	{
 		return StringId::crc32b(str);
 	}
 
-	constexpr stringHash operator""_id(const char* str, std::size_t)
+	constexpr StringHash operator""_id(const char* str, std::size_t)
 	{
 		return StringId::crc32b(str);
 	}
