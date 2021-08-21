@@ -8,130 +8,132 @@
 #include <atta/memory/allocators/stackAllocator.h>
 
 using namespace atta;
-
-class TestObject
+namespace
 {
-public:
-	TestObject(int startVal)
+	class TestObject
 	{
-		x[0] = y[0] = z[0] = startVal;
+	public:
+		TestObject(int startVal)
+		{
+			x[0] = y[0] = z[0] = startVal;
+		}
+
+		uint8_t x[100];
+		uint8_t y[100];
+		uint8_t z[100];
+	};
+
+	TEST(Memory_StackAllocator, Allocate)
+	{
+		StackAllocator stack(1024);
+		int *i0;
+
+		i0 = stack.alloc<int>();
+		*i0 = 10;
+		EXPECT_EQ(*i0, 10);
 	}
 
-	uint8_t x[100];
-	uint8_t y[100];
-	uint8_t z[100];
-};
+	TEST(Memory_StackAllocator, Rollback)
+	{
+		StackAllocator stack(1024);
 
-TEST(Memory_StackAllocator, Allocate)
-{
-	StackAllocator stack(1024);
-	int *i0;
+		// Allocate 2 bytes
+		stack.alloc<uint16_t>();
 
-	i0 = stack.alloc<int>();
-	*i0 = 10;
-	EXPECT_EQ(*i0, 10);
-}
+		StackAllocator::Marker marker = stack.getMarker();
+		// Check if marker is where it should be
+		EXPECT_EQ(marker, sizeof(uint16_t));
 
-TEST(Memory_StackAllocator, Rollback)
-{
-	StackAllocator stack(1024);
+		TestObject* obj0 = stack.alloc<TestObject>();
+		stack.rollback(marker);
+		TestObject* obj1 = stack.alloc<TestObject>();
 
-	// Allocate 2 bytes
-	stack.alloc<uint16_t>();
+		// Check if returned same pointer after rollback
+		EXPECT_EQ(obj0, obj1);
+	}
 
-	StackAllocator::Marker marker = stack.getMarker();
-	// Check if marker is where it should be
-	EXPECT_EQ(marker, sizeof(uint16_t));
+	TEST(Memory_StackAllocator, AllocateFail)
+	{
+		StackAllocator stack(1024);
 
-	TestObject* obj0 = stack.alloc<TestObject>();
-	stack.rollback(marker);
-	TestObject* obj1 = stack.alloc<TestObject>();
+		// Should not be possible to alloc more than the stack supports
+		TestObject* obj = stack.alloc<TestObject>(10);
+		EXPECT_EQ(obj, nullptr);
+	}
 
-	// Check if returned same pointer after rollback
-	EXPECT_EQ(obj0, obj1);
-}
+	TEST(Memory_StackAllocator, Clear)
+	{
+		StackAllocator stack(1024);
 
-TEST(Memory_StackAllocator, AllocateFail)
-{
-	StackAllocator stack(1024);
+		stack.alloc<int>(20);
+		EXPECT_EQ(stack.getMarker(), 20*sizeof(int));
 
-	// Should not be possible to alloc more than the stack supports
-	TestObject* obj = stack.alloc<TestObject>(10);
-	EXPECT_EQ(obj, nullptr);
-}
+		stack.clear();
+		EXPECT_EQ(stack.getMarker(), 0);
+	}
 
-TEST(Memory_StackAllocator, Clear)
-{
-	StackAllocator stack(1024);
+	TEST(Memory_StackAllocator, Free)
+	{
+		StackAllocator stack(1024);
+		int *i0, *i1, *i2;
+		char *c0;
 
-	stack.alloc<int>(20);
-	EXPECT_EQ(stack.getMarker(), 20*sizeof(int));
+		// Allocate
+		i0 = stack.alloc<int>();
+		c0 = stack.alloc<char>();
+		i1 = stack.alloc<int>();
 
-	stack.clear();
-	EXPECT_EQ(stack.getMarker(), 0);
-}
+		// Set values
+		*i0 = 10;
+		*c0 = 'a';
+		*i1 = 20;
 
-TEST(Memory_StackAllocator, Free)
-{
-	StackAllocator stack(1024);
-	int *i0, *i1, *i2;
-	char *c0;
+		// Test values
+		EXPECT_EQ(*i0, 10);
+		EXPECT_EQ(*c0, 'a');
+		EXPECT_EQ(*i1, 20);
 
-	// Allocate
-	i0 = stack.alloc<int>();
-	c0 = stack.alloc<char>();
-	i1 = stack.alloc<int>();
+		// Free
+		stack.free<int>(i1);
+		stack.free<int>(i0);// Will not be freed
+		stack.free<char>(c0);
 
-	// Set values
-	*i0 = 10;
-	*c0 = 'a';
-	*i1 = 20;
+		// Allocate again
+		c0 = stack.alloc<char>();
+		i2 = stack.alloc<int>();
 
-	// Test values
-	EXPECT_EQ(*i0, 10);
-	EXPECT_EQ(*c0, 'a');
-	EXPECT_EQ(*i1, 20);
+		// The values should not have changed
+		EXPECT_EQ(*c0, 'a');
+		EXPECT_EQ(*i2, 20);
+	}
 
-	// Free
-	stack.free<int>(i1);
-	stack.free<int>(i0);// Will not be freed
-	stack.free<char>(c0);
+	TEST(Memory_StackAllocator, Alignment)
+	{
+		GTEST_SKIP();
 
-	// Allocate again
-	c0 = stack.alloc<char>();
-	i2 = stack.alloc<int>();
+		StackAllocator stack(1024);
+		int *i0, *i1;
+		char *c0, *c1;
+		uint16_t *u0;
 
-	// The values should not have changed
-	EXPECT_EQ(*c0, 'a');
-	EXPECT_EQ(*i2, 20);
-}
+		// iiii------------
+		i0 = stack.alloc<int>();
+		EXPECT_EQ(stack.getMarker(), sizeof(int));
 
-TEST(Memory_StackAllocator, Alignment)
-{
-	GTEST_SKIP();
+		// iiiic-----------
+		c0 = stack.alloc<char>();
+		EXPECT_EQ(stack.getMarker(), sizeof(int)+sizeof(char));
 
-	StackAllocator stack(1024);
-	int *i0, *i1;
-	char *c0, *c1;
-	uint16_t *u0;
+		// iiiic-uu--------
+		u0 = stack.alloc<uint16_t>();
+		EXPECT_EQ(stack.getMarker(), 4*sizeof(uint16_t));
 
-	// iiii------------
-	i0 = stack.alloc<int>();
-	EXPECT_EQ(stack.getMarker(), sizeof(int));
+		// iiiic-uuc-------
+		c1 = stack.alloc<char>();
+		EXPECT_EQ(stack.getMarker(), 4*sizeof(uint16_t)+sizeof(char));
 
-	// iiiic-----------
-	c0 = stack.alloc<char>();
-	EXPECT_EQ(stack.getMarker(), sizeof(int)+sizeof(char));
-
-	// iiiic-uu--------
-	u0 = stack.alloc<uint16_t>();
-	EXPECT_EQ(stack.getMarker(), 4*sizeof(uint16_t));
-
-	// iiiic-uuc-------
-	c1 = stack.alloc<char>();
-	EXPECT_EQ(stack.getMarker(), 4*sizeof(uint16_t)+sizeof(char));
-
-	// iiiic-uuc---iiii
-	i1 = stack.alloc<int>();
-	EXPECT_EQ(stack.getMarker(), 4*sizeof(int));
+		// iiiic-uuc---iiii
+		i1 = stack.alloc<int>();
+		EXPECT_EQ(stack.getMarker(), 4*sizeof(int));
+	}
 }

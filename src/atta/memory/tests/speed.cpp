@@ -11,92 +11,103 @@
 #include <atta/memory/allocators/stackAllocator.h>
 
 using namespace atta;
-#define NUM_IT 5000
-#define NUM_OBJ 5000
-
-class TestMem : public AllocatedObject<TestMem, SID("Stack")>
+namespace
 {
-public:
-	TestMem(): x(1), y(1), z(1) {}
-	int x, y, z;
-};
+	constexpr int NUM_IT = 2000;
+	constexpr int NUM_OBJ = 5000;
 
-class TestMemMalloc
-{
-public:
-	TestMemMalloc(): x(1), y(1), z(1) {}
-	int x, y, z;
-};
-
-TEST(Memory_Speed, RegisterAllocator)
-{
-	MemoryManager::registerAllocator(
-		SID("Stack"), 
-		std::static_pointer_cast<Allocator>(std::make_shared<StackAllocator>(sizeof(TestMem)*NUM_OBJ)));
-}
-
-TEST(Memory_Speed, DefaultCpp)
-{
-	TestMemMalloc* a[NUM_OBJ];
-	for(int it = 0; it < NUM_IT; it++)
+	class TestMem : public AllocatedObject<TestMem, SID("Stack")>
 	{
-		for(int i = 0; i < NUM_OBJ; i++)
+	public:
+		TestMem() {}
+		int x, y, z;
+	};
+
+	class TestMemMalloc
+	{
+	public:
+		TestMemMalloc() {}
+		int x, y, z;
+	};
+
+	class Memory_Speed : public ::testing::Test
+	{
+	public:
+		void SetUp()
 		{
-			a[i] = new TestMemMalloc();
+			MemoryManager::registerAllocator(
+				SID("Stack"), 
+				std::static_pointer_cast<Allocator>(std::make_shared<StackAllocator>(sizeof(TestMem)*NUM_OBJ)));
 		}
-		for(int i = NUM_OBJ-1; i >= 0; i--)
+	};
+
+	TEST_F(Memory_Speed, RegisterAllocator)
+	{
+	}
+
+	TEST_F(Memory_Speed, DefaultCpp)
+	{
+		TestMemMalloc* a[NUM_OBJ];
+		for(int it = 0; it < NUM_IT; it++)
 		{
-			delete a[i];
+			for(int i = 0; i < NUM_OBJ; i++)
+			{
+				a[i] = new TestMemMalloc();
+			}
+			for(int i = NUM_OBJ-1; i >= 0; i--)
+			{
+				delete a[i];
+			}
 		}
 	}
-}
 
-TEST(Memory_Speed, StackObj)
-{
-	StackAllocator stack = StackAllocator(sizeof(TestMem)*NUM_OBJ);
-	TestMemMalloc* a[NUM_OBJ];
-	for(int it = 0; it < NUM_IT; it++)
+	TEST_F(Memory_Speed, StackObj)
 	{
-		for(int i = 0; i < NUM_OBJ; i++)
+		StackAllocator stack = StackAllocator(sizeof(TestMem)*NUM_OBJ);
+		TestMemMalloc* a[NUM_OBJ];
+		for(int it = 0; it < NUM_IT; it++)
 		{
-			a[i] = new (stack.alloc<TestMemMalloc>()) TestMemMalloc();
-		}
-		for(int i = NUM_OBJ-1; i >= 0; i--)
-		{
-			stack.free<TestMemMalloc>(a[i]);
+			for(int i = 0; i < NUM_OBJ; i++)
+			{
+				a[i] = new (stack.alloc<TestMemMalloc>()) TestMemMalloc();
+			}
+			for(int i = NUM_OBJ-1; i >= 0; i--)
+			{
+				stack.free<TestMemMalloc>(a[i]);
+			}
 		}
 	}
-}
 
-TEST(Memory_Speed, StackPtr)
-{
-	std::shared_ptr<StackAllocator> stack = MemoryManager::getAllocator<StackAllocator>(SID("Stack"));
-	TestMemMalloc* a[NUM_OBJ];
-	for(int it = 0; it < NUM_IT; it++)
+	TEST_F(Memory_Speed, StackPtr)
 	{
-		for(int i = 0; i < NUM_OBJ; i++)
+		std::shared_ptr<StackAllocator> stack = MemoryManager::getAllocator<StackAllocator>(SID("Stack"));
+		TestMemMalloc* a[NUM_OBJ];
+		for(int it = 0; it < NUM_IT; it++)
 		{
-			a[i] = new (stack->alloc<TestMemMalloc>()) TestMemMalloc();
-		}
-		for(int i = NUM_OBJ-1; i >= 0; i--)
-		{
-			stack->free<TestMemMalloc>(a[i]);
+			for(int i = 0; i < NUM_OBJ; i++)
+			{
+				a[i] = new (stack->alloc<TestMemMalloc>()) TestMemMalloc();
+			}
+			for(int i = NUM_OBJ-1; i >= 0; i--)
+			{
+				stack->free<TestMemMalloc>(a[i]);
+			}
 		}
 	}
-}
 
-TEST(Memory_Speed, StackWithMemoryManager)
-{
-	TestMem* a[NUM_OBJ];
-	for(int it = 0; it < NUM_IT; it++)
+	TEST_F(Memory_Speed, StackWithMemoryManager)
 	{
-		for(int i = 0; i < NUM_OBJ; i++)
+		TestMem* a[NUM_OBJ];
+		for(int it = 0; it < NUM_IT; it++)
 		{
-			a[i] = new TestMem();
-		}
-		for(int i = NUM_OBJ-1; i >= 0; i--)
-		{
-			delete a[i];
+			for(int i = 0; i < NUM_OBJ; i++)
+			{
+				a[i] = new TestMem();
+			}
+			for(int i = NUM_OBJ-1; i >= 0; i--)
+			{
+				delete a[i];
+			}
 		}
 	}
 }

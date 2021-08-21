@@ -18,7 +18,7 @@ namespace atta
 		auto allocator = _allocators.find(hash);
 		if(allocator == _allocators.end())
 		{
-			//DASSERT(false, "Trying to use allocator that was never registered");
+			//ASSERT(false, "Trying to use allocator that was never registered");
 			return nullptr;
 		}
 		else
@@ -27,7 +27,7 @@ namespace atta
 
 	void MemoryManager::registerAllocatorImpl(StringHash hash, std::shared_ptr<Allocator> alloc)
 	{
-		//DASSERT(_allocators.find(hash) == _allocators.end(), "Allocators must be registered only once");
+		//ASSERT(_allocators.find(hash) == _allocators.end(), "Allocators must be registered only once");
 		_allocators[hash] = alloc;
 	}
 }
