@@ -26,13 +26,13 @@ jobs:
           cxx: "clang++",
           build_type: "Release"
         }
-        #- {
-        #  name: "Windows Latest gcc",
-        #  os: windows-latest,
-        #  cc: "gcc",
-        #  cxx: "g++",
-        #  build_type: "Release"
-        #}
+        - {
+          name: "Windows Latest gcc",
+          os: windows-latest,
+          cc: "gcc",
+          cxx: "g++",
+          build_type: "Release"
+        }
 
     steps:
     - name: Checkout atta
