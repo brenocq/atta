@@ -31,9 +31,6 @@ set(ATTA_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 ########## Precompiled Headers ##########
 list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
 
-########## Extern ##########
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/extern)
-
 ########## Macros ##########
 macro(atta_add_libs)
 	foreach(_lib ${ARGN})
@@ -56,11 +53,9 @@ macro(atta_target_common target)
 	)
 endmacro()
 
-########## Subsystems ##########
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/core)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/eventSystem)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/serviceLocator)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/memory)
+########## Atta/Extern ##########
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/extern)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta)
 
 ########## Testing ##########
 include(GoogleTest)
@@ -72,6 +67,6 @@ target_compile_definitions(atta_test PRIVATE ${ATTA_DEFINITIONS})
 gtest_discover_tests(atta_test)
 
 ########## Executable ##########
-add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/core/log.cpp")
+add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 target_compile_definitions(atta PRIVATE ${ATTA_DEFINITIONS})
 target_link_libraries(atta PRIVATE ${ATTA_LIBS})

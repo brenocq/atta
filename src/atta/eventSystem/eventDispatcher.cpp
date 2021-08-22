@@ -1,21 +1,21 @@
 //--------------------------------------------------
 // Atta Event System
-// dispatcher.cpp
+// eventDispatcher.cpp
 // Date: 2021-08-17
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include "dispatcher.h"
+#include <atta/eventSystem/eventDispatcher.h>
 
 namespace atta
 {
-	void Dispatcher::subscribe(const EventType& type, Callback&& callback)
+	void EventDispatcher::subscribe(Event::Type type, Callback&& callback)
 	{
 		_observers[type].push_back(callback);
 	}
 
-	void Dispatcher::publish(Event& event) const
+	void EventDispatcher::publish(Event& event) const
 	{
-		EventType type = event.getType();
+		Event::Type type = event.getType();
 
 		// If there are no observers
 		if(_observers.find(type) == _observers.end())
