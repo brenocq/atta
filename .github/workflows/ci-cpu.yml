@@ -1,9 +1,6 @@
 name: Atta CI CPU
 on: [push, pull_request, release]
 
-env:
-  BUILD_TYPE: Release
-
 jobs:
   build:
     name: ${{ matrix.config.name }} - Build and Test
@@ -15,22 +12,16 @@ jobs:
         - {
           name: "Ubuntu Latest gcc",
           os: ubuntu-latest,
-          cc: "gcc",
-          cxx: "g++",
           build_type: "Release"
         }
         - {
           name: "MacOS Latest clang",
           os: macos-latest,
-          cc: "clang",
-          cxx: "clang++",
           build_type: "Release"
         }
         - {
           name: "Windows Latest gcc",
           os: windows-latest,
-          cc: "gcc",
-          cxx: "g++",
           build_type: "Release"
         }
 

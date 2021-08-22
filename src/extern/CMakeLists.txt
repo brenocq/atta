@@ -4,4 +4,9 @@ cmake_minimum_required(VERSION 3.12)
 option(BUILD_GMOCK OFF)
 option(INSTALL_GTEST OFF)
 add_subdirectory(googletest)
-#set(GTEST_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest/include PARENT_SCOPE)
+
+########## glfw ##########
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(glfw)

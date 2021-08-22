@@ -18,4 +18,4 @@
 #include "core/log.h"
 #include "core/assert.h"
 
-#endif ATTA_PRE_COMPILED_HEADER_H
+#endif// ATTA_PRE_COMPILED_HEADER_H

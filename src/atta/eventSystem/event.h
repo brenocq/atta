@@ -6,33 +6,20 @@
 //--------------------------------------------------
 #ifndef ATTA_EVENT_SYSTEM_EVENT_H
 #define ATTA_EVENT_SYSTEM_EVENT_H
+#include <atta/core/stringId.h>
 
 namespace atta
 {
-	enum class EventType {
-		NONE = 0,
-		// Window
-		WINDOW_MOUSE_MOVE,
-		WINDOW_MOUSE_PRESS,
-		WINDOW_MOUSE_RELEASE,
-		WINDOW_MOUSE_SCROLL,
-		WINDOW_KEY_PRESS,
-		WINDOW_KEY_REPEAT,
-		WINDOW_KEY_RELEASE,
-		WINDOW_FOCUS,
-		WINDOW_LOST_FOCUS,
-		WINDOW_MOVE,
-		WINDOW_CLOSE,
-	};
-
 	class Event
 	{
 	public:
 		virtual ~Event() = default;
 
-		virtual EventType getType() const = 0;
+		using Type = StringHash;
+
+		virtual Type getType() const = 0;
 		virtual const char* getName() const = 0;
-		virtual std::string toString() const { return getName(); }
+		std::string toString() const { return getName(); }
 
 		bool handled = false;
 	};

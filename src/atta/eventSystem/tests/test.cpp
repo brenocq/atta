@@ -6,18 +6,20 @@
 //--------------------------------------------------
 #include <gtest/gtest.h>
 #include <atta/eventSystem/event.h>
-#include <atta/eventSystem/dispatcher.h>
+#include <atta/eventSystem/eventDispatcher.h>
 
 using namespace atta;
 namespace
 {
+	constexpr Event::Type TEST_EVENT = SID("TestEvent");
+
 	class TestEvent : public Event
 	{
 	public:
 		TestEvent(int value): _value(value) {}
 		~TestEvent() {}
 
-		EventType getType() const { return EventType::NONE; }
+		Event::Type getType() const { return TEST_EVENT; }
 		const char* getName() const { return "TestEvent"; }
 
 		int getValue() const { return _value; }
@@ -33,7 +35,7 @@ namespace
 
 		void handle(Event& e)
 		{
-			if(e.getType() == EventType::NONE)
+			if(e.getType() == TEST_EVENT)
 			{
 				TestEvent& testEvent = static_cast<TestEvent&>(e);
 				testEvent.handled = true;
@@ -50,7 +52,7 @@ namespace
 	TEST(EventSystem, Publish)
 	{
 		TestEvent e {2};
-		Dispatcher dispatcher;
+		EventDispatcher dispatcher;
 		dispatcher.publish(e);
 
 		EXPECT_EQ(e.handled, false);
@@ -61,10 +63,10 @@ namespace
 	{
 		using namespace std::placeholders;
 
-		Dispatcher dispatcher;
+		EventDispatcher dispatcher;
 		TestObserver observer;
 
-		dispatcher.subscribe(EventType::NONE, std::bind(&TestObserver::handle, &observer, _1));
+		dispatcher.subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer, _1));
 
 		EXPECT_EQ(observer.getSum(), 0);
 	}
@@ -73,7 +75,7 @@ namespace
 	{
 		using namespace std::placeholders;
 
-		Dispatcher dispatcher;
+		EventDispatcher dispatcher;
 		TestObserver observer0;
 		TestObserver observer1;
 		TestObserver observer2;
@@ -85,11 +87,11 @@ namespace
 		dispatcher.publish(e0);
 
 		// The observer0 should not receive testEvents, so its sum stays in 0
-		dispatcher.subscribe(EventType::WINDOW_MOUSE_MOVE, std::bind(&TestObserver::handle, &observer0, _1));
+		dispatcher.subscribe(SID("Window_MouseMove"), std::bind(&TestObserver::handle, &observer0, _1));
 		// The observer1 receives all testEvents after subscription
-		dispatcher.subscribe(EventType::NONE, std::bind(&TestObserver::handle, &observer1, _1));
+		dispatcher.subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer1, _1));
 		// Because observer1 will consume the events, observer2 will not receive any event
-		dispatcher.subscribe(EventType::NONE, std::bind(&TestObserver::handle, &observer2, _1));
+		dispatcher.subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer2, _1));
 
 		// Publish more two events, 2+4=6
 		dispatcher.publish(e1);
