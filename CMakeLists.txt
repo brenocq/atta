@@ -13,6 +13,8 @@ endif()
 ########## OS ##########
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
 	list(APPEND ATTA_DEFINITIONS "ATTA_IS_WINDOWS")
+	# Force google test to link the runtimes dynamically (to avoid visual studio link error)
+	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
 	list(APPEND ATTA_DEFINITIONS "ATTA_IS_MACOS")
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)

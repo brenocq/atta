@@ -8,3 +8,7 @@
 # Build
 build/
 scripts/
+
+# Visual Studio
+/.vs
+/CMakeSettings.json
