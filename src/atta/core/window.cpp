@@ -100,7 +100,11 @@ namespace atta
 			w._eventDispatcher->publish(e);
 		});
 
-		LOG_VERBOSE("Window", "Windows created");
+		glfwSetErrorCallback([](int error, const char* description){
+			LOG_ERROR("Window", "GLFW error($0): $2", error, std::string(description));
+		});
+
+		LOG_VERBOSE("Window", "Window created");
 	}
 
 	Window::~Window()

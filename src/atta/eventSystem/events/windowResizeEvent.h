@@ -16,8 +16,8 @@ namespace atta
 	public:
 		WindowResizeEvent(size_t width_, size_t height_): width(width_), height(height_) {}
 
-		Event::Type getType() const { return static_cast<Event::Type>(Window::Event::RESIZE); }
-		const char* getName() const { return "Window_Resize"; }
+		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::RESIZE); }
+		const char* getName() const override { return "Window_Resize"; }
 
 		size_t width, height;
 	};

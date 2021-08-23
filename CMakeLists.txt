@@ -23,6 +23,15 @@ else()
 	message(SEND_ERROR "Unknown system name: " + CMAKE_SYSTEM_NAME)
 endif()
 
+########## Options ##########
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+	if(MSVC)
+		list(APPEND ATTA_OPTIONS /W4 /WX)
+	else()
+		list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -Werror -Wno-unused-parameter)
+	endif()
+endif()
+
 ########## Output Directories ##########
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "" FORCE)
@@ -47,10 +56,10 @@ macro(atta_add_tests)
 endmacro()
 
 macro(atta_target_common target)
-	target_precompile_headers(${target} PUBLIC ${ATTA_PCH})
-	target_include_directories(${target} PUBLIC
-		${ATTA_PATH}/src
-	)
+	target_precompile_headers(${target} PRIVATE ${ATTA_PCH})
+	target_include_directories(${target} PRIVATE ${ATTA_PATH}/src)
+	target_compile_options(${target} PRIVATE ${ATTA_OPTIONS})
+	target_compile_definitions(${target} PRIVATE ${ATTA_DEFINITIONS})
 endmacro()
 
 ########## Atta/Extern ##########
@@ -62,11 +71,11 @@ include(GoogleTest)
 enable_testing()
 
 add_executable(atta_test ${ATTA_TEST_SOURCES})
+atta_target_common(atta_test)
 target_link_libraries(atta_test PRIVATE ${ATTA_LIBS} gtest_main)
-target_compile_definitions(atta_test PRIVATE ${ATTA_DEFINITIONS})
 gtest_discover_tests(atta_test)
 
 ########## Executable ##########
 add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
-target_compile_definitions(atta PRIVATE ${ATTA_DEFINITIONS})
+atta_target_common(atta)
 target_link_libraries(atta PRIVATE ${ATTA_LIBS})

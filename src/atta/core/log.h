@@ -63,7 +63,7 @@ namespace atta
 	//---------------------------------//
 	//----------- Log class -----------//
 	//---------------------------------//
-	class Log
+	class Log final
 	{
 	public:
 		enum LogLevel {

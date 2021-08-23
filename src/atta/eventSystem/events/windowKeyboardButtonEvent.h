@@ -22,8 +22,8 @@ namespace atta
 
 		WindowKeyboardButtonEvent(int key_, Action action_): key(key_), action(action_) {}
 
-		Event::Type getType() const { return static_cast<Event::Type>(Window::Event::KEYBOARD_BUTTON); }
-		const char* getName() const { return "Window_KeyboardButton"; }
+		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::KEYBOARD_BUTTON); }
+		const char* getName() const override { return "Window_KeyboardButton"; }
 
 		int key;
 		Action action;

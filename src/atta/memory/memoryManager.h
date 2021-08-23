@@ -11,7 +11,7 @@
 
 namespace atta
 {
-	class MemoryManager
+	class MemoryManager final
 	{
 	public:
 		static MemoryManager& getInstance() {

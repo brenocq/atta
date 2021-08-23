@@ -10,7 +10,7 @@
 
 namespace atta
 {
-	class ServiceLocator
+	class ServiceLocator final
 	{
 	public:
 		template<typename T>

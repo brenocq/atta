@@ -7,7 +7,7 @@
 #ifndef ATTA_ATTA_H
 #define ATTA_ATTA_H
 #include <atta/eventSystem/eventDispatcher.h>
-#include <atta/core/window.h>
+#include <atta/graphicsSystem/graphicsManager.h>
 
 namespace atta
 {
@@ -27,7 +27,7 @@ namespace atta
 		// Dispatcher to handle internal atta events
 		std::shared_ptr<EventDispatcher> _eventDispatcher;
 
-		std::unique_ptr<Window> _window;
+		std::unique_ptr<GraphicsManager> _graphicsManager;
 
 		bool _shouldFinish;
 	};

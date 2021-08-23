@@ -14,8 +14,8 @@ namespace atta
 	class WindowCloseEvent : public Event
 	{
 	public:
-		Event::Type getType() const { return static_cast<Event::Type>(Window::Event::CLOSE); }
-		const char* getName() const { return "Window_Close"; }
+		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::CLOSE); }
+		const char* getName() const override { return "Window_Close"; }
 	};
 }
 
