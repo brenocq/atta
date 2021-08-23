@@ -16,8 +16,8 @@ namespace atta
 	public:
 		WindowMouseMoveEvent(float x_, float y_): x(x_), y(y_) {}
 
-		Event::Type getType() const { return static_cast<Event::Type>(Window::Event::MOUSE_MOVE); }
-		const char* getName() const { return "Window_MouseMove"; }
+		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::MOUSE_MOVE); }
+		const char* getName() const override { return "Window_MouseMove"; }
 
 		float x, y;
 	};

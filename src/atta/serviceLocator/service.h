@@ -14,7 +14,7 @@ namespace atta
 	class Service
 	{
 	public:
-		Service() { }
+		Service() = default;
 		virtual ~Service() = default;
 
 		static constexpr int getHash() { return typeid(T).hash_code(); }

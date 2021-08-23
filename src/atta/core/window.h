@@ -12,7 +12,7 @@
 
 namespace atta
 {
-	class Window 
+	class Window final
 	{
 		public:
 			struct CreateInfo

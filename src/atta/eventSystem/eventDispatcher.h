@@ -12,7 +12,7 @@ namespace atta
 {
 #define BIND_EVENT_FUNC(x) std::bind(&x, this, std::placeholders::_1)
 
-	class EventDispatcher
+	class EventDispatcher final
 	{
 	public:
 		using Callback = std::function<void(Event&)>;

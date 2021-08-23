@@ -16,8 +16,8 @@ namespace atta
 	public:
 		WindowFocusEvent(bool hasFocus_): hasFocus(hasFocus_) {}
 
-		Event::Type getType() const { return static_cast<Event::Type>(Window::Event::FOCUS); }
-		const char* getName() const { return "Window_Focus"; }
+		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::FOCUS); }
+		const char* getName() const override { return "Window_Focus"; }
 
 		bool hasFocus;
 	};

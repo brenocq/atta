@@ -9,21 +9,13 @@
 
 namespace atta
 {
-
 	Atta::Atta():
 		_shouldFinish(false)
 	{
 		_eventDispatcher = std::make_shared<EventDispatcher>();
-		_window = std::make_unique<Window>((Window::CreateInfo){.eventDispatcher = _eventDispatcher });
-
-		_eventDispatcher->subscribe(SID("Window_MouseMove"), BIND_EVENT_FUNC(Atta::onEvent));
-		_eventDispatcher->subscribe(SID("Window_Resize"), BIND_EVENT_FUNC(Atta::onEvent));
-		_eventDispatcher->subscribe(SID("Window_Focus"), BIND_EVENT_FUNC(Atta::onEvent));
-		_eventDispatcher->subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onEvent));
-		_eventDispatcher->subscribe(SID("Window_MouseButton"), BIND_EVENT_FUNC(Atta::onEvent));
-		_eventDispatcher->subscribe(SID("Window_KeyboardButton"), BIND_EVENT_FUNC(Atta::onEvent));
-		_eventDispatcher->subscribe(SID("Window_MouseScroll"), BIND_EVENT_FUNC(Atta::onEvent));
 		_eventDispatcher->subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
+
+		_graphicsManager = std::make_unique<GraphicsManager>(_eventDispatcher);
 	}
 
 	Atta::~Atta()
@@ -34,19 +26,10 @@ namespace atta
 	void Atta::run()
 	{
 		while(!_shouldFinish)
-			_window->update();
-	}
-
-	void Atta::onEvent(Event& event)
-	{
-		LOG_DEBUG("Atta", "$0", event.toString());
-		switch(event.getType())
 		{
-			case SID("Window_MouseMove"):
-			{
-				WindowMouseMoveEvent& e = reinterpret_cast<WindowMouseMoveEvent&>(event);
-				LOG_DEBUG("Atta", "$0 $1 $2", e.toString(), e.x, e.y);
-			}
+			_graphicsManager->update();
+
+			_graphicsManager->renderWindow();
 		}
 	}
 

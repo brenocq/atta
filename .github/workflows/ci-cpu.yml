@@ -10,17 +10,17 @@ jobs:
       matrix:
         config:
         - {
-          name: "Ubuntu Latest gcc",
+          name: "Ubuntu Latest",
           os: ubuntu-latest,
           build_type: "Release"
         }
         - {
-          name: "MacOS Latest clang",
+          name: "MacOS Latest",
           os: macos-latest,
           build_type: "Release"
         }
         - {
-          name: "Windows Latest gcc",
+          name: "Windows Latest",
           os: windows-latest,
           build_type: "Release"
         }
@@ -35,7 +35,7 @@ jobs:
       if: startsWith(matrix.config.os, 'ubuntu')
       run: |
         sudo apt-get update
-        sudo apt-get install ninja-build cmake
+        sudo apt-get install ninja-build cmake libxrandr-dev
         ninja --version
         cmake --version
         gcc --version

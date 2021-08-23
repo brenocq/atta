@@ -10,6 +10,8 @@
 
 namespace atta
 {
+	// Objects that want to be allocated using atta allocators should derive from this class
+	// and specify the allocator stringHash
 	template <class Object, StringHash allocatorId>
 	class AllocatedObject
 	{
