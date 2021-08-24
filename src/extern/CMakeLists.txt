@@ -25,9 +25,12 @@ set(IMGUI_SOURCE
 	imgui/imgui_draw.cpp
 	imgui/imgui_tables.cpp
 	imgui/imgui_widgets.cpp
+	imgui/backends/imgui_impl_glfw.cpp
+	imgui/backends/imgui_impl_opengl3.cpp
 )
 add_library(imgui STATIC
 	${IMGUI_SOURCE}
 )
+target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 atta_add_libs(imgui)
 atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/imgui)
