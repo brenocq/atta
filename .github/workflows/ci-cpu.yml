@@ -35,7 +35,7 @@ jobs:
       if: startsWith(matrix.config.os, 'ubuntu')
       run: |
         sudo apt-get update
-        sudo apt-get install ninja-build cmake libxrandr-dev libxinerama-dev
+        sudo apt-get install ninja-build cmake xorg-dev
         ninja --version
         cmake --version
         gcc --version
