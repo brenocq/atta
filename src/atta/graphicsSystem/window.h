@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_CORE_WINDOW_H
 #define ATTA_CORE_WINDOW_H
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <atta/core/stringId.h>
 #include <atta/eventSystem/eventDispatcher.h>
+#include <glad/glad.h>
 
 namespace atta
 {

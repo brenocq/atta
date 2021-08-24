@@ -36,6 +36,7 @@ namespace atta
 			float m30, float m31, float m32, float m33);
         mat4(const vec3 &v0, const vec3 &v1, const vec3 &v2, const vec3 &v3=vec3(0,0,0));
         mat4(const vec4 &v0, const vec4 &v1, const vec4 &v2, const vec4 &v3);
+        mat4(const mat4 &mat);
         mat4(const mat3 &mat);
 
 		// Create from base vector and global position

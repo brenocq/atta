@@ -92,6 +92,26 @@ namespace atta
 		data[15] = v3.w;
 	}
 
+	mat4::mat4(const mat4 &mat)
+	{
+		data[0] = mat.data[0];
+		data[1] = mat.data[1];
+		data[2] = mat.data[2];
+		data[3] = mat.data[3];
+		data[4] = mat.data[4];
+		data[5] = mat.data[5];
+		data[6] = mat.data[6];
+		data[7] = mat.data[7];
+		data[8] = mat.data[8];
+		data[9] = mat.data[9];
+		data[10] = mat.data[10];
+		data[11] = mat.data[11];
+		data[12] = mat.data[12];
+		data[13] = mat.data[13];
+		data[14] = mat.data[14];
+		data[15] = mat.data[15];
+	}
+
 	mat4::mat4(const mat3 &mat)
 	{
 		data[0] = mat.data[0];
