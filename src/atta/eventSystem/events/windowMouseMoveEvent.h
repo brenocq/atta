@@ -7,7 +7,6 @@
 #ifndef ATTA_EVENT_SYSTEM_EVENTS_WINDOW_MOUSE_MOVE_EVENT_H
 #define ATTA_EVENT_SYSTEM_EVENTS_WINDOW_MOUSE_MOVE_EVENT_H
 #include <atta/eventSystem/event.h>
-#include <atta/core/window.h>
 
 namespace atta
 {
@@ -16,7 +15,7 @@ namespace atta
 	public:
 		WindowMouseMoveEvent(float x_, float y_): x(x_), y(y_) {}
 
-		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::MOUSE_MOVE); }
+		Event::Type getType() const override { return SID("Window_MouseMove"); }
 		const char* getName() const override { return "Window_MouseMove"; }
 
 		float x, y;

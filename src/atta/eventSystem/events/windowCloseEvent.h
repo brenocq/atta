@@ -7,14 +7,13 @@
 #ifndef ATTA_EVENT_SYSTEM_EVENTS_WINDOW_CLOSE_EVENT_H
 #define ATTA_EVENT_SYSTEM_EVENTS_WINDOW_CLOSE_EVENT_H
 #include <atta/eventSystem/event.h>
-#include <atta/core/window.h>
 
 namespace atta
 {
 	class WindowCloseEvent : public Event
 	{
 	public:
-		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::CLOSE); }
+		Event::Type getType() const override { return SID("Window_Close"); }
 		const char* getName() const override { return "Window_Close"; }
 	};
 }

@@ -7,7 +7,7 @@
 #ifndef ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
 #include <atta/eventSystem/eventDispatcher.h>
-#include <atta/core/window.h>
+#include <atta/graphicsSystem/window.h>
 
 namespace atta
 {

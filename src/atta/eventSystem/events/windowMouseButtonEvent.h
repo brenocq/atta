@@ -7,7 +7,6 @@
 #ifndef ATTA_EVENT_SYSTEM_EVENTS_WINDOW_MOUSE_BUTTON_EVENT_H
 #define ATTA_EVENT_SYSTEM_EVENTS_WINDOW_MOUSE_BUTTON_EVENT_H
 #include <atta/eventSystem/event.h>
-#include <atta/core/window.h>
 
 namespace atta
 {
@@ -21,7 +20,7 @@ namespace atta
 
 		WindowMouseButtonEvent(int button_, Action action_): button(button_), action(action_) {}
 
-		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::MOUSE_BUTTON); }
+		Event::Type getType() const override { return SID("Window_MouseButton"); }
 		const char* getName() const override { return "Window_MouseButton"; }
 
 		int button;

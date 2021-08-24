@@ -4,7 +4,7 @@
 // Date: 2021-08-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/window.h>
+#include <atta/graphicsSystem/window.h>
 #include <atta/eventSystem/events/windowCloseEvent.h>
 #include <atta/eventSystem/events/windowResizeEvent.h>
 #include <atta/eventSystem/events/windowFocusEvent.h>
@@ -23,7 +23,7 @@ namespace atta
 	{
 		if(_glfwWindowCounter++ == 0)
 			glfwInit();
-	
+
 		_window = glfwCreateWindow(_width, _height, _title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(_window, this);
 
@@ -37,6 +37,9 @@ namespace atta
 		glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, int width, int height)
 		{
 			Window& w = *(Window*)glfwGetWindowUserPointer(window);
+			w._width = width;
+			w._height = height;
+
 			WindowResizeEvent e((size_t)width, (size_t)height);
 			w._eventDispatcher->publish(e);
 		});
@@ -101,8 +104,17 @@ namespace atta
 		});
 
 		glfwSetErrorCallback([](int error, const char* description){
-			LOG_ERROR("Window", "GLFW error($0): $2", error, std::string(description));
+			LOG_ERROR("Window", "GLFW error($0): $1", error, std::string(description));
 		});
+
+
+		// XXX Only testing
+		glfwMakeContextCurrent(_window);
+		if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		{
+			LOG_ERROR("Window", "Failed to initialize GLAD");
+			return;
+		}
 
 		LOG_VERBOSE("Window", "Window created");
 	}
@@ -117,7 +129,11 @@ namespace atta
 
 	void Window::update()
 	{
+		// XXX Only testing
+		glClearColor(0.3, 0.5, 0.8, 0.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
 		glfwPollEvents();
-		// TODO Swap buffers
+		glfwSwapBuffers(_window);
 	}
 }

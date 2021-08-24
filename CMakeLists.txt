@@ -28,7 +28,13 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 	if(MSVC)
 		list(APPEND ATTA_OPTIONS /W4 /WX)
 	else()
-		list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -Werror -Wno-unused-parameter)
+		list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -Werror)
+		# Unused parameter
+		list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
+		# Math anonymous union 
+		list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
+		# Glad opengl definitions
+		list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
 	endif()
 endif()
 

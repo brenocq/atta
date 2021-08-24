@@ -7,7 +7,6 @@
 #ifndef ATTA_EVENT_SYSTEM_EVENTS_WINDOW_KEYBOARD_BUTTON_EVENT_H
 #define ATTA_EVENT_SYSTEM_EVENTS_WINDOW_KEYBOARD_BUTTON_EVENT_H
 #include <atta/eventSystem/event.h>
-#include <atta/core/window.h>
 
 namespace atta
 {
@@ -22,7 +21,7 @@ namespace atta
 
 		WindowKeyboardButtonEvent(int key_, Action action_): key(key_), action(action_) {}
 
-		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::KEYBOARD_BUTTON); }
+		Event::Type getType() const override { return SID("Window_KeyboardButton"); }
 		const char* getName() const override { return "Window_KeyboardButton"; }
 
 		int key;

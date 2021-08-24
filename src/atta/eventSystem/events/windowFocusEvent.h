@@ -7,7 +7,6 @@
 #ifndef ATTA_EVENT_SYSTEM_EVENTS_WINDOW_FOCUS_EVENT_H
 #define ATTA_EVENT_SYSTEM_EVENTS_WINDOW_FOCUS_EVENT_H
 #include <atta/eventSystem/event.h>
-#include <atta/core/window.h>
 
 namespace atta
 {
@@ -16,7 +15,7 @@ namespace atta
 	public:
 		WindowFocusEvent(bool hasFocus_): hasFocus(hasFocus_) {}
 
-		Event::Type getType() const override { return static_cast<Event::Type>(Window::Event::FOCUS); }
+		Event::Type getType() const override { return SID("Window_Focus"); }
 		const char* getName() const override { return "Window_Focus"; }
 
 		bool hasFocus;
