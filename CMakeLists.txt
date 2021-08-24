@@ -48,6 +48,13 @@ macro(atta_add_libs)
 	set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)
 endmacro()
 
+macro(atta_add_include_dirs)
+	foreach(_include_dir ${ARGN})
+		list(APPEND ATTA_INCLUDE_DIRS ${_include_dir})
+	endforeach()
+	set(ATTA_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS} PARENT_SCOPE)
+endmacro()
+
 macro(atta_add_tests)
 	foreach(_test ${ARGN})
 		list(APPEND ATTA_TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_test}")
@@ -57,12 +64,13 @@ endmacro()
 
 macro(atta_target_common target)
 	target_precompile_headers(${target} PRIVATE ${ATTA_PCH})
-	target_include_directories(${target} PRIVATE ${ATTA_PATH}/src)
+	target_include_directories(${target} PRIVATE ${ATTA_INCLUDE_DIRS})
 	target_compile_options(${target} PRIVATE ${ATTA_OPTIONS})
 	target_compile_definitions(${target} PRIVATE ${ATTA_DEFINITIONS})
 endmacro()
 
 ########## Atta/Extern ##########
+list(APPEND ATTA_INCLUDE_DIRS ${ATTA_PATH}/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/extern)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta)
 
