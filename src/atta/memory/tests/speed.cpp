@@ -13,7 +13,7 @@
 using namespace atta;
 namespace
 {
-	constexpr int NUM_IT = 2000;
+	constexpr int NUM_IT = 100;
 	constexpr int NUM_OBJ = 5000;
 
 	class TestMem : public AllocatedObject<TestMem, SID("Stack")>
@@ -37,7 +37,7 @@ namespace
 		{
 			MemoryManager::registerAllocator(
 				SID("Stack"), 
-				std::static_pointer_cast<Allocator>(std::make_shared<StackAllocator>(sizeof(TestMem)*NUM_OBJ)));
+				static_cast<Allocator*>(new StackAllocator(sizeof(TestMem)*NUM_OBJ)));
 		}
 	};
 
@@ -80,7 +80,7 @@ namespace
 
 	TEST_F(Memory_Speed, StackPtr)
 	{
-		std::shared_ptr<StackAllocator> stack = MemoryManager::getAllocator<StackAllocator>(SID("Stack"));
+		StackAllocator* stack = MemoryManager::getAllocator<StackAllocator>(SID("Stack"));
 		TestMemMalloc* a[NUM_OBJ];
 		for(int it = 0; it < NUM_IT; it++)
 		{
@@ -93,6 +93,7 @@ namespace
 				stack->free<TestMemMalloc>(a[i]);
 			}
 		}
+		EXPECT_EQ(stack->getUsedMemory(), 0);
 	}
 
 	TEST_F(Memory_Speed, StackWithMemoryManager)
@@ -109,5 +110,8 @@ namespace
 				delete a[i];
 			}
 		}
+
+		StackAllocator* stack = MemoryManager::getAllocator<StackAllocator>(SID("Stack"));
+		EXPECT_EQ(stack->getUsedMemory(), 0);
 	}
 }

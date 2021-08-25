@@ -130,14 +130,33 @@ namespace atta
 	//--------------- common --------------//
 	//-------------------------------------//
 	template <class Object, StringHash allocatorId>
+	// It is faster to use last allocator pointer than accessing the MemoryManager unordered_map
+	Allocator* getLastAllocator()
+	{
+		static Allocator** allocator = MemoryManager::getAllocatorPtr<Allocator>(allocatorId);
+
+		// Try to allocate using last used allocator
+		if(allocator != nullptr && *allocator != nullptr)
+			return *allocator;
+		else
+			return nullptr;
+	}
+
+	template <class Object, StringHash allocatorId>
 	void* AllocatedObject<Object, allocatorId>::allocBytes(size_t size, size_t align)
 	{
-		return MemoryManager::getAllocator<Allocator>(allocatorId)->allocBytes(size, align);
+		Allocator* allocator = getLastAllocator<Object, allocatorId>();
+		if(allocator != nullptr)
+			return allocator->allocBytes(size, align);
+		else
+			return nullptr;
 	}
 
 	template <class Object, StringHash allocatorId>
 	void AllocatedObject<Object, allocatorId>::freeBytes(void* ptr, size_t size, size_t align)
 	{
-		MemoryManager::getAllocator<Allocator>(allocatorId)->freeBytes(ptr, size, align);
+		Allocator* allocator = getLastAllocator<Object, allocatorId>();
+		if(allocator != nullptr)
+			return allocator->freeBytes(ptr, size, align);
 	}
 }

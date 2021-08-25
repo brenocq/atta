@@ -22,7 +22,7 @@ namespace atta
 
 	Window::Window(const CreateInfo& info):
 		_title(info.title), _width(info.width), _height(info.height),
-		_eventDispatcher(info.eventDispatcher)
+		_eventManager(info.eventManager)
 	{
 		//if(_glfwWindowCounter++ == 0) XXX
 			glfwInit();
@@ -34,7 +34,7 @@ namespace atta
 		{
 			Window& w = *(Window*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent e;
-			w._eventDispatcher->publish(e);
+			w._eventManager->publish(e);
 		});
 
 		glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, int width, int height)
@@ -44,28 +44,28 @@ namespace atta
 			w._height = height;
 
 			WindowResizeEvent e((size_t)width, (size_t)height);
-			w._eventDispatcher->publish(e);
+			w._eventManager->publish(e);
 		});
 
 		glfwSetCursorEnterCallback(_window, [](GLFWwindow* window, int entered)
 		{
 			Window& w = *(Window*)glfwGetWindowUserPointer(window);
 			WindowFocusEvent e(entered != 0);
-			w._eventDispatcher->publish(e);
+			w._eventManager->publish(e);
 		});
 
 		glfwSetCursorPosCallback(_window, [](GLFWwindow* window, double xPos, double yPos)
 		{
 			Window& w = *(Window*)glfwGetWindowUserPointer(window);
 			WindowMouseMoveEvent e((float)xPos, (float)yPos);
-			w._eventDispatcher->publish(e);
+			w._eventManager->publish(e);
 		});
 
 		glfwSetScrollCallback(_window, [](GLFWwindow* window, double dx, double dy)
 		{
 			Window& w = *(Window*)glfwGetWindowUserPointer(window);
 			WindowMouseScrollEvent e((float)dx, (float)dy);
-			w._eventDispatcher->publish(e);
+			w._eventManager->publish(e);
 		});
 
 		glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods)
@@ -75,12 +75,12 @@ namespace atta
 			if(action == GLFW_PRESS)
 			{
 				WindowMouseButtonEvent e(button, WindowMouseButtonEvent::Action::PRESS);
-				w._eventDispatcher->publish(e);
+				w._eventManager->publish(e);
 			}
 			else if(action == GLFW_RELEASE)
 			{
 				WindowMouseButtonEvent e(button, WindowMouseButtonEvent::Action::RELEASE);
-				w._eventDispatcher->publish(e);
+				w._eventManager->publish(e);
 			}
 		});
 
@@ -103,7 +103,7 @@ namespace atta
 			}
 
 			WindowKeyboardButtonEvent e(key, a);
-			w._eventDispatcher->publish(e);
+			w._eventManager->publish(e);
 		});
 
 		glfwSetErrorCallback([](int error, const char* description){

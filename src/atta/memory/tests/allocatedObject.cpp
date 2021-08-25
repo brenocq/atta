@@ -20,11 +20,11 @@ namespace
 		{
 			MemoryManager::registerAllocator(
 				SID("Stack_TestA"), 
-				std::static_pointer_cast<Allocator>(std::make_shared<StackAllocator>(sizeof(int)*3)));
+				static_cast<Allocator*>(new StackAllocator(sizeof(int)*3)));
 
 			MemoryManager::registerAllocator(
 				SID("Stack_TestB"), 
-				std::static_pointer_cast<Allocator>(std::make_shared<StackAllocator>(sizeof(int)*2)));
+				static_cast<Allocator*>(new StackAllocator(sizeof(int)*2)));
 		}
 	};
 
@@ -60,22 +60,25 @@ namespace
 		EXPECT_EQ(b0->x, 4);
 
 		//----- Check stack size -----//
-		std::shared_ptr<StackAllocator> stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
+		StackAllocator* stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
 		EXPECT_EQ(stackA->getTotalMemory(), sizeof(int)*3);
 		EXPECT_EQ(stackA->getUsedMemory(), sizeof(int)*3);
 
-		std::shared_ptr<StackAllocator> stackB = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestB"));
+		StackAllocator* stackB = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestB"));
 		EXPECT_EQ(stackB->getTotalMemory(), sizeof(int)*2);
 		EXPECT_EQ(stackB->getUsedMemory(), sizeof(int));
 	}
 
 	TEST_F(Memory_AllocatedObject, Delete)
 	{
-		std::shared_ptr<StackAllocator> stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
+		StackAllocator* stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
 		stackA->clear();
+		EXPECT_EQ(stackA->getTotalMemory(), sizeof(int)*3);
+		EXPECT_EQ(stackA->getUsedMemory(), 0);
 
 		TestA *a0, *a1, *a2;
 		a0 = new TestA(0);
+		EXPECT_EQ(stackA->getUsedMemory(), sizeof(TestA));
 		a1 = new TestA(1);
 		a2 = new TestA(2);
 
@@ -99,13 +102,13 @@ namespace
 		EXPECT_EQ(a[1].x, 1);
 		EXPECT_EQ(a[2].x, 1);
 
-		std::shared_ptr<StackAllocator> stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
+		StackAllocator* stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
 		stackA->clear();
 	}
 
 	TEST_F(Memory_AllocatedObject, DeleteArray)
 	{
-		std::shared_ptr<StackAllocator> stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
+		StackAllocator* stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
 		TestA* a0 = new TestA(0);
 
 		TestA* a = new TestA[2];

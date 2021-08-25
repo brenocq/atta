@@ -19,19 +19,25 @@ namespace atta
 			return instance;
 		}
 
-		// After registering, it is possible to get a pointer to it
-		template <typename T>
-		static std::shared_ptr<T> getAllocator(StringHash hash);
-
 		// It is necessary to register the allocators to define its 
 		// type (stack, general, pool, ...) and parameters (size, ...)
-		static void registerAllocator(StringHash hash, std::shared_ptr<Allocator> alloc);
+		static void registerAllocator(StringHash hash, Allocator* alloc);
+
+		// After registered, it is possible to get a pointer to the allocator
+		template <typename T>
+		static T* getAllocator(StringHash hash);
+
+		// Used by allocatedObject to store pointer to the hash table value and
+		// reduce number of unordered_map accesses
+		template <typename T>
+		static T** getAllocatorPtr(StringHash hash);
 
 	private:
-		std::shared_ptr<Allocator> getAllocatorImpl(StringHash hash);
-		void registerAllocatorImpl(StringHash hash, std::shared_ptr<Allocator> alloc);
+		Allocator* getAllocatorImpl(StringHash hash);
+		Allocator** getAllocatorPtrImpl(StringHash hash);
+		void registerAllocatorImpl(StringHash hash, Allocator* alloc);
 
-		std::unordered_map<StringHash, std::shared_ptr<Allocator>> _allocators;
+		std::unordered_map<StringHash, Allocator*> _allocators;
 	};
 
 }

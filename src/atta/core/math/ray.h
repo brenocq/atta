@@ -23,9 +23,9 @@ namespace atta
 			float time;
 			// const Medium medium;
 
-        	ray(): tMax(infinity), time(0.0f) {};
+        	ray(): tMax(infinity), time(0.0f) {}
         	ray(const pnt3 &o, const vec3 &d, float tMax=infinity, float time=0.0f): 
-				o(o), d(d), tMax(tMax), time(time) {};
+				o(o), d(d), tMax(tMax), time(time) {}
 
 			pnt3 operator()(float t) const { return o + t*d; }
 	};

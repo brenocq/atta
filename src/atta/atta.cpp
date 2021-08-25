@@ -12,10 +12,10 @@ namespace atta
 	Atta::Atta():
 		_shouldFinish(false)
 	{
-		_eventDispatcher = std::make_shared<EventDispatcher>();
-		_eventDispatcher->subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
+		_eventManager = std::make_shared<EventManager>();
+		_eventManager->subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
 
-		_graphicsManager = std::make_unique<GraphicsManager>(_eventDispatcher);
+		_graphicsManager = std::make_unique<GraphicsManager>(_eventManager);
 	}
 
 	Atta::~Atta()

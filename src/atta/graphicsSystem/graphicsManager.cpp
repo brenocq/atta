@@ -8,11 +8,11 @@
 
 namespace atta
 {
-	GraphicsManager::GraphicsManager(std::shared_ptr<EventDispatcher> eventDispatcher):
-		_eventDispatcher(eventDispatcher)
+	GraphicsManager::GraphicsManager(std::shared_ptr<EventManager> eventManager):
+		_eventManager(eventManager)
 	{
 		Window::CreateInfo windowInfo = {};
-		windowInfo.eventDispatcher = _eventDispatcher;
+		windowInfo.eventManager = _eventManager;
 		_window = std::make_unique<Window>(windowInfo);
 	}
 

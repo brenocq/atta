@@ -8,12 +8,12 @@
 
 namespace atta
 {
-	void MemoryManager::registerAllocator(StringHash hash, std::shared_ptr<Allocator> alloc)
+	void MemoryManager::registerAllocator(StringHash hash, Allocator* alloc)
 	{
 		getInstance().registerAllocatorImpl(hash, alloc);
 	}
 
-	std::shared_ptr<Allocator> MemoryManager::getAllocatorImpl(StringHash hash)
+	Allocator* MemoryManager::getAllocatorImpl(StringHash hash)
 	{
 		auto allocator = _allocators.find(hash);
 		if(allocator == _allocators.end())
@@ -25,10 +25,32 @@ namespace atta
 			return allocator->second;
 	}
 
-	void MemoryManager::registerAllocatorImpl(StringHash hash, std::shared_ptr<Allocator> alloc)
+	Allocator** MemoryManager::getAllocatorPtrImpl(StringHash hash)
 	{
-		//ASSERT(_allocators.find(hash) == _allocators.end(), "Allocators must be registered only once");
-		_allocators[hash] = alloc;
+		auto allocator = _allocators.find(hash);
+		if(allocator == _allocators.end())
+		{
+			//ASSERT(false, "Trying to use allocator that was never registered");
+			return nullptr;
+		}
+		else
+			return &allocator->second;
+	}
+
+	void MemoryManager::registerAllocatorImpl(StringHash hash, Allocator* alloc)
+	{
+		if(_allocators.find(hash) != _allocators.end())
+		{
+			// Delete old allocator
+			delete _allocators[hash];
+			_allocators[hash] = nullptr;
+			// Add new allocator
+			_allocators[hash] = alloc;
+		}
+		else
+		{
+			_allocators[hash] = alloc;
+		}
 	}
 }
 
