@@ -6,6 +6,7 @@ set(ATTA_MEMORY_SOURCE
 	allocatedObject.cpp
 	allocators/stackAllocator.cpp
 	allocators/poolAllocator.cpp
+	allocators/mallocAllocator.cpp
 )
 
 add_library(atta_memory_lib STATIC

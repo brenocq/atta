@@ -18,6 +18,7 @@ namespace atta
 
 		void* allocBytes(size_t size, size_t align) override { return nullptr; }
 		void freeBytes(void* ptr, size_t size, size_t align) override {}
+	private:
 	};
 }
 
