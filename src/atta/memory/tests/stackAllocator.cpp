@@ -135,5 +135,11 @@ namespace
 		// iiiic-uuc---iiii
 		i1 = stack.alloc<int>();
 		EXPECT_EQ(stack.getMarker(), 4*sizeof(int));
+
+		delete i1;
+		delete c1;
+		delete u0;
+		delete c0;
+		delete i0;
 	}
 }

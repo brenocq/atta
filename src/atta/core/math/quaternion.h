@@ -16,17 +16,10 @@ namespace atta
     class quat
     {
     public:
-        union {
-            struct {
-                float r;// Real component
-                float i;// First complex
-                float j;// Second complex
-                float k;// Third complex
-            };
-
-			// quat data as array
-            float data[4];
-        };
+		float r;// Real component
+		float i;// First complex
+		float j;// Second complex
+		float k;// Third complex
 
         quat() : r(1), i(0), j(0), k(0) {}
         quat(const float r, const float i, const float j, const float k)

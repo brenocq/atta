@@ -26,13 +26,15 @@ namespace atta
 			T x, y, z, w;
 
 		public:
-        	vector4(): x(0), y(0), z(0), w(0) {};
-        	vector4(T _x, T _y, T _z, T _w): x(_x), y(_y), z(_z), w(_w) {};
-			vector4(vector3<T> vector, T _w): x(vector.x), y(vector.y), z(vector.z), w(_w) {};
-			vector4(T _x, vector3<T> vector): x(_x), y(vector.x), z(vector.y), w(vector.z) {};
-			vector4(vector2<T> vector, T _z, T _w): x(vector.x), y(vector.y), z(_z), w(_w) {};
-			vector4(T _x, vector2<T> vector, T _w): x(_x), y(vector.x), z(vector.y), w(_w) {};
-			vector4(T _x, T _y, vector2<T> vector): x(_x), y(_y), z(vector.x), w(vector.y) {};
+        	vector4(): x(0), y(0), z(0), w(0) {}
+        	vector4(T _x, T _y, T _z, T _w): x(_x), y(_y), z(_z), w(_w) {}
+        	vector4(T _x): x(_x), y(_x), z(_x), w(_x) {}
+			vector4(vector3<T> vector, T _w): x(vector.x), y(vector.y), z(vector.z), w(_w) {}
+			vector4(T _x, vector3<T> vector): x(_x), y(vector.x), z(vector.y), w(vector.z) {}
+			vector4(vector2<T> vector, T _z, T _w): x(vector.x), y(vector.y), z(_z), w(_w) {}
+			vector4(T _x, vector2<T> vector, T _w): x(_x), y(vector.x), z(vector.y), w(_w) {}
+			vector4(vector2<T> v0, vector2<T> v1): x(v0.x), y(v0.y), z(v1.x), w(v1.y) {}
+			vector4(T _x, T _y, vector2<T> vector): x(_x), y(_y), z(vector.x), w(vector.y) {}
 
 			T operator[](unsigned i) const
 			{
@@ -265,13 +267,14 @@ namespace atta
 		//	T pad;// 4 word alignment
 
 		public:
-        	vector3(): x(0), y(0), z(0) {};
-        	vector3(T _x, T _y, T _z): x(_x), y(_y), z(_z) {};
-        	vector3(vector4<T> vector): x(vector.x), y(vector.y), z(vector.z) {};
+        	vector3(): x(0), y(0), z(0) {}
+        	vector3(T _x): x(_x), y(_x), z(_x) {}
+        	vector3(T _x, T _y, T _z): x(_x), y(_y), z(_z) {}
+        	vector3(vector4<T> vector): x(vector.x), y(vector.y), z(vector.z) {}
 			template <typename U>
-        	vector3(vector2<U> v, T _z): x(v.x), y(v.y), z(_z) {};
+        	vector3(vector2<U> v, T _z): x(v.x), y(v.y), z(_z) {}
 			template <typename U>
-        	vector3(T _x, vector2<U> v): x(_x), y(v.x), z(v.y) {};
+        	vector3(T _x, vector2<U> v): x(_x), y(v.x), z(v.y) {}
 
 			T operator[](unsigned i) const
 			{
@@ -525,10 +528,11 @@ namespace atta
 		public:
 			T x, y;
 
-        	vector2(): x(0), y(0) {};
-        	vector2(T _x, T _y): x(_x), y(_y) {};
+        	vector2(): x(0), y(0) {}
+        	vector2(T _x, T _y): x(_x), y(_y) {}
+        	vector2(T _x): x(_x), y(_x) {}
 			template <typename U>
-        	vector2(vector3<U> v): x(v.x), y(v.y) {};
+        	vector2(vector3<U> v): x(v.x), y(v.y) {}
 
 			template <typename U>
 			void operator=(vector2<U> v)

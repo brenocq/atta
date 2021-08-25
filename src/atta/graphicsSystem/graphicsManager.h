@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
-#include <atta/eventSystem/eventDispatcher.h>
+#include <atta/eventSystem/eventManager.h>
 #include <atta/graphicsSystem/window.h>
 
 namespace atta
@@ -14,7 +14,7 @@ namespace atta
 	class GraphicsManager final
 	{
 	public:
-		GraphicsManager(std::shared_ptr<EventDispatcher> eventDispatcher);
+		GraphicsManager(std::shared_ptr<EventManager> eventManager);
 		~GraphicsManager();
 
 		void update();
@@ -22,7 +22,7 @@ namespace atta
 		void renderCamera() = delete;
 
 	private:
-		std::shared_ptr<EventDispatcher> _eventDispatcher;
+		std::shared_ptr<EventManager> _eventManager;
 		std::unique_ptr<Window> _window;
 	};
 }

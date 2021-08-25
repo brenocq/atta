@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 set(ATTA_EVENT_SYSTEM_SOURCE
-	eventDispatcher.cpp
+	eventManager.cpp
 )
 
 add_library(atta_event_system_lib STATIC

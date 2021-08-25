@@ -265,6 +265,7 @@ namespace atta
         void operator*=(const mat3 &o);
 
 		// Multiply matrix with scalar
+        mat3 operator*(const float scalar) const;
         void operator*=(const float scalar);
 
 		// Component-wise addition
@@ -339,7 +340,7 @@ namespace atta
 	//------------------------------------------------------------//
 	//-------------------------- Inline --------------------------//
 	//------------------------------------------------------------//
-	inline mat3 operator*(const float value, mat3 const &mat)
+	inline mat3 operator*(const float value, const mat3& mat)
 	{
 		return mat*value;
 	}

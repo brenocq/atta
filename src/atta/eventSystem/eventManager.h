@@ -1,18 +1,18 @@
 //--------------------------------------------------
 // Atta Event System
-// eventDispatcher.h
+// eventManager.h
 // Date: 2021-08-17
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_EVENT_SYSTEM_EVENT_DISPATCHER_H
-#define ATTA_EVENT_SYSTEM_EVENT_DISPATCHER_H
+#ifndef ATTA_EVENT_SYSTEM_EVENT_MANAGER_H
+#define ATTA_EVENT_SYSTEM_EVENT_MANAGER_H
 #include <atta/eventSystem/event.h>
 
 namespace atta
 {
 #define BIND_EVENT_FUNC(x) std::bind(&x, this, std::placeholders::_1)
 
-	class EventDispatcher final
+	class EventManager final
 	{
 	public:
 		using Callback = std::function<void(Event&)>;
@@ -25,4 +25,4 @@ namespace atta
 	};
 }
 
-#endif// ATTA_EVENT_SYSTEM_EVENT_DISPATCHER_H
+#endif// ATTA_EVENT_SYSTEM_EVENT_MANAGER_H

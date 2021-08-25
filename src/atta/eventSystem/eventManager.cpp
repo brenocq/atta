@@ -1,19 +1,19 @@
 //--------------------------------------------------
 // Atta Event System
-// eventDispatcher.cpp
+// eventManager.cpp
 // Date: 2021-08-17
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/eventSystem/eventDispatcher.h>
+#include <atta/eventSystem/eventManager.h>
 
 namespace atta
 {
-	void EventDispatcher::subscribe(Event::Type type, Callback&& callback)
+	void EventManager::subscribe(Event::Type type, Callback&& callback)
 	{
 		_observers[type].push_back(callback);
 	}
 
-	void EventDispatcher::publish(Event& event) const
+	void EventManager::publish(Event& event) const
 	{
 		Event::Type type = event.getType();
 

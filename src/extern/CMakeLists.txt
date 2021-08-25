@@ -32,5 +32,9 @@ add_library(imgui STATIC
 	${IMGUI_SOURCE}
 )
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
-atta_add_libs(imgui)
+target_link_libraries(imgui PRIVATE glfw)
+if(NOT MSVC)
+	target_compile_options(imgui PRIVATE -Wno-invalid-noreturn)
+endif()
 atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/imgui)
+atta_add_libs(imgui)

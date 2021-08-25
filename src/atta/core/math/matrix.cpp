@@ -849,6 +849,22 @@ namespace atta
 	}
 
 	// Multiply matrix with scalar
+    mat3 mat3::operator*(const float scalar) const
+	{
+		mat3 result;
+		result.data[0] = data[0]*scalar;
+		result.data[1] = data[1]*scalar;
+		result.data[2] = data[2]*scalar;
+		result.data[3] = data[3]*scalar;
+		result.data[4] = data[4]*scalar;
+		result.data[5] = data[5]*scalar;
+		result.data[6] = data[6]*scalar;
+		result.data[7] = data[7]*scalar;
+		result.data[8] = data[8]*scalar;
+
+		return result;
+	}
+
 	void mat3::operator*=(const float scalar)
 	{
 		data[0] *= scalar; data[1] *= scalar; data[2] *= scalar;

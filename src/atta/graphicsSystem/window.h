@@ -9,7 +9,7 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <atta/core/stringId.h>
-#include <atta/eventSystem/eventDispatcher.h>
+#include <atta/eventSystem/eventManager.h>
 #include <glad/glad.h>
 
 namespace atta
@@ -22,7 +22,7 @@ namespace atta
 				std::string title = "Atta - by Brenocq";
 				size_t width = 1600;
 				size_t height = 900;
-				std::shared_ptr<EventDispatcher> eventDispatcher;
+				std::shared_ptr<EventManager> eventManager;
 			};
 
 			enum class Event : atta::Event::Type
@@ -52,7 +52,7 @@ namespace atta
 			size_t _width, _height;
 			static unsigned _glfwWindowCounter;
 
-			std::shared_ptr<EventDispatcher> _eventDispatcher;
+			std::shared_ptr<EventManager> _eventManager;
 	};
 }
 

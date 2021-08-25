@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <gtest/gtest.h>
 #include <atta/eventSystem/event.h>
-#include <atta/eventSystem/eventDispatcher.h>
+#include <atta/eventSystem/eventManager.h>
 
 using namespace atta;
 namespace
@@ -52,7 +52,7 @@ namespace
 	TEST(EventSystem, Publish)
 	{
 		TestEvent e {2};
-		EventDispatcher dispatcher;
+		EventManager dispatcher;
 		dispatcher.publish(e);
 
 		EXPECT_EQ(e.handled, false);
@@ -63,7 +63,7 @@ namespace
 	{
 		using namespace std::placeholders;
 
-		EventDispatcher dispatcher;
+		EventManager dispatcher;
 		TestObserver observer;
 
 		dispatcher.subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer, _1));
@@ -75,7 +75,7 @@ namespace
 	{
 		using namespace std::placeholders;
 
-		EventDispatcher dispatcher;
+		EventManager dispatcher;
 		TestObserver observer0;
 		TestObserver observer1;
 		TestObserver observer2;
