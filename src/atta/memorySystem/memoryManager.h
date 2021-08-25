@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_MEMORY_MEMORY_MANAGER_H
 #define ATTA_MEMORY_MEMORY_MANAGER_H
-#include <atta/memory/allocator.h>
+#include <atta/memorySystem/allocator.h>
 #include <atta/core/stringId.h>
 
 namespace atta
@@ -20,7 +20,7 @@ namespace atta
 		}
 
 		// It is necessary to register the allocators to define its 
-		// type (stack, general, pool, ...) and parameters (size, ...)
+		// type (stack, pool, malloc,  ...) and parameters (size, ...)
 		static void registerAllocator(StringHash hash, Allocator* alloc);
 
 		// After registered, it is possible to get a pointer to the allocator
@@ -39,8 +39,7 @@ namespace atta
 
 		std::unordered_map<StringHash, Allocator*> _allocators;
 	};
-
 }
 
-#include <atta/memory/memoryManager.inl>
+#include <atta/memorySystem/memoryManager.inl>
 #endif// ATTA_MEMORY_MEMORY_MANAGER_H

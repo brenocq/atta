@@ -55,5 +55,5 @@ namespace atta
 	};
 }
 
-#include <atta/memory/allocatedObject.inl>
+#include <atta/memorySystem/allocatedObject.inl>
 #endif// ATTA_MEMORY_ALLOCATED_OBJECT_H

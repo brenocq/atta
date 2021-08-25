@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_MEMORY_ALLOCATORS_STACK_ALLOCATOR_H
 #define ATTA_MEMORY_ALLOCATORS_STACK_ALLOCATOR_H
-#include <atta/memory/allocator.h>
+#include <atta/memorySystem/allocator.h>
 
 namespace atta
 {
@@ -17,7 +17,10 @@ namespace atta
 	public:
 		using Marker = size_t;
 
+		// Allocate heap memory
 		StackAllocator(size_t size);
+		// Use already allocated memory
+		StackAllocator(uint8_t* memory, size_t size);
 		~StackAllocator();
 
 		// Simplified alloc/free
@@ -45,8 +48,9 @@ namespace atta
 		size_t _current;
 		size_t _size;
 		uint8_t* _memory;
+		bool _shouldFree;// True if _memory was allocated by this
 	};
 }
 
-#include <atta/memory/allocators/stackAllocator.inl>
+#include <atta/memorySystem/allocators/stackAllocator.inl>
 #endif// ATTA_MEMORY_ALLOCATORS_STACK_ALLOCATOR_H

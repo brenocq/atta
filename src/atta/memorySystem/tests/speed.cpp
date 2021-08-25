@@ -6,10 +6,10 @@
 //--------------------------------------------------
 #include <gtest/gtest.h>
 #include <atta/core/stringId.h>
-#include <atta/memory/memoryManager.h>
-#include <atta/memory/allocatedObject.h>
-#include <atta/memory/allocators/stackAllocator.h>
-#include <atta/memory/allocators/mallocAllocator.h>
+#include <atta/memorySystem/memoryManager.h>
+#include <atta/memorySystem/allocatedObject.h>
+#include <atta/memorySystem/allocators/stackAllocator.h>
+#include <atta/memorySystem/allocators/mallocAllocator.h>
 
 using namespace atta;
 namespace

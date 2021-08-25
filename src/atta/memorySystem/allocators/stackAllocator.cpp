@@ -4,20 +4,27 @@
 // Date: 2021-08-20
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/memory/allocators/stackAllocator.h>
+#include <atta/memorySystem/allocators/stackAllocator.h>
 
 namespace atta
 {
 	StackAllocator::StackAllocator(size_t size):
-		_current(0), _size(size)
+		_current(0), _size(size), _shouldFree(true)
 	{
 		_memory = static_cast<uint8_t*>(malloc(size));
 		//LOG_VERBOSE("StackAllocator", "Allocate heap memory of size $0", size);
 	}
 
+	StackAllocator::StackAllocator(uint8_t* memory, size_t size):
+		_current(0), _size(size), _memory(memory), _shouldFree(false)
+	{
+
+	}
+
 	StackAllocator::~StackAllocator()
 	{
-		free(_memory);
+		if(_shouldFree)
+			free(_memory);
 		//LOG_VERBOSE("StackAllocator", "Free heap memory");
 	}
 

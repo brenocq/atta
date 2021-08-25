@@ -4,7 +4,7 @@
 // Date: 2021-08-20
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/memory/memoryManager.h>
+#include <atta/memorySystem/memoryManager.h>
 
 namespace atta
 {
@@ -18,7 +18,7 @@ namespace atta
 		auto allocator = _allocators.find(hash);
 		if(allocator == _allocators.end())
 		{
-			//ASSERT(false, "Trying to use allocator that was never registered");
+			ASSERT(false, "Trying to use allocator that was never registered");
 			return nullptr;
 		}
 		else
@@ -30,7 +30,7 @@ namespace atta
 		auto allocator = _allocators.find(hash);
 		if(allocator == _allocators.end())
 		{
-			//ASSERT(false, "Trying to use allocator that was never registered");
+			ASSERT(false, "Trying to use allocator that was never registered");
 			return nullptr;
 		}
 		else

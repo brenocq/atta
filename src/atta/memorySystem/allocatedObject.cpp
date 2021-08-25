@@ -4,4 +4,4 @@
 // Date: 2021-08-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/memory/allocatedObject.h>
+#include <atta/memorySystem/allocatedObject.h>
