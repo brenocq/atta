@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <gtest/gtest.h>
-#include <atta/memory/allocators/stackAllocator.h>
+#include <atta/memorySystem/allocators/stackAllocator.h>
 
 using namespace atta;
 namespace

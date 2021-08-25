@@ -15,6 +15,8 @@
 #include <unordered_map>
 #include <limits>
 #include <cmath>
+#include <sstream>
+#include <iostream>
 
 #include "core/common.h"
 #include "core/log.h"

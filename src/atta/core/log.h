@@ -7,18 +7,59 @@
 #ifndef ATTA_CORE_LOG_H
 #define ATTA_CORE_LOG_H
 
+//---------------------------------//
+//------ Terminal Color Code ------//
+//---------------------------------//
+#define COLOR_RESET   		"\033[0m"
+#define COLOR_BOLD   		"\033[1m"
+#define COLOR_BLACK   		"\033[30m"      		/* Black */
+#define COLOR_RED     		"\033[31m"      		/* Red */
+#define COLOR_GREEN   		"\033[32m"      		/* Green */
+#define COLOR_YELLOW  		"\033[33m"      		/* Yellow */
+#define COLOR_BLUE    		"\033[34m"      		/* Blue */
+#define COLOR_MAGENTA 		"\033[35m"      		/* Magenta */
+#define COLOR_CYAN    		"\033[36m"      		/* Cyan */
+#define COLOR_WHITE   		"\033[37m"      		/* White */
+#define COLOR_RESET_BLACK   "\033[0m\033[30m"      	/* Black */
+#define COLOR_RESET_RED     "\033[0m\033[31m"      	/* Red */
+#define COLOR_RESET_GREEN   "\033[0m\033[32m"      	/* Green */
+#define COLOR_RESET_YELLOW  "\033[0m\033[33m"      	/* Yellow */
+#define COLOR_RESET_BLUE    "\033[0m\033[34m"      	/* Blue */
+#define COLOR_RESET_MAGENTA "\033[0m\033[35m"      	/* Magenta */
+#define COLOR_RESET_CYAN    "\033[0m\033[36m"      	/* Cyan */
+#define COLOR_RESET_WHITE   "\033[0m\033[37m"      	/* White */
+#define COLOR_BOLD_BLACK   	"\033[1m\033[30m"      	/* Bold Black */
+#define COLOR_BOLD_RED     	"\033[1m\033[31m"      	/* Bold Red */
+#define COLOR_BOLD_GREEN   	"\033[1m\033[32m"      	/* Bold Green */
+#define COLOR_BOLD_YELLOW  	"\033[1m\033[33m"      	/* Bold Yellow */
+#define COLOR_BOLD_BLUE    	"\033[1m\033[34m"      	/* Bold Blue */
+#define COLOR_BOLD_MAGENTA 	"\033[1m\033[35m"      	/* Bold Magenta */
+#define COLOR_BOLD_CYAN    	"\033[1m\033[36m"      	/* Bold Cyan */
+#define COLOR_BOLD_WHITE   	"\033[1m\033[37m"      	/* Bold White */
+
 namespace atta
 {
-
 	//---------------------------------//
 	//---------- Description ----------//
 	//---------------------------------//
 	// Create colored output logs with parameter pack
-	// Color examples: [w]  -> white
-	//                 [r]  -> red
-	//                 [*c] -> bold cyan
-	//                 [*y] -> bold yellow
-	//                 []   -> reset to log default color
+	// Colors: [w]  -> white
+	//         [r]  -> red
+	//         [g]  -> green
+	//         [b]  -> blue
+	//         [c]  -> cyan
+	//         [m]  -> magenta
+	//         [y]  -> yellow
+	//         [k]  -> black
+	//         [*w]  -> bold white
+	//         [*r]  -> bold red
+	//         [*g]  -> bold green
+	//         [*b]  -> bold blue
+	//         [*c]  -> bold cyan
+	//         [*m]  -> bold magenta
+	//         [*y]  -> bold yellow
+	//         [*k]  -> bold black
+	//         []   -> reset to default color
 	//
 	// Argument substitution: $0 -> first argument
 	//						  $1 -> second argument
@@ -38,29 +79,6 @@ namespace atta
 	// [Cool] Rainbow output // But with colors
 
 	//---------------------------------//
-	//------ Terminal Color Code ------//
-	//---------------------------------//
-	// https://stackoverflow.com/questions/9158150/colored-output-in-c/9158263
-	// The following are UBUNTU/LINUX, and MacOS ONLY terminal color codes.
-#define COLOR_RESET   		"\033[0m"
-#define COLOR_BLACK   		"\033[0m\033[30m"      	/* Black */
-#define COLOR_RED     		"\033[0m\033[31m"      	/* Red */
-#define COLOR_GREEN   		"\033[0m\033[32m"      	/* Green */
-#define COLOR_YELLOW  		"\033[0m\033[33m"      	/* Yellow */
-#define COLOR_BLUE    		"\033[0m\033[34m"      	/* Blue */
-#define COLOR_MAGENTA 		"\033[0m\033[35m"      	/* Magenta */
-#define COLOR_CYAN    		"\033[0m\033[36m"      	/* Cyan */
-#define COLOR_WHITE   		"\033[0m\033[37m"      	/* White */
-#define COLOR_BOLD_BLACK   	"\033[1m\033[30m"      	/* Bold Black */
-#define COLOR_BOLD_RED     	"\033[1m\033[31m"      	/* Bold Red */
-#define COLOR_BOLD_GREEN   	"\033[1m\033[32m"      	/* Bold Green */
-#define COLOR_BOLD_YELLOW  	"\033[1m\033[33m"      	/* Bold Yellow */
-#define COLOR_BOLD_BLUE    	"\033[1m\033[34m"      	/* Bold Blue */
-#define COLOR_BOLD_MAGENTA 	"\033[1m\033[35m"      	/* Bold Magenta */
-#define COLOR_BOLD_CYAN    	"\033[1m\033[36m"      	/* Bold Cyan */
-#define COLOR_BOLD_WHITE   	"\033[1m\033[37m"      	/* Bold White */
-
-	//---------------------------------//
 	//----------- Log class -----------//
 	//---------------------------------//
 	class Log final
@@ -78,112 +96,24 @@ namespace atta
 		const static LogLevel logLevel = LOG_LEVEL_VERBOSE;
 
 		template<class...Args>
-		static void verbose(std::string tag, std::string text, Args&&... args)
-		{
-			if(logLevel<=LOG_LEVEL_VERBOSE)
-				log(COLOR_BOLD_WHITE, tag, COLOR_WHITE, text, args...);
-		}
-
+		static void verbose(std::string tag, std::string text, Args&&... args);
 		template<class...Args>
-		static void debug(std::string tag, std::string text, Args&&... args)
-		{
-			if(logLevel<=LOG_LEVEL_DEBUG)
-				log(COLOR_BOLD_BLUE, tag, COLOR_BLUE, text, args...);
-		}
-
+		static void debug(std::string tag, std::string text, Args&&... args);
 		template<class...Args>
-		static void success(std::string tag, std::string text, Args&&... args)
-		{
-			if(logLevel<=LOG_LEVEL_SUCCESS)
-				log(COLOR_BOLD_GREEN, tag, COLOR_GREEN, text, args...);
-		}
-
+		static void success(std::string tag, std::string text, Args&&... args);
 		template<class...Args>
-		static void info(std::string tag, std::string text, Args&&... args)
-		{
-			if(logLevel<=LOG_LEVEL_INFO)
-				log(COLOR_BOLD_CYAN, tag, COLOR_CYAN, text, args...);
-		}
-
+		static void info(std::string tag, std::string text, Args&&... args);
 		template<class...Args>
-		static void warning(std::string tag, std::string text, Args&&... args)
-		{
-			if(logLevel<=LOG_LEVEL_WARNING)
-				log(COLOR_BOLD_YELLOW, tag, COLOR_YELLOW, text, args...);
-		}
-
+		static void warning(std::string tag, std::string text, Args&&... args);
 		template<class...Args>
-		static void error(std::string tag, std::string text, Args&&... args)
-		{
-			if(logLevel<=LOG_LEVEL_ERROR)
-				log(COLOR_BOLD_RED, tag, COLOR_RED, text, args...);
-		}
+		static void error(std::string tag, std::string text, Args&&... args);
 
 	private:
-		static void replace(std::string& str, const std::string& oldStr, const std::string& newStr);
-		
-		//---------- Convert parameters to string ----------//
-		static std::string toString(const char* str);
-		static std::string toString(std::string str);
-
-		template<class T>
-		static std::string toString(std::vector<T> vec)
-		{
-			std::string str = "{";
-			for(unsigned int i=0; i<vec.size(); i++)
-			{
-				str+=toString(vec[i]);
-				if(i<vec.size()-1)
-					str+=", ";
-			}
-			str+="}";
-
-			return str;
-		}
-
-		template<class T>
-		static std::string toString(T t)
-		{
-			return std::to_string(t);
-		}
-
 		//---------- Main log function ----------//
 		template<class...Args>
-		static void log(const char* tagColor, std::string tag, const char* textColor, std::string text, Args&&... args)
-		{
-			//int size = argSize(args...);
-			
-			// Replace special sequences by color (TODO more efficient algorithm)
-			replace(text, "[k]", std::string(COLOR_BLACK));
-			replace(text, "[r]", std::string(COLOR_RED));
-			replace(text, "[g]", std::string(COLOR_GREEN));
-			replace(text, "[y]", std::string(COLOR_YELLOW));
-			replace(text, "[b]", std::string(COLOR_BLUE));
-			replace(text, "[m]", std::string(COLOR_MAGENTA));
-			replace(text, "[c]", std::string(COLOR_CYAN));
-			replace(text, "[w]", std::string(COLOR_WHITE));
-			replace(text, "[*k]", std::string(COLOR_BOLD_BLACK));
-			replace(text, "[*r]", std::string(COLOR_BOLD_RED));
-			replace(text, "[*g]", std::string(COLOR_BOLD_GREEN));
-			replace(text, "[*y]", std::string(COLOR_BOLD_YELLOW));
-			replace(text, "[*b]", std::string(COLOR_BOLD_BLUE));
-			replace(text, "[*m]", std::string(COLOR_BOLD_MAGENTA));
-			replace(text, "[*c]", std::string(COLOR_BOLD_CYAN));
-			replace(text, "[*w]", std::string(COLOR_BOLD_WHITE));
-			replace(text, "[]", std::string(textColor));
-
-			// Replace arguments
-			std::vector<std::string> argsStr;
-			(argsStr.push_back(toString(std::forward<Args>(args))), ...);
-
-			for(unsigned int i=0; i<argsStr.size(); i++)
-				replace(text, "$"+std::to_string(i), argsStr[i]);
-
-			// Print [tag] text
-			std::string output = std::string(tagColor) + "[" + tag + "] " + textColor + text + COLOR_RESET + "\n";
-			std::cout << output;
-		}
+		static void log(const char* tagColor, std::string tag, const char* textColor, std::string text, Args&&... args);
 	};
+}
 
 #define LOG_VERBOSE(...) atta::Log::verbose(__VA_ARGS__)
 #define LOG_DEBUG(...) atta::Log::debug(__VA_ARGS__)
@@ -192,6 +122,5 @@ namespace atta
 #define LOG_WARN(...) atta::Log::warning(__VA_ARGS__)
 #define LOG_ERROR(...) atta::Log::error(__VA_ARGS__)
 
-}
-
+#include <atta/core/log.inl>
 #endif// ATTA_CORE_LOG_H

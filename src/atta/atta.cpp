@@ -6,6 +6,8 @@
 //--------------------------------------------------
 #include <atta/atta.h>
 #include <atta/eventSystem/events/windowMouseMoveEvent.h>
+#include <atta/memorySystem/memoryManager.h>
+#include <atta/memorySystem/allocators/stackAllocator.h>
 
 namespace atta
 {
@@ -16,6 +18,10 @@ namespace atta
 		_eventManager->subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
 
 		_graphicsManager = std::make_unique<GraphicsManager>(_eventManager);
+
+			MemoryManager::registerAllocator(
+				SID("Stack"), 
+				static_cast<Allocator*>(new StackAllocator(1024)));
 	}
 
 	Atta::~Atta()

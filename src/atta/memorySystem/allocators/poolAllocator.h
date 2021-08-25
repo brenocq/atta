@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_MEMORY_ALLOCATORS_POOL_ALLOCATOR_H
 #define ATTA_MEMORY_ALLOCATORS_POOL_ALLOCATOR_H
-#include <atta/memory/allocator.h>
+#include <atta/memorySystem/allocator.h>
 
 namespace atta
 {

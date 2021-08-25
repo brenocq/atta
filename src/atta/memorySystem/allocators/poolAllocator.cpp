@@ -4,7 +4,7 @@
 // Date: 2021-08-20
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/memory/allocators/poolAllocator.h>
+#include <atta/memorySystem/allocators/poolAllocator.h>
 
 namespace atta
 {

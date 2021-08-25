@@ -4,7 +4,7 @@
 // Date: 2021-08-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/memory/memoryManager.h>
+#include <atta/memorySystem/memoryManager.h>
 
 namespace atta
 {

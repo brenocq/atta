@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
 set(ATTA_CORE_SOURCE
-	log.cpp
 	stringId.cpp
 
 	math/bounds.cpp
