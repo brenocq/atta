@@ -14,6 +14,8 @@ namespace atta
 	class MallocAllocator : public Allocator
 	{
 	public:
+		MallocAllocator();
+
 		void* allocBytes(size_t size, size_t align) override;
 		void freeBytes(void* ptr, size_t size, size_t align) override;
 

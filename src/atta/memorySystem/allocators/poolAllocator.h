@@ -10,16 +10,34 @@
 
 namespace atta
 {
+	template<typename T>
 	class PoolAllocator : public Allocator
 	{
 	public:
-		PoolAllocator(size_t size);
-		~PoolAllocator();
+		// If blockAlign is set to zero, no alignment
+		PoolAllocator(size_t countBlocks, size_t blockAlign = 0);
+		PoolAllocator(uint8_t* memory, size_t countBlocks, size_t blockAlign = 0);
 
-		void* allocBytes(size_t size, size_t align) override { return nullptr; }
-		void freeBytes(void* ptr, size_t size, size_t align) override {}
+		// Simplified alloc/free
+		T* alloc(size_t count = 1);
+		void free(T* ptr, size_t count = 1);
+		void clear();
+
+		void* allocBytes(size_t size, size_t align);
+		void freeBytes(void* ptr, size_t size, size_t align);
+
+		union Block
+		{
+			T object;	
+			Block* next;
+		};
+
 	private:
+		size_t _blockCount;
+		size_t _blockAlign;
+		Block** _freeList;
 	};
 }
 
+#include <atta/memorySystem/allocators/poolAllocator.inl>
 #endif// ATTA_MEMORY_ALLOCATORS_POOL_ALLOCATOR_H
