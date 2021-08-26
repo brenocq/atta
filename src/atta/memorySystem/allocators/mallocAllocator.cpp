@@ -8,6 +8,12 @@
 
 namespace atta
 {
+	MallocAllocator::MallocAllocator():
+		Allocator(nullptr, 0)
+	{
+
+	}
+
 	void* MallocAllocator::allocBytes(size_t size, size_t align)
 	{
 		return malloc(size);

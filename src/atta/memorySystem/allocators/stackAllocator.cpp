@@ -9,23 +9,15 @@
 namespace atta
 {
 	StackAllocator::StackAllocator(size_t size):
-		_current(0), _size(size), _shouldFree(true)
+		Allocator(size), _current(0)
 	{
-		_memory = static_cast<uint8_t*>(malloc(size));
-		//LOG_VERBOSE("StackAllocator", "Allocate heap memory of size $0", size);
+
 	}
 
 	StackAllocator::StackAllocator(uint8_t* memory, size_t size):
-		_current(0), _size(size), _memory(memory), _shouldFree(false)
+		Allocator(memory, size), _current(0)
 	{
 
-	}
-
-	StackAllocator::~StackAllocator()
-	{
-		if(_shouldFree)
-			free(_memory);
-		//LOG_VERBOSE("StackAllocator", "Free heap memory");
 	}
 
 	void* StackAllocator::allocBytes(size_t size, size_t align)

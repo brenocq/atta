@@ -21,7 +21,6 @@ namespace atta
 		StackAllocator(size_t size);
 		// Use already allocated memory
 		StackAllocator(uint8_t* memory, size_t size);
-		~StackAllocator();
 
 		// Simplified alloc/free
 		template<typename T>
@@ -42,13 +41,9 @@ namespace atta
 
 		Marker getMarker() { return _current; }
 		size_t getUsedMemory() { return _current; }
-		size_t getTotalMemory() { return _size; }
 
 	private:
 		size_t _current;
-		size_t _size;
-		uint8_t* _memory;
-		bool _shouldFree;// True if _memory was allocated by this
 	};
 }
 

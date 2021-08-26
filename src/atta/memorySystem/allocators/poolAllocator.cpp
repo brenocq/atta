@@ -5,16 +5,3 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/memorySystem/allocators/poolAllocator.h>
-
-namespace atta
-{
-	PoolAllocator::PoolAllocator(size_t size)
-	{
-
-	}
-
-	PoolAllocator::~PoolAllocator()
-	{
-
-	}
-}

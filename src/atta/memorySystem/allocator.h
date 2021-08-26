@@ -12,18 +12,29 @@ namespace atta
 	class Allocator
 	{
 	public:
-		virtual ~Allocator() = default;
+		// Allocate memory
+		Allocator(size_t size);
+		// Use existing allocated memory
+		Allocator(uint8_t* memory, size_t size);
+		virtual ~Allocator();
 
 		// How many bytes to allocate
 		// size: number of bytes
 		// align: byte alignment
 		virtual void* allocBytes(size_t size, size_t align = 0) = 0;
 
-		// Free object at the pointer
+		// Free bytes at the pointer
 		// ptr: ptr at the start
 		// size: number of bytes
 		// align: byte alignment
 		virtual void freeBytes(void* ptr, size_t size, size_t align = 0) = 0;
+
+		size_t getTotalMemory() { return _size; }
+
+	protected:
+		uint8_t* _memory;
+		size_t _size;
+		bool _shouldFree;// True if _memory was allocated by this allocator
 	};
 }
 
