@@ -48,6 +48,7 @@ endif()
 ########## Output Directories ##########
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "" FORCE)
+set(ATTA_TEST_PATH ${CMAKE_BINARY_DIR}/bin/tests CACHE INTERNAL "" FORCE)
 set(ATTA_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 
 ########## Precompiled Headers ##########
@@ -80,6 +81,14 @@ macro(atta_target_common target)
 	target_include_directories(${target} PRIVATE ${ATTA_INCLUDE_DIRS})
 	target_compile_options(${target} PRIVATE ${ATTA_OPTIONS})
 	target_compile_definitions(${target} PRIVATE ${ATTA_DEFINITIONS})
+endmacro()
+
+macro(atta_create_local_test target sources libs)
+	message(${sources})
+	add_executable(${target} ${sources})
+	atta_target_common(${target})
+	target_link_libraries(${target} PRIVATE ${libs} gtest_main)
+	set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ATTA_TEST_PATH})
 endmacro()
 
 ########## Atta/Extern ##########
