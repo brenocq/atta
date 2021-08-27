@@ -35,7 +35,7 @@ namespace atta
 	private:
 		size_t _blockCount;
 		size_t _blockAlign;
-		Block** _freeList;
+		Block* _freeList;
 	};
 }
 
