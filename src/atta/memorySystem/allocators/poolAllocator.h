@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Memory
+// Atta Memory System
 // poolAllocator.h
 // Date: 2021-08-20
 // By Breno Cunha Queiroz
@@ -11,28 +11,31 @@
 namespace atta
 {
 	template<typename T>
-	class PoolAllocator : public Allocator
+	class PoolAllocator final : public Allocator
 	{
 	public:
 		// If blockAlign is set to zero, no alignment
+		// Allocate heap memory
 		PoolAllocator(size_t countBlocks, size_t blockAlign = 0);
+		// Use already allocated memory
 		PoolAllocator(uint8_t* memory, size_t countBlocks, size_t blockAlign = 0);
 
 		// Simplified alloc/free
 		T* alloc(size_t count = 1);
 		void free(T* ptr, size_t count = 1);
+
+		void* allocBytes(size_t size, size_t align) override;
+		void freeBytes(void* ptr, size_t size, size_t align) override;
+
 		void clear();
 
-		void* allocBytes(size_t size, size_t align);
-		void freeBytes(void* ptr, size_t size, size_t align);
-
+	private:
 		union Block
 		{
 			T object;	
 			Block* next;
 		};
 
-	private:
 		size_t _blockCount;
 		size_t _blockAlign;
 		Block* _freeList;

@@ -47,11 +47,7 @@ namespace
 		}
 	};
 
-	TEST_F(Memory_Speed, RegisterAllocator)
-	{
-	}
-
-	TEST_F(Memory_Speed, DefaultCpp)
+	TEST_F(Memory_Speed, DefaultNewCpp)
 	{
 		TestCpp* a[NUM_OBJ];
 		for(int it = 0; it < NUM_IT; it++)

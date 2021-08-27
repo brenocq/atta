@@ -35,6 +35,7 @@ namespace
 			EXPECT_NE(i0, nullptr);
 			EXPECT_NE(i1, nullptr);
 			EXPECT_EQ(i2, nullptr);
+			if(i0 == nullptr || i1 == nullptr) GTEST_SKIP();
 
 			*i0 = 10;
 			*i1 = 20;
@@ -54,6 +55,7 @@ namespace
 			EXPECT_NE(i0, nullptr);
 			EXPECT_NE(i1, nullptr);
 			EXPECT_EQ(i2, nullptr);
+			if(i0 == nullptr || i1 == nullptr) GTEST_SKIP();
 
 			*i0 = 10;
 			*i1 = 20;
@@ -73,6 +75,7 @@ namespace
 		EXPECT_NE(o0, nullptr);
 		EXPECT_NE(o1, nullptr);
 		EXPECT_EQ(o2, nullptr);
+		if(o0 == nullptr || o1 == nullptr) GTEST_SKIP();
 
 		o0->x[0] = 10;
 		o1->y[10] = 20;
@@ -91,6 +94,7 @@ namespace
 		EXPECT_NE(i0, nullptr);
 		EXPECT_NE(i1, nullptr);
 		EXPECT_EQ(i2, nullptr);
+		if(i0 == nullptr || i1 == nullptr) GTEST_SKIP();
 
 		*i0 = 10;
 		*i1 = 20;
@@ -100,6 +104,7 @@ namespace
 		*i2 = 30;
 
 		EXPECT_NE(i2, nullptr);
+		if(i2 == nullptr) GTEST_SKIP();
 		EXPECT_EQ(*i0, 30);
 		EXPECT_EQ(*i2, 30);
 	}
