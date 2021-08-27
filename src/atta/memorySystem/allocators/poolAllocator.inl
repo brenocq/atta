@@ -10,7 +10,8 @@ namespace atta
 	PoolAllocator<T>::PoolAllocator(size_t blockCount, size_t blockAlign):
 		Allocator(blockAlign == 0 ? sizeof(Block)*blockCount : blockAlign*blockCount),
 		_blockCount(blockCount),
-		_blockAlign(blockAlign == 0 ? sizeof(Block) : blockAlign)
+		_blockAlign(blockAlign == 0 ? sizeof(Block) : blockAlign),
+		_freeList(nullptr)
 	{
 		DASSERT(_blockCount > 0, "Pool should have more than 0 blocks");
 		DASSERT(_blockAlign >= sizeof(Block), "Block align must be equal or greater than the block size");
@@ -23,7 +24,8 @@ namespace atta
 	PoolAllocator<T>::PoolAllocator(uint8_t* memory, size_t blockCount, size_t blockAlign):
 		Allocator(memory, blockAlign == 0 ? sizeof(Block)*blockCount : blockAlign*blockCount),
 		_blockCount(blockCount),
-		_blockAlign(blockAlign == 0 ? sizeof(Block) : blockAlign)
+		_blockAlign(blockAlign == 0 ? sizeof(Block) : blockAlign),
+		_freeList(nullptr)
 	{
 		DASSERT(_blockCount > 0, "Pool should have more than 0 blocks");
 		DASSERT(_blockAlign >= sizeof(Block), "Block align must be equal or greater than the block size");
@@ -50,8 +52,8 @@ namespace atta
 	template <typename T>
 	void PoolAllocator<T>::clear()
 	{
-		Block* block = reinterpret_cast<Block*>(_memory);
-		*_freeList = block;
+		Block* block = reinterpret_cast<Block*>(Allocator::_memory);
+		_freeList = block;
 		for(size_t i = 0; i < _blockCount-1; i++)
 		{
 			block[i].next = &block[i+1];
@@ -65,12 +67,12 @@ namespace atta
 		DASSERT(size == sizeof(T), "AllocBytes with more than one block is not supported yet");
 
 		// Check if there are block availables
-		if(*_freeList == nullptr)
+		if(_freeList == nullptr)
 			return nullptr;
 
 		// Update freelist and return block
-		Block* block = *_freeList;
-		*_freeList = block->next;
+		Block* block = _freeList;
+		_freeList = block->next;
 		return reinterpret_cast<void*>(&block->object);
 	}
 
@@ -80,11 +82,11 @@ namespace atta
 		DASSERT(size == sizeof(T), "AllocBytes with more than one block is not supported yet");
 
 		Block* block = static_cast<Block*>(ptr);
-		Block* last = *_freeList;
+		Block* last = _freeList;
 
 		// Add block to end of the list
 		block->next = last;
 		// Update list root
-		*_freeList = block;
+		_freeList = block;
 	}
 }
