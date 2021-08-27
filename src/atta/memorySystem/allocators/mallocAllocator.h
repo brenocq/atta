@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Memory
+// Atta Memory System
 // mallocAllocator.h
 // Date: 2021-08-24
 // By Breno Cunha Queiroz
@@ -11,7 +11,7 @@
 namespace atta
 {
 	// Allocator for profiling purpose only, it uses malloc() behind
-	class MallocAllocator : public Allocator
+	class MallocAllocator final : public Allocator
 	{
 	public:
 		MallocAllocator();

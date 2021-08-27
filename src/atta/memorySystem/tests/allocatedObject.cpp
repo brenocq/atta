@@ -61,11 +61,11 @@ namespace
 
 		//----- Check stack size -----//
 		StackAllocator* stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
-		EXPECT_EQ(stackA->getTotalMemory(), sizeof(int)*3);
+		EXPECT_EQ(stackA->getSize(), sizeof(int)*3);
 		EXPECT_EQ(stackA->getUsedMemory(), sizeof(int)*3);
 
 		StackAllocator* stackB = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestB"));
-		EXPECT_EQ(stackB->getTotalMemory(), sizeof(int)*2);
+		EXPECT_EQ(stackB->getSize(), sizeof(int)*2);
 		EXPECT_EQ(stackB->getUsedMemory(), sizeof(int));
 	}
 
@@ -73,7 +73,7 @@ namespace
 	{
 		StackAllocator* stackA = MemoryManager::getAllocator<StackAllocator>(SID("Stack_TestA"));
 		stackA->clear();
-		EXPECT_EQ(stackA->getTotalMemory(), sizeof(int)*3);
+		EXPECT_EQ(stackA->getSize(), sizeof(int)*3);
 		EXPECT_EQ(stackA->getUsedMemory(), 0);
 
 		TestA *a0, *a1, *a2;

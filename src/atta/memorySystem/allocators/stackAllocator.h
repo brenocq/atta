@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Memory
+// Atta Memory System
 // stackAllocator.h
 // Date: 2021-08-20
 // By Breno Cunha Queiroz
@@ -12,7 +12,7 @@ namespace atta
 {
 	// Allocator to objects of variable size. To deallocate can return stack to saved marker.
 	// Can free the memory using rollback or deallocate
-	class StackAllocator : public Allocator
+	class StackAllocator final : public Allocator
 	{
 	public:
 		using Marker = size_t;
@@ -26,15 +26,13 @@ namespace atta
 		template<typename T>
 		T* alloc(size_t size = 1);
 		template<typename T>
-		void free(T* ptr);
-		template<typename T>
-		void free(T* ptr, size_t size);
+		void free(T* ptr, size_t size = 1);
 
 		// Default alloc/free
 		void* allocBytes(size_t size, size_t align) override;
 		void freeBytes(void* ptr, size_t size, size_t align) override;
 
-		// Return stack to the marker (free up to the marker)
+		// Return stack to marker (free up to marker)
 		void rollback(Marker marker) { _current = marker; }
 		// Clear entire stack
 		void clear() { _current = 0; }

@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Memory
+// Atta Memory System
 // mallocAllocator.cpp
 // Date: 2021-08-24
 // By Breno Cunha Queiroz

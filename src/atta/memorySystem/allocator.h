@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Memory
+// Atta Memory System
 // allocator.h
 // Date: 2021-08-20
 // By Breno Cunha Queiroz
@@ -29,7 +29,7 @@ namespace atta
 		// align: byte alignment
 		virtual void freeBytes(void* ptr, size_t size, size_t align = 0) = 0;
 
-		size_t getTotalMemory() { return _size; }
+		size_t getSize() { return _size; }
 
 	protected:
 		uint8_t* _memory;

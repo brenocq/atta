@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Memory
+// Atta Memory System
 // stackAllocator.cpp
 // Date: 2021-08-20
 // By Breno Cunha Queiroz

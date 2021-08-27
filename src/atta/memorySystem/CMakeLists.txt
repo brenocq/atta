@@ -7,6 +7,7 @@ set(ATTA_MEMORY_SOURCE
 	allocators/stackAllocator.cpp
 	allocators/poolAllocator.cpp
 	allocators/mallocAllocator.cpp
+	allocators/bitmapAllocator.cpp
 )
 
 add_library(atta_memory_lib STATIC
@@ -19,6 +20,7 @@ atta_add_libs(atta_memory_lib)
 atta_add_tests(
 	"tests/stackAllocator.cpp"
 	"tests/poolAllocator.cpp"
+	"tests/bitmapAllocator.cpp"
 	"tests/allocatedObject.cpp"
 	"tests/speed.cpp"
 )

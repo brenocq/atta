@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Memory
+// Atta Memory System
 // allocatedObject.inl
 // Date: 2021-08-21
 // By Breno Cunha Queiroz

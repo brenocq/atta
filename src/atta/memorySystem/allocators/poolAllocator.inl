@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Memory
+// Atta Memory System
 // poolAllocator.inl
 // Date: 2021-08-25
 // By Breno Cunha Queiroz
