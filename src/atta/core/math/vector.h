@@ -125,15 +125,19 @@ namespace atta
 
 	// Right multiply scalar
 	template <typename T>
-	vector4<T> operator*(T value, vector4<T> const &vec);
+	vector4<T> operator*(T value, vector4<T> const& vec);
 
 	// Normalize
 	template <typename T>
-	inline vector4<T> normalize(const vector4<T> &v);
+	inline vector4<T> normalize(const vector4<T>& v);
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector4<T> &v1, const vector4<T> &v2);
+	inline float dot(const vector4<T>& v1, const vector4<T>& v2);
+
+	// Length
+	template <typename T>
+	inline float length(const vector4<T>& v);
 
 	// <<
 	template <typename T>
@@ -154,7 +158,8 @@ namespace atta
         	vector3(): x(0), y(0), z(0) {}
         	vector3(T _x): x(_x), y(_x), z(_x) {}
         	vector3(T _x, T _y, T _z): x(_x), y(_y), z(_z) {}
-        	vector3(vector4<T> vector): x(vector.x), y(vector.y), z(vector.z) {}
+			template <typename U>
+			vector3(vector4<U> v): x(v.x), y(v.y), z(v.z) {}
 			template <typename U>
         	vector3(vector2<U> v, T _z): x(v.x), y(v.y), z(_z) {}
 			template <typename U>
@@ -270,6 +275,10 @@ namespace atta
 	template <typename T>
 	inline float dot(const vector3<T> &v1, const vector3<T> &v2);
 
+	// Length
+	template <typename T>
+	inline float length(const vector3<T>& v);
+
 	// <<
 	template <typename T>
 	inline std::ostream& operator<<(std::ostream& os, const vector3<T>& v);
@@ -287,7 +296,9 @@ namespace atta
         	vector2(T _x, T _y): x(_x), y(_y) {}
         	vector2(T _x): x(_x), y(_x) {}
 			template <typename U>
-        	vector2(vector3<U> v): x(v.x), y(v.y) {}
+			vector2(vector3<U> v): x(v.x), y(v.y) {}
+			template <typename U>
+			vector2(vector4<U> v): x(v.x), y(v.y) {}
 
 			template <typename U>
 			void operator=(vector2<U> v);
@@ -387,15 +398,19 @@ namespace atta
 
 	// Right multiply scalar
 	template <typename T>
-	vector2<T> operator*(T value, vector2<T> const &vec);
+	vector2<T> operator*(T value, const vector2<T>& vec);
 
 	// Normalize
 	template <typename T>
-	inline vector2<T> normalize(const vector2<T> &v);
+	inline vector2<T> normalize(const vector2<T>& v);
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector2<T> &v1, const vector2<T> &v2);
+	inline float dot(const vector2<T>& v1, const vector2<T>& v2);
+
+	// Length
+	template <typename T>
+	inline float length(const vector2<T>& v);
 
 	// <<
 	template <typename T>

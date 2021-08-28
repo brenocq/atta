@@ -279,14 +279,14 @@ namespace atta
 	//---------- External ----------//
 	// Right multiply scalar
 	template <typename T>
-	vector3<T> operator*(T value, vector3<T> const &vec)
+	vector3<T> operator*(T value, vector3<T> const& vec)
 	{
 		return vec*value;
 	}
 
 	// Cross
 	template <typename T>
-	inline vector3<T> cross(const vector3<T> &v1, const vector3<T> &v2)
+	inline vector3<T> cross(const vector3<T>& v1, const vector3<T>& v2)
 	{
 		// Using always double to avoid float-pointing error
 		double xd = v1.x, yd = v1.y, zd = v1.z;
@@ -308,9 +308,16 @@ namespace atta
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector3<T> &v1, const vector3<T> &v2)
+	inline float dot(const vector3<T>& v1, const vector3<T>& v2)
 	{
 		return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
+	}
+
+	// Length
+	template <typename T>
+	inline float length(const vector3<T>& v)
+	{
+		return v.length();
 	}
 
 	// <<

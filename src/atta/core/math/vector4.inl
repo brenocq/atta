@@ -272,14 +272,14 @@ namespace atta
 	//---------- External ----------//
 	// Right multiply scalar
 	template <typename T>
-	vector4<T> operator*(T value, vector4<T> const &vec)
+	vector4<T> operator*(T value, vector4<T> const& vec)
 	{
 		return vec*value;
 	}
 
 	// Normalize
 	template <typename T>
-	inline vector4<T> normalize(const vector4<T> &v)
+	inline vector4<T> normalize(const vector4<T>& v)
 	{
 		float l = v.length();
 		if(l > 0)
@@ -289,9 +289,16 @@ namespace atta
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector4<T> &v1, const vector4<T> &v2)
+	inline float dot(const vector4<T>& v1, const vector4<T>& v2)
 	{
-		return v1.x*v2.x * v1.y*v2.y * v1.z*v2.z * v1.w*v2.w;
+		return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z + v1.w*v2.w;
+	}
+
+	// Length
+	template <typename T>
+	inline float length(const vector4<T>& v)
+	{
+		return v.length();
 	}
 
 	// <<

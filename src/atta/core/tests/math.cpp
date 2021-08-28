@@ -29,6 +29,22 @@ namespace
 			vec2 v3 = { 1.0f, 2.0f };
 			EXPECT_EQ(v3.x, 1.0f);
 			EXPECT_EQ(v3.y, 2.0f);
+
+			vec2 v4(vec3(0.0f, 1.0f, 2.0f));
+			EXPECT_EQ(v4.x, 0.0f);
+			EXPECT_EQ(v4.y, 1.0f);
+
+			vec2 v5 = vec3(0.0f, 1.0f, 2.0f);
+			EXPECT_EQ(v5.x, 0.0f);
+			EXPECT_EQ(v5.y, 1.0f);
+
+			vec2 v6(vec4(0.0f, 1.0f, 2.0f, 3.0f));
+			EXPECT_EQ(v6.x, 0.0f);
+			EXPECT_EQ(v6.y, 1.0f);
+
+			vec2 v7 = vec4(0.0f, 1.0f, 2.0f, 3.0f);
+			EXPECT_EQ(v7.x, 0.0f);
+			EXPECT_EQ(v7.y, 1.0f);
 		}
 
 		//---------- vec3 ----------//
@@ -62,6 +78,16 @@ namespace
 			EXPECT_EQ(v5.x, 0.0f);
 			EXPECT_EQ(v5.y, 1.0f);
 			EXPECT_EQ(v5.z, 2.0f);
+
+			vec3 v6 = vec4(0.0f, 1.0f, 2.0f, 3.0f);
+			EXPECT_EQ(v6.x, 0.0f);
+			EXPECT_EQ(v6.y, 1.0f);
+			EXPECT_EQ(v6.z, 2.0f);
+
+			vec3 v7(vec4(0.0f, 1.0f, 2.0f, 3.0f));
+			EXPECT_EQ(v7.x, 0.0f);
+			EXPECT_EQ(v7.y, 1.0f);
+			EXPECT_EQ(v7.z, 2.0f);
 		}
 
 		//---------- vec4 ----------//
@@ -286,6 +312,159 @@ namespace
 			EXPECT_EQ(u4.y, 0.5f);
 			EXPECT_EQ(u4.z, 1.0f);
 			EXPECT_EQ(u4.w, 1.5f);
+		}
+	}
+
+	TEST(Core_Math_Vector, LogicalOperations)
+	{
+		EXPECT_FALSE(vec2(0.0f, 1.1f) == vec2(0.0f, 1.0f));
+		EXPECT_FALSE(vec3(0.0f, 1.1f, 2.2f) == vec3(0.0f, 1.0f, 2.0f));
+		EXPECT_FALSE(vec4(0.0f, 1.1f, 2.2f, 3.3f) == vec4(0.0f, 1.0f, 2.0f, 3.0f));
+		EXPECT_TRUE(vec2(0.0f, 1.0f) == vec2(0.0f, 1.0f));
+		EXPECT_TRUE(vec3(0.0f, 1.0f, 2.0f) == vec3(0.0f, 1.0f, 2.0f));
+		EXPECT_TRUE(vec4(0.0f, 1.0f, 2.0f, 3.0f) == vec4(0.0f, 1.0f, 2.0f, 3.0f));
+
+		EXPECT_FALSE(vec2(0.0f, 1.0f) != vec2(0.0f, 1.0f));
+		EXPECT_FALSE(vec3(0.0f, 1.0f, 2.0f) != vec3(0.0f, 1.0f, 2.0f));
+		EXPECT_FALSE(vec4(0.0f, 1.0f, 2.0f, 3.0f) != vec4(0.0f, 1.0f, 2.0f, 3.0f));
+		EXPECT_TRUE(vec2(0.0f, 1.1f) != vec2(0.0f, 1.0f));
+		EXPECT_TRUE(vec3(0.0f, 1.1f, 2.2f) != vec3(0.0f, 1.0f, 2.0f));
+		EXPECT_TRUE(vec4(0.0f, 1.1f, 2.2f, 3.3f) != vec4(0.0f, 1.0f, 2.0f, 3.0f));
+
+		EXPECT_FALSE(vec2(0.0f, 0.0f) < vec2(0.0f, 1.0f));
+		EXPECT_FALSE(vec3(0.0f, 0.0f, 0.0f) < vec3(0.0f, 1.0f, 2.0f));
+		EXPECT_FALSE(vec4(0.0f, 0.0f, 0.0f, 0.0f) < vec4(0.0f, 1.0f, 2.0f, 3.0f));
+		EXPECT_TRUE(vec2(0.0f, 0.0f) < vec2(0.1f, 1.0f));
+		EXPECT_TRUE(vec3(0.0f, 0.0f, 0.0f) < vec3(0.1f, 1.0f, 2.0f));
+		EXPECT_TRUE(vec4(0.0f, 0.0f, 0.0f, 0.0f) < vec4(0.1f, 1.0f, 2.0f, 3.0f));
+
+		EXPECT_FALSE(vec2(0.0f, 0.0f) <= vec2(-1.0f, 1.0f));
+		EXPECT_FALSE(vec3(0.0f, 0.0f, 0.0f) <= vec3(-1.0f, 1.0f, 2.0f));
+		EXPECT_FALSE(vec4(0.0f, 0.0f, 0.0f, 0.0f) <= vec4(-1.0f, 1.0f, 2.0f, 3.0f));
+		EXPECT_TRUE(vec2(0.0f, 0.0f) <= vec2(0.0f, 1.0f));
+		EXPECT_TRUE(vec3(0.0f, 0.0f, 0.0f) <= vec3(0.0f, 1.0f, 2.0f));
+		EXPECT_TRUE(vec4(0.0f, 0.0f, 0.0f, 0.0f) <= vec4(0.0f, 1.0f, 2.0f, 3.0f));
+
+		EXPECT_FALSE(vec2(0.0f, 1.0f) > vec2(0.0f, 0.0f));
+		EXPECT_FALSE(vec3(0.0f, 1.0f, 2.0f) > vec3(0.0f, 0.0f, 0.0f));
+		EXPECT_FALSE(vec4(0.0f, 1.0f, 2.0f, 3.0f) > vec4(0.0f, 0.0f, 0.0f, 0.0f));
+		EXPECT_TRUE(vec2(0.1f, 1.0f) > vec2(0.0f, 0.0f));
+		EXPECT_TRUE(vec3(0.1f, 1.0f, 2.0f) > vec3(0.0f, 0.0f, 0.0f));
+		EXPECT_TRUE(vec4(0.1f, 1.0f, 2.0f, 3.0f) > vec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+		EXPECT_FALSE(vec2(-1.0f, 1.0f) >= vec2(0.0f, 0.0f));
+		EXPECT_FALSE(vec3(-1.0f, 1.0f, 2.0f) >= vec3(0.0f, 0.0f, 0.0f));
+		EXPECT_FALSE(vec4(-1.0f, 1.0f, 2.0f, 3.0f) >= vec4(0.0f, 0.0f, 0.0f, 0.0f));
+		EXPECT_TRUE(vec2(0.0f, 1.0f) >= vec2(0.0f, 0.0f));
+		EXPECT_TRUE(vec3(0.0f, 1.0f, 2.0f) >= vec3(0.0f, 0.0f, 0.0f));
+		EXPECT_TRUE(vec4(0.0f, 1.0f, 2.0f, 3.0f) >= vec4(0.0f, 0.0f, 0.0f, 0.0f));
+	}
+
+	TEST(Core_Math_Vector, SpecialFunctions)
+	{
+		// vec2
+		{
+			vec2 v(1.0f, 2.0f);
+			// Dot
+			EXPECT_EQ(v.dot(vec2(0.0f, 2.0f)), 4.0f);
+			EXPECT_EQ(dot(v, vec2(0.0f, 2.0f)), 4.0f);
+
+			// Length
+			EXPECT_EQ(v.squareLength(), 5.0f);
+			EXPECT_NEAR(v.length(), sqrt(v.squareLength()), 0.0001f);
+
+			// Unit
+			vec2 vUnit = v.unit();
+			EXPECT_EQ(vUnit.x, 1.0f/v.length());
+			EXPECT_EQ(vUnit.y, 2.0f/v.length());
+
+			// Min max
+			EXPECT_EQ(v.minComponent(), 1.0f);
+			EXPECT_EQ(v.maxComponent(), 2.0f);
+
+			// Normalize
+			vec2 vNorm = normalize(v);
+			EXPECT_EQ(vNorm, v.unit());
+
+			v.invert();
+			EXPECT_EQ(v, vec2(-1.0f, -2.0f));
+
+			v.normalize();
+			EXPECT_EQ(v, -vNorm);
+
+			v.clear();
+			EXPECT_EQ(v, vec2(0.0f, 0.0f));
+		}
+
+		// vec3
+		{
+			vec3 v(1.0f, 2.0f, 3.0f);
+			// Dot
+			EXPECT_EQ(v.dot(vec3(0.0f, 2.0f, 3.0f)), 13.0f);
+			EXPECT_EQ(dot(v, vec3(0.0f, 2.0f, 3.0f)), 13.0f);
+
+			// Length
+			EXPECT_EQ(v.squareLength(), 14.0f);
+			EXPECT_NEAR(v.length(), sqrt(v.squareLength()), 0.0001f);
+
+			// Unit
+			vec3 vUnit = v.unit();
+			EXPECT_EQ(vUnit.x, 1.0f/v.length());
+			EXPECT_EQ(vUnit.y, 2.0f/v.length());
+			EXPECT_EQ(vUnit.z, 3.0f/v.length());
+
+			// Min max
+			EXPECT_EQ(v.minComponent(), 1.0f);
+			EXPECT_EQ(v.maxComponent(), 3.0f);
+
+			// Normalize
+			vec3 vNorm = normalize(v);
+			EXPECT_EQ(vNorm, v.unit());
+
+			v.invert();
+			EXPECT_EQ(v, vec3(-1.0f, -2.0f, -3.0f));
+
+			v.normalize();
+			EXPECT_EQ(v, -vNorm);
+
+			v.clear();
+			EXPECT_EQ(v, vec3(0.0f, 0.0f, 0.0f));
+		}
+
+		// vec4
+		{
+			vec4 v(1.0f, 2.0f, 3.0f, 4.0f);
+			// Dot
+			EXPECT_EQ(v.dot(vec4(0.0f, 2.0f, 3.0f, 4.0f)), 29.0f);
+			EXPECT_EQ(dot(v, vec4(0.0f, 2.0f, 3.0f, 4.0f)), 29.0f);
+
+			// Length
+			EXPECT_EQ(v.squareLength(), 30.0f);
+			EXPECT_NEAR(v.length(), sqrt(v.squareLength()), 0.0001f);
+
+			// Unit
+			vec4 vUnit = v.unit();
+			EXPECT_NEAR(vUnit.x, 1.0f/v.length(), 0.0001f);
+			EXPECT_NEAR(vUnit.y, 2.0f/v.length(), 0.0001f);
+			EXPECT_NEAR(vUnit.z, 3.0f/v.length(), 0.0001f);
+			EXPECT_NEAR(vUnit.w, 4.0f/v.length(), 0.0001f);
+
+			// Min max
+			EXPECT_EQ(v.minComponent(), 1.0f);
+			EXPECT_EQ(v.maxComponent(), 4.0f);
+
+			// Normalize
+			vec4 vNorm = normalize(v);
+			EXPECT_NEAR(length(vNorm - v.unit()), 0.0f, 0.0001f);
+
+			v.invert();
+			EXPECT_NEAR(length(v - vec4(-1.0f, -2.0f, -3.0f, -4.0f)), 0.0f, 0.0001f);
+
+			v.normalize();
+			EXPECT_NEAR(length(v + vNorm), 0.0f, 0.0001f);
+
+			v.clear();
+			EXPECT_EQ(v, vec4(0.0f, 0.0f, 0.0f, 0.0f));
 		}
 	}
 
