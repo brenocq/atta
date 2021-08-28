@@ -14,7 +14,7 @@
 using namespace atta;
 namespace
 {
-	constexpr int NUM_IT = 100;
+	constexpr int NUM_IT = 1000;
 	constexpr int NUM_OBJ = 5000;
 
 	struct TestStack : public AllocatedObject<TestStack, SID("Stack")>

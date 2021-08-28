@@ -36,224 +36,108 @@ namespace atta
 			vector4(vector2<T> v0, vector2<T> v1): x(v0.x), y(v0.y), z(v1.x), w(v1.y) {}
 			vector4(T _x, T _y, vector2<T> vector): x(_x), y(_y), z(vector.x), w(vector.y) {}
 
-			T operator[](unsigned i) const
-			{
-				if(i == 0) return x;
-				if(i == 1) return y;
-				if(i == 2) return z;
-				return w;
-			}
+			T operator[](unsigned i) const;
 
 			// Add vector
 			template <typename U>
-			void operator+=(const vector4<U>& v)
-			{
-				x += v.x;
-				y += v.y;
-				z += v.z;
-				w += v.w;
-			}
-
+			void operator+=(const vector4<U>& v);
 			template <typename U>
-			vector4<T> operator+(const vector4<U>& v) const
-			{
-				return vector4<T>(x+v.x, y+v.y, z+v.z, w+v.w);
-			}
+			vector4<T> operator+(const vector4<U>& v) const;
+
+			// Add scalar
+			template <typename U>
+			void operator+=(const U value);
+			template <typename U>
+			vector4<T> operator+(const U value) const;
 
 			// Subtract vector
 			template <typename U>
-			void operator-=(const vector4<U>& v)
-			{
-				x -= v.x;
-				y -= v.y;
-				z -= v.z;
-				w -= v.w;
-			}
-
+			void operator-=(const vector4<U>& v);
 			template <typename U>
-			vector4<T> operator-(const vector4<U>& v) const
-			{
-				return vector4<T>(x-v.x, y-v.y, z-v.z, w-v.w);
-			}
+			vector4<T> operator-(const vector4<U>& v) const;
 
-			vector4<T> operator-() const
-			{
-				return vector4<T>(-x, -y, -z, -w);
-			}
+			// Subtract scalar
+			template <typename U>
+			void operator-=(const U value);
+			template <typename U>
+			vector4<T> operator-(const U value) const;
+			vector4<T> operator-() const;
 
 			// Multiply scalar
 			template <typename U>
-			void operator*=(const U value)
-			{
-				x *= value;
-				y *= value;
-				z *= value;
-				w *= value;
-			}
-
+			void operator*=(const U value);
 			template <typename U>
-			vector4<T> operator*(const U value) const
-			{
-				return vector4<T>(x*value, y*value, z*value, w*value);
-			}
+			vector4<T> operator*(const U value) const;
 
 			// Divide scalar
 			template <typename U>
-			void operator/=(const U value)
-			{
-				x /= value;
-				y /= value;
-				z /= value;
-				w /= value;
-			}
-
+			void operator/=(const U value);
 			template <typename U>
-			vector4<T> operator/(const U value) const
-			{
-				return vector4<T>(x/value, y/value, z/value, w/value);
-			}
+			vector4<T> operator/(const U value) const;
+
+			// Divide vector
+			template <typename U>
+			void operator/=(const vector4<U>& v);
+			template <typename U>
+			vector4<T> operator/(const vector4<U>& v) const;
 
 			// Multiply vector
 			template <typename U>
-			void operator*=(const vector4<U> vector)
-			{
-				x *= vector.x;
-				y *= vector.y;
-				z *= vector.z;
-				w *= vector.w;
-			}
-
+			void operator*=(const vector4<U> vector);
 			template <typename U>
-			vector4<T> operator*(const vector4<U> vector) const
-			{
-				return vector4<T>(x*vector.x, y*vector.y, z*vector.z, w*vector.w);
-			}
+			vector4<T> operator*(const vector4<U> vector) const;
 
+			// Dot
 			template <typename U>
-			float dot(const vector4<U> &vec) const
-			{
-				return x*vec.x + y*vec.y + z*vec.z + w*vec.w;
-			}
+			float dot(const vector4<U> &vec) const;
 
 			// Length
-			float length() const
-			{
-				return sqrt(squareLength());
-			}
-
-			float squareLength() const
-			{
-				return x*x+y*y+z*z+w*w;
-			}
+			float length() const;
+			float squareLength() const;
 			
 			// Normalize
-			void normalize()
-			{
-				float l = length();
-				if(l > 0)
-				{
-					(*this) *= 1.0f/l;
-				}
-			}
+			void normalize();
 
 			// Unit
-			vector4<T> unit() const
-			{
-				vector4<T> result = *this;
-				result.normalize();
-				return result;
-			}
+			vector4<T> unit() const;
 
-			// Logical compare
+			// Logical operators
 			template <typename U>
-			bool operator==(const vector4<U>& other) const
-			{
-				return x == other.x &&
-					y == other.y &&
-					z == other.z &&
-					w == other.w;
-			}
-
+			bool operator==(const vector4<U>& other) const;
 			template <typename U>
-			bool operator!=(const vector4<U>& other) const
-			{
-				return !(*this == other);
-			}
-
+			bool operator!=(const vector4<U>& other) const;
 			template <typename U>
-			bool operator<(const vector4<U>& other) const
-			{
-				return x < other.x && y < other.y && z < other.z && w < other.w;
-			}
-
+			bool operator<(const vector4<U>& other) const;
 			template <typename U>
-			bool operator>(const vector4<U>& other) const
-			{
-				return x > other.x && y > other.y && z > other.z && w > other.w;
-			}
-
+			bool operator>(const vector4<U>& other) const;
 			template <typename U>
-			bool operator<=(const vector4<U>& other) const
-			{
-				return x <= other.x && y <= other.y && z <= other.z && w <= other.w;
-			}
-
+			bool operator<=(const vector4<U>& other) const;
 			template <typename U>
-			bool operator>=(const vector4<U>& other) const
-			{
-				return x >= other.x && y >= other.y && z >= other.z && w >= other.w;
-			}
+			bool operator>=(const vector4<U>& other) const;
 
 			// Helpers
-			void clear()
-			{
-				x = y = z = w = 0;
-			}
-
-			void invert()
-			{
-				x = -x;
-				y = -y;
-				z = -z;
-				w = -w;
-			}
-
-			T maxComponent()
-			{
-				return std::max(x, std::max(y, std::max(z, w)));
-			}
-
-			T minComponent()
-			{
-				return std::min(x, std::min(y, std::min(z, w)));
-			}
-
-			// Glm conversion
-			//operator glm::vec4() const { return glm::vec4(x,y,z,w); }
-
-			std::string toString() const
-			{
-				return "vec4{"+std::to_string(x)+", "+std::to_string(y)+", "+std::to_string(z)+", "+std::to_string(w)+"}";
-			}
+			void clear();
+			void invert();
+			T maxComponent();
+			T minComponent();
+			std::string toString() const;
 	};
 
+	// Right multiply scalar
 	template <typename T>
-	vector4<T> operator*(const T value, vector4<T> const &vec)
-	{
-		return vec*value;
-	}
+	vector4<T> operator*(T value, vector4<T> const &vec);
 
 	// Normalize
 	template <typename T>
-	inline vector4<T> normalize(const vector4<T> &v)
-	{
-		float l = v.length();
-		if(l > 0)
-		{
-			return v * 1.0f/l;
-		}
-		return v;
-	}
+	inline vector4<T> normalize(const vector4<T> &v);
+
+	// Dot
+	template <typename T>
+	inline float dot(const vector4<T> &v1, const vector4<T> &v2);
+
+	// <<
+	template <typename T>
+	inline std::ostream& operator<<(std::ostream& os, const vector4<T>& v);
 
 	//----------------------------------------//
 	//--------------- Vector 3 ---------------//
@@ -276,248 +160,119 @@ namespace atta
 			template <typename U>
         	vector3(T _x, vector2<U> v): x(_x), y(v.x), z(v.y) {}
 
-			T operator[](unsigned i) const
-			{
-				if(i == 0) return x;
-				if(i == 1) return y;
-				return z;
-			}
+			T operator[](unsigned i) const;
 
 			// Add vector
 			template <typename U>
-			void operator+=(const vector3<U>& v)
-			{
-				x += v.x;
-				y += v.y;
-				z += v.z;
-			}
-
+			void operator+=(const vector3<U>& v);
 			template <typename U>
-			vector3<T> operator+(const vector3<U>& v) const
-			{
-				return vector3<T>(x+v.x, y+v.y, z+v.z);
-			}
+			vector3<T> operator+(const vector3<U>& v) const;
+
+			// Add scalar
+			template <typename U>
+			void operator+=(const U value);
+			template <typename U>
+			vector3<T> operator+(const U value) const;
 
 			// Subtract vector
 			template <typename U>
-			void operator-=(const vector3<U>& v)
-			{
-				x -= v.x;
-				y -= v.y;
-				z -= v.z;
-			}
-
+			void operator-=(const vector3<U>& v);
 			template <typename U>
-			vector3<T> operator-(const vector3<U>& v) const
-			{
-				return vector3<T>(x-v.x, y-v.y, z-v.z);
-			}
+			vector3<T> operator-(const vector3<U>& v) const;
 
-			vector3<T> operator-() const
-			{
-				return vector3<T>(-x, -y, -z);
-			}
-
-			// Multiply scalar
+			// Subtract scalar
 			template <typename U>
-			void operator*=(const U value)
-			{
-				x *= value;
-				y *= value;
-				z *= value;
-			}
-
+			void operator-=(const U value);
 			template <typename U>
-			vector3<T> operator*(const U value) const
-			{
-				return vector3<T>(x*value, y*value, z*value);
-			}
-
-			// Divide scalar
-			template <typename U>
-			void operator/=(const U value)
-			{
-				x /= value;
-				y /= value;
-				z /= value;
-			}
-
-			template <typename U>
-			vector3<T> operator/(const U value) const
-			{
-				return vector3<T>(x/value, y/value, z/value);
-			}
+			vector3<T> operator-(const U value) const;
+			vector3<T> operator-() const;
 
 			// Multiply vector
 			template <typename U>
-			void operator*=(const vector3<U> vector)
-			{
-				x *= vector.x;
-				y *= vector.y;
-				z *= vector.z;
-			}
-
+			void operator*=(const vector3<U> vector);
 			template <typename U>
-			vector3<T> operator*(const vector3<U> vector) const
-			{
-				return vector3<T>(x*vector.x, y*vector.y, z*vector.z);
-			}
+			vector3<T> operator*(const vector3<U> vector) const;
+
+			// Multiply scalar
+			template <typename U>
+			void operator*=(const U value);
+			template <typename U>
+			vector3<T> operator*(const U value) const;
+
+			// Divide vector
+			template <typename U>
+			void operator/=(const vector3<U>& v);
+			template <typename U>
+			vector3<T> operator/(const vector3<U>& v) const;
+
+			// Divide scalar
+			template <typename U>
+			void operator/=(const U value);
+			template <typename U>
+			vector3<T> operator/(const U value) const;
 
 			// Vector products
 			template <typename U>
-			vector3<T> cross(const vector3<U> &vector) const
-			{
-				// Using always double to avoid float-pointing error
-				double xd = x, yd = y, zd = z;
-				double vxd = vector.x, vyd = vector.y, vzd = vector.z;
-				return vector3<T>((yd*vzd) - (zd*vyd),
-								  (zd*vxd) - (xd*vzd),
-								  (xd*vyd) - (yd*vxd));
-			}
+			vector3<T> cross(const vector3<U> &vector) const;
 
+			// Dot
 			template <typename U>
-			float dot(const vector3<U> &vector) const
-			{
-				return x*vector.x + y*vector.y + z*vector.z;
-			}
+			float dot(const vector3<U> &vector) const;
 
 			// Length
-			float length() const
-			{
-				return sqrt(squareLength());
-			}
-
-			float squareLength() const
-			{
-				return x*x+y*y+z*z;
-			}
+			float length() const;
+			float squareLength() const;
 			
 			// Normalize
-			void normalize()
-			{
-				float l = length();
-				if(l > 0)
-				{
-					(*this) *= 1.0f/l;
-				}
-			}
+			void normalize();
 
 			// Unit
-			vector3<T> unit() const
-			{
-				vector3<T> result = *this;
-				result.normalize();
-				return result;
-			}
+			vector3<T> unit() const;
 
-			// Logical compare
+			// Logical operators
 			template <typename U>
-			bool operator==(const vector3<U>& other) const
-			{
-				return x == other.x &&
-					y == other.y &&
-					z == other.z;
-			}
-
+			bool operator==(const vector3<U>& other) const;
 			template <typename U>
-			bool operator!=(const vector3<U>& other) const
-			{
-				return !(*this == other);
-			}
-
+			bool operator!=(const vector3<U>& other) const;
 			template <typename U>
-			bool operator<(const vector3<U>& other) const
-			{
-				return x < other.x && y < other.y && z < other.z;
-			}
-
+			bool operator<(const vector3<U>& other) const;
 			template <typename U>
-			bool operator>(const vector3<U>& other) const
-			{
-				return x > other.x && y > other.y && z > other.z;
-			}
-
+			bool operator>(const vector3<U>& other) const;
 			template <typename U>
-			bool operator<=(const vector3<U>& other) const
-			{
-				return x <= other.x && y <= other.y && z <= other.z;
-			}
-
+			bool operator<=(const vector3<U>& other) const;
 			template <typename U>
-			bool operator>=(const vector3<U>& other) const
-			{
-				return x >= other.x && y >= other.y && z >= other.z;
-			}
+			bool operator>=(const vector3<U>& other) const;
 
 			// Helpers
-			void clear()
-			{
-				x = y = z = 0;
-			}
+			void clear();
+			void invert();
 
-			void invert()
-			{
-				x = -x;
-				y = -y;
-				z = -z;
-			}
+			// Min max
+			T minComponent();
+			T maxComponent();
 
-			T maxComponent()
-			{
-				return std::max(x, std::max(y, z));
-			}
-
-			T minComponent()
-			{
-				return std::min(x, std::min(y, z));
-			}
-
-			// Glm conversion
-			//operator glm::vec3() const { return glm::vec3(x,y,z); }
-
-			std::string toString() const
-			{
-				return "vec3{"+std::to_string(x)+", "+std::to_string(y)+", "+std::to_string(z)+"}";
-			}
+			std::string toString() const;
 	};
 
+	// Right multiply scalar
 	template <typename T>
-	vector3<T> operator*(const T value, vector3<T> const &vec)
-	{
-		return vec*value;
-	}
-
+	vector3<T> operator*(T value, vector3<T> const &vec);
 
 	// Cross
 	template <typename T>
-	inline vector3<T> cross(const vector3<T> &v1, const vector3<T> &v2)
-	{
-		// Using always double to avoid float-pointing error
-		double xd = v1.x, yd = v1.y, zd = v1.z;
-		double vxd = v2.x, vyd = v2.y, vzd = v2.z;
-		return vector3<T>((yd*vzd) - (zd*vyd),
-						  (zd*vxd) - (xd*vzd),
-						  (xd*vyd) - (yd*vxd));
-	}
+	inline vector3<T> cross(const vector3<T> &v1, const vector3<T> &v2);
 
 	// Normalize
 	template <typename T>
-	inline vector3<T> normalize(const vector3<T> &v)
-	{
-		float l = v.length();
-		if(l > 0)
-		{
-			return v * 1.0f/l;
-		}
-		return v;
-	}
+	inline vector3<T> normalize(const vector3<T> &v);
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector3<T> &v1, const vector3<T> &v2)
-	{
-		return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
-	}
+	inline float dot(const vector3<T> &v1, const vector3<T> &v2);
+
+	// <<
+	template <typename T>
+	inline std::ostream& operator<<(std::ostream& os, const vector3<T>& v);
 
 	//----------------------------------------//
 	//--------------- Vector 2 ---------------//
@@ -535,231 +290,116 @@ namespace atta
         	vector2(vector3<U> v): x(v.x), y(v.y) {}
 
 			template <typename U>
-			void operator=(vector2<U> v)
-			{
-				x = v.x;
-				y = v.y;
-			}
+			void operator=(vector2<U> v);
 
+			// vector2 casting
 			template <typename U>
-			operator vector2<U>()
-			{
-				vector2<U> u;
-				u.x = (U)x;
-				u.y = (U)y;
-				return u;
-			}
+			operator vector2<U>();
 
-			T operator[](unsigned i) const
-			{
-				if(i == 0) return x;
-				return y;
-			}
+			T operator[](unsigned i) const;
 
-			// Add
+			// Add vector
 			template <typename U>
-			void operator+=(const vector2<U>& v)
-			{
-				x += v.x;
-				y += v.y;
-			}
-
+			void operator+=(const vector2<U>& v);
 			template <typename U>
-			vector2<T> operator+(const vector2<U>& v) const
-			{
-				return vector2<T>(x+v.x, y+v.y);
-			}
+			vector2<T> operator+(const vector2<U>& v) const;
 
+			// Add scalar
 			template <typename U>
-			void operator+=(const U v)
-			{
-				x += v;
-				y += v;
-			}
-
+			void operator+=(const U v);
 			template <typename U>
-			vector2<T> operator+(const U v) const
-			{
-				return vector2<T>(x+v, y+v);
-			}
+			vector2<T> operator+(const U v) const;
 
-			// Subtract
+			// Subtract vector
 			template <typename U>
-			void operator-=(const vector2<U>& v)
-			{
-				x -= v.x;
-				y -= v.y;
-			}
-
+			void operator-=(const vector2<U>& v);
 			template <typename U>
-			vector2<T> operator-(const vector2<U>& v) const
-			{
-				return vector2<T>(x-v.x, y-v.y);
-			}
+			vector2<T> operator-(const vector2<U>& v) const;
 
+			// Subtract scalar
 			template <typename U>
-			void operator-=(const U v)
-			{
-				x -= v;
-				y -= v;
-			}
-
+			void operator-=(const U value);
 			template <typename U>
-			vector2<T> operator-(const U v) const
-			{
-				return vector2<T>(x-v, y-v);
-			}
-
-			vector2<T> operator-() const
-			{
-				return vector2<T>(-x, -y);
-			}
+			vector2<T> operator-(const U value) const;
+			vector2<T> operator-() const;
 
 			// Multiply scalar
 			template <typename U>
-			void operator*=(const U value)
-			{
-				x *= value;
-				y *= value;
-			}
-
+			void operator*=(const U value);
 			template <typename U>
-			vector2<T> operator*(const U value) const
-			{
-				return vector2<T>(x*value, y*value);
-			}
+			vector2<T> operator*(const U value) const;
 
 			// Divide scalar
 			template <typename U>
-			void operator/=(const U value)
-			{
-				x /= value;
-				y /= value;
-			}
-
+			void operator/=(const U value);
 			template <typename U>
-			vector2<T> operator/(const U value) const
-			{
-				return vector2<T>(x/value, y/value);
-			}
+			vector2<T> operator/(const U value) const;
+
+			// Divide vector
+			template <typename U>
+			void operator/=(const vector2<U>& v);
+			template <typename U>
+			vector2<T> operator/(const vector2<U>& v) const;
 
 			// Multiply vector
 			template <typename U>
-			void operator*=(const vector2<U> vector)
-			{
-				x *= vector.x;
-				y *= vector.y;
-			}
+			void operator*=(const vector2<U> vector);
+			template <typename U>
+			vector2<T> operator*(const vector2<U> vector) const;
 
 			template <typename U>
-			vector2<T> operator*(const vector2<U> vector) const
-			{
-				return vector2<T>(x*vector.x, y*vector.y);
-			}
-
-			template <typename U>
-			float dot(const vector2<U> &vector) const
-			{
-				return x*vector.x + y*vector.y;
-			}
+			float dot(const vector2<U> &vector) const;
 
 			// Length
-			float length() const
-			{
-				return sqrt(squareLength());
-			}
-
-			float squareLength() const
-			{
-				return x*x+y*y;
-			}
+			float length() const;
+			float squareLength() const;
 			
 			// Normalize
-			void normalize()
-			{
-				float l = length();
-				if(l > 0)
-				{
-					(*this) *= 1.0f/l;
-				}
-			}
+			void normalize();
 
 			// Unit
-			vector2<T> unit() const
-			{
-				vector2<T> result = *this;
-				result.normalize();
-				return result;
-			}
+			vector2<T> unit() const;
 
 			// Logical compare
 			template <typename U>
-			bool operator==(const vector2<U>& other) const
-			{
-				return x == other.x &&
-					y == other.y;
-			}
-
+			bool operator==(const vector2<U>& other) const;
 			template <typename U>
-			bool operator!=(const vector2<U>& other) const
-			{
-				return !(*this == other);
-			}
-
+			bool operator!=(const vector2<U>& other) const;
 			template <typename U>
-			bool operator<(const vector2<U>& other) const
-			{
-				return x < other.x && y < other.y;
-			}
-
+			bool operator<(const vector2<U>& other) const;
 			template <typename U>
-			bool operator>(const vector2<U>& other) const
-			{
-				return x > other.x && y > other.y;
-			}
-
+			bool operator>(const vector2<U>& other) const;
 			template <typename U>
-			bool operator<=(const vector2<U>& other) const
-			{
-				return x <= other.x && y <= other.yz;
-			}
-
+			bool operator<=(const vector2<U>& other) const;
 			template <typename U>
-			bool operator>=(const vector2<U>& other) const
-			{
-				return x >= other.x && y >= other.yz;
-			}
+			bool operator>=(const vector2<U>& other) const;
 
 			// Helpers
-			void clear()
-			{
-				x = y = 0;
-			}
+			void clear();
+			void invert();
 
-			void invert()
-			{
-				x = -x;
-				y = -y;
-			}
+			// Min max
+			T minComponent();
+			T maxComponent();
 
-			T maxComponent()
-			{
-				return std::max(x, y);
-			}
-
-			T minComponent()
-			{
-				return std::min(x, y);
-			}
-
-			// Glm conversion
-			//operator glm::vec2() const { return glm::vec2(x,y); }
-
-			std::string toString() const
-			{
-				return "vec2{"+std::to_string(x)+", "+std::to_string(y)+"}";
-			}
+			std::string toString() const;
 	};
+
+	// Right multiply scalar
+	template <typename T>
+	vector2<T> operator*(T value, vector2<T> const &vec);
+
+	// Normalize
+	template <typename T>
+	inline vector2<T> normalize(const vector2<T> &v);
+
+	// Dot
+	template <typename T>
+	inline float dot(const vector2<T> &v1, const vector2<T> &v2);
+
+	// <<
+	template <typename T>
+	inline std::ostream& operator<<(std::ostream& os, const vector2<T>& v);
 
 	//----------------------------------------//
 	//---------------- Vector ----------------//
@@ -851,7 +491,6 @@ namespace atta
 	using vecf = vector<float>;
 	using vecd = vector<double>;
 	using veci = vector<int>;
-
 }
 
 namespace std {
@@ -871,5 +510,8 @@ namespace std {
 	};
 }
 
+#include <atta/core/math/vector4.inl>
+#include <atta/core/math/vector3.inl>
+#include <atta/core/math/vector2.inl>
 #include <atta/core/math/vector.inl>
 #endif// ATTA_CORE_MATH_VECTOR_H

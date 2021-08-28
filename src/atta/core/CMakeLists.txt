@@ -26,9 +26,14 @@ set(ATTA_CORE_TEST_SOURCES
 # Add to global test
 atta_add_tests(${ATTA_CORE_TEST_SOURCES})
 
-# Create local test
+# Create local tests
 atta_create_local_test(
-	atta_core_test 
-	"${ATTA_CORE_TEST_SOURCES}"
+	atta_core_string_id_test 
+	"tests/stringId.cpp"
+	"atta_core_lib"
+)
+atta_create_local_test(
+	atta_core_math_test 
+	"tests/math.cpp"
 	"atta_core_lib"
 )
