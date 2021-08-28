@@ -281,9 +281,16 @@ namespace atta
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector2<T> &v1, const vector2<T> &v2)
+	inline float dot(const vector2<T>& v1, const vector2<T>& v2)
 	{
 		return v1.x*v2.x + v1.y*v2.y;
+	}
+
+	// Length
+	template <typename T>
+	inline float length(const vector2<T>& v)
+	{
+		return v.length();
 	}
 
 	// <<

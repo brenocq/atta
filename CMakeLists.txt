@@ -28,7 +28,9 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 	if(MSVC)
 		list(APPEND ATTA_OPTIONS /W4 /WX)
 	else()
-		list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -Werror -g)
+		list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -g)#-Werror 
+		# Profilling
+		list(APPEND ATTA_OPTIONS -fno-omit-frame-pointer)
 		# Unused parameter
 		list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
 		# Math anonymous union 
