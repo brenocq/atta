@@ -6,8 +6,8 @@
 //--------------------------------------------------
 #include <gtest/gtest.h>
 #include <atta/core/math/math.h>
-
 using namespace atta;
+
 namespace
 {
 	TEST(Core_Math_Vector, Create)
@@ -125,6 +125,167 @@ namespace
 			EXPECT_EQ(v9.y, 1.0f);
 			EXPECT_EQ(v9.z, 2.0f);
 			EXPECT_EQ(v9.w, 3.0f);
+		}
+	}
+
+	TEST(Core_Math_Vector, BasicVectorOperations)
+	{
+		vec2 v2_0(0.0f, 1.0f);
+		vec2 v2_1(1.0f, 0.0f);
+		vec3 v3_0(0.0f, 1.0f, 2.0f);
+		vec3 v3_1(2.0f, 1.0f, 0.0f);
+		vec4 v4_0(0.0f, 1.0f, 2.0f, 3.0f);
+		vec4 v4_1(3.0f, 2.0f, 1.0f, 0.0f);
+
+		// +
+		{
+			vec2 u2 = v2_0 + v2_1;
+			EXPECT_EQ(u2.x, 1.0f);
+			EXPECT_EQ(u2.y, 1.0f);
+
+			vec3 u3 = v3_0 + v3_1;
+			EXPECT_EQ(u3.x, 2.0f);
+			EXPECT_EQ(u3.y, 2.0f);
+			EXPECT_EQ(u3.z, 2.0f);
+
+			vec4 u4 = v4_0 + v4_1;
+			EXPECT_EQ(u4.x, 3.0f);
+			EXPECT_EQ(u4.y, 3.0f);
+			EXPECT_EQ(u4.z, 3.0f);
+			EXPECT_EQ(u4.w, 3.0f);
+		}
+
+		// -
+		{
+			vec2 u2 = v2_0 - v2_1;
+			EXPECT_EQ(u2.x, -1.0f);
+			EXPECT_EQ(u2.y, 1.0f);
+
+			vec3 u3 = v3_0 - v3_1;
+			EXPECT_EQ(u3.x, -2.0f);
+			EXPECT_EQ(u3.y, 0.0f);
+			EXPECT_EQ(u3.z, 2.0f);
+
+			vec4 u4 = v4_0 - v4_1;
+			EXPECT_EQ(u4.x, -3.0f);
+			EXPECT_EQ(u4.y, -1.0f);
+			EXPECT_EQ(u4.z, 1.0f);
+			EXPECT_EQ(u4.w, 3.0f);
+		}
+
+		// *
+		{
+			vec2 u2 = v2_0 * v2_1;
+			EXPECT_EQ(u2.x, 0.0f);
+			EXPECT_EQ(u2.y, 0.0f);
+
+			vec3 u3 = v3_0 * v3_1;
+			EXPECT_EQ(u3.x, 0.0f);
+			EXPECT_EQ(u3.y, 1.0f);
+			EXPECT_EQ(u3.z, 0.0f);
+
+			vec4 u4 = v4_0 * v4_1;
+			EXPECT_EQ(u4.x, 0.0f);
+			EXPECT_EQ(u4.y, 2.0f);
+			EXPECT_EQ(u4.z, 2.0f);
+			EXPECT_EQ(u4.w, 0.0f);
+		}
+
+		// /
+		{
+			vec2 u2 = vec2(1.0f, 1.0f) / vec2(2.0f, 2.0f);
+			EXPECT_EQ(u2.x, 0.5f);
+			EXPECT_EQ(u2.y, 0.5f);
+
+			vec3 u3 = vec3(1.0f, 1.0f, 1.0f) / vec3(2.0f, 2.0f, 2.0f);
+			EXPECT_EQ(u3.x, 0.5f);
+			EXPECT_EQ(u3.y, 0.5f);
+			EXPECT_EQ(u3.z, 0.5f);
+
+			vec4 u4 = vec4(1.0f, 1.0f, 1.0f, 1.0f) / vec4(2.0f, 2.0f, 2.0f, 2.0f);
+			EXPECT_EQ(u4.x, 0.5f);
+			EXPECT_EQ(u4.y, 0.5f);
+			EXPECT_EQ(u4.z, 0.5f);
+			EXPECT_EQ(u4.w, 0.5f);
+		}
+	}
+
+	TEST(Core_Math_Vector, BasicScalarOperations)
+	{
+		vec2 v2(0.0f, 1.0f);
+		vec3 v3(0.0f, 1.0f, 2.0f);
+		vec4 v4(0.0f, 1.0f, 2.0f, 3.0f);
+
+		// +
+		{
+			vec2 u2 = v2 + 1.0f;
+			EXPECT_EQ(u2.x, 1.0f);
+			EXPECT_EQ(u2.y, 2.0f);
+
+			vec3 u3 = v3 + 1.0f;
+			EXPECT_EQ(u3.x, 1.0f);
+			EXPECT_EQ(u3.y, 2.0f);
+			EXPECT_EQ(u3.z, 3.0f);
+
+			vec4 u4 = v4 + 1.0f;
+			EXPECT_EQ(u4.x, 1.0f);
+			EXPECT_EQ(u4.y, 2.0f);
+			EXPECT_EQ(u4.z, 3.0f);
+			EXPECT_EQ(u4.w, 4.0f);
+		}
+
+		// -
+		{
+			vec2 u2 = v2 - 1.0f;
+			EXPECT_EQ(u2.x, -1.0f);
+			EXPECT_EQ(u2.y, 0.0f);
+
+			vec3 u3 = v3 - 1.0f;
+			EXPECT_EQ(u3.x, -1.0f);
+			EXPECT_EQ(u3.y, 0.0f);
+			EXPECT_EQ(u3.z, 1.0f);
+
+			vec4 u4 = v4 - 1.0f;
+			EXPECT_EQ(u4.x, -1.0f);
+			EXPECT_EQ(u4.y, 0.0f);
+			EXPECT_EQ(u4.z, 1.0f);
+			EXPECT_EQ(u4.w, 2.0f);
+		}
+
+		// *
+		{
+			vec2 u2 = v2 * -1.0f;
+			EXPECT_EQ(u2.x, 0.0f);
+			EXPECT_EQ(u2.y, -1.0f);
+
+			vec3 u3 = v3 * -1.0f;
+			EXPECT_EQ(u3.x, 0.0f);
+			EXPECT_EQ(u3.y, -1.0f);
+			EXPECT_EQ(u3.z, -2.0f);
+
+			vec4 u4 = v4 * -1.0f;
+			EXPECT_EQ(u4.x, 0.0f);
+			EXPECT_EQ(u4.y, -1.0f);
+			EXPECT_EQ(u4.z, -2.0f);
+			EXPECT_EQ(u4.w, -3.0f);
+		}
+
+		// /
+		{
+			vec2 u2 = v2 / 2.0f;
+			EXPECT_EQ(u2.x, 0.0f);
+			EXPECT_EQ(u2.y, 0.5f);
+
+			vec3 u3 = v3 / 2.0f;
+			EXPECT_EQ(u3.x, 0.0f);
+			EXPECT_EQ(u3.y, 0.5f);
+			EXPECT_EQ(u3.z, 1.0f);
+
+			vec4 u4 = v4 / 2.0f;
+			EXPECT_EQ(u4.x, 0.0f);
+			EXPECT_EQ(u4.y, 0.5f);
+			EXPECT_EQ(u4.z, 1.0f);
+			EXPECT_EQ(u4.w, 1.5f);
 		}
 	}
 
