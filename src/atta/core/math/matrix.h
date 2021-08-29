@@ -202,6 +202,13 @@ namespace atta
 		return res;
 	}
 
+	// <<
+	template <typename T>
+	inline std::ostream& operator<<(std::ostream& os, const mat4& m)
+	{
+		return os << m.toString();
+	}
+
 	//------------------------------------------------------------//
 	//--------------------------- mat3 ---------------------------//
 	//------------------------------------------------------------//
@@ -283,6 +290,13 @@ namespace atta
 		std::string toString() const;
     };
 
+	// <<
+	template <typename T>
+	inline std::ostream& operator<<(std::ostream& os, const mat3& m)
+	{
+		return os << m.toString();
+	}
+
 	//------------------------------------------------------------//
 	//--------------------------- mat ---------------------------//
 	//------------------------------------------------------------//
@@ -330,12 +344,19 @@ namespace atta
 			template <typename U>
 			vector<U> operator*(const vector<U>& v);
 
-			std::string toString();
+			std::string toString() const;
 
 	};
 
 	template <typename T>
 	inline matrix<T> transpose(const matrix<T>& m);
+
+	// <<
+	template <typename T>
+	inline std::ostream& operator<<(std::ostream& os, const matrix<T>& m)
+	{
+		return os << m.toString();
+	}
 
 	//------------------------------------------------------------//
 	//-------------------------- Inline --------------------------//

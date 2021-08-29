@@ -170,7 +170,7 @@ namespace atta
 	}
 
 	template <typename T>
-	std::string matrix<T>::toString()
+	std::string matrix<T>::toString() const
 	{
 		std::string res = "\n[";
 
@@ -178,7 +178,7 @@ namespace atta
 		{
 			res+="[";
 			for(size_t j=0; j<ncols; j++)
-				res += std::to_string(rows[i][j]) + (j!=ncols-1 ? ", " : "]");
+				res += std::to_string(rows.at(i).at(j)) + (j!=ncols-1 ? ", " : "]");
 			res += i!=nrows-1 ? ",\n" : "]";
 		}
 

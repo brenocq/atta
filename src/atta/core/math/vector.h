@@ -429,6 +429,7 @@ namespace atta
         	vector();
         	vector(size_t _n);
         	vector(size_t _n, T val);
+        	vector(std::initializer_list<T> l);
 			~vector();
 
 			T& operator[](size_t i);
