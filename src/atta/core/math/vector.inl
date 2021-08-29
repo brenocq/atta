@@ -32,6 +32,13 @@ namespace atta
 	};
 
 	template <typename T>
+    vector<T>::vector(std::initializer_list<T> l):
+		n(l.size())
+	{
+		data = l;
+	}
+
+	template <typename T>
 	vector<T>::~vector()
 	{
 	}
