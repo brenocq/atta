@@ -111,3 +111,8 @@ gtest_discover_tests(atta_test)
 add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 atta_target_common(atta)
 target_link_libraries(atta PRIVATE ${ATTA_LIBS})
+
+########## Install ##########
+install(TARGETS atta atta_test
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib)
