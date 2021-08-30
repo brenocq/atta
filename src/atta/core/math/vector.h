@@ -481,12 +481,16 @@ namespace atta
 			void normalize();
 			T length();
 
-			std::string toString();
+			std::string toString() const;
 	};
 
 	// Dot
 	template <typename T, typename U>
 	inline T dot(const vector<T> &v1, const vector<U> &v2);
+
+	// <<
+	template <typename T>
+	inline std::ostream& operator<<(std::ostream& os, const vector<T>& v);
 
 	using vec2 = vector2<float>;
 	using vec2f = vector2<float>;
