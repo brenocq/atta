@@ -63,7 +63,7 @@ namespace atta
 	}
 
 	template <typename T>
-	std::string vector<T>::toString()
+	std::string vector<T>::toString() const
 	{
 		std::string res = "[";
 		for(size_t i=0;i<n;i++)
@@ -255,5 +255,12 @@ namespace atta
 		for(const T& val : data)
 			sum+=val*val;
 		return sqrt(sum);
+	}
+
+	// <<
+	template <typename T>
+	inline std::ostream& operator<<(std::ostream& os, const vector<T>& v)
+	{
+		return os << v.toString();
 	}
 }

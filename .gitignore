@@ -12,3 +12,6 @@ scripts/
 # Visual Studio
 /.vs
 /CMakeSettings.json
+
+# ImGui
+imgui.ini

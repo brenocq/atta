@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 
 set(ATTA_LINEAR_ALGEBRA_SOURCES
 	LU/LU.cpp
+	QR/QR.cpp
+	SVD/SVD.cpp
 )
 
 add_library(atta_linalg_lib STATIC
@@ -14,6 +16,8 @@ target_link_libraries(atta_linalg_lib PUBLIC atta_core_lib)
 ########## Testing ##########
 set(ATTA_ALGS_LINALG_TEST_SOURCES
 	LU/test.cpp
+	QR/test.cpp
+	SVD/test.cpp
 )
 # Add to global test
 atta_add_tests(${ATTA_ALGS_LINALG_TEST_SOURCES})

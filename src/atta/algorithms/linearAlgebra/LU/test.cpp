@@ -1,6 +1,6 @@
 //--------------------------------------------------
 // Atta Algorithms - Linear Algebra Tests
-// LU.cpp
+// test.cpp
 // Date: 2021-08-29
 // By Breno Cunha Queiroz
 //--------------------------------------------------
@@ -30,7 +30,7 @@ namespace
 		EXPECT_NEAR(lu.lu[0][1], 2.0f, error);
 		EXPECT_NEAR(lu.lu[0][2], 1.0f, error);
 
-		EXPECT_NEAR(lu.lu[1][0], 0.75, error);
+		EXPECT_NEAR(lu.lu[1][0], 0.75f, error);
 		EXPECT_NEAR(lu.lu[1][1], 3.5f, error);
 		EXPECT_NEAR(lu.lu[1][2], 3.25f, error);
 
