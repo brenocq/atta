@@ -8,6 +8,7 @@
 #define ATTA_ATTA_H
 #include <atta/eventSystem/eventManager.h>
 #include <atta/graphicsSystem/graphicsManager.h>
+#include <atta/memorySystem/allocators/stackAllocator.h>
 
 namespace atta
 {
@@ -27,8 +28,13 @@ namespace atta
 		// Manager to handle internal atta events
 		std::shared_ptr<EventManager> _eventManager;
 
-		std::unique_ptr<GraphicsManager> _graphicsManager;
+		// Graphics
+		GraphicsManager* _graphicsManager;
 
+		// Memory
+		StackAllocator* _mainAllocator;
+
+		// State
 		bool _shouldFinish;
 	};
 }

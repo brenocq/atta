@@ -16,13 +16,28 @@ namespace atta
 		stringIdTable[_id] = str;
 	}
 
-	const std::string& StringId::getString()
+	const std::string& StringId::getString() const
 	{
 		return stringIdTable[_id];
 	}
 
-	StringHash StringId::getId()
+	StringHash StringId::getId() const
 	{
 		return _id;	
+	}
+
+	bool StringId::operator==(StringHash sid) const
+	{
+		return _id == sid;
+	}
+
+	bool StringId::operator==(std::string str) const
+	{
+		return getString() == str;
+	}
+
+	bool StringId::operator==(StringId sid) const
+	{
+		return _id == sid.getId();
 	}
 }

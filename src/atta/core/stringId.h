@@ -17,14 +17,23 @@ namespace atta
 		public:
 			StringId(std::string str);
 
-			const std::string& getString();
-			uint32_t getId();
+			const std::string& getString() const;
+			uint32_t getId() const;
+
+			bool operator==(StringHash sid) const;
+			bool operator==(std::string str) const;
+			bool operator==(StringId sid) const;
 
 			static constexpr StringHash crc32b(const char* str);
 		
 		private:
 			StringHash _id;
 	};
+
+	inline std::ostream& operator<<(std::ostream& os, const StringId& sid)
+	{
+		return os << sid.getString();
+	}
 
 	constexpr StringHash SID(const char* str)
 	{

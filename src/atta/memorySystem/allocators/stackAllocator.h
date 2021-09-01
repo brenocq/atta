@@ -18,7 +18,7 @@ namespace atta
 		using Marker = size_t;
 
 		// Allocate heap memory
-		StackAllocator(size_t size);
+		StackAllocator(uint64_t size);
 		// Use already allocated memory
 		StackAllocator(uint8_t* memory, size_t size);
 

@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.12)
 set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	graphicsManager.cpp
 	window.cpp
+	rendererAPIs/openGL/openGLRenderer.cpp
+	layers/layer.cpp
+	layers/layerStack.cpp
+	layers/internal/uiLayer.cpp
+	layers/internal/layer2D.cpp
 )
 
 add_library(atta_graphics_system_lib STATIC
