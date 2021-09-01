@@ -7,21 +7,25 @@
 #include <atta/atta.h>
 #include <atta/eventSystem/events/windowMouseMoveEvent.h>
 #include <atta/memorySystem/memoryManager.h>
-#include <atta/memorySystem/allocators/stackAllocator.h>
 
 namespace atta
 {
 	Atta::Atta():
 		_shouldFinish(false)
 	{
+		_mainAllocator = new StackAllocator(1*1024*1024*1024L);// Allocate 1GB for the whole system
+		MemoryManager::registerAllocator(SID("Main"), static_cast<Allocator*>(_mainAllocator));
+
 		_eventManager = std::make_shared<EventManager>();
 		_eventManager->subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
 
-		_graphicsManager = std::make_unique<GraphicsManager>(_eventManager);
+		_graphicsManager = new GraphicsManager(_eventManager);
 	}
 
 	Atta::~Atta()
 	{
+		delete _graphicsManager;
+		delete _mainAllocator;
 		LOG_VERBOSE("Atta", "Finished");
 	}
 
@@ -30,8 +34,6 @@ namespace atta
 		while(!_shouldFinish)
 		{
 			_graphicsManager->update();
-
-			_graphicsManager->renderWindow();
 		}
 	}
 

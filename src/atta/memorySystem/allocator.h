@@ -13,7 +13,7 @@ namespace atta
 	{
 	public:
 		// Allocate memory
-		Allocator(size_t size);
+		Allocator(uint64_t size);
 		// Use existing allocated memory
 		Allocator(uint8_t* memory, size_t size);
 		virtual ~Allocator();
@@ -33,7 +33,7 @@ namespace atta
 
 	protected:
 		uint8_t* _memory;
-		size_t _size;
+		uint64_t _size;
 		bool _shouldFree;// True if _memory was allocated by this allocator
 	};
 }

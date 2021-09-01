@@ -8,6 +8,8 @@
 #define ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
 #include <atta/eventSystem/eventManager.h>
 #include <atta/graphicsSystem/window.h>
+#include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
+#include <atta/graphicsSystem/layers/layerStack.h>
 
 namespace atta
 {
@@ -18,12 +20,14 @@ namespace atta
 		~GraphicsManager();
 
 		void update();
-		void renderWindow();
-		void renderCamera() = delete;
 
 	private:
 		std::shared_ptr<EventManager> _eventManager;
-		std::unique_ptr<Window> _window;
+		std::shared_ptr<Window> _window;
+		std::shared_ptr<OpenGLRenderer> _rendererAPI;
+
+		// Layer stack
+		std::unique_ptr<LayerStack> _layerStack;
 	};
 }
 

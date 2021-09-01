@@ -44,6 +44,9 @@ namespace atta
 			size_t getHeight() const { return _height; }
 
 			void update();
+			void swapBuffers();
+
+			GLFWwindow* getGLFWHandle() const { return _window; }
 
 		private:
 
