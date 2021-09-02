@@ -7,13 +7,14 @@
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/memorySystem/allocators/stackAllocator.h>
+#include <atta/eventSystem/eventManager.h>
 #include <atta/graphicsSystem/layers/internal/uiLayer.h>
 #include <atta/graphicsSystem/layers/internal/layer2D.h>
+#include <atta/graphicsSystem/layers/internal/editor/editorLayer.h>
 
 namespace atta
 {
-	GraphicsManager::GraphicsManager(std::shared_ptr<EventManager> eventManager):
-		_eventManager(eventManager)
+	GraphicsManager::GraphicsManager()
 	{
 		//----- System Memory -----//
 		// Get main memory
@@ -26,8 +27,7 @@ namespace atta
 		MemoryManager::registerAllocator(SID("Graphics"), static_cast<Allocator*>(graphics));
 
 		//----- Window -----//
-		Window::CreateInfo windowInfo = {};
-		windowInfo.eventManager = _eventManager;
+		Window::CreateInfo windowInfo {};
 		_window = std::make_shared<Window>(windowInfo);
 
 		//----- Render API -----//
@@ -36,6 +36,7 @@ namespace atta
 		//----- Create Layers -----//
 		_layerStack = std::make_unique<LayerStack>();
 		_layerStack->push(new Layer2D());
+		_layerStack->push(new EditorLayer());
 		_layerStack->push(new UILayer());
 	}
 

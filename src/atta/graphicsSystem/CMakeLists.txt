@@ -8,6 +8,9 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	layers/layerStack.cpp
 	layers/internal/uiLayer.cpp
 	layers/internal/layer2D.cpp
+	layers/internal/editor/editorLayer.cpp
+	layers/internal/editor/menuBar.cpp
+	layers/internal/editor/dockSpace.cpp
 )
 
 add_library(atta_graphics_system_lib STATIC

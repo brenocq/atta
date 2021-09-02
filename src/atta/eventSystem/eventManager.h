@@ -15,12 +15,20 @@ namespace atta
 	class EventManager final
 	{
 	public:
+		static EventManager& getInstance() {
+			static EventManager instance;
+			return instance;
+		}
+
 		using Callback = std::function<void(Event&)>;
 
-		void subscribe(Event::Type type, Callback&& callback);
-  		void publish(Event& event) const;
+		static void subscribe(Event::Type type, Callback&& callback) { getInstance().subscribeImpl(type, std::move(callback)); }
+  		static void publish(Event& event) { getInstance().publishImpl(event); }
 
 	private:
+		void subscribeImpl(Event::Type type, Callback&& callback);
+  		void publishImpl(Event& event) const;
+
 		std::unordered_map<Event::Type, std::vector<Callback>> _observers;
 	};
 }

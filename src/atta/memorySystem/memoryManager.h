@@ -4,8 +4,8 @@
 // Date: 2021-08-20
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_MEMORY_MEMORY_MANAGER_H
-#define ATTA_MEMORY_MEMORY_MANAGER_H
+#ifndef ATTA_MEMORY_SYSTEM_MEMORY_MANAGER_H
+#define ATTA_MEMORY_SYSTEM_MEMORY_MANAGER_H
 #include <atta/memorySystem/allocator.h>
 #include <atta/core/stringId.h>
 
@@ -42,4 +42,4 @@ namespace atta
 }
 
 #include <atta/memorySystem/memoryManager.inl>
-#endif// ATTA_MEMORY_MEMORY_MANAGER_H
+#endif// ATTA_MEMORY_SYSTEM_MEMORY_MANAGER_H
