@@ -33,7 +33,7 @@ namespace atta
 
 		GLFWwindow* window = glfwGetCurrentContext();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init("#version 410");
+		ImGui_ImplOpenGL3_Init("#version 330");
 	}
 
 	void UILayer::onDetach()
@@ -49,13 +49,6 @@ namespace atta
 
 	void UILayer::onUIRender()
 	{
-		// XXX Only testing
-		ImGui::Begin("Demo window");
-        ImGui::Button("Hello!");
-		ImGui::End();
-
-		bool demo = true;
-        ImGui::ShowDemoWindow(&demo);
 	}
 
 	void UILayer::begin()

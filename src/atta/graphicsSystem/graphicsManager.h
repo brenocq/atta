@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
-#include <atta/eventSystem/eventManager.h>
 #include <atta/graphicsSystem/window.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphicsSystem/layers/layerStack.h>
@@ -16,13 +15,12 @@ namespace atta
 	class GraphicsManager final
 	{
 	public:
-		GraphicsManager(std::shared_ptr<EventManager> eventManager);
+		GraphicsManager();
 		~GraphicsManager();
 
 		void update();
 
 	private:
-		std::shared_ptr<EventManager> _eventManager;
 		std::shared_ptr<Window> _window;
 		std::shared_ptr<OpenGLRenderer> _rendererAPI;
 

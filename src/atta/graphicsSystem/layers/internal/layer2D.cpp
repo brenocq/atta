@@ -159,9 +159,9 @@ namespace atta
 	void Layer2D::onUIRender()
 	{
 		// XXX Only testing
-		ImGui::Begin("Layer 2D window");
-        ImGui::Button("Hello!");
-        ImGui::Button("Testiiing!");
-		ImGui::End();
+		//ImGui::Begin("Layer 2D window");
+        //ImGui::Button("Hello!");
+        //ImGui::Button("Testiiing!");
+		//ImGui::End();
 	}
 }

@@ -8,12 +8,12 @@
 
 namespace atta
 {
-	void EventManager::subscribe(Event::Type type, Callback&& callback)
+	void EventManager::subscribeImpl(Event::Type type, Callback&& callback)
 	{
 		_observers[type].push_back(callback);
 	}
 
-	void EventManager::publish(Event& event) const
+	void EventManager::publishImpl(Event& event) const
 	{
 		Event::Type type = event.getType();
 

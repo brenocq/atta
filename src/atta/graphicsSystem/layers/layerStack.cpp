@@ -31,7 +31,7 @@ namespace atta
 		if(layer->getSID() == SID("UI"))
 			_uiLayer = reinterpret_cast<UILayer*>(layer);
 
-		LOG_VERBOSE("LayerStack", "Layer pushed: $0", layer->getSID());
+		LOG_VERBOSE("LayerStack", "Layer pushed: $0 (ptr:$1, size:$2)", layer->getSID(), layer, sizeof(layer));
 	}
 
 	void LayerStack::pop(Layer* layer)

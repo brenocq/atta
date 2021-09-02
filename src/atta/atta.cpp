@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/atta.h>
+#include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/windowMouseMoveEvent.h>
 #include <atta/memorySystem/memoryManager.h>
 
@@ -16,10 +17,9 @@ namespace atta
 		_mainAllocator = new StackAllocator(1*1024*1024*1024L);// Allocate 1GB for the whole system
 		MemoryManager::registerAllocator(SID("Main"), static_cast<Allocator*>(_mainAllocator));
 
-		_eventManager = std::make_shared<EventManager>();
-		_eventManager->subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
+		EventManager::subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
 
-		_graphicsManager = new GraphicsManager(_eventManager);
+		_graphicsManager = new GraphicsManager();
 	}
 
 	Atta::~Atta()

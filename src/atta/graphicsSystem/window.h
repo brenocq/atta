@@ -22,7 +22,7 @@ namespace atta
 				std::string title = "Atta - by Brenocq";
 				size_t width = 1600;
 				size_t height = 900;
-				std::shared_ptr<EventManager> eventManager;
+				//std::shared_ptr<EventManager> eventManager;
 			};
 
 			enum class Event : atta::Event::Type
@@ -54,8 +54,7 @@ namespace atta
 			std::string _title;
 			size_t _width, _height;
 			static unsigned _glfwWindowCounter;
-
-			std::shared_ptr<EventManager> _eventManager;
+			//std::shared_ptr<EventManager> _eventManager;
 	};
 }
 

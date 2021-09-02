@@ -18,8 +18,7 @@ namespace atta
 	unsigned Window::_glfwWindowCounter = 0;
 
 	Window::Window(const CreateInfo& info):
-		_title(info.title), _width(info.width), _height(info.height),
-		_eventManager(info.eventManager)
+		_title(info.title), _width(info.width), _height(info.height)
 	{
 		if(_glfwWindowCounter++ == 0)// XXX
 			glfwInit();
@@ -34,9 +33,8 @@ namespace atta
 
 		glfwSetWindowCloseCallback(_window, [](GLFWwindow* window)
 		{
-			Window& w = *(Window*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent e;
-			w._eventManager->publish(e);
+			EventManager::publish(e);
 		});
 
 		glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, int width, int height)
@@ -46,50 +44,43 @@ namespace atta
 			w._height = height;
 
 			WindowResizeEvent e((size_t)width, (size_t)height);
-			w._eventManager->publish(e);
+			EventManager::publish(e);
 		});
 
 		glfwSetCursorEnterCallback(_window, [](GLFWwindow* window, int entered)
 		{
-			Window& w = *(Window*)glfwGetWindowUserPointer(window);
 			WindowFocusEvent e(entered != 0);
-			w._eventManager->publish(e);
+			EventManager::publish(e);
 		});
 
 		glfwSetCursorPosCallback(_window, [](GLFWwindow* window, double xPos, double yPos)
 		{
-			Window& w = *(Window*)glfwGetWindowUserPointer(window);
 			WindowMouseMoveEvent e((float)xPos, (float)yPos);
-			w._eventManager->publish(e);
+			EventManager::publish(e);
 		});
 
 		glfwSetScrollCallback(_window, [](GLFWwindow* window, double dx, double dy)
 		{
-			Window& w = *(Window*)glfwGetWindowUserPointer(window);
 			WindowMouseScrollEvent e((float)dx, (float)dy);
-			w._eventManager->publish(e);
+			EventManager::publish(e);
 		});
 
 		glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods)
 		{
-			Window& w = *(Window*)glfwGetWindowUserPointer(window);
-
 			if(action == GLFW_PRESS)
 			{
 				WindowMouseButtonEvent e(button, WindowMouseButtonEvent::Action::PRESS);
-				w._eventManager->publish(e);
+				EventManager::publish(e);
 			}
 			else if(action == GLFW_RELEASE)
 			{
 				WindowMouseButtonEvent e(button, WindowMouseButtonEvent::Action::RELEASE);
-				w._eventManager->publish(e);
+				EventManager::publish(e);
 			}
 		});
 
 		glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
-			Window& w = *(Window*)glfwGetWindowUserPointer(window);
-
 			WindowKeyboardButtonEvent::Action a;
 			switch(action)
 			{
@@ -105,7 +96,7 @@ namespace atta
 			}
 
 			WindowKeyboardButtonEvent e(key, a);
-			w._eventManager->publish(e);
+			EventManager::publish(e);
 		});
 
 		glfwSetErrorCallback([](int error, const char* description){
