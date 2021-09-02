@@ -11,7 +11,7 @@
 
 namespace atta
 {
-	class Layer2D final : public Layer, public AllocatedObject<Layer2D, SID("Graphics")>
+	class Layer2D final : public Layer, public AllocatedObject<Layer2D, SID("GraphicsSystem")>
 	{
 	public:
 		Layer2D();

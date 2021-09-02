@@ -31,4 +31,10 @@ namespace atta
 		if(_shouldFree)
 			delete _memory;
 	}
+
+	bool Allocator::owns(void* ptr)
+	{
+		void* start = reinterpret_cast<void*>(_memory);
+		return ptr >= start && ptr < start+_size;
+	}
 }

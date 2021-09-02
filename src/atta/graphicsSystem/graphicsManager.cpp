@@ -19,12 +19,12 @@ namespace atta
 		//----- System Memory -----//
 		// Get main memory
 		StackAllocator* main = MemoryManager::getAllocator<StackAllocator>(SID("Main"));
-		size_t size = 32*1024*1024;// 32mb
+		size_t size = 32*1024*1024;// 32MB
 		// Alloc memory inside main memory
 		uint8_t* graphicsMemory = main->alloc<uint8_t>(size);
 		// Create new allocator with graphics memory
 		StackAllocator* graphics = new StackAllocator(graphicsMemory, size);
-		MemoryManager::registerAllocator(SID("Graphics"), static_cast<Allocator*>(graphics));
+		MemoryManager::registerAllocator(SID("GraphicsSystem"), static_cast<Allocator*>(graphics));
 
 		//----- Window -----//
 		Window::CreateInfo windowInfo {};

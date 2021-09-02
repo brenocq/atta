@@ -31,6 +31,8 @@ namespace atta
 
 		size_t getSize() { return _size; }
 
+		bool owns(void* ptr);// Check if pointer is inside this allocator memory
+
 	protected:
 		uint8_t* _memory;
 		uint64_t _size;

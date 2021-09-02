@@ -62,6 +62,19 @@ namespace atta
 	}
 
 	template <typename T>
+	uint64_t PoolAllocator<T>::getIndex(T* block)
+	{
+		return (Block*)block - (Block*)_memory;
+	}
+
+	template <typename T>
+	T* PoolAllocator<T>::getBlock(uint64_t index)
+	{
+		Block* blocks = reinterpret_cast<Block*>(_memory);
+		return &blocks[index].object;
+	}
+
+	template <typename T>
 	void* PoolAllocator<T>::allocBytes(size_t size, size_t align)
 	{
 		DASSERT(size == sizeof(T), "AllocBytes with more than one block is not supported yet");
