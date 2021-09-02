@@ -28,11 +28,13 @@ namespace atta
 		void freeBytes(void* ptr, size_t size, size_t align) override;
 
 		void clear();
+		uint64_t getIndex(T* block);
+		T* getBlock(uint64_t index);// Return the block even if it is free, this can broke the pool allocator
 
 	private:
 		union Block
 		{
-			T object;	
+			T object;
 			Block* next;
 		};
 

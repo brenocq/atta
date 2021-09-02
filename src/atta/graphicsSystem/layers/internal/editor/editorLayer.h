@@ -10,10 +10,11 @@
 #include <atta/memorySystem/allocatedObject.h>
 #include <atta/graphicsSystem/layers/internal/editor/menuBar.h>
 #include <atta/graphicsSystem/layers/internal/editor/dockSpace.h>
+#include <atta/graphicsSystem/layers/internal/editor/sceneTree.h>
 
 namespace atta
 {
-	class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("Graphics")>
+	class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("GraphicsSystem")>
 	{
 	public:
 		EditorLayer();
@@ -25,6 +26,7 @@ namespace atta
 	private:
 		MenuBar _menuBar;
 		DockSpace _dockSpace;
+		SceneTree _sceneTree;
 	};
 }
 

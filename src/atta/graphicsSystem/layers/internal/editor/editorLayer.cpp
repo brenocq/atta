@@ -34,11 +34,13 @@ namespace atta
 		bool demo = true;
 		ImGui::ShowDemoWindow(&demo);
 
-		ImGui::Begin("EditorDockSpaceRight");
-		ImGui::Text("Hello, right!");
+		ImGui::Begin("Scene");
+		{
+			_sceneTree.render();
+		}
 		ImGui::End();
 
-		ImGui::Begin("EditorDockSpaceDown");
+		ImGui::Begin("Debug");
 		ImGui::Text("Hello, down!");
 		ImGui::End();
 	}

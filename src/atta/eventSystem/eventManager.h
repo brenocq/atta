@@ -15,7 +15,8 @@ namespace atta
 	class EventManager final
 	{
 	public:
-		static EventManager& getInstance() {
+		static EventManager& getInstance()
+		{
 			static EventManager instance;
 			return instance;
 		}
