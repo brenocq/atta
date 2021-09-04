@@ -34,7 +34,7 @@ namespace atta
 
 	bool Allocator::owns(void* ptr)
 	{
-		void* start = reinterpret_cast<void*>(_memory);
-		return ptr >= start && ptr < start+_size;
+		uint8_t* uptr = reinterpret_cast<uint8_t*>(ptr);
+		return uptr >= _memory && uptr < _memory+_size;
 	}
 }

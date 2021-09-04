@@ -155,7 +155,7 @@ namespace atta
 	// Dot
 	template <typename T>
 	template <typename U>
-	float vector2<T>::dot(const vector2<U> &vector) const
+	auto vector2<T>::dot(const vector2<U> &vector) const
 	{
 		return x*vector.x + y*vector.y;
 	}
@@ -281,7 +281,7 @@ namespace atta
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector2<T>& v1, const vector2<T>& v2)
+	inline auto dot(const vector2<T>& v1, const vector2<T>& v2)
 	{
 		return v1.x*v2.x + v1.y*v2.y;
 	}

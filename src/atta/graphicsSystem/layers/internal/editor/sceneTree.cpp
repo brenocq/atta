@@ -45,7 +45,7 @@ namespace atta
                 }
 
 				ImGui::TableNextColumn();
-				ImGui::Text("%d", entity);
+				ImGui::Text("%lu", entity);
 
 			}
 			ImGui::EndTable();
