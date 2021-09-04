@@ -468,6 +468,23 @@ namespace
 		}
 	}
 
+	TEST(Core_Math_Vector, TypeDeduction)
+	{
+		{
+			vector<float> v0 = { 1.0f, 2.0f };
+			vector<int> v1 = { 1, 2 };
+			auto v = dot(v0, v1);
+			EXPECT_EQ(std::string(typeid(v).name()), std::string(typeid(float).name()));
+		}
+
+		{
+			vector<double> v0 = { 1.0, 2.0 };
+			vector<float> v1 = { 1.0f, 2.0f };
+			auto v = dot(v0, v1);
+			EXPECT_EQ(std::string(typeid(v).name()), std::string(typeid(double).name()));
+		}
+	}
+
 	//#include <immintrin.h>
 	//TEST(Core_Math_Vector, SIMD128)
 	//{

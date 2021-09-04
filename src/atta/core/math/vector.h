@@ -89,7 +89,7 @@ namespace atta
 
 			// Dot
 			template <typename U>
-			float dot(const vector4<U> &vec) const;
+			auto dot(const vector4<U> &vec) const;
 
 			// Length
 			float length() const;
@@ -133,7 +133,7 @@ namespace atta
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector4<T>& v1, const vector4<T>& v2);
+	inline auto dot(const vector4<T>& v1, const vector4<T>& v2);
 
 	// Length
 	template <typename T>
@@ -222,7 +222,7 @@ namespace atta
 
 			// Dot
 			template <typename U>
-			float dot(const vector3<U> &vector) const;
+			auto dot(const vector3<U> &vector) const;
 
 			// Length
 			float length() const;
@@ -273,7 +273,7 @@ namespace atta
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector3<T> &v1, const vector3<T> &v2);
+	inline auto dot(const vector3<T> &v1, const vector3<T> &v2);
 
 	// Length
 	template <typename T>
@@ -359,7 +359,7 @@ namespace atta
 			vector2<T> operator*(const vector2<U> vector) const;
 
 			template <typename U>
-			float dot(const vector2<U> &vector) const;
+			auto dot(const vector2<U> &vector) const;
 
 			// Length
 			float length() const;
@@ -406,7 +406,7 @@ namespace atta
 
 	// Dot
 	template <typename T>
-	inline float dot(const vector2<T>& v1, const vector2<T>& v2);
+	inline auto dot(const vector2<T>& v1, const vector2<T>& v2);
 
 	// Length
 	template <typename T>
@@ -486,7 +486,7 @@ namespace atta
 
 	// Dot
 	template <typename T, typename U>
-	inline T dot(const vector<T> &v1, const vector<U> &v2);
+	inline auto dot(const vector<T> &v1, const vector<U> &v2);
 
 	// <<
 	template <typename T>

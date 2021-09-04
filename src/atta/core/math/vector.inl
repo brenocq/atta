@@ -230,10 +230,10 @@ namespace atta
 
 	// Dot
 	template <typename T, typename U>
-	inline T dot(const vector<T> &v1, const vector<U> &v2)
+	inline auto dot(const vector<T> &v1, const vector<U> &v2)
 	{
-		T res=0;
-		for(size_t i=0;i<v1.n;i++)
+		decltype(std::declval<T>()*std::declval<U>()) res = 0;
+		for(size_t i = 0; i < v1.n; i++)
 			res += v1.data[i]*v2.data[i];
 		return res;
 	}

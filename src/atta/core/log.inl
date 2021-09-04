@@ -48,6 +48,21 @@ namespace atta
 			log(COLOR_BOLD_RED, tag, COLOR_RESET_RED, text, args...);
 	}
 
+	// std::vector overload
+	template <typename Tstream, typename T>
+	std::ostream& operator <<(Tstream& s, const std::vector<T>& v) 
+	{
+		s << "{";
+		for(typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
+		{
+			s << *ii;
+			if(ii < v.end()-1)
+				s << ", ";
+		}
+		s << "}";
+		return s;
+	}
+
 	template<typename T>
 	std::string getArgStr(T t)
 	{
@@ -128,20 +143,5 @@ namespace atta
 		// Print [tag] text
 		std::string output = std::string(tagColor) + "[" + tag + "] " + textColor + finalText.str() + COLOR_RESET + "\n";
 		std::cout << output;
-	}
-
-	// std::vector overload
-	template < class T >
-	std::ostream& operator << (std::ostream& os, const std::vector<T>& v) 
-	{
-		os << "{";
-		for(typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
-		{
-			os << *ii;
-			if(ii < v.end()-1)
-				os << ", ";
-		}
-		os << "}";
-		return os;
 	}
 }
