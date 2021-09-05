@@ -62,6 +62,27 @@ namespace atta
 			return result;
         }
 
+		// Multiply scalar
+		template <typename U>
+		void operator*=(const U value)
+		{
+            r *= value;
+            i *= value;
+            j *= value;
+            k *= value;
+		}
+
+		template <typename U>
+		quat operator*(const U value) const
+		{
+			quat q;
+            q.r = r*value;
+            q.i = i*value;
+            q.j = j*value;
+            q.k = k*value;
+			return q;
+		}
+
         void operator +=(const vec3 &vec)
         {
             quat q(0, vec.x, vec.y, vec.z);

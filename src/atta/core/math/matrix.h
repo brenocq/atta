@@ -84,15 +84,15 @@ namespace atta
         void invert();
         void transpose();
 
-        vec3 transformDirection(const vec3 &vector) const;
+        vec3 transformDirection(const vec3& vector) const;
         vec3 transformInverseDirection(const vec3 &vector) const;
 
-        vec3 transformInverse(const vec3 &vector) const;
+        vec3 transformInverse(const vec3& vector) const;
         vec3 getAxisVector(int i) const;
-        void setPosOri(const vec3 &pos, const quat &q);
-        void setPosOriScale(const vec3 &pos, const quat &q, const vec3 &scale);
+        void setPosOri(const vec3& pos, const quat& q);
+        void setPosOriScale(const vec3& pos, const quat& q, const vec3 &scale);
 
-        vec3 rollPitchYaw();
+        void getPosOriScale(vec3& pos, quat& q, vec3& scale) const;
 
 		std::string toString() const;
     };
@@ -203,11 +203,10 @@ namespace atta
 	}
 
 	// <<
-	template <typename T>
-	inline std::ostream& operator<<(std::ostream& os, const mat4& m)
-	{
-		return os << m.toString();
-	}
+	//inline std::stringstream& operator<<(std::stringstream& os, const mat4& m)
+	//{
+	//	return os << m.toString();
+	//}
 
 	//------------------------------------------------------------//
 	//--------------------------- mat3 ---------------------------//

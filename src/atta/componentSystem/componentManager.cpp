@@ -36,17 +36,20 @@ namespace atta
 		LOG_DEBUG("ComponentManager", "Creating entities $0 $1 $2 $3", e0, e1, e2, e3);
 
 		TransformComponent* t = addEntityComponent<TransformComponent>(e0);
-		t->position = { 1.0f, 2.0f, 3.0f };
-		LOG_DEBUG("ComponentManager", "Entity position: $0", t->position);
+		t->transform = mat4(1.0f, 0.0f, 0.0f, 0.5f,
+						0.0f, 1.0f, 0.0f, 0.5f,
+						0.0f, 0.0f, 1.0f, 0.0f,
+						0.0f, 0.0f, 1.0f, 1.0f);
+		LOG_DEBUG("ComponentManager", "Entity transform: $0", t->transform.toString());
 
-		TransformComponent* t1 = addEntityComponent<TransformComponent>(e1);
-		LOG_DEBUG("ComponentManager", "Entity position: $0", t1->position);
+		//TransformComponent* t1 = addEntityComponent<TransformComponent>(e1);
+		//LOG_DEBUG("ComponentManager", "Entity position: $0", t1->position);
 
-		TransformComponent* t2 = getEntityComponent<TransformComponent>(e0);
-		LOG_DEBUG("ComponentManager", "Test get: $0", t2->position);
+		//TransformComponent* t2 = getEntityComponent<TransformComponent>(e0);
+		//LOG_DEBUG("ComponentManager", "Test get: $0", t2->position);
 
-		LOG_DEBUG("ComponentManager", "Components: $0", getComponentNames());
-		LOG_DEBUG("ComponentManager", "Entities: $0", getEntities());
+		//LOG_DEBUG("ComponentManager", "Components: $0", getComponentNames());
+		//LOG_DEBUG("ComponentManager", "Entities: $0", getEntities());
 
 		NameComponent* n0 = addEntityComponent<NameComponent>(e0);
 		strcpy(n0->name,"e0 object");

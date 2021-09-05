@@ -480,6 +480,28 @@ namespace atta
 		data[15] = 1;
 	}
 
+    void mat4::getPosOriScale(vec3 &pos, quat &q, vec3 &scale) const
+	{
+		pos.x = mat[0][3];
+		pos.y = mat[1][3];
+		pos.z = mat[2][3];
+		scale = vec3(length(vec3(mat[0][0], mat[1][0], mat[2][0])),
+						length(vec3(mat[0][1], mat[1][1], mat[2][1])),
+						length(vec3(mat[0][2], mat[1][2], mat[2][2])));
+
+		double b1_squared = 0.25 * (1.0 + mat[0][0]/scale.x + mat[1][1]/scale.y + mat[2][2]/scale.z);
+		if(b1_squared > 0.001)
+		{
+			double b1 = sqrt(b1_squared);
+
+			double over_b1_4 = 0.25 / b1;
+			double b2 = -(mat[2][1]/scale.y - mat[1][2]/scale.z) * over_b1_4;
+			double b3 = -(mat[0][2]/scale.z - mat[2][0]/scale.x) * over_b1_4;
+			double b4 = -(mat[1][0]/scale.x - mat[0][1]/scale.y) * over_b1_4;
+
+			q = quat(b1, b2, b3, b4);
+		}
+	}
 
     float mat4::determinant() const
 	{
@@ -620,17 +642,6 @@ namespace atta
 				  m.data[4] * m.data[2] * m.data[9] +
 				  m.data[8] * m.data[1] * m.data[6] -
 				  m.data[8] * m.data[2] * m.data[5])*idet;
-	}
-
-    vec3 mat4::rollPitchYaw()
-	{
-		// TODO wrong results when roll=yaw=0, pitch 2nd or 3rd quadrant
-		float roll = atan2(-data[6], data[10]);
-		float pitch = atan2(data[2], sqrt(data[6]*data[6] + data[10]*data[10]));
-		float yaw = atan2(-data[1], data[0]);
-
-		// Must be a rotation matrix to work properly
-		return vec3(roll,pitch,yaw);
 	}
 
 	std::string mat4::toString() const

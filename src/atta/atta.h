@@ -14,7 +14,12 @@ namespace atta
 	class Atta
 	{
 	public:
-		Atta();
+		struct CreateInfo
+		{
+			std::filesystem::path projectFile = "";
+		};
+
+		Atta(CreateInfo info);
 		~Atta();
 
 		void run();

@@ -12,7 +12,7 @@ namespace atta
 {
 	struct TransformComponent
 	{
-		vec3 position;
+		mat4 transform;
 	};
 }
 
