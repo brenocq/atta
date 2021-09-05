@@ -92,7 +92,6 @@ namespace atta
 				else if(text[i] == ']')
 				{
 					finalText << textColor;// Return color to default if found []
-					i++;// Skip ]
 					continue;
 				}
 				else

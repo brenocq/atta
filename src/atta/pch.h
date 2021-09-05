@@ -17,6 +17,8 @@
 #include <cmath>
 #include <sstream>
 #include <iostream>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include "core/common.h"
 #include "core/log.h"

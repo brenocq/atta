@@ -29,6 +29,8 @@ namespace atta
 			glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
 			glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
 			ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 3), "Atta requires at least OpenGL 3.3");
+
+			glEnable(GL_DEPTH_TEST);
 		}
 
 		OpenGLRenderer::~OpenGLRenderer()
@@ -39,7 +41,7 @@ namespace atta
 		void OpenGLRenderer::beginFrame()
 		{
 			glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
 		void OpenGLRenderer::endFrame()

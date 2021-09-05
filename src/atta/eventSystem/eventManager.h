@@ -24,11 +24,11 @@ namespace atta
 		using Callback = std::function<void(Event&)>;
 
 		static void subscribe(Event::Type type, Callback&& callback) { getInstance().subscribeImpl(type, std::move(callback)); }
-  		static void publish(Event& event) { getInstance().publishImpl(event); }
+		static void publish(Event& event) { getInstance().publishImpl(event); }
 
 	private:
 		void subscribeImpl(Event::Type type, Callback&& callback);
-  		void publishImpl(Event& event) const;
+		void publishImpl(Event& event) const;
 
 		std::unordered_map<Event::Type, std::vector<Callback>> _observers;
 	};

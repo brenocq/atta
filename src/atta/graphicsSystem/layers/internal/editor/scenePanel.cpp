@@ -88,7 +88,7 @@ namespace atta
 			{
 				TransformComponent* transform = ComponentManager::addEntityComponent<TransformComponent>(_selected);
 				if(transform != nullptr)
-					transform->position = {0};
+					transform->transform = {1.0f};
 			}
 			ImGui::EndPopup();
 		}
@@ -102,40 +102,32 @@ namespace atta
 		if(transform != nullptr)
 			if(ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
 			{
+				bool posChanged = false, rotChanged = false, scaleChanged = false;
+				vec3 pos, ori, scale;
+				quat q;
+				transform->transform.getPosOriScale(pos, q, scale);
+				ori = q.toEuler();
+				ori = degrees(ori);
+
 				ImGui::Text("Position");
+				posChanged |= ImGui::DragFloat("X##SceneTransformPosX", &pos.x, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+				posChanged |= ImGui::DragFloat("Y##SceneTransformPosY", &pos.y, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+				posChanged |= ImGui::DragFloat("Z##SceneTransformPosZ", &pos.z, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
 
+				ImGui::Text("Rotation");
+				//changed |= ImGui::DragFloat("X##SceneTransformRotX", &ori.x, 1.0f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+				//changed |= ImGui::DragFloat("Y##SceneTransformRotY", &ori.y, 1.0f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+				rotChanged |= ImGui::DragFloat("Z##SceneTransformRotZ", &ori.z, 1.0f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
 
+				ImGui::Text("Scale");
+				scaleChanged |= ImGui::DragFloat("X##SceneTransformScaleX", &scale.x, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+				scaleChanged |= ImGui::DragFloat("Y##SceneTransformScaleY", &scale.y, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+				scaleChanged |= ImGui::DragFloat("Z##SceneTransformScaleZ", &scale.z, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+
+				if(posChanged || rotChanged || scaleChanged)
 				{
-					ImVec4 color = ImVec4(0.6f, 0.2f, 0.2f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Button, color);
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
-					if(ImGui::Button("X"));
-					ImGui::PopStyleColor(3);
-					ImGui::SameLine();
-					ImGui::DragFloat("##Transform_X", &transform->position.x, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
-				}
-
-				{
-					ImVec4 color = ImVec4(0.2f, 0.6f, 0.2f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Button, color);
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
-					if(ImGui::Button("Y"));
-					ImGui::PopStyleColor(3);
-					ImGui::SameLine();
-					ImGui::DragFloat("##TransformY", &transform->position.y, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
-				}
-
-				{
-					ImVec4 color = ImVec4(0.2f, 0.2f, 0.6f, 1.0f);
-					ImGui::PushStyleColor(ImGuiCol_Button, color);
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
-					if(ImGui::Button("Z"));
-					ImGui::PopStyleColor(3);
-					ImGui::SameLine();
-					ImGui::DragFloat("##TransformZ", &transform->position.z, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+					q.fromEuler(radians(ori));
+					transform->transform.setPosOriScale(pos, q, scale);
 				}
 			}
 	}

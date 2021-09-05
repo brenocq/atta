@@ -7,6 +7,7 @@
 #include <atta/graphicsSystem/layers/internal/editor/menuBar.h>
 #include <atta/eventSystem/events/windowCloseEvent.h>
 #include <atta/eventSystem/eventManager.h>
+#include <atta/fileSystem/fileManager.h>
 #include <imgui_internal.h>
 
 namespace atta
@@ -17,6 +18,29 @@ namespace atta
 		{
 			if(ImGui::BeginMenu("File"))
 			{
+
+				if(ImGui::BeginMenu("Project"))
+				{
+					if(FileManager::isProjectDefined())
+					{
+						if(ImGui::BeginMenu(FileManager::getProjectName().c_str()))
+						{
+							if(ImGui::MenuItem("Close"))
+								FileManager::closeProject();
+
+							ImGui::EndMenu();
+						}
+					}
+					else
+						if(ImGui::MenuItem("Open"));
+					ImGui::EndMenu();
+				}
+				else
+				{
+				}
+
+				ImGui::Separator();
+
 				if(ImGui::MenuItem("Quit"))
 				{
 					WindowCloseEvent e;

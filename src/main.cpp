@@ -2,10 +2,9 @@
 
 int main(int argc, char *argv[])
 {
+	atta::Atta::CreateInfo info {};
 	if(argc == 1)
 	{
-		atta::Atta atta;
-		atta.run();
 	}
 	else
 	{
@@ -13,8 +12,17 @@ int main(int argc, char *argv[])
 		{
 			std::cout << "Atta Simulator 0.0.2.0" <<
 				"\nThis project is licensed under the MIT License\n";
+			return EXIT_SUCCESS;
+		}
+		else
+		{
+			fs::path attaFile(argv[1]);
+			info.projectFile = attaFile;
 		}
 	}
+
+	atta::Atta atta(info);
+	atta.run();
 
 	return EXIT_SUCCESS;
 }

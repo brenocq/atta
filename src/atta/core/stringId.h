@@ -14,20 +14,20 @@ namespace atta
 
 	class StringId
 	{
-		public:
-			StringId(std::string str);
+	public:
+		StringId(std::string str);
 
-			const std::string& getString() const;
-			uint32_t getId() const;
+		const std::string& getString() const;
+		uint32_t getId() const;
 
-			bool operator==(StringHash sid) const;
-			bool operator==(std::string str) const;
-			bool operator==(StringId sid) const;
+		bool operator==(StringHash sid) const;
+		bool operator==(std::string str) const;
+		bool operator==(StringId sid) const;
 
-			static constexpr StringHash crc32b(const char* str);
-		
-		private:
-			StringHash _id;
+		static constexpr StringHash crc32b(const char* str);
+	
+	private:
+		StringHash _id;
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const StringId& sid)

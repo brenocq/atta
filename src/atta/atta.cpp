@@ -9,12 +9,16 @@
 #include <atta/eventSystem/events/windowMouseMoveEvent.h>
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/componentSystem/componentManager.h>
+#include <atta/fileSystem/fileManager.h>
 
 namespace atta
 {
-	Atta::Atta():
+	Atta::Atta(CreateInfo info):
 		_shouldFinish(false)
 	{
+		if(info.projectFile != "")
+			FileManager::setProjectFile(info.projectFile);
+
 		_mainAllocator = new StackAllocator(2*1024*1024*1024L);// Allocate 1GB for the whole system
 		MemoryManager::registerAllocator(SID("Main"), static_cast<Allocator*>(_mainAllocator));
 

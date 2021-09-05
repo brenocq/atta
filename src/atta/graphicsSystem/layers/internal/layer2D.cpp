@@ -6,7 +6,11 @@
 //--------------------------------------------------
 #include <atta/graphicsSystem/layers/internal/layer2D.h>
 #include <imgui_internal.h>
+
+// To delete
 #include <glad/glad.h>
+#include <atta/componentSystem/components/components.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -28,11 +32,11 @@ namespace atta
 		const char *vertexShaderSource = "#version 330 core\n"
 			"layout (location = 0) in vec3 aPos;\n"
 			"layout (location = 1) in vec3 aColor;\n"
-			"uniform vec2 delta;"
+			"uniform mat4 transform;"
 			"out vec3 color;"
 			"void main()\n"
 			"{\n"
-			"   gl_Position = vec4(aPos.x + delta.x, aPos.y + delta.y, aPos.z, 1.0);\n"
+			"   gl_Position = transpose(transform)*vec4(aPos, 1.0f);\n"
 			"	color = aColor;"
 			"}\0";
 
@@ -148,11 +152,22 @@ namespace atta
 	{
 		glUseProgram(shaderProgram);
 
-		int vertexDeltaLocation = glGetUniformLocation(shaderProgram, "delta");
-		glUniform2f(vertexDeltaLocation, 0.5f, 0.5f);
+		std::vector<EntityId> entities = ComponentManager::getEntities();
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		for(EntityId entity : entities)
+		{
+			TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
+			int vertexTransformLocation = glGetUniformLocation(shaderProgram, "transform");
+
+			if(t != nullptr)
+			{
+				//mat4 trans = transpose(t->transform);
+				glUniformMatrix4fv(vertexTransformLocation, 1, GL_FALSE, static_cast<const float*>(&t->transform.data[0]));
+
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			}
+		}
 		glBindVertexArray(0);
 	}
 
