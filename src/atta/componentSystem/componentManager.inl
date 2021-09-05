@@ -58,7 +58,6 @@ namespace atta
 		for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
 			if(cpool->owns(e->components[i]))
 				return reinterpret_cast<T*>(e->components[i]);
-
 		return nullptr;
 	}
 

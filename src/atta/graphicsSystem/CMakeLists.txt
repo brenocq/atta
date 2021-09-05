@@ -11,7 +11,7 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	layers/internal/editor/editorLayer.cpp
 	layers/internal/editor/menuBar.cpp
 	layers/internal/editor/dockSpace.cpp
-	layers/internal/editor/sceneTree.cpp
+	layers/internal/editor/scenePanel.cpp
 )
 
 add_library(atta_graphics_system_lib STATIC

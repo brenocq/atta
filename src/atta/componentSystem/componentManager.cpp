@@ -5,9 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/componentSystem/componentManager.h>
-#include <atta/componentSystem/components/transform.h>
-#include <atta/componentSystem/components/mesh.h>
-#include <atta/componentSystem/components/name.h>
+#include <atta/componentSystem/components/components.h>
 #include <cstring>
 
 namespace atta
@@ -37,24 +35,24 @@ namespace atta
 		EntityId e3 = createEntity();
 		LOG_DEBUG("ComponentManager", "Creating entities $0 $1 $2 $3", e0, e1, e2, e3);
 
-		Transform* t = addEntityComponent<Transform>(e0);
+		TransformComponent* t = addEntityComponent<TransformComponent>(e0);
 		t->position = { 1.0f, 2.0f, 3.0f };
 		LOG_DEBUG("ComponentManager", "Entity position: $0", t->position);
 
-		Transform* t1 = addEntityComponent<Transform>(e1);
+		TransformComponent* t1 = addEntityComponent<TransformComponent>(e1);
 		LOG_DEBUG("ComponentManager", "Entity position: $0", t1->position);
 
-		Transform* t2 = getEntityComponent<Transform>(e0);
+		TransformComponent* t2 = getEntityComponent<TransformComponent>(e0);
 		LOG_DEBUG("ComponentManager", "Test get: $0", t2->position);
 
 		LOG_DEBUG("ComponentManager", "Components: $0", getComponentNames());
 		LOG_DEBUG("ComponentManager", "Entities: $0", getEntities());
 
-		Name* n0 = addEntityComponent<Name>(e0);
+		NameComponent* n0 = addEntityComponent<NameComponent>(e0);
 		strcpy(n0->name,"e0 object");
-		Name* n1 = addEntityComponent<Name>(e1);
+		NameComponent* n1 = addEntityComponent<NameComponent>(e1);
 		strcpy(n1->name,"e1 object");
-		Name* n2 = addEntityComponent<Name>(e2);
+		NameComponent* n2 = addEntityComponent<NameComponent>(e2);
 		strcpy(n2->name,"e2 object");
 	}
 
@@ -86,9 +84,9 @@ namespace atta
 	void ComponentManager::createComponentPools()
 	{
 		//----- Register default component pools -----//
-		registerComponentPoolImpl<Transform>(_maxEntities, "Transform");
-		registerComponentPoolImpl<Mesh>(_maxEntities, "Mesh");
-		registerComponentPoolImpl<Name>(_maxEntities, "Name");
+		registerComponentPoolImpl<TransformComponent>(_maxEntities, "Transform");
+		registerComponentPoolImpl<MeshComponent>(_maxEntities, "Mesh");
+		registerComponentPoolImpl<NameComponent>(_maxEntities, "Name");
 	}
 
 	EntityId ComponentManager::createEntityImpl()
@@ -103,7 +101,7 @@ namespace atta
 			e->components[i] = nullptr;
 
 		// Calculate entityId (index inside pool memory)
-		EntityId eid = reinterpret_cast<EntityId>(pool->getIndex(e));
+		EntityId eid = static_cast<EntityId>(pool->getIndex(e));
 
 		// Add entity to dense list
 		_denseList[_denseListSize++] = eid;
