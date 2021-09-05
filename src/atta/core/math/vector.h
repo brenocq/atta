@@ -482,11 +482,11 @@ namespace atta
 			T length();
 
 			std::string toString() const;
-	};
 
-	// Dot
-	template <typename T, typename U>
-	inline auto dot(const vector<T> &v1, const vector<U> &v2);
+			// Dot
+			template <typename U, typename V>
+			friend auto dot(const vector<U> &v1, const vector<V> &v2);
+	};
 
 	// <<
 	template <typename T>

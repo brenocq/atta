@@ -34,11 +34,7 @@ namespace atta
 		bool demo = true;
 		ImGui::ShowDemoWindow(&demo);
 
-		ImGui::Begin("Scene");
-		{
-			_sceneTree.render();
-		}
-		ImGui::End();
+		_scenePanel.render();
 
 		ImGui::Begin("Debug");
 		ImGui::Text("Hello, down!");

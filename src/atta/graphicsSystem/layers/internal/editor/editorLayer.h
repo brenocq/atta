@@ -10,7 +10,7 @@
 #include <atta/memorySystem/allocatedObject.h>
 #include <atta/graphicsSystem/layers/internal/editor/menuBar.h>
 #include <atta/graphicsSystem/layers/internal/editor/dockSpace.h>
-#include <atta/graphicsSystem/layers/internal/editor/sceneTree.h>
+#include <atta/graphicsSystem/layers/internal/editor/scenePanel.h>
 
 namespace atta
 {
@@ -26,7 +26,7 @@ namespace atta
 	private:
 		MenuBar _menuBar;
 		DockSpace _dockSpace;
-		SceneTree _sceneTree;
+		ScenePanel _scenePanel;
 	};
 }
 

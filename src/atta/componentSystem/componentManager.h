@@ -16,6 +16,7 @@ namespace atta
 #define COMPONENT_POOL_ID(T) SID((std::string("ComponentSystem_") + typeid(T).name() + "_Pool").c_str())
 	using EntityId = size_t;
 
+
 	class ComponentManager final
 	{
 	public:
