@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Project
+// Atta File System
 // fileWatcher.h
 // Date: 2021-09-05
 // By Breno Cunha Queiroz
@@ -15,8 +15,8 @@ namespace atta
 		FileWatcher() = default;
 		virtual ~FileWatcher() = default;
 
-		virtual void addWatch(fs::path pathName);
-		virtual void removeWatch(fs::path pathName);
+		virtual void addWatch(fs::path directory);
+		virtual void removeWatch(fs::path directory);
 		virtual void update() = 0;
 
 	protected:

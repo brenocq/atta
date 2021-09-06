@@ -1,12 +1,12 @@
 //--------------------------------------------------
-// Atta Project
+// Atta File System
 // fileManager.h
 // Date: 2021-09-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef ATTA_FILE_SYSTEM_FILE_MANAGER_H
 #define ATTA_FILE_SYSTEM_FILE_MANAGER_H
-#include <atta/fileSystem/watcher/fileWatcher.h>
+#include <atta/fileSystem/watchers/fileWatcher.h>
 
 namespace atta
 {
@@ -26,6 +26,7 @@ namespace atta
 		static bool setProjectFile(fs::path projectFile) { return getInstance().setProjectFileImpl(projectFile); }
 		static bool isProjectDefined() { return getInstance().isProjectDefinedImpl(); }
 		static std::string getProjectName() { return getInstance().getProjectNameImpl(); }
+		static fs::path getProjectDirectory() { return getInstance().getProjectDirectoryImpl(); }
 		static void closeProject() { return getInstance().closeProjectImpl(); }
 
 		// TODO remove
@@ -37,6 +38,7 @@ namespace atta
 		bool setProjectFileImpl(fs::path projectFile);
 		bool isProjectDefinedImpl() const;
 		std::string getProjectNameImpl() const;
+		fs::path getProjectDirectoryImpl() const;
 		void closeProjectImpl();
 
 		// TODO remove

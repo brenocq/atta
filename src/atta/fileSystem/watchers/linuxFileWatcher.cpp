@@ -1,14 +1,14 @@
 //--------------------------------------------------
-// Atta Project
+// Atta File System
 // linuxFileWatcher.cpp
 // Date: 2021-09-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/fileSystem/watcher/linuxFileWatcher.h>
+#ifdef ATTA_OS_LINUX
+#include <atta/fileSystem/watchers/linuxFileWatcher.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/fileEvent.h>
 
-#ifdef ATTA_OS_LINUX
 #include <unistd.h>// read
 // System error
 #include <cstring>
@@ -18,48 +18,59 @@ namespace atta
 {
 	constexpr size_t EVENT_SIZE = sizeof(struct inotify_event);
 	int LinuxFileWatcher::_inotifyFd = -1;
-	bool LinuxFileWatcher::_active = false;
 
 	LinuxFileWatcher::LinuxFileWatcher()
 	{
-		ASSERT(!_active, "Only one LinuxFileWatcher should be active!");
+		ASSERT(_inotifyFd == -1, "Only one LinuxFileWatcher should be active!");
 
 		_bufLen = 1024*(EVENT_SIZE+16);
 		_buf = new char[_bufLen];
+
+		_inotifyFd = inotify_init();
+		if(_inotifyFd < 0)
+		{
+			LOG_WARN("LinuxFileWatcher", "Could not initialize inotify! Error ($0): $1", _inotifyFd, std::strerror(errno));
+			return;
+		}
 	}
 
 	LinuxFileWatcher::~LinuxFileWatcher()
 	{
-		_active = false;
+		// Remove watches
+		for(auto pathToWatch : _pathsToWatch)
+			inotify_rm_watch(_inotifyFd, pathToWatch.second);
+		
+		// Close file descriptor
+		close(_inotifyFd);
+		_inotifyFd = -1;
 	}
 
-	void LinuxFileWatcher::addWatch(fs::path pathName)
+	void LinuxFileWatcher::addWatch(fs::path directory)
 	{
-		if(_inotifyFd < 0)
-		{
-			_inotifyFd = inotify_init();
-			if(_inotifyFd < 0)
-			{
-				LOG_WARN("LinuxFileWatcher", "Could not initialize inotify! Can't watch files. Error ($0): $1", _inotifyFd, std::strerror(errno));
-				return;
-			}
-		}
-
 		// Get watch descriptor
-		int wd = inotify_add_watch(_inotifyFd, fs::absolute(pathName).c_str(), IN_MODIFY);
+		int wd = inotify_add_watch(_inotifyFd, fs::absolute(directory).c_str(), IN_MODIFY);
 		if(wd < 0)
 		{
-			LOG_WARN("LinuxFileWatcher", "Could not add watch to $0! (Error ($1): $2)", pathName, wd, std::strerror(errno));
+			LOG_WARN("LinuxFileWatcher", "Could not add watch to $0! (Error ($1): $2)", directory, wd, std::strerror(errno));
 			return;
 		}
 
-		_pathsToWatch[pathName] = wd;
-		LOG_INFO("LinuxFileWatcher", "Watch $0 created -> $1", pathName, wd);
+		_pathsToWatch[directory] = wd;
+		LOG_INFO("LinuxFileWatcher", "Watch $0 created", directory, wd);
+
+		// Add subdirectories
+		for(auto& p : fs::directory_iterator(directory))
+			if(p.is_directory())
+			{
+				// Ignore hidden directories and build directory
+				if(p.path().stem().string()[0] != '.' && p.path().stem().string() != "build")
+					addWatch(p.path());
+			}
 	}
 
-	void LinuxFileWatcher::removeWatch(fs::path pathName)
+	void LinuxFileWatcher::removeWatch(fs::path directory)
 	{
-		FileWatcher::removeWatch(pathName);
+		FileWatcher::removeWatch(directory);
 	}
 
 	void LinuxFileWatcher::update()
@@ -110,7 +121,7 @@ namespace atta
 		}
 		else if(len > 0)
 		{
-			size_t i = 0;
+			int i = 0;
 			while(i < len)
 			{
 				struct inotify_event* ievent;
@@ -127,10 +138,10 @@ namespace atta
 	{
 		if(ievent->len)
 		{
-			LOG_DEBUG("LinuxFileWatcher", "name=$0", ievent->name);
-			LOG_DEBUG("LinuxFileWatcher", "wd=$0 cookie=$2 len=$3",
-					ievent->wd, 
-					ievent->cookie, ievent->len);
+			//LOG_DEBUG("LinuxFileWatcher", "name=$0", ievent->name);
+			//LOG_DEBUG("LinuxFileWatcher", "wd=$0 cookie=$2 len=$3",
+			//		ievent->wd, 
+			//		ievent->cookie, ievent->len);
 
 			for(auto pathToWatch : _pathsToWatch)
 			{
@@ -139,13 +150,13 @@ namespace atta
 					FileEvent e;
 
 					if(ievent->mask & IN_MODIFY)
-						e.action = e.action | FileEvent::Action::MODIFY;
+						e.action = static_cast<FileEvent::Action>(e.action | FileEvent::MODIFY);
 					if(ievent->mask & IN_DELETE)
-						e.action = e.action | FileEvent::Action::DELETE;
+						e.action = static_cast<FileEvent::Action>(e.action | FileEvent::DELETE);
 					if(ievent->mask & IN_OPEN)
-						e.action = e.action | FileEvent::Action::OPEN;
+						e.action = static_cast<FileEvent::Action>(e.action | FileEvent::OPEN);
 					if(ievent->mask & IN_CLOSE)
-						e.action = e.action | FileEvent::Action::CLOSE;
+						e.action = static_cast<FileEvent::Action>(e.action | FileEvent::CLOSE);
 
 					e.file = pathToWatch.first / ievent->name;
 

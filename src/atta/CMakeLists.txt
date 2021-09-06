@@ -18,6 +18,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/fileSystem)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/componentSystem)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/graphicsSystem)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/serviceLocator)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/scriptSystem)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/algorithms)
 
 set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
