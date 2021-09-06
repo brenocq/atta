@@ -16,6 +16,8 @@ namespace atta
 	Atta::Atta(CreateInfo info):
 		_shouldFinish(false)
 	{
+		FileManager::startUp();
+
 		if(info.projectFile != "")
 			FileManager::setProjectFile(info.projectFile);
 
@@ -25,6 +27,7 @@ namespace atta
 		ComponentManager::startUp();
 
 		EventManager::subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
+		EventManager::subscribe(SID("File"), BIND_EVENT_FUNC(Atta::onWindowClose));
 
 		_graphicsManager = new GraphicsManager();
 	}
@@ -34,6 +37,8 @@ namespace atta
 		delete _graphicsManager;
 
 		ComponentManager::shutDown();
+		FileManager::shutDown();
+
 		delete _mainAllocator;
 		LOG_VERBOSE("Atta", "Finished");
 	}
@@ -43,6 +48,7 @@ namespace atta
 		while(!_shouldFinish)
 		{
 			_graphicsManager->update();
+			FileManager::update();
 		}
 	}
 

@@ -10,11 +10,11 @@ set(ATTA_MEMORY_SYSTEM_SOURCES
 	allocators/bitmapAllocator.cpp
 )
 
-add_library(atta_memory_system_lib STATIC
+add_library(atta_memory_system STATIC
 	${ATTA_MEMORY_SYSTEM_SOURCES}
 )
-atta_target_common(atta_memory_system_lib)
-atta_add_libs(atta_memory_system_lib)
+atta_target_common(atta_memory_system)
+atta_add_libs(atta_memory_system)
 
 ########## Testing ##########
 set(ATTA_MEMORY_SYSTEM_TEST_SOURCES
@@ -31,5 +31,5 @@ atta_add_tests(${ATTA_MEMORY_SYSTEM_TEST_SOURCES})
 atta_create_local_test(
 	atta_memory_system_test
 	"${ATTA_MEMORY_SYSTEM_TEST_SOURCES}"
-	"atta_memory_system_lib"
+	"atta_memory_system"
 )

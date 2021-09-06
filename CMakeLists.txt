@@ -12,13 +12,13 @@ endif()
 
 ########## OS ##########
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
-	list(APPEND ATTA_DEFINITIONS "ATTA_IS_WINDOWS")
+	list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
 	# Force google test to link the runtimes dynamically (to avoid visual studio link error)
 	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-	list(APPEND ATTA_DEFINITIONS "ATTA_IS_MACOS")
+	list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
-	list(APPEND ATTA_DEFINITIONS "ATTA_IS_LINUX")
+	list(APPEND ATTA_DEFINITIONS "ATTA_OS_LINUX")
 else()
 	message(SEND_ERROR "Unknown system name: " + CMAKE_SYSTEM_NAME)
 endif()
@@ -37,6 +37,9 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 		list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
 		# Glad opengl definitions
 		list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
+		# ImGui warnings
+		list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn)
+		
 	endif()
 endif()
 if(CMAKE_BUILD_TYPE MATCHES Release)

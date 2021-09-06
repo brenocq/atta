@@ -13,7 +13,8 @@ namespace atta
 	class WindowKeyboardButtonEvent : public Event
 	{
 	public:
-		enum class Action {
+		enum class Action
+		{
 			PRESS,
 			REPEAT,
 			RELEASE
