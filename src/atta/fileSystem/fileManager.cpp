@@ -1,12 +1,14 @@
 //--------------------------------------------------
-// Atta Project
+// Atta File System
 // fileManager.cpp
 // Date: 2021-09-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/fileSystem/fileManager.h>
-#include <atta/fileSystem/watcher/nullFileWatcher.h>
-#include <atta/fileSystem/watcher/linuxFileWatcher.h>
+#include <atta/fileSystem/watchers/nullFileWatcher.h>
+#include <atta/fileSystem/watchers/linuxFileWatcher.h>
+#include <atta/eventSystem/eventManager.h>
+#include <atta/eventSystem/events/projectEvent.h>
 
 namespace atta
 {
@@ -15,10 +17,10 @@ namespace atta
 		_projectDefined = false;
 
 #ifdef ATTA_OS_LINUX
-		_fileWatcher = static_pointer_cast<FileWatcher>(std::make_shared<LinuxFileWatcher>());
+		_fileWatcher = std::static_pointer_cast<FileWatcher>(std::make_shared<LinuxFileWatcher>());
 #else
-		_fileWatcher = static_pointer_cast<FileWatcher>(std::make_shared<NullFileWatcher>());
-#endif// ATTA_OS_LINUX
+		_fileWatcher = std::static_pointer_cast<FileWatcher>(std::make_shared<NullFileWatcher>());
+#endif
 	}
 
 	void FileManager::shutDownImpl()
@@ -49,6 +51,9 @@ namespace atta
 
 		_fileWatcher->addWatch(_projectDirectory);
 
+		ProjectEvent e;
+		EventManager::publish(e);
+
 		return true;
 	}
 
@@ -60,6 +65,11 @@ namespace atta
 	std::string FileManager::getProjectNameImpl() const
 	{
 		return _projectFile.stem();
+	}
+
+	fs::path FileManager::getProjectDirectoryImpl() const
+	{
+		return _projectDirectory;
 	}
 
 	void FileManager::closeProjectImpl()

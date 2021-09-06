@@ -26,7 +26,6 @@ namespace atta
 
 	private:
 		// Handle events
-		void onEvent(Event& event);
 		void onWindowClose(Event& event);
 
 		// Graphics

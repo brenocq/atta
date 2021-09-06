@@ -19,6 +19,7 @@
 #include <cmath>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <filesystem>
 namespace fs = std::filesystem;
 

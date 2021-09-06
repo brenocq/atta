@@ -13,7 +13,7 @@ namespace atta
 	class FileEvent : public Event
 	{
 	public:
-		enum class Action
+		enum Action
 		{
 			NONE = 0,
 			MODIFY = 1,
@@ -22,7 +22,7 @@ namespace atta
 			CLOSE = 8
 		};
 
-		FileEvent(): action(Action::NONE) {}
+		FileEvent(): action(FileEvent::NONE) {}
 
 		Event::Type getType() const override { return SID("File"); }
 		const char* getName() const override { return "File"; }
@@ -31,10 +31,23 @@ namespace atta
 		fs::path file;
 	};
 
-	inline FileEvent::Action operator|(FileEvent::Action a, FileEvent::Action b)
+	inline std::stringstream& operator<<(std::stringstream& ss, const FileEvent& e)
 	{
-		return static_cast<FileEvent::Action>(static_cast<int>(a) | static_cast<int>(b));
-	}
-}
+		ss << "FileEvent{file=" << e.file << ", action={ ";
+		if(e.action & FileEvent::MODIFY)
+			ss << "MODIFY ";
+		if(e.action & FileEvent::DELETE)
+			ss << "DELETE ";
+		if(e.action & FileEvent::OPEN)
+			ss << "OPEN ";
+		if(e.action & FileEvent::CLOSE)
+			ss << "CLOSE ";
+		if(e.action == FileEvent::NONE)
+			ss << "NONE ";
+		ss << "}}";
 
+		return ss;
+	}
+
+}
 #endif// ATTA_EVENT_SYSTEM_EVENTS_FILE_EVENT_H
