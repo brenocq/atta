@@ -14,9 +14,9 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	layers/internal/editor/scenePanel.cpp
 )
 
-add_library(atta_graphics_system_lib STATIC
+add_library(atta_graphics_system STATIC
 	${ATTA_GRAPHICS_SYSTEM_SOURCE}
 )
-target_link_libraries(atta_graphics_system_lib PRIVATE glfw glad imgui)
-atta_target_common(atta_graphics_system_lib)
-atta_add_libs(atta_graphics_system_lib)
+target_link_libraries(atta_graphics_system PRIVATE glfw glad imgui)
+atta_target_common(atta_graphics_system)
+atta_add_libs(atta_graphics_system)

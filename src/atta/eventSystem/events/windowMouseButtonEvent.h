@@ -13,7 +13,8 @@ namespace atta
 	class WindowMouseButtonEvent : public Event
 	{
 	public:
-		enum class Action {
+		enum class Action
+		{
 			PRESS,
 			RELEASE
 		};

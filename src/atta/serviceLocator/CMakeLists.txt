@@ -5,11 +5,11 @@ set(ATTA_SERVICE_LOCATOR_SOURCE
 	service.cpp
 )
 
-add_library(atta_service_locator_lib STATIC
+add_library(atta_service_locator STATIC
 	${ATTA_SERVICE_LOCATOR_SOURCE}
 )
-atta_target_common(atta_service_locator_lib)
-atta_add_libs(atta_service_locator_lib)
+atta_target_common(atta_service_locator)
+atta_add_libs(atta_service_locator)
 
 ########## Testing ##########
 set(ATTA_SERVICE_LOCATOR_TEST_SOURCES
@@ -22,5 +22,5 @@ atta_add_tests(${ATTA_SERVICE_LOCATOR_TEST_SOURCES})
 atta_create_local_test(
 	atta_service_locator_test
 	"${ATTA_SERVICE_LOCATOR_TEST_SOURCES}"
-	"atta_service_locator_lib"
+	"atta_service_locator"
 )

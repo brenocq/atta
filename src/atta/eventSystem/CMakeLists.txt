@@ -4,11 +4,11 @@ set(ATTA_EVENT_SYSTEM_SOURCE
 	eventManager.cpp
 )
 
-add_library(atta_event_system_lib STATIC
+add_library(atta_event_system STATIC
 	${ATTA_EVENT_SYSTEM_SOURCE}
 )
-atta_target_common(atta_event_system_lib)
-atta_add_libs(atta_event_system_lib)
+atta_target_common(atta_event_system)
+atta_add_libs(atta_event_system)
 
 ########## Testing ##########
 set(ATTA_EVENT_SYSTEM_TEST_SOURCES
@@ -21,5 +21,5 @@ atta_add_tests(${ATTA_EVENT_SYSTEM_TEST_SOURCES})
 atta_create_local_test(
 	atta_event_system_test
 	"${ATTA_EVENT_SYSTEM_TEST_SOURCES}"
-	"atta_event_system_lib"
+	"atta_event_system"
 )

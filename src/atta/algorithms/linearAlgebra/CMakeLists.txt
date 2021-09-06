@@ -6,12 +6,12 @@ set(ATTA_LINEAR_ALGEBRA_SOURCES
 	SVD/SVD.cpp
 )
 
-add_library(atta_linalg_lib STATIC
+add_library(atta_linalg STATIC
 	${ATTA_LINEAR_ALGEBRA_SOURCES}
 )
-atta_target_common(atta_linalg_lib)
-atta_add_libs(atta_linalg_lib)
-target_link_libraries(atta_linalg_lib PUBLIC atta_core_lib)
+atta_target_common(atta_linalg)
+atta_add_libs(atta_linalg)
+target_link_libraries(atta_linalg PUBLIC atta_core)
 
 ########## Testing ##########
 set(ATTA_ALGS_LINALG_TEST_SOURCES
@@ -26,5 +26,5 @@ atta_add_tests(${ATTA_ALGS_LINALG_TEST_SOURCES})
 atta_create_local_test(
 	atta_linalg_test 
 	"${ATTA_ALGS_LINALG_TEST_SOURCES}"
-	"atta_linalg_lib"
+	"atta_linalg"
 )

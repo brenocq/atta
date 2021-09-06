@@ -11,12 +11,12 @@ set(ATTA_CORE_SOURCE
 	math/ray.cpp
 )
 
-add_library(atta_core_lib STATIC
+add_library(atta_core STATIC
 	${ATTA_CORE_SOURCE}
 )
-atta_target_common(atta_core_lib)
-atta_add_libs(atta_core_lib)
-target_link_libraries(atta_core_lib PUBLIC glfw)
+atta_target_common(atta_core)
+atta_add_libs(atta_core)
+target_link_libraries(atta_core PUBLIC glfw)
 
 ########## Testing ##########
 set(ATTA_CORE_TEST_SOURCES
@@ -30,10 +30,10 @@ atta_add_tests(${ATTA_CORE_TEST_SOURCES})
 atta_create_local_test(
 	atta_core_string_id_test 
 	"tests/stringId.cpp"
-	"atta_core_lib"
+	"atta_core"
 )
 atta_create_local_test(
 	atta_core_math_test 
 	"tests/math.cpp"
-	"atta_core_lib"
+	"atta_core"
 )

@@ -11,7 +11,12 @@ namespace atta
 {
 
 // Assert without error message
-#define ASSERT_1ARG(x) { if(!(x)) { LOG_ERROR("Assert", "Failed assert at file [w]$0[], line [w]$1[]", __FILE__, __LINE__); exit(EXIT_FAILURE);} }
+#define ASSERT_1ARG(x) \
+	if(!(x)) \
+	{ \
+		LOG_ERROR("Assert", "Failed assert at file [w]$0[], line [w]$1[]", __FILE__, __LINE__); \
+		exit(EXIT_FAILURE); \
+	}
 
 // Assert with error message
 #define ASSERT_W_ARGS(x, ...) \
@@ -22,13 +27,13 @@ namespace atta
 		exit(EXIT_FAILURE); \
 	}
 
-// Check number of arguments and select which assert to call (up to 10 arguments)
-#define ASSERT_SELECT(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
+// Check number of arguments and select which assert to call (up to 9 arguments)
+#define ASSERT_SELECT(_1, _2, _3, _4, _5, _6, _7, _8, _9, NAME, ...) NAME
 #define ASSERT(...) ASSERT_SELECT(__VA_ARGS__, \
 		ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS,\
 		ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS,\
 		ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS,\
-		ASSERT_W_ARGS, ASSERT_1ARG)(__VA_ARGS__)
+		ASSERT_1ARG)(__VA_ARGS__)
 
 // Assert when using debug build
 #ifdef ATTA_DEBUG_BUILD
