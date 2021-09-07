@@ -51,9 +51,10 @@ namespace
 
 	TEST(EventSystem, Publish)
 	{
+		EventManager::clear();
+
 		TestEvent e {2};
-		EventManager dispatcher;
-		dispatcher.publish(e);
+		EventManager::publish(e);
 
 		EXPECT_EQ(e.handled, false);
 		EXPECT_EQ(e.getValue(), 2);
@@ -61,21 +62,22 @@ namespace
 
 	TEST(EventSystem, Subscribe)
 	{
+		EventManager::clear();
+
 		using namespace std::placeholders;
 
-		EventManager dispatcher;
 		TestObserver observer;
 
-		dispatcher.subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer, _1));
+		EventManager::subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer, _1));
 
 		EXPECT_EQ(observer.getSum(), 0);
 	}
 
 	TEST(EventSystem, MultipleEventsObservers)
 	{
+		EventManager::clear();
 		using namespace std::placeholders;
 
-		EventManager dispatcher;
 		TestObserver observer0;
 		TestObserver observer1;
 		TestObserver observer2;
@@ -84,18 +86,18 @@ namespace
 		TestEvent e2 {4};
 
 		// Event will be discarted because no one was subscribed to it, will not be handled
-		dispatcher.publish(e0);
+		EventManager::publish(e0);
 
 		// The observer0 should not receive testEvents, so its sum stays in 0
-		dispatcher.subscribe(SID("Window_MouseMove"), std::bind(&TestObserver::handle, &observer0, _1));
+		EventManager::subscribe(SID("Window_MouseMove"), std::bind(&TestObserver::handle, &observer0, _1));
 		// The observer1 receives all testEvents after subscription
-		dispatcher.subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer1, _1));
+		EventManager::subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer1, _1));
 		// Because observer1 will consume the events, observer2 will not receive any event
-		dispatcher.subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer2, _1));
+		EventManager::subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer2, _1));
 
 		// Publish more two events, 2+4=6
-		dispatcher.publish(e1);
-		dispatcher.publish(e2);
+		EventManager::publish(e1);
+		EventManager::publish(e2);
 
 		EXPECT_EQ(observer0.getSum(), 0);
 		EXPECT_EQ(observer1.getSum(), 6);

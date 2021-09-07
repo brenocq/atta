@@ -29,4 +29,9 @@ namespace atta
 				return;
 		}
 	}
+
+	void EventManager::clearImpl()
+	{
+		_observers.clear();
+	}
 }
