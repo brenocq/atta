@@ -18,7 +18,7 @@ namespace atta
 	unsigned int shaderProgram;
 
 	Layer2D::Layer2D():
-		Layer(StringId("2D"))
+		Layer(StringId("GraphicsLayer2D"))
 	{
 	}
 

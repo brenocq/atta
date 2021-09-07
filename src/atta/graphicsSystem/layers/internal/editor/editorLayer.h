@@ -14,7 +14,7 @@
 
 namespace atta
 {
-	class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("GraphicsSystem")>
+	class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("GraphicsAllocator")>
 	{
 	public:
 		EditorLayer();

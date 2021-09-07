@@ -16,15 +16,15 @@ namespace atta
 
 		//----- System Memory -----//
 		// Get main memory
-		StackAllocator* main = MemoryManager::getAllocator<StackAllocator>(SID("Main"));
+		Allocator* mainAllocator = MemoryManager::getAllocator(SSID("MainAllocator"));
 		size_t size = 1024*1024*1024;// 1GB
 		// Alloc memory inside main memory
-		uint8_t* componentMemory = main->alloc<uint8_t>(size);
+		uint8_t* componentMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
 		ASSERT(componentMemory != nullptr, "Could not allocate component system memory");
 
 		// Create new allocator from component memory
 		_allocator = new StackAllocator(componentMemory, size);
-		MemoryManager::registerAllocator(SID("ComponentSystem"), static_cast<Allocator*>(_allocator));
+		MemoryManager::registerAllocator(SSID("ComponentAllocator"), static_cast<Allocator*>(_allocator));
 
 		createEntityPool();
 		createComponentPools();
@@ -33,14 +33,14 @@ namespace atta
 		EntityId e1 = createEntity();
 		EntityId e2 = createEntity();
 		EntityId e3 = createEntity();
-		LOG_DEBUG("ComponentManager", "Creating entities $0 $1 $2 $3", e0, e1, e2, e3);
+		//LOG_DEBUG("ComponentManager", "Creating entities $0 $1 $2 $3", e0, e1, e2, e3);
 
 		TransformComponent* t = addEntityComponent<TransformComponent>(e0);
 		t->transform = mat4(1.0f, 0.0f, 0.0f, 0.5f,
 						0.0f, 1.0f, 0.0f, 0.5f,
 						0.0f, 0.0f, 1.0f, 0.0f,
 						0.0f, 0.0f, 1.0f, 1.0f);
-		LOG_DEBUG("ComponentManager", "Entity transform: $0", t->transform.toString());
+		//LOG_DEBUG("ComponentManager", "Entity transform: $0", t->transform.toString());
 
 		//TransformComponent* t1 = addEntityComponent<TransformComponent>(e1);
 		//LOG_DEBUG("ComponentManager", "Entity position: $0", t1->position);
@@ -80,7 +80,7 @@ namespace atta
 		
 		// Create entity pool allocator
 		uint8_t* startEntityPool = entityMemory+sizeof(EntityId)*_maxEntities;
-		MemoryManager::registerAllocator(SID("ComponentSystem_Entity"), 
+		MemoryManager::registerAllocator(SSID("Component_EntityAllocator"), 
 				static_cast<Allocator*>(new PoolAllocator<Entity>(startEntityPool, _maxEntities)));
 	}
 
@@ -94,7 +94,7 @@ namespace atta
 
 	EntityId ComponentManager::createEntityImpl()
 	{
-		PoolAllocator<Entity>* pool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("ComponentSystem_Entity"));
+		PoolAllocator<Entity>* pool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("Component_EntityAllocator"));
 
 		// Alloc entity
 		Entity* e = pool->alloc();

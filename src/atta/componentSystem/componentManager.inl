@@ -16,7 +16,7 @@ namespace atta
 		// TODO Check if entity was created, if this entity was not created, this will break the pool allocator
 		
 		// Get entity
-		PoolAllocator<Entity>* epool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("ComponentSystem_Entity"));
+		PoolAllocator<Entity>* epool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("Component_EntityAllocator"));
 		Entity* e = epool->getBlock(entity);
 
 		int freeComponentSlot = -1;
@@ -33,7 +33,7 @@ namespace atta
 			return nullptr;
 
 		// Alloc component
-		PoolAllocator<T>* cpool = MemoryManager::getAllocator<PoolAllocator<T>>(COMPONENT_POOL_ID(T));
+		PoolAllocator<T>* cpool = MemoryManager::getAllocator<PoolAllocator<T>>(COMPONENT_POOL_SID(T));
 		T* component = cpool->alloc();
 
 		// Add component to entity
@@ -49,11 +49,11 @@ namespace atta
 		// TODO Check if entity was created, if this entity was not created, this will break the pool allocator
 		
 		// Get entity
-		PoolAllocator<Entity>* epool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("ComponentSystem_Entity"));
+		PoolAllocator<Entity>* epool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("Component_EntityAllocator"));
 		Entity* e = epool->getBlock(entity);
 
 		// Get component pool
-		PoolAllocator<T>* cpool = MemoryManager::getAllocator<PoolAllocator<T>>(COMPONENT_POOL_ID(T));
+		PoolAllocator<T>* cpool = MemoryManager::getAllocator<PoolAllocator<T>>(COMPONENT_POOL_SID(T));
 
 		for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
 			if(cpool->owns(e->components[i]))
@@ -77,7 +77,7 @@ namespace atta
 		LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB", name, typeid(T).name(), maxCount*sizeof(T)/(1024*1024.0f));
 		
 		// Create pool allocator
-		MemoryManager::registerAllocator(COMPONENT_POOL_ID(T), static_cast<Allocator*>(new PoolAllocator<T>(componentMemory, maxCount)));
+		MemoryManager::registerAllocator(COMPONENT_POOL_SSID(T), static_cast<Allocator*>(new PoolAllocator<T>(componentMemory, maxCount)));
 
 		// Register component name
 		_componentNames[typeid(T).hash_code()] = std::string(name);

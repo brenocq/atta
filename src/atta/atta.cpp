@@ -11,6 +11,7 @@
 #include <atta/componentSystem/componentManager.h>
 #include <atta/fileSystem/fileManager.h>
 #include <atta/scriptSystem/scriptManager.h>
+#include <atta/resourceSystem/resourceManager.h>
 
 namespace atta
 {
@@ -19,12 +20,14 @@ namespace atta
 	{
 		FileManager::startUp();
 
-		_mainAllocator = new StackAllocator(2*1024*1024*1024L);// Allocate 1GB for the whole system
-		MemoryManager::registerAllocator(SID("Main"), static_cast<Allocator*>(_mainAllocator));
+		_mainAllocator = new StackAllocator(2*1024*1024*1024L);// Allocate 2GB for the whole system
+		MemoryManager::registerAllocator(SSID("MainAllocator"), 
+				static_cast<Allocator*>(_mainAllocator));
 
+		ResourceManager::startUp();
 		ComponentManager::startUp();
 
-		EventManager::subscribe(SID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
+		EventManager::subscribe(SSID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
 
 		_graphicsManager = new GraphicsManager();
 
@@ -40,6 +43,7 @@ namespace atta
 
 		ScriptManager::shutDown();
 		ComponentManager::shutDown();
+		ResourceManager::shutDown();
 		FileManager::shutDown();
 
 		delete _mainAllocator;

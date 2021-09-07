@@ -14,7 +14,7 @@
 namespace atta
 {
 	UILayer::UILayer():
-		Layer(StringId("UI"))
+		Layer(StringId("GraphicsLayerUI"))
 	{
 
 	}

@@ -10,7 +10,7 @@ namespace atta
 {
 	Allocator::Allocator(uint64_t size)
 	{
-		LOG_DEBUG("Allocator", "Allocating $0GB", size/1024/1024/1024);
+		//LOG_DEBUG("Allocator", "Allocating $0GB", size/1024/1024/1024);
 		_memory = new uint8_t[size];
 		ASSERT(_memory != nullptr, "Could not allocate enough memory");
 
@@ -27,7 +27,7 @@ namespace atta
 
 	Allocator::~Allocator()
 	{
-		LOG_DEBUG("Allocator", "Free $0GB", _size/1024/1024/1024);
+		//LOG_DEBUG("Allocator", "Freeing $0GB", _size/1024/1024/1024);
 		if(_shouldFree)
 			delete _memory;
 	}

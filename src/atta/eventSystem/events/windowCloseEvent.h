@@ -13,7 +13,7 @@ namespace atta
 	class WindowCloseEvent : public Event
 	{
 	public:
-		Event::Type getType() const override { return SID("Window_Close"); }
+		Event::Type getType() const override { return SSID("Window_Close"); }
 		const char* getName() const override { return "Window_Close"; }
 	};
 }

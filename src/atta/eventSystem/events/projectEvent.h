@@ -13,7 +13,7 @@ namespace atta
 	class ProjectEvent : public Event
 	{
 	public:
-		Event::Type getType() const override { return SID("Project"); }
+		Event::Type getType() const override { return SSID("Project"); }
 		const char* getName() const override { return "Project"; }
 	};
 }

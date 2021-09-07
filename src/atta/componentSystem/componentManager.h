@@ -13,7 +13,8 @@
 
 namespace atta
 {
-#define COMPONENT_POOL_ID(T) SID((std::string("ComponentSystem_") + typeid(T).name() + "_Pool").c_str())
+#define COMPONENT_POOL_SID(T) SID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
+#define COMPONENT_POOL_SSID(T) SSID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
 	using EntityId = size_t;
 
 

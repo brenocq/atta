@@ -12,6 +12,12 @@
 
 namespace atta
 {
+	MenuBar::MenuBar():
+		_showPreferences(false)
+	{
+
+	}
+
 	void MenuBar::render()
 	{
 		if(ImGui::BeginMainMenuBar())
@@ -51,16 +57,28 @@ namespace atta
 
 			if(ImGui::BeginMenu("Edit"))
 			{
-				//if(ImGui::MenuItem("Undo", "CTRL+Z")) {}
-				//if(ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-				//ImGui::Separator();
-				//if(ImGui::MenuItem("Cut", "CTRL+X")) {}
-				//if(ImGui::MenuItem("Copy", "CTRL+C")) {}
-				//if(ImGui::MenuItem("Paste", "CTRL+V")) {}
+				if(ImGui::MenuItem("Preferences"))
+					_showPreferences = true;
+
 				ImGui::EndMenu();
 			}
 
 			ImGui::EndMainMenuBar();
+		}
+		preferences();
+	}
+
+	void MenuBar::preferences()
+	{
+		if(_showPreferences)
+		{
+			if(ImGui::Begin("Preferences", &_showPreferences))
+			{
+				std::vector<std::string> stringIds = StringId::getStrings();
+				for(const auto& str : stringIds)
+					ImGui::Text(str.c_str());
+			}
+			ImGui::End();
 		}
 	}
 }

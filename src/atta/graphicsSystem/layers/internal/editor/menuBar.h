@@ -12,8 +12,14 @@ namespace atta
 	class MenuBar
 	{
 	public:
+		MenuBar();
+
 		void render();
+
 	private:
+		void preferences();
+
+		bool _showPreferences;
 	};
 }
 

@@ -11,7 +11,7 @@
 
 namespace atta
 {
-	class UILayer final : public Layer, public AllocatedObject<UILayer, SID("GraphicsSystem")>
+	class UILayer final : public Layer, public AllocatedObject<UILayer, SID("GraphicsAllocator")>
 	{
 	public:
 		UILayer();

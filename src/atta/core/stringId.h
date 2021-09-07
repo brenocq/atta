@@ -20,30 +20,33 @@ namespace atta
 		const std::string& getString() const;
 		uint32_t getId() const;
 
-		bool operator==(StringHash sid) const;
-		bool operator==(std::string str) const;
-		bool operator==(StringId sid) const;
+		inline bool operator==(StringHash sid) const;
+		inline bool operator==(std::string str) const;
+		inline bool operator==(StringId sid) const;
 
 		static constexpr StringHash crc32b(const char* str);
+		static std::vector<std::string> getStrings();
 	
 	private:
 		StringHash _id;
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, const StringId& sid)
-	{
-		return os << sid.getString();
-	}
+	inline std::ostream& operator<<(std::ostream& os, const StringId& sid);
 
-	constexpr StringHash SID(const char* str)
-	{
-		return StringId::crc32b(str);
-	}
-
-	constexpr StringHash operator""_id(const char* str, std::size_t)
-	{
-		return StringId::crc32b(str);
-	}
+	//----- (S)tring (ID) -----
+	// Convert at compile-time the string to its hash
+	// Can be used with templates, constexpr, switch case, etc
+	constexpr StringHash SID(const char* str);
+	constexpr StringHash operator""_sid(const char* str, std::size_t);
+	//----- (S)aved (S)tring (ID) -----
+	// SSID is compiled like SID if not compiling as debug
+	// When compiling as debug, SSID executes at runtime and add 
+	// an entry to the stringId table (useful for debugging)
+#ifdef ATTA_DEBUG_BUILD
+	StringHash SSID(const char* str);
+#else
+	constexpr auto SSID = SID;
+#endif
 }
 
 #include <atta/core/stringId.inl>
