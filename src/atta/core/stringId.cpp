@@ -13,6 +13,9 @@ namespace atta
 	StringId::StringId(std::string str):
 		_id(crc32b(str.c_str()))
 	{
+		DASSERT(!(stringIdTable.find(_id) != stringIdTable.end() &&
+			stringIdTable[_id] != str), "String id hash collisiong between [w]$0[] and [w]$1[] ($2)", stringIdTable[_id], str, _id);
+
 		stringIdTable[_id] = str;
 	}
 
@@ -25,19 +28,20 @@ namespace atta
 	{
 		return _id;	
 	}
-
-	bool StringId::operator==(StringHash sid) const
+	
+	std::vector<std::string> StringId::getStrings()
 	{
-		return _id == sid;
+		std::vector<std::string> strings;
+		for(auto str : stringIdTable)
+			strings.push_back(str.second);
+
+		return strings;
 	}
 
-	bool StringId::operator==(std::string str) const
+#ifdef ATTA_DEBUG_BUILD
+	StringHash SSID(const char* str)
 	{
-		return getString() == str;
+		return StringId(str).getId();
 	}
-
-	bool StringId::operator==(StringId sid) const
-	{
-		return _id == sid.getId();
-	}
+#endif
 }

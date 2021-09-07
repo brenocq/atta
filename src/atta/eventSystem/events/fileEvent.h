@@ -24,7 +24,7 @@ namespace atta
 
 		FileEvent(): action(FileEvent::NONE) {}
 
-		Event::Type getType() const override { return SID("File"); }
+		Event::Type getType() const override { return SSID("File"); }
 		const char* getName() const override { return "File"; }
 
 		Action action;

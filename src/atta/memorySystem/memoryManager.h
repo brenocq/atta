@@ -25,12 +25,12 @@ namespace atta
 		static void registerAllocator(StringHash hash, Allocator* alloc);
 
 		// After registered, it is possible to get a pointer to the allocator
-		template <typename T>
+		template <typename T = Allocator>
 		static T* getAllocator(StringHash hash);
 
 		// Used by allocatedObject to store pointer to the hash table value and
 		// reduce number of unordered_map accesses
-		template <typename T>
+		template <typename T = Allocator>
 		static T** getAllocatorPtr(StringHash hash);
 
 	private:

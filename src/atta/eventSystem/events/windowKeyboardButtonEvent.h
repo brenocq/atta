@@ -22,7 +22,7 @@ namespace atta
 
 		WindowKeyboardButtonEvent(int key_, Action action_): key(key_), action(action_) {}
 
-		Event::Type getType() const override { return SID("Window_KeyboardButton"); }
+		Event::Type getType() const override { return SSID("Window_KeyboardButton"); }
 		const char* getName() const override { return "Window_KeyboardButton"; }
 
 		int key;

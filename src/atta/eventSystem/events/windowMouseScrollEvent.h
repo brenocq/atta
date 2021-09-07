@@ -15,7 +15,7 @@ namespace atta
 	public:
 		WindowMouseScrollEvent(float dx_, float dy_): dx(dx_), dy(dy_) {}
 
-		Event::Type getType() const override { return SID("Window_MouseScroll"); }
+		Event::Type getType() const override { return SSID("Window_MouseScroll"); }
 		const char* getName() const override { return "Window_MouseScroll"; }
 
 		float dx, dy;

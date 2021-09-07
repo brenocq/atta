@@ -21,7 +21,7 @@ namespace atta
 
 		WindowMouseButtonEvent(int button_, Action action_): button(button_), action(action_) {}
 
-		Event::Type getType() const override { return SID("Window_MouseButton"); }
+		Event::Type getType() const override { return SSID("Window_MouseButton"); }
 		const char* getName() const override { return "Window_MouseButton"; }
 
 		int button;

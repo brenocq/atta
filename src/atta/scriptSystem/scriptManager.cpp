@@ -32,8 +32,8 @@ namespace atta
 		_linker = std::static_pointer_cast<Linker>(std::make_shared<NullLinker>());
 #endif
 
-		EventManager::subscribe(SID("File"), BIND_EVENT_FUNC(ScriptManager::onFileChange));
-		EventManager::subscribe(SID("Project"), BIND_EVENT_FUNC(ScriptManager::onProjectChange));
+		EventManager::subscribe(SSID("File"), BIND_EVENT_FUNC(ScriptManager::onFileChange));
+		EventManager::subscribe(SSID("Project"), BIND_EVENT_FUNC(ScriptManager::onProjectChange));
 	}
 
 	void ScriptManager::shutDown() { getInstance().shutDownImpl(); }

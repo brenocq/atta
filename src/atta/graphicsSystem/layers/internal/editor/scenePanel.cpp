@@ -95,12 +95,12 @@ namespace atta
 
 		NameComponent* name = ComponentManager::getEntityComponent<NameComponent>(_selected);
 		if(name != nullptr)
-			if(ImGui::CollapsingHeader("Name", ImGuiTreeNodeFlags_None))
+			if(ImGui::CollapsingHeader("Name##ComponentsNameHeader", ImGuiTreeNodeFlags_None))
             	ImGui::InputText("Name", name->name, sizeof(NameComponent::name));
 
 		TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(_selected);
 		if(transform != nullptr)
-			if(ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_None))
+			if(ImGui::CollapsingHeader("Transform##ComponentsTransformHeader", ImGuiTreeNodeFlags_None))
 			{
 				bool posChanged = false, rotChanged = false, scaleChanged = false;
 				vec3 pos, ori, scale;

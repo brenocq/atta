@@ -12,9 +12,9 @@ namespace
 {
 	TEST(Core_StringId, ConstexprLiteral)
 	{
-		EXPECT_EQ(SID("test string"), "test string"_id);
+		EXPECT_EQ(SID("test string"), "test string"_sid);
 		EXPECT_NE(SID("test"), SID("string"));
-		EXPECT_NE("test"_id, "string"_id);
+		EXPECT_NE("test"_sid, "string"_sid);
 	}
 
 	TEST(Core_StringId, StringTable)

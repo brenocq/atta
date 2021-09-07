@@ -10,7 +10,7 @@
 namespace atta
 {
 	EditorLayer::EditorLayer():
-		Layer(StringId("Editor"))
+		Layer(StringId("GraphicsEditorLayer"))
 	{
 	}
 
