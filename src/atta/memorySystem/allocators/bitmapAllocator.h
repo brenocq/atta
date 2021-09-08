@@ -19,9 +19,9 @@ namespace atta
 	{
 	public:
 		// Allocate heap memory
-		BitmapAllocator(size_t size);
+		BitmapAllocator(uint64_t size);
 		// Use already allocated memory
-		BitmapAllocator(uint8_t* memory, size_t size);
+		BitmapAllocator(uint8_t* memory, uint64_t size);
 
 		// Simplified alloc/free
 		template<typename T>

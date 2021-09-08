@@ -15,7 +15,7 @@ namespace atta
 	}
 
 
-	StackAllocator::StackAllocator(uint8_t* memory, size_t size):
+	StackAllocator::StackAllocator(uint8_t* memory, uint64_t size):
 		Allocator(memory, size), _current(0)
 	{
 
