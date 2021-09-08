@@ -9,7 +9,7 @@
 
 namespace atta::linalg
 {
-	float SIGN(const float &a, const float &b)
+	inline float SIGN(const float &a, const float &b)
 	{
 		return b >= 0 ? (a >= 0 ? a : -a) : (a >= 0 ? -a : a);
 	}
