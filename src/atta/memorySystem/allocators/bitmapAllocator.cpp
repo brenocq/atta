@@ -8,13 +8,13 @@
 
 namespace atta
 {
-	BitmapAllocator::BitmapAllocator(size_t size):
+	BitmapAllocator::BitmapAllocator(uint64_t size):
 		Allocator(size), _current(0)
 	{
 		init();
 	}
 
-	BitmapAllocator::BitmapAllocator(uint8_t* memory, size_t size):
+	BitmapAllocator::BitmapAllocator(uint8_t* memory, uint64_t size):
 		Allocator(memory, size), _current(0)
 	{
 		init();

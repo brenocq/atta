@@ -15,6 +15,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL Windows)
 	list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
 	# Force google test to link the runtimes dynamically (to avoid visual studio link error)
 	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+	# Fix assert __VA_ARGS__ expansion
+	list(APPEND ATTA_OPTIONS /Zc:preprocessor)
 elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
 	list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
@@ -26,7 +28,7 @@ endif()
 ########## Options ##########
 if(CMAKE_BUILD_TYPE MATCHES Debug)
 	if(MSVC)
-		list(APPEND ATTA_OPTIONS /W4 /WX)
+		#list(APPEND ATTA_OPTIONS /W4 /WX)
 	else()
 		list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -g)#-Werror 
 		# Profilling
