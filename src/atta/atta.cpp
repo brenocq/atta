@@ -20,7 +20,8 @@ namespace atta
 	{
 		FileManager::startUp();
 
-		_mainAllocator = new StackAllocator(2*1024*1024*1024L);// Allocate 2GB for the whole system
+		uint64_t size = 2UL * 1024UL * 1024UL * 1024UL;
+		_mainAllocator = new StackAllocator(size);// Allocate 2GB for the whole system
 		MemoryManager::registerAllocator(SSID("MainAllocator"), 
 				static_cast<Allocator*>(_mainAllocator));
 

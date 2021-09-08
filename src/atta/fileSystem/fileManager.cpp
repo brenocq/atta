@@ -64,7 +64,7 @@ namespace atta
 
 	std::string FileManager::getProjectNameImpl() const
 	{
-		return _projectFile.stem();
+		return _projectFile.stem().string();
 	}
 
 	fs::path FileManager::getProjectDirectoryImpl() const

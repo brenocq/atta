@@ -15,7 +15,7 @@ namespace atta
 		// Allocate memory
 		Allocator(uint64_t size);
 		// Use existing allocated memory
-		Allocator(uint8_t* memory, size_t size);
+		Allocator(uint8_t* memory, uint64_t size);
 		virtual ~Allocator();
 
 		// How many bytes to allocate
@@ -29,7 +29,7 @@ namespace atta
 		// align: byte alignment
 		virtual void freeBytes(void* ptr, size_t size, size_t align = 0) = 0;
 
-		size_t getSize() { return _size; }
+		uint64_t getSize() { return _size; }
 
 		bool owns(void* ptr);// Check if pointer is inside this allocator memory
 
