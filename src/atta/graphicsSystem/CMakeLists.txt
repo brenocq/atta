@@ -3,7 +3,23 @@ cmake_minimum_required(VERSION 3.12)
 set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	graphicsManager.cpp
 	window.cpp
+	rendererAPI.cpp
+	image.cpp
+	framebuffer.cpp
+	renderPass.cpp
+	shaderUniform.cpp
+	shader.cpp
+	shaderGroup.cpp
+	pipeline.cpp
+
 	rendererAPIs/openGL/openGLRenderer.cpp
+	rendererAPIs/openGL/openGLImage.cpp
+	rendererAPIs/openGL/openGLFramebuffer.cpp
+	rendererAPIs/openGL/openGLRenderPass.cpp
+	rendererAPIs/openGL/openGLShader.cpp
+	rendererAPIs/openGL/openGLShaderGroup.cpp
+	rendererAPIs/openGL/openGLPipeline.cpp
+
 	layers/layer.cpp
 	layers/layerStack.cpp
 	layers/internal/uiLayer.cpp

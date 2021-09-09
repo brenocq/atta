@@ -26,4 +26,18 @@ namespace atta
 		{
 
 		}
+
+		void VulkanRenderer::beginRenderPass()
+		{
+
+		}
+		void VulkanRenderer::endRenderPass()
+		{
+
+		}
+
+		void VulkanRenderer::renderMesh()
+		{
+
+		}
 }

@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Window
+// Atta Graphics System
 // window.cpp
 // Date: 2021-08-16
 // By Breno Cunha Queiroz
