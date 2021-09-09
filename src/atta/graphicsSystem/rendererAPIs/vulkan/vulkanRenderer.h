@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_VULKAN_VULKAN_RENDERER_H
 #define ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_VULKAN_VULKAN_RENDERER_H
-#include <atta/graphicsSystem/rendererAPIs/rendererAPI.h>
+#include <atta/graphicsSystem/rendererAPI.h>
 
 namespace atta
 {
@@ -18,6 +18,11 @@ namespace atta
 
 		void beginFrame() override;
 		void endFrame() override;
+
+		void beginRenderPass() override;
+		void endRenderPass() override;
+
+		void renderMesh() override;
 	};
 }
 

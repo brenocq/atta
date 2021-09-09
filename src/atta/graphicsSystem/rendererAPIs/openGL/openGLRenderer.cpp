@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
-#include <glad/glad.h>
+#include <atta/graphicsSystem/rendererAPIs/openGL/base.h>
 #include <GLFW/glfw3.h>
 
 namespace atta
@@ -28,7 +28,7 @@ namespace atta
 			int versionMinor;
 			glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
 			glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
-			ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 3), "Atta requires at least OpenGL 3.3");
+			ASSERT(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 5), "Atta requires OpenGL >= 4.5");
 
 			glEnable(GL_DEPTH_TEST);
 		}
@@ -45,6 +45,21 @@ namespace atta
 		}
 
 		void OpenGLRenderer::endFrame()
+		{
+
+		}
+
+		void OpenGLRenderer::beginRenderPass()
+		{
+
+		}
+
+		void OpenGLRenderer::endRenderPass()
+		{
+
+		}
+
+		void OpenGLRenderer::renderMesh()
 		{
 
 		}

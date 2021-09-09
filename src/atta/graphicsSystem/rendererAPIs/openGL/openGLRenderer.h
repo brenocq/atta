@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H
 #define ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H
-#include <atta/graphicsSystem/rendererAPIs/rendererAPI.h>
+#include <atta/graphicsSystem/rendererAPI.h>
 #include <atta/graphicsSystem/window.h>
 
 struct GLFWwindow;
@@ -20,6 +20,11 @@ namespace atta
 
 		void beginFrame() override;
 		void endFrame() override;
+
+		void beginRenderPass() override;
+		void endRenderPass() override;
+
+		void renderMesh() override;
 	
 	private:
 		std::shared_ptr<Window> _window;
