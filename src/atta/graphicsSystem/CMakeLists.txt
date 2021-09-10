@@ -10,6 +10,8 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	shaderUniform.cpp
 	shader.cpp
 	shaderGroup.cpp
+	vertexBuffer.cpp
+	indexBuffer.cpp
 	pipeline.cpp
 
 	rendererAPIs/openGL/openGLRenderer.cpp
@@ -18,6 +20,8 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	rendererAPIs/openGL/openGLRenderPass.cpp
 	rendererAPIs/openGL/openGLShader.cpp
 	rendererAPIs/openGL/openGLShaderGroup.cpp
+	rendererAPIs/openGL/openGLVertexBuffer.cpp
+	rendererAPIs/openGL/openGLIndexBuffer.cpp
 	rendererAPIs/openGL/openGLPipeline.cpp
 
 	layers/layer.cpp
