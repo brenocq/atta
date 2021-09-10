@@ -16,6 +16,12 @@ namespace atta
 		OpenGLPipeline(const Pipeline::CreateInfo& info);
 		~OpenGLPipeline();
 	
+		void bind() override;
+
+	private:
+		static GLenum convertBaseType(VertexBufferElement::Type type);
+
+		OpenGLId _vertexArrayId;
 	};
 }
 

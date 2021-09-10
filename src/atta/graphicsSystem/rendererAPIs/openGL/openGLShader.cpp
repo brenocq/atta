@@ -47,7 +47,7 @@ namespace atta
 		if(!success)
 		{
 			glGetShaderInfoLog(_id, 512, NULL, infoLog);
-			ASSERT(false, "Failed to compile shader [*w]$0[]:[w]\n$1", _filepath, infoLog);
+			ASSERT(false, "Failed to compile shader [*w]$0[]:[w]\n$1", _filepath.string(), infoLog);
 		}
 	}
 

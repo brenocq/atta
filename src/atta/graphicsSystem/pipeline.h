@@ -9,6 +9,7 @@
 #include <atta/core/stringId.h>
 #include <atta/graphicsSystem/shaderGroup.h>
 #include <atta/graphicsSystem/renderPass.h>
+#include <atta/graphicsSystem/vertexBuffer.h>
 
 namespace atta
 {
@@ -30,6 +31,7 @@ namespace atta
 		{
 			std::shared_ptr<ShaderGroup> shaderGroup;
 			std::shared_ptr<RenderPass> renderPass;
+			VertexBufferLayout layout;
 			PrimitiveTopology primitiveTopology = PrimitiveTopology::TRIANGLE;
 			bool backfaceCulling = true;
 			bool wireframe = false;
@@ -41,9 +43,12 @@ namespace atta
 		Pipeline(const CreateInfo& info);
 		virtual ~Pipeline() = default;
 
+		virtual void bind() = 0;
+
 	protected:
 		std::shared_ptr<ShaderGroup> _shaderGroup;
 		std::shared_ptr<RenderPass> _renderPass;
+		VertexBufferLayout _layout;
 		PrimitiveTopology _primitiveTopology;
 
 		const bool _backfaceCulling;
