@@ -14,7 +14,7 @@ namespace atta
 	class OpenGLVertexBuffer final : public VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(uint8_t* data, uint32_t size, VertexBufferLayout layout, VertexBuffer::Usage usage = VertexBuffer::Usage::STATIC);
+		OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info);
 		~OpenGLVertexBuffer();
 
 		void setData(uint8_t* data, uint32_t size, uint32_t offset) override;

@@ -17,7 +17,6 @@ namespace atta
 		struct CreateInfo
 		{
 			std::shared_ptr<Framebuffer> framebuffer;
-
 			StringId debugName = StringId("Unnamed Render Pass");
 		};
 

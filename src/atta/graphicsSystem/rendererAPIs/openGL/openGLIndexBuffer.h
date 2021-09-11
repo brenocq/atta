@@ -14,7 +14,7 @@ namespace atta
 	class OpenGLIndexBuffer final : public IndexBuffer
 	{
 	public:
-		OpenGLIndexBuffer(uint8_t* data, uint32_t size);
+		OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info);
 		~OpenGLIndexBuffer();
 
 		void setData(uint8_t* data, uint32_t size, uint32_t offset) override;

@@ -12,10 +12,12 @@
 #include <atta/fileSystem/fileManager.h>
 #include <atta/scriptSystem/scriptManager.h>
 #include <atta/resourceSystem/resourceManager.h>
+#include <atta/graphicsSystem/graphicsManager.h>
+#include <atta/graphicsSystem/pipeline.h>
 
 namespace atta
 {
-	Atta::Atta(CreateInfo info):
+	Atta::Atta(const CreateInfo& info):
 		_shouldFinish(false)
 	{
 		FileManager::startUp();
@@ -30,8 +32,7 @@ namespace atta
 
 		EventManager::subscribe(SSID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
 
-		_graphicsManager = new GraphicsManager();
-
+		GraphicsManager::startUp();
 		ScriptManager::startUp();
 
 		if(info.projectFile != "")
@@ -40,9 +41,8 @@ namespace atta
 
 	Atta::~Atta()
 	{
-		delete _graphicsManager;
-
 		ScriptManager::shutDown();
+		GraphicsManager::shutDown();
 		ComponentManager::shutDown();
 		ResourceManager::shutDown();
 		FileManager::shutDown();
@@ -55,7 +55,7 @@ namespace atta
 	{
 		while(!_shouldFinish)
 		{
-			_graphicsManager->update();
+			GraphicsManager::update();
 			FileManager::update();
 		}
 	}

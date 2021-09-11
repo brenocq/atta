@@ -12,7 +12,13 @@ namespace atta
 	class RendererAPI
 	{
 	public:
-		RendererAPI() = default;
+		enum Type
+		{
+			OPENGL = 0,
+			VULKAN
+		};
+
+		RendererAPI(Type type);
 		virtual ~RendererAPI() = default;
 
 		virtual void beginFrame() = 0;
@@ -22,6 +28,11 @@ namespace atta
 		virtual void endRenderPass() = 0;
 
 		virtual void renderMesh() = 0;
+	
+		Type getType() const { return _type; }
+
+	protected:
+		Type _type;
 	};
 }
 

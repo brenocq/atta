@@ -11,7 +11,7 @@
 namespace atta
 {
 		OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window):
-			_window(window)
+			RendererAPI(RendererAPI::OPENGL), _window(window)
 		{
 			// Initialize GLAD
 			int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -22,6 +22,31 @@ namespace atta
 			LOG_INFO("OpenGLRenderer", "  - Vendor: $0", glGetString(GL_VENDOR));
 			LOG_INFO("OpenGLRenderer", "  - Renderer: $0", glGetString(GL_RENDERER));
 			LOG_INFO("OpenGLRenderer", "  - Version: $0", glGetString(GL_VERSION));
+
+#ifdef ATTA_DEBUG_BUILD
+			// Enable Debug
+			glEnable(GL_DEBUG_OUTPUT);
+			glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, 
+						GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+					{
+						switch (severity)
+						{
+						case GL_DEBUG_SEVERITY_HIGH:
+							LOG_ERROR("OpenGL Debug", "$0", message);
+							ASSERT(false, "OpenGL error");
+							break;
+						case GL_DEBUG_SEVERITY_MEDIUM:
+							LOG_WARN("OpenGL Debug", "$0", message);
+							break;
+						case GL_DEBUG_SEVERITY_LOW:
+							LOG_INFO("OpenGL Debug", "$0", message);
+							break;
+						case GL_DEBUG_SEVERITY_NOTIFICATION:
+							//LOG_VERBOSE("OpenGL Debug", "$0", message);
+							break;
+						}
+					}, nullptr);
+#endif// ATTA_DEBUG_BUILD
 
 			// Check OpenGL version
 			int versionMajor;

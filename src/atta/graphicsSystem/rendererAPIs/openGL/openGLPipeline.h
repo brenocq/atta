@@ -7,6 +7,7 @@
 #ifndef ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_PIPELINE_H
 #define ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_PIPELINE_H
 #include <atta/graphicsSystem/pipeline.h>
+#include <atta/graphicsSystem/rendererAPIs/openGL/base.h>
 
 namespace atta
 {

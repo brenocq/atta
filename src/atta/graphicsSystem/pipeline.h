@@ -45,6 +45,8 @@ namespace atta
 
 		virtual void bind() = 0;
 
+		StringId getDebugName() const { return _debugName; }
+
 	protected:
 		std::shared_ptr<ShaderGroup> _shaderGroup;
 		std::shared_ptr<RenderPass> _renderPass;

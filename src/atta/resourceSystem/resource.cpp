@@ -5,3 +5,12 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/resourceSystem/resource.h>
+
+namespace atta
+{
+	Resource::Resource(const fs::path filename):
+		_filename(filename), _id(StringId(fs::absolute(filename))), _data(nullptr)
+	{
+
+	}
+}

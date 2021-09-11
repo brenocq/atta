@@ -12,6 +12,14 @@ namespace atta
 	class IndexBuffer
 	{
 	public:
+		struct CreateInfo
+		{
+			uint8_t* data = nullptr;
+			uint32_t size = 0;
+			uint32_t offset = 0;
+		};
+
+		IndexBuffer(const CreateInfo& info);
 		virtual ~IndexBuffer() = default;
 
 		virtual void setData(uint8_t* buffer, uint32_t size, uint32_t offset = 0) = 0;
@@ -21,8 +29,9 @@ namespace atta
 		uint32_t getCount() const { return _size/sizeof(uint32_t); };
 
 	protected:
-		uint32_t _size;
 		std::vector<uint8_t> _data;
+		uint32_t _size;
+		uint32_t _offset;
 	};
 }
 

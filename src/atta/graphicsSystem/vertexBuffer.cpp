@@ -72,9 +72,9 @@ namespace atta
 		}
 	}
 
-	VertexBuffer::VertexBuffer(VertexBufferLayout layout, Usage usage):
-		_layout(layout), _usage(usage) 
+	VertexBuffer::VertexBuffer(const CreateInfo& info):
+		_layout(info.layout), _usage(info.usage), _size(info.size)
 	{
-
+		_data = std::vector<uint8_t>(info.data, info.data+_size);
 	}
 }

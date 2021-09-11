@@ -13,6 +13,7 @@ namespace atta
 	class VertexBufferElement final
 	{
 	public:
+		// TODO merge with type of shaderUniform.h
 		enum class Type
 		{
 			NONE = 0, 
@@ -68,7 +69,15 @@ namespace atta
 			DYNAMIC,
 		};
 
-		VertexBuffer(VertexBufferLayout layout, Usage usage);
+		struct CreateInfo
+		{
+			uint8_t* data = nullptr;
+			uint32_t size = 0;
+			VertexBufferLayout layout;
+			Usage usage = Usage::STATIC;
+		};
+
+		VertexBuffer(const CreateInfo& info);
 		virtual ~VertexBuffer() = default;
 
 		virtual void setData(uint8_t* data, uint32_t size, uint32_t offset) = 0;

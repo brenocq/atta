@@ -17,31 +17,31 @@ namespace atta
 		glGenVertexArrays(1, &_vertexArrayId);
 		glBindVertexArray(_vertexArrayId);
 
-		uint32_t i = 0;
-		for(const auto& element : _layout->getElements())
-		{
-			glEnableVertexAttribArray(i);
-			GLenum openGLType = convertBaseType(element.type);
+		//uint32_t i = 0;
+		//for(const auto& element : _layout.getElements())
+		//{
+		//	glEnableVertexAttribArray(i);
+		//	GLenum openGLType = convertBaseType(element.type);
 
-			if(openGLType == GL_INT)
-			{
-				glVertexAttribIPointer(i,
-					element.getComponentCount(),
-					glBaseType,
-					layout->getStride(),
-					(const void*)(intptr_t)element.offset);
-			}
-			else
-			{
-				glVertexAttribPointer(i,
-					element.getComponentCount(),
-					openGLType,
-					element.normalized ? GL_TRUE : GL_FALSE,
-					layout->getStride(),
-					(const void*)(intptr_t)element.offset);
-			}
-			i++;
-		}
+		//	if(openGLType == GL_INT)
+		//	{
+		//		glVertexAttribIPointer(i,
+		//			element.getComponentCount(),
+		//			openGLType,
+		//			_layout.getStride(),
+		//			(const void*)(intptr_t)element.offset);
+		//	}
+		//	else
+		//	{
+		//		glVertexAttribPointer(i,
+		//			element.getComponentCount(),
+		//			openGLType,
+		//			element.normalized ? GL_TRUE : GL_FALSE,
+		//			_layout.getStride(),
+		//			(const void*)(intptr_t)element.offset);
+		//	}
+		//	i++;
+		//}
 
 		glBindVertexArray(0);
 	}
