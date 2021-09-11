@@ -7,6 +7,7 @@
 #ifndef ATTA_RESOURCE_SYSTEM_RESOURCES_MESH_H
 #define ATTA_RESOURCE_SYSTEM_RESOURCES_MESH_H
 #include <atta/resourceSystem/resource.h>
+#include <atta/memorySystem/allocatedObject.h>
 #include <atta/core/math/vector.h>
 
 struct aiNode; 
@@ -15,7 +16,7 @@ struct aiScene;
 
 namespace atta
 {
-	class Mesh : public Resource
+	class Mesh : public Resource, public AllocatedObject<Mesh, SID("ResourceAllocator")>
 	{
 	public:
 		struct Vertex
@@ -27,8 +28,8 @@ namespace atta
 
 		Mesh(const fs::path& filename);
 
-		const std::vector<Vertex>& getVertices();
-		const std::vector<uint32_t>& getIndices();
+		const std::vector<Vertex>& getVertices() const { return _vertices; };
+		const std::vector<uint32_t>& getIndices() const { return _indices; };
 
 	private:
 		void loadMesh();

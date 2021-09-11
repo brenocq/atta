@@ -27,6 +27,8 @@ namespace atta
 		template <typename T, typename... Args>
 		static std::shared_ptr<T> create(Args... args) { return getInstance().createImpl<T>(args...); }
 
+		static std::shared_ptr<RendererAPI> getRendererAPI() { return getInstance().getRendererAPIImpl(); };
+
 	private:
 		void startUpImpl();
 		void shutDownImpl();
@@ -35,6 +37,8 @@ namespace atta
 		std::shared_ptr<T> createImpl(Args... args);
 		template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
 		std::shared_ptr<T> createSpecific(Args... args);
+
+		std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
 
 		std::shared_ptr<Window> _window;
 		std::shared_ptr<RendererAPI> _rendererAPI;

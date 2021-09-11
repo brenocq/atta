@@ -43,7 +43,8 @@ namespace atta
 		Pipeline(const CreateInfo& info);
 		virtual ~Pipeline() = default;
 
-		virtual void bind() = 0;
+		virtual void begin() = 0;
+		virtual void end() = 0;
 
 		StringId getDebugName() const { return _debugName; }
 

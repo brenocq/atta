@@ -24,6 +24,7 @@ namespace atta
 		virtual ~ShaderGroup() = default;
 
 		virtual void recompile() = 0;
+		virtual void bind() = 0;
 
 		const std::vector<std::shared_ptr<Shader>>& getShaders() const { return _shaders; };
 

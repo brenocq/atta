@@ -14,16 +14,16 @@ namespace atta
 	class OpenGLVertexBuffer final : public VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info);
+		OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info, OpenGLId vao);
 		~OpenGLVertexBuffer();
 
-		void setData(uint8_t* data, uint32_t size, uint32_t offset) override;
 		void bind() const override;
 
 		OpenGLId getId() const { return _id; }
 
 	private:
 		static GLenum convertUsage(Usage usage);
+		static GLenum convertBaseType(VertexBufferElement::Type type);
 
 		OpenGLId _id;
 	};

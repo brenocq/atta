@@ -73,4 +73,9 @@ namespace atta
 		}
 		glUseProgram(0);
 	}
+
+	void OpenGLShaderGroup::bind()
+	{
+		glUseProgram(_id);
+	}
 }

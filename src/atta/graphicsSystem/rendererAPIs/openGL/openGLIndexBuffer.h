@@ -14,10 +14,9 @@ namespace atta
 	class OpenGLIndexBuffer final : public IndexBuffer
 	{
 	public:
-		OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info);
+		OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info, OpenGLId vao);
 		~OpenGLIndexBuffer();
 
-		void setData(uint8_t* data, uint32_t size, uint32_t offset) override;
 		void bind() const override;
 
 		OpenGLId getId() const { return _id; }

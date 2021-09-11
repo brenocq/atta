@@ -90,13 +90,13 @@ namespace atta
 	template <>
 	std::shared_ptr<VertexBuffer> GraphicsManager::createImpl<VertexBuffer>(VertexBuffer::CreateInfo info)
 	{
-		return createSpecific<VertexBuffer, OpenGLVertexBuffer, VertexBuffer>(info);
+		return createSpecific<VertexBuffer, VertexBuffer, VertexBuffer>(info);
 	}
 
 	template <>
 	std::shared_ptr<IndexBuffer> GraphicsManager::createImpl<IndexBuffer>(IndexBuffer::CreateInfo info)
 	{
-		return createSpecific<IndexBuffer, OpenGLIndexBuffer, IndexBuffer>(info);
+		return createSpecific<IndexBuffer, IndexBuffer, IndexBuffer>(info);
 	}
 
 	template <>

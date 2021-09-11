@@ -18,4 +18,14 @@ namespace atta
 	{
 
 	}
+
+	void OpenGLRenderPass::begin()
+	{
+		_framebuffer->bind();
+	}
+
+	void OpenGLRenderPass::end()
+	{
+		_framebuffer->unbind();
+	}
 }

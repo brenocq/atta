@@ -9,6 +9,9 @@
 #include <atta/graphicsSystem/framebuffer.h>
 #include <atta/graphicsSystem/renderPass.h>
 
+#include <atta/resourceSystem/resourceManager.h>
+#include <atta/resourceSystem/resources/mesh.h>
+
 namespace atta
 {
 	FastRenderer::FastRenderer()
@@ -39,7 +42,8 @@ namespace atta
 		pipelineInfo.shaderGroup = shaderGroup;
 		pipelineInfo.layout = {
 			{ "inPosition", VertexBufferElement::Type::VEC3 },
-			{ "inColor", VertexBufferElement::Type::VEC3 },
+			{ "inNormal", VertexBufferElement::Type::VEC3 },
+			{ "inTexCoord", VertexBufferElement::Type::VEC2 }
 		};
 		pipelineInfo.renderPass = renderPass;
 		_geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
@@ -48,5 +52,15 @@ namespace atta
 	FastRenderer::~FastRenderer()
 	{
 
+	}
+
+	void FastRenderer::render()
+	{
+		_geometryPipeline->begin();
+		{
+			Mesh* mesh = ResourceManager::get<Mesh>("../resources/meshes/cube.obj");
+			GraphicsManager::getRendererAPI()->renderMesh(mesh->getId());
+		}
+		_geometryPipeline->end();
 	}
 }

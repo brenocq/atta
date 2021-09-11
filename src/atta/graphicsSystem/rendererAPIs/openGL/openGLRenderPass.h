@@ -15,6 +15,9 @@ namespace atta
 	public:
 		OpenGLRenderPass(const RenderPass::CreateInfo& info);
 		~OpenGLRenderPass();
+
+		void begin() override;
+		void end() override;
 	};
 }
 

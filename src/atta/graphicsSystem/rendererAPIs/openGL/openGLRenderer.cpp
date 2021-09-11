@@ -6,6 +6,10 @@
 //--------------------------------------------------
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/base.h>
+#include <atta/eventSystem/eventManager.h>
+#include <atta/eventSystem/events/meshLoadEvent.h>
+#include <atta/resourceSystem/resourceManager.h>
+#include <atta/resourceSystem/resources/mesh.h>
 #include <GLFW/glfw3.h>
 
 namespace atta
@@ -56,6 +60,9 @@ namespace atta
 			ASSERT(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 5), "Atta requires OpenGL >= 4.5");
 
 			glEnable(GL_DEPTH_TEST);
+
+			// Subscribe to events
+			EventManager::subscribe(SSID("Resource_MeshLoadEvent"), BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
 		}
 
 		OpenGLRenderer::~OpenGLRenderer()
@@ -74,18 +81,23 @@ namespace atta
 
 		}
 
-		void OpenGLRenderer::beginRenderPass()
+		void OpenGLRenderer::renderMesh(StringId meshSid)
 		{
+			if(_openGLMeshes.find(meshSid.getId()) == _openGLMeshes.end())
+			{
+				LOG_WARN("OpenGLRenderer", "Trying to render mesh that was never initialized");
+				return;
+			}
 
+			_openGLMeshes.at(meshSid.getId()).bind();
+			_openGLMeshes.at(meshSid.getId()).draw();
 		}
 
-		void OpenGLRenderer::endRenderPass()
+		void OpenGLRenderer::onMeshLoadEvent(Event& event)
 		{
+			MeshLoadEvent& e = reinterpret_cast<MeshLoadEvent&>(event);
+			LOG_DEBUG("OpenGLRenderer", "Mesh load event! [w]$0[]", e.sid);
 
-		}
-
-		void OpenGLRenderer::renderMesh()
-		{
-
+			_openGLMeshes.insert(std::make_pair(e.sid.getId(), OpenGLMesh(e.sid)));
 		}
 }

@@ -71,16 +71,15 @@ namespace atta
 
 		struct CreateInfo
 		{
-			uint8_t* data = nullptr;
-			uint32_t size = 0;
 			VertexBufferLayout layout;
 			Usage usage = Usage::STATIC;
+			uint32_t size = 0;
+			const uint8_t* data = nullptr;
 		};
 
 		VertexBuffer(const CreateInfo& info);
 		virtual ~VertexBuffer() = default;
 
-		virtual void setData(uint8_t* data, uint32_t size, uint32_t offset) = 0;
 		virtual void bind() const = 0;
 
 		uint32_t getSize() const { return _size; };
@@ -90,7 +89,7 @@ namespace atta
 		VertexBufferLayout _layout;
 		Usage _usage;
 		uint32_t _size;
-		std::vector<uint8_t> _data;
+		const uint8_t* _data;
 	};
 }
 

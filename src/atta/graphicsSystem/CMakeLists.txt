@@ -23,6 +23,7 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	rendererAPIs/openGL/openGLVertexBuffer.cpp
 	rendererAPIs/openGL/openGLIndexBuffer.cpp
 	rendererAPIs/openGL/openGLPipeline.cpp
+	rendererAPIs/openGL/openGLMesh.cpp
 
 	renderers/fastRenderer.cpp
 
