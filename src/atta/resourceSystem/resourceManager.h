@@ -7,6 +7,7 @@
 #ifndef ATTA_RESOURCE_SYSTEM_RESOURCE_MANAGER_H
 #define ATTA_RESOURCE_SYSTEM_RESOURCE_MANAGER_H
 #include <atta/memorySystem/allocators/bitmapAllocator.h>
+#include <atta/core/stringId.h>
 
 namespace atta
 {
@@ -18,7 +19,7 @@ namespace atta
 		static void shutDown();
 
 		template <typename R>
-		R* get(const fs::path& filename) { getInstance().getImpl<R>(filename); }
+		static R* get(const fs::path& filename) { return getInstance().getImpl<R>(filename); }
 
 	private:
 		void startUpImpl();
@@ -26,9 +27,13 @@ namespace atta
 
 		template <typename R>
 		R* getImpl(const fs::path& filename);
+		template <typename R>
+		void createLoadEvent(R* resource, StringId sid);
 
 		BitmapAllocator* _allocator;
+		std::unordered_map<StringHash, uint8_t*> _resourceMap;
 	};
 }
 
+#include <atta/resourceSystem/resourceManager.inl>
 #endif// ATTA_RESOURCE_SYSTEM_RESOURCE_MANAGER_H

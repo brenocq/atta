@@ -1,19 +1,42 @@
 //--------------------------------------------------
 // Atta Resource System
-// resourceManager.h
+// resourceManager.inl
 // Date: 2021-09-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_RESOURCE_SYSTEM_RESOURCE_MANAGER_H
-#define ATTA_RESOURCE_SYSTEM_RESOURCE_MANAGER_H
-
 namespace atta
 {
 	template <typename R>
 	R* ResourceManager::getImpl(const fs::path& filename)
 	{
+		StringId sid = StringId(fs::absolute(filename));
+		if(_resourceMap.find(sid.getId()) == _resourceMap.end())
+		{
+			// Load resource if not loaded yet
+			R* resource = new R(filename);
+			if(resource == nullptr)
+			{
+				LOG_ERROR("ResourceManager", "Could not load resource [*w]$0[] ([w]$1[]). Probably out of memory", 
+						sid, typeid(R).name());
+				return nullptr;
+			}
+			_resourceMap[sid.getId()] = reinterpret_cast<uint8_t*>(resource);
 
+			// Create resource load event
+			createLoadEvent<R>(resource, sid);
+
+			return resource;
+		}
+		else
+		{
+			// Return loaded resource
+			return reinterpret_cast<R*>(_resourceMap[sid.getId()]);
+		}
+	}
+
+	template <typename R>
+	void ResourceManager::createLoadEvent(R* resource, StringId sid)
+	{
+		LOG_ERROR("ResourceManager", "Could create load event for resource [*w]$0[] ([w]$1[]). It is a resource?", sid, typeid(R).name());
 	}
 }
-
-#endif// ATTA_RESOURCE_SYSTEM_RESOURCE_MANAGER_H

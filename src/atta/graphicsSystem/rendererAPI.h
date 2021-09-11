@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SYSTEM_RENDERER_API_H
 #define ATTA_GRAPHICS_SYSTEM_RENDERER_API_H
+#include <atta/core/stringId.h>
 
 namespace atta
 {
@@ -24,10 +25,7 @@ namespace atta
 		virtual void beginFrame() = 0;
 		virtual void endFrame() = 0;
 
-		virtual void beginRenderPass() = 0;
-		virtual void endRenderPass() = 0;
-
-		virtual void renderMesh() = 0;
+		virtual void renderMesh(StringId meshSid) = 0;
 	
 		Type getType() const { return _type; }
 

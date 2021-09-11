@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H
 #include <atta/graphicsSystem/rendererAPI.h>
 #include <atta/graphicsSystem/window.h>
+#include <atta/graphicsSystem/rendererAPIs/openGL/openGLMesh.h>
 
 struct GLFWwindow;
 namespace atta
@@ -21,13 +22,14 @@ namespace atta
 		void beginFrame() override;
 		void endFrame() override;
 
-		void beginRenderPass() override;
-		void endRenderPass() override;
+		void renderMesh(StringId meshSid) override;
 
-		void renderMesh() override;
+		// Handle events
+		void onMeshLoadEvent(Event& event);
 	
 	private:
 		std::shared_ptr<Window> _window;
+		std::unordered_map<StringHash, OpenGLMesh> _openGLMeshes;
 	};
 }
 

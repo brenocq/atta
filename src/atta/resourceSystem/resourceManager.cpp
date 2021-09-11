@@ -6,6 +6,9 @@
 //--------------------------------------------------
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/memorySystem/memoryManager.h>
+#include <atta/resourceSystem/resources/resources.h>
+#include <atta/eventSystem/eventManager.h>
+#include <atta/eventSystem/events/meshLoadEvent.h>
 
 namespace atta
 {
@@ -32,5 +35,12 @@ namespace atta
 	void ResourceManager::shutDownImpl()
 	{
 
+	}
+
+	template <>
+	void ResourceManager::createLoadEvent(Mesh* resource, StringId sid)
+	{
+		MeshLoadEvent e(sid);
+		EventManager::publish(e);
 	}
 }

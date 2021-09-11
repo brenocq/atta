@@ -16,6 +16,8 @@ namespace atta
 		FastRenderer();
 		~FastRenderer();
 
+		void render();
+
 	private:
 		std::shared_ptr<Pipeline> _geometryPipeline;
 	};
