@@ -11,7 +11,7 @@ namespace atta
 {
 
 // Assert without error message
-#define ASSERT_1ARG(x) {\
+#define ASSERT_1_ARG(x) {\
 	if(!(x)) \
 	{ \
 		LOG_ERROR("Assert", "Failed assert at file [w]$0[], line [w]$1[]", __FILE__, __LINE__); \
@@ -37,7 +37,7 @@ namespace atta
 		ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS,\
 		ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS,\
 		ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS,\
-		ASSERT_1ARG)(__VA_ARGS__)
+		ASSERT_1_ARG)(__VA_ARGS__)
 
 // Assert when using debug build
 #ifdef ATTA_DEBUG_BUILD

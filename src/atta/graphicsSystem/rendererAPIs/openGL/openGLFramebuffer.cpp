@@ -63,7 +63,7 @@ namespace atta
 		//----- Create color attachments -----//
 		if(_colorAttachmentFormats.size() > 0)
 		{
-			_colorAttachments.reserve(_colorAttachmentFormats.size());
+			_colorAttachments.resize(_colorAttachmentFormats.size());
 			for(size_t i = 0; i < _colorAttachments.size(); i++)
 				_colorAttachments[i] = createColorAttachment(_colorAttachmentFormats[i], static_cast<int>(i));
 		}
@@ -83,7 +83,8 @@ namespace atta
 			_depthAttachment = createDepthAttachment(_depthAttachmentFormat);
 		}
 
-		ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete and can not be created");
+		ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, 
+				"Framebuffer is incomplete and can not be created ($0)", glCheckFramebufferStatus(GL_FRAMEBUFFER));
 
 		// Unbind framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -102,6 +103,7 @@ namespace atta
 		image = std::make_shared<OpenGLImage>(info);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+index, GL_TEXTURE_2D, image->getId(), 0);
+		LOG_DEBUG("OpenGLFramebuffer", "Created color attachment $0", index);
 
 		return std::static_pointer_cast<Image>(image);
 	}

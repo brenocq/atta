@@ -6,8 +6,8 @@
 //--------------------------------------------------
 #ifndef ATTA_ATTA_H
 #define ATTA_ATTA_H
-#include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/memorySystem/allocators/stackAllocator.h>
+#include <atta/eventSystem/eventManager.h>
 
 namespace atta
 {
@@ -19,7 +19,7 @@ namespace atta
 			std::filesystem::path projectFile = "";
 		};
 
-		Atta(CreateInfo info);
+		Atta(const CreateInfo& info);
 		~Atta();
 
 		void run();
@@ -27,9 +27,6 @@ namespace atta
 	private:
 		// Handle events
 		void onWindowClose(Event& event);
-
-		// Graphics
-		GraphicsManager* _graphicsManager;
 
 		// Memory
 		StackAllocator* _mainAllocator;

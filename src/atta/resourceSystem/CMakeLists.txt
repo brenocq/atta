@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.12)
 set(ATTA_RESOURCE_SYSTEM_SOURCE
 	resourceManager.cpp
 	resource.cpp
+
+	resources/mesh.cpp
 )
 
 add_library(atta_resource_system STATIC

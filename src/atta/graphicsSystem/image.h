@@ -35,7 +35,7 @@ namespace atta
 			Wrap samplerWrap = Wrap::REPEAT;
 			uint32_t width = 1;
 			uint32_t height = 1;
-			uint32_t mipLevels = 0;
+			uint32_t mipLevels = 1;
 			StringId debugName = StringId("Unnamed Image");
 			uint8_t* data = nullptr;
 		};

@@ -8,3 +8,6 @@
 	path = src/extern/imgui
 	url = git@github.com:ocornut/imgui.git
 	branch = docking
+[submodule "src/extern/assimp"]
+	path = src/extern/assimp
+	url = https://github.com/assimp/assimp

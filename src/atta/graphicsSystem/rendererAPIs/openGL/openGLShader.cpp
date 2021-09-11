@@ -62,10 +62,10 @@ namespace atta
 	//------------------------------------------------//
 	GLenum OpenGLShader::convertFileToShaderType(const fs::path& filepath)
 	{
-		std::string extension = filepath.extension();
+		std::string extension = filepath.extension().string();
 		if(extension == ".vert") return GL_VERTEX_SHADER;
 		if(extension == ".frag") return GL_FRAGMENT_SHADER;
 		ASSERT(false, "Unknown shader file format [w]$0[]. Instead of [*w]$1[], it should be [w].vert[] or [w].frag[]",
-				filepath, extension);
+				filepath.string(), extension);
 	}
 }

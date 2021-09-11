@@ -29,8 +29,9 @@ namespace atta
 
 			std::vector<Attachment> attachments = {};
 			uint32_t samples = 1;
-			std::map<uint32_t, std::shared_ptr<Image>> images;// Each image is mapped to one id
 
+			// TODO possibility of using one already created image (attachment id and image ptr)
+			std::map<uint32_t, std::shared_ptr<Image>> images;
 
 			StringId debugName = StringId("Unnamed Framebuffer");
 		};

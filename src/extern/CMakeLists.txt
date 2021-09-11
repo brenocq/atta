@@ -38,3 +38,8 @@ if(NOT MSVC)
 endif()
 atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 atta_add_libs(imgui)
+
+########## assimp ##########
+add_subdirectory(assimp)
+atta_add_libs(assimp)
+atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/assimp/include)

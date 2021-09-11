@@ -15,18 +15,34 @@ namespace atta
 	class GraphicsManager final
 	{
 	public:
-		GraphicsManager();
-		~GraphicsManager();
+		static GraphicsManager& getInstance();
+		static void startUp();
+		static void shutDown();
 
-		void update();
+		static void update();
+
+		// Used to create the object (image/pipeline/renderPass/...) based on the current rendererAPI
+		// e.g.: GraphicsManager::create<Pipeline>(pipelineInfo) will create OpenGLPipeline or 
+		// VulkanPipeline or ... depending on the current renderering API
+		template <typename T, typename... Args>
+		static std::shared_ptr<T> create(Args... args) { return getInstance().createImpl<T>(args...); }
 
 	private:
+		void startUpImpl();
+		void shutDownImpl();
+		void updateImpl();
+		template <typename T, typename... Args>
+		std::shared_ptr<T> createImpl(Args... args);
+		template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
+		std::shared_ptr<T> createSpecific(Args... args);
+
 		std::shared_ptr<Window> _window;
-		std::shared_ptr<OpenGLRenderer> _rendererAPI;
+		std::shared_ptr<RendererAPI> _rendererAPI;
 
 		// Layer stack
 		std::unique_ptr<LayerStack> _layerStack;
 	};
 }
 
+#include <atta/graphicsSystem/graphicsManager.inl>
 #endif// ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H

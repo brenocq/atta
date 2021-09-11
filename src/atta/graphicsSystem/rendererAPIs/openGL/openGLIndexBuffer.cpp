@@ -8,12 +8,9 @@
 
 namespace atta
 {
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint8_t* data, uint32_t size):
-		_id(0)
+	OpenGLIndexBuffer::OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info):
+		IndexBuffer(info), _id(0)
 	{
-		_size = size;
-		_data = std::vector<uint8_t>(data, data+_size);
-
 		glCreateBuffers(1, &_id);
 		glNamedBufferData(_id, _size, _data.data(), GL_STATIC_DRAW);
 	}
