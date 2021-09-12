@@ -6,14 +6,13 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H
-#include <atta/core/math/math.h>
+#include <atta/core/stringId.h>
 
 namespace atta
 {
 	struct MeshComponent
 	{
-		vec4 vertex;
-		int index;
+		StringId sid;
 	};
 }
 

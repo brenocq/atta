@@ -77,19 +77,27 @@ namespace atta
 
 		if(ImGui::BeginPopup("Scene_ComponentAdd"))
 		{
-			if(ImGui::Selectable("Name"))
+			if(ImGui::Selectable("Name##ComponentAddName"))
 			{
 				NameComponent* name = ComponentManager::addEntityComponent<NameComponent>(_selected);
 				if(name != nullptr)
 					name->name[0] = '\0';
 			}
 
-			if(ImGui::Selectable("Transform"))
+			if(ImGui::Selectable("Transform##ComponentAddTransform"))
 			{
+				TransformComponent defTrans;
 				TransformComponent* transform = ComponentManager::addEntityComponent<TransformComponent>(_selected);
-				if(transform != nullptr)
-					transform->transform = {1.0f};
+				*transform = defTrans;
+
 			}
+
+			if(ImGui::Selectable("Mesh##ComponentAddMesh"))
+			{
+				MeshComponent* mesh = ComponentManager::addEntityComponent<MeshComponent>(_selected);
+				mesh->sid = StringId(fs::absolute("../resources/meshes/plane.obj").string());
+			}
+
 			ImGui::EndPopup();
 		}
 
@@ -102,32 +110,61 @@ namespace atta
 		if(transform != nullptr)
 			if(ImGui::CollapsingHeader("Transform##ComponentsTransformHeader", ImGuiTreeNodeFlags_None))
 			{
-				bool posChanged = false, rotChanged = false, scaleChanged = false;
+				bool posChanged = false, oriChanged = false, scaleChanged = false;
 				vec3 pos, ori, scale;
-				quat q;
-				transform->transform.getPosOriScale(pos, q, scale);
-				ori = q.toEuler();
-				ori = degrees(ori);
+				pos = transform->position;
+				ori = degrees(transform->orientation.toEuler());
+				scale = transform->scale;
 
 				ImGui::Text("Position");
-				posChanged |= ImGui::DragFloat("X##SceneTransformPosX", &pos.x, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
-				posChanged |= ImGui::DragFloat("Y##SceneTransformPosY", &pos.y, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
-				posChanged |= ImGui::DragFloat("Z##SceneTransformPosZ", &pos.z, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+				posChanged |= ImGui::DragFloat("X##SceneTransformPosX", &pos.x, 0.005f, 1000.0f, 1000.0f, "%.6f", ImGuiSliderFlags_None);
+				posChanged |= ImGui::DragFloat("Y##SceneTransformPosY", &pos.y, 0.005f, 1000.0f, 1000.0f, "%.6f", ImGuiSliderFlags_None);
+				posChanged |= ImGui::DragFloat("Z##SceneTransformPosZ", &pos.z, 0.005f, 1000.0f, 1000.0f, "%.6f", ImGuiSliderFlags_None);
 
-				ImGui::Text("Rotation");
-				//changed |= ImGui::DragFloat("X##SceneTransformRotX", &ori.x, 1.0f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
-				//changed |= ImGui::DragFloat("Y##SceneTransformRotY", &ori.y, 1.0f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
-				rotChanged |= ImGui::DragFloat("Z##SceneTransformRotZ", &ori.z, 1.0f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+				ImGui::Text("Orientation");
+				oriChanged |= ImGui::DragFloat("X##SceneTransformOriX", &ori.x, 0.5f, -360.0f, 360.0f, "%.2f", ImGuiSliderFlags_None);
+				oriChanged |= ImGui::DragFloat("Y##SceneTransformOriY", &ori.y, 0.5f, -360.0f, 360.0f, "%.2f", ImGuiSliderFlags_None);
+				oriChanged |= ImGui::DragFloat("Z##SceneTransformOriZ", &ori.z, 0.5f, -360.0f, 360.0f, "%.2f", ImGuiSliderFlags_None);
 
 				ImGui::Text("Scale");
-				scaleChanged |= ImGui::DragFloat("X##SceneTransformScaleX", &scale.x, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
-				scaleChanged |= ImGui::DragFloat("Y##SceneTransformScaleY", &scale.y, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
-				scaleChanged |= ImGui::DragFloat("Z##SceneTransformScaleZ", &scale.z, 0.005f, -FLT_MAX, +FLT_MAX, "%.6f", ImGuiSliderFlags_None);
+				scaleChanged |= ImGui::DragFloat("X##SceneTransformScaleX", &scale.x, 0.005f, -FLT_MAX, +FLT_MAX, "%.2f", ImGuiSliderFlags_None);
+				scaleChanged |= ImGui::DragFloat("Y##SceneTransformScaleY", &scale.y, 0.005f, -FLT_MAX, +FLT_MAX, "%.2f", ImGuiSliderFlags_None);
+				scaleChanged |= ImGui::DragFloat("Z##SceneTransformScaleZ", &scale.z, 0.005f, -FLT_MAX, +FLT_MAX, "%.2f", ImGuiSliderFlags_None);
 
-				if(posChanged || rotChanged || scaleChanged)
+				if(posChanged)
+					transform->position = pos;
+				if(oriChanged)
+					transform->orientation = quat(radians(ori));
+				if(scaleChanged)
+					transform->scale = scale;
+			}
+
+		MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(_selected);
+		if(mesh != nullptr)
+			if(ImGui::CollapsingHeader("Mesh##ComponentsMeshHeader", ImGuiTreeNodeFlags_None))
+			{
+				uint32_t comboValue;
+				if(mesh->sid == StringId(fs::absolute("../resources/meshes/plane.obj").string()))
+					comboValue = 0;
+				else if(mesh->sid == StringId(fs::absolute("../resources/meshes/cube.obj").string()))
+					comboValue = 1;
+				else
+					comboValue = 2;
+
+				const char* names[] = { "Plane", "Cube", "Sphere" };
+				const char* paths[] = { "../resources/meshes/plane.obj", "../resources/meshes/cube.obj", "../resources/meshes/sphere.obj"};
+				const char* comboPreviewValue = names[comboValue];
+				if(ImGui::BeginCombo("Mesh", comboPreviewValue))
 				{
-					q.fromEuler(radians(ori));
-					transform->transform.setPosOriScale(pos, q, scale);
+					for(uint32_t i = 0; i < sizeof(names)/sizeof(const char*); i++)
+					{
+						if(ImGui::Selectable(names[i], comboValue == i))
+							mesh->sid = StringId(fs::absolute(paths[i]).string());
+						if(comboValue == i)
+							ImGui::SetItemDefaultFocus();
+					}
+
+					ImGui::EndCombo();
 				}
 			}
 	}

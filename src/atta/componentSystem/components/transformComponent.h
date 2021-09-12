@@ -12,7 +12,9 @@ namespace atta
 {
 	struct TransformComponent
 	{
-		mat4 transform;
+		vec3 position = vec3();
+		quat orientation = quat();
+		vec3 scale = vec3(1,1,1);
 	};
 }
 

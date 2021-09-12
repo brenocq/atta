@@ -21,11 +21,11 @@ namespace atta
 		float j;// Second complex
 		float k;// Third complex
 
-        quat() : r(1), i(0), j(0), k(0) {}
-        quat(const float r, const float i, const float j, const float k)
-            : r(r), i(i), j(j), k(k)
-        {
-        }
+        quat(): r(1), i(0), j(0), k(0) {}
+        quat(const vec3& v) { fromEuler(v); }
+        quat(const float r, const float i, const float j, const float k): 
+			r(r), i(i), j(j), k(k)
+        {}
 
         void normalize()
         {

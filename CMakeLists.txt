@@ -63,6 +63,7 @@ list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
 
 ########## Macros ##########
 macro(atta_add_libs)
+	# Used by systems to register itself to be linked with the atta target
 	foreach(_lib ${ARGN})
 		list(APPEND ATTA_LIBS ${_lib})
 	endforeach()
@@ -70,6 +71,7 @@ macro(atta_add_libs)
 endmacro()
 
 macro(atta_add_include_dirs)
+	# Used by systems to include directories to all targets
 	foreach(_include_dir ${ARGN})
 		list(APPEND ATTA_INCLUDE_DIRS ${_include_dir})
 	endforeach()
@@ -77,13 +79,28 @@ macro(atta_add_include_dirs)
 endmacro()
 
 macro(atta_add_tests)
+	# Used by systems to add tests to the atta_test target
 	foreach(_test ${ARGN})
 		list(APPEND ATTA_TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_test}")
 	endforeach()
     set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
 endmacro()
 
+macro(atta_install)
+	# Install system headers keeping the directory hierarchy
+	set(optionsArgs "")
+    set(oneValueArgs "DESTINATION")
+    set(multiValueArgs "FILES")
+    cmake_parse_arguments(CAS "${optionsArgs}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    foreach(FILE ${CAS_FILES})
+        get_filename_component(DIR ${FILE} DIRECTORY)
+		install(FILES ${FILE} DESTINATION include/atta/${CAS_DESTINATION}/${DIR})
+    endforeach()
+endmacro()
+
 macro(atta_target_common target)
+	# Common to all targets
 	target_precompile_headers(${target} PRIVATE ${ATTA_PCH})
 	target_include_directories(${target} PRIVATE ${ATTA_INCLUDE_DIRS})
 	target_compile_options(${target} PRIVATE ${ATTA_OPTIONS})
@@ -120,4 +137,5 @@ target_link_libraries(atta PRIVATE ${ATTA_LIBS})
 ########## Install ##########
 install(TARGETS atta atta_test
         RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib)
+        LIBRARY DESTINATION lib
+)

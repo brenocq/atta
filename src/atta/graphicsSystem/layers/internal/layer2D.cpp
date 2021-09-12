@@ -163,7 +163,7 @@ namespace atta
 			if(t != nullptr)
 			{
 				//mat4 trans = transpose(t->transform);
-				glUniformMatrix4fv(vertexTransformLocation, 1, GL_FALSE, static_cast<const float*>(&t->transform.data[0]));
+				//glUniformMatrix4fv(vertexTransformLocation, 1, GL_FALSE, static_cast<const float*>(&t->transform.data[0]));
 
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			}

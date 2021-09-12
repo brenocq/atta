@@ -33,8 +33,10 @@ namespace atta
 		//---------- Get targets ----------//
 		_targetFiles.clear();
 		std::string getTargetCommand = "cmake --build . --target help > " + tempFile.filename().string();
+		fs::path prevPath = fs::current_path();
 		fs::current_path(buildDir);
 		std::system(getTargetCommand.c_str());
+		fs::current_path(prevPath);
 
 		std::ifstream tempIn(tempFile.filename());
 		std::string line;
@@ -86,11 +88,13 @@ namespace atta
 			return;
 		}
 
+		fs::path prevPath = fs::current_path();
 		fs::current_path(buildDir);
 		std::string command = "cmake --build . --target "+target;
 		command += " > " + tempFile.filename().string();
 		command += " 2> " + errorFile.filename().string();
 		std::system(command.c_str());
+		fs::current_path(prevPath);
 
 		//std::string makeCommand = "make";
 		//makeCommand += " > " + tempFile.filename().string();
@@ -130,6 +134,7 @@ namespace atta
 		if(!fs::exists(buildDir))
 			fs::create_directory(buildDir);
 
+		fs::path prevPath = fs::current_path();
 		fs::current_path(buildDir);
 		std::string buildCommand = "cmake -DCMAKE_CUDA_ARCHITECTURES=75 .. ";
 		buildCommand += "> " + tempFile.filename().string() + " ";
@@ -140,7 +145,19 @@ namespace atta
 		makeCommand += " > " + tempFile.filename().string();
 		makeCommand += " 2> " + errorFile.filename().string();
 		std::system(makeCommand.c_str());
+		fs::current_path(prevPath);
 
+		//---------- Show default output ----------//
+		std::stringstream tempSS;
+		std::ifstream tempIn(tempFile.filename());
+		tempSS << tempIn.rdbuf();
+		tempIn.close();
+		std::string tempStr = tempSS.str();
+
+		if(tempStr.size() > 0)
+			LOG_VERBOSE("LinuxCompiler", "Build output: \n$0", tempStr);
+
+		//---------- Show error ----------//
 		std::stringstream errorSS;
 		std::ifstream errorIn(errorFile.filename());
 		errorSS << errorIn.rdbuf();
