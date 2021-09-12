@@ -7,6 +7,7 @@
 #ifndef ATTA_GRAPHICS_SYSTEM_RENDERER_API_H
 #define ATTA_GRAPHICS_SYSTEM_RENDERER_API_H
 #include <atta/core/stringId.h>
+#include <atta/graphicsSystem/framebuffer.h>
 
 namespace atta
 {
@@ -26,6 +27,7 @@ namespace atta
 		virtual void endFrame() = 0;
 
 		virtual void renderMesh(StringId meshSid) = 0;
+		virtual void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) = 0;
 	
 		Type getType() const { return _type; }
 

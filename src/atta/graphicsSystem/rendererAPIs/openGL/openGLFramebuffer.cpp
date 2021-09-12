@@ -29,13 +29,21 @@ namespace atta
 
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
-
+		if(_id)
+		{
+			glDeleteFramebuffers(1, &_id);
+			_colorAttachments.clear();
+		}
 	}
 
 	void OpenGLFramebuffer::bind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, _id);
 		glViewport(0, 0, _width, _height);
+		glClearColor(0.5f, 1.0f, 0.5f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
 	}
 
 	void OpenGLFramebuffer::unbind()
@@ -69,13 +77,13 @@ namespace atta
 		}
 
 		// Specify framebuffer color attachments
-		if(_colorAttachments.size() > 0)
-		{
-			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-			glNamedFramebufferDrawBuffers(_id, _colorAttachments.size(), buffers);
-		}
-		else
-			glNamedFramebufferDrawBuffer(_id, GL_NONE);
+		//if(_colorAttachments.size() > 0)
+		//{
+		//	GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+		//	glNamedFramebufferDrawBuffers(_id, _colorAttachments.size(), buffers);
+		//}
+		//else
+		//	glNamedFramebufferDrawBuffer(_id, GL_NONE);
 
 		//----- Create depth attachment -----//
 		if(_depthAttachmentFormat != Image::Format::NONE)
@@ -83,6 +91,7 @@ namespace atta
 			_depthAttachment = createDepthAttachment(_depthAttachmentFormat);
 		}
 
+		//----- Check framebuffer-----//
 		ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, 
 				"Framebuffer is incomplete and can not be created ($0)", glCheckFramebufferStatus(GL_FRAMEBUFFER));
 

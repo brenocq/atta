@@ -8,14 +8,12 @@
 
 namespace atta
 {
-	OpenGLIndexBuffer::OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info, OpenGLId vao):
+	OpenGLIndexBuffer::OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info):
 		IndexBuffer(info), _id(0)
 	{
-		glCreateBuffers(1, &_id);
-		glNamedBufferData(_id, _size, _data, GL_STATIC_DRAW);
-
-		// Bind EBO to VAO (offset 0, stride of one index)
-		glVertexArrayVertexBuffer(vao, 1, _id, 0, sizeof(uint32_t));
+		glGenBuffers(1, &_id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, _size, _data, GL_STATIC_DRAW);
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()

@@ -14,7 +14,7 @@ namespace atta
 	class OpenGLVertexBuffer final : public VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info, OpenGLId vao);
+		OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info);
 		~OpenGLVertexBuffer();
 
 		void bind() const override;

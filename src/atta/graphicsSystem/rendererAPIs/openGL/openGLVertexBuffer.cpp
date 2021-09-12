@@ -8,44 +8,39 @@
 
 namespace atta
 {
-	OpenGLVertexBuffer::OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info, OpenGLId vao):
+	OpenGLVertexBuffer::OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info):
 		VertexBuffer(info), _id(0)
 	{
-		// Create VBO buffer
-		glCreateBuffers(1, &_id);
-		glNamedBufferData(_id, _size, _data, convertUsage(_usage));
-
-		// Bind VBO to VAO (offset 0, stride from layout)
-		glVertexArrayVertexBuffer(vao, 0, _id, 0, _layout.getStride());
+		glGenBuffers(1, &_id);
+		glBindBuffer(GL_ARRAY_BUFFER, _id);
+		glBufferData(GL_ARRAY_BUFFER, _size, _data, GL_STATIC_DRAW);
 
 		uint32_t i = 0;
 		for(const auto& element : _layout.getElements())
 		{
 			GLenum openGLType = convertBaseType(element.type);
 
+			// Enable attribute
+			glEnableVertexAttribArray(i);
+
 			// Define attribute format
 			if(openGLType == GL_INT)
 			{
-				glVertexArrayAttribIFormat(vao, 
-						i, 
+				glVertexAttribIPointer(i, 
 						element.getComponentCount(), 
 						openGLType, 
-						element.offset);
+						_layout.getStride(), 
+						(void*)(element.offset));
 			}
 			else
 			{
-				glVertexArrayAttribFormat(vao, 
-						i, 
+				glVertexAttribPointer(i, 
 						element.getComponentCount(), 
 						openGLType, 
-						element.normalized ? GL_TRUE : GL_FALSE,
-						element.offset);
+						element.normalized ? GL_TRUE : GL_FALSE, 
+						_layout.getStride(), 
+						(void*)(element.offset));
 			}
-
-			// Define which VBO that will use this attribute (only using one VBO)
-			glVertexArrayAttribBinding(vao, i, 0);
-			// Enable the attribute
-			glEnableVertexArrayAttrib(vao, i);
 			i++;
 		}
 	}

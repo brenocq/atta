@@ -64,14 +64,14 @@ namespace atta
 		}
 
 		// Detach and delete shaders
-		glUseProgram(_id);
+		//glUseProgram(_id);
 		for(auto shader : _shaders)
 		{
 			std::shared_ptr<OpenGLShader> s = std::static_pointer_cast<OpenGLShader>(shader);
-			glDetachShader(_id, s->getId());
+			//glDetachShader(_id, s->getId());
 			s->deleteShader();
 		}
-		glUseProgram(0);
+		//glUseProgram(0);
 	}
 
 	void OpenGLShaderGroup::bind()

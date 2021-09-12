@@ -18,7 +18,6 @@ namespace atta
 		OpenGLMesh(StringId sid);
 		~OpenGLMesh();
 
-		void bind();
 		void draw();
 
 	private:
