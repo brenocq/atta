@@ -40,6 +40,7 @@ namespace atta
 		template <typename T>
 		static std::string getComponentName() { return getInstance().getComponentNameImpl<T>(); }
 		static std::vector<std::string> getComponentNames() { return getInstance().getComponentNamesImpl(); }
+
 		static std::vector<EntityId> getEntities() { return getInstance().getEntitiesImpl(); }
 
 		template <typename T>

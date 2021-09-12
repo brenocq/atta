@@ -37,3 +37,27 @@ atta_create_local_test(
 	"tests/math.cpp"
 	"atta_core"
 )
+
+########## Public headers ##########
+set(ATTA_CORE_PUBLIC_HEADERS
+	math/bounds.h
+	math/common.h
+	math/math.h
+	math/matrix.h
+	math/matrix.inl
+	math/point.h
+	math/quaternion.h
+	math/ray.h
+	math/vector.h
+	math/vector.inl
+	math/vector2.inl
+	math/vector3.inl
+	math/vector4.inl
+	assert.h
+	common.h
+	log.h
+	log.inl
+	stringId.h
+	stringId.inl
+)
+atta_install(FILES ${ATTA_CORE_PUBLIC_HEADERS} DESTINATION core)

@@ -45,7 +45,7 @@ namespace atta
 	void ScriptManager::onFileChange(Event& event)
 	{
 		FileEvent& e = reinterpret_cast<FileEvent&>(event);
-		//LOG_DEBUG("ScriptManager", "New event: $0", e);
+		LOG_DEBUG("ScriptManager", "New event: $0", e);
 
 		if(e.file.filename() == "CMakeLists.txt")
 			updateTargets();
@@ -72,6 +72,6 @@ namespace atta
 		for(auto target : _compiler->getTargets())
 			_linker->linkTarget(target);// TODO check error
 
-		//LOG_DEBUG("ScriptManager", "Targets: $0", _compiler->getTargets());
+		LOG_DEBUG("ScriptManager", "Targets: $0", _compiler->getTargets());
 	}
 }

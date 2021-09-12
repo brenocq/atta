@@ -24,3 +24,10 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/serviceLocator)
 
 set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
 set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)
+
+########## Public headers ##########
+set(ATTA_ATTA_PUBLIC_HEADERS
+	atta.h
+	pch.h
+)
+atta_install(FILES ${ATTA_ATTA_PUBLIC_HEADERS} DESTINATION "")
