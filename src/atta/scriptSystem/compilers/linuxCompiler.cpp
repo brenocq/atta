@@ -32,13 +32,13 @@ namespace atta
 
 		//---------- Get targets ----------//
 		_targetFiles.clear();
-		std::string getTargetCommand = "cmake --build . --target help > " + tempFile.filename().string();
+		std::string getTargetCommand = "cmake --build . --target help > " + fs::absolute(tempFile).string();
 		fs::path prevPath = fs::current_path();
 		fs::current_path(buildDir);
 		std::system(getTargetCommand.c_str());
 		fs::current_path(prevPath);
 
-		std::ifstream tempIn(tempFile.filename());
+		std::ifstream tempIn(tempFile.string());
 		std::string line;
 
 		bool isTarget = false;
@@ -80,6 +80,8 @@ namespace atta
 		fs::path buildDir = projectDir / "build";
 		fs::path tempFile = buildDir / "atta.temp";
 		fs::path errorFile = buildDir / "atta.error";
+		tempFile = fs::absolute(tempFile);
+		errorFile = fs::absolute(errorFile);
 
 		// Compile all if never compiled
 		if(!fs::exists(buildDir))
@@ -91,8 +93,8 @@ namespace atta
 		fs::path prevPath = fs::current_path();
 		fs::current_path(buildDir);
 		std::string command = "cmake --build . --target "+target;
-		command += " > " + tempFile.filename().string();
-		command += " 2> " + errorFile.filename().string();
+		command += " > " + tempFile.string();
+		command += " 2> " + errorFile.string();
 		std::system(command.c_str());
 		fs::current_path(prevPath);
 
@@ -102,7 +104,7 @@ namespace atta
 		//std::system(makeCommand.c_str());
 
 		std::stringstream errorSS;
-		std::ifstream errorIn(errorFile.filename());
+		std::ifstream errorIn(errorFile);
 		errorSS << errorIn.rdbuf();
 		errorIn.close();
 		std::string errorStr = errorSS.str();
@@ -129,6 +131,8 @@ namespace atta
 		fs::path buildDir = projectDir / "build";
 		fs::path tempFile = buildDir / "atta.temp";
 		fs::path errorFile = buildDir / "atta.error";
+		tempFile = fs::absolute(tempFile);
+		errorFile = fs::absolute(errorFile);
 
 		// Create build directory if does not exists
 		if(!fs::exists(buildDir))
@@ -136,20 +140,20 @@ namespace atta
 
 		fs::path prevPath = fs::current_path();
 		fs::current_path(buildDir);
-		std::string buildCommand = "cmake -DCMAKE_CUDA_ARCHITECTURES=75 .. ";
-		buildCommand += "> " + tempFile.filename().string() + " ";
-		buildCommand += "2> " + errorFile.filename().string();
+		std::string buildCommand = "cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CUDA_ARCHITECTURES=75 ..";
+		buildCommand += " > " + tempFile.string() + " ";
+		buildCommand += "2> " + errorFile.string();
 		std::system(buildCommand.c_str());
 
 		std::string makeCommand = "make";
-		makeCommand += " > " + tempFile.filename().string();
-		makeCommand += " 2> " + errorFile.filename().string();
+		makeCommand += " > " + tempFile.string();
+		makeCommand += " 2> " + errorFile.string();
 		std::system(makeCommand.c_str());
 		fs::current_path(prevPath);
 
 		//---------- Show default output ----------//
 		std::stringstream tempSS;
-		std::ifstream tempIn(tempFile.filename());
+		std::ifstream tempIn(tempFile);
 		tempSS << tempIn.rdbuf();
 		tempIn.close();
 		std::string tempStr = tempSS.str();
@@ -159,7 +163,7 @@ namespace atta
 
 		//---------- Show error ----------//
 		std::stringstream errorSS;
-		std::ifstream errorIn(errorFile.filename());
+		std::ifstream errorIn(errorFile);
 		errorSS << errorIn.rdbuf();
 		errorIn.close();
 		std::string errorStr = errorSS.str();

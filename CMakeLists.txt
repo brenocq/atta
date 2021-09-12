@@ -5,6 +5,12 @@ project(Atta VERSION 0.0.2.0 LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+message(${CMAKE_CXX_COMPILER_ID})
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	set(CMAKE_CXX_FLAGS "-Wl,--export-dynamic")
+	set(CMAKE_EXE_LINKER_FLAGS "-Wl,--export-dynamic")
+endif()
+
 ########## Build Types ##########
 if(CMAKE_BUILD_TYPE MATCHES Debug)
 	list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
@@ -41,7 +47,9 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 		list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
 		# ImGui warnings
 		list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn)
-		
+		# Scripting
+		#list(APPEND ATTA_OPTIONS -Wl,--no-undefined -rdynamic)
+		#list(APPEND ATTA_OPTIONS -Wl,--export-dynamic)
 	endif()
 endif()
 if(CMAKE_BUILD_TYPE MATCHES Release)
@@ -63,7 +71,7 @@ list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
 
 ########## Macros ##########
 macro(atta_add_libs)
-	# Used by systems to register itself to be linked with the atta target
+	# Used by atta systems to register itself to be linked with the atta target
 	foreach(_lib ${ARGN})
 		list(APPEND ATTA_LIBS ${_lib})
 	endforeach()
@@ -71,7 +79,7 @@ macro(atta_add_libs)
 endmacro()
 
 macro(atta_add_include_dirs)
-	# Used by systems to include directories to all targets
+	# Used by atta systems to include directories to all targets
 	foreach(_include_dir ${ARGN})
 		list(APPEND ATTA_INCLUDE_DIRS ${_include_dir})
 	endforeach()
@@ -79,7 +87,7 @@ macro(atta_add_include_dirs)
 endmacro()
 
 macro(atta_add_tests)
-	# Used by systems to add tests to the atta_test target
+	# Used by atta systems to add tests to the atta_test target
 	foreach(_test ${ARGN})
 		list(APPEND ATTA_TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_test}")
 	endforeach()
@@ -87,7 +95,7 @@ macro(atta_add_tests)
 endmacro()
 
 macro(atta_install)
-	# Install system headers keeping the directory hierarchy
+	# Install atta system headers keeping the directory hierarchy
 	set(optionsArgs "")
     set(oneValueArgs "DESTINATION")
     set(multiValueArgs "FILES")
@@ -95,7 +103,9 @@ macro(atta_install)
 
     foreach(FILE ${CAS_FILES})
         get_filename_component(DIR ${FILE} DIRECTORY)
-		install(FILES ${FILE} DESTINATION include/atta/${CAS_DESTINATION}/${DIR})
+		#install(FILES ${FILE} DESTINATION include/atta/${CAS_DESTINATION}/${DIR})
+		install(FILES ${FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/atta/${CAS_DESTINATION}/${DIR})
+
     endforeach()
 endmacro()
 
@@ -132,10 +142,37 @@ gtest_discover_tests(atta_test)
 ########## Executable ##########
 add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 atta_target_common(atta)
-target_link_libraries(atta PRIVATE ${ATTA_LIBS})
+target_link_libraries(atta PUBLIC ${ATTA_LIBS})
+
+########## Package ##########
+include(CMakePackageConfigHelpers)
+# Create version file for find_package
+write_basic_package_version_file(
+	"${CMAKE_CURRENT_BINARY_DIR}/AttaConfigVersion.cmake"
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY SameMajorVersion
+)
 
 ########## Install ##########
+# Each atta system install its header files too
+
+# Install executables
 install(TARGETS atta atta_test
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+# Install package
+install(TARGETS atta_component_system
+		EXPORT atta_targets
+)
+install(EXPORT atta_targets
+	FILE AttaTargets.cmake
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Atta
+)
+install(
+	FILES 
+		"${CMAKE_CURRENT_SOURCE_DIR}/AttaConfig.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/AttaConfigVersion.cmake"
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Atta
 )

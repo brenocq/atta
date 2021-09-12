@@ -23,7 +23,7 @@ namespace atta
 
 		LOG_DEBUG("LinuxLinker", "Linking target $0", lib);
 
-		void* fLib = dlopen(fs::absolute(lib).c_str(), RTLD_NOW);
+		void* fLib = dlopen(fs::absolute(lib).c_str(), RTLD_LAZY);
 		if(!fLib)
 		{
 			LOG_WARN("LinuxLinker", "Cannot open library $0. Error: $1", lib.filename(), dlerror());
