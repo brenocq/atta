@@ -24,6 +24,8 @@ namespace atta
 
 		static GLenum convertDepthAttachmentType(Image::Format format);
 
+		const std::vector<std::shared_ptr<Image>>& getColorAttachments() const { return _colorAttachments; };
+
 	private:
 		std::shared_ptr<Image> createColorAttachment(Image::Format format, int index);
 		std::shared_ptr<Image> createDepthAttachment(Image::Format format);

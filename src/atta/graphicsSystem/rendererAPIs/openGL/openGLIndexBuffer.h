@@ -14,7 +14,7 @@ namespace atta
 	class OpenGLIndexBuffer final : public IndexBuffer
 	{
 	public:
-		OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info, OpenGLId vao);
+		OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info);
 		~OpenGLIndexBuffer();
 
 		void bind() const override;

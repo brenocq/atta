@@ -12,24 +12,28 @@ namespace atta
 		Image(info), _id(0), _samplerId(0)
 	{
 		// Create texture
-		glCreateTextures(GL_TEXTURE_2D, 1, &_id);
+		glGenTextures(1, &_id);
+		glBindTexture(GL_TEXTURE_2D, _id);
 		GLenum sizedFormat = OpenGLImage::convertSizedInternalFormat(_format);
-		glTextureStorage2D(_id, _mipLevels, sizedFormat, _width, _height);
+		//glTextureStorage2D(_id, _mipLevels, sizedFormat, _width, _height);
 
 		// Populate data and generate mipmap
+		GLenum dataType = OpenGLImage::convertDataType(_format);
+		GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
 		if(info.data)
-		{
-			GLenum dataType = OpenGLImage::convertDataType(_format);
-			GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
-			glTextureSubImage2D(_id, _mipLevels, 0, 0, _width, _height, internalFormat, dataType, info.data);
-			glGenerateTextureMipmap(_id);
-		}
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, internalFormat, dataType, info.data);
+		else
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, internalFormat, dataType, 0);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		//glGenerateTextureMipmap(_id);
 
 		// Create sampler
-		glCreateSamplers(1, &_samplerId);
-		glSamplerParameteri(_samplerId, GL_TEXTURE_WRAP_R, convertSamplerWrap(_samplerWrap));
-		glSamplerParameteri(_samplerId, GL_TEXTURE_WRAP_S, convertSamplerWrap(_samplerWrap));
-		glSamplerParameteri(_samplerId, GL_TEXTURE_WRAP_T, convertSamplerWrap(_samplerWrap));
+		//glCreateSamplers(1, &_samplerId);
+		//glSamplerParameteri(_samplerId, GL_TEXTURE_WRAP_R, convertSamplerWrap(_samplerWrap));
+		//glSamplerParameteri(_samplerId, GL_TEXTURE_WRAP_S, convertSamplerWrap(_samplerWrap));
+		//glSamplerParameteri(_samplerId, GL_TEXTURE_WRAP_T, convertSamplerWrap(_samplerWrap));
 	}
 
 	OpenGLImage::~OpenGLImage()

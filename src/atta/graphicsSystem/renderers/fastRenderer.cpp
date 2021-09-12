@@ -18,7 +18,7 @@ namespace atta
 	{
 		// Framebuffer
 		Framebuffer::CreateInfo framebufferInfo {};
-		framebufferInfo.attachments.push_back({Image::Format::RGBA});
+		framebufferInfo.attachments.push_back({Image::Format::RGB});
 		framebufferInfo.width = 500;
 		framebufferInfo.height = 500;
 		framebufferInfo.debugName = StringId("Simulation Layer Framebuffer");
@@ -62,5 +62,6 @@ namespace atta
 			GraphicsManager::getRendererAPI()->renderMesh(mesh->getId());
 		}
 		_geometryPipeline->end();
+		GraphicsManager::getRendererAPI()->framebufferToScreen(_geometryPipeline->getRenderPass()->getFramebuffer());
 	}
 }
