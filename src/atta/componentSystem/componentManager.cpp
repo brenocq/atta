@@ -33,23 +33,10 @@ namespace atta
 		EntityId e1 = createEntity();
 		EntityId e2 = createEntity();
 		EntityId e3 = createEntity();
-		//LOG_DEBUG("ComponentManager", "Creating entities $0 $1 $2 $3", e0, e1, e2, e3);
 
 		TransformComponent* t = addEntityComponent<TransformComponent>(e0);
-		t->transform = mat4(1.0f, 0.0f, 0.0f, 0.5f,
-						0.0f, 1.0f, 0.0f, 0.5f,
-						0.0f, 0.0f, 1.0f, 0.0f,
-						0.0f, 0.0f, 1.0f, 1.0f);
-		//LOG_DEBUG("ComponentManager", "Entity transform: $0", t->transform.toString());
-
-		//TransformComponent* t1 = addEntityComponent<TransformComponent>(e1);
-		//LOG_DEBUG("ComponentManager", "Entity position: $0", t1->position);
-
-		//TransformComponent* t2 = getEntityComponent<TransformComponent>(e0);
-		//LOG_DEBUG("ComponentManager", "Test get: $0", t2->position);
-
-		//LOG_DEBUG("ComponentManager", "Components: $0", getComponentNames());
-		//LOG_DEBUG("ComponentManager", "Entities: $0", getEntities());
+		t->position = vec3(0.5f, 0.5f, 0.0f);
+		t->scale = vec3(0.1f, 0.1f, 0.1f);
 
 		NameComponent* n0 = addEntityComponent<NameComponent>(e0);
 		strcpy(n0->name,"e0 object");
@@ -57,6 +44,12 @@ namespace atta
 		strcpy(n1->name,"e1 object");
 		NameComponent* n2 = addEntityComponent<NameComponent>(e2);
 		strcpy(n2->name,"e2 object");
+
+		MeshComponent* m0 = addEntityComponent<MeshComponent>(e0);
+		m0->sid = StringId(fs::absolute("../resources/meshes/cube.obj").string());
+
+		MeshComponent* m1 = addEntityComponent<MeshComponent>(e1);
+		m1->sid = StringId(fs::absolute("../resources/meshes/plane.obj").string());
 	}
 
 	void ComponentManager::shutDownImpl()
@@ -88,8 +81,8 @@ namespace atta
 	{
 		//----- Register default component pools -----//
 		registerComponentPoolImpl<TransformComponent>(_maxEntities, "Transform");
-		registerComponentPoolImpl<MeshComponent>(_maxEntities, "Mesh");
 		registerComponentPoolImpl<NameComponent>(_maxEntities, "Name");
+		registerComponentPoolImpl<MeshComponent>(_maxEntities, "Mesh");
 	}
 
 	EntityId ComponentManager::createEntityImpl()

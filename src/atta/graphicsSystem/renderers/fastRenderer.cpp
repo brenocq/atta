@@ -9,8 +9,14 @@
 #include <atta/graphicsSystem/framebuffer.h>
 #include <atta/graphicsSystem/renderPass.h>
 
+#include <atta/graphicsSystem/rendererAPIs/openGL/openGLShaderGroup.h>
+
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
+
+#include <atta/componentSystem/componentManager.h>
+#include <atta/componentSystem/components/meshComponent.h>
+#include <atta/componentSystem/components/transformComponent.h>
 
 namespace atta
 {
@@ -47,6 +53,11 @@ namespace atta
 		};
 		pipelineInfo.renderPass = renderPass;
 		_geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+
+		// XXX
+		ResourceManager::get<Mesh>("../resources/meshes/plane.obj");
+		ResourceManager::get<Mesh>("../resources/meshes/cube.obj");
+		ResourceManager::get<Mesh>("../resources/meshes/sphere.obj");
 	}
 
 	FastRenderer::~FastRenderer()
@@ -56,10 +67,31 @@ namespace atta
 
 	void FastRenderer::render()
 	{
+		std::vector<EntityId> entities = ComponentManager::getEntities();
+
 		_geometryPipeline->begin();
 		{
-			Mesh* mesh = ResourceManager::get<Mesh>("../resources/meshes/cube.obj");
-			GraphicsManager::getRendererAPI()->renderMesh(mesh->getId());
+			for(auto entity : entities)
+			{
+				MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
+				TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+
+
+				if(mesh != nullptr && transform != nullptr)
+				{
+					// XXX Move to shader class
+					// Updating transform uniform
+					std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());
+					unsigned int transformLoc = glGetUniformLocation(shader->getId(), "transform");
+					mat4 trans;
+					trans.setPosOriScale(transform->position, transform->orientation, transform->scale);
+					trans.transpose();
+					glUniformMatrix4fv(transformLoc, 1, GL_FALSE, trans.data);
+
+					// Draw mesh
+					GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+				}
+			}
 		}
 		_geometryPipeline->end();
 		GraphicsManager::getRendererAPI()->framebufferToScreen(_geometryPipeline->getRenderPass()->getFramebuffer());

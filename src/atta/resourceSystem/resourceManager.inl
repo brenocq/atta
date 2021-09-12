@@ -21,6 +21,7 @@ namespace atta
 				return nullptr;
 			}
 			_resourceMap[sid.getId()] = reinterpret_cast<uint8_t*>(resource);
+			_resourcesByType[typeid(R).hash_code()].push_back(sid);
 
 			// Create resource load event
 			createLoadEvent<R>(resource, sid);
@@ -38,5 +39,11 @@ namespace atta
 	void ResourceManager::createLoadEvent(R* resource, StringId sid)
 	{
 		LOG_ERROR("ResourceManager", "Could create load event for resource [*w]$0[] ([w]$1[]). It is a resource?", sid, typeid(R).name());
+	}
+
+	template <typename R>
+	std::vector<StringId> ResourceManager::getResourcesImpl()
+	{
+		return _resourcesByType[typeid(R).hash_code()];
 	}
 }
