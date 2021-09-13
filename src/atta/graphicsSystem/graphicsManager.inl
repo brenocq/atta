@@ -13,6 +13,15 @@ namespace atta
 		ASSERT(false, "Trying to create invalid $0, which does not have an API specific implementation. Invalid class or invalid constructor parameters", typeid(T).name());
 	}
 
+	template <> std::shared_ptr<Image> GraphicsManager::createImpl<Image>(Image::CreateInfo info);
+	template <> std::shared_ptr<Framebuffer> GraphicsManager::createImpl<Framebuffer>(Framebuffer::CreateInfo info);
+	template <> std::shared_ptr<IndexBuffer> GraphicsManager::createImpl<IndexBuffer>(IndexBuffer::CreateInfo info);
+	template <> std::shared_ptr<VertexBuffer> GraphicsManager::createImpl<VertexBuffer>(VertexBuffer::CreateInfo info);
+	template <> std::shared_ptr<RenderPass> GraphicsManager::createImpl<RenderPass>(RenderPass::CreateInfo info);
+	template <> std::shared_ptr<Shader> GraphicsManager::createImpl<Shader>(Shader::CreateInfo info);
+	template <> std::shared_ptr<ShaderGroup> GraphicsManager::createImpl<ShaderGroup>(ShaderGroup::CreateInfo info);
+	template <> std::shared_ptr<Pipeline> GraphicsManager::createImpl<Pipeline>(Pipeline::CreateInfo info);
+
 	template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
 	std::shared_ptr<T> GraphicsManager::createSpecific(Args... args)
 	{

@@ -10,6 +10,15 @@
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphicsSystem/layers/layerStack.h>
 
+#include <atta/graphicsSystem/image.h>
+#include <atta/graphicsSystem/framebuffer.h>
+#include <atta/graphicsSystem/indexBuffer.h>
+#include <atta/graphicsSystem/vertexBuffer.h>
+#include <atta/graphicsSystem/renderPass.h>
+#include <atta/graphicsSystem/shader.h>
+#include <atta/graphicsSystem/shaderGroup.h>
+#include <atta/graphicsSystem/pipeline.h>
+
 namespace atta
 {
 	class GraphicsManager final
@@ -35,8 +44,10 @@ namespace atta
 		void updateImpl();
 		template <typename T, typename... Args>
 		std::shared_ptr<T> createImpl(Args... args);
+
 		template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
 		std::shared_ptr<T> createSpecific(Args... args);
+
 
 		std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
 

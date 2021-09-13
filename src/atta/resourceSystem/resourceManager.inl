@@ -41,6 +41,8 @@ namespace atta
 		LOG_ERROR("ResourceManager", "Could create load event for resource [*w]$0[] ([w]$1[]). It is a resource?", sid, typeid(R).name());
 	}
 
+	template <> void ResourceManager::createLoadEvent(Mesh* resource, StringId sid);
+
 	template <typename R>
 	std::vector<StringId> ResourceManager::getResourcesImpl()
 	{
