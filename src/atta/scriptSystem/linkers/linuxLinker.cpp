@@ -14,25 +14,21 @@
 
 namespace atta
 {
-	void LinuxLinker::linkTarget(std::string target)
+	void LinuxLinker::linkTarget(StringId target, Script** script)
 	{
+		(*script) = nullptr;
+
 		std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
 		fs::path projectDir = FileManager::getProjectDirectory();
-		fs::path lib = projectDir / "build" / ("lib"+target+".so").c_str();
+		fs::path lib = projectDir / "build" / ("lib"+target.getString()+".so").c_str();
 
 		LOG_DEBUG("LinuxLinker", "Linking target $0", lib);
 
 		void* fLib = dlopen(fs::absolute(lib).c_str(), RTLD_LAZY);
-		if(!fLib)
-		{
-			LOG_WARN("LinuxLinker", "Cannot open library $0. Error: $1", lib.filename(), dlerror());
-			return;
-		}
-
 		if(fLib)
 		{
-			using ScriptCreator = Script* (*)();
+			using ScriptCreator = atta::Script* (*)();
 			ScriptCreator fn = reinterpret_cast<ScriptCreator>(dlsym(fLib, "createScript"));
 
 			const char* dlsymError = dlerror();
@@ -43,18 +39,24 @@ namespace atta
 				return;
 			}
 
+			*script = fn();
+			_targetHandles[target] = fLib;
+
 			std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 			auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
 			LOG_INFO("LinuxLinker", "Time to link: $0 ms", micro.count()/1000.0f);
-
-			Script* testScript = fn();
-			testScript->update(0);
-			delete testScript;
-			fn = nullptr;
-
-			dlclose(fLib);
 		}
+		else
+		{
+			LOG_WARN("LinuxLinker", "Cannot open library $0. Error: $1", lib.filename(), dlerror());
+			return;
+		}
+	}
 
+	void LinuxLinker::releaseTarget(StringId target)
+	{
+		if(_targetHandles.find(target) != _targetHandles.end())
+			dlclose(_targetHandles[target]);
 	}
 }
 #endif// ATTA_OS_LINUX

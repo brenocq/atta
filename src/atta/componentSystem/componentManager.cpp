@@ -50,6 +50,9 @@ namespace atta
 
 		MeshComponent* m1 = addEntityComponent<MeshComponent>(e1);
 		m1->sid = StringId(fs::absolute("../resources/meshes/plane.obj").string());
+
+		ScriptComponent* s0 = addEntityComponent<ScriptComponent>(e0);
+		s0->sid = StringId("scriptCPU");
 	}
 
 	void ComponentManager::shutDownImpl()
@@ -83,6 +86,7 @@ namespace atta
 		registerComponentPoolImpl<TransformComponent>(_maxEntities, "Transform");
 		registerComponentPoolImpl<NameComponent>(_maxEntities, "Name");
 		registerComponentPoolImpl<MeshComponent>(_maxEntities, "Mesh");
+		registerComponentPoolImpl<ScriptComponent>(_maxEntities, "Script");
 	}
 
 	EntityId ComponentManager::createEntityImpl()

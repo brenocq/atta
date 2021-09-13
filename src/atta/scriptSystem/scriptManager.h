@@ -18,18 +18,24 @@ namespace atta
 		static ScriptManager& getInstance();
 		static void startUp();
 		static void shutDown();
+		static Script* getScript(StringId target);
 
 	private:
 		void startUpImpl();
 		void shutDownImpl();
+		Script* getScriptImpl(StringId target) const;
 
 		// Handle events
 		void onFileChange(Event& event);
 		void onProjectChange(Event& event);
-		void updateTargets();
+
+		void updateAllTargets();
+		void updateTarget(StringId target);
 
 		std::shared_ptr<Compiler> _compiler;
 		std::shared_ptr<Linker> _linker;
+
+		std::unordered_map<StringId, Script*> _scripts;
 	};
 }
 

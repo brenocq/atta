@@ -22,6 +22,11 @@ namespace atta
 		return _id == sid._id;
 	}
 
+	inline bool StringId::operator<(StringId other) const
+	{
+		return _id < other._id;
+	}
+
 
 	//---------- Extern inline functions ----------//
 	inline std::ostream& operator<<(std::ostream& os, const StringId& sid)

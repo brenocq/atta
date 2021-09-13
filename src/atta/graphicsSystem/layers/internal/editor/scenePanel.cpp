@@ -98,6 +98,12 @@ namespace atta
 				mesh->sid = StringId(fs::absolute("../resources/meshes/plane.obj").string());
 			}
 
+			if(ImGui::Selectable("Script##ComponentAddMesh"))
+			{
+				ScriptComponent* script = ComponentManager::addEntityComponent<ScriptComponent>(_selected);
+				script->sid = StringId("scriptCPU");
+			}
+
 			ImGui::EndPopup();
 		}
 
@@ -160,6 +166,32 @@ namespace atta
 					{
 						if(ImGui::Selectable(names[i], comboValue == i))
 							mesh->sid = StringId(fs::absolute(paths[i]).string());
+						if(comboValue == i)
+							ImGui::SetItemDefaultFocus();
+					}
+
+					ImGui::EndCombo();
+				}
+			}
+
+		ScriptComponent* script = ComponentManager::getEntityComponent<ScriptComponent>(_selected);
+		if(script != nullptr)
+			if(ImGui::CollapsingHeader("Script##ComponentsScriptHeader", ImGuiTreeNodeFlags_None))
+			{
+				uint32_t comboValue;
+				if(script->sid == StringId("scriptCPU"))
+					comboValue = 0;
+				else
+					comboValue = 1;
+
+				const char* names[] = { "scriptCPU", "scriptGPU" };
+				const char* comboPreviewValue = names[comboValue];
+				if(ImGui::BeginCombo("Script", comboPreviewValue))
+				{
+					for(uint32_t i = 0; i < sizeof(names)/sizeof(const char*); i++)
+					{
+						if(ImGui::Selectable(names[i], comboValue == i))
+							script->sid = StringId(names[i]);
 						if(comboValue == i)
 							ImGui::SetItemDefaultFocus();
 					}

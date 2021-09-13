@@ -14,7 +14,7 @@ namespace atta
 	public:
 		Script() = default;    
 		virtual ~Script() {};  
-		virtual void update(size_t index) = 0;
+		virtual void update(size_t index, float delta = 0.0f) = 0;
 	}; 
    
 }

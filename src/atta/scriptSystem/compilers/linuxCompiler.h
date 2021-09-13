@@ -17,11 +17,12 @@ namespace atta
 		LinuxCompiler();
 		~LinuxCompiler();
 
+		void compileAll() override;
+		void compileTarget(StringId target) override;
 		void updateTargets() override;
-		void compileTarget(std::string target) override;
-		void compileAll();
+
 	private:
-		void findTargetFiles(std::string target);
+		void findTargetFiles(StringId target);
 	};
 }
 

@@ -6,6 +6,8 @@
 //--------------------------------------------------
 #ifndef ATTA_SCRIPT_SYSTEM_LINKERS_LINKER_H
 #define ATTA_SCRIPT_SYSTEM_LINKERS_LINKER_H
+#include <atta/scriptSystem/script.h>
+#include <atta/core/stringId.h>
 
 namespace atta
 {
@@ -15,7 +17,8 @@ namespace atta
 		Linker() = default;
 		virtual ~Linker() = default;
 
-		virtual void linkTarget(std::string target) = 0;
+		virtual void linkTarget(StringId target, Script** script) = 0;
+		virtual void releaseTarget(StringId target) = 0;
 	};
 }
 

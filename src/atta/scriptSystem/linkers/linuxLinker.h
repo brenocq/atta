@@ -17,7 +17,11 @@ namespace atta
 		LinuxLinker() = default;
 		~LinuxLinker() = default;
 
-		void linkTarget(std::string target) override;
+		void linkTarget(StringId target, Script** script) override;
+		void releaseTarget(StringId target) override;
+
+	private:
+		std::unordered_map<StringId, void*> _targetHandles;
 	};
 }
 

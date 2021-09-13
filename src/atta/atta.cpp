@@ -15,6 +15,10 @@
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/graphicsSystem/pipeline.h>
 
+// Include execute code
+#include <atta/scriptSystem/script.h>
+#include <atta/componentSystem/components/scriptComponent.h>
+
 namespace atta
 {
 	Atta::Atta(const CreateInfo& info):
@@ -56,6 +60,19 @@ namespace atta
 		while(!_shouldFinish)
 		{
 			GraphicsManager::update();
+
+			std::vector<EntityId> entities = ComponentManager::getEntities();
+			for(auto entity : entities)
+			{
+				ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(entity);
+				if(scriptComponent != nullptr)
+				{
+					Script* script = ScriptManager::getScript(scriptComponent->sid);
+					if(script != nullptr)
+						script->update(entity, 0.01);
+				}
+			}
+
 			FileManager::update();
 		}
 	}
