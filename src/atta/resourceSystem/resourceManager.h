@@ -8,6 +8,7 @@
 #define ATTA_RESOURCE_SYSTEM_RESOURCE_MANAGER_H
 #include <atta/memorySystem/allocators/bitmapAllocator.h>
 #include <atta/core/stringId.h>
+#include <atta/resourceSystem/resources/resources.h>
 
 namespace atta
 {

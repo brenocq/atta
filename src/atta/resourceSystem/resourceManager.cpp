@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/memorySystem/memoryManager.h>
-#include <atta/resourceSystem/resources/resources.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/meshLoadEvent.h>
 
