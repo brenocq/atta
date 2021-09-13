@@ -40,6 +40,11 @@ atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 atta_add_libs(imgui)
 
 ########## assimp ##########
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(assimp)
 atta_add_libs(assimp)
 atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/assimp/include)
