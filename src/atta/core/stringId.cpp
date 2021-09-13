@@ -10,6 +10,17 @@ namespace atta
 {
 	static std::unordered_map<StringHash, std::string> stringIdTable;
 
+	StringId::StringId():
+		_id(crc32b("emptyStringId"))
+	{
+		std::string str = "emptyStringId";
+
+		DASSERT(!(stringIdTable.find(_id) != stringIdTable.end() &&
+			stringIdTable[_id] != str), "String id hash collisiong between [w]$0[] and [w]$1[] ($2)", stringIdTable[_id], str, _id);
+
+		stringIdTable[_id] = str;
+	}
+
 	StringId::StringId(std::string str):
 		_id(crc32b(str.c_str()))
 	{
@@ -17,6 +28,12 @@ namespace atta
 			stringIdTable[_id] != str), "String id hash collisiong between [w]$0[] and [w]$1[] ($2)", stringIdTable[_id], str, _id);
 
 		stringIdTable[_id] = str;
+	}
+
+	StringId::StringId(StringHash id):
+		_id(id)
+	{
+		DASSERT(stringIdTable.find(id) != stringIdTable.end(), "Can not create StringId from StringHash ($0) that was never registered", id);
 	}
 
 	const std::string& StringId::getString() const

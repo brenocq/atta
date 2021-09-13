@@ -8,10 +8,10 @@
 
 namespace atta
 {
-	std::vector<std::string> Compiler::getTargets() const
+	std::vector<StringId> Compiler::getTargets() const
 	{
-		std::vector<std::string> targets;
-		targets.reserve(_targetFiles.size());
+		std::vector<StringId> targets;
+		targets.clear();
 
 		for(auto& target : _targetFiles)
 			targets.push_back(target.first);

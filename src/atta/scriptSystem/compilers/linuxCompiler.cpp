@@ -22,107 +22,6 @@ namespace atta
 
 	}
 
-	void LinuxCompiler::updateTargets()
-	{
-		fs::path projectDir = FileManager::getProjectDirectory();
-		fs::path buildDir = projectDir / "build";
-		fs::path tempFile = buildDir / "atta.temp";
-		//---------- Build cmake ----------//
-		compileAll();
-
-		//---------- Get targets ----------//
-		_targetFiles.clear();
-		std::string getTargetCommand = "cmake --build . --target help > " + fs::absolute(tempFile).string();
-		fs::path prevPath = fs::current_path();
-		fs::current_path(buildDir);
-		std::system(getTargetCommand.c_str());
-		fs::current_path(prevPath);
-
-		std::ifstream tempIn(tempFile.string());
-		std::string line;
-
-		bool isTarget = false;
-		while(std::getline(tempIn, line))
-		{
-			if(line == "... rebuild_cache")
-			{
-				isTarget = true;
-				continue;
-			}
-			if(line.find(".o") != std::string::npos)
-			{
-				isTarget = false;
-				continue;
-			}
-
-			size_t space = line.find(' ');
-			if(isTarget)
-			{
-				std::string target = line.substr(space+1);
-				findTargetFiles(target);
-			}
-		}
-		tempIn.close();
-	}
-
-	void LinuxCompiler::compileTarget(std::string target)
-	{
-		std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-
-		LOG_DEBUG("LinuxCompiler", "Compile target $0", target);
-		if(_targetFiles.find(target) == _targetFiles.end())
-		{
-			LOG_WARN("LinuxCompiler", "Could not find target $0", target);
-			return;
-		}
-
-		fs::path projectDir = FileManager::getProjectDirectory();
-		fs::path buildDir = projectDir / "build";
-		fs::path tempFile = buildDir / "atta.temp";
-		fs::path errorFile = buildDir / "atta.error";
-		tempFile = fs::absolute(tempFile);
-		errorFile = fs::absolute(errorFile);
-
-		// Compile all if never compiled
-		if(!fs::exists(buildDir))
-		{
-			compileAll();
-			return;
-		}
-
-		fs::path prevPath = fs::current_path();
-		fs::current_path(buildDir);
-		std::string command = "cmake --build . --target "+target;
-		command += " > " + tempFile.string();
-		command += " 2> " + errorFile.string();
-		std::system(command.c_str());
-		fs::current_path(prevPath);
-
-		//std::string makeCommand = "make";
-		//makeCommand += " > " + tempFile.filename().string();
-		//makeCommand += " 2> " + errorFile.filename().string();
-		//std::system(makeCommand.c_str());
-
-		std::stringstream errorSS;
-		std::ifstream errorIn(errorFile);
-		errorSS << errorIn.rdbuf();
-		errorIn.close();
-		std::string errorStr = errorSS.str();
-
-		if(errorStr.size() > 0)
-		{
-			LOG_WARN("LinuxCompiler", "Error while compiling target $0\n$1", target, errorStr);
-			return;
-		}
-
-		fs::remove(tempFile);
-		fs::remove(errorFile);
-
-		std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-		auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-		LOG_INFO("LinuxCompiler", "Time to link: $0 ms", micro.count()/1000.0f);
-	}
-
 	void LinuxCompiler::compileAll()
 	{
 		LOG_DEBUG("LinuxCompiler", "Compile all targets");
@@ -178,13 +77,114 @@ namespace atta
 		fs::remove(errorFile);
 	}
 
-	void LinuxCompiler::findTargetFiles(std::string target)
+	void LinuxCompiler::compileTarget(StringId target)
+	{
+		std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
+
+		LOG_DEBUG("LinuxCompiler", "Compile target $0", target);
+		if(_targetFiles.find(target) == _targetFiles.end())
+		{
+			LOG_WARN("LinuxCompiler", "Could not find target $0", target);
+			return;
+		}
+
+		fs::path projectDir = FileManager::getProjectDirectory();
+		fs::path buildDir = projectDir / "build";
+		fs::path tempFile = buildDir / "atta.temp";
+		fs::path errorFile = buildDir / "atta.error";
+		tempFile = fs::absolute(tempFile);
+		errorFile = fs::absolute(errorFile);
+
+		// Compile all if never compiled
+		if(!fs::exists(buildDir))
+		{
+			compileAll();
+			return;
+		}
+
+		fs::path prevPath = fs::current_path();
+		fs::current_path(buildDir);
+		std::string command = "cmake --build . --target "+target.getString();
+		command += " > " + tempFile.string();
+		command += " 2> " + errorFile.string();
+		std::system(command.c_str());
+		fs::current_path(prevPath);
+
+		//std::string makeCommand = "make";
+		//makeCommand += " > " + tempFile.filename().string();
+		//makeCommand += " 2> " + errorFile.filename().string();
+		//std::system(makeCommand.c_str());
+
+		std::stringstream errorSS;
+		std::ifstream errorIn(errorFile);
+		errorSS << errorIn.rdbuf();
+		errorIn.close();
+		std::string errorStr = errorSS.str();
+
+		if(errorStr.size() > 0)
+		{
+			LOG_WARN("LinuxCompiler", "Error while compiling target $0\n$1", target, errorStr);
+			return;
+		}
+
+		fs::remove(tempFile);
+		fs::remove(errorFile);
+
+		std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+		auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+		LOG_INFO("LinuxCompiler", "Time to link: $0 ms", micro.count()/1000.0f);
+	}
+
+	void LinuxCompiler::updateTargets()
+	{
+		fs::path projectDir = FileManager::getProjectDirectory();
+		fs::path buildDir = projectDir / "build";
+		fs::path tempFile = buildDir / "atta.temp";
+
+		//---------- Get targets ----------//
+		_targetFiles.clear();
+		std::string getTargetCommand = "cmake --build . --target help > " + fs::absolute(tempFile).string();
+		fs::path prevPath = fs::current_path();
+		fs::current_path(buildDir);
+		std::system(getTargetCommand.c_str());
+		fs::current_path(prevPath);
+
+		std::ifstream tempIn(tempFile.string());
+		std::string line;
+
+		bool isTarget = false;
+		while(std::getline(tempIn, line))
+		{
+			if(line == "... rebuild_cache")
+			{
+				isTarget = true;
+				continue;
+			}
+			if(line.find(".o") != std::string::npos)
+			{
+				isTarget = false;
+				continue;
+			}
+
+			size_t space = line.find(' ');
+			if(isTarget)
+			{
+				LOG_DEBUG("Compi", "Curr is target: $0", line.substr(space+1));
+				StringId target = StringId(line.substr(space+1));
+				findTargetFiles(target);
+			}
+		}
+		tempIn.close();
+	}
+
+
+	void LinuxCompiler::findTargetFiles(StringId target)
 	{
 		_targetFiles[target] = std::vector<fs::path>();
 
 		fs::path projectDir = FileManager::getProjectDirectory();
 		fs::path buildDir = projectDir / "build";
-		fs::path dependFile = buildDir / "CMakeFiles" / (target+".dir").c_str() / "DependInfo.cmake";
+		fs::path dependFile = buildDir / "CMakeFiles" / (target.getString()+".dir").c_str() / "DependInfo.cmake";
 
 		std::ifstream dependIn(dependFile);
 		std::string line;

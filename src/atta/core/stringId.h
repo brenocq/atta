@@ -15,7 +15,9 @@ namespace atta
 	class StringId
 	{
 	public:
+		StringId();
 		StringId(std::string str);
+		StringId(StringHash id);
 
 		const std::string& getString() const;
 		uint32_t getId() const;
@@ -23,6 +25,8 @@ namespace atta
 		inline bool operator==(StringHash sid) const;
 		inline bool operator==(std::string str) const;
 		inline bool operator==(StringId sid) const;
+
+		inline bool operator<(StringId other) const;
 
 		static constexpr StringHash crc32b(const char* str);
 		static std::vector<std::string> getStrings();
@@ -48,6 +52,15 @@ namespace atta
 	constexpr auto SSID = SID;
 #endif
 }
+
+namespace std {
+	template<> struct hash<atta::StringId> {
+		size_t operator()(atta::StringId const& sid) const {
+			return static_cast<size_t>(sid.getId());
+		}
+	};
+}
+
 
 #include <atta/core/stringId.inl>
 #endif// ATTA_CORE_STRING_ID_H

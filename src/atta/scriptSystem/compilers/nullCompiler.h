@@ -15,8 +15,9 @@ namespace atta
 	public:
 		NullCompiler() = default;
 
+		void compileAll() override {};
+		void compileTarget(StringId target) override {};
 		void updateTargets() override {};
-		void compileTarget(std::string target) override {};
 	};
 }
 

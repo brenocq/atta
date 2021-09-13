@@ -42,36 +42,84 @@ namespace atta
 
 	}
 
+	Script* ScriptManager::getScript(StringId target) { return getInstance().getScriptImpl(target); } 
+	Script* ScriptManager::getScriptImpl(StringId target) const
+	{
+		if(_scripts.find(target) != _scripts.end())
+			return _scripts.at(target);
+		else
+			return nullptr;
+	}
+
 	void ScriptManager::onFileChange(Event& event)
 	{
 		FileEvent& e = reinterpret_cast<FileEvent&>(event);
-		LOG_DEBUG("ScriptManager", "New event: $0", e);
 
 		if(e.file.filename() == "CMakeLists.txt")
-			updateTargets();
+		{
+			updateAllTargets();
+			return;
+		}
 
 		for(auto target : _compiler->getTargetFiles())
 			for(auto file : target.second)
 				if(file == e.file)
-				{
-					_compiler->compileTarget(target.first);
-					_linker->linkTarget(target.first);// TODO check error
-				}
+					updateTarget(target.first);
+
+		LOG_DEBUG("ScriptManager", "New event: $0", e);
 	}
 
 	void ScriptManager::onProjectChange(Event& event)
 	{
 		ProjectEvent& e = reinterpret_cast<ProjectEvent&>(event);
-		updateTargets();
+		updateAllTargets();
 	}
 
-	void ScriptManager::updateTargets()
+	void ScriptManager::updateAllTargets()
 	{
+		// Release all targets
+		for(auto target : _compiler->getTargets())
+			_linker->releaseTarget(target);
+
+		for(auto [key, script] : _scripts)
+			delete script;
+		_scripts.clear();
+
+		// Recompile targets
+		_compiler->compileAll();
 		_compiler->updateTargets();
 
+		// For each target in the project, link the script
 		for(auto target : _compiler->getTargets())
-			_linker->linkTarget(target);// TODO check error
+		{
+			Script* script = nullptr;
+			_linker->linkTarget(target, &script);
+			if(script != nullptr)
+				_scripts[target] = script;
 
-		LOG_DEBUG("ScriptManager", "Targets: $0", _compiler->getTargets());
+		}
+
+		LOG_DEBUG("ScriptManager", "Targets updated: $0", _compiler->getTargets());
+	}
+	void ScriptManager::updateTarget(StringId target)
+	{
+		// Release this targets
+		if(_scripts.find(target) != _scripts.end())
+			delete _scripts[target];
+		_scripts.erase(target);
+		_linker->releaseTarget(target);
+
+		// Compile and link specific target
+		_compiler->compileTarget(target);
+
+		Script* script = nullptr;
+		_linker->linkTarget(target, &script);
+		if(script != nullptr)
+		{
+			_scripts[target] = script;
+			LOG_WARN("ScriptManager", "Target $0 -> calling test", target);
+		}
+		else
+			LOG_WARN("ScriptManager", "Target $0 does not have an script", target);
 	}
 }
