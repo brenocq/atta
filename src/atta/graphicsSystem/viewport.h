@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_SYSTEM_VIEWPORT_H
 #include <atta/core/stringId.h>
 #include <atta/graphicsSystem/renderers/renderer.h>
+#include <atta/graphicsSystem/cameras/camera.h>
 
 namespace atta
 {
@@ -18,6 +19,7 @@ namespace atta
 		{
 			StringId sid = StringId("Unnamed viewport");
 			std::shared_ptr<Renderer> renderer = nullptr;
+			std::shared_ptr<Camera> camera = nullptr;
 		};
 		Viewport(CreateInfo info);
 		~Viewport();
@@ -30,9 +32,13 @@ namespace atta
 		uint32_t getHeight() const { return _renderer->getHeight(); }
 		void* getImGuiTexture() const { return _renderer->getImGuiTexture(); }
 
+		std::shared_ptr<Renderer> getRenderer() const { return _renderer; }
+		std::shared_ptr<Camera> getCamera() const { return _camera; }
+
 	private:
 		StringId _sid;
 		std::shared_ptr<Renderer> _renderer;
+		std::shared_ptr<Camera> _camera;
 	};
 }
 

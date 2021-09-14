@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_SYSTEM_RENDERER_H
 #include <atta/core/stringId.h>
 #include <atta/graphicsSystem/framebuffer.h>
+#include <atta/graphicsSystem/cameras/camera.h>
 
 namespace atta
 {
@@ -16,7 +17,7 @@ namespace atta
 	public:
 		virtual ~Renderer() = default;
 
-		virtual void render() = 0;
+		virtual void render(std::shared_ptr<Camera> camera) = 0;
 		virtual void resize(uint32_t width, uint32_t height) = 0;
 
 		virtual uint32_t getWidth() const = 0;

@@ -29,6 +29,9 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	renderers/renderer.cpp
 	renderers/fastRenderer.cpp
 
+	cameras/camera.cpp
+	cameras/perspectiveCamera.cpp
+
 	layers/layer.cpp
 	layers/layerStack.cpp
 	layers/internal/uiLayer.cpp

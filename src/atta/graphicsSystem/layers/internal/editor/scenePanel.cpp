@@ -133,9 +133,9 @@ namespace atta
 				oriChanged |= ImGui::DragFloat("Z##SceneTransformOriZ", &ori.z, 0.5f, -360.0f, 360.0f, "%.2f", ImGuiSliderFlags_None);
 
 				ImGui::Text("Scale");
-				scaleChanged |= ImGui::DragFloat("X##SceneTransformScaleX", &scale.x, 0.005f, -FLT_MAX, +FLT_MAX, "%.2f", ImGuiSliderFlags_None);
-				scaleChanged |= ImGui::DragFloat("Y##SceneTransformScaleY", &scale.y, 0.005f, -FLT_MAX, +FLT_MAX, "%.2f", ImGuiSliderFlags_None);
-				scaleChanged |= ImGui::DragFloat("Z##SceneTransformScaleZ", &scale.z, 0.005f, -FLT_MAX, +FLT_MAX, "%.2f", ImGuiSliderFlags_None);
+				scaleChanged |= ImGui::DragFloat("X##SceneTransformScaleX", &scale.x, 0.005f, 0.0f, +FLT_MAX, "%.2f", ImGuiSliderFlags_None);
+				scaleChanged |= ImGui::DragFloat("Y##SceneTransformScaleY", &scale.y, 0.005f, 0.0f, +FLT_MAX, "%.2f", ImGuiSliderFlags_None);
+				scaleChanged |= ImGui::DragFloat("Z##SceneTransformScaleZ", &scale.z, 0.005f, 0.0f, +FLT_MAX, "%.2f", ImGuiSliderFlags_None);
 
 				if(posChanged)
 					transform->position = pos;

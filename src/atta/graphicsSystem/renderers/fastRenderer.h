@@ -17,7 +17,7 @@ namespace atta
 		FastRenderer();
 		~FastRenderer();
 
-		void render() override;
+		void render(std::shared_ptr<Camera> camera) override;
 		void resize(uint32_t width, uint32_t height) override;
 
 		uint32_t getWidth() const override { return _geometryPipeline->getRenderPass()->getFramebuffer()->getWidth(); };
