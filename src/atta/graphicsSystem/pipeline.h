@@ -46,6 +46,8 @@ namespace atta
 		virtual void begin() = 0;
 		virtual void end() = 0;
 
+		virtual void* getImGuiTexture() const = 0;
+
 		std::shared_ptr<ShaderGroup> getShaderGroup() const { return _shaderGroup; };
 		std::shared_ptr<RenderPass> getRenderPass() const { return _renderPass; };
 		StringId getDebugName() const { return _debugName; }

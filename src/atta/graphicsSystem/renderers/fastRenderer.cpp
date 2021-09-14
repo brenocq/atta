@@ -76,7 +76,6 @@ namespace atta
 				MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
 				TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
 
-
 				if(mesh != nullptr && transform != nullptr)
 				{
 					// XXX Move to shader class
@@ -94,6 +93,16 @@ namespace atta
 			}
 		}
 		_geometryPipeline->end();
-		GraphicsManager::getRendererAPI()->framebufferToScreen(_geometryPipeline->getRenderPass()->getFramebuffer());
+		//GraphicsManager::getRendererAPI()->framebufferToScreen(_geometryPipeline->getRenderPass()->getFramebuffer());
+	}
+
+	void FastRenderer::resize(uint32_t width, uint32_t height)
+	{
+		if(width != _width || height != _height)
+		{
+			_geometryPipeline->getRenderPass()->getFramebuffer()->resize(width, height);
+			_width = width;
+			_height = height;
+		}
 	}
 }

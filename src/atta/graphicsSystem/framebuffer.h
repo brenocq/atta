@@ -37,7 +37,7 @@ namespace atta
 		};
 
 		Framebuffer(const CreateInfo& info);
-		virtual ~Framebuffer() = default;
+		virtual ~Framebuffer();
 
 		virtual void bind() = 0;
 		virtual void unbind() = 0;

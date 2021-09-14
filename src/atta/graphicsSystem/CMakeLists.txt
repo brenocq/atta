@@ -13,6 +13,7 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	vertexBuffer.cpp
 	indexBuffer.cpp
 	pipeline.cpp
+	viewport.cpp
 
 	rendererAPIs/openGL/openGLRenderer.cpp
 	rendererAPIs/openGL/openGLImage.cpp
@@ -25,6 +26,7 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 	rendererAPIs/openGL/openGLPipeline.cpp
 	rendererAPIs/openGL/openGLMesh.cpp
 
+	renderers/renderer.cpp
 	renderers/fastRenderer.cpp
 
 	layers/layer.cpp

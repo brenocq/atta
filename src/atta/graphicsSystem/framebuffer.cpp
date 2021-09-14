@@ -17,6 +17,11 @@ namespace atta
 		DASSERT(_attachments.size() > 0, "It is not possible to create framebuffer with no attachments");
 	}
 
+	Framebuffer::~Framebuffer()
+	{
+		_images.clear();
+	}
+
 	std::shared_ptr<Image> Framebuffer::getImage(uint32_t attachment)
 	{
 		DASSERT(_images.find(attachment) != _images.end(), "[$0] Trying to access invalid attachment $1", _debugName.getString(), attachment);

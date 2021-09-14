@@ -19,6 +19,8 @@ namespace atta
 	
 		void begin() override;
 		void end() override;
+
+		void* getImGuiTexture() const override;
 	};
 }
 

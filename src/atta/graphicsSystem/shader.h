@@ -23,6 +23,7 @@ namespace atta
 		virtual ~Shader() = default;
 
 		virtual void recompile() = 0;
+		fs::path getFilepath() const { return _filepath; }
 
 	protected:
 		fs::path _filepath;

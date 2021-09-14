@@ -136,7 +136,7 @@ namespace atta
 		glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
 
 		std::shared_ptr<OpenGLFramebuffer> openGLFramebuffer = std::static_pointer_cast<OpenGLFramebuffer>(framebuffer);
-		std::shared_ptr<OpenGLImage> openGLImage = std::static_pointer_cast<OpenGLImage>(openGLFramebuffer->getColorAttachments()[0]);
+		std::shared_ptr<OpenGLImage> openGLImage = std::static_pointer_cast<OpenGLImage>(openGLFramebuffer->getImage(0));
 
 		_quadShader->bind();
 		glBindVertexArray(quadVAO);
