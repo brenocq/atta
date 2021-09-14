@@ -1,0 +1,42 @@
+name: Windows
+on: [push, pull_request, release]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }} - Build and test
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+          name: "Windows Latest",
+          os: windows-latest,
+          build_type: "Release"
+        }
+
+    steps:
+    - name: Checkout atta
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Install dependencies on windows
+      if: startsWith(matrix.config.os, 'windows')
+      run: |
+        choco install ninja cmake
+        ninja --version
+        cmake --version
+
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+
+    - name: Build
+      run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
+
+    - name: Test
+      run: ctest
+      working-directory: build

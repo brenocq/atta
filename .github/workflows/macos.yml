@@ -1,0 +1,42 @@
+name: MacOS
+on: [push, pull_request, release]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }} - Build and test
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+          name: "MacOS Latest",
+          os: macos-latest,
+          build_type: "Release"
+        }
+
+    steps:
+    - name: Checkout atta
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Install dependencies on macos
+      if: startsWith(matrix.config.os, 'macos')
+      run: |
+        brew install cmake ninja
+        ninja --version
+        cmake --version
+
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+
+    - name: Build
+      run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
+
+    - name: Test
+      run: ctest
+      working-directory: build
