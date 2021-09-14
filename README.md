@@ -1,9 +1,9 @@
 # Atta
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Linux](https://github.com/Brenocq/Atta/actions/workflows/linux.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/linux.yml)
 [![MacOS](https://github.com/Brenocq/Atta/actions/workflows/macos.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/macos.yml)
 [![Windows](https://github.com/Brenocq/Atta/actions/workflows/windows.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/windows.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 <p align="center">
  <img src="https://storage.googleapis.com/atta-images/evolution/2020-08-16.png" height="200">
@@ -23,13 +23,13 @@ This project aims to simulate complex systems like this, but with robots.
 
 ## Architecture
 <p align="center">
- <img src="https://storage.googleapis.com/atta-images/main/arch-2021-09-08.png" height="400">
+ <img src="https://storage.googleapis.com/atta-images/main/arch-2021-09-08.png" height="600">
 </p>
 
 ## Build & test
 Be sure to clone with the `--recursive` flag. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.\
 Atta should build without errors when the compiller supports C++17.\
-If you found any errors when building, do not exitate to create an issue.\
+If you found any errors when building, do not exitate to create an issue.
 
 ```
 $ git clone --recursive git@github.com:Brenocq/Atta.git
