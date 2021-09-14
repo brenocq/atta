@@ -24,7 +24,7 @@ namespace atta
 
 		static GLenum convertDepthAttachmentType(Image::Format format);
 
-		const std::vector<std::shared_ptr<Image>>& getColorAttachments() const { return _colorAttachments; };
+		//const std::vector<std::shared_ptr<Image>>& getColorAttachments() const { return _colorAttachments; };
 
 	private:
 		std::shared_ptr<Image> createColorAttachment(Image::Format format, int index);
@@ -33,12 +33,13 @@ namespace atta
 		OpenGLId _id;
 
 		// Attachments
-		std::vector<std::shared_ptr<Image>> _colorAttachments;
-		std::shared_ptr<Image> _depthAttachment;
+		//std::vector<std::shared_ptr<Image>> _colorAttachments;
+		//std::shared_ptr<Image> _depthAttachment;
+		int _depthAttachmentIndex;
 
 		// Attachment formats
-		std::vector<Image::Format> _colorAttachmentFormats;
-		Image::Format _depthAttachmentFormat;
+		//std::vector<Image::Format> _colorAttachmentFormats;
+		//Image::Format _depthAttachmentFormat;
 	};
 }
 

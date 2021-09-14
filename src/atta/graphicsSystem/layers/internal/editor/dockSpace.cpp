@@ -45,6 +45,7 @@ namespace atta
 				auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.20f, nullptr, &dockspace_id);
 
 				// we now dock our windows into the docking node we made above
+				ImGui::DockBuilderDockWindow("Main Viewport", dockspace_id);
 				ImGui::DockBuilderDockWindow("Debug", dock_id_down);
 				ImGui::DockBuilderDockWindow("Scene", dock_id_right);
 				ImGui::DockBuilderFinish(dockspace_id);

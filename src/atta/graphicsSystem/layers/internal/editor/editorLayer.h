@@ -23,7 +23,10 @@ namespace atta
 		void onDetach() override;
 		void onRender() override;
 		void onUIRender() override;
+
 	private:
+		void updateViewports();
+
 		MenuBar _menuBar;
 		DockSpace _dockSpace;
 		ScenePanel _scenePanel;

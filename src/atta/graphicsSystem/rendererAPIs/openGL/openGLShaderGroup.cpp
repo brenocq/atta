@@ -59,8 +59,10 @@ namespace atta
 		if(!success)
 		{
 			glGetProgramInfoLog(_id, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::LINK_FAILED\n" << infoLog << std::endl;
-			ASSERT(false, "Failed to link shader group [w]$0[]:[w]\n$1", _debugName, infoLog);
+			std::vector<std::string> shaderPaths;
+			for(auto shader : _shaders)
+				shaderPaths.push_back(fs::absolute(shader->getFilepath()).string());
+			ASSERT(false, "Failed to link shader group [w]$0[]:\n[*w]Shaders:[w]$1\n[*w]Error:[w]\n$2", _debugName, shaderPaths, infoLog);
 		}
 
 		// Detach and delete shaders

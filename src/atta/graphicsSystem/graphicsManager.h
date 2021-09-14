@@ -9,6 +9,7 @@
 #include <atta/graphicsSystem/window.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphicsSystem/layers/layerStack.h>
+#include <atta/graphicsSystem/viewport.h>
 
 #include <atta/graphicsSystem/image.h>
 #include <atta/graphicsSystem/framebuffer.h>
@@ -38,6 +39,8 @@ namespace atta
 
 		static std::shared_ptr<RendererAPI> getRendererAPI() { return getInstance().getRendererAPIImpl(); };
 
+		static std::vector<std::shared_ptr<Viewport>>& getViewports() { return getInstance().getViewportsImpl(); }
+
 	private:
 		void startUpImpl();
 		void shutDownImpl();
@@ -50,12 +53,16 @@ namespace atta
 
 
 		std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
+		std::vector<std::shared_ptr<Viewport>>& getViewportsImpl() { return _viewports; };
 
 		std::shared_ptr<Window> _window;
 		std::shared_ptr<RendererAPI> _rendererAPI;
 
 		// Layer stack
 		std::unique_ptr<LayerStack> _layerStack;
+
+		// Viewports
+		std::vector<std::shared_ptr<Viewport>> _viewports;
 	};
 }
 

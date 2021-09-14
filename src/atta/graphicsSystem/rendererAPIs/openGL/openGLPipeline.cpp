@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLPipeline.h>
+#include <atta/graphicsSystem/rendererAPIs/openGL/openGLImage.h>
 
 namespace atta
 {
@@ -29,5 +30,13 @@ namespace atta
 	{
 		_renderPass->end();
 		//_shaderGroup->unbind();
+	}
+
+	void* OpenGLPipeline::getImGuiTexture() const
+	{
+		return reinterpret_cast<void*>(
+				std::static_pointer_cast<OpenGLImage>(
+					_renderPass->getFramebuffer()->getImage(0)
+				)->getId());
 	}
 }

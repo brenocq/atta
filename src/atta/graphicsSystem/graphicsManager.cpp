@@ -44,10 +44,16 @@ namespace atta
 
 		//----- Create Layers -----//
 		_layerStack = std::make_unique<LayerStack>();
-		_layerStack->push(new SimulationLayer());
+		//_layerStack->push(new SimulationLayer());
 		//_layerStack->push(new Layer2D());
 		_layerStack->push(new EditorLayer());
 		_layerStack->push(new UILayer());
+
+		//----- Create viewports -----//
+		Viewport::CreateInfo viewportInfo;
+		viewportInfo.renderer = std::make_shared<FastRenderer>();
+		viewportInfo.sid = StringId("Main Viewport");
+		_viewports.emplace_back(std::make_shared<Viewport>(viewportInfo));
 	}
 
 	void GraphicsManager::shutDown() { getInstance().shutDownImpl(); }
@@ -64,7 +70,11 @@ namespace atta
 		_window->update();
 
 		_rendererAPI->beginFrame();
-		_layerStack->render();
+		{
+			for(auto& viewport : _viewports)
+				viewport->render();
+			_layerStack->render();
+		}
 		_rendererAPI->endFrame();
 
 		_window->swapBuffers();

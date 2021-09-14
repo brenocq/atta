@@ -10,18 +10,18 @@
 namespace atta
 {
 	OpenGLFramebuffer::OpenGLFramebuffer(const Framebuffer::CreateInfo& info):
-		Framebuffer(info), _id(0), _depthAttachmentFormat(Image::Format::NONE)
+		Framebuffer(info), _id(0), _depthAttachmentIndex(-1)
 	{
 		// Populate color and depth attachments
+		int i = 0;
 		for(auto attachment : _attachments)
 		{
 			if(Image::isDepthFormat(attachment.format))
 			{
-				DASSERT(_depthAttachmentFormat == Image::Format::NONE, "It is not possible to create frameBuffer with more than one depth attachment");
-				_depthAttachmentFormat = attachment.format;
+				DASSERT(_depthAttachmentIndex == -1, "It is not possible to create frameBuffer with more than one depth attachment");
+				_depthAttachmentIndex = i;
 			}
-			else
-				_colorAttachmentFormats.push_back(attachment.format);
+			i++;
 		}
 
 		resize(_width, _height, true);
@@ -30,10 +30,7 @@ namespace atta
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
 		if(_id)
-		{
 			glDeleteFramebuffers(1, &_id);
-			_colorAttachments.clear();
-		}
 	}
 
 	void OpenGLFramebuffer::bind()
@@ -62,33 +59,19 @@ namespace atta
 		if(_id)
 		{
 			glDeleteFramebuffers(1, &_id);
-			_colorAttachments.clear();
+			_images.clear();
 		}
 
 		glGenFramebuffers(1, &_id);
 		glBindFramebuffer(GL_FRAMEBUFFER, _id);
 
-		//----- Create color attachments -----//
-		if(_colorAttachmentFormats.size() > 0)
+		//----- Create attachment images -----//
+		for(size_t i = 0; i < _attachments.size(); i++)
 		{
-			_colorAttachments.resize(_colorAttachmentFormats.size());
-			for(size_t i = 0; i < _colorAttachments.size(); i++)
-				_colorAttachments[i] = createColorAttachment(_colorAttachmentFormats[i], static_cast<int>(i));
-		}
-
-		// Specify framebuffer color attachments
-		//if(_colorAttachments.size() > 0)
-		//{
-		//	GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-		//	glNamedFramebufferDrawBuffers(_id, _colorAttachments.size(), buffers);
-		//}
-		//else
-		//	glNamedFramebufferDrawBuffer(_id, GL_NONE);
-
-		//----- Create depth attachment -----//
-		if(_depthAttachmentFormat != Image::Format::NONE)
-		{
-			_depthAttachment = createDepthAttachment(_depthAttachmentFormat);
+			if(i == _depthAttachmentIndex)
+				_images[i] = createDepthAttachment(_attachments[i].format);
+			else
+				_images[i] = createColorAttachment(_attachments[i].format, static_cast<int>(i));
 		}
 
 		//----- Check framebuffer-----//
@@ -112,7 +95,7 @@ namespace atta
 		image = std::make_shared<OpenGLImage>(info);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+index, GL_TEXTURE_2D, image->getId(), 0);
-		LOG_DEBUG("OpenGLFramebuffer", "Created color attachment $0", index);
+		//LOG_DEBUG("OpenGLFramebuffer", "Created color attachment $0", index);
 
 		return std::static_pointer_cast<Image>(image);
 	}

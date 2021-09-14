@@ -59,6 +59,5 @@ namespace atta
 				layer->onUIRender();
 			_uiLayer->end();
 		}
-
 	}
 }
