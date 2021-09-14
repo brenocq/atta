@@ -27,7 +27,7 @@ namespace atta
 
 	void SimulationLayer::onRender()
 	{
-		_renderer->render();
+		//_renderer->render();
 	}
 
 	void SimulationLayer::onUIRender()

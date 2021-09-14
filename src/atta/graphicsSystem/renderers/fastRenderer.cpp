@@ -65,12 +65,20 @@ namespace atta
 
 	}
 
-	void FastRenderer::render()
+	void FastRenderer::render(std::shared_ptr<Camera> camera)
 	{
 		std::vector<EntityId> entities = ComponentManager::getEntities();
-
 		_geometryPipeline->begin();
 		{
+			std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());
+
+			unsigned int projLoc = glGetUniformLocation(shader->getId(), "projection");
+			glUniformMatrix4fv(projLoc, 1, GL_FALSE, transpose(camera->getProj()).data);
+			//mat4 proj = mat4(1.0f);
+			//glUniformMatrix4fv(projLoc, 1, GL_FALSE, proj.data);
+			unsigned int viewLoc = glGetUniformLocation(shader->getId(), "view");
+			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, transpose(camera->getView()).data);
+
 			for(auto entity : entities)
 			{
 				MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
@@ -80,7 +88,7 @@ namespace atta
 				{
 					// XXX Move to shader class
 					// Updating transform uniform
-					std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());
+
 					unsigned int transformLoc = glGetUniformLocation(shader->getId(), "transform");
 					mat4 trans;
 					trans.setPosOriScale(transform->position, transform->orientation, transform->scale);
