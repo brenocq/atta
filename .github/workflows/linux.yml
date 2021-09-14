@@ -1,9 +1,9 @@
-name: Atta CI CPU
+name: Linux
 on: [push, pull_request, release]
 
 jobs:
   build:
-    name: ${{ matrix.config.name }} - Build and Test
+    name: ${{ matrix.config.name }} - Build and test
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
@@ -12,16 +12,6 @@ jobs:
         - {
           name: "Ubuntu Latest",
           os: ubuntu-latest,
-          build_type: "Release"
-        }
-        - {
-          name: "MacOS Latest",
-          os: macos-latest,
-          build_type: "Release"
-        }
-        - {
-          name: "Windows Latest",
-          os: windows-latest,
           build_type: "Release"
         }
 
@@ -39,20 +29,6 @@ jobs:
         ninja --version
         cmake --version
         gcc --version
-
-    - name: Install dependencies on macos
-      if: startsWith(matrix.config.os, 'macos')
-      run: |
-        brew install cmake ninja
-        ninja --version
-        cmake --version
-
-    - name: Install dependencies on windows
-      if: startsWith(matrix.config.os, 'windows')
-      run: |
-        choco install ninja cmake
-        ninja --version
-        cmake --version
 
     - name: Configure
       run: |
