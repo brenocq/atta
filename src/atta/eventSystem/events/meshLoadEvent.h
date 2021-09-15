@@ -10,13 +10,10 @@
 
 namespace atta
 {
-	class MeshLoadEvent : public Event
+	class MeshLoadEvent : public EventTyped<SID("MeshLoadEvent")>
 	{
 	public:
 		MeshLoadEvent(StringId sid_): sid(sid_) {}
-
-		Event::Type getType() const override { return SSID("Resource_MeshLoadEvent"); }
-		const char* getName() const override { return "Resource_MeshLoadEvent"; }
 
 		const StringId sid;
 	};

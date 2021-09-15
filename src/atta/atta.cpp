@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/atta.h>
 #include <atta/eventSystem/eventManager.h>
-#include <atta/eventSystem/events/windowMouseMoveEvent.h>
+#include <atta/eventSystem/events/windowCloseEvent.h>
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/componentSystem/componentManager.h>
 #include <atta/fileSystem/fileManager.h>
@@ -34,7 +34,7 @@ namespace atta
 		ResourceManager::startUp();
 		ComponentManager::startUp();
 
-		EventManager::subscribe(SSID("Window_Close"), BIND_EVENT_FUNC(Atta::onWindowClose));
+		EventManager::subscribe<WindowCloseEvent>(BIND_EVENT_FUNC(Atta::onWindowClose));
 
 		GraphicsManager::startUp();
 		ScriptManager::startUp();

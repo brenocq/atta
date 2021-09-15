@@ -10,7 +10,7 @@
 
 namespace atta
 {
-	class WindowKeyboardButtonEvent : public Event
+	class WindowKeyboardButtonEvent : public EventTyped<SID("WindowKeyboardButtonEvent")>
 	{
 	public:
 		enum class Action
@@ -20,10 +20,8 @@ namespace atta
 			RELEASE
 		};
 
-		WindowKeyboardButtonEvent(int key_, Action action_): key(key_), action(action_) {}
-
-		Event::Type getType() const override { return SSID("Window_KeyboardButton"); }
-		const char* getName() const override { return "Window_KeyboardButton"; }
+		WindowKeyboardButtonEvent(int key_, Action action_): 
+			key(key_), action(action_) {}
 
 		int key;
 		Action action;

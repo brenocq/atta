@@ -6,8 +6,8 @@
 //--------------------------------------------------
 #include <atta/scriptSystem/scriptManager.h>
 #include <atta/eventSystem/eventManager.h>
-#include <atta/eventSystem/events/fileEvent.h>
-#include <atta/eventSystem/events/projectEvent.h>
+#include <atta/eventSystem/events/fileWatchEvent.h>
+#include <atta/eventSystem/events/projectSaveEvent.h>
 #include <atta/scriptSystem/compilers/nullCompiler.h>
 #include <atta/scriptSystem/compilers/linuxCompiler.h>
 #include <atta/scriptSystem/linkers/nullLinker.h>
@@ -32,8 +32,8 @@ namespace atta
 		_linker = std::static_pointer_cast<Linker>(std::make_shared<NullLinker>());
 #endif
 
-		EventManager::subscribe(SSID("File"), BIND_EVENT_FUNC(ScriptManager::onFileChange));
-		EventManager::subscribe(SSID("Project"), BIND_EVENT_FUNC(ScriptManager::onProjectChange));
+		EventManager::subscribe<FileWatchEvent>(BIND_EVENT_FUNC(ScriptManager::onFileChange));
+		EventManager::subscribe<ProjectSaveEvent>(BIND_EVENT_FUNC(ScriptManager::onProjectChange));
 	}
 
 	void ScriptManager::shutDown() { getInstance().shutDownImpl(); }
@@ -53,7 +53,7 @@ namespace atta
 
 	void ScriptManager::onFileChange(Event& event)
 	{
-		FileEvent& e = reinterpret_cast<FileEvent&>(event);
+		FileWatchEvent& e = reinterpret_cast<FileWatchEvent&>(event);
 
 		if(e.file.filename() == "CMakeLists.txt")
 		{
@@ -71,7 +71,7 @@ namespace atta
 
 	void ScriptManager::onProjectChange(Event& event)
 	{
-		ProjectEvent& e = reinterpret_cast<ProjectEvent&>(event);
+		ProjectSaveEvent& e = reinterpret_cast<ProjectSaveEvent&>(event);
 		updateAllTargets();
 	}
 

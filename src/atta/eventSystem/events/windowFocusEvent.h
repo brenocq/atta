@@ -10,13 +10,11 @@
 
 namespace atta
 {
-	class WindowFocusEvent : public Event
+	class WindowFocusEvent : public EventTyped<SID("WindowFocusEvent")>
 	{
 	public:
-		WindowFocusEvent(bool hasFocus_): hasFocus(hasFocus_) {}
-
-		Event::Type getType() const override { return SSID("Window_Focus"); }
-		const char* getName() const override { return "Window_Focus"; }
+		WindowFocusEvent(bool hasFocus_): 
+			hasFocus(hasFocus_) {}
 
 		bool hasFocus;
 	};

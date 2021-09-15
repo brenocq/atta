@@ -10,7 +10,7 @@
 
 namespace atta
 {
-	class WindowMouseButtonEvent : public Event
+	class WindowMouseButtonEvent : public EventTyped<SID("WindowMouseButtonEvent")>
 	{
 	public:
 		enum class Action
@@ -19,10 +19,8 @@ namespace atta
 			RELEASE
 		};
 
-		WindowMouseButtonEvent(int button_, Action action_): button(button_), action(action_) {}
-
-		Event::Type getType() const override { return SSID("Window_MouseButton"); }
-		const char* getName() const override { return "Window_MouseButton"; }
+		WindowMouseButtonEvent(int button_, Action action_): 
+			button(button_), action(action_) {}
 
 		int button;
 		Action action;
