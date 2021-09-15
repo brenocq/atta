@@ -75,6 +75,8 @@ namespace atta
 
 			FileManager::update();
 		}
+
+		FileManager::closeProject();
 	}
 
 	void Atta::onWindowClose(Event& event)

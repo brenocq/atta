@@ -42,6 +42,7 @@ namespace atta
 
 			std::vector<EntityId> entities = ComponentManager::getEntities();
 
+			_someSelected = false;
 			for(EntityId entity : entities)
 			{
 				std::string name = "<Object "+std::to_string(entity)+">";
@@ -63,6 +64,10 @@ namespace atta
                         ImGui::CloseCurrentPopup();
                     ImGui::EndPopup();
                 }
+
+				// If entity is still selected
+				if(entity == _selected)
+					_someSelected = true;
 			}
 			ImGui::EndTable();
 		}
@@ -70,6 +75,9 @@ namespace atta
 
 	void ScenePanel::renderComponents()
 	{
+		if(!_someSelected)
+			return;
+
 		ImGui::Text("Components (ID:%lu)", _selected);
 		ImGui::SameLine();
 		if(ImGui::Button("Add"))

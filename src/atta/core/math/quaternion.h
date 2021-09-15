@@ -150,5 +150,11 @@ namespace atta
 		vec3 e = q.toEuler();
 		return e;
 	}
+
+	// <<
+	inline std::ostream& operator<<(std::ostream& os, const quat& q)
+	{
+		return os << q.toString();
+	}
 }
 #endif// ATTA_CORE_MATH_QUATERNION_H

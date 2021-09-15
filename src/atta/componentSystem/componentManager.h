@@ -46,11 +46,14 @@ namespace atta
 		template <typename T>
 		static void registerComponentPool(size_t maxCount, const char* name) { return getInstance().registerComponentPoolImpl<T>(maxCount, name); }
 
+		static void clear() { getInstance().clearImpl(); }
+
 	private:
 		void startUpImpl();
 		void shutDownImpl();
 		void createEntityPool();
 		void createComponentPools();
+		void clearImpl();
 
 		EntityId createEntityImpl();
 		template <typename T>
