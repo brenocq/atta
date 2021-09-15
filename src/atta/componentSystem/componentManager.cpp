@@ -28,31 +28,6 @@ namespace atta
 
 		createEntityPool();
 		createComponentPools();
-
-		EntityId e0 = createEntity();
-		EntityId e1 = createEntity();
-		EntityId e2 = createEntity();
-		EntityId e3 = createEntity();
-
-		TransformComponent* t = addEntityComponent<TransformComponent>(e0);
-		t->position = vec3(0.5f, 0.5f, 0.0f);
-		t->scale = vec3(0.1f, 0.1f, 0.1f);
-
-		NameComponent* n0 = addEntityComponent<NameComponent>(e0);
-		strcpy(n0->name,"e0 object");
-		NameComponent* n1 = addEntityComponent<NameComponent>(e1);
-		strcpy(n1->name,"e1 object");
-		NameComponent* n2 = addEntityComponent<NameComponent>(e2);
-		strcpy(n2->name,"e2 object");
-
-		MeshComponent* m0 = addEntityComponent<MeshComponent>(e0);
-		m0->sid = StringId(fs::absolute("../resources/meshes/cube.obj").string());
-
-		MeshComponent* m1 = addEntityComponent<MeshComponent>(e1);
-		m1->sid = StringId(fs::absolute("../resources/meshes/plane.obj").string());
-
-		ScriptComponent* s0 = addEntityComponent<ScriptComponent>(e0);
-		s0->sid = StringId("scriptCPU");
 	}
 
 	void ComponentManager::shutDownImpl()
@@ -121,5 +96,25 @@ namespace atta
 	std::vector<EntityId> ComponentManager::getEntitiesImpl()
 	{
 		return std::vector<EntityId>(_denseList, _denseList+_denseListSize);
+	}
+
+	void ComponentManager::clearImpl()
+	{
+		PoolAllocator<Entity>* epool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("Component_EntityAllocator"));
+		epool->clear();
+
+		_denseListSize = 0;
+
+		PoolAllocator<NameComponent>* namePool = MemoryManager::getAllocator<PoolAllocator<NameComponent>>(COMPONENT_POOL_SID(NameComponent));
+		namePool->clear();
+
+		PoolAllocator<MeshComponent>* meshPool = MemoryManager::getAllocator<PoolAllocator<MeshComponent>>(COMPONENT_POOL_SID(MeshComponent));
+		meshPool->clear();
+
+		PoolAllocator<ScriptComponent>* scriptPool = MemoryManager::getAllocator<PoolAllocator<ScriptComponent>>(COMPONENT_POOL_SID(ScriptComponent));
+		scriptPool->clear();
+
+		PoolAllocator<TransformComponent>* transformPool = MemoryManager::getAllocator<PoolAllocator<TransformComponent>>(COMPONENT_POOL_SID(TransformComponent));
+		transformPool->clear();
 	}
 }

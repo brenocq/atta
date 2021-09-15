@@ -14,7 +14,7 @@ namespace atta
 		// Create texture
 		glGenTextures(1, &_id);
 		glBindTexture(GL_TEXTURE_2D, _id);
-		GLenum sizedFormat = OpenGLImage::convertSizedInternalFormat(_format);
+		//GLenum sizedFormat = OpenGLImage::convertSizedInternalFormat(_format);
 		//glTextureStorage2D(_id, _mipLevels, sizedFormat, _width, _height);
 
 		// Populate data and generate mipmap
@@ -52,6 +52,7 @@ namespace atta
 			case Format::NONE: break;
 			case Format::RGB: return GL_RGB8;
 			case Format::RGBA: return GL_RGBA8;
+			case Format::DEPTH32F: return GL_R32F;
 		}
 		ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
 	}
@@ -63,6 +64,7 @@ namespace atta
 			case Format::NONE: break;
 			case Format::RGB: return GL_RGB;
 			case Format::RGBA: return GL_RGBA;
+			case Format::DEPTH32F: return GL_DEPTH_COMPONENT;
 		}
 		ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
 	}
@@ -74,6 +76,7 @@ namespace atta
 			case Format::NONE: break;
 			case Format::RGB: 
 			case Format::RGBA: return GL_UNSIGNED_BYTE;
+			case Format::DEPTH32F: return GL_FLOAT;
 		}
 		ASSERT(false, "Could not convert format to openGL data type. Unknown image format");
 	}

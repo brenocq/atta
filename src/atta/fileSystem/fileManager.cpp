@@ -8,7 +8,8 @@
 #include <atta/fileSystem/watchers/nullFileWatcher.h>
 #include <atta/fileSystem/watchers/linuxFileWatcher.h>
 #include <atta/eventSystem/eventManager.h>
-#include <atta/eventSystem/events/projectSaveEvent.h>
+#include <atta/eventSystem/events/projectOpenEvent.h>
+#include <atta/eventSystem/events/projectCloseEvent.h>
 #include <atta/cmakeConfig.h>
 
 namespace atta
@@ -56,7 +57,7 @@ namespace atta
 		// Watch project directory file changes
 		_fileWatcher->addWatch(_project->getDirectory());
 
-		ProjectSaveEvent e;
+		ProjectOpenEvent e;
 		EventManager::publish(e);
 
 		return true;
@@ -69,11 +70,17 @@ namespace atta
 
 	void FileManager::closeProjectImpl()
 	{
-		_projectSerializer->serialize();
+		if(_projectSerializer)
+			_projectSerializer->serialize();
 
-		_fileWatcher->removeWatch(_project->getDirectory());
+		if(_project)
+			_fileWatcher->removeWatch(_project->getDirectory());
+
 		_project.reset();
 		_projectSerializer.reset();
+
+		ProjectCloseEvent e;
+		EventManager::publish(e);
 	}
 
 	// TODO remove

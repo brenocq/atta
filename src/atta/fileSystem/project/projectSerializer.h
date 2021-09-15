@@ -14,6 +14,7 @@ namespace atta
 	{
 	public:
 		ProjectSerializer(std::shared_ptr<Project> project);
+		~ProjectSerializer();
 
 		void serialize();
 		void deserialize();
@@ -30,6 +31,9 @@ namespace atta
 
 		void serializeHeader(std::ofstream& os);
 		Header deserializeHeader(std::ifstream& is);
+
+		void serializeComponentSystem(std::ofstream& os);
+		void deserializeComponentSystem(std::ifstream& is);
 
 		// Helpers to write binary data
 		template <typename T>

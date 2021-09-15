@@ -7,7 +7,8 @@
 #include <atta/scriptSystem/scriptManager.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/fileWatchEvent.h>
-#include <atta/eventSystem/events/projectSaveEvent.h>
+#include <atta/eventSystem/events/projectOpenEvent.h>
+#include <atta/eventSystem/events/projectCloseEvent.h>
 #include <atta/scriptSystem/compilers/nullCompiler.h>
 #include <atta/scriptSystem/compilers/linuxCompiler.h>
 #include <atta/scriptSystem/linkers/nullLinker.h>
@@ -33,7 +34,8 @@ namespace atta
 #endif
 
 		EventManager::subscribe<FileWatchEvent>(BIND_EVENT_FUNC(ScriptManager::onFileChange));
-		EventManager::subscribe<ProjectSaveEvent>(BIND_EVENT_FUNC(ScriptManager::onProjectChange));
+		EventManager::subscribe<ProjectOpenEvent>(BIND_EVENT_FUNC(ScriptManager::onProjectOpen));
+		EventManager::subscribe<ProjectCloseEvent>(BIND_EVENT_FUNC(ScriptManager::onProjectClose));
 	}
 
 	void ScriptManager::shutDown() { getInstance().shutDownImpl(); }
@@ -69,10 +71,19 @@ namespace atta
 		LOG_DEBUG("ScriptManager", "New event: $0", e);
 	}
 
-	void ScriptManager::onProjectChange(Event& event)
+	void ScriptManager::onProjectOpen(Event& event)
 	{
-		ProjectSaveEvent& e = reinterpret_cast<ProjectSaveEvent&>(event);
+		//ProjectOpenEvent& e = reinterpret_cast<ProjectOpenEvent&>(event);
 		updateAllTargets();
+	}
+
+	void ScriptManager::onProjectClose(Event& event)
+	{
+		// Release all targets
+		for(auto target : _compiler->getTargets())
+			_linker->releaseTarget(target);
+
+		_scripts.clear();
 	}
 
 	void ScriptManager::updateAllTargets()

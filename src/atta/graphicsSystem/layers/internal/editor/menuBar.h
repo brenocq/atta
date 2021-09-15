@@ -16,10 +16,13 @@ namespace atta
 
 		void render();
 
+
 	private:
 		void preferences();
+		void openProjectModal();
 
 		bool _showPreferences;
+		bool _showOpenProject;
 	};
 }
 

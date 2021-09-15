@@ -31,6 +31,7 @@ namespace atta
 		return os << e.getName();
 	}
 
+	// TODO Template char* argument to save the string name when attributing the static member
 	template <Event::Type type_>
 	class EventTyped : public Event
 	{

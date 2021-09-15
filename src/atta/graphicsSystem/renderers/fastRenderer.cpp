@@ -25,6 +25,7 @@ namespace atta
 		// Framebuffer
 		Framebuffer::CreateInfo framebufferInfo {};
 		framebufferInfo.attachments.push_back({Image::Format::RGB});
+		//framebufferInfo.attachments.push_back({Image::Format::DEPTH32F});
 		framebufferInfo.width = 500;
 		framebufferInfo.height = 500;
 		framebufferInfo.debugName = StringId("Simulation Layer Framebuffer");

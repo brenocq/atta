@@ -27,7 +27,8 @@ namespace atta
 
 		// Handle events
 		void onFileChange(Event& event);
-		void onProjectChange(Event& event);
+		void onProjectOpen(Event& event);
+		void onProjectClose(Event& event);
 
 		void updateAllTargets();
 		void updateTarget(StringId target);

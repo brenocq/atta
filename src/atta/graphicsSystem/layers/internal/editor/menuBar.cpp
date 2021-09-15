@@ -38,11 +38,11 @@ namespace atta
 						}
 					}
 					else
-						if(ImGui::MenuItem("Open"));
+					{
+						if(ImGui::MenuItem("Open"))
+							_showOpenProject = true;
+					}
 					ImGui::EndMenu();
-				}
-				else
-				{
 				}
 
 				ImGui::Separator();
@@ -65,6 +65,7 @@ namespace atta
 
 			ImGui::EndMainMenuBar();
 		}
+		openProjectModal();
 		preferences();
 	}
 
@@ -80,5 +81,45 @@ namespace atta
 			}
 			ImGui::End();
 		}
+	}
+
+	void MenuBar::openProjectModal()
+	{
+		static bool lastShow = false;
+		if(_showOpenProject && !lastShow)
+		{
+			// OBS: Doing this because can't open popup inside menuitem
+			ImGui::OpenPopup("Open Project##OpenProjectModal");
+			lastShow = _showOpenProject;
+		}
+
+        if(ImGui::BeginPopupModal("Open Project##OpenProjectModal"))
+        {
+            ImGui::Text("For now, you need to paste the absolute location for the .atta file below");
+            ImGui::Separator();
+
+            static char buf[254] = "";
+            ImGui::InputText("##openProjectAttaPath", buf, sizeof(buf));
+
+            if(ImGui::Button("Cancel"))
+			{
+				ImGui::CloseCurrentPopup();
+				_showOpenProject = false;
+				lastShow = false;
+			}
+
+            ImGui::SameLine();
+
+            if(ImGui::Button("Open"))
+			{ 
+				FileManager::openProject(fs::path(buf));
+				ImGui::CloseCurrentPopup();
+				_showOpenProject = false;
+				lastShow = false;
+			}
+            ImGui::SetItemDefaultFocus();
+
+            ImGui::EndPopup();
+        }
 	}
 }
