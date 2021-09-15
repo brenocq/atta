@@ -27,9 +27,9 @@ namespace atta
 
 				if(ImGui::BeginMenu("Project"))
 				{
-					if(FileManager::isProjectDefined())
+					if(FileManager::isProjectOpen())
 					{
-						if(ImGui::BeginMenu(FileManager::getProjectName().c_str()))
+						if(ImGui::BeginMenu(FileManager::getProject()->getName().c_str()))
 						{
 							if(ImGui::MenuItem("Close"))
 								FileManager::closeProject();

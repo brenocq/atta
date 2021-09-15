@@ -26,7 +26,7 @@ namespace atta
 	{
 		LOG_DEBUG("LinuxCompiler", "Compile all targets");
 
-		fs::path projectDir = FileManager::getProjectDirectory();
+		fs::path projectDir = FileManager::getProject()->getDirectory();
 		fs::path buildDir = projectDir / "build";
 		fs::path tempFile = buildDir / "atta.temp";
 		fs::path errorFile = buildDir / "atta.error";
@@ -88,7 +88,7 @@ namespace atta
 			return;
 		}
 
-		fs::path projectDir = FileManager::getProjectDirectory();
+		fs::path projectDir = FileManager::getProject()->getDirectory();
 		fs::path buildDir = projectDir / "build";
 		fs::path tempFile = buildDir / "atta.temp";
 		fs::path errorFile = buildDir / "atta.error";
@@ -137,7 +137,7 @@ namespace atta
 
 	void LinuxCompiler::updateTargets()
 	{
-		fs::path projectDir = FileManager::getProjectDirectory();
+		fs::path projectDir = FileManager::getProject()->getDirectory();
 		fs::path buildDir = projectDir / "build";
 		fs::path tempFile = buildDir / "atta.temp";
 
@@ -182,7 +182,7 @@ namespace atta
 	{
 		_targetFiles[target] = std::vector<fs::path>();
 
-		fs::path projectDir = FileManager::getProjectDirectory();
+		fs::path projectDir = FileManager::getProject()->getDirectory();
 		fs::path buildDir = projectDir / "build";
 		fs::path dependFile = buildDir / "CMakeFiles" / (target.getString()+".dir").c_str() / "DependInfo.cmake";
 

@@ -33,20 +33,3 @@ atta_create_local_test(
 	"${ATTA_MEMORY_SYSTEM_TEST_SOURCES}"
 	"atta_memory_system"
 )
-
-########## Public headers ##########
-set(ATTA_MEMORY_SYSTEM_PUBLIC_HEADERS
-	memoryManager.h
-	memoryManager.inl
-	allocatedObject.h
-	allocatedObject.inl
-	allocator.h
-	allocators/bitmapAllocator.h
-	allocators/bitmapAllocator.inl
-	allocators/mallocAllocator.h
-	allocators/poolAllocator.h
-	allocators/poolAllocator.inl
-	allocators/stackAllocator.h
-	allocators/stackAllocator.inl
-)
-atta_install(FILES ${ATTA_MEMORY_SYSTEM_PUBLIC_HEADERS} DESTINATION memorySystem)

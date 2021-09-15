@@ -20,7 +20,7 @@ namespace atta
 
 		std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
-		fs::path projectDir = FileManager::getProjectDirectory();
+		fs::path projectDir = FileManager::getProject()->getDirectory();
 		fs::path lib = projectDir / "build" / ("lib"+target.getString()+".so").c_str();
 
 		LOG_DEBUG("LinuxLinker", "Linking target $0", lib);

@@ -16,10 +16,3 @@ add_library(atta_script_system STATIC
 )
 atta_target_common(atta_script_system)
 atta_add_libs(atta_script_system)
-
-########## Public headers ##########
-set(ATTA_SCRIPT_SYSTEM_PUBLIC_HEADERS
-	scriptManager.h
-	script.h
-)
-atta_install(FILES ${ATTA_SCRIPT_SYSTEM_PUBLIC_HEADERS} DESTINATION scriptSystem)

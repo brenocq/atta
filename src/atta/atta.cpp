@@ -40,7 +40,7 @@ namespace atta
 		ScriptManager::startUp();
 
 		if(info.projectFile != "")
-			FileManager::setProjectFile(info.projectFile);
+			FileManager::openProject(info.projectFile);
 	}
 
 	Atta::~Atta()

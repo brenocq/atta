@@ -1,0 +1,45 @@
+//--------------------------------------------------
+// Atta File System
+// project.cpp
+// Date: 2021-09-15
+// By Breno Cunha Queiroz
+//--------------------------------------------------
+#include <atta/fileSystem/project/project.h>
+#include <atta/cmakeConfig.h>
+
+namespace atta
+{
+	Project::Project(fs::path file):
+		_file(fs::absolute(file)), 
+		_directory(file.parent_path()), 
+		_name(file.stem().string())
+	{
+		_resourceRootPaths.push_back(_directory/"resources");
+		_resourceRootPaths.push_back(fs::path(ATTA_DIR)/"resources");
+
+		LOG_DEBUG("Project", "Opened project [*g]$0[] ([w]$1[])", _name, _file);
+		LOG_DEBUG("Project", "Resource paths: $0", _resourceRootPaths);
+	}
+
+	fs::path Project::getBuildDirectory()
+	{
+		return _directory/"build";
+	}
+
+	fs::path Project::getSnapshotDirectory()
+	{
+		return _directory/"snapshots";
+	}
+
+	fs::path Project::solveResourcePath(fs::path relativePath)
+	{
+		for(auto& root : _resourceRootPaths)	
+		{
+			fs::path full = root/relativePath;
+			if(fs::exists(full))
+				return full;
+		}
+
+		return fs::path();
+	}
+}
