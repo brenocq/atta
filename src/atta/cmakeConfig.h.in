@@ -1,0 +1,17 @@
+//--------------------------------------------------
+// Atta
+// cmakeConfig.h           
+// Date: 2021-09-15
+// By Breno Cunha Queiroz  
+//--------------------------------------------------
+#ifndef ATTA_CMAKE_CONFIG   
+#define ATTA_CMAKE_CONFIG   
+
+#define ATTA_DIR "@CMAKE_SOURCE_DIR@"
+#define ATTA_VERSION "@CMAKE_PROJECT_VERSION@"
+#define ATTA_VERSION_MAJOR @CMAKE_PROJECT_VERSION_MAJOR@
+#define ATTA_VERSION_MINOR @CMAKE_PROJECT_VERSION_MINOR@
+#define ATTA_VERSION_PATCH @CMAKE_PROJECT_VERSION_PATCH@
+#define ATTA_VERSION_TWEAK @CMAKE_PROJECT_VERSION_TWEAK@
+
+#endif// ATTA_CMAKE_CONFIG

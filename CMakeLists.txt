@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(Atta VERSION 0.0.2.0 LANGUAGES CXX C)
+project(Atta VERSION 0.0.3.0 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
 
 message(${CMAKE_CXX_COMPILER_ID})
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -94,21 +95,6 @@ macro(atta_add_tests)
     set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
 endmacro()
 
-macro(atta_install)
-	# Install atta system headers keeping the directory hierarchy
-	set(optionsArgs "")
-    set(oneValueArgs "DESTINATION")
-    set(multiValueArgs "FILES")
-    cmake_parse_arguments(CAS "${optionsArgs}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-    foreach(FILE ${CAS_FILES})
-        get_filename_component(DIR ${FILE} DIRECTORY)
-		#install(FILES ${FILE} DESTINATION include/atta/${CAS_DESTINATION}/${DIR})
-		install(FILES ${FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/atta/${CAS_DESTINATION}/${DIR})
-
-    endforeach()
-endmacro()
-
 macro(atta_target_common target)
 	# Common to all targets
 	target_precompile_headers(${target} PRIVATE ${ATTA_PCH})
@@ -125,7 +111,7 @@ macro(atta_create_local_test target sources libs)
 	set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ATTA_TEST_PATH})
 endmacro()
 
-########## Atta/Extern ##########
+########## Atta/Extern directories ##########
 list(APPEND ATTA_INCLUDE_DIRS ${ATTA_PATH}/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/extern)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta)
@@ -139,40 +125,56 @@ atta_target_common(atta_test)
 target_link_libraries(atta_test PRIVATE ${ATTA_LIBS} gtest_main)
 gtest_discover_tests(atta_test)
 
-########## Executable ##########
+########## Install ##########
 add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 atta_target_common(atta)
 target_link_libraries(atta PUBLIC ${ATTA_LIBS})
 
-########## Package ##########
-include(CMakePackageConfigHelpers)
-# Create version file for find_package
-write_basic_package_version_file(
-	"${CMAKE_CURRENT_BINARY_DIR}/AttaConfigVersion.cmake"
-	VERSION ${PROJECT_VERSION}
-	COMPATIBILITY SameMajorVersion
-)
-
-########## Install ##########
-# Each atta system install its header files too
-
 # Install executables
 install(TARGETS atta atta_test
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-# Install package
-install(TARGETS atta_component_system
-		EXPORT atta_targets
-)
-install(EXPORT atta_targets
-	FILE AttaTargets.cmake
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Atta
-)
-install(
-	FILES 
-		"${CMAKE_CURRENT_SOURCE_DIR}/AttaConfig.cmake"
-		"${CMAKE_CURRENT_BINARY_DIR}/AttaConfigVersion.cmake"
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Atta
-)
+# Install includes
+install(DIRECTORY src/atta/ DESTINATION include/atta
+	FILES_MATCHING REGEX ".*\.(h|inl)$")
+
+# Install resources
+install(DIRECTORY resources/ DESTINATION share/atta
+	PATTERN "resources/*")
+
+########## Cmake Package ##########
+#include(CMakePackageConfigHelpers)
+
+# Create version file for find_package
+#write_basic_package_version_file(
+#	"${CMAKE_CURRENT_BINARY_DIR}/AttaConfigVersion.cmake"
+#	VERSION ${PROJECT_VERSION}
+#	COMPATIBILITY SameMajorVersion
+#)
+
+# Install cmake package
+#install(TARGETS ${ATTA_LIBS}
+#	EXPORT atta_targets
+#)
+#install(EXPORT atta_targets
+#	FILE AttaTargets.cmake
+#		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Atta
+#)
+#install(
+#	FILES 
+#		"${CMAKE_CURRENT_SOURCE_DIR}/AttaConfig.cmake"
+#		"${CMAKE_CURRENT_BINARY_DIR}/AttaConfigVersion.cmake"
+#	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Atta
+#)
+
+########## CPack (deb package) ##########
+#install(TARGETS atta_core
+#	COMPONENT atta_component
+#)
+#
+#set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
+#set(CPACK_COMPONENTS_ALL atta_component)
+#set(CPACK_DEBIAN_PACKAGE_MAINTAINER "BrenoCQ")
+#set(CPACK_DEBIAN_PACKAGE_DEPENDS "xorg-dev;libglfw3-dev")
+#include(CPack)

@@ -9,12 +9,14 @@
 #include <atta/fileSystem/watchers/linuxFileWatcher.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/projectEvent.h>
+#include <atta/cmakeConfig.h>
 
 namespace atta
 {
 	void FileManager::startUpImpl()
 	{
-		_projectDefined = false;
+		_project = nullptr;
+		_projectSerializer = nullptr;
 
 #ifdef ATTA_OS_LINUX
 		_fileWatcher = std::static_pointer_cast<FileWatcher>(std::make_shared<LinuxFileWatcher>());
@@ -28,8 +30,9 @@ namespace atta
 
 	}
 
-	bool FileManager::setProjectFileImpl(fs::path projectFile)
+	bool FileManager::openProjectImpl(fs::path projectFile)
 	{
+		// Check valid project file
 		if(!fs::exists(projectFile))
 		{
 			LOG_WARN("FileManager", "Could not find file [w]$0[]", fs::absolute(projectFile));
@@ -42,14 +45,16 @@ namespace atta
 		}
 
 		// Close project if still open
-		if(_projectDefined)
+		if(_project != nullptr)
 			closeProjectImpl();
 
-		_projectFile = projectFile; 
-		_projectDirectory = projectFile.parent_path(); 
-		_projectDefined = true;
+		// Update project
+		_project = std::make_shared<Project>(projectFile);
+		_projectSerializer = std::make_shared<ProjectSerializer>(_project);
+		_projectSerializer->deserialize();
 
-		_fileWatcher->addWatch(_projectDirectory);
+		// Watch project directory file changes
+		_fileWatcher->addWatch(_project->getDirectory());
 
 		ProjectEvent e;
 		EventManager::publish(e);
@@ -57,30 +62,37 @@ namespace atta
 		return true;
 	}
 
-	bool FileManager::isProjectDefinedImpl() const
+	bool FileManager::isProjectOpenImpl() const
 	{
-		return _projectDefined;
-	}
-
-	std::string FileManager::getProjectNameImpl() const
-	{
-		return _projectFile.stem().string();
-	}
-
-	fs::path FileManager::getProjectDirectoryImpl() const
-	{
-		return _projectDirectory;
+		return _project != nullptr;
 	}
 
 	void FileManager::closeProjectImpl()
 	{
-		_fileWatcher->removeWatch(_projectDirectory);
-		_projectDefined = false;
+		_projectSerializer->serialize();
+
+		_fileWatcher->removeWatch(_project->getDirectory());
+		_project.reset();
+		_projectSerializer.reset();
 	}
 
 	// TODO remove
 	void FileManager::updateImpl()
 	{
 		_fileWatcher->update();
+	}
+
+	fs::path FileManager::solveResourcePathImpl(fs::path relativePath)
+	{
+		if(_project != nullptr)
+			return _project->solveResourcePath(relativePath);
+		else
+		{
+			fs::path full = fs::path(ATTA_DIR)/"resources"/relativePath;
+			if(fs::exists(full))
+				return full;
+			else 
+				return fs::path();
+		}
 	}
 }
