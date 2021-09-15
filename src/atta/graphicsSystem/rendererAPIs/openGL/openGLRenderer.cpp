@@ -65,7 +65,7 @@ namespace atta
 		glEnable(GL_DEPTH_TEST);
 
 		// Subscribe to events
-		EventManager::subscribe(SSID("Resource_MeshLoadEvent"), BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
+		EventManager::subscribe<MeshLoadEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
 
 
 		// Quad shader

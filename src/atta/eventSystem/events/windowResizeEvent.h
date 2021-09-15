@@ -10,13 +10,11 @@
 
 namespace atta
 {
-	class WindowResizeEvent : public Event
+	class WindowResizeEvent : public EventTyped<SID("WindowResizeEvent")>
 	{
 	public:
-		WindowResizeEvent(size_t width_, size_t height_): width(width_), height(height_) {}
-
-		Event::Type getType() const override { return SSID("Window_Resize"); }
-		const char* getName() const override { return "Window_Resize"; }
+		WindowResizeEvent(size_t width_, size_t height_): 
+			width(width_), height(height_) {}
 
 		size_t width, height;
 	};

@@ -7,7 +7,7 @@
 #ifdef ATTA_OS_LINUX
 #include <atta/fileSystem/watchers/linuxFileWatcher.h>
 #include <atta/eventSystem/eventManager.h>
-#include <atta/eventSystem/events/fileEvent.h>
+#include <atta/eventSystem/events/fileWatchEvent.h>
 
 #include <unistd.h>// read
 // System error
@@ -147,16 +147,16 @@ namespace atta
 			{
 				if(pathToWatch.second == ievent->wd)
 				{
-					FileEvent e;
+					FileWatchEvent e;
 
 					if(ievent->mask & IN_MODIFY)
-						e.action = static_cast<FileEvent::Action>(e.action | FileEvent::MODIFY);
+						e.action = static_cast<FileWatchEvent::Action>(e.action | FileWatchEvent::MODIFY);
 					if(ievent->mask & IN_DELETE)
-						e.action = static_cast<FileEvent::Action>(e.action | FileEvent::DELETE);
+						e.action = static_cast<FileWatchEvent::Action>(e.action | FileWatchEvent::DELETE);
 					if(ievent->mask & IN_OPEN)
-						e.action = static_cast<FileEvent::Action>(e.action | FileEvent::OPEN);
+						e.action = static_cast<FileWatchEvent::Action>(e.action | FileWatchEvent::OPEN);
 					if(ievent->mask & IN_CLOSE)
-						e.action = static_cast<FileEvent::Action>(e.action | FileEvent::CLOSE);
+						e.action = static_cast<FileWatchEvent::Action>(e.action | FileWatchEvent::CLOSE);
 
 					e.file = pathToWatch.first / ievent->name;
 

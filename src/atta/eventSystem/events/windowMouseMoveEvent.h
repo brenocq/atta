@@ -10,13 +10,11 @@
 
 namespace atta
 {
-	class WindowMouseMoveEvent : public Event
+	class WindowMouseMoveEvent : public EventTyped<SID("WindowMouseMoveEvent")>
 	{
 	public:
-		WindowMouseMoveEvent(float x_, float y_): x(x_), y(y_) {}
-
-		Event::Type getType() const override { return SSID("Window_MouseMove"); }
-		const char* getName() const override { return "Window_MouseMove"; }
+		WindowMouseMoveEvent(float x_, float y_): 
+			x(x_), y(y_) {}
 
 		float x, y;
 	};

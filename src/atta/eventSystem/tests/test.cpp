@@ -7,20 +7,16 @@
 #include <gtest/gtest.h>
 #include <atta/eventSystem/event.h>
 #include <atta/eventSystem/eventManager.h>
+#include <atta/eventSystem/events/windowMouseMoveEvent.h>
 
 using namespace atta;
 namespace
 {
-	constexpr Event::Type TEST_EVENT = SID("TestEvent");
-
-	class TestEvent : public Event
+	class TestEvent : public EventTyped<SID("TestEvent")>
 	{
 	public:
 		TestEvent(int value): _value(value) {}
 		~TestEvent() {}
-
-		Event::Type getType() const { return TEST_EVENT; }
-		const char* getName() const { return "TestEvent"; }
 
 		int getValue() const { return _value; }
 
@@ -35,7 +31,7 @@ namespace
 
 		void handle(Event& e)
 		{
-			if(e.getType() == TEST_EVENT)
+			if(e.getType() == TestEvent::type)
 			{
 				TestEvent& testEvent = static_cast<TestEvent&>(e);
 				testEvent.handled = true;
@@ -68,7 +64,7 @@ namespace
 
 		TestObserver observer;
 
-		EventManager::subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer, _1));
+		EventManager::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer, _1));
 
 		EXPECT_EQ(observer.getSum(), 0);
 	}
@@ -89,11 +85,11 @@ namespace
 		EventManager::publish(e0);
 
 		// The observer0 should not receive testEvents, so its sum stays in 0
-		EventManager::subscribe(SID("Window_MouseMove"), std::bind(&TestObserver::handle, &observer0, _1));
+		EventManager::subscribe<WindowMouseMoveEvent>(std::bind(&TestObserver::handle, &observer0, _1));
 		// The observer1 receives all testEvents after subscription
-		EventManager::subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer1, _1));
+		EventManager::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer1, _1));
 		// Because observer1 will consume the events, observer2 will not receive any event
-		EventManager::subscribe(TEST_EVENT, std::bind(&TestObserver::handle, &observer2, _1));
+		EventManager::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer2, _1));
 
 		// Publish more two events, 2+4=6
 		EventManager::publish(e1);
