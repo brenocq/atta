@@ -42,8 +42,6 @@ namespace atta
 
 		// Override atta file with temp file
 		fs::rename(attaTemp, _project->getFile());
-
-		LOG_WARN("ProjectSerializer", "New file:$0 -> ext:$1", fs::absolute(attaTemp), attaTemp.extension());
 	}
 
 	void ProjectSerializer::deserialize()

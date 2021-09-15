@@ -9,7 +9,7 @@ namespace atta
 	template <typename R>
 	R* ResourceManager::getImpl(const fs::path& filename)
 	{
-		StringId sid = StringId(fs::absolute(filename).string());
+		StringId sid = StringId(filename);
 		if(_resourceMap.find(sid.getId()) == _resourceMap.end())
 		{
 			// Load resource if not loaded yet

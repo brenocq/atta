@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLShader.h>
+#include <atta/fileSystem/fileManager.h>
 
 namespace atta
 {
@@ -30,7 +31,8 @@ namespace atta
 
 		// Read file
 		std::stringstream fileSS;
-		std::ifstream file(_filepath);
+		fs::path absolutePath = FileManager::solveResourcePath(_filepath);
+		std::ifstream file(absolutePath);
 		fileSS << file.rdbuf();
 		file.close();
 

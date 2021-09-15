@@ -70,7 +70,7 @@ namespace atta
 
 		// Quad shader
 		ShaderGroup::CreateInfo shaderGroupInfo {};
-		shaderGroupInfo.shaderPaths = {"../resources/shaders/quad/shader.vert", "../resources/shaders/quad/shader.frag"};
+		shaderGroupInfo.shaderPaths = {"shaders/quad/shader.vert", "shaders/quad/shader.frag"};
 		shaderGroupInfo.debugName = StringId("OpenGLRenderer Quad Shader Group");
 		_quadShader = std::make_shared<OpenGLShaderGroup>(shaderGroupInfo);
 

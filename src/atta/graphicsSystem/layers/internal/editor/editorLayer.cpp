@@ -61,10 +61,7 @@ namespace atta
 				//----- Move camera -----//
 				// Check started camera movement
 				if(ImGui::IsMouseClicked(2) && ImGui::IsWindowHovered())
-				{
-					LOG_DEBUG("Editorlater", "($1) ACTIVE $0", i, viewport->getSID());
 					activeViewport = i;
-				}
 
 				// Update camera (wheel pressed)
 				if(activeViewport==i && ImGui::IsMouseDown(2))

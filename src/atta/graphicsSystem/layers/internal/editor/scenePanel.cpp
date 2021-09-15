@@ -103,7 +103,7 @@ namespace atta
 			if(ImGui::Selectable("Mesh##ComponentAddMesh"))
 			{
 				MeshComponent* mesh = ComponentManager::addEntityComponent<MeshComponent>(_selected);
-				mesh->sid = StringId(fs::absolute("../resources/meshes/plane.obj").string());
+				mesh->sid = StringId(fs::path("meshes/plane.obj").string());
 			}
 
 			if(ImGui::Selectable("Script##ComponentAddMesh"))
@@ -158,22 +158,22 @@ namespace atta
 			if(ImGui::CollapsingHeader("Mesh##ComponentsMeshHeader", ImGuiTreeNodeFlags_None))
 			{
 				uint32_t comboValue;
-				if(mesh->sid == StringId(fs::absolute("../resources/meshes/plane.obj").string()))
+				if(mesh->sid == StringId(fs::path("meshes/plane.obj").string()))
 					comboValue = 0;
-				else if(mesh->sid == StringId(fs::absolute("../resources/meshes/cube.obj").string()))
+				else if(mesh->sid == StringId(fs::path("meshes/cube.obj").string()))
 					comboValue = 1;
 				else
 					comboValue = 2;
 
 				const char* names[] = { "Plane", "Cube", "Sphere" };
-				const char* paths[] = { "../resources/meshes/plane.obj", "../resources/meshes/cube.obj", "../resources/meshes/sphere.obj"};
+				const char* paths[] = { "meshes/plane.obj", "meshes/cube.obj", "meshes/sphere.obj"};
 				const char* comboPreviewValue = names[comboValue];
 				if(ImGui::BeginCombo("Mesh", comboPreviewValue))
 				{
 					for(uint32_t i = 0; i < sizeof(names)/sizeof(const char*); i++)
 					{
 						if(ImGui::Selectable(names[i], comboValue == i))
-							mesh->sid = StringId(fs::absolute(paths[i]).string());
+							mesh->sid = StringId(fs::path(paths[i]).string());
 						if(comboValue == i)
 							ImGui::SetItemDefaultFocus();
 					}
