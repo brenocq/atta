@@ -8,6 +8,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <atta/fileSystem/fileManager.h>
 
 namespace atta
 {
@@ -20,8 +21,10 @@ namespace atta
 	//---------- Assimp mesh loading ----------//
 	void Mesh::loadMesh()
 	{
+		fs::path absolutePath = FileManager::solveResourcePath(_filename);
+
 		Assimp::Importer importer;
-		const aiScene *scene = importer.ReadFile(fs::absolute(_filename).string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs); 
+		const aiScene *scene = importer.ReadFile(absolutePath.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs); 
 
 		if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{

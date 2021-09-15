@@ -34,7 +34,7 @@ namespace atta
 		// Shader Group
 		ShaderGroup::CreateInfo shaderGroupInfo {};
 		// TODO relative to resources directory
-		shaderGroupInfo.shaderPaths = {"../resources/shaders/fastRenderer/shader.vert", "../resources/shaders/fastRenderer/shader.frag"};
+		shaderGroupInfo.shaderPaths = {"shaders/fastRenderer/shader.vert", "shaders/fastRenderer/shader.frag"};
 		shaderGroupInfo.debugName = StringId("Simulation Layer Shader Group");
 		std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
 
@@ -56,9 +56,9 @@ namespace atta
 		_geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
 
 		// XXX
-		ResourceManager::get<Mesh>("../resources/meshes/plane.obj");
-		ResourceManager::get<Mesh>("../resources/meshes/cube.obj");
-		ResourceManager::get<Mesh>("../resources/meshes/sphere.obj");
+		ResourceManager::get<Mesh>("meshes/plane.obj");
+		ResourceManager::get<Mesh>("meshes/cube.obj");
+		ResourceManager::get<Mesh>("meshes/sphere.obj");
 	}
 
 	FastRenderer::~FastRenderer()
