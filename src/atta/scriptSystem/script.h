@@ -6,15 +6,16 @@
 //--------------------------------------------------
 #ifndef ATTA_SCRIPT_SYSTEM_SCRIPT_H
 #define ATTA_SCRIPT_SYSTEM_SCRIPT_H
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
 	class Script               
 	{
 	public:
-		Script() = default;    
+		Script() = default;  
 		virtual ~Script() {};  
-		virtual void update(size_t index, float delta = 0.0f) = 0;
+		virtual void update(EntityId id, float delta = 0.0f) = 0;
 	}; 
    
 }

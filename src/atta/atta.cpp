@@ -67,7 +67,7 @@ namespace atta
 				project->onUpdateBefore(0.01);
 
 			std::vector<EntityId> entities = ComponentManager::getEntities();
-			for(auto entity : entities)
+			for(EntityId entity : entities)
 			{
 				ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(entity);
 				if(scriptComponent != nullptr)

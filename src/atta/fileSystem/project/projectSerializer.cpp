@@ -320,7 +320,6 @@ namespace atta
 			else
 			{
 				LOG_WARN("ProjectSerializer", "Unknown marker found at the component section: [w]$0[]", marker);
-				return;
 			}
 		}
 	}
