@@ -21,7 +21,6 @@ namespace atta
 	class ComponentManager final
 	{
 	public:
-
 		static ComponentManager& getInstance()
 		{
 			static ComponentManager instance;

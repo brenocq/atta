@@ -4,6 +4,7 @@
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+
 namespace atta
 {
 	// TODO create multiple entities sequentially in memory (their components must match and be sequential in memory too)
@@ -72,9 +73,14 @@ namespace atta
 	template <typename T>
 	void ComponentManager::registerComponentPoolImpl(size_t maxCount, const char* name)
 	{
-		uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->alloc<T>(maxCount));
+		// TODO better pool allocator allocation from another one (now need to know that implementation to implement it correctly)
+		// Should not need to calculate this size
+		size_t size = sizeof(void*) > sizeof(T) ? sizeof(void*) : sizeof(T);
+
+		uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(maxCount*size, size));
 		DASSERT(componentMemory != nullptr, std::string("Could not allocate component system memory for ") + std::string(name));
-		LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB", name, typeid(T).name(), maxCount*sizeof(T)/(1024*1024.0f));
+		LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB -> memory space:($3 $4)", 
+				name, typeid(T).name(), maxCount*sizeof(T)/(1024*1024.0f), (void*)(componentMemory), (void*)(componentMemory+maxCount*sizeof(T)));
 		
 		// Create pool allocator
 		MemoryManager::registerAllocator(COMPONENT_POOL_SSID(T), static_cast<Allocator*>(new PoolAllocator<T>(componentMemory, maxCount)));

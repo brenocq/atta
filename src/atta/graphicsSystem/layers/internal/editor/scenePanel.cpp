@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/graphicsSystem/layers/internal/editor/scenePanel.h>
 #include <atta/componentSystem/components/components.h>
+#include <atta/scriptSystem/scriptManager.h>
 #include <imgui.h>
 
 namespace atta
@@ -188,24 +189,24 @@ namespace atta
 		if(script != nullptr)
 			if(ImGui::CollapsingHeader("Script##ComponentsScriptHeader", ImGuiTreeNodeFlags_None))
 			{
-				uint32_t comboValue;
-				if(script->sid == StringId("scriptCPU"))
-					comboValue = 0;
-				else
-					comboValue = 1;
+				std::vector<StringId> scriptSids = ScriptManager::getScriptSids();
+				uint32_t comboValue = 0;
+				for(size_t i = 0; i<scriptSids.size(); i++)
+					if(script->sid == scriptSids[i])
+						comboValue = i;
 
-				const char* names[] = { "scriptCPU", "scriptGPU" };
-				const char* comboPreviewValue = names[comboValue];
-				if(ImGui::BeginCombo("Script", comboPreviewValue))
+				//LOG_WARN("Scenepanel", "scripts: $0", scriptSids);
+
+				const char* comboPreviewValue = scriptSids[comboValue].getString().c_str();
+				if(ImGui::BeginCombo("Script", comboPreviewValue ))
 				{
-					for(uint32_t i = 0; i < sizeof(names)/sizeof(const char*); i++)
+					for(size_t i = 0; i < scriptSids.size(); i++)
 					{
-						if(ImGui::Selectable(names[i], comboValue == i))
-							script->sid = StringId(names[i]);
+						if(ImGui::Selectable(scriptSids[i].getString().c_str(), comboValue == i))
+							script->sid = scriptSids[i];
 						if(comboValue == i)
 							ImGui::SetItemDefaultFocus();
 					}
-
 					ImGui::EndCombo();
 				}
 			}
