@@ -61,6 +61,11 @@ namespace atta
 		{
 			GraphicsManager::update();
 
+			ProjectScript* project = ScriptManager::getProjectScript();
+
+			if(project)
+				project->onUpdateBefore(0.01);
+
 			std::vector<EntityId> entities = ComponentManager::getEntities();
 			for(auto entity : entities)
 			{
@@ -72,6 +77,9 @@ namespace atta
 						script->update(entity, 0.01);
 				}
 			}
+
+			if(project)
+				project->onUpdateAfter(0.01);
 
 			FileManager::update();
 		}

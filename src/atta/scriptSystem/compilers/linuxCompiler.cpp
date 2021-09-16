@@ -24,6 +24,7 @@ namespace atta
 
 	void LinuxCompiler::compileAll()
 	{
+		std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 		LOG_DEBUG("LinuxCompiler", "Compile all targets");
 
 		fs::path projectDir = FileManager::getProject()->getDirectory();
@@ -44,7 +45,7 @@ namespace atta
 		buildCommand += "2> " + errorFile.string();
 		std::system(buildCommand.c_str());
 
-		std::string makeCommand = "make";
+		std::string makeCommand = "make -j";
 		makeCommand += " > " + tempFile.string();
 		makeCommand += " 2> " + errorFile.string();
 		std::system(makeCommand.c_str());
@@ -75,6 +76,10 @@ namespace atta
 
 		fs::remove(tempFile);
 		fs::remove(errorFile);
+
+		std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+		auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+		LOG_INFO("LinuxCompiler", "Time to compile all: $0 ms", micro.count()/1000.0f);
 	}
 
 	void LinuxCompiler::compileTarget(StringId target)
@@ -104,7 +109,8 @@ namespace atta
 
 		fs::path prevPath = fs::current_path();
 		fs::current_path(buildDir);
-		std::string command = "cmake --build . --target "+target.getString();
+		std::string command = "cmake --build . --parallel --target "+target.getString();
+		//std::string command = "make "+target.getString()+"/fast -j";
 		command += " > " + tempFile.string();
 		command += " 2> " + errorFile.string();
 		std::system(command.c_str());
@@ -132,7 +138,7 @@ namespace atta
 
 		std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 		auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-		LOG_INFO("LinuxCompiler", "Time to link: $0 ms", micro.count()/1000.0f);
+		LOG_INFO("LinuxCompiler", "Time to compile target $1: $0 ms", micro.count()/1000.0f, target);
 	}
 
 	void LinuxCompiler::updateTargets()

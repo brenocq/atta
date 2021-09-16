@@ -67,7 +67,6 @@ namespace atta
 		// Subscribe to events
 		EventManager::subscribe<MeshLoadEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
 
-
 		// Quad shader
 		ShaderGroup::CreateInfo shaderGroupInfo {};
 		shaderGroupInfo.shaderPaths = {"shaders/quad/shader.vert", "shaders/quad/shader.frag"};
@@ -84,6 +83,7 @@ namespace atta
 			 1.0f, -1.0f,  1.0f, 0.0f,
 			 1.0f,  1.0f,  1.0f, 1.0f
 		};
+
 		// screen quad VAO
 		glGenVertexArrays(1, &quadVAO);
 		glGenBuffers(1, &quadVBO);
@@ -94,6 +94,11 @@ namespace atta
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+		// Create vertex/indices of meshes already loaded
+		std::vector<StringId> meshSids = ResourceManager::getResources<Mesh>();
+		for(auto meshSid : meshSids)
+			_openGLMeshes[meshSid.getId()] = std::make_shared<OpenGLMesh>(meshSid);
 	}
 
 	OpenGLRenderer::~OpenGLRenderer()

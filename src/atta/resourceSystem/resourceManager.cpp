@@ -28,6 +28,12 @@ namespace atta
 		uint8_t* resourceMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
 		_allocator = new BitmapAllocator(resourceMemory, size);
 		MemoryManager::registerAllocator(SSID("ResourceAllocator"), static_cast<Allocator*>(_allocator));
+
+		// Default resources
+		ResourceManager::get<Mesh>("meshes/plane.obj");
+		ResourceManager::get<Mesh>("meshes/cube.obj");
+		ResourceManager::get<Mesh>("meshes/sphere.obj");
+		ResourceManager::get<Mesh>("meshes/triangle.obj");
 	}
 
 	void ResourceManager::shutDown() { getInstance().shutDownImpl(); }

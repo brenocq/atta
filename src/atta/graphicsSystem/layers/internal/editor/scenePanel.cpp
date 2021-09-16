@@ -7,6 +7,8 @@
 #include <atta/graphicsSystem/layers/internal/editor/scenePanel.h>
 #include <atta/componentSystem/components/components.h>
 #include <atta/scriptSystem/scriptManager.h>
+#include <atta/resourceSystem/resourceManager.h>
+#include <atta/resourceSystem/resources/mesh.h>
 #include <imgui.h>
 
 namespace atta
@@ -104,13 +106,15 @@ namespace atta
 			if(ImGui::Selectable("Mesh##ComponentAddMesh"))
 			{
 				MeshComponent* mesh = ComponentManager::addEntityComponent<MeshComponent>(_selected);
-				mesh->sid = StringId(fs::path("meshes/plane.obj").string());
+				mesh->sid = StringId(fs::path("meshes/cube.obj").string());
 			}
 
-			if(ImGui::Selectable("Script##ComponentAddMesh"))
+			if(ImGui::Selectable("Script##ComponentAddScript"))
 			{
 				ScriptComponent* script = ComponentManager::addEntityComponent<ScriptComponent>(_selected);
-				script->sid = StringId("scriptCPU");
+				std::vector<StringId> scriptSids = ScriptManager::getScriptSids();
+				if(scriptSids.size())
+					script->sid = scriptSids[0];
 			}
 
 			ImGui::EndPopup();
@@ -158,29 +162,28 @@ namespace atta
 		if(mesh != nullptr)
 			if(ImGui::CollapsingHeader("Mesh##ComponentsMeshHeader", ImGuiTreeNodeFlags_None))
 			{
-				uint32_t comboValue;
-				if(mesh->sid == StringId(fs::path("meshes/plane.obj").string()))
-					comboValue = 0;
-				else if(mesh->sid == StringId(fs::path("meshes/cube.obj").string()))
-					comboValue = 1;
-				else if(mesh->sid == StringId(fs::path("meshes/sphere.obj").string()))
-					comboValue = 2;
-				else
-					comboValue = 3;
+				std::vector<StringId> meshSids = ResourceManager::getResources<Mesh>();
 
-				const char* names[] = { "Plane", "Cube", "Sphere", "Triangle" };
-				const char* paths[] = { "meshes/plane.obj", "meshes/cube.obj", "meshes/sphere.obj", "meshes/triangle.obj"};
-				const char* comboPreviewValue = names[comboValue];
+				uint32_t comboValue;
+
+				int i = 0;
+				for(auto sid : meshSids)
+				{
+					if(mesh->sid == sid)
+						comboValue = i;
+					i++;	
+				}
+
+				const char* comboPreviewValue = fs::path(meshSids[comboValue].getString()).stem().string().c_str();
 				if(ImGui::BeginCombo("Mesh", comboPreviewValue))
 				{
-					for(uint32_t i = 0; i < sizeof(names)/sizeof(const char*); i++)
+					for(size_t i = 0; i < meshSids.size(); i++)
 					{
-						if(ImGui::Selectable(names[i], comboValue == i))
-							mesh->sid = StringId(fs::path(paths[i]).string());
+						if(ImGui::Selectable(fs::path(meshSids[i].getString()).stem().string().c_str(), comboValue == i))
+							mesh->sid = meshSids[i];
 						if(comboValue == i)
 							ImGui::SetItemDefaultFocus();
 					}
-
 					ImGui::EndCombo();
 				}
 			}
@@ -194,8 +197,6 @@ namespace atta
 				for(size_t i = 0; i<scriptSids.size(); i++)
 					if(script->sid == scriptSids[i])
 						comboValue = i;
-
-				//LOG_WARN("Scenepanel", "scripts: $0", scriptSids);
 
 				const char* comboPreviewValue = scriptSids[comboValue].getString().c_str();
 				if(ImGui::BeginCombo("Script", comboPreviewValue ))

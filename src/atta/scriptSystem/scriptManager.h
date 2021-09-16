@@ -18,15 +18,22 @@ namespace atta
 		static ScriptManager& getInstance();
 		static void startUp();
 		static void shutDown();
-		static Script* getScript(StringId target);
 
+		static Script* getScript(StringId target);
 		static std::vector<StringId> getScriptSids();
+
+		static ProjectScript* getProjectScript();
+		static StringId getProjectScriptSid();
 
 	private:
 		void startUpImpl();
 		void shutDownImpl();
+
 		Script* getScriptImpl(StringId target) const;
 		std::vector<StringId> getScriptSidsImpl() const;
+
+		ProjectScript* getProjectScriptImpl() const;
+		StringId getProjectScriptSidImpl() const;
 
 		// Handle events
 		void onFileChange(Event& event);
@@ -40,6 +47,8 @@ namespace atta
 		std::shared_ptr<Linker> _linker;
 
 		std::unordered_map<StringId, Script*> _scripts;
+		std::pair<StringId, ProjectScript*> _projectScript;
+		 
 	};
 }
 

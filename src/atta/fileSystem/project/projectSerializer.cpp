@@ -13,6 +13,9 @@
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/scriptComponent.h>
 
+#include <atta/resourceSystem/resourceManager.h>
+#include <atta/resourceSystem/resources/mesh.h>
+
 #define WRITE_BIN(s,x)
 #define WRITE_VEC_BIN(s,vec,size) s.write(reinterpret_cast<const char*>(vec), size);
 
@@ -159,7 +162,7 @@ namespace atta
 				for(auto mesh : meshes)
 				{
 					write(os, mesh.first);
-					write(os, mesh.second->sid);
+					write(os, mesh.second->sid.getString());
 				}
 			}
 			else if(component == "Name")
@@ -262,12 +265,18 @@ namespace atta
 				{
 					EntityId eid;
 					read(is, eid);
-					StringId sid;
-					read(is, sid);
+					std::string meshFile;
+					read(is, meshFile);
+					StringId sid = StringId(meshFile);
+					//std::string meshFile = sid.getString();
 
+					// Add entity mesh component
 					MeshComponent* mesh = ComponentManager::addEntityComponent<MeshComponent>(eid);
 					mesh->sid = sid;
-					LOG_VERBOSE("ProjectSerializer","entity($0) -> $1", eid, sid);
+					// Load mesh if not already loaded
+
+					LOG_VERBOSE("ProjectSerializer","entity($0) -> $1", eid, meshFile);
+					ResourceManager::get<Mesh>(meshFile);
 				}
 			}
 			else if(marker == "Name")

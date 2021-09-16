@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 set(ATTA_SCRIPT_SYSTEM_SOURCE
 	scriptManager.cpp
 	script.cpp
+	projectScript.cpp
 	compilers/compiler.cpp
 	compilers/nullCompiler.cpp
 	compilers/linuxCompiler.cpp
