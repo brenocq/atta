@@ -18,7 +18,7 @@ namespace atta
 		auto allocator = _allocators.find(hash);
 		if(allocator == _allocators.end())
 		{
-			ASSERT(false, "Trying to use allocator that was never registered");
+			ASSERT(false, "Trying to use allocator that was never registered [w]$0[]", hash);
 			return nullptr;
 		}
 		else

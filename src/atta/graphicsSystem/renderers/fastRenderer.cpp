@@ -59,6 +59,7 @@ namespace atta
 		ResourceManager::get<Mesh>("meshes/plane.obj");
 		ResourceManager::get<Mesh>("meshes/cube.obj");
 		ResourceManager::get<Mesh>("meshes/sphere.obj");
+		ResourceManager::get<Mesh>("meshes/triangle.obj");
 	}
 
 	FastRenderer::~FastRenderer()

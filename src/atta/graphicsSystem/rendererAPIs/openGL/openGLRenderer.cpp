@@ -117,7 +117,7 @@ namespace atta
 	{
 		if(_openGLMeshes.find(meshSid.getId()) == _openGLMeshes.end())
 		{
-			LOG_WARN("OpenGLRenderer", "Trying to render mesh that was never initialized");
+			LOG_WARN("OpenGLRenderer", "Trying to render mesh that was never initialized []$0[]", meshSid);
 			return;
 		}
 

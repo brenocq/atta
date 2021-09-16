@@ -31,6 +31,7 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 
 	cameras/camera.cpp
 	cameras/perspectiveCamera.cpp
+	cameras/orthographicCamera.cpp
 
 	layers/layer.cpp
 	layers/layerStack.cpp
