@@ -17,7 +17,7 @@ namespace atta
 		LinuxLinker() = default;
 		~LinuxLinker() = default;
 
-		void linkTarget(StringId target, Script** script) override;
+		void linkTarget(StringId target, Script** script, ProjectScript** projectScript) override;
 		void releaseTarget(StringId target) override;
 
 	private:

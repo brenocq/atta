@@ -5,3 +5,12 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/scriptSystem/linkers/nullLinker.h>
+
+namespace atta
+{
+	void NullLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript)
+	{
+		*script = nullptr;
+		*projectScript = nullptr;
+	}
+}

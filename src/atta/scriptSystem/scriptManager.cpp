@@ -36,6 +36,8 @@ namespace atta
 		EventManager::subscribe<FileWatchEvent>(BIND_EVENT_FUNC(ScriptManager::onFileChange));
 		EventManager::subscribe<ProjectOpenEvent>(BIND_EVENT_FUNC(ScriptManager::onProjectOpen));
 		EventManager::subscribe<ProjectCloseEvent>(BIND_EVENT_FUNC(ScriptManager::onProjectClose));
+
+		_projectScript = std::make_pair(StringId(), nullptr);
 	}
 
 	void ScriptManager::shutDown() { getInstance().shutDownImpl(); }
@@ -60,6 +62,18 @@ namespace atta
 		for(auto [sid, script] : _scripts)
 			scriptsSids.push_back(sid);
 		return scriptsSids;
+	}
+
+	ProjectScript* ScriptManager::getProjectScript() { return getInstance().getProjectScriptImpl(); }
+	ProjectScript* ScriptManager::getProjectScriptImpl() const
+	{
+		return _projectScript.second;
+	}
+
+	StringId ScriptManager::getProjectScriptSid() { return getInstance().getProjectScriptSidImpl(); }
+	StringId ScriptManager::getProjectScriptSidImpl() const
+	{
+		return _projectScript.first;
 	}
 
 	void ScriptManager::onFileChange(Event& event)
@@ -88,6 +102,14 @@ namespace atta
 
 	void ScriptManager::onProjectClose(Event& event)
 	{
+		// Delete project script
+		if(_projectScript.second != nullptr)
+		{
+			_projectScript.first = StringId();
+			delete _projectScript.second;
+			_projectScript.second = nullptr;
+		}
+
 		// Delete scripts
 		for(auto [key, script] : _scripts)
 			delete script;
@@ -100,6 +122,14 @@ namespace atta
 
 	void ScriptManager::updateAllTargets()
 	{
+		// Delete project script
+		if(_projectScript.second)
+		{
+			_projectScript.first = StringId();
+			delete _projectScript.second;
+			_projectScript.second = nullptr;
+		}
+
 		// Delete scripts
 		for(auto [key, script] : _scripts)
 			delete script;
@@ -117,10 +147,17 @@ namespace atta
 		for(auto target : _compiler->getTargets())
 		{
 			Script* script = nullptr;
-			_linker->linkTarget(target, &script);
+			ProjectScript* projectScript = nullptr;
+			_linker->linkTarget(target, &script, &projectScript);
 			if(script != nullptr)
 				_scripts[target] = script;
-
+			if(projectScript != nullptr)
+			{
+				if(_projectScript.second != nullptr)
+					LOG_WARN("ScriptManager", "Multiple project scripts found. There must be only one project script in the project. Found at [w]$0[] and [w]$1[]", _projectScript.first, target);
+				_projectScript.first = target;
+				_projectScript.second = projectScript;
+			}
 		}
 
 		LOG_DEBUG("ScriptManager", "Targets updated: $0", _compiler->getTargets());
@@ -131,16 +168,34 @@ namespace atta
 		if(_scripts.find(target) != _scripts.end())
 			delete _scripts[target];
 		_scripts.erase(target);
+
+		if(_projectScript.first == target)
+		{
+			_projectScript.first = StringId();
+			delete _projectScript.second;
+			_projectScript.second = nullptr;
+		}
+
 		_linker->releaseTarget(target);
 
 		// Compile and link specific target
 		_compiler->compileTarget(target);
 
 		Script* script = nullptr;
-		_linker->linkTarget(target, &script);
+		ProjectScript* projectScript = nullptr;
+		_linker->linkTarget(target, &script, &projectScript);
 		if(script != nullptr)
 			_scripts[target] = script;
-		else
-			LOG_WARN("ScriptManager", "Target $0 does not have an script", target);
+
+		if(projectScript != nullptr)
+		{
+			if(_projectScript.second != nullptr)
+				LOG_WARN("ScriptManager", "Multiple project scripts found. There must be only one project script in the project. Found at [w]$0[] and [w]$1[]", _projectScript.first, target);
+			_projectScript.first = target;
+			_projectScript.second = projectScript;
+		}
+
+		if(script == nullptr && projectScript == nullptr)
+			LOG_WARN("ScriptManager", "Target $0 does not have any script", target);
 	}
 }

@@ -14,9 +14,10 @@
 
 namespace atta
 {
-	void LinuxLinker::linkTarget(StringId target, Script** script)
+	void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript)
 	{
-		(*script) = nullptr;
+		*script = nullptr;
+		*projectScript = nullptr;
 
 		std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
@@ -28,18 +29,37 @@ namespace atta
 		void* fLib = dlopen(fs::absolute(lib).c_str(), RTLD_LAZY);
 		if(fLib)
 		{
+			//---------- Script ----------//
 			using ScriptCreator = atta::Script* (*)();
 			ScriptCreator fn = reinterpret_cast<ScriptCreator>(dlsym(fLib, "createScript"));
 
 			const char* dlsymError = dlerror();
-			if(dlsymError)
-			{
-				LOG_WARN("LinuxLinker", "Could not get script from library $0. Error: $1", lib.filename(), dlsymError);
-				dlclose(fLib);
-				return;
-			}
+			//if(dlsymError)
+			//{
+			//	LOG_WARN("LinuxLinker", "Could not get script from library $0. Error: $1", lib.filename(), dlsymError);
+			//	dlclose(fLib);
+			//	return;
+			//}
 
-			*script = fn();
+			if(!dlsymError)
+				*script = fn();
+
+			//---------- Project Script ----------//
+			using ProjectScriptCreator = atta::ProjectScript* (*)();
+			ProjectScriptCreator pfn = reinterpret_cast<ProjectScriptCreator>(dlsym(fLib, "createProjectScript"));
+
+			dlsymError = dlerror();
+			//if(dlsymError)
+			//{
+			//	LOG_WARN("LinuxLinker", "Could not get project script from library $0. Error: $1", lib.filename(), dlsymError);
+			//	dlclose(fLib);
+			//	return;
+			//}
+
+			if(!dlsymError)
+				*projectScript = pfn();
+
+			// Save library pointer to delete later
 			_targetHandles[target] = fLib;
 
 			std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
