@@ -29,6 +29,7 @@ namespace atta
 		// align: byte alignment
 		virtual void freeBytes(void* ptr, size_t size, size_t align = 0) = 0;
 
+		const uint8_t* getMemory() { return _memory; }
 		uint64_t getSize() { return _size; }
 
 		bool owns(void* ptr);// Check if pointer is inside this allocator memory

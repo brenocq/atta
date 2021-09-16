@@ -20,10 +20,13 @@ namespace atta
 		static void shutDown();
 		static Script* getScript(StringId target);
 
+		static std::vector<StringId> getScriptSids();
+
 	private:
 		void startUpImpl();
 		void shutDownImpl();
 		Script* getScriptImpl(StringId target) const;
+		std::vector<StringId> getScriptSidsImpl() const;
 
 		// Handle events
 		void onFileChange(Event& event);

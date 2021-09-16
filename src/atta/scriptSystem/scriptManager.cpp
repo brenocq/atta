@@ -53,6 +53,15 @@ namespace atta
 			return nullptr;
 	}
 
+	std::vector<StringId> ScriptManager::getScriptSids() { return getInstance().getScriptSidsImpl(); }
+	std::vector<StringId> ScriptManager::getScriptSidsImpl() const
+	{
+		std::vector<StringId> scriptsSids;
+		for(auto [sid, script] : _scripts)
+			scriptsSids.push_back(sid);
+		return scriptsSids;
+	}
+
 	void ScriptManager::onFileChange(Event& event)
 	{
 		FileWatchEvent& e = reinterpret_cast<FileWatchEvent&>(event);
@@ -79,22 +88,26 @@ namespace atta
 
 	void ScriptManager::onProjectClose(Event& event)
 	{
+		// Delete scripts
+		for(auto [key, script] : _scripts)
+			delete script;
+		_scripts.clear();
+
 		// Release all targets
 		for(auto target : _compiler->getTargets())
 			_linker->releaseTarget(target);
-
-		_scripts.clear();
 	}
 
 	void ScriptManager::updateAllTargets()
 	{
-		// Release all targets
-		for(auto target : _compiler->getTargets())
-			_linker->releaseTarget(target);
-
+		// Delete scripts
 		for(auto [key, script] : _scripts)
 			delete script;
 		_scripts.clear();
+
+		// Release all targets
+		for(auto target : _compiler->getTargets())
+			_linker->releaseTarget(target);
 
 		// Recompile targets
 		_compiler->compileAll();
