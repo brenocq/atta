@@ -14,6 +14,7 @@
 #include <atta/graphicsSystem/layers/internal/editor/editorLayer.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGL.h>
 
+#include <atta/graphicsSystem/cameras/orthographicCamera.h>
 #include <atta/graphicsSystem/cameras/perspectiveCamera.h>
 
 namespace atta
@@ -54,8 +55,10 @@ namespace atta
 		//----- Create viewports -----//
 		Viewport::CreateInfo viewportInfo;
 		viewportInfo.renderer = std::make_shared<FastRenderer>();
-		PerspectiveCamera::CreateInfo camInfo {};
-		viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(camInfo));
+		OrthographicCamera::CreateInfo oCamInfo {};
+		PerspectiveCamera::CreateInfo pCamInfo {};
+		viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<OrthographicCamera>(oCamInfo));
+		//viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(pCamInfo));
 		viewportInfo.sid = StringId("Main Viewport");
 		_viewports.emplace_back(std::make_shared<Viewport>(viewportInfo));
 	}
@@ -63,6 +66,10 @@ namespace atta
 	void GraphicsManager::shutDown() { getInstance().shutDownImpl(); }
 	void GraphicsManager::shutDownImpl()
 	{
+		// Frambuffers must be deleted before window deletion
+		for(auto& viewport : _viewports)
+			viewport.reset();
+
 		_layerStack.reset();
 		_rendererAPI.reset();
 		_window.reset();

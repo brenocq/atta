@@ -162,11 +162,13 @@ namespace atta
 					comboValue = 0;
 				else if(mesh->sid == StringId(fs::path("meshes/cube.obj").string()))
 					comboValue = 1;
-				else
+				else if(mesh->sid == StringId(fs::path("meshes/sphere.obj").string()))
 					comboValue = 2;
+				else
+					comboValue = 3;
 
-				const char* names[] = { "Plane", "Cube", "Sphere" };
-				const char* paths[] = { "meshes/plane.obj", "meshes/cube.obj", "meshes/sphere.obj"};
+				const char* names[] = { "Plane", "Cube", "Sphere", "Triangle" };
+				const char* paths[] = { "meshes/plane.obj", "meshes/cube.obj", "meshes/sphere.obj", "meshes/triangle.obj"};
 				const char* comboPreviewValue = names[comboValue];
 				if(ImGui::BeginCombo("Mesh", comboPreviewValue))
 				{

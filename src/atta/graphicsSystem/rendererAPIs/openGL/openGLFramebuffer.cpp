@@ -30,7 +30,9 @@ namespace atta
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
 		if(_id)
+		{
 			glDeleteFramebuffers(1, &_id);
+		}
 	}
 
 	void OpenGLFramebuffer::bind()

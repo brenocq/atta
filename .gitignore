@@ -15,3 +15,7 @@ scripts/
 
 # ImGui
 imgui.ini
+
+# Debugging/Profile
+perf.*
+.gdb_history

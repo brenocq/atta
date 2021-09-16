@@ -126,10 +126,7 @@ namespace atta
 		Script* script = nullptr;
 		_linker->linkTarget(target, &script);
 		if(script != nullptr)
-		{
 			_scripts[target] = script;
-			LOG_WARN("ScriptManager", "Target $0 -> calling test", target);
-		}
 		else
 			LOG_WARN("ScriptManager", "Target $0 does not have an script", target);
 	}
