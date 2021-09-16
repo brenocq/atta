@@ -62,6 +62,9 @@ namespace atta
 		registerComponentPoolImpl<NameComponent>(_maxEntities, "Name");
 		registerComponentPoolImpl<MeshComponent>(_maxEntities, "Mesh");
 		registerComponentPoolImpl<ScriptComponent>(_maxEntities, "Script");
+
+		// Can be used to free all custom component allocators (useful when hot-reloading a project)
+		_customComponentsMarker = _allocator->getMarker();
 	}
 
 	EntityId ComponentManager::createEntityImpl()
@@ -116,5 +119,10 @@ namespace atta
 
 		PoolAllocator<TransformComponent>* transformPool = MemoryManager::getAllocator<PoolAllocator<TransformComponent>>(COMPONENT_POOL_SID(TransformComponent));
 		transformPool->clear();
+	}
+
+	void ComponentManager::unregisterCustomComponentPoolsImpl()
+	{
+		_allocator->rollback(_customComponentsMarker);
 	}
 }

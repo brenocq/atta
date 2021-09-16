@@ -47,6 +47,9 @@ namespace atta
 
 		static void clear() { getInstance().clearImpl(); }
 
+		// Return stack pointer to the point before custom components (free custom component allocators)
+		static void unregisterCustomComponentPools() { getInstance().unregisterCustomComponentPoolsImpl(); }
+
 	private:
 		void startUpImpl();
 		void shutDownImpl();
@@ -66,6 +69,7 @@ namespace atta
 
 		template <typename T>
 		void registerComponentPoolImpl(size_t maxCount, const char* name);
+		void unregisterCustomComponentPoolsImpl();
 
 		struct Entity
 		{
@@ -73,6 +77,8 @@ namespace atta
 		};
 
 		StackAllocator* _allocator;// Used to allocate more memory to component pools
+		StackAllocator::Marker _customComponentsMarker;
+
 		size_t _maxEntities;// Maximum number of entities
 		EntityId* _denseList;// Dense list of entities to find active entities inside the entity pool
 		size_t _denseListSize;

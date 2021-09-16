@@ -22,6 +22,9 @@ namespace atta
 
 		virtual void onUpdateBefore(float delta) = 0;
 		virtual void onUpdateAfter(float delta) = 0;
+
+		virtual void onLoad() = 0;
+		virtual void onUnload() = 0;
 	}; 
 }
 

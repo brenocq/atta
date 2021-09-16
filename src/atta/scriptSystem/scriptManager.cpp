@@ -14,6 +14,8 @@
 #include <atta/scriptSystem/linkers/nullLinker.h>
 #include <atta/scriptSystem/linkers/linuxLinker.h>
 
+#include <atta/componentSystem/componentManager.h>
+
 namespace atta
 {
 	ScriptManager& ScriptManager::getInstance()
@@ -58,10 +60,7 @@ namespace atta
 	std::vector<StringId> ScriptManager::getScriptSids() { return getInstance().getScriptSidsImpl(); }
 	std::vector<StringId> ScriptManager::getScriptSidsImpl() const
 	{
-		std::vector<StringId> scriptsSids;
-		for(auto [sid, script] : _scripts)
-			scriptsSids.push_back(sid);
-		return scriptsSids;
+		return _compiler->getTargets();
 	}
 
 	ProjectScript* ScriptManager::getProjectScript() { return getInstance().getProjectScriptImpl(); }
@@ -96,91 +95,47 @@ namespace atta
 
 	void ScriptManager::onProjectOpen(Event& event)
 	{
-		//ProjectOpenEvent& e = reinterpret_cast<ProjectOpenEvent&>(event);
 		updateAllTargets();
 	}
 
 	void ScriptManager::onProjectClose(Event& event)
 	{
-		// Delete project script
-		if(_projectScript.second != nullptr)
-		{
-			_projectScript.first = StringId();
-			delete _projectScript.second;
-			_projectScript.second = nullptr;
-		}
-
-		// Delete scripts
-		for(auto [key, script] : _scripts)
-			delete script;
-		_scripts.clear();
-
 		// Release all targets
 		for(auto target : _compiler->getTargets())
-			_linker->releaseTarget(target);
+			releaseTarget(target);
 	}
 
 	void ScriptManager::updateAllTargets()
 	{
-		// Delete project script
-		if(_projectScript.second)
-		{
-			_projectScript.first = StringId();
-			delete _projectScript.second;
-			_projectScript.second = nullptr;
-		}
-
-		// Delete scripts
-		for(auto [key, script] : _scripts)
-			delete script;
-		_scripts.clear();
-
 		// Release all targets
 		for(auto target : _compiler->getTargets())
-			_linker->releaseTarget(target);
+			releaseTarget(target);
 
-		// Recompile targets
+		// Recompile all targets
 		_compiler->compileAll();
 		_compiler->updateTargets();
 
-		// For each target in the project, link the script
+		// Link each target in the project
 		for(auto target : _compiler->getTargets())
-		{
-			Script* script = nullptr;
-			ProjectScript* projectScript = nullptr;
-			_linker->linkTarget(target, &script, &projectScript);
-			if(script != nullptr)
-				_scripts[target] = script;
-			if(projectScript != nullptr)
-			{
-				if(_projectScript.second != nullptr)
-					LOG_WARN("ScriptManager", "Multiple project scripts found. There must be only one project script in the project. Found at [w]$0[] and [w]$1[]", _projectScript.first, target);
-				_projectScript.first = target;
-				_projectScript.second = projectScript;
-			}
-		}
+			linkTarget(target);
 
 		LOG_DEBUG("ScriptManager", "Targets updated: $0", _compiler->getTargets());
 	}
+
 	void ScriptManager::updateTarget(StringId target)
 	{
-		// Release this targets
-		if(_scripts.find(target) != _scripts.end())
-			delete _scripts[target];
-		_scripts.erase(target);
-
-		if(_projectScript.first == target)
-		{
-			_projectScript.first = StringId();
-			delete _projectScript.second;
-			_projectScript.second = nullptr;
-		}
-
-		_linker->releaseTarget(target);
+		// Delete all scripts related to this target
+		releaseTarget(target);
 
 		// Compile and link specific target
 		_compiler->compileTarget(target);
 
+		// Link target
+		linkTarget(target);
+	}
+
+	void ScriptManager::linkTarget(StringId target)
+	{
 		Script* script = nullptr;
 		ProjectScript* projectScript = nullptr;
 		_linker->linkTarget(target, &script, &projectScript);
@@ -193,9 +148,33 @@ namespace atta
 				LOG_WARN("ScriptManager", "Multiple project scripts found. There must be only one project script in the project. Found at [w]$0[] and [w]$1[]", _projectScript.first, target);
 			_projectScript.first = target;
 			_projectScript.second = projectScript;
+
+			_projectScript.second->onLoad();
 		}
 
 		if(script == nullptr && projectScript == nullptr)
 			LOG_WARN("ScriptManager", "Target $0 does not have any script", target);
+	}
+
+	void ScriptManager::releaseTarget(StringId target)
+	{
+		// Delete script
+		if(_scripts.find(target) != _scripts.end())
+			delete _scripts[target];
+		_scripts.erase(target);
+
+		// Delete project script
+		if(_projectScript.first == target)
+		{
+			_projectScript.second->onUnload();
+			ComponentManager::unregisterCustomComponentPools();
+
+			_projectScript.first = StringId();
+			delete _projectScript.second;
+			_projectScript.second = nullptr;
+		}
+
+		// Release target
+		_linker->releaseTarget(target);
 	}
 }

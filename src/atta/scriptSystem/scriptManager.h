@@ -42,6 +42,8 @@ namespace atta
 
 		void updateAllTargets();
 		void updateTarget(StringId target);
+		void linkTarget(StringId target);
+		void releaseTarget(StringId target);
 
 		std::shared_ptr<Compiler> _compiler;
 		std::shared_ptr<Linker> _linker;
