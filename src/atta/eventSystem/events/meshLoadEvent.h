@@ -4,8 +4,8 @@
 // Date: 2021-09-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_EVENT_SYSTEM_EVENTS_MESH_LOAD_EVENT_EVENT_H
-#define ATTA_EVENT_SYSTEM_EVENTS_MESH_LOAD_EVENT_EVENT_H
+#ifndef ATTA_EVENT_SYSTEM_EVENTS_MESH_LOAD_EVENT_H
+#define ATTA_EVENT_SYSTEM_EVENTS_MESH_LOAD_EVENT_H
 #include <atta/eventSystem/event.h>
 
 namespace atta

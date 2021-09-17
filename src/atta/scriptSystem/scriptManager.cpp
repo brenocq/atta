@@ -60,7 +60,15 @@ namespace atta
 	std::vector<StringId> ScriptManager::getScriptSids() { return getInstance().getScriptSidsImpl(); }
 	std::vector<StringId> ScriptManager::getScriptSidsImpl() const
 	{
-		return _compiler->getTargets();
+		std::vector<StringId> scripts = _compiler->getTargets();
+		for(size_t i = 0; i < scripts.size(); i++)
+			if(scripts[i] == _projectScript.first)
+			{
+				scripts.erase(scripts.begin()+i);
+				break;
+			}
+
+		return scripts;
 	}
 
 	ProjectScript* ScriptManager::getProjectScript() { return getInstance().getProjectScriptImpl(); }

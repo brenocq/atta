@@ -17,6 +17,13 @@ namespace atta
 	class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("GraphicsAllocator")>
 	{
 	public:
+		enum class EditorState
+		{
+			EDITOR = 0,
+			SIMULATION_RUNNING,
+			SIMULATION_PAUSED,
+		};
+
 		EditorLayer();
 
 		void onAttach() override;
@@ -26,10 +33,13 @@ namespace atta
 
 	private:
 		void updateViewports();
+		void toolbar();
 
 		MenuBar _menuBar;
 		DockSpace _dockSpace;
 		ScenePanel _scenePanel;
+
+		EditorState _editorState;
 	};
 }
 

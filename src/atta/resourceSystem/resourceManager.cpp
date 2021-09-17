@@ -8,6 +8,7 @@
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/meshLoadEvent.h>
+#include <atta/eventSystem/events/textureLoadEvent.h>
 
 namespace atta
 {
@@ -43,9 +44,15 @@ namespace atta
 	}
 
 	template <>
-	void ResourceManager::createLoadEvent(Mesh* resource, StringId sid)
+	void ResourceManager::createLoadEvent<Mesh>(Mesh* resource, StringId sid)
 	{
 		MeshLoadEvent e(sid);
+		EventManager::publish(e);
+	}
+	template <>
+	void ResourceManager::createLoadEvent<Texture>(Texture* resource, StringId sid)
+	{
+		TextureLoadEvent e(sid);
 		EventManager::publish(e);
 	}
 }

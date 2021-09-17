@@ -48,3 +48,6 @@ set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 add_subdirectory(assimp)
 atta_add_libs(assimp)
 atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/assimp/include)
+
+########## stb_image ##########
+atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/stb_image)

@@ -10,6 +10,7 @@
 #include <atta/graphicsSystem/rendererAPIs/openGL/base.h>
 #include <atta/graphicsSystem/window.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLMesh.h>
+#include <atta/graphicsSystem/rendererAPIs/openGL/openGLImage.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLShaderGroup.h>
 
 struct GLFWwindow;
@@ -27,12 +28,16 @@ namespace atta
 		void renderMesh(StringId meshSid) override;
 		void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) override;
 
+		void* getImGuiImage(StringId sid) const override;
+
 		// Handle events
 		void onMeshLoadEvent(Event& event);
+		void onTextureLoadEvent(Event& event);
 	
 	private:
 		std::shared_ptr<Window> _window;
 		std::unordered_map<StringHash, std::shared_ptr<OpenGLMesh>> _openGLMeshes;
+		std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> _openGLImages;
 
 		std::shared_ptr<OpenGLShaderGroup> _quadShader;
 

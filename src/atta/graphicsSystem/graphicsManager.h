@@ -41,6 +41,8 @@ namespace atta
 
 		static std::vector<std::shared_ptr<Viewport>>& getViewports() { return getInstance().getViewportsImpl(); }
 
+		static void* getImGuiImage(StringId sid) { return getInstance().getImGuiImageImpl(sid); }
+
 	private:
 		void startUpImpl();
 		void shutDownImpl();
@@ -51,9 +53,10 @@ namespace atta
 		template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
 		std::shared_ptr<T> createSpecific(Args... args);
 
-
 		std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
 		std::vector<std::shared_ptr<Viewport>>& getViewportsImpl() { return _viewports; };
+
+		void* getImGuiImageImpl(StringId sid) const { return _rendererAPI->getImGuiImage(sid); }
 
 		std::shared_ptr<Window> _window;
 		std::shared_ptr<RendererAPI> _rendererAPI;
