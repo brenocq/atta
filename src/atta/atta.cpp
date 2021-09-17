@@ -39,15 +39,15 @@ namespace atta
 
 		ResourceManager::startUp();
 		ComponentManager::startUp();
+		GraphicsManager::startUp();
+		ScriptManager::startUp();
 
+		// Atta is the last one to reveice events
 		EventManager::subscribe<WindowCloseEvent>(BIND_EVENT_FUNC(Atta::onWindowClose));
 		EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 		EventManager::subscribe<SimulationPlayEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 		EventManager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 		EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-
-		GraphicsManager::startUp();
-		ScriptManager::startUp();
 
 		if(info.projectFile != "")
 			FileManager::openProject(info.projectFile);
@@ -87,6 +87,20 @@ namespace atta
 						Script* script = ScriptManager::getScript(scriptComponent->sid);
 						if(script != nullptr)
 							script->update(entity, 0.01);
+					}
+				}
+
+				for(auto factory : ComponentManager::getFactories())
+				{
+					ScriptComponent* scriptComponent = factory->getComponent<ScriptComponent>();
+					if(scriptComponent != nullptr)
+					{
+						Script* script = ScriptManager::getScript(scriptComponent->sid);
+						if(script != nullptr)
+						{
+							for(uint64_t i = 0; i < factory->getMaxClones(); i++)
+								script->update(factory, i, 0.01);
+						}
 					}
 				}
 

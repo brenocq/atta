@@ -17,6 +17,7 @@
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/transformComponent.h>
+#include <atta/componentSystem/factory.h>
 
 namespace atta
 {
@@ -93,6 +94,31 @@ namespace atta
 
 					// Draw mesh
 					GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+				}
+			}
+
+			for(auto factory : ComponentManager::getFactories())
+			{
+				MeshComponent* mesh = factory->getComponent<MeshComponent>();
+				TransformComponent* transform = factory->getComponent<TransformComponent>();
+				if(mesh != nullptr && transform != nullptr)
+				{
+					for(uint64_t i = 0; i < factory->getMaxClones(); i++)
+					{
+						// XXX Move to shader class
+						// Updating transform uniform
+						unsigned int transformLoc = glGetUniformLocation(shader->getId(), "transform");
+						mat4 trans;
+						trans.setPosOriScale(transform->position, transform->orientation, transform->scale);
+						trans.transpose();
+						glUniformMatrix4fv(transformLoc, 1, GL_FALSE, trans.data);
+
+						// Draw mesh
+						GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+
+						mesh++;
+						transform++;
+					}
 				}
 			}
 		}

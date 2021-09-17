@@ -12,6 +12,7 @@
 #include <atta/componentSystem/components/transformComponent.h>
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/scriptComponent.h>
+#include <atta/componentSystem/components/prototypeComponent.h>
 
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
@@ -201,6 +202,23 @@ namespace atta
 					write(os, transform.second->scale);
 				}
 			}
+			else if(component == "Prototype")
+			{
+				std::vector<std::pair<EntityId,PrototypeComponent*>> prototypes;
+				for(auto entity : entities)
+				{
+					PrototypeComponent* prototype = ComponentManager::getEntityComponent<PrototypeComponent>(entity);
+					if(prototype != nullptr)
+						prototypes.push_back(std::make_pair(entity, prototype));
+				}
+
+				write<uint32_t>(os, prototypes.size());
+				for(auto prototype : prototypes)
+				{
+					write(os, prototype.first);
+					write(os, prototype.second->maxClones);
+				}
+			}
 		}
 	}
 
@@ -315,6 +333,23 @@ namespace atta
 
 					LOG_VERBOSE("ProjectSerializer","entity($0) -> p:$1 o:$2 s:$3", 
 							eid, transform->position, transform->orientation, transform->scale);
+				}
+			}
+			else if(marker == "Prototype")
+			{
+				uint32_t numPrototypes;
+				read<uint32_t>(is, numPrototypes);
+				LOG_VERBOSE("ProjectSerializer","Num prototypes: $0", numPrototypes);
+				for(uint32_t i = 0; i < numPrototypes; i++)
+				{
+					EntityId eid;
+					read(is, eid);
+					PrototypeComponent temp {};
+					read(is, temp.maxClones);
+
+					// Add entity prototype component
+					PrototypeComponent* prototype = ComponentManager::addEntityComponent<PrototypeComponent>(eid);
+					*prototype = temp;
 				}
 			}
 			else

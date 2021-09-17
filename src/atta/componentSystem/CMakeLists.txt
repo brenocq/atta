@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 set(ATTA_COMPONENT_SYSTEM_SOURCE
 	entity.cpp
+	factory.cpp
 	componentManager.cpp
 )
 

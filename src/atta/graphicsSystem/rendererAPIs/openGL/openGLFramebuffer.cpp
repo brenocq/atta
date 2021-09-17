@@ -39,7 +39,7 @@ namespace atta
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, _id);
 		glViewport(0, 0, _width, _height);
-		glClearColor(0.5f, 1.0f, 0.5f, 1.0f);
+		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
