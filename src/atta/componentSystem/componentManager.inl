@@ -62,6 +62,25 @@ namespace atta
 		return nullptr;
 	}
 
+	template <ComponentId id>
+	void* ComponentManager::getEntityComponentByIdImpl(EntityId entity)
+	{
+		DASSERT(entity < _maxEntities, "Trying to access entity outside of range");
+		// TODO Check if entity was created, if this entity was not created, this will break the pool allocator
+		
+		// Get entity
+		PoolAllocator<Entity>* epool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("Component_EntityAllocator"));
+		Entity* e = epool->getBlock(entity);
+
+		// Get component pool
+		Allocator* alloc = MemoryManager::getAllocator(id);
+
+		for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
+			if(alloc->owns(e->components[i]))
+				return e->components[i];
+		return nullptr;
+	}
+
 	template <typename T>
 	std::string ComponentManager::getComponentNameImpl()
 	{
@@ -85,7 +104,9 @@ namespace atta
 		// Create pool allocator
 		MemoryManager::registerAllocator(COMPONENT_POOL_SSID(T), static_cast<Allocator*>(new PoolAllocator<T>(componentMemory, maxCount)));
 
-		// Register component name
+		// Register component name and id
 		_componentNames[typeid(T).hash_code()] = std::string(name);
+		_componentIds[typeid(T).hash_code()] = COMPONENT_POOL_SID(T);
+		_componentSize[typeid(T).hash_code()] = sizeof(T);
 	}
 }

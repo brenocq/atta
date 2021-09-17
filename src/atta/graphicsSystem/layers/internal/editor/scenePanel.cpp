@@ -117,6 +117,12 @@ namespace atta
 					script->sid = scriptSids[0];
 			}
 
+			if(ImGui::Selectable("Prototype##ComponentAddPrototype"))
+			{
+				PrototypeComponent* prototype = ComponentManager::addEntityComponent<PrototypeComponent>(_selected);
+				prototype->maxClones = 1;
+			}
+
 			ImGui::EndPopup();
 		}
 
@@ -210,6 +216,15 @@ namespace atta
 					}
 					ImGui::EndCombo();
 				}
+			}
+
+		PrototypeComponent* prototype = ComponentManager::getEntityComponent<PrototypeComponent>(_selected);
+		if(prototype != nullptr)
+			if(ImGui::CollapsingHeader("Prototype##ComponentsPrototypeHeader", ImGuiTreeNodeFlags_None))
+			{
+				int value = prototype->maxClones;
+				ImGui::DragInt("MaxClones##ScenePrototypeMaxClones", &value, 1, 0, 1000, "%d", ImGuiSliderFlags_AlwaysClamp);
+				prototype->maxClones = (uint64_t)value;
 			}
 	}
 

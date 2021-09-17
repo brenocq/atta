@@ -6,6 +6,9 @@
 //--------------------------------------------------
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/components.h>
+#include <atta/componentSystem/factory.h>
+#include <atta/eventSystem/events/simulationStartEvent.h>
+#include <atta/eventSystem/events/simulationStopEvent.h>
 #include <cstring>
 
 namespace atta
@@ -28,6 +31,9 @@ namespace atta
 
 		createEntityPool();
 		createComponentPools();
+
+		EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
+		EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
 	}
 
 	void ComponentManager::shutDownImpl()
@@ -62,6 +68,7 @@ namespace atta
 		registerComponentPoolImpl<NameComponent>(_maxEntities, "Name");
 		registerComponentPoolImpl<MeshComponent>(_maxEntities, "Mesh");
 		registerComponentPoolImpl<ScriptComponent>(_maxEntities, "Script");
+		registerComponentPoolImpl<PrototypeComponent>(_maxEntities, "Prototype");
 
 		// Can be used to free all custom component allocators (useful when hot-reloading a project)
 		_customComponentsMarker = _allocator->getMarker();
@@ -124,5 +131,86 @@ namespace atta
 	void ComponentManager::unregisterCustomComponentPoolsImpl()
 	{
 		_allocator->rollback(_customComponentsMarker);
+	}
+
+	//---------- Factory Management ----------//
+	void ComponentManager::onSimulationStateChange(Event& event)
+	{
+		if(event.getType() == SimulationStartEvent::type)
+		{
+			createFactories();
+		}
+		else if(event.getType() == SimulationStopEvent::type)
+		{
+			destroyFactories();
+		}
+		else
+		{
+			LOG_WARN("ComponentManager", "Received simulation event that was not be handled (type=[w]$0[])", event.getType());
+		}
+	}
+
+	void ComponentManager::createFactories()
+	{
+		LOG_WARN("ComponentManager", "Create factories");
+		// Create factory for each entity that has prototype
+		for(auto entity : getEntities())
+		{
+			PrototypeComponent* prototype = getEntityComponentImpl<PrototypeComponent>(entity);
+			if(prototype != nullptr)
+			{
+				std::vector<std::pair<size_t, uint8_t*>> componentMemories;
+
+				//LOG_WARN("ComponentManager", "Entity $0 is an prototype", entity);
+				// Allocate memory for each 
+				for(auto [componentHash, componentId] : _componentIds)	
+				{
+					// Get component pool
+					Allocator* alloc = MemoryManager::getAllocator(componentId);
+					size_t componentSize = _componentSize[componentHash];
+
+					if(prototype->maxClones > 0)
+					{
+						uint8_t* mem = (uint8_t*)alloc->allocBytes(componentSize, componentSize);
+						componentMemories.push_back(std::make_pair(componentHash, mem));
+						//LOG_WARN("ComponentManager", "I have the component $0, mem:$1", _componentNames[componentHash], (void*)mem);
+					}
+
+					for(uint32_t i = 1; i < prototype->maxClones; i++)
+						alloc->allocBytes(componentSize, componentSize);
+				}
+
+				Factory::CreateInfo info {};
+				info.prototypeId = entity;
+				info.maxClones = prototype->maxClones;
+				info.componentMemories = componentMemories;
+				_factories.push_back(std::make_shared<Factory>(info));
+			}
+		}
+	}
+
+	void ComponentManager::destroyFactories()
+	{ 
+		LOG_WARN("ComponentManager", "Destroy factories");
+		// Release memory for each factory
+		// Because we are using a pool free list allocator, need to delete from last to first element
+		for(int i = _factories.size()-1; i>=0; i--)
+		{
+			//LOG_WARN("ComponentManager", "Destroying factory $0", i);
+			auto maxClones = _factories[i]->getMaxClones();
+			for(auto [componentHash, memory] : _factories[i]->getComponentMemories())
+			{
+				//LOG_WARN("ComponentManager", "Deleting component $0, mem:$1", _componentNames[componentHash], (void*)memory);
+				// Delete from last to first
+				size_t componentSize = _componentSize[componentHash];
+				size_t blockSize = sizeof(void*) > componentSize ? sizeof(void*) : componentSize;
+				ComponentId componentId = _componentIds[componentHash];
+				Allocator* alloc = MemoryManager::getAllocator(componentId);
+
+				for(uint8_t* it = memory+blockSize*maxClones; it >= memory; it-=blockSize)
+					alloc->freeBytes(it, componentSize, componentSize);
+			}
+		}
+		_factories.clear();
 	}
 }

@@ -11,5 +11,6 @@
 #include <atta/componentSystem/components/nameComponent.h>
 #include <atta/componentSystem/components/scriptComponent.h>
 #include <atta/componentSystem/components/transformComponent.h>
+#include <atta/componentSystem/components/prototypeComponent.h>
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_COMPONENTS_H

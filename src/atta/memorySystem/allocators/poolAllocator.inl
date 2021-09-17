@@ -92,7 +92,7 @@ namespace atta
 	template <typename T>
 	void PoolAllocator<T>::freeBytes(void* ptr, size_t size, size_t align)
 	{
-		DASSERT(size == sizeof(T), "AllocBytes with more than one block is not supported yet");
+		DASSERT(size == sizeof(T), "FreeBytes with more than one block is not supported yet");
 
 		Block* block = static_cast<Block*>(ptr);
 		Block* last = _freeList;
