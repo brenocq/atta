@@ -11,6 +11,7 @@
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/meshLoadEvent.h>
+#include <atta/eventSystem/events/textureLoadEvent.h>
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
 #include <GLFW/glfw3.h>
@@ -66,6 +67,7 @@ namespace atta
 
 		// Subscribe to events
 		EventManager::subscribe<MeshLoadEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
+		EventManager::subscribe<TextureLoadEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onTextureLoadEvent));
 
 		// Quad shader
 		ShaderGroup::CreateInfo shaderGroupInfo {};
@@ -129,12 +131,37 @@ namespace atta
 		_openGLMeshes.at(meshSid.getId())->draw();
 	}
 
+	void* OpenGLRenderer::getImGuiImage(StringId sid) const
+	{
+		if(_openGLImages.find(sid.getId()) == _openGLImages.end())
+		{
+			LOG_WARN("OpenGLRenderer", "Trying to get ImGui image that was never initialized []$0[]", sid);
+			return nullptr;
+		}
+		return reinterpret_cast<void*>(_openGLImages.at(sid.getId())->getId());
+	}
+
 	void OpenGLRenderer::onMeshLoadEvent(Event& event)
 	{
 		MeshLoadEvent& e = reinterpret_cast<MeshLoadEvent&>(event);
 		LOG_DEBUG("OpenGLRenderer", "Mesh load event! [w]$0[]", e.sid);
-
 		_openGLMeshes[e.sid.getId()] = std::make_shared<OpenGLMesh>(e.sid);
+	}
+
+	void OpenGLRenderer::onTextureLoadEvent(Event& event)
+	{
+		TextureLoadEvent& e = reinterpret_cast<TextureLoadEvent&>(event);
+
+		Texture* texture = ResourceManager::get<Texture>(e.sid.getString());
+		
+		Image::CreateInfo info {};
+		info.width = texture->getWidth();
+		info.height = texture->getHeight();
+		info.data = texture->getData();
+		info.debugName = e.sid;
+		_openGLImages[e.sid.getId()] = std::make_shared<OpenGLImage>(info);
+
+		LOG_DEBUG("OpenGLRenderer", "Texture load event! [w]$0[] -> $1", e.sid, _openGLImages[e.sid.getId()]->getId());
 	}
 
 	void OpenGLRenderer::framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer)

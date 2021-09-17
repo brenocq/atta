@@ -6,6 +6,13 @@
 //--------------------------------------------------
 #include <atta/graphicsSystem/layers/internal/editor/editorLayer.h>
 #include <atta/graphicsSystem/graphicsManager.h>
+#include <atta/resourceSystem/resourceManager.h>
+#include <atta/resourceSystem/resources/texture.h>
+#include <atta/eventSystem/eventManager.h>
+#include <atta/eventSystem/events/simulationStartEvent.h>
+#include <atta/eventSystem/events/simulationPlayEvent.h>
+#include <atta/eventSystem/events/simulationPauseEvent.h>
+#include <atta/eventSystem/events/simulationStopEvent.h>
 #include <imgui_internal.h>
 
 namespace atta
@@ -17,6 +24,12 @@ namespace atta
 
 	void EditorLayer::onAttach()
 	{
+		// Load resources if needed
+		ResourceManager::get<Texture>("icons/play.png");
+		ResourceManager::get<Texture>("icons/pause.png");
+		ResourceManager::get<Texture>("icons/stop.png");
+
+		_editorState = EditorState::EDITOR;
 	}
 
 	void EditorLayer::onDetach()
@@ -30,17 +43,21 @@ namespace atta
 	void EditorLayer::onUIRender()
 	{
 		_dockSpace.render();
-		_menuBar.render();
+		toolbar();
 
-		bool demo = true;
-		ImGui::ShowDemoWindow(&demo);
+		if(_editorState != EditorState::SIMULATION_RUNNING)
+		{
+			_menuBar.render();
+			bool demo = true;
+			ImGui::ShowDemoWindow(&demo);
 
-		_scenePanel.render();
+			_scenePanel.render();
+
+			ImGui::Begin("Debug");
+			ImGui::Text("Hello, down!");
+			ImGui::End();
+		}
 		updateViewports();
-
-		ImGui::Begin("Debug");
-		ImGui::Text("Hello, down!");
-		ImGui::End();
 	}
 
 	void EditorLayer::updateViewports()
@@ -54,6 +71,19 @@ namespace atta
 		for(auto& viewport : viewports)
 		{
 			i++;
+
+			if(_editorState == EditorState::SIMULATION_RUNNING)
+			{
+				ImGuiWindowClass window_class;
+				window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+				ImGui::SetNextWindowClass(&window_class);
+			}
+			else
+			{
+				ImGuiWindowClass window_class;
+				ImGui::SetNextWindowClass(&window_class);
+			}
+
 			// Render and resize
         	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
 			ImGui::Begin(viewport->getSID().getString().c_str());
@@ -88,5 +118,79 @@ namespace atta
         	ImGui::PopStyleVar(1);
 
 		}
+	}
+
+	void EditorLayer::toolbar()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 5));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		auto& colors = ImGui::GetStyle().Colors;
+		const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+		//const auto& buttonActive = colors[ImGuiCol_ButtonActive];
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 1.0f));
+		
+		ImGuiWindowClass window_class;
+		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoResize;
+		ImGui::SetNextWindowClass(&window_class);
+
+		ImGui::Begin("##Toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		{
+			float buttonH = ImGui::GetWindowHeight() - 10.0f;
+
+			switch(_editorState)
+			{
+				case EditorState::EDITOR:
+					{
+						ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f));
+						if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/play.png"_sid), 
+									ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
+						{
+							SimulationStartEvent e;
+							EventManager::publish(e);
+							_editorState = EditorState::SIMULATION_RUNNING;
+						}
+						break;
+					}
+				case EditorState::SIMULATION_RUNNING:
+				case EditorState::SIMULATION_PAUSED:
+					{
+						ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f)-buttonH/2-2.0f);
+						if(_editorState == EditorState::SIMULATION_RUNNING)
+							if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/pause.png"_sid), 
+										ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
+							{
+								SimulationPauseEvent e;
+								EventManager::publish(e);
+								_editorState = EditorState::SIMULATION_PAUSED;
+							}
+						if(_editorState == EditorState::SIMULATION_PAUSED)
+							if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/play.png"_sid), 
+										ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
+							{
+								SimulationPlayEvent e;
+								EventManager::publish(e);
+								_editorState = EditorState::SIMULATION_RUNNING;
+							}
+
+						ImGui::SameLine();
+						ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f)+buttonH/2+2.0f);
+						if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/stop.png"_sid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
+						{
+							SimulationStopEvent e;
+							EventManager::publish(e);
+							_editorState = EditorState::EDITOR;
+						}
+						break;
+					}
+				defualt:
+					{
+						LOG_WARN("EditorLayer", "Invalid editor state: [w]$0[]", static_cast<int>(_editorState));
+					}
+			}
+		}
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar(1);
+		ImGui::End();
 	}
 }

@@ -5,6 +5,7 @@ set(ATTA_RESOURCE_SYSTEM_SOURCE
 	resource.cpp
 
 	resources/mesh.cpp
+	resources/texture.cpp
 )
 
 add_library(atta_resource_system STATIC

@@ -28,6 +28,8 @@ namespace atta
 
 		virtual void renderMesh(StringId meshSid) = 0;
 		virtual void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) = 0;
+
+		virtual void* getImGuiImage(StringId sid) const = 0;
 	
 		Type getType() const { return _type; }
 

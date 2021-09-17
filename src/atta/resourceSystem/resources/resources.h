@@ -8,5 +8,6 @@
 #define ATTA_RESOURCE_SYSTEM_RESOURCES_RESOURCES_H
 
 #include <atta/resourceSystem/resources/mesh.h>
+#include <atta/resourceSystem/resources/texture.h>
 
 #endif// ATTA_RESOURCE_SYSTEM_RESOURCES_RESOURCES_H

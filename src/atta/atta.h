@@ -25,14 +25,23 @@ namespace atta
 		void run();
 
 	private:
+		enum class SimulationState
+		{
+			NOT_RUNNING = 0,
+			RUNNING,
+			PAUSED,
+		};
+
 		// Handle events
 		void onWindowClose(Event& event);
+		void onSimulationStateChange(Event& event);
 
 		// Memory
 		StackAllocator* _mainAllocator;
 
 		// State
 		bool _shouldFinish;
+		SimulationState _simulationState;
 	};
 }
 
