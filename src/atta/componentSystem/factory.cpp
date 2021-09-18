@@ -13,6 +13,12 @@ namespace atta
 	{
 
 	}
+
+	Factory::Factory(): 
+		_prototypeId(0), _maxClones(0), _componentMemories({})
+	{
+
+	}
 	
 	void Factory::runScripts()
 	{
@@ -27,5 +33,15 @@ namespace atta
 			components.push_back(componentHash);
 
 		return components;
+	}
+
+	std::vector<uint8_t*> Factory::getMemories() const
+	{
+		std::vector<uint8_t*> memories;
+
+		for(auto [componentHash, memory] : _componentMemories)
+			memories.push_back(memory);
+
+		return memories;
 	}
 }

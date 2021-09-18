@@ -10,15 +10,13 @@
 #include <atta/memorySystem/allocators/poolAllocator.h>
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/eventSystem/eventManager.h>
-#include <atta/core/stringId.h>
+#include <atta/componentSystem/base.h>
+#include <atta/componentSystem/factory.h>
 
 namespace atta
 {
 #define COMPONENT_POOL_SID(T) SID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
 #define COMPONENT_POOL_SSID(T) SSID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
-	using EntityId = size_t;// Index inside entity pool
-	using ComponentId = StringHash;// Component allocator name hash (COMPONENT_POOL_SID(T) result)
-	class Factory;
 
 	class ComponentManager final
 	{
@@ -45,7 +43,7 @@ namespace atta
 		static std::vector<std::string> getComponentNames() { return getInstance().getComponentNamesImpl(); }
 
 		static std::vector<EntityId> getEntities() { return getInstance().getEntitiesImpl(); }
-		static std::vector<std::shared_ptr<Factory>> getFactories() { return getInstance().getFactoriesImpl(); }
+		static std::vector<Factory>& getFactories() { return getInstance().getFactoriesImpl(); }
 
 		template <typename T>
 		static void registerComponentPool(size_t maxCount, const char* name) { return getInstance().registerComponentPoolImpl<T>(maxCount, name); }
@@ -75,7 +73,7 @@ namespace atta
 		std::string getComponentNameImpl();
 		std::vector<std::string> getComponentNamesImpl();
 		std::vector<EntityId> getEntitiesImpl();
-		std::vector<std::shared_ptr<Factory>> getFactoriesImpl() { return _factories; }
+		std::vector<Factory>& getFactoriesImpl() { return _factories; }
 
 		// Used to register internal components and custom components
 		template <typename T>
@@ -103,7 +101,7 @@ namespace atta
 		void createFactories();
 		void destroyFactories();
 
-		std::vector<std::shared_ptr<Factory>> _factories;
+		std::vector<Factory> _factories;
 	};
 }
 

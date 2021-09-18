@@ -161,7 +161,7 @@ namespace atta
 			{
 				std::vector<std::pair<size_t, uint8_t*>> componentMemories;
 
-				//LOG_WARN("ComponentManager", "Entity $0 is an prototype", entity);
+				LOG_WARN("ComponentManager", "Entity $0 is an prototype", entity);
 				// Allocate memory for each 
 				for(auto [componentHash, componentId] : _componentIds)	
 				{
@@ -173,7 +173,7 @@ namespace atta
 					{
 						uint8_t* mem = (uint8_t*)alloc->allocBytes(componentSize, componentSize);
 						componentMemories.push_back(std::make_pair(componentHash, mem));
-						//LOG_WARN("ComponentManager", "I have the component $0, mem:$1", _componentNames[componentHash], (void*)mem);
+						LOG_WARN("ComponentManager", "Found component $0, mem:$1", _componentNames[componentHash], (void*)mem);
 					}
 
 					for(uint32_t i = 1; i < prototype->maxClones; i++)
@@ -184,7 +184,7 @@ namespace atta
 				info.prototypeId = entity;
 				info.maxClones = prototype->maxClones;
 				info.componentMemories = componentMemories;
-				_factories.push_back(std::make_shared<Factory>(info));
+				_factories.emplace_back(info);
 			}
 		}
 	}
@@ -197,8 +197,8 @@ namespace atta
 		for(int i = _factories.size()-1; i>=0; i--)
 		{
 			//LOG_WARN("ComponentManager", "Destroying factory $0", i);
-			auto maxClones = _factories[i]->getMaxClones();
-			for(auto [componentHash, memory] : _factories[i]->getComponentMemories())
+			auto maxClones = _factories[i].getMaxClones();
+			for(auto [componentHash, memory] : _factories[i].getComponentMemories())
 			{
 				//LOG_WARN("ComponentManager", "Deleting component $0, mem:$1", _componentNames[componentHash], (void*)memory);
 				// Delete from last to first

@@ -25,6 +25,9 @@
 #include <atta/scriptSystem/script.h>
 #include <atta/componentSystem/components/scriptComponent.h>
 
+// TODO move to another class
+#include <ctime>
+
 namespace atta
 {
 	Atta::Atta(const CreateInfo& info):
@@ -67,13 +70,31 @@ namespace atta
 
 	void Atta::run()
 	{
+		
 		while(!_shouldFinish)
 		{
-			GraphicsManager::update();
+			// TODO Abstract this
+			if(_simulationState == SimulationState::RUNNING)
+			{
+				// Execute graphics update every X seconds
+				static clock_t lastTime = std::clock();
+				const clock_t currTime = std::clock();
+				float timeDiff = float(currTime-lastTime)/CLOCKS_PER_SEC;
+				if(timeDiff > 0.1f)
+				{
+					GraphicsManager::update();
+					lastTime = currTime;
+				}
+			}
+			else
+				// Update graphics every frame
+				GraphicsManager::update();
 
 			if(_simulationState == SimulationState::RUNNING)
 			{
 				ProjectScript* project = ScriptManager::getProjectScript();
+				if(!project)
+					LOG_WARN("Atta", "No project script was found");
 
 				if(project)
 					project->onUpdateBefore(0.01);
@@ -90,17 +111,16 @@ namespace atta
 					}
 				}
 
-				for(auto factory : ComponentManager::getFactories())
+				for(auto& factory : ComponentManager::getFactories())
 				{
-					ScriptComponent* scriptComponent = factory->getComponent<ScriptComponent>();
+					ScriptComponent* scriptComponent = factory.getComponent<ScriptComponent>();
 					if(scriptComponent != nullptr)
 					{
 						Script* script = ScriptManager::getScript(scriptComponent->sid);
+						std::vector<uint8_t*> memories = factory.getMemories();
 						if(script != nullptr)
-						{
-							for(uint64_t i = 0; i < factory->getMaxClones(); i++)
-								script->update(factory, i, 0.01);
-						}
+							for(uint64_t i = 0; i < factory.getMaxClones(); i++)
+								script->update(memories, i, 0.01);
 					}
 				}
 

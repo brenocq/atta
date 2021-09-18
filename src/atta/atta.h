@@ -42,6 +42,12 @@ namespace atta
 		// State
 		bool _shouldFinish;
 		SimulationState _simulationState;
+
+		// Fast execution (precompute to execute clone scripts faster)
+		//struct FactoryPrecompute
+		//{
+		//	
+		//}
 	};
 }
 

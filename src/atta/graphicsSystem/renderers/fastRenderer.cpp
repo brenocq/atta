@@ -97,13 +97,13 @@ namespace atta
 				}
 			}
 
-			for(auto factory : ComponentManager::getFactories())
+			for(auto& factory : ComponentManager::getFactories())
 			{
-				MeshComponent* mesh = factory->getComponent<MeshComponent>();
-				TransformComponent* transform = factory->getComponent<TransformComponent>();
+				MeshComponent* mesh = factory.getComponent<MeshComponent>();
+				TransformComponent* transform = factory.getComponent<TransformComponent>();
 				if(mesh != nullptr && transform != nullptr)
 				{
-					for(uint64_t i = 0; i < factory->getMaxClones(); i++)
+					for(uint64_t i = 0; i < factory.getMaxClones(); i++)
 					{
 						// XXX Move to shader class
 						// Updating transform uniform
