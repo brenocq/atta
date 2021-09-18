@@ -103,6 +103,7 @@ namespace atta
 				TransformComponent* transform = factory.getComponent<TransformComponent>();
 				if(mesh != nullptr && transform != nullptr)
 				{
+					//for(uint64_t i = 0; i < std::min((uint64_t)factory.getMaxClones(), (uint64_t)1000); i++)
 					for(uint64_t i = 0; i < factory.getMaxClones(); i++)
 					{
 						// XXX Move to shader class

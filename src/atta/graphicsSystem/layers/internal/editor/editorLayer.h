@@ -34,6 +34,7 @@ namespace atta
 	private:
 		void updateViewports();
 		void toolbar();
+		void onSimulationStateChange(Event& event);
 
 		MenuBar _menuBar;
 		DockSpace _dockSpace;

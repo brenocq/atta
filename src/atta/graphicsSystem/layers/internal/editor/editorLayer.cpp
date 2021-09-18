@@ -29,6 +29,11 @@ namespace atta
 		ResourceManager::get<Texture>("icons/pause.png");
 		ResourceManager::get<Texture>("icons/stop.png");
 
+		EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
+		EventManager::subscribe<SimulationPlayEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
+		EventManager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
+		EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
+
 		_editorState = EditorState::EDITOR;
 	}
 
@@ -192,5 +197,36 @@ namespace atta
 		ImGui::PopStyleColor(3);
 		ImGui::PopStyleVar(1);
 		ImGui::End();
+	}
+
+	void EditorLayer::onSimulationStateChange(Event& event)
+	{
+		switch(event.getType())
+		{
+			case SimulationStartEvent::type:
+				{
+					_editorState = EditorState::SIMULATION_RUNNING;
+					break;
+				}
+			case SimulationPlayEvent::type:
+				{
+					_editorState = EditorState::SIMULATION_RUNNING;
+					break;
+				}
+			case SimulationPauseEvent::type:
+				{
+					_editorState = EditorState::SIMULATION_PAUSED;
+					break;
+				}
+			case SimulationStopEvent::type:
+				{
+					_editorState = EditorState::EDITOR;
+					break;
+				}
+			default:
+				{
+					LOG_WARN("EditorLayer", "Unknown simulation event");
+				}
+		}
 	}
 }
