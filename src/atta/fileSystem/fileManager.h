@@ -25,10 +25,12 @@ namespace atta
 		static void shutDown() { getInstance().shutDownImpl(); }
 
 		// Project
-		static bool openProject(fs::path projectFile) { return getInstance().openProjectImpl(projectFile); }
+		static bool openProject(fs::path projectFile, bool newProject = false) { return getInstance().openProjectImpl(projectFile, newProject); }
 		static bool isProjectOpen() { return getInstance().isProjectOpenImpl(); }
 		static std::shared_ptr<Project> getProject() { return getInstance().getProjectImpl(); }
-		static void closeProject() { return getInstance().closeProjectImpl(); }
+		static void closeProject(bool save = true) { return getInstance().closeProjectImpl(save); }
+		static void saveProject() { return getInstance().saveProjectImpl(); }
+		static void saveNewProject(fs::path projectFile) { return getInstance().saveNewProjectImpl(projectFile); }
 
 		// Receives a relative resource path and searches the registered directories for that file
 		// By default searches on the <ATTA_DIR>/resources and <PROJECT_DIR>/resources directories
@@ -42,10 +44,12 @@ namespace atta
 		void startUpImpl();
 		void shutDownImpl();
 
-		bool openProjectImpl(fs::path projectFile);
+		bool openProjectImpl(fs::path projectFile, bool newProject = false);
 		bool isProjectOpenImpl() const;
 		std::shared_ptr<Project> getProjectImpl() const { return _project; }
-		void closeProjectImpl();
+		void closeProjectImpl(bool save = true);
+		void saveProjectImpl();
+		void saveNewProjectImpl(fs::path projectFile);
 
 		fs::path solveResourcePathImpl(fs::path relativePath);
 

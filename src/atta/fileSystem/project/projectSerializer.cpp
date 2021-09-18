@@ -29,7 +29,6 @@ namespace atta
 
 	ProjectSerializer::~ProjectSerializer()
 	{
-		ComponentManager::clear();
 	}
 
 	void ProjectSerializer::serialize()
@@ -77,7 +76,7 @@ namespace atta
 		// Project info
 		write(os, "proj");
 		write(os, _project->getName());// Project name
-		uint32_t saveCounter = 1;
+		uint32_t saveCounter = 0;
 		write(os, saveCounter);// Save counter (number of times that was saved)
 		write(os, "hend");
 	}

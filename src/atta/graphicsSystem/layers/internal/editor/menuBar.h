@@ -20,9 +20,11 @@ namespace atta
 	private:
 		void preferences();
 		void openProjectModal();
+		void createProjectModal();
 
 		bool _showPreferences;
 		bool _showOpenProject;
+		bool _showCreateProject;
 	};
 }
 

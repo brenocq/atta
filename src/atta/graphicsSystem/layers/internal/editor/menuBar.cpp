@@ -25,25 +25,21 @@ namespace atta
 			if(ImGui::BeginMenu("File"))
 			{
 
-				if(ImGui::BeginMenu("Project"))
+				if(FileManager::isProjectOpen())
 				{
-					if(FileManager::isProjectOpen())
-					{
-						if(ImGui::BeginMenu(FileManager::getProject()->getName().c_str()))
-						{
-							if(ImGui::MenuItem("Close"))
-								FileManager::closeProject();
-
-							ImGui::EndMenu();
-						}
-					}
-					else
-					{
-						if(ImGui::MenuItem("Open"))
-							_showOpenProject = true;
-					}
-					ImGui::EndMenu();
+					ImGui::Text(FileManager::getProject()->getName().c_str());
+					if(ImGui::MenuItem("Close"))
+						FileManager::closeProject();
 				}
+				if(ImGui::MenuItem("Open"))
+					_showOpenProject = true;
+
+				if(FileManager::isProjectOpen())
+					if(ImGui::MenuItem("Save"))
+						FileManager::saveProject();
+				
+				if(ImGui::MenuItem("Save as"))
+					_showCreateProject = true;
 
 				ImGui::Separator();
 
@@ -66,6 +62,7 @@ namespace atta
 			ImGui::EndMainMenuBar();
 		}
 		openProjectModal();
+		createProjectModal();
 		preferences();
 	}
 
@@ -115,6 +112,46 @@ namespace atta
 				FileManager::openProject(fs::path(buf));
 				ImGui::CloseCurrentPopup();
 				_showOpenProject = false;
+				lastShow = false;
+			}
+            ImGui::SetItemDefaultFocus();
+
+            ImGui::EndPopup();
+        }
+	}
+
+	void MenuBar::createProjectModal()
+	{
+		static bool lastShow = false;
+		if(_showCreateProject && !lastShow)
+		{
+			// OBS: Doing this because can't open popup inside menuitem
+			ImGui::OpenPopup("Create Project##CreateProjectModal");
+			lastShow = _showCreateProject;
+		}
+
+        if(ImGui::BeginPopupModal("Create Project##CreateProjectModal"))
+        {
+            ImGui::Text("For now, you need to write the absolute location for the .atta file below");
+            ImGui::Separator();
+
+            static char buf[254] = "";
+            ImGui::InputText("##createProjectAttaPath", buf, sizeof(buf));
+
+            if(ImGui::Button("Cancel"))
+			{
+				ImGui::CloseCurrentPopup();
+				_showCreateProject = false;
+				lastShow = false;
+			}
+
+            ImGui::SameLine();
+
+            if(ImGui::Button("Create"))
+			{ 
+				FileManager::saveNewProject(fs::path(buf));
+				ImGui::CloseCurrentPopup();
+				_showCreateProject = false;
 				lastShow = false;
 			}
             ImGui::SetItemDefaultFocus();

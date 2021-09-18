@@ -10,6 +10,7 @@
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/projectOpenEvent.h>
 #include <atta/eventSystem/events/projectCloseEvent.h>
+#include <atta/componentSystem/componentManager.h>
 #include <atta/cmakeConfig.h>
 
 namespace atta
@@ -31,10 +32,10 @@ namespace atta
 
 	}
 
-	bool FileManager::openProjectImpl(fs::path projectFile)
+	bool FileManager::openProjectImpl(fs::path projectFile, bool newProject)
 	{
 		// Check valid project file
-		if(!fs::exists(projectFile))
+		if(!newProject && !fs::exists(projectFile))
 		{
 			LOG_WARN("FileManager", "Could not find file [w]$0[]", fs::absolute(projectFile));
 			return false;
@@ -45,14 +46,19 @@ namespace atta
 			return false;
 		}
 
-		// Close project if still open
+		// Close project if still open (save if not new project)
+		// When opening a new project we save the changes only to the new project
 		if(_project != nullptr)
-			closeProjectImpl();
+			closeProjectImpl(!newProject);
 
 		// Update project
 		_project = std::make_shared<Project>(projectFile);
 		_projectSerializer = std::make_shared<ProjectSerializer>(_project);
-		_projectSerializer->deserialize();
+
+		if(!newProject)
+			_projectSerializer->deserialize();// Deserialize already created project file
+		else
+			_projectSerializer->serialize();// Create new project file
 
 		// Watch project directory file changes
 		_fileWatcher->addWatch(_project->getDirectory());
@@ -68,10 +74,13 @@ namespace atta
 		return _project != nullptr;
 	}
 
-	void FileManager::closeProjectImpl()
+	void FileManager::closeProjectImpl(bool save)
 	{
-		if(_projectSerializer)
-			_projectSerializer->serialize();
+		if(save)
+		{
+			saveProjectImpl();
+			ComponentManager::clear();
+		}
 
 		if(_project)
 			_fileWatcher->removeWatch(_project->getDirectory());
@@ -81,6 +90,17 @@ namespace atta
 
 		ProjectCloseEvent e;
 		EventManager::publish(e);
+	}
+
+	void FileManager::saveProjectImpl()
+	{
+		if(_projectSerializer)
+			_projectSerializer->serialize();
+	}
+
+	void FileManager::saveNewProjectImpl(fs::path projectFile)
+	{
+		openProjectImpl(projectFile, true);
 	}
 
 	// TODO remove
