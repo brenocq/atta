@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_FACTORY_H
 #define ATTA_COMPONENT_SYSTEM_FACTORY_H
-#include <atta/componentSystem/componentManager.h>
+#include <atta/componentSystem/base.h>
 
 namespace atta
 {
@@ -21,6 +21,7 @@ namespace atta
 				std::vector<std::pair<size_t, uint8_t*>> componentMemories;
 			};
 			Factory(CreateInfo info);
+			Factory();
 
 			template <typename T>
 			T* getComponent(uint64_t cloneId = 0);
@@ -28,8 +29,10 @@ namespace atta
 
 			EntityId getPrototypeId() const { return _prototypeId; }
 			uint64_t getMaxClones() const { return _maxClones; }
-			std::vector<std::pair<size_t, uint8_t*>> getComponentMemories() const { return _componentMemories; }
+
 			std::vector<size_t> getComponents() const;
+			std::vector<std::pair<size_t, uint8_t*>>& getComponentMemories() { return _componentMemories; }
+			std::vector<uint8_t*> getMemories() const;
 
 		private:
 			EntityId _prototypeId;

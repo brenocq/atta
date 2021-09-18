@@ -17,7 +17,7 @@ namespace atta
 		Script() = default;  
 		virtual ~Script() {};  
 		virtual void update(EntityId id, float delta = 0.0f) = 0;
-		virtual void update(std::shared_ptr<Factory> factory, uint64_t cloneId, float delta = 0.0f) = 0;
+		virtual void update(const std::vector<uint8_t*>& memories, uint64_t cloneId, float delta = 0.0f) = 0;
 	}; 
    
 }

@@ -19,3 +19,4 @@ imgui.ini
 # Debugging/Profile
 perf.*
 .gdb_history
+profile/

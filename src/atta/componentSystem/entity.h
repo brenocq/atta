@@ -7,6 +7,7 @@
 #ifndef ATTA_COMPONENT_SYSTEM_ENTITY_H
 #define ATTA_COMPONENT_SYSTEM_ENTITY_H
 #include <atta/componentSystem/componentManager.h>
+#include <atta/componentSystem/base.h>
 
 namespace atta
 {

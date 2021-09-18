@@ -223,7 +223,7 @@ namespace atta
 			if(ImGui::CollapsingHeader("Prototype##ComponentsPrototypeHeader", ImGuiTreeNodeFlags_None))
 			{
 				int value = prototype->maxClones;
-				ImGui::DragInt("MaxClones##ScenePrototypeMaxClones", &value, 1, 0, 1000, "%d", ImGuiSliderFlags_AlwaysClamp);
+				ImGui::DragInt("MaxClones##ScenePrototypeMaxClones", &value, 1, 0, 1000000, "%d", ImGuiSliderFlags_AlwaysClamp);
 				prototype->maxClones = (uint64_t)value;
 			}
 	}
