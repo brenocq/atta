@@ -7,6 +7,9 @@
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLShaderGroup.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLShader.h>
 
+#include <atta/graphicsSystem/graphicsManager.h>
+#include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
+
 namespace atta
 {
 	OpenGLShaderGroup::OpenGLShaderGroup(const ShaderGroup::CreateInfo& info):
@@ -119,6 +122,14 @@ namespace atta
 	void OpenGLShaderGroup::setMat4(const char* name, const mat4& m)
 	{
 		glUniformMatrix4fv(getLoc(name), 1, GL_FALSE, m.data);
+	}
+
+	void OpenGLShaderGroup::setTexture(const char* name, StringId sid)
+	{
+		std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(GraphicsManager::getRendererAPI());
+		std::shared_ptr<OpenGLImage> image = renderer->getOpenGLImages()[sid.getId()];
+		glActiveTexture(GL_TEXTURE0+getLoc(name));
+        glBindTexture(GL_TEXTURE_2D, image->getId());
 	}
 
 	unsigned int OpenGLShaderGroup::getLoc(const char* name)

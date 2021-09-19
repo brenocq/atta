@@ -5,12 +5,20 @@ layout (location = 2) in vec2 inTexCoord;
 
 uniform mat4 projection;
 uniform mat4 view;
-uniform mat4 transform;
+uniform mat4 model;
+uniform mat4 invModel;
 
-out vec3 color;
+out vec3 worldPos;
+out vec3 normal;
+out vec2 texCoord;
+
 
 void main()
 {
-	gl_Position = projection * view * transform * vec4(inPosition, 1.0f);
-	color = vec3(inNormal*0.1f)+0.5f;
+	vec4 coord = model * vec4(inPosition, 1.0f);
+	gl_Position = projection * view * coord;
+
+	worldPos = coord.xyz;
+	normal = mat3(transpose(invModel))*inNormal;
+	texCoord = inTexCoord;
 }

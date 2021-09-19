@@ -58,7 +58,7 @@ namespace atta
 
 		//----- Create viewports -----//
 		Viewport::CreateInfo viewportInfo;
-		viewportInfo.renderer = std::make_shared<PhongRenderer>();
+		viewportInfo.renderer = std::make_shared<PbrRenderer>();
 		viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{}));
 		viewportInfo.sid = StringId("Main Viewport");
 		_viewports.emplace_back(std::make_shared<Viewport>(viewportInfo));

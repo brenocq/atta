@@ -12,6 +12,7 @@
 
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
+#include <atta/resourceSystem/resources/texture.h>
 
 #define WRITE_BIN(s,x)
 #define WRITE_VEC_BIN(s,vec,size) s.write(reinterpret_cast<const char*>(vec), size);
@@ -218,6 +219,11 @@ namespace atta
 					write(os, material.second->metallic);
 					write(os, material.second->roughness);
 					write(os, material.second->ao);
+					write(os, material.second->albedoTexture.getString());
+					write(os, material.second->metallicTexture.getString());
+					write(os, material.second->roughnessTexture.getString());
+					write(os, material.second->aoTexture.getString());
+					write(os, material.second->normalTexture.getString());
 				}
 			}
 			else if(component == "Point Light")
@@ -401,6 +407,15 @@ namespace atta
 					read(is, temp.metallic);
 					read(is, temp.roughness);
 					read(is, temp.ao);
+					std::string tempStr;
+					read(is, tempStr); temp.albedoTexture = StringId(tempStr);
+					read(is, tempStr); temp.metallicTexture = StringId(tempStr);
+					read(is, tempStr); temp.roughnessTexture = StringId(tempStr);
+					read(is, tempStr); temp.aoTexture = StringId(tempStr);
+					read(is, tempStr); temp.normalTexture = StringId(tempStr);
+
+					if(temp.albedoTexture.getId() != SID("Empty texture"))
+						ResourceManager::get<Texture>(temp.albedoTexture.getString());
 
 					MaterialComponent* material = ComponentManager::addEntityComponent<MaterialComponent>(eid);
 					*material = temp;
