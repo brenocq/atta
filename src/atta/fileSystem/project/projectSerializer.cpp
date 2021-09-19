@@ -8,11 +8,7 @@
 #include <atta/cmakeConfig.h>
 
 #include <atta/componentSystem/componentManager.h>
-#include <atta/componentSystem/components/nameComponent.h>
-#include <atta/componentSystem/components/transformComponent.h>
-#include <atta/componentSystem/components/meshComponent.h>
-#include <atta/componentSystem/components/scriptComponent.h>
-#include <atta/componentSystem/components/prototypeComponent.h>
+#include <atta/componentSystem/components/components.h>
 
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
@@ -201,6 +197,26 @@ namespace atta
 					write(os, transform.second->scale);
 				}
 			}
+			else if(component == "Material")
+			{
+				std::vector<std::pair<EntityId,MaterialComponent*>> materials;
+				for(auto entity : entities)
+				{
+					MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
+					if(material != nullptr)
+						materials.push_back(std::make_pair(entity, material));
+				}
+
+				write<uint32_t>(os, materials.size());
+				for(auto material : materials)
+				{
+					write(os, material.first);
+					write(os, material.second->albedo);
+					write(os, material.second->metallic);
+					write(os, material.second->roughness);
+					write(os, material.second->ao);
+				}
+			}
 			else if(component == "Prototype")
 			{
 				std::vector<std::pair<EntityId,PrototypeComponent*>> prototypes;
@@ -332,6 +348,25 @@ namespace atta
 
 					LOG_VERBOSE("ProjectSerializer","entity($0) -> p:$1 o:$2 s:$3", 
 							eid, transform->position, transform->orientation, transform->scale);
+				}
+			}
+			else if(marker == "Material")
+			{
+				uint32_t numMaterials;
+				read<uint32_t>(is, numMaterials);
+				LOG_VERBOSE("ProjectSerializer","Num materials: $0", numMaterials);
+				for(uint32_t i = 0; i < numMaterials; i++)
+				{
+					EntityId eid;
+					read(is, eid);
+					MaterialComponent temp;
+					read(is, temp.albedo);
+					read(is, temp.metallic);
+					read(is, temp.roughness);
+					read(is, temp.ao);
+
+					MaterialComponent* material = ComponentManager::addEntityComponent<MaterialComponent>(eid);
+					*material = temp;
 				}
 			}
 			else if(marker == "Prototype")

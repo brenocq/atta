@@ -40,9 +40,13 @@ namespace atta
 		glBindFramebuffer(GL_FRAMEBUFFER, _id);
 		glViewport(0, 0, _width, _height);
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		if(_depthAttachmentIndex != -1)
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glEnable(GL_DEPTH_TEST);
+		}
+		else
+			glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	void OpenGLFramebuffer::unbind()

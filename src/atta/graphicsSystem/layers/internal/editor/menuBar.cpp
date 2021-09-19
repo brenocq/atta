@@ -31,6 +31,7 @@ namespace atta
 					if(ImGui::MenuItem("Close"))
 						FileManager::closeProject();
 				}
+
 				if(ImGui::MenuItem("Open"))
 					_showOpenProject = true;
 

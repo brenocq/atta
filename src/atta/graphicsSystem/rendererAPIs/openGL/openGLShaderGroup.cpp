@@ -80,4 +80,49 @@ namespace atta
 	{
 		glUseProgram(_id);
 	}
+
+	void OpenGLShaderGroup::setBool(const char* name, bool b)
+	{
+		glUniform1ui(getLoc(name), (unsigned int)b);
+	}
+
+	void OpenGLShaderGroup::setInt(const char* name, int i)
+	{
+		glUniform1i(getLoc(name), i);
+	}
+
+	void OpenGLShaderGroup::setFloat(const char* name, float f)
+	{
+		glUniform1f(getLoc(name), f);
+	}
+
+	void OpenGLShaderGroup::setVec2(const char* name, const vec2& v)
+	{
+		glUniform2fv(getLoc(name), 1, &v.x);
+	}
+
+	void OpenGLShaderGroup::setVec3(const char* name, const vec3& v)
+	{
+		glUniform3fv(getLoc(name), 1, &v.x);
+	}
+
+	void OpenGLShaderGroup::setVec4(const char* name, const vec4& v)
+	{
+		glUniform4fv(getLoc(name), 1, &v.x);
+	}
+
+	void OpenGLShaderGroup::setMat3(const char* name, const mat3& m)
+	{
+		glUniformMatrix3fv(getLoc(name), 1, GL_FALSE, m.data);
+	}
+
+	void OpenGLShaderGroup::setMat4(const char* name, const mat4& m)
+	{
+		glUniformMatrix4fv(getLoc(name), 1, GL_FALSE, m.data);
+	}
+
+	unsigned int OpenGLShaderGroup::getLoc(const char* name)
+	{
+		return glGetUniformLocation(_id, name);
+	}
 }

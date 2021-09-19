@@ -7,6 +7,7 @@
 #ifndef ATTA_GRAPHICS_SYSTEM_SHADER_GROUP_H
 #define ATTA_GRAPHICS_SYSTEM_SHADER_GROUP_H
 #include <atta/graphicsSystem/shader.h>
+#include <atta/core/math/math.h>
 
 namespace atta
 {
@@ -27,6 +28,15 @@ namespace atta
 		virtual void bind() = 0;
 
 		const std::vector<std::shared_ptr<Shader>>& getShaders() const { return _shaders; };
+
+		virtual void setBool(const char* name, bool b) = 0;
+		virtual void setInt(const char* name, int i) = 0;
+		virtual void setFloat(const char* name, float f) = 0;
+		virtual void setVec2(const char* name, const vec2& v) = 0;
+		virtual void setVec3(const char* name, const vec3& v) = 0;
+		virtual void setVec4(const char* name, const vec4& v) = 0;
+		virtual void setMat3(const char* name, const mat3& m) = 0;
+		virtual void setMat4(const char* name, const mat4& m) = 0;
 
 	protected:
 		std::vector<std::shared_ptr<Shader>> _shaders;

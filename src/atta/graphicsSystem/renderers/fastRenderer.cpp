@@ -29,20 +29,19 @@ namespace atta
 		//framebufferInfo.attachments.push_back({Image::Format::DEPTH32F});
 		framebufferInfo.width = 500;
 		framebufferInfo.height = 500;
-		framebufferInfo.debugName = StringId("Simulation Layer Framebuffer");
+		framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
 		std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
 
 		// Shader Group
 		ShaderGroup::CreateInfo shaderGroupInfo {};
-		// TODO relative to resources directory
 		shaderGroupInfo.shaderPaths = {"shaders/fastRenderer/shader.vert", "shaders/fastRenderer/shader.frag"};
-		shaderGroupInfo.debugName = StringId("Simulation Layer Shader Group");
+		shaderGroupInfo.debugName = StringId("FastRenderer Shader Group");
 		std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
 
 		// Render Pass
 		RenderPass::CreateInfo renderPassInfo {};
 		renderPassInfo.framebuffer = framebuffer;
-		renderPassInfo.debugName = StringId("Simulation Layer Render Pass");
+		renderPassInfo.debugName = StringId("FastRenderer Render Pass");
 		std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
 
 		Pipeline::CreateInfo pipelineInfo {};
@@ -124,7 +123,6 @@ namespace atta
 			}
 		}
 		_geometryPipeline->end();
-		//GraphicsManager::getRendererAPI()->framebufferToScreen(_geometryPipeline->getRenderPass()->getFramebuffer());
 	}
 
 	void FastRenderer::resize(uint32_t width, uint32_t height)

@@ -28,6 +28,8 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 
 	renderers/renderer.cpp
 	renderers/fastRenderer.cpp
+	renderers/pbrRenderer.cpp
+	renderers/phongRenderer.cpp
 
 	cameras/camera.cpp
 	cameras/perspectiveCamera.cpp

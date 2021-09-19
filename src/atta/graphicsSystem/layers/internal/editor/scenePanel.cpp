@@ -97,10 +97,8 @@ namespace atta
 
 			if(ImGui::Selectable("Transform##ComponentAddTransform"))
 			{
-				TransformComponent defTrans;
 				TransformComponent* transform = ComponentManager::addEntityComponent<TransformComponent>(_selected);
-				*transform = defTrans;
-
+				*transform = TransformComponent{};
 			}
 
 			if(ImGui::Selectable("Mesh##ComponentAddMesh"))
@@ -108,6 +106,14 @@ namespace atta
 				MeshComponent* mesh = ComponentManager::addEntityComponent<MeshComponent>(_selected);
 				mesh->sid = StringId(fs::path("meshes/cube.obj").string());
 			}
+
+			if(ImGui::Selectable("Material##ComponentAddMaterial"))
+			{
+				MaterialComponent* material = ComponentManager::addEntityComponent<MaterialComponent>(_selected);
+				*material = MaterialComponent{};
+			}
+
+			ImGui::Separator();
 
 			if(ImGui::Selectable("Script##ComponentAddScript"))
 			{
@@ -192,6 +198,24 @@ namespace atta
 					}
 					ImGui::EndCombo();
 				}
+			}
+
+		MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(_selected);
+		if(material != nullptr)
+			if(ImGui::CollapsingHeader("Material##ComponentsMaterialHeader", ImGuiTreeNodeFlags_None))
+			{
+				float min = 0.0f;
+				float max = 1.0f;
+				ImGui::Text("Albedo");
+				ImGui::SliderScalar("R##SceneMaterialR", ImGuiDataType_Float, &material->albedo.x, &min, &max, "%.6f");
+				ImGui::SliderScalar("G##SceneMaterialG", ImGuiDataType_Float, &material->albedo.y, &min, &max, "%.6f");
+				ImGui::SliderScalar("B##SceneMaterialB", ImGuiDataType_Float, &material->albedo.z, &min, &max, "%.6f");
+				ImGui::Text("Metallic");
+				ImGui::SliderScalar("##SceneMaterialMetallic", ImGuiDataType_Float, &material->metallic, &min, &max, "%.6f");
+				ImGui::Text("Roughness");
+				ImGui::SliderScalar("##SceneMaterialRoughness", ImGuiDataType_Float, &material->roughness, &min, &max, "%.6f");
+				ImGui::Text("AO");
+				ImGui::SliderScalar("##SceneMaterialAO", ImGuiDataType_Float, &material->ao, &min, &max, "%.6f");
 			}
 
 		ScriptComponent* script = ComponentManager::getEntityComponent<ScriptComponent>(_selected);
