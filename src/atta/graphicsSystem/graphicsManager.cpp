@@ -14,6 +14,10 @@
 #include <atta/graphicsSystem/layers/internal/editor/editorLayer.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGL.h>
 
+#include <atta/graphicsSystem/renderers/fastRenderer.h>
+#include <atta/graphicsSystem/renderers/pbrRenderer.h>
+#include <atta/graphicsSystem/renderers/phongRenderer.h>
+
 #include <atta/graphicsSystem/cameras/orthographicCamera.h>
 #include <atta/graphicsSystem/cameras/perspectiveCamera.h>
 
@@ -54,11 +58,8 @@ namespace atta
 
 		//----- Create viewports -----//
 		Viewport::CreateInfo viewportInfo;
-		viewportInfo.renderer = std::make_shared<FastRenderer>();
-		OrthographicCamera::CreateInfo oCamInfo {};
-		PerspectiveCamera::CreateInfo pCamInfo {};
-		viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<OrthographicCamera>(oCamInfo));
-		//viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(pCamInfo));
+		viewportInfo.renderer = std::make_shared<PhongRenderer>();
+		viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{}));
 		viewportInfo.sid = StringId("Main Viewport");
 		_viewports.emplace_back(std::make_shared<Viewport>(viewportInfo));
 	}
