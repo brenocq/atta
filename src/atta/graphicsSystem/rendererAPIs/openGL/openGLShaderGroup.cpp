@@ -128,7 +128,22 @@ namespace atta
 	{
 		std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(GraphicsManager::getRendererAPI());
 		std::shared_ptr<OpenGLImage> image = renderer->getOpenGLImages()[sid.getId()];
-		glActiveTexture(GL_TEXTURE0+getLoc(name));
+
+		if(!image)
+		{
+			LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to use image that was never loaded $0", name);
+			return;
+		}
+
+		GLint imgUnit = -1;
+		glGetUniformiv(_id, getLoc(name), &imgUnit);
+
+		if(imgUnit == -1)
+		{
+			LOG_WARN("OpenGLShaderGroup", "(setTexture) Could not get texture unit for $0", name);
+			return;
+		}
+		glActiveTexture(GL_TEXTURE0+imgUnit);
         glBindTexture(GL_TEXTURE_2D, image->getId());
 	}
 

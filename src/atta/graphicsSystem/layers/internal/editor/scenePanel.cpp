@@ -260,16 +260,16 @@ namespace atta
 							material->albedo.z = -1.0f;
 						}
 
+						if(buf[0] == '\0')
+							strcpy(buf, material->albedoTexture.getString().c_str());
+
 						ImGui::InputText("Path##albedoInput", buf, sizeof(buf));
 						ImGui::SameLine();
 						if(ImGui::Button("Load##albedoLoadTex"))
 						{
 							Texture* tex = ResourceManager::get<Texture>(buf);
 							if(tex)
-							{
 								material->albedoTexture = tex->getId();
-								buf[0] = '\0';
-							}
 							else
 								buf[0] = '\0';
 						}
@@ -296,16 +296,16 @@ namespace atta
 						if(material->metallic != -1.0f)
 							material->metallic = -1.0f;
 
+						if(buf[0] == '\0')
+							strcpy(buf, material->metallicTexture.getString().c_str());
+
 						ImGui::InputText("Path##metallicInput", buf, sizeof(buf));
 						ImGui::SameLine();
 						if(ImGui::Button("Load##metallicLoadTex"))
 						{
 							Texture* tex = ResourceManager::get<Texture>(buf);
 							if(tex)
-							{
 								material->metallicTexture = tex->getId();
-								buf[0] = '\0';
-							}
 							else
 								buf[0] = '\0';
 						}
@@ -332,16 +332,16 @@ namespace atta
 						if(material->roughness != -1.0f)
 							material->roughness = -1.0f;
 
+						if(buf[0] == '\0')
+							strcpy(buf, material->roughnessTexture.getString().c_str());
+
 						ImGui::InputText("Path##roughnessInput", buf, sizeof(buf));
 						ImGui::SameLine();
 						if(ImGui::Button("Load##roughnessLoadTex"))
 						{
 							Texture* tex = ResourceManager::get<Texture>(buf);
 							if(tex)
-							{
 								material->roughnessTexture = tex->getId();
-								buf[0] = '\0';
-							}
 							else
 								buf[0] = '\0';
 						}
@@ -368,16 +368,16 @@ namespace atta
 						if(material->ao != -1.0f)
 							material->ao = -1.0f;
 
+						if(buf[0] == '\0')
+							strcpy(buf, material->aoTexture.getString().c_str());
+
 						ImGui::InputText("Path##aoInput", buf, sizeof(buf));
 						ImGui::SameLine();
 						if(ImGui::Button("Load##aoLoadTex"))
 						{
 							Texture* tex = ResourceManager::get<Texture>(buf);
 							if(tex)
-							{
 								material->aoTexture = tex->getId();
-								buf[0] = '\0';
-							}
 							else
 								buf[0] = '\0';
 						}

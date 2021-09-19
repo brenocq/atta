@@ -45,6 +45,7 @@ namespace atta
 		switch(format)
 		{
 			case Format::NONE: break;
+			case Format::RED: return GL_R8;
 			case Format::RGB: return GL_RGB8;
 			case Format::RGBA: return GL_RGBA8;
 			case Format::DEPTH32F: return GL_R32F;
@@ -57,6 +58,7 @@ namespace atta
 		switch(format)
 		{
 			case Format::NONE: break;
+			case Format::RED: return GL_RED;
 			case Format::RGB: return GL_RGB;
 			case Format::RGBA: return GL_RGBA;
 			case Format::DEPTH32F: return GL_DEPTH_COMPONENT;
@@ -69,6 +71,7 @@ namespace atta
 		switch(format)
 		{
 			case Format::NONE: break;
+			case Format::RED: 
 			case Format::RGB: 
 			case Format::RGBA: return GL_UNSIGNED_BYTE;
 			case Format::DEPTH32F: return GL_FLOAT;
