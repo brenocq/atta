@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Atta Graphics System
 // phongRenderer.cpp
-// Date: 2021-09-10
+// Date: 2021-09-18
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphicsSystem/renderers/phongRenderer.h>
@@ -16,6 +16,8 @@
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/transformComponent.h>
 #include <atta/componentSystem/components/materialComponent.h>
+#include <atta/componentSystem/components/pointLightComponent.h>
+#include <atta/componentSystem/components/directionalLightComponent.h>
 #include <atta/componentSystem/factory.h>
 
 namespace atta
@@ -73,10 +75,37 @@ namespace atta
 			shader->setVec3("viewPos", camera->getPosition());
 
 			//----- Lighting -----//
-			shader->setVec3("lightPos", {0.0f, 0.0f, 2.0f});
-			shader->setVec3("lightColor", {0.5f, 0.7f, 1.0f});
+			int numPointLights = 0;
+			for(auto entity : entities)
+			{
+				TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+				PointLightComponent* pl = ComponentManager::getEntityComponent<PointLightComponent>(entity);
+				DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
+
+				if(transform && (pl || dl))
+				{
+					if(pl && numPointLights < 10)
+					{
+						int i = numPointLights++;
+						shader->setVec3(("pointLights["+std::to_string(i)+"].position").c_str(), transform->position);
+						shader->setVec3(("pointLights["+std::to_string(i)+"].intensity").c_str(), pl->intensity);
+					}
+					if(dl)
+					{
+						vec3 before = { 0.0f, -1.0f, 0.0f };
+						//vec3 direction;
+						//transform->orientation.transformVector(before, direction);
+						shader->setVec3("directionalLight.direction", before);
+						shader->setVec3("directionalLight.intensity", dl->intensity);
+					}
+					if(numPointLights++ == 10)
+						LOG_WARN("PhongRenderer", "Maximum number of point lights reached, 10 lights");
+				}
+			}
+			shader->setInt("numPointLights", numPointLights);
+
 			// Ambient
-			shader->setVec3("ambientColor", {0.1f, 0.1f, 0.1f});
+			shader->setVec3("ambientColor", {0.2f, 0.2f, 0.2f});
 			shader->setFloat("ambientStrength", 1.0f);
 			// Diffuse
 			shader->setFloat("diffuseStrength", 1.0f);
@@ -89,7 +118,7 @@ namespace atta
 				TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
 				MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
 
-				if(mesh != nullptr && transform != nullptr)
+				if(mesh && transform)
 				{
 					mat4 model; 
 					model.setPosOriScale(transform->position, transform->orientation, transform->scale);

@@ -54,10 +54,13 @@ namespace atta
 		//		header.version[0], header.version[1], header.version[2], header.version[3], 
 		//		header.projectName, header.saveCounter);
 
-		std::string marker;
-		read(is, marker);
-		if(marker == "comp")
-			deserializeComponentSystem(is);
+		if(is)
+		{
+			std::string marker;
+			read(is, marker);
+			if(marker == "comp")
+				deserializeComponentSystem(is);
+		}
 
 		is.close();
 	}
@@ -217,6 +220,40 @@ namespace atta
 					write(os, material.second->ao);
 				}
 			}
+			else if(component == "Point Light")
+			{
+				std::vector<std::pair<EntityId,PointLightComponent*>> pointLights;
+				for(auto entity : entities)
+				{
+					PointLightComponent* pointLight = ComponentManager::getEntityComponent<PointLightComponent>(entity);
+					if(pointLight != nullptr)
+						pointLights.push_back(std::make_pair(entity, pointLight));
+				}
+
+				write<uint32_t>(os, pointLights.size());
+				for(auto pointLight : pointLights)
+				{
+					write(os, pointLight.first);
+					write(os, pointLight.second->intensity);
+				}
+			}
+			else if(component == "Directional Light")
+			{
+				std::vector<std::pair<EntityId,DirectionalLightComponent*>> directionalLights;
+				for(auto entity : entities)
+				{
+					DirectionalLightComponent* directionalLight = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
+					if(directionalLight != nullptr)
+						directionalLights.push_back(std::make_pair(entity, directionalLight));
+				}
+
+				write<uint32_t>(os, directionalLights.size());
+				for(auto directionalLight : directionalLights)
+				{
+					write(os, directionalLight.first);
+					write(os, directionalLight.second->intensity);
+				}
+			}
 			else if(component == "Prototype")
 			{
 				std::vector<std::pair<EntityId,PrototypeComponent*>> prototypes;
@@ -367,6 +404,38 @@ namespace atta
 
 					MaterialComponent* material = ComponentManager::addEntityComponent<MaterialComponent>(eid);
 					*material = temp;
+				}
+			}
+			else if(marker == "Point Light")
+			{
+				uint32_t numPointLights;
+				read<uint32_t>(is, numPointLights);
+				LOG_VERBOSE("ProjectSerializer","Num point lights: $0", numPointLights);
+				for(uint32_t i = 0; i < numPointLights; i++)
+				{
+					EntityId eid;
+					read(is, eid);
+					PointLightComponent temp;
+					read(is, temp.intensity);
+
+					PointLightComponent* pointLight = ComponentManager::addEntityComponent<PointLightComponent>(eid);
+					*pointLight = temp;
+				}
+			}
+			else if(marker == "Directional Light")
+			{
+				uint32_t numDirectionalLights;
+				read<uint32_t>(is, numDirectionalLights);
+				LOG_VERBOSE("ProjectSerializer","Num directional lights: $0", numDirectionalLights);
+				for(uint32_t i = 0; i < numDirectionalLights; i++)
+				{
+					EntityId eid;
+					read(is, eid);
+					DirectionalLightComponent temp;
+					read(is, temp.intensity);
+
+					DirectionalLightComponent* directionalLight = ComponentManager::addEntityComponent<DirectionalLightComponent>(eid);
+					*directionalLight = temp;
 				}
 			}
 			else if(marker == "Prototype")

@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Atta Component System
 // materialComponent.h
-// Date: 2021-09-02
+// Date: 2021-09-18
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_MATERIAL_COMPONENT_H

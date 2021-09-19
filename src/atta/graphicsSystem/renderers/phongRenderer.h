@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Atta Graphics System
 // phongRenderer.h
-// Date: 2021-09-10
+// Date: 2021-09-18
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SYSTEM_RENDERERS_PHONG_RENDERER_H
