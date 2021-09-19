@@ -16,6 +16,11 @@ namespace atta
 		float metallic = 0.0f;
 		float roughness = 0.5f;
 		float ao = 1.0f;
+		StringId albedoTexture = StringId("Empty texture");
+		StringId metallicTexture = StringId("Empty texture");
+		StringId roughnessTexture = StringId("Empty texture");
+		StringId aoTexture = StringId("Empty texture");
+		StringId normalTexture = StringId("Empty texture");
 	};
 }
 

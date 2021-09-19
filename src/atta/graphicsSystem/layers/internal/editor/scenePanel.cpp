@@ -218,18 +218,176 @@ namespace atta
 		if(material != nullptr)
 			if(ImGui::CollapsingHeader("Material##ComponentsMaterialHeader", ImGuiTreeNodeFlags_None))
 			{
+				static bool albedoIsTexture = false;
+				static bool metallicIsTexture = false;
+				static bool roughnessIsTexture = false;
+				static bool aoIsTexture = false;
+				static bool normalIsTexture = false;
+
+				albedoIsTexture = material->albedo.x == -1.0f;
+				metallicIsTexture = material->metallic == -1.0f;
+				roughnessIsTexture = material->roughness == -1.0f;
+				aoIsTexture = material->ao == -1.0f;
+
 				float min = 0.0f;
 				float max = 1.0f;
-				ImGui::Text("Albedo");
-				ImGui::SliderScalar("R##SceneMaterialR", ImGuiDataType_Float, &material->albedo.x, &min, &max, "%.6f");
-				ImGui::SliderScalar("G##SceneMaterialG", ImGuiDataType_Float, &material->albedo.y, &min, &max, "%.6f");
-				ImGui::SliderScalar("B##SceneMaterialB", ImGuiDataType_Float, &material->albedo.z, &min, &max, "%.6f");
-				ImGui::Text("Metallic");
-				ImGui::SliderScalar("##SceneMaterialMetallic", ImGuiDataType_Float, &material->metallic, &min, &max, "%.6f");
-				ImGui::Text("Roughness");
-				ImGui::SliderScalar("##SceneMaterialRoughness", ImGuiDataType_Float, &material->roughness, &min, &max, "%.6f");
-				ImGui::Text("AO");
-				ImGui::SliderScalar("##SceneMaterialAO", ImGuiDataType_Float, &material->ao, &min, &max, "%.6f");
+				{
+					ImGui::Text("Albedo");
+					ImGui::SameLine();
+					ImGui::Checkbox("Is texture##isTexAlbedo", &albedoIsTexture);
+					if(!albedoIsTexture)
+					{
+						if(material->albedoTexture.getId() != SID("Empty texture") || material->albedo.x == -1)
+						{
+							material->albedoTexture = StringId("Empty texture");
+							material->albedo.x = 1.0f;
+							material->albedo.y = 0.0f;
+							material->albedo.z = 1.0f;
+						}
+
+						ImGui::SliderScalar("R##SceneMaterialR", ImGuiDataType_Float, &material->albedo.x, &min, &max, "%.6f");
+						ImGui::SliderScalar("G##SceneMaterialG", ImGuiDataType_Float, &material->albedo.y, &min, &max, "%.6f");
+						ImGui::SliderScalar("B##SceneMaterialB", ImGuiDataType_Float, &material->albedo.z, &min, &max, "%.6f");
+					}
+					else
+					{
+						static char buf[254] = "";
+
+						if(material->albedo.x != -1.0f)
+						{
+							material->albedo.x = -1.0f;
+							material->albedo.y = -1.0f;
+							material->albedo.z = -1.0f;
+						}
+
+						ImGui::InputText("Path##albedoInput", buf, sizeof(buf));
+						ImGui::SameLine();
+						if(ImGui::Button("Load##albedoLoadTex"))
+						{
+							Texture* tex = ResourceManager::get<Texture>(buf);
+							if(tex)
+							{
+								material->albedoTexture = tex->getId();
+								buf[0] = '\0';
+							}
+							else
+								buf[0] = '\0';
+						}
+					}
+				}
+				{
+					ImGui::Text("Metallic");
+					ImGui::SameLine();
+					ImGui::Checkbox("Is texture##isTexMetallic", &metallicIsTexture);
+					if(!metallicIsTexture)
+					{
+						if(material->metallicTexture.getId() != SID("Empty texture") || material->metallic == -1)
+						{
+							material->metallicTexture = StringId("Empty texture");
+							material->metallic = 0.0f;
+						}
+
+						ImGui::SliderScalar("##SceneMaterialMetallic", ImGuiDataType_Float, &material->metallic, &min, &max, "%.6f");
+					}
+					else
+					{
+						static char buf[254] = "";
+
+						if(material->metallic != -1.0f)
+							material->metallic = -1.0f;
+
+						ImGui::InputText("Path##metallicInput", buf, sizeof(buf));
+						ImGui::SameLine();
+						if(ImGui::Button("Load##metallicLoadTex"))
+						{
+							Texture* tex = ResourceManager::get<Texture>(buf);
+							if(tex)
+							{
+								material->metallicTexture = tex->getId();
+								buf[0] = '\0';
+							}
+							else
+								buf[0] = '\0';
+						}
+					}
+				}
+				{
+					ImGui::Text("Roughness");
+					ImGui::SameLine();
+					ImGui::Checkbox("Is texture##isTexRoughness", &roughnessIsTexture);
+					if(!roughnessIsTexture)
+					{
+						if(material->roughnessTexture.getId() != SID("Empty texture") || material->roughness == -1)
+						{
+							material->roughnessTexture = StringId("Empty texture");
+							material->roughness = 0.0f;
+						}
+
+						ImGui::SliderScalar("##SceneMaterialRoughness", ImGuiDataType_Float, &material->roughness, &min, &max, "%.6f");
+					}
+					else
+					{
+						static char buf[254] = "";
+
+						if(material->roughness != -1.0f)
+							material->roughness = -1.0f;
+
+						ImGui::InputText("Path##roughnessInput", buf, sizeof(buf));
+						ImGui::SameLine();
+						if(ImGui::Button("Load##roughnessLoadTex"))
+						{
+							Texture* tex = ResourceManager::get<Texture>(buf);
+							if(tex)
+							{
+								material->roughnessTexture = tex->getId();
+								buf[0] = '\0';
+							}
+							else
+								buf[0] = '\0';
+						}
+					}
+				}
+				{
+					ImGui::Text("AO");
+					ImGui::SameLine();
+					ImGui::Checkbox("Is texture##isTexAO", &aoIsTexture);
+					if(!aoIsTexture)
+					{
+						if(material->aoTexture.getId() != SID("Empty texture") || material->ao == -1)
+						{
+							material->aoTexture = StringId("Empty texture");
+							material->ao = 0.0f;
+						}
+
+						ImGui::SliderScalar("##SceneMaterialAO", ImGuiDataType_Float, &material->ao, &min, &max, "%.6f");
+					}
+					else
+					{
+						static char buf[254] = "";
+
+						if(material->ao != -1.0f)
+							material->ao = -1.0f;
+
+						ImGui::InputText("Path##aoInput", buf, sizeof(buf));
+						ImGui::SameLine();
+						if(ImGui::Button("Load##aoLoadTex"))
+						{
+							Texture* tex = ResourceManager::get<Texture>(buf);
+							if(tex)
+							{
+								material->aoTexture = tex->getId();
+								buf[0] = '\0';
+							}
+							else
+								buf[0] = '\0';
+						}
+					}
+				}
+				{
+					ImGui::Text("Normal");
+					ImGui::SameLine();
+					ImGui::Checkbox("Is texture##isTexNormal", &normalIsTexture);
+				}
 			}
 
 		PointLightComponent* pointLight = ComponentManager::getEntityComponent<PointLightComponent>(_selected);

@@ -33,6 +33,8 @@ namespace atta
 		// Handle events
 		void onMeshLoadEvent(Event& event);
 		void onTextureLoadEvent(Event& event);
+
+		std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> getOpenGLImages() const { return _openGLImages; };
 	
 	private:
 		std::shared_ptr<Window> _window;

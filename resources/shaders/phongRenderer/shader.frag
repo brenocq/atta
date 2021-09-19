@@ -72,7 +72,7 @@ vec3 calcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
     // combine results
     float diffuse  = diffuseStrength * diff * material.roughness;
     float specular = specularStrength * spec * material.metallic;
-    return light.intensity * (diffuse+specular) * 0.001;
+    return light.intensity * (diffuse+specular);
 }
 
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
@@ -82,10 +82,10 @@ vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 3.0f);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 5.0f);
     // attenuation
     float distance    = length(light.position - fragPos);
-    float attenuation = 1.0 / (1.0f + 0.09f*distance + 0.032f*(distance*distance));    
+    float attenuation = 1.0 / (2.0f + 0.4f*distance + 0.64f*(distance*distance));    
     // combine results
     float diffuse  = diffuseStrength * diff * material.roughness;
     float specular = specularStrength * spec * material.metallic;

@@ -15,6 +15,9 @@
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/transformComponent.h>
+#include <atta/componentSystem/components/materialComponent.h>
+#include <atta/componentSystem/components/pointLightComponent.h>
+#include <atta/componentSystem/components/directionalLightComponent.h>
 #include <atta/componentSystem/factory.h>
 
 namespace atta
@@ -68,16 +71,105 @@ namespace atta
 			std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
 			shader->setMat4("projection", transpose(camera->getProj()));
 			shader->setMat4("view", transpose(camera->getView()));
-			shader->setVec3("lightColor", {0.8f, 0.4f, 0.3f});
+			shader->setVec3("camPos", camera->getPosition());
+
+			//----- Lighting -----//
+			int numPointLights = 0;
+			for(auto entity : entities)
+			{
+				TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+				PointLightComponent* pl = ComponentManager::getEntityComponent<PointLightComponent>(entity);
+				DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
+
+				if(transform && (pl || dl))
+				{
+					if(pl && numPointLights < 10)
+					{
+						int i = numPointLights++;
+						shader->setVec3(("pointLights["+std::to_string(i)+"].position").c_str(), transform->position);
+						shader->setVec3(("pointLights["+std::to_string(i)+"].intensity").c_str(), pl->intensity);
+					}
+					if(dl)
+					{
+						vec3 before = { 0.0f, -1.0f, 0.0f };
+						//vec3 direction;
+						//transform->orientation.transformVector(before, direction);
+						shader->setVec3("directionalLight.direction", before);
+						shader->setVec3("directionalLight.intensity", dl->intensity);
+					}
+					if(numPointLights++ == 10)
+						LOG_WARN("PhongRenderer", "Maximum number of point lights reached, 10 lights");
+				}
+			}
+			shader->setInt("numPointLights", numPointLights);
 
 			for(auto entity : entities)
 			{
 				MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
 				TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+				MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
 
-				if(mesh != nullptr && transform != nullptr)
+				if(mesh && transform)
 				{
-					shader->setMat4("transform", transpose(posOriScale(transform->position, transform->orientation, transform->scale)));
+					mat4 model; 
+					model.setPosOriScale(transform->position, transform->orientation, transform->scale);
+					model.transpose();
+					mat4 invModel = inverse(model);
+					shader->setMat4("model", model);
+					shader->setMat4("invModel", invModel);
+
+					if(material)
+					{
+						if(material->albedoTexture.getId() != SID("Empty texture"))
+						{
+							shader->setTexture("material.albedoTexture", material->albedoTexture);
+							shader->setVec3("material.albedo", {-1, -1, -1});
+						}
+						else
+							shader->setVec3("material.albedo", material->albedo);
+
+						if(material->metallicTexture.getId() != SID("Empty texture"))
+						{
+							shader->setTexture("material.metallicTexture", material->metallicTexture);
+							shader->setFloat("material.metallic", -1);
+						}
+						else
+							shader->setFloat("material.metallic", material->metallic);
+
+						if(material->roughnessTexture.getId() != SID("Empty texture"))
+						{
+							shader->setTexture("material.roughnessTexture", material->roughnessTexture);
+							shader->setFloat("material.roughness", -1);
+						}
+						else
+							shader->setFloat("material.roughness", material->roughness);
+
+						if(material->aoTexture.getId() != SID("Empty texture"))
+						{
+							shader->setTexture("material.aoTexture", material->aoTexture);
+							shader->setFloat("material.ao", -1);
+						}
+						else
+							shader->setFloat("material.ao", material->ao);
+
+						if(material->normalTexture.getId() != SID("Empty texture"))
+						{
+							shader->setTexture("material.normalTexture", material->normalTexture);
+							shader->setInt("material.hasNormalTexture", 1);
+						}
+						else
+							shader->setInt("material.hasNormalTexture", 0);
+					}
+					else
+					{
+						MaterialComponent material {};
+						shader->setVec3("material.albedo", material.albedo);
+						shader->setFloat("material.metallic", material.metallic);
+						shader->setFloat("material.roughness", material.roughness);
+						shader->setFloat("material.ao", material.ao);
+						shader->setFloat("material.hasNormalTexture", 0);
+					}
+
 					GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
 				}
 			}
