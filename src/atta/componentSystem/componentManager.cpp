@@ -70,6 +70,8 @@ namespace atta
 		registerComponentPoolImpl<ScriptComponent>(_maxEntities, "Script");
 		registerComponentPoolImpl<PrototypeComponent>(_maxEntities, "Prototype");
 		registerComponentPoolImpl<MaterialComponent>(_maxEntities, "Material");
+		registerComponentPoolImpl<PointLightComponent>(_maxEntities, "Point Light");
+		registerComponentPoolImpl<DirectionalLightComponent>(_maxEntities, "Directional Light");
 
 		// Can be used to free all custom component allocators (useful when hot-reloading a project)
 		_customComponentsMarker = _allocator->getMarker();

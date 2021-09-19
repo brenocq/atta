@@ -115,6 +115,20 @@ namespace atta
 
 			ImGui::Separator();
 
+			if(ImGui::Selectable("Point Light##ComponentAddPointLight"))
+			{
+				PointLightComponent* pl = ComponentManager::addEntityComponent<PointLightComponent>(_selected);
+				*pl = PointLightComponent{};
+			}
+
+			if(ImGui::Selectable("Directional Light##ComponentAddDirectionalLight"))
+			{
+				DirectionalLightComponent* dl = ComponentManager::addEntityComponent<DirectionalLightComponent>(_selected);
+				*dl = DirectionalLightComponent{};
+			}
+
+			ImGui::Separator();
+
 			if(ImGui::Selectable("Script##ComponentAddScript"))
 			{
 				ScriptComponent* script = ComponentManager::addEntityComponent<ScriptComponent>(_selected);
@@ -216,6 +230,30 @@ namespace atta
 				ImGui::SliderScalar("##SceneMaterialRoughness", ImGuiDataType_Float, &material->roughness, &min, &max, "%.6f");
 				ImGui::Text("AO");
 				ImGui::SliderScalar("##SceneMaterialAO", ImGuiDataType_Float, &material->ao, &min, &max, "%.6f");
+			}
+
+		PointLightComponent* pointLight = ComponentManager::getEntityComponent<PointLightComponent>(_selected);
+		if(pointLight != nullptr)
+			if(ImGui::CollapsingHeader("PointLight##ComponentsMaterialHeader", ImGuiTreeNodeFlags_None))
+			{
+				float min = 0.0f;
+				float max = 10.0f;
+				ImGui::Text("Intensity");
+				ImGui::SliderScalar("R##ScenePointLightR", ImGuiDataType_Float, &pointLight->intensity.x, &min, &max, "%.6f");
+				ImGui::SliderScalar("G##ScenePointLightG", ImGuiDataType_Float, &pointLight->intensity.y, &min, &max, "%.6f");
+				ImGui::SliderScalar("B##ScenePointLightB", ImGuiDataType_Float, &pointLight->intensity.z, &min, &max, "%.6f");
+			}
+
+		DirectionalLightComponent* directionalLight = ComponentManager::getEntityComponent<DirectionalLightComponent>(_selected);
+		if(directionalLight != nullptr)
+			if(ImGui::CollapsingHeader("DirectionalLight##ComponentsMaterialHeader", ImGuiTreeNodeFlags_None))
+			{
+				float min = 0.0f;
+				float max = 1.0f;
+				ImGui::Text("Intensity");
+				ImGui::SliderScalar("R##SceneDirectionalLightR", ImGuiDataType_Float, &directionalLight->intensity.x, &min, &max, "%.6f");
+				ImGui::SliderScalar("G##SceneDirectionalLightG", ImGuiDataType_Float, &directionalLight->intensity.y, &min, &max, "%.6f");
+				ImGui::SliderScalar("B##SceneDirectionalLightB", ImGuiDataType_Float, &directionalLight->intensity.z, &min, &max, "%.6f");
 			}
 
 		ScriptComponent* script = ComponentManager::getEntityComponent<ScriptComponent>(_selected);

@@ -13,5 +13,7 @@
 #include <atta/componentSystem/components/materialComponent.h>
 #include <atta/componentSystem/components/scriptComponent.h>
 #include <atta/componentSystem/components/prototypeComponent.h>
+#include <atta/componentSystem/components/pointLightComponent.h>
+#include <atta/componentSystem/components/directionalLightComponent.h>
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_COMPONENTS_H
