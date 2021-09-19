@@ -7,11 +7,6 @@ struct Material
     float roughness;
     float ao;
 	int hasNormalTexture;
-	sampler2D albedoTexture;
-	sampler2D metallicTexture;
-	sampler2D roughnessTexture;
-	sampler2D aoTexture;
-	sampler2D normalTexture;
 };
 struct PointLight
 {
@@ -43,6 +38,11 @@ uniform vec3 camPos;
 
 //----- Material -----//
 uniform Material material;
+layout(binding = 0) uniform sampler2D albedoTexture;
+layout(binding = 1) uniform sampler2D metallicTexture;
+layout(binding = 2) uniform sampler2D roughnessTexture;
+layout(binding = 3) uniform sampler2D aoTexture;
+layout(binding = 4) uniform sampler2D normalTexture;
 
 //---------- Definitions ----------//
 float DistributionGGX(vec3 N, vec3 H, float roughness);// Distribution of microsurface normals
@@ -54,19 +54,19 @@ void main()
 {
 	vec3 albedo = material.albedo;
 	if(albedo.x == -1.0f)
-		albedo = texture(material.albedoTexture, texCoord).xyz;
+		albedo = pow(texture(albedoTexture, texCoord).rgb, vec3(2.2));
 
 	float metallic = material.metallic;
 	if(metallic == -1.0f)
-		metallic = texture(material.metallicTexture, texCoord).x;
+		metallic = texture(metallicTexture, texCoord).r;
 
 	float roughness = material.roughness;
 	if(roughness == -1.0f)
-		roughness = texture(material.roughnessTexture, texCoord).x;
+		roughness = texture(roughnessTexture, texCoord).r;
 
 	float ao = material.ao;
 	if(ao == -1.0f)
-		ao = texture(material.aoTexture, texCoord).x;
+		ao = texture(aoTexture, texCoord).r;
 
 	vec3 N = normalize(normal); 
     vec3 V = normalize(camPos - worldPos);
@@ -86,8 +86,8 @@ void main()
 		vec3 radiance     = pointLights[i].intensity * attenuation;
 
 		// Cook-torrance BRDF
-		float NDF = DistributionGGX(N, H, material.roughness);       
-		float G   = GeometrySmith(N, V, L, material.roughness); 
+		float NDF = DistributionGGX(N, H, roughness);       
+		float G   = GeometrySmith(N, V, L, roughness); 
 		vec3 F  = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
 		vec3 numerator    = NDF * G * F;
@@ -103,7 +103,7 @@ void main()
     	Lo += (kD * albedo / PI + specular) * radiance * NdotL;
 	}
 
-	vec3 ambient = vec3(0.03) * albedo * material.ao;
+	vec3 ambient = vec3(0.03) * albedo * ao;
 	vec3 color   = ambient + Lo;
 
 	// HDR

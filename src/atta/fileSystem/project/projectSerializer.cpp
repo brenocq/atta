@@ -416,6 +416,14 @@ namespace atta
 
 					if(temp.albedoTexture.getId() != SID("Empty texture"))
 						ResourceManager::get<Texture>(temp.albedoTexture.getString());
+					if(temp.metallicTexture.getId() != SID("Empty texture"))
+						ResourceManager::get<Texture>(temp.metallicTexture.getString());
+					if(temp.roughnessTexture.getId() != SID("Empty texture"))
+						ResourceManager::get<Texture>(temp.roughnessTexture.getString());
+					if(temp.aoTexture.getId() != SID("Empty texture"))
+						ResourceManager::get<Texture>(temp.aoTexture.getString());
+					if(temp.normalTexture.getId() != SID("Empty texture"))
+						ResourceManager::get<Texture>(temp.normalTexture.getString());
 
 					MaterialComponent* material = ComponentManager::addEntityComponent<MaterialComponent>(eid);
 					*material = temp;

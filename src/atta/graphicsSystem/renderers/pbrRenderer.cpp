@@ -122,7 +122,7 @@ namespace atta
 					{
 						if(material->albedoTexture.getId() != SID("Empty texture"))
 						{
-							shader->setTexture("material.albedoTexture", material->albedoTexture);
+							shader->setTexture("albedoTexture", material->albedoTexture);
 							shader->setVec3("material.albedo", {-1, -1, -1});
 						}
 						else
@@ -130,7 +130,7 @@ namespace atta
 
 						if(material->metallicTexture.getId() != SID("Empty texture"))
 						{
-							shader->setTexture("material.metallicTexture", material->metallicTexture);
+							shader->setTexture("metallicTexture", material->metallicTexture);
 							shader->setFloat("material.metallic", -1);
 						}
 						else
@@ -138,7 +138,7 @@ namespace atta
 
 						if(material->roughnessTexture.getId() != SID("Empty texture"))
 						{
-							shader->setTexture("material.roughnessTexture", material->roughnessTexture);
+							shader->setTexture("roughnessTexture", material->roughnessTexture);
 							shader->setFloat("material.roughness", -1);
 						}
 						else
@@ -146,7 +146,7 @@ namespace atta
 
 						if(material->aoTexture.getId() != SID("Empty texture"))
 						{
-							shader->setTexture("material.aoTexture", material->aoTexture);
+							shader->setTexture("aoTexture", material->aoTexture);
 							shader->setFloat("material.ao", -1);
 						}
 						else
@@ -154,7 +154,7 @@ namespace atta
 
 						if(material->normalTexture.getId() != SID("Empty texture"))
 						{
-							shader->setTexture("material.normalTexture", material->normalTexture);
+							shader->setTexture("normalTexture", material->normalTexture);
 							shader->setInt("material.hasNormalTexture", 1);
 						}
 						else

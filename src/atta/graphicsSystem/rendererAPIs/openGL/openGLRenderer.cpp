@@ -158,6 +158,13 @@ namespace atta
 		info.width = texture->getWidth();
 		info.height = texture->getHeight();
 		info.data = texture->getData();
+		if(texture->getChannels() == 4)
+			info.format = Image::Format::RGBA;
+		else if(texture->getChannels() == 3)
+			info.format = Image::Format::RGB;
+		else if(texture->getChannels() == 1)
+			info.format = Image::Format::RED;
+
 		info.debugName = e.sid;
 		_openGLImages[e.sid.getId()] = std::make_shared<OpenGLImage>(info);
 

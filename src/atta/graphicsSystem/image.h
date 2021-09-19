@@ -16,6 +16,7 @@ namespace atta
 		enum class Format
 		{
 			NONE = 0,
+			RED,// 1 byte
 			RGB,// 3 bytes
 			RGBA,// 4 bytes
 

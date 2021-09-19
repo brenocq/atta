@@ -21,6 +21,7 @@ namespace atta
 		switch(format)
 		{
 			case Format::NONE: break;
+			case Format::RED: return 1;
 			case Format::RGB: return 3;
 			case Format::RGBA: return 4;
 		}
