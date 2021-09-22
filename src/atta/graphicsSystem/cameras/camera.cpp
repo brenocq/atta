@@ -8,9 +8,9 @@
 
 namespace atta
 {
-	void Camera::setFront(const vec3& front)
+	void Camera::update()
 	{
-		_front = normalize(front);
+		_front = normalize(_front);
 		_left = cross(_up, _front);
 		_up = cross(_front, _left);
 

@@ -20,6 +20,7 @@ namespace atta
 			RGB,// 3 bytes
 			RGBA,// 4 bytes
 
+			RGB16F,
 			DEPTH32F
 		};
 

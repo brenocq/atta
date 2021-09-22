@@ -161,14 +161,17 @@ namespace atta
 		if(texture->getChannels() == 4)
 			info.format = Image::Format::RGBA;
 		else if(texture->getChannels() == 3)
-			info.format = Image::Format::RGB;
+			if(texture->getFormat() == Texture::Format::RGB8)
+				info.format = Image::Format::RGB;
+			else
+				info.format = Image::Format::RGB16F;
 		else if(texture->getChannels() == 1)
 			info.format = Image::Format::RED;
 
 		info.debugName = e.sid;
 		_openGLImages[e.sid.getId()] = std::make_shared<OpenGLImage>(info);
 
-		LOG_DEBUG("OpenGLRenderer", "Texture load event! [w]$0[] -> $1", e.sid, _openGLImages[e.sid.getId()]->getId());
+		LOG_DEBUG("OpenGLRenderer", "Texture load event! [w]$0[] -> $1 ($2)", e.sid, _openGLImages[e.sid.getId()]->getId(), info.format == Image::Format::RGB16F);
 	}
 
 	void OpenGLRenderer::framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer)

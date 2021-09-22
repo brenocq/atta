@@ -24,6 +24,7 @@ namespace atta
 			case Format::RED: return 1;
 			case Format::RGB: return 3;
 			case Format::RGBA: return 4;
+			case Format::RGB16F: return 3;
 		}
 		ASSERT(false, "Could not calculate format size. Unknown image format");
 	}

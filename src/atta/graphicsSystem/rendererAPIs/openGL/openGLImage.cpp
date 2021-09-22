@@ -23,10 +23,11 @@ namespace atta
 		// Populate data and generate mipmap
 		GLenum dataType = OpenGLImage::convertDataType(_format);
 		GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
+		GLenum format = OpenGLImage::convertFormat(_format);
 		if(info.data)
-			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, internalFormat, dataType, info.data);
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, info.data);
 		else
-			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, internalFormat, dataType, 0);
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, 0);
 
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
@@ -48,9 +49,24 @@ namespace atta
 			case Format::RED: return GL_R8;
 			case Format::RGB: return GL_RGB8;
 			case Format::RGBA: return GL_RGBA8;
+			case Format::RGB16F: return GL_RGB16F;
 			case Format::DEPTH32F: return GL_R32F;
 		}
 		ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
+	}
+
+	GLenum OpenGLImage::convertFormat(Format format)
+	{
+		switch(format)
+		{
+			case Format::NONE: break;
+			case Format::RED: return GL_RED;
+			case Format::RGB16F:
+			case Format::RGB: return GL_RGB;
+			case Format::RGBA: return GL_RGBA;
+			case Format::DEPTH32F: return GL_DEPTH_COMPONENT;
+		}
+		ASSERT(false, "Could not convert format to openGL format. Unknown image format");
 	}
 
 	GLenum OpenGLImage::convertInternalFormat(Format format)
@@ -59,6 +75,7 @@ namespace atta
 		{
 			case Format::NONE: break;
 			case Format::RED: return GL_RED;
+			case Format::RGB16F: return GL_RGB16F;
 			case Format::RGB: return GL_RGB;
 			case Format::RGBA: return GL_RGBA;
 			case Format::DEPTH32F: return GL_DEPTH_COMPONENT;
@@ -74,6 +91,7 @@ namespace atta
 			case Format::RED: 
 			case Format::RGB: 
 			case Format::RGBA: return GL_UNSIGNED_BYTE;
+			case Format::RGB16F:
 			case Format::DEPTH32F: return GL_FLOAT;
 		}
 		ASSERT(false, "Could not convert format to openGL data type. Unknown image format");
