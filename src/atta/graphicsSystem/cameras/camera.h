@@ -22,7 +22,11 @@ namespace atta
 		vec3 getFront() const { return _front; }
 
 		void setPosition(const vec3& position) { _position = position; }
-		void setFront(const vec3& front);
+		void setLeft(const vec3& left) { _left = left; }
+		void setUp(const vec3& up) { _up = up; }
+		void setFront(const vec3& front) { _front = front; }
+		void update();
+
 		void setRatio(float ratio) { _ratio = ratio; }
 
 	protected:

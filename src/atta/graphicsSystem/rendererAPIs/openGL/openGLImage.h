@@ -18,6 +18,7 @@ namespace atta
 		~OpenGLImage();
 
 		static GLenum convertSizedInternalFormat(Format format);
+		static GLenum convertFormat(Format format);
 		static GLenum convertInternalFormat(Format format);
 		static GLenum convertDataType(Format format);
 		static GLenum convertSamplerWrap(Wrap samplerWrap);

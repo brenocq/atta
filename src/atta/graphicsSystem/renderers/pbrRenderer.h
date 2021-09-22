@@ -25,7 +25,20 @@ namespace atta
 		void* getImGuiTexture() const override { return _geometryPipeline->getImGuiTexture(); }
 
 	private:
+		void renderCube();
+		void renderQuad();
+		void generateCubemap();
+		void convoluteCubemap();
+		void prefilterCubemap();
+		void brdfLUT();
+
 		std::shared_ptr<Pipeline> _geometryPipeline;
+
+		std::shared_ptr<ShaderGroup> _backgroundShader;
+		unsigned int _envCubemap;
+		unsigned int _irradianceMap;
+		unsigned int _prefilterMap;
+		unsigned int _brdfLUT;
 	};
 }
 

@@ -101,13 +101,22 @@ namespace atta
 				// Update camera (wheel pressed)
 				if(activeViewport==i && ImGui::IsMouseDown(2))
 				{
+					mat4 orientation = mat4(1.0f);
 					vec3 position = viewport->getCamera()->getPosition();
+					vec3 front = viewport->getCamera()->getFront();
 					vec3 up = viewport->getCamera()->getUp();
 					vec3 left = viewport->getCamera()->getLeft();
 
-					position += up*io.MouseDelta.y*0.01f + -left*io.MouseDelta.x*0.01f;
+					float x = io.MouseDelta.x*0.01f;
+					float y = io.MouseDelta.y*0.01f;
 
-					viewport->getCamera()->setPosition(position);
+					orientation = rotationFromAxisAngle(-up, x) * 
+						rotationFromAxisAngle(-left, y);
+
+					viewport->getCamera()->setFront(orientation*front);
+					viewport->getCamera()->setUp(orientation*up);
+					viewport->getCamera()->setLeft(orientation*left);
+					viewport->getCamera()->update();
 				}
 
 				//----- Render to texture -----//
