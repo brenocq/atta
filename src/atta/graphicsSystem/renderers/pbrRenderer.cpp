@@ -15,6 +15,7 @@
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/transformComponent.h>
+#include <atta/componentSystem/components/relationshipComponent.h>
 #include <atta/componentSystem/components/materialComponent.h>
 #include <atta/componentSystem/components/pointLightComponent.h>
 #include <atta/componentSystem/components/directionalLightComponent.h>
@@ -141,11 +142,25 @@ namespace atta
 				MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
 				TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
 				MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
+				RelationshipComponent* relationship = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
 
 				if(mesh && transform)
 				{
 					mat4 model; 
 					model.setPosOriScale(transform->position, transform->orientation, transform->scale);
+
+					while(relationship && relationship->parent >= 0)
+					{
+						TransformComponent* ptransform = ComponentManager::getEntityComponent<TransformComponent>(relationship->parent);
+						if(ptransform)
+						{
+							mat4 pmodel; 
+							pmodel.setPosOriScale(ptransform->position, ptransform->orientation, ptransform->scale);
+							model = pmodel * model;
+						}
+						relationship = ComponentManager::getEntityComponent<RelationshipComponent>(relationship->parent);
+					}
+
 					model.transpose();
 					mat4 invModel = inverse(model);
 					shader->setMat4("model", model);

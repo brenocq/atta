@@ -34,45 +34,110 @@ namespace atta
 		if(ImGui::Button("Create"))
 			ComponentManager::createEntity();
 
-		static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | 
-			ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollY | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_NoBordersInBody;
-		if(ImGui::BeginTable("Scene", 1, flags, ImVec2(0, 250.0f)))
+		std::vector<EntityId> entities = ComponentManager::getEntities();
+		int i = 0;
+		ImGui::Text("Scene");
+		// Render root entities
+		for(EntityId entity : entities)
 		{
-			// The first column will use the default _WidthStretch when ScrollX is Off and _WidthFixed when ScrollX is On
-			ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
-			//ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed, 30.0f);
-			ImGui::TableHeadersRow();
+			RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
+			if(!r || (r && r->parent == -1))
+				renderTreeNode(entity, i);
+		}
+	}
 
-			std::vector<EntityId> entities = ComponentManager::getEntities();
+	void ScenePanel::renderTreeNode(EntityId entity, int& i)
+	{
+		//----- Selected -----//
+        ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+		if(entity == _selected)
+			nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
-			_someSelected = false;
-			for(EntityId entity : entities)
+		//----- Name -----//
+		std::string name = "<Object "+std::to_string(entity)+">";
+		NameComponent* n = ComponentManager::getEntityComponent<NameComponent>(entity);
+		RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
+		if(n) name = n->name;
+
+		//----- Leaf/Node -----//
+		if(r)
+		{
+			if(r->children.size() == 0)
+				nodeFlags |= ImGuiTreeNodeFlags_Leaf;
+		}
+		else
+			nodeFlags |= ImGuiTreeNodeFlags_Leaf;
+		bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)i++, nodeFlags, name.c_str());
+
+		//----- Select -----//
+		if(ImGui::IsItemClicked())
+		{
+			_selected = entity;
+			_someSelected = true;
+		}
+
+		//----- Drag/Drop -----//
+		if(ImGui::BeginDragDropSource())
+		{
+			ImGui::SetDragDropPayload("EntityId", &entity, sizeof(EntityId));
+			ImGui::Text(name.c_str());
+			ImGui::EndDragDropSource();
+		}
+		if(ImGui::BeginDragDropTarget())
+		{
+			if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("EntityId"))
 			{
-				std::string name = "<Object "+std::to_string(entity)+">";
-				NameComponent* n = ComponentManager::getEntityComponent<NameComponent>(entity);
-				if(n != nullptr) name = n->name;
+				DASSERT(payload->DataSize == sizeof(EntityId), "Payload data should have same size as EntityId");
+				EntityId childEntity = *(const EntityId*)payload->Data;
+				LOG_DEBUG("ScenePanel", "Now $1 is child of $0", entity, childEntity);
 
-				ImGui::TableNextRow();
-				ImGui::TableNextColumn();
+				// Update new parent (entity that received drop)
+				if(r)
+					r->children.push_back(childEntity);
+				else
+				{
+					// Create parent relationship
+					r = ComponentManager::addEntityComponent<RelationshipComponent>(entity);
+					r->parent = -1;
+					r->children = { childEntity };
+				}
 
-                ImGui::Selectable(name.c_str(), _selected == entity);
-                if(ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-					_selected = entity;
-
-                if(ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
-                {
-                    ImGui::Text("Delete %lu", entity);
-                    ImGui::Text("Add component");
-                    if (ImGui::Button("Close"))
-                        ImGui::CloseCurrentPopup();
-                    ImGui::EndPopup();
-                }
-
-				// If entity is still selected
-				if(entity == _selected)
-					_someSelected = true;
+				// Update child relationship (entity that was dropped)
+				RelationshipComponent* cr = ComponentManager::getEntityComponent<RelationshipComponent>(childEntity);
+				if(cr)
+				{
+					// Remove old entity parent if necessary
+					if(cr->parent != -1)
+					{
+						RelationshipComponent* oldp = ComponentManager::getEntityComponent<RelationshipComponent>(cr->parent);
+						DASSERT(oldp, "Entity dropped has parent, so parent must have parent relationship too");
+						for(size_t i = 0; i < oldp->children.size(); i++)
+							if(oldp->children[i] == childEntity)
+							{
+								oldp->children.erase(oldp->children.begin()+i);
+								break;
+							}
+					}
+				}
+				else
+				{
+					// Create child relationship
+					cr = ComponentManager::addEntityComponent<RelationshipComponent>(childEntity);
+					cr->children = {};
+				}
+				// Set child parent
+				cr->parent = entity;
 			}
-			ImGui::EndTable();
+			ImGui::EndDragDropTarget();
+		}
+
+		//----- Children -----//
+		if(nodeOpen)
+		{
+			if(r && r->children.size() > 0)
+				for(auto child : r->children)
+					renderTreeNode(child, i);
+			ImGui::TreePop();
 		}
 	}
 

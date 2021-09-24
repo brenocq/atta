@@ -10,7 +10,7 @@
 
 namespace atta
 {
-	using EntityId = size_t;// Index inside entity pool
+	using EntityId = int;// Index inside entity pool
 	using ComponentId = StringHash;// Component allocator name hash (COMPONENT_POOL_SID(T) result)
 }
 
