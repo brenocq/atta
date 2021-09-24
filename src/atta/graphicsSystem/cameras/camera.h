@@ -16,6 +16,8 @@ namespace atta
 		virtual mat4 getView() const = 0;
 		virtual mat4 getProj() const = 0;
 
+		virtual void move() = 0;
+
 		vec3 getPosition() const { return _position; }
 		vec3 getLeft() const { return _left; }
 		vec3 getUp() const { return _up; }
@@ -28,6 +30,7 @@ namespace atta
 		void update();
 
 		void setRatio(float ratio) { _ratio = ratio; }
+
 
 	protected:
 		vec3 _position;

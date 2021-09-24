@@ -35,6 +35,9 @@ namespace atta
 		std::shared_ptr<Renderer> getRenderer() const { return _renderer; }
 		std::shared_ptr<Camera> getCamera() const { return _camera; }
 
+		void setRenderer(std::shared_ptr<Renderer> renderer) { _renderer = renderer; }
+		void setCamera(std::shared_ptr<Camera> camera) { _camera = camera; }
+
 	private:
 		StringId _sid;
 		std::shared_ptr<Renderer> _renderer;

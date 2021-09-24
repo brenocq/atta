@@ -21,7 +21,8 @@
 
 namespace atta
 {
-	FastRenderer::FastRenderer()
+	FastRenderer::FastRenderer():
+		Renderer("FastRenderer")
 	{
 		// Framebuffer
 		Framebuffer::CreateInfo framebufferInfo {};

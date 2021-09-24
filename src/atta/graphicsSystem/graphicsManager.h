@@ -40,6 +40,7 @@ namespace atta
 		static std::shared_ptr<RendererAPI> getRendererAPI() { return getInstance().getRendererAPIImpl(); };
 
 		static std::vector<std::shared_ptr<Viewport>>& getViewports() { return getInstance().getViewportsImpl(); }
+		static void addViewport(std::shared_ptr<Viewport> viewport) { return getInstance().addViewportImpl(viewport); }
 
 		static void* getImGuiImage(StringId sid) { return getInstance().getImGuiImageImpl(sid); }
 
@@ -55,6 +56,7 @@ namespace atta
 
 		std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
 		std::vector<std::shared_ptr<Viewport>>& getViewportsImpl() { return _viewports; };
+		void addViewportImpl(std::shared_ptr<Viewport> viewport) { _viewports.push_back(viewport); }
 
 		void* getImGuiImageImpl(StringId sid) const { return _rendererAPI->getImGuiImage(sid); }
 

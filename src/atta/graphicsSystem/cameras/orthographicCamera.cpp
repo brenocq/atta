@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphicsSystem/cameras/orthographicCamera.h>
+#include <imgui_internal.h>
 
 namespace atta
 {
@@ -31,5 +32,15 @@ namespace atta
 	mat4 OrthographicCamera::getProj() const
 	{
 		return orthographic(_height, _ratio, _far);
+	}
+
+	void OrthographicCamera::move()
+	{
+        ImGuiIO& io = ImGui::GetIO();
+
+		float x = io.MouseDelta.x*0.01f;
+		float y = io.MouseDelta.y*0.01f;
+
+		_position += x*_left + -y*_up;
 	}
 }

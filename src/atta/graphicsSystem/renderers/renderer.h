@@ -15,6 +15,7 @@ namespace atta
 	class Renderer
 	{
 	public:
+		Renderer(const char* name): _name(StringId(name)) {}
 		virtual ~Renderer() = default;
 
 		virtual void render(std::shared_ptr<Camera> camera) = 0;
@@ -24,9 +25,13 @@ namespace atta
 		virtual uint32_t getHeight() const = 0;
 		virtual void* getImGuiTexture() const = 0;
 
+		std::string getName() const { return _name.getString(); }
+		StringId getSID() const { return _name; }
+
 	protected:
 		uint32_t _width;
 		uint32_t _height;
+		StringId _name;
 	};
 }
 

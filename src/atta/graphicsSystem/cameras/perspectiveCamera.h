@@ -28,10 +28,14 @@ namespace atta
 		mat4 getView() const override;
 		mat4 getProj() const override;
 
+		void move() override;
+
 	private:
 		float _near;
 		float _far;
 		float _fov;
+
+		float _speed;
 	};
 }
 
