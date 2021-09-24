@@ -7,7 +7,7 @@
 
 <p align="center">
  <img src="https://storage.googleapis.com/atta-images/evolution/2020-08-16.png" height="200">
- <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-24.png" height="200">
+ <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-24.gif" height="200">
  <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-08.gif" height="200">
 </p>
 
