@@ -122,4 +122,12 @@ namespace atta
 				return fs::path();
 		}
 	}
+
+	std::vector<fs::path> FileManager::getResourcePathsImpl() const
+	{
+		if(_project != nullptr)
+			return _project->getResourceRootPaths();
+		else
+			return { fs::path(ATTA_DIR)/"resources" };
+	}
 }

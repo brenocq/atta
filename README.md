@@ -7,7 +7,7 @@
 
 <p align="center">
  <img src="https://storage.googleapis.com/atta-images/evolution/2020-08-16.png" height="200">
- <img src="https://storage.googleapis.com/atta-images/evolution/2021-02-20.png" height="200">
+ <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-24.png" height="200">
  <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-08.gif" height="200">
 </p>
 
@@ -32,8 +32,8 @@ Atta should build without errors when the compiller supports C++17.\
 If you found any errors when building, do not hesitate to create an issue.
 
 ```
-$ git clone --recursive git@github.com:Brenocq/Atta.git
-$ cd Atta
+$ git clone --recursive git@github.com:brenocq/atta.git
+$ cd atta
 $ mkdir build && cd build
 $ cmake ..
 $ make -j

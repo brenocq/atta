@@ -22,6 +22,7 @@ namespace atta
 
 		fs::path getBuildDirectory();
 		fs::path getSnapshotDirectory();
+		std::vector<fs::path> getResourceRootPaths() const { return _resourceRootPaths; }
 
 	private:
 		fs::path solveResourcePath(fs::path relativePath);

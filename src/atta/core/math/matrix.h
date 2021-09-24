@@ -153,7 +153,6 @@ namespace atta
 		res.mat[2][2] = -(far + near) * oneOverDepth;
 		res.mat[2][3] = -2*far*near * oneOverDepth;
 		res.mat[3][2] = -1;
-		res.mat[1][1] *= -1;
 
 		return res;
 	}

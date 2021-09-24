@@ -97,10 +97,12 @@ namespace atta
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-		// Create vertex/indices of meshes already loaded
-		std::vector<StringId> meshSids = ResourceManager::getResources<Mesh>();
-		for(auto meshSid : meshSids)
-			_openGLMeshes[meshSid.getId()] = std::make_shared<OpenGLMesh>(meshSid);
+		// Initialize meshes already loaded (create vertex/indices)
+		for(auto meshSid : ResourceManager::getResources<Mesh>())
+			initializeMesh(meshSid);
+		// Initialize textures already loaded
+		for(auto texSid : ResourceManager::getResources<Texture>())
+			initializeTexture(texSid);
 	}
 
 	OpenGLRenderer::~OpenGLRenderer()
@@ -144,15 +146,38 @@ namespace atta
 	void OpenGLRenderer::onMeshLoadEvent(Event& event)
 	{
 		MeshLoadEvent& e = reinterpret_cast<MeshLoadEvent&>(event);
-		LOG_DEBUG("OpenGLRenderer", "Mesh load event! [w]$0[]", e.sid);
-		_openGLMeshes[e.sid.getId()] = std::make_shared<OpenGLMesh>(e.sid);
+		initializeMesh(e.sid);
 	}
 
 	void OpenGLRenderer::onTextureLoadEvent(Event& event)
 	{
 		TextureLoadEvent& e = reinterpret_cast<TextureLoadEvent&>(event);
+		initializeTexture(e.sid);
+	}
 
-		Texture* texture = ResourceManager::get<Texture>(e.sid.getString());
+	void OpenGLRenderer::framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer)
+	{
+		glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
+
+		std::shared_ptr<OpenGLFramebuffer> openGLFramebuffer = std::static_pointer_cast<OpenGLFramebuffer>(framebuffer);
+		std::shared_ptr<OpenGLImage> openGLImage = std::static_pointer_cast<OpenGLImage>(openGLFramebuffer->getImage(0));
+
+		_quadShader->bind();
+		glBindVertexArray(quadVAO);
+		glDisable(GL_DEPTH_TEST);
+		glBindTexture(GL_TEXTURE_2D, openGLImage->getId());
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
+	void OpenGLRenderer::initializeMesh(StringId sid)
+	{
+		_openGLMeshes[sid.getId()] = std::make_shared<OpenGLMesh>(sid);
+		LOG_DEBUG("OpenGLRenderer", "Mesh loaded! [w]$0[]", sid);
+	}
+
+	void OpenGLRenderer::initializeTexture(StringId sid)
+	{
+		Texture* texture = ResourceManager::get<Texture>(sid.getString());
 		
 		Image::CreateInfo info {};
 		info.width = texture->getWidth();
@@ -168,23 +193,9 @@ namespace atta
 		else if(texture->getChannels() == 1)
 			info.format = Image::Format::RED;
 
-		info.debugName = e.sid;
-		_openGLImages[e.sid.getId()] = std::make_shared<OpenGLImage>(info);
+		info.debugName = sid;
+		_openGLImages[sid.getId()] = std::make_shared<OpenGLImage>(info);
 
-		LOG_DEBUG("OpenGLRenderer", "Texture load event! [w]$0[] -> $1 ($2)", e.sid, _openGLImages[e.sid.getId()]->getId(), info.format == Image::Format::RGB16F);
-	}
-
-	void OpenGLRenderer::framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer)
-	{
-		glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
-
-		std::shared_ptr<OpenGLFramebuffer> openGLFramebuffer = std::static_pointer_cast<OpenGLFramebuffer>(framebuffer);
-		std::shared_ptr<OpenGLImage> openGLImage = std::static_pointer_cast<OpenGLImage>(openGLFramebuffer->getImage(0));
-
-		_quadShader->bind();
-		glBindVertexArray(quadVAO);
-		glDisable(GL_DEPTH_TEST);
-		glBindTexture(GL_TEXTURE_2D, openGLImage->getId());
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		LOG_DEBUG("OpenGLRenderer", "Texture loaded! [w]$0[] -> $1 ($2)", sid, _openGLImages[sid.getId()]->getId(), info.format == Image::Format::RGB16F);
 	}
 }
