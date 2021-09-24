@@ -224,10 +224,15 @@ namespace atta
 				static bool aoIsTexture = false;
 				static bool normalIsTexture = false;
 
-				albedoIsTexture = material->albedo.x == -1.0f;
-				metallicIsTexture = material->metallic == -1.0f;
-				roughnessIsTexture = material->roughness == -1.0f;
-				aoIsTexture = material->ao == -1.0f;
+				//albedoIsTexture = material->albedo.x == -1.0f;
+				//metallicIsTexture = material->metallic == -1.0f;
+				//roughnessIsTexture = material->roughness == -1.0f;
+				//aoIsTexture = material->ao == -1.0f;
+
+				albedoIsTexture = material->albedoTexture.getId() != SID("Empty texture");
+				metallicIsTexture = material->metallicTexture.getId() != SID("Empty texture");
+				roughnessIsTexture = material->roughnessTexture.getId() != SID("Empty texture");
+				aoIsTexture = material->aoTexture.getId() != SID("Empty texture");
 
 				float min = 0.0f;
 				float max = 1.0f;
@@ -250,30 +255,7 @@ namespace atta
 						ImGui::SliderScalar("B##SceneMaterialB", ImGuiDataType_Float, &material->albedo.z, &min, &max, "%.6f");
 					}
 					else
-					{
-						static char buf[254] = "";
-
-						if(material->albedo.x != -1.0f)
-						{
-							material->albedo.x = -1.0f;
-							material->albedo.y = -1.0f;
-							material->albedo.z = -1.0f;
-						}
-
-						if(buf[0] == '\0')
-							strcpy(buf, material->albedoTexture.getString().c_str());
-
-						ImGui::InputText("Path##albedoInput", buf, sizeof(buf));
-						ImGui::SameLine();
-						if(ImGui::Button("Load##albedoLoadTex"))
-						{
-							Texture* tex = ResourceManager::get<Texture>(buf);
-							if(tex)
-								material->albedoTexture = tex->getId();
-							else
-								buf[0] = '\0';
-						}
-					}
+						textureCombo("albedoTextureCombo", material->albedoTexture);
 				}
 				{
 					ImGui::Text("Metallic");
@@ -290,26 +272,7 @@ namespace atta
 						ImGui::SliderScalar("##SceneMaterialMetallic", ImGuiDataType_Float, &material->metallic, &min, &max, "%.6f");
 					}
 					else
-					{
-						static char buf[254] = "";
-
-						if(material->metallic != -1.0f)
-							material->metallic = -1.0f;
-
-						if(buf[0] == '\0')
-							strcpy(buf, material->metallicTexture.getString().c_str());
-
-						ImGui::InputText("Path##metallicInput", buf, sizeof(buf));
-						ImGui::SameLine();
-						if(ImGui::Button("Load##metallicLoadTex"))
-						{
-							Texture* tex = ResourceManager::get<Texture>(buf);
-							if(tex)
-								material->metallicTexture = tex->getId();
-							else
-								buf[0] = '\0';
-						}
-					}
+						textureCombo("metallicTextureCombo", material->metallicTexture);
 				}
 				{
 					ImGui::Text("Roughness");
@@ -326,26 +289,7 @@ namespace atta
 						ImGui::SliderScalar("##SceneMaterialRoughness", ImGuiDataType_Float, &material->roughness, &min, &max, "%.6f");
 					}
 					else
-					{
-						static char buf[254] = "";
-
-						if(material->roughness != -1.0f)
-							material->roughness = -1.0f;
-
-						if(buf[0] == '\0')
-							strcpy(buf, material->roughnessTexture.getString().c_str());
-
-						ImGui::InputText("Path##roughnessInput", buf, sizeof(buf));
-						ImGui::SameLine();
-						if(ImGui::Button("Load##roughnessLoadTex"))
-						{
-							Texture* tex = ResourceManager::get<Texture>(buf);
-							if(tex)
-								material->roughnessTexture = tex->getId();
-							else
-								buf[0] = '\0';
-						}
-					}
+						textureCombo("roughnessTextureCombo", material->roughnessTexture);
 				}
 				{
 					ImGui::Text("AO");
@@ -356,32 +300,13 @@ namespace atta
 						if(material->aoTexture.getId() != SID("Empty texture") || material->ao == -1)
 						{
 							material->aoTexture = StringId("Empty texture");
-							material->ao = 0.0f;
+							material->ao = 1.0f;
 						}
 
 						ImGui::SliderScalar("##SceneMaterialAO", ImGuiDataType_Float, &material->ao, &min, &max, "%.6f");
 					}
 					else
-					{
-						static char buf[254] = "";
-
-						if(material->ao != -1.0f)
-							material->ao = -1.0f;
-
-						if(buf[0] == '\0')
-							strcpy(buf, material->aoTexture.getString().c_str());
-
-						ImGui::InputText("Path##aoInput", buf, sizeof(buf));
-						ImGui::SameLine();
-						if(ImGui::Button("Load##aoLoadTex"))
-						{
-							Texture* tex = ResourceManager::get<Texture>(buf);
-							if(tex)
-								material->aoTexture = tex->getId();
-							else
-								buf[0] = '\0';
-						}
-					}
+						textureCombo("aoTextureCombo", material->aoTexture);
 				}
 				{
 					ImGui::Text("Normal");
@@ -452,5 +377,29 @@ namespace atta
 	{
 		eid = _selected;
 		return _someSelected;
+	}
+
+	void ScenePanel::textureCombo(std::string comboId, StringId& sid)
+	{
+		std::vector<StringId> textures = ResourceManager::getResources<Texture>();
+
+		if(sid == "Empty texture")
+		{
+			DASSERT(textures.size()>0, "At least one texture should be loaded to the memory");
+			sid = textures[0];
+		}
+
+
+		if(ImGui::BeginCombo(("Texture##"+comboId).c_str(), fs::path(sid.getString()).filename().string().c_str()))
+		{
+			for(size_t i = 0; i < textures.size(); i++)
+			{
+				if(ImGui::Selectable(fs::path(textures[i].getString()).filename().string().c_str(), sid == textures[i]))
+					sid = textures[i];
+				if(textures[i] == sid)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
 	}
 }

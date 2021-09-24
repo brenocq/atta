@@ -37,6 +37,9 @@ namespace atta
 		std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> getOpenGLImages() const { return _openGLImages; };
 	
 	private:
+		void initializeMesh(StringId sid);
+		void initializeTexture(StringId sid);
+
 		std::shared_ptr<Window> _window;
 		std::unordered_map<StringHash, std::shared_ptr<OpenGLMesh>> _openGLMeshes;
 		std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> _openGLImages;

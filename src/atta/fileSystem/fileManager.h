@@ -36,6 +36,7 @@ namespace atta
 		// By default searches on the <ATTA_DIR>/resources and <PROJECT_DIR>/resources directories
 		// The return is the absolute resource path
 		static fs::path solveResourcePath(fs::path relativePath) { return getInstance().solveResourcePathImpl(relativePath); }
+		static std::vector<fs::path> getResourcePaths() { return getInstance().getResourcePathsImpl(); }
 
 		// Update watcher (TODO remove)
 		static void update() { getInstance().updateImpl(); };
@@ -52,6 +53,7 @@ namespace atta
 		void saveNewProjectImpl(fs::path projectFile);
 
 		fs::path solveResourcePathImpl(fs::path relativePath);
+		std::vector<fs::path> getResourcePathsImpl() const;
 
 		// TODO remove
 		void updateImpl();

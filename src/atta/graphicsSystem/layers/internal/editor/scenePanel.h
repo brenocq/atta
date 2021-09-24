@@ -22,6 +22,7 @@ namespace atta
 	private:
 		void renderTree();
 		void renderComponents();
+		void textureCombo(std::string comboId, StringId& sid);
 
 		EntityId _selected;
 		bool _someSelected;

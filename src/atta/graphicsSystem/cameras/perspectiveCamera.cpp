@@ -32,7 +32,9 @@ namespace atta
 
 	mat4 PerspectiveCamera::getProj() const
 	{
-		return perspective(_fov, _ratio, _near, _far);
+		mat4 proj = perspective(_fov, _ratio, _near, _far);
+		proj.mat[1][1] *= -1;
+		return proj;
 	}
 
 	void PerspectiveCamera::move()

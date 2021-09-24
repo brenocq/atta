@@ -6,9 +6,10 @@
 //--------------------------------------------------
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/memorySystem/memoryManager.h>
-#include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/meshLoadEvent.h>
 #include <atta/eventSystem/events/textureLoadEvent.h>
+#include <atta/eventSystem/events/projectOpenEvent.h>
+#include <atta/fileSystem/fileManager.h>
 
 namespace atta
 {
@@ -30,17 +31,51 @@ namespace atta
 		_allocator = new BitmapAllocator(resourceMemory, size);
 		MemoryManager::registerAllocator(SSID("ResourceAllocator"), static_cast<Allocator*>(_allocator));
 
+		// Subscribe to project open (load project events when opened)
+		EventManager::subscribe<ProjectOpenEvent>(BIND_EVENT_FUNC(ResourceManager::onProjectOpen));
+
 		// Default resources
-		ResourceManager::get<Mesh>("meshes/plane.obj");
-		ResourceManager::get<Mesh>("meshes/cube.obj");
-		ResourceManager::get<Mesh>("meshes/sphere.obj");
-		ResourceManager::get<Mesh>("meshes/triangle.obj");
+		for(auto& resourcePath : FileManager::getResourcePaths())
+			loadResourcesRecursively(resourcePath);
 	}
 
 	void ResourceManager::shutDown() { getInstance().shutDownImpl(); }
 	void ResourceManager::shutDownImpl()
 	{
 
+	}
+
+	void ResourceManager::onProjectOpen(Event& event)
+	{
+		for(auto& resourcePath : FileManager::getResourcePaths())
+			loadResourcesRecursively(resourcePath);
+	}
+
+	void ResourceManager::loadResourcesRecursively(fs::path directory)
+	{
+		static const std::vector<std::string> meshExtensions { ".obj", ".3ds", ".fbx", ".stl", ".ply" };
+		static const std::vector<std::string> textureExtensions { ".jpg", ".jpeg", ".png", ".hdr" };
+		
+		for(auto& p : fs::recursive_directory_iterator(directory))
+			if(!p.is_directory())
+			{
+				// Load meshes
+				for(auto& extension : meshExtensions)
+					if(extension == p.path().extension().string())
+					{
+						LOG_DEBUG("ResourceManager", "Resource mesh: $0", fs::relative(p.path(), directory).string());
+						ResourceManager::get<Mesh>(fs::relative(p.path(), directory).string());
+						break;
+					}
+				// Load textures
+				for(auto& extension : textureExtensions)
+					if(extension == p.path().extension().string())
+					{
+						LOG_DEBUG("ResourceManager", "Resource texture: $0", fs::relative(p.path(), directory).string());
+						ResourceManager::get<Texture>(fs::relative(p.path(), directory).string());
+						break;
+					}
+			}
 	}
 
 	template <>

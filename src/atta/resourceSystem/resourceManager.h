@@ -7,6 +7,7 @@
 #ifndef ATTA_RESOURCE_SYSTEM_RESOURCE_MANAGER_H
 #define ATTA_RESOURCE_SYSTEM_RESOURCE_MANAGER_H
 #include <atta/memorySystem/allocators/bitmapAllocator.h>
+#include <atta/eventSystem/eventManager.h>
 #include <atta/core/stringId.h>
 #include <atta/resourceSystem/resources/resources.h>
 
@@ -30,6 +31,8 @@ namespace atta
 	private:
 		void startUpImpl();
 		void shutDownImpl();
+		void loadResourcesRecursively(fs::path directory);
+		void onProjectOpen(Event& event);
 
 		template <typename R>
 		R* getImpl(const fs::path& filename);
