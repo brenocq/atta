@@ -22,7 +22,8 @@
 
 namespace atta
 {
-	PhongRenderer::PhongRenderer()
+	PhongRenderer::PhongRenderer():
+		Renderer("PhongRenderer")
 	{
 		//---------- Create geometry pipeline ----------//
 		// Framebuffer
@@ -60,7 +61,6 @@ namespace atta
 
 	PhongRenderer::~PhongRenderer()
 	{
-
 	}
 
 	void PhongRenderer::render(std::shared_ptr<Camera> camera)
@@ -146,6 +146,7 @@ namespace atta
 					GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
 				}
 			}
+
 		}
 		_geometryPipeline->end();
 	}

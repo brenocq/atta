@@ -21,10 +21,13 @@ namespace atta
 		void preferences();
 		void openProjectModal();
 		void createProjectModal();
+		void viewportModals();
 
 		bool _showPreferences;
 		bool _showOpenProject;
 		bool _showCreateProject;
+
+		std::vector<bool> _viewportModals;// True/false for each viewport window
 	};
 }
 

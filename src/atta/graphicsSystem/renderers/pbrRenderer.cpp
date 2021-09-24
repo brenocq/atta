@@ -22,7 +22,8 @@
 
 namespace atta
 {
-	PbrRenderer::PbrRenderer()
+	PbrRenderer::PbrRenderer():
+		Renderer("PbrRenderer")
 	{
 		//---------- Create geometry pipeline ----------//
 		// Framebuffer

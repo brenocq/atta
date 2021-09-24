@@ -67,8 +67,6 @@ namespace atta
 
 	void EditorLayer::updateViewports()
 	{
-        ImGuiIO& io = ImGui::GetIO();
-
 		std::vector<std::shared_ptr<Viewport>> viewports = GraphicsManager::getViewports();
 		static int activeViewport = 0;
 
@@ -100,24 +98,7 @@ namespace atta
 
 				// Update camera (wheel pressed)
 				if(activeViewport==i && ImGui::IsMouseDown(2))
-				{
-					mat4 orientation = mat4(1.0f);
-					vec3 position = viewport->getCamera()->getPosition();
-					vec3 front = viewport->getCamera()->getFront();
-					vec3 up = viewport->getCamera()->getUp();
-					vec3 left = viewport->getCamera()->getLeft();
-
-					float x = io.MouseDelta.x*0.01f;
-					float y = io.MouseDelta.y*0.01f;
-
-					orientation = rotationFromAxisAngle(-up, x) * 
-						rotationFromAxisAngle(-left, y);
-
-					viewport->getCamera()->setFront(orientation*front);
-					viewport->getCamera()->setUp(orientation*up);
-					viewport->getCamera()->setLeft(orientation*left);
-					viewport->getCamera()->update();
-				}
+					viewport->getCamera()->move();
 
 				//----- Render to texture -----//
 				ImVec2 size = ImVec2(viewport->getWidth(), viewport->getHeight());
