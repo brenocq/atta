@@ -277,6 +277,26 @@ namespace atta
 					write(os, prototype.second->maxClones);
 				}
 			}
+			else if(component == "Relationship")
+			{
+				std::vector<std::pair<EntityId,RelationshipComponent*>> relationships;
+				for(auto entity : entities)
+				{
+					RelationshipComponent* relationship = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
+					if(relationship != nullptr)
+						relationships.push_back(std::make_pair(entity, relationship));
+				}
+
+				write<uint32_t>(os, relationships.size());
+				for(auto relationship : relationships)
+				{
+					write(os, relationship.first);
+					write(os, relationship.second->parent);
+					write<uint32_t>(os, relationship.second->children.size());
+					for(auto child : relationship.second->children)
+						write(os, child);
+				}
+			}
 		}
 	}
 
@@ -476,6 +496,31 @@ namespace atta
 					// Add entity prototype component
 					PrototypeComponent* prototype = ComponentManager::addEntityComponent<PrototypeComponent>(eid);
 					*prototype = temp;
+				}
+			}
+			else if(marker == "Relationship")
+			{
+				uint32_t numRelationships;
+				read<uint32_t>(is, numRelationships);
+				LOG_VERBOSE("ProjectSerializer","Num relationships: $0", numRelationships);
+				for(uint32_t i = 0; i < numRelationships; i++)
+				{
+					EntityId eid;
+					read(is, eid);
+					RelationshipComponent temp {};
+					read(is, temp.parent);
+					uint32_t numChildren;
+					read(is, numChildren);
+					for(size_t i = 0; i < numChildren; i++)
+					{
+						EntityId child;
+						read(is, child);
+						temp.children.push_back(child);
+					}
+
+					// Add entity relationship component
+					RelationshipComponent* relationship = ComponentManager::addEntityComponent<RelationshipComponent>(eid);
+					*relationship = temp;
 				}
 			}
 			else

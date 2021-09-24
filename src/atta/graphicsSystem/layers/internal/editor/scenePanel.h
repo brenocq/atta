@@ -21,6 +21,8 @@ namespace atta
 		bool getSelected(EntityId& eid);
 	private:
 		void renderTree();
+		void renderTreeNode(EntityId entity, int& i);
+
 		void renderComponents();
 		void textureCombo(std::string comboId, StringId& sid);
 

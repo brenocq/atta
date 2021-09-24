@@ -11,6 +11,7 @@
 #include <atta/componentSystem/components/transformComponent.h>
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/materialComponent.h>
+#include <atta/componentSystem/components/relationshipComponent.h>
 #include <atta/componentSystem/components/scriptComponent.h>
 #include <atta/componentSystem/components/prototypeComponent.h>
 #include <atta/componentSystem/components/pointLightComponent.h>

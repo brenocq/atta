@@ -15,7 +15,7 @@ namespace atta
 {
 	void ComponentManager::startUpImpl()
 	{
-		_maxEntities = 1024*1024;
+		_maxEntities = 1024;
 
 		//----- System Memory -----//
 		// Get main memory
@@ -68,6 +68,7 @@ namespace atta
 		registerComponentPoolImpl<NameComponent>(_maxEntities, "Name");
 		registerComponentPoolImpl<MeshComponent>(_maxEntities, "Mesh");
 		registerComponentPoolImpl<ScriptComponent>(_maxEntities, "Script");
+		registerComponentPoolImpl<RelationshipComponent>(_maxEntities, "Relationship");
 		registerComponentPoolImpl<PrototypeComponent>(_maxEntities, "Prototype");
 		registerComponentPoolImpl<MaterialComponent>(_maxEntities, "Material");
 		registerComponentPoolImpl<PointLightComponent>(_maxEntities, "Point Light");
