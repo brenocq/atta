@@ -9,6 +9,7 @@
 #include <atta/scriptSystem/scriptManager.h>
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
+#include <atta/sensorSystem/sensorManager.h>
 #include <imgui.h>
 
 namespace atta
@@ -25,6 +26,7 @@ namespace atta
 			renderTree();
         	ImGui::Separator();
 			renderComponents();
+			renderCameraWindows();
 		}
 		ImGui::End();
 	}
@@ -206,6 +208,14 @@ namespace atta
 			{
 				PrototypeComponent* prototype = ComponentManager::addEntityComponent<PrototypeComponent>(_selected);
 				prototype->maxClones = 1;
+			}
+
+			ImGui::Separator();
+
+			if(ImGui::Selectable("Camera##ComponentAddCamera"))
+			{
+				CameraComponent* camera = ComponentManager::addEntityComponent<CameraComponent>(_selected);
+				*camera = CameraComponent{};
 			}
 
 			ImGui::EndPopup();
@@ -436,6 +446,55 @@ namespace atta
 				ImGui::DragInt("MaxClones##ScenePrototypeMaxClones", &value, 1, 0, 1000000, "%d", ImGuiSliderFlags_AlwaysClamp);
 				prototype->maxClones = (uint64_t)value;
 			}
+
+		CameraComponent* camera = ComponentManager::getEntityComponent<CameraComponent>(_selected);
+		if(camera != nullptr)
+			if(ImGui::CollapsingHeader("Camera##ComponentsCameraHeader", ImGuiTreeNodeFlags_None))
+			{
+				if(ImGui::Button("View"))
+					_cameraWindows.insert(_selected);
+
+				std::vector<const char*> cameraTypes = {"Orthographic", "Perspective"};
+				uint8_t comboCamValue = (uint8_t)camera->cameraType;
+				if(ImGui::BeginCombo("Camera", cameraTypes[comboCamValue]))
+				{
+					for(size_t i = 0; i < cameraTypes.size(); i++)
+					{
+						if(ImGui::Selectable(cameraTypes[i], comboCamValue == i))
+							camera->cameraType = (CameraComponent::CameraType)i;
+						if(comboCamValue == i)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
+
+				std::vector<const char*> rendererTypes = {"Fast", "Phong", "PBR"};
+				uint8_t comboRenderValue = (uint8_t)camera->rendererType;
+				if(ImGui::BeginCombo("Renderer", rendererTypes[comboRenderValue]))
+				{
+					for(size_t i = 0; i < rendererTypes.size(); i++)
+					{
+						if(ImGui::Selectable(rendererTypes[i], comboRenderValue == i))
+							camera->rendererType = (CameraComponent::RendererType)i;
+						if(comboRenderValue == i)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
+
+				int width = camera->width;
+				ImGui::DragInt("Width##SceneCameraWidth", &width, 1, 0, 10000, "%d", ImGuiSliderFlags_AlwaysClamp);
+				camera->width = (uint32_t)width;
+
+				int height = camera->height;
+				ImGui::DragInt("Height##SceneCameraHeight", &height, 1, 0, 10000, "%d", ImGuiSliderFlags_AlwaysClamp);
+				camera->height = (uint32_t)height;
+
+				ImGui::DragFloat("FoV##SceneCameraFoV", &camera->fov, 0.005f, 0.0f, 180.0f, "%.2f", ImGuiSliderFlags_None);
+				ImGui::DragFloat("Near##SceneCameraNear", &camera->near, 0.005f, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_None);
+				ImGui::DragFloat("Far##SceneCameraFar", &camera->far, 0.005f, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_None);
+				ImGui::DragFloat("FPS##SceneCameraFPS", &camera->fps, 0.005f, 0.0f, 120.0f, "%.2f", ImGuiSliderFlags_None);
+			}
 	}
 
 	bool ScenePanel::getSelected(EntityId& eid)
@@ -465,6 +524,21 @@ namespace atta
 					ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();
+		}
+	}
+
+	void ScenePanel::renderCameraWindows()
+	{
+		for(auto eid : _cameraWindows)
+		{
+			CameraComponent* camera = ComponentManager::getEntityComponent<CameraComponent>(eid);
+			bool open = true;
+			ImGui::Begin(("Camera Entity "+std::to_string(eid)).c_str(), &open);
+			ImVec2 size = ImVec2(camera->width, camera->height);
+			ImGui::Image(SensorManager::getEntityCameraImGuiTexture(eid), size, ImVec2(0, 0), ImVec2(1, 1));
+			ImGui::End();
+
+			if(!open) _cameraWindows.erase(eid);
 		}
 	}
 }

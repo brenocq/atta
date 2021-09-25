@@ -18,8 +18,8 @@ namespace atta
 			vec3 position = {-3.0f, 0.0f, 0.0f};
 			vec3 lookAt = {0.0f, 0.0f, 0.0f};
 			vec3 up = {0.0f, 0.0f, 1.0f};
-			float near = 0.001f;
-			float far = 1000.0f;
+			float near = 0.01f;
+			float far = 100.0f;
 			float fov = 45.0f;
 			float ratio = 1.0f;
 		};

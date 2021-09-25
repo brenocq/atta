@@ -14,9 +14,6 @@
 #include <atta/resourceSystem/resources/mesh.h>
 #include <atta/resourceSystem/resources/texture.h>
 
-#define WRITE_BIN(s,x)
-#define WRITE_VEC_BIN(s,vec,size) s.write(reinterpret_cast<const char*>(vec), size);
-
 namespace atta
 {
 	ProjectSerializer::ProjectSerializer(std::shared_ptr<Project> project):
@@ -297,6 +294,30 @@ namespace atta
 						write(os, child);
 				}
 			}
+			else if(component == "Camera")
+			{
+				std::vector<std::pair<EntityId,CameraComponent*>> cameras;
+				for(auto entity : entities)
+				{
+					CameraComponent* camera = ComponentManager::getEntityComponent<CameraComponent>(entity);
+					if(camera != nullptr)
+						cameras.push_back(std::make_pair(entity, camera));
+				}
+
+				write<uint32_t>(os, cameras.size());
+				for(auto camera : cameras)
+				{
+					write(os, camera.first);
+					write(os, camera.second->width);
+					write(os, camera.second->height);
+					write(os, camera.second->fov);
+					write(os, camera.second->far);
+					write(os, camera.second->near);
+					write(os, camera.second->fps);
+					write(os, camera.second->cameraType);
+					write(os, camera.second->rendererType);
+				}
+			}
 		}
 	}
 
@@ -521,6 +542,30 @@ namespace atta
 					// Add entity relationship component
 					RelationshipComponent* relationship = ComponentManager::addEntityComponent<RelationshipComponent>(eid);
 					*relationship = temp;
+				}
+			}
+			else if(marker == "Camera")
+			{
+				uint32_t numCameras;
+				read<uint32_t>(is, numCameras);
+				LOG_VERBOSE("ProjectSerializer","Num cameras: $0", numCameras);
+				for(uint32_t i = 0; i < numCameras; i++)
+				{
+					EntityId eid;
+					read(is, eid);
+					CameraComponent temp {};
+					read(is, temp.width);
+					read(is, temp.height);
+					read(is, temp.fov);
+					read(is, temp.far);
+					read(is, temp.near);
+					read(is, temp.fps);
+					read(is, temp.cameraType);
+					read(is, temp.rendererType);
+
+					// Add entity camera component
+					CameraComponent* camera = ComponentManager::addEntityComponent<CameraComponent>(eid);
+					*camera = temp;
 				}
 			}
 			else

@@ -20,6 +20,7 @@
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/graphicsSystem/pipeline.h>
+#include <atta/sensorSystem/sensorManager.h>
 
 // Include execute code
 #include <atta/scriptSystem/script.h>
@@ -44,6 +45,7 @@ namespace atta
 		ComponentManager::startUp();
 		GraphicsManager::startUp();
 		ScriptManager::startUp();
+		SensorManager::startUp();
 
 		// Atta is the last one to reveice events
 		EventManager::subscribe<WindowCloseEvent>(BIND_EVENT_FUNC(Atta::onWindowClose));
@@ -52,12 +54,13 @@ namespace atta
 		EventManager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 		EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 
-		if(info.projectFile != "")
+		if(!info.projectFile.empty())
 			FileManager::openProject(info.projectFile);
 	}
 
 	Atta::~Atta()
 	{
+		SensorManager::shutDown();
 		ScriptManager::shutDown();
 		GraphicsManager::shutDown();
 		ComponentManager::shutDown();
@@ -70,7 +73,7 @@ namespace atta
 
 	void Atta::run()
 	{
-		
+		float dt = 0.01;
 		while(!_shouldFinish)
 		{
 			// TODO Abstract this
@@ -80,7 +83,7 @@ namespace atta
 				static clock_t lastTime = std::clock();
 				const clock_t currTime = std::clock();
 				float timeDiff = float(currTime-lastTime)/CLOCKS_PER_SEC;
-				if(timeDiff > 0.1f)
+				if(timeDiff > 0.03f)
 				{
 					GraphicsManager::update();
 					lastTime = currTime;
@@ -92,40 +95,39 @@ namespace atta
 
 			if(_simulationState == SimulationState::RUNNING)
 			{
-				ProjectScript* project = ScriptManager::getProjectScript();
-				if(!project)
-					LOG_WARN("Atta", "No project script was found");
+				SensorManager::update(dt);
 
+				ProjectScript* project = ScriptManager::getProjectScript();
 				if(project)
-					project->onUpdateBefore(0.01);
+					project->onUpdateBefore(dt);
 
 				std::vector<EntityId> entities = ComponentManager::getEntities();
 				for(EntityId entity : entities)
 				{
 					ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(entity);
-					if(scriptComponent != nullptr)
+					if(scriptComponent)
 					{
 						Script* script = ScriptManager::getScript(scriptComponent->sid);
-						if(script != nullptr)
-							script->update(entity, 0.01);
+						if(script)
+							script->update(entity, dt);
 					}
 				}
 
 				for(auto& factory : ComponentManager::getFactories())
 				{
 					ScriptComponent* scriptComponent = factory.getComponent<ScriptComponent>();
-					if(scriptComponent != nullptr)
+					if(scriptComponent)
 					{
 						Script* script = ScriptManager::getScript(scriptComponent->sid);
 						std::vector<uint8_t*> memories = factory.getMemories();
-						if(script != nullptr)
+						if(script)
 							for(uint64_t i = 0; i < factory.getMaxClones(); i++)
-								script->update(memories, i, 0.01);
+								script->update(memories, i, dt);
 					}
 				}
 
 				if(project)
-					project->onUpdateAfter(0.01);
+					project->onUpdateAfter(dt);
 			}
 
 			FileManager::update();
