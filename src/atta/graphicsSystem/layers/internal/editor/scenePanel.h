@@ -24,10 +24,12 @@ namespace atta
 		void renderTreeNode(EntityId entity, int& i);
 
 		void renderComponents();
+		void renderCameraWindows();
 		void textureCombo(std::string comboId, StringId& sid);
 
 		EntityId _selected;
 		bool _someSelected;
+		std::unordered_set<EntityId> _cameraWindows;
 	};
 }
 
