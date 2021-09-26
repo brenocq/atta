@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
 
-message(${CMAKE_CXX_COMPILER_ID})
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	# Set flags necessary for the script system to work correctly
 	set(CMAKE_CXX_FLAGS "-Wl,--export-dynamic")
 	set(CMAKE_EXE_LINKER_FLAGS "-Wl,--export-dynamic")
 endif()

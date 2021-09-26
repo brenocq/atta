@@ -15,6 +15,7 @@
 #include <atta/graphicsSystem/renderers/pbrRenderer.h>
 #include <atta/graphicsSystem/cameras/orthographicCamera.h>
 #include <atta/graphicsSystem/cameras/perspectiveCamera.h>
+#include <atta/graphicsSystem/drawer.h>
 
 namespace atta
 {
@@ -130,11 +131,13 @@ namespace atta
 
 	void SensorManager::cameraUpdate(float dt)
 	{
+		bool shouldRedraw = false;
 		for(size_t i = 0; i < _cameraLastTime.size(); i++)
 		{
 			float change = _currTime - _cameraLastTime[i];
 			if(change >= 1.0f/_cameraEntities[i].second->fps)
 			{
+				shouldRedraw = true;
 				//LOG_DEBUG("SensorManager", "Render camera $0", _cameraEntities[i].first);
 				EntityId entity = _cameraEntities[i].first;
 				TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
@@ -191,6 +194,13 @@ namespace atta
 					_cameraCameras[i]->setFront(rotation*vec3(0,0,1));
 					_cameraCameras[i]->setUp(rotation*vec3(1,0,0));
 					_cameraCameras[i]->update();
+
+					if(_cameraEntities[i].second->cameraType == CameraComponent::CameraType::PERSPECTIVE)
+					{
+						std::shared_ptr<PerspectiveCamera> persCam = std::static_pointer_cast<PerspectiveCamera>(_cameraCameras[i]);
+						persCam->setFov(radians(_cameraEntities[i].second->fov));
+					}
+
 					_cameraRenderers[i]->render(_cameraCameras[i]);
 				}
 				else
@@ -199,6 +209,11 @@ namespace atta
 				}
 			}
 		}
+		if(shouldRedraw)
+		{
+			// Add lines to drawer line buffer
+			drawCameras();
+		}
 	}
 
 	void SensorManager::cameraStop()
@@ -206,6 +221,38 @@ namespace atta
 		_cameraEntities.clear();
 		_cameraLastTime.clear();
 		_cameraRenderers.clear();
+	}
+
+	void SensorManager::drawCameras()
+	{
+		Drawer::clear<Drawer::Line>("atta::sensor::Camera"_ssid);
+		for(uint32_t i = 0; i < _cameraEntities.size(); i++)
+		{
+			vec3 pos = _cameraCameras[i]->getPosition();
+			vec3 front = _cameraCameras[i]->getFront();
+			vec3 up = _cameraCameras[i]->getUp();
+			vec3 left = _cameraCameras[i]->getLeft();
+			float fov = _cameraEntities[i].second->fov;
+			float ratio = _cameraEntities[i].second->width/(float)_cameraEntities[i].second->height;
+
+			vec3 plane = pos+front;
+			vec3 midLeft = left*tan(radians(fov/2));
+			vec3 midUp = up*tan(radians(fov/(2*ratio)));
+			vec3 tl = midLeft+midUp; 
+			vec3 tr = -midLeft+midUp; 
+			vec3 bl = midLeft-midUp; 
+			vec3 br = -midLeft-midUp; 
+
+			Drawer::add(Drawer::Line(pos, plane+tl, {1,1,0,1}, {1,1,0,1}), "atta::sensor::Camera"_ssid);
+			Drawer::add(Drawer::Line(pos, plane+tr, {1,1,0,1}, {1,1,0,1}), "atta::sensor::Camera"_ssid);
+			Drawer::add(Drawer::Line(pos, plane+bl, {1,1,0,1}, {1,1,0,1}), "atta::sensor::Camera"_ssid);
+			Drawer::add(Drawer::Line(pos, plane+br, {1,1,0,1}, {1,1,0,1}), "atta::sensor::Camera"_ssid);
+
+			Drawer::add(Drawer::Line(plane+tl, plane+tr, {1,1,0,1}, {1,1,0,1}), "atta::sensor::Camera"_ssid);
+			Drawer::add(Drawer::Line(plane+tr, plane+br, {1,1,0,1}, {1,1,0,1}), "atta::sensor::Camera"_ssid);
+			Drawer::add(Drawer::Line(plane+br, plane+bl, {1,1,0,1}, {1,1,0,1}), "atta::sensor::Camera"_ssid);
+			Drawer::add(Drawer::Line(plane+bl, plane+tl, {1,1,0,1}, {1,1,0,1}), "atta::sensor::Camera"_ssid);
+		}
 	}
 
 	void* SensorManager::getEntityCameraImGuiTexture(EntityId eid) { return getInstance().getEntityCameraImGuiTextureImpl(eid); }

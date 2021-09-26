@@ -48,8 +48,13 @@ namespace atta
 	// an entry to the stringId table (useful for debugging)
 #ifdef ATTA_DEBUG_BUILD
 	StringHash SSID(const char* str);
+	StringHash operator""_ssid(const char* str, std::size_t);
 #else
 	constexpr auto SSID = SID;
+	constexpr StringHash operator""_ssid(const char* str, std::size_t)
+	{
+		return SSID(str);
+	}
 #endif
 }
 

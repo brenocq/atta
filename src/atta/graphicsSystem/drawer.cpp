@@ -19,6 +19,7 @@ namespace atta
 		_lines.resize(_maxNumberOfLines);
 		_points.resize(_maxNumberOfPoints);
 		glPointSize(5.0f);
+		glLineWidth(2.0f);
 
 		// Line VAO
 		glGenVertexArrays(1, &_lineVAO);

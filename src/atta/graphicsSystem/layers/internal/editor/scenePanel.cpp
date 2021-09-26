@@ -490,10 +490,10 @@ namespace atta
 				ImGui::DragInt("Height##SceneCameraHeight", &height, 1, 0, 10000, "%d", ImGuiSliderFlags_AlwaysClamp);
 				camera->height = (uint32_t)height;
 
-				ImGui::DragFloat("FoV##SceneCameraFoV", &camera->fov, 0.005f, 0.0f, 180.0f, "%.2f", ImGuiSliderFlags_None);
-				ImGui::DragFloat("Near##SceneCameraNear", &camera->near, 0.005f, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_None);
-				ImGui::DragFloat("Far##SceneCameraFar", &camera->far, 0.005f, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_None);
-				ImGui::DragFloat("FPS##SceneCameraFPS", &camera->fps, 0.005f, 0.0f, 120.0f, "%.2f", ImGuiSliderFlags_None);
+				ImGui::DragFloat("FoV##SceneCameraFoV", &camera->fov, 0.5f, 0.0f, 180.0f, "%.3f", ImGuiSliderFlags_None);
+				ImGui::DragFloat("Near##SceneCameraNear", &camera->near, 0.5f, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_None);
+				ImGui::DragFloat("Far##SceneCameraFar", &camera->far, 0.5f, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_None);
+				ImGui::DragFloat("FPS##SceneCameraFPS", &camera->fps, 0.5f, 0.0f, 120.0f, "%.3f", ImGuiSliderFlags_None);
 			}
 	}
 

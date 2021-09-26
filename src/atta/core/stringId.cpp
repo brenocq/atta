@@ -63,5 +63,10 @@ namespace atta
 	{
 		return StringId(str).getId();
 	}
+
+	StringHash operator""_ssid(const char* str, std::size_t)
+	{
+		return SSID(str);
+	}
 #endif
 }

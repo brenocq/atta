@@ -41,7 +41,7 @@ namespace atta
 
 	constexpr StringHash operator""_sid(const char* str, std::size_t)
 	{
-		return StringId::crc32b(str);
+		return SID(str);
 	}
 
 	constexpr StringHash StringId::crc32b(const char* str)
