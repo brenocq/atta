@@ -19,9 +19,9 @@ namespace atta
 
 	}
 
-	void OpenGLRenderPass::begin()
+	void OpenGLRenderPass::begin(bool clear)
 	{
-		_framebuffer->bind();
+		_framebuffer->bind(clear);
 	}
 
 	void OpenGLRenderPass::end()

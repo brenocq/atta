@@ -23,7 +23,7 @@ namespace atta
 		RenderPass(const CreateInfo& info);
 		virtual ~RenderPass() = default;
 
-		virtual void begin() = 0;
+		virtual void begin(bool clear = true) = 0;
 		virtual void end() = 0;
 
 		std::shared_ptr<Framebuffer> getFramebuffer() const { return _framebuffer; }

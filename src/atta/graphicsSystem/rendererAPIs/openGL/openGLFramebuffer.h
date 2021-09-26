@@ -17,7 +17,7 @@ namespace atta
 		OpenGLFramebuffer(const Framebuffer::CreateInfo& info);
 		~OpenGLFramebuffer();
 
-		void bind() override;
+		void bind(bool clear = true) override;
 		void unbind() override;
 
 		void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;

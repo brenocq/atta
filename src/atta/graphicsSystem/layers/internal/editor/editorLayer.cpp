@@ -50,7 +50,7 @@ namespace atta
 		_dockSpace.render();
 		toolbar();
 
-		if(_editorState != EditorState::SIMULATION_RUNNING)
+		//if(_editorState != EditorState::SIMULATION_RUNNING)
 		{
 			_menuBar.render();
 			bool demo = true;

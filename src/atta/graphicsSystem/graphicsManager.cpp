@@ -21,6 +21,8 @@
 #include <atta/graphicsSystem/cameras/orthographicCamera.h>
 #include <atta/graphicsSystem/cameras/perspectiveCamera.h>
 
+#include <atta/graphicsSystem/drawer.h>
+
 namespace atta
 {
 	GraphicsManager& GraphicsManager::getInstance()
@@ -63,6 +65,10 @@ namespace atta
 		//viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<OrthographicCamera>(OrthographicCamera::CreateInfo{}));
 		viewportInfo.sid = StringId("Main Viewport");
 		_viewports.emplace_back(std::make_shared<Viewport>(viewportInfo));
+
+		Drawer::add(Drawer::Line({0,0,0}, {0,0,1}));
+		Drawer::add(Drawer::Line({0,0,0}, {1,1,1}, {0,0,1,1}, {0,0,1,1}));
+		//Drawer::add(Drawer::Point({0,0,1}));
 	}
 
 	void GraphicsManager::shutDown() { getInstance().shutDownImpl(); }

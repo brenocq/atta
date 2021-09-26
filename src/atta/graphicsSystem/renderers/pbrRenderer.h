@@ -33,6 +33,7 @@ namespace atta
 		void brdfLUT();
 
 		std::shared_ptr<Pipeline> _geometryPipeline;
+		std::shared_ptr<Pipeline> _linePipeline;
 
 		std::shared_ptr<ShaderGroup> _backgroundShader;
 		unsigned int _envCubemap;

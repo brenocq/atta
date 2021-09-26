@@ -21,12 +21,13 @@
 #include <atta/componentSystem/components/directionalLightComponent.h>
 #include <atta/componentSystem/factory.h>
 
+#include <atta/graphicsSystem/drawer.h>
+
 namespace atta
 {
 	PbrRenderer::PbrRenderer():
 		Renderer("PbrRenderer")
 	{
-		//---------- Create geometry pipeline ----------//
 		// Framebuffer
 		Framebuffer::CreateInfo framebufferInfo {};
 		framebufferInfo.attachments.push_back({Image::Format::RGB});
@@ -36,36 +37,65 @@ namespace atta
 		framebufferInfo.debugName = StringId("PbrRenderer Framebuffer");
 		std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
 
-		// Shader Group
-		ShaderGroup::CreateInfo shaderGroupInfo {};
-		shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/shader.vert", "shaders/pbrRenderer/shader.frag"};
-		shaderGroupInfo.debugName = StringId("PbrRenderer Shader Group");
-		std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+		//---------- Create geometry pipeline ----------//
+		{
+			// Shader Group
+			ShaderGroup::CreateInfo shaderGroupInfo {};
+			shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/shader.vert", "shaders/pbrRenderer/shader.frag"};
+			shaderGroupInfo.debugName = StringId("PbrRenderer Shader Group");
+			std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
 
-		// Render Pass
-		RenderPass::CreateInfo renderPassInfo {};
-		renderPassInfo.framebuffer = framebuffer;
-		renderPassInfo.debugName = StringId("PbrRenderer Render Pass");
-		std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+			// Render Pass
+			RenderPass::CreateInfo renderPassInfo {};
+			renderPassInfo.framebuffer = framebuffer;
+			renderPassInfo.debugName = StringId("PbrRenderer Render Pass");
+			std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
 
-		Pipeline::CreateInfo pipelineInfo {};
-		// Vertex input layout
-		pipelineInfo.shaderGroup = shaderGroup;
-		pipelineInfo.layout = {
-			{ "inPosition", VertexBufferElement::Type::VEC3 },
-			{ "inNormal", VertexBufferElement::Type::VEC3 },
-			{ "inTexCoord", VertexBufferElement::Type::VEC2 }
-		};
-		pipelineInfo.renderPass = renderPass;
-		_geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+			Pipeline::CreateInfo pipelineInfo {};
+			// Vertex input layout
+			pipelineInfo.shaderGroup = shaderGroup;
+			pipelineInfo.layout = {
+				{ "inPosition", VertexBufferElement::Type::VEC3 },
+				{ "inNormal", VertexBufferElement::Type::VEC3 },
+				{ "inTexCoord", VertexBufferElement::Type::VEC2 }
+			};
+			pipelineInfo.renderPass = renderPass;
+			_geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+		}
 
-		// Background shader
+		//---------- Create line pipeline ----------//
+		{
+			// Shader Group
+			ShaderGroup::CreateInfo shaderGroupInfo {};
+			shaderGroupInfo.shaderPaths = {"shaders/line/shader.vert", "shaders/line/shader.frag"};
+			shaderGroupInfo.debugName = StringId("PbrRenderer Line Shader Group");
+			std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+
+			// Render Pass
+			RenderPass::CreateInfo renderPassInfo {};
+			renderPassInfo.framebuffer = framebuffer;
+			renderPassInfo.debugName = StringId("PbrRenderer Line Render Pass");
+			std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+
+			Pipeline::CreateInfo pipelineInfo {};
+			// Vertex input layout
+			pipelineInfo.shaderGroup = shaderGroup;
+			pipelineInfo.layout = {
+				{ "inPos", VertexBufferElement::Type::VEC3 },
+				{ "inColor", VertexBufferElement::Type::VEC4 }
+			};
+			pipelineInfo.renderPass = renderPass;
+			_linePipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+		}
+
+		//---------- Create background shader ----------//
 		{
 			ShaderGroup::CreateInfo bgShaderGroupInfo {};
 			bgShaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/background.vert", "shaders/pbrRenderer/background.frag"};
 			bgShaderGroupInfo.debugName = StringId("PBR background Shader Group");
 			_backgroundShader = GraphicsManager::create<ShaderGroup>(bgShaderGroupInfo);
 		}
+
 	}
 
 	PbrRenderer::~PbrRenderer()
@@ -232,6 +262,16 @@ namespace atta
 
 		}
 		_geometryPipeline->end();
+
+		_linePipeline->begin(false);
+		{
+			std::shared_ptr<ShaderGroup> shader = _linePipeline->getShaderGroup();
+			shader->bind();
+			shader->setMat4("projection", transpose(camera->getProj()));
+			shader->setMat4("view", transpose(camera->getView()));
+			Drawer::draw<Drawer::Line>();
+		}
+		_linePipeline->end();
 	}
 
 	void PbrRenderer::resize(uint32_t width, uint32_t height)
