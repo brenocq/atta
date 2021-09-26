@@ -116,7 +116,9 @@ namespace atta
 			std::vector<Point> _points;// Updated only when get() is called
 
 			OpenGLId _lineVAO; 
+			OpenGLId _lineVBO; 
 			OpenGLId _pointVAO; 
+			OpenGLId _pointVBO; 
 	};
 }
 #include <atta/graphicsSystem/drawer.inl>

@@ -18,16 +18,15 @@ namespace atta
 	{
 		_lines.resize(_maxNumberOfLines);
 		_points.resize(_maxNumberOfPoints);
+		glPointSize(5.0f);
 
 		// Line VAO
-		OpenGLId lineVBO;
 		glGenVertexArrays(1, &_lineVAO);
-        glGenBuffers(1, &lineVBO);
+        glGenBuffers(1, &_lineVBO);
         glBindVertexArray(_lineVAO);
 
-        glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Line) * _lines.size(), _lines.data(), GL_DYNAMIC_DRAW);
-		LOG_DEBUG("Drawer", "Created size: $0", sizeof(Line) * _lines.size());
+        glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Line) * _maxNumberOfLines, _lines.data(), GL_DYNAMIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -35,12 +34,11 @@ namespace atta
         glEnableVertexAttribArray(1);
 
 		// Point VAO
-		OpenGLId pointVBO;
 		glGenVertexArrays(1, &_pointVAO);
-        glGenBuffers(1, &pointVBO);
+        glGenBuffers(1, &_pointVBO);
         glBindVertexArray(_pointVAO);
 
-        glBindBuffer(GL_ARRAY_BUFFER, pointVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, _pointVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * _points.size(), _points.data(), GL_DYNAMIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
