@@ -75,10 +75,9 @@ namespace atta
 						else if constexpr(std::is_same<T, Drawer::Point>::value)
 							_points[_currNumberOfPoints++] = group[i];
 					}
-
-					// Set changed as false
-					setChanged<T>(false);
 				}
+				// Set changed as false
+				setChanged<T>(false);
 			}
 		}
 
@@ -166,12 +165,11 @@ namespace atta
 			if(_linesChanged)
 			{
 				// Update _line vector and gpu buffer
-				auto& lines = getImpl<Drawer::Line>();
-				LOG_DEBUG("Drawer", "currNumber $0, elem bytes: $2, total bytes: $1 -> size: $3", _currNumberOfLines, sizeof(Line)*_currNumberOfLines, sizeof(Line), lines.size());
-				//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Line)*_currNumberOfLines, lines.data());
-				LOG_DEBUG("Drawer", "ok");
+				getImpl<Drawer::Line>();
+        		glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
+				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Line)*_currNumberOfLines, _lines.data());
 			}
-			//glDrawArrays(GL_LINES, 0, 2*_currNumberOfLines);
+			glDrawArrays(GL_LINES, 0, 2*_currNumberOfLines);
 			glBindVertexArray(0);
 		}
 		else if constexpr(std::is_same<T, Drawer::Point>::value)
@@ -179,11 +177,12 @@ namespace atta
 			glBindVertexArray(_pointVAO);
 			if(_pointsChanged)
 			{
-				auto& points = getImpl<Drawer::Point>();
-				// Update _line vector and gpu buffer
-				//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point)*_currNumberOfPoints, points.data());
+				// Update _point vector and gpu buffer
+				getImpl<Drawer::Point>();
+        		glBindBuffer(GL_ARRAY_BUFFER, _pointVBO);
+				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point)*_currNumberOfPoints, _points.data());
 			}
-        	//glDrawArrays(GL_POINTS, 0, _currNumberOfPoints);
+        	glDrawArrays(GL_POINTS, 0, _currNumberOfPoints);
 			glBindVertexArray(0);
 		}
 		else

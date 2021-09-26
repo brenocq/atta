@@ -34,6 +34,7 @@ namespace atta
 
 		std::shared_ptr<Pipeline> _geometryPipeline;
 		std::shared_ptr<Pipeline> _linePipeline;
+		std::shared_ptr<Pipeline> _pointPipeline;
 
 		std::shared_ptr<ShaderGroup> _backgroundShader;
 		unsigned int _envCubemap;

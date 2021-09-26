@@ -88,6 +88,31 @@ namespace atta
 			_linePipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
 		}
 
+		//---------- Create point pipeline ----------//
+		{
+			// Shader Group
+			ShaderGroup::CreateInfo shaderGroupInfo {};
+			shaderGroupInfo.shaderPaths = {"shaders/point/shader.vert", "shaders/point/shader.frag"};
+			shaderGroupInfo.debugName = StringId("PbrRenderer Point Shader Group");
+			std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+
+			// Render Pass
+			RenderPass::CreateInfo renderPassInfo {};
+			renderPassInfo.framebuffer = framebuffer;
+			renderPassInfo.debugName = StringId("PbrRenderer Point Render Pass");
+			std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+
+			Pipeline::CreateInfo pipelineInfo {};
+			// Vertex input layout
+			pipelineInfo.shaderGroup = shaderGroup;
+			pipelineInfo.layout = {
+				{ "inPos", VertexBufferElement::Type::VEC3 },
+				{ "inColor", VertexBufferElement::Type::VEC4 }
+			};
+			pipelineInfo.renderPass = renderPass;
+			_pointPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+		}
+
 		//---------- Create background shader ----------//
 		{
 			ShaderGroup::CreateInfo bgShaderGroupInfo {};
@@ -272,6 +297,16 @@ namespace atta
 			Drawer::draw<Drawer::Line>();
 		}
 		_linePipeline->end();
+
+		_pointPipeline->begin(false);
+		{
+			std::shared_ptr<ShaderGroup> shader = _pointPipeline->getShaderGroup();
+			shader->bind();
+			shader->setMat4("projection", transpose(camera->getProj()));
+			shader->setMat4("view", transpose(camera->getView()));
+			Drawer::draw<Drawer::Point>();
+		}
+		_pointPipeline->end();
 	}
 
 	void PbrRenderer::resize(uint32_t width, uint32_t height)
