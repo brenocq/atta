@@ -27,6 +27,7 @@ namespace atta
 		PerspectiveCamera(CreateInfo info);
 		mat4 getView() const override;
 		mat4 getProj() const override;
+		void setFov(float fov) { _fov = fov; }
 
 		void move() override;
 

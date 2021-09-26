@@ -21,7 +21,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/graphicsSystem)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/resourceSystem)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/scriptSystem)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sensorSystem)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/serviceLocator)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ioSystem)
 
 set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
 set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)

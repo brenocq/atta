@@ -29,7 +29,6 @@ namespace atta
 		void startUpImpl();
 		void shutDownImpl();
 		void updateImpl(float dt);
-		void* getEntityCameraImGuiTextureImpl(EntityId eid);
 
 		// Handle events
 		void onSimulationStateChange(Event& event);
@@ -38,6 +37,8 @@ namespace atta
 		void cameraStart();
 		void cameraUpdate(float dt);
 		void cameraStop();
+		void drawCameras();
+		void* getEntityCameraImGuiTextureImpl(EntityId eid);
 
 		float _currTime;
 		//----- Camera -----//
