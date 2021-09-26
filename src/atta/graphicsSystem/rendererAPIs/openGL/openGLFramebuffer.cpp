@@ -35,18 +35,21 @@ namespace atta
 		}
 	}
 
-	void OpenGLFramebuffer::bind()
+	void OpenGLFramebuffer::bind(bool clear)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, _id);
 		glViewport(0, 0, _width, _height);
-		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-		if(_depthAttachmentIndex != -1)
+		if(clear)
 		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glEnable(GL_DEPTH_TEST);
+			glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+			if(_depthAttachmentIndex != -1)
+			{
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glEnable(GL_DEPTH_TEST);
+			}
+			else
+				glClear(GL_COLOR_BUFFER_BIT);
 		}
-		else
-			glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	void OpenGLFramebuffer::unbind()

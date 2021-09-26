@@ -20,10 +20,10 @@ namespace atta
 	{
 	}
 
-	void OpenGLPipeline::begin()
+	void OpenGLPipeline::begin(bool clear)
 	{
 		_shaderGroup->bind();
-		_renderPass->begin();
+		_renderPass->begin(clear);
 	}
 
 	void OpenGLPipeline::end()

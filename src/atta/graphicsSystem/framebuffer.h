@@ -39,7 +39,7 @@ namespace atta
 		Framebuffer(const CreateInfo& info);
 		virtual ~Framebuffer();
 
-		virtual void bind() = 0;
+		virtual void bind(bool clear = true) = 0;
 		virtual void unbind() = 0;
 
 		virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;

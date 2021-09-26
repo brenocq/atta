@@ -17,7 +17,7 @@ namespace atta
 		OpenGLPipeline(const Pipeline::CreateInfo& info);
 		~OpenGLPipeline();
 	
-		void begin() override;
+		void begin(bool clear = true) override;
 		void end() override;
 
 		void* getImGuiTexture() const override;
