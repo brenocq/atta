@@ -29,7 +29,7 @@ namespace atta
 		layer->onAttach();
 
 		if(layer->getSID() == SSID("GraphicsLayerUI"))
-			_uiLayer = reinterpret_cast<UILayer*>(layer);
+			_uiLayer = reinterpret_cast<ui::UILayer*>(layer);
 
 		LOG_VERBOSE("LayerStack", "Layer pushed: $0 (ptr:$1, size:$2)", layer->getSID(), layer, sizeof(layer));
 	}

@@ -1,10 +1,10 @@
 //--------------------------------------------------
-// Atta Graphics System
+// Atta UI System
 // editorLayer.cpp
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphicsSystem/layers/internal/editor/editorLayer.h>
+#include <atta/uiSystem/layers/editor/editorLayer.h>
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/texture.h>
@@ -15,7 +15,7 @@
 #include <atta/eventSystem/events/simulationStopEvent.h>
 #include <imgui_internal.h>
 
-namespace atta
+namespace atta::ui
 {
 	EditorLayer::EditorLayer():
 		Layer(StringId("GraphicsEditorLayer"))

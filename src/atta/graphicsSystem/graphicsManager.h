@@ -30,6 +30,7 @@ namespace atta
 		static void shutDown();
 
 		static void update();
+		static void pushLayer(Layer* layer);
 
 		// Used to create the object (image/pipeline/renderPass/...) based on the current rendererAPI
 		// e.g.: GraphicsManager::create<Pipeline>(pipelineInfo) will create OpenGLPipeline or 
@@ -38,16 +39,15 @@ namespace atta
 		static std::shared_ptr<T> create(Args... args) { return getInstance().createImpl<T>(args...); }
 
 		static std::shared_ptr<RendererAPI> getRendererAPI() { return getInstance().getRendererAPIImpl(); };
-
 		static std::vector<std::shared_ptr<Viewport>>& getViewports() { return getInstance().getViewportsImpl(); }
 		static void addViewport(std::shared_ptr<Viewport> viewport) { return getInstance().addViewportImpl(viewport); }
-
 		static void* getImGuiImage(StringId sid) { return getInstance().getImGuiImageImpl(sid); }
 
 	private:
 		void startUpImpl();
 		void shutDownImpl();
 		void updateImpl();
+		void pushLayerImpl(Layer* layer);
 		template <typename T, typename... Args>
 		std::shared_ptr<T> createImpl(Args... args);
 

@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Graphics System
+// Atta UI System
 // scenePanel.h
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
@@ -9,7 +9,7 @@
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/entity.h>
 
-namespace atta
+namespace atta::ui
 {
 	class ScenePanel
 	{

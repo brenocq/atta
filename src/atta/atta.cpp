@@ -21,6 +21,7 @@
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/graphicsSystem/pipeline.h>
 #include <atta/sensorSystem/sensorManager.h>
+#include <atta/uiSystem/uiManager.h>
 
 // Include execute code
 #include <atta/scriptSystem/script.h>
@@ -44,6 +45,7 @@ namespace atta
 		ResourceManager::startUp();
 		ComponentManager::startUp();
 		GraphicsManager::startUp();
+		ui::UIManager::startUp();
 		ScriptManager::startUp();
 		SensorManager::startUp();
 
@@ -62,6 +64,7 @@ namespace atta
 	{
 		SensorManager::shutDown();
 		ScriptManager::shutDown();
+		ui::UIManager::shutDown();
 		GraphicsManager::shutDown();
 		ComponentManager::shutDown();
 		ResourceManager::shutDown();

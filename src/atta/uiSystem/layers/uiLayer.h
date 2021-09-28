@@ -1,27 +1,32 @@
 //--------------------------------------------------
-// Atta Graphics System
-// layer2D.h
+// Atta UI System
+// uiLayer.h
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_LAYER_2D_H
-#define ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_LAYER_2D_H
+#ifndef ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_UI_LAYER_H
+#define ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_UI_LAYER_H
 #include <atta/graphicsSystem/layers/layer.h>
 #include <atta/memorySystem/allocatedObject.h>
 
-namespace atta
+namespace atta::ui
 {
-	class Layer2D final : public Layer, public AllocatedObject<Layer2D, SID("GraphicsAllocator")>
+	class UILayer final : public Layer, public AllocatedObject<UILayer, SID("GraphicsAllocator")>
 	{
 	public:
-		Layer2D();
+		UILayer();
 
 		void onAttach() override;
 		void onDetach() override;
 		void onRender() override;
 		void onUIRender() override;
+
+		void begin();
+		void end();
+	
 	private:
+		void setTheme();
 	};
 }
 
-#endif// ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_LAYER_2D_H
+#endif// ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_UI_LAYER_H
