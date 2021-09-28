@@ -1,10 +1,10 @@
 //--------------------------------------------------
-// Atta Graphics System
+// Atta UI System
 // menuBar.cpp
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphicsSystem/layers/internal/editor/menuBar.h>
+#include <atta/uiSystem/layers/editor/menuBar/menuBar.h>
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/eventSystem/events/windowCloseEvent.h>
 #include <atta/eventSystem/eventManager.h>
@@ -16,7 +16,7 @@
 #include <atta/graphicsSystem/renderers/pbrRenderer.h>
 #include <atta/graphicsSystem/cameras/perspectiveCamera.h>
 
-namespace atta
+namespace atta::ui
 {
 	MenuBar::MenuBar():
 		_showPreferences(false)

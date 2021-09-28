@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Graphics System
+// Atta UI System
 // editorLayer.h
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
@@ -8,11 +8,11 @@
 #define ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_EDITOR_LAYER_H
 #include <atta/graphicsSystem/layers/layer.h>
 #include <atta/memorySystem/allocatedObject.h>
-#include <atta/graphicsSystem/layers/internal/editor/menuBar.h>
-#include <atta/graphicsSystem/layers/internal/editor/dockSpace.h>
-#include <atta/graphicsSystem/layers/internal/editor/scenePanel.h>
+#include <atta/uiSystem/layers/editor/menuBar/menuBar.h>
+#include <atta/uiSystem/layers/editor/dockSpace.h>
+#include <atta/uiSystem/layers/editor/scenePanel.h>
 
-namespace atta
+namespace atta::ui
 {
 	class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("GraphicsAllocator")>
 	{

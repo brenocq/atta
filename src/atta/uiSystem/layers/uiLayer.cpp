@@ -1,17 +1,17 @@
 //--------------------------------------------------
-// Atta Graphics System
+// Atta UI System
 // uiLayer.cpp
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphicsSystem/layers/internal/uiLayer.h>
+#include <atta/uiSystem/layers/uiLayer.h>
 // ImGui backends
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 // ImGui window managing
 #include <GLFW/glfw3.h>
 
-namespace atta
+namespace atta::ui
 {
 	UILayer::UILayer():
 		Layer(StringId("GraphicsLayerUI"))

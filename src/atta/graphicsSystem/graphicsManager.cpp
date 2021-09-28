@@ -8,10 +8,6 @@
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/memorySystem/allocators/stackAllocator.h>
 #include <atta/eventSystem/eventManager.h>
-#include <atta/graphicsSystem/layers/internal/uiLayer.h>
-#include <atta/graphicsSystem/layers/internal/layer2D.h>
-#include <atta/graphicsSystem/layers/internal/simulationLayer.h>
-#include <atta/graphicsSystem/layers/internal/editor/editorLayer.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGL.h>
 
 #include <atta/graphicsSystem/renderers/fastRenderer.h>
@@ -51,12 +47,8 @@ namespace atta
 		//----- Renderer API -----//
 		_rendererAPI = std::static_pointer_cast<RendererAPI>(std::make_shared<OpenGLRenderer>(_window));
 
-		//----- Create Layers -----//
+		//----- Create layer stack -----//
 		_layerStack = std::make_unique<LayerStack>();
-		//_layerStack->push(new SimulationLayer());
-		//_layerStack->push(new Layer2D());
-		_layerStack->push(new EditorLayer());
-		_layerStack->push(new UILayer());
 
 		//----- Create viewports -----//
 		Viewport::CreateInfo viewportInfo;
@@ -100,6 +92,12 @@ namespace atta
 		_rendererAPI->endFrame();
 
 		_window->swapBuffers();
+	}
+
+	void GraphicsManager::pushLayer(Layer* layer) { getInstance().pushLayerImpl(layer); }
+	void GraphicsManager::pushLayerImpl(Layer* layer)
+	{
+		_layerStack->push(layer);
 	}
 
 	//---------- Register API specific implementations ----------//

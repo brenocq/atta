@@ -1,13 +1,13 @@
 //--------------------------------------------------
-// Atta Graphics System
+// Atta UI System
 // dockSpace.cpp
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphicsSystem/layers/internal/editor/dockSpace.h>
+#include <atta/uiSystem/layers/editor/dockSpace.h>
 #include <imgui_internal.h>
 
-namespace atta
+namespace atta::ui
 {
 	void DockSpace::render()
 	{

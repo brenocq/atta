@@ -7,7 +7,7 @@
 #ifndef ATTA_GRAPHICS_SYSTEM_LAYERS_LAYER_STACK_H
 #define ATTA_GRAPHICS_SYSTEM_LAYERS_LAYER_STACK_H
 #include <atta/graphicsSystem/layers/layer.h>
-#include <atta/graphicsSystem/layers/internal/uiLayer.h>
+#include <atta/uiSystem/layers/uiLayer.h>
 
 namespace atta
 {
@@ -29,7 +29,7 @@ namespace atta
 	
 	private:
 		std::vector<Layer*> _layers;
-		UILayer* _uiLayer;
+		ui::UILayer* _uiLayer;
 	};
 }
 

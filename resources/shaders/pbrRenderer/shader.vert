@@ -16,7 +16,17 @@ out vec2 texCoord;
 void main()
 {
 	vec4 coord = model * vec4(inPosition, 1.0f);
-	gl_Position = projection * view * coord;
+	vec4 coordImage = view * coord;
+
+	//float z = coordImage.z;
+	//coordImage /= z;
+	//float r = sqrt(coordImage.x*coordImage.x + coordImage.y*coordImage.y);
+	//float L = 1 + r*0.103689 + r*r*0.00487908 + r*r*r*0.00116894 + r*r*r*r*0.000941614;
+	//coordImage.x *= L;
+	//coordImage.y *= L;
+	//coordImage *= z;
+
+	gl_Position = projection * coordImage;
 
 	worldPos = coord.xyz;
 	normal = mat3(transpose(invModel))*inNormal;

@@ -1,10 +1,10 @@
 //--------------------------------------------------
-// Atta Graphics System
+// Atta UI System
 // scenePanel.cpp
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphicsSystem/layers/internal/editor/scenePanel.h>
+#include <atta/uiSystem/layers/editor/scenePanel.h>
 #include <atta/componentSystem/components/components.h>
 #include <atta/scriptSystem/scriptManager.h>
 #include <atta/resourceSystem/resourceManager.h>
@@ -12,7 +12,7 @@
 #include <atta/sensorSystem/sensorManager.h>
 #include <imgui.h>
 
-namespace atta
+namespace atta::ui
 {
 	ScenePanel::ScenePanel():
 		_selected(0), _someSelected(false)
