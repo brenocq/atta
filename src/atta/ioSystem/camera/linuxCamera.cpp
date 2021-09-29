@@ -271,22 +271,23 @@ namespace atta::io
 			LOG_WARN("io::LinuxCamera", "Cannot identify '$0' ($1)",
 					_deviceName, errno);
 			//exit(1);
-			// Check if it is a device (video is a character device file)
-			if(!S_ISCHR(st.st_mode))
-			{
-				LOG_ERROR("io::LinuxCamera", "'$0' is not a device ($1)",
-						_deviceName, errno);
-				exit(1);
-			}
+		}
 
-			// Open file descriptor with read/write and
-			_fd = open(_deviceName.c_str(), O_RDWR /* required */ | O_NONBLOCK, 0);
-			if(_fd == -1)
-			{
-				LOG_ERROR("io::LinuxCamera", "Could not open camera file '$0' ($1)",
-						_deviceName, errno);
-				exit(1);
-			}
+		// Check if it is a device (video is a character device file)
+		if(!S_ISCHR(st.st_mode))
+		{
+			LOG_ERROR("io::LinuxCamera", "'$0' is not a device ($1)",
+					_deviceName, errno);
+			exit(1);
+		}
+
+		// Open file descriptor with read/write and
+		_fd = open(_deviceName.c_str(), O_RDWR /* required */ | O_NONBLOCK, 0);
+		if(_fd == -1)
+		{
+			LOG_ERROR("io::LinuxCamera", "Could not open camera file '$0' ($1)",
+					_deviceName, errno);
+			exit(1);
 		}
 	}
 

@@ -1,10 +1,10 @@
 //--------------------------------------------------
 // Atta UI System
-// scenePanel.cpp
+// entityWindow.cpp
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/uiSystem/layers/editor/scenePanel.h>
+#include <atta/uiSystem/layers/editor/windows/entityWindow.h>
 #include <atta/componentSystem/components/components.h>
 #include <atta/scriptSystem/scriptManager.h>
 #include <atta/resourceSystem/resourceManager.h>
@@ -14,12 +14,12 @@
 
 namespace atta::ui
 {
-	ScenePanel::ScenePanel():
+	EntityWindow::EntityWindow():
 		_selected(0), _someSelected(false)
 	{
 	}
 
-	void ScenePanel::render()
+	void EntityWindow::render()
 	{
 		ImGui::Begin("Scene");
 		{
@@ -31,7 +31,7 @@ namespace atta::ui
 		ImGui::End();
 	}
 
-	void ScenePanel::renderTree()
+	void EntityWindow::renderTree()
 	{
 		if(ImGui::Button("Create"))
 			ComponentManager::createEntity();
@@ -48,7 +48,7 @@ namespace atta::ui
 		}
 	}
 
-	void ScenePanel::renderTreeNode(EntityId entity, int& i)
+	void EntityWindow::renderTreeNode(EntityId entity, int& i)
 	{
 		//----- Selected -----//
         ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -91,7 +91,7 @@ namespace atta::ui
 			{
 				DASSERT(payload->DataSize == sizeof(EntityId), "Payload data should have same size as EntityId");
 				EntityId childEntity = *(const EntityId*)payload->Data;
-				LOG_DEBUG("ScenePanel", "Now $1 is child of $0", entity, childEntity);
+				LOG_DEBUG("EntityWindow", "Now $1 is child of $0", entity, childEntity);
 
 				// Update new parent (entity that received drop)
 				if(r)
@@ -143,7 +143,7 @@ namespace atta::ui
 		}
 	}
 
-	void ScenePanel::renderComponents()
+	void EntityWindow::renderComponents()
 	{
 		if(!_someSelected)
 			return;
@@ -497,13 +497,13 @@ namespace atta::ui
 			}
 	}
 
-	bool ScenePanel::getSelected(EntityId& eid)
+	bool EntityWindow::getSelected(EntityId& eid)
 	{
 		eid = _selected;
 		return _someSelected;
 	}
 
-	void ScenePanel::textureCombo(std::string comboId, StringId& sid)
+	void EntityWindow::textureCombo(std::string comboId, StringId& sid)
 	{
 		std::vector<StringId> textures = ResourceManager::getResources<Texture>();
 
@@ -527,7 +527,7 @@ namespace atta::ui
 		}
 	}
 
-	void ScenePanel::renderCameraWindows()
+	void EntityWindow::renderCameraWindows()
 	{
 		for(auto eid : _cameraWindows)
 		{

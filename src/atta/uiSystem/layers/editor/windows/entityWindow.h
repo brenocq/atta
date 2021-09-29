@@ -1,20 +1,20 @@
 //--------------------------------------------------
 // Atta UI System
-// scenePanel.h
+// entityWindow.h
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_SCENE_PANEL_H
-#define ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_SCENE_PANEL_H
+#ifndef ATTA_UI_SYSTEM_LAYERS_EDITOR_WINDOWS_ENTITY_WINDOW_H
+#define ATTA_UI_SYSTEM_LAYERS_EDITOR_WINDOWS_ENTITY_WINDOW_H
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/entity.h>
 
 namespace atta::ui
 {
-	class ScenePanel
+	class EntityWindow
 	{
 	public:
-		ScenePanel();
+		EntityWindow();
 
 		void render();
 
@@ -33,5 +33,4 @@ namespace atta::ui
 	};
 }
 
-#endif// ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_SCENE_PANEL_H
-
+#endif// ATTA_UI_SYSTEM_LAYERS_EDITOR_WINDOWS_ENTITY_WINDOW_H

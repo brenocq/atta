@@ -1,18 +1,18 @@
 //--------------------------------------------------
 // Atta UI System
-// menuBar.h
+// topBar.h
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_MENU_BAR_H
-#define ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_MENU_BAR_H
+#ifndef ATTA_UI_SYSTEM_LAYERS_EDITOR_TOP_BAR_TOP_BAR_H
+#define ATTA_UI_SYSTEM_LAYERS_EDITOR_TOP_BAR_TOP_BAR_H
 
 namespace atta::ui
 {
-	class MenuBar
+	class TopBar
 	{
 	public:
-		MenuBar();
+		TopBar();
 
 		void render();
 
@@ -31,4 +31,4 @@ namespace atta::ui
 	};
 }
 
-#endif// ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_MENU_BAR_H
+#endif// ATTA_UI_SYSTEM_LAYERS_EDITOR_TOP_BAR_TOP_BAR_H
