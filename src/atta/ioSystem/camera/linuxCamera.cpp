@@ -38,11 +38,38 @@ namespace atta::io
 		_fd = -1;
 	}
 
-	void LinuxCamera::start()
+	bool LinuxCamera::start()
 	{
-		initDevice();
-		startCapturing();
+		if(!initDevice())
+			return false;
+		if(!startCapturing())
+			return false;
 		LOG_INFO("io::LinuxCamera", "Camera $0 initialized", _deviceName);
+		return true;
+	}
+
+	bool LinuxCamera::isValidDevice()
+	{
+		struct v4l2_capability cap;
+		struct v4l2_fmtdesc fmtEnum;
+		struct v4l2_format fmt;
+
+		//---------- Get device capabilities ----------//
+		// Get capabilities
+		if(ioctl(_fd, VIDIOC_QUERYCAP, &cap) == -1)
+			return false;
+
+		// Check if it is a device capable of video capturing
+		if(!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE))
+			return false;
+
+		//---------- Check if can enumerate formats ----------//
+		memset(&(fmt), 0, sizeof(fmt));
+		fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		// Try to get format
+		if(ioctl(_fd, VIDIOC_G_FMT, &fmt) == -1)
+			return false;
+		return true;
 	}
 
 	void LinuxCamera::readFrame()
@@ -291,7 +318,7 @@ namespace atta::io
 		}
 	}
 
-	void LinuxCamera::initDevice()
+	bool LinuxCamera::initDevice()
 	{
 		struct v4l2_capability cap;
 		struct v4l2_cropcap cropcap;
@@ -301,15 +328,15 @@ namespace atta::io
 		//---------- Get device capabilities ----------//
 		if(ioctl(_fd, VIDIOC_QUERYCAP, &cap) == -1)
 		{
-			LOG_ERROR("io::LinuxCamera", "'$0' is not a V4L2 device", _deviceName);
-			exit(1);
+			LOG_WARN("io::LinuxCamera", "'$0' is not a V4L2 device", _deviceName);
+			return false;
 		}
 
 		// Check if it is a device capable of video capturing
 		if(!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE))
 		{
-			LOG_ERROR("io::LinuxCamera", "'$0' is not a video capture device", _deviceName);
-			exit(1);
+			LOG_WARN("io::LinuxCamera", "'$0' is not a video capture device", _deviceName);
+			return false;
 		}
 
 		//---------- Image format ----------//
@@ -335,8 +362,8 @@ namespace atta::io
 		// Use default image format
 		if(ioctl(_fd, VIDIOC_G_FMT, &fmt) == -1)
 		{
-			LOG_ERROR("io::LinuxCamera", "Could not get format");
-			exit(1);
+			LOG_WARN("io::LinuxCamera", "Could not get format");
+			return false;
 		}
 
 		//LOG_DEBUG("io::LinuxCamera", "Allocating width:$0 height:$1 total:$2", 
@@ -353,20 +380,20 @@ namespace atta::io
 		{
 			if(EINVAL == errno)
 			{
-				LOG_ERROR("io::LinuxCamera", "'$0' does not support memory mapping", _deviceName);
-				exit(1);
+				LOG_WARN("io::LinuxCamera", "'$0' does not support memory mapping", _deviceName);
+				return false;
 			} 
 			else 
 			{
-				LOG_ERROR("io::LinuxCamera", "Failed to run VOIDC_REQBUFS");
-				exit(1);
+				LOG_WARN("io::LinuxCamera", "Failed to run VOIDC_REQBUFS");
+				return false;
 			}
 		}
 
 		if(req.count<2)
 		{
-			LOG_ERROR("io::LinuxCamera", "Insufficient buffer memory on '$0'", _deviceName);
-			exit(1);
+			LOG_WARN("io::LinuxCamera", "Insufficient buffer memory on '$0'", _deviceName);
+			return false;
 		}
 
 		//LOG_DEBUG("io::LinuxCamera", "We will allocate $0", req.count);
@@ -382,8 +409,8 @@ namespace atta::io
 
 			if(ioctl(_fd, VIDIOC_QUERYBUF, &buf) == -1)
 			{
-				LOG_ERROR("io::LinuxCamera", "Failed to run VIDIOC_QUERYBUF");
-				exit(1);
+				LOG_WARN("io::LinuxCamera", "Failed to run VIDIOC_QUERYBUF");
+				return false;
 			}
 
 			_buffers[i].length = buf.length;
@@ -396,13 +423,14 @@ namespace atta::io
 
 			if(_buffers[i].start == MAP_FAILED)
 			{
-				LOG_ERROR("io::LinuxCamera", "Failed to run mmap");
-				exit(1);
+				LOG_WARN("io::LinuxCamera", "Failed to run mmap");
+				return false;
 			}
 		}
+		return true;
 	}
 
-	void LinuxCamera::startCapturing()
+	bool LinuxCamera::startCapturing()
 	{
 		// Enqueue buffer to receive images from driver
 		for(size_t i = 0; i<_buffers.size(); i++)
@@ -415,8 +443,8 @@ namespace atta::io
 
 			if(ioctl(_fd, VIDIOC_QBUF, &buf) == -1)
 			{
-				LOG_ERROR("io::LinuxCamera", "Failed to run VIDIOC_QBUF");
-				exit(1);
+				LOG_WARN("io::LinuxCamera", "Failed to run VIDIOC_QBUF");
+				return false;
 			}
 		}
 
@@ -424,9 +452,11 @@ namespace atta::io
 		enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		if(ioctl(_fd, VIDIOC_STREAMON, &type) == -1)
 		{
-			LOG_ERROR("io::LinuxCamera", "Failed to run VIDIOC_STREAMON");
-			exit(1);
+			LOG_WARN("io::LinuxCamera", "Failed to run VIDIOC_STREAMON");
+			return false;
 		}
+
+		return true;
 	}
 }
 #endif// ATTA_OS_LINUX

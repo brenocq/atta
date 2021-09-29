@@ -25,8 +25,8 @@ namespace atta::ui
 		void uartTabItem();
 		void cameraTabItem();
 
-		std::vector<std::shared_ptr<io::Camera>> _cameras;
-		std::vector<std::shared_ptr<Image>> _cameraImages;
+		std::unordered_map<std::string, std::shared_ptr<io::Camera>> _cameras;
+		std::unordered_map<std::string, std::shared_ptr<Image>> _cameraImages;
 
 		friend Window<IOSystemWindow>;
 	};
