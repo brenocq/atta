@@ -24,6 +24,7 @@ namespace atta::io
 		// io::WindowsCameraUSB or ... depending on the current operating system
 		template <typename T, typename... Args>
 		static std::shared_ptr<T> create(Args... args) { return getInstance().createImpl<T>(args...); }
+		static std::vector<std::string> getCameraDeviceNames() { return {"/dev/video0", "/dev/video1"}; }
 
 	private:
 		void startUpImpl();

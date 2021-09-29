@@ -4,13 +4,13 @@
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_EDITOR_LAYER_H
-#define ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_EDITOR_LAYER_H
+#ifndef ATTA_UI_SYSTEM_LAYERS_EDITOR_EDITOR_LAYER_H
+#define ATTA_UI_SYSTEM_LAYERS_EDITOR_EDITOR_LAYER_H
 #include <atta/graphicsSystem/layers/layer.h>
 #include <atta/memorySystem/allocatedObject.h>
-#include <atta/uiSystem/layers/editor/menuBar/menuBar.h>
 #include <atta/uiSystem/layers/editor/dockSpace.h>
-#include <atta/uiSystem/layers/editor/scenePanel.h>
+#include <atta/uiSystem/layers/editor/topBar/topBar.h>
+#include <atta/uiSystem/layers/editor/windows/entityWindow.h>
 
 namespace atta::ui
 {
@@ -36,12 +36,12 @@ namespace atta::ui
 		void toolbar();
 		void onSimulationStateChange(Event& event);
 
-		MenuBar _menuBar;
 		DockSpace _dockSpace;
-		ScenePanel _scenePanel;
+		TopBar _topBar;
+		EntityWindow _entityWindow;
 
 		EditorState _editorState;
 	};
 }
 
-#endif// ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_EDITOR_EDITOR_LAYER_H
+#endif// ATTA_UI_SYSTEM_LAYERS_EDITOR_EDITOR_LAYER_H

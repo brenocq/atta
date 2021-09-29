@@ -15,6 +15,8 @@
 #include <atta/eventSystem/events/simulationStopEvent.h>
 #include <imgui_internal.h>
 
+#include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
+
 namespace atta::ui
 {
 	EditorLayer::EditorLayer():
@@ -24,11 +26,6 @@ namespace atta::ui
 
 	void EditorLayer::onAttach()
 	{
-		// Load resources if needed
-		ResourceManager::get<Texture>("icons/play.png");
-		ResourceManager::get<Texture>("icons/pause.png");
-		ResourceManager::get<Texture>("icons/stop.png");
-
 		EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
 		EventManager::subscribe<SimulationPlayEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
 		EventManager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
@@ -52,11 +49,12 @@ namespace atta::ui
 
 		//if(_editorState != EditorState::SIMULATION_RUNNING)
 		{
-			_menuBar.render();
+			_topBar.render();
 			bool demo = true;
 			ImGui::ShowDemoWindow(&demo);
 
-			_scenePanel.render();
+			_entityWindow.render();
+			IOSystemWindow::render();
 
 			ImGui::Begin("Debug");
 			ImGui::Text("Hello, down!");

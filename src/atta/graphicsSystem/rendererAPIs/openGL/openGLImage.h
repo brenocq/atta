@@ -25,6 +25,9 @@ namespace atta
 
 		OpenGLId getId() const { return _id; }
 
+		void write(void* data) override;
+		void* getImGuiImage() override { return reinterpret_cast<void*>(_id); }
+
 	private:
 		OpenGLId _id;
 		OpenGLId _samplerId;

@@ -1,10 +1,10 @@
 //--------------------------------------------------
 // Atta UI System
-// menuBar.cpp
+// topBar.cpp
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/uiSystem/layers/editor/menuBar/menuBar.h>
+#include <atta/uiSystem/layers/editor/topBar/topBar.h>
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/eventSystem/events/windowCloseEvent.h>
 #include <atta/eventSystem/eventManager.h>
@@ -16,15 +16,17 @@
 #include <atta/graphicsSystem/renderers/pbrRenderer.h>
 #include <atta/graphicsSystem/cameras/perspectiveCamera.h>
 
+#include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
+
 namespace atta::ui
 {
-	MenuBar::MenuBar():
+	TopBar::TopBar():
 		_showPreferences(false)
 	{
 
 	}
 
-	void MenuBar::render()
+	void TopBar::render()
 	{
 		if(ImGui::BeginMainMenuBar())
 		{
@@ -94,6 +96,13 @@ namespace atta::ui
 				ImGui::EndMenu();
 			}
 
+			if(ImGui::BeginMenu("Systems"))
+			{
+				if(ImGui::MenuItem("IO"))
+					IOSystemWindow::setOpen(true);
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMainMenuBar();
 		}
 		openProjectModal();
@@ -102,7 +111,7 @@ namespace atta::ui
 		viewportModals();
 	}
 
-	void MenuBar::preferences()
+	void TopBar::preferences()
 	{
 		if(_showPreferences)
 		{
@@ -116,7 +125,7 @@ namespace atta::ui
 		}
 	}
 
-	void MenuBar::openProjectModal()
+	void TopBar::openProjectModal()
 	{
 		static bool lastShow = false;
 		if(_showOpenProject && !lastShow)
@@ -156,7 +165,7 @@ namespace atta::ui
         }
 	}
 
-	void MenuBar::createProjectModal()
+	void TopBar::createProjectModal()
 	{
 		static bool lastShow = false;
 		if(_showCreateProject && !lastShow)
@@ -196,7 +205,7 @@ namespace atta::ui
         }
 	}
 
-	void MenuBar::viewportModals()
+	void TopBar::viewportModals()
 	{
 		std::vector<std::shared_ptr<Viewport>> viewports = GraphicsManager::getViewports();
 

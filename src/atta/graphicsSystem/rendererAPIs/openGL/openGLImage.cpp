@@ -38,6 +38,17 @@ namespace atta
 			glDeleteTextures(1, &_id);
 	}
 
+	void OpenGLImage::write(void* data)
+	{
+
+		glBindTexture(GL_TEXTURE_2D, _id);
+		GLenum dataType = OpenGLImage::convertDataType(_format);
+		GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
+		GLenum format = OpenGLImage::convertFormat(_format);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, data);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
 	//------------------------------------------------//
 	//---------- Atta to OpenGL conversions ----------//
 	//------------------------------------------------//

@@ -45,14 +45,18 @@ namespace atta
 		Image(const CreateInfo& info);
 		virtual ~Image() = default;
 
+		virtual void write(void* data) = 0;
+
 		Format getFormat() const { return _format; }
 		Wrap getSamplerWrap() const { return _samplerWrap; }
 		uint32_t getWidth() const { return _width; }
 		uint32_t getHeight() const { return _height; }
 		float getRatio() const { return _width/static_cast<float>(_height); }
+		virtual void* getImGuiImage() = 0;
 
 		static uint32_t getFormatSize(Format format);
 		static bool isDepthFormat(Format format);
+
 
 	protected:
 		Format _format;
