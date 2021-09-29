@@ -17,7 +17,7 @@ namespace atta::io
 			LinuxCamera(Camera::CreateInfo info);
 			~LinuxCamera();
 
-			void start() override;
+			bool start() override;
 			void readFrame() override;
 
 			//---------- Setters ----------//
@@ -26,11 +26,12 @@ namespace atta::io
 
 			//---------- Getters ----------//
 			std::vector<Camera::FormatInfo> getAvailableFormats() override;
+			bool isValidDevice() override;
 
 		private:
 			void openDevice();
-			void initDevice();
-			void startCapturing();
+			bool initDevice();
+			bool startCapturing();
 
 			int _fd;
 

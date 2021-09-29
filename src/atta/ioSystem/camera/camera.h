@@ -35,9 +35,10 @@ namespace atta::io
 			Camera(CreateInfo info);
 			virtual ~Camera() = default;
 
-			virtual void start() = 0;
+			virtual bool start() = 0;
 			virtual void readFrame() = 0;
 			const std::vector<uint8_t>& getFrame() const { return _frame; }
+			virtual bool isValidDevice() = 0;
 
 			//---------- Setters ----------//
 			virtual bool setFormat(PixelFormat pixelFormat, Resolution resolution) = 0;
@@ -56,6 +57,7 @@ namespace atta::io
 			PixelFormat getPixelFormat() const { return _pixelFormat; }
 			Resolution getResolution() const { return _resolution; }
 			unsigned getFps() const { return _fps; }
+			static std::vector<std::string> getAvailableDeviceNames();
 
 		protected:
 			std::string _deviceName;
