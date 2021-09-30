@@ -14,4 +14,5 @@ namespace atta::io
 	}
 
 	template <> std::shared_ptr<io::Camera> IOManager::createImpl<io::Camera>(io::Camera::CreateInfo info);
+	template <> std::shared_ptr<io::Serial> IOManager::createImpl<io::Serial>(io::Serial::CreateInfo info);
 }
