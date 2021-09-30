@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/ioSystem/ioManager.h>
 #include <atta/ioSystem/camera/linuxCamera.h>
+#include <atta/ioSystem/serial/linuxSerial.h>
 
 namespace atta::io
 {
@@ -38,6 +39,17 @@ namespace atta::io
 		return std::static_pointer_cast<io::Camera>(std::make_shared<io::LinuxCamera>(info));
 #else
 		LOG_WARN("IOManager", "io::Camera not implemented for this operating system");
+		return nullptr;
+#endif
+	}
+
+	template <>
+	std::shared_ptr<io::Serial> IOManager::createImpl<io::Serial>(io::Serial::CreateInfo info)
+	{
+#ifdef ATTA_OS_LINUX
+		return std::static_pointer_cast<io::Serial>(std::make_shared<io::LinuxSerial>(info));
+#else
+		LOG_WARN("IOManager", "io::Serial not implemented for this operating system");
 		return nullptr;
 #endif
 	}

@@ -49,6 +49,7 @@ $ ./bin/atta
 - [(Book) Numerical Recipes: The Art of Scientific Computing](http://numerical.recipes/com/storefront.html)
 - [(Book) Game Programming Patterns](https://gameprogrammingpatterns.com)
 - [(Book) Game Engine Architecture](https://www.gameenginebook.com)
+- [(Book) C++ Templates: The Complete Guide](http://www.tmplbook.com)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.

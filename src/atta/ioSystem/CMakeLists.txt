@@ -5,6 +5,9 @@ set(ATTA_IO_SYSTEM_SOURCE
 
 	camera/camera.cpp
 	camera/linuxCamera.cpp
+
+	serial/serial.cpp
+	serial/linuxSerial.cpp
 )
 
 add_library(atta_io_system STATIC

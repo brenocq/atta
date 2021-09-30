@@ -5,6 +5,9 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/algorithms/computerVision/jpeg.h>
+#ifdef ATTA_OS_WINDOWS
+#define _USE_MATH_DEFINES
+#endif
 #include <cmath>
 
 namespace atta::cv {
