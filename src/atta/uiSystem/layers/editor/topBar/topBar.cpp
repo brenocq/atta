@@ -98,7 +98,7 @@ namespace atta::ui
 
 			if(ImGui::BeginMenu("Systems"))
 			{
-				if(ImGui::MenuItem("IO"))
+				if(ImGui::MenuItem("IO System"))
 					IOSystemWindow::setOpen(true);
 				ImGui::EndMenu();
 			}

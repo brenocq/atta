@@ -14,6 +14,12 @@ namespace atta
 	public:
 		ProjectScript() = default;    
 		virtual ~ProjectScript() {};  
+
+        //---------- Load/Unload ----------//
+		virtual void onLoad() = 0;
+		virtual void onUnload() = 0;
+
+        //---------- Simulation ----------//
 		virtual void onStart() = 0;
 		virtual void onStop() = 0;
 
@@ -23,8 +29,9 @@ namespace atta
 		virtual void onUpdateBefore(float delta) = 0;
 		virtual void onUpdateAfter(float delta) = 0;
 
-		virtual void onLoad() = 0;
-		virtual void onUnload() = 0;
+        //---------- Editor ----------//
+		virtual void onUIUpdate() = 0;
+		virtual void onUIRender() = 0;
 	}; 
 }
 

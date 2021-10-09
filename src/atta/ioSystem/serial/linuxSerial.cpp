@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <cstring>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 namespace atta::io
 {
@@ -41,7 +42,7 @@ namespace atta::io
 
 		//---------- Configure ----------//
 		// Initialize termios struct
-		if(tcgetattr(_fd, &_tty) != 0)
+		if(ioctl(_fd, TCGETS2, &_tty) != 0)
 		{
 			LOG_WARN("io::LinuxSerial", "[*w](start)[] Could not initialize termios struct for [w]$0[]. Error($1): $2", _deviceName, errno, std::strerror(errno));
 			return false;
@@ -72,6 +73,10 @@ namespace atta::io
 
 		// Enable read and ignore ctrl lines
 		_tty.c_cflag |= CREAD | CLOCAL;
+
+        // Set custom baud rate
+        _tty.c_cflag &= ~CBAUD;
+        _tty.c_cflag |= CBAUDEX;
 
 		//----- Local modes -----//
 		// Disable canonical mode to receive raw data
@@ -125,33 +130,37 @@ namespace atta::io
 
 	bool LinuxSerial::setBaudRate(unsigned baudRate)
 	{
-		switch(baudRate)
-		{
-			case 0: cfsetspeed(&_tty, B0); break;
-			case 50: cfsetspeed(&_tty, B50); break;
-			case 75: cfsetspeed(&_tty, B75); break;
-			case 110: cfsetspeed(&_tty, B110); break;
-			case 134: cfsetspeed(&_tty, B134); break;
-			case 150: cfsetspeed(&_tty, B150); break;
-			case 200: cfsetspeed(&_tty, B200); break;
-			case 300: cfsetspeed(&_tty, B300); break;
-			case 600: cfsetspeed(&_tty, B600); break;
-			case 1200: cfsetspeed(&_tty, B1200); break;
-			case 1800: cfsetspeed(&_tty, B1800); break;
-			case 2400: cfsetspeed(&_tty, B2400); break;
-			case 4800: cfsetspeed(&_tty, B4800); break;
-			case 9600: cfsetspeed(&_tty, B9600); break;
-			case 19200: cfsetspeed(&_tty, B19200); break;
-			case 38400: cfsetspeed(&_tty, B38400); break;
-			case 57600: cfsetspeed(&_tty, B57600); break;
-			case 115200: cfsetspeed(&_tty, B115200); break;
-			case 230400: cfsetspeed(&_tty, B230400); break;
-			case 460800: cfsetspeed(&_tty, B460800); break;
-			default:
-				LOG_WARN("io::LinuxSerial", "[*w](setBaudRate)[] Invalid baudRate number $0", baudRate);
-		}
+        _tty.c_ispeed = baudRate;
+        _tty.c_ospeed = baudRate;
+        
+        // TODO Use default baudrates if custom is not supported
+		//switch(baudRate)
+		//{
+		//	case 0: cfsetspeed(&_tty, B0); break;
+		//	case 50: cfsetspeed(&_tty, B50); break;
+		//	case 75: cfsetspeed(&_tty, B75); break;
+		//	case 110: cfsetspeed(&_tty, B110); break;
+		//	case 134: cfsetspeed(&_tty, B134); break;
+		//	case 150: cfsetspeed(&_tty, B150); break;
+		//	case 200: cfsetspeed(&_tty, B200); break;
+		//	case 300: cfsetspeed(&_tty, B300); break;
+		//	case 600: cfsetspeed(&_tty, B600); break;
+		//	case 1200: cfsetspeed(&_tty, B1200); break;
+		//	case 1800: cfsetspeed(&_tty, B1800); break;
+		//	case 2400: cfsetspeed(&_tty, B2400); break;
+		//	case 4800: cfsetspeed(&_tty, B4800); break;
+		//	case 9600: cfsetspeed(&_tty, B9600); break;
+		//	case 19200: cfsetspeed(&_tty, B19200); break;
+		//	case 38400: cfsetspeed(&_tty, B38400); break;
+		//	case 57600: cfsetspeed(&_tty, B57600); break;
+		//	case 115200: cfsetspeed(&_tty, B115200); break;
+		//	case 230400: cfsetspeed(&_tty, B230400); break;
+		//	case 460800: cfsetspeed(&_tty, B460800); break;
+		//	default:
+		//		LOG_WARN("io::LinuxSerial", "[*w](setBaudRate)[] Invalid baudRate number $0", baudRate);
+		//}
 
-		if(tcsetattr(_fd, TCSANOW, &_tty) != 0)
+		if(ioctl(_fd, TCSETS2, &_tty) != 0)
 		{
 			LOG_WARN("io::LinuxSerial", "[*w](setBaudRate)[] Could not configure termios struct for [w]$0[]. Error($1): $2", _deviceName, errno, std::strerror(errno));
 			return false;

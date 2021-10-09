@@ -5,9 +5,12 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/algorithms/computerVision/jpeg.h>
-#ifdef ATTA_OS_WINDOWS
+
 #define _USE_MATH_DEFINES
+#ifdef ATTA_OS_WINDOWS
+#define M_PI 3.14159265368979
 #endif
+
 #include <cmath>
 
 namespace atta::cv {

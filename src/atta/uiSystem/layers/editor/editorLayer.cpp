@@ -13,6 +13,7 @@
 #include <atta/eventSystem/events/simulationPlayEvent.h>
 #include <atta/eventSystem/events/simulationPauseEvent.h>
 #include <atta/eventSystem/events/simulationStopEvent.h>
+#include <atta/scriptSystem/scriptManager.h>
 #include <imgui_internal.h>
 
 #include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
@@ -55,6 +56,10 @@ namespace atta::ui
 
 			_entityWindow.render();
 			IOSystemWindow::render();
+
+			ProjectScript* project = ScriptManager::getProjectScript();
+            if(project)
+                project->onUIRender();
 
 			ImGui::Begin("Debug");
 			ImGui::Text("Hello, down!");
