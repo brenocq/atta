@@ -139,6 +139,11 @@ install(TARGETS atta atta_test
 install(DIRECTORY src/atta/ DESTINATION include/atta
 	FILES_MATCHING REGEX ".*\.(h|inl)$")
 
+install(DIRECTORY src/extern/imgui/ DESTINATION include/atta/extern/imgui
+	FILES_MATCHING REGEX ".*\.(h|inl)$")
+install(DIRECTORY src/extern/glad/ DESTINATION include/atta/extern/glad
+	FILES_MATCHING REGEX ".*\.(h|inl)$")
+
 # Install resources
 install(DIRECTORY resources/ DESTINATION share/atta
 	PATTERN "resources/*")

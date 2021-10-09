@@ -12,6 +12,7 @@
 #include <atta/eventSystem/events/windowMouseScrollEvent.h>
 #include <atta/eventSystem/events/windowMouseButtonEvent.h>
 #include <atta/eventSystem/events/windowKeyboardButtonEvent.h>
+#include <glad/glad.h>
 
 namespace atta
 {

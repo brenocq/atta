@@ -10,7 +10,6 @@
 #include <GLFW/glfw3.h>
 #include <atta/core/stringId.h>
 #include <atta/eventSystem/eventManager.h>
-#include <glad/glad.h>
 
 namespace atta
 {

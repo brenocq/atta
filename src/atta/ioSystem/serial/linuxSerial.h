@@ -9,7 +9,7 @@
 #ifdef ATTA_OS_LINUX
 #include <atta/core/stringId.h>
 #include <atta/ioSystem/serial/serial.h>
-#include <termios.h>
+#include <asm/termbits.h>
 
 namespace atta::io
 {
@@ -28,7 +28,7 @@ namespace atta::io
 
 	private:
 		int _fd;
-		struct termios _tty;
+		struct termios2 _tty;
 	};
 }
 #endif// ATTA_OS_LINUX

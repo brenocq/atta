@@ -96,11 +96,11 @@ namespace atta
 				// Update graphics every frame
 				GraphicsManager::update();
 
+			ProjectScript* project = ScriptManager::getProjectScript();
 			if(_simulationState == SimulationState::RUNNING)
 			{
 				SensorManager::update(dt);
 
-				ProjectScript* project = ScriptManager::getProjectScript();
 				if(project)
 					project->onUpdateBefore(dt);
 
@@ -132,6 +132,9 @@ namespace atta
 				if(project)
 					project->onUpdateAfter(dt);
 			}
+            else
+				if(project)
+                    project->onUIUpdate();
 
 			FileManager::update();
 		}
