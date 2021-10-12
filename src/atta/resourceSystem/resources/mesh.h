@@ -16,31 +16,31 @@ struct aiScene;
 
 namespace atta
 {
-	class Mesh : public Resource, public AllocatedObject<Mesh, SID("ResourceAllocator")>
-	{
-	public:
-		struct Vertex
-		{
-			vec3 position;
-			vec3 normal;
-			vec2 texCoord;
-		};
+    class Mesh : public Resource, public AllocatedObject<Mesh, SID("ResourceAllocator")>
+    {
+    public:
+        struct Vertex
+        {
+            vec3 position;
+            vec3 normal;
+            vec2 texCoord;
+        };
 
-		Mesh(const fs::path& filename);
+        Mesh(const fs::path& filename);
 
-		const std::vector<Vertex>& getVertices() const { return _vertices; };
-		const std::vector<uint32_t>& getIndices() const { return _indices; };
+        const std::vector<Vertex>& getVertices() const { return _vertices; };
+        const std::vector<uint32_t>& getIndices() const { return _indices; };
 
-	private:
-		void loadMesh();
+    private:
+        void loadMesh();
 
-		// Assimp mesh loading
-		void processNode(aiNode *node, const aiScene *scene);
-    	void processMesh(aiMesh *mesh, const aiScene *scene);
+        // Assimp mesh loading
+        void processNode(aiNode *node, const aiScene *scene);
+        void processMesh(aiMesh *mesh, const aiScene *scene);
 
-		std::vector<Vertex> _vertices;
-		std::vector<uint32_t> _indices;
-	};
+        std::vector<Vertex> _vertices;
+        std::vector<uint32_t> _indices;
+    };
 }
 
 #endif// ATTA_RESOURCE_SYSTEM_RESOURCES_MESH_H

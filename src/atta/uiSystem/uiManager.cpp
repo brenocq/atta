@@ -12,22 +12,22 @@
 
 namespace atta::ui
 {
-	UIManager& UIManager::getInstance()
-	{
-		static UIManager instance;
-		return instance;
-	}
+    UIManager& UIManager::getInstance()
+    {
+        static UIManager instance;
+        return instance;
+    }
 
-	void UIManager::startUp() { getInstance().startUpImpl(); }
-	void UIManager::startUpImpl()
-	{
-		GraphicsManager::pushLayer(new EditorLayer());
-		GraphicsManager::pushLayer(new UILayer());
-	}
+    void UIManager::startUp() { getInstance().startUpImpl(); }
+    void UIManager::startUpImpl()
+    {
+        GraphicsManager::pushLayer(new EditorLayer());
+        GraphicsManager::pushLayer(new UILayer());
+    }
 
-	void UIManager::shutDown() { getInstance().shutDownImpl(); }
-	void UIManager::shutDownImpl()
-	{
+    void UIManager::shutDown() { getInstance().shutDownImpl(); }
+    void UIManager::shutDownImpl()
+    {
 
-	}
+    }
 }

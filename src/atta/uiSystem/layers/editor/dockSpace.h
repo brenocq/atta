@@ -9,12 +9,12 @@
 
 namespace atta::ui
 {
-	class DockSpace
-	{
-	public:
-		void render();
-	private:
-	};
+    class DockSpace
+    {
+    public:
+        void render();
+    private:
+    };
 }
 
 #endif// ATTA_UI_SYSTEM_LAYERS_EDITOR_DOCK_SPACE_H

@@ -14,34 +14,34 @@
 
 namespace atta::ui
 {
-	class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("GraphicsAllocator")>
-	{
-	public:
-		enum class EditorState
-		{
-			EDITOR = 0,
-			SIMULATION_RUNNING,
-			SIMULATION_PAUSED,
-		};
+    class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("GraphicsAllocator")>
+    {
+    public:
+        enum class EditorState
+        {
+            EDITOR = 0,
+            SIMULATION_RUNNING,
+            SIMULATION_PAUSED,
+        };
 
-		EditorLayer();
+        EditorLayer();
 
-		void onAttach() override;
-		void onDetach() override;
-		void onRender() override;
-		void onUIRender() override;
+        void onAttach() override;
+        void onDetach() override;
+        void onRender() override;
+        void onUIRender() override;
 
-	private:
-		void updateViewports();
-		void toolbar();
-		void onSimulationStateChange(Event& event);
+    private:
+        void updateViewports();
+        void toolbar();
+        void onSimulationStateChange(Event& event);
 
-		DockSpace _dockSpace;
-		TopBar _topBar;
-		EntityWindow _entityWindow;
+        DockSpace _dockSpace;
+        TopBar _topBar;
+        EntityWindow _entityWindow;
 
-		EditorState _editorState;
-	};
+        EditorState _editorState;
+    };
 }
 
 #endif// ATTA_UI_SYSTEM_LAYERS_EDITOR_EDITOR_LAYER_H

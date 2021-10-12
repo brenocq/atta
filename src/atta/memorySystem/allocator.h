@@ -9,36 +9,36 @@
 
 namespace atta
 {
-	class Allocator
-	{
-	public:
-		// Allocate memory
-		Allocator(uint64_t size);
-		// Use existing allocated memory
-		Allocator(uint8_t* memory, uint64_t size);
-		virtual ~Allocator();
+    class Allocator
+    {
+    public:
+        // Allocate memory
+        Allocator(uint64_t size);
+        // Use existing allocated memory
+        Allocator(uint8_t* memory, uint64_t size);
+        virtual ~Allocator();
 
-		// How many bytes to allocate
-		// size: number of bytes
-		// align: byte alignment
-		virtual void* allocBytes(size_t size, size_t align = 0) = 0;
+        // How many bytes to allocate
+        // size: number of bytes
+        // align: byte alignment
+        virtual void* allocBytes(size_t size, size_t align = 0) = 0;
 
-		// Free bytes at the pointer
-		// ptr: ptr at the start
-		// size: number of bytes
-		// align: byte alignment
-		virtual void freeBytes(void* ptr, size_t size, size_t align = 0) = 0;
+        // Free bytes at the pointer
+        // ptr: ptr at the start
+        // size: number of bytes
+        // align: byte alignment
+        virtual void freeBytes(void* ptr, size_t size, size_t align = 0) = 0;
 
-		const uint8_t* getMemory() { return _memory; }
-		uint64_t getSize() { return _size; }
+        const uint8_t* getMemory() { return _memory; }
+        uint64_t getSize() { return _size; }
 
-		bool owns(void* ptr);// Check if pointer is inside this allocator memory
+        bool owns(void* ptr);// Check if pointer is inside this allocator memory
 
-	protected:
-		uint8_t* _memory;
-		uint64_t _size;
-		bool _shouldFree;// True if _memory was allocated by this allocator
-	};
+    protected:
+        uint8_t* _memory;
+        uint64_t _size;
+        bool _shouldFree;// True if _memory was allocated by this allocator
+    };
 }
 
 #endif// ATTA_MEMORY_ALLOCATOR_H

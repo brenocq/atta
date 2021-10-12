@@ -11,35 +11,35 @@
 
 namespace atta
 {
-	class MemoryManager final
-	{
-	public:
-		static MemoryManager& getInstance()
-		{
-			static MemoryManager instance;
-			return instance;
-		}
+    class MemoryManager final
+    {
+    public:
+        static MemoryManager& getInstance()
+        {
+            static MemoryManager instance;
+            return instance;
+        }
 
-		// It is necessary to register the allocators to define its 
-		// type (stack, pool, malloc,  ...) and parameters (size, ...)
-		static void registerAllocator(StringHash hash, Allocator* alloc);
+        // It is necessary to register the allocators to define its 
+        // type (stack, pool, malloc,  ...) and parameters (size, ...)
+        static void registerAllocator(StringHash hash, Allocator* alloc);
 
-		// After registered, it is possible to get a pointer to the allocator
-		template <typename T = Allocator>
-		static T* getAllocator(StringHash hash);
+        // After registered, it is possible to get a pointer to the allocator
+        template <typename T = Allocator>
+        static T* getAllocator(StringHash hash);
 
-		// Used by allocatedObject to store pointer to the hash table value and
-		// reduce number of unordered_map accesses
-		template <typename T = Allocator>
-		static T** getAllocatorPtr(StringHash hash);
+        // Used by allocatedObject to store pointer to the hash table value and
+        // reduce number of unordered_map accesses
+        template <typename T = Allocator>
+        static T** getAllocatorPtr(StringHash hash);
 
-	private:
-		Allocator* getAllocatorImpl(StringHash hash);
-		Allocator** getAllocatorPtrImpl(StringHash hash);
-		void registerAllocatorImpl(StringHash hash, Allocator* alloc);
+    private:
+        Allocator* getAllocatorImpl(StringHash hash);
+        Allocator** getAllocatorPtrImpl(StringHash hash);
+        void registerAllocatorImpl(StringHash hash, Allocator* alloc);
 
-		std::unordered_map<StringHash, Allocator*> _allocators;
-	};
+        std::unordered_map<StringHash, Allocator*> _allocators;
+    };
 }
 
 #include <atta/memorySystem/memoryManager.inl>

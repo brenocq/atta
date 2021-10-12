@@ -12,46 +12,46 @@
 
 namespace atta
 {
-	class ScriptManager final
-	{
-	public:
-		static ScriptManager& getInstance();
-		static void startUp();
-		static void shutDown();
+    class ScriptManager final
+    {
+    public:
+        static ScriptManager& getInstance();
+        static void startUp();
+        static void shutDown();
 
-		static Script* getScript(StringId target);
-		static std::vector<StringId> getScriptSids();
+        static Script* getScript(StringId target);
+        static std::vector<StringId> getScriptSids();
 
-		static ProjectScript* getProjectScript();
-		static StringId getProjectScriptSid();
+        static ProjectScript* getProjectScript();
+        static StringId getProjectScriptSid();
 
-	private:
-		void startUpImpl();
-		void shutDownImpl();
+    private:
+        void startUpImpl();
+        void shutDownImpl();
 
-		Script* getScriptImpl(StringId target) const;
-		std::vector<StringId> getScriptSidsImpl() const;
+        Script* getScriptImpl(StringId target) const;
+        std::vector<StringId> getScriptSidsImpl() const;
 
-		ProjectScript* getProjectScriptImpl() const;
-		StringId getProjectScriptSidImpl() const;
+        ProjectScript* getProjectScriptImpl() const;
+        StringId getProjectScriptSidImpl() const;
 
-		// Handle events
-		void onFileChange(Event& event);
-		void onProjectOpen(Event& event);
-		void onProjectClose(Event& event);
+        // Handle events
+        void onFileChange(Event& event);
+        void onProjectOpen(Event& event);
+        void onProjectClose(Event& event);
 
-		void updateAllTargets();
-		void updateTarget(StringId target);
-		void linkTarget(StringId target);
-		void releaseTarget(StringId target);
+        void updateAllTargets();
+        void updateTarget(StringId target);
+        void linkTarget(StringId target);
+        void releaseTarget(StringId target);
 
-		std::shared_ptr<Compiler> _compiler;
-		std::shared_ptr<Linker> _linker;
+        std::shared_ptr<Compiler> _compiler;
+        std::shared_ptr<Linker> _linker;
 
-		std::unordered_map<StringId, Script*> _scripts;
-		std::pair<StringId, ProjectScript*> _projectScript;
-		 
-	};
+        std::unordered_map<StringId, Script*> _scripts;
+        std::pair<StringId, ProjectScript*> _projectScript;
+
+    };
 }
 
 #endif// ATTA_SCRIPT_SYSTEM_SCRIPT_MANAGER_H

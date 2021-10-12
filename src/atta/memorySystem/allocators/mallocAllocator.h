@@ -10,17 +10,17 @@
 
 namespace atta
 {
-	// Allocator for profiling purpose only, it uses malloc() behind
-	class MallocAllocator final : public Allocator
-	{
-	public:
-		MallocAllocator();
+    // Allocator for profiling purpose only, it uses malloc() behind
+    class MallocAllocator final : public Allocator
+    {
+    public:
+        MallocAllocator();
 
-		void* allocBytes(size_t size, size_t align) override;
-		void freeBytes(void* ptr, size_t size, size_t align) override;
+        void* allocBytes(size_t size, size_t align) override;
+        void freeBytes(void* ptr, size_t size, size_t align) override;
 
-	private:
-	};
+    private:
+    };
 }
 
 #endif// ATTA_MEMORY_ALLOCATORS_MALLOC_ALLOCATOR_H

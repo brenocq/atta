@@ -8,9 +8,9 @@
 
 namespace atta
 {
-	void NullLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript)
-	{
-		*script = nullptr;
-		*projectScript = nullptr;
-	}
+    void NullLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript)
+    {
+        *script = nullptr;
+        *projectScript = nullptr;
+    }
 }
