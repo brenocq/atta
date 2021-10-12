@@ -9,17 +9,17 @@
 
 namespace atta::ui
 {
-	class UIManager final
-	{
-	public:
-		static UIManager& getInstance();
-		static void startUp();
-		static void shutDown();
+    class UIManager final
+    {
+    public:
+        static UIManager& getInstance();
+        static void startUp();
+        static void shutDown();
 
-	private:
-		void startUpImpl();
-		void shutDownImpl();
-	};
+    private:
+        void startUpImpl();
+        void shutDownImpl();
+    };
 }
 
 #endif// ATTA_UI_SYSTEM_UI_MANAGER_H

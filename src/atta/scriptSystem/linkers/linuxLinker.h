@@ -11,18 +11,18 @@
 
 namespace atta
 {
-	class LinuxLinker : public Linker
-	{
-	public:
-		LinuxLinker() = default;
-		~LinuxLinker() = default;
+    class LinuxLinker : public Linker
+    {
+    public:
+        LinuxLinker() = default;
+        ~LinuxLinker() = default;
 
-		void linkTarget(StringId target, Script** script, ProjectScript** projectScript) override;
-		void releaseTarget(StringId target) override;
+        void linkTarget(StringId target, Script** script, ProjectScript** projectScript) override;
+        void releaseTarget(StringId target) override;
 
-	private:
-		std::unordered_map<StringId, void*> _targetHandles;
-	};
+    private:
+        std::unordered_map<StringId, void*> _targetHandles;
+    };
 }
 
 #endif// ATTA_OS_LINUX

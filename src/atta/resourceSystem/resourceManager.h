@@ -13,39 +13,39 @@
 
 namespace atta
 {
-	class ResourceManager final
-	{
-	public:
-		using ResourceType = size_t;
+    class ResourceManager final
+    {
+    public:
+        using ResourceType = size_t;
 
-		static ResourceManager& getInstance();
-		static void startUp();
-		static void shutDown();
+        static ResourceManager& getInstance();
+        static void startUp();
+        static void shutDown();
 
-		template <typename R>
-		static R* get(const fs::path& filename) { return getInstance().getImpl<R>(filename); }
+        template <typename R>
+        static R* get(const fs::path& filename) { return getInstance().getImpl<R>(filename); }
 
-		template <typename R>
-		static std::vector<StringId> getResources() { return getInstance().getResourcesImpl<R>(); }
+        template <typename R>
+        static std::vector<StringId> getResources() { return getInstance().getResourcesImpl<R>(); }
 
-	private:
-		void startUpImpl();
-		void shutDownImpl();
-		void loadResourcesRecursively(fs::path directory);
-		void onProjectOpen(Event& event);
+    private:
+        void startUpImpl();
+        void shutDownImpl();
+        void loadResourcesRecursively(fs::path directory);
+        void onProjectOpen(Event& event);
 
-		template <typename R>
-		R* getImpl(const fs::path& filename);
-		template <typename R>
-		std::vector<StringId> getResourcesImpl();
+        template <typename R>
+        R* getImpl(const fs::path& filename);
+        template <typename R>
+        std::vector<StringId> getResourcesImpl();
 
-		template <typename R>
-		void createLoadEvent(R* resource, StringId sid);
+        template <typename R>
+        void createLoadEvent(R* resource, StringId sid);
 
-		BitmapAllocator* _allocator;
-		std::unordered_map<StringHash, uint8_t*> _resourceMap;
-		std::unordered_map<ResourceType, std::vector<StringId>> _resourcesByType;
-	};
+        BitmapAllocator* _allocator;
+        std::unordered_map<StringHash, uint8_t*> _resourceMap;
+        std::unordered_map<ResourceType, std::vector<StringId>> _resourcesByType;
+    };
 }
 
 #include <atta/resourceSystem/resourceManager.inl>

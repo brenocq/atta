@@ -12,15 +12,15 @@
 
 namespace atta
 {
-	class Linker
-	{
-	public:
-		Linker() = default;
-		virtual ~Linker() = default;
+    class Linker
+    {
+    public:
+        Linker() = default;
+        virtual ~Linker() = default;
 
-		virtual void linkTarget(StringId target, Script** script, ProjectScript** projectScript) = 0;
-		virtual void releaseTarget(StringId target) = 0;
-	};
+        virtual void linkTarget(StringId target, Script** script, ProjectScript** projectScript) = 0;
+        virtual void releaseTarget(StringId target) = 0;
+    };
 }
 
 #endif// ATTA_SCRIPT_SYSTEM_LINKERS_LINKER_H

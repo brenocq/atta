@@ -11,22 +11,22 @@
 
 namespace atta::ui
 {
-	class UILayer final : public Layer, public AllocatedObject<UILayer, SID("GraphicsAllocator")>
-	{
-	public:
-		UILayer();
+    class UILayer final : public Layer, public AllocatedObject<UILayer, SID("GraphicsAllocator")>
+    {
+    public:
+        UILayer();
 
-		void onAttach() override;
-		void onDetach() override;
-		void onRender() override;
-		void onUIRender() override;
+        void onAttach() override;
+        void onDetach() override;
+        void onRender() override;
+        void onUIRender() override;
 
-		void begin();
-		void end();
-	
-	private:
-		void setTheme();
-	};
+        void begin();
+        void end();
+
+    private:
+        void setTheme();
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_LAYERS_INTERNAL_UI_LAYER_H

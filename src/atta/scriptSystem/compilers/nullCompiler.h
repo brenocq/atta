@@ -10,15 +10,15 @@
 
 namespace atta
 {
-	class NullCompiler : public Compiler
-	{
-	public:
-		NullCompiler() = default;
+    class NullCompiler : public Compiler
+    {
+    public:
+        NullCompiler() = default;
 
-		void compileAll() override {};
-		void compileTarget(StringId target) override {};
-		void updateTargets() override {};
-	};
+        void compileAll() override {};
+        void compileTarget(StringId target) override {};
+        void updateTargets() override {};
+    };
 }
 
 #endif// ATTA_SCRIPT_SYSTEM_COMPILERS_NULL_COMPILER_H

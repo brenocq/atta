@@ -15,28 +15,28 @@
 
 namespace atta::ui
 {
-	class IOSystemWindow : public Window<IOSystemWindow>
-	{
-	private:
-		IOSystemWindow();
-		void renderImpl();
+    class IOSystemWindow : public Window<IOSystemWindow>
+    {
+    private:
+        IOSystemWindow();
+        void renderImpl();
 
-		void serialTabItem();
-		void serialUpdateConsole(std::string deviceName);
+        void serialTabItem();
+        void serialUpdateConsole(std::string deviceName);
 
-		void cameraTabItem();
+        void cameraTabItem();
 
-		// Serial
-		std::unordered_map<std::string, std::shared_ptr<io::Serial>> _serials;
-		std::unordered_map<std::string, std::vector<char>> _serialInputBuf;
-		std::unordered_map<std::string, std::vector<char>> _serialConsoleBuf;
+        // Serial
+        std::unordered_map<std::string, std::shared_ptr<io::Serial>> _serials;
+        std::unordered_map<std::string, std::vector<char>> _serialInputBuf;
+        std::unordered_map<std::string, std::vector<char>> _serialConsoleBuf;
 
-		// Camera
-		std::unordered_map<std::string, std::shared_ptr<io::Camera>> _cameras;
-		std::unordered_map<std::string, std::shared_ptr<Image>> _cameraImages;
+        // Camera
+        std::unordered_map<std::string, std::shared_ptr<io::Camera>> _cameras;
+        std::unordered_map<std::string, std::shared_ptr<Image>> _cameraImages;
 
-		friend Window<IOSystemWindow>;
-	};
+        friend Window<IOSystemWindow>;
+    };
 }
 
 #endif// ATTA_UI_SYSTEM_LAYERS_EDITOR_WINDOWS_IO_SYSTEM_WINDOW_H

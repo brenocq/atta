@@ -10,47 +10,47 @@
 
 namespace atta::io
 {
-	IOManager& IOManager::getInstance()
-	{
-		static IOManager instance;
-		return instance;
-	}
+    IOManager& IOManager::getInstance()
+    {
+        static IOManager instance;
+        return instance;
+    }
 
-	void IOManager::startUp() { getInstance().startUpImpl(); }
-	void IOManager::startUpImpl()
-	{
-	}
+    void IOManager::startUp() { getInstance().startUpImpl(); }
+    void IOManager::startUpImpl()
+    {
+    }
 
-	void IOManager::shutDown() { getInstance().shutDownImpl(); }
-	void IOManager::shutDownImpl()
-	{
-	}
+    void IOManager::shutDown() { getInstance().shutDownImpl(); }
+    void IOManager::shutDownImpl()
+    {
+    }
 
-	void IOManager::update() { getInstance().updateImpl(); }
-	void IOManager::updateImpl()
-	{
-	}
+    void IOManager::update() { getInstance().updateImpl(); }
+    void IOManager::updateImpl()
+    {
+    }
 
-	//---------- Register OS specific implementations ----------//
-	template <>
-	std::shared_ptr<io::Camera> IOManager::createImpl<io::Camera>(io::Camera::CreateInfo info)
-	{
+    //---------- Register OS specific implementations ----------//
+    template <>
+    std::shared_ptr<io::Camera> IOManager::createImpl<io::Camera>(io::Camera::CreateInfo info)
+    {
 #ifdef ATTA_OS_LINUX
-		return std::static_pointer_cast<io::Camera>(std::make_shared<io::LinuxCamera>(info));
+        return std::static_pointer_cast<io::Camera>(std::make_shared<io::LinuxCamera>(info));
 #else
-		LOG_WARN("IOManager", "io::Camera not implemented for this operating system");
-		return nullptr;
+        LOG_WARN("IOManager", "io::Camera not implemented for this operating system");
+        return nullptr;
 #endif
-	}
+    }
 
-	template <>
-	std::shared_ptr<io::Serial> IOManager::createImpl<io::Serial>(io::Serial::CreateInfo info)
-	{
+    template <>
+    std::shared_ptr<io::Serial> IOManager::createImpl<io::Serial>(io::Serial::CreateInfo info)
+    {
 #ifdef ATTA_OS_LINUX
-		return std::static_pointer_cast<io::Serial>(std::make_shared<io::LinuxSerial>(info));
+        return std::static_pointer_cast<io::Serial>(std::make_shared<io::LinuxSerial>(info));
 #else
-		LOG_WARN("IOManager", "io::Serial not implemented for this operating system");
-		return nullptr;
+        LOG_WARN("IOManager", "io::Serial not implemented for this operating system");
+        return nullptr;
 #endif
-	}
+    }
 }

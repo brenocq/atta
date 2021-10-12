@@ -10,23 +10,23 @@
 
 namespace atta
 {
-	class Compiler
-	{
-	public:
-		Compiler() = default;
-		virtual ~Compiler() = default;
+    class Compiler
+    {
+    public:
+        Compiler() = default;
+        virtual ~Compiler() = default;
 
-		virtual void compileAll() = 0;
-		virtual void compileTarget(StringId target) = 0;
-		virtual void updateTargets() = 0;
+        virtual void compileAll() = 0;
+        virtual void compileTarget(StringId target) = 0;
+        virtual void updateTargets() = 0;
 
 
-		std::vector<StringId> getTargets() const;
-		std::map<StringId, std::vector<fs::path>> getTargetFiles() const { return _targetFiles; };
+        std::vector<StringId> getTargets() const;
+        std::map<StringId, std::vector<fs::path>> getTargetFiles() const { return _targetFiles; };
 
-	protected:
-		std::map<StringId, std::vector<fs::path>> _targetFiles;
-	};
+    protected:
+        std::map<StringId, std::vector<fs::path>> _targetFiles;
+    };
 }
 
 #endif// ATTA_SCRIPT_SYSTEM_COMPILERS_COMPILER_H

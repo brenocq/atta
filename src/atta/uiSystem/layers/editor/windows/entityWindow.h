@@ -11,26 +11,26 @@
 
 namespace atta::ui
 {
-	class EntityWindow
-	{
-	public:
-		EntityWindow();
+    class EntityWindow
+    {
+    public:
+        EntityWindow();
 
-		void render();
+        void render();
 
-		bool getSelected(EntityId& eid);
-	private:
-		void renderTree();
-		void renderTreeNode(EntityId entity, int& i);
+        bool getSelected(EntityId& eid);
+    private:
+        void renderTree();
+        void renderTreeNode(EntityId entity, int& i);
 
-		void renderComponents();
-		void renderCameraWindows();
-		void textureCombo(std::string comboId, StringId& sid);
+        void renderComponents();
+        void renderCameraWindows();
+        void textureCombo(std::string comboId, StringId& sid);
 
-		EntityId _selected;
-		bool _someSelected;
-		std::unordered_set<EntityId> _cameraWindows;
-	};
+        EntityId _selected;
+        bool _someSelected;
+        std::unordered_set<EntityId> _cameraWindows;
+    };
 }
 
 #endif// ATTA_UI_SYSTEM_LAYERS_EDITOR_WINDOWS_ENTITY_WINDOW_H

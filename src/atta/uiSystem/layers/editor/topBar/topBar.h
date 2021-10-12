@@ -9,26 +9,26 @@
 
 namespace atta::ui
 {
-	class TopBar
-	{
-	public:
-		TopBar();
+    class TopBar
+    {
+    public:
+        TopBar();
 
-		void render();
+        void render();
 
 
-	private:
-		void preferences();
-		void openProjectModal();
-		void createProjectModal();
-		void viewportModals();
+    private:
+        void preferences();
+        void openProjectModal();
+        void createProjectModal();
+        void viewportModals();
 
-		bool _showPreferences;
-		bool _showOpenProject;
-		bool _showCreateProject;
+        bool _showPreferences;
+        bool _showOpenProject;
+        bool _showCreateProject;
 
-		std::vector<bool> _viewportModals;// True/false for each viewport window
-	};
+        std::vector<bool> _viewportModals;// True/false for each viewport window
+    };
 }
 
 #endif// ATTA_UI_SYSTEM_LAYERS_EDITOR_TOP_BAR_TOP_BAR_H

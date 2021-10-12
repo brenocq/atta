@@ -10,38 +10,38 @@
 
 namespace atta
 {
-	// Allocator for variable-size objects, free bytes are known using a bitmap
-	// The first memory bytes are used by the bitmap
-	//
-	// Each bit in the bitmap section corresponds to one byte
-	// 1 -> allocated | 0 -> free
-	class BitmapAllocator final : public Allocator
-	{
-	public:
-		// Allocate heap memory
-		BitmapAllocator(uint64_t size);
-		// Use already allocated memory
-		BitmapAllocator(uint8_t* memory, uint64_t size);
+    // Allocator for variable-size objects, free bytes are known using a bitmap
+    // The first memory bytes are used by the bitmap
+    //
+    // Each bit in the bitmap section corresponds to one byte
+    // 1 -> allocated | 0 -> free
+    class BitmapAllocator final : public Allocator
+    {
+    public:
+        // Allocate heap memory
+        BitmapAllocator(uint64_t size);
+        // Use already allocated memory
+        BitmapAllocator(uint8_t* memory, uint64_t size);
 
-		// Simplified alloc/free
-		template<typename T>
-		T* alloc(size_t size = 1);
-		template<typename T>
-		void free(T* ptr, size_t size = 1);
+        // Simplified alloc/free
+        template<typename T>
+        T* alloc(size_t size = 1);
+        template<typename T>
+        void free(T* ptr, size_t size = 1);
 
-		// Default alloc/free
-		void* allocBytes(size_t size, size_t align) override;
-		void freeBytes(void* ptr, size_t size, size_t align) override;
+        // Default alloc/free
+        void* allocBytes(size_t size, size_t align) override;
+        void freeBytes(void* ptr, size_t size, size_t align) override;
 
-		size_t getDataSize() const { return _dataSize; }
+        size_t getDataSize() const { return _dataSize; }
 
-	private:
-		void init();
+    private:
+        void init();
 
-		uint8_t* _dataStart;
-		size_t _dataSize;
-		size_t _current;// Position to start free space search
-	};
+        uint8_t* _dataStart;
+        size_t _dataSize;
+        size_t _current;// Position to start free space search
+    };
 }
 
 #include <atta/memorySystem/allocators/bitmapAllocator.inl>

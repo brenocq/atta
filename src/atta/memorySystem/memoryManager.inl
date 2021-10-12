@@ -6,15 +6,15 @@
 //--------------------------------------------------
 namespace atta
 {
-	template <typename T>
-	T* MemoryManager::getAllocator(StringHash hash)
-	{
-		return static_cast<T*>(getInstance().getAllocatorImpl(hash));
-	}
+    template <typename T>
+    T* MemoryManager::getAllocator(StringHash hash)
+    {
+        return static_cast<T*>(getInstance().getAllocatorImpl(hash));
+    }
 
-	template <typename T>
-	T** MemoryManager::getAllocatorPtr(StringHash hash)
-	{
-		return static_cast<T**>(getInstance().getAllocatorPtrImpl(hash));
-	}
+    template <typename T>
+    T** MemoryManager::getAllocatorPtr(StringHash hash)
+    {
+        return static_cast<T**>(getInstance().getAllocatorPtrImpl(hash));
+    }
 }
