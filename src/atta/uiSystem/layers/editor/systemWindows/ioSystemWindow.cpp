@@ -182,17 +182,15 @@ namespace atta::ui
         {
             for(auto& name : deviceNames)
             {
-                if(ImGui::BeginTabItem((name+"##IOSystemWindowCameraTab"+name).c_str()))
+                // Initialize camera if not initialized yet
+                if(_cameras.find(name) == _cameras.end() || _cameras[name] == nullptr)
                 {
-                    // Initialize camera if not initialized yet
-                    if(_cameras.find(name) == _cameras.end())
+                    io::Camera::CreateInfo info {};
+                    info.deviceName = name;
+                    info.debugName = StringId("[atta::ui] "+info.deviceName+" camera");
+                    _cameras[name] = io::IOManager::create<io::Camera>(info);
+                    if(_cameras[name]->start())
                     {
-                        io::Camera::CreateInfo info {};
-                        info.deviceName = name;
-                        info.debugName = StringId("[atta::ui] "+info.deviceName+" camera");
-                        _cameras[name] = io::IOManager::create<io::Camera>(info);
-                        _cameras[name]->start();
-
                         Image::CreateInfo imgInfo {};
                         imgInfo.width = _cameras[name]->getResolution().width;
                         imgInfo.height = _cameras[name]->getResolution().height;
@@ -200,7 +198,12 @@ namespace atta::ui
                         imgInfo.debugName = StringId("[atta::ui] "+info.deviceName+" image");
                         _cameraImages[name] = GraphicsManager::create<Image>(imgInfo);
                     }
+                    else
+                        _cameras[name].reset();
+                }
 
+                if(_cameras[name] && ImGui::BeginTabItem((name+"##IOSystemWindowCameraTab"+name).c_str()))
+                {
                     //---------- Camera image ----------//
                     _cameras[name]->readFrame();
                     const std::vector<uint8_t> data = _cameras[name]->getFrame();
@@ -217,6 +220,15 @@ namespace atta::ui
                     std::vector<io::Camera::FormatInfo> formats = _cameras[name]->getAvailableFormats();
                     io::Camera::PixelFormat currPixelFormat = _cameras[name]->getPixelFormat();
                     io::Camera::Resolution currResolution = _cameras[name]->getResolution();
+
+                    // If some error occured in the camera (e.g. disconnected), stop showing
+                    if(formats.size() == 0)
+                    {
+                        _cameras[name].reset();
+                        _cameraImages[name].reset();
+                        ImGui::EndTabItem();
+                        continue;
+                    }
 
                     unsigned selPixelFormat = 0;
                     unsigned selResolution = 0;

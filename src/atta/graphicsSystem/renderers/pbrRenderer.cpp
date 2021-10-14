@@ -277,13 +277,13 @@ namespace atta
                 }
             }
 
-            _backgroundShader->bind();
-            _backgroundShader->setMat4("projection", transpose(camera->getProj()));
-            _backgroundShader->setMat4("view", transpose(camera->getView()));
-            _backgroundShader->setInt("environmentMap", 0);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
-            renderCube();
+            //_backgroundShader->bind();
+            //_backgroundShader->setMat4("projection", transpose(camera->getProj()));
+            //_backgroundShader->setMat4("view", transpose(camera->getView()));
+            //_backgroundShader->setInt("environmentMap", 0);
+            //glActiveTexture(GL_TEXTURE0);
+            //glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
+            //renderCube();
 
         }
         _geometryPipeline->end();
@@ -425,6 +425,7 @@ namespace atta
 
     void PbrRenderer::generateCubemap()
     {
+        StringId sid("textures/white.jpg");
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
@@ -443,7 +444,7 @@ namespace atta
         shaderGroupInfo.debugName = StringId("EquiToCubemap Shader Group");
         std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
 
-        ResourceManager::get<Texture>("textures/Hamarikyu_Bridge_B/14-Hamarikyu_Bridge_B_3k.hdr");// Load
+        ResourceManager::get<Texture>(fs::path(sid.getString()));// Load
         glGenTextures(1, &_envCubemap);
         glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
         for(unsigned int i = 0; i < 6; ++i)
@@ -471,7 +472,7 @@ namespace atta
         // Convert HDR equirectangular environment map to cubemap equivalent
         shader->bind();
         shader->setMat4("projection", transpose(captureProjection));
-        shader->setTexture("equirectangularMap", StringId("textures/Hamarikyu_Bridge_B/14-Hamarikyu_Bridge_B_3k.hdr"));
+        shader->setTexture("equirectangularMap", sid);
         glViewport(0, 0, 512, 512);
         glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
         for(unsigned int i = 0; i < 6; ++i)
