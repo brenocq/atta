@@ -29,7 +29,7 @@ namespace atta::io
         bool isValidDevice() override;
 
     private:
-        void openDevice();
+        bool openDevice();
         bool initDevice();
         bool startCapturing();
 

@@ -263,8 +263,8 @@ namespace atta::ui
 
                     ImGui::Text("Camera");
 
-                    ImGui::End();
                 }
+                ImGui::End();
             }
         }
     }

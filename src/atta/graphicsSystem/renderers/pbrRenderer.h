@@ -37,6 +37,7 @@ namespace atta
         std::shared_ptr<Pipeline> _pointPipeline;
 
         std::shared_ptr<ShaderGroup> _backgroundShader;
+        bool _hasEnvTexture;
         unsigned int _envCubemap;
         unsigned int _irradianceMap;
         unsigned int _prefilterMap;

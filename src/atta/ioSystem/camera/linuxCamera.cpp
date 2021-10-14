@@ -19,9 +19,8 @@
 namespace atta::io
 {
     LinuxCamera::LinuxCamera(Camera::CreateInfo info):
-        Camera(info)
+        Camera(info), _fd(-1)
     {
-        openDevice();
     }
 
     LinuxCamera::~LinuxCamera()
@@ -32,14 +31,15 @@ namespace atta::io
                 LOG_WARN("io::LinuxCamera", "Could not unmap buffer");
 
         // Close camera file descriptor
-        if(close(_fd) == -1)
+        if(_fd != -1 && close(_fd) == -1)
             LOG_WARN("io::LinuxCamera", "Could not close camera file descriptor");
-
         _fd = -1;
     }
 
     bool LinuxCamera::start()
     {
+        if(!openDevice())
+            return false;
         if(!initDevice())
             return false;
         if(!startCapturing())
@@ -53,6 +53,10 @@ namespace atta::io
         struct v4l2_capability cap;
         struct v4l2_fmtdesc fmtEnum;
         struct v4l2_format fmt;
+
+        // Open if not already open
+        if(!openDevice())
+            return false;
 
         //---------- Get device capabilities ----------//
         // Get capabilities
@@ -215,8 +219,8 @@ namespace atta::io
             if(ret<0 && errno == EINVAL) break;
             if(ret<0)
             {
-                LOG_ERROR("io::LinuxCamera", "Could not enumerate available formats");
-                exit(1);
+                LOG_WARN("io::LinuxCamera", "Could not enumerate available formats");
+                return {};
             }
 
             Camera::FormatInfo fmtInfo;
@@ -248,8 +252,8 @@ namespace atta::io
                 if(ret<0 && errno == EINVAL) break;
                 if(ret<0)
                 {
-                    LOG_ERROR("io::LinuxCamera", "Could not enumerate frame sizes");
-                    exit(1);
+                    LOG_WARN("io::LinuxCamera", "Could not enumerate frame sizes");
+                    return {};
                 }
 
                 if(frmSizeEnum.type == V4L2_FRMSIZE_TYPE_DISCRETE)
@@ -269,8 +273,8 @@ namespace atta::io
                         if(ret<0 && errno == EINVAL) break;
                         if(ret<0)
                         {
-                            LOG_ERROR("io::LinuxCamera", "Could not enumerate frame intervals");
-                            exit(1);
+                            LOG_WARN("io::LinuxCamera", "Could not enumerate frame intervals");
+                            return {};
                         }
                         if(frmIvalEnum.type == V4L2_FRMIVAL_TYPE_DISCRETE)
                             fmtInfo.fps.back().push_back((unsigned)(frmIvalEnum.discrete.denominator/(float)frmIvalEnum.discrete.numerator));
@@ -289,33 +293,37 @@ namespace atta::io
         return availableFormats;
     }
 
-    void LinuxCamera::openDevice()
+    bool LinuxCamera::openDevice()
     {
+        // Ignore if already open
+        if(_fd != -1) return true;
+
         struct stat st;
         // Get information about the file
         if(stat(_deviceName.c_str(), &st) == -1)
         {
             LOG_WARN("io::LinuxCamera", "Cannot identify '$0' ($1)",
                     _deviceName, errno);
-            //exit(1);
+            return false;
         }
 
         // Check if it is a device (video is a character device file)
         if(!S_ISCHR(st.st_mode))
         {
-            LOG_ERROR("io::LinuxCamera", "'$0' is not a device ($1)",
+            LOG_WARN("io::LinuxCamera", "'$0' is not a device ($1)",
                     _deviceName, errno);
-            exit(1);
+            return false;
         }
 
         // Open file descriptor with read/write and
         _fd = open(_deviceName.c_str(), O_RDWR /* required */ | O_NONBLOCK, 0);
         if(_fd == -1)
         {
-            LOG_ERROR("io::LinuxCamera", "Could not open camera file '$0' ($1)",
+            LOG_WARN("io::LinuxCamera", "Could not open camera file '$0' ($1)",
                     _deviceName, errno);
-            exit(1);
+            return false;
         }
+        return true;
     }
 
     bool LinuxCamera::initDevice()
