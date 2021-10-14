@@ -8,13 +8,13 @@
 
 namespace atta
 {
-	void Camera::update()
-	{
-		_front = normalize(_front);
-		_left = cross(_up, _front);
-		_up = cross(_front, _left);
+    void Camera::update()
+    {
+        _front = normalize(_front);
+        _left = cross(_up, _front);
+        _up = cross(_front, _left);
 
-		_left.normalize();
-		_up.normalize();
-	}
+        _left.normalize();
+        _up.normalize();
+    }
 }

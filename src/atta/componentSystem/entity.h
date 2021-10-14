@@ -11,17 +11,17 @@
 
 namespace atta
 {
-	class Entity
-	{
-		public:
-			Entity(EntityId id);
+    class Entity
+    {
+    public:
+        Entity(EntityId id);
 
-			template <typename T>
-			T* getComponent() { return ComponentManager::getEntityComponent<T>(_id); }
+        template <typename T>
+        T* getComponent() { return ComponentManager::getEntityComponent<T>(_id); }
 
-		private:
-			EntityId _id;
-	};
+    private:
+        EntityId _id;
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_ENTITY_H

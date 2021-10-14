@@ -10,18 +10,18 @@
 
 namespace atta
 {
-	struct MaterialComponent
-	{
-		vec3 albedo = vec3(1.0f, 0.0f, 1.0f);
-		float metallic = 0.0f;
-		float roughness = 0.5f;
-		float ao = 1.0f;
-		StringId albedoTexture = StringId("Empty texture");
-		StringId metallicTexture = StringId("Empty texture");
-		StringId roughnessTexture = StringId("Empty texture");
-		StringId aoTexture = StringId("Empty texture");
-		StringId normalTexture = StringId("Empty texture");
-	};
+    struct MaterialComponent
+    {
+        vec3 albedo = vec3(1.0f, 0.0f, 1.0f);
+        float metallic = 0.0f;
+        float roughness = 0.5f;
+        float ao = 1.0f;
+        StringId albedoTexture = StringId("Empty texture");
+        StringId metallicTexture = StringId("Empty texture");
+        StringId roughnessTexture = StringId("Empty texture");
+        StringId aoTexture = StringId("Empty texture");
+        StringId normalTexture = StringId("Empty texture");
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_MATERIAL_COMPONENT_H

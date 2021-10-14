@@ -13,48 +13,48 @@
 
 namespace atta
 {
-	class Window final
-	{
-	public:
-		struct CreateInfo
-		{
-			std::string title = "Atta - by Brenocq";
-			size_t width = 1600;
-			size_t height = 900;
-			//std::shared_ptr<EventManager> eventManager;
-		};
+    class Window final
+    {
+    public:
+        struct CreateInfo
+        {
+            std::string title = "Atta - by Brenocq";
+            size_t width = 1600;
+            size_t height = 900;
+            //std::shared_ptr<EventManager> eventManager;
+        };
 
-		enum class Event : atta::Event::Type
-		{
-			MOUSE_MOVE = SID("Window_MouseMove"),
-			MOUSE_BUTTON = SID("Window_MouseButton"),
-			MOUSE_SCROLL = SID("Window_MouseScroll"),
-			KEYBOARD_BUTTON = SID("Window_KeyboardButton"),
-			RESIZE = SID("Window_Resize"),
-			FOCUS = SID("Window_Focus"),
-			MOVE = SID("Window_Move"),
-			CLOSE = SID("Window_Close")
-		};
+        enum class Event : atta::Event::Type
+        {
+            MOUSE_MOVE = SID("Window_MouseMove"),
+            MOUSE_BUTTON = SID("Window_MouseButton"),
+            MOUSE_SCROLL = SID("Window_MouseScroll"),
+            KEYBOARD_BUTTON = SID("Window_KeyboardButton"),
+            RESIZE = SID("Window_Resize"),
+            FOCUS = SID("Window_Focus"),
+            MOVE = SID("Window_Move"),
+            CLOSE = SID("Window_Close")
+        };
 
-		Window(const CreateInfo& info);
-		~Window();
+        Window(const CreateInfo& info);
+        ~Window();
 
-		size_t getWidth() const { return _width; }
-		size_t getHeight() const { return _height; }
+        size_t getWidth() const { return _width; }
+        size_t getHeight() const { return _height; }
 
-		void update();
-		void swapBuffers();
+        void update();
+        void swapBuffers();
 
-		GLFWwindow* getGLFWHandle() const { return _window; }
+        GLFWwindow* getGLFWHandle() const { return _window; }
 
-	private:
+    private:
 
-		GLFWwindow* _window;
-		std::string _title;
-		size_t _width, _height;
-		static unsigned _glfwWindowCounter;
-		//std::shared_ptr<EventManager> _eventManager;
-	};
+        GLFWwindow* _window;
+        std::string _title;
+        size_t _width, _height;
+        static unsigned _glfwWindowCounter;
+        //std::shared_ptr<EventManager> _eventManager;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_WINDOW_H

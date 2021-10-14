@@ -10,32 +10,32 @@
 
 namespace atta
 {
-	class FileManager;
-	class Project final
-	{
-	public:
-		Project(fs::path file);
+    class FileManager;
+    class Project final
+    {
+    public:
+        Project(fs::path file);
 
-		std::string getName() { return _name; }
-		fs::path getFile() const { return _file; }
-		fs::path getDirectory() const { return _directory; }
+        std::string getName() { return _name; }
+        fs::path getFile() const { return _file; }
+        fs::path getDirectory() const { return _directory; }
 
-		fs::path getBuildDirectory();
-		fs::path getSnapshotDirectory();
-		std::vector<fs::path> getResourceRootPaths() const { return _resourceRootPaths; }
+        fs::path getBuildDirectory();
+        fs::path getSnapshotDirectory();
+        std::vector<fs::path> getResourceRootPaths() const { return _resourceRootPaths; }
 
-	private:
-		fs::path solveResourcePath(fs::path relativePath);
+    private:
+        fs::path solveResourcePath(fs::path relativePath);
 
-		std::string _name;
+        std::string _name;
 
-		fs::path _file;// .atta file
-		fs::path _directory;
+        fs::path _file;// .atta file
+        fs::path _directory;
 
-		std::vector<fs::path> _resourceRootPaths;
+        std::vector<fs::path> _resourceRootPaths;
 
-		friend FileManager;
-	};
+        friend FileManager;
+    };
 }
 
 #endif// ATTA_FILE_SYSTEM_PROJECT_PROJECT_H

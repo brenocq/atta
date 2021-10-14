@@ -10,7 +10,7 @@
 
 namespace atta
 {
-	using OpenGLId = uint32_t;
+    using OpenGLId = uint32_t;
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_BASE_H

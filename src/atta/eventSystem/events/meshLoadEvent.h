@@ -10,13 +10,13 @@
 
 namespace atta
 {
-	class MeshLoadEvent : public EventTyped<SID("MeshLoadEvent")>
-	{
-	public:
-		MeshLoadEvent(StringId sid_): sid(sid_) {}
+    class MeshLoadEvent : public EventTyped<SID("MeshLoadEvent")>
+    {
+    public:
+        MeshLoadEvent(StringId sid_): sid(sid_) {}
 
-		const StringId sid;
-	};
+        const StringId sid;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_MESH_LOAD_EVENT_H

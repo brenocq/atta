@@ -10,10 +10,10 @@
 
 namespace atta
 {
-	struct ScriptComponent
-	{
-		StringId sid;
-	};
+    struct ScriptComponent
+    {
+        StringId sid;
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H

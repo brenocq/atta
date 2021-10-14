@@ -10,10 +10,10 @@
 
 namespace atta
 {
-	struct NameComponent
-	{
-		char name[32];
-	};
+    struct NameComponent
+    {
+        char name[32];
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_NAME_COMPONENT_H

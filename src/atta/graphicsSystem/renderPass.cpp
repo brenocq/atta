@@ -8,10 +8,10 @@
 
 namespace atta
 {
-	RenderPass::RenderPass(const CreateInfo& info):
-		_framebuffer(info.framebuffer), _debugName(info.debugName)
-	{
+    RenderPass::RenderPass(const CreateInfo& info):
+        _framebuffer(info.framebuffer), _debugName(info.debugName)
+    {
 
-	}
+    }
 }
 

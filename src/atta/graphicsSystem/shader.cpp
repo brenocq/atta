@@ -8,9 +8,9 @@
 
 namespace atta
 {
-	Shader::Shader(const CreateInfo& info):
-		_filepath(info.filepath)
-	{
+    Shader::Shader(const CreateInfo& info):
+        _filepath(info.filepath)
+    {
 
-	}
+    }
 }

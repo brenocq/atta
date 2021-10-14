@@ -10,10 +10,10 @@
 
 namespace atta
 {
-	struct MeshComponent
-	{
-		StringId sid;
-	};
+    struct MeshComponent
+    {
+        StringId sid;
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H

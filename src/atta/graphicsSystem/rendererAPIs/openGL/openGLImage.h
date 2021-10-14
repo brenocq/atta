@@ -11,27 +11,27 @@
 
 namespace atta
 {
-	class OpenGLImage final : public Image
-	{
-	public:
-		OpenGLImage(const Image::CreateInfo& info);
-		~OpenGLImage();
+    class OpenGLImage final : public Image
+    {
+    public:
+        OpenGLImage(const Image::CreateInfo& info);
+        ~OpenGLImage();
 
-		static GLenum convertSizedInternalFormat(Format format);
-		static GLenum convertFormat(Format format);
-		static GLenum convertInternalFormat(Format format);
-		static GLenum convertDataType(Format format);
-		static GLenum convertSamplerWrap(Wrap samplerWrap);
+        static GLenum convertSizedInternalFormat(Format format);
+        static GLenum convertFormat(Format format);
+        static GLenum convertInternalFormat(Format format);
+        static GLenum convertDataType(Format format);
+        static GLenum convertSamplerWrap(Wrap samplerWrap);
 
-		OpenGLId getId() const { return _id; }
+        OpenGLId getId() const { return _id; }
 
-		void write(void* data) override;
-		void* getImGuiImage() override { return reinterpret_cast<void*>(_id); }
+        void write(void* data) override;
+        void* getImGuiImage() override { return reinterpret_cast<void*>(_id); }
 
-	private:
-		OpenGLId _id;
-		OpenGLId _samplerId;
-	};
+    private:
+        OpenGLId _id;
+        OpenGLId _samplerId;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_IMAGE_H

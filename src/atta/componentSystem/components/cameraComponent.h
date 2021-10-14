@@ -12,32 +12,32 @@
 
 namespace atta
 {
-	struct CameraComponent
-	{
-		enum class CameraType : uint8_t
-		{
-			ORTHOGRAPHIC = 0,
-			PERSPECTIVE
-		};
+    struct CameraComponent
+    {
+        enum class CameraType : uint8_t
+        {
+            ORTHOGRAPHIC = 0,
+            PERSPECTIVE
+        };
 
-		enum class RendererType : uint8_t
-		{
-			FAST = 0,
-			PHONG,
-			PBR
-		};
+        enum class RendererType : uint8_t
+        {
+            FAST = 0,
+            PHONG,
+            PBR
+        };
 
-		uint32_t width = 128;
-		uint32_t height = 128;
+        uint32_t width = 128;
+        uint32_t height = 128;
 
-		float fov = 45.0f;
-		float far = 100.0f;
-		float near = 0.001f;
-		float fps = 30;
+        float fov = 45.0f;
+        float far = 100.0f;
+        float near = 0.001f;
+        float fps = 30;
 
-		CameraType cameraType = CameraType::PERSPECTIVE;
-		RendererType rendererType = RendererType::PHONG;
-	};
+        CameraType cameraType = CameraType::PERSPECTIVE;
+        RendererType rendererType = RendererType::PHONG;
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H

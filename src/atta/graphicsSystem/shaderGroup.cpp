@@ -8,8 +8,8 @@
 
 namespace atta
 {
-	ShaderGroup::ShaderGroup(const CreateInfo& info):
-		_debugName(info.debugName)
-	{
-	}
+    ShaderGroup::ShaderGroup(const CreateInfo& info):
+        _debugName(info.debugName)
+    {
+    }
 }

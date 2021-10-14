@@ -10,10 +10,10 @@
 
 namespace atta
 {
-	struct PrototypeComponent
-	{
-		uint64_t maxClones;
-	};
+    struct PrototypeComponent
+    {
+        uint64_t maxClones;
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H

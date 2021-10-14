@@ -7,58 +7,58 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	# Set flags necessary for the script system to work correctly
-	set(CMAKE_CXX_FLAGS "-Wl,--export-dynamic")
-	set(CMAKE_EXE_LINKER_FLAGS "-Wl,--export-dynamic")
+    # Set flags necessary for the script system to work correctly
+    set(CMAKE_CXX_FLAGS "-Wl,--export-dynamic")
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--export-dynamic")
 endif()
 
 ########## Build Types ##########
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-	list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
+    list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
 endif()
 
 ########## OS ##########
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
-	list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
-	# Force google test to link the runtimes dynamically (to avoid visual studio link error)
-	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-	# Fix assert __VA_ARGS__ expansion
-	list(APPEND ATTA_OPTIONS /Zc:preprocessor)
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
+    # Force google test to link the runtimes dynamically (to avoid visual studio link error)
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    # Fix assert __VA_ARGS__ expansion
+    list(APPEND ATTA_OPTIONS /Zc:preprocessor)
 elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-	list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
-	list(APPEND ATTA_DEFINITIONS "ATTA_OS_LINUX")
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_LINUX")
 else()
-	message(SEND_ERROR "Unknown system name: " + CMAKE_SYSTEM_NAME)
+    message(SEND_ERROR "Unknown system name: " + CMAKE_SYSTEM_NAME)
 endif()
 
 ########## Options ##########
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-	if(MSVC)
-		#list(APPEND ATTA_OPTIONS /W4 /WX)
-	else()
-		list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -g -pg)#-Werror 
-		# Profilling
-		list(APPEND ATTA_OPTIONS -fno-omit-frame-pointer)
-		# Unused parameter
-		list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
-		# Math anonymous union 
-		list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
-		# Glad opengl definitions
-		list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
-		# ImGui warnings
-		list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn)
-		# Scripting
-		#list(APPEND ATTA_OPTIONS -Wl,--no-undefined -rdynamic)
-		#list(APPEND ATTA_OPTIONS -Wl,--export-dynamic)
-	endif()
+    if(MSVC)
+        #list(APPEND ATTA_OPTIONS /W4 /WX)
+    else()
+        list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -g -pg)#-Werror 
+        # Profilling
+        list(APPEND ATTA_OPTIONS -fno-omit-frame-pointer)
+        # Unused parameter
+        list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
+        # Math anonymous union 
+        list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
+        # Glad opengl definitions
+        list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
+        # ImGui warnings
+        list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn)
+        # Scripting
+        #list(APPEND ATTA_OPTIONS -Wl,--no-undefined -rdynamic)
+        #list(APPEND ATTA_OPTIONS -Wl,--export-dynamic)
+    endif()
 endif()
 if(CMAKE_BUILD_TYPE MATCHES Release)
-	if(MSVC)
-		list(APPEND ATTA_OPTIONS /O2)
-	else()
-		list(APPEND ATTA_OPTIONS -O3)
-	endif()
+    if(MSVC)
+        list(APPEND ATTA_OPTIONS /O2)
+    else()
+        list(APPEND ATTA_OPTIONS -O3)
+    endif()
 endif()
 
 ########## Output Directories ##########
@@ -72,43 +72,43 @@ list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
 
 ########## Macros ##########
 macro(atta_add_libs)
-	# Used by atta systems to register itself to be linked with the atta target
-	foreach(_lib ${ARGN})
-		list(APPEND ATTA_LIBS ${_lib})
-	endforeach()
-	set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)
+    # Used by atta systems to register itself to be linked with the atta target
+    foreach(_lib ${ARGN})
+        list(APPEND ATTA_LIBS ${_lib})
+    endforeach()
+    set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)
 endmacro()
 
 macro(atta_add_include_dirs)
-	# Used by atta systems to include directories to all targets
-	foreach(_include_dir ${ARGN})
-		list(APPEND ATTA_INCLUDE_DIRS ${_include_dir})
-	endforeach()
-	set(ATTA_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS} PARENT_SCOPE)
+    # Used by atta systems to include directories to all targets
+    foreach(_include_dir ${ARGN})
+        list(APPEND ATTA_INCLUDE_DIRS ${_include_dir})
+    endforeach()
+    set(ATTA_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS} PARENT_SCOPE)
 endmacro()
 
 macro(atta_add_tests)
-	# Used by atta systems to add tests to the atta_test target
-	foreach(_test ${ARGN})
-		list(APPEND ATTA_TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_test}")
-	endforeach()
+    # Used by atta systems to add tests to the atta_test target
+    foreach(_test ${ARGN})
+        list(APPEND ATTA_TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_test}")
+    endforeach()
     set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
 endmacro()
 
 macro(atta_target_common target)
-	# Common to all targets
-	target_precompile_headers(${target} PRIVATE ${ATTA_PCH})
-	target_include_directories(${target} PRIVATE ${ATTA_INCLUDE_DIRS})
-	target_compile_options(${target} PRIVATE ${ATTA_OPTIONS})
-	target_compile_definitions(${target} PRIVATE ${ATTA_DEFINITIONS})
+    # Common to all targets
+    target_precompile_headers(${target} PRIVATE ${ATTA_PCH})
+    target_include_directories(${target} PRIVATE ${ATTA_INCLUDE_DIRS})
+    target_compile_options(${target} PRIVATE ${ATTA_OPTIONS})
+    target_compile_definitions(${target} PRIVATE ${ATTA_DEFINITIONS})
 endmacro()
 
 macro(atta_create_local_test target sources libs)
-	message(${sources})
-	add_executable(${target} ${sources})
-	atta_target_common(${target})
-	target_link_libraries(${target} PRIVATE ${libs} gtest_main)
-	set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ATTA_TEST_PATH})
+    message(${sources})
+    add_executable(${target} ${sources})
+    atta_target_common(${target})
+    target_link_libraries(${target} PRIVATE ${libs} gtest_main)
+    set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ATTA_TEST_PATH})
 endmacro()
 
 ########## Atta/Extern directories ##########
@@ -132,21 +132,21 @@ target_link_libraries(atta PUBLIC ${ATTA_LIBS})
 
 # Install executables
 install(TARGETS atta atta_test
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 # Install includes
 install(DIRECTORY src/atta/ DESTINATION include/atta
-	FILES_MATCHING REGEX ".*\.(h|inl)$")
+    FILES_MATCHING REGEX ".*\.(h|inl)$")
 
 install(DIRECTORY src/extern/imgui/ DESTINATION include/atta/extern/imgui
-	FILES_MATCHING REGEX ".*\.(h|inl)$")
+    FILES_MATCHING REGEX ".*\.(h|inl)$")
 install(DIRECTORY src/extern/glad/ DESTINATION include/atta/extern/glad
-	FILES_MATCHING REGEX ".*\.(h|inl)$")
+    FILES_MATCHING REGEX ".*\.(h|inl)$")
 
 # Install resources
 install(DIRECTORY resources/ DESTINATION share/atta
-	PATTERN "resources/*")
+    PATTERN "resources/*")
 
 ########## Cmake Package ##########
 #include(CMakePackageConfigHelpers)

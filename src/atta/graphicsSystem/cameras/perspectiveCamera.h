@@ -10,34 +10,34 @@
 
 namespace atta
 {
-	class PerspectiveCamera : public Camera
-	{
-	public:
-		struct CreateInfo
-		{
-			vec3 position = {-3.0f, 0.0f, 0.0f};
-			vec3 lookAt = {0.0f, 0.0f, 0.0f};
-			vec3 up = {0.0f, 0.0f, 1.0f};
-			float near = 0.01f;
-			float far = 100.0f;
-			float fov = 45.0f;
-			float ratio = 1.0f;
-		};
+    class PerspectiveCamera : public Camera
+    {
+    public:
+        struct CreateInfo
+        {
+            vec3 position = {-3.0f, 0.0f, 0.0f};
+            vec3 lookAt = {0.0f, 0.0f, 0.0f};
+            vec3 up = {0.0f, 0.0f, 1.0f};
+            float near = 0.01f;
+            float far = 100.0f;
+            float fov = 45.0f;
+            float ratio = 1.0f;
+        };
 
-		PerspectiveCamera(CreateInfo info);
-		mat4 getView() const override;
-		mat4 getProj() const override;
-		void setFov(float fov) { _fov = fov; }
+        PerspectiveCamera(CreateInfo info);
+        mat4 getView() const override;
+        mat4 getProj() const override;
+        void setFov(float fov) { _fov = fov; }
 
-		void move() override;
+        void move() override;
 
-	private:
-		float _near;
-		float _far;
-		float _fov;
+    private:
+        float _near;
+        float _far;
+        float _fov;
 
-		float _speed;
-	};
+        float _speed;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_CAMERAS_PERSPECTIVE_CAMERA_H

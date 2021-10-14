@@ -8,21 +8,21 @@
 
 namespace atta
 {
-	Drawer::Drawer(): 
-		_maxNumberOfLines(100000),
-		_currNumberOfLines(0),
-		_linesChanged(false),
-		_maxNumberOfPoints(1000000),
-		_currNumberOfPoints(0),
-		_pointsChanged(false)
-	{
-		_lines.resize(_maxNumberOfLines);
-		_points.resize(_maxNumberOfPoints);
-		glPointSize(5.0f);
-		glLineWidth(2.0f);
+    Drawer::Drawer(): 
+        _maxNumberOfLines(100000),
+        _currNumberOfLines(0),
+        _linesChanged(false),
+        _maxNumberOfPoints(1000000),
+        _currNumberOfPoints(0),
+        _pointsChanged(false)
+    {
+        _lines.resize(_maxNumberOfLines);
+        _points.resize(_maxNumberOfPoints);
+        glPointSize(5.0f);
+        glLineWidth(2.0f);
 
-		// Line VAO
-		glGenVertexArrays(1, &_lineVAO);
+        // Line VAO
+        glGenVertexArrays(1, &_lineVAO);
         glGenBuffers(1, &_lineVBO);
         glBindVertexArray(_lineVAO);
 
@@ -34,8 +34,8 @@ namespace atta
         glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3*sizeof(float)));
         glEnableVertexAttribArray(1);
 
-		// Point VAO
-		glGenVertexArrays(1, &_pointVAO);
+        // Point VAO
+        glGenVertexArrays(1, &_pointVAO);
         glGenBuffers(1, &_pointVBO);
         glBindVertexArray(_pointVAO);
 
@@ -49,20 +49,20 @@ namespace atta
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-	};
+    };
 
-	Drawer& Drawer::getInstance()
-	{
-		static Drawer drawer;
-		return drawer;
-	}
+    Drawer& Drawer::getInstance()
+    {
+        static Drawer drawer;
+        return drawer;
+    }
 
-	void Drawer::clear() { getInstance().clearImpl(); }
-	void Drawer::clearImpl()
-	{
-		_currNumberOfLines = 0;
-		_currNumberOfPoints = 0;
-		_linesChanged = false;
-		_pointsChanged = false;
-	}
+    void Drawer::clear() { getInstance().clearImpl(); }
+    void Drawer::clearImpl()
+    {
+        _currNumberOfLines = 0;
+        _currNumberOfPoints = 0;
+        _linesChanged = false;
+        _pointsChanged = false;
+    }
 }

@@ -8,24 +8,24 @@
 
 namespace atta
 {
-	OpenGLRenderPass::OpenGLRenderPass(const RenderPass::CreateInfo& info):
-		RenderPass(info)
-	{
+    OpenGLRenderPass::OpenGLRenderPass(const RenderPass::CreateInfo& info):
+        RenderPass(info)
+    {
 
-	}
+    }
 
-	OpenGLRenderPass::~OpenGLRenderPass()
-	{
+    OpenGLRenderPass::~OpenGLRenderPass()
+    {
 
-	}
+    }
 
-	void OpenGLRenderPass::begin(bool clear)
-	{
-		_framebuffer->bind(clear);
-	}
+    void OpenGLRenderPass::begin(bool clear)
+    {
+        _framebuffer->bind(clear);
+    }
 
-	void OpenGLRenderPass::end()
-	{
-		_framebuffer->unbind();
-	}
+    void OpenGLRenderPass::end()
+    {
+        _framebuffer->unbind();
+    }
 }

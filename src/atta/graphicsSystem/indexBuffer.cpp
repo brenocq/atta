@@ -8,8 +8,8 @@
 
 namespace atta
 {
-	IndexBuffer::IndexBuffer(const CreateInfo& info):
-		_offset(info.offset), _size(info.size), _data(info.data)
-	{
-	}
+    IndexBuffer::IndexBuffer(const CreateInfo& info):
+        _offset(info.offset), _size(info.size), _data(info.data)
+    {
+    }
 }

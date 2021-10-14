@@ -12,37 +12,37 @@
 
 namespace atta
 {
-	class Viewport final
-	{
-	public:
-		struct CreateInfo
-		{
-			StringId sid = StringId("Unnamed viewport");
-			std::shared_ptr<Renderer> renderer = nullptr;
-			std::shared_ptr<Camera> camera = nullptr;
-		};
-		Viewport(CreateInfo info);
-		~Viewport();
+    class Viewport final
+    {
+    public:
+        struct CreateInfo
+        {
+            StringId sid = StringId("Unnamed viewport");
+            std::shared_ptr<Renderer> renderer = nullptr;
+            std::shared_ptr<Camera> camera = nullptr;
+        };
+        Viewport(CreateInfo info);
+        ~Viewport();
 
-		void render();
-		void resize(uint32_t width, uint32_t height);
+        void render();
+        void resize(uint32_t width, uint32_t height);
 
-		StringId getSID() { return _sid; }
-		uint32_t getWidth() const { return _renderer->getWidth(); }
-		uint32_t getHeight() const { return _renderer->getHeight(); }
-		void* getImGuiTexture() const { return _renderer->getImGuiTexture(); }
+        StringId getSID() { return _sid; }
+        uint32_t getWidth() const { return _renderer->getWidth(); }
+        uint32_t getHeight() const { return _renderer->getHeight(); }
+        void* getImGuiTexture() const { return _renderer->getImGuiTexture(); }
 
-		std::shared_ptr<Renderer> getRenderer() const { return _renderer; }
-		std::shared_ptr<Camera> getCamera() const { return _camera; }
+        std::shared_ptr<Renderer> getRenderer() const { return _renderer; }
+        std::shared_ptr<Camera> getCamera() const { return _camera; }
 
-		void setRenderer(std::shared_ptr<Renderer> renderer) { _renderer = renderer; }
-		void setCamera(std::shared_ptr<Camera> camera) { _camera = camera; }
+        void setRenderer(std::shared_ptr<Renderer> renderer) { _renderer = renderer; }
+        void setCamera(std::shared_ptr<Camera> camera) { _camera = camera; }
 
-	private:
-		StringId _sid;
-		std::shared_ptr<Renderer> _renderer;
-		std::shared_ptr<Camera> _camera;
-	};
+    private:
+        StringId _sid;
+        std::shared_ptr<Renderer> _renderer;
+        std::shared_ptr<Camera> _camera;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_VIEWPORT_H

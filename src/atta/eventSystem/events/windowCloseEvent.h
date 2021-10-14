@@ -10,10 +10,10 @@
 
 namespace atta
 {
-	class WindowCloseEvent : public EventTyped<SID("WindowCloseEvent")>
-	{
-	public:
-	};
+    class WindowCloseEvent : public EventTyped<SID("WindowCloseEvent")>
+    {
+    public:
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_WINDOW_CLOSE_H

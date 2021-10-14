@@ -10,22 +10,22 @@
 
 namespace atta
 {
-	class WindowKeyboardButtonEvent : public EventTyped<SID("WindowKeyboardButtonEvent")>
-	{
-	public:
-		enum class Action
-		{
-			PRESS,
-			REPEAT,
-			RELEASE
-		};
+    class WindowKeyboardButtonEvent : public EventTyped<SID("WindowKeyboardButtonEvent")>
+    {
+    public:
+        enum class Action
+        {
+            PRESS,
+            REPEAT,
+            RELEASE
+        };
 
-		WindowKeyboardButtonEvent(int key_, Action action_): 
-			key(key_), action(action_) {}
+        WindowKeyboardButtonEvent(int key_, Action action_): 
+            key(key_), action(action_) {}
 
-		int key;
-		Action action;
-	};
+        int key;
+        Action action;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_WINDOW_KEYBOARD_BUTTON_H

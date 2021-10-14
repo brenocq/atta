@@ -11,19 +11,19 @@
 
 namespace atta
 {
-	class OpenGLIndexBuffer final : public IndexBuffer
-	{
-	public:
-		OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info);
-		~OpenGLIndexBuffer();
+    class OpenGLIndexBuffer final : public IndexBuffer
+    {
+    public:
+        OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info);
+        ~OpenGLIndexBuffer();
 
-		void bind() const override;
+        void bind() const override;
 
-		OpenGLId getId() const { return _id; }
+        OpenGLId getId() const { return _id; }
 
-	private:
-		OpenGLId _id;
-	};
+    private:
+        OpenGLId _id;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_INDEX_BUFFER_H

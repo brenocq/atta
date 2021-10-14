@@ -10,10 +10,10 @@
 
 namespace atta
 {
-	struct PointLightComponent
-	{
-		vec3 intensity = vec3(1.0f, 1.0f, 1.0f);
-	};
+    struct PointLightComponent
+    {
+        vec3 intensity = vec3(1.0f, 1.0f, 1.0f);
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_POINT_LIGHT_COMPONENT_H

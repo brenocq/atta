@@ -10,29 +10,29 @@
 
 namespace atta
 {
-	class OrthographicCamera : public Camera
-	{
-	public:
-		struct CreateInfo
-		{
-			vec3 position = {0.0f, 0.0f, 3.0f};
-			vec3 lookAt = {0.0f, 0.0f, 0.0f};
-			vec3 up = {0.0f, 1.0f, 0.0f};
-			float far = 1000.0f;
-			float height = 5.0f;
-			float ratio = 1.0f;
-		};
+    class OrthographicCamera : public Camera
+    {
+    public:
+        struct CreateInfo
+        {
+            vec3 position = {0.0f, 0.0f, 3.0f};
+            vec3 lookAt = {0.0f, 0.0f, 0.0f};
+            vec3 up = {0.0f, 1.0f, 0.0f};
+            float far = 1000.0f;
+            float height = 5.0f;
+            float ratio = 1.0f;
+        };
 
-		OrthographicCamera(CreateInfo info);
-		mat4 getView() const override;
-		mat4 getProj() const override;
+        OrthographicCamera(CreateInfo info);
+        mat4 getView() const override;
+        mat4 getProj() const override;
 
-		void move() override;
+        void move() override;
 
-	private:
-		float _far;
-		float _height;
-	};
+    private:
+        float _far;
+        float _height;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_CAMERAS_ORTHOGRAPHIC_CAMERA_H

@@ -10,11 +10,11 @@
 
 namespace atta
 {
-	class SimulationPauseEvent : public EventTyped<SID("SimulationPauseEvent")>
-	{
-	public:
-		SimulationPauseEvent() = default;
-	};
+    class SimulationPauseEvent : public EventTyped<SID("SimulationPauseEvent")>
+    {
+    public:
+        SimulationPauseEvent() = default;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_SIMULATION_PAUSE_EVENT_H

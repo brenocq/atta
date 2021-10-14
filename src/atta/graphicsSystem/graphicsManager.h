@@ -22,53 +22,53 @@
 
 namespace atta
 {
-	class GraphicsManager final
-	{
-	public:
-		static GraphicsManager& getInstance();
-		static void startUp();
-		static void shutDown();
+    class GraphicsManager final
+    {
+    public:
+        static GraphicsManager& getInstance();
+        static void startUp();
+        static void shutDown();
 
-		static void update();
-		static void pushLayer(Layer* layer);
+        static void update();
+        static void pushLayer(Layer* layer);
 
-		// Used to create the object (image/pipeline/renderPass/...) based on the current rendererAPI
-		// e.g.: GraphicsManager::create<Pipeline>(pipelineInfo) will create OpenGLPipeline or 
-		// VulkanPipeline or ... depending on the current renderering API
-		template <typename T, typename... Args>
-		static std::shared_ptr<T> create(Args... args) { return getInstance().createImpl<T>(args...); }
+        // Used to create the object (image/pipeline/renderPass/...) based on the current rendererAPI
+        // e.g.: GraphicsManager::create<Pipeline>(pipelineInfo) will create OpenGLPipeline or 
+        // VulkanPipeline or ... depending on the current renderering API
+        template <typename T, typename... Args>
+        static std::shared_ptr<T> create(Args... args) { return getInstance().createImpl<T>(args...); }
 
-		static std::shared_ptr<RendererAPI> getRendererAPI() { return getInstance().getRendererAPIImpl(); };
-		static std::vector<std::shared_ptr<Viewport>>& getViewports() { return getInstance().getViewportsImpl(); }
-		static void addViewport(std::shared_ptr<Viewport> viewport) { return getInstance().addViewportImpl(viewport); }
-		static void* getImGuiImage(StringId sid) { return getInstance().getImGuiImageImpl(sid); }
+        static std::shared_ptr<RendererAPI> getRendererAPI() { return getInstance().getRendererAPIImpl(); };
+        static std::vector<std::shared_ptr<Viewport>>& getViewports() { return getInstance().getViewportsImpl(); }
+        static void addViewport(std::shared_ptr<Viewport> viewport) { return getInstance().addViewportImpl(viewport); }
+        static void* getImGuiImage(StringId sid) { return getInstance().getImGuiImageImpl(sid); }
 
-	private:
-		void startUpImpl();
-		void shutDownImpl();
-		void updateImpl();
-		void pushLayerImpl(Layer* layer);
-		template <typename T, typename... Args>
-		std::shared_ptr<T> createImpl(Args... args);
+    private:
+        void startUpImpl();
+        void shutDownImpl();
+        void updateImpl();
+        void pushLayerImpl(Layer* layer);
+        template <typename T, typename... Args>
+        std::shared_ptr<T> createImpl(Args... args);
 
-		template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
-		std::shared_ptr<T> createSpecific(Args... args);
+        template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
+        std::shared_ptr<T> createSpecific(Args... args);
 
-		std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
-		std::vector<std::shared_ptr<Viewport>>& getViewportsImpl() { return _viewports; };
-		void addViewportImpl(std::shared_ptr<Viewport> viewport) { _viewports.push_back(viewport); }
+        std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
+        std::vector<std::shared_ptr<Viewport>>& getViewportsImpl() { return _viewports; };
+        void addViewportImpl(std::shared_ptr<Viewport> viewport) { _viewports.push_back(viewport); }
 
-		void* getImGuiImageImpl(StringId sid) const { return _rendererAPI->getImGuiImage(sid); }
+        void* getImGuiImageImpl(StringId sid) const { return _rendererAPI->getImGuiImage(sid); }
 
-		std::shared_ptr<Window> _window;
-		std::shared_ptr<RendererAPI> _rendererAPI;
+        std::shared_ptr<Window> _window;
+        std::shared_ptr<RendererAPI> _rendererAPI;
 
-		// Layer stack
-		std::unique_ptr<LayerStack> _layerStack;
+        // Layer stack
+        std::unique_ptr<LayerStack> _layerStack;
 
-		// Viewports
-		std::vector<std::shared_ptr<Viewport>> _viewports;
-	};
+        // Viewports
+        std::vector<std::shared_ptr<Viewport>> _viewports;
+    };
 }
 
 #include <atta/graphicsSystem/graphicsManager.inl>

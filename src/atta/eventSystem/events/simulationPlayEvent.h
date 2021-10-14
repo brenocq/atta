@@ -10,11 +10,11 @@
 
 namespace atta
 {
-	class SimulationPlayEvent : public EventTyped<SID("SimulationPlayEvent")>
-	{
-	public:
-		SimulationPlayEvent() = default;
-	};
+    class SimulationPlayEvent : public EventTyped<SID("SimulationPlayEvent")>
+    {
+    public:
+        SimulationPlayEvent() = default;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_SIMULATION_PLAY_EVENT_H

@@ -12,21 +12,21 @@
 
 namespace atta
 {
-	class OpenGLMesh final
-	{
-	public:
-		OpenGLMesh(StringId sid);
-		~OpenGLMesh();
+    class OpenGLMesh final
+    {
+    public:
+        OpenGLMesh(StringId sid);
+        ~OpenGLMesh();
 
-		void draw();
+        void draw();
 
-	private:
-		std::shared_ptr<OpenGLVertexBuffer> _vertexBuffer;
-		std::shared_ptr<OpenGLIndexBuffer> _indexBuffer;
-		StringId _sid;
+    private:
+        std::shared_ptr<OpenGLVertexBuffer> _vertexBuffer;
+        std::shared_ptr<OpenGLIndexBuffer> _indexBuffer;
+        StringId _sid;
 
-		OpenGLId _id;
-	};
+        OpenGLId _id;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_MESH_H

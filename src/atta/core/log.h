@@ -39,80 +39,80 @@
 
 namespace atta
 {
-	//---------------------------------//
-	//---------- Description ----------//
-	//---------------------------------//
-	// Create colored output logs with parameter pack
-	// Colors: [w]  -> white
-	//         [r]  -> red
-	//         [g]  -> green
-	//         [b]  -> blue
-	//         [c]  -> cyan
-	//         [m]  -> magenta
-	//         [y]  -> yellow
-	//         [k]  -> black
-	//         [*w]  -> bold white
-	//         [*r]  -> bold red
-	//         [*g]  -> bold green
-	//         [*b]  -> bold blue
-	//         [*c]  -> bold cyan
-	//         [*m]  -> bold magenta
-	//         [*y]  -> bold yellow
-	//         [*k]  -> bold black
-	//         []   -> reset to default color
-	//
-	// Argument substitution: $0 -> first argument
-	//						  $1 -> second argument
-	//						  ...
+    //---------------------------------//
+    //---------- Description ----------//
+    //---------------------------------//
+    // Create colored output logs with parameter pack
+    // Colors: [w]  -> white
+    //         [r]  -> red
+    //         [g]  -> green
+    //         [b]  -> blue
+    //         [c]  -> cyan
+    //         [m]  -> magenta
+    //         [y]  -> yellow
+    //         [k]  -> black
+    //         [*w]  -> bold white
+    //         [*r]  -> bold red
+    //         [*g]  -> bold green
+    //         [*b]  -> bold blue
+    //         [*c]  -> bold cyan
+    //         [*m]  -> bold magenta
+    //         [*y]  -> bold yellow
+    //         [*k]  -> bold black
+    //         []   -> reset to default color
+    //
+    // Argument substitution: $0 -> first argument
+    //						  $1 -> second argument
+    //						  ...
 
-	//---------------------------------//
-	//------------ Examples -----------//
-	//---------------------------------//
-	// Log::error("Window", "$0 surface could not be created. [w]Error Code: $1", "Main", 123);
-	//
-	// Output:
-	// /*boldred*/[Window] /*red*/Main surface could not be created. /*white*/Error Code: 123
-	//----------------
-	// Log::info("Cool", "[r]R[*g]a[y]i[*c]n[m]b[*w]o[c]w []$0", "output");
-	//
-	// Output:
-	// [Cool] Rainbow output // But with colors
+    //---------------------------------//
+    //------------ Examples -----------//
+    //---------------------------------//
+    // Log::error("Window", "$0 surface could not be created. [w]Error Code: $1", "Main", 123);
+    //
+    // Output:
+    // /*boldred*/[Window] /*red*/Main surface could not be created. /*white*/Error Code: 123
+    //----------------
+    // Log::info("Cool", "[r]R[*g]a[y]i[*c]n[m]b[*w]o[c]w []$0", "output");
+    //
+    // Output:
+    // [Cool] Rainbow output // But with colors
 
-	//---------------------------------//
-	//----------- Log class -----------//
-	//---------------------------------//
-	class Log final
-	{
-	public:
-		enum LogLevel {
-			LOG_LEVEL_VERBOSE = 0,
-			LOG_LEVEL_DEBUG,
-			LOG_LEVEL_SUCCESS,
-			LOG_LEVEL_INFO,
-			LOG_LEVEL_WARNING,
-			LOG_LEVEL_ERROR,
-			LOG_LEVEL_NONE,
-		};
-		const static LogLevel logLevel = LOG_LEVEL_VERBOSE;
+    //---------------------------------//
+    //----------- Log class -----------//
+    //---------------------------------//
+    class Log final
+    {
+    public:
+        enum LogLevel {
+            LOG_LEVEL_VERBOSE = 0,
+            LOG_LEVEL_DEBUG,
+            LOG_LEVEL_SUCCESS,
+            LOG_LEVEL_INFO,
+            LOG_LEVEL_WARNING,
+            LOG_LEVEL_ERROR,
+            LOG_LEVEL_NONE,
+        };
+        const static LogLevel logLevel = LOG_LEVEL_VERBOSE;
 
-		template<class...Args>
-		static void verbose(std::string tag, std::string text, Args&&... args);
-		template<class...Args>
-		static void debug(std::string tag, std::string text, Args&&... args);
-		template<class...Args>
-		static void success(std::string tag, std::string text, Args&&... args);
-		template<class...Args>
-		static void info(std::string tag, std::string text, Args&&... args);
-		template<class...Args>
-		static void warning(std::string tag, std::string text, Args&&... args);
-		template<class...Args>
-		static void error(std::string tag, std::string text, Args&&... args);
+        template<class...Args>
+        static void verbose(std::string tag, std::string text, Args&&... args);
+        template<class...Args>
+        static void debug(std::string tag, std::string text, Args&&... args);
+        template<class...Args>
+        static void success(std::string tag, std::string text, Args&&... args);
+        template<class...Args>
+        static void info(std::string tag, std::string text, Args&&... args);
+        template<class...Args>
+        static void warning(std::string tag, std::string text, Args&&... args);
+        template<class...Args>
+        static void error(std::string tag, std::string text, Args&&... args);
 
-	private:
-		//---------- Main log function ----------//
-		template<class...Args>
-		static void log(const char* tagColor, std::string tag, const char* textColor, std::string text, Args&&... args);
-	};
+    private:
+        //---------- Main log function ----------//
+        template<class...Args>
+        static void log(const char* tagColor, std::string tag, const char* textColor, std::string text, Args&&... args);
+    };
 }
 
 #define LOG_VERBOSE(...) atta::Log::verbose(__VA_ARGS__)

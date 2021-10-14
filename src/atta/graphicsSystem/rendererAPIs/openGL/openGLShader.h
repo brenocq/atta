@@ -11,22 +11,22 @@
 
 namespace atta
 {
-	class OpenGLShader final : public Shader
-	{
-	public:
-		OpenGLShader(const Shader::CreateInfo& info);
-		~OpenGLShader();
+    class OpenGLShader final : public Shader
+    {
+    public:
+        OpenGLShader(const Shader::CreateInfo& info);
+        ~OpenGLShader();
 
-		void recompile() override;
+        void recompile() override;
 
-		OpenGLId getId() const { return _id; }
-		void deleteShader();
+        OpenGLId getId() const { return _id; }
+        void deleteShader();
 
-		static GLenum convertFileToShaderType(const fs::path& filepath);
-	
-	private:
-		OpenGLId _id;
-	};
+        static GLenum convertFileToShaderType(const fs::path& filepath);
+
+    private:
+        OpenGLId _id;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_SHADER_H

@@ -10,7 +10,7 @@ const float PI = 3.14159265359;
 float RadicalInverse_VdC(uint bits);
 vec2 Hammersley(uint i, uint N);
 vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness);
-  
+
 void main()
 {		
     vec3 N = normalize(localPos);    
@@ -37,7 +37,7 @@ void main()
 
     FragColor = vec4(prefilteredColor, 1.0);
 }  
-  
+
 float VanDerCorput(uint n, uint base)
 {
     float invBase = 1.0 / float(base);
