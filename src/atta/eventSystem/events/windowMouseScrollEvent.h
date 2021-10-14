@@ -10,14 +10,14 @@
 
 namespace atta
 {
-	class WindowMouseScrollEvent : public EventTyped<SID("WindowMouseScrollEvent")>
-	{
-	public:
-		WindowMouseScrollEvent(float dx_, float dy_): 
-			dx(dx_), dy(dy_) {}
+    class WindowMouseScrollEvent : public EventTyped<SID("WindowMouseScrollEvent")>
+    {
+    public:
+        WindowMouseScrollEvent(float dx_, float dy_): 
+            dx(dx_), dy(dy_) {}
 
-		float dx, dy;
-	};
+        float dx, dy;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_WINDOW_MOUSE_SCROLL_H

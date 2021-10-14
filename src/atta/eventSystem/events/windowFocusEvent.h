@@ -10,14 +10,14 @@
 
 namespace atta
 {
-	class WindowFocusEvent : public EventTyped<SID("WindowFocusEvent")>
-	{
-	public:
-		WindowFocusEvent(bool hasFocus_): 
-			hasFocus(hasFocus_) {}
+    class WindowFocusEvent : public EventTyped<SID("WindowFocusEvent")>
+    {
+    public:
+        WindowFocusEvent(bool hasFocus_): 
+            hasFocus(hasFocus_) {}
 
-		bool hasFocus;
-	};
+        bool hasFocus;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_WINDOW_FOCUS_H

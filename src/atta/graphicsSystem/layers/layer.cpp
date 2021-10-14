@@ -8,9 +8,9 @@
 
 namespace atta
 {
-	Layer::Layer(StringId sid):
-		_sid(sid)
-	{
+    Layer::Layer(StringId sid):
+        _sid(sid)
+    {
 
-	}
+    }
 }

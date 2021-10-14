@@ -12,27 +12,27 @@
 
 namespace atta
 {
-	class Renderer
-	{
-	public:
-		Renderer(const char* name): _name(StringId(name)) {}
-		virtual ~Renderer() = default;
+    class Renderer
+    {
+    public:
+        Renderer(const char* name): _name(StringId(name)) {}
+        virtual ~Renderer() = default;
 
-		virtual void render(std::shared_ptr<Camera> camera) = 0;
-		virtual void resize(uint32_t width, uint32_t height) = 0;
+        virtual void render(std::shared_ptr<Camera> camera) = 0;
+        virtual void resize(uint32_t width, uint32_t height) = 0;
 
-		virtual uint32_t getWidth() const = 0;
-		virtual uint32_t getHeight() const = 0;
-		virtual void* getImGuiTexture() const = 0;
+        virtual uint32_t getWidth() const = 0;
+        virtual uint32_t getHeight() const = 0;
+        virtual void* getImGuiTexture() const = 0;
 
-		std::string getName() const { return _name.getString(); }
-		StringId getSID() const { return _name; }
+        std::string getName() const { return _name.getString(); }
+        StringId getSID() const { return _name; }
 
-	protected:
-		uint32_t _width;
-		uint32_t _height;
-		StringId _name;
-	};
+    protected:
+        uint32_t _width;
+        uint32_t _height;
+        StringId _name;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_H

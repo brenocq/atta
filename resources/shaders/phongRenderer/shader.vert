@@ -13,9 +13,9 @@ out vec3 normal;
 
 void main()
 {
-	vec4 coord = model * vec4(inPosition, 1.0f);
-	gl_Position = projection * view * coord;
+    vec4 coord = model * vec4(inPosition, 1.0f);
+    gl_Position = projection * view * coord;
 
-	fragPos = coord.xyz;
-	normal = mat3(transpose(invModel))*inNormal;
+    fragPos = coord.xyz;
+    normal = mat3(transpose(invModel))*inNormal;
 }

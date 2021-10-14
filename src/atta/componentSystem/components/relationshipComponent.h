@@ -10,11 +10,11 @@
 
 namespace atta
 {
-	struct RelationshipComponent
-	{
-		EntityId parent;
-		std::vector<EntityId> children;
-	};
+    struct RelationshipComponent
+    {
+        EntityId parent;
+        std::vector<EntityId> children;
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_RELATIONSHIP_COMPONENT_H

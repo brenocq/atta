@@ -47,17 +47,17 @@ vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 //---------- Main ----------//
 void main()
 {
-	vec3 norm = normalize(normal);
-	vec3 viewDir = normalize(viewPos - fragPos);
+    vec3 norm = normalize(normal);
+    vec3 viewDir = normalize(viewPos - fragPos);
 
-	vec3 result = calcDirectionalLight(directionalLight, norm, viewDir);
+    vec3 result = calcDirectionalLight(directionalLight, norm, viewDir);
     for(int i = 0; i < numPointLights; i++)
         result += calcPointLight(pointLights[i], norm, fragPos, viewDir);  	
 
-	result += ambientColor * ambientStrength * material.albedo;
-	result *= material.ao;
+    result += ambientColor * ambientStrength * material.albedo;
+    result *= material.ao;
 
-	FragColor = vec4(result, 1.0f);
+    FragColor = vec4(result, 1.0f);
 }
 
 //---------- Declarations ----------//
@@ -77,7 +77,7 @@ vec3 calcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
-	vec3 lightDir = normalize(light.position - fragPos);
+    vec3 lightDir = normalize(light.position - fragPos);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading

@@ -8,13 +8,13 @@
 
 namespace atta
 {
-	void FileWatcher::addWatch(fs::path directory)
-	{
-		_pathsToWatch[directory] = -1;
-	}
+    void FileWatcher::addWatch(fs::path directory)
+    {
+        _pathsToWatch[directory] = -1;
+    }
 
-	void FileWatcher::removeWatch(fs::path directory)
-	{
-		_pathsToWatch.erase(directory);
-	}
+    void FileWatcher::removeWatch(fs::path directory)
+    {
+        _pathsToWatch.erase(directory);
+    }
 }

@@ -11,26 +11,26 @@
 
 namespace atta
 {
-	class LayerStack
-	{
-	public:
-		LayerStack();
-		~LayerStack();
+    class LayerStack
+    {
+    public:
+        LayerStack();
+        ~LayerStack();
 
-		void push(Layer* layer);
-		void pop(Layer* layer);
+        void push(Layer* layer);
+        void pop(Layer* layer);
 
-		size_t size() const { return _layers.size(); }
+        size_t size() const { return _layers.size(); }
 
-		std::vector<Layer*>::iterator begin() { return _layers.begin(); }
-		std::vector<Layer*>::iterator end() { return _layers.end(); }
+        std::vector<Layer*>::iterator begin() { return _layers.begin(); }
+        std::vector<Layer*>::iterator end() { return _layers.end(); }
 
-		void render();
-	
-	private:
-		std::vector<Layer*> _layers;
-		ui::UILayer* _uiLayer;
-	};
+        void render();
+
+    private:
+        std::vector<Layer*> _layers;
+        ui::UILayer* _uiLayer;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_LAYERS_LAYER_STACK_H

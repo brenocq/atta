@@ -10,36 +10,36 @@
 
 namespace atta
 {
-	class Event
-	{
-	public:
-		using Type = StringHash;
+    class Event
+    {
+    public:
+        using Type = StringHash;
 
-		Event(Event::Type type): _type(type) {}
-		virtual ~Event() = default;
+        Event(Event::Type type): _type(type) {}
+        virtual ~Event() = default;
 
-		Event::Type getType() const { return _type; }
-		std::string getName() const { return StringId(_type).getString(); }
+        Event::Type getType() const { return _type; }
+        std::string getName() const { return StringId(_type).getString(); }
 
-		bool handled = false;
-	private:
-		Event::Type _type;
-	};
+        bool handled = false;
+    private:
+        Event::Type _type;
+    };
 
-	inline std::ostream& operator<<(std::ostream& os, const Event& e)
-	{
-		return os << e.getName();
-	}
+    inline std::ostream& operator<<(std::ostream& os, const Event& e)
+    {
+        return os << e.getName();
+    }
 
-	// TODO Template char* argument to save the string name when attributing the static member
-	template <Event::Type type_>
-	class EventTyped : public Event
-	{
-	public:
-		EventTyped(): Event(type_) {}
+    // TODO Template char* argument to save the string name when attributing the static member
+    template <Event::Type type_>
+    class EventTyped : public Event
+    {
+    public:
+        EventTyped(): Event(type_) {}
 
-		static const Event::Type type = type_;
-	};
+        static const Event::Type type = type_;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENT_H

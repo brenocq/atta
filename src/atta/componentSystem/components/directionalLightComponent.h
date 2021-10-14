@@ -10,10 +10,10 @@
 
 namespace atta
 {
-	struct DirectionalLightComponent
-	{
-		vec3 intensity = vec3(1.0f, 1.0f, 1.0f);
-	};
+    struct DirectionalLightComponent
+    {
+        vec3 intensity = vec3(1.0f, 1.0f, 1.0f);
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_DIRECTIONAL_LIGHT_COMPONENT_H

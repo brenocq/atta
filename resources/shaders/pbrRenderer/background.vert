@@ -10,18 +10,18 @@ void main()
 {
     WorldPos = aPos;
 
-	mat4 rotView = mat4(mat3(view));
-	vec4 coordImage = rotView * vec4(WorldPos, 1.0);
+    mat4 rotView = mat4(mat3(view));
+    vec4 coordImage = rotView * vec4(WorldPos, 1.0);
 
-	//float z = coordImage.z;
-	//coordImage /= z;
-	//float r = sqrt(coordImage.x*coordImage.x + coordImage.y*coordImage.y);
-	//float L = 1 + r*0.103689 + r*r*0.00487908 + r*r*r*0.00116894 + r*r*r*r*0.000941614;
-	//coordImage.x *= L;
-	//coordImage.y *= L;
-	//coordImage *= z;
+    //float z = coordImage.z;
+    //coordImage /= z;
+    //float r = sqrt(coordImage.x*coordImage.x + coordImage.y*coordImage.y);
+    //float L = 1 + r*0.103689 + r*r*0.00487908 + r*r*r*0.00116894 + r*r*r*r*0.000941614;
+    //coordImage.x *= L;
+    //coordImage.y *= L;
+    //coordImage *= z;
 
-	vec4 clipPos = projection * coordImage;
+    vec4 clipPos = projection * coordImage;
 
-	gl_Position = clipPos.xyww;
+    gl_Position = clipPos.xyww;
 }

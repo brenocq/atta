@@ -10,11 +10,11 @@
 
 namespace atta
 {
-	class SimulationStartEvent : public EventTyped<SID("SimulationStartEvent")>
-	{
-	public:
-		SimulationStartEvent() = default;
-	};
+    class SimulationStartEvent : public EventTyped<SID("SimulationStartEvent")>
+    {
+    public:
+        SimulationStartEvent() = default;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_SIMULATION_START_EVENT_H

@@ -16,39 +16,39 @@
 struct GLFWwindow;
 namespace atta
 {
-	class OpenGLRenderer final : public RendererAPI
-	{
-	public:
-		OpenGLRenderer(std::shared_ptr<Window> window);
-		~OpenGLRenderer();
+    class OpenGLRenderer final : public RendererAPI
+    {
+    public:
+        OpenGLRenderer(std::shared_ptr<Window> window);
+        ~OpenGLRenderer();
 
-		void beginFrame() override;
-		void endFrame() override;
+        void beginFrame() override;
+        void endFrame() override;
 
-		void renderMesh(StringId meshSid) override;
-		void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) override;
+        void renderMesh(StringId meshSid) override;
+        void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) override;
 
-		void* getImGuiImage(StringId sid) const override;
+        void* getImGuiImage(StringId sid) const override;
 
-		// Handle events
-		void onMeshLoadEvent(Event& event);
-		void onTextureLoadEvent(Event& event);
+        // Handle events
+        void onMeshLoadEvent(Event& event);
+        void onTextureLoadEvent(Event& event);
 
-		std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> getOpenGLImages() const { return _openGLImages; };
-	
-	private:
-		void initializeMesh(StringId sid);
-		void initializeTexture(StringId sid);
+        std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> getOpenGLImages() const { return _openGLImages; };
 
-		std::shared_ptr<Window> _window;
-		std::unordered_map<StringHash, std::shared_ptr<OpenGLMesh>> _openGLMeshes;
-		std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> _openGLImages;
+    private:
+        void initializeMesh(StringId sid);
+        void initializeTexture(StringId sid);
 
-		std::shared_ptr<OpenGLShaderGroup> _quadShader;
+        std::shared_ptr<Window> _window;
+        std::unordered_map<StringHash, std::shared_ptr<OpenGLMesh>> _openGLMeshes;
+        std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> _openGLImages;
 
-		OpenGLId quadVBO;
-		OpenGLId quadVAO;
-	};
+        std::shared_ptr<OpenGLShaderGroup> _quadShader;
+
+        OpenGLId quadVBO;
+        OpenGLId quadVAO;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H

@@ -14,112 +14,112 @@
 
 namespace atta
 {
-	// Used to draw 3d objects, mainly for debugging and visualization
-	class Drawer
-	{
-		public:
-			struct Line
-			{
-				vec3 p0; 
-				vec4 c0 = vec4(1,0,1,1);
-				vec3 p1; 
-				vec4 c1 = vec4(1,0,1,1);
+    // Used to draw 3d objects, mainly for debugging and visualization
+    class Drawer
+    {
+    public:
+        struct Line
+        {
+            vec3 p0; 
+            vec4 c0 = vec4(1,0,1,1);
+            vec3 p1; 
+            vec4 c1 = vec4(1,0,1,1);
 
-				Line() = default;
-				Line(vec3 p0_, vec3 p1_, vec4 c0_ = vec4(1,0,1,1), vec4 c1_ = vec4(1,0,1,1)):
-					p0(p0_), c0(c0_), p1(p1_), c1(c1_)
-				{
-				}
-			};
+            Line() = default;
+            Line(vec3 p0_, vec3 p1_, vec4 c0_ = vec4(1,0,1,1), vec4 c1_ = vec4(1,0,1,1)):
+                p0(p0_), c0(c0_), p1(p1_), c1(c1_)
+            {
+            }
+        };
 
-			struct Point
-			{
-				vec3 p; 
-				vec4 c = vec4(1,0,1,1);
+        struct Point
+        {
+            vec3 p; 
+            vec4 c = vec4(1,0,1,1);
 
-				Point() = default;
-				Point(vec3 p_, vec4 c_ = vec4(1,0,1,1)):
-					p(p_), c(c_)
-				{
-				}
-			};
+            Point() = default;
+            Point(vec3 p_, vec4 c_ = vec4(1,0,1,1)):
+                p(p_), c(c_)
+            {
+            }
+        };
 
-			// Draw 3d objects
-			template <typename T>
-			static void add(T obj, StringId group = StringId("No group"));
-			template <typename T>
-			static void clear(StringId group = StringId("No group"));// Clear lines or points of specific group
-			static void clear();// Clear all lines and points
+        // Draw 3d objects
+        template <typename T>
+        static void add(T obj, StringId group = StringId("No group"));
+        template <typename T>
+        static void clear(StringId group = StringId("No group"));// Clear lines or points of specific group
+        static void clear();// Clear all lines and points
 
-			// Get data
-			template <typename T>
-			static std::vector<T>& get();
-			template <typename T>
-			static std::map<StringHash, std::vector<T>>& getGroups();
-			template <typename T>
-			static unsigned getMaxNumber();
-			template <typename T>
-			static unsigned getCurrNumber();
+        // Get data
+        template <typename T>
+        static std::vector<T>& get();
+        template <typename T>
+        static std::map<StringHash, std::vector<T>>& getGroups();
+        template <typename T>
+        static unsigned getMaxNumber();
+        template <typename T>
+        static unsigned getCurrNumber();
 
-			// Draw
-			template <typename T>
-			static void draw();
+        // Draw
+        template <typename T>
+        static void draw();
 
-			// Core
-			static Drawer& getInstance();
-			Drawer(const Drawer&) = delete;
-        	void operator=(const Drawer&) = delete;
+        // Core
+        static Drawer& getInstance();
+        Drawer(const Drawer&) = delete;
+        void operator=(const Drawer&) = delete;
 
-		private:
-			Drawer();
+    private:
+        Drawer();
 
-			// Draw 3d objects implementation
-			template <typename T>
-			void addImpl(T obj, StringId group = StringId("No group"));
-			template <typename T>
-			void clearImpl(StringId group = StringId("No group"));
-			void clearImpl();
+        // Draw 3d objects implementation
+        template <typename T>
+        void addImpl(T obj, StringId group = StringId("No group"));
+        template <typename T>
+        void clearImpl(StringId group = StringId("No group"));
+        void clearImpl();
 
-			// Get data implementation
-			template <typename T>
-			std::vector<T>& getImpl();
-			template <typename T>
-			std::map<StringHash, std::vector<T>>& getGroupsImpl();
-			template <typename T>
-			unsigned getMaxNumberImpl();
-			template <typename T>
-			unsigned getCurrNumberImpl();
-			template <typename T>
-			unsigned getChanged();
-			template <typename T>
-			void setCurrNumber(unsigned number);
-			template <typename T>
-			void setChanged(bool changed);
+        // Get data implementation
+        template <typename T>
+        std::vector<T>& getImpl();
+        template <typename T>
+        std::map<StringHash, std::vector<T>>& getGroupsImpl();
+        template <typename T>
+        unsigned getMaxNumberImpl();
+        template <typename T>
+        unsigned getCurrNumberImpl();
+        template <typename T>
+        unsigned getChanged();
+        template <typename T>
+        void setCurrNumber(unsigned number);
+        template <typename T>
+        void setChanged(bool changed);
 
-			// Draw
-			template <typename T>
-			void drawImpl();
+        // Draw
+        template <typename T>
+        void drawImpl();
 
 
-			// The _lines vector is updated only when getImpl() 
-			// is called and _linesChanged is true. Analogous to _points
-			std::map<StringHash, std::vector<Line>> _lineGroups;
-			unsigned _maxNumberOfLines;
-			unsigned _currNumberOfLines;// Always have the right number of lines, even if _lines still need to be updated
-			bool _linesChanged;
-			std::vector<Line> _lines;// Updated only when get() is called
+        // The _lines vector is updated only when getImpl() 
+        // is called and _linesChanged is true. Analogous to _points
+        std::map<StringHash, std::vector<Line>> _lineGroups;
+        unsigned _maxNumberOfLines;
+        unsigned _currNumberOfLines;// Always have the right number of lines, even if _lines still need to be updated
+        bool _linesChanged;
+        std::vector<Line> _lines;// Updated only when get() is called
 
-			std::map<StringHash, std::vector<Point>> _pointGroups;
-			unsigned _maxNumberOfPoints;
-			unsigned _currNumberOfPoints;// Always have the right number of points, even if _points still need to be updated
-			bool _pointsChanged;
-			std::vector<Point> _points;// Updated only when get() is called
+        std::map<StringHash, std::vector<Point>> _pointGroups;
+        unsigned _maxNumberOfPoints;
+        unsigned _currNumberOfPoints;// Always have the right number of points, even if _points still need to be updated
+        bool _pointsChanged;
+        std::vector<Point> _points;// Updated only when get() is called
 
-			OpenGLId _lineVAO; 
-			OpenGLId _lineVBO; 
-			OpenGLId _pointVAO; 
-			OpenGLId _pointVBO; 
-	};
+        OpenGLId _lineVAO; 
+        OpenGLId _lineVBO; 
+        OpenGLId _pointVAO; 
+        OpenGLId _pointVBO; 
+    };
 }
 #include <atta/graphicsSystem/drawer.inl>
 #endif// ATTA_GRAPHICS_SYSTEM_DRAWER_H

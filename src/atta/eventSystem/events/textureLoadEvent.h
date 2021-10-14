@@ -10,13 +10,13 @@
 
 namespace atta
 {
-	class TextureLoadEvent : public EventTyped<SID("TextureLoadEvent")>
-	{
-	public:
-		TextureLoadEvent(StringId sid_): sid(sid_) {}
+    class TextureLoadEvent : public EventTyped<SID("TextureLoadEvent")>
+    {
+    public:
+        TextureLoadEvent(StringId sid_): sid(sid_) {}
 
-		const StringId sid;
-	};
+        const StringId sid;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_TEXTURE_LOAD_EVENT_H

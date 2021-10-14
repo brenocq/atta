@@ -8,10 +8,10 @@
 
 namespace atta
 {
-	RendererAPI::RendererAPI(Type type):
-		_type(type)
-	{
+    RendererAPI::RendererAPI(Type type):
+        _type(type)
+    {
 
-	}
+    }
 
 }

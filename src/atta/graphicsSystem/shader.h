@@ -11,24 +11,24 @@
 
 namespace atta
 {
-	class Shader
-	{
-	public:
-		struct CreateInfo
-		{
-			fs::path filepath;
-		};
+    class Shader
+    {
+    public:
+        struct CreateInfo
+        {
+            fs::path filepath;
+        };
 
-		Shader(const CreateInfo& info);
-		virtual ~Shader() = default;
+        Shader(const CreateInfo& info);
+        virtual ~Shader() = default;
 
-		virtual void recompile() = 0;
-		fs::path getFilepath() const { return _filepath; }
+        virtual void recompile() = 0;
+        fs::path getFilepath() const { return _filepath; }
 
-	protected:
-		fs::path _filepath;
-		std::unordered_map<std::string, ShaderUniform> _uniforms;
-	};
+    protected:
+        fs::path _filepath;
+        std::unordered_map<std::string, ShaderUniform> _uniforms;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_SHADER_H

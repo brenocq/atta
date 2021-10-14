@@ -11,31 +11,31 @@
 
 namespace atta
 {
-	class RendererAPI
-	{
-	public:
-		enum Type
-		{
-			OPENGL = 0,
-			VULKAN
-		};
+    class RendererAPI
+    {
+    public:
+        enum Type
+        {
+            OPENGL = 0,
+            VULKAN
+        };
 
-		RendererAPI(Type type);
-		virtual ~RendererAPI() = default;
+        RendererAPI(Type type);
+        virtual ~RendererAPI() = default;
 
-		virtual void beginFrame() = 0;
-		virtual void endFrame() = 0;
+        virtual void beginFrame() = 0;
+        virtual void endFrame() = 0;
 
-		virtual void renderMesh(StringId meshSid) = 0;
-		virtual void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) = 0;
+        virtual void renderMesh(StringId meshSid) = 0;
+        virtual void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) = 0;
 
-		virtual void* getImGuiImage(StringId sid) const = 0;
-	
-		Type getType() const { return _type; }
+        virtual void* getImGuiImage(StringId sid) const = 0;
 
-	protected:
-		Type _type;
-	};
+        Type getType() const { return _type; }
+
+    protected:
+        Type _type;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_API_H

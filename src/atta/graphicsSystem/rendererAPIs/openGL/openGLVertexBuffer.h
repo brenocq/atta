@@ -11,22 +11,22 @@
 
 namespace atta
 {
-	class OpenGLVertexBuffer final : public VertexBuffer
-	{
-	public:
-		OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info);
-		~OpenGLVertexBuffer();
+    class OpenGLVertexBuffer final : public VertexBuffer
+    {
+    public:
+        OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info);
+        ~OpenGLVertexBuffer();
 
-		void bind() const override;
+        void bind() const override;
 
-		OpenGLId getId() const { return _id; }
+        OpenGLId getId() const { return _id; }
 
-	private:
-		static GLenum convertUsage(Usage usage);
-		static GLenum convertBaseType(VertexBufferElement::Type type);
+    private:
+        static GLenum convertUsage(Usage usage);
+        static GLenum convertBaseType(VertexBufferElement::Type type);
 
-		OpenGLId _id;
-	};
+        OpenGLId _id;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_VERTEX_BUFFER_H

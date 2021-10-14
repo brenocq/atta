@@ -11,17 +11,17 @@
 
 namespace atta
 {
-	class OpenGLPipeline final : public Pipeline
-	{
-	public:
-		OpenGLPipeline(const Pipeline::CreateInfo& info);
-		~OpenGLPipeline();
-	
-		void begin(bool clear = true) override;
-		void end() override;
+    class OpenGLPipeline final : public Pipeline
+    {
+    public:
+        OpenGLPipeline(const Pipeline::CreateInfo& info);
+        ~OpenGLPipeline();
 
-		void* getImGuiTexture() const override;
-	};
+        void begin(bool clear = true) override;
+        void end() override;
+
+        void* getImGuiTexture() const override;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_PIPELINE_H

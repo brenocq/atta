@@ -10,10 +10,10 @@
 
 namespace atta
 {
-	class ProjectCloseEvent : public EventTyped<SID("ProjectCloseEvent")>
-	{
-	public:
-	};
+    class ProjectCloseEvent : public EventTyped<SID("ProjectCloseEvent")>
+    {
+    public:
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_PROJECT_CLOSE_EVENT_H

@@ -8,29 +8,29 @@
 
 namespace atta
 {
-	Image::Image(const CreateInfo& info):
-		_format(info.format), _samplerWrap(info.samplerWrap), 
-		_width(info.width), _height(info.height), _mipLevels(info.mipLevels),
-		_debugName(info.debugName)
-	{
+    Image::Image(const CreateInfo& info):
+        _format(info.format), _samplerWrap(info.samplerWrap), 
+        _width(info.width), _height(info.height), _mipLevels(info.mipLevels),
+        _debugName(info.debugName)
+    {
 
-	}
+    }
 
-	uint32_t Image::getFormatSize(Format format)
-	{
-		switch(format)
-		{
-			case Format::NONE: break;
-			case Format::RED: return 1;
-			case Format::RGB: return 3;
-			case Format::RGBA: return 4;
-			case Format::RGB16F: return 3;
-		}
-		ASSERT(false, "Could not calculate format size. Unknown image format");
-	}
+    uint32_t Image::getFormatSize(Format format)
+    {
+        switch(format)
+        {
+            case Format::NONE: break;
+            case Format::RED: return 1;
+            case Format::RGB: return 3;
+            case Format::RGBA: return 4;
+            case Format::RGB16F: return 3;
+        }
+        ASSERT(false, "Could not calculate format size. Unknown image format");
+    }
 
-	bool Image::isDepthFormat(Format format)
-	{
-		return format == Format::DEPTH32F;
-	}
+    bool Image::isDepthFormat(Format format)
+    {
+        return format == Format::DEPTH32F;
+    }
 }

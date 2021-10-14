@@ -12,28 +12,28 @@
 
 namespace atta
 {
-	class LinuxFileWatcher : public FileWatcher
-	{
-	public:
-		LinuxFileWatcher();
-		~LinuxFileWatcher();
+    class LinuxFileWatcher : public FileWatcher
+    {
+    public:
+        LinuxFileWatcher();
+        ~LinuxFileWatcher();
 
-		void addWatch(fs::path directory) override;
-		void removeWatch(fs::path directory) override;
+        void addWatch(fs::path directory) override;
+        void removeWatch(fs::path directory) override;
 
-		void update() override;
-	private:
-		void checkAndRead();
-		void readEvents();
+        void update() override;
+    private:
+        void checkAndRead();
+        void readEvents();
 
-		void publishEvent(struct inotify_event* ievent);
+        void publishEvent(struct inotify_event* ievent);
 
-		static int _inotifyFd;
+        static int _inotifyFd;
 
-		// Buffer to receive events
-		char* _buf;
-		size_t _bufLen;
-	};
+        // Buffer to receive events
+        char* _buf;
+        size_t _bufLen;
+    };
 }
 
 #endif// ATTA_OS_LINUX

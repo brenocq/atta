@@ -8,26 +8,26 @@
 
 namespace atta
 {
-	Viewport::Viewport(CreateInfo info):
-		_sid(info.sid), _renderer(info.renderer), _camera(info.camera)
-	{
-		ASSERT(_renderer != nullptr, "Can not create viewport ([w]$0[]) without renderer", _sid);
-		ASSERT(_camera != nullptr, "Can not create viewport ([w]$0[]) without camera", _sid);
-	}
+    Viewport::Viewport(CreateInfo info):
+        _sid(info.sid), _renderer(info.renderer), _camera(info.camera)
+    {
+        ASSERT(_renderer != nullptr, "Can not create viewport ([w]$0[]) without renderer", _sid);
+        ASSERT(_camera != nullptr, "Can not create viewport ([w]$0[]) without camera", _sid);
+    }
 
-	Viewport::~Viewport()
-	{
+    Viewport::~Viewport()
+    {
 
-	}
+    }
 
-	void Viewport::render()
-	{
-		_renderer->render(_camera);
-	}
+    void Viewport::render()
+    {
+        _renderer->render(_camera);
+    }
 
-	void Viewport::resize(uint32_t width, uint32_t height)
-	{
-		_camera->setRatio(width/(float)height);
-		_renderer->resize(width, height);
-	}
+    void Viewport::resize(uint32_t width, uint32_t height)
+    {
+        _camera->setRatio(width/(float)height);
+        _renderer->resize(width, height);
+    }
 }

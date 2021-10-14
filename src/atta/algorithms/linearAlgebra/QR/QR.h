@@ -8,18 +8,18 @@
 
 namespace atta::linalg
 {
-	class QR
-	{
-		public:
-			size_t m, n;// Number of rows/columns
-			mat Qt, R;// Matrices Q^T and R
-			bool sing;// Indicates wheter A is singular
+    class QR
+    {
+    public:
+        size_t m, n;// Number of rows/columns
+        mat Qt, R;// Matrices Q^T and R
+        bool sing;// Indicates wheter A is singular
 
-			QR(const mat& A);
+        QR(const mat& A);
 
-			void solve(const vec& b, vec& x);
+        void solve(const vec& b, vec& x);
 
-		private: 
-			void rsolve(vec& b, vec& x);
-	};
+    private: 
+        void rsolve(vec& b, vec& x);
+    };
 }

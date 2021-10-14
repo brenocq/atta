@@ -10,14 +10,14 @@
 
 namespace atta
 {
-	class WindowMouseMoveEvent : public EventTyped<SID("WindowMouseMoveEvent")>
-	{
-	public:
-		WindowMouseMoveEvent(float x_, float y_): 
-			x(x_), y(y_) {}
+    class WindowMouseMoveEvent : public EventTyped<SID("WindowMouseMoveEvent")>
+    {
+    public:
+        WindowMouseMoveEvent(float x_, float y_): 
+            x(x_), y(y_) {}
 
-		float x, y;
-	};
+        float x, y;
+    };
 }
 
 #endif// ATTA_EVENT_SYSTEM_EVENTS_WINDOW_MOUSE_MOVE_H

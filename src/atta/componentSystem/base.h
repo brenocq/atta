@@ -10,8 +10,8 @@
 
 namespace atta
 {
-	using EntityId = int;// Index inside entity pool
-	using ComponentId = StringHash;// Component allocator name hash (COMPONENT_POOL_SID(T) result)
+    using EntityId = int;// Index inside entity pool
+    using ComponentId = StringHash;// Component allocator name hash (COMPONENT_POOL_SID(T) result)
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_BASE_H
