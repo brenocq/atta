@@ -38,6 +38,7 @@ namespace atta::io
             }
         }
 #endif
+        std::sort(deviceNames.begin(), deviceNames.end());
         return deviceNames;
     }
 }
