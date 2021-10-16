@@ -18,7 +18,8 @@ namespace atta::io
         ~LinuxCamera();
 
         bool start() override;
-        void readFrame() override;
+        bool stop() override;
+        bool readFrame() override;
 
         //---------- Setters ----------//
         bool setFormat(Camera::PixelFormat pixelFormat, Camera::Resolution resolution) override;
@@ -41,6 +42,7 @@ namespace atta::io
             size_t length;
         };
         std::vector<Buffer> _buffers;
+        std::vector<Camera::FormatInfo> _availableFormats;
     };
 }
 

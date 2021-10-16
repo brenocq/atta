@@ -36,7 +36,8 @@ namespace atta::io
         virtual ~Camera() = default;
 
         virtual bool start() = 0;
-        virtual void readFrame() = 0;
+        virtual bool stop() = 0;
+        virtual bool readFrame() = 0;
         const std::vector<uint8_t>& getFrame() const { return _frame; }
         virtual bool isValidDevice() = 0;
 
@@ -66,6 +67,7 @@ namespace atta::io
         unsigned _fps;
         StringId _debugName;
 
+        bool _capturing;
         std::vector<uint8_t> _frame;
     };
 }

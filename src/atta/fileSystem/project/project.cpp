@@ -14,7 +14,9 @@ namespace atta
         _directory(file.parent_path()), 
         _name(file.stem().string())
     {
-        _resourceRootPaths.push_back(_directory/"resources");
+        fs::path projectResourcePath = _directory/"resources";
+        if(exists(projectResourcePath))
+            _resourceRootPaths.push_back(projectResourcePath);
         _resourceRootPaths.push_back(fs::path(ATTA_DIR)/"resources");
 
         LOG_DEBUG("Project", "Opened project [*g]$0[] ([w]$1[])", _name, _file);

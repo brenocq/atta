@@ -37,7 +37,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
     if(MSVC)
         #list(APPEND ATTA_OPTIONS /W4 /WX)
     else()
-        list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -g -pg)#-Werror 
+        list(APPEND ATTA_OPTIONS -Wall -Wextra -Wpedantic -g)#-Werror 
         # Profilling
         list(APPEND ATTA_OPTIONS -fno-omit-frame-pointer)
         # Unused parameter
@@ -142,6 +142,8 @@ install(DIRECTORY src/atta/ DESTINATION include/atta
 install(DIRECTORY src/extern/imgui/ DESTINATION include/atta/extern/imgui
     FILES_MATCHING REGEX ".*\.(h|inl)$")
 install(DIRECTORY src/extern/glad/ DESTINATION include/atta/extern/glad
+    FILES_MATCHING REGEX ".*\.(h|inl)$")
+install(DIRECTORY src/extern/stb_image/ DESTINATION include/atta/extern/stb_image
     FILES_MATCHING REGEX ".*\.(h|inl)$")
 
 # Install resources
