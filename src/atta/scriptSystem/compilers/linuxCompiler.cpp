@@ -40,7 +40,11 @@ namespace atta
 
         fs::path prevPath = fs::current_path();
         fs::current_path(buildDir);
-        std::string buildCommand = "cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CUDA_ARCHITECTURES=75 ..";
+#ifdef ATTA_DEBUG_BUILD
+        std::string buildCommand = "cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CUDA_ARCHITECTURES=75 -DCMAKE_BUILD_TYPE=Debug ..";
+#else
+        std::string buildCommand = "cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CUDA_ARCHITECTURES=75 -DCMAKE_BUILD_TYPE=Release ..";
+#endif
         buildCommand += " > " + tempFile.string() + " ";
         buildCommand += "2> " + errorFile.string();
         std::system(buildCommand.c_str());
