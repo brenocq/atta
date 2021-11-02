@@ -1,10 +1,10 @@
 //--------------------------------------------------
 // Atta Graphics System
-// window.cpp
+// glfwWindow.cpp
 // Date: 2021-08-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphicsSystem/window.h>
+#include <atta/graphicsSystem/windows/glfwWindow.h>
 #include <atta/eventSystem/events/windowCloseEvent.h>
 #include <atta/eventSystem/events/windowResizeEvent.h>
 #include <atta/eventSystem/events/windowFocusEvent.h>
@@ -14,18 +14,25 @@
 #include <atta/eventSystem/events/windowKeyboardButtonEvent.h>
 #include <glad/glad.h>
 
+#ifdef ATTA_OS_WEB
+#include <emscripten.h>
+EM_JS( int, canvas_get_width, (), { return Module.canvas.width; } );
+EM_JS( int, canvas_get_height, (), { return Module.canvas.height; } );
+#endif
+
 namespace atta
 {
-    unsigned Window::_glfwWindowCounter = 0;
+    unsigned GlfwWindow::_glfwWindowCounter = 0;
 
-    Window::Window(const CreateInfo& info):
-        _title(info.title), _width(info.width), _height(info.height)
+    GlfwWindow::GlfwWindow(const CreateInfo& info):
+        Window(info)
     {
         if(_glfwWindowCounter++ == 0)// XXX
             glfwInit();
 
-        //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+        glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
         //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);// Needed for apple?
 
@@ -40,10 +47,9 @@ namespace atta
 
         glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, int width, int height)
             {
-                Window& w = *(Window*)glfwGetWindowUserPointer(window);
+                GlfwWindow& w = *(GlfwWindow*)glfwGetWindowUserPointer(window);
                 w._width = width;
                 w._height = height;
-
                 WindowResizeEvent e((size_t)width, (size_t)height);
                 EventManager::publish(e);
             });
@@ -106,10 +112,17 @@ namespace atta
             });
 
         glfwMakeContextCurrent(_window);
+
+#ifdef ATTA_OS_WEB
+        int w = canvas_get_width();
+        int h = canvas_get_height();
+        glfwSetWindowSize(_window,w,h);
+#endif
+
         LOG_VERBOSE("Window", "Window created");
     }
 
-    Window::~Window()
+    GlfwWindow::~GlfwWindow()
     {
         glfwDestroyWindow(_window);
 
@@ -117,12 +130,17 @@ namespace atta
             glfwTerminate();
     }
 
-    void Window::update()
+    void GlfwWindow::update()
     {
+#ifdef ATTA_OS_WEB
+        int w = canvas_get_width();
+        int h = canvas_get_height();
+        glfwSetWindowSize(_window,w,h);
+#endif
         glfwPollEvents();
     }
 
-    void Window::swapBuffers()
+    void GlfwWindow::swapBuffers()
     {
         glfwSwapBuffers(_window);
     }

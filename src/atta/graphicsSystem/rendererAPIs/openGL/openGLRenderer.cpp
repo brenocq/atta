@@ -31,7 +31,7 @@ namespace atta
         LOG_INFO("OpenGLRenderer", "  - Renderer: $0", glGetString(GL_RENDERER));
         LOG_INFO("OpenGLRenderer", "  - Version: $0", glGetString(GL_VERSION));
 
-#ifdef ATTA_DEBUG_BUILD
+#if defined(ATTA_DEBUG_BUILD) && !defined(ATTA_OS_WEB)
         // Enable Debug
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, 
@@ -61,7 +61,7 @@ namespace atta
         int versionMinor;
         glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
         glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
-        ASSERT(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 5), "Atta requires OpenGL >= 4.5");
+        ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 0), "Atta requires OpenGL >= 3.0");
 
         glEnable(GL_DEPTH_TEST);
 
@@ -159,6 +159,7 @@ namespace atta
     {
         glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
 
+        LOG_DEBUG("OpenGLRenderer", "Framebuffer from framebufferToScreen");
         std::shared_ptr<OpenGLFramebuffer> openGLFramebuffer = std::static_pointer_cast<OpenGLFramebuffer>(framebuffer);
         std::shared_ptr<OpenGLImage> openGLImage = std::static_pointer_cast<OpenGLImage>(openGLFramebuffer->getImage(0));
 
@@ -178,6 +179,8 @@ namespace atta
     void OpenGLRenderer::initializeTexture(StringId sid)
     {
         Texture* texture = ResourceManager::get<Texture>(sid.getString());
+        if(texture == nullptr)
+            LOG_WARN("OpenGLRenderer", "Could not initialize OpenGL texture from [w]$0[]", sid.getString());
 
         Image::CreateInfo info {};
         info.width = texture->getWidth();

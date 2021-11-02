@@ -1,19 +1,17 @@
 //--------------------------------------------------
 // Atta Graphics System
 // window.h
-// Date: 2021-08-16
+// Date: 2021-10-31
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_SYSTEM_WINDOW_H
-#define ATTA_GRAPHICS_SYSTEM_WINDOW_H
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#ifndef ATTA_GRAPHICS_SYSTEM_WINDOWS_WINDOW_H
+#define ATTA_GRAPHICS_SYSTEM_WINDOWS_WINDOW_H
 #include <atta/core/stringId.h>
 #include <atta/eventSystem/eventManager.h>
 
 namespace atta
 {
-    class Window final
+    class Window
     {
     public:
         struct CreateInfo
@@ -21,7 +19,6 @@ namespace atta
             std::string title = "Atta - by Brenocq";
             size_t width = 1600;
             size_t height = 900;
-            //std::shared_ptr<EventManager> eventManager;
         };
 
         enum class Event : atta::Event::Type
@@ -37,24 +34,18 @@ namespace atta
         };
 
         Window(const CreateInfo& info);
-        ~Window();
+        virtual ~Window() = default;
 
         size_t getWidth() const { return _width; }
         size_t getHeight() const { return _height; }
 
-        void update();
-        void swapBuffers();
+        virtual void update() = 0;
+        virtual void swapBuffers() = 0;
 
-        GLFWwindow* getGLFWHandle() const { return _window; }
-
-    private:
-
-        GLFWwindow* _window;
+    protected:
         std::string _title;
         size_t _width, _height;
-        static unsigned _glfwWindowCounter;
-        //std::shared_ptr<EventManager> _eventManager;
     };
 }
 
-#endif// ATTA_GRAPHICS_SYSTEM_WINDOW_H
+#endif// ATTA_GRAPHICS_SYSTEM_WINDOWS_WINDOW_H

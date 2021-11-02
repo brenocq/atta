@@ -1,5 +1,5 @@
-#version 450 core
-layout (location = 0) in vec3 aPos;
+#version 300 es
+in vec3 aPos;
 
 uniform mat4 projection;
 uniform mat4 view;

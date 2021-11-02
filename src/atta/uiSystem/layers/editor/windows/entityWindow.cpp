@@ -265,7 +265,7 @@ namespace atta::ui
             {
                 std::vector<StringId> meshSids = ResourceManager::getResources<Mesh>();
 
-                uint32_t comboValue;
+                uint32_t comboValue = -1;
 
                 int i = 0;
                 for(auto sid : meshSids)
@@ -274,7 +274,6 @@ namespace atta::ui
                         comboValue = i;
                     i++;	
                 }
-
                 const char* comboPreviewValue = fs::path(meshSids[comboValue].getString()).stem().string().c_str();
                 if(ImGui::BeginCombo("Mesh", comboPreviewValue))
                 {

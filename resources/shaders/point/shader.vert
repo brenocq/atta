@@ -1,6 +1,6 @@
-#version 450 core
-layout (location = 0) in vec3 inPos;
-layout (location = 1) in vec4 inColor;
+#version 300 es
+in vec3 inPos;
+in vec4 inColor;
 
 uniform mat4 view;
 uniform mat4 projection;

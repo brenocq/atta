@@ -1,0 +1,33 @@
+name: Web
+on: [push, pull_request, release]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }} - Build
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+          name: "Web Latest",
+          os: ubuntu-latest,
+          build_type: "Release"
+        }
+
+    steps:
+      - uses: mymindstorm/setup-emsdk@v9
+        
+      - name: Checkout atta
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Configure
+        run: |
+          mkdir build
+          cd build
+          emcmake cmake ..
+
+      - name: Build
+        run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
