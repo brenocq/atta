@@ -1,4 +1,5 @@
-#version 450 core
+#version 300 es
+precision mediump float;
 //---------- Definitions ----------//
 struct Material
 {

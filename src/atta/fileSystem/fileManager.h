@@ -37,6 +37,7 @@ namespace atta
         // The return is the absolute resource path
         static fs::path solveResourcePath(fs::path relativePath) { return getInstance().solveResourcePathImpl(relativePath); }
         static std::vector<fs::path> getResourcePaths() { return getInstance().getResourcePathsImpl(); }
+        static std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
 
         // Update watcher (TODO remove)
         static void update() { getInstance().updateImpl(); };

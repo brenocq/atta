@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.12)
 
 project(Atta VERSION 0.0.3.0 LANGUAGES CXX C)
 
+OPTION(ATTA_BUILD_TESTS
+  "Set to ON to build also the test executables"
+  ON
+)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
@@ -17,19 +22,37 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
     list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
 endif()
 
-########## OS ##########
+########## OS Specific ##########
+message(STATUS "System name: ${CMAKE_SYSTEM_NAME}")
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+    set(ATTA_SYSTEM_NAME "Windows")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
     # Force google test to link the runtimes dynamically (to avoid visual studio link error)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     # Fix assert __VA_ARGS__ expansion
     list(APPEND ATTA_OPTIONS /Zc:preprocessor)
+
 elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    set(ATTA_SYSTEM_NAME "MacOS")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
+
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+    set(ATTA_SYSTEM_NAME "Linux")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_LINUX")
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
+    set(ATTA_SYSTEM_NAME "Web")
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_WEB")
+    set(ATTA_BUILD_TESTS OFF)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+
+    set(EMSCRIPTEN_LINK_PROPERTIES "-s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3")
+    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1")
+    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1 -s FORCE_FILESYSTEM=1")
+    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ../resources")
+    list(APPEND ATTA_LINK_PROP ${EMSCRIPTEN_LINK_PROPERTIES})
 else()
-    message(SEND_ERROR "Unknown system name: " + CMAKE_SYSTEM_NAME)
+    message(SEND_ERROR "Unknown system name: ${CMAKE_SYSTEM_NAME}")
 endif()
 
 ########## Options ##########
@@ -104,11 +127,13 @@ macro(atta_target_common target)
 endmacro()
 
 macro(atta_create_local_test target sources libs)
+if(ATTA_BUILD_TESTS)
     message(${sources})
     add_executable(${target} ${sources})
     atta_target_common(${target})
     target_link_libraries(${target} PRIVATE ${libs} gtest_main)
     set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ATTA_TEST_PATH})
+endif()
 endmacro()
 
 ########## Atta/Extern directories ##########
@@ -117,23 +142,32 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/extern)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta)
 
 ########## Testing ##########
-include(GoogleTest)
-enable_testing()
+if(ATTA_BUILD_TESTS)
+    include(GoogleTest)
+    enable_testing()
 
-add_executable(atta_test ${ATTA_TEST_SOURCES})
-atta_target_common(atta_test)
-target_link_libraries(atta_test PRIVATE ${ATTA_LIBS} gtest_main)
-gtest_discover_tests(atta_test)
+    add_executable(atta_test ${ATTA_TEST_SOURCES})
+    atta_target_common(atta_test)
+
+    target_link_libraries(atta_test PRIVATE ${ATTA_LIBS} gtest_main)
+    gtest_discover_tests(atta_test)
+endif()
 
 ########## Install ##########
 add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 atta_target_common(atta)
 target_link_libraries(atta PUBLIC ${ATTA_LIBS})
+set_target_properties(atta PROPERTIES LINK_FLAGS "${ATTA_LINK_PROP}")
 
 # Install executables
-install(TARGETS atta atta_test
+install(TARGETS atta
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+if(ATTA_BUILD_TESTS)
+    install(TARGETS atta_test
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
 
 # Install includes
 install(DIRECTORY src/atta/ DESTINATION include/atta

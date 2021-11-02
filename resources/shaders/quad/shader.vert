@@ -1,6 +1,6 @@
-#version 450 core
-layout (location = 0) in vec2 aPos;
-layout (location = 1) in vec2 aTexCoords;
+#version 300 es
+in vec2 aPos;
+in vec2 aTexCoords;
 
 out vec2 TexCoords;
 

@@ -1,4 +1,5 @@
-#version 450 core
+#version 300 es
+precision mediump float;
 //---------- Definitions ----------//
 struct Material
 {
@@ -36,17 +37,17 @@ uniform int numPointLights;
 //----- PBR -----//
 uniform vec3 camPos;
 // IBL
-layout(binding = 0) uniform samplerCube irradianceMap;
-layout(binding = 1) uniform samplerCube prefilterMap;
-layout(binding = 2) uniform sampler2D   brdfLUT;
+uniform samplerCube irradianceMap;
+uniform samplerCube prefilterMap;
+uniform sampler2D   brdfLUT;
 
 //----- Material -----//
 uniform Material material;
-layout(binding = 3) uniform sampler2D albedoTexture;
-layout(binding = 4) uniform sampler2D metallicTexture;
-layout(binding = 5) uniform sampler2D roughnessTexture;
-layout(binding = 6) uniform sampler2D aoTexture;
-layout(binding = 7) uniform sampler2D normalTexture;
+uniform sampler2D albedoTexture;
+uniform sampler2D metallicTexture;
+uniform sampler2D roughnessTexture;
+uniform sampler2D aoTexture;
+uniform sampler2D normalTexture;
 
 //---------- Definitions ----------//
 float DistributionGGX(vec3 N, vec3 H, float roughness);// Distribution of microsurface normals

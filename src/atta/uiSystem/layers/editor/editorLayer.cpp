@@ -141,7 +141,7 @@ namespace atta::ui
             case EditorState::EDITOR:
                 {
                     ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f));
-                    if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/play.png"_sid), 
+                    if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/play.png"_ssid), 
                                 ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
                     {
                         SimulationStartEvent e;
@@ -155,7 +155,7 @@ namespace atta::ui
                 {
                     ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f)-buttonH/2-2.0f);
                     if(_editorState == EditorState::SIMULATION_RUNNING)
-                        if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/pause.png"_sid), 
+                        if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/pause.png"_ssid), 
                                     ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
                         {
                             SimulationPauseEvent e;
@@ -163,7 +163,7 @@ namespace atta::ui
                             _editorState = EditorState::SIMULATION_PAUSED;
                         }
                     if(_editorState == EditorState::SIMULATION_PAUSED)
-                        if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/play.png"_sid), 
+                        if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/play.png"_ssid), 
                                     ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
                         {
                             SimulationPlayEvent e;
@@ -173,7 +173,7 @@ namespace atta::ui
 
                     ImGui::SameLine();
                     ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f)+buttonH/2+2.0f);
-                    if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/stop.png"_sid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
+                    if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/stop.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
                     {
                         SimulationStopEvent e;
                         EventManager::publish(e);

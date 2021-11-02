@@ -5,10 +5,10 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/resourceSystem/resources/mesh.h>
+#include <atta/fileSystem/fileManager.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <atta/fileSystem/fileManager.h>
 
 namespace atta
 {
@@ -79,3 +79,4 @@ namespace atta
         }
     }
 }
+

@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
-#include <atta/graphicsSystem/window.h>
+#include <atta/graphicsSystem/windows/window.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphicsSystem/layers/layerStack.h>
 #include <atta/graphicsSystem/viewport.h>

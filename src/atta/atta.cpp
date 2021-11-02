@@ -37,8 +37,8 @@ namespace atta
     {
         FileManager::startUp();
 
-        uint64_t size = 2UL * 1024UL * 1024UL * 1024UL;
-        _mainAllocator = new StackAllocator(size);// Allocate 2GB for the whole system
+        uint64_t size = 1.5 * 1024UL * 1024UL * 1024UL;
+        _mainAllocator = new StackAllocator(size);// Allocate 1.5GB for the whole system
         MemoryManager::registerAllocator(SSID("MainAllocator"), 
                 static_cast<Allocator*>(_mainAllocator));
 
@@ -62,6 +62,7 @@ namespace atta
 
     Atta::~Atta()
     {
+        FileManager::closeProject();
         SensorManager::shutDown();
         ScriptManager::shutDown();
         ui::UIManager::shutDown();
@@ -74,72 +75,89 @@ namespace atta
         LOG_VERBOSE("Atta", "Finished");
     }
 
+#ifdef ATTA_OS_WEB
+    #include <emscripten.h>
+    void attaLoop(void* atta)
+    {
+        ((Atta*)atta)->loop();
+    }
+
     void Atta::run()
     {
-        float dt = 0.01;
+        // When atta is being executed by the browser, the browser controls the main loop
+        //emscripten_request_animation_frame_loop(attaLoop, this);
+        emscripten_set_main_loop_arg((em_arg_callback_func)attaLoop, this, 0, 1);
+    }
+#else
+    void Atta::run()
+    {
         while(!_shouldFinish)
+            loop();
+    }
+#endif
+
+    void Atta::loop()
+    {
+        if(_shouldFinish) return;
+        float dt = 0.01;// XXX timestamp hardcoded for now
+
+        if(_simulationState == SimulationState::RUNNING)
         {
-            // TODO Abstract this
-            if(_simulationState == SimulationState::RUNNING)
+            // Execute graphics update every X seconds
+            static clock_t lastTime = std::clock();
+            const clock_t currTime = std::clock();
+            float timeDiff = float(currTime-lastTime)/CLOCKS_PER_SEC;
+            if(timeDiff > 0.03f)
             {
-                // Execute graphics update every X seconds
-                static clock_t lastTime = std::clock();
-                const clock_t currTime = std::clock();
-                float timeDiff = float(currTime-lastTime)/CLOCKS_PER_SEC;
-                if(timeDiff > 0.03f)
-                {
-                    GraphicsManager::update();
-                    lastTime = currTime;
-                }
-            }
-            else
-                // Update graphics every frame
                 GraphicsManager::update();
-
-            ProjectScript* project = ScriptManager::getProjectScript();
-            if(_simulationState == SimulationState::RUNNING)
-            {
-                SensorManager::update(dt);
-
-                if(project)
-                    project->onUpdateBefore(dt);
-
-                std::vector<EntityId> entities = ComponentManager::getEntities();
-                for(EntityId entity : entities)
-                {
-                    ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(entity);
-                    if(scriptComponent)
-                    {
-                        Script* script = ScriptManager::getScript(scriptComponent->sid);
-                        if(script)
-                            script->update(entity, dt);
-                    }
-                }
-
-                for(auto& factory : ComponentManager::getFactories())
-                {
-                    ScriptComponent* scriptComponent = factory.getComponent<ScriptComponent>();
-                    if(scriptComponent)
-                    {
-                        Script* script = ScriptManager::getScript(scriptComponent->sid);
-                        std::vector<uint8_t*> memories = factory.getMemories();
-                        if(script)
-                            for(uint64_t i = 0; i < factory.getMaxClones(); i++)
-                                script->update(memories, i, dt);
-                    }
-                }
-
-                if(project)
-                    project->onUpdateAfter(dt);
+                lastTime = currTime;
             }
-            else
-                if(project)
-                    project->onUIUpdate();
-
-            FileManager::update();
         }
+        else
+            // Update graphics every frame
+            GraphicsManager::update();
 
-        FileManager::closeProject();
+        ProjectScript* project = ScriptManager::getProjectScript();
+        if(_simulationState == SimulationState::RUNNING)
+        {
+            SensorManager::update(dt);
+
+            if(project)
+                project->onUpdateBefore(dt);
+
+            std::vector<EntityId> entities = ComponentManager::getEntities();
+            for(EntityId entity : entities)
+            {
+                ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(entity);
+                if(scriptComponent)
+                {
+                    Script* script = ScriptManager::getScript(scriptComponent->sid);
+                    if(script)
+                        script->update(entity, dt);
+                }
+            }
+
+            for(auto& factory : ComponentManager::getFactories())
+            {
+                ScriptComponent* scriptComponent = factory.getComponent<ScriptComponent>();
+                if(scriptComponent)
+                {
+                    Script* script = ScriptManager::getScript(scriptComponent->sid);
+                    std::vector<uint8_t*> memories = factory.getMemories();
+                    if(script)
+                        for(uint64_t i = 0; i < factory.getMaxClones(); i++)
+                            script->update(memories, i, dt);
+                }
+            }
+
+            if(project)
+                project->onUpdateAfter(dt);
+        }
+        else
+            if(project)
+                project->onUIUpdate();
+
+        FileManager::update();
     }
 
     void Atta::onWindowClose(Event& event)

@@ -8,12 +8,11 @@
 #define ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H
 #include <atta/graphicsSystem/rendererAPI.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/base.h>
-#include <atta/graphicsSystem/window.h>
+#include <atta/graphicsSystem/windows/window.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLMesh.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLImage.h>
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLShaderGroup.h>
 
-struct GLFWwindow;
 namespace atta
 {
     class OpenGLRenderer final : public RendererAPI

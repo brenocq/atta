@@ -8,6 +8,10 @@
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/memorySystem/allocators/stackAllocator.h>
 #include <atta/eventSystem/eventManager.h>
+
+#include <atta/graphicsSystem/windows/nullWindow.h>
+#include <atta/graphicsSystem/windows/glfwWindow.h>
+
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGL.h>
 
 #include <atta/graphicsSystem/renderers/fastRenderer.h>
@@ -42,7 +46,7 @@ namespace atta
 
         //----- Window -----//
         Window::CreateInfo windowInfo {};
-        _window = std::make_shared<Window>(windowInfo);
+        _window = std::static_pointer_cast<Window>(std::make_shared<GlfwWindow>(windowInfo));
 
         //----- Renderer API -----//
         _rendererAPI = std::static_pointer_cast<RendererAPI>(std::make_shared<OpenGLRenderer>(_window));
@@ -52,18 +56,18 @@ namespace atta
 
         //----- Create viewports -----//
         Viewport::CreateInfo viewportInfo;
-        viewportInfo.renderer = std::make_shared<PbrRenderer>();
+        viewportInfo.renderer = std::make_shared<FastRenderer>();
         viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{}));
         //viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<OrthographicCamera>(OrthographicCamera::CreateInfo{}));
         viewportInfo.sid = StringId("Main Viewport");
         _viewports.emplace_back(std::make_shared<Viewport>(viewportInfo));
 
-        Drawer::add(Drawer::Line({0,0,0}, {0,0,1}, {0,0,1,1}, {0,0,1,1}));
-        Drawer::add(Drawer::Line({0,0,0}, {1,0,0}, {1,0,0,1}, {1,0,0,1}));
-        Drawer::add(Drawer::Line({0,0,0}, {0,1,0}, {0,1,0,1}, {0,1,0,1}));
-        Drawer::add(Drawer::Point({1,0,0}, {1,0,0,1}));
-        Drawer::add(Drawer::Point({0,1,0}, {0,1,0,1}));
-        Drawer::add(Drawer::Point({0,0,1}, {0,0,1,1}));
+        //Drawer::add(Drawer::Line({0,0,0}, {0,0,1}, {0,0,1,1}, {0,0,1,1}));
+        //Drawer::add(Drawer::Line({0,0,0}, {1,0,0}, {1,0,0,1}, {1,0,0,1}));
+        //Drawer::add(Drawer::Line({0,0,0}, {0,1,0}, {0,1,0,1}, {0,1,0,1}));
+        //Drawer::add(Drawer::Point({1,0,0}, {1,0,0,1}));
+        //Drawer::add(Drawer::Point({0,1,0}, {0,1,0,1}));
+        //Drawer::add(Drawer::Point({0,0,1}, {0,0,1,1}));
     }
 
     void GraphicsManager::shutDown() { getInstance().shutDownImpl(); }

@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_CORE_ASSERT_H
 #define ATTA_CORE_ASSERT_H
+#include <assert.h>
 
 namespace atta
 {
@@ -15,7 +16,7 @@ namespace atta
     if(!(x)) \
     { \
         LOG_ERROR("Assert", "Failed assert at file [w]$0[], line [w]$1[]", __FILE__, __LINE__); \
-        exit(EXIT_FAILURE); \
+        assert(false); \
     } \
 }
 
@@ -26,7 +27,7 @@ namespace atta
     { \
         LOG_ERROR("Assert", "Failed assert at file [w]$0[], line [w]$1[]", __FILE__, __LINE__); \
         LOG_ERROR("Assert", __VA_ARGS__); \
-        exit(EXIT_FAILURE); \
+        assert(false); \
     } \
 }
 

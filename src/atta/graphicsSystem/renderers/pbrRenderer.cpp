@@ -134,179 +134,179 @@ namespace atta
         if(first)
         {
             generateCubemap();
-            convoluteCubemap();
-            prefilterCubemap();
-            brdfLUT();
+            //convoluteCubemap();
+            //prefilterCubemap();
+            //brdfLUT();
             first = false;
         }
 
-        std::vector<EntityId> entities = ComponentManager::getEntities();
+        //std::vector<EntityId> entities = ComponentManager::getEntities();
 
-        _geometryPipeline->begin();
-        {
-            std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
-            shader->bind();
-            shader->setMat4("projection", transpose(camera->getProj()));
-            shader->setMat4("view", transpose(camera->getView()));
-            shader->setVec3("camPos", camera->getPosition());
+        //_geometryPipeline->begin();
+        //{
+        //    std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
+        //    shader->bind();
+        //    shader->setMat4("projection", transpose(camera->getProj()));
+        //    shader->setMat4("view", transpose(camera->getView()));
+        //    shader->setVec3("camPos", camera->getPosition());
 
-            shader->setInt("irradianceMap", 0);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, _irradianceMap);
+        //    shader->setInt("irradianceMap", 0);
+        //    glActiveTexture(GL_TEXTURE0);
+        //    glBindTexture(GL_TEXTURE_CUBE_MAP, _irradianceMap);
 
-            shader->setInt("prefilterMap", 1);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, _prefilterMap);
+        //    shader->setInt("prefilterMap", 1);
+        //    glActiveTexture(GL_TEXTURE1);
+        //    glBindTexture(GL_TEXTURE_CUBE_MAP, _prefilterMap);
 
-            shader->setInt("brdfLUT", 2);
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, _brdfLUT);
+        //    shader->setInt("brdfLUT", 2);
+        //    glActiveTexture(GL_TEXTURE2);
+        //    glBindTexture(GL_TEXTURE_2D, _brdfLUT);
 
-            //----- Lighting -----//
-            int numPointLights = 0;
-            for(auto entity : entities)
-            {
-                TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
-                PointLightComponent* pl = ComponentManager::getEntityComponent<PointLightComponent>(entity);
-                DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
+        //    //----- Lighting -----//
+        //    int numPointLights = 0;
+        //    for(auto entity : entities)
+        //    {
+        //        TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+        //        PointLightComponent* pl = ComponentManager::getEntityComponent<PointLightComponent>(entity);
+        //        DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
 
-                if(transform && (pl || dl))
-                {
-                    if(pl && numPointLights < 10)
-                    {
-                        int i = numPointLights++;
-                        shader->setVec3(("pointLights["+std::to_string(i)+"].position").c_str(), transform->position);
-                        shader->setVec3(("pointLights["+std::to_string(i)+"].intensity").c_str(), pl->intensity);
-                    }
-                    if(dl)
-                    {
-                        vec3 before = { 0.0f, -1.0f, 0.0f };
-                        //vec3 direction;
-                        //transform->orientation.transformVector(before, direction);
-                        shader->setVec3("directionalLight.direction", before);
-                        shader->setVec3("directionalLight.intensity", dl->intensity);
-                    }
-                    if(numPointLights++ == 10)
-                        LOG_WARN("PhongRenderer", "Maximum number of point lights reached, 10 lights");
-                }
-            }
-            shader->setInt("numPointLights", numPointLights);
+        //        if(transform && (pl || dl))
+        //        {
+        //            if(pl && numPointLights < 10)
+        //            {
+        //                int i = numPointLights++;
+        //                shader->setVec3(("pointLights["+std::to_string(i)+"].position").c_str(), transform->position);
+        //                shader->setVec3(("pointLights["+std::to_string(i)+"].intensity").c_str(), pl->intensity);
+        //            }
+        //            if(dl)
+        //            {
+        //                vec3 before = { 0.0f, -1.0f, 0.0f };
+        //                //vec3 direction;
+        //                //transform->orientation.transformVector(before, direction);
+        //                shader->setVec3("directionalLight.direction", before);
+        //                shader->setVec3("directionalLight.intensity", dl->intensity);
+        //            }
+        //            if(numPointLights++ == 10)
+        //                LOG_WARN("PhongRenderer", "Maximum number of point lights reached, 10 lights");
+        //        }
+        //    }
+        //    shader->setInt("numPointLights", numPointLights);
 
-            for(auto entity : entities)
-            {
-                MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
-                TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
-                MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
-                RelationshipComponent* relationship = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
+        //    for(auto entity : entities)
+        //    {
+        //        MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
+        //        TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+        //        MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
+        //        RelationshipComponent* relationship = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
 
-                if(mesh && transform)
-                {
-                    mat4 model; 
-                    model.setPosOriScale(transform->position, transform->orientation, transform->scale);
+        //        if(mesh && transform)
+        //        {
+        //            mat4 model; 
+        //            model.setPosOriScale(transform->position, transform->orientation, transform->scale);
 
-                    while(relationship && relationship->parent >= 0)
-                    {
-                        TransformComponent* ptransform = ComponentManager::getEntityComponent<TransformComponent>(relationship->parent);
-                        if(ptransform)
-                        {
-                            mat4 pmodel; 
-                            pmodel.setPosOriScale(ptransform->position, ptransform->orientation, ptransform->scale);
-                            model = pmodel * model;
-                        }
-                        relationship = ComponentManager::getEntityComponent<RelationshipComponent>(relationship->parent);
-                    }
+        //            while(relationship && relationship->parent >= 0)
+        //            {
+        //                TransformComponent* ptransform = ComponentManager::getEntityComponent<TransformComponent>(relationship->parent);
+        //                if(ptransform)
+        //                {
+        //                    mat4 pmodel; 
+        //                    pmodel.setPosOriScale(ptransform->position, ptransform->orientation, ptransform->scale);
+        //                    model = pmodel * model;
+        //                }
+        //                relationship = ComponentManager::getEntityComponent<RelationshipComponent>(relationship->parent);
+        //            }
 
-                    model.transpose();
-                    mat4 invModel = inverse(model);
-                    shader->setMat4("model", model);
-                    shader->setMat4("invModel", invModel);
+        //            model.transpose();
+        //            mat4 invModel = inverse(model);
+        //            shader->setMat4("model", model);
+        //            shader->setMat4("invModel", invModel);
 
-                    if(material)
-                    {
-                        if(material->albedoTexture.getId() != SID("Empty texture"))
-                        {
-                            shader->setTexture("albedoTexture", material->albedoTexture);
-                            shader->setVec3("material.albedo", {-1, -1, -1});
-                        }
-                        else
-                            shader->setVec3("material.albedo", material->albedo);
+        //            if(material)
+        //            {
+        //                if(material->albedoTexture.getId() != SID("Empty texture"))
+        //                {
+        //                    shader->setTexture("albedoTexture", material->albedoTexture);
+        //                    shader->setVec3("material.albedo", {-1, -1, -1});
+        //                }
+        //                else
+        //                    shader->setVec3("material.albedo", material->albedo);
 
-                        if(material->metallicTexture.getId() != SID("Empty texture"))
-                        {
-                            shader->setTexture("metallicTexture", material->metallicTexture);
-                            shader->setFloat("material.metallic", -1);
-                        }
-                        else
-                            shader->setFloat("material.metallic", material->metallic);
+        //                if(material->metallicTexture.getId() != SID("Empty texture"))
+        //                {
+        //                    shader->setTexture("metallicTexture", material->metallicTexture);
+        //                    shader->setFloat("material.metallic", -1);
+        //                }
+        //                else
+        //                    shader->setFloat("material.metallic", material->metallic);
 
-                        if(material->roughnessTexture.getId() != SID("Empty texture"))
-                        {
-                            shader->setTexture("roughnessTexture", material->roughnessTexture);
-                            shader->setFloat("material.roughness", -1);
-                        }
-                        else
-                            shader->setFloat("material.roughness", material->roughness);
+        //                if(material->roughnessTexture.getId() != SID("Empty texture"))
+        //                {
+        //                    shader->setTexture("roughnessTexture", material->roughnessTexture);
+        //                    shader->setFloat("material.roughness", -1);
+        //                }
+        //                else
+        //                    shader->setFloat("material.roughness", material->roughness);
 
-                        if(material->aoTexture.getId() != SID("Empty texture"))
-                        {
-                            shader->setTexture("aoTexture", material->aoTexture);
-                            shader->setFloat("material.ao", -1);
-                        }
-                        else
-                            shader->setFloat("material.ao", material->ao);
+        //                if(material->aoTexture.getId() != SID("Empty texture"))
+        //                {
+        //                    shader->setTexture("aoTexture", material->aoTexture);
+        //                    shader->setFloat("material.ao", -1);
+        //                }
+        //                else
+        //                    shader->setFloat("material.ao", material->ao);
 
-                        if(material->normalTexture.getId() != SID("Empty texture"))
-                        {
-                            shader->setTexture("normalTexture", material->normalTexture);
-                            shader->setInt("material.hasNormalTexture", 1);
-                        }
-                        else
-                            shader->setInt("material.hasNormalTexture", 0);
-                    }
-                    else
-                    {
-                        MaterialComponent material {};
-                        shader->setVec3("material.albedo", material.albedo);
-                        shader->setFloat("material.metallic", material.metallic);
-                        shader->setFloat("material.roughness", material.roughness);
-                        shader->setFloat("material.ao", material.ao);
-                        shader->setFloat("material.hasNormalTexture", 0);
-                    }
+        //                if(material->normalTexture.getId() != SID("Empty texture"))
+        //                {
+        //                    shader->setTexture("normalTexture", material->normalTexture);
+        //                    shader->setInt("material.hasNormalTexture", 1);
+        //                }
+        //                else
+        //                    shader->setInt("material.hasNormalTexture", 0);
+        //            }
+        //            else
+        //            {
+        //                MaterialComponent material {};
+        //                shader->setVec3("material.albedo", material.albedo);
+        //                shader->setFloat("material.metallic", material.metallic);
+        //                shader->setFloat("material.roughness", material.roughness);
+        //                shader->setFloat("material.ao", material.ao);
+        //                shader->setFloat("material.hasNormalTexture", 0);
+        //            }
 
-                    GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
-                }
-            }
+        //            GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+        //        }
+        //    }
 
-            //_backgroundShader->bind();
-            //_backgroundShader->setMat4("projection", transpose(camera->getProj()));
-            //_backgroundShader->setMat4("view", transpose(camera->getView()));
-            //_backgroundShader->setInt("environmentMap", 0);
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
-            //renderCube();
+        //    //_backgroundShader->bind();
+        //    //_backgroundShader->setMat4("projection", transpose(camera->getProj()));
+        //    //_backgroundShader->setMat4("view", transpose(camera->getView()));
+        //    //_backgroundShader->setInt("environmentMap", 0);
+        //    //glActiveTexture(GL_TEXTURE0);
+        //    //glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
+        //    //renderCube();
 
-        }
-        _geometryPipeline->end();
+        //}
+        //_geometryPipeline->end();
 
-        _linePipeline->begin(false);
-        {
-            std::shared_ptr<ShaderGroup> shader = _linePipeline->getShaderGroup();
-            shader->bind();
-            shader->setMat4("projection", transpose(camera->getProj()));
-            shader->setMat4("view", transpose(camera->getView()));
-            Drawer::draw<Drawer::Line>();
-        }
-        _linePipeline->end();
+        //_linePipeline->begin(false);
+        //{
+        //    std::shared_ptr<ShaderGroup> shader = _linePipeline->getShaderGroup();
+        //    shader->bind();
+        //    shader->setMat4("projection", transpose(camera->getProj()));
+        //    shader->setMat4("view", transpose(camera->getView()));
+        //    //Drawer::draw<Drawer::Line>();
+        //}
+        //_linePipeline->end();
 
-        _pointPipeline->begin(false);
-        {
-            std::shared_ptr<ShaderGroup> shader = _pointPipeline->getShaderGroup();
-            shader->bind();
-            shader->setMat4("projection", transpose(camera->getProj()));
-            shader->setMat4("view", transpose(camera->getView()));
-            Drawer::draw<Drawer::Point>();
-        }
-        _pointPipeline->end();
+        //_pointPipeline->begin(false);
+        //{
+        //    std::shared_ptr<ShaderGroup> shader = _pointPipeline->getShaderGroup();
+        //    shader->bind();
+        //    shader->setMat4("projection", transpose(camera->getProj()));
+        //    shader->setMat4("view", transpose(camera->getView()));
+        //    //Drawer::draw<Drawer::Point>();
+        //}
+        //_pointPipeline->end();
     }
 
     void PbrRenderer::resize(uint32_t width, uint32_t height)
@@ -473,15 +473,15 @@ namespace atta
         shader->bind();
         shader->setMat4("projection", transpose(captureProjection));
         shader->setTexture("equirectangularMap", sid);
-        glViewport(0, 0, 512, 512);
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        for(unsigned int i = 0; i < 6; ++i)
-        {
-            shader->setMat4("view", transpose(captureViews[i]));
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _envCubemap, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            renderCube();
-        }
+        //glViewport(0, 0, 512, 512);
+        //glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+        //for(unsigned int i = 0; i < 6; ++i)
+        //{
+        //    shader->setMat4("view", transpose(captureViews[i]));
+        //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _envCubemap, 0);
+        //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //    renderCube();
+        //}
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 

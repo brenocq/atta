@@ -7,7 +7,12 @@
 #ifndef ATTA_CMAKE_CONFIG   
 #define ATTA_CMAKE_CONFIG   
 
+#ifdef ATTA_OS_WEB
+#define ATTA_DIR "/"
+#else
 #define ATTA_DIR "/home/breno/Github/Atta"
+#endif
+
 #define ATTA_VERSION "0.0.3.0"
 #define ATTA_VERSION_MAJOR 0
 #define ATTA_VERSION_MINOR 0

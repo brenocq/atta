@@ -20,7 +20,7 @@ namespace atta
         //----- System Memory -----//
         // Get main memory
         Allocator* mainAllocator = MemoryManager::getAllocator(SSID("MainAllocator"));
-        size_t size = 1024*1024*1024;// 1GB
+        size_t size = 512*1024*1024;// 512MB
         // Alloc memory inside main memory
         uint8_t* componentMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
         ASSERT(componentMemory != nullptr, "Could not allocate component system memory");

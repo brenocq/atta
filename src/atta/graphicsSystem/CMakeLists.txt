@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.12)
 set(ATTA_GRAPHICS_SYSTEM_SOURCE
     graphicsManager.cpp
     drawer.cpp
-    window.cpp
     viewport.cpp
 
     image.cpp
@@ -15,6 +14,10 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
     vertexBuffer.cpp
     indexBuffer.cpp
     pipeline.cpp
+
+    windows/window.cpp
+    windows/nullWindow.cpp
+    windows/glfwWindow.cpp
 
     rendererAPI.cpp
     rendererAPIs/openGL/openGLRenderer.cpp

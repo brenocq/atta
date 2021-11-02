@@ -13,6 +13,11 @@
 #include <atta/componentSystem/componentManager.h>
 #include <atta/cmakeConfig.h>
 
+#ifdef ATTA_OS_WEB
+// Need to use "linux" build-in commands instead of std::filesystem
+#include <dirent.h> 
+#endif
+
 namespace atta
 {
     void FileManager::startUpImpl()
@@ -129,5 +134,43 @@ namespace atta
             return _project->getResourceRootPaths();
         else
             return { fs::path(ATTA_DIR)/"resources" };
+    }
+
+    std::vector<fs::path> FileManager::getDirectoryFilesRecursive(fs::path directory)
+    {
+        std::vector<fs::path> files;
+#ifndef ATTA_OS_WEB
+        for(auto& p : fs::recursive_directory_iterator(directory))
+            if(!p.is_directory())
+                files.push_back(fs::relative(p.path(), directory));
+#else
+        // If compiling for the web, need to use system calls to get files recursivelly
+        DIR *d;
+        struct dirent *dir;
+
+        std::stack<fs::path> directories;
+        directories.push(directory);
+
+        while(!directories.empty())
+        {
+            fs::path curr = directories.top();
+            directories.pop();
+
+            d = opendir(curr.string().c_str());
+            // Check if curr is file or directory
+            if(d)
+            {
+                // Push children directories to stack
+                while((dir = readdir(d)) != NULL)
+                    if(dir->d_name[0] != '.')
+                        directories.push(curr/dir->d_name);
+            }
+            else
+                // Push file to list
+                files.push_back(fs::relative(curr, directory));
+            closedir(d);
+        }
+#endif
+        return files;
     }
 }

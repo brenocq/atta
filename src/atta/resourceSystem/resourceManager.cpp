@@ -53,29 +53,28 @@ namespace atta
 
     void ResourceManager::loadResourcesRecursively(fs::path directory)
     {
-        static const std::vector<std::string> meshExtensions { ".obj", ".3ds", ".fbx", ".stl", ".ply" };
+        static const std::vector<std::string> meshExtensions { ".obj" };//, ".3ds", ".fbx", ".stl", ".ply" };
         static const std::vector<std::string> textureExtensions { ".jpg", ".jpeg", ".png", ".hdr" };
 
-        for(auto& p : fs::recursive_directory_iterator(directory))
-            if(!p.is_directory())
-            {
-                // Load meshes
-                for(auto& extension : meshExtensions)
-                    if(extension == p.path().extension().string())
-                    {
-                        LOG_DEBUG("ResourceManager", "Resource mesh: $0", fs::relative(p.path(), directory).string());
-                        ResourceManager::get<Mesh>(fs::relative(p.path(), directory).string());
-                        break;
-                    }
-                // Load textures
-                for(auto& extension : textureExtensions)
-                    if(extension == p.path().extension().string())
-                    {
-                        LOG_DEBUG("ResourceManager", "Resource texture: $0", fs::relative(p.path(), directory).string());
-                        ResourceManager::get<Texture>(fs::relative(p.path(), directory).string());
-                        break;
-                    }
-            }
+        for(auto file : FileManager::getDirectoryFilesRecursive(directory))
+        {
+            // Load as meshe
+            for(auto& extension : meshExtensions)
+                if(extension == file.extension().string())
+                {
+                    LOG_DEBUG("ResourceManager", "Resource mesh: $0", file.string());
+                    ResourceManager::get<Mesh>(file.string());
+                    break;
+                }
+            // Load as texture
+            for(auto& extension : textureExtensions)
+                if(extension == file.extension().string())
+                {
+                    LOG_DEBUG("ResourceManager", "Resource texture: $0", file.string());
+                    ResourceManager::get<Texture>(file.string());
+                    break;
+                }
+        }
     }
 
     template <>
