@@ -7,6 +7,11 @@ OPTION(ATTA_BUILD_TESTS
   ON
 )
 
+OPTION(ATTA_WEB_BUILD_MODULE
+  "Set to ON to generate only the javascript module"
+  OFF
+)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
@@ -45,10 +50,15 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_WEB")
     set(ATTA_BUILD_TESTS OFF)
 
-    set(EMSCRIPTEN_LINK_PROPERTIES "-s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3")
+    set(EMSCRIPTEN_LINK_PROPERTIES "-s USE_WEBGL2=1 -s USE_GLFW=3")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1 -s FORCE_FILESYSTEM=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ../resources")
+
+    if(ATTA_WEB_BUILD_MODULE)
+        message(STATUS "Building only javascript module")
+        set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s WASM=1 -s ENVIRONMENT=web -s MODULARIZE=1 -s EXPORT_NAME=AttaModule --use-preload-plugins -s EXPORT_NAME='createModule' -s SINGLE_FILE=1 -s USE_ES6_IMPORT_META=0")
+    endif()
     list(APPEND ATTA_LINK_PROP ${EMSCRIPTEN_LINK_PROPERTIES})
 else()
     message(SEND_ERROR "Unknown system name: ${CMAKE_SYSTEM_NAME}")
@@ -158,9 +168,10 @@ atta_target_common(atta)
 target_link_libraries(atta PUBLIC ${ATTA_LIBS})
 set_target_properties(atta PROPERTIES LINK_FLAGS "${ATTA_LINK_PROP}")
 if(ATTA_SYSTEM_NAME MATCHES "Web")
-    set_target_properties(atta PROPERTIES SUFFIX ".html")
+    if(NOT ATTA_WEB_BUILD_MODULE)
+        set_target_properties(atta PROPERTIES SUFFIX ".html")
+    endif()
 endif()
-
 
 # Install executables
 install(TARGETS atta
