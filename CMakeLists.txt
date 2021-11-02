@@ -44,7 +44,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
     set(ATTA_SYSTEM_NAME "Web")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_WEB")
     set(ATTA_BUILD_TESTS OFF)
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
     set(EMSCRIPTEN_LINK_PROPERTIES "-s USE_WEBGL2=1 -s FULL_ES3=1 -s USE_GLFW=3")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1")
@@ -158,6 +157,10 @@ add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 atta_target_common(atta)
 target_link_libraries(atta PUBLIC ${ATTA_LIBS})
 set_target_properties(atta PROPERTIES LINK_FLAGS "${ATTA_LINK_PROP}")
+if(ATTA_SYSTEM_NAME MATCHES "Web")
+    set_target_properties(atta PROPERTIES SUFFIX ".html")
+endif()
+
 
 # Install executables
 install(TARGETS atta
