@@ -7,7 +7,7 @@
 
 # Build
 build/
-scripts/
+scripts/local_*.sh
 
 # Visual Studio
 /.vs

@@ -34,6 +34,36 @@ namespace atta
 
         EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
+
+        // Default entity
+        {
+            // Cube entity
+            EntityId cube = createEntity();
+            TransformComponent* t = addEntityComponent<TransformComponent>(cube);
+
+            NameComponent* n = addEntityComponent<NameComponent>(cube);
+            strcpy(n->name, "Cube");
+
+            MeshComponent* m = addEntityComponent<MeshComponent>(cube);
+            m->sid = StringId("meshes/cube.obj");
+
+            MaterialComponent* mt = addEntityComponent<MaterialComponent>(cube);
+            mt->albedo = { 0.5, 0.5, 0.5 };
+
+            // Light entity
+            EntityId light = createEntity();
+            t = addEntityComponent<TransformComponent>(light);
+            t->position = { -0.6, -0.6, 0.6 };
+            t->scale = { 0.05, 0.05, 0.05 };
+
+            n = addEntityComponent<NameComponent>(light);
+            strcpy(n->name, "Point light");
+
+            m = addEntityComponent<MeshComponent>(light);
+            m->sid = StringId("meshes/sphere.obj");
+
+            addEntityComponent<PointLightComponent>(light);
+        }
     }
 
     void ComponentManager::shutDownImpl()

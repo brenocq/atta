@@ -36,6 +36,7 @@ namespace atta
         // Alloc component
         PoolAllocator<T>* cpool = MemoryManager::getAllocator<PoolAllocator<T>>(COMPONENT_POOL_SID(T));
         T* component = cpool->alloc();
+        *component = T{};
 
         // Add component to entity
         e->components[freeComponentSlot] = reinterpret_cast<void*>(component);

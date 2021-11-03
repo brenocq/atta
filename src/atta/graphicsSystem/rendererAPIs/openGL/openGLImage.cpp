@@ -89,7 +89,7 @@ namespace atta
         case Format::RGB16F: return GL_RGB16F;
         case Format::RGB: return GL_RGB;
         case Format::RGBA: return GL_RGBA;
-        case Format::DEPTH32F: return GL_DEPTH_COMPONENT;
+        case Format::DEPTH32F: return GL_DEPTH_COMPONENT32F;
         }
         ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
     }
