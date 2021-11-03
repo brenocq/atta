@@ -59,7 +59,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ../resources")
     if(ATTA_WEB_BUILD_MODULE)
         message(STATUS "Building only javascript module")
-        set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s WASM=1 -s ENVIRONMENT=web -s MODULARIZE=1 -s EXPORT_NAME=AttaModule --use-preload-plugins -s EXPORT_NAME='createModule' -s SINGLE_FILE=1 -s USE_ES6_IMPORT_META=0")
+        set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s WASM=1 -s ENVIRONMENT=web -s MODULARIZE=1 -s EXPORT_NAME=AttaModule -s EXPORT_NAME='createModule' -s SINGLE_FILE=1 -s USE_ES6_IMPORT_META=0 --use-preload-plugins")
     endif()
     list(APPEND ATTA_LINK_PROP ${EMSCRIPTEN_LINK_PROPERTIES})
 else()#----- Unknown build

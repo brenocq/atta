@@ -20,7 +20,6 @@ namespace atta
         _resourceRootPaths.push_back(fs::path(ATTA_DIR)/"resources");
 
         LOG_DEBUG("Project", "Opened project [*g]$0[] ([w]$1[])", _name, _file);
-        LOG_DEBUG("Project", "Resource paths: $0", _resourceRootPaths);
     }
 
     fs::path Project::getBuildDirectory()

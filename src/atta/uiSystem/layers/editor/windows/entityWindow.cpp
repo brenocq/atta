@@ -177,7 +177,6 @@ namespace atta::ui
             if(ImGui::Selectable("Material##ComponentAddMaterial"))
             {
                 MaterialComponent* material = ComponentManager::addEntityComponent<MaterialComponent>(_selected);
-                *material = MaterialComponent{};
             }
 
             ImGui::Separator();

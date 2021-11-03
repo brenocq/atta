@@ -455,6 +455,7 @@ namespace atta
                     read(is, tempStr); temp.aoTexture = StringId(tempStr);
                     read(is, tempStr); temp.normalTexture = StringId(tempStr);
 
+                    LOG_DEBUG("ProjectSerializer", "Albedo tex: $0", temp.albedoTexture);
                     if(temp.albedoTexture.getId() != SID("Empty texture"))
                         ResourceManager::get<Texture>(temp.albedoTexture.getString());
                     if(temp.metallicTexture.getId() != SID("Empty texture"))

@@ -9,7 +9,7 @@
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/windowCloseEvent.h>
 #include <atta/eventSystem/events/simulationStartEvent.h>
-#include <atta/eventSystem/events/simulationPlayEvent.h>
+#include <atta/eventSystem/events/simulationContinueEvent.h>
 #include <atta/eventSystem/events/simulationPauseEvent.h>
 #include <atta/eventSystem/events/simulationStopEvent.h>
 
@@ -52,7 +52,7 @@ namespace atta
         // Atta is the last one to reveice events
         EventManager::subscribe<WindowCloseEvent>(BIND_EVENT_FUNC(Atta::onWindowClose));
         EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-        EventManager::subscribe<SimulationPlayEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+        EventManager::subscribe<SimulationContinueEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
         EventManager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 
@@ -176,9 +176,9 @@ namespace atta
                     _simulationState = SimulationState::RUNNING;
                     break;
                 }
-            case SimulationPlayEvent::type:
+            case SimulationContinueEvent::type:
                 {
-                    if(project) project->onPlay();
+                    if(project) project->onContinue();
                     _simulationState = SimulationState::RUNNING;
                     break;
                 }

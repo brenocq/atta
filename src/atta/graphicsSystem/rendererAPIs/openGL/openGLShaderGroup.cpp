@@ -128,7 +128,7 @@ namespace atta
 
         if(!image)
         {
-            LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to use image that was never loaded $0", name);
+            LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to use image that was never loaded: $0 = \"$1\"", name, sid);
             return;
         }
 

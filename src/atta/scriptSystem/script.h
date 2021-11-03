@@ -19,7 +19,14 @@ namespace atta
 		virtual void update(EntityId id, float delta = 0.0f) = 0;
 		virtual void update(const std::vector<uint8_t*>& memories, uint64_t cloneId, float delta = 0.0f) = 0;
 	}; 
-   
+}
+
+#define ATTA_REGISTER_SCRIPT(DerivedScript) \
+extern "C" {\
+    atta::Script* createScript()\
+    {\
+        return static_cast<atta::Script*>(new DerivedScript());\
+    }\
 }
 
 #endif// ATTA_SCRIPT_SYSTEM_SCRIPT_H

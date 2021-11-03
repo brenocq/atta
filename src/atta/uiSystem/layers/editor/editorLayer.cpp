@@ -10,7 +10,7 @@
 #include <atta/resourceSystem/resources/texture.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/simulationStartEvent.h>
-#include <atta/eventSystem/events/simulationPlayEvent.h>
+#include <atta/eventSystem/events/simulationContinueEvent.h>
 #include <atta/eventSystem/events/simulationPauseEvent.h>
 #include <atta/eventSystem/events/simulationStopEvent.h>
 #include <atta/scriptSystem/scriptManager.h>
@@ -28,7 +28,7 @@ namespace atta::ui
     void EditorLayer::onAttach()
     {
         EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
-        EventManager::subscribe<SimulationPlayEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
+        EventManager::subscribe<SimulationContinueEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
         EventManager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(EditorLayer::onSimulationStateChange));
 
@@ -166,7 +166,7 @@ namespace atta::ui
                         if(ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/play.png"_ssid), 
                                     ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0))
                         {
-                            SimulationPlayEvent e;
+                            SimulationContinueEvent e;
                             EventManager::publish(e);
                             _editorState = EditorState::SIMULATION_RUNNING;
                         }
@@ -201,7 +201,7 @@ namespace atta::ui
                 _editorState = EditorState::SIMULATION_RUNNING;
                 break;
             }
-        case SimulationPlayEvent::type:
+        case SimulationContinueEvent::type:
             {
                 _editorState = EditorState::SIMULATION_RUNNING;
                 break;
