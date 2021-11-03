@@ -35,12 +35,14 @@ namespace atta
         std::shared_ptr<Renderer> getRenderer() const { return _renderer; }
         std::shared_ptr<Camera> getCamera() const { return _camera; }
 
-        void setRenderer(std::shared_ptr<Renderer> renderer) { _renderer = renderer; }
+        void setRenderer(std::shared_ptr<Renderer> renderer) { _newRenderer = renderer; }
         void setCamera(std::shared_ptr<Camera> camera) { _camera = camera; }
 
     private:
         StringId _sid;
         std::shared_ptr<Renderer> _renderer;
+        // If want to change the renderer, store new renderer in _newRenderer until next frame to avoid destroying current renderer that can still be in use 
+        std::shared_ptr<Renderer> _newRenderer;
         std::shared_ptr<Camera> _camera;
     };
 }

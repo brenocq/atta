@@ -243,13 +243,13 @@ namespace atta::ui
                                 switch(j)
                                 {
                                 case 0:
-                                    viewports[i]->setRenderer(std::make_shared<FastRenderer>());
+                                    viewports[i]->setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<FastRenderer>()));
                                 break;
                                 case 1:
-                                    viewports[i]->setRenderer(std::make_shared<PhongRenderer>());
+                                    viewports[i]->setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PhongRenderer>()));
                                 break;
                                 case 2:
-                                    viewports[i]->setRenderer(std::make_shared<PbrRenderer>());
+                                    viewports[i]->setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PbrRenderer>()));
                                 break;
                                 }
                             }

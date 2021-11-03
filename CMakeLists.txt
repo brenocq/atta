@@ -29,7 +29,7 @@ endif()
 
 ########## OS Specific ##########
 message(STATUS "System name: ${CMAKE_SYSTEM_NAME}")
-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+if(CMAKE_SYSTEM_NAME STREQUAL Windows)#----- Windows build
     set(ATTA_SYSTEM_NAME "Windows")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
     # Force google test to link the runtimes dynamically (to avoid visual studio link error)
@@ -37,30 +37,32 @@ if(CMAKE_SYSTEM_NAME STREQUAL Windows)
     # Fix assert __VA_ARGS__ expansion
     list(APPEND ATTA_OPTIONS /Zc:preprocessor)
 
-elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)#----- MacOS build
     set(ATTA_SYSTEM_NAME "MacOS")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
 
-elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)#----- Linux build
     set(ATTA_SYSTEM_NAME "Linux")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_LINUX")
 
-elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
+elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(ATTA_SYSTEM_NAME "Web")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_WEB")
-    set(ATTA_BUILD_TESTS OFF)
 
+    # Configure web build
+    set(ATTA_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
+
+    # Configure emscripten link flags
     set(EMSCRIPTEN_LINK_PROPERTIES "-s USE_WEBGL2=1 -s USE_GLFW=3")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1 -s FORCE_FILESYSTEM=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ../resources")
-
     if(ATTA_WEB_BUILD_MODULE)
         message(STATUS "Building only javascript module")
         set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s WASM=1 -s ENVIRONMENT=web -s MODULARIZE=1 -s EXPORT_NAME=AttaModule --use-preload-plugins -s EXPORT_NAME='createModule' -s SINGLE_FILE=1 -s USE_ES6_IMPORT_META=0")
     endif()
     list(APPEND ATTA_LINK_PROP ${EMSCRIPTEN_LINK_PROPERTIES})
-else()
+else()#----- Unknown build
     message(SEND_ERROR "Unknown system name: ${CMAKE_SYSTEM_NAME}")
 endif()
 

@@ -104,7 +104,6 @@ namespace atta
         image = std::make_shared<OpenGLImage>(info);
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+index, GL_TEXTURE_2D, image->getId(), 0);
-        //LOG_DEBUG("OpenGLFramebuffer", "Created color attachment $0", index);
 
         return std::static_pointer_cast<Image>(image);
     }
@@ -130,8 +129,8 @@ namespace atta
     {
         switch(format)
         {
-        case Image::Format::NONE: break;
-        case Image::Format::DEPTH32F: return GL_DEPTH_ATTACHMENT;
+            case Image::Format::NONE: break;
+            case Image::Format::DEPTH32F: return GL_DEPTH_ATTACHMENT;
         }
         ASSERT(false, "Could not convert format to openGL depth attachment");
     }

@@ -22,6 +22,12 @@ namespace atta
 
     void Viewport::render()
     {
+        if(_newRenderer)
+        {
+            _renderer.reset();
+            _renderer = _newRenderer;
+            _newRenderer.reset();
+        }
         _renderer->render(_camera);
     }
 
