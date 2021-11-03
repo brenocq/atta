@@ -12,15 +12,22 @@ namespace atta
 {
     struct MaterialComponent
     {
-        vec3 albedo = vec3(1.0f, 0.0f, 1.0f);
-        float metallic = 0.0f;
-        float roughness = 0.5f;
-        float ao = 1.0f;
-        StringId albedoTexture = StringId("Empty texture");
-        StringId metallicTexture = StringId("Empty texture");
-        StringId roughnessTexture = StringId("Empty texture");
-        StringId aoTexture = StringId("Empty texture");
-        StringId normalTexture = StringId("Empty texture");
+        vec3 albedo;
+        float metallic;
+        float roughness;
+        float ao;
+        StringId albedoTexture;
+        StringId metallicTexture;
+        StringId roughnessTexture;
+        StringId aoTexture;
+        StringId normalTexture;
+
+        MaterialComponent(): 
+            albedo(vec3(1.0f, 0.0f, 1.0f)), metallic(0.0f), roughness(0.5f),
+            ao(1.0f), albedoTexture(StringId("Empty texture")), metallicTexture(StringId("Empty texture")),
+            roughnessTexture(StringId("Empty texture")), aoTexture(StringId("Empty texture")),
+            normalTexture(StringId("Empty texture"))
+        {}
     };
 }
 

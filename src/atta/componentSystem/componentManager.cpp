@@ -97,10 +97,10 @@ namespace atta
         registerComponentPoolImpl<TransformComponent>(_maxEntities, "Transform");
         registerComponentPoolImpl<NameComponent>(_maxEntities, "Name");
         registerComponentPoolImpl<MeshComponent>(_maxEntities, "Mesh");
+        registerComponentPoolImpl<MaterialComponent>(_maxEntities, "Material");
         registerComponentPoolImpl<ScriptComponent>(_maxEntities, "Script");
         registerComponentPoolImpl<RelationshipComponent>(_maxEntities, "Relationship");
         registerComponentPoolImpl<PrototypeComponent>(_maxEntities, "Prototype");
-        registerComponentPoolImpl<MaterialComponent>(_maxEntities, "Material");
         registerComponentPoolImpl<PointLightComponent>(_maxEntities, "Point Light");
         registerComponentPoolImpl<DirectionalLightComponent>(_maxEntities, "Directional Light");
         registerComponentPoolImpl<CameraComponent>(_maxEntities, "Camera");
@@ -150,17 +150,35 @@ namespace atta
 
         _denseListSize = 0;
 
+        PoolAllocator<TransformComponent>* transformPool = MemoryManager::getAllocator<PoolAllocator<TransformComponent>>(COMPONENT_POOL_SID(TransformComponent));
+        transformPool->clear();
+
         PoolAllocator<NameComponent>* namePool = MemoryManager::getAllocator<PoolAllocator<NameComponent>>(COMPONENT_POOL_SID(NameComponent));
         namePool->clear();
 
         PoolAllocator<MeshComponent>* meshPool = MemoryManager::getAllocator<PoolAllocator<MeshComponent>>(COMPONENT_POOL_SID(MeshComponent));
         meshPool->clear();
 
+        PoolAllocator<MaterialComponent>* materialPool = MemoryManager::getAllocator<PoolAllocator<MaterialComponent>>(COMPONENT_POOL_SID(MaterialComponent));
+        materialPool->clear();
+
         PoolAllocator<ScriptComponent>* scriptPool = MemoryManager::getAllocator<PoolAllocator<ScriptComponent>>(COMPONENT_POOL_SID(ScriptComponent));
         scriptPool->clear();
 
-        PoolAllocator<TransformComponent>* transformPool = MemoryManager::getAllocator<PoolAllocator<TransformComponent>>(COMPONENT_POOL_SID(TransformComponent));
-        transformPool->clear();
+        PoolAllocator<RelationshipComponent>* relationshipPool = MemoryManager::getAllocator<PoolAllocator<RelationshipComponent>>(COMPONENT_POOL_SID(RelationshipComponent));
+        relationshipPool->clear();
+
+        PoolAllocator<PrototypeComponent>* prototypePool = MemoryManager::getAllocator<PoolAllocator<PrototypeComponent>>(COMPONENT_POOL_SID(PrototypeComponent));
+        prototypePool->clear();
+
+        PoolAllocator<PointLightComponent>* pointLightPool = MemoryManager::getAllocator<PoolAllocator<PointLightComponent>>(COMPONENT_POOL_SID(PointLightComponent));
+        pointLightPool->clear();
+
+        PoolAllocator<DirectionalLightComponent>* directionalLightPool = MemoryManager::getAllocator<PoolAllocator<DirectionalLightComponent>>(COMPONENT_POOL_SID(DirectionalLightComponent));
+        directionalLightPool->clear();
+
+        PoolAllocator<CameraComponent>* cameraPool = MemoryManager::getAllocator<PoolAllocator<CameraComponent>>(COMPONENT_POOL_SID(CameraComponent));
+        cameraPool->clear();
     }
 
     void ComponentManager::unregisterCustomComponentPoolsImpl()

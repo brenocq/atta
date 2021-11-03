@@ -31,7 +31,10 @@ namespace atta
         }
 
         if(freeComponentSlot == -1)
+        {
+            LOG_WARN("ComponentManager", "Could not add component $0 to entity $1", typeid(T).name(), entity);
             return nullptr;
+        }
 
         // Alloc component
         PoolAllocator<T>* cpool = MemoryManager::getAllocator<PoolAllocator<T>>(COMPONENT_POOL_SID(T));

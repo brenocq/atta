@@ -39,7 +39,7 @@ namespace atta
 
     bool FileManager::openProjectImpl(fs::path projectFile, bool newProject)
     {
-        // Check valid project file
+        // Check valid project file (skip file check if first time saving this project)
         if(!newProject && !fs::exists(projectFile))
         {
             LOG_WARN("FileManager", "Could not find file [w]$0[]", fs::absolute(projectFile));
@@ -61,9 +61,12 @@ namespace atta
         _projectSerializer = std::make_shared<ProjectSerializer>(_project);
 
         if(!newProject)
+        {
+            ComponentManager::clear();
             _projectSerializer->deserialize();// Deserialize already created project file
+        }
         else
-            _projectSerializer->serialize();// Create new project file
+            _projectSerializer->serialize();// Create new project file (keep component system)
 
         // Watch project directory file changes
         _fileWatcher->addWatch(_project->getDirectory());
@@ -82,10 +85,7 @@ namespace atta
     void FileManager::closeProjectImpl(bool save)
     {
         if(save)
-        {
             saveProjectImpl();
-            ComponentManager::clear();
-        }
 
         if(_project)
             _fileWatcher->removeWatch(_project->getDirectory());
