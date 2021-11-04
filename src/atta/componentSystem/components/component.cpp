@@ -61,7 +61,7 @@ namespace atta
         else if constexpr(std::is_same_v<T, double>)
             format = "%.6lf";
 
-        ImGuiSliderFlags sliderFlags;
+        ImGuiSliderFlags sliderFlags = ImGuiSliderFlags_None;
 
         unsigned qty = size/sizeof(T);
         if(aDesc.min.has_value() && aDesc.max.has_value())

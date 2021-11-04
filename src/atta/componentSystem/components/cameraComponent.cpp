@@ -13,14 +13,14 @@ namespace atta
     {
         Component::Type("Camera"),
         {
-            { Component::AttributeType::UINT32, attributeOffset(&CameraComponent::width), "width" },
-            { Component::AttributeType::UINT32, attributeOffset(&CameraComponent::height), "height" },
-            { Component::AttributeType::FLOAT32, attributeOffset(&CameraComponent::fov), "fov", .min = 0.0f, .max = 120.0f },
-            { Component::AttributeType::FLOAT32, attributeOffset(&CameraComponent::far), "far", .min = 0.0f, .max = 10000.0f, .step = 0.5f  },
-            { Component::AttributeType::FLOAT32, attributeOffset(&CameraComponent::near), "near", .min = 0.0f, .max = 10000.0f, .step = 0.5f },
-            { Component::AttributeType::FLOAT32, attributeOffset(&CameraComponent::fps), "fps", .min = 0.0f, .max = 120.0f },
-            { Component::AttributeType::UINT32, attributeOffset(&CameraComponent::cameraType), "cameraType", .options = { "Fast", "Phong", "Pbr"} },
-            { Component::AttributeType::UINT32, attributeOffset(&CameraComponent::rendererType), "rendererType", .options = { "Orthographic", "Perspective" } }
+            { Component::AttributeType::UINT32,  attributeOffset(&CameraComponent::width), "width" },
+            { Component::AttributeType::UINT32,  attributeOffset(&CameraComponent::height), "height" },
+            { Component::AttributeType::FLOAT32, attributeOffset(&CameraComponent::fov), "fov", 0.0f, 120.0f },
+            { Component::AttributeType::FLOAT32, attributeOffset(&CameraComponent::far), "far", 0.0f, 10000.0f,  0.5f  },
+            { Component::AttributeType::FLOAT32, attributeOffset(&CameraComponent::near), "near", 0.0f, 10000.0f,  0.5f },
+            { Component::AttributeType::FLOAT32, attributeOffset(&CameraComponent::fps), "fps", 0.0f, 120.0f },
+            { Component::AttributeType::UINT32,  attributeOffset(&CameraComponent::cameraType), "cameraType", {}, {}, {}, { "Fast", "Phong", "Pbr"} },
+            { Component::AttributeType::UINT32,  attributeOffset(&CameraComponent::rendererType), "rendererType", {}, {}, {}, { "Orthographic", "Perspective" } }
         }
     };
 }

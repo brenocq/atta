@@ -13,10 +13,10 @@ namespace atta
     {
         Component::Type("Material"),
         {
-            { Component::AttributeType::VECTOR_FLOAT32, attributeOffset(&MaterialComponent::albedo), "albedo", .min=0.0f, .max=1.0f },
-            { Component::AttributeType::FLOAT32, attributeOffset(&MaterialComponent::metallic), "metallic", .min=0.0f, .max=1.0f },
-            { Component::AttributeType::FLOAT32, attributeOffset(&MaterialComponent::roughness), "roughness", .min=0.0f, .max=1.0f },
-            { Component::AttributeType::FLOAT32, attributeOffset(&MaterialComponent::ao), "ao", .min=0.0f, .max=1.0f },
+            { Component::AttributeType::VECTOR_FLOAT32, attributeOffset(&MaterialComponent::albedo), "albedo", 0.0f, 1.0f },
+            { Component::AttributeType::FLOAT32, attributeOffset(&MaterialComponent::metallic), "metallic", 0.0f, 1.0f },
+            { Component::AttributeType::FLOAT32, attributeOffset(&MaterialComponent::roughness), "roughness", 0.0f, 1.0f },
+            { Component::AttributeType::FLOAT32, attributeOffset(&MaterialComponent::ao), "ao", 0.0f, 1.0f },
             { Component::AttributeType::STRINGID, attributeOffset(&MaterialComponent::albedoTexture), "albedoTexture" },
             { Component::AttributeType::STRINGID, attributeOffset(&MaterialComponent::metallicTexture), "metallicTexture" },
             { Component::AttributeType::STRINGID, attributeOffset(&MaterialComponent::roughnessTexture), "roughnessTexture" },

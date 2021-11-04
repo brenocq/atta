@@ -8,6 +8,7 @@
 #define ATTA_PRE_COMPILED_HEADER_H
 
 #include <vector>
+#include <array>
 #include <string>
 #include <memory>
 #include <functional>

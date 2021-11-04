@@ -14,13 +14,13 @@ namespace atta
         Component::Type("Script"),
         {
             { 
-                .type = Component::AttributeType::STRINGID, 
-                .offset = attributeOffset(&ScriptComponent::sid), 
-                .name = "sid", 
-                .min = {},
-                .max = {},
-                .step = {},
-                .options = { "test" }
+                Component::AttributeType::STRINGID, 
+                attributeOffset(&ScriptComponent::sid), 
+                "sid", 
+                {},
+                {},
+                {},
+                { "test" }
             },
         }
     };
