@@ -306,6 +306,7 @@ namespace atta
         size_t nrows, ncols;
         std::vector<vector<T>> rows;
 
+        constexpr matrix(): nrows(0), ncols(0) {}
         matrix(size_t _nrows, size_t _ncols);
         matrix(size_t _nrows, size_t _ncols, T val);
         template <typename U>

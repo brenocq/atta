@@ -94,14 +94,17 @@ namespace atta
     }
 
     template <typename T>
-    void ComponentManager::registerComponentPoolImpl(size_t maxCount, const char* name)
+    void ComponentManager::registerComponentPoolImpl(size_t maxCount)
     {
+        _registeredComponents.push_back(std::static_pointer_cast<Component>(std::make_shared<T>()));
+        std::string name = _registeredComponents.back()->getTypeDescription().type.getString();
+
         // TODO better pool allocator allocation from another one (now need to know that implementation to implement it correctly)
         // Should not need to calculate this size
         size_t size = sizeof(void*) > sizeof(T) ? sizeof(void*) : sizeof(T);
 
         uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(maxCount*size, size));
-        DASSERT(componentMemory != nullptr, std::string("Could not allocate component system memory for ") + std::string(name));
+        DASSERT(componentMemory != nullptr, "Could not allocate component system memory for " + name);
         LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB -> memory space:($3 $4)", 
                 name, typeid(T).name(), maxCount*sizeof(T)/(1024*1024.0f), (void*)(componentMemory), (void*)(componentMemory+maxCount*sizeof(T)));
 
@@ -109,7 +112,7 @@ namespace atta
         MemoryManager::registerAllocator(COMPONENT_POOL_SSID(T), static_cast<Allocator*>(new PoolAllocator<T>(componentMemory, maxCount)));
 
         // Register component name and id
-        _componentNames[typeid(T).hash_code()] = std::string(name);
+        _componentNames[typeid(T).hash_code()] = name;
         _componentIds[typeid(T).hash_code()] = COMPONENT_POOL_SID(T);
         _componentSize[typeid(T).hash_code()] = sizeof(T);
     }

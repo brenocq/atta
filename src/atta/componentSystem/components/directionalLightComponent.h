@@ -6,14 +6,17 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_DIRECTIONAL_LIGHT_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_DIRECTIONAL_LIGHT_COMPONENT_H
+#include <atta/componentSystem/components/component.h>
 #include <atta/core/math/math.h>
 
 namespace atta
 {
-    struct DirectionalLightComponent
+    struct DirectionalLightComponent final : public TypedComponent<DirectionalLightComponent>
     {
-        vec3 intensity = vec3(1.0f, 1.0f, 1.0f);
+        vec3f intensity = vec3f(1.0f, 1.0f, 1.0f);
     };
+
+    template<> const Component::TypeDescription TypedComponent<DirectionalLightComponent>::typeDescription;
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_DIRECTIONAL_LIGHT_COMPONENT_H

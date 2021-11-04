@@ -6,21 +6,21 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H
-#include <atta/core/stringId.h>
+#include <atta/componentSystem/components/component.h>
 #include <atta/graphicsSystem/renderers/renderer.h>
 #include <atta/graphicsSystem/cameras/camera.h>
 
 namespace atta
 {
-    struct CameraComponent
+    struct CameraComponent final : public TypedComponent<CameraComponent>
     {
-        enum class CameraType : uint8_t
+        enum class CameraType : uint32_t
         {
             ORTHOGRAPHIC = 0,
             PERSPECTIVE
         };
 
-        enum class RendererType : uint8_t
+        enum class RendererType : uint32_t
         {
             FAST = 0,
             PHONG,
@@ -38,6 +38,8 @@ namespace atta
         CameraType cameraType = CameraType::PERSPECTIVE;
         RendererType rendererType = RendererType::PHONG;
     };
+
+    template<> const Component::TypeDescription TypedComponent<CameraComponent>::typeDescription;
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H

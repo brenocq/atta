@@ -6,14 +6,16 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H
-#include <atta/core/stringId.h>
+#include <atta/componentSystem/components/component.h>
 
 namespace atta
 {
-    struct ScriptComponent
+    struct ScriptComponent final : public TypedComponent<ScriptComponent>
     {
         StringId sid;
     };
+
+    template<> const Component::TypeDescription TypedComponent<ScriptComponent>::typeDescription;
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H

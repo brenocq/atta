@@ -11,6 +11,7 @@
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/componentSystem/base.h>
+#include <atta/componentSystem/components/component.h>
 #include <atta/componentSystem/factory.h>
 
 namespace atta
@@ -46,7 +47,7 @@ namespace atta
         static std::vector<Factory>& getFactories() { return getInstance().getFactoriesImpl(); }
 
         template <typename T>
-        static void registerComponentPool(size_t maxCount, const char* name) { return getInstance().registerComponentPoolImpl<T>(maxCount, name); }
+        static void registerComponentPool(size_t maxCount) { return getInstance().registerComponentPoolImpl<T>(maxCount); }
 
         static void clear() { getInstance().clearImpl(); }
 
@@ -77,7 +78,7 @@ namespace atta
 
         // Used to register internal components and custom components
         template <typename T>
-        void registerComponentPoolImpl(size_t maxCount, const char* name);
+        void registerComponentPoolImpl(size_t maxCount);
         // Unregister to free memory that was allocated for all custom components
         void unregisterCustomComponentPoolsImpl();
 
@@ -95,6 +96,7 @@ namespace atta
         std::unordered_map<size_t, std::string> _componentNames;// Name of each registered component
         std::unordered_map<size_t, ComponentId> _componentIds;// id of each registered component
         std::unordered_map<size_t, uint32_t> _componentSize;// sizeof(T) of each registered component
+        std::vector<std::shared_ptr<Component>> _registeredComponents;
 
         //----- Factory Management -----//
         void onSimulationStateChange(Event& event);
