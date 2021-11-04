@@ -39,7 +39,21 @@ namespace atta
         RendererType rendererType = RendererType::PHONG;
     };
 
-    template<> const Component::TypeDescription TypedComponent<CameraComponent>::typeDescription;
+    template<>
+    inline const Component::TypeDescription TypedComponent<CameraComponent>::typeDescription = 
+    {
+        "Camera",
+        {
+            { Component::AttributeType::UINT32,  offsetof(CameraComponent, width), "width" },
+            { Component::AttributeType::UINT32,  offsetof(CameraComponent, height), "height" },
+            { Component::AttributeType::FLOAT32, offsetof(CameraComponent, fov), "fov", 0.0f, 120.0f },
+            { Component::AttributeType::FLOAT32, offsetof(CameraComponent, far), "far", 0.0f, 10000.0f,  0.5f  },
+            { Component::AttributeType::FLOAT32, offsetof(CameraComponent, near), "near", 0.0f, 10000.0f,  0.5f },
+            { Component::AttributeType::FLOAT32, offsetof(CameraComponent, fps), "fps", 0.0f, 120.0f },
+            { Component::AttributeType::UINT32,  offsetof(CameraComponent, cameraType), "cameraType", {}, {}, {}, { "Fast", "Phong", "Pbr"} },
+            { Component::AttributeType::UINT32,  offsetof(CameraComponent, rendererType), "rendererType", {}, {}, {}, { "Orthographic", "Perspective" } }
+        }
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H

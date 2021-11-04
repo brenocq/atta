@@ -15,7 +15,14 @@ namespace atta
         uint64_t maxClones;
     };
 
-    template<> const Component::TypeDescription TypedComponent<PrototypeComponent>::typeDescription;
+    template<>
+    inline const Component::TypeDescription TypedComponent<PrototypeComponent>::typeDescription = 
+    {
+        "Prototype",
+        {
+            { Component::AttributeType::UINT64, offsetof(PrototypeComponent, maxClones), "maxClones", uint64_t(1), uint64_t(1000000) }
+        }
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H

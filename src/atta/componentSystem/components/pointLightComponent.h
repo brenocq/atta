@@ -16,7 +16,14 @@ namespace atta
         vec3f intensity = vec3(1.0f, 1.0f, 1.0f);
     };
 
-    template<> const Component::TypeDescription TypedComponent<PointLightComponent>::typeDescription;
+    template<>
+    inline const Component::TypeDescription TypedComponent<PointLightComponent>::typeDescription = 
+    {
+        "Point Light",
+        {
+            { Component::AttributeType::VECTOR_FLOAT32, offsetof(PointLightComponent, intensity), "intensity", 0.0f, 10.0f }
+        }
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_POINT_LIGHT_COMPONENT_H

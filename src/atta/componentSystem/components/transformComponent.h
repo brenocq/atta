@@ -18,7 +18,16 @@ namespace atta
         vec3f scale = vec3(1,1,1);
     };
 
-    template<> const Component::TypeDescription TypedComponent<TransformComponent>::typeDescription;
+    template<>
+    inline const Component::TypeDescription TypedComponent<TransformComponent>::typeDescription = 
+    {
+        "Transform",
+        {
+            { Component::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, position),    "position", -1000.0f, 1000.0f, 0.05f },
+            { Component::AttributeType::QUAT,           offsetof(TransformComponent, orientation), "orientation", -360.0f, 360.0f, 0.5f },
+            { Component::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, scale),       "scale", 0.0f, 1000.0f, 0.05f }
+        }
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_TRANSFORM_COMPONENT_H

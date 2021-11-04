@@ -15,7 +15,14 @@ namespace atta
         StringId sid;
     };
 
-    template<> const Component::TypeDescription TypedComponent<MeshComponent>::typeDescription;
+    template<>
+    inline const Component::TypeDescription TypedComponent<MeshComponent>::typeDescription = 
+    {
+        "Mesh",
+        {
+            { Component::AttributeType::STRINGID, offsetof(MeshComponent, sid), "sid", {}, {}, {}, { "test" } },
+        }
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H
