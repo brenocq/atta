@@ -13,7 +13,7 @@ namespace atta
     {
         Component::Type("Prototype"),
         {
-            { Component::AttributeType::UINT64, attributeOffset(&PrototypeComponent::maxClones), "maxClones", .min = uint64_t(1), .max = uint64_t(1000000) }
+            { Component::AttributeType::UINT64, attributeOffset(&PrototypeComponent::maxClones), "maxClones", uint64_t(1), uint64_t(1000000) }
         }
     };
 }

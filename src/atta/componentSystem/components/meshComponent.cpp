@@ -14,13 +14,13 @@ namespace atta
         Component::Type("Mesh"),
         {
             { 
-                .type = Component::AttributeType::STRINGID, 
-                .offset = attributeOffset(&MeshComponent::sid), 
-                .name = "sid", 
-                .min = {},
-                .max = {},
-                .step = {},
-                .options = { "test" }
+                Component::AttributeType::STRINGID, 
+                attributeOffset(&MeshComponent::sid), 
+                "sid", 
+                {},
+                {},
+                {},
+                { "test" }
             },
         }
     };

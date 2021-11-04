@@ -13,7 +13,7 @@ namespace atta
     {
         Component::Type("Point Light"),
         {
-            { Component::AttributeType::VECTOR_FLOAT32, attributeOffset(&PointLightComponent::intensity), "intensity", .min = 0.0f, .max = 10.0f }
+            { Component::AttributeType::VECTOR_FLOAT32, attributeOffset(&PointLightComponent::intensity), "intensity", 0.0f, 10.0f }
         }
     };
 }
