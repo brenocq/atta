@@ -97,7 +97,7 @@ namespace atta
     void ComponentManager::registerComponentPoolImpl(size_t maxCount)
     {
         _registeredComponents.push_back(std::static_pointer_cast<Component>(std::make_shared<T>()));
-        std::string name = _registeredComponents.back()->getTypeDescription().type.getString();
+        std::string name = _registeredComponents.back()->getTypeDescription().type;
 
         // TODO better pool allocator allocation from another one (now need to know that implementation to implement it correctly)
         // Should not need to calculate this size

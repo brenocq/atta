@@ -16,7 +16,14 @@ namespace atta
         char name[32];
     };
 
-    template<> const Component::TypeDescription TypedComponent<NameComponent>::typeDescription;
+    template<>
+    inline const Component::TypeDescription TypedComponent<NameComponent>::typeDescription = 
+    {
+        "Name",
+        {
+            { Component::AttributeType::CHAR, offsetof(NameComponent, name), "name" }
+        }
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_NAME_COMPONENT_H

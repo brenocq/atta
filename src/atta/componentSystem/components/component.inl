@@ -24,15 +24,6 @@ namespace atta
     ATTA_COMPONENT_RENDER_UI_ATTRIBUTE(QUAT);
     ATTA_COMPONENT_RENDER_UI_ATTRIBUTE(STRINGID);
 
-    template<typename T>
-    const Component::TypeDescription TypedComponent<T>::typeDescription = 
-    {
-        Component::Type(typeid(T).name()),
-        {
-            { Component::AttributeType::CUSTOM, 0, "custom" },
-        }
-    };
-
 #define ATTA_TYPED_COMPONENT_RENDER_UI_CASE(ComponentType) \
                 case AttributeType::ComponentType:\
                 case AttributeType::VECTOR_##ComponentType:\
@@ -61,7 +52,7 @@ namespace atta
 
             //LOG_DEBUG("TypedComponent", "  - Attribute [w]$2[] has offset $0 and size $1", aDesc.offset, size, aDesc.name);
 
-            const std::string imguiId = "##"+typeDescription.type.getString();
+            const std::string imguiId = "##"+typeDescription.type;
             switch(aDesc.type)
             {
                 case AttributeType::CHAR:

@@ -24,7 +24,22 @@ namespace atta
         StringId normalTexture = StringId("Empty texture");
     };
 
-    template<> const Component::TypeDescription TypedComponent<MaterialComponent>::typeDescription;
+    template<>
+    inline const Component::TypeDescription TypedComponent<MaterialComponent>::typeDescription = 
+    {
+        "Material",
+        {
+            { Component::AttributeType::VECTOR_FLOAT32, offsetof(MaterialComponent, albedo), "albedo", 0.0f, 1.0f },
+            { Component::AttributeType::FLOAT32, offsetof(MaterialComponent, metallic), "metallic", 0.0f, 1.0f },
+            { Component::AttributeType::FLOAT32, offsetof(MaterialComponent, roughness), "roughness", 0.0f, 1.0f },
+            { Component::AttributeType::FLOAT32, offsetof(MaterialComponent, ao), "ao", 0.0f, 1.0f },
+            { Component::AttributeType::STRINGID, offsetof(MaterialComponent, albedoTexture), "albedoTexture" },
+            { Component::AttributeType::STRINGID, offsetof(MaterialComponent, metallicTexture), "metallicTexture" },
+            { Component::AttributeType::STRINGID, offsetof(MaterialComponent, roughnessTexture), "roughnessTexture" },
+            { Component::AttributeType::STRINGID, offsetof(MaterialComponent, aoTexture), "aoTexture" },
+            { Component::AttributeType::STRINGID, offsetof(MaterialComponent, normalTexture), "normalTexture" }
+        }
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_MATERIAL_COMPONENT_H

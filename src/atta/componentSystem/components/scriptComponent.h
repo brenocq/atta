@@ -15,7 +15,22 @@ namespace atta
         StringId sid;
     };
 
-    template<> const Component::TypeDescription TypedComponent<ScriptComponent>::typeDescription;
+    template<>
+    inline const Component::TypeDescription TypedComponent<ScriptComponent>::typeDescription = 
+    {
+        "Script",
+        {
+            { 
+                Component::AttributeType::STRINGID, 
+                offsetof(ScriptComponent, sid), 
+                "sid", 
+                {},
+                {},
+                {},
+                { "test" }
+            },
+        }
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H

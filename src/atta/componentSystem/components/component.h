@@ -80,7 +80,7 @@ namespace atta
         
         struct TypeDescription
         {
-            Type type;
+            std::string type;
             std::vector<AttributeDescription> attributeDescriptions;
         };
 
@@ -107,18 +107,28 @@ namespace atta
         static const Component::TypeDescription typeDescription;
     };
 
+    template<typename T>
+    inline const Component::TypeDescription TypedComponent<T>::typeDescription = 
+    {
+        typeid(T).name(),
+        {
+            { Component::AttributeType::CUSTOM, 0, "custom" },
+        }
+    };
+
     //---------- Attribute helpers ----------//
     inline std::ostream& operator<<(std::ostream& os, const Component& c)
     {
-        return os << c.getTypeDescription().type.getString();
+        return os << c.getTypeDescription().type;
     }
 
     // Could be resolved at compile time if used constexpr constructor, may use it in the future
     template <typename T1, typename T2>
     inline unsigned attributeOffset(T1 T2::*member)
     {
-        T2 object {};
-        return static_cast<unsigned>(size_t(&(object.*member)) - size_t(&object));
+        return offsetof(T2, member);
+        //T2 object {};
+        //return static_cast<unsigned>(size_t(&(object.*member)) - size_t(&object));
     }
 }
 

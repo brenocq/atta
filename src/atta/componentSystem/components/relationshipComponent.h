@@ -17,7 +17,15 @@ namespace atta
         std::vector<EntityId> children;
     };
 
-    template<> const Component::TypeDescription TypedComponent<RelationshipComponent>::typeDescription;
+    template<>
+    inline const Component::TypeDescription TypedComponent<RelationshipComponent>::typeDescription = 
+    {
+        "Relationship",
+        {
+            { Component::AttributeType::UINT32, offsetof(RelationshipComponent, parent), "parent" },
+            { Component::AttributeType::CUSTOM, offsetof(RelationshipComponent, children), "children" }
+        }
+    };
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_RELATIONSHIP_COMPONENT_H
