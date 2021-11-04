@@ -6,14 +6,16 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H
-#include <atta/core/stringId.h>
+#include <atta/componentSystem/components/component.h>
 
 namespace atta
 {
-    struct MeshComponent
+    struct MeshComponent final : public TypedComponent<MeshComponent>
     {
         StringId sid;
     };
+
+    template<> const Component::TypeDescription TypedComponent<MeshComponent>::typeDescription;
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H

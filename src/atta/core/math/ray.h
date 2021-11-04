@@ -38,7 +38,7 @@ namespace atta
         pnt3 rxOrigin, ryOrigin;
         vec3 rxDirection, ryDirection;
 
-        rayDifferential() { hasDifferentials = false; };
+        rayDifferential(): hasDifferentials(false) { }
         rayDifferential(pnt3 &o, vec3 &d, float tMax=infinity, float time=0.0f): 
             ray(o, d, tMax, time)
         {

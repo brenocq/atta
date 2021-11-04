@@ -94,16 +94,16 @@ namespace atta
     void ComponentManager::createComponentPools()
     {
         //----- Register default component pools -----//
-        registerComponentPoolImpl<TransformComponent>(_maxEntities, "Transform");
-        registerComponentPoolImpl<NameComponent>(_maxEntities, "Name");
-        registerComponentPoolImpl<MeshComponent>(_maxEntities, "Mesh");
-        registerComponentPoolImpl<MaterialComponent>(_maxEntities, "Material");
-        registerComponentPoolImpl<ScriptComponent>(_maxEntities, "Script");
-        registerComponentPoolImpl<RelationshipComponent>(_maxEntities, "Relationship");
-        registerComponentPoolImpl<PrototypeComponent>(_maxEntities, "Prototype");
-        registerComponentPoolImpl<PointLightComponent>(_maxEntities, "Point Light");
-        registerComponentPoolImpl<DirectionalLightComponent>(_maxEntities, "Directional Light");
-        registerComponentPoolImpl<CameraComponent>(_maxEntities, "Camera");
+        registerComponentPoolImpl<TransformComponent>(_maxEntities);
+        registerComponentPoolImpl<NameComponent>(_maxEntities);
+        registerComponentPoolImpl<MeshComponent>(_maxEntities);
+        registerComponentPoolImpl<MaterialComponent>(_maxEntities);
+        registerComponentPoolImpl<ScriptComponent>(_maxEntities);
+        registerComponentPoolImpl<RelationshipComponent>(_maxEntities);
+        registerComponentPoolImpl<PrototypeComponent>(_maxEntities);
+        registerComponentPoolImpl<PointLightComponent>(_maxEntities);
+        registerComponentPoolImpl<DirectionalLightComponent>(_maxEntities);
+        registerComponentPoolImpl<CameraComponent>(_maxEntities);
 
         // Can be used to free all custom component allocators (useful when hot-reloading a project)
         _customComponentsMarker = _allocator->getMarker();

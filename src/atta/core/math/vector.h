@@ -419,6 +419,7 @@ namespace atta
     //----------------------------------------//
     //---------------- Vector ----------------//
     //----------------------------------------//
+    // TODO implement with array (vector2, vector3, vector4 can be a template specialization)
     template <typename T>
     class vector
     {
@@ -496,16 +497,19 @@ namespace atta
     using vec2f = vector2<float>;
     using vec2d = vector2<double>;
     using vec2i = vector2<int>;
+    using vec2u = vector2<int>;
 
     using vec3 = vector3<float>;
     using vec3f = vector3<float>;
     using vec3d = vector3<double>;
     using vec3i = vector3<int>;
+    using vec3u = vector3<unsigned>;
 
     using vec4 = vector4<float>;
     using vec4f = vector4<float>;
     using vec4d = vector4<double>;
     using vec4i = vector4<int>;
+    using vec4u = vector4<unsigned>;
 
     using vec = vector<float>;
     using vecf = vector<float>;

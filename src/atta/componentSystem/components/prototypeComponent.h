@@ -6,14 +6,16 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H
-#include <atta/core/stringId.h>
+#include <atta/componentSystem/components/component.h>
 
 namespace atta
 {
-    struct PrototypeComponent
+    struct PrototypeComponent final : public TypedComponent<PrototypeComponent>
     {
         uint64_t maxClones;
     };
+
+    template<> const Component::TypeDescription TypedComponent<PrototypeComponent>::typeDescription;
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H
