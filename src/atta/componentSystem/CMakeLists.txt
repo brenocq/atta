@@ -4,7 +4,7 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     entity.cpp
     factory.cpp
     componentManager.cpp
-    components/component.cpp
+    componentRegistry.cpp
 )
 
 add_library(atta_component_system STATIC

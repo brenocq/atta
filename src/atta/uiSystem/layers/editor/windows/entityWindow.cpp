@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/uiSystem/layers/editor/windows/entityWindow.h>
 #include <atta/componentSystem/components/components.h>
+#include <atta/componentSystem/componentRegistry.h>
 #include <atta/scriptSystem/scriptManager.h>
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
@@ -197,191 +198,17 @@ namespace atta::ui
             ImGui::EndPopup();
         }
 
-        NameComponent* name = ComponentManager::getEntityComponent<NameComponent>(_selected);
-        if(name != nullptr)
-            if(ImGui::CollapsingHeader("Name##ComponentsNameHeader", ImGuiTreeNodeFlags_None))
-                name->renderUI();
-
-        TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(_selected);
-        if(transform != nullptr)
-            if(ImGui::CollapsingHeader("Transform##ComponentsTransformHeader", ImGuiTreeNodeFlags_None))
-                transform->renderUI();
-
-        MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(_selected);
-        if(mesh != nullptr)
-            if(ImGui::CollapsingHeader("Mesh##ComponentsMeshHeader", ImGuiTreeNodeFlags_None))
-                mesh->renderUI();
-
-        MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(_selected);
-        if(material != nullptr)
-            if(ImGui::CollapsingHeader("Material##ComponentsMaterialHeader", ImGuiTreeNodeFlags_None))
-                material->renderUI();
-            //{
-            //    static bool albedoIsTexture = false;
-            //    static bool metallicIsTexture = false;
-            //    static bool roughnessIsTexture = false;
-            //    static bool aoIsTexture = false;
-            //    static bool normalIsTexture = false;
-
-            //    //albedoIsTexture = material->albedo.x == -1.0f;
-            //    //metallicIsTexture = material->metallic == -1.0f;
-            //    //roughnessIsTexture = material->roughness == -1.0f;
-            //    //aoIsTexture = material->ao == -1.0f;
-
-            //    albedoIsTexture = material->albedoTexture.getId() != SID("Empty texture");
-            //    metallicIsTexture = material->metallicTexture.getId() != SID("Empty texture");
-            //    roughnessIsTexture = material->roughnessTexture.getId() != SID("Empty texture");
-            //    aoIsTexture = material->aoTexture.getId() != SID("Empty texture");
-
-            //    float min = 0.0f;
-            //    float max = 1.0f;
-            //    {
-            //        ImGui::Text("Albedo");
-            //        ImGui::SameLine();
-            //        ImGui::Checkbox("Is texture##isTexAlbedo", &albedoIsTexture);
-            //        if(!albedoIsTexture)
-            //        {
-            //            if(material->albedoTexture.getId() != SID("Empty texture") || material->albedo.x == -1)
-            //            {
-            //                material->albedoTexture = StringId("Empty texture");
-            //                material->albedo.x = 1.0f;
-            //                material->albedo.y = 0.0f;
-            //                material->albedo.z = 1.0f;
-            //            }
-
-            //            ImGui::SliderScalar("R##SceneMaterialR", ImGuiDataType_Float, &material->albedo.x, &min, &max, "%.6f");
-            //            ImGui::SliderScalar("G##SceneMaterialG", ImGuiDataType_Float, &material->albedo.y, &min, &max, "%.6f");
-            //            ImGui::SliderScalar("B##SceneMaterialB", ImGuiDataType_Float, &material->albedo.z, &min, &max, "%.6f");
-            //        }
-            //        else
-            //            textureCombo("albedoTextureCombo", material->albedoTexture);
-            //    }
-            //    {
-            //        ImGui::Text("Metallic");
-            //        ImGui::SameLine();
-            //        ImGui::Checkbox("Is texture##isTexMetallic", &metallicIsTexture);
-            //        if(!metallicIsTexture)
-            //        {
-            //            if(material->metallicTexture.getId() != SID("Empty texture") || material->metallic == -1)
-            //            {
-            //                material->metallicTexture = StringId("Empty texture");
-            //                material->metallic = 0.0f;
-            //            }
-
-            //            ImGui::SliderScalar("##SceneMaterialMetallic", ImGuiDataType_Float, &material->metallic, &min, &max, "%.6f");
-            //        }
-            //        else
-            //            textureCombo("metallicTextureCombo", material->metallicTexture);
-            //    }
-            //    {
-            //        ImGui::Text("Roughness");
-            //        ImGui::SameLine();
-            //        ImGui::Checkbox("Is texture##isTexRoughness", &roughnessIsTexture);
-            //        if(!roughnessIsTexture)
-            //        {
-            //            if(material->roughnessTexture.getId() != SID("Empty texture") || material->roughness == -1)
-            //            {
-            //                material->roughnessTexture = StringId("Empty texture");
-            //                material->roughness = 0.0f;
-            //            }
-
-            //            ImGui::SliderScalar("##SceneMaterialRoughness", ImGuiDataType_Float, &material->roughness, &min, &max, "%.6f");
-            //        }
-            //        else
-            //            textureCombo("roughnessTextureCombo", material->roughnessTexture);
-            //    }
-            //    {
-            //        ImGui::Text("AO");
-            //        ImGui::SameLine();
-            //        ImGui::Checkbox("Is texture##isTexAO", &aoIsTexture);
-            //        if(!aoIsTexture)
-            //        {
-            //            if(material->aoTexture.getId() != SID("Empty texture") || material->ao == -1)
-            //            {
-            //                material->aoTexture = StringId("Empty texture");
-            //                material->ao = 1.0f;
-            //            }
-
-            //            ImGui::SliderScalar("##SceneMaterialAO", ImGuiDataType_Float, &material->ao, &min, &max, "%.6f");
-            //        }
-            //        else
-            //            textureCombo("aoTextureCombo", material->aoTexture);
-            //    }
-            //    {
-            //        ImGui::Text("Normal");
-            //        ImGui::SameLine();
-            //        ImGui::Checkbox("Is texture##isTexNormal", &normalIsTexture);
-            //    }
-            //}
-
-        PointLightComponent* pointLight = ComponentManager::getEntityComponent<PointLightComponent>(_selected);
-        if(pointLight != nullptr)
-            if(ImGui::CollapsingHeader("PointLight##ComponentsMaterialHeader", ImGuiTreeNodeFlags_None))
-                pointLight->renderUI();
-
-        DirectionalLightComponent* directionalLight = ComponentManager::getEntityComponent<DirectionalLightComponent>(_selected);
-        if(directionalLight != nullptr)
-            directionalLight->renderUI();
-
-        ScriptComponent* script = ComponentManager::getEntityComponent<ScriptComponent>(_selected);
-        if(script != nullptr)
-            if(ImGui::CollapsingHeader("Script##ComponentsScriptHeader", ImGuiTreeNodeFlags_None))
-                script->renderUI();
-
-        PrototypeComponent* prototype = ComponentManager::getEntityComponent<PrototypeComponent>(_selected);
-        if(prototype != nullptr)
-            if(ImGui::CollapsingHeader("Prototype##ComponentsPrototypeHeader", ImGuiTreeNodeFlags_None))
-                prototype->renderUI();
-
-        CameraComponent* camera = ComponentManager::getEntityComponent<CameraComponent>(_selected);
-        if(camera != nullptr)
-            if(ImGui::CollapsingHeader("Camera##ComponentsCameraHeader", ImGuiTreeNodeFlags_None))
-                camera->renderUI();
-            //{
-            //    if(ImGui::Button("View"))
-            //        _cameraWindows.insert(_selected);
-
-            //    std::vector<const char*> cameraTypes = {"Orthographic", "Perspective"};
-            //    uint8_t comboCamValue = (uint8_t)camera->cameraType;
-            //    if(ImGui::BeginCombo("Camera", cameraTypes[comboCamValue]))
-            //    {
-            //        for(size_t i = 0; i < cameraTypes.size(); i++)
-            //        {
-            //            if(ImGui::Selectable(cameraTypes[i], comboCamValue == i))
-            //                camera->cameraType = (CameraComponent::CameraType)i;
-            //            if(comboCamValue == i)
-            //                ImGui::SetItemDefaultFocus();
-            //        }
-            //        ImGui::EndCombo();
-            //    }
-
-            //    std::vector<const char*> rendererTypes = {"Fast", "Phong", "PBR"};
-            //    uint8_t comboRenderValue = (uint8_t)camera->rendererType;
-            //    if(ImGui::BeginCombo("Renderer", rendererTypes[comboRenderValue]))
-            //    {
-            //        for(size_t i = 0; i < rendererTypes.size(); i++)
-            //        {
-            //            if(ImGui::Selectable(rendererTypes[i], comboRenderValue == i))
-            //                camera->rendererType = (CameraComponent::RendererType)i;
-            //            if(comboRenderValue == i)
-            //                ImGui::SetItemDefaultFocus();
-            //        }
-            //        ImGui::EndCombo();
-            //    }
-
-            //    int width = camera->width;
-            //    ImGui::DragInt("Width##SceneCameraWidth", &width, 1, 0, 10000, "%d", ImGuiSliderFlags_AlwaysClamp);
-            //    camera->width = (uint32_t)width;
-
-            //    int height = camera->height;
-            //    ImGui::DragInt("Height##SceneCameraHeight", &height, 1, 0, 10000, "%d", ImGuiSliderFlags_AlwaysClamp);
-            //    camera->height = (uint32_t)height;
-
-            //    ImGui::DragFloat("FoV##SceneCameraFoV", &camera->fov, 0.5f, 0.0f, 180.0f, "%.3f", ImGuiSliderFlags_None);
-            //    ImGui::DragFloat("Near##SceneCameraNear", &camera->near, 0.5f, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_None);
-            //    ImGui::DragFloat("Far##SceneCameraFar", &camera->far, 0.5f, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_None);
-            //    ImGui::DragFloat("FPS##SceneCameraFPS", &camera->fps, 0.5f, 0.0f, 120.0f, "%.3f", ImGuiSliderFlags_None);
-            //}
+        // Render options to edit each component
+        for(auto compReg : ComponentManager::getComponentRegistries())
+        {
+            void* component = ComponentManager::getEntityComponentById(compReg->getId(), _selected);
+            if(component != nullptr)
+            {
+                std::string name = compReg->getDescription().type;
+                if(ImGui::CollapsingHeader((name+"##Components"+name+"Header").c_str(), ImGuiTreeNodeFlags_None))
+                    compReg->renderUI((Component*)component);
+            }
+        }
     }
 
     bool EntityWindow::getSelected(EntityId& eid)

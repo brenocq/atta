@@ -67,6 +67,7 @@ else()#----- Unknown build
 endif()
 
 ########## Options ##########
+##### Debug #####
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     if(MSVC)
         #list(APPEND ATTA_OPTIONS /W4 /WX)
@@ -85,6 +86,8 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
         #list(APPEND ATTA_OPTIONS -Wl,--export-dynamic)
     endif()
 endif()
+
+##### Releaese #####
 if(CMAKE_BUILD_TYPE MATCHES Release)
     if(MSVC)
         list(APPEND ATTA_OPTIONS /O2)
@@ -92,10 +95,15 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
         list(APPEND ATTA_OPTIONS -O3)
     endif()
 endif()
-# ImGui warnings
-list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn -Wno-format-security)
-# Useful to ignore
-list(APPEND ATTA_OPTIONS -Wno-missing-field-initializers -Wno-invalid-offsetof -Wno-char-subscripts)
+
+##### Default #####
+if(MSVC)
+else()
+    # ImGui warnings
+    list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn -Wno-format-security)
+    # Useful to ignore
+    list(APPEND ATTA_OPTIONS -Wno-missing-field-initializers -Wno-invalid-offsetof -Wno-char-subscripts)
+endif()
 
 ########## Output Directories ##########
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)

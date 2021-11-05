@@ -7,12 +7,13 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
+#include <atta/componentSystem/componentRegistry.h>
 #include <atta/graphicsSystem/renderers/renderer.h>
 #include <atta/graphicsSystem/cameras/camera.h>
 
 namespace atta
 {
-    struct CameraComponent final : public TypedComponent<CameraComponent>
+    struct CameraComponent : public Component
     {
         enum class CameraType : uint32_t
         {
@@ -38,22 +39,22 @@ namespace atta
         CameraType cameraType = CameraType::PERSPECTIVE;
         RendererType rendererType = RendererType::PHONG;
     };
+    ATTA_REGISTER_COMPONENT(CameraComponent);
 
     template<>
-    inline const Component::TypeDescription TypedComponent<CameraComponent>::typeDescription = 
+    inline const ComponentRegistry::Description TypedComponentRegistry<CameraComponent>::description = 
     {
         "Camera",
         {
-            { Component::AttributeType::UINT32,  offsetof(CameraComponent, width), "width" },
-            { Component::AttributeType::UINT32,  offsetof(CameraComponent, height), "height" },
-            { Component::AttributeType::FLOAT32, offsetof(CameraComponent, fov), "fov", 0.0f, 120.0f },
-            { Component::AttributeType::FLOAT32, offsetof(CameraComponent, far), "far", 0.0f, 10000.0f,  0.5f  },
-            { Component::AttributeType::FLOAT32, offsetof(CameraComponent, near), "near", 0.0f, 10000.0f,  0.5f },
-            { Component::AttributeType::FLOAT32, offsetof(CameraComponent, fps), "fps", 0.0f, 120.0f },
-            { Component::AttributeType::UINT32,  offsetof(CameraComponent, cameraType), "cameraType", {}, {}, {}, { "Fast", "Phong", "Pbr"} },
-            { Component::AttributeType::UINT32,  offsetof(CameraComponent, rendererType), "rendererType", {}, {}, {}, { "Orthographic", "Perspective" } }
+            { ComponentRegistry::AttributeType::UINT32,  offsetof(CameraComponent, width), "width" },
+            { ComponentRegistry::AttributeType::UINT32,  offsetof(CameraComponent, height), "height" },
+            { ComponentRegistry::AttributeType::FLOAT32, offsetof(CameraComponent, fov), "fov", 0.0f, 120.0f },
+            { ComponentRegistry::AttributeType::FLOAT32, offsetof(CameraComponent, far), "far", 0.0f, 10000.0f,  0.5f  },
+            { ComponentRegistry::AttributeType::FLOAT32, offsetof(CameraComponent, near), "near", 0.0f, 10000.0f,  0.5f },
+            { ComponentRegistry::AttributeType::FLOAT32, offsetof(CameraComponent, fps), "fps", 0.0f, 120.0f },
+            { ComponentRegistry::AttributeType::UINT32,  offsetof(CameraComponent, cameraType), "cameraType", {}, {}, {}, { "Fast", "Phong", "Pbr"} },
+            { ComponentRegistry::AttributeType::UINT32,  offsetof(CameraComponent, rendererType), "rendererType", {}, {}, {}, { "Orthographic", "Perspective" } }
         }
     };
 }
-
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H

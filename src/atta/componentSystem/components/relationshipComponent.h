@@ -7,23 +7,25 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_RELATIONSHIP_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_RELATIONSHIP_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
+#include <atta/componentSystem/componentRegistry.h>
 #include <atta/componentSystem/base.h>
 
 namespace atta
 {
-    struct RelationshipComponent final : public TypedComponent<RelationshipComponent>
+    struct RelationshipComponent final : public Component
     {
         EntityId parent;
         std::vector<EntityId> children;
     };
+    ATTA_REGISTER_COMPONENT(RelationshipComponent)
 
     template<>
-    inline const Component::TypeDescription TypedComponent<RelationshipComponent>::typeDescription = 
+    inline const ComponentRegistry::Description TypedComponentRegistry<RelationshipComponent>::description = 
     {
         "Relationship",
         {
-            { Component::AttributeType::UINT32, offsetof(RelationshipComponent, parent), "parent" },
-            { Component::AttributeType::CUSTOM, offsetof(RelationshipComponent, children), "children" }
+            { ComponentRegistry::AttributeType::UINT32, offsetof(RelationshipComponent, parent), "parent" },
+            { ComponentRegistry::AttributeType::CUSTOM, offsetof(RelationshipComponent, children), "children" }
         }
     };
 }

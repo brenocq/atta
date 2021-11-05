@@ -7,7 +7,7 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENT_MANAGER_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENT_MANAGER_H
 #include <atta/memorySystem/allocators/stackAllocator.h>
-#include <atta/memorySystem/allocators/poolAllocator.h>
+#include <atta/memorySystem/allocators/poolAllocatorT.h>
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/componentSystem/base.h>
@@ -18,7 +18,10 @@ namespace atta
 {
 #define COMPONENT_POOL_SID(T) SID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
 #define COMPONENT_POOL_SSID(T) SSID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
+#define COMPONENT_POOL_SID_BY_NAME(typeidTname) SID((std::string("Component_") + typeidTname + "Allocator").c_str())
+#define COMPONENT_POOL_SSID_BY_NAME(typeidTname) SSID((std::string("Component_") + typeidTname + "Allocator").c_str())
 
+    class ComponentRegistry;
     class ComponentManager final
     {
     public:
@@ -38,21 +41,22 @@ namespace atta
         static T* getEntityComponent(EntityId entity) { return getInstance().getEntityComponentImpl<T>(entity); }
         template <ComponentId id>
         static void* getEntityComponentById(EntityId entity) { return getInstance().getEntityComponentByIdImpl<id>(entity); }
+        static void* getEntityComponentById(ComponentId id, EntityId entity) { return getInstance().getEntityComponentByIdImpl(id, entity); }
 
         template <typename T>
         static std::string getComponentName() { return getInstance().getComponentNameImpl<T>(); }
         static std::vector<std::string> getComponentNames() { return getInstance().getComponentNamesImpl(); }
+        static std::vector<ComponentRegistry*> getComponentRegistries() { return getInstance().getComponentRegistriesImpl(); }
 
         static std::vector<EntityId> getEntities() { return getInstance().getEntitiesImpl(); }
         static std::vector<Factory>& getFactories() { return getInstance().getFactoriesImpl(); }
 
-        template <typename T>
-        static void registerComponentPool(size_t maxCount) { return getInstance().registerComponentPoolImpl<T>(maxCount); }
+        static void registerComponent(ComponentRegistry* componentRegistry) { return getInstance().registerComponentImpl(componentRegistry); }
 
         static void clear() { getInstance().clearImpl(); }
 
         // Return stack pointer to the point before custom components (free custom component allocators)
-        static void unregisterCustomComponentPools() { getInstance().unregisterCustomComponentPoolsImpl(); }
+        static void unregisterCustomComponents() { getInstance().unregisterCustomComponentsImpl(); }
 
     private:
         //----- Startup/ShutDown -----//
@@ -60,7 +64,6 @@ namespace atta
         void shutDownImpl();
         void clearImpl();
         void createEntityPool();
-        void createComponentPools();
 
         //----- Public Interface -----//
         EntityId createEntityImpl();
@@ -70,17 +73,21 @@ namespace atta
         T* getEntityComponentImpl(EntityId entity);
         template <ComponentId id>
         void* getEntityComponentByIdImpl(EntityId entity);
+        void* getEntityComponentByIdImpl(ComponentId id, EntityId entity);
         template <typename T>
         std::string getComponentNameImpl();
         std::vector<std::string> getComponentNamesImpl();
         std::vector<EntityId> getEntitiesImpl();
         std::vector<Factory>& getFactoriesImpl() { return _factories; }
+        std::vector<ComponentRegistry*> getComponentRegistriesImpl() { return _componentRegistries; }
+        PoolAllocator* getComponentAllocator(ComponentRegistry* compReg);
 
         // Used to register internal components and custom components
-        template <typename T>
-        void registerComponentPoolImpl(size_t maxCount);
+        void registerComponentImpl(ComponentRegistry* componentRegistry);
+        void createComponentPoolsFromRegistered();
+        void createComponentPool(ComponentRegistry* componentRegistry);
         // Unregister to free memory that was allocated for all custom components
-        void unregisterCustomComponentPoolsImpl();
+        void unregisterCustomComponentsImpl();
 
         //----- Memory management -----//
         struct Entity
@@ -89,6 +96,7 @@ namespace atta
         };
         StackAllocator* _allocator;// Used to allocate more memory to component pools
         StackAllocator::Marker _customComponentsMarker;// Marker to free custom components
+        size_t _numAttaComponents;// Used to remove custom components form componentRegistries
 
         size_t _maxEntities;// Maximum number of entities
         EntityId* _denseList;// Dense list of entities to find active entities inside the entity pool
@@ -96,7 +104,7 @@ namespace atta
         std::unordered_map<size_t, std::string> _componentNames;// Name of each registered component
         std::unordered_map<size_t, ComponentId> _componentIds;// id of each registered component
         std::unordered_map<size_t, uint32_t> _componentSize;// sizeof(T) of each registered component
-        std::vector<std::shared_ptr<Component>> _registeredComponents;
+        std::vector<ComponentRegistry*> _componentRegistries;
 
         //----- Factory Management -----//
         void onSimulationStateChange(Event& event);

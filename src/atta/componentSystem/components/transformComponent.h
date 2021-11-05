@@ -7,25 +7,27 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_TRANSFORM_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_TRANSFORM_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
+#include <atta/componentSystem/componentRegistry.h>
 #include <atta/core/math/math.h>
 
 namespace atta
 {
-    struct TransformComponent final : public TypedComponent<TransformComponent>
+    struct TransformComponent final : public Component
     {
         vec3f position = vec3();
         quat orientation = quat();
         vec3f scale = vec3(1,1,1);
     };
+    ATTA_REGISTER_COMPONENT(TransformComponent)
 
     template<>
-    inline const Component::TypeDescription TypedComponent<TransformComponent>::typeDescription = 
+    inline const ComponentRegistry::Description TypedComponentRegistry<TransformComponent>::description = 
     {
         "Transform",
         {
-            { Component::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, position),    "position", -1000.0f, 1000.0f, 0.05f },
-            { Component::AttributeType::QUAT,           offsetof(TransformComponent, orientation), "orientation", -360.0f, 360.0f, 0.5f },
-            { Component::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, scale),       "scale", 0.0f, 1000.0f, 0.05f }
+            { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, position),    "position", -1000.0f, 1000.0f, 0.05f },
+            { ComponentRegistry::AttributeType::QUAT,           offsetof(TransformComponent, orientation), "orientation", -360.0f, 360.0f, 0.5f },
+            { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, scale),       "scale", 0.0f, 1000.0f, 0.05f }
         }
     };
 }

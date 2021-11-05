@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <gtest/gtest.h>
-#include <atta/memorySystem/allocators/poolAllocator.h>
+#include <atta/memorySystem/allocators/poolAllocatorT.h>
 
 using namespace atta;
 namespace
@@ -27,7 +27,7 @@ namespace
     {
         // No external memory, no alignment
         {
-            PoolAllocator<int> pool(2);
+            PoolAllocatorT<int> pool(2);
             int* i0 = pool.alloc();
             int* i1 = pool.alloc();
             int* i2 = pool.alloc();
@@ -47,7 +47,7 @@ namespace
         // External memory, no alignment
         {
             uint8_t* mem = static_cast<uint8_t*>(malloc(10*sizeof(int)));
-            PoolAllocator<int> pool(mem, 2);
+            PoolAllocatorT<int> pool(mem, 2);
             int *i0 = pool.alloc();
             int *i1 = pool.alloc();
             int *i2 = pool.alloc();
@@ -67,7 +67,7 @@ namespace
 
     TEST(Memory_PoolAllocator, BigBlock)
     {
-        PoolAllocator<TestObject> pool(2);
+        PoolAllocatorT<TestObject> pool(2);
         TestObject* o0 = pool.alloc();
         TestObject* o1 = pool.alloc();
         TestObject* o2 = pool.alloc();
@@ -86,7 +86,7 @@ namespace
 
     TEST(Memory_PoolAllocator, PoolReuse)
     {
-        PoolAllocator<int> pool(2);
+        PoolAllocatorT<int> pool(2);
         int* i0 = pool.alloc();
         int* i1 = pool.alloc();
         int* i2 = pool.alloc();
@@ -111,7 +111,7 @@ namespace
 
     TEST(Memory_PoolAllocator, Clear)
     {
-        PoolAllocator<int> pool(4);
+        PoolAllocatorT<int> pool(4);
         int* i0 = pool.alloc();
         int* i1 = pool.alloc();
 

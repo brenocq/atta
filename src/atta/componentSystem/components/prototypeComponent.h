@@ -7,20 +7,22 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
+#include <atta/componentSystem/componentRegistry.h>
 
 namespace atta
 {
-    struct PrototypeComponent final : public TypedComponent<PrototypeComponent>
+    struct PrototypeComponent final : public Component
     {
         uint64_t maxClones;
     };
+    ATTA_REGISTER_COMPONENT(PrototypeComponent)
 
     template<>
-    inline const Component::TypeDescription TypedComponent<PrototypeComponent>::typeDescription = 
+    inline const ComponentRegistry::Description TypedComponentRegistry<PrototypeComponent>::description = 
     {
         "Prototype",
         {
-            { Component::AttributeType::UINT64, offsetof(PrototypeComponent, maxClones), "maxClones", uint64_t(1), uint64_t(1000000) }
+            { ComponentRegistry::AttributeType::UINT64, offsetof(PrototypeComponent, maxClones), "maxClones", uint64_t(1), uint64_t(1000000) }
         }
     };
 }
