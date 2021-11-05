@@ -7,20 +7,23 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
+#include <atta/componentSystem/componentRegistry.h>
+#include <atta/core/stringId.h>
 
 namespace atta
 {
-    struct MeshComponent final : public TypedComponent<MeshComponent>
+    struct MeshComponent final : public Component
     {
         StringId sid;
     };
+    ATTA_REGISTER_COMPONENT(MeshComponent)
 
     template<>
-    inline const Component::TypeDescription TypedComponent<MeshComponent>::typeDescription = 
+    inline const ComponentRegistry::Description TypedComponentRegistry<MeshComponent>::description = 
     {
         "Mesh",
         {
-            { Component::AttributeType::STRINGID, offsetof(MeshComponent, sid), "sid", {}, {}, {}, { "test" } },
+            { ComponentRegistry::AttributeType::STRINGID, offsetof(MeshComponent, sid), "sid", {}, {}, {}, { "test" } },
         }
     };
 }

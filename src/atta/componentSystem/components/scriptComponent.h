@@ -7,21 +7,24 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
+#include <atta/componentSystem/componentRegistry.h>
+#include <atta/core/stringId.h>
 
 namespace atta
 {
-    struct ScriptComponent final : public TypedComponent<ScriptComponent>
+    struct ScriptComponent final : public Component
     {
         StringId sid;
     };
+    ATTA_REGISTER_COMPONENT(ScriptComponent)
 
     template<>
-    inline const Component::TypeDescription TypedComponent<ScriptComponent>::typeDescription = 
+    inline const ComponentRegistry::Description TypedComponentRegistry<ScriptComponent>::description = 
     {
         "Script",
         {
             { 
-                Component::AttributeType::STRINGID, 
+                ComponentRegistry::AttributeType::STRINGID, 
                 offsetof(ScriptComponent, sid), 
                 "sid", 
                 {},

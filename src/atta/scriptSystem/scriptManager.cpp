@@ -175,7 +175,7 @@ namespace atta
         if(_projectScript.first == target)
         {
             _projectScript.second->onUnload();
-            ComponentManager::unregisterCustomComponentPools();
+            ComponentManager::unregisterCustomComponents();
 
             _projectScript.first = StringId();
             delete _projectScript.second;

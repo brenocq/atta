@@ -1,17 +1,17 @@
 //--------------------------------------------------
 // Atta Component System
-// component.inl
-// Date: 2021-11-04
+// componentRegistry.cpp
+// Date: 2021-11-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/componentSystem/components/component.h>
+#include <atta/componentSystem/componentRegistry.h>
 #include <atta/core/math/math.h>
 #include <imgui.h>
 
 namespace atta
 {
     template<typename T>
-    void renderSliders(Component::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void renderSliders(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         T* data = (T*)d;
 
@@ -108,7 +108,7 @@ namespace atta
     }
 
     template<typename T>
-    void renderCombo(Component::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void renderCombo(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         T* data = (T*)d;
 
@@ -132,7 +132,7 @@ namespace atta
         for(unsigned i = 0; i < aDesc.options.size(); i++)
             if(aDesc.options[i].type() != typeid(const char*) && aDesc.options[i].type() != typeid(T))
             {
-                LOG_WARN("Component", "The component attribute [w]$0[] cannot be rendered because the values inside its atta::Component::AttributeDescriptoin::options should be all of type [w]const char*[] or [w]$1[]", aDesc.name, typeid(T).name());
+                LOG_WARN("Component", "The component attribute [w]$0[] cannot be rendered because the values inside its atta::ComponentRegistry::AttributeDescriptoin::options should be all of type [w]const char*[] or [w]$1[]", aDesc.name, typeid(T).name());
                 return;
             }
 #endif
@@ -187,7 +187,7 @@ namespace atta
 
 #define ATTA_RENDER_UI_ATTRIBUTE_NUMBER(AttaType, CppType) \
     template<>\
-    void Component::renderUIAttribute<Component::AttributeType::AttaType>(Component::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)\
+    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::AttaType>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)\
     {\
         if(aDesc.options.size() == 0)\
             renderSliders<CppType>(aDesc, d, size, imguiId);\
@@ -207,7 +207,7 @@ namespace atta
     ATTA_RENDER_UI_ATTRIBUTE_NUMBER(FLOAT64, double);
 
     template<>
-    void Component::renderUIAttribute<Component::AttributeType::QUAT>(Component::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::QUAT>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         ImGui::Text(aDesc.name.c_str());
 
@@ -241,7 +241,7 @@ namespace atta
     }
 
     template<>
-    void Component::renderUIAttribute<Component::AttributeType::STRINGID>(Component::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::STRINGID>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         StringHash* data = (StringHash*)d;
 
@@ -276,7 +276,7 @@ namespace atta
     }
 
     template<>
-    void Component::renderUIAttribute<Component::AttributeType::CHAR>(Component::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::CHAR>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         char* data = (char*)d;
         ImGui::InputText((aDesc.name+"##"+imguiId).c_str(), data, size);

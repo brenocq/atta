@@ -6,6 +6,7 @@ set(ATTA_MEMORY_SYSTEM_SOURCES
     allocatedObject.cpp
     allocators/stackAllocator.cpp
     allocators/poolAllocator.cpp
+    allocators/poolAllocatorT.cpp
     allocators/mallocAllocator.cpp
     allocators/bitmapAllocator.cpp
     )

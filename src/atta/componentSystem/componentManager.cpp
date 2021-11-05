@@ -30,7 +30,11 @@ namespace atta
         MemoryManager::registerAllocator(SSID("ComponentAllocator"), static_cast<Allocator*>(_allocator));
 
         createEntityPool();
-        createComponentPools();
+        createComponentPoolsFromRegistered();
+        // Can be used to free all custom component allocators (useful when reloading a project)
+        // Because the ComponentManager::startUp method is called before any project is loaded, only atta components were created at this point
+        _customComponentsMarker = _allocator->getMarker();
+        _numAttaComponents = _componentRegistries.size();
 
         EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
@@ -88,30 +92,12 @@ namespace atta
         // Create entity pool allocator
         uint8_t* startEntityPool = entityMemory+sizeof(EntityId)*_maxEntities;
         MemoryManager::registerAllocator(SSID("Component_EntityAllocator"), 
-                static_cast<Allocator*>(new PoolAllocator<Entity>(startEntityPool, _maxEntities)));
-    }
-
-    void ComponentManager::createComponentPools()
-    {
-        //----- Register default component pools -----//
-        registerComponentPoolImpl<TransformComponent>(_maxEntities);
-        registerComponentPoolImpl<NameComponent>(_maxEntities);
-        registerComponentPoolImpl<MeshComponent>(_maxEntities);
-        registerComponentPoolImpl<MaterialComponent>(_maxEntities);
-        registerComponentPoolImpl<ScriptComponent>(_maxEntities);
-        registerComponentPoolImpl<RelationshipComponent>(_maxEntities);
-        registerComponentPoolImpl<PrototypeComponent>(_maxEntities);
-        registerComponentPoolImpl<PointLightComponent>(_maxEntities);
-        registerComponentPoolImpl<DirectionalLightComponent>(_maxEntities);
-        registerComponentPoolImpl<CameraComponent>(_maxEntities);
-
-        // Can be used to free all custom component allocators (useful when hot-reloading a project)
-        _customComponentsMarker = _allocator->getMarker();
+                static_cast<Allocator*>(new PoolAllocatorT<Entity>(startEntityPool, _maxEntities)));
     }
 
     EntityId ComponentManager::createEntityImpl()
     {
-        PoolAllocator<Entity>* pool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("Component_EntityAllocator"));
+        PoolAllocatorT<Entity>* pool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
 
         // Alloc entity
         Entity* e = pool->alloc();
@@ -145,44 +131,61 @@ namespace atta
 
     void ComponentManager::clearImpl()
     {
-        PoolAllocator<Entity>* epool = MemoryManager::getAllocator<PoolAllocator<Entity>>(SID("Component_EntityAllocator"));
+        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
         epool->clear();
 
         _denseListSize = 0;
 
-        PoolAllocator<TransformComponent>* transformPool = MemoryManager::getAllocator<PoolAllocator<TransformComponent>>(COMPONENT_POOL_SID(TransformComponent));
-        transformPool->clear();
-
-        PoolAllocator<NameComponent>* namePool = MemoryManager::getAllocator<PoolAllocator<NameComponent>>(COMPONENT_POOL_SID(NameComponent));
-        namePool->clear();
-
-        PoolAllocator<MeshComponent>* meshPool = MemoryManager::getAllocator<PoolAllocator<MeshComponent>>(COMPONENT_POOL_SID(MeshComponent));
-        meshPool->clear();
-
-        PoolAllocator<MaterialComponent>* materialPool = MemoryManager::getAllocator<PoolAllocator<MaterialComponent>>(COMPONENT_POOL_SID(MaterialComponent));
-        materialPool->clear();
-
-        PoolAllocator<ScriptComponent>* scriptPool = MemoryManager::getAllocator<PoolAllocator<ScriptComponent>>(COMPONENT_POOL_SID(ScriptComponent));
-        scriptPool->clear();
-
-        PoolAllocator<RelationshipComponent>* relationshipPool = MemoryManager::getAllocator<PoolAllocator<RelationshipComponent>>(COMPONENT_POOL_SID(RelationshipComponent));
-        relationshipPool->clear();
-
-        PoolAllocator<PrototypeComponent>* prototypePool = MemoryManager::getAllocator<PoolAllocator<PrototypeComponent>>(COMPONENT_POOL_SID(PrototypeComponent));
-        prototypePool->clear();
-
-        PoolAllocator<PointLightComponent>* pointLightPool = MemoryManager::getAllocator<PoolAllocator<PointLightComponent>>(COMPONENT_POOL_SID(PointLightComponent));
-        pointLightPool->clear();
-
-        PoolAllocator<DirectionalLightComponent>* directionalLightPool = MemoryManager::getAllocator<PoolAllocator<DirectionalLightComponent>>(COMPONENT_POOL_SID(DirectionalLightComponent));
-        directionalLightPool->clear();
-
-        PoolAllocator<CameraComponent>* cameraPool = MemoryManager::getAllocator<PoolAllocator<CameraComponent>>(COMPONENT_POOL_SID(CameraComponent));
-        cameraPool->clear();
+        for(auto reg : _componentRegistries)
+            getComponentAllocator(reg)->clear();
     }
 
-    void ComponentManager::unregisterCustomComponentPoolsImpl()
+    PoolAllocator* ComponentManager::getComponentAllocator(ComponentRegistry* compReg)
     {
+        return MemoryManager::getAllocator<PoolAllocator>(COMPONENT_POOL_SID_BY_NAME(compReg->getTypeidName()));
+    }
+
+    void ComponentManager::registerComponentImpl(ComponentRegistry* componentRegistry)
+    {
+        _componentRegistries.push_back(componentRegistry);
+    }
+
+    void ComponentManager::createComponentPoolsFromRegistered()
+    {
+        for(auto reg : _componentRegistries)
+            createComponentPool(reg);
+    }
+
+    void ComponentManager::createComponentPool(ComponentRegistry* componentRegistry)
+    {
+        ComponentRegistry::Description desc = componentRegistry->getDescription();
+        std::string name = desc.type;
+        unsigned sizeofT = componentRegistry->getSizeof();
+        std::string typeidTName = componentRegistry->getTypeidName();
+        size_t typeidTHash = componentRegistry->getTypeidHash();
+        unsigned maxCount = desc.limit;
+
+        // TODO better pool allocator allocation from another one (now need to know that implementation to implement it correctly)
+        // Should not need to calculate this size
+        size_t size = std::max((unsigned)sizeof(void*), sizeofT);
+
+        uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(maxCount*size, size));
+        DASSERT(componentMemory != nullptr, "Could not allocate component system memory for " + name);
+        LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB -> memory space:($3 $4)", 
+                name, typeidTName, maxCount*sizeofT/(1024*1024.0f), (void*)(componentMemory), (void*)(componentMemory+maxCount*sizeofT));
+
+        // Create pool allocator
+        MemoryManager::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName), static_cast<Allocator*>(new PoolAllocator(componentMemory, sizeofT, maxCount)));
+
+        // Register component name and id
+        _componentNames[typeidTHash] = name;
+        _componentIds[typeidTHash] = COMPONENT_POOL_SSID_BY_NAME(typeidTName);
+        _componentSize[typeidTHash] = sizeofT;
+    }
+
+    void ComponentManager::unregisterCustomComponentsImpl()
+    {
+        _componentRegistries.resize(_numAttaComponents);
         _allocator->rollback(_customComponentsMarker);
     }
 
@@ -265,5 +268,23 @@ namespace atta
             }
         }
         _factories.clear();
+    }
+
+    void* ComponentManager::getEntityComponentByIdImpl(ComponentId id, EntityId entity)
+    {
+        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
+
+        // Get entity
+        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
+        Entity* e = epool->getBlock(entity);
+
+        // Get component pool
+        Allocator* alloc = MemoryManager::getAllocator(id);
+
+        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
+            if(alloc->owns(e->components[i]))
+                return e->components[i];
+        return nullptr;
     }
 }
