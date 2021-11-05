@@ -11,7 +11,7 @@ namespace atta::linalg
     class SVD
     {
     public:
-        size_t m,n;// Number of rows/columns
+        int m,n;// Number of rows/columns
         mat U, V;// Matrices U and V
         vec S;// Sigma/Diagonal matrix (eigenvalues)
         float eps, tsh;
