@@ -46,7 +46,7 @@ namespace atta
         std::vector<std::shared_ptr<Renderer>> _cameraRenderers;
         std::vector<std::shared_ptr<Camera>> _cameraCameras;
         std::vector<float> _cameraLastTime;// Used to render with the correct fps
-        uint8_t** _camerasData;
+        //uint8_t** _camerasData;
     };
 }
 

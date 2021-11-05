@@ -110,7 +110,7 @@ namespace atta::linalg
         for(int i=n-1; i>=0; i--)
         {
             sum = b[i];
-            for(int j=i+1;j<m;j++) sum -= R[i][j]*x[j];
+            for(unsigned j=i+1;j<m;j++) sum -= R[i][j]*x[j];
             x[i]=sum/R[i][i];
         }
     }

@@ -75,9 +75,9 @@ namespace atta
         glBindFramebuffer(GL_FRAMEBUFFER, _id);
 
         //----- Create attachment images -----//
-        for(size_t i = 0; i < _attachments.size(); i++)
+        for(unsigned i = 0; i < _attachments.size(); i++)
         {
-            if(i == _depthAttachmentIndex)
+            if(i == (unsigned)_depthAttachmentIndex)
                 _images[i] = createDepthAttachment(_attachments[i].format);
             else
                 _images[i] = createColorAttachment(_attachments[i].format, static_cast<int>(i));
@@ -131,6 +131,7 @@ namespace atta
         {
             case Image::Format::NONE: break;
             case Image::Format::DEPTH32F: return GL_DEPTH_ATTACHMENT;
+            default: break;
         }
         ASSERT(false, "Could not convert format to openGL depth attachment");
     }

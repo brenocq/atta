@@ -9,7 +9,7 @@
 namespace atta
 {
     Resource::Resource(const fs::path filename):
-        _filename(filename), _id(StringId(filename.string())), _data(nullptr)
+        _id(StringId(filename.string())), _filename(filename), _data(nullptr)
     {
 
     }

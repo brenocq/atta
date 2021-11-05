@@ -9,7 +9,7 @@
 namespace atta
 {
     OpenGLImage::OpenGLImage(const Image::CreateInfo& info):
-        Image(info), _id(0), _samplerId(0)
+        Image(info), _id(0)//, _samplerId(0)
     {
         // Create texture
         glGenTextures(1, &_id);

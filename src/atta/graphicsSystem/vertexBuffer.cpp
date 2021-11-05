@@ -30,6 +30,7 @@ namespace atta
             case Type::IVEC4: return 4;
             case Type::MAT3: return 3*3;
             case Type::MAT4:return 4*4;
+            default: break;
         }
         ASSERT(false, "Unknown vertex buffer element type");
     }
@@ -50,6 +51,7 @@ namespace atta
             case Type::IVEC4: return 4 * 4;
             case Type::MAT3: return 3*3 * 4;
             case Type::MAT4:return 4*4 * 4;
+            default: break;
         }
         ASSERT(false, "Could not calculate size from element type");
     }

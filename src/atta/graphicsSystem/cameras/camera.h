@@ -13,6 +13,8 @@ namespace atta
     class Camera
     {
     public:
+        virtual ~Camera() = default;
+
         virtual mat4 getView() const = 0;
         virtual mat4 getProj() const = 0;
 

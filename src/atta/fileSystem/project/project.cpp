@@ -10,9 +10,9 @@
 namespace atta
 {
     Project::Project(fs::path file):
+        _name(file.stem().string()),
         _file(fs::absolute(file)), 
-        _directory(file.parent_path()), 
-        _name(file.stem().string())
+        _directory(file.parent_path())
     {
         fs::path projectResourcePath = _directory/"resources";
         if(exists(projectResourcePath))

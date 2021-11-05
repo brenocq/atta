@@ -58,7 +58,8 @@ namespace atta::cv {
 
         bool finished = false;
         while(!finished && i<data.size()) {
-            unsigned marker = data[i++]<<8 | data[i++];
+            unsigned marker = data[i]<<8 | data[i+1];
+            i += 2;
             //LOG_DEBUG("imgproc::JPEG", "Marker $0", marker);
             if(marker == MARKER_START_OF_IMAGE) {
                 //LOG_DEBUG("imgproc::JPEG", "Marker MARKER_START_OF_IMAGE");
@@ -159,8 +160,8 @@ namespace atta::cv {
 
     bool JPEG::readQuantizationTable(const std::vector<uint8_t>& data, size_t& i) {
         //LOG_DEBUG("imgproc::JPEG", "Marker MARKER_QUANTIZATION_TABLE");
-        int length = (data[i++]<<8) | data[i++];
-        length-=2;
+        int length = (data[i]<<8) | data[i+1];
+        length -= 2;
 
         while(length > 0) {
             uint8_t infoQT = data[i++];
@@ -175,12 +176,16 @@ namespace atta::cv {
 
             if(infoQT>>4 != 0) {
                 for(size_t j = 0; j < 64; j++)
-                    _quantizationTables[idxQT].table[zigZagMap[j]] = (data[i++]<<8) | data[i++];
-                length-=128;
+                {
+                    _quantizationTables[idxQT].table[zigZagMap[j]] = (data[i]<<8) | data[i+1];
+                    i += 2;
+
+                }
+                length -= 128;
             } else {
                 for(size_t j = 0; j < 64; j++)
                     _quantizationTables[idxQT].table[zigZagMap[j]] = data[i++];
-                length-=64;
+                length -= 64;
             }
         }
 
@@ -204,21 +209,22 @@ namespace atta::cv {
 
     bool JPEG::readApplicationSegment(const std::vector<uint8_t>& data, size_t& i) {
         //LOG_DEBUG("imgproc::JPEG", "Marker MARKER_APPLICATION_SEGMENT");
-        unsigned length = (data[i++]<<8) | data[i++];
-        i+=length-2;
+        unsigned length = (data[i]<<8) | data[i+1];
+        i+=length;
         //LOG_DEBUG("imgproc::JPEG", "Marker MARKER_APPLICATION_SEGMENT $0", (data[i]<<8)|data[i+1]);
         return true;
     }
 
     bool JPEG::readComment(const std::vector<uint8_t>& data, size_t& i) {
         //LOG_DEBUG("imgproc::JPEG", "Marker MARKER_COMMENT (or ignored)");
-        unsigned length = (data[i++]<<8) | data[i++];
-        i+=length-2;
+        unsigned length = (data[i]<<8) | data[i+1];
+        i += length;
         return true;
     }
 
     bool JPEG::readHuffmanTable(const std::vector<uint8_t>& data, size_t& i) {
-        int length = (data[i++]<<8) | data[i++];
+        int length = (data[i]<<8) | data[i+1];
+        i += 2;
         length -= 2;
 
         while(length > 0) {
@@ -288,7 +294,8 @@ namespace atta::cv {
             LOG_ERROR("imgproc::JPEG", "Start of Scan before Start of Frame");
             return false;
         }
-        unsigned length = (data[i++]<<8) | data[i++];
+        unsigned length = (data[i]<<8) | data[i+1];
+        i += 2;
         for(size_t j = 0; j < _numComponents; j++)
             _colorComponents[j].defined = false;
 
@@ -340,7 +347,7 @@ namespace atta::cv {
             return false;
         }
 
-        if(length != 6+2*numComponents) {
+        if((int)length != 6+2*numComponents) {
             LOG_ERROR("imgproc::JPEG", "Invalid start of scan length");
             return false;
         }
@@ -355,7 +362,8 @@ namespace atta::cv {
             return false;
         }
 
-        unsigned length = (data[i++]<<8) | data[i++];
+        unsigned length = (data[i]<<8) | data[i+1];
+        i += 2;
 
         //----- Precision -----//
         unsigned precision = data[i++];
@@ -365,8 +373,9 @@ namespace atta::cv {
         }
 
         //----- Width/Height -----//
-        _height = data[i++]<<8 | data[i++];
-        _width = data[i++]<<8 | data[i++];
+        _height = data[i]<<8 | data[i+1];
+        _width = data[i+2]<<8 | data[i+3];
+        i += 4;
         _mcuHeight = (_height+7)/8;
         _mcuWidth = (_width+7)/8;
         _mcuHeightReal = _mcuHeight;
@@ -453,13 +462,15 @@ namespace atta::cv {
     }
 
     bool JPEG::readRestartInterval(const std::vector<uint8_t>& data, size_t& i) {
-        unsigned length = (data[i++]<<8) | data[i++];
+        //unsigned length = (data[i++]<<8) | data[i++];
+        i += 2;
         if(_restartInterval > 0) {
             LOG_ERROR("imgproc::JPEG", "Duplicated restart interval");
             return false;
         }
 
-        _restartInterval = (data[i++]<<8) | data[i++];
+        _restartInterval = (data[i]<<8) | data[i+1];
+        i += 2;
 
         //if(_restartInterval == 0) {
         //	_restartInterval = (unsigned)-1;
@@ -702,7 +713,6 @@ namespace atta::cv {
     }
 
     void JPEG::inverseDCTComponent(int* const component) {
-        float result[64] = {0};
         // Compute inverse DCT using AAN algorithm
 
         // For each column
@@ -897,8 +907,8 @@ namespace atta::cv {
             }
     }
 
-    BitReader::BitReader(const std::vector<uint8_t>& d)
-        : _data(d), _nextByte(0), _nextBit(0) 
+    BitReader::BitReader(const std::vector<uint8_t>& d):
+        _nextByte(0), _nextBit(0), _data(d)
     {
 
     }
