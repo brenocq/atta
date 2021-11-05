@@ -28,19 +28,18 @@ namespace atta::linalg
     {
         // Reference: Numerical Recipes: The Art of Scientific Computing - Third Edition - Webnote No.2, Rev. 1
         bool flag;
-        int i, its, l, nm;
-        unsigned j, jj, k;
+        int i,its,j,jj,k,l,nm;
         float anorm,c,f,g,h,s,scale,x,y,z;
         g = scale = anorm = 0.0f;
         vec rv1(n);
 
         // Householder reduction to bidiagonal form
-        for(i=0;i<(int)n;i++)
+        for(i=0;i<n;i++)
         {
             l = i+2;
             rv1[i] = scale*g;
             g = s = scale = 0.0f;
-            if(i<(int)m)
+            if(i<m)
             {
                 for(k=i;k<m;k++) scale += std::abs(U[k][i]);
                 if(scale != 0.0f)
@@ -66,7 +65,7 @@ namespace atta::linalg
             }
             S[i] = scale*g;
             g=s=scale=0.0f;
-            if(i+1 <= (int)m && i+1 != (int)n)
+            if(i+1<= m && i+1!= n)
             {
                 for(k=l-1;k<n;k++) scale += std::abs(U[i][k]);
                 if(scale != 0.0)
@@ -94,9 +93,9 @@ namespace atta::linalg
         }
 
         // Accumulation of right-hand transformations
-        for(i=n-1;i<=(int)n-1;i--)
+        for(i=n-1;i>=0;i--)
         {
-            if(i < (int)n-1)
+            if(i < n-1)
             {
                 if(g != 0.0)
                 {
@@ -117,7 +116,7 @@ namespace atta::linalg
         }
 
         // Accumulation of left-hand transformations.
-        for(i=std::min(m,n)-1;i<=(int)std::min(m,n)-1;i--)
+        for(i=std::min(m,n)-1;i>=0;i--)
         {
             l = i+1;
             g = S[i];
@@ -138,12 +137,12 @@ namespace atta::linalg
         }
 
         // Diagonalization of the bidiagonal form: Loop over singular values, and over allowed iterations
-        for(k=n-1;k<=n-1;k--)
+        for(k=n-1;k>=0;k--)
         {
             for(its=0;its<30;its++)
             {
                 flag=true;
-                for(l=k;l<=(int)k;l--)
+                for(l=k;l>=0;l--)
                 {
                     nm=l-1;
                     if(l == 0 || std::abs(rv1[l])<= eps*anorm)
@@ -157,7 +156,7 @@ namespace atta::linalg
                 {
                     c = 0.0;
                     s = 1.0;
-                    for(i=l;i<(int)k+1;i++)
+                    for(i=l;i<k+1;i++)
                     {
                         f = s*rv1[i];
                         rv1[i] = c*rv1[i];
@@ -179,7 +178,7 @@ namespace atta::linalg
                 }
                 // Convergence
                 z = S[k];
-                if(l == (int)k)
+                if(l == k)
                 {
                     if(z < 0.0)
                     {
@@ -203,7 +202,7 @@ namespace atta::linalg
                 g = pythag(f,1.0);
                 f = ((x-z)*(x+z)+h*((y/(f+SIGN(g,f)))-h))/x;
                 c = s = 1.0;
-                for(j=l;j<=(unsigned)nm;j++)
+                for(j=l;j<=nm;j++)
                 {
                     i = j+1;
                     g = rv1[i];
@@ -255,7 +254,7 @@ namespace atta::linalg
         // Reference: Numerical Recipes: The Art of Scientific Computing - Third Edition - Webnote No.2, Rev. 1
         // Sort the result of decompose with Shell's sort. U and V columns are ordered by decreasing magnitude 
         // and the sign are flipped to maximuze the number of positive elements
-        unsigned i, j, k, s, inc = 1;
+        int i,j,k,s,inc=1;
         float sw;
         vec su(m);
         vec sv(n);
@@ -295,9 +294,9 @@ namespace atta::linalg
         {
             s=0;
             for(i=0;i<m;i++)
-                if(U[i][k] < 0.) s++;
+                if(U[i][k]< 0.) s++;
             for(j=0;j<n;j++)
-                if(V[j][k] < 0.) s++;
+                if(V[j][k]< 0.) s++;
             if(s>(m+n)/2)
             {
                 for(i=0;i<m;i++) U[i][k] = -U[i][k];
@@ -319,7 +318,7 @@ namespace atta::linalg
     {
         unsigned nr = 0;
         tsh = thresh>0.0f ? thresh : 0.5f*sqrt(m+n+1.0f)*S[0]*eps;
-        for(size_t i=0;i<n;i++) if(S[i]>tsh)nr++;
+        for(int i=0;i<n;i++) if(S[i]>tsh)nr++;
         return nr;
     }
 
@@ -327,17 +326,17 @@ namespace atta::linalg
     {
         unsigned nr = 0;
         tsh = thresh>0.0f ? thresh : 0.5f*sqrt(m+n+1.0f)*S[0]*eps;
-        for(size_t i=0;i<n;i++) if(S[i]<=tsh)nr++;
+        for(int i=0;i<n;i++) if(S[i]<=tsh)nr++;
         return nr;
     }
 
     mat SVD::colSpace(float thresh)
     {
-        size_t nr = 0;
+        int nr = 0;
         mat colSp(m,rank(thresh));
-        for(size_t i=0;i<n;i++) if(S[i]>tsh)
+        for(int i=0;i<n;i++) if(S[i]>tsh)
         {
-            for(size_t j=0;j<m;j++) 
+            for(int j=0;j<m;j++) 
                 colSp[j][nr] = U[j][i];
             nr++;
         }
@@ -346,11 +345,11 @@ namespace atta::linalg
 
     mat SVD::nullSpace(float thresh)
     {
-        size_t nn = 0;
+        int nn = 0;
         mat nullSp(m,nullity(thresh));
-        for(size_t i=0;i<n;i++) if(S[i]<=tsh)
+        for(int i=0;i<n;i++) if(S[i]<=tsh)
         {
-            for(size_t j=0;j<n;j++) 
+            for(int j=0;j<n;j++) 
                 nullSp[j][nn] = V[j][i];
             nn++;
         }
