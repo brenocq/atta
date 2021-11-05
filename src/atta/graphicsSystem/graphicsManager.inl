@@ -43,5 +43,6 @@ namespace atta
                         ASSERT(false, "Trying to create $0, which does not have Vulkan implementation", typeid(T).name());
                 }
         }
+        return nullptr;
     }
 }

@@ -11,9 +11,9 @@ namespace atta::linalg
     class LU
     {
     public:
+        size_t n;// Number of rows/columns
         mat lu;
         mat& Aref;
-        size_t n;// Number of rows/columns
         vec indx;
         float d;// If number of row interchanges are even(1) or odd(-1) (used to determine the determinant sign)
 

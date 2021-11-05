@@ -303,18 +303,18 @@ namespace atta
     class matrix
     {
     public:
-        size_t nrows, ncols;
+        unsigned nrows, ncols;
         std::vector<vector<T>> rows;
 
         constexpr matrix(): nrows(0), ncols(0) {}
-        matrix(size_t _nrows, size_t _ncols);
-        matrix(size_t _nrows, size_t _ncols, T val);
+        matrix(unsigned _nrows, unsigned _ncols);
+        matrix(unsigned _nrows, unsigned _ncols, T val);
         template <typename U>
         matrix(const matrix<U>& m);
         ~matrix();
 
         // Access
-        vector<T>& operator[](size_t i);
+        vector<T>& operator[](unsigned i);
 
         // Basic operations
         // +

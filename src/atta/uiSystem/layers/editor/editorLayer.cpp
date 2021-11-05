@@ -181,7 +181,7 @@ namespace atta::ui
                     }
                     break;
                 }
-            defualt:
+            default:
                 {
                     LOG_WARN("EditorLayer", "Invalid editor state: [w]$0[]", static_cast<int>(_editorState));
                 }

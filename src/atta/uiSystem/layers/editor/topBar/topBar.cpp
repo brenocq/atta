@@ -223,7 +223,7 @@ namespace atta::ui
                     ImGui::Text("Renderer");
                     std::vector<const char*> renderers = { "FastRenderer", "PhongRenderer", "PbrRenderer" };
 
-                    int comboValue = 0;
+                    unsigned comboValue = 0;
                     for(size_t j = 0; j < renderers.size(); j++)
                     {
                         if(viewports[i]->getRenderer()->getName() == renderers[j])

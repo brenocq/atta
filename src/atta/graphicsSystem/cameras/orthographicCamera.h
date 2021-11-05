@@ -24,6 +24,7 @@ namespace atta
         };
 
         OrthographicCamera(CreateInfo info);
+
         mat4 getView() const override;
         mat4 getProj() const override;
 

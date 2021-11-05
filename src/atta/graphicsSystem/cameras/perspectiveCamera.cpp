@@ -58,7 +58,7 @@ namespace atta
         // Move front/back
         if(ImGui::IsKeyDown('W') || ImGui::IsKeyDown('S'))
         {
-            char key = 0;
+            int key = 0;
             if(io.KeysDownDuration['W'] > 0 && io.KeysDownDuration['S']>0)
                 if(io.KeysDownDuration['W'] < io.KeysDownDuration['S'])
                     key = 'W';
@@ -83,7 +83,7 @@ namespace atta
         // Move left/right
         if(ImGui::IsKeyDown('A') || ImGui::IsKeyDown('D'))
         {
-            char key = 0;
+            int key = 0;
             if(io.KeysDownDuration['A'] > 0 && io.KeysDownDuration['D']>0)
                 if(io.KeysDownDuration['A'] < io.KeysDownDuration['D'])
                     key = 'A';
@@ -108,7 +108,7 @@ namespace atta
         // Move up/down
         if(ImGui::IsKeyDown('E') || ImGui::IsKeyDown('Q'))
         {
-            char key = 0;
+            int key = 0;
             if(io.KeysDownDuration['E'] > 0 && io.KeysDownDuration['Q']>0)
                 if(io.KeysDownDuration['E'] < io.KeysDownDuration['Q'])
                     key = 'E';

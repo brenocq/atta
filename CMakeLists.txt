@@ -71,17 +71,15 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
     if(MSVC)
         #list(APPEND ATTA_OPTIONS /W4 /WX)
     else()
-        list(APPEND ATTA_OPTIONS -g)#-Wall -Wextra -Wpedantic -Werror 
+        list(APPEND ATTA_OPTIONS -g -Wall -Wextra -Wpedantic)
         # Profilling
         list(APPEND ATTA_OPTIONS -fno-omit-frame-pointer)
         # Unused parameter
         list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
         # Math anonymous union 
-        list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
+        #list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
         # Glad opengl definitions
-        list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
-        # ImGui warnings
-        list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn)
+        #list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
         # Scripting
         #list(APPEND ATTA_OPTIONS -Wl,--no-undefined -rdynamic)
         #list(APPEND ATTA_OPTIONS -Wl,--export-dynamic)
@@ -94,6 +92,10 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
         list(APPEND ATTA_OPTIONS -O3)
     endif()
 endif()
+# ImGui warnings
+list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn -Wno-format-security)
+# Useful to ignore
+list(APPEND ATTA_OPTIONS -Wno-missing-field-initializers -Wno-invalid-offsetof -Wno-char-subscripts)
 
 ########## Output Directories ##########
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)

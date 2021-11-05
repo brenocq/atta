@@ -92,16 +92,16 @@ namespace atta
 
                 if(aDesc.step > 0.0f)
                 {
-                    for(int i = 0; i < qty; i++)
+                    for(unsigned i = 0; i < qty; i++)
                         ImGui::DragScalar((labels[i]+imguiId).c_str(), dataType, data+i, step, &min, &max, format.c_str());
                 }
                 else
-                    for(int i = 0; i < qty; i++)
+                    for(unsigned i = 0; i < qty; i++)
                         ImGui::SliderScalar((labels[i]+imguiId).c_str(), dataType, data+i, &min, &max, format.c_str(), sliderFlags);
             }
             else
                 // Format for arbitrarily long vector
-                for(int i = 0; i < qty; i++)
+                for(unsigned i = 0; i < qty; i++)
                     ImGui::SliderScalar(("Coordinate "+std::to_string(i)+imguiId).c_str(), dataType, data+i, &min, &max, format.c_str(), sliderFlags);
 
         }
@@ -137,7 +137,7 @@ namespace atta
             }
 #endif
 
-        enum Result { INDEX_AS_RESULT, VALUE_AS_RESULT } result;
+        enum Result { INDEX_AS_RESULT, VALUE_AS_RESULT } result = INDEX_AS_RESULT;
         std::vector<std::string> valuesPreview;
         if(aDesc.options[0].type() == typeid(const char*))
         {
@@ -156,7 +156,7 @@ namespace atta
         if(result == INDEX_AS_RESULT)
         {
             for(size_t i = 0; i < valuesPreview.size(); i++)
-                if(*data == i)
+                if(*data == (T)i)
                     comboValue = i;
         }
         else if(result == VALUE_AS_RESULT)

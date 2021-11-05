@@ -30,7 +30,7 @@ namespace atta
                         element.getComponentCount(), 
                         openGLType, 
                         _layout.getStride(), 
-                        (void*)(element.offset));
+                        reinterpret_cast<void*>(element.offset));
             }
             else
             {
@@ -39,7 +39,7 @@ namespace atta
                         openGLType, 
                         element.normalized ? GL_TRUE : GL_FALSE, 
                         _layout.getStride(), 
-                        (void*)(element.offset));
+                        reinterpret_cast<void*>(element.offset));
             }
             i++;
         }
@@ -65,6 +65,7 @@ namespace atta
         {
             case Usage::STATIC: return GL_STATIC_DRAW;
             case Usage::DYNAMIC: return GL_DYNAMIC_DRAW;
+            default: break;
         }
         ASSERT(false, "Unknown vertex buffer usage");
     }
@@ -85,6 +86,7 @@ namespace atta
             case VertexBufferElement::Type::VEC4:
             case VertexBufferElement::Type::MAT3:
             case VertexBufferElement::Type::MAT4: return GL_FLOAT;
+            default: break;
         }
         ASSERT(false, "Unknown vertex buffer element type");
     }

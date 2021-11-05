@@ -33,7 +33,7 @@ namespace atta
     template<typename T>
     void TypedComponent<T>::renderUI()
     {
-        ASSERT(this != nullptr, "Trying to call TypedComponent<$0>::renderUI() on nullptr component", std::string(typeid(T).name()));
+        //DASSERT(this != nullptr, "Trying to call TypedComponent<$0>::renderUI() on nullptr component", std::string(typeid(T).name()));
 
         T* t = (T*)this;
         const TypeDescription typeDescription = T::typeDescription;

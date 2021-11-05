@@ -30,7 +30,7 @@ namespace atta
 
     private:
         OpenGLId _id;
-        OpenGLId _samplerId;
+        //OpenGLId _samplerId;
     };
 }
 

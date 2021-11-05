@@ -122,15 +122,15 @@ namespace atta::ui
                     int selBaudRate = 0;
                     int currBaudRate = _serials[name]->getBaudRate();
                     for(unsigned i = 0; i < baudRates.size(); i++)
-                        if(baudRates[i] == currBaudRate) selBaudRate = i;
+                        if((int)baudRates[i] == currBaudRate) selBaudRate = (int)i;
 
                     if(ImGui::BeginCombo("Baud rate", baudRateStr[selBaudRate].c_str()))
                     {
-                        for(size_t i = 0; i < baudRates.size(); i++)
+                        for(unsigned i = 0; i < baudRates.size(); i++)
                         {
-                            if(ImGui::Selectable(baudRateStr[i].c_str(), i == selBaudRate))
+                            if(ImGui::Selectable(baudRateStr[i].c_str(), i == (unsigned)selBaudRate))
                                 _serials[name]->setBaudRate(baudRates[i]);
-                            if(i == selBaudRate)
+                            if((int)i == selBaudRate)
                                 ImGui::SetItemDefaultFocus();
                         }
                         ImGui::EndCombo();
@@ -339,7 +339,7 @@ namespace atta::ui
                         {
                             for(size_t i = 0; i < fps.size(); i++)
                             {
-                                if(ImGui::Selectable(fps[i].c_str(), i == 0));
+                                //if(ImGui::Selectable(fps[i].c_str(), i == 0));
                                 //_cameras[name]->setFormat(currPixelFormat, formats[selPixelFormat].resolutions[i]);
                                 if(i == 0)
                                     ImGui::SetItemDefaultFocus();

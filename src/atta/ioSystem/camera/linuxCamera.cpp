@@ -371,8 +371,8 @@ namespace atta::io
     bool LinuxCamera::initDevice()
     {
         struct v4l2_capability cap;
-        struct v4l2_cropcap cropcap;
-        struct v4l2_crop crop;
+        //struct v4l2_cropcap cropcap;
+        //struct v4l2_crop crop;
         struct v4l2_format fmt;
 
         //---------- Get device capabilities ----------//

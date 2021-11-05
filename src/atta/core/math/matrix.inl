@@ -7,20 +7,20 @@
 namespace atta
 {
     template <typename T>
-    matrix<T>::matrix(size_t _nrows, size_t _ncols):
+    matrix<T>::matrix(unsigned _nrows, unsigned _ncols):
         nrows(_nrows), ncols(_ncols)
     {
         rows = std::vector<vector<T>>(nrows);
-        for(int i=0;i<nrows;i++)
+        for(unsigned i=0;i<nrows;i++)
             rows[i] = vector<T>(ncols);
     }
 
     template <typename T>
-    matrix<T>::matrix(size_t _nrows, size_t _ncols, T val):
+    matrix<T>::matrix(unsigned _nrows, unsigned _ncols, T val):
         nrows(_nrows), ncols(_ncols)
     {
         rows = std::vector<atta::vector<T>>(nrows);
-        for(int i=0;i<nrows;i++)
+        for(unsigned i=0;i<nrows;i++)
             rows[i] = atta::vector<T>(ncols, val);
     }
 
@@ -30,11 +30,11 @@ namespace atta
         nrows(m.nrows), ncols(m.ncols)
     {
         rows = std::vector<atta::vector<T>>(nrows);
-        for(int i=0;i<nrows;i++)
+        for(unsigned i=0;i<nrows;i++)
             rows[i] = atta::vector<T>(ncols);
 
-        for(int i=0;i<nrows;i++)
-            for(int j=0;j<ncols;j++)
+        for(unsigned i=0;i<nrows;i++)
+            for(unsigned j=0;j<ncols;j++)
                 rows[i][j] = m.rows.at(i).at(j);
     }
 
@@ -44,7 +44,7 @@ namespace atta
     }
 
     template <typename T>
-    vector<T>& matrix<T>::operator[](size_t i)
+    vector<T>& matrix<T>::operator[](unsigned i)
     {
         return rows[i];
     }
@@ -54,7 +54,7 @@ namespace atta
     matrix<T> matrix<T>::operator+(const matrix<U>& o) const
     {
         matrix<T> res = *this;
-        for(size_t i=0; i<nrows; i++)
+        for(unsigned i=0; i<nrows; i++)
             res.rows[i]+=o.rows[i];
         return res;
     }
@@ -63,7 +63,7 @@ namespace atta
     template <typename U>
     void matrix<T>::operator+=(const matrix<U>& o)
     {
-        for(size_t i=0; i<nrows; i++)
+        for(unsigned i=0; i<nrows; i++)
             rows[i]+=o.rows[i];
     }
 
@@ -72,7 +72,7 @@ namespace atta
     matrix<T> matrix<T>::operator-(const matrix<U>& o) const
     {
         matrix<T> res = *this;
-        for(size_t i=0; i<nrows; i++)
+        for(unsigned i=0; i<nrows; i++)
             res.rows[i]-=o.rows[i];
         return res;
     }
@@ -81,7 +81,7 @@ namespace atta
     template <typename U>
     void matrix<T>::operator-=(const matrix<U>& o)
     {
-        for(size_t i=0; i<nrows; i++)
+        for(unsigned i=0; i<nrows; i++)
             rows[i]-=o.rows[i];
     }
 
@@ -91,7 +91,7 @@ namespace atta
     {
         matrix<T> res = matrix<T>(nrows, o.ncols);
 
-        size_t i, j, k;
+        unsigned i, j, k;
         for(i=0; i<res.nrows; i++)
         {
             for(j=0; j<res.ncols; j++)
@@ -128,10 +128,10 @@ namespace atta
     vector<U> matrix<T>::operator*(const vector<U>& v)
     {
         vector<U> res(nrows);
-        for(int i=0;i<nrows;i++)
+        for(unsigned i=0;i<nrows;i++)
         {
             U sum = 0;
-            for(int j=0;j<ncols;j++)
+            for(unsigned j=0;j<ncols;j++)
                 sum += rows[i][j]*v.at(j);
             res[i] = sum;
         }
@@ -143,8 +143,8 @@ namespace atta
     matrix<T> matrix<T>::operator*(U v)
     {
         matrix<T> res = matrix<T>(nrows, ncols);
-        for(int i=0;i<res.nrows;i++)
-            for(int j=0;j<res.ncols;j++)
+        for(unsigned i=0;i<res.nrows;i++)
+            for(unsigned j=0;j<res.ncols;j++)
                 res.rows[i][j] = rows[i][j]*v;
 
         return res;
@@ -157,10 +157,10 @@ namespace atta
 
         std::vector<vector<T>> cols = std::vector<vector<T>>(nrows);
 
-        for(int i=0;i<nrows;i++)
+        for(unsigned i = 0; i < nrows; i++)
         {
             cols[i] = vector<T>(ncols);
-            for(int j=0;j<ncols;j++)
+            for(unsigned j = 0; j < ncols; j++)
                 cols[i][j] = rows[j][i];
         }
 
@@ -174,10 +174,10 @@ namespace atta
     {
         std::string res = "\n[";
 
-        for(size_t i=0; i<nrows; i++)
+        for(unsigned i=0; i<nrows; i++)
         {
             res+="[";
-            for(size_t j=0; j<ncols; j++)
+            for(unsigned j=0; j<ncols; j++)
                 res += std::to_string(rows.at(i).at(j)) + (j!=ncols-1 ? ", " : "]");
             res += i!=nrows-1 ? ",\n" : "]";
         }

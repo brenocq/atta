@@ -148,7 +148,7 @@ namespace atta::ui
         if(!_someSelected)
             return;
 
-        ImGui::Text("Components (ID:%lu)", _selected);
+        ImGui::Text("Components (ID:%d)", _selected);
         ImGui::SameLine();
         if(ImGui::Button("Add"))
             ImGui::OpenPopup("Scene_ComponentAdd");
@@ -156,28 +156,19 @@ namespace atta::ui
         if(ImGui::BeginPopup("Scene_ComponentAdd"))
         {
             if(ImGui::Selectable("Name##ComponentAddName"))
-            {
-                NameComponent* name = ComponentManager::addEntityComponent<NameComponent>(_selected);
-                if(name != nullptr)
-                    name->name[0] = '\0';
-            }
-
+                ComponentManager::addEntityComponent<NameComponent>(_selected);
             if(ImGui::Selectable("Transform##ComponentAddTransform"))
-                TransformComponent* transform = ComponentManager::addEntityComponent<TransformComponent>(_selected);
-
+                ComponentManager::addEntityComponent<TransformComponent>(_selected);
             if(ImGui::Selectable("Mesh##ComponentAddMesh"))
-                MeshComponent* mesh = ComponentManager::addEntityComponent<MeshComponent>(_selected);
-
+                ComponentManager::addEntityComponent<MeshComponent>(_selected);
             if(ImGui::Selectable("Material##ComponentAddMaterial"))
-                MaterialComponent* material = ComponentManager::addEntityComponent<MaterialComponent>(_selected);
+                ComponentManager::addEntityComponent<MaterialComponent>(_selected);
 
             ImGui::Separator();
-
             if(ImGui::Selectable("Point Light##ComponentAddPointLight"))
-                PointLightComponent* pl = ComponentManager::addEntityComponent<PointLightComponent>(_selected);
-
+                ComponentManager::addEntityComponent<PointLightComponent>(_selected);
             if(ImGui::Selectable("Directional Light##ComponentAddDirectionalLight"))
-                DirectionalLightComponent* dl = ComponentManager::addEntityComponent<DirectionalLightComponent>(_selected);
+                ComponentManager::addEntityComponent<DirectionalLightComponent>(_selected);
 
             ImGui::Separator();
 

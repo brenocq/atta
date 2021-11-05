@@ -13,7 +13,7 @@ namespace atta
     template <typename T>
     T* ComponentManager::addEntityComponentImpl(EntityId entity)
     {
-        DASSERT(entity < _maxEntities, "Trying to access entity outside of range");
+        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
         // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
 
         // Get entity
@@ -50,7 +50,7 @@ namespace atta
     template <typename T>
     T* ComponentManager::getEntityComponentImpl(EntityId entity)
     {
-        DASSERT(entity < _maxEntities, "Trying to access entity outside of range");
+        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
         // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
 
         // Get entity
@@ -69,7 +69,7 @@ namespace atta
     template <ComponentId id>
     void* ComponentManager::getEntityComponentByIdImpl(EntityId entity)
     {
-        DASSERT(entity < _maxEntities, "Trying to access entity outside of range");
+        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
         // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
 
         // Get entity

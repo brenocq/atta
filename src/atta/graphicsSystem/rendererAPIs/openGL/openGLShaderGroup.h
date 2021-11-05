@@ -19,7 +19,7 @@ namespace atta
 
         void recompile() override;
 
-        void bind();
+        void bind() override;
 
         void setBool(const char* name, bool b) override;
         void setInt(const char* name, int i) override;
