@@ -40,6 +40,7 @@ namespace atta
         template <typename T>
         static T* getEntityComponent(EntityId entity) { return getInstance().getEntityComponentImpl<T>(entity); }
         static Component* addEntityComponentById(ComponentId id, EntityId entity) { return getInstance().addEntityComponentByIdImpl(id, entity); }
+        static void removeEntityComponentById(ComponentId id, EntityId entity) { getInstance().removeEntityComponentByIdImpl(id, entity); }
         template <ComponentId id>
         static Component* getEntityComponentById(EntityId entity) { return getInstance().getEntityComponentByIdImpl<id>(entity); }
         static Component* getEntityComponentById(ComponentId id, EntityId entity) { return getInstance().getEntityComponentByIdImpl(id, entity); }
@@ -73,6 +74,7 @@ namespace atta
         template <typename T>
         T* addEntityComponentImpl(EntityId entity);
         Component* addEntityComponentByIdImpl(ComponentId id, EntityId entity);
+        void removeEntityComponentByIdImpl(ComponentId id, EntityId entity);
         template <typename T>
         T* getEntityComponentImpl(EntityId entity);
         template <ComponentId id>
@@ -92,6 +94,10 @@ namespace atta
         void createComponentPool(ComponentRegistry* componentRegistry);
         // Unregister to free memory that was allocated for all custom components
         void unregisterCustomComponentsImpl();
+
+        //----- Event handling -----//
+        void onMeshEvent(Event& event);// Used the update the MeshComponent attribute options
+        void onTextureEvent(Event& event);// Used the update the MaterialComponent attribute options
 
         //----- Memory management -----//
         struct Entity

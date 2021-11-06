@@ -20,7 +20,7 @@ namespace atta
     ATTA_REGISTER_COMPONENT(RelationshipComponent)
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<RelationshipComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<RelationshipComponent>::description = 
     {
         "Relationship",
         {

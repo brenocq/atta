@@ -34,12 +34,10 @@ namespace atta::ui
 
     void EntityWindow::renderTree()
     {
-        if(ImGui::Button("Create"))
-            ComponentManager::createEntity();
-
         std::vector<EntityId> entities = ComponentManager::getEntities();
         int i = 0;
         ImGui::Text("Scene");
+
         // Render root entities
         for(EntityId entity : entities)
         {
@@ -47,6 +45,13 @@ namespace atta::ui
             if(!r || (r && r->parent == -1))
                 renderTreeNode(entity, i);
         }
+
+        const float size = 100.0f;
+        ImVec2 cursor = ImGui::GetCursorPos();
+        ImVec2 window = ImGui::GetWindowSize();
+        ImGui::SetCursorPos(ImVec2((window.x - size)*0.5f, cursor.y));
+        if(ImGui::Button("Create entity", ImVec2(size, 0)))
+            ComponentManager::createEntity();
     }
 
     void EntityWindow::renderTreeNode(EntityId entity, int& i)
@@ -149,54 +154,7 @@ namespace atta::ui
         if(!_someSelected)
             return;
 
-        ImGui::Text("Components (ID:%d)", _selected);
-        ImGui::SameLine();
-        if(ImGui::Button("Add"))
-            ImGui::OpenPopup("Scene_ComponentAdd");
-
-        if(ImGui::BeginPopup("Scene_ComponentAdd"))
-        {
-            if(ImGui::Selectable("Name##ComponentAddName"))
-                ComponentManager::addEntityComponent<NameComponent>(_selected);
-            if(ImGui::Selectable("Transform##ComponentAddTransform"))
-                ComponentManager::addEntityComponent<TransformComponent>(_selected);
-            if(ImGui::Selectable("Mesh##ComponentAddMesh"))
-                ComponentManager::addEntityComponent<MeshComponent>(_selected);
-            if(ImGui::Selectable("Material##ComponentAddMaterial"))
-                ComponentManager::addEntityComponent<MaterialComponent>(_selected);
-
-            ImGui::Separator();
-            if(ImGui::Selectable("Point Light##ComponentAddPointLight"))
-                ComponentManager::addEntityComponent<PointLightComponent>(_selected);
-            if(ImGui::Selectable("Directional Light##ComponentAddDirectionalLight"))
-                ComponentManager::addEntityComponent<DirectionalLightComponent>(_selected);
-
-            ImGui::Separator();
-
-            if(ImGui::Selectable("Script##ComponentAddScript"))
-            {
-                ScriptComponent* script = ComponentManager::addEntityComponent<ScriptComponent>(_selected);
-                std::vector<StringId> scriptSids = ScriptManager::getScriptSids();
-                if(scriptSids.size())
-                    script->sid = scriptSids[0];
-            }
-
-            if(ImGui::Selectable("Prototype##ComponentAddPrototype"))
-            {
-                PrototypeComponent* prototype = ComponentManager::addEntityComponent<PrototypeComponent>(_selected);
-                prototype->maxClones = 1;
-            }
-
-            ImGui::Separator();
-
-            if(ImGui::Selectable("Camera##ComponentAddCamera"))
-            {
-                CameraComponent* camera = ComponentManager::addEntityComponent<CameraComponent>(_selected);
-                *camera = CameraComponent{};
-            }
-
-            ImGui::EndPopup();
-        }
+        ImGui::Text("Components (EntityId: %d)", _selected);
 
         // Render options to edit each component
         for(auto compReg : ComponentManager::getComponentRegistries())
@@ -205,9 +163,36 @@ namespace atta::ui
             if(component != nullptr)
             {
                 std::string name = compReg->getDescription().type;
-                if(ImGui::CollapsingHeader((name+"##Components"+name+"Header").c_str(), ImGuiTreeNodeFlags_None))
+                bool open = true;
+                if(ImGui::CollapsingHeader((name+"##Components"+name+"Header").c_str(), &open))
                     compReg->renderUI((Component*)component);
+                if(!open)
+                    ComponentManager::removeEntityComponentById(compReg->getId(), _selected);
             }
+        }
+
+        // Align button
+        const float size = 100.0f;
+        ImVec2 cursor = ImGui::GetCursorPos();
+        ImVec2 window = ImGui::GetWindowSize();
+        ImGui::SetCursorPos(ImVec2((window.x - size)*0.5f, cursor.y));
+        if(ImGui::Button("Add Component", ImVec2(size, 0)))
+            ImGui::OpenPopup("Scene_ComponentAdd");
+
+
+        if(ImGui::BeginPopup("Scene_ComponentAdd"))
+        {
+            for(auto compReg : ComponentManager::getComponentRegistries())
+            {
+                void* component = ComponentManager::getEntityComponentById(compReg->getId(), _selected);
+                if(component == nullptr)
+                {
+                    std::string type = compReg->getDescription().type;
+                    if(ImGui::Selectable((type+"##ComponentAdd"+type).c_str()))
+                        ComponentManager::addEntityComponentById(compReg->getId(), _selected);
+                }
+            }
+            ImGui::EndPopup();
         }
     }
 

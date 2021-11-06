@@ -19,11 +19,11 @@ namespace atta
     ATTA_REGISTER_COMPONENT(MeshComponent)
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<MeshComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<MeshComponent>::description = 
     {
         "Mesh",
         {
-            { ComponentRegistry::AttributeType::STRINGID, offsetof(MeshComponent, sid), "sid", {}, {}, {}, { "test" } },
+            { ComponentRegistry::AttributeType::STRINGID, offsetof(MeshComponent, sid), "sid", {}, {}, {}, {} },
         }
     };
 }

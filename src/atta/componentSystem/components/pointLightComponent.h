@@ -19,7 +19,7 @@ namespace atta
     ATTA_REGISTER_COMPONENT(PointLightComponent)
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<PointLightComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<PointLightComponent>::description = 
     {
         "Point Light",
         {

@@ -42,7 +42,7 @@ namespace atta
     ATTA_REGISTER_COMPONENT(CameraComponent);
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<CameraComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<CameraComponent>::description = 
     {
         "Camera",
         {

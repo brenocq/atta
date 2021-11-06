@@ -15,7 +15,7 @@ namespace atta
 {
 #define ATTA_REGISTER_COMPONENT(TYPE) \
     template<> \
-    inline const ::atta::TypedComponentRegistry<TYPE>& \
+    inline ::atta::TypedComponentRegistry<TYPE>& \
     ::atta::ComponentRegistration<TYPE>::reg = \
         ::atta::TypedComponentRegistry<TYPE>::getInstance();
 
@@ -79,6 +79,26 @@ namespace atta
             CUSTOM
         };
 
+        struct AttributeOptionCompare 
+        {
+            inline bool operator()(const std::any& a, const std::any& b) const
+            {
+                if(a.type() != b.type()) return true;
+                if(a.type() == typeid(StringId)) return std::any_cast<StringId>(a).getId() != std::any_cast<StringId>(b).getId();
+                if(a.type() == typeid(uint8_t)) return std::any_cast<uint8_t>(a) != std::any_cast<uint8_t>(b);
+                if(a.type() == typeid(uint16_t)) return std::any_cast<uint16_t>(a) != std::any_cast<uint16_t>(b);
+                if(a.type() == typeid(uint32_t)) return std::any_cast<uint32_t>(a) != std::any_cast<uint32_t>(b);
+                if(a.type() == typeid(uint64_t)) return std::any_cast<uint64_t>(a) != std::any_cast<uint64_t>(b);
+                if(a.type() == typeid(int8_t)) return std::any_cast<int8_t>(a) != std::any_cast<int8_t>(b);
+                if(a.type() == typeid(int16_t)) return std::any_cast<int16_t>(a) != std::any_cast<int16_t>(b);
+                if(a.type() == typeid(int32_t)) return std::any_cast<int32_t>(a) != std::any_cast<int32_t>(b);
+                if(a.type() == typeid(int64_t)) return std::any_cast<int64_t>(a) != std::any_cast<int64_t>(b);
+                if(a.type() == typeid(float)) return std::any_cast<float>(a) != std::any_cast<float>(b);
+                if(a.type() == typeid(double)) return std::any_cast<double>(a) != std::any_cast<double>(b);
+                return true;
+            }
+        };
+
         struct AttributeDescription
         {
             AttributeType type;
@@ -87,7 +107,7 @@ namespace atta
             std::any min;
             std::any max;
             float step;
-            std::vector<std::any> options;
+            std::set<std::any, AttributeOptionCompare> options;
         };
         
         struct Description
@@ -103,7 +123,7 @@ namespace atta
         virtual void deserialize(std::istream& is, Component* component) = 0;
         virtual std::vector<uint8_t> getDefault() = 0;
 
-        virtual Description getDescription() const = 0;
+        virtual Description& getDescription() = 0;
         unsigned getSerializedSize(Component* component);
         unsigned getSizeof() { return _sizeof; }
         std::string getTypeidName() { return _typeidName; }
@@ -133,13 +153,13 @@ namespace atta
         void serialize(std::ostream& os, Component* component) override { serializeImpl(os, (T*)component); }
         void deserialize(std::istream& is, Component* component) override { deserializeImpl(is, (T*)component); }
         std::vector<uint8_t> getDefault() override;
-        Description getDescription() const override { return description; }
+        Description& getDescription() override { return description; }
 
         static void renderUI(T* component) { getInstance().renderUIImpl(component); }
         static void serialize(std::ostream& os, T* component) { getInstance().serializeImpl(os, component); }
         static void deserialize(std::istream& is, T* component) { getInstance().deserializeImpl(is, component); }
 
-        static const ComponentRegistry::Description description;
+        static ComponentRegistry::Description description;
     private:
         TypedComponentRegistry<T>();
 
@@ -151,12 +171,12 @@ namespace atta
     template<typename T>
     class ComponentRegistration
     {
-        static const ::atta::TypedComponentRegistry<T>& reg;
+        static ::atta::TypedComponentRegistry<T>& reg;
     };
 
     //---------- Default component register description ----------//
     template<typename T>
-    inline const ComponentRegistry::Description TypedComponentRegistry<T>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<T>::description = 
     {
         typeid(T).name(),
         {
@@ -165,7 +185,7 @@ namespace atta
     };
 
     //---------- Attribute helpers ----------//
-    inline std::ostream& operator<<(std::ostream& os, const ComponentRegistry& c)
+    inline std::ostream& operator<<(std::ostream& os, ComponentRegistry& c)
     {
         return os << c.getDescription().type;
     }

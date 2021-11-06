@@ -42,8 +42,8 @@ namespace atta
         MemoryManager::registerAllocator(SSID("MainAllocator"), 
                 static_cast<Allocator*>(_mainAllocator));
 
-        ResourceManager::startUp();
         ComponentManager::startUp();
+        ResourceManager::startUp();
         GraphicsManager::startUp();
         ui::UIManager::startUp();
         ScriptManager::startUp();
@@ -69,8 +69,8 @@ namespace atta
         ScriptManager::shutDown();
         ui::UIManager::shutDown();
         GraphicsManager::shutDown();
-        ComponentManager::shutDown();
         ResourceManager::shutDown();
+        ComponentManager::shutDown();
         FileManager::shutDown();
 
         delete _mainAllocator;
