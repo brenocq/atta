@@ -10,6 +10,17 @@
 
 namespace atta
 {
+    unsigned ComponentRegistry::getSerializedSize(Component* component)
+    {
+        std::vector<char> buffer(getDescription().maxSerializedSize);
+        std::ostringstream of;
+        std::basic_ostream<char>::pos_type posBefore = of.tellp();
+        serialize(of, component);
+        ASSERT(of.tellp() != -1, "Failed to calculate componente serialized size")
+        unsigned size = (int)of.tellp() - posBefore;
+        return size;
+    }
+
     template<typename T>
     void renderSliders(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
@@ -271,7 +282,7 @@ namespace atta
         }
         else
         {
-            // TODO text field (do not save StringId!!!)
+            // TODO text field (do not save StringId!)
         }
     }
 

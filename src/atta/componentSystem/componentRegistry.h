@@ -94,14 +94,17 @@ namespace atta
         {
             std::string type;
             std::vector<AttributeDescription> attributeDescriptions;
-            unsigned limit = 1024;// Maximum number of component instances
+            unsigned maxInstances = 1024;// Maximum number of component instances
+            unsigned maxSerializedSize = 1024*1024;// Maximum number of bytes when the component is serialized
         };
 
         virtual void renderUI(Component* component) = 0;
-        virtual std::vector<uint8_t> serialize(Component* component) = 0;
-        virtual void deserialize(Component* component, std::vector<uint8_t> serialized) = 0;
+        virtual void serialize(std::ostream& os, Component* component) = 0;
+        virtual void deserialize(std::istream& is, Component* component) = 0;
+        virtual std::vector<uint8_t> getDefault() = 0;
 
         virtual Description getDescription() const = 0;
+        unsigned getSerializedSize(Component* component);
         unsigned getSizeof() { return _sizeof; }
         std::string getTypeidName() { return _typeidName; }
         size_t getTypeidHash() { return _typeidHash; }
@@ -127,21 +130,22 @@ namespace atta
         }
 
         void renderUI(Component* component) override { renderUIImpl((T*)component); }
-        std::vector<uint8_t> serialize(Component* component) override { return serializeImpl((T*)component); }
-        void deserialize(Component* component, std::vector<uint8_t> serialized) override { deserializeImpl((T*)component, serialized); }
+        void serialize(std::ostream& os, Component* component) override { serializeImpl(os, (T*)component); }
+        void deserialize(std::istream& is, Component* component) override { deserializeImpl(is, (T*)component); }
+        std::vector<uint8_t> getDefault() override;
         Description getDescription() const override { return description; }
 
         static void renderUI(T* component) { getInstance().renderUIImpl(component); }
-        static std::vector<uint8_t> serialize(T* component) { return getInstance().serializeImpl(component); }
-        static void deserialize(T* component, std::vector<uint8_t> serialized) { getInstance().deserializeImpl(component, serialized); }
+        static void serialize(std::ostream& os, T* component) { getInstance().serializeImpl(os, component); }
+        static void deserialize(std::istream& is, T* component) { getInstance().deserializeImpl(is, component); }
 
         static const ComponentRegistry::Description description;
     private:
         TypedComponentRegistry<T>();
 
         void renderUIImpl(T* component);
-        std::vector<uint8_t> serializeImpl(T* component);
-        void deserializeImpl(T* component, std::vector<uint8_t> serialized);
+        void serializeImpl(std::ostream& os, T* component);
+        void deserializeImpl(std::istream& is, T* component);
     };
 
     template<typename T>

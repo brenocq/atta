@@ -163,7 +163,7 @@ namespace atta
         unsigned sizeofT = componentRegistry->getSizeof();
         std::string typeidTName = componentRegistry->getTypeidName();
         size_t typeidTHash = componentRegistry->getTypeidHash();
-        unsigned maxCount = desc.limit;
+        unsigned maxCount = desc.maxInstances;
 
         // TODO better pool allocator allocation from another one (now need to know that implementation to implement it correctly)
         // Should not need to calculate this size
@@ -270,7 +270,57 @@ namespace atta
         _factories.clear();
     }
 
-    void* ComponentManager::getEntityComponentByIdImpl(ComponentId id, EntityId entity)
+    Component* ComponentManager::addEntityComponentByIdImpl(ComponentId id, EntityId entity)
+    {
+        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
+
+        // Get entity
+        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
+        Entity* e = epool->getBlock(entity);
+
+        int freeComponentSlot = -1;
+        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
+        {
+            if(e->components[i] == nullptr)
+            {
+                freeComponentSlot = i;
+                break;
+            }
+        }
+
+        if(freeComponentSlot == -1)
+        {
+            LOG_WARN("ComponentManager", "Could not add component $0 to entity $1", id, entity);
+            return nullptr;
+        }
+
+        // Alloc component
+        PoolAllocator* cpool = MemoryManager::getAllocator<PoolAllocator>(id);
+        Component* component = reinterpret_cast<Component*>(cpool->alloc());
+
+        // Initialization
+        for(auto compReg : _componentRegistries)
+            if(compReg->getId() == id)
+            {
+                std::vector<uint8_t> defaultInit = compReg->getDefault();
+                memcpy(component, defaultInit.data(), compReg->getSizeof());
+                break;
+            }
+
+        // Add component to entity
+        e->components[freeComponentSlot] = reinterpret_cast<void*>(component);
+
+        return component;
+    }
+
+    template <ComponentId id>
+    Component* ComponentManager::getEntityComponentByIdImpl(EntityId entity)
+    {
+        return getEntityComponentByIdImpl(id, entity);
+    }
+
+    Component* ComponentManager::getEntityComponentByIdImpl(ComponentId id, EntityId entity)
     {
         DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
         // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
@@ -284,7 +334,7 @@ namespace atta
 
         for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
             if(alloc->owns(e->components[i]))
-                return e->components[i];
+                return reinterpret_cast<Component*>(e->components[i]);
         return nullptr;
     }
 }

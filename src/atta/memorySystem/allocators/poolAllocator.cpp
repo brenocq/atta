@@ -62,8 +62,8 @@ namespace atta
             curr += _blockSize;
             next += _blockSize;
         }
-        Node* nextNode = reinterpret_cast<Node*>(next);
-        nextNode->next = nullptr;
+        Node* tailNode = reinterpret_cast<Node*>(curr);
+        tailNode->next = nullptr;
     }
 
     uint64_t PoolAllocator::getIndex(void* block)
