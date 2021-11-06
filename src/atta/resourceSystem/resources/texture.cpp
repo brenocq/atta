@@ -57,7 +57,7 @@ namespace atta
 
                 _format = Format::RGB16F;
             }
-            LOG_WARN("Texture", "$3 -> w:$0, h:$1, c:$2", _width, _height, _channels, absolutePath);
+            //LOG_WARN("Texture", "$3 -> w:$0, h:$1, c:$2", _width, _height, _channels, absolutePath);
         }
         else
         {

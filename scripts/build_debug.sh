@@ -5,5 +5,5 @@ cd build/
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 make -j
 
-echo "---------- Running atta ----------"
+echo "---------- Executing ----------"
 ./bin/atta

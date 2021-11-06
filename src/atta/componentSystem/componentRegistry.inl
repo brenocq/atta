@@ -35,9 +35,8 @@ namespace atta
     TypedComponentRegistry<T>::TypedComponentRegistry():
         ComponentRegistry(sizeof(T), typeid(T).name(), typeid(T).hash_code())
     {
-        LOG_DEBUG("TypedComponentRegistry", "Created new registry for $0", typeid(T).name());
+        //LOG_DEBUG("TypedComponentRegistry", "Created new registry for $0", typeid(T).name());
         ComponentManager::registerComponent(dynamic_cast<ComponentRegistry*>(this));
-        //ComponentManager::registerComponent<T>(dynamic_cast<ComponentRegistry*>(this));
     }
 
     template<typename T>
@@ -91,13 +90,67 @@ namespace atta
     template<typename T>
     void TypedComponentRegistry<T>::serializeImpl(std::ostream& os, T* component)
     {
-        os.write(reinterpret_cast<const char*>(component), sizeof(T));
+        uint8_t* curr = reinterpret_cast<uint8_t*>(component);
+        for(unsigned i = 0; i < description.attributeDescriptions.size(); i++)
+        {
+            auto aDesc = description.attributeDescriptions[i];
+            unsigned size = (i == description.attributeDescriptions.size()-1)
+                ? sizeof(T)-aDesc.offset 
+                : description.attributeDescriptions[i+1].offset - aDesc.offset;
+            switch(aDesc.type)
+            {
+                case AttributeType::STRINGID:
+                {
+                    StringId* sid = reinterpret_cast<StringId*>(curr);
+                    std::string str = sid->getString();
+                    os.write(str.c_str(), str.size());
+                    os.put('\0');
+                    break;
+                }
+                default:
+                    os.write(reinterpret_cast<const char*>(curr), size);
+            }
+            curr += size;
+        }
     }
 
     template<typename T>
     void TypedComponentRegistry<T>::deserializeImpl(std::istream& is, T* component)
     {
-        is.read(reinterpret_cast<char*>(component), sizeof(T));
+        char* curr = reinterpret_cast<char*>(component);
+        for(unsigned i = 0; i < description.attributeDescriptions.size(); i++)
+        {
+            auto aDesc = description.attributeDescriptions[i];
+            unsigned size = (i == description.attributeDescriptions.size()-1)
+                ? sizeof(T)-aDesc.offset 
+                : description.attributeDescriptions[i+1].offset - aDesc.offset;
+            switch(aDesc.type)
+            {
+                case AttributeType::STRINGID:
+                {
+                    // Calculate string size
+                    int init = is.tellg();
+                    while(is.get()!='\0' && !is.eof());
+                    int size = int(is.tellg())-init-1;
+
+                    // Return to string first char
+                    is.seekg(init);
+
+                    // Read string
+                    std::string str;
+                    str.resize(size);
+                    is.read(&str[0], size);
+                    is.ignore();// jump \0
+                    StringId sid(str);
+                    // Save stringId to component
+                    memcpy(curr, reinterpret_cast<char*>(&sid), sizeof(StringId));
+                    break;
+                }
+                default:
+                    is.read(reinterpret_cast<char*>(curr), size);
+            }
+            curr += size;
+        }
     }
 
     template<typename T>

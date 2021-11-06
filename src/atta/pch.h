@@ -22,6 +22,7 @@
 #include <cmath>
 #include <sstream>
 #include <iostream>
+#include <cstring>
 #include <fstream>
 #include <filesystem>
 namespace fs = std::filesystem;

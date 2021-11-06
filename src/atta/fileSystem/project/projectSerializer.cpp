@@ -144,6 +144,7 @@ namespace atta
                 totalSectionSize += compReg->getSerializedSize(compPair.second) + sizeof(EntityId);
             write<uint32_t>(os, totalSectionSize);
 
+            std::basic_ostream<char>::pos_type posBef = os.tellp();
             for(auto compPair : pairs)
             {
                 // TODO StringId as string
@@ -151,6 +152,7 @@ namespace atta
                 write(os, compPair.first);
                 compReg->serialize(os, compPair.second);
             }
+            ASSERT(os.tellp()-posBef == totalSectionSize, "Serialized section size and calculated section size does not match");
         }
     }
 
@@ -170,22 +172,19 @@ namespace atta
 
             uint32_t numIds;
             read(is, numIds);
-            LOG_VERBOSE("ProjectSerializer","Num ids: $0", numIds);
             for(uint32_t i = 0; i < numIds; i++)
             {
                 EntityId id;
                 read(is, id);
-                LOG_VERBOSE("ProjectSerializer","id: $0", id);
 
                 EntityId res = ComponentManager::createEntity();
                 if(res != id)
-                    LOG_VERBOSE("ProjectSerializer","Created and serialized entities does not match! $0 and $1", id, res);
+                    LOG_WARN("ProjectSerializer","Created and serialized entities does not match! $0 and $1", id, res);
             }
         }
 
         // Read number of components
         read(is, numComponents);
-        LOG_VERBOSE("ProjectSerializer","Num components: $0", numComponents);
 
         for(uint32_t i = 0; i < numComponents; i++)
         {
@@ -195,7 +194,6 @@ namespace atta
             read(is, marker);
             read(is, sectionSize);
             ComponentRegistry* compReg = nullptr;
-            LOG_VERBOSE("ProjectSerializer"," - Component $0 size: $1", marker, sectionSize);
 
             // Find correct component registry
             for(auto componentRegistry : ComponentManager::getComponentRegistries())
@@ -210,23 +208,18 @@ namespace atta
             // If not found the component, skip this section
             if(compReg == nullptr)
             {
-                LOG_WARN("ProjectSerializer"," - Ignoring component $0, it is unknown");
                 is.ignore(sectionSize);
                 continue;
             }
 
             // Deserialize 
             size_t endPos = size_t(is.tellg()) + sectionSize;
-            LOG_DEBUG("ProjectSerializer", "curr: $0 end: $1", is.tellg(), endPos);
-            for(; size_t(is.tellg()) < endPos; i++)
+            while(size_t(is.tellg()) < endPos)
             {
                 EntityId eid;
                 read(is, eid);
-                LOG_WARN("ProjectSerializer", " - Data eid: $0", eid);
                 Component* component = ComponentManager::addEntityComponentById(compReg->getId(), eid);
-                LOG_WARN("ProjectSerializer", " - Component added");
                 compReg->deserialize(is, component);
-                LOG_WARN("ProjectSerializer", " - Read!");
             }
         }
     }

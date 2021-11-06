@@ -118,8 +118,6 @@ namespace atta
         int h = canvas_get_height();
         glfwSetWindowSize(_window,w,h);
 #endif
-
-        LOG_VERBOSE("Window", "Window created");
     }
 
     GlfwWindow::~GlfwWindow()

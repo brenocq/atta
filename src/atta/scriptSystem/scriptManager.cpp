@@ -98,7 +98,7 @@ namespace atta
                 if(file == e.file)
                     updateTarget(target.first);
 
-        LOG_DEBUG("ScriptManager", "New event: $0", e);
+        //LOG_DEBUG("ScriptManager", "New event: $0", e);
     }
 
     void ScriptManager::onProjectOpen(Event& event)
@@ -127,7 +127,7 @@ namespace atta
         for(auto target : _compiler->getTargets())
             linkTarget(target);
 
-        LOG_DEBUG("ScriptManager", "Targets updated: $0", _compiler->getTargets());
+        //LOG_DEBUG("ScriptManager", "Targets updated: $0", _compiler->getTargets());
     }
 
     void ScriptManager::updateTarget(StringId target)

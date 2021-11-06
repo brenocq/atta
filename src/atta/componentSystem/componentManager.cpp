@@ -40,34 +40,7 @@ namespace atta
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
 
         // Default entity
-        {
-            // Cube entity
-            EntityId cube = createEntity();
-            TransformComponent* t = addEntityComponent<TransformComponent>(cube);
-
-            NameComponent* n = addEntityComponent<NameComponent>(cube);
-            strcpy(n->name, "Cube");
-
-            MeshComponent* m = addEntityComponent<MeshComponent>(cube);
-            m->sid = StringId("meshes/cube.obj");
-
-            MaterialComponent* mt = addEntityComponent<MaterialComponent>(cube);
-            mt->albedo = { 0.5, 0.5, 0.5 };
-
-            // Light entity
-            EntityId light = createEntity();
-            t = addEntityComponent<TransformComponent>(light);
-            t->position = { -0.6, -0.6, 0.6 };
-            t->scale = { 0.05, 0.05, 0.05 };
-
-            n = addEntityComponent<NameComponent>(light);
-            strcpy(n->name, "Point light");
-
-            m = addEntityComponent<MeshComponent>(light);
-            m->sid = StringId("meshes/sphere.obj");
-
-            addEntityComponent<PointLightComponent>(light);
-        }
+        createDefaultImpl();
     }
 
     void ComponentManager::shutDownImpl()
@@ -75,11 +48,41 @@ namespace atta
 
     }
 
+    void ComponentManager::createDefaultImpl()
+    {
+        // Cube entity
+        EntityId cube = createEntity();
+        TransformComponent* t = addEntityComponent<TransformComponent>(cube);
+
+        NameComponent* n = addEntityComponent<NameComponent>(cube);
+        strcpy(n->name, "Cube");
+
+        MeshComponent* m = addEntityComponent<MeshComponent>(cube);
+        m->sid = StringId("meshes/cube.obj");
+
+        MaterialComponent* mt = addEntityComponent<MaterialComponent>(cube);
+        mt->albedo = { 0.5, 0.5, 0.5 };
+
+        // Light entity
+        EntityId light = createEntity();
+        t = addEntityComponent<TransformComponent>(light);
+        t->position = { -0.6, -0.6, 0.6 };
+        t->scale = { 0.05, 0.05, 0.05 };
+
+        n = addEntityComponent<NameComponent>(light);
+        strcpy(n->name, "Point light");
+
+        m = addEntityComponent<MeshComponent>(light);
+        m->sid = StringId("meshes/sphere.obj");
+
+        addEntityComponent<PointLightComponent>(light);
+    }
+
     void ComponentManager::createEntityPool()
     {
         const size_t entityMemorySize = (sizeof(EntityId)+sizeof(Entity))*_maxEntities;// TODO Entity objects may need to me aligned
 
-        LOG_VERBOSE("ComponentManager", "Allocating memory for entities. $0MB\n - Entity block size: $1.\n - Limits: \n    - $2 entities\n    - $3 components per entity", entityMemorySize/(1024*1024.0f), sizeof(EntityId), _maxEntities, sizeof(Entity)/sizeof(void*));
+        //LOG_VERBOSE("ComponentManager", "Allocating memory for entities. $0MB\n - Entity block size: $1.\n - Limits: \n    - $2 entities\n    - $3 components per entity", entityMemorySize/(1024*1024.0f), sizeof(EntityId), _maxEntities, sizeof(Entity)/sizeof(void*));
 
         // Allocate from component system memory
         uint8_t* entityMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(entityMemorySize, sizeof(Entity)));
@@ -171,8 +174,8 @@ namespace atta
 
         uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(maxCount*size, size));
         DASSERT(componentMemory != nullptr, "Could not allocate component system memory for " + name);
-        LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB -> memory space:($3 $4)", 
-                name, typeidTName, maxCount*sizeofT/(1024*1024.0f), (void*)(componentMemory), (void*)(componentMemory+maxCount*sizeofT));
+        //LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB -> memory space:($3 $4)", 
+        //        name, typeidTName, maxCount*sizeofT/(1024*1024.0f), (void*)(componentMemory), (void*)(componentMemory+maxCount*sizeofT));
 
         // Create pool allocator
         MemoryManager::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName), static_cast<Allocator*>(new PoolAllocator(componentMemory, sizeofT, maxCount)));

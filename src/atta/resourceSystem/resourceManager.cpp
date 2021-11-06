@@ -62,7 +62,7 @@ namespace atta
             for(auto& extension : meshExtensions)
                 if(extension == file.extension().string())
                 {
-                    LOG_DEBUG("ResourceManager", "Resource mesh: $0", file.string());
+                    //LOG_DEBUG("ResourceManager", "Resource mesh: $0", file.string());
                     ResourceManager::get<Mesh>(file.string());
                     break;
                 }
@@ -70,7 +70,7 @@ namespace atta
             for(auto& extension : textureExtensions)
                 if(extension == file.extension().string())
                 {
-                    LOG_DEBUG("ResourceManager", "Resource texture: $0", file.string());
+                    //LOG_DEBUG("ResourceManager", "Resource texture: $0", file.string());
                     ResourceManager::get<Texture>(file.string());
                     break;
                 }

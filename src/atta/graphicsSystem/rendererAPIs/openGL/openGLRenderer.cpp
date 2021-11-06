@@ -26,10 +26,10 @@ namespace atta
         ASSERT(status, "Failed to initialize Glad!");
 
         // Print info
-        LOG_INFO("OpenGLRenderer", "GPU Info:");
-        LOG_INFO("OpenGLRenderer", "  - Vendor: $0", glGetString(GL_VENDOR));
-        LOG_INFO("OpenGLRenderer", "  - Renderer: $0", glGetString(GL_RENDERER));
-        LOG_INFO("OpenGLRenderer", "  - Version: $0", glGetString(GL_VERSION));
+        //LOG_INFO("OpenGLRenderer", "GPU Info:");
+        //LOG_INFO("OpenGLRenderer", "  - Vendor: $0", glGetString(GL_VENDOR));
+        //LOG_INFO("OpenGLRenderer", "  - Renderer: $0", glGetString(GL_RENDERER));
+        //LOG_INFO("OpenGLRenderer", "  - Version: $0", glGetString(GL_VERSION));
 
 #if defined(ATTA_DEBUG_BUILD) && !defined(ATTA_OS_WEB)
         // Enable Debug
@@ -174,7 +174,7 @@ namespace atta
     void OpenGLRenderer::initializeMesh(StringId sid)
     {
         _openGLMeshes[sid.getId()] = std::make_shared<OpenGLMesh>(sid);
-        LOG_DEBUG("OpenGLRenderer", "Mesh loaded! [w]$0[]", sid);
+        //LOG_DEBUG("OpenGLRenderer", "Mesh loaded! [w]$0[]", sid);
     }
 
     void OpenGLRenderer::initializeTexture(StringId sid)
@@ -200,6 +200,6 @@ namespace atta
         info.debugName = sid;
         _openGLImages[sid.getId()] = std::make_shared<OpenGLImage>(info);
 
-        LOG_DEBUG("OpenGLRenderer", "Texture loaded! [w]$0[] -> $1 ($2)", sid, _openGLImages[sid.getId()]->getId(), info.format == Image::Format::RGB16F);
+        //LOG_DEBUG("OpenGLRenderer", "Texture loaded! [w]$0[] -> $1 ($2)", sid, _openGLImages[sid.getId()]->getId(), info.format == Image::Format::RGB16F);
     }
 }
