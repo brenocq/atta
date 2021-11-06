@@ -89,14 +89,23 @@ namespace atta
     }
 
     template<typename T>
-    std::vector<uint8_t> TypedComponentRegistry<T>::serializeImpl(T* component)
+    void TypedComponentRegistry<T>::serializeImpl(std::ostream& os, T* component)
     {
-        return {};
+        os.write(reinterpret_cast<const char*>(component), sizeof(T));
     }
 
     template<typename T>
-    void TypedComponentRegistry<T>::deserializeImpl(T* component, std::vector<uint8_t> serialized)
+    void TypedComponentRegistry<T>::deserializeImpl(std::istream& is, T* component)
     {
+        is.read(reinterpret_cast<char*>(component), sizeof(T));
+    }
 
+    template<typename T>
+    std::vector<uint8_t> TypedComponentRegistry<T>::getDefault()
+    {
+        std::vector<uint8_t> defaultData(sizeof(T));
+        T* newComponent = reinterpret_cast<T*>(defaultData.data());
+        *newComponent = T{};
+        return defaultData;
     }
 }

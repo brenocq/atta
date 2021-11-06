@@ -39,9 +39,10 @@ namespace atta
         static T* addEntityComponent(EntityId entity) { return getInstance().addEntityComponentImpl<T>(entity); }
         template <typename T>
         static T* getEntityComponent(EntityId entity) { return getInstance().getEntityComponentImpl<T>(entity); }
+        static Component* addEntityComponentById(ComponentId id, EntityId entity) { return getInstance().addEntityComponentByIdImpl(id, entity); }
         template <ComponentId id>
-        static void* getEntityComponentById(EntityId entity) { return getInstance().getEntityComponentByIdImpl<id>(entity); }
-        static void* getEntityComponentById(ComponentId id, EntityId entity) { return getInstance().getEntityComponentByIdImpl(id, entity); }
+        static Component* getEntityComponentById(EntityId entity) { return getInstance().getEntityComponentByIdImpl<id>(entity); }
+        static Component* getEntityComponentById(ComponentId id, EntityId entity) { return getInstance().getEntityComponentByIdImpl(id, entity); }
 
         template <typename T>
         static std::string getComponentName() { return getInstance().getComponentNameImpl<T>(); }
@@ -69,11 +70,12 @@ namespace atta
         EntityId createEntityImpl();
         template <typename T>
         T* addEntityComponentImpl(EntityId entity);
+        Component* addEntityComponentByIdImpl(ComponentId id, EntityId entity);
         template <typename T>
         T* getEntityComponentImpl(EntityId entity);
         template <ComponentId id>
-        void* getEntityComponentByIdImpl(EntityId entity);
-        void* getEntityComponentByIdImpl(ComponentId id, EntityId entity);
+        Component* getEntityComponentByIdImpl(EntityId entity);
+        Component* getEntityComponentByIdImpl(ComponentId id, EntityId entity);
         template <typename T>
         std::string getComponentNameImpl();
         std::vector<std::string> getComponentNamesImpl();
