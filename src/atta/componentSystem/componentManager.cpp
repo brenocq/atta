@@ -9,6 +9,8 @@
 #include <atta/componentSystem/factory.h>
 #include <atta/eventSystem/events/simulationStartEvent.h>
 #include <atta/eventSystem/events/simulationStopEvent.h>
+#include <atta/eventSystem/events/meshLoadEvent.h>
+#include <atta/eventSystem/events/textureLoadEvent.h>
 #include <cstring>
 
 namespace atta
@@ -38,6 +40,8 @@ namespace atta
 
         EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
+        EventManager::subscribe<MeshLoadEvent>(BIND_EVENT_FUNC(ComponentManager::onMeshEvent));
+        EventManager::subscribe<TextureLoadEvent>(BIND_EVENT_FUNC(ComponentManager::onTextureEvent));
 
         // Default entity
         createDefaultImpl();
@@ -317,6 +321,28 @@ namespace atta
         return component;
     }
 
+    void ComponentManager::removeEntityComponentByIdImpl(ComponentId id, EntityId entity)
+    {
+        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
+
+        // Get entity
+        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
+        Entity* e = epool->getBlock(entity);
+
+        // Get component pool
+        PoolAllocator* cpool = MemoryManager::getAllocator<PoolAllocator>(id);
+
+        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
+            if(cpool->owns(e->components[i]))
+            {
+                // Found component to remove
+                cpool->free(reinterpret_cast<void*>(e->components[i]));
+                e->components[i] = nullptr;
+                return;
+            }
+    }
+
     template <ComponentId id>
     Component* ComponentManager::getEntityComponentByIdImpl(EntityId entity)
     {
@@ -339,5 +365,41 @@ namespace atta
             if(alloc->owns(e->components[i]))
                 return reinterpret_cast<Component*>(e->components[i]);
         return nullptr;
+    }
+
+    void ComponentManager::onMeshEvent(Event& event)
+    {
+        switch(event.getType())
+        {
+            case MeshLoadEvent::type:
+                {
+                    MeshLoadEvent& e = reinterpret_cast<MeshLoadEvent&>(event);
+                    TypedComponentRegistry<MeshComponent>::description.attributeDescriptions[0].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MeshComponent>::description.attributeDescriptions[0].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MeshComponent>::description.attributeDescriptions[0].options.insert(std::any(e.sid));
+                    break;
+                }
+            default:
+                break;
+        }
+    }
+
+    void ComponentManager::onTextureEvent(Event& event)
+    {
+        switch(event.getType())
+        {
+            case TextureLoadEvent::type:
+                {
+                    TextureLoadEvent& e = reinterpret_cast<TextureLoadEvent&>(event);
+                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[4].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[5].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[6].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[8].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[7].options.insert(std::any(e.sid));
+                    break;
+                }
+            default:
+                break;
+        }
     }
 }

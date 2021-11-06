@@ -28,7 +28,7 @@ namespace atta
     ATTA_REGISTER_COMPONENT(MaterialComponent)
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<MaterialComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<MaterialComponent>::description = 
     {
         "Material",
         {

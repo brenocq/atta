@@ -19,7 +19,7 @@ namespace atta
     ATTA_REGISTER_COMPONENT(ScriptComponent)
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<ScriptComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<ScriptComponent>::description = 
     {
         "Script",
         {

@@ -132,16 +132,16 @@ namespace atta
         }
 
         // Check if all values inside option have the same type
-        for(unsigned i = 0; i < aDesc.options.size()-1; i++)
-            if(aDesc.options[i].type() != aDesc.options[i+1].type())
-            {
-                LOG_WARN("Component", "The component attribute [w]$0[] cannot be rendered because it has entries of different types.", aDesc.name);
-                return;
-            }
+        //for(auto it = aDesc.options.begin(); it != aDesc.options.end(); it++)
+        //    if(it->type() != (it+1)->type())
+        //    {
+        //        LOG_WARN("Component", "The component attribute [w]$0[] cannot be rendered because it has entries of different types.", aDesc.name);
+        //        return;
+        //    }
 
         // Check if they are value entries
-        for(unsigned i = 0; i < aDesc.options.size(); i++)
-            if(aDesc.options[i].type() != typeid(const char*) && aDesc.options[i].type() != typeid(T))
+        for(auto it = aDesc.options.begin(); it != aDesc.options.end(); it++)
+            if(it->type() != typeid(const char*) && it->type() != typeid(T))
             {
                 LOG_WARN("Component", "The component attribute [w]$0[] cannot be rendered because the values inside its atta::ComponentRegistry::AttributeDescriptoin::options should be all of type [w]const char*[] or [w]$1[]", aDesc.name, typeid(T).name());
                 return;
@@ -150,13 +150,13 @@ namespace atta
 
         enum Result { INDEX_AS_RESULT, VALUE_AS_RESULT } result = INDEX_AS_RESULT;
         std::vector<std::string> valuesPreview;
-        if(aDesc.options[0].type() == typeid(const char*))
+        if(aDesc.options.begin()->type() == typeid(const char*))
         {
             for(auto value : aDesc.options)
-                valuesPreview.push_back(std::string(std::any_cast<const char*>(value)));
+                valuesPreview.push_back(std::any_cast<StringId>(value).getString());
             result = INDEX_AS_RESULT;
         }
-        else if(aDesc.options[0].type() == typeid(T))
+        else if(aDesc.options.begin()->type() == typeid(T))
         {
             for(auto value : aDesc.options)
                 valuesPreview.push_back(std::to_string(std::any_cast<T>(value)));
@@ -172,21 +172,23 @@ namespace atta
         }
         else if(result == VALUE_AS_RESULT)
         {
-            for(size_t i = 0; i < valuesPreview.size(); i++)
-                if(*data == std::any_cast<T>(aDesc.options[i]))
+            auto it = aDesc.options.begin();
+            for(size_t i = 0; i < valuesPreview.size(); i++, it++)
+                if(*data == std::any_cast<T>(*it))
                     comboValue = i;
         }
 
         if(ImGui::BeginCombo((aDesc.name+"##"+imguiId).c_str(), valuesPreview[comboValue].c_str()))
         {
-            for(size_t i = 0; i < valuesPreview.size(); i++)
+            auto it = aDesc.options.begin();
+            for(size_t i = 0; i < valuesPreview.size(); i++, it++)
             {
                 if(ImGui::Selectable(valuesPreview[i].c_str(), comboValue == i))
                 {
                     if(result == INDEX_AS_RESULT)
                         *data = (T)i;
                     else if(result == VALUE_AS_RESULT)
-                        *data = std::any_cast<T>(aDesc.options[i]);
+                        *data = std::any_cast<T>(*it);
                 }
                 if(comboValue == i)
                     ImGui::SetItemDefaultFocus();
@@ -260,7 +262,7 @@ namespace atta
         {
             std::vector<StringId> sids;
             for(auto value : aDesc.options)
-                sids.emplace_back(std::string(std::any_cast<const char*>(value)));
+                sids.emplace_back(std::any_cast<StringId>(value).getString());
 
             uint32_t comboValue = 0;
             for(size_t i = 0; i<sids.size(); i++)

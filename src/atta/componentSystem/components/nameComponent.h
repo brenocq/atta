@@ -18,7 +18,7 @@ namespace atta
     };
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<NameComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<NameComponent>::description = 
     {
         "Name",
         {

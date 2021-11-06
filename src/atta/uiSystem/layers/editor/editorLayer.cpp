@@ -51,8 +51,8 @@ namespace atta::ui
         //if(_editorState != EditorState::SIMULATION_RUNNING)
         {
             _topBar.render();
-            //bool demo = true;
-            //ImGui::ShowDemoWindow(&demo);
+            bool demo = true;
+            ImGui::ShowDemoWindow(&demo);
 
             _entityWindow.render();
             IOSystemWindow::render();

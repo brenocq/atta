@@ -18,7 +18,7 @@ namespace atta
     ATTA_REGISTER_COMPONENT(PrototypeComponent)
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<PrototypeComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<PrototypeComponent>::description = 
     {
         "Prototype",
         {

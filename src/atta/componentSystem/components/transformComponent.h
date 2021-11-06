@@ -21,7 +21,7 @@ namespace atta
     ATTA_REGISTER_COMPONENT(TransformComponent)
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<TransformComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<TransformComponent>::description = 
     {
         "Transform",
         {

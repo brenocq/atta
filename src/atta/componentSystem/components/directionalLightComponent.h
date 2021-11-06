@@ -19,7 +19,7 @@ namespace atta
     ATTA_REGISTER_COMPONENT(DirectionalLightComponent)
 
     template<>
-    inline const ComponentRegistry::Description TypedComponentRegistry<DirectionalLightComponent>::description = 
+    inline ComponentRegistry::Description TypedComponentRegistry<DirectionalLightComponent>::description = 
     {
         "Directional Light",
         {
