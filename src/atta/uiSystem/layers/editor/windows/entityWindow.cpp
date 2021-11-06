@@ -35,6 +35,7 @@ namespace atta::ui
     void EntityWindow::renderTree()
     {
         std::vector<EntityId> entities = ComponentManager::getEntities();
+        if(entities.size() > 0) _someSelected = true;
         int i = 0;
         ImGui::Text("Scene");
 
@@ -97,44 +98,62 @@ namespace atta::ui
             {
                 DASSERT(payload->DataSize == sizeof(EntityId), "Payload data should have same size as EntityId");
                 EntityId childEntity = *(const EntityId*)payload->Data;
-                LOG_DEBUG("EntityWindow", "Now $1 is child of $0", entity, childEntity);
 
-                // Update new parent (entity that received drop)
-                if(r)
-                    r->children.push_back(childEntity);
-                else
+                // Check if entity can be children (avoid recursive)
+                bool canBeChild = true;
+                if(r && r->parent != -1)
                 {
-                    // Create parent relationship
-                    r = ComponentManager::addEntityComponent<RelationshipComponent>(entity);
-                    r->parent = -1;
-                    r->children = { childEntity };
-                }
-
-                // Update child relationship (entity that was dropped)
-                RelationshipComponent* cr = ComponentManager::getEntityComponent<RelationshipComponent>(childEntity);
-                if(cr)
-                {
-                    // Remove old entity parent if necessary
-                    if(cr->parent != -1)
+                    // From the parent, going up in the hierarchy, can't find the child
+                    RelationshipComponent* parent = r;
+                    if(r->parent == childEntity) canBeChild = false;
+                    while(canBeChild && parent != nullptr)
                     {
-                        RelationshipComponent* oldp = ComponentManager::getEntityComponent<RelationshipComponent>(cr->parent);
-                        DASSERT(oldp, "Entity dropped has parent, so parent must have parent relationship too");
-                        for(size_t i = 0; i < oldp->children.size(); i++)
-                            if(oldp->children[i] == childEntity)
-                            {
-                                oldp->children.erase(oldp->children.begin()+i);
-                                break;
-                            }
+                        if(parent->parent == childEntity) canBeChild = false;
+
+                        if(parent->parent == -1) parent = nullptr;
+                        else parent = ComponentManager::getEntityComponent<RelationshipComponent>(parent->parent);
                     }
                 }
-                else
+
+                if(canBeChild)
                 {
-                    // Create child relationship
-                    cr = ComponentManager::addEntityComponent<RelationshipComponent>(childEntity);
-                    cr->children = {};
+                    // Update new parent (entity that received drop)
+                    if(r)
+                        r->children.push_back(childEntity);
+                    else
+                    {
+                        // Create parent relationship
+                        r = ComponentManager::addEntityComponent<RelationshipComponent>(entity);
+                        r->parent = -1;
+                        r->children = { childEntity };
+                    }
+
+                    RelationshipComponent* cr = ComponentManager::getEntityComponent<RelationshipComponent>(childEntity);
+                    // Update child relationship (entity that was dropped)
+                    if(cr)
+                    {
+                        // Remove old entity parent if necessary
+                        if(cr->parent != -1)
+                        {
+                            RelationshipComponent* oldp = ComponentManager::getEntityComponent<RelationshipComponent>(cr->parent);
+                            DASSERT(oldp, "Entity dropped has parent, so parent must have parent relationship too");
+                            for(size_t i = 0; i < oldp->children.size(); i++)
+                                if(oldp->children[i] == childEntity)
+                                {
+                                    oldp->children.erase(oldp->children.begin()+i);
+                                    break;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        // Create child relationship
+                        cr = ComponentManager::addEntityComponent<RelationshipComponent>(childEntity);
+                        cr->children = {};
+                    }
+                    // Set child parent
+                    cr->parent = entity;
                 }
-                // Set child parent
-                cr->parent = entity;
             }
             ImGui::EndDragDropTarget();
         }

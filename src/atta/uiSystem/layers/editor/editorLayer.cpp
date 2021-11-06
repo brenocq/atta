@@ -51,8 +51,8 @@ namespace atta::ui
         //if(_editorState != EditorState::SIMULATION_RUNNING)
         {
             _topBar.render();
-            bool demo = true;
-            ImGui::ShowDemoWindow(&demo);
+            //bool demo = true;
+            //ImGui::ShowDemoWindow(&demo);
 
             _entityWindow.render();
             IOSystemWindow::render();
@@ -111,6 +111,23 @@ namespace atta::ui
                 ImVec2 windowSize = ImGui::GetWindowSize();
                 if(windowSize.x != size.x || windowSize.y != size.y)
                     viewport->resize((uint32_t)windowSize.x-10, (uint32_t)windowSize.y-30);
+
+                //----- Overlay -----//
+                {
+                    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+                    ImVec2 window = ImGui::GetWindowPos();
+                    ImGui::SetNextWindowPos(ImVec2(window.x+10, window.y+30));
+                    ImGui::SetNextWindowBgAlpha(0.35f);
+                    bool open = true;
+                    if(ImGui::Begin((viewport->getSID().getString()+"Overlay").c_str(), &open, window_flags))
+                    {
+                        ImGui::Text("To move the camera");
+                        ImGui::BulletText("Holding mouse middle button");
+                        ImGui::BulletText("Rotate with mouse");
+                        ImGui::BulletText("Move with ASWD QE");
+                    }
+                    ImGui::End();
+                }
             }
             ImGui::End();
             ImGui::PopStyleVar(1);
