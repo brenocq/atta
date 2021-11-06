@@ -54,6 +54,7 @@ namespace atta
 
         static void registerComponent(ComponentRegistry* componentRegistry) { return getInstance().registerComponentImpl(componentRegistry); }
 
+        static void createDefault() { getInstance().createDefaultImpl(); }
         static void clear() { getInstance().clearImpl(); }
 
         // Return stack pointer to the point before custom components (free custom component allocators)
@@ -63,6 +64,7 @@ namespace atta
         //----- Startup/ShutDown -----//
         void startUpImpl();
         void shutDownImpl();
+        void createDefaultImpl();
         void clearImpl();
         void createEntityPool();
 

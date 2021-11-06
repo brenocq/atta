@@ -25,7 +25,7 @@ namespace atta
     void LinuxCompiler::compileAll()
     {
         std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-        LOG_DEBUG("LinuxCompiler", "Compile all targets");
+        //LOG_DEBUG("LinuxCompiler", "Compile all targets");
 
         fs::path projectDir = FileManager::getProject()->getDirectory();
         fs::path buildDir = projectDir / "build";
@@ -83,14 +83,14 @@ namespace atta
 
         std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
         auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-        LOG_INFO("LinuxCompiler", "Time to compile all: $0 ms", micro.count()/1000.0f);
+        //LOG_INFO("LinuxCompiler", "Time to compile all: $0 ms", micro.count()/1000.0f);
     }
 
     void LinuxCompiler::compileTarget(StringId target)
     {
         std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
-        LOG_DEBUG("LinuxCompiler", "Compile target $0", target);
+        //LOG_DEBUG("LinuxCompiler", "Compile target $0", target);
         if(_targetFiles.find(target) == _targetFiles.end())
         {
             LOG_WARN("LinuxCompiler", "Could not find target $0", target);
@@ -142,7 +142,7 @@ namespace atta
 
         std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
         auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-        LOG_INFO("LinuxCompiler", "Time to compile target $1: $0 ms", micro.count()/1000.0f, target);
+        //LOG_INFO("LinuxCompiler", "Time to compile target $1: $0 ms", micro.count()/1000.0f, target);
     }
 
     void LinuxCompiler::updateTargets()
@@ -179,7 +179,6 @@ namespace atta
             size_t space = line.find(' ');
             if(isTarget)
             {
-                LOG_DEBUG("Compi", "Curr is target: $0", line.substr(space+1));
                 StringId target = StringId(line.substr(space+1));
                 findTargetFiles(target);
             }
@@ -212,7 +211,7 @@ namespace atta
                     size_t start = line.find("\"", end+1);
                     if(start == std::string::npos)	
                     {
-                        LOG_DEBUG("LinuxCompiler", "Updated target files $0:\n $1", target, _targetFiles[target]);
+                        //LOG_DEBUG("LinuxCompiler", "Updated target files $0:\n $1", target, _targetFiles[target]);
                         return;
                     }
                     end = line.find("\"", start+1);

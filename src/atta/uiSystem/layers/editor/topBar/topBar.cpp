@@ -36,8 +36,15 @@ namespace atta::ui
                 if(FileManager::isProjectOpen())
                 {
                     ImGui::Text(FileManager::getProject()->getName().c_str());
+                    ImGui::Separator();
+
                     if(ImGui::MenuItem("Close"))
+                    {
+                        FileManager::saveProject();
                         FileManager::closeProject();
+                        ComponentManager::clear();
+                        ComponentManager::createDefault();
+                    }
                 }
 
                 if(ImGui::MenuItem("Open"))
@@ -154,6 +161,7 @@ namespace atta::ui
 
             if(ImGui::Button("Open"))
             { 
+                FileManager::saveProject();
                 FileManager::openProject(fs::path(buf));
                 ImGui::CloseCurrentPopup();
                 _showOpenProject = false;
@@ -194,7 +202,7 @@ namespace atta::ui
 
             if(ImGui::Button("Create"))
             { 
-                FileManager::saveNewProject(fs::path(buf));
+                FileManager::createProject(fs::path(buf));
                 ImGui::CloseCurrentPopup();
                 _showCreateProject = false;
                 lastShow = false;

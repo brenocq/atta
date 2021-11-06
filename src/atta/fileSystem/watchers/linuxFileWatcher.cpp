@@ -56,7 +56,7 @@ namespace atta
         }
 
         _pathsToWatch[directory] = wd;
-        LOG_INFO("LinuxFileWatcher", "Watch $0 created", directory, wd);
+        //LOG_INFO("LinuxFileWatcher", "Watcher $0 created", directory, wd);
 
         // Add subdirectories
         for(auto& p : fs::directory_iterator(directory))

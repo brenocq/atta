@@ -37,10 +37,10 @@ namespace atta
 
     }
 
-    bool FileManager::openProjectImpl(fs::path projectFile, bool newProject)
+    bool FileManager::openProjectImpl(fs::path projectFile)
     {
         // Check valid project file (skip file check if first time saving this project)
-        if(!newProject && !fs::exists(projectFile))
+        if(!fs::exists(projectFile))
         {
             LOG_WARN("FileManager", "Could not find file [w]$0[]", fs::absolute(projectFile));
             return false;
@@ -51,22 +51,17 @@ namespace atta
             return false;
         }
 
-        // Close project if still open (save if not new project)
-        // When opening a new project we save the changes only to the new project
+        // Project open project is it exists
         if(_project != nullptr)
-            closeProjectImpl(!newProject);
+            closeProjectImpl();
 
         // Update project
         _project = std::make_shared<Project>(projectFile);
         _projectSerializer = std::make_shared<ProjectSerializer>(_project);
 
-        if(!newProject)
-        {
-            ComponentManager::clear();
-            _projectSerializer->deserialize();// Deserialize already created project file
-        }
-        else
-            _projectSerializer->serialize();// Create new project file (keep component system)
+        // Clear components and read project file
+        ComponentManager::clear();
+        _projectSerializer->deserialize();
 
         // Watch project directory file changes
         _fileWatcher->addWatch(_project->getDirectory());
@@ -77,24 +72,32 @@ namespace atta
         return true;
     }
 
-    bool FileManager::isProjectOpenImpl() const
+    bool FileManager::createProjectImpl(fs::path projectFile)
     {
-        return _project != nullptr;
-    }
+        if(projectFile.extension() != ".atta")
+        {
+            LOG_WARN("FileManager", "Project file must have .atta extension [w]$0[]", fs::absolute(projectFile));
+            return false;
+        }
 
-    void FileManager::closeProjectImpl(bool save)
-    {
-        if(save)
-            saveProjectImpl();
+        // Close if there is an open project
+        if(_project != nullptr)
+            closeProjectImpl();
 
-        if(_project)
-            _fileWatcher->removeWatch(_project->getDirectory());
+        // Update project
+        _project = std::make_shared<Project>(projectFile);
+        _projectSerializer = std::make_shared<ProjectSerializer>(_project);
 
-        _project.reset();
-        _projectSerializer.reset();
+        // Write data to the file
+        _projectSerializer->serialize();
 
-        ProjectCloseEvent e;
+        // Watch project directory file changes
+        _fileWatcher->addWatch(_project->getDirectory());
+
+        ProjectOpenEvent e;
         EventManager::publish(e);
+
+        return true;
     }
 
     void FileManager::saveProjectImpl()
@@ -103,12 +106,26 @@ namespace atta
             _projectSerializer->serialize();
     }
 
-    void FileManager::saveNewProjectImpl(fs::path projectFile)
+    void FileManager::closeProjectImpl()
     {
-        openProjectImpl(projectFile, true);
+        if(_project == nullptr)
+            return;
+
+        _fileWatcher->removeWatch(_project->getDirectory());
+
+        _project.reset();
+        _projectSerializer.reset();
+
+        ProjectCloseEvent e;
+        EventManager::publish(e);
     }
 
-    // TODO remove
+    bool FileManager::isProjectOpenImpl() const
+    {
+        return _project != nullptr;
+    }
+
+    // TODO remove and use multi threading
     void FileManager::updateImpl()
     {
         _fileWatcher->update();

@@ -56,12 +56,14 @@ namespace atta
         EventManager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 
+        LOG_SUCCESS("Atta", "Initialized");
         if(!info.projectFile.empty())
             FileManager::openProject(info.projectFile);
     }
 
     Atta::~Atta()
     {
+        FileManager::saveProject();
         FileManager::closeProject();
         SensorManager::shutDown();
         ScriptManager::shutDown();
@@ -72,7 +74,7 @@ namespace atta
         FileManager::shutDown();
 
         delete _mainAllocator;
-        LOG_VERBOSE("Atta", "Finished");
+        LOG_SUCCESS("Atta", "Finished");
     }
 
 #ifdef ATTA_OS_WEB
