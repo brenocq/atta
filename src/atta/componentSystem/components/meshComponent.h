@@ -14,6 +14,7 @@ namespace atta
 {
     struct MeshComponent final : public Component
     {
+        MeshComponent();
         StringId sid;
     };
     ATTA_REGISTER_COMPONENT(MeshComponent)

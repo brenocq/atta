@@ -65,7 +65,7 @@ namespace atta
 
     void PhongRenderer::render(std::shared_ptr<Camera> camera)
     {
-        std::vector<EntityId> entities = ComponentManager::getEntities();
+        std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
         _geometryPipeline->begin();
         {
             // Camera

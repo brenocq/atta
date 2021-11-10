@@ -7,7 +7,7 @@
 #ifndef ATTA_SCRIPT_SYSTEM_SCRIPT_H
 #define ATTA_SCRIPT_SYSTEM_SCRIPT_H
 #include <atta/componentSystem/componentManager.h>
-#include <atta/componentSystem/factory.h>
+#include <atta/componentSystem/entity.h>
 
 namespace atta
 {
@@ -16,8 +16,7 @@ namespace atta
 	public:
 		Script() = default;  
 		virtual ~Script() {};  
-		virtual void update(EntityId id, float delta = 0.0f) = 0;
-		virtual void update(const std::vector<uint8_t*>& memories, uint64_t cloneId, float delta = 0.0f) = 0;
+		virtual void update(Entity entity, float dt) = 0;
 	}; 
 }
 

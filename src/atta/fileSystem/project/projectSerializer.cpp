@@ -114,7 +114,7 @@ namespace atta
         write(os, "comp");
 
         // Serialize entity ids
-        std::vector<EntityId> entities = ComponentManager::getEntities();
+        std::vector<EntityId> entities = ComponentManager::getEntitiesView();
         write(os, "id");// Entity id marker
         write<uint32_t>(os, entities.size());
         for(EntityId entity : entities)

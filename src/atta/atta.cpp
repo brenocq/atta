@@ -26,6 +26,7 @@
 // Include execute code
 #include <atta/scriptSystem/script.h>
 #include <atta/componentSystem/components/scriptComponent.h>
+#include <atta/componentSystem/components/prototypeComponent.h>
 
 // TODO move to another class
 #include <ctime>
@@ -127,30 +128,25 @@ namespace atta
             if(project)
                 project->onUpdateBefore(dt);
 
-            std::vector<EntityId> entities = ComponentManager::getEntities();
+            // Run entity scripts
+            // TODO keep list of entities that have script (and are not prototype entities)
+            std::vector<EntityId> entities = ComponentManager::getScriptView();
             for(EntityId entity : entities)
             {
                 ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(entity);
-                if(scriptComponent)
+                PrototypeComponent* prototypeComponent = ComponentManager::getEntityComponent<PrototypeComponent>(entity);
+                if(scriptComponent && !prototypeComponent)
                 {
+                    //std::vector<Component*> components = ComponentManager::getEntityComponents(entity);
                     Script* script = ScriptManager::getScript(scriptComponent->sid);
                     if(script)
-                        script->update(entity, dt);
+                        script->update(Entity(entity), dt);
                 }
             }
 
+            // Run clone scripts
             for(auto& factory : ComponentManager::getFactories())
-            {
-                ScriptComponent* scriptComponent = factory.getComponent<ScriptComponent>();
-                if(scriptComponent)
-                {
-                    Script* script = ScriptManager::getScript(scriptComponent->sid);
-                    std::vector<uint8_t*> memories = factory.getMemories();
-                    if(script)
-                        for(uint64_t i = 0; i < factory.getMaxClones(); i++)
-                            script->update(memories, i, dt);
-                }
-            }
+                factory.runScripts(dt);
 
             if(project)
                 project->onUpdateAfter(dt);

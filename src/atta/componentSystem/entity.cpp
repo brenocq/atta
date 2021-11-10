@@ -8,8 +8,8 @@
 
 namespace atta
 {
-    Entity::Entity(EntityId id):
-        _id(id)
+    Entity::Entity(EntityId id, int cloneId):
+        _id(id), _cloneId(cloneId)
     {
 
     }

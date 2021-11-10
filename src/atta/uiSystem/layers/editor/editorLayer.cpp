@@ -77,19 +77,6 @@ namespace atta::ui
         for(auto& viewport : viewports)
         {
             i++;
-
-            if(_editorState == EditorState::SIMULATION_RUNNING)
-            {
-                ImGuiWindowClass window_class;
-                window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
-                ImGui::SetNextWindowClass(&window_class);
-            }
-            else
-            {
-                ImGuiWindowClass window_class;
-                ImGui::SetNextWindowClass(&window_class);
-            }
-
             // Render and resize
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
             ImGui::Begin(viewport->getSID().getString().c_str());
@@ -131,7 +118,6 @@ namespace atta::ui
             }
             ImGui::End();
             ImGui::PopStyleVar(1);
-
         }
     }
 

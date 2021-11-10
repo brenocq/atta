@@ -9,6 +9,7 @@
 #include <atta/eventSystem/events/fileWatchEvent.h>
 #include <atta/eventSystem/events/projectOpenEvent.h>
 #include <atta/eventSystem/events/projectCloseEvent.h>
+#include <atta/eventSystem/events/scriptTargetEvent.h>
 #include <atta/scriptSystem/compilers/nullCompiler.h>
 #include <atta/scriptSystem/compilers/linuxCompiler.h>
 #include <atta/scriptSystem/linkers/nullLinker.h>
@@ -54,20 +55,21 @@ namespace atta
         if(_scripts.find(target) != _scripts.end())
             return _scripts.at(target);
         else
+        {
+            LOG_WARN("ScriptManager", "Trying to get script from target that does not exist: [w]$0[]", target);
             return nullptr;
+        }
     }
 
     std::vector<StringId> ScriptManager::getScriptSids() { return getInstance().getScriptSidsImpl(); }
     std::vector<StringId> ScriptManager::getScriptSidsImpl() const
     {
-        std::vector<StringId> scripts = _compiler->getTargets();
-        for(size_t i = 0; i < scripts.size(); i++)
-            if(scripts[i] == _projectScript.first)
-            {
-                scripts.erase(scripts.begin()+i);
-                break;
-            }
+        std::vector<StringId> scripts;
+        for(auto [script, value] : _scripts)
+            if(script != _projectScript.first)
+                scripts.push_back(script);
 
+        LOG_DEBUG("ScriptManager", "Scripts: $0", scripts);
         return scripts;
     }
 
@@ -98,12 +100,20 @@ namespace atta
                 if(file == e.file)
                     updateTarget(target.first);
 
-        //LOG_DEBUG("ScriptManager", "New event: $0", e);
+        // Publish event
+        ScriptTargetEvent evt;
+        evt.scriptSids = getScriptSids();
+        EventManager::publish(evt);
     }
 
     void ScriptManager::onProjectOpen(Event& event)
     {
         updateAllTargets();
+
+        // Publish event
+        ScriptTargetEvent evt;
+        evt.scriptSids = getScriptSids();
+        EventManager::publish(evt);
     }
 
     void ScriptManager::onProjectClose(Event& event)
@@ -111,6 +121,11 @@ namespace atta
         // Release all targets
         for(auto target : _compiler->getTargets())
             releaseTarget(target);
+
+        // Publish event
+        ScriptTargetEvent evt;
+        evt.scriptSids = getScriptSids();
+        EventManager::publish(evt);
     }
 
     void ScriptManager::updateAllTargets()

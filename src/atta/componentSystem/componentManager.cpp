@@ -11,6 +11,7 @@
 #include <atta/eventSystem/events/simulationStopEvent.h>
 #include <atta/eventSystem/events/meshLoadEvent.h>
 #include <atta/eventSystem/events/textureLoadEvent.h>
+#include <atta/eventSystem/events/scriptTargetEvent.h>
 #include <cstring>
 
 namespace atta
@@ -42,6 +43,7 @@ namespace atta
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(ComponentManager::onSimulationStateChange));
         EventManager::subscribe<MeshLoadEvent>(BIND_EVENT_FUNC(ComponentManager::onMeshEvent));
         EventManager::subscribe<TextureLoadEvent>(BIND_EVENT_FUNC(ComponentManager::onTextureEvent));
+        EventManager::subscribe<ScriptTargetEvent>(BIND_EVENT_FUNC(ComponentManager::onScriptEvent));
 
         // Default entity
         createDefaultImpl();
@@ -102,6 +104,7 @@ namespace atta
                 static_cast<Allocator*>(new PoolAllocatorT<Entity>(startEntityPool, _maxEntities)));
     }
 
+    EntityId ComponentManager::createEntity() { return getInstance().createEntityImpl(); }
     EntityId ComponentManager::createEntityImpl()
     {
         PoolAllocatorT<Entity>* pool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
@@ -119,21 +122,46 @@ namespace atta
         // Add entity to dense list
         _denseList[_denseListSize++] = eid;
 
+        _noPrototypeView.insert(eid);
+
         return eid;
     }
 
-    std::vector<std::string> ComponentManager::getComponentNamesImpl()
+    EntityId ComponentManager::createClone() { return getInstance().createCloneImpl(); }
+    EntityId ComponentManager::createCloneImpl()
     {
-        std::vector<std::string> componentNames;
-        for(auto p : _componentNames)
-            componentNames.push_back(p.second);
-
-        return componentNames;
+        EntityId eid = createEntityImpl();
+        _cloneView.insert(eid);
+        return eid;
     }
 
-    std::vector<EntityId> ComponentManager::getEntitiesImpl()
+    void ComponentManager::destroyEntity(EntityId entity) { return getInstance().destroyEntityImpl(entity); }
+    void ComponentManager::destroyEntityImpl(EntityId entity)
     {
-        return std::vector<EntityId>(_denseList, _denseList+_denseListSize);
+        LOG_WARN("ComponentManager", "destroyEntity(EntityId) not implemented yet!");
+    }
+    
+    void ComponentManager::destroyEntityOnly(EntityId entity) { return getInstance().destroyEntityOnlyImpl(entity); }
+    void ComponentManager::destroyEntityOnlyImpl(EntityId entity)
+    {
+        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
+    
+        // Get entity
+        Entity* e = epool->getBlock(entity);
+
+        // Remove entity component pointers
+        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
+            e->components[i] = nullptr;
+
+        // Remove entity from dense list
+        for(unsigned i = 0; i < _denseListSize; i++)
+            if(_denseList[i] == entity)
+            {
+                // Swap this entity with last entity and reduce list size
+                _denseList[i] = _denseList[_denseListSize-1];
+                _denseListSize--;
+                break;
+            }
     }
 
     void ComponentManager::clearImpl()
@@ -178,105 +206,23 @@ namespace atta
 
         uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(maxCount*size, size));
         DASSERT(componentMemory != nullptr, "Could not allocate component system memory for " + name);
-        //LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB -> memory space:($3 $4)", 
-        //        name, typeidTName, maxCount*sizeofT/(1024*1024.0f), (void*)(componentMemory), (void*)(componentMemory+maxCount*sizeofT));
+        //LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB ($5 instances) -> memory space:($3 $4)", 
+        //        name, typeidTName, maxCount*sizeofT/(1024*1024.0f), (void*)(componentMemory), (void*)(componentMemory+maxCount*sizeofT), maxCount);
 
         // Create pool allocator
-        MemoryManager::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName), static_cast<Allocator*>(new PoolAllocator(componentMemory, sizeofT, maxCount)));
-
-        // Register component name and id
-        _componentNames[typeidTHash] = name;
-        _componentIds[typeidTHash] = COMPONENT_POOL_SSID_BY_NAME(typeidTName);
-        _componentSize[typeidTHash] = sizeofT;
+        MemoryManager::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName), static_cast<Allocator*>(new PoolAllocator(componentMemory, maxCount, sizeofT)));
     }
 
     void ComponentManager::unregisterCustomComponentsImpl()
     {
+        // Return stack pointer to the point before custom components (free custom component allocators)
         _componentRegistries.resize(_numAttaComponents);
         _allocator->rollback(_customComponentsMarker);
     }
 
-    //---------- Factory Management ----------//
-    void ComponentManager::onSimulationStateChange(Event& event)
-    {
-        if(event.getType() == SimulationStartEvent::type)
-        {
-            createFactories();
-        }
-        else if(event.getType() == SimulationStopEvent::type)
-        {
-            destroyFactories();
-        }
-        else
-        {
-            LOG_WARN("ComponentManager", "Received simulation event that was not be handled (type=[w]$0[])", event.getType());
-        }
-    }
-
-    void ComponentManager::createFactories()
-    {
-        LOG_WARN("ComponentManager", "Create factories");
-        // Create factory for each entity that has prototype
-        for(auto entity : getEntities())
-        {
-            PrototypeComponent* prototype = getEntityComponentImpl<PrototypeComponent>(entity);
-            if(prototype != nullptr)
-            {
-                std::vector<std::pair<size_t, uint8_t*>> componentMemories;
-
-                LOG_WARN("ComponentManager", "Entity $0 is an prototype", entity);
-                // Allocate memory for each 
-                for(auto [componentHash, componentId] : _componentIds)	
-                {
-                    // Get component pool
-                    Allocator* alloc = MemoryManager::getAllocator(componentId);
-                    size_t componentSize = _componentSize[componentHash];
-
-                    if(prototype->maxClones > 0)
-                    {
-                        uint8_t* mem = (uint8_t*)alloc->allocBytes(componentSize, componentSize);
-                        componentMemories.push_back(std::make_pair(componentHash, mem));
-                        LOG_WARN("ComponentManager", "Found component $0, mem:$1", _componentNames[componentHash], (void*)mem);
-                    }
-
-                    for(uint32_t i = 1; i < prototype->maxClones; i++)
-                        alloc->allocBytes(componentSize, componentSize);
-                }
-
-                Factory::CreateInfo info {};
-                info.prototypeId = entity;
-                info.maxClones = prototype->maxClones;
-                info.componentMemories = componentMemories;
-                _factories.emplace_back(info);
-            }
-        }
-    }
-
-    void ComponentManager::destroyFactories()
-    { 
-        LOG_WARN("ComponentManager", "Destroy factories");
-        // Release memory for each factory
-        // Because we are using a pool free list allocator, need to delete from last to first element
-        for(int i = _factories.size()-1; i>=0; i--)
-        {
-            //LOG_WARN("ComponentManager", "Destroying factory $0", i);
-            auto maxClones = _factories[i].getMaxClones();
-            for(auto [componentHash, memory] : _factories[i].getComponentMemories())
-            {
-                //LOG_WARN("ComponentManager", "Deleting component $0, mem:$1", _componentNames[componentHash], (void*)memory);
-                // Delete from last to first
-                size_t componentSize = _componentSize[componentHash];
-                size_t blockSize = sizeof(void*) > componentSize ? sizeof(void*) : componentSize;
-                ComponentId componentId = _componentIds[componentHash];
-                Allocator* alloc = MemoryManager::getAllocator(componentId);
-
-                for(uint8_t* it = memory+blockSize*maxClones; it >= memory; it-=blockSize)
-                    alloc->freeBytes(it, componentSize, componentSize);
-            }
-        }
-        _factories.clear();
-    }
-
+    //----------------------------------------//
+    //--------- Remove/Add component ---------//
+    //----------------------------------------//
     Component* ComponentManager::addEntityComponentByIdImpl(ComponentId id, EntityId entity)
     {
         DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
@@ -306,25 +252,88 @@ namespace atta
         PoolAllocator* cpool = MemoryManager::getAllocator<PoolAllocator>(id);
         Component* component = reinterpret_cast<Component*>(cpool->alloc());
 
-        // Initialization
-        for(auto compReg : _componentRegistries)
-            if(compReg->getId() == id)
+        if(component)
+        {
+            // Initialization
+            for(auto compReg : _componentRegistries)
+                if(compReg->getId() == id)
+                {
+                    std::vector<uint8_t> defaultInit = compReg->getDefault();
+                    uint8_t* data = reinterpret_cast<uint8_t*>(component);
+                    for(uint8_t val : defaultInit)
+                    {
+                        *data = val;
+                        data++;
+                    }
+                    memcpy(component, defaultInit.data(), compReg->getSizeof());
+
+                    // Remove entity from some views if it is a prototype
+                    if(compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
+                    {
+                        _noPrototypeView.erase(entity);
+                        _scriptView.erase(entity);
+                    }
+
+                    // Add entity to script view if it is not prototype and has script component
+                    if(compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
+                    {
+                        PrototypeComponent* pc = getEntityComponent<PrototypeComponent>(entity);
+                        if(pc == nullptr)
+                            _scriptView.insert(entity);
+                    }
+
+                    break;
+                }
+
+            // Add component to entity
+            e->components[freeComponentSlot] = reinterpret_cast<void*>(component);
+
+            return component;
+        }
+        else
+        {
+            LOG_WARN("ComponentManager", "Could not allocate component $0 for entity $1", id, entity);
+            return nullptr;
+        }
+    }
+
+    Component* ComponentManager::addEntityComponentPtrImpl(EntityId entity, uint8_t* component)
+    {
+        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
+
+        // Get entity
+        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
+        Entity* e = epool->getBlock(entity);
+
+        // Find free component slot
+        int freeComponentSlot = -1;
+        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
+        {
+            if(e->components[i] == nullptr)
             {
-                std::vector<uint8_t> defaultInit = compReg->getDefault();
-                memcpy(component, defaultInit.data(), compReg->getSizeof());
+                freeComponentSlot = i;
                 break;
             }
+        }
+
+        if(freeComponentSlot == -1)
+        {
+            LOG_WARN("ComponentManager", "Could not add component pointer $0 to entity $1", (void*)component, entity);
+            return nullptr;
+        }
 
         // Add component to entity
         e->components[freeComponentSlot] = reinterpret_cast<void*>(component);
 
-        return component;
+        return reinterpret_cast<Component*>(component);
     }
 
     void ComponentManager::removeEntityComponentByIdImpl(ComponentId id, EntityId entity)
     {
         DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
         // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
+        // TODO View inconsistencity if more than one script/prototype component was added
 
         // Get entity
         PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
@@ -341,14 +350,16 @@ namespace atta
                 e->components[i] = nullptr;
                 return;
             }
+
+        if(id == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
+            _scriptView.erase(entity);
+        if(id == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
+            _noPrototypeView.insert(entity);
     }
 
-    template <ComponentId id>
-    Component* ComponentManager::getEntityComponentByIdImpl(EntityId entity)
-    {
-        return getEntityComponentByIdImpl(id, entity);
-    }
-
+    //----------------------------------------//
+    //--------- Get entity component ---------//
+    //----------------------------------------//
     Component* ComponentManager::getEntityComponentByIdImpl(ComponentId id, EntityId entity)
     {
         DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
@@ -367,6 +378,93 @@ namespace atta
         return nullptr;
     }
 
+    std::vector<Component*> ComponentManager::getEntityComponentsImpl(EntityId entity)
+    {
+        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
+
+        // Get entity
+        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
+        Entity* e = epool->getBlock(entity);
+
+        std::vector<Component*> components;
+        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
+            components.push_back(reinterpret_cast<Component*>(e->components[i]));
+
+        return components;
+    }
+
+    //----------------------------------------//
+    //----------------- Views ----------------//
+    //----------------------------------------//
+    std::vector<EntityId> ComponentManager::getEntitiesView() { return getInstance().getEntitiesViewImpl(); }
+    std::vector<EntityId> ComponentManager::getEntitiesViewImpl()
+    {
+        return std::vector<EntityId>(_denseList, _denseList+_denseListSize);
+    }
+
+    std::vector<EntityId> ComponentManager::getNoPrototypeView() { return getInstance().getNoPrototypeViewImpl(); }
+    std::vector<EntityId> ComponentManager::getNoPrototypeViewImpl()
+    {
+        return std::vector<EntityId>(_noPrototypeView.begin(), _noPrototypeView.end());
+    }
+
+    std::vector<EntityId> ComponentManager::getCloneView() { return getInstance().getCloneViewImpl(); }
+    std::vector<EntityId> ComponentManager::getCloneViewImpl()
+    {
+        return std::vector<EntityId>(_cloneView.begin(), _cloneView.end());
+    }
+
+    std::vector<EntityId> ComponentManager::getScriptView() { return getInstance().getScriptViewImpl(); }
+    std::vector<EntityId> ComponentManager::getScriptViewImpl()
+    {
+        return std::vector<EntityId>(_scriptView.begin(), _scriptView.end());
+    }
+
+    //----------------------------------------//
+    //---------------- Factory ---------------//
+    //----------------------------------------//
+    void ComponentManager::createFactories()
+    {
+        // Create factory for each entity that has prototype
+        for(EntityId entity : getEntitiesView())
+        {
+            PrototypeComponent* prototype = getEntityComponentImpl<PrototypeComponent>(entity);
+            if(prototype && prototype->maxClones > 0)
+            {
+                _factories.emplace_back(entity);
+                _factories.back().createClones();
+            }
+        }
+    }
+
+    void ComponentManager::destroyFactories()
+    { 
+        for(int i = _factories.size()-1; i>=0; i--)
+            _factories[i].destroyClones();
+        _factories.clear();
+    }
+
+
+    //----------------------------------------//
+    //--------------- Events -----------------//
+    //----------------------------------------//
+    void ComponentManager::onSimulationStateChange(Event& event)
+    {
+        if(event.getType() == SimulationStartEvent::type)
+        {
+            createFactories();
+        }
+        else if(event.getType() == SimulationStopEvent::type)
+        {
+            destroyFactories();
+        }
+        else
+        {
+            LOG_WARN("ComponentManager", "Received simulation event that was not be handled (type=[w]$0[])", event.getType());
+        }
+    }
+
     void ComponentManager::onMeshEvent(Event& event)
     {
         switch(event.getType())
@@ -374,8 +472,6 @@ namespace atta
             case MeshLoadEvent::type:
                 {
                     MeshLoadEvent& e = reinterpret_cast<MeshLoadEvent&>(event);
-                    TypedComponentRegistry<MeshComponent>::description.attributeDescriptions[0].options.insert(std::any(e.sid));
-                    TypedComponentRegistry<MeshComponent>::description.attributeDescriptions[0].options.insert(std::any(e.sid));
                     TypedComponentRegistry<MeshComponent>::description.attributeDescriptions[0].options.insert(std::any(e.sid));
                     break;
                 }
@@ -401,5 +497,14 @@ namespace atta
             default:
                 break;
         }
+    }
+
+    void ComponentManager::onScriptEvent(Event& event)
+    {
+        ScriptTargetEvent& e = reinterpret_cast<ScriptTargetEvent&>(event);
+
+        TypedComponentRegistry<ScriptComponent>::description.attributeDescriptions[0].options.clear();
+        for(StringId script : e.scriptSids)
+            TypedComponentRegistry<ScriptComponent>::description.attributeDescriptions[0].options.insert(std::any(script));
     }
 }

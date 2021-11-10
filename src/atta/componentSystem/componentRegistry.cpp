@@ -163,7 +163,7 @@ namespace atta
             result = VALUE_AS_RESULT;
         }
 
-        uint32_t comboValue = 0;
+        int comboValue = -1;
         if(result == INDEX_AS_RESULT)
         {
             for(size_t i = 0; i < valuesPreview.size(); i++)
@@ -177,20 +177,25 @@ namespace atta
                 if(*data == std::any_cast<T>(*it))
                     comboValue = i;
         }
+        if(comboValue == -1)
+        {
+            comboValue = 0;
+            *data = std::any_cast<T>(*aDesc.options.begin());
+        }
 
         if(ImGui::BeginCombo((aDesc.name+"##"+imguiId).c_str(), valuesPreview[comboValue].c_str()))
         {
             auto it = aDesc.options.begin();
             for(size_t i = 0; i < valuesPreview.size(); i++, it++)
             {
-                if(ImGui::Selectable(valuesPreview[i].c_str(), comboValue == i))
+                if(ImGui::Selectable(valuesPreview[i].c_str(), (size_t)comboValue == i))
                 {
                     if(result == INDEX_AS_RESULT)
                         *data = (T)i;
                     else if(result == VALUE_AS_RESULT)
                         *data = std::any_cast<T>(*it);
                 }
-                if(comboValue == i)
+                if((size_t)comboValue == i)
                     ImGui::SetItemDefaultFocus();
             }
             ImGui::EndCombo();
@@ -264,10 +269,15 @@ namespace atta
             for(auto value : aDesc.options)
                 sids.emplace_back(std::any_cast<StringId>(value).getString());
 
-            uint32_t comboValue = 0;
-            for(size_t i = 0; i<sids.size(); i++)
+            int comboValue = -1;
+            for(size_t i = 0; i < sids.size(); i++)
                 if(sids[i] == *data)
                     comboValue = i;
+            if(comboValue == -1 && sids.size())
+            {
+                comboValue = 0;
+                *data = sids[0].getId();
+            }
 
             const char* comboPreviewValue = sids[comboValue].getString().c_str();
             if(ImGui::BeginCombo((aDesc.name+"##"+imguiId).c_str(), comboPreviewValue ))
