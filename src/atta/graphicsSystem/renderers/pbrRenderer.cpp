@@ -140,7 +140,7 @@ namespace atta
             first = false;
         }
 
-        std::vector<EntityId> entities = ComponentManager::getEntities();
+        std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
 
         _geometryPipeline->begin();
         {

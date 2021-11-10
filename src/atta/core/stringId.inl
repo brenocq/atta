@@ -22,9 +22,29 @@ namespace atta
         return _id == sid._id;
     }
 
+    inline bool StringId::operator!=(StringHash sid) const
+    {
+        return _id != sid;
+    }
+
+    inline bool StringId::operator!=(std::string str) const
+    {
+        return getString() != str;
+    }
+
+    inline bool StringId::operator!=(StringId sid) const
+    {
+        return _id != sid._id;
+    }
+
     inline bool StringId::operator<(StringId other) const
     {
         return _id < other._id;
+    }
+
+    inline bool StringId::operator>(StringId other) const
+    {
+        return _id > other._id;
     }
 
 

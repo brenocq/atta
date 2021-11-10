@@ -5,6 +5,8 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     factory.cpp
     componentManager.cpp
     componentRegistry.cpp
+
+    components/meshComponent.cpp
 )
 
 add_library(atta_component_system STATIC

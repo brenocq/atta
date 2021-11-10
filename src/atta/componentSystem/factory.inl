@@ -9,9 +9,9 @@ namespace atta
     template <typename T>
     T* Factory::getComponent(uint64_t cloneId)
     {
-        for(const auto& [typeHash, memory] : _componentMemories)
+        for(const auto& [componentId, memory] : _componentMemories)
         {
-            if(typeHash == typeid(T).hash_code())
+            if(componentId == typeid(T).hash_code())
                 return reinterpret_cast<T*>(memory)+cloneId;
         }
         return nullptr;

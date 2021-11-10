@@ -14,13 +14,17 @@ namespace atta
     class Entity
     {
     public:
-        Entity(EntityId id);
+        Entity(EntityId id, int cloneId = 0);
 
         template <typename T>
         T* getComponent() { return ComponentManager::getEntityComponent<T>(_id); }
 
+        EntityId getId() const { return _id; }
+        int getCloneId() const { return _cloneId; }
+
     private:
         EntityId _id;
+        int _cloneId;
     };
 }
 

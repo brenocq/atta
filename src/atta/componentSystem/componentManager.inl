@@ -1,20 +1,11 @@
 //--------------------------------------------------
 // Atta Component System
-// componentManager.inl
-// Date: 2021-09-02
+// componentManager.h
+// Date: 2021-11-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta
 {
-    // TODO create multiple entities sequentially in memory (their components must match and be sequential in memory too)
-    // entity group?
-    template <typename T>
-    T* ComponentManager::addEntityComponentImpl(EntityId entity)
-    {
-        return reinterpret_cast<T*>(addEntityComponentByIdImpl(COMPONENT_POOL_SSID(T), entity));
-    }
-
     template <typename T>
     T* ComponentManager::getEntityComponentImpl(EntityId entity)
     {
@@ -34,11 +25,11 @@ namespace atta
         return nullptr;
     }
 
+    // TODO create multiple entities sequentially in memory (their components must match and be sequential in memory too)
+    // entity group?
     template <typename T>
-    std::string ComponentManager::getComponentNameImpl()
+    T* ComponentManager::addEntityComponentImpl(EntityId entity)
     {
-        if(_componentNames.find(typeid(T).hash_code()) == _componentNames.end())
-            return std::string("Unknown");
-        return _componentNames[typeid(T).hash_code()];
+        return reinterpret_cast<T*>(addEntityComponentByIdImpl(COMPONENT_POOL_SSID(T), entity));
     }
 }

@@ -69,7 +69,7 @@ namespace atta
 
     void SensorManager::cameraStart()
     {
-        for(auto entity : ComponentManager::getEntities())
+        for(auto entity : ComponentManager::getEntitiesView())
         {
             CameraComponent* camera = ComponentManager::getEntityComponent<CameraComponent>(entity);
             if(camera)

@@ -34,31 +34,38 @@ namespace atta
         static void startUp() { getInstance().startUpImpl(); }
         static void shutDown() { getInstance().shutDownImpl(); }
 
-        static EntityId createEntity() { return getInstance().createEntityImpl(); }
+        // Create/destroy entity
+        static EntityId createEntity();
+        static void destroyEntity(EntityId entity);// Destroy entity and deallocate components
+        static void destroyEntityOnly(EntityId entity);// Destroy entity without deallocating components
+
+        // Add entity component
         template <typename T>
         static T* addEntityComponent(EntityId entity) { return getInstance().addEntityComponentImpl<T>(entity); }
+        static Component* addEntityComponentById(ComponentId id, EntityId entity) { return getInstance().addEntityComponentByIdImpl(id, entity); }
+        static Component* addEntityComponentPtr(EntityId entity, uint8_t* component) { return getInstance().addEntityComponentPtrImpl(entity, component); }
+        // Get entity component
         template <typename T>
         static T* getEntityComponent(EntityId entity) { return getInstance().getEntityComponentImpl<T>(entity); }
-        static Component* addEntityComponentById(ComponentId id, EntityId entity) { return getInstance().addEntityComponentByIdImpl(id, entity); }
-        static void removeEntityComponentById(ComponentId id, EntityId entity) { getInstance().removeEntityComponentByIdImpl(id, entity); }
-        template <ComponentId id>
-        static Component* getEntityComponentById(EntityId entity) { return getInstance().getEntityComponentByIdImpl<id>(entity); }
         static Component* getEntityComponentById(ComponentId id, EntityId entity) { return getInstance().getEntityComponentByIdImpl(id, entity); }
+        static std::vector<Component*> getEntityComponents(EntityId entity) { return getInstance().getEntityComponentsImpl(entity); }
+        // Remove entity component
+        static void removeEntityComponentById(ComponentId id, EntityId entity) { getInstance().removeEntityComponentByIdImpl(id, entity); }
 
-        template <typename T>
-        static std::string getComponentName() { return getInstance().getComponentNameImpl<T>(); }
-        static std::vector<std::string> getComponentNames() { return getInstance().getComponentNamesImpl(); }
+        // Getters
         static std::vector<ComponentRegistry*> getComponentRegistries() { return getInstance().getComponentRegistriesImpl(); }
-
-        static std::vector<EntityId> getEntities() { return getInstance().getEntitiesImpl(); }
         static std::vector<Factory>& getFactories() { return getInstance().getFactoriesImpl(); }
 
-        static void registerComponent(ComponentRegistry* componentRegistry) { return getInstance().registerComponentImpl(componentRegistry); }
+        // Views
+        static std::vector<EntityId> getEntitiesView();
+        static std::vector<EntityId> getNoPrototypeView();
+        static std::vector<EntityId> getCloneView();
+        static std::vector<EntityId> getScriptView();
 
+        // Memory management
         static void createDefault() { getInstance().createDefaultImpl(); }
         static void clear() { getInstance().clearImpl(); }
-
-        // Return stack pointer to the point before custom components (free custom component allocators)
+        static void registerComponent(ComponentRegistry* componentRegistry) { return getInstance().registerComponentImpl(componentRegistry); }
         static void unregisterCustomComponents() { getInstance().unregisterCustomComponentsImpl(); }
 
     private:
@@ -70,23 +77,31 @@ namespace atta
         void createEntityPool();
 
         //----- Public Interface -----//
+        static EntityId createClone();
+        EntityId createCloneImpl();
         EntityId createEntityImpl();
+        void destroyEntityImpl(EntityId entity);
+        void destroyEntityOnlyImpl(EntityId entity);
+
         template <typename T>
         T* addEntityComponentImpl(EntityId entity);
         Component* addEntityComponentByIdImpl(ComponentId id, EntityId entity);
+        Component* addEntityComponentPtrImpl(EntityId entity, uint8_t* component);
         void removeEntityComponentByIdImpl(ComponentId id, EntityId entity);
         template <typename T>
         T* getEntityComponentImpl(EntityId entity);
-        template <ComponentId id>
-        Component* getEntityComponentByIdImpl(EntityId entity);
         Component* getEntityComponentByIdImpl(ComponentId id, EntityId entity);
-        template <typename T>
-        std::string getComponentNameImpl();
-        std::vector<std::string> getComponentNamesImpl();
-        std::vector<EntityId> getEntitiesImpl();
+        std::vector<Component*> getEntityComponentsImpl(EntityId entity);
+
         std::vector<Factory>& getFactoriesImpl() { return _factories; }
         std::vector<ComponentRegistry*> getComponentRegistriesImpl() { return _componentRegistries; }
         PoolAllocator* getComponentAllocator(ComponentRegistry* compReg);
+
+        // Views
+        std::vector<EntityId> getEntitiesViewImpl();
+        std::vector<EntityId> getNoPrototypeViewImpl();
+        std::vector<EntityId> getCloneViewImpl();
+        std::vector<EntityId> getScriptViewImpl();
 
         // Used to register internal components and custom components
         void registerComponentImpl(ComponentRegistry* componentRegistry);
@@ -98,6 +113,7 @@ namespace atta
         //----- Event handling -----//
         void onMeshEvent(Event& event);// Used the update the MeshComponent attribute options
         void onTextureEvent(Event& event);// Used the update the MaterialComponent attribute options
+        void onScriptEvent(Event& event);// Used the update the ScriptComponent attribute options
 
         //----- Memory management -----//
         struct Entity
@@ -107,14 +123,17 @@ namespace atta
         StackAllocator* _allocator;// Used to allocate more memory to component pools
         StackAllocator::Marker _customComponentsMarker;// Marker to free custom components
         size_t _numAttaComponents;// Used to remove custom components form componentRegistries
+        std::vector<ComponentRegistry*> _componentRegistries;// All registered components
 
+        // Dense list of all entities
         size_t _maxEntities;// Maximum number of entities
         EntityId* _denseList;// Dense list of entities to find active entities inside the entity pool
         size_t _denseListSize;
-        std::unordered_map<size_t, std::string> _componentNames;// Name of each registered component
-        std::unordered_map<size_t, ComponentId> _componentIds;// id of each registered component
-        std::unordered_map<size_t, uint32_t> _componentSize;// sizeof(T) of each registered component
-        std::vector<ComponentRegistry*> _componentRegistries;
+
+        // Entity views(TODO create views from template?)
+        std::set<EntityId> _noPrototypeView;// View of entities and clone (no prototype entity)
+        std::set<EntityId> _cloneView;// View of only clones
+        std::set<EntityId> _scriptView;// View of entities that are neither prototype or clone and have script component
 
         //----- Factory Management -----//
         void onSimulationStateChange(Event& event);
@@ -122,6 +141,8 @@ namespace atta
         void destroyFactories();
 
         std::vector<Factory> _factories;
+
+        friend Factory;
     };
 }
 

@@ -64,7 +64,7 @@ namespace atta
 
     void FastRenderer::render(std::shared_ptr<Camera> camera)
     {
-        std::vector<EntityId> entities = ComponentManager::getEntities();
+        std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
         _geometryPipeline->begin();
         {
             std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());

@@ -34,7 +34,7 @@ namespace atta::ui
 
     void EntityWindow::renderTree()
     {
-        std::vector<EntityId> entities = ComponentManager::getEntities();
+        std::vector<EntityId> entities = ComponentManager::getEntitiesView();
         if(entities.size() > 0) _someSelected = true;
         int i = 0;
         ImGui::Text("Scene");

@@ -22,7 +22,7 @@ namespace atta
     {
         "Prototype",
         {
-            { ComponentRegistry::AttributeType::UINT64, offsetof(PrototypeComponent, maxClones), "maxClones", uint64_t(1), uint64_t(1000000) }
+            { ComponentRegistry::AttributeType::UINT64, offsetof(PrototypeComponent, maxClones), "maxClones", uint64_t(0), uint64_t(1000), 1 }
         }
     };
 }

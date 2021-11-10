@@ -25,8 +25,12 @@ namespace atta
         inline bool operator==(StringHash sid) const;
         inline bool operator==(std::string str) const;
         inline bool operator==(StringId sid) const;
+        inline bool operator!=(StringHash sid) const;
+        inline bool operator!=(std::string str) const;
+        inline bool operator!=(StringId sid) const;
 
         inline bool operator<(StringId other) const;
+        inline bool operator>(StringId other) const;
 
         static constexpr StringHash crc32b(const char* str);
         static std::vector<std::string> getStrings();

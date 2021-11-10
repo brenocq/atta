@@ -30,7 +30,7 @@ namespace atta
                 {},
                 {},
                 {},
-                { "test" }
+                {}
             },
         }
     };
