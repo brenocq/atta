@@ -5,13 +5,12 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphicsSystem/cameras/perspectiveCamera.h>
-#include <imgui_internal.h>
+#include <atta/fileSystem/serializer/serializer.h>
 
 namespace atta
 {
     PerspectiveCamera::PerspectiveCamera(CreateInfo info):
-        _near(info.near), _far(info.far), _fov(info.fov),
-        _speed(10)
+        _near(info.near), _far(info.far), _fov(info.fov)
     {
         _position = info.position;
         _front = normalize(info.lookAt-info.position);
@@ -21,6 +20,8 @@ namespace atta
 
         _left.normalize();
         _up.normalize();
+        _control = info.control;
+        _speed = 10.0f;
 
         _ratio = info.ratio;
     }
@@ -37,99 +38,32 @@ namespace atta
         return proj;
     }
 
-    void PerspectiveCamera::move()
+    void PerspectiveCamera::serialize(std::ostream& os)
     {
-        static float lastTimeFront = 0;
-        static float lastTimeLeft = 0;
-        static float lastTimeUp = 0;
+        write(os, std::string("PerspectiveCamera"));
+        write(os, _position);
+        write(os, _left);
+        write(os, _up);
+        write(os, _front);
+        write(os, _ratio);
+        write(os, _control);
+        write(os, _speed);
+        write(os, _near);
+        write(os, _far);
+        write(os, _fov);
+    }
 
-        ImGuiIO& io = ImGui::GetIO();
-
-        float x = io.MouseDelta.x*0.01f;
-        float y = io.MouseDelta.y*0.01f;
-
-        mat4 orientation = mat4(1.0f);
-        orientation = rotationFromAxisAngle(-_up, x) * 
-            rotationFromAxisAngle(_left, y);
-
-        _front = orientation*_front;
-        _up = vec3(0,0,1);
-
-        // Move front/back
-        if(ImGui::IsKeyDown('W') || ImGui::IsKeyDown('S'))
-        {
-            int key = 0;
-            if(io.KeysDownDuration['W'] > 0 && io.KeysDownDuration['S']>0)
-                if(io.KeysDownDuration['W'] < io.KeysDownDuration['S'])
-                    key = 'W';
-                else
-                    key = 'S';
-            else if(io.KeysDownDuration['W'] > 0)
-                key = 'W';
-            else if(io.KeysDownDuration['S'] > 0)
-                key = 'S';
-
-            if(key)
-            {
-                if(io.KeysDownDuration[key] < lastTimeFront)
-                    lastTimeFront = 0;
-
-                float delta = (io.KeysDownDuration[key] - lastTimeFront) * (key == 'W'?1:-1) * _speed;
-                lastTimeFront = io.KeysDownDuration[key];
-                _position += _front*delta;
-            }
-        }
-
-        // Move left/right
-        if(ImGui::IsKeyDown('A') || ImGui::IsKeyDown('D'))
-        {
-            int key = 0;
-            if(io.KeysDownDuration['A'] > 0 && io.KeysDownDuration['D']>0)
-                if(io.KeysDownDuration['A'] < io.KeysDownDuration['D'])
-                    key = 'A';
-                else
-                    key = 'D';
-            else if(io.KeysDownDuration['A'] > 0)
-                key = 'A';
-            else if(io.KeysDownDuration['D'] > 0)
-                key = 'D';
-
-            if(key)
-            {
-                if(io.KeysDownDuration[key] < lastTimeLeft)
-                    lastTimeLeft = 0;
-
-                float delta = (io.KeysDownDuration[key] - lastTimeLeft) * (key == 'A'?1:-1) * _speed;
-                lastTimeLeft = io.KeysDownDuration[key];
-                _position += _left*delta;
-            }
-        }
-
-        // Move up/down
-        if(ImGui::IsKeyDown('E') || ImGui::IsKeyDown('Q'))
-        {
-            int key = 0;
-            if(io.KeysDownDuration['E'] > 0 && io.KeysDownDuration['Q']>0)
-                if(io.KeysDownDuration['E'] < io.KeysDownDuration['Q'])
-                    key = 'E';
-                else
-                    key = 'Q';
-            else if(io.KeysDownDuration['E'] > 0)
-                key = 'E';
-            else if(io.KeysDownDuration['Q'] > 0)
-                key = 'Q';
-
-            if(key)
-            {
-                if(io.KeysDownDuration[key] < lastTimeUp)
-                    lastTimeUp = 0;
-
-                float delta = (io.KeysDownDuration[key] - lastTimeUp) * (key == 'E'?1:-1) * _speed;
-                lastTimeUp = io.KeysDownDuration[key];
-                _position += _up*delta;
-            }
-        }
-
-        Camera::update();
+    void PerspectiveCamera::deserialize(std::istream& is)
+    {
+        read(is, _position);
+        read(is, _left);
+        read(is, _up);
+        read(is, _front);
+        read(is, _ratio);
+        read(is, _control);
+        read(is, _speed);
+        read(is, _near);
+        read(is, _far);
+        read(is, _fov);
     }
 }

@@ -7,10 +7,11 @@
 #ifndef ATTA_GRAPHICS_SYSTEM_CAMERAS_CAMERA_H
 #define ATTA_GRAPHICS_SYSTEM_CAMERAS_CAMERA_H
 #include <atta/core/math/math.h>
+#include <atta/fileSystem/serializer/serializable.h>
 
 namespace atta
 {
-    class Camera
+    class Camera : public Serializable
     {
     public:
         virtual ~Camera() = default;
@@ -18,12 +19,19 @@ namespace atta
         virtual mat4 getView() const = 0;
         virtual mat4 getProj() const = 0;
 
-        virtual void move() = 0;
+        void move();
+
+        enum class Control
+        {
+            PLANAR = 0,// Left click and move with mouse, scroll to zoom in/zoom out
+            FIRST_PERSON,// Rotate with mouse, move with wasdqe (pressing middle button)
+        };
 
         vec3 getPosition() const { return _position; }
         vec3 getLeft() const { return _left; }
         vec3 getUp() const { return _up; }
         vec3 getFront() const { return _front; }
+        float getRatio() const { return _ratio; }
 
         void setPosition(const vec3& position) { _position = position; }
         void setLeft(const vec3& left) { _left = left; }
@@ -38,6 +46,13 @@ namespace atta
         vec3 _position;
         vec3 _left, _up, _front;
         float _ratio;
+        Control _control;
+
+        // Camera move
+        float _speed;
+    private:
+        void movePlanar();
+        void moveFirstPerson();
     };
 }
 

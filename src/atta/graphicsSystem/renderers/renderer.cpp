@@ -5,3 +5,23 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphicsSystem/renderers/renderer.h>
+#include <atta/fileSystem/serializer/serializer.h>
+
+namespace atta
+{
+    void Renderer::serialize(std::ostream& os)
+    {
+        write(os, _name);
+        write(os, _width);
+        write(os, _height);
+    }
+
+    void Renderer::deserialize(std::istream& is)
+    {
+        // Name should be read before to know which renderer to deserialize
+        decltype(_width) width, height;
+        read(is, width);
+        read(is, height);
+        resize(width, height);
+    }
+}

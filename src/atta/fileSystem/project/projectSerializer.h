@@ -35,23 +35,11 @@ namespace atta
         void serializeComponentSystem(std::ofstream& os);
         void deserializeComponentSystem(std::ifstream& is);
 
-        // Helpers to write binary data
-        template <typename T>
-        void write(std::ofstream& os, T x);
-        template<typename T, size_t N>
-        void write(std::ofstream& os, T(&x)[N]);
-        template <typename It>
-        void write(std::ofstream& os, It begin, It end);
-
-        // Helpers to read binary data
-        template <typename T>
-        void read(std::ifstream& is, T& x);
-        template<typename T, size_t N>
-        void read(std::ifstream& is, T(&x)[N]);
+        void serializeGraphicsSystem(std::ofstream& os);
+        void deserializeGraphicsSystem(std::ifstream& is);
 
         std::shared_ptr<Project> _project;
     };
 }
 
-#include <atta/fileSystem/project/projectSerializer.inl>
 #endif// ATTA_FILE_SYSTEM_PROJECT_PROJECT_SERIALIZER_H

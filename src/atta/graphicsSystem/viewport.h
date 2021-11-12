@@ -9,10 +9,11 @@
 #include <atta/core/stringId.h>
 #include <atta/graphicsSystem/renderers/renderer.h>
 #include <atta/graphicsSystem/cameras/camera.h>
+#include <atta/fileSystem/serializer/serializable.h>
 
 namespace atta
 {
-    class Viewport final
+    class Viewport final : public Serializable
     {
     public:
         struct CreateInfo
@@ -37,6 +38,10 @@ namespace atta
 
         void setRenderer(std::shared_ptr<Renderer> renderer) { _newRenderer = renderer; }
         void setCamera(std::shared_ptr<Camera> camera) { _camera = camera; }
+
+        void serialize(std::ostream& os) override;
+        void deserialize(std::istream& is) override;
+        unsigned getSerializedSize() { return Serializable::getSerializedSize(this); }
 
     private:
         StringId _sid;

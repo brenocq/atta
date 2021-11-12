@@ -30,7 +30,6 @@ namespace atta
                     ComponentRegistry::renderUIAttribute<AttributeType::ComponentType>(aDesc, data, size, imguiId+aDesc.name);\
                     break;\
 
-
     template<typename T>
     TypedComponentRegistry<T>::TypedComponentRegistry():
         ComponentRegistry(sizeof(T), typeid(T).name(), typeid(T).hash_code())

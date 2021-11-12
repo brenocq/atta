@@ -55,12 +55,7 @@ namespace atta
         _layerStack = std::make_unique<LayerStack>();
 
         //----- Create viewports -----//
-        Viewport::CreateInfo viewportInfo;
-        viewportInfo.renderer = std::make_shared<PhongRenderer>();
-        viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{}));
-        //viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<OrthographicCamera>(OrthographicCamera::CreateInfo{}));
-        viewportInfo.sid = StringId("Main Viewport");
-        _viewports.emplace_back(std::make_shared<Viewport>(viewportInfo));
+        _viewports = createDefaultViewportsImpl();
 
         //Drawer::add(Drawer::Line({0,0,0}, {0,0,1}, {0,0,1,1}, {0,0,1,1}));
         //Drawer::add(Drawer::Line({0,0,0}, {1,0,0}, {1,0,0,1}, {1,0,0,1}));
@@ -85,6 +80,14 @@ namespace atta
     void GraphicsManager::update() { getInstance().updateImpl(); }
     void GraphicsManager::updateImpl()
     {
+        // Update viewport if it was changed
+        if(_viewportsNext.size())
+        {
+            _viewports = _viewportsNext;
+            _viewportsNext.clear();
+        }
+
+        // Render
         _window->update();
 
         _rendererAPI->beginFrame();
@@ -102,6 +105,17 @@ namespace atta
     void GraphicsManager::pushLayerImpl(Layer* layer)
     {
         _layerStack->push(layer);
+    }
+
+    std::vector<std::shared_ptr<Viewport>> GraphicsManager::createDefaultViewportsImpl()
+    {
+        std::vector<std::shared_ptr<Viewport>> viewports;
+        Viewport::CreateInfo viewportInfo;
+        viewportInfo.renderer = std::make_shared<PhongRenderer>();
+        viewportInfo.camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
+        viewportInfo.sid = StringId("Main Viewport");
+        viewports.emplace_back(std::make_shared<Viewport>(viewportInfo));
+        return viewports;
     }
 
     //---------- Register API specific implementations ----------//

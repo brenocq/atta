@@ -18,6 +18,7 @@ namespace atta
             vec3 position = {-3.0f, 0.0f, 0.0f};
             vec3 lookAt = {0.0f, 0.0f, 0.0f};
             vec3 up = {0.0f, 0.0f, 1.0f};
+            Control control = Control::FIRST_PERSON;
             float near = 0.01f;
             float far = 100.0f;
             float fov = 45.0f;
@@ -25,18 +26,17 @@ namespace atta
         };
 
         PerspectiveCamera(CreateInfo info);
+        void serialize(std::ostream& os) override;
+        void deserialize(std::istream& is) override;
+
         mat4 getView() const override;
         mat4 getProj() const override;
         void setFov(float fov) { _fov = fov; }
-
-        void move() override;
 
     private:
         float _near;
         float _far;
         float _fov;
-
-        float _speed;
     };
 }
 

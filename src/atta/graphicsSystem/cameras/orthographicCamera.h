@@ -18,17 +18,18 @@ namespace atta
             vec3 position = {0.0f, 0.0f, 3.0f};
             vec3 lookAt = {0.0f, 0.0f, 0.0f};
             vec3 up = {0.0f, 1.0f, 0.0f};
+            Control control = Control::PLANAR;
             float far = 1000.0f;
             float height = 5.0f;
             float ratio = 1.0f;
         };
 
         OrthographicCamera(CreateInfo info);
+        void serialize(std::ostream& os) override;
+        void deserialize(std::istream& is) override;
 
         mat4 getView() const override;
         mat4 getProj() const override;
-
-        void move() override;
 
     private:
         float _far;

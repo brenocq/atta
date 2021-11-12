@@ -28,7 +28,6 @@ namespace atta
         for(uint32_t i = 0; i < _maxClones; i++)
             _cloneEntityIds[i] = ComponentManager::createClone();
 
-        PrototypeComponent* prototype = ComponentManager::getEntityComponent<PrototypeComponent>(_prototypeId);
         for(auto compReg : ComponentManager::getComponentRegistries())
         {
             // Check if prototype entity has this component

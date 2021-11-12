@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphicsSystem/cameras/orthographicCamera.h>
-#include <imgui_internal.h>
+#include <atta/fileSystem/serializer/serializer.h>
 
 namespace atta
 {
@@ -20,6 +20,7 @@ namespace atta
 
         _left.normalize();
         _up.normalize();
+        _control = info.control;
 
         _ratio = info.ratio;
     }
@@ -34,13 +35,30 @@ namespace atta
         return orthographic(_height, _ratio, _far);
     }
 
-    void OrthographicCamera::move()
+    void OrthographicCamera::serialize(std::ostream& os)
     {
-        ImGuiIO& io = ImGui::GetIO();
+        write(os, std::string("OrthographicCamera"));
+        write(os, _position);
+        write(os, _left);
+        write(os, _up);
+        write(os, _front);
+        write(os, _ratio);
+        write(os, _control);
+        write(os, _speed);
+        write(os, _far);
+        write(os, _height);
+    }
 
-        float x = io.MouseDelta.x*0.01f;
-        float y = io.MouseDelta.y*0.01f;
-
-        _position += x*_left + -y*_up;
+    void OrthographicCamera::deserialize(std::istream& is)
+    {
+        read(is, _position);
+        read(is, _left);
+        read(is, _up);
+        read(is, _front);
+        read(is, _ratio);
+        read(is, _control);
+        read(is, _speed);
+        read(is, _far);
+        read(is, _height);
     }
 }
