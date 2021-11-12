@@ -284,9 +284,9 @@ namespace atta
             {
                 for(size_t i = 0; i < sids.size(); i++)
                 {
-                    if(ImGui::Selectable(sids[i].getString().c_str(), comboValue == i))
+                    if(ImGui::Selectable(sids[i].getString().c_str(), comboValue == (int)i))
                         *data = sids[i].getId();
-                    if(comboValue == i)
+                    if(comboValue == (int)i)
                         ImGui::SetItemDefaultFocus();
                 }
                 ImGui::EndCombo();

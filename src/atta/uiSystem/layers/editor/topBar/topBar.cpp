@@ -44,6 +44,10 @@ namespace atta::ui
                         FileManager::closeProject();
                         ComponentManager::clear();
                         ComponentManager::createDefault();
+
+                        // Update viewports in the next frame
+                        auto& viewports = GraphicsManager::getViewportsNext();
+                        viewports = GraphicsManager::createDefaultViewports();
                     }
                 }
 

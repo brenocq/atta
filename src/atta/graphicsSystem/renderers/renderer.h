@@ -9,10 +9,11 @@
 #include <atta/core/stringId.h>
 #include <atta/graphicsSystem/framebuffer.h>
 #include <atta/graphicsSystem/cameras/camera.h>
+#include <atta/fileSystem/serializer/serializable.h>
 
 namespace atta
 {
-    class Renderer
+    class Renderer : public Serializable
     {
     public:
         Renderer(const char* name): _name(StringId(name)) {}
@@ -27,6 +28,10 @@ namespace atta
 
         std::string getName() const { return _name.getString(); }
         StringId getSID() const { return _name; }
+
+        void serialize(std::ostream& os) override;
+        void deserialize(std::istream& is) override;
+        unsigned getSerializedSize() { return Serializable::getSerializedSize(this); }
 
     protected:
         uint32_t _width;

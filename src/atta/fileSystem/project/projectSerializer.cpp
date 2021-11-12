@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/fileSystem/project/projectSerializer.h>
+#include <atta/fileSystem/serializer/serializer.h>
 #include <atta/cmakeConfig.h>
 
 #include <atta/componentSystem/componentManager.h>
@@ -13,6 +14,8 @@
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
 #include <atta/resourceSystem/resources/texture.h>
+
+#include <atta/graphicsSystem/graphicsManager.h>
 
 namespace atta
 {
@@ -34,6 +37,8 @@ namespace atta
 
         serializeHeader(os);
         serializeComponentSystem(os);
+        serializeGraphicsSystem(os);
+        write(os, "end");
 
         os.close();
 
@@ -48,16 +53,25 @@ namespace atta
         std::ifstream is(attaFile, std::ifstream::in | std::ifstream::binary);
 
         Header header = deserializeHeader(is);
-        //LOG_WARN("ProjectSerializer", "[*y]Header:[]\n\tversion:$0.$1.$2.$3\n\tproj:$4\n\tcounter:$5", 
-        //		header.version[0], header.version[1], header.version[2], header.version[3], 
-        //		header.projectName, header.saveCounter);
+        LOG_VERBOSE("ProjectSerializer", "[*y]Header:[]\n\tversion:$0.$1.$2.$3\n\tproj:$4\n\tcounter:$5", 
+        		header.version[0], header.version[1], header.version[2], header.version[3], 
+        		header.projectName, header.saveCounter);
 
-        if(is)
+        while(is)
         {
             std::string marker;
             read(is, marker);
             if(marker == "comp")
                 deserializeComponentSystem(is);
+            else if(marker == "gfx")
+                deserializeGraphicsSystem(is);
+            else if(marker == "end")
+                break;
+            else
+            {
+                LOG_WARN("ProjectSerializer", "Unknown marker [w]$0[]. The file may be corrupted", marker);
+                break;
+            }
         }
 
         is.close();
@@ -220,6 +234,67 @@ namespace atta
                 read(is, eid);
                 Component* component = ComponentManager::addEntityComponentById(compReg->getId(), eid);
                 compReg->deserialize(is, component);
+            }
+        }
+    }
+
+    void ProjectSerializer::serializeGraphicsSystem(std::ofstream& os)
+    {
+        // Graphics system marker
+        write(os, "gfx");
+
+        // Number of sections
+        write<uint32_t>(os, 1);
+
+        //----- Viewports -----//
+        write(os, "viewports");
+        std::vector<std::shared_ptr<Viewport>> viewports = GraphicsManager::getViewports();
+
+        // Serialize section size in bytes
+        unsigned sectionSize = 0;
+        for(auto viewport : viewports)
+            sectionSize += viewport->getSerializedSize();
+        write<uint32_t>(os, sectionSize);
+
+        // Serialize number of viewports
+        write<uint32_t>(os, viewports.size());
+
+        // Serialize 
+        for(auto viewport : viewports)
+            viewport->serialize(os);
+    }
+
+    void ProjectSerializer::deserializeGraphicsSystem(std::ifstream& is)
+    {
+        unsigned numSections;
+        read(is, numSections);
+
+        unsigned curr = numSections;
+        while(curr--)
+        {
+            std::string marker;
+            read(is, marker);
+
+            if(marker == "viewports")
+            {
+                // Read section size in bytes
+                unsigned sectionSize;
+                read(is, sectionSize);
+
+                // Read number of viewports
+                unsigned numViewports;
+                read(is, numViewports);
+
+                // Deserialize 
+                std::vector<std::shared_ptr<Viewport>>& viewports = GraphicsManager::getViewportsNext();
+                viewports.clear();
+                for(unsigned i = 0; i < numViewports; i++)
+                {
+                    std::shared_ptr<Viewport> viewport;
+                    viewport = std::make_shared<Viewport>(Viewport::CreateInfo{});
+                    viewport->deserialize(is);
+                    viewports.push_back(viewport);
+                }
             }
         }
     }

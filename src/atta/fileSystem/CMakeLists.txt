@@ -9,6 +9,8 @@ set(ATTA_SCRIPT_SYSTEM_SOURCE
 
     project/project.cpp
     project/projectSerializer.cpp
+
+    serializer/serializable.cpp
     )
 
 add_library(atta_file_system STATIC

@@ -119,12 +119,13 @@ namespace atta
         };
 
         virtual void renderUI(Component* component) = 0;
+
         virtual void serialize(std::ostream& os, Component* component) = 0;
         virtual void deserialize(std::istream& is, Component* component) = 0;
-        virtual std::vector<uint8_t> getDefault() = 0;
-
-        virtual Description& getDescription() = 0;
         unsigned getSerializedSize(Component* component);
+        
+        virtual Description& getDescription() = 0;
+        virtual std::vector<uint8_t> getDefault() = 0;
         unsigned getSizeof() { return _sizeof; }
         std::string getTypeidName() { return _typeidName; }
         size_t getTypeidHash() { return _typeidHash; }
@@ -150,14 +151,15 @@ namespace atta
         }
 
         void renderUI(Component* component) override { renderUIImpl((T*)component); }
+        static void renderUI(T* component) { getInstance().renderUIImpl(component); }
+
         void serialize(std::ostream& os, Component* component) override { serializeImpl(os, (T*)component); }
         void deserialize(std::istream& is, Component* component) override { deserializeImpl(is, (T*)component); }
-        std::vector<uint8_t> getDefault() override;
-        Description& getDescription() override { return description; }
-
-        static void renderUI(T* component) { getInstance().renderUIImpl(component); }
         static void serialize(std::ostream& os, T* component) { getInstance().serializeImpl(os, component); }
         static void deserialize(std::istream& is, T* component) { getInstance().deserializeImpl(is, component); }
+
+        std::vector<uint8_t> getDefault() override;
+        Description& getDescription() override { return description; }
 
         static ComponentRegistry::Description description;
     private:
