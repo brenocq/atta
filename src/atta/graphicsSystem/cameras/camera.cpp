@@ -148,7 +148,7 @@ namespace atta
         if(_control == Control::FIRST_PERSON)
             comboValue = 1;
 
-        if(ImGui::BeginCombo("Type###CameraType", controls[comboValue]))
+        if(ImGui::BeginCombo("Control###CameraControl", controls[comboValue]))
         {
             for(size_t j = 0; j < controls.size(); j++)
             {

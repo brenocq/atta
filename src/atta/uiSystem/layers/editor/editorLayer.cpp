@@ -46,7 +46,6 @@ namespace atta::ui
     void EditorLayer::onUIRender()
     {
         _dockSpace.render();
-        _topBar.setViewportDockId(_dockSpace.getViewportDockId());
         toolbar();
 
         //if(_editorState != EditorState::SIMULATION_RUNNING)
@@ -77,6 +76,7 @@ namespace atta::ui
         int i = -1;
         for(auto viewport : viewports)
         {
+            ImGui::DockBuilderDockWindow((viewport->getName()+"###Viewport"+viewport->getSID().getString()).c_str(), _dockSpace.getViewportDockId());
             char nameBuf[128];
             sprintf(nameBuf, "%s###Viewport%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
             i++;

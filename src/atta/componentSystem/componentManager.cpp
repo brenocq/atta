@@ -166,11 +166,17 @@ namespace atta
 
     void ComponentManager::clearImpl()
     {
+        // Clear entities
         PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
         epool->clear();
 
+        // Clear entity view
+        _noPrototypeView.clear();
+        _cloneView.clear();
+        _scriptView.clear();
         _denseListSize = 0;
 
+        // Clear components
         for(auto reg : _componentRegistries)
             getComponentAllocator(reg)->clear();
     }

@@ -168,13 +168,16 @@ namespace atta
                     switch(j)
                     {
                     case 0:
-                        setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<FastRenderer>()));
+                        if(comboValue != 0)
+                            setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<FastRenderer>()));
                     break;
                     case 1:
-                        setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PhongRenderer>()));
+                        if(comboValue != 1)
+                            setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PhongRenderer>()));
                     break;
                     case 2:
-                        setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PbrRenderer>()));
+                        if(comboValue != 2)
+                            setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PbrRenderer>()));
                     break;
                     }
                 }
@@ -223,8 +226,6 @@ namespace atta
             }
             ImGui::EndCombo();
         }
-
-        if(_camera)
-            _camera->renderUI();
+        _camera->renderUI();
     }
 }

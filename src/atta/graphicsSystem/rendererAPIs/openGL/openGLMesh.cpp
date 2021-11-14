@@ -44,6 +44,5 @@ namespace atta
     {
         glBindVertexArray(_id);
         glDrawElements(GL_TRIANGLES, _indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
     }
 }

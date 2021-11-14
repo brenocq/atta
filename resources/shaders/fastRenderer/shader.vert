@@ -5,12 +5,9 @@ in vec2 inTexCoord;
 
 uniform mat4 projection;
 uniform mat4 view;
-uniform mat4 transform;
-
-out vec3 color;
+uniform mat4 model;
 
 void main()
 {
-    gl_Position = projection * view * transform * vec4(inPosition, 1.0f);
-    color = vec3(inNormal);
+    gl_Position = projection * view * model * vec4(inPosition, 1.0f);
 }

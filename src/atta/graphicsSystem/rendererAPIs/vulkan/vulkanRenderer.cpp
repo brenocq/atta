@@ -8,36 +8,46 @@
 
 namespace atta
 {
-		VulkanRenderer::VulkanRenderer()
-		{
+    VulkanRenderer::VulkanRenderer()
+    {
 
-		}
+    }
 
-		VulkanRenderer::~VulkanRenderer()
-		{
+    VulkanRenderer::~VulkanRenderer()
+    {
 
-		}
+    }
 
-		void VulkanRenderer::beginFrame()
-		{
+    void VulkanRenderer::beginFrame()
+    {
 
-		}
-		void VulkanRenderer::endFrame()
-		{
+    }
+    void VulkanRenderer::endFrame()
+    {
 
-		}
+    }
 
-		void VulkanRenderer::beginRenderPass()
-		{
+    void VulkanRenderer::beginRenderPass()
+    {
 
-		}
-		void VulkanRenderer::endRenderPass()
-		{
+    }
+    void VulkanRenderer::endRenderPass()
+    {
 
-		}
+    }
 
-		void VulkanRenderer::renderMesh()
-		{
+    void VulkanRenderer::renderMesh()
+    {
 
-		}
+    }
+
+    void VulkanRenderer::renderQuad()
+    {
+
+    }
+
+    void VulkanRenderer::renderCube()
+    {
+
+    }
 }
