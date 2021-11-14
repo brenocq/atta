@@ -8,9 +8,8 @@
 
 namespace atta
 {
-    unsigned Serializable::getSerializedSize(void* object, size_t maxSerializedSize)
+    unsigned Serializable::getSerializedSize(void* object)
     {
-        std::vector<char> buffer(maxSerializedSize);
         std::ostringstream of;
         std::basic_ostream<char>::pos_type posBefore = of.tellp();
         serialize(of);

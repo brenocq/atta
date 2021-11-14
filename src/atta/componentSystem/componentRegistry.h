@@ -115,7 +115,6 @@ namespace atta
             std::string type;
             std::vector<AttributeDescription> attributeDescriptions;
             unsigned maxInstances = 1024;// Maximum number of component instances
-            unsigned maxSerializedSize = 1024*1024;// Maximum number of bytes when the component is serialized
         };
 
         virtual void renderUI(Component* component) = 0;

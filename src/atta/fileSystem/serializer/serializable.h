@@ -14,7 +14,7 @@ namespace atta
     public:
         virtual void serialize(std::ostream& os) = 0;
         virtual void deserialize(std::istream& is) = 0;
-        unsigned getSerializedSize(void* object, size_t maxSerializedSize = 256);
+        unsigned getSerializedSize(void* object);
     };
 }
 
