@@ -55,7 +55,7 @@ namespace atta
         _layerStack = std::make_unique<LayerStack>();
 
         //----- Create viewports -----//
-        _viewports = createDefaultViewportsImpl();
+        createDefaultViewportsImpl();
 
         //Drawer::add(Drawer::Line({0,0,0}, {0,0,1}, {0,0,1,1}, {0,0,1,1}));
         //Drawer::add(Drawer::Line({0,0,0}, {1,0,0}, {1,0,0,1}, {1,0,0,1}));
@@ -81,10 +81,10 @@ namespace atta
     void GraphicsManager::updateImpl()
     {
         // Update viewport if it was changed
-        if(_viewportsNext.size())
+        if(_swapViewports)
         {
             _viewports = _viewportsNext;
-            _viewportsNext.clear();
+            _swapViewports = false;
         }
 
         // Render
@@ -107,15 +107,51 @@ namespace atta
         _layerStack->push(layer);
     }
 
-    std::vector<std::shared_ptr<Viewport>> GraphicsManager::createDefaultViewportsImpl()
+    void GraphicsManager::clearViewports() { return getInstance().clearViewportsImpl(); }
+    void GraphicsManager::clearViewportsImpl()
+    { 
+        _viewportsNext.clear();
+        _swapViewports = true; 
+    }
+
+    void GraphicsManager::addViewport(std::shared_ptr<Viewport> viewport) { return getInstance().addViewportImpl(viewport); }
+    void GraphicsManager::addViewportImpl(std::shared_ptr<Viewport> viewport)
+    { 
+        _viewportsNext.push_back(viewport); 
+        _swapViewports = true; 
+    }
+
+    void GraphicsManager::removeViewport(std::shared_ptr<Viewport> viewport) { return getInstance().removeViewportImpl(viewport); }
+    void GraphicsManager::removeViewportImpl(std::shared_ptr<Viewport> viewport)
     {
-        std::vector<std::shared_ptr<Viewport>> viewports;
+        // TODO make it work with zero viewports
+        if(_viewportsNext.size() > 1)
+        {
+            for(unsigned i = 0; i < _viewportsNext.size(); i++)
+                if(_viewportsNext[i] == viewport)
+                {
+                    _viewportsNext.erase(_viewportsNext.begin()+i);
+                    break;
+                }
+            _swapViewports = true;
+        }
+        else
+        {
+            LOG_WARN("GraphicsManager", "It is not possible to have 0 viewports yet");
+        }
+    }
+
+    void GraphicsManager::createDefaultViewports() { getInstance().createDefaultViewportsImpl(); }
+    void GraphicsManager::createDefaultViewportsImpl()
+    {
+        _viewportsNext.clear();
+
         Viewport::CreateInfo viewportInfo;
         viewportInfo.renderer = std::make_shared<PhongRenderer>();
         viewportInfo.camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
         viewportInfo.sid = StringId("Main Viewport");
-        viewports.emplace_back(std::make_shared<Viewport>(viewportInfo));
-        return viewports;
+        _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));
+        _swapViewports = true;
     }
 
     //---------- Register API specific implementations ----------//

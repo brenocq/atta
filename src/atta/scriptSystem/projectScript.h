@@ -16,22 +16,22 @@ namespace atta
         virtual ~ProjectScript() {};  
 
         //---------- Load/Unload ----------//
-        virtual void onLoad() = 0;
-        virtual void onUnload() = 0;
+        virtual void onLoad() {};
+        virtual void onUnload() {};
 
         //---------- Simulation ----------//
-        virtual void onStart() = 0;
-        virtual void onStop() = 0;
+        virtual void onStart() {};
+        virtual void onStop() {};
 
-        virtual void onContinue() = 0;
-        virtual void onPause() = 0;
+        virtual void onContinue() {};
+        virtual void onPause() {};
 
-        virtual void onUpdateBefore(float delta) = 0;
-        virtual void onUpdateAfter(float delta) = 0;
+        virtual void onUpdateBefore(float delta) {};
+        virtual void onUpdateAfter(float delta) {};
 
         //---------- Editor ----------//
-        virtual void onUIUpdate() = 0;
-        virtual void onUIRender() = 0;
+        virtual void onUIUpdate() {};
+        virtual void onUIRender() {};
     }; 
 }
 

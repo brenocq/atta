@@ -106,7 +106,7 @@ namespace atta
                     finalText << COLOR_RED;
                 break;
                 case 'g':
-                    finalText << COLOR_BLUE;
+                    finalText << COLOR_GREEN;
                 break;
                 case 'b':
                     finalText << COLOR_BLUE;

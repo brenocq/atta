@@ -53,9 +53,9 @@ namespace atta
         std::ifstream is(attaFile, std::ifstream::in | std::ifstream::binary);
 
         Header header = deserializeHeader(is);
-        LOG_VERBOSE("ProjectSerializer", "[*y]Header:[]\n\tversion:$0.$1.$2.$3\n\tproj:$4\n\tcounter:$5", 
-        		header.version[0], header.version[1], header.version[2], header.version[3], 
-        		header.projectName, header.saveCounter);
+        //LOG_VERBOSE("ProjectSerializer", "[*y]Header:[]\n\tversion:$0.$1.$2.$3\n\tproj:$4\n\tcounter:$5", 
+        //		header.version[0], header.version[1], header.version[2], header.version[3], 
+        //		header.projectName, header.saveCounter);
 
         while(is)
         {
@@ -320,14 +320,13 @@ namespace atta
                 read(is, numViewports);
 
                 // Deserialize 
-                std::vector<std::shared_ptr<Viewport>>& viewports = GraphicsManager::getViewportsNext();
-                viewports.clear();
+                GraphicsManager::clearViewports();
                 for(unsigned i = 0; i < numViewports; i++)
                 {
                     std::shared_ptr<Viewport> viewport;
                     viewport = std::make_shared<Viewport>(Viewport::CreateInfo{});
                     viewport->deserialize(is);
-                    viewports.push_back(viewport);
+                    GraphicsManager::addViewport(viewport);
                 }
             }
         }

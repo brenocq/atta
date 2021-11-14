@@ -14,6 +14,7 @@ namespace atta
     class Camera : public Serializable
     {
     public:
+        Camera(std::string name): _name(name) {}
         virtual ~Camera() = default;
 
         virtual mat4 getView() const = 0;
@@ -32,6 +33,7 @@ namespace atta
         vec3 getUp() const { return _up; }
         vec3 getFront() const { return _front; }
         float getRatio() const { return _ratio; }
+        std::string getName() const { return _name; }
 
         void setPosition(const vec3& position) { _position = position; }
         void setLeft(const vec3& left) { _left = left; }
@@ -40,7 +42,7 @@ namespace atta
         void update();
 
         void setRatio(float ratio) { _ratio = ratio; }
-
+        virtual void renderUI();
 
     protected:
         vec3 _position;
@@ -50,6 +52,9 @@ namespace atta
 
         // Camera move
         float _speed;
+
+        // UI
+        std::string _name;
     private:
         void movePlanar();
         void moveFirstPerson();

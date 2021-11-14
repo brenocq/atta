@@ -45,9 +45,8 @@ namespace atta::ui
                         ComponentManager::clear();
                         ComponentManager::createDefault();
 
-                        // Update viewports in the next frame
-                        auto& viewports = GraphicsManager::getViewportsNext();
-                        viewports = GraphicsManager::createDefaultViewports();
+                        // Replace viewports with default
+                        GraphicsManager::createDefaultViewports();
                     }
                 }
 
@@ -84,7 +83,7 @@ namespace atta::ui
                 std::vector<std::shared_ptr<Viewport>> viewports = GraphicsManager::getViewports();
                 _viewportModals.resize(viewports.size());
                 int i = 0;
-                for(auto& viewport : viewports)
+                for(auto viewport : viewports)
                 {
                     if(ImGui::MenuItem(viewport->getSID().getString().c_str()))
                         _viewportModals[i] = true;
@@ -93,16 +92,34 @@ namespace atta::ui
 
                 ImGui::Separator();
 
-                if(ImGui::MenuItem("Create new"))
+                if(ImGui::MenuItem("Create viewport"))
                 {
+                    // Choose viewport name
+                    unsigned newViewportNumber = 0;
+                    bool found = false;
+                    while(!found)
+                    {
+                        found = true;
+                        for(auto viewport : viewports) 
+                            if(viewport->getSID() == StringId("Viewport "+std::to_string(newViewportNumber)))
+                            {
+                                found = false;
+                                break;
+                            }
+                        if(!found)
+                            newViewportNumber++;
+                    }
+
+                    // Create viewport
                     Viewport::CreateInfo viewportInfo;
                     viewportInfo.renderer = std::make_shared<PhongRenderer>();
                     viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{}));
-                    viewportInfo.sid = StringId("New Viewport");
+                    viewportInfo.sid = StringId("Viewport "+std::to_string(newViewportNumber));
                     std::shared_ptr<Viewport> viewport = std::make_shared<Viewport>(viewportInfo);
                     GraphicsManager::addViewport(viewport);
+                    ImGui::DockBuilderDockWindow((viewportInfo.sid.getString()+"###Viewport"+viewportInfo.sid.getString()).c_str(), _viewportDockId);
+                    //ImGui::DockBuilderDockWindow("Viewport 0###ViewportViewport 0", _viewportDockId);
                 }
-
 
                 ImGui::EndMenu();
             }
@@ -220,64 +237,40 @@ namespace atta::ui
     void TopBar::viewportModals()
     {
         std::vector<std::shared_ptr<Viewport>> viewports = GraphicsManager::getViewports();
+        static std::vector<bool> newViewportModals;// If first time creating the modal
+        _viewportModals.resize(viewports.size());
+
+        // Check if first time creating viewport
+        newViewportModals.resize(_viewportModals.size());
+        for(unsigned i = 0; i < newViewportModals.size(); i++)
+            newViewportModals[i] = !newViewportModals[i] && _viewportModals[i];
 
         for(uint32_t i = 0; i < _viewportModals.size(); i++)
         {
-            if(_viewportModals[i])
+            char nameBuf[196];
+            sprintf(nameBuf, "%s###ViewportProps%s", viewports[i]->getName().c_str(), viewports[i]->getSID().getString().c_str());
+
+            bool open = _viewportModals[i];
+            if(open)
             {
-                std::string viewportName = viewports[i]->getSID().getString();
-                if(ImGui::Begin((viewportName+" Properties").c_str()))
+                if(newViewportModals[i])
+                    ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f));
+                if(ImGui::Begin(nameBuf, &open))
                 {
-                    ImGui::Text("Name");
-                    ImGui::Text(viewportName.c_str());
-                    ImGui::Separator();
-
-                    ImGui::Text("Renderer");
-                    std::vector<const char*> renderers = { "FastRenderer", "PhongRenderer", "PbrRenderer" };
-
-                    unsigned comboValue = 0;
-                    for(size_t j = 0; j < renderers.size(); j++)
-                    {
-                        if(viewports[i]->getRenderer()->getName() == renderers[j])
-                        {
-                            comboValue = j;
-                            break;
-                        }
-                    }
-
-                    const char* comboPreviewValue = renderers[comboValue];
-                    if(ImGui::BeginCombo("Renderer", comboPreviewValue))
-                    {
-                        for(size_t j = 0; j < renderers.size(); j++)
-                        {
-                            if(ImGui::Selectable(renderers[j], comboValue == j))
-                            {
-                                switch(j)
-                                {
-                                case 0:
-                                    viewports[i]->setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<FastRenderer>()));
-                                break;
-                                case 1:
-                                    viewports[i]->setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PhongRenderer>()));
-                                break;
-                                case 2:
-                                    viewports[i]->setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PbrRenderer>()));
-                                break;
-                                }
-                            }
-                            if(comboValue == j)
-                                ImGui::SetItemDefaultFocus();
-                        }
-                        ImGui::EndCombo();
-                    }
+                    viewports[i]->renderUI();
 
                     ImGui::Separator();
-
-                    ImGui::Text("Camera");
-
+                    if(ImGui::Button("Delete Viewport"))
+                    {
+                        GraphicsManager::removeViewport(viewports[i]);
+                        ImGui::End();
+                        break;
+                    }
                 }
                 ImGui::End();
+                _viewportModals[i] = open;
             }
         }
+        newViewportModals = _viewportModals;
     }
 }

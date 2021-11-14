@@ -46,6 +46,7 @@ namespace atta::ui
     void EditorLayer::onUIRender()
     {
         _dockSpace.render();
+        _topBar.setViewportDockId(_dockSpace.getViewportDockId());
         toolbar();
 
         //if(_editorState != EditorState::SIMULATION_RUNNING)
@@ -74,12 +75,15 @@ namespace atta::ui
         static int activeViewport = 0;
 
         int i = -1;
-        for(auto& viewport : viewports)
+        for(auto viewport : viewports)
         {
+            char nameBuf[128];
+            sprintf(nameBuf, "%s###Viewport%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
             i++;
             // Render and resize
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
-            ImGui::Begin(viewport->getSID().getString().c_str());
+            bool open = true;
+            ImGui::Begin(nameBuf, &open);
             {
                 //----- Move camera -----//
                 // Check started camera movement
@@ -118,6 +122,9 @@ namespace atta::ui
             }
             ImGui::End();
             ImGui::PopStyleVar(1);
+
+            if(!open)
+                GraphicsManager::removeViewport(viewport);
         }
     }
 

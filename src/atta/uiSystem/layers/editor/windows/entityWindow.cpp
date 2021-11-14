@@ -63,7 +63,7 @@ namespace atta::ui
             nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
         //----- Name -----//
-        std::string name = "<Object "+std::to_string(entity)+">";
+        std::string name = "<Entity "+std::to_string(entity)+">";
         NameComponent* n = ComponentManager::getEntityComponent<NameComponent>(entity);
         RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
         if(n) name = n->name;
