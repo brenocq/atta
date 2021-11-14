@@ -17,6 +17,7 @@
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/transformComponent.h>
+#include <atta/componentSystem/components/materialComponent.h>
 #include <atta/componentSystem/factory.h>
 
 namespace atta
@@ -69,57 +70,32 @@ namespace atta
         {
             std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());
 
-            unsigned int projLoc = glGetUniformLocation(shader->getId(), "projection");
-            glUniformMatrix4fv(projLoc, 1, GL_FALSE, transpose(camera->getProj()).data);
-            //mat4 proj = mat4(1.0f);
-            //glUniformMatrix4fv(projLoc, 1, GL_FALSE, proj.data);
-            unsigned int viewLoc = glGetUniformLocation(shader->getId(), "view");
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, transpose(camera->getView()).data);
+            shader->setMat4("projection", transpose(camera->getProj()));
+            shader->setMat4("view", transpose(camera->getView()));
 
             for(auto entity : entities)
             {
                 MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
                 TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+                MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
 
-                if(mesh != nullptr && transform != nullptr)
+                if(mesh && transform)
                 {
-                    // XXX Move to shader class
-                    // Updating transform uniform
+                    mat4 model; 
+                    model.setPosOriScale(transform->position, transform->orientation, transform->scale);
+                    model.transpose();
+                    shader->setMat4("model", model);
 
-                    unsigned int transformLoc = glGetUniformLocation(shader->getId(), "transform");
-                    mat4 trans;
-                    trans.setPosOriScale(transform->position, transform->orientation, transform->scale);
-                    trans.transpose();
-                    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, trans.data);
+                    if(material)
+                        shader->setVec3("albedo", material->albedo);
+                    else
+                    {
+                        MaterialComponent material {};
+                        shader->setVec3("albedo", material.albedo);
+                    }
 
                     // Draw mesh
                     GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
-                }
-            }
-
-            for(auto& factory : ComponentManager::getFactories())
-            {
-                MeshComponent* mesh = factory.getComponent<MeshComponent>();
-                TransformComponent* transform = factory.getComponent<TransformComponent>();
-                if(mesh != nullptr && transform != nullptr)
-                {
-                    //for(uint64_t i = 0; i < std::min((uint64_t)factory.getMaxClones(), (uint64_t)1000); i++)
-                    for(uint64_t i = 0; i < factory.getMaxClones(); i++)
-                    {
-                        // XXX Move to shader class
-                        // Updating transform uniform
-                        unsigned int transformLoc = glGetUniformLocation(shader->getId(), "transform");
-                        mat4 trans;
-                        trans.setPosOriScale(transform->position, transform->orientation, transform->scale);
-                        trans.transpose();
-                        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, trans.data);
-
-                        // Draw mesh
-                        GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
-
-                        mesh++;
-                        transform++;
-                    }
                 }
             }
         }

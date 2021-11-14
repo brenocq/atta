@@ -10,20 +10,22 @@
 
 namespace atta
 {
-	class VulkanRenderer final : public RendererAPI
-	{
-	public:
-		VulkanRenderer();
-		~VulkanRenderer();
+    class VulkanRenderer final : public RendererAPI
+    {
+    public:
+        VulkanRenderer();
+        ~VulkanRenderer();
 
-		void beginFrame() override;
-		void endFrame() override;
+        void beginFrame() override;
+        void endFrame() override;
 
-		void beginRenderPass() override;
-		void endRenderPass() override;
+        void beginRenderPass() override;
+        void endRenderPass() override;
 
-		void renderMesh() override;
-	};
+        void renderMesh() override;
+        void renderQuad() override;
+        void renderCube() override;
+    };
 }
 
 #endif// ATTA_GRAPHICS_SYSTEM_RENDERER_APIS_VULKAN_VULKAN_RENDERER_H

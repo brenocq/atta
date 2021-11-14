@@ -25,6 +25,8 @@ namespace atta
         void endFrame() override;
 
         void renderMesh(StringId meshSid) override;
+        void renderQuad() override;
+        void renderCube() override;
         void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) override;
 
         void* getImGuiImage(StringId sid) const override;
@@ -45,8 +47,10 @@ namespace atta
 
         std::shared_ptr<OpenGLShaderGroup> _quadShader;
 
-        OpenGLId quadVBO;
-        OpenGLId quadVAO;
+        OpenGLId _quadVBO;
+        OpenGLId _quadVAO;
+        OpenGLId _cubeVBO;
+        OpenGLId _cubeVAO;
     };
 }
 

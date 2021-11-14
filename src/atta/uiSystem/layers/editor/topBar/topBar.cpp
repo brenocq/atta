@@ -85,7 +85,7 @@ namespace atta::ui
                 int i = 0;
                 for(auto viewport : viewports)
                 {
-                    if(ImGui::MenuItem(viewport->getSID().getString().c_str()))
+                    if(ImGui::MenuItem(viewport->getName().c_str()))
                         _viewportModals[i] = true;
                     i++;
                 }
@@ -117,8 +117,6 @@ namespace atta::ui
                     viewportInfo.sid = StringId("Viewport "+std::to_string(newViewportNumber));
                     std::shared_ptr<Viewport> viewport = std::make_shared<Viewport>(viewportInfo);
                     GraphicsManager::addViewport(viewport);
-                    ImGui::DockBuilderDockWindow((viewportInfo.sid.getString()+"###Viewport"+viewportInfo.sid.getString()).c_str(), _viewportDockId);
-                    //ImGui::DockBuilderDockWindow("Viewport 0###ViewportViewport 0", _viewportDockId);
                 }
 
                 ImGui::EndMenu();

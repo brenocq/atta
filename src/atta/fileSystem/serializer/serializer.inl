@@ -19,7 +19,7 @@ namespace atta
     template <>
     inline void write<std::string>(std::ostream& os, std::string x)
     {
-        os.write(x.c_str(), x.size());
+        os.write(x.c_str(), strlen(x.c_str()));
         os.put('\0');
     }
 

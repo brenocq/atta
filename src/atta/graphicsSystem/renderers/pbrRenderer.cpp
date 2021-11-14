@@ -26,7 +26,7 @@
 namespace atta
 {
     PbrRenderer::PbrRenderer():
-        Renderer("PbrRenderer")
+        Renderer("PbrRenderer"), _firstRender(true)
     {
         // Framebuffer
         Framebuffer::CreateInfo framebufferInfo {};
@@ -120,24 +120,26 @@ namespace atta
         //    bgShaderGroupInfo.debugName = StringId("PBR background Shader Group");
         //    _backgroundShader = GraphicsManager::create<ShaderGroup>(bgShaderGroupInfo);
         //}
-
     }
 
     PbrRenderer::~PbrRenderer()
     {
-
+        // TODO Not everything created is being deleted
+        glDeleteTextures(1, &_envCubemap);
+        glDeleteTextures(1, &_irradianceMap);
+        glDeleteTextures(1, &_prefilterMap);
+        glDeleteTextures(1, &_brdfLUT);
     }
 
     void PbrRenderer::render(std::shared_ptr<Camera> camera)
     {
-        static bool first = true;
-        if(first)
+        if(_firstRender)
         {
+            brdfLUT();
             generateCubemap();
             convoluteCubemap();
             prefilterCubemap();
-            brdfLUT();
-            first = false;
+            _firstRender = false;
         }
 
         std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
@@ -285,30 +287,30 @@ namespace atta
             //_backgroundShader->setInt("environmentMap", 0);
             //glActiveTexture(GL_TEXTURE0);
             //glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
-            //renderCube();
+            //GraphicsManager::getRendererAPI()->renderCube();
 
         }
         _geometryPipeline->end();
 
-        _linePipeline->begin(false);
-        {
-            std::shared_ptr<ShaderGroup> shader = _linePipeline->getShaderGroup();
-            shader->bind();
-            shader->setMat4("projection", transpose(camera->getProj()));
-            shader->setMat4("view", transpose(camera->getView()));
-            Drawer::draw<Drawer::Line>();
-        }
-        _linePipeline->end();
+        //_linePipeline->begin(false);
+        //{
+        //    std::shared_ptr<ShaderGroup> shader = _linePipeline->getShaderGroup();
+        //    shader->bind();
+        //    shader->setMat4("projection", transpose(camera->getProj()));
+        //    shader->setMat4("view", transpose(camera->getView()));
+        //    Drawer::draw<Drawer::Line>();
+        //}
+        //_linePipeline->end();
 
-        _pointPipeline->begin(false);
-        {
-            std::shared_ptr<ShaderGroup> shader = _pointPipeline->getShaderGroup();
-            shader->bind();
-            shader->setMat4("projection", transpose(camera->getProj()));
-            shader->setMat4("view", transpose(camera->getView()));
-            Drawer::draw<Drawer::Point>();
-        }
-        _pointPipeline->end();
+        //_pointPipeline->begin(false);
+        //{
+        //    std::shared_ptr<ShaderGroup> shader = _pointPipeline->getShaderGroup();
+        //    shader->bind();
+        //    shader->setMat4("projection", transpose(camera->getProj()));
+        //    shader->setMat4("view", transpose(camera->getView()));
+        //    Drawer::draw<Drawer::Point>();
+        //}
+        //_pointPipeline->end();
     }
 
     void PbrRenderer::resize(uint32_t width, uint32_t height)
@@ -319,110 +321,6 @@ namespace atta
             _width = width;
             _height = height;
         }
-    }
-
-    // renderCube() renders a 1x1 3D cube in NDC.
-    // -------------------------------------------------
-    unsigned int cubeVAO = 0;
-    unsigned int cubeVBO = 0;
-    void PbrRenderer::renderCube()
-    {
-        // initialize (if necessary)
-        if (cubeVAO == 0)
-        {
-            float vertices[] = {
-                // back face
-                -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-                1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-                1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
-                1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-                -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-                -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-                // front face
-                -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-                1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-                1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-                1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-                -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-                -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-                // left face
-                -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-                -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-                -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-                -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-                -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-                -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-                // right face
-                1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-                1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-                1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right
-                1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-                1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-                1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
-                // bottom face
-                -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-                1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-                1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-                1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-                -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-                -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-                // top face
-                -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-                1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-                1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right
-                1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-                -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-                -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
-            };
-            glGenVertexArrays(1, &cubeVAO);
-            glGenBuffers(1, &cubeVBO);
-            // fill buffer
-            glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-            // link vertex attributes
-            glBindVertexArray(cubeVAO);
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
-        }
-        // render Cube
-        glBindVertexArray(cubeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-    }
-
-    unsigned int quadVAO = 0;
-    unsigned int quadVBO;
-    void PbrRenderer::renderQuad()
-    {
-        if (quadVAO == 0)
-        {
-            float quadVertices[] = {
-                // positions        // texture Coords
-                -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-                1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-            };
-            // setup plane VAO
-            glGenVertexArrays(1, &quadVAO);
-            glGenBuffers(1, &quadVBO);
-            glBindVertexArray(quadVAO);
-            glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-        }
-        glBindVertexArray(quadVAO);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        glBindVertexArray(0);
     }
 
     void PbrRenderer::generateCubemap()
@@ -461,29 +359,29 @@ namespace atta
 
         // Projection and view matrices
         mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
-        //mat4 captureViews[] =
-        //{
-        //    lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
-        //    lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
-        //    lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)),
-        //    lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)),
-        //    lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)),
-        //    lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f))
-        //};
+        mat4 captureViews[] =
+        {
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f))
+        };
 
         // Convert HDR equirectangular environment map to cubemap equivalent
         shader->bind();
         shader->setMat4("projection", transpose(captureProjection));
         shader->setTexture("equirectangularMap", sid);
-        //glViewport(0, 0, 512, 512);
-        //glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        //for(unsigned int i = 0; i < 6; ++i)
-        //{
-        //    shader->setMat4("view", transpose(captureViews[i]));
-        //    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _envCubemap, 0);
-        //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //    renderCube();
-        //}
+        glViewport(0, 0, 512, 512);
+        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+        for(unsigned int i = 0; i < 6; ++i)
+        {
+            shader->setMat4("view", transpose(captureViews[i]));
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _envCubemap, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            GraphicsManager::getRendererAPI()->renderCube();
+        }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -546,7 +444,7 @@ namespace atta
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _irradianceMap, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            renderCube();
+            GraphicsManager::getRendererAPI()->renderCube();
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
@@ -623,7 +521,7 @@ namespace atta
                         GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _prefilterMap, mip);
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                renderCube();
+                GraphicsManager::getRendererAPI()->renderCube();
             }
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -640,7 +538,6 @@ namespace atta
         glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
-
 
         glGenTextures(1, &_brdfLUT);
         // pre-allocate enough memory for the LUT texture.
@@ -666,7 +563,7 @@ namespace atta
         glViewport(0, 0, 512, 512);
         shader->bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderQuad();
+        GraphicsManager::getRendererAPI()->renderQuad();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

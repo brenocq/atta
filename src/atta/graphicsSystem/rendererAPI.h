@@ -27,6 +27,8 @@ namespace atta
         virtual void endFrame() = 0;
 
         virtual void renderMesh(StringId meshSid) = 0;
+        virtual void renderQuad() = 0;
+        virtual void renderCube() = 0;
         virtual void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) = 0;
 
         virtual void* getImGuiImage(StringId sid) const = 0;
