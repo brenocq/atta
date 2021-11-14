@@ -12,7 +12,6 @@ namespace atta
 {
     unsigned ComponentRegistry::getSerializedSize(Component* component)
     {
-        std::vector<char> buffer(getDescription().maxSerializedSize);
         std::ostringstream of;
         std::basic_ostream<char>::pos_type posBefore = of.tellp();
         serialize(of, component);

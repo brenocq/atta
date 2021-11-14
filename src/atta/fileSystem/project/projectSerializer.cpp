@@ -124,24 +124,25 @@ namespace atta
 
     void ProjectSerializer::serializeComponentSystem(std::ofstream& os)
     {
-        // Component system marker
-        write(os, "comp");
+        std::stringstream oss;
+        std::basic_ostream<char>::pos_type posBefore = oss.tellp();
 
+        //---------- Write to temporary buffer ----------//
         // Serialize entity ids
         std::vector<EntityId> entities = ComponentManager::getEntitiesView();
-        write(os, "id");// Entity id marker
-        write<uint32_t>(os, entities.size());
+        write(oss, "id");// Entity id marker
+        write<uint64_t>(oss, entities.size());
         for(EntityId entity : entities)
-            write(os, entity);
+            write(oss, entity);
 
         // Serialize number of components
-        write<uint32_t>(os, ComponentManager::getComponentRegistries().size());
+        write<uint32_t>(oss, ComponentManager::getComponentRegistries().size());
 
         // Serialize components
         for(auto compReg : ComponentManager::getComponentRegistries())
         {
             // Write name
-            write(os, compReg->getDescription().type);
+            write(oss, compReg->getDescription().type);
 
             // Get all entities that have this component
             std::vector<std::pair<EntityId,Component*>> pairs;
@@ -156,22 +157,39 @@ namespace atta
             unsigned totalSectionSize = 0;
             for(auto compPair : pairs)
                 totalSectionSize += compReg->getSerializedSize(compPair.second) + sizeof(EntityId);
-            write<uint32_t>(os, totalSectionSize);
+            write<uint32_t>(oss, totalSectionSize);
 
-            std::basic_ostream<char>::pos_type posBef = os.tellp();
+            std::basic_ostream<char>::pos_type posBef = oss.tellp();
             for(auto compPair : pairs)
             {
-                // TODO StringId as string
                 // TODO Open vector
-                write(os, compPair.first);
-                compReg->serialize(os, compPair.second);
+                write(oss, compPair.first);
+                compReg->serialize(oss, compPair.second);
             }
-            ASSERT(os.tellp()-posBef == totalSectionSize, "Serialized section size and calculated section size does not match");
+            ASSERT(oss.tellp()-posBef == totalSectionSize, "Serialized section size and calculated section size does not match");
         }
+
+        //---------- Flush buffer to file ----------//
+        // Write section header
+        size_t size = (int)oss.tellp() - posBefore;
+        write(os, "comp");// Section title
+        write(os, size);// Section size
+
+        // Write section body
+        char* buffer = new char[size];
+        oss.rdbuf()->pubseekpos(0);// Return to first position
+        oss.rdbuf()->sgetn(buffer, size);// Copy to buffer
+        os.write(reinterpret_cast<const char*>(buffer), size);
+        delete buffer;
     }
 
     void ProjectSerializer::deserializeComponentSystem(std::ifstream& is)
     {
+        // Read section size in bytes
+        size_t sizeBytes;
+        read(is, sizeBytes);
+
+        // Read section
         std::string marker;
         uint32_t numComponents = 0;
 
@@ -184,9 +202,9 @@ namespace atta
                 return;
             }
 
-            uint32_t numIds;
+            uint64_t numIds;
             read(is, numIds);
-            for(uint32_t i = 0; i < numIds; i++)
+            for(uint64_t i = 0; i < numIds; i++)
             {
                 EntityId id;
                 read(is, id);
@@ -240,32 +258,48 @@ namespace atta
 
     void ProjectSerializer::serializeGraphicsSystem(std::ofstream& os)
     {
-        // Graphics system marker
-        write(os, "gfx");
+        std::stringstream oss;
+        std::basic_ostream<char>::pos_type posBefore = oss.tellp();
 
-        // Number of sections
-        write<uint32_t>(os, 1);
+        //---------- Write to temporary buffer ----------//
+        // Number of subsections
+        write<uint32_t>(oss, 1);
+        //----- Viewport subsection -----//
+        write(oss, "viewports");
 
-        //----- Viewports -----//
-        write(os, "viewports");
         std::vector<std::shared_ptr<Viewport>> viewports = GraphicsManager::getViewports();
-
-        // Serialize section size in bytes
         unsigned sectionSize = 0;
         for(auto viewport : viewports)
             sectionSize += viewport->getSerializedSize();
-        write<uint32_t>(os, sectionSize);
+        // Serialize section size in bytes
+        write<uint32_t>(oss, sectionSize);
 
         // Serialize number of viewports
-        write<uint32_t>(os, viewports.size());
+        write<uint32_t>(oss, viewports.size());
 
         // Serialize 
         for(auto viewport : viewports)
-            viewport->serialize(os);
+            viewport->serialize(oss);
+
+        //---------- Flush buffer to file ----------//
+        // Write section header
+        size_t size = (int)oss.tellp() - posBefore;
+        write(os, "gfx");// Section title
+        write(os, size);// Section size
+
+        // Write section body
+        char* buffer = new char[size];
+        oss.rdbuf()->pubseekpos(0);// Return to first position
+        oss.rdbuf()->sgetn(buffer, size);// Copy to buffer
+        os.write(reinterpret_cast<const char*>(buffer), size);
+        delete buffer;
     }
 
     void ProjectSerializer::deserializeGraphicsSystem(std::ifstream& is)
     {
+        size_t sizeBytes;
+        read(is, sizeBytes);
+
         unsigned numSections;
         read(is, numSections);
 
