@@ -10,7 +10,7 @@
 namespace atta
 {
     PerspectiveCamera::PerspectiveCamera(CreateInfo info):
-        _near(info.near), _far(info.far), _fov(info.fov)
+        Camera("PerspectiveCamera"), _near(info.near), _far(info.far), _fov(info.fov)
     {
         _position = info.position;
         _front = normalize(info.lookAt-info.position);

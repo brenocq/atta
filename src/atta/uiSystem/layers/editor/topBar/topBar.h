@@ -15,6 +15,7 @@ namespace atta::ui
         TopBar();
 
         void render();
+        void setViewportDockId(unsigned viewportDockId) { _viewportDockId = viewportDockId; }
 
 
     private:
@@ -27,6 +28,7 @@ namespace atta::ui
         bool _showOpenProject;
         bool _showCreateProject;
 
+        unsigned _viewportDockId;
         std::vector<bool> _viewportModals;// True/false for each viewport window
     };
 }

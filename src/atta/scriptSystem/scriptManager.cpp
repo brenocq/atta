@@ -69,7 +69,7 @@ namespace atta
             if(script != _projectScript.first)
                 scripts.push_back(script);
 
-        LOG_DEBUG("ScriptManager", "Scripts: $0", scripts);
+        //LOG_DEBUG("ScriptManager", "Scripts: $0", scripts);
         return scripts;
     }
 

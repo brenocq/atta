@@ -10,7 +10,7 @@
 namespace atta
 {
     OrthographicCamera::OrthographicCamera(CreateInfo info):
-        _far(info.far), _height(info.height)
+        Camera("OrthographicCamera"), _far(info.far), _height(info.height)
     {
         _position = info.position;
         _front = normalize(info.lookAt-info.position);

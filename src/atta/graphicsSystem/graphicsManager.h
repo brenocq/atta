@@ -39,11 +39,13 @@ namespace atta
         static std::shared_ptr<T> create(Args... args) { return getInstance().createImpl<T>(args...); }
 
         static std::shared_ptr<RendererAPI> getRendererAPI() { return getInstance().getRendererAPIImpl(); };
-        static std::vector<std::shared_ptr<Viewport>>& getViewports() { return getInstance().getViewportsImpl(); }
-        static std::vector<std::shared_ptr<Viewport>>& getViewportsNext() { return getInstance().getViewportsNextImpl(); }
-        static void addViewport(std::shared_ptr<Viewport> viewport) { return getInstance().addViewportImpl(viewport); }
+        static std::vector<std::shared_ptr<Viewport>> getViewports() { return getInstance().getViewportsImpl(); }
+        static void clearViewports();
+        static void addViewport(std::shared_ptr<Viewport> viewport);
+        static void removeViewport(std::shared_ptr<Viewport> viewport);
+        static void createDefaultViewports();
+
         static void* getImGuiImage(StringId sid) { return getInstance().getImGuiImageImpl(sid); }
-        static std::vector<std::shared_ptr<Viewport>> createDefaultViewports() { return getInstance().createDefaultViewportsImpl(); }
 
     private:
         void startUpImpl();
@@ -58,9 +60,10 @@ namespace atta
 
         std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
         std::vector<std::shared_ptr<Viewport>>& getViewportsImpl() { return _viewports; };
-        std::vector<std::shared_ptr<Viewport>>& getViewportsNextImpl() { return _viewportsNext; };
-        void addViewportImpl(std::shared_ptr<Viewport> viewport) { _viewports.push_back(viewport); }
-        std::vector<std::shared_ptr<Viewport>> createDefaultViewportsImpl();
+        void clearViewportsImpl();
+        void addViewportImpl(std::shared_ptr<Viewport> viewport);
+        void removeViewportImpl(std::shared_ptr<Viewport> viewport);
+        void createDefaultViewportsImpl();
 
         void* getImGuiImageImpl(StringId sid) const { return _rendererAPI->getImGuiImage(sid); }
 
@@ -73,6 +76,7 @@ namespace atta
         // Viewports
         std::vector<std::shared_ptr<Viewport>> _viewports;
         std::vector<std::shared_ptr<Viewport>> _viewportsNext;// Being used for now to update the viewports in the next frame without breaking imgui
+        bool _swapViewports;
     };
 }
 

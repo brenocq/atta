@@ -139,4 +139,37 @@ namespace atta
 
         Camera::update();
     }
+
+    void Camera::renderUI()
+    {
+        std::vector<const char*> controls = { "Planar", "First person" };
+
+        unsigned comboValue = 0;
+        if(_control == Control::FIRST_PERSON)
+            comboValue = 1;
+
+        if(ImGui::BeginCombo("Type###CameraType", controls[comboValue]))
+        {
+            for(size_t j = 0; j < controls.size(); j++)
+            {
+                if(ImGui::Selectable(controls[j], comboValue == j))
+                {
+                    switch(j)
+                    {
+                        case 0:
+                            if(comboValue != 0)
+                                _control = Control::PLANAR;
+                        break;
+                        case 1:
+                            if(comboValue != 1)
+                                _control = Control::FIRST_PERSON;
+                        break;
+                    }
+                }
+                if(comboValue == j)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    }
 }

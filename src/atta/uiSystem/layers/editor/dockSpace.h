@@ -13,7 +13,10 @@ namespace atta::ui
     {
     public:
         void render();
+
+        unsigned getViewportDockId() { return _viewportDockId; }
     private:
+        unsigned _viewportDockId;
     };
 }
 

@@ -46,7 +46,8 @@ namespace atta::ui
                 auto dock_id_vp_top = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.00f, nullptr, &dockspace_id);
 
                 // we now dock our windows into the docking node we made above
-                ImGui::DockBuilderDockWindow("Main Viewport", dockspace_id);
+                _viewportDockId = dockspace_id;
+                ImGui::DockBuilderDockWindow("Main Viewport###ViewportMain Viewport", dockspace_id);
                 ImGui::DockBuilderDockWindow("Debug", dock_id_debug);
                 ImGui::DockBuilderDockWindow("Scene", dock_id_scene);
                 ImGui::DockBuilderDockWindow("##Toolbar", dock_id_vp_top);
