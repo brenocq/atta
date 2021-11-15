@@ -26,6 +26,7 @@ namespace atta
 
     private:
         std::shared_ptr<Pipeline> _geometryPipeline;
+        std::shared_ptr<Pipeline> _selectedPipeline;
     };
 }
 

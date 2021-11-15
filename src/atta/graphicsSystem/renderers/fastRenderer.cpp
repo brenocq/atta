@@ -28,7 +28,7 @@ namespace atta
         // Framebuffer
         Framebuffer::CreateInfo framebufferInfo {};
         framebufferInfo.attachments.push_back({Image::Format::RGB});
-        framebufferInfo.attachments.push_back({Image::Format::DEPTH32F});
+        framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
         framebufferInfo.width = 500;
         framebufferInfo.height = 500;
         framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
@@ -56,6 +56,13 @@ namespace atta
         };
         pipelineInfo.renderPass = renderPass;
         _geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+
+        //---------- Selected pipeline ----------//
+        shaderGroupInfo.shaderPaths = {"shaders/common/selected.vert", "shaders/common/selected.frag"};
+        shaderGroupInfo.debugName = StringId("FastRenderer Selected Shader Group");
+        std::shared_ptr<ShaderGroup> selectedShaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+        pipelineInfo.shaderGroup = selectedShaderGroup;
+        _selectedPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
     }
 
     FastRenderer::~FastRenderer()
@@ -68,6 +75,9 @@ namespace atta
         std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
         _geometryPipeline->begin();
         {
+            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+            glStencilFunc(GL_ALWAYS, 1, 0xFF); 
+
             std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());
 
             shader->setMat4("projection", transpose(camera->getProj()));
@@ -94,12 +104,48 @@ namespace atta
                         shader->setVec3("albedo", material.albedo);
                     }
 
+                    if(entity == ComponentManager::getSelectedEntity())
+                        glStencilMask(0xFF); 
+                    else
+                        glStencilMask(0x00); 
+
                     // Draw mesh
                     GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
                 }
             }
         }
         _geometryPipeline->end();
+
+        _selectedPipeline->begin(false);
+        {
+            glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+            glStencilMask(0x00);
+            glDisable(GL_DEPTH_TEST);
+
+            std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_selectedPipeline->getShaderGroup());
+            shader->setMat4("projection", transpose(camera->getProj()));
+            shader->setMat4("view", transpose(camera->getView()));
+
+            EntityId entity = ComponentManager::getSelectedEntity();
+            if(entity != -1)
+            {
+                MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
+                TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+
+                if(mesh && transform)
+                {
+                    mat4 model; 
+                    model.setPosOriScale(transform->position, transform->orientation, transform->scale*1.05);
+                    model.transpose();
+                    shader->setMat4("model", model);
+
+                    // Draw mesh
+                    GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+                }
+            }
+            glEnable(GL_DEPTH_TEST);
+        }
+        _selectedPipeline->end();
     }
 
     void FastRenderer::resize(uint32_t width, uint32_t height)

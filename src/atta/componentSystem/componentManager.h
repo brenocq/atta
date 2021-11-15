@@ -61,6 +61,8 @@ namespace atta
         static std::vector<EntityId> getNoPrototypeView();
         static std::vector<EntityId> getCloneView();
         static std::vector<EntityId> getScriptView();
+        static EntityId getSelectedEntity() { return getInstance()._selectedEntity; }
+        static void setSelectedEntity(EntityId eid) { getInstance()._selectedEntity = eid; }
 
         // Memory management
         static void createDefault() { getInstance().createDefaultImpl(); }
@@ -97,18 +99,18 @@ namespace atta
         std::vector<ComponentRegistry*> getComponentRegistriesImpl() { return _componentRegistries; }
         PoolAllocator* getComponentAllocator(ComponentRegistry* compReg);
 
-        // Views
+        //----- Views -----//
+        // TODO Hardcoded, think some way using templates
         std::vector<EntityId> getEntitiesViewImpl();
         std::vector<EntityId> getNoPrototypeViewImpl();
         std::vector<EntityId> getCloneViewImpl();
         std::vector<EntityId> getScriptViewImpl();
 
-        // Used to register internal components and custom components
-        void registerComponentImpl(ComponentRegistry* componentRegistry);
+        //----- Component management -----//
+        void registerComponentImpl(ComponentRegistry* componentRegistry);// Used to register internal components and custom components
+        void unregisterCustomComponentsImpl();// Unregister to free memory that was allocated for all custom components
         void createComponentPoolsFromRegistered();
         void createComponentPool(ComponentRegistry* componentRegistry);
-        // Unregister to free memory that was allocated for all custom components
-        void unregisterCustomComponentsImpl();
 
         //----- Event handling -----//
         void onMeshEvent(Event& event);// Used the update the MeshComponent attribute options
@@ -134,6 +136,7 @@ namespace atta
         std::set<EntityId> _noPrototypeView;// View of entities and clone (no prototype entity)
         std::set<EntityId> _cloneView;// View of only clones
         std::set<EntityId> _scriptView;// View of entities that are neither prototype or clone and have script component
+        EntityId _selectedEntity = -1;// TODO Use views and selectedComponent to allow multi selection?
 
         //----- Factory Management -----//
         void onSimulationStateChange(Event& event);

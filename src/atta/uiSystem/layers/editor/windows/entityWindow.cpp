@@ -15,8 +15,7 @@
 
 namespace atta::ui
 {
-    EntityWindow::EntityWindow():
-        _selected(0), _someSelected(false)
+    EntityWindow::EntityWindow()
     {
     }
 
@@ -35,7 +34,6 @@ namespace atta::ui
     void EntityWindow::renderTree()
     {
         std::vector<EntityId> entities = ComponentManager::getEntitiesView();
-        if(entities.size() > 0) _someSelected = true;
         int i = 0;
         ImGui::Text("Scene");
 
@@ -59,7 +57,7 @@ namespace atta::ui
     {
         //----- Selected -----//
         ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-        if(entity == _selected)
+        if(entity == ComponentManager::getSelectedEntity())
             nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
         //----- Name -----//
@@ -80,10 +78,7 @@ namespace atta::ui
 
         //----- Select -----//
         if(ImGui::IsItemClicked())
-        {
-            _selected = entity;
-            _someSelected = true;
-        }
+            ComponentManager::setSelectedEntity(entity);
 
         //----- Drag/Drop -----//
         if(ImGui::BeginDragDropSource())
@@ -170,15 +165,16 @@ namespace atta::ui
 
     void EntityWindow::renderComponents()
     {
-        if(!_someSelected)
+        EntityId selected = ComponentManager::getSelectedEntity();
+        if(selected == -1)
             return;
 
-        ImGui::Text("Components (EntityId: %d)", _selected);
+        ImGui::Text("Components (EntityId: %d)", selected);
 
         // Render options to edit each component
         for(auto compReg : ComponentManager::getComponentRegistries())
         {
-            void* component = ComponentManager::getEntityComponentById(compReg->getId(), _selected);
+            void* component = ComponentManager::getEntityComponentById(compReg->getId(), selected);
             if(component != nullptr)
             {
                 std::string name = compReg->getDescription().type;
@@ -186,7 +182,7 @@ namespace atta::ui
                 if(ImGui::CollapsingHeader((name+"##Components"+name+"Header").c_str(), &open))
                     compReg->renderUI((Component*)component);
                 if(!open)
-                    ComponentManager::removeEntityComponentById(compReg->getId(), _selected);
+                    ComponentManager::removeEntityComponentById(compReg->getId(), selected);
             }
         }
 
@@ -203,22 +199,16 @@ namespace atta::ui
         {
             for(auto compReg : ComponentManager::getComponentRegistries())
             {
-                void* component = ComponentManager::getEntityComponentById(compReg->getId(), _selected);
+                void* component = ComponentManager::getEntityComponentById(compReg->getId(), selected);
                 if(component == nullptr)
                 {
                     std::string type = compReg->getDescription().type;
                     if(ImGui::Selectable((type+"##ComponentAdd"+type).c_str()))
-                        ComponentManager::addEntityComponentById(compReg->getId(), _selected);
+                        ComponentManager::addEntityComponentById(compReg->getId(), selected);
                 }
             }
             ImGui::EndPopup();
         }
-    }
-
-    bool EntityWindow::getSelected(EntityId& eid)
-    {
-        eid = _selected;
-        return _someSelected;
     }
 
     void EntityWindow::textureCombo(std::string comboId, StringId& sid)

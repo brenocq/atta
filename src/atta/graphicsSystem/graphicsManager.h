@@ -20,6 +20,10 @@
 #include <atta/graphicsSystem/shaderGroup.h>
 #include <atta/graphicsSystem/pipeline.h>
 
+#include <atta/graphicsSystem/compute/entityClick.h>
+
+#include <atta/componentSystem/base.h>
+
 namespace atta
 {
     class GraphicsManager final
@@ -37,13 +41,15 @@ namespace atta
         // VulkanPipeline or ... depending on the current renderering API
         template <typename T, typename... Args>
         static std::shared_ptr<T> create(Args... args) { return getInstance().createImpl<T>(args...); }
-
         static std::shared_ptr<RendererAPI> getRendererAPI() { return getInstance().getRendererAPIImpl(); };
+
+        //----- Viewport -----//
         static std::vector<std::shared_ptr<Viewport>> getViewports() { return getInstance().getViewportsImpl(); }
         static void clearViewports();
         static void addViewport(std::shared_ptr<Viewport> viewport);
         static void removeViewport(std::shared_ptr<Viewport> viewport);
         static void createDefaultViewports();
+        static EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
 
         static void* getImGuiImage(StringId sid) { return getInstance().getImGuiImageImpl(sid); }
 
@@ -64,6 +70,7 @@ namespace atta
         void addViewportImpl(std::shared_ptr<Viewport> viewport);
         void removeViewportImpl(std::shared_ptr<Viewport> viewport);
         void createDefaultViewportsImpl();
+        EntityId viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos);
 
         void* getImGuiImageImpl(StringId sid) const { return _rendererAPI->getImGuiImage(sid); }
 
@@ -77,6 +84,9 @@ namespace atta
         std::vector<std::shared_ptr<Viewport>> _viewports;
         std::vector<std::shared_ptr<Viewport>> _viewportsNext;// Being used for now to update the viewports in the next frame without breaking imgui
         bool _swapViewports;
+
+        // Compute
+        std::unique_ptr<EntityClick> _computeEntityClick;
     };
 }
 
