@@ -17,6 +17,13 @@ namespace atta
         vec3f position = vec3();
         quat orientation = quat();
         vec3f scale = vec3(1,1,1);
+
+        mat4 getTransform()
+        {
+            mat4 t;
+            t.setPosOriScale(position, orientation, scale);
+            return t;
+        }
     };
     ATTA_REGISTER_COMPONENT(TransformComponent)
 

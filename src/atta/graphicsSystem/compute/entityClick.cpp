@@ -55,7 +55,7 @@ namespace atta
     EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i pos)
     {
         EntityId eid;
-        EntityId maxEid;
+        EntityId maxEid = -1;
         unsigned width = viewport->getWidth();
         unsigned height = viewport->getHeight();
         // Resize

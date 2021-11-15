@@ -203,7 +203,6 @@ namespace atta
         std::string name = desc.type;
         unsigned sizeofT = componentRegistry->getSizeof();
         std::string typeidTName = componentRegistry->getTypeidName();
-        size_t typeidTHash = componentRegistry->getTypeidHash();
         unsigned maxCount = desc.maxInstances;
 
         // TODO better pool allocator allocation from another one (now need to know that implementation to implement it correctly)

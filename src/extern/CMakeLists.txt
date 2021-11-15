@@ -48,8 +48,8 @@ include(FetchContent)
 
 FetchContent_Declare(
   assimp
-  GIT_REPOSITORY  https://github.com/assimp/assimp.git
-  GIT_TAG         6841397798051919a23a3fbe1405fd934fb5f39c
+  GIT_REPOSITORY  "https://github.com/assimp/assimp.git"
+  GIT_TAG         "6841397798051919a23a3fbe1405fd934fb5f39c"
 )
 
 FetchContent_GetProperties(assimp)
@@ -74,3 +74,15 @@ endif()
 
 ########## stb_image ##########
 atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/stb_image)
+
+########## imguizmo ##########
+set(IMGUIZMO_SOURCE
+    imguizmo/ImGuizmo.cpp
+)
+add_library(imguizmo STATIC
+    ${IMGUIZMO_SOURCE}
+)
+target_include_directories(imguizmo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/imguizmo)
+target_link_libraries(imguizmo PRIVATE imgui)
+atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/imguizmo)
+atta_add_libs(imguizmo)
