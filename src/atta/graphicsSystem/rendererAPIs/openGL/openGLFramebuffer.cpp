@@ -47,7 +47,9 @@ namespace atta
         glViewport(0, 0, _width, _height);
         if(clear)
         {
-            glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+            // TODO Renderer choose clear color
+            if(_attachments[0].format == Image::Format::RGB)
+                glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
             if(_depthAttachmentIndex != -1 && _stencilAttachmentIndex != -1)
             {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

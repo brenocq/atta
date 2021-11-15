@@ -24,6 +24,7 @@ namespace atta
 
         void renderMesh() override;
         void renderQuad() override;
+        void renderQuad3() override;
         void renderCube() override;
     };
 }

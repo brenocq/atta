@@ -15,6 +15,9 @@
 #include <atta/eventSystem/events/simulationStopEvent.h>
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/transformComponent.h>
+#include <atta/componentSystem/components/nameComponent.h>
+#include <atta/componentSystem/components/meshComponent.h>
+#include <atta/componentSystem/components/materialComponent.h>
 #include <atta/scriptSystem/scriptManager.h>
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
@@ -104,20 +107,55 @@ namespace atta::ui
                     ImVec2 window = ImGui::GetWindowPos();
                     ImVec2 cursor = ImGui::GetCursorPos();
                     ImVec2 mouse = ImGui::GetMousePos();
+                    //LOG_DEBUG("EditorLayer", "Mouse: $0,$1\nWindow: $2,$3\nCursor: $4,$5", mouse.x, mouse.y, window.x, window.y, cursor.x, cursor.y);
                     click = { int(mouse.x-window.x-cursor.x), int(mouse.y-window.y-cursor.y) };
+                    //LOG_DEBUG("EditorLayer", "Click pos: $0", click);
                 }
 
-                static ImGuizmo::OPERATION mouseMode = ImGuizmo::OPERATION::TRANSLATE;
+                if(ImGui::IsMouseClicked(1) && ImGui::IsWindowHovered())
+                    ImGui::OpenPopup("Editor_AddBasicShape");
+                addBasicShapePopup();
+
+                static ImGuizmo::OPERATION mouseOperation = ImGuizmo::OPERATION::TRANSLATE;
+                static ImGuizmo::MODE mouseMode = ImGuizmo::MODE::LOCAL;
+                static bool snap = false;
 
                 if(ImGui::IsWindowHovered())
                 {
+                    snap = false;
                     ImGuiIO& io = ImGui::GetIO();
                     if(ImGui::IsKeyPressed('T') && io.KeyCtrl)
-                        mouseMode = ImGuizmo::OPERATION::TRANSLATE;
+                    {
+                        mouseOperation = ImGuizmo::OPERATION::TRANSLATE;
+                        mouseMode = ImGuizmo::MODE::LOCAL;
+                    }
+                    else if(ImGui::IsKeyPressed('T') && io.KeyShift)
+                    {
+                        mouseOperation = ImGuizmo::OPERATION::TRANSLATE;
+                        mouseMode = ImGuizmo::MODE::WORLD;
+                    }
                     else if(ImGui::IsKeyPressed('S') && io.KeyCtrl)
-                        mouseMode = ImGuizmo::OPERATION::SCALE;
+                    {
+                        mouseOperation = ImGuizmo::OPERATION::SCALE;
+                        mouseMode = ImGuizmo::MODE::LOCAL;
+                    }
+                    else if(ImGui::IsKeyPressed('S') && io.KeyShift)
+                    {
+                        mouseOperation = ImGuizmo::OPERATION::SCALE;
+                        mouseMode = ImGuizmo::MODE::WORLD;
+                    }
                     else if(ImGui::IsKeyPressed('R') && io.KeyCtrl)
-                        mouseMode = ImGuizmo::OPERATION::ROTATE;
+                    {
+                        mouseOperation = ImGuizmo::OPERATION::ROTATE;
+                        mouseMode = ImGuizmo::MODE::LOCAL;
+                    }
+                    else if(ImGui::IsKeyPressed('R') && io.KeyShift)
+                    {
+                        mouseOperation = ImGuizmo::OPERATION::ROTATE;
+                        mouseMode = ImGuizmo::MODE::WORLD;
+                    }
+                    else if(io.KeyCtrl)
+                        snap = true;
                 }
 
                 //----- Render to texture -----//
@@ -130,11 +168,12 @@ namespace atta::ui
                 if(entity >= 0)
                 {
                     TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
+
                     if(t)
                     {
-                        ImGuizmo::SetOrthographic(false);
+                        ImGuizmo::SetOrthographic(viewport->getCamera()->getName() == "OrthographicCamera");
                         ImGuizmo::SetDrawlist();
-                        ImGuizmo::SetRect(ImGui::GetWindowPos().x+5.0f, ImGui::GetWindowPos().y+25.0f, viewport->getWidth(), viewport->getHeight());
+                        ImGuizmo::SetRect(ImGui::GetWindowPos().x+5.0f, ImGui::GetWindowPos().y+24.0f, viewport->getWidth(), viewport->getHeight());
                         mat4 view = transpose(viewport->getCamera()->getView());
                         mat4 proj = viewport->getCamera()->getProj();
                         proj.mat[1][1] *= -1;
@@ -142,7 +181,14 @@ namespace atta::ui
 
                         mat4 transform = t->getTransform();
                         transform.transpose();
-                        ImGuizmo::Manipulate(view.data, proj.data, mouseMode, ImGuizmo::LOCAL, transform.data);
+
+                        float snapValue = 0.5f;
+                        if(mouseOperation == ImGuizmo::OPERATION::ROTATE)
+                            snapValue = 45.0f;
+                        float snapValues[3] = { snapValue, snapValue, snapValue };
+
+                        ImGuizmo::Manipulate(view.data, proj.data, mouseOperation, mouseMode, transform.data, nullptr, snap ? snapValues : nullptr);
+
                         if(ImGuizmo::IsUsing())
                         {
                             imGuizmoUsingMouse = true;
@@ -177,9 +223,9 @@ namespace atta::ui
                         ImGui::BulletText("Move with ASWD QE");
                         ImGui::Text("To move objects");
                         ImGui::BulletText("Select some object");
-                        ImGui::BulletText("Translate: CTRL+t");
-                        ImGui::BulletText("Scale: CTRL+s");
-                        ImGui::BulletText("Rotate: CTRL+r");
+                        ImGui::BulletText("Translate: SHIFT+t");
+                        ImGui::BulletText("Scale: SHIFT+s");
+                        ImGui::BulletText("Rotate: SHIFT+r");
                     }
                     ImGui::End();
                 }
@@ -269,6 +315,33 @@ namespace atta::ui
         ImGui::PopStyleColor(3);
         ImGui::PopStyleVar(1);
         ImGui::End();
+    }
+
+    void EditorLayer::addBasicShapePopup()
+    {
+        if(ImGui::BeginPopup("Editor_AddBasicShape"))
+        {
+            std::string basicShapes[] = { "Cube", "Sphere", "Plane", "Triangle" };
+            StringId basicShapesMesh[] = { "meshes/cube.obj"_sid, "meshes/sphere.obj"_sid, "meshes/plane.obj"_sid, "meshes/triangle.obj"_sid };
+            unsigned i = 0; 
+            for(auto shape : basicShapes)
+            {
+                if(ImGui::Selectable((shape+"##AddBasicShape"+shape).c_str()))
+                {
+                    EntityId eid = ComponentManager::createEntity();
+                    NameComponent* n = ComponentManager::addEntityComponent<NameComponent>(eid);
+                    strcpy(n->name, shape.c_str());
+                    ComponentManager::addEntityComponent<TransformComponent>(eid);
+                    MeshComponent* m = ComponentManager::addEntityComponent<MeshComponent>(eid);
+                    m->sid = basicShapesMesh[i];
+                    MaterialComponent* mat = ComponentManager::addEntityComponent<MaterialComponent>(eid);
+                    mat->albedo = vec3(0.5f, 0.5f, 0.5f);
+                    ComponentManager::setSelectedEntity(eid);
+                }
+                i++;
+            }
+            ImGui::EndPopup();
+        }
     }
 
     void EditorLayer::onSimulationStateChange(Event& event)

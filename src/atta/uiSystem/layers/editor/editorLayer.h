@@ -34,6 +34,7 @@ namespace atta::ui
     private:
         void updateViewports();
         void toolbar();
+        void addBasicShapePopup();
         void onSimulationStateChange(Event& event);
 
         DockSpace _dockSpace;

@@ -101,16 +101,42 @@ namespace atta
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
         }
 
+        //---------- Quad3 ----------//
+        {
+            float vertices[] = {
+                // positions          // normal           // texCoords
+                -1.0f, 1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+                -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f,
+                1.0f,  -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
+                -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
+                1.0f,  -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,
+                1.0f, 1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+            };
+
+            // screen quad VAO
+            glGenVertexArrays(1, &_quad3VAO);
+            glGenBuffers(1, &_quad3VBO);
+            glBindVertexArray(_quad3VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, _quad3VBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        }
+
         //---------- Cube ----------//
         {
             float vertices[] = {
                 // back face
-                -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-                1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-                1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
-                1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-                -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-                -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+                -1.0f, -1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                1.0f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+                1.0f, -1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
+                1.0f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+                -1.0f, -1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                -1.0f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
                 // front face
                 -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
                 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
@@ -204,6 +230,13 @@ namespace atta
         // Render quad in NDC
         glBindVertexArray(_quadVAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+
+    void OpenGLRenderer::renderQuad3()
+    {
+        // Render quad in NDC
+        glBindVertexArray(_quad3VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
     void OpenGLRenderer::renderCube()

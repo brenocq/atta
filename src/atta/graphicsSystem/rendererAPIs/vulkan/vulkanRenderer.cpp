@@ -46,6 +46,11 @@ namespace atta
 
     }
 
+    void VulkanRenderer::renderQuad3()
+    {
+
+    }
+
     void VulkanRenderer::renderCube()
     {
 

@@ -29,7 +29,8 @@ namespace atta
         else
             glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, 0);
 
-        glGenerateMipmap(GL_TEXTURE_2D);
+        if(_format == Format::RGB || _format == Format::RGBA)
+            glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     OpenGLImage::~OpenGLImage()
