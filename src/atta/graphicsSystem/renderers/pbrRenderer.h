@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_SYSTEM_RENDERERS_PBR_RENDERER_H
 #include <atta/graphicsSystem/pipeline.h>
 #include <atta/graphicsSystem/renderers/renderer.h>
+#include <atta/graphicsSystem/renderers/common/selectedPipeline.h>
 
 namespace atta
 {
@@ -33,6 +34,7 @@ namespace atta
         std::shared_ptr<Pipeline> _geometryPipeline;
         std::shared_ptr<Pipeline> _linePipeline;
         std::shared_ptr<Pipeline> _pointPipeline;
+        std::unique_ptr<SelectedPipeline> _selectedPipeline;
 
         std::shared_ptr<ShaderGroup> _backgroundShader;
         //bool _hasEnvTexture;

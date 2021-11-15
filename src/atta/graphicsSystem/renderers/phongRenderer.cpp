@@ -29,7 +29,7 @@ namespace atta
         // Framebuffer
         Framebuffer::CreateInfo framebufferInfo {};
         framebufferInfo.attachments.push_back({Image::Format::RGB});
-        framebufferInfo.attachments.push_back({Image::Format::DEPTH32F});
+        framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
         framebufferInfo.width = 500;
         framebufferInfo.height = 500;
         framebufferInfo.debugName = StringId("PhongRenderer Framebuffer");
@@ -57,6 +57,9 @@ namespace atta
         };
         pipelineInfo.renderPass = renderPass;
         _geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+
+        //---------- Create selected pipeline ----------//
+        _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
     }
 
     PhongRenderer::~PhongRenderer()
@@ -149,6 +152,8 @@ namespace atta
 
         }
         _geometryPipeline->end();
+
+        _selectedPipeline->render(camera);
     }
 
     void PhongRenderer::resize(uint32_t width, uint32_t height)
