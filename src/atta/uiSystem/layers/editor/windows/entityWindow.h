@@ -17,8 +17,6 @@ namespace atta::ui
         EntityWindow();
 
         void render();
-
-        bool getSelected(EntityId& eid);
     private:
         void renderTree();
         void renderTreeNode(EntityId entity, int& i);
@@ -27,8 +25,6 @@ namespace atta::ui
         void renderCameraWindows();
         void textureCombo(std::string comboId, StringId& sid);
 
-        EntityId _selected;
-        bool _someSelected;
         std::unordered_set<EntityId> _cameraWindows;
     };
 }

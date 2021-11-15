@@ -40,7 +40,6 @@ namespace atta
 
     void OpenGLImage::write(void* data)
     {
-
         glBindTexture(GL_TEXTURE_2D, _id);
         GLenum dataType = OpenGLImage::convertDataType(_format);
         GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
@@ -56,12 +55,14 @@ namespace atta
     {
         switch(format)
         {
-        case Format::NONE: break;
-        case Format::RED: return GL_R8;
-        case Format::RGB: return GL_RGB8;
-        case Format::RGBA: return GL_RGBA8;
-        case Format::RGB16F: return GL_RGB16F;
-        case Format::DEPTH32F: return GL_R32F;
+            case Format::NONE: break;
+            case Format::RED: return GL_R8;
+            case Format::RED32I: return GL_R32I;
+            case Format::RGB: return GL_RGB8;
+            case Format::RGBA: return GL_RGBA8;
+            case Format::RGB16F: return GL_RGB16F;
+            case Format::DEPTH32F: return GL_R32F;
+            case Format::DEPTH24_STENCIL8: return GL_DEPTH24_STENCIL8;
         }
         ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
     }
@@ -70,12 +71,14 @@ namespace atta
     {
         switch(format)
         {
-        case Format::NONE: break;
-        case Format::RED: return GL_RED;
-        case Format::RGB16F:
-        case Format::RGB: return GL_RGB;
-        case Format::RGBA: return GL_RGBA;
-        case Format::DEPTH32F: return GL_DEPTH_COMPONENT;
+            case Format::NONE: break;
+            case Format::RED: return GL_RED;
+            case Format::RED32I: return GL_RED_INTEGER;
+            case Format::RGB16F:
+            case Format::RGB: return GL_RGB;
+            case Format::RGBA: return GL_RGBA;
+            case Format::DEPTH32F: return GL_DEPTH_COMPONENT;
+            case Format::DEPTH24_STENCIL8: return GL_DEPTH_STENCIL;
         }
         ASSERT(false, "Could not convert format to openGL format. Unknown image format");
     }
@@ -84,12 +87,14 @@ namespace atta
     {
         switch(format)
         {
-        case Format::NONE: break;
-        case Format::RED: return GL_RED;
-        case Format::RGB16F: return GL_RGB16F;
-        case Format::RGB: return GL_RGB;
-        case Format::RGBA: return GL_RGBA;
-        case Format::DEPTH32F: return GL_DEPTH_COMPONENT32F;
+            case Format::NONE: break;
+            case Format::RED:return GL_RED;
+            case Format::RED32I: return GL_R32I;
+            case Format::RGB16F: return GL_RGB16F;
+            case Format::RGB: return GL_RGB;
+            case Format::RGBA: return GL_RGBA;
+            case Format::DEPTH32F: return GL_DEPTH_COMPONENT32F;
+            case Format::DEPTH24_STENCIL8: return GL_DEPTH24_STENCIL8;
         }
         ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
     }
@@ -98,12 +103,14 @@ namespace atta
     {
         switch(format)
         {
-        case Format::NONE: break;
-        case Format::RED: 
-        case Format::RGB: 
-        case Format::RGBA: return GL_UNSIGNED_BYTE;
-        case Format::RGB16F:
-        case Format::DEPTH32F: return GL_FLOAT;
+            case Format::NONE: break;
+            case Format::RED: 
+            case Format::RGB: 
+            case Format::RGBA: return GL_UNSIGNED_BYTE;
+            case Format::RED32I: return GL_INT;
+            case Format::RGB16F:
+            case Format::DEPTH32F: return GL_FLOAT;
+            case Format::DEPTH24_STENCIL8: return GL_UNSIGNED_INT_24_8;
         }
         ASSERT(false, "Could not convert format to openGL data type. Unknown image format");
     }
@@ -112,9 +119,9 @@ namespace atta
     {
         switch(samplerWrap)
         {
-        case Wrap::NONE: break;
-        case Wrap::CLAMP: return GL_CLAMP_TO_EDGE;
-        case Wrap::REPEAT: return GL_REPEAT;
+            case Wrap::NONE: break;
+            case Wrap::CLAMP: return GL_CLAMP_TO_EDGE;
+            case Wrap::REPEAT: return GL_REPEAT;
         }
         ASSERT(false, "Could not convert sampler wrap to openGL sampler wrap. Unknown sampler wrap");
     }

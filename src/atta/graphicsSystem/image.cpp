@@ -24,6 +24,7 @@ namespace atta
             case Format::RED: return 1;
             case Format::RGB: return 3;
             case Format::RGBA: return 4;
+            case Format::RED32I: return 4;
             case Format::RGB16F: return 3;
             default: break;
         }
@@ -32,6 +33,11 @@ namespace atta
 
     bool Image::isDepthFormat(Format format)
     {
-        return format == Format::DEPTH32F;
+        return format == Format::DEPTH32F || format == Format::DEPTH24_STENCIL8;
+    }
+
+    bool Image::isStencilFormat(Format format)
+    {
+        return format == Format::DEPTH24_STENCIL8;
     }
 }

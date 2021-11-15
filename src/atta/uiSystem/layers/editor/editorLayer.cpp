@@ -94,6 +94,20 @@ namespace atta::ui
                 if(activeViewport==i && ImGui::IsMouseDown(2))
                     viewport->getCamera()->move();
 
+                //----- Mouse click -----//
+                if(ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered())
+                {
+                    ImVec2 window = ImGui::GetWindowPos();
+                    ImVec2 cursor = ImGui::GetCursorPos();
+                    ImVec2 mouse = ImGui::GetMousePos();
+                    vec2i click = { int(mouse.x-window.x-cursor.x), int(mouse.y-window.y-cursor.y) };
+                    if(click.x >= 0 && click.y >=0 && click.x < (int)viewport->getWidth() & click.y < (int)viewport->getHeight())
+                    {
+                        EntityId eid = GraphicsManager::viewportEntityClick(viewport, click);
+                        ComponentManager::setSelectedEntity(eid);
+                    }
+                }
+
                 //----- Render to texture -----//
                 ImVec2 size = ImVec2(viewport->getWidth(), viewport->getHeight());
                 ImGui::Image(viewport->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));

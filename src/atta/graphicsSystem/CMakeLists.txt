@@ -36,6 +36,8 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
     renderers/pbrRenderer.cpp
     renderers/phongRenderer.cpp
 
+    compute/entityClick.cpp
+
     cameras/camera.cpp
     cameras/perspectiveCamera.cpp
     cameras/orthographicCamera.cpp

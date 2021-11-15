@@ -10,7 +10,7 @@
 namespace atta
 {
     OpenGLFramebuffer::OpenGLFramebuffer(const Framebuffer::CreateInfo& info):
-        Framebuffer(info), _id(0), _depthAttachmentIndex(-1)
+        Framebuffer(info), _id(0), _depthAttachmentIndex(-1), _stencilAttachmentIndex(-1)
     {
         // Populate color and depth attachments
         int i = 0;
@@ -20,6 +20,12 @@ namespace atta
             {
                 DASSERT(_depthAttachmentIndex == -1, "It is not possible to create frameBuffer with more than one depth attachment");
                 _depthAttachmentIndex = i;
+            }
+
+            if(Image::isStencilFormat(attachment.format))
+            {
+                DASSERT(_stencilAttachmentIndex == -1, "It is not possible to create frameBuffer with more than one stencil attachment");
+                _stencilAttachmentIndex = i;
             }
             i++;
         }
@@ -42,7 +48,13 @@ namespace atta
         if(clear)
         {
             glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-            if(_depthAttachmentIndex != -1)
+            if(_depthAttachmentIndex != -1 && _stencilAttachmentIndex != -1)
+            {
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+                glEnable(GL_DEPTH_TEST);
+                glEnable(GL_STENCIL_TEST);
+            }
+            else if(_depthAttachmentIndex != -1)
             {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glEnable(GL_DEPTH_TEST);
@@ -91,6 +103,14 @@ namespace atta
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
+    int OpenGLFramebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned y)
+    {
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+        int pixel;
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
+        return pixel;
+    }
+
     //------------------------------------------------//
     //------------- Attachment creation --------------//
     //------------------------------------------------//
@@ -117,7 +137,9 @@ namespace atta
         info.height = _height;
         image = std::make_shared<OpenGLImage>(info);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, convertDepthAttachmentType(format), GL_TEXTURE_2D, image->getId(), 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, image->getId(), 0);
+        if(_stencilAttachmentIndex == _depthAttachmentIndex)
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, image->getId(), 0);
 
         return std::static_pointer_cast<Image>(image);
     }
@@ -131,6 +153,7 @@ namespace atta
         {
             case Image::Format::NONE: break;
             case Image::Format::DEPTH32F: return GL_DEPTH_ATTACHMENT;
+            case Image::Format::DEPTH24_STENCIL8: return GL_DEPTH_ATTACHMENT;
             default: break;
         }
         ASSERT(false, "Could not convert format to openGL depth attachment");

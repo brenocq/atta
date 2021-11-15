@@ -50,6 +50,7 @@ namespace atta
 
         //----- Renderer API -----//
         _rendererAPI = std::static_pointer_cast<RendererAPI>(std::make_shared<OpenGLRenderer>(_window));
+        _computeEntityClick = std::make_unique<EntityClick>();
 
         //----- Create layer stack -----//
         _layerStack = std::make_unique<LayerStack>();
@@ -152,6 +153,12 @@ namespace atta
         viewportInfo.sid = StringId("Main Viewport");
         _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));
         _swapViewports = true;
+    }
+
+    EntityId GraphicsManager::viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos) { return getInstance().viewportEntityClickImpl(viewport, pos); }
+    EntityId GraphicsManager::viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos)
+    {
+        return _computeEntityClick->click(viewport, pos);
     }
 
     //---------- Register API specific implementations ----------//

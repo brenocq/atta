@@ -19,9 +19,11 @@ namespace atta
             RED,// 1 byte
             RGB,// 3 bytes
             RGBA,// 4 bytes
+            RED32I,// 4 byte
 
             RGB16F,
-            DEPTH32F
+            DEPTH32F,
+            DEPTH24_STENCIL8,
         };
 
         enum class Wrap
@@ -56,7 +58,7 @@ namespace atta
 
         static uint32_t getFormatSize(Format format);
         static bool isDepthFormat(Format format);
-
+        static bool isStencilFormat(Format format);
 
     protected:
         Format _format;

@@ -22,6 +22,8 @@ namespace atta
 
         void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
+        int readPixel(unsigned attachmentIndex, unsigned x, unsigned y) override;
+
         static GLenum convertDepthAttachmentType(Image::Format format);
 
         //const std::vector<std::shared_ptr<Image>>& getColorAttachments() const { return _colorAttachments; };
@@ -36,6 +38,7 @@ namespace atta
         //std::vector<std::shared_ptr<Image>> _colorAttachments;
         //std::shared_ptr<Image> _depthAttachment;
         int _depthAttachmentIndex;
+        int _stencilAttachmentIndex;
 
         // Attachment formats
         //std::vector<Image::Format> _colorAttachmentFormats;
