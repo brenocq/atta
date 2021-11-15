@@ -13,8 +13,11 @@
 #include <atta/eventSystem/events/simulationContinueEvent.h>
 #include <atta/eventSystem/events/simulationPauseEvent.h>
 #include <atta/eventSystem/events/simulationStopEvent.h>
+#include <atta/componentSystem/componentManager.h>
+#include <atta/componentSystem/components/transformComponent.h>
 #include <atta/scriptSystem/scriptManager.h>
 #include <imgui_internal.h>
+#include <ImGuizmo.h>
 
 #include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
 
@@ -95,27 +98,69 @@ namespace atta::ui
                     viewport->getCamera()->move();
 
                 //----- Mouse click -----//
+                vec2i click = {-1, -1};
                 if(ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered())
                 {
                     ImVec2 window = ImGui::GetWindowPos();
                     ImVec2 cursor = ImGui::GetCursorPos();
                     ImVec2 mouse = ImGui::GetMousePos();
-                    vec2i click = { int(mouse.x-window.x-cursor.x), int(mouse.y-window.y-cursor.y) };
-                    if(click.x >= 0 && click.y >=0 && click.x < (int)viewport->getWidth() & click.y < (int)viewport->getHeight())
-                    {
-                        EntityId eid = GraphicsManager::viewportEntityClick(viewport, click);
-                        ComponentManager::setSelectedEntity(eid);
-                    }
+                    click = { int(mouse.x-window.x-cursor.x), int(mouse.y-window.y-cursor.y) };
+                }
+
+                static ImGuizmo::OPERATION mouseMode = ImGuizmo::OPERATION::TRANSLATE;
+
+                if(ImGui::IsWindowHovered())
+                {
+                    ImGuiIO& io = ImGui::GetIO();
+                    if(ImGui::IsKeyPressed('T') && io.KeyCtrl)
+                        mouseMode = ImGuizmo::OPERATION::TRANSLATE;
+                    else if(ImGui::IsKeyPressed('S') && io.KeyCtrl)
+                        mouseMode = ImGuizmo::OPERATION::SCALE;
+                    else if(ImGui::IsKeyPressed('R') && io.KeyCtrl)
+                        mouseMode = ImGuizmo::OPERATION::ROTATE;
                 }
 
                 //----- Render to texture -----//
                 ImVec2 size = ImVec2(viewport->getWidth(), viewport->getHeight());
                 ImGui::Image(viewport->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));
 
-                //----- Resize -----//
-                ImVec2 windowSize = ImGui::GetWindowSize();
-                if(windowSize.x != size.x || windowSize.y != size.y)
-                    viewport->resize((uint32_t)windowSize.x-10, (uint32_t)windowSize.y-30);
+                //----- ImGuizmo -----//
+                bool imGuizmoUsingMouse = false;
+                EntityId entity = ComponentManager::getSelectedEntity();
+                if(entity >= 0)
+                {
+                    TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
+                    if(t)
+                    {
+                        ImGuizmo::SetOrthographic(false);
+                        ImGuizmo::SetDrawlist();
+                        ImGuizmo::SetRect(ImGui::GetWindowPos().x+5.0f, ImGui::GetWindowPos().y+25.0f, viewport->getWidth(), viewport->getHeight());
+                        mat4 view = transpose(viewport->getCamera()->getView());
+                        mat4 proj = viewport->getCamera()->getProj();
+                        proj.mat[1][1] *= -1;
+                        proj.transpose();
+
+                        mat4 transform = t->getTransform();
+                        transform.transpose();
+                        ImGuizmo::Manipulate(view.data, proj.data, mouseMode, ImGuizmo::LOCAL, transform.data);
+                        if(ImGuizmo::IsUsing())
+                        {
+                            imGuizmoUsingMouse = true;
+                            transform.transpose();
+                            transform.getPosOriScale(t->position, t->orientation, t->scale);
+                        }
+                    }
+                }
+
+                //----- Mouse click selection -----//
+                if(!imGuizmoUsingMouse)
+                {
+                    if(click.x >= 0 && click.y >=0 && click.x < (int)viewport->getWidth() && click.y < (int)viewport->getHeight())
+                    {
+                        EntityId eid = GraphicsManager::viewportEntityClick(viewport, click);
+                        ComponentManager::setSelectedEntity(eid);
+                    }
+                }
 
                 //----- Overlay -----//
                 {
@@ -130,9 +175,19 @@ namespace atta::ui
                         ImGui::BulletText("Holding mouse middle button");
                         ImGui::BulletText("Rotate with mouse");
                         ImGui::BulletText("Move with ASWD QE");
+                        ImGui::Text("To move objects");
+                        ImGui::BulletText("Select some object");
+                        ImGui::BulletText("Translate: CTRL+t");
+                        ImGui::BulletText("Scale: CTRL+s");
+                        ImGui::BulletText("Rotate: CTRL+r");
                     }
                     ImGui::End();
                 }
+
+                //----- Resize -----//
+                ImVec2 windowSize = ImGui::GetWindowSize();
+                if(windowSize.x != size.x || windowSize.y != size.y)
+                    viewport->resize((uint32_t)windowSize.x-10, (uint32_t)windowSize.y-30);
             }
             ImGui::End();
             ImGui::PopStyleVar(1);

@@ -11,3 +11,6 @@
 [submodule "src/extern/assimp"]
 	path = src/extern/assimp
 	url = https://github.com/assimp/assimp
+[submodule "src/imguizmo"]
+	path = src/extern/imguizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo

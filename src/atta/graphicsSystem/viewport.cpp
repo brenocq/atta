@@ -134,7 +134,6 @@ namespace atta
             LOG_WARN("Viewport", "Unknown camera [w]$0[] when deserializing. This may break the serialization", cameraName);
             _camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
         }
-        mat4 m = _camera->getProj();
     }
 
     void Viewport::renderUI()

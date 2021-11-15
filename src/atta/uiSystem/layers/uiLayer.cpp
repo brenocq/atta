@@ -10,6 +10,8 @@
 #include <backends/imgui_impl_opengl3.h>
 // ImGui window managing
 #include <GLFW/glfw3.h>
+// ImGuizmo
+#include <ImGuizmo.h>
 
 namespace atta::ui
 {
@@ -62,6 +64,7 @@ namespace atta::ui
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
     }
 
     void UILayer::end()
