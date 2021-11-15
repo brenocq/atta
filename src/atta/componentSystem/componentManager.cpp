@@ -274,14 +274,14 @@ namespace atta
                     memcpy(component, defaultInit.data(), compReg->getSizeof());
 
                     // Remove entity from some views if it is a prototype
-                    if(compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
+                    if(id == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
                     {
                         _noPrototypeView.erase(entity);
                         _scriptView.erase(entity);
                     }
 
                     // Add entity to script view if it is not prototype and has script component
-                    if(compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
+                    if(id == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
                     {
                         PrototypeComponent* pc = getEntityComponent<PrototypeComponent>(entity);
                         if(pc == nullptr)

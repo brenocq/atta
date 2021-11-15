@@ -31,13 +31,15 @@ namespace atta
         // Framebuffer
         Framebuffer::CreateInfo framebufferInfo {};
         framebufferInfo.attachments.push_back({Image::Format::RGB});
-        framebufferInfo.attachments.push_back({Image::Format::DEPTH32F});
+        framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
         framebufferInfo.width = 500;
         framebufferInfo.height = 500;
         framebufferInfo.debugName = StringId("PbrRenderer Framebuffer");
         std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
 
         //---------- Create geometry pipeline ----------//
+        Pipeline::CreateInfo geometryPipelineInfo {};
+        std::shared_ptr<RenderPass> geometryRenderPass;
         {
             // Shader Group
             ShaderGroup::CreateInfo shaderGroupInfo {};
@@ -49,19 +51,21 @@ namespace atta
             RenderPass::CreateInfo renderPassInfo {};
             renderPassInfo.framebuffer = framebuffer;
             renderPassInfo.debugName = StringId("PbrRenderer Render Pass");
-            std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+            geometryRenderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
 
-            Pipeline::CreateInfo pipelineInfo {};
             // Vertex input layout
-            pipelineInfo.shaderGroup = shaderGroup;
-            pipelineInfo.layout = {
+            geometryPipelineInfo.shaderGroup = shaderGroup;
+            geometryPipelineInfo.layout = {
                 { "inPosition", VertexBufferElement::Type::VEC3 },
                 { "inNormal", VertexBufferElement::Type::VEC3 },
                 { "inTexCoord", VertexBufferElement::Type::VEC2 }
             };
-            pipelineInfo.renderPass = renderPass;
-            _geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+            geometryPipelineInfo.renderPass = geometryRenderPass;
+            _geometryPipeline = GraphicsManager::create<Pipeline>(geometryPipelineInfo);
         }
+
+        //---------- SelectedPipeline ----------//
+        _selectedPipeline = std::make_unique<SelectedPipeline>(geometryRenderPass, geometryPipelineInfo.layout);
 
         //---------- Create line pipeline ----------//
         {
@@ -291,6 +295,8 @@ namespace atta
 
         }
         _geometryPipeline->end();
+
+        _selectedPipeline->render(camera);
 
         //_linePipeline->begin(false);
         //{

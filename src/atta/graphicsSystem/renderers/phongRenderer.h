@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_SYSTEM_RENDERERS_PHONG_RENDERER_H
 #include <atta/graphicsSystem/pipeline.h>
 #include <atta/graphicsSystem/renderers/renderer.h>
+#include <atta/graphicsSystem/renderers/common/selectedPipeline.h>
 
 namespace atta
 {
@@ -26,6 +27,7 @@ namespace atta
 
     private:
         std::shared_ptr<Pipeline> _geometryPipeline;
+        std::unique_ptr<SelectedPipeline> _selectedPipeline;
     };
 }
 
