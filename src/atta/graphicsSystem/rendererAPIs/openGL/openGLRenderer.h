@@ -26,6 +26,7 @@ namespace atta
 
         void renderMesh(StringId meshSid) override;
         void renderQuad() override;
+        void renderQuad3() override;
         void renderCube() override;
         void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) override;
 
@@ -49,6 +50,8 @@ namespace atta
 
         OpenGLId _quadVBO;
         OpenGLId _quadVAO;
+        OpenGLId _quad3VBO;
+        OpenGLId _quad3VAO;
         OpenGLId _cubeVBO;
         OpenGLId _cubeVAO;
     };

@@ -28,17 +28,18 @@ namespace atta
         framebufferInfo.debugName = StringId("EntityClick Framebuffer");
         std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
 
-        // Shader Group
-        ShaderGroup::CreateInfo shaderGroupInfo {};
-        shaderGroupInfo.shaderPaths = {"shaders/compute/entityClick.vert", "shaders/compute/entityClick.frag"};
-        shaderGroupInfo.debugName = StringId("EntityClick Shader Group");
-        std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
-
         // Render Pass
         RenderPass::CreateInfo renderPassInfo {};
         renderPassInfo.framebuffer = framebuffer;
         renderPassInfo.debugName = StringId("EntityClick Render Pass");
         std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+
+        //---------- Graphics pipeline ----------//
+        // Shader Group
+        ShaderGroup::CreateInfo shaderGroupInfo {};
+        shaderGroupInfo.shaderPaths = {"shaders/compute/entityClick.vert", "shaders/compute/entityClick.frag"};
+        shaderGroupInfo.debugName = StringId("EntityClick Shader Group");
+        std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
 
         Pipeline::CreateInfo pipelineInfo {};
         // Vertex input layout
@@ -68,19 +69,20 @@ namespace atta
 
         // Render entity ids
         std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
+
         _geometryPipeline->begin();
         {
             std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());
 
-            // TODO Clear with -1
-            //mat4 m(1.0f);
-            //glDisable(GL_DEPTH_TEST);
-            //shader->setMat4("model", m);
-            //shader->setMat4("projection", m);
-            //shader->setMat4("view", m);
-            //shader->setInt("entityId", -1);
-            //GraphicsManager::getRendererAPI()->renderQuad();
-            //glEnable(GL_DEPTH_TEST);
+            mat4 m(1.0f);
+            glDisable(GL_DEPTH_TEST);
+            shader->setMat4("model", m);
+            shader->setMat4("projection", m);
+            shader->setMat4("view", m);
+            shader->setInt("entityId", -1);
+            GraphicsManager::getRendererAPI()->renderQuad3();
+            glEnable(GL_DEPTH_TEST);
+            glClear(GL_DEPTH_BUFFER_BIT);// XXX Not sure why but it only works in the browser if clear the depth buffer
 
             // Render entities
             shader->setMat4("projection", transpose(viewport->getCamera()->getProj()));

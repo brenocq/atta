@@ -28,6 +28,7 @@ namespace atta
 
         virtual void renderMesh(StringId meshSid) = 0;
         virtual void renderQuad() = 0;
+        virtual void renderQuad3() = 0;
         virtual void renderCube() = 0;
         virtual void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) = 0;
 
