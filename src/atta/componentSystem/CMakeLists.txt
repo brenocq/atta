@@ -7,6 +7,8 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     componentRegistry.cpp
 
     components/meshComponent.cpp
+    components/relationshipComponent.cpp
+    components/transformComponent.cpp
 )
 
 add_library(atta_component_system STATIC

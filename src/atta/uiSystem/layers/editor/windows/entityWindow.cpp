@@ -41,7 +41,7 @@ namespace atta::ui
         for(EntityId entity : entities)
         {
             RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
-            if(!r || (r && r->parent == -1))
+            if(!r || (r && r->getParent() == -1))
                 renderTreeNode(entity, i);
         }
 
@@ -55,32 +55,32 @@ namespace atta::ui
 
     void EntityWindow::renderTreeNode(EntityId entity, int& i)
     {
-        //----- Selected -----//
-        ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-        if(entity == ComponentManager::getSelectedEntity())
-            nodeFlags |= ImGuiTreeNodeFlags_Selected;
-
         //----- Name -----//
         std::string name = "<Entity "+std::to_string(entity)+">";
         NameComponent* n = ComponentManager::getEntityComponent<NameComponent>(entity);
         RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
         if(n) name = n->name;
 
+        //----- Selected -----//
+        ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+        if(entity == ComponentManager::getSelectedEntity())
+            nodeFlags |= ImGuiTreeNodeFlags_Selected;
+
         //----- Leaf/Node -----//
         if(r)
         {
-            if(r->children.size() == 0)
+            if(r->getChildren().size() == 0)
                 nodeFlags |= ImGuiTreeNodeFlags_Leaf;
         }
         else
             nodeFlags |= ImGuiTreeNodeFlags_Leaf;
         bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)i++, nodeFlags, name.c_str());
 
-        //----- Select -----//
+        //----- Select entity -----//
         if(ImGui::IsItemClicked())
             ComponentManager::setSelectedEntity(entity);
 
-        //----- Drag/Drop -----//
+        //----- Drag/Drop entities -----//
         if(ImGui::BeginDragDropSource())
         {
             ImGui::SetDragDropPayload("EntityId", &entity, sizeof(EntityId));
@@ -93,71 +93,16 @@ namespace atta::ui
             {
                 DASSERT(payload->DataSize == sizeof(EntityId), "Payload data should have same size as EntityId");
                 EntityId childEntity = *(const EntityId*)payload->Data;
-
-                // Check if entity can be children (avoid recursive)
-                bool canBeChild = true;
-                if(r && r->parent != -1)
-                {
-                    // From the parent, going up in the hierarchy, can't find the child
-                    RelationshipComponent* parent = r;
-                    if(r->parent == childEntity) canBeChild = false;
-                    while(canBeChild && parent != nullptr)
-                    {
-                        if(parent->parent == childEntity) canBeChild = false;
-
-                        if(parent->parent == -1) parent = nullptr;
-                        else parent = ComponentManager::getEntityComponent<RelationshipComponent>(parent->parent);
-                    }
-                }
-
-                if(canBeChild)
-                {
-                    // Update new parent (entity that received drop)
-                    if(r)
-                        r->children.push_back(childEntity);
-                    else
-                    {
-                        // Create parent relationship
-                        r = ComponentManager::addEntityComponent<RelationshipComponent>(entity);
-                        r->parent = -1;
-                        r->children = { childEntity };
-                    }
-
-                    RelationshipComponent* cr = ComponentManager::getEntityComponent<RelationshipComponent>(childEntity);
-                    // Update child relationship (entity that was dropped)
-                    if(cr)
-                    {
-                        // Remove old entity parent if necessary
-                        if(cr->parent != -1)
-                        {
-                            RelationshipComponent* oldp = ComponentManager::getEntityComponent<RelationshipComponent>(cr->parent);
-                            DASSERT(oldp, "Entity dropped has parent, so parent must have parent relationship too");
-                            for(size_t i = 0; i < oldp->children.size(); i++)
-                                if(oldp->children[i] == childEntity)
-                                {
-                                    oldp->children.erase(oldp->children.begin()+i);
-                                    break;
-                                }
-                        }
-                    }
-                    else
-                    {
-                        // Create child relationship
-                        cr = ComponentManager::addEntityComponent<RelationshipComponent>(childEntity);
-                        cr->children = {};
-                    }
-                    // Set child parent
-                    cr->parent = entity;
-                }
+                RelationshipComponent::setParent(entity, childEntity);
             }
             ImGui::EndDragDropTarget();
         }
 
-        //----- Children -----//
+        //----- Render children -----//
         if(nodeOpen)
         {
-            if(r && r->children.size() > 0)
-                for(auto child : r->children)
+            if(r && r->getChildren().size() > 0)
+                for(auto child : r->getChildren())
                     renderTreeNode(child, i);
             ImGui::TreePop();
         }

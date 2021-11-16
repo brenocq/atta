@@ -14,8 +14,21 @@ namespace atta
 {
     struct RelationshipComponent final : public Component
     {
-        EntityId parent;
-        std::vector<EntityId> children;
+        // To keep the hierarchy consistent, this component can only be changed using these functions
+        // Parent operations
+        static void setParent(EntityId parent, EntityId child);
+        static void removeParent(EntityId parent, EntityId child);
+        // Child operations
+        static void addChild(EntityId parent, EntityId child);
+        static void removeChild(EntityId parent, EntityId child);
+
+        // Get data
+        EntityId getParent() { return _parent; }
+        std::vector<EntityId> getChildren() { return _children; }
+
+        // Data
+        EntityId _parent = -1;
+        std::vector<EntityId> _children;
     };
     ATTA_REGISTER_COMPONENT(RelationshipComponent)
 
@@ -24,8 +37,8 @@ namespace atta
     {
         "Relationship",
         {
-            { ComponentRegistry::AttributeType::UINT32, offsetof(RelationshipComponent, parent), "parent" },
-            { ComponentRegistry::AttributeType::CUSTOM, offsetof(RelationshipComponent, children), "children" }
+            { ComponentRegistry::AttributeType::UINT32, offsetof(RelationshipComponent, _parent), "parent" },
+            { ComponentRegistry::AttributeType::CUSTOM, offsetof(RelationshipComponent, _children), "children" }
         }
     };
 }

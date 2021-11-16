@@ -182,8 +182,9 @@ namespace atta
                 {
                     if(pl && numPointLights < 10)
                     {
+                        vec3 position = transform->getWorldTransform(entity).getPosition();
                         int i = numPointLights++;
-                        shader->setVec3(("pointLights["+std::to_string(i)+"].position").c_str(), transform->position);
+                        shader->setVec3(("pointLights["+std::to_string(i)+"].position").c_str(), position);
                         shader->setVec3(("pointLights["+std::to_string(i)+"].intensity").c_str(), pl->intensity);
                     }
                     if(dl)
@@ -209,22 +210,7 @@ namespace atta
 
                 if(mesh && transform)
                 {
-                    mat4 model; 
-                    model.setPosOriScale(transform->position, transform->orientation, transform->scale);
-
-                    while(relationship && relationship->parent >= 0)
-                    {
-                        TransformComponent* ptransform = ComponentManager::getEntityComponent<TransformComponent>(relationship->parent);
-                        if(ptransform)
-                        {
-                            mat4 pmodel; 
-                            pmodel.setPosOriScale(ptransform->position, ptransform->orientation, ptransform->scale);
-                            model = pmodel * model;
-                        }
-                        relationship = ComponentManager::getEntityComponent<RelationshipComponent>(relationship->parent);
-                    }
-
-                    model.transpose();
+                    mat4 model = transpose(transform->getWorldTransform(entity)); 
                     mat4 invModel = inverse(model);
                     shader->setMat4("model", model);
                     shader->setMat4("invModel", invModel);

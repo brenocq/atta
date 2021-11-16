@@ -147,16 +147,16 @@ namespace atta
                     mat4 model; 
                     model.setPosOriScale(transform->position, transform->orientation, transform->scale);
 
-                    while(relationship && relationship->parent >= 0)
+                    while(relationship && relationship->getParent() >= 0)
                     {
-                        TransformComponent* ptransform = ComponentManager::getEntityComponent<TransformComponent>(relationship->parent);
+                        TransformComponent* ptransform = ComponentManager::getEntityComponent<TransformComponent>(relationship->getParent());
                         if(ptransform)
                         {
                             mat4 pmodel; 
                             pmodel.setPosOriScale(ptransform->position, ptransform->orientation, ptransform->scale);
                             model = pmodel * model;
                         }
-                        relationship = ComponentManager::getEntityComponent<RelationshipComponent>(relationship->parent);
+                        relationship = ComponentManager::getEntityComponent<RelationshipComponent>(relationship->getParent());
                     }
 
                     vec3 position;
@@ -172,9 +172,9 @@ namespace atta
                     rotation.mat[0][0] /= transform->scale.x;
                     rotation.mat[1][1] /= transform->scale.y;
                     rotation.mat[2][2] /= transform->scale.z;
-                    while(relationship && relationship->parent >= 0)
+                    while(relationship && relationship->getParent() >= 0)
                     {
-                        TransformComponent* ptransform = ComponentManager::getEntityComponent<TransformComponent>(relationship->parent);
+                        TransformComponent* ptransform = ComponentManager::getEntityComponent<TransformComponent>(relationship->getParent());
                         if(ptransform)
                         {
                             mat4 protation; 
@@ -187,7 +187,7 @@ namespace atta
                             protation.mat[2][2] /= ptransform->scale.z;
                             rotation = protation * rotation;
                         }
-                        relationship = ComponentManager::getEntityComponent<RelationshipComponent>(relationship->parent);
+                        relationship = ComponentManager::getEntityComponent<RelationshipComponent>(relationship->getParent());
                     }
 
                     _cameraCameras[i]->setPosition(position);

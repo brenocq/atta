@@ -15,6 +15,7 @@
 #include <atta/eventSystem/events/simulationStopEvent.h>
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/transformComponent.h>
+#include <atta/componentSystem/components/relationshipComponent.h>
 #include <atta/componentSystem/components/nameComponent.h>
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/materialComponent.h>
@@ -179,8 +180,7 @@ namespace atta::ui
                         proj.mat[1][1] *= -1;
                         proj.transpose();
 
-                        mat4 transform = t->getTransform();
-                        transform.transpose();
+                        mat4 transform = transpose(t->getWorldTransform(entity));
 
                         float snapValue = 0.5f;
                         if(mouseOperation == ImGuizmo::OPERATION::ROTATE)
@@ -193,6 +193,23 @@ namespace atta::ui
                         {
                             imGuizmoUsingMouse = true;
                             transform.transpose();
+
+                            // Delta world to local
+                            RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
+                            if(r && r->getParent() != -1)
+                            {
+                                TransformComponent* pt = nullptr;
+                                while(pt == nullptr && r != nullptr && r->getParent() != -1)
+                                {
+                                    pt = ComponentManager::getEntityComponent<TransformComponent>(r->getParent());
+                                    r = ComponentManager::getEntityComponent<RelationshipComponent>(r->getParent());
+                                }
+
+                                if(pt)
+                                    transform = inverse(pt->getWorldTransform(r->getParent())) * transform;
+                            }
+
+                            // Update entity transform
                             transform.getPosOriScale(t->position, t->orientation, t->scale);
                         }
                     }

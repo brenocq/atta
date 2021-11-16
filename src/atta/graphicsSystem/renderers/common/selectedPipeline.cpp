@@ -53,9 +53,12 @@ namespace atta
                 if(mesh && transform)
                 {
                     // Draw mesh normal size
-                    mat4 model; 
-                    model.setPosOriScale(transform->position, transform->orientation, transform->scale);
+                    mat4 model = transform->getWorldTransform(entity); 
+                    vec3 pos, scale;
+                    quat ori;
+                    model.getPosOriScale(pos, ori, scale);
                     model.transpose();
+
                     shader->setMat4("model", model);
                     shader->setVec4("color", vec4(0, 0, 0, 0));
 
@@ -65,8 +68,8 @@ namespace atta
                     GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
 
                     // Draw scaled mesh
-                    float distance = (camera->getPosition()-transform->position).length();
-                    model.setPosOriScale(transform->position, transform->orientation, transform->scale+distance/100.0f);
+                    float distance = (camera->getPosition()-pos).length();
+                    model.setPosOriScale(pos, ori, scale+distance/100.0f);
                     model.transpose();
                     shader->setMat4("model", model);
                     shader->setVec4("color", vec4(0.22f, 0.63f, 0.27f, 1.0f));

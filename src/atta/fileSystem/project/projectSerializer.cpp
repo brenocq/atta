@@ -188,6 +188,7 @@ namespace atta
         // Read section size in bytes
         size_t sizeBytes;
         read(is, sizeBytes);
+        int endSectionPos = int(is.tellg()) + sizeBytes;// Used to validate position at the end
 
         // Read section
         std::string marker;
@@ -220,12 +221,13 @@ namespace atta
 
         for(uint32_t i = 0; i < numComponents; i++)
         {
-            uint32_t sectionSize;// Can be used to skip the component data if it is an unknown component
+            uint32_t componentSectionSize;// Can be used to skip the component data if it is an unknown component
 
             // Read component name
             read(is, marker);
-            read(is, sectionSize);
+            read(is, componentSectionSize);
             ComponentRegistry* compReg = nullptr;
+            int componentSectionEndPos = int(is.tellg()) + componentSectionSize;
 
             // Find correct component registry
             for(auto componentRegistry : ComponentManager::getComponentRegistries())
@@ -240,19 +242,31 @@ namespace atta
             // If not found the component, skip this section
             if(compReg == nullptr)
             {
-                is.ignore(sectionSize);
+                is.ignore(componentSectionEndPos);
                 continue;
             }
 
             // Deserialize 
-            size_t endPos = size_t(is.tellg()) + sectionSize;
-            while(size_t(is.tellg()) < endPos)
+            while(size_t(is.tellg()) < componentSectionEndPos)
             {
                 EntityId eid;
                 read(is, eid);
                 Component* component = ComponentManager::addEntityComponentById(compReg->getId(), eid);
                 compReg->deserialize(is, component);
             }
+
+            // Check finished at right position
+            if(int(is.tellg()) != componentSectionEndPos)
+            {
+                LOG_WARN("ProjectSerializer", "Expected position ([w]$0[]) and actual position ([w]$1[])does not match for [*w]component $2 section[]. Some data may have been incorrectly initialized for this component", (int)is.tellg(), componentSectionEndPos, compReg->getDescription().type);
+                is.seekg(componentSectionEndPos, std::ios_base::beg);
+            }
+        }
+
+        if(int(is.tellg()) != endSectionPos)
+        {
+            LOG_WARN("ProjectSerializer", "Expected position ([w]$0[]) and actual position ([w]$1[])does not match for the [*w]component system section[]. Some data may have been incorrectly initialized", (int)is.tellg(), endSectionPos);
+            is.seekg(endSectionPos, std::ios_base::beg);
         }
     }
 
@@ -299,6 +313,7 @@ namespace atta
     {
         size_t sizeBytes;
         read(is, sizeBytes);
+        int sectionEndPos = int(is.tellg()) + sizeBytes;// Used to validate position at the end
 
         unsigned numSections;
         read(is, numSections);
@@ -329,6 +344,12 @@ namespace atta
                     GraphicsManager::addViewport(viewport);
                 }
             }
+        }
+
+        if(int(is.tellg()) != sectionEndPos)
+        {
+            LOG_WARN("ProjectSerializer", "Expected position ([w]$0[]) and actual position ([w]$1[])does not match for the [*w]graphics system section[]. Some data may have been incorrectly initialized", (int)is.tellg(), sectionEndPos);
+            is.seekg(sectionEndPos, std::ios_base::beg);
         }
     }
 }

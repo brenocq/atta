@@ -95,9 +95,7 @@ namespace atta
 
                 if(mesh && transform)
                 {
-                    mat4 model; 
-                    model.setPosOriScale(transform->position, transform->orientation, transform->scale);
-                    model.transpose();
+                    mat4 model = transpose(transform->getWorldTransform(entity)); 
                     shader->setMat4("model", model);
 
                     // EntityId
