@@ -96,19 +96,25 @@ namespace atta
             unsigned size = (i == description.attributeDescriptions.size()-1)
                 ? sizeof(T)-aDesc.offset 
                 : description.attributeDescriptions[i+1].offset - aDesc.offset;
-            switch(aDesc.type)
-            {
-                case AttributeType::STRINGID:
+
+            // Custom defined serialization
+            if(description.serialize.find(aDesc.name) != description.serialize.end())
+                description.serialize[aDesc.name](os, (void*)curr);
+            // Default serialization
+            else
+                switch(aDesc.type)
                 {
-                    StringId* sid = reinterpret_cast<StringId*>(curr);
-                    std::string str = sid->getString();
-                    os.write(str.c_str(), str.size());
-                    os.put('\0');
-                    break;
+                    case AttributeType::STRINGID:
+                    {
+                        StringId* sid = reinterpret_cast<StringId*>(curr);
+                        std::string str = sid->getString();
+                        os.write(str.c_str(), str.size());
+                        os.put('\0');
+                        break;
+                    }
+                    default:
+                        os.write(reinterpret_cast<const char*>(curr), size);
                 }
-                default:
-                    os.write(reinterpret_cast<const char*>(curr), size);
-            }
             curr += size;
         }
     }
@@ -123,31 +129,37 @@ namespace atta
             unsigned size = (i == description.attributeDescriptions.size()-1)
                 ? sizeof(T)-aDesc.offset 
                 : description.attributeDescriptions[i+1].offset - aDesc.offset;
-            switch(aDesc.type)
-            {
-                case AttributeType::STRINGID:
+
+            // Custom defined deserialization
+            if(description.deserialize.find(aDesc.name) != description.deserialize.end())
+                description.deserialize[aDesc.name](is, (void*)curr);
+            // Default deserialization
+            else
+                switch(aDesc.type)
                 {
-                    // Calculate string size
-                    int init = is.tellg();
-                    while(is.get()!='\0' && !is.eof());
-                    int size = int(is.tellg())-init-1;
+                    case AttributeType::STRINGID:
+                    {
+                        // Calculate string size
+                        int init = is.tellg();
+                        while(is.get()!='\0' && !is.eof());
+                        int size = int(is.tellg())-init-1;
 
-                    // Return to string first char
-                    is.seekg(init);
+                        // Return to string first char
+                        is.seekg(init);
 
-                    // Read string
-                    std::string str;
-                    str.resize(size);
-                    is.read(&str[0], size);
-                    is.ignore();// jump \0
-                    StringId sid(str);
-                    // Save stringId to component
-                    memcpy(curr, reinterpret_cast<char*>(&sid), sizeof(StringId));
-                    break;
+                        // Read string
+                        std::string str;
+                        str.resize(size);
+                        is.read(&str[0], size);
+                        is.ignore();// jump \0
+                        StringId sid(str);
+                        // Save stringId to component
+                        memcpy(curr, reinterpret_cast<char*>(&sid), sizeof(StringId));
+                        break;
+                    }
+                    default:
+                        is.read(reinterpret_cast<char*>(curr), size);
                 }
-                default:
-                    is.read(reinterpret_cast<char*>(curr), size);
-            }
             curr += size;
         }
     }

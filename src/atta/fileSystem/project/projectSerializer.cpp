@@ -247,7 +247,7 @@ namespace atta
             }
 
             // Deserialize 
-            while(size_t(is.tellg()) < componentSectionEndPos)
+            while(int(is.tellg()) < componentSectionEndPos)
             {
                 EntityId eid;
                 read(is, eid);

@@ -15,7 +15,6 @@
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/transformComponent.h>
-#include <atta/componentSystem/components/relationshipComponent.h>
 #include <atta/componentSystem/components/materialComponent.h>
 #include <atta/componentSystem/components/pointLightComponent.h>
 #include <atta/componentSystem/components/directionalLightComponent.h>
@@ -206,7 +205,6 @@ namespace atta
                 MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
                 TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
                 MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
-                RelationshipComponent* relationship = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
 
                 if(mesh && transform)
                 {
