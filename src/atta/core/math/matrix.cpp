@@ -480,6 +480,16 @@ namespace atta
         data[15] = 1;
     }
 
+    vec3 mat4::getPosition() const
+    {
+        vec3 pos;
+        pos.x = mat[0][3];
+        pos.y = mat[1][3];
+        pos.z = mat[2][3];
+
+        return pos;
+    }
+
     void mat4::getPosOriScale(vec3 &pos, quat &q, vec3 &scale) const
     {
         pos.x = mat[0][3];

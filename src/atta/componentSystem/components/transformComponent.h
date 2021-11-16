@@ -18,12 +18,8 @@ namespace atta
         quat orientation = quat();
         vec3f scale = vec3(1,1,1);
 
-        mat4 getTransform()
-        {
-            mat4 t;
-            t.setPosOriScale(position, orientation, scale);
-            return t;
-        }
+        mat4 getWorldTransform(EntityId entity);
+        mat4 getLocalTransform();
     };
     ATTA_REGISTER_COMPONENT(TransformComponent)
 

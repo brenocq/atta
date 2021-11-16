@@ -92,6 +92,7 @@ namespace atta
         void setPosOri(const vec3& pos, const quat& q);
         void setPosOriScale(const vec3& pos, const quat& q, const vec3 &scale);
 
+        vec3 getPosition() const;
         void getPosOriScale(vec3& pos, quat& q, vec3& scale) const;
 
         std::string toString() const;
