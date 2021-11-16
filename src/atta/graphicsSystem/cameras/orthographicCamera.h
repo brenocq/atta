@@ -15,7 +15,7 @@ namespace atta
     public:
         struct CreateInfo
         {
-            vec3 position = {0.0f, 0.0f, 3.0f};
+            vec3 position = {0.0f, 0.0f, 10.0f};
             vec3 lookAt = {0.0f, 0.0f, 0.0f};
             vec3 up = {0.0f, 1.0f, 0.0f};
             Control control = Control::PLANAR;
@@ -32,6 +32,8 @@ namespace atta
         mat4 getProj() const override;
 
     private:
+        virtual void movePlanar() override;
+
         float _far;
         float _height;
     };

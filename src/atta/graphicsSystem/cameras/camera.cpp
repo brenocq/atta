@@ -36,6 +36,9 @@ namespace atta
 
     void Camera::movePlanar()
     {
+        if(!ImGui::IsMouseDown(2))// Move only if middle button is pressed
+            return;
+
         ImGuiIO& io = ImGui::GetIO();
 
         float x = io.MouseDelta.x*0.01f;
@@ -46,6 +49,9 @@ namespace atta
     
     void Camera::moveFirstPerson()
     {
+        if(!ImGui::IsMouseDown(2))// Move only if middle button is pressed
+            return;
+
         static float lastTimeFront = 0;
         static float lastTimeLeft = 0;
         static float lastTimeUp = 0;

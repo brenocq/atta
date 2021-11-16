@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/graphicsSystem/cameras/orthographicCamera.h>
 #include <atta/fileSystem/serializer/serializer.h>
+#include <imgui.h>
 
 namespace atta
 {
@@ -60,5 +61,23 @@ namespace atta
         read(is, _speed);
         read(is, _far);
         read(is, _height);
+    }
+
+    void OrthographicCamera::movePlanar()
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        if(_height-io.MouseWheel*0.5 > 0)
+            _height -= io.MouseWheel*0.5;
+
+        // Move only if middle button is pressed
+        if(ImGui::IsMouseDown(2))
+        {
+            ImGuiIO& io = ImGui::GetIO();
+
+            float x = io.MouseDelta.x/float(_viewportWidth)*_height*_ratio;
+            float y = io.MouseDelta.y/float(_viewportHeight)*_height;
+
+            _position += x*_left + -y*_up;
+        }
     }
 }

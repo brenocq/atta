@@ -59,6 +59,7 @@ namespace atta
 
         //---------- Selected pipeline ----------//
         _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
+        _drawerPipeline = std::make_unique<DrawerPipeline>(renderPass);
     }
 
     FastRenderer::~FastRenderer()
@@ -105,6 +106,7 @@ namespace atta
         _geometryPipeline->end();
 
         _selectedPipeline->render(camera);
+        _drawerPipeline->render(camera);
     }
 
     void FastRenderer::resize(uint32_t width, uint32_t height)

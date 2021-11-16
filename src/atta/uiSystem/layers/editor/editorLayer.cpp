@@ -98,8 +98,11 @@ namespace atta::ui
                     activeViewport = i;
 
                 // Update camera (wheel pressed)
-                if(activeViewport==i && ImGui::IsMouseDown(2))
+                if(activeViewport==i)
+                {
+                    viewport->getCamera()->setViewportSize(viewport->getWidth(), viewport->getHeight());
                     viewport->getCamera()->move();
+                }
 
                 //----- Mouse click -----//
                 vec2i click = {-1, -1};
@@ -338,8 +341,8 @@ namespace atta::ui
     {
         if(ImGui::BeginPopup("Editor_AddBasicShape"))
         {
-            std::string basicShapes[] = { "Cube", "Sphere", "Plane", "Triangle" };
-            StringId basicShapesMesh[] = { "meshes/cube.obj"_sid, "meshes/sphere.obj"_sid, "meshes/plane.obj"_sid, "meshes/triangle.obj"_sid };
+            std::string basicShapes[] = { "Cube", "Sphere", "Cylinder", "Triangle", "Plane", "Disk" };
+            StringId basicShapesMesh[] = { "meshes/cube.obj"_sid, "meshes/sphere.obj"_sid, "meshes/cylinder.obj"_sid, "meshes/triangle.obj"_sid, "meshes/plane.obj"_sid, "meshes/disk.obj"_sid };
             unsigned i = 0; 
             for(auto shape : basicShapes)
             {

@@ -58,12 +58,12 @@ namespace atta
         //----- Create viewports -----//
         createDefaultViewportsImpl();
 
-        //Drawer::add(Drawer::Line({0,0,0}, {0,0,1}, {0,0,1,1}, {0,0,1,1}));
-        //Drawer::add(Drawer::Line({0,0,0}, {1,0,0}, {1,0,0,1}, {1,0,0,1}));
-        //Drawer::add(Drawer::Line({0,0,0}, {0,1,0}, {0,1,0,1}, {0,1,0,1}));
-        //Drawer::add(Drawer::Point({1,0,0}, {1,0,0,1}));
-        //Drawer::add(Drawer::Point({0,1,0}, {0,1,0,1}));
-        //Drawer::add(Drawer::Point({0,0,1}, {0,0,1,1}));
+        Drawer::add(Drawer::Line({0,0,0}, {0,0,1}, {0,0,1,1}, {0,0,1,1}));
+        Drawer::add(Drawer::Line({0,0,0}, {1,0,0}, {1,0,0,1}, {1,0,0,1}));
+        Drawer::add(Drawer::Line({0,0,0}, {0,1,0}, {0,1,0,1}, {0,1,0,1}));
+        Drawer::add(Drawer::Point({1,0,0}, {1,0,0,1}));
+        Drawer::add(Drawer::Point({0,1,0}, {0,1,0,1}));
+        Drawer::add(Drawer::Point({0,0,1}, {0,0,1,1}));
     }
 
     void GraphicsManager::shutDown() { getInstance().shutDownImpl(); }

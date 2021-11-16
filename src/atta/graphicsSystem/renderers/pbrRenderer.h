@@ -9,6 +9,7 @@
 #include <atta/graphicsSystem/pipeline.h>
 #include <atta/graphicsSystem/renderers/renderer.h>
 #include <atta/graphicsSystem/renderers/common/selectedPipeline.h>
+#include <atta/graphicsSystem/renderers/common/drawerPipeline.h>
 
 namespace atta
 {
@@ -32,9 +33,8 @@ namespace atta
         void brdfLUT();
 
         std::shared_ptr<Pipeline> _geometryPipeline;
-        std::shared_ptr<Pipeline> _linePipeline;
-        std::shared_ptr<Pipeline> _pointPipeline;
         std::unique_ptr<SelectedPipeline> _selectedPipeline;
+        std::unique_ptr<DrawerPipeline> _drawerPipeline;
 
         std::shared_ptr<ShaderGroup> _backgroundShader;
         //bool _hasEnvTexture;

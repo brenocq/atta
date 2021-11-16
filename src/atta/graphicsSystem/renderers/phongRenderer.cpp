@@ -58,8 +58,9 @@ namespace atta
         pipelineInfo.renderPass = renderPass;
         _geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
 
-        //---------- Create selected pipeline ----------//
+        //---------- Common pipelines ----------//
         _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
+        _drawerPipeline = std::make_unique<DrawerPipeline>(renderPass);
     }
 
     PhongRenderer::~PhongRenderer()
@@ -153,6 +154,7 @@ namespace atta
         _geometryPipeline->end();
 
         _selectedPipeline->render(camera);
+        _drawerPipeline->render(camera);
     }
 
     void PhongRenderer::resize(uint32_t width, uint32_t height)

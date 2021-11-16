@@ -8,7 +8,7 @@
 
 namespace atta
 {
-    Drawer::Drawer(): 
+    Drawer::Drawer():
         _maxNumberOfLines(100000),
         _currNumberOfLines(0),
         _linesChanged(false),
@@ -18,9 +18,6 @@ namespace atta
     {
         _lines.resize(_maxNumberOfLines);
         _points.resize(_maxNumberOfPoints);
-        glPointSize(5.0f);
-        glLineWidth(2.0f);
-
         // Line VAO
         glGenVertexArrays(1, &_lineVAO);
         glGenBuffers(1, &_lineVBO);
@@ -49,7 +46,7 @@ namespace atta
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-    };
+    }
 
     Drawer& Drawer::getInstance()
     {

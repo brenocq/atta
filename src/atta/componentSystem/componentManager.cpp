@@ -72,7 +72,7 @@ namespace atta
         // Light entity
         EntityId light = createEntity();
         t = addEntityComponent<TransformComponent>(light);
-        t->position = { -0.6, -0.6, 0.6 };
+        t->position = { 0.6, 0.6, 0.6 };
         t->scale = { 0.05, 0.05, 0.05 };
 
         n = addEntityComponent<NameComponent>(light);
