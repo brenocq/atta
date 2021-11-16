@@ -35,6 +35,7 @@ namespace atta
         float getRatio() const { return _ratio; }
         std::string getName() const { return _name; }
 
+        void setViewportSize(unsigned width, unsigned height) { _viewportWidth = width; _viewportHeight = height; }
         void setPosition(const vec3& position) { _position = position; }
         void setLeft(const vec3& left) { _left = left; }
         void setUp(const vec3& up) { _up = up; }
@@ -45,19 +46,19 @@ namespace atta
         virtual void renderUI();
 
     protected:
+        virtual void movePlanar();
+        virtual void moveFirstPerson();
+
         vec3 _position;
         vec3 _left, _up, _front;
         float _ratio;
         Control _control;
 
-        // Camera move
         float _speed;
+        unsigned _viewportWidth, _viewportHeight;
 
         // UI
         std::string _name;
-    private:
-        void movePlanar();
-        void moveFirstPerson();
     };
 }
 

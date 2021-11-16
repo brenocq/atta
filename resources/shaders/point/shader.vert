@@ -9,6 +9,7 @@ out vec4 color;
 
 void main()
 {
+    gl_PointSize = 5.0;
     gl_Position = projection * view * vec4(inPos, 1.0); 
     color = inColor;
 }  

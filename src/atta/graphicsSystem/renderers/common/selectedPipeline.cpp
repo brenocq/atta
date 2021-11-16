@@ -6,8 +6,6 @@
 //--------------------------------------------------
 #include <atta/graphicsSystem/renderers/common/selectedPipeline.h>
 #include <atta/graphicsSystem/graphicsManager.h>
-#include <atta/graphicsSystem/framebuffer.h>
-#include <atta/graphicsSystem/renderPass.h>
 
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLShaderGroup.h>
 

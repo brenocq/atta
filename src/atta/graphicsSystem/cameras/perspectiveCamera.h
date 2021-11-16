@@ -15,7 +15,7 @@ namespace atta
     public:
         struct CreateInfo
         {
-            vec3 position = {-3.0f, 0.0f, 0.0f};
+            vec3 position = {2.0f, 2.0f, 2.0f};
             vec3 lookAt = {0.0f, 0.0f, 0.0f};
             vec3 up = {0.0f, 0.0f, 1.0f};
             Control control = Control::FIRST_PERSON;

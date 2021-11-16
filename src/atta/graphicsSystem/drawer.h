@@ -67,8 +67,6 @@ namespace atta
 
         // Core
         static Drawer& getInstance();
-        Drawer(const Drawer&) = delete;
-        void operator=(const Drawer&) = delete;
 
     private:
         Drawer();

@@ -36,6 +36,7 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
     renderers/pbrRenderer.cpp
     renderers/phongRenderer.cpp
     renderers/common/selectedPipeline.cpp
+    renderers/common/drawerPipeline.cpp
 
     compute/entityClick.cpp
 
