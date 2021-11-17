@@ -9,20 +9,20 @@ namespace atta
     template <typename T>
     T* ComponentManager::getEntityComponentImpl(EntityId entity)
     {
-        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
-        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
+        //DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+        //// TODO Check if entity was created, if this entity was not created, this will break the pool allocator
 
-        // Get entity
-        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
-        Entity* e = epool->getBlock(entity);
+        //// Get entity
+        //EntityBlock* e = getEntityBlock(entity);
 
-        // Get component pool
-        PoolAllocatorT<T>* cpool = MemoryManager::getAllocator<PoolAllocatorT<T>>(COMPONENT_POOL_SID(T));
+        //// Get component pool
+        //PoolAllocatorT<T>* cpool = MemoryManager::getAllocator<PoolAllocatorT<T>>(COMPONENT_POOL_SID(T));
 
-        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
-            if(cpool->owns(e->components[i]))
-                return reinterpret_cast<T*>(e->components[i]);
-        return nullptr;
+        //for(size_t i = 0; i < sizeof(EntityBlock)/sizeof(void*); i++)
+        //    if(cpool->owns(e->components[i]))
+        //        return reinterpret_cast<T*>(e->components[i]);
+        //return nullptr;
+        return reinterpret_cast<T*>(getEntityComponentByIdImpl(COMPONENT_POOL_SSID(T), entity));
     }
 
     // TODO create multiple entities sequentially in memory (their components must match and be sequential in memory too)

@@ -54,7 +54,7 @@ namespace atta
 
                 // Add allocated component to clone entities
                 for(unsigned i = 0; i < _maxClones; i++)
-                    ComponentManager::addEntityComponentPtr(_cloneEntityIds[i], mem+componentSize*i);
+                    ComponentManager::addEntityComponentPtr(_cloneEntityIds[i], compReg->getIndex(), mem+componentSize*i);
             }
         }
 
@@ -91,7 +91,7 @@ namespace atta
 
         // Delete entity component
         for(EntityId eid : _cloneEntityIds)
-            ComponentManager::destroyEntityOnly(eid);
+            ComponentManager::deleteEntityOnly(eid);
     }
 
     void Factory::runScripts(float dt)

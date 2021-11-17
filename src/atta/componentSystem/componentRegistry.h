@@ -24,7 +24,7 @@ namespace atta
     public:
         using Type = StringId;
         ComponentRegistry(unsigned sizeofT, std::string typeidName, size_t typeidHash):
-            _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash)
+            _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _index(0)
         {
         }
 
@@ -127,10 +127,11 @@ namespace atta
         
         virtual Description& getDescription() = 0;
         virtual std::vector<uint8_t> getDefault() = 0;
-        unsigned getSizeof() { return _sizeof; }
-        std::string getTypeidName() { return _typeidName; }
-        size_t getTypeidHash() { return _typeidHash; }
-        ComponentId getId() { return COMPONENT_POOL_SSID_BY_NAME(_typeidName); }
+        unsigned getSizeof() const { return _sizeof; }
+        std::string getTypeidName() const { return _typeidName; }
+        size_t getTypeidHash() const { return _typeidHash; }
+        ComponentId getId() const { return COMPONENT_POOL_SSID_BY_NAME(_typeidName); }
+        unsigned getIndex() const { return _index; }
 
     protected:
         template<ComponentRegistry::AttributeType attributeType>
@@ -139,6 +140,14 @@ namespace atta
         unsigned _sizeof;// sizeof(T)
         std::string _typeidName;// typeid(T).name()
         size_t _typeidHash;// typeid(T).hash_code()
+
+        // Component index starting from 0
+        // This index is useful to access the entity component without iterating over the entity block
+        unsigned _index;
+
+    private:
+        void setIndex(unsigned index) { _index = index; }
+        friend ComponentManager;
     };
 
     template <typename T>

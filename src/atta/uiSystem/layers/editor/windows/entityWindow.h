@@ -26,6 +26,9 @@ namespace atta::ui
         void textureCombo(std::string comboId, StringId& sid);
 
         std::unordered_set<EntityId> _cameraWindows;
+
+        // TODO Move this to undo/redo code
+        std::vector<EntityId> _entitiesToDelete;
     };
 }
 

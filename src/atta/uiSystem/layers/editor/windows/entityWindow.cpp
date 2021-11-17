@@ -51,6 +51,11 @@ namespace atta::ui
         ImGui::SetCursorPos(ImVec2((window.x - size)*0.5f, cursor.y));
         if(ImGui::Button("Create entity", ImVec2(size, 0)))
             ComponentManager::createEntity();
+
+        //----- Operations -----//
+        for(auto entity : _entitiesToDelete)
+            ComponentManager::deleteEntity(entity);
+        _entitiesToDelete.clear();
     }
 
     void EntityWindow::renderTreeNode(EntityId entity, int& i)
@@ -79,6 +84,14 @@ namespace atta::ui
         //----- Select entity -----//
         if(ImGui::IsItemClicked())
             ComponentManager::setSelectedEntity(entity);
+
+        //----- Popup -----//
+        if(ImGui::BeginPopupContextItem())
+        {
+            if(ImGui::Selectable("Delete"))
+                _entitiesToDelete.push_back(entity);
+           ImGui::EndPopup();
+        }
 
         //----- Drag/Drop entities -----//
         if(ImGui::BeginDragDropSource())
@@ -123,11 +136,14 @@ namespace atta::ui
             if(component != nullptr)
             {
                 std::string name = compReg->getDescription().type;
-                bool open = true;
-                if(ImGui::CollapsingHeader((name+"##Components"+name+"Header").c_str(), &open))
-                    compReg->renderUI((Component*)component);
-                if(!open)
-                    ComponentManager::removeEntityComponentById(compReg->getId(), selected);
+                if(compReg->getId() != TypedComponentRegistry<RelationshipComponent>::getInstance().getId())
+                {
+                    bool open = true;
+                    if(ImGui::CollapsingHeader((name+"##Components"+name+"Header").c_str(), &open))
+                        compReg->renderUI((Component*)component);
+                    if(!open)
+                        ComponentManager::removeEntityComponentById(compReg->getId(), selected);
+                }
             }
         }
 
@@ -147,9 +163,12 @@ namespace atta::ui
                 void* component = ComponentManager::getEntityComponentById(compReg->getId(), selected);
                 if(component == nullptr)
                 {
-                    std::string type = compReg->getDescription().type;
-                    if(ImGui::Selectable((type+"##ComponentAdd"+type).c_str()))
-                        ComponentManager::addEntityComponentById(compReg->getId(), selected);
+                    if(compReg->getId() != TypedComponentRegistry<RelationshipComponent>::getInstance().getId())
+                    {
+                        std::string type = compReg->getDescription().type;
+                        if(ImGui::Selectable((type+"##ComponentAdd"+type).c_str()))
+                            ComponentManager::addEntityComponentById(compReg->getId(), selected);
+                    }
                 }
             }
             ImGui::EndPopup();

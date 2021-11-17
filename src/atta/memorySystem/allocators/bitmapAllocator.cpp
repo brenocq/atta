@@ -8,14 +8,14 @@
 
 namespace atta
 {
-    BitmapAllocator::BitmapAllocator(uint64_t size):
-        Allocator(size), _current(0)
+    BitmapAllocator::BitmapAllocator(uint64_t size, uint32_t blockSize):
+        Allocator(size), _blockSize(blockSize), _current(0)
     {
         init();
     }
 
-    BitmapAllocator::BitmapAllocator(uint8_t* memory, uint64_t size):
-        Allocator(memory, size), _current(0)
+    BitmapAllocator::BitmapAllocator(uint8_t* memory, uint64_t size, uint32_t blockSize):
+        Allocator(memory, size), _blockSize(blockSize), _current(0)
     {
         init();
     }
@@ -23,13 +23,14 @@ namespace atta
     void BitmapAllocator::init()
     {
         // x := Number of bytes in the bitmap
-        // x + x*8 = size
-        // 9*x = size
-        // x = ceil(size/9)
+        // x + x*8*blockSize = size
+        // x*(1 + 8*blockSize) = size
+        // x = ceil(size/(1 + 8*blockSize))
 
-        size_t bitmapSize = ceil(_size/9.0f);
+        size_t bitmapSize = ceil(_size/(1.0f + 8*_blockSize));
         _dataStart = _memory + bitmapSize;
         _dataSize = _size - bitmapSize;
+        DASSERT(_dataSize%_blockSize == 0, "Data size [w]$0[] is not a multiple of block size [w]$1[], some errors may occur. Try recalculating the memory size to take into account the bitmap space", _dataSize, _blockSize);
 
         for(size_t i = 0; i < bitmapSize; i++)
             _memory[i] = 0;
@@ -38,47 +39,42 @@ namespace atta
     void* BitmapAllocator::allocBytes(size_t size, size_t align)
     {
         DASSERT(_size > 1, "Memory size must be greater than 1");
+        DASSERT(size%_blockSize == 0, "Trying to allocate [w]$0[] bytes, but each block have [w]$1[] bytes. The number of bytes to allocate must be a multiple of [w]$1[]", size, _blockSize);
 
         const size_t start = _current;
-        int firstFreeCount = -1;
+        const size_t numBlocks = size/_blockSize;
 
         size_t curr = start;
         unsigned freeCount = 0;
 
         do {
-            bool freeSpace = (_memory[curr/8] & (1 << (curr%8))) == 0;
-            if(freeSpace)
+            // Check if it is free
+            bool isFree = !getBlockBit(curr);
+            if(isFree)
                 freeCount++;
             else
-            {
-                // Restart counter
-                if(firstFreeCount == -1)
-                    firstFreeCount = freeCount;
                 freeCount = 0;
-            }
 
             // Check can allocate
-            if(freeCount == size)
+            if(freeCount == numBlocks)
             {
                 // Found free bytes
                 // Set bits as allocated
-                for(size_t i = curr-size+1; i <= curr; i++)
-                    _memory[i/8] = _memory[i/8] | (1 << (i%8));
+                for(size_t i = curr-numBlocks+1; i <= curr; i++)
+                    setBlockBit(i, true);
 
                 // Update _current for next search
-                _current = (curr+1)%_dataSize;
+                _current = (curr+1)%(_dataSize/_blockSize);
 
                 // Return pointer to first position
-                return &_dataStart[curr-size+1];
+                return &_dataStart[curr*_blockSize-size+_blockSize];
             }
 
             curr++;
             // Check if need to return to first data byte
-            if(curr >= _dataSize)
+            if(curr >= _dataSize/_blockSize)
             {
                 // Restart counter
-                if(firstFreeCount == -1)
-                    firstFreeCount = freeCount;
                 freeCount = 0;
 
                 // Return to first data byte
@@ -86,29 +82,49 @@ namespace atta
             }
         } while(curr != start);
 
-        if(firstFreeCount+freeCount >= size)
-        {
-            // Found free bytes (bytes before start + bytes after start)
-            // Set bits as allocated
-            for(size_t i = curr-freeCount+1; i <= curr; i++)
-                _memory[i/8] = _memory[i/8] | (1 << (i%8));
-
-            // Update _current for next search
-            _current = (curr-freeCount+size+1)%_dataSize;
-
-            // Return pointer to first position
-            return &_dataStart[curr-freeCount+1];
-        }
-
         return nullptr;
     }
 
     void BitmapAllocator::freeBytes(void* ptr, size_t size, size_t align)
     {
-        size_t start = static_cast<uint8_t*>(ptr) - _dataStart;
+        DASSERT(size%_blockSize == 0, "Trying to deallocate [w]$0[] bytes, but each block have [w]$1[] bytes. The number of bytes to deallocate must be a multiple of [w]$1[]", size, _blockSize);
+        uint64_t index = getIndex(ptr);
+
+        // Try to avoid memory fragmentation
+        // The next allocation will start the search from the first free block
+        _current = std::min(_current, index);
 
         // XXX Can be faster if set byte to zero
-        for(size_t i = start; i < start+size; i++)
-            _memory[i/8] = _memory[i/8] & ~(1 << (i%8));
+        unsigned numBlocks = size/_blockSize;
+        for(uint64_t i = index; i < index+numBlocks; i++)
+            setBlockBit(i, false);
+    }
+
+    // Helpers
+    void BitmapAllocator::clear()
+    {
+        freeBytes(_dataStart, _dataSize, _blockSize);
+        _current = 0;
+    }
+
+    uint64_t BitmapAllocator::getIndex(void* block)
+    {
+        return (static_cast<uint8_t*>(block) - _dataStart)/_blockSize;
+    }
+
+    void* BitmapAllocator::getBlock(uint64_t index)
+    {
+        return getBlockBit(index) ? reinterpret_cast<void*>(_dataStart + _blockSize*index) : nullptr;
+    }
+
+    bool BitmapAllocator::getBlockBit(uint64_t index)
+    {
+        return (_memory[index/8] & (1 << (index%8))) > 0;
+    }
+
+    void BitmapAllocator::setBlockBit(uint64_t index, bool bit)
+    {
+        _memory[index/8] = (_memory[index/8] & ~(1 << (index%8)))// Clear bit
+            + (1 << (index%8))*bit;// Set bit
     }
 }
