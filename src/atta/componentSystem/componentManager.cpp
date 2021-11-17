@@ -18,7 +18,7 @@ namespace atta
 {
     void ComponentManager::startUpImpl()
     {
-        _maxEntities = 1024;
+        _maxEntities = maxEntities;
 
         //----- System Memory -----//
         // Get main memory
@@ -86,43 +86,36 @@ namespace atta
 
     void ComponentManager::createEntityPool()
     {
-        const size_t entityMemorySize = (sizeof(EntityId)+sizeof(Entity))*_maxEntities;// TODO Entity objects may need to me aligned
+        const size_t entityMemorySize = ceil(_maxEntities/8.0f) + sizeof(EntityBlock)*_maxEntities;// Memory for bitmap + pool blocks
 
-        //LOG_VERBOSE("ComponentManager", "Allocating memory for entities. $0MB\n - Entity block size: $1.\n - Limits: \n    - $2 entities\n    - $3 components per entity", entityMemorySize/(1024*1024.0f), sizeof(EntityId), _maxEntities, sizeof(Entity)/sizeof(void*));
+        LOG_VERBOSE("ComponentManager", "Allocating memory for entities. $0MB\n - Entity block size: $1.\n - Limits: \n    - $2 entities\n    - $3 components per entity", entityMemorySize/(1024*1024.0f), sizeof(EntityId), _maxEntities, sizeof(EntityBlock)/sizeof(void*));
 
         // Allocate from component system memory
-        uint8_t* entityMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(entityMemorySize, sizeof(Entity)));
+        uint8_t* entityMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(entityMemorySize, sizeof(EntityBlock)));// TODO Probably not aligned because of the bitmap 
         ASSERT(entityMemory != nullptr, "Could not allocate component system entity memory");
 
-        // Use start of the allocate memory for the dense list
-        _denseList = reinterpret_cast<EntityId*>(entityMemory);
-        _denseListSize = 0;
-
-        // Create entity pool allocator
-        uint8_t* startEntityPool = entityMemory+sizeof(EntityId)*_maxEntities;
+        // Create entity bitmap pool allocator
         MemoryManager::registerAllocator(SSID("Component_EntityAllocator"), 
-                static_cast<Allocator*>(new PoolAllocatorT<Entity>(startEntityPool, _maxEntities)));
+                static_cast<Allocator*>(new BitmapAllocator(entityMemory, entityMemorySize, sizeof(EntityBlock))));
     }
 
     EntityId ComponentManager::createEntity() { return getInstance().createEntityImpl(); }
     EntityId ComponentManager::createEntityImpl()
     {
-        PoolAllocatorT<Entity>* pool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
+        BitmapAllocator* pool = MemoryManager::getAllocator<BitmapAllocator>(SID("Component_EntityAllocator"));
 
         // Alloc entity
-        Entity* e = pool->alloc();
+        EntityBlock* e = pool->alloc<EntityBlock>();
 
         // Initialize entity component pointers
-        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
+        for(size_t i = 0; i < sizeof(EntityBlock)/sizeof(void*); i++)
             e->components[i] = nullptr;
 
         // Calculate entityId (index inside pool memory)
         EntityId eid = static_cast<EntityId>(pool->getIndex(e));
 
-        // Add entity to dense list
-        _denseList[_denseListSize++] = eid;
-
         _noPrototypeView.insert(eid);
+        _entities.insert(eid);
 
         return eid;
     }
@@ -135,46 +128,79 @@ namespace atta
         return eid;
     }
 
-    void ComponentManager::destroyEntity(EntityId entity) { return getInstance().destroyEntityImpl(entity); }
-    void ComponentManager::destroyEntityImpl(EntityId entity)
+    void ComponentManager::deleteEntity(EntityId entity) { return getInstance().deleteEntityImpl(entity); }
+    void ComponentManager::deleteEntityImpl(EntityId entity)
     {
-        LOG_WARN("ComponentManager", "destroyEntity(EntityId) not implemented yet!");
+        // Get entity
+        BitmapAllocator* epool = MemoryManager::getAllocator<BitmapAllocator>(SID("Component_EntityAllocator"));
+        EntityBlock* e = epool->getBlock<EntityBlock>(entity);
+        ASSERT(e != nullptr, "Trying to delete entity [w]$0[] that never was created", entity);
+
+        // Delete children and remove parent relationship
+        RelationshipComponent* r = getEntityComponent<RelationshipComponent>(entity);
+        if(r)
+        {
+            if(r->getParent() != -1)
+                r->removeParent(r->getParent(), entity);
+
+            auto children = r->getChildren();
+            for(auto child : children)
+                deleteEntity(child);
+        }
+
+        // Delete allocated components
+        for(unsigned i = 0; i < _componentRegistries.size(); i++) 
+            if(e->components[i] != nullptr)
+            {
+                // Get component pool
+                BitmapAllocator* cpool = MemoryManager::getAllocator<BitmapAllocator>(_componentRegistries[i]->getId());
+
+                // Free component
+                cpool->free(e->components[i]);
+            }
+
+        // Unselect
+        if(_selectedEntity == entity)
+            _selectedEntity = -1;
+
+        // Free entity
+        epool->free<EntityBlock>(e);
+        _entities.erase(entity);
+        _noPrototypeView.erase(entity);
+        _cloneView.erase(entity);
+        _scriptView.erase(entity);
     }
     
-    void ComponentManager::destroyEntityOnly(EntityId entity) { return getInstance().destroyEntityOnlyImpl(entity); }
-    void ComponentManager::destroyEntityOnlyImpl(EntityId entity)
+    void ComponentManager::deleteEntityOnly(EntityId entity) { return getInstance().deleteEntityOnlyImpl(entity); }
+    void ComponentManager::deleteEntityOnlyImpl(EntityId entity)
     {
-        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
-    
         // Get entity
-        Entity* e = epool->getBlock(entity);
+        BitmapAllocator* epool = MemoryManager::getAllocator<BitmapAllocator>(SID("Component_EntityAllocator"));
+        EntityBlock* e = epool->getBlock<EntityBlock>(entity);
+        ASSERT(e != nullptr, "Trying to delete entity [w]$0[] that never was created", entity);
 
-        // Remove entity component pointers
-        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
-            e->components[i] = nullptr;
+        // Unselect
+        if(_selectedEntity == entity)
+            _selectedEntity = -1;
 
-        // Remove entity from dense list
-        for(unsigned i = 0; i < _denseListSize; i++)
-            if(_denseList[i] == entity)
-            {
-                // Swap this entity with last entity and reduce list size
-                _denseList[i] = _denseList[_denseListSize-1];
-                _denseListSize--;
-                break;
-            }
+        // Free entity
+        epool->free<EntityBlock>(e);
+        _entities.erase(entity);
+        _noPrototypeView.erase(entity);
+        _cloneView.erase(entity);
+        _scriptView.erase(entity);
     }
 
     void ComponentManager::clearImpl()
     {
         // Clear entities
-        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
+        BitmapAllocator* epool = MemoryManager::getAllocator<BitmapAllocator>(SID("Component_EntityAllocator"));
         epool->clear();
 
         // Clear entity view
         _noPrototypeView.clear();
         _cloneView.clear();
         _scriptView.clear();
-        _denseListSize = 0;
 
         // Clear components
         for(auto reg : _componentRegistries)
@@ -188,6 +214,9 @@ namespace atta
 
     void ComponentManager::registerComponentImpl(ComponentRegistry* componentRegistry)
     {
+        ASSERT(_componentRegistries.size() < maxRegisteredComponents, "More components than it is possible to store inside the entityBlock, maximum is $0", maxRegisteredComponents);
+
+        componentRegistry->setIndex(_componentRegistries.size());
         _componentRegistries.push_back(componentRegistry);
     }
 
@@ -205,17 +234,18 @@ namespace atta
         std::string typeidTName = componentRegistry->getTypeidName();
         unsigned maxCount = desc.maxInstances;
 
-        // TODO better pool allocator allocation from another one (now need to know that implementation to implement it correctly)
+        // TODO better bitmap allocator allocation from another allocator (now need to know that implementation to implement it correctly)
         // Should not need to calculate this size
-        size_t size = std::max((unsigned)sizeof(void*), sizeofT);
+        size_t size = ceil(maxCount/8.0f) + sizeofT*maxCount;
 
-        uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(maxCount*size, size));
+        uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(size, sizeofT));
         DASSERT(componentMemory != nullptr, "Could not allocate component system memory for " + name);
         //LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB ($5 instances) -> memory space:($3 $4)", 
         //        name, typeidTName, maxCount*sizeofT/(1024*1024.0f), (void*)(componentMemory), (void*)(componentMemory+maxCount*sizeofT), maxCount);
 
         // Create pool allocator
-        MemoryManager::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName), static_cast<Allocator*>(new PoolAllocator(componentMemory, maxCount, sizeofT)));
+        MemoryManager::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName), 
+                static_cast<Allocator*>(new BitmapAllocator(componentMemory, size, sizeofT)));
     }
 
     void ComponentManager::unregisterCustomComponentsImpl()
@@ -230,131 +260,109 @@ namespace atta
     //----------------------------------------//
     Component* ComponentManager::addEntityComponentByIdImpl(ComponentId id, EntityId entity)
     {
-        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
-        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
+        ASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
 
         // Get entity
-        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
-        Entity* e = epool->getBlock(entity);
+        EntityBlock* e = getEntityBlock(entity);
 
-        int freeComponentSlot = -1;
-        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
-        {
-            if(e->components[i] == nullptr)
+        // Get component registry
+        ComponentRegistry* compReg = nullptr;
+        for(auto cg : _componentRegistries)
+            if(cg->getId() == id)
             {
-                freeComponentSlot = i;
+                compReg = cg; 
                 break;
             }
-        }
+        ASSERT(compReg != nullptr, "Trying to add unknown component with id $0", id);
+        ASSERT(e != nullptr, "Trying to add component [w]$0[] to entity [w]$1[] that was not created", compReg->getDescription().type, entity);
 
-        if(freeComponentSlot == -1)
+        if(e->components[compReg->getIndex()] != nullptr)
         {
-            LOG_WARN("ComponentManager", "Could not add component $0 to entity $1", id, entity);
+            LOG_WARN("ComponentManager", "Could not add component [w]$1[] to entity [w]$0[]. The entity [w]$0[] already has the component [w]$1[]", entity, compReg->getDescription().type);
             return nullptr;
         }
 
         // Alloc component
-        PoolAllocator* cpool = MemoryManager::getAllocator<PoolAllocator>(id);
-        Component* component = reinterpret_cast<Component*>(cpool->alloc());
+        BitmapAllocator* cpool = MemoryManager::getAllocator<BitmapAllocator>(id);
+        Component* component = cpool->alloc<Component>();
 
         if(component)
         {
             // Initialization
-            for(auto compReg : _componentRegistries)
-                if(compReg->getId() == id)
-                {
-                    std::vector<uint8_t> defaultInit = compReg->getDefault();
-                    uint8_t* data = reinterpret_cast<uint8_t*>(component);
-                    for(uint8_t val : defaultInit)
-                    {
-                        *data = val;
-                        data++;
-                    }
-                    memcpy(component, defaultInit.data(), compReg->getSizeof());
+            std::vector<uint8_t> defaultInit = compReg->getDefault();
+            memcpy(component, defaultInit.data(), compReg->getSizeof());
 
-                    // Remove entity from some views if it is a prototype
-                    if(id == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
-                    {
-                        _noPrototypeView.erase(entity);
-                        _scriptView.erase(entity);
-                    }
+            // Remove entity from some views if it is a prototype
+            if(id == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
+            {
+                _noPrototypeView.erase(entity);
+                _scriptView.erase(entity);
+            }
 
-                    // Add entity to script view if it is not prototype and has script component
-                    if(id == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
-                    {
-                        PrototypeComponent* pc = getEntityComponent<PrototypeComponent>(entity);
-                        if(pc == nullptr)
-                            _scriptView.insert(entity);
-                    }
-
-                    break;
-                }
+            // Add entity to script view if it is not prototype and has script component
+            if(id == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
+            {
+                PrototypeComponent* pc = getEntityComponent<PrototypeComponent>(entity);
+                if(pc == nullptr)
+                    _scriptView.insert(entity);
+            }
 
             // Add component to entity
-            e->components[freeComponentSlot] = reinterpret_cast<void*>(component);
+            e->components[compReg->getIndex()] = reinterpret_cast<void*>(component);
 
             return component;
         }
         else
         {
-            LOG_WARN("ComponentManager", "Could not allocate component $0 for entity $1", id, entity);
+            LOG_WARN("ComponentManager", "Could not allocate component $0 for entity $1", compReg->getDescription().type, entity);
             return nullptr;
         }
     }
 
-    Component* ComponentManager::addEntityComponentPtrImpl(EntityId entity, uint8_t* component)
+    Component* ComponentManager::addEntityComponentPtrImpl(EntityId entity, unsigned index, uint8_t* component)
     {
         DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
-        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
 
         // Get entity
-        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
-        Entity* e = epool->getBlock(entity);
+        EntityBlock* e = getEntityBlock(entity);
+        ASSERT(e != nullptr, "Trying to add component pointer to entity [w]$0[] that was not created", entity);
 
-        // Find free component slot
-        int freeComponentSlot = -1;
-        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
-        {
-            if(e->components[i] == nullptr)
-            {
-                freeComponentSlot = i;
-                break;
-            }
-        }
+        // Add pointer to entity
+        if(e->components[index] == nullptr)
+            e->components[index] = reinterpret_cast<void*>(component);
+        else
+            LOG_WARN("ComponentManager", "Trying to override entity [w]$0[] component pointer. Returning already allocated one", entity);
 
-        if(freeComponentSlot == -1)
-        {
-            LOG_WARN("ComponentManager", "Could not add component pointer $0 to entity $1", (void*)component, entity);
-            return nullptr;
-        }
-
-        // Add component to entity
-        e->components[freeComponentSlot] = reinterpret_cast<void*>(component);
-
-        return reinterpret_cast<Component*>(component);
+        return reinterpret_cast<Component*>(e->components[index]);
     }
 
     void ComponentManager::removeEntityComponentByIdImpl(ComponentId id, EntityId entity)
     {
         DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
-        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
         // TODO View inconsistencity if more than one script/prototype component was added
 
         // Get entity
-        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
-        Entity* e = epool->getBlock(entity);
+        EntityBlock* e = getEntityBlock(entity);
+        ASSERT(e != nullptr, "Trying to remove component from entity [w]$0[] that was not created", entity);
+
+        // Get component registry
+        ComponentRegistry* compReg = nullptr;
+        for(auto cg : _componentRegistries)
+            if(cg->getId() == id)
+            {
+                compReg = cg; 
+                break;
+            }
+        ASSERT(compReg != nullptr, "Trying to add unknown component with id $0", id);
 
         // Get component pool
-        PoolAllocator* cpool = MemoryManager::getAllocator<PoolAllocator>(id);
+        BitmapAllocator* cpool = MemoryManager::getAllocator<BitmapAllocator>(id);
 
-        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
-            if(cpool->owns(e->components[i]))
-            {
-                // Found component to remove
-                cpool->free(reinterpret_cast<void*>(e->components[i]));
-                e->components[i] = nullptr;
-                return;
-            }
+        // Free component
+        cpool->free(e->components[compReg->getIndex()]);
+        
+        // Clear entity block
+        e->components[compReg->getIndex()] = nullptr;
 
         if(id == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
             _scriptView.erase(entity);
@@ -368,32 +376,34 @@ namespace atta
     Component* ComponentManager::getEntityComponentByIdImpl(ComponentId id, EntityId entity)
     {
         DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
-        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
 
         // Get entity
-        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
-        Entity* e = epool->getBlock(entity);
+        EntityBlock* e = getEntityBlock(entity);
+        ASSERT(e != nullptr, "Trying to get component from entity [w]$0[], but this entity was not created", entity);
 
-        // Get component pool
-        Allocator* alloc = MemoryManager::getAllocator(id);
+        // Get component registry
+        ComponentRegistry* compReg = nullptr;
+        for(auto cg : _componentRegistries)
+            if(cg->getId() == id)
+            {
+                compReg = cg; 
+                break;
+            }
+        ASSERT(compReg != nullptr, "Trying to add unknown component with id $0", id);
 
-        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
-            if(alloc->owns(e->components[i]))
-                return reinterpret_cast<Component*>(e->components[i]);
-        return nullptr;
+        // Return component
+        return reinterpret_cast<Component*>(e->components[compReg->getIndex()]);
     }
 
     std::vector<Component*> ComponentManager::getEntityComponentsImpl(EntityId entity)
     {
         DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
-        // TODO Check if entity was created, if this entity was not created, this will break the pool allocator
 
-        // Get entity
-        PoolAllocatorT<Entity>* epool = MemoryManager::getAllocator<PoolAllocatorT<Entity>>(SID("Component_EntityAllocator"));
-        Entity* e = epool->getBlock(entity);
+        EntityBlock* e = getEntityBlock(entity);
+        ASSERT(e != nullptr, "Trying to remove component from entity [w]$0[] that was not created", entity);
 
         std::vector<Component*> components;
-        for(size_t i = 0; i < sizeof(Entity)/sizeof(void*); i++)
+        for(size_t i = 0; i < sizeof(EntityBlock)/sizeof(void*); i++)
             components.push_back(reinterpret_cast<Component*>(e->components[i]));
 
         return components;
@@ -405,7 +415,7 @@ namespace atta
     std::vector<EntityId> ComponentManager::getEntitiesView() { return getInstance().getEntitiesViewImpl(); }
     std::vector<EntityId> ComponentManager::getEntitiesViewImpl()
     {
-        return std::vector<EntityId>(_denseList, _denseList+_denseListSize);
+        return std::vector<EntityId>(_entities.begin(), _entities.end());
     }
 
     std::vector<EntityId> ComponentManager::getNoPrototypeView() { return getInstance().getNoPrototypeViewImpl(); }
@@ -424,6 +434,15 @@ namespace atta
     std::vector<EntityId> ComponentManager::getScriptViewImpl()
     {
         return std::vector<EntityId>(_scriptView.begin(), _scriptView.end());
+    }
+
+    //----------------------------------------//
+    //----------- Memory Management ----------//
+    //----------------------------------------//
+    ComponentManager::EntityBlock* ComponentManager::getEntityBlock(EntityId eid)
+    {
+        BitmapAllocator* epool = MemoryManager::getAllocator<BitmapAllocator>(SID("Component_EntityAllocator"));
+        return epool->getBlock<EntityBlock>(eid);
     }
 
     //----------------------------------------//

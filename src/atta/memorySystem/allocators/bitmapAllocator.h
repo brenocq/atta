@@ -19,9 +19,9 @@ namespace atta
     {
     public:
         // Allocate heap memory
-        BitmapAllocator(uint64_t size);
+        BitmapAllocator(uint64_t size, uint32_t blockSize = 1);
         // Use already allocated memory
-        BitmapAllocator(uint8_t* memory, uint64_t size);
+        BitmapAllocator(uint8_t* memory, uint64_t size, uint32_t blockSize = 1);
 
         // Simplified alloc/free
         template<typename T>
@@ -33,13 +33,25 @@ namespace atta
         void* allocBytes(size_t size, size_t align) override;
         void freeBytes(void* ptr, size_t size, size_t align) override;
 
+        // Helpers
+        void clear();
+
+        uint64_t getIndex(void* block);
+        void* getBlock(uint64_t index);
+        template<typename T>
+        T* getBlock(uint64_t index);
+        bool getBlockBit(uint64_t index);
+
         size_t getDataSize() const { return _dataSize; }
+        size_t getBlockSize() const { return _blockSize; }
 
     private:
         void init();
+        void setBlockBit(uint64_t index, bool bit);
 
         uint8_t* _dataStart;
         size_t _dataSize;
+        size_t _blockSize;
         size_t _current;// Position to start free space search
     };
 }

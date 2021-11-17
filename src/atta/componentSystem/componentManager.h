@@ -8,6 +8,7 @@
 #define ATTA_COMPONENT_SYSTEM_COMPONENT_MANAGER_H
 #include <atta/memorySystem/allocators/stackAllocator.h>
 #include <atta/memorySystem/allocators/poolAllocatorT.h>
+#include <atta/memorySystem/allocators/bitmapAllocator.h>
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/componentSystem/base.h>
@@ -20,6 +21,9 @@ namespace atta
 #define COMPONENT_POOL_SSID(T) SSID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
 #define COMPONENT_POOL_SID_BY_NAME(typeidTname) SID((std::string("Component_") + typeidTname + "Allocator").c_str())
 #define COMPONENT_POOL_SSID_BY_NAME(typeidTname) SSID((std::string("Component_") + typeidTname + "Allocator").c_str())
+
+    constexpr unsigned maxRegisteredComponents = 32;
+    constexpr unsigned maxEntities = 1024;
 
     class ComponentRegistry;
     class ComponentManager final
@@ -36,14 +40,14 @@ namespace atta
 
         // Create/destroy entity
         static EntityId createEntity();
-        static void destroyEntity(EntityId entity);// Destroy entity and deallocate components
-        static void destroyEntityOnly(EntityId entity);// Destroy entity without deallocating components
+        static void deleteEntity(EntityId entity);// Delete entity and deallocate components
+        static void deleteEntityOnly(EntityId entity);// Delete entity without deallocating components
 
         // Add entity component
         template <typename T>
         static T* addEntityComponent(EntityId entity) { return getInstance().addEntityComponentImpl<T>(entity); }
         static Component* addEntityComponentById(ComponentId id, EntityId entity) { return getInstance().addEntityComponentByIdImpl(id, entity); }
-        static Component* addEntityComponentPtr(EntityId entity, uint8_t* component) { return getInstance().addEntityComponentPtrImpl(entity, component); }
+        static Component* addEntityComponentPtr(EntityId entity, unsigned index, uint8_t* component) { return getInstance().addEntityComponentPtrImpl(entity, index, component); }
         // Get entity component
         template <typename T>
         static T* getEntityComponent(EntityId entity) { return getInstance().getEntityComponentImpl<T>(entity); }
@@ -82,13 +86,13 @@ namespace atta
         static EntityId createClone();
         EntityId createCloneImpl();
         EntityId createEntityImpl();
-        void destroyEntityImpl(EntityId entity);
-        void destroyEntityOnlyImpl(EntityId entity);
+        void deleteEntityImpl(EntityId entity);
+        void deleteEntityOnlyImpl(EntityId entity);
 
         template <typename T>
         T* addEntityComponentImpl(EntityId entity);
         Component* addEntityComponentByIdImpl(ComponentId id, EntityId entity);
-        Component* addEntityComponentPtrImpl(EntityId entity, uint8_t* component);
+        Component* addEntityComponentPtrImpl(EntityId entity, unsigned index, uint8_t* component);
         void removeEntityComponentByIdImpl(ComponentId id, EntityId entity);
         template <typename T>
         T* getEntityComponentImpl(EntityId entity);
@@ -118,10 +122,12 @@ namespace atta
         void onScriptEvent(Event& event);// Used the update the ScriptComponent attribute options
 
         //----- Memory management -----//
-        struct Entity
+        struct EntityBlock
         {
-            void* components[8];
+            void* components[maxRegisteredComponents];
         };
+        EntityBlock* getEntityBlock(EntityId eid);
+
         StackAllocator* _allocator;// Used to allocate more memory to component pools
         StackAllocator::Marker _customComponentsMarker;// Marker to free custom components
         size_t _numAttaComponents;// Used to remove custom components form componentRegistries
@@ -129,10 +135,11 @@ namespace atta
 
         // Dense list of all entities
         size_t _maxEntities;// Maximum number of entities
-        EntityId* _denseList;// Dense list of entities to find active entities inside the entity pool
-        size_t _denseListSize;
+        //EntityId* _denseList;// Dense list of entities to find active entities inside the entity pool
+        //size_t _denseListSize;
 
         // Entity views(TODO create views from template?)
+        std::set<EntityId> _entities;// View of entities
         std::set<EntityId> _noPrototypeView;// View of entities and clone (no prototype entity)
         std::set<EntityId> _cloneView;// View of only clones
         std::set<EntityId> _scriptView;// View of entities that are neither prototype or clone and have script component
