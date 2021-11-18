@@ -88,7 +88,7 @@ namespace atta
     {
         const size_t entityMemorySize = ceil(_maxEntities/8.0f) + sizeof(EntityBlock)*_maxEntities;// Memory for bitmap + pool blocks
 
-        LOG_VERBOSE("ComponentManager", "Allocating memory for entities. $0MB\n - Entity block size: $1.\n - Limits: \n    - $2 entities\n    - $3 components per entity", entityMemorySize/(1024*1024.0f), sizeof(EntityId), _maxEntities, sizeof(EntityBlock)/sizeof(void*));
+        //LOG_VERBOSE("ComponentManager", "Allocating memory for entities. $0MB\n - Entity block size: $1.\n - Limits: \n    - $2 entities\n    - $3 components per entity", entityMemorySize/(1024*1024.0f), sizeof(EntityId), _maxEntities, sizeof(EntityBlock)/sizeof(void*));
 
         // Allocate from component system memory
         uint8_t* entityMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(entityMemorySize, sizeof(EntityBlock)));// TODO Probably not aligned because of the bitmap 
@@ -99,36 +99,52 @@ namespace atta
                 static_cast<Allocator*>(new BitmapAllocator(entityMemory, entityMemorySize, sizeof(EntityBlock))));
     }
 
-    EntityId ComponentManager::createEntity() { return getInstance().createEntityImpl(); }
-    EntityId ComponentManager::createEntityImpl()
+    EntityId ComponentManager::createEntity(EntityId entity) { return getInstance().createEntityImpl(entity); }
+    EntityId ComponentManager::createEntityImpl(EntityId entity, size_t quantity)
     {
         BitmapAllocator* pool = MemoryManager::getAllocator<BitmapAllocator>(SID("Component_EntityAllocator"));
 
+        if(entity != -1 && pool->getBlockBit(entity))
+        {
+            LOG_WARN("ComponentManager", "Trying to create entity [w]$0[] that already exists", entity);
+            return -1;
+        }
+
         // Alloc entity
-        EntityBlock* e = pool->alloc<EntityBlock>();
+        EntityBlock* e = nullptr;
+        if(entity == -1)
+            e = pool->alloc<EntityBlock>(quantity);
+        else
+            e = pool->allocAtIndex<EntityBlock>(entity, quantity);
+        ASSERT(e != nullptr, "Could not create entity, probably atta memory is full");
 
         // Initialize entity component pointers
-        for(size_t i = 0; i < sizeof(EntityBlock)/sizeof(void*); i++)
-            e->components[i] = nullptr;
+        for(EntityBlock* it = e; it < e+quantity; it++)
+            for(size_t i = 0; i < sizeof(EntityBlock)/sizeof(void*); i++)
+                it->components[i] = nullptr;
 
         // Calculate entityId (index inside pool memory)
         EntityId eid = static_cast<EntityId>(pool->getIndex(e));
 
-        _noPrototypeView.insert(eid);
-        _entities.insert(eid);
+        for(EntityId i = eid; i < eid+quantity; i++)
+        {
+            _noPrototypeView.insert(i);
+            _entities.insert(i);
+        }
 
         return eid;
     }
 
-    EntityId ComponentManager::createClone() { return getInstance().createCloneImpl(); }
-    EntityId ComponentManager::createCloneImpl()
+    EntityId ComponentManager::createClones(size_t quantity) { return getInstance().createClonesImpl(quantity); }
+    EntityId ComponentManager::createClonesImpl(size_t quantity)
     {
-        EntityId eid = createEntityImpl();
-        _cloneView.insert(eid);
+        EntityId eid = createEntityImpl(-1, quantity);
+        for(EntityId i = eid; i < eid+EntityId(quantity); i++)
+            _cloneView.insert(i);
         return eid;
     }
 
-    void ComponentManager::deleteEntity(EntityId entity) { return getInstance().deleteEntityImpl(entity); }
+    void ComponentManager::deleteEntity(EntityId entity) { getInstance().deleteEntityImpl(entity); }
     void ComponentManager::deleteEntityImpl(EntityId entity)
     {
         // Get entity
@@ -170,7 +186,7 @@ namespace atta
         _cloneView.erase(entity);
         _scriptView.erase(entity);
     }
-    
+
     void ComponentManager::deleteEntityOnly(EntityId entity) { return getInstance().deleteEntityOnlyImpl(entity); }
     void ComponentManager::deleteEntityOnlyImpl(EntityId entity)
     {
@@ -191,6 +207,40 @@ namespace atta
         _scriptView.erase(entity);
     }
 
+    EntityId ComponentManager::copyEntity(EntityId entity) { return getInstance().copyEntityImpl(entity); }
+    EntityId ComponentManager::copyEntityImpl(EntityId entity)
+    {
+        // Get entity
+        EntityBlock* e = getEntityBlock(entity);
+        ASSERT(e != nullptr, "Trying to copy entity [w]$0[] that does not exists", entity);
+
+        EntityId newEntity = createEntity();
+
+        // Delete allocated components
+        for(auto compReg : _componentRegistries) 
+        {
+            // If base entity has this component
+            Component* baseComponent = getEntityComponentById(compReg->getId(), entity);
+            if(baseComponent)
+            {
+                Component* component = addEntityComponentById(compReg->getId(), newEntity);
+
+                // TODO implement component copy operator
+                if(compReg->getId() != TypedComponentRegistry<RelationshipComponent>::getInstance().getId())
+                    memcpy(component, baseComponent, compReg->getSizeof());
+                else
+                {
+                    RelationshipComponent* baseR = static_cast<RelationshipComponent*>(baseComponent);
+                    RelationshipComponent* copyR = static_cast<RelationshipComponent*>(component);
+                    if(baseR->getParent() != -1)
+                        copyR->setParent(baseR->getParent(), newEntity);
+                }
+            }
+        }
+
+        return newEntity;
+    }
+
     void ComponentManager::clearImpl()
     {
         // Clear entities
@@ -207,9 +257,9 @@ namespace atta
             getComponentAllocator(reg)->clear();
     }
 
-    PoolAllocator* ComponentManager::getComponentAllocator(ComponentRegistry* compReg)
+    BitmapAllocator* ComponentManager::getComponentAllocator(ComponentRegistry* compReg)
     {
-        return MemoryManager::getAllocator<PoolAllocator>(COMPONENT_POOL_SID_BY_NAME(compReg->getTypeidName()));
+        return MemoryManager::getAllocator<BitmapAllocator>(COMPONENT_POOL_SID_BY_NAME(compReg->getTypeidName()));
     }
 
     void ComponentManager::registerComponentImpl(ComponentRegistry* componentRegistry)
@@ -333,6 +383,21 @@ namespace atta
         else
             LOG_WARN("ComponentManager", "Trying to override entity [w]$0[] component pointer. Returning already allocated one", entity);
 
+        // Remove entity from some views if it is a prototype
+        if(_componentRegistries[index]->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
+        {
+            _noPrototypeView.erase(entity);
+            _scriptView.erase(entity);
+        }
+
+        // Add entity to script view if it is not prototype and has script component
+        if(_componentRegistries[index]->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
+        {
+            PrototypeComponent* pc = getEntityComponent<PrototypeComponent>(entity);
+            if(pc == nullptr)
+                _scriptView.insert(entity);
+        }
+
         return reinterpret_cast<Component*>(e->components[index]);
     }
 
@@ -428,6 +493,16 @@ namespace atta
     std::vector<EntityId> ComponentManager::getCloneViewImpl()
     {
         return std::vector<EntityId>(_cloneView.begin(), _cloneView.end());
+    }
+
+    std::vector<EntityId> ComponentManager::getNoCloneView() { return getInstance().getNoCloneViewImpl(); }
+    std::vector<EntityId> ComponentManager::getNoCloneViewImpl()
+    {
+        std::vector<EntityId> noClones;
+        for(auto entity : getEntitiesView())
+            if(_cloneView.find(entity) == _cloneView.end())
+                noClones.push_back(entity);
+        return noClones;
     }
 
     std::vector<EntityId> ComponentManager::getScriptView() { return getInstance().getScriptViewImpl(); }

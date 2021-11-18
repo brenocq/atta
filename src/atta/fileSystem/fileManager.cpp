@@ -7,9 +7,10 @@
 #include <atta/fileSystem/fileManager.h>
 #include <atta/fileSystem/watchers/nullFileWatcher.h>
 #include <atta/fileSystem/watchers/linuxFileWatcher.h>
-#include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/projectOpenEvent.h>
 #include <atta/eventSystem/events/projectCloseEvent.h>
+#include <atta/eventSystem/events/simulationStartEvent.h>
+#include <atta/eventSystem/events/simulationStopEvent.h>
 #include <atta/componentSystem/componentManager.h>
 #include <atta/cmakeConfig.h>
 
@@ -24,12 +25,16 @@ namespace atta
     {
         _project = nullptr;
         _projectSerializer = nullptr;
+        _simulationRunning = false;
 
 #ifdef ATTA_OS_LINUX
         _fileWatcher = std::static_pointer_cast<FileWatcher>(std::make_shared<LinuxFileWatcher>());
 #else
         _fileWatcher = std::static_pointer_cast<FileWatcher>(std::make_shared<NullFileWatcher>());
 #endif
+
+        EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(FileManager::onSimulationStateChange));
+        EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(FileManager::onSimulationStateChange));
     }
 
     void FileManager::shutDownImpl()
@@ -102,6 +107,12 @@ namespace atta
 
     void FileManager::saveProjectImpl()
     {
+        if(_simulationRunning)
+        {
+            SimulationStopEvent e;
+            EventManager::publish(e);
+        }
+
         if(_projectSerializer)
             _projectSerializer->serialize();
     }
@@ -189,5 +200,20 @@ namespace atta
         }
 #endif
         return files;
+    }
+
+    void FileManager::onSimulationStateChange(Event& event)
+    {
+        switch(event.getType())
+        {
+            case SimulationStartEvent::type:
+                _simulationRunning = true;
+                break;
+            case SimulationStopEvent::type:
+                _simulationRunning = false;
+                break;
+            default:
+                    LOG_WARN("FileManager", "Unknown simulation event");
+        }
     }
 }

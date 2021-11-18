@@ -27,6 +27,8 @@ namespace atta
         template<typename T>
         T* alloc(size_t size = 1);
         template<typename T>
+        T* allocAtIndex(int64_t index = -1, size_t size = 1);
+        template<typename T>
         void free(T* ptr, size_t size = 1);
 
         // Default alloc/free

@@ -15,8 +15,6 @@ Atta is a robot simulator for 2D and 3D applications. For now, the core is still
 
 This project is not yet well documented, I am creating a website in parallel to document the source code and project examples, but it is not yet available.
 
-**Now I am refactoring the entire atta software architecture to be able to perform high-performance simulations and be easier to add new features (decoupling components). Please check the 0.0.1.0 branch if you want to test the previous version**
-
 ## Why Atta?
 "Atta" comes from the scientific name of a type of leaf-cutting ant that can build nests of up to millions of individuals capable of working together to perform complex tasks.
 This project aims to simulate complex systems like this, mainly composed of robots.

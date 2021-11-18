@@ -13,6 +13,15 @@ namespace atta
     }
 
     template<typename T>
+    T* BitmapAllocator::allocAtIndex(int64_t index, size_t size)
+    {
+        if(index == -1 || getBlockBit(index))
+            return nullptr;
+        _current = index;
+        return alloc<T>(size);
+    }
+
+    template<typename T>
     void BitmapAllocator::free(T* ptr, size_t size)
     {
         freeBytes(reinterpret_cast<void*>(ptr), size*_blockSize, _blockSize);

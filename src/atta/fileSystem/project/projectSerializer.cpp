@@ -129,7 +129,7 @@ namespace atta
 
         //---------- Write to temporary buffer ----------//
         // Serialize entity ids
-        std::vector<EntityId> entities = ComponentManager::getEntitiesView();
+        std::vector<EntityId> entities = ComponentManager::getNoCloneView();
         write(oss, "id");// Entity id marker
         write<uint64_t>(oss, entities.size());
         for(EntityId entity : entities)
@@ -210,9 +210,9 @@ namespace atta
                 EntityId id;
                 read(is, id);
 
-                EntityId res = ComponentManager::createEntity();
+                EntityId res = ComponentManager::createEntity(id);
                 if(res != id)
-                    LOG_WARN("ProjectSerializer","Created and serialized entities does not match! $0 and $1", id, res);
+                    LOG_WARN("ProjectSerializer","Could not create entity with id $0", id);
             }
         }
 

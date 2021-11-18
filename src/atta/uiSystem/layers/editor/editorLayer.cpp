@@ -169,7 +169,7 @@ namespace atta::ui
                 //----- ImGuizmo -----//
                 bool imGuizmoUsingMouse = false;
                 EntityId entity = ComponentManager::getSelectedEntity();
-                if(entity >= 0)
+                if(entity >= 0 && ImGui::IsWindowHovered())
                 {
                     TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
 
@@ -201,15 +201,22 @@ namespace atta::ui
                             RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
                             if(r && r->getParent() != -1)
                             {
+                                // Get transform of the first entity that has transform when going up in the hierarchy
                                 TransformComponent* pt = nullptr;
-                                while(pt == nullptr && r != nullptr && r->getParent() != -1)
+                                EntityId parentId = -1;
+                                while(pt == nullptr)
                                 {
-                                    pt = ComponentManager::getEntityComponent<TransformComponent>(r->getParent());
-                                    r = ComponentManager::getEntityComponent<RelationshipComponent>(r->getParent());
+                                    parentId = r->getParent();
+                                    pt = ComponentManager::getEntityComponent<TransformComponent>(parentId);
+                                    r = ComponentManager::getEntityComponent<RelationshipComponent>(parentId);
+                                    if(r->getParent() == -1)
+                                        break;
                                 }
 
-                                if(pt)
-                                    transform = inverse(pt->getWorldTransform(r->getParent())) * transform;
+                                // If found some entity with transform component, convert world transform to local
+                                // newM1 = M2^(-1)*M3^(-1)*M3*M2*M1
+                                // newM1 = (M3*M2)^(-1)*M3*M2*M1
+                                if(pt) transform = inverse(pt->getWorldTransform(parentId)) * transform;
                             }
 
                             // Update entity transform
