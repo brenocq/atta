@@ -9,6 +9,7 @@
 #include <atta/fileSystem/watchers/fileWatcher.h>
 #include <atta/fileSystem/project/project.h>
 #include <atta/fileSystem/project/projectSerializer.h>
+#include <atta/eventSystem/eventManager.h>
 
 namespace atta
 {
@@ -56,12 +57,16 @@ namespace atta
         fs::path solveResourcePathImpl(fs::path relativePath);
         std::vector<fs::path> getResourcePathsImpl() const;
 
+        // Handle events
+        void onSimulationStateChange(Event& event);
+
         // TODO remove
         void updateImpl();
 
         std::shared_ptr<FileWatcher> _fileWatcher;
         std::shared_ptr<Project> _project;
         std::shared_ptr<ProjectSerializer> _projectSerializer;
+        bool _simulationRunning;
     };
 }
 

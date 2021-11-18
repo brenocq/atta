@@ -29,6 +29,7 @@ namespace atta::ui
 
         // TODO Move this to undo/redo code
         std::vector<EntityId> _entitiesToDelete;
+        std::vector<EntityId> _entitiesToCopy;
     };
 }
 

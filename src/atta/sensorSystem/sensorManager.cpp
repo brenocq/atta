@@ -126,7 +126,7 @@ namespace atta
             }
         }
 
-        LOG_DEBUG("SensorManager", "Found $0 camera components. Time: $1", _cameraEntities.size(), _cameraLastTime);
+        //LOG_DEBUG("SensorManager", "Found $0 camera components. Time: $1", _cameraEntities.size(), _cameraLastTime);
     }
 
     void SensorManager::cameraUpdate(float dt)

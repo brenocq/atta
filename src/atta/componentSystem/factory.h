@@ -34,7 +34,7 @@ namespace atta
 
         EntityId _prototypeId;
         uint64_t _maxClones;
-        std::vector<EntityId> _cloneEntityIds;
+        EntityId _firstCloneEid;
 
         // Map the hash of each type to the memory start
         // Using vector assuming just a few of components

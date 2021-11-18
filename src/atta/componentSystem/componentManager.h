@@ -39,9 +39,10 @@ namespace atta
         static void shutDown() { getInstance().shutDownImpl(); }
 
         // Create/destroy entity
-        static EntityId createEntity();
+        static EntityId createEntity(EntityId entity = -1);// Can try to create entity with specific EntityId
         static void deleteEntity(EntityId entity);// Delete entity and deallocate components
         static void deleteEntityOnly(EntityId entity);// Delete entity without deallocating components
+        static EntityId copyEntity(EntityId entity);
 
         // Add entity component
         template <typename T>
@@ -64,6 +65,7 @@ namespace atta
         static std::vector<EntityId> getEntitiesView();
         static std::vector<EntityId> getNoPrototypeView();
         static std::vector<EntityId> getCloneView();
+        static std::vector<EntityId> getNoCloneView();
         static std::vector<EntityId> getScriptView();
         static EntityId getSelectedEntity() { return getInstance()._selectedEntity; }
         static void setSelectedEntity(EntityId eid) { getInstance()._selectedEntity = eid; }
@@ -82,13 +84,13 @@ namespace atta
         void clearImpl();
         void createEntityPool();
 
-        //----- Public Interface -----//
-        static EntityId createClone();
-        EntityId createCloneImpl();
-        EntityId createEntityImpl();
+        //----- Entity -----//
+        EntityId createEntityImpl(EntityId entity = -1, size_t quantity = 1);
         void deleteEntityImpl(EntityId entity);
         void deleteEntityOnlyImpl(EntityId entity);
+        EntityId copyEntityImpl(EntityId entity);
 
+        //----- Component -----//
         template <typename T>
         T* addEntityComponentImpl(EntityId entity);
         Component* addEntityComponentByIdImpl(ComponentId id, EntityId entity);
@@ -99,15 +101,12 @@ namespace atta
         Component* getEntityComponentByIdImpl(ComponentId id, EntityId entity);
         std::vector<Component*> getEntityComponentsImpl(EntityId entity);
 
-        std::vector<Factory>& getFactoriesImpl() { return _factories; }
-        std::vector<ComponentRegistry*> getComponentRegistriesImpl() { return _componentRegistries; }
-        PoolAllocator* getComponentAllocator(ComponentRegistry* compReg);
-
         //----- Views -----//
         // TODO Hardcoded, think some way using templates
         std::vector<EntityId> getEntitiesViewImpl();
         std::vector<EntityId> getNoPrototypeViewImpl();
         std::vector<EntityId> getCloneViewImpl();
+        std::vector<EntityId> getNoCloneViewImpl();
         std::vector<EntityId> getScriptViewImpl();
 
         //----- Component management -----//
@@ -115,6 +114,8 @@ namespace atta
         void unregisterCustomComponentsImpl();// Unregister to free memory that was allocated for all custom components
         void createComponentPoolsFromRegistered();
         void createComponentPool(ComponentRegistry* componentRegistry);
+        std::vector<ComponentRegistry*> getComponentRegistriesImpl() { return _componentRegistries; }
+        BitmapAllocator* getComponentAllocator(ComponentRegistry* compReg);
 
         //----- Event handling -----//
         void onMeshEvent(Event& event);// Used the update the MeshComponent attribute options
@@ -133,12 +134,8 @@ namespace atta
         size_t _numAttaComponents;// Used to remove custom components form componentRegistries
         std::vector<ComponentRegistry*> _componentRegistries;// All registered components
 
-        // Dense list of all entities
-        size_t _maxEntities;// Maximum number of entities
-        //EntityId* _denseList;// Dense list of entities to find active entities inside the entity pool
-        //size_t _denseListSize;
-
         // Entity views(TODO create views from template?)
+        size_t _maxEntities;// Maximum number of entities
         std::set<EntityId> _entities;// View of entities
         std::set<EntityId> _noPrototypeView;// View of entities and clone (no prototype entity)
         std::set<EntityId> _cloneView;// View of only clones
@@ -149,9 +146,11 @@ namespace atta
         void onSimulationStateChange(Event& event);
         void createFactories();
         void destroyFactories();
+        static EntityId createClones(size_t quantity);
+        EntityId createClonesImpl(size_t quantity);
+        std::vector<Factory>& getFactoriesImpl() { return _factories; }
 
         std::vector<Factory> _factories;
-
         friend Factory;
     };
 }

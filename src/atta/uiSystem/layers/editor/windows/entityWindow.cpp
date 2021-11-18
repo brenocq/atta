@@ -56,6 +56,13 @@ namespace atta::ui
         for(auto entity : _entitiesToDelete)
             ComponentManager::deleteEntity(entity);
         _entitiesToDelete.clear();
+
+        for(auto entity : _entitiesToCopy)
+        {
+            EntityId copied = ComponentManager::copyEntity(entity);
+            ComponentManager::setSelectedEntity(copied);
+        }
+        _entitiesToCopy.clear();
     }
 
     void EntityWindow::renderTreeNode(EntityId entity, int& i)
@@ -90,6 +97,9 @@ namespace atta::ui
         {
             if(ImGui::Selectable("Delete"))
                 _entitiesToDelete.push_back(entity);
+
+            if(ImGui::Selectable("Copy"))
+                _entitiesToCopy.push_back(entity);
            ImGui::EndPopup();
         }
 
