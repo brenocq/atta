@@ -180,7 +180,7 @@ namespace atta
         oss.rdbuf()->pubseekpos(0);// Return to first position
         oss.rdbuf()->sgetn(buffer, size);// Copy to buffer
         os.write(reinterpret_cast<const char*>(buffer), size);
-        delete buffer;
+        delete[] buffer;
     }
 
     void ProjectSerializer::deserializeComponentSystem(std::ifstream& is)
@@ -306,7 +306,7 @@ namespace atta
         oss.rdbuf()->pubseekpos(0);// Return to first position
         oss.rdbuf()->sgetn(buffer, size);// Copy to buffer
         os.write(reinterpret_cast<const char*>(buffer), size);
-        delete buffer;
+        delete[] buffer;
     }
 
     void ProjectSerializer::deserializeGraphicsSystem(std::ifstream& is)

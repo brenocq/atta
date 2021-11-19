@@ -131,7 +131,13 @@ namespace atta
         std::vector<ComponentRegistry*> _componentRegistries;// All registered components
 
         // Need to store this because old componentRegistry data is lost when component shared library is reloaded
-        std::vector<std::pair<size_t, ComponentRegistry::Description>> _componentRegistriesBackupInfo;
+        struct ComponentRegistryBackupInfo
+        {
+            size_t typeidHash;
+            ComponentRegistry::Description description;
+            bool poolCreated;
+        };
+        std::vector<ComponentRegistryBackupInfo> _componentRegistriesBackupInfo;
 
         // Entity views(TODO create views from template?)
         size_t _maxEntities;// Maximum number of entities

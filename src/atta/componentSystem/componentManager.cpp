@@ -269,7 +269,7 @@ namespace atta
         // Check if not already registered
         int oldIndex = -1;
         for(unsigned i = 0; i < _componentRegistries.size() && i < _componentRegistriesBackupInfo.size(); i++)
-            if(componentRegistry->getTypeidHash() == _componentRegistriesBackupInfo[i].first)
+            if(componentRegistry->getTypeidHash() == _componentRegistriesBackupInfo[i].typeidHash)
             {
                 oldIndex = i;
                 break;
@@ -277,18 +277,18 @@ namespace atta
 
         if(oldIndex == -1)
         {
-            LOG_DEBUG("ComponentManager", "Registered component [w]$0[]", componentRegistry->getTypeidName());
+            //LOG_DEBUG("ComponentManager", "Registered component [w]$0[]", componentRegistry->getTypeidName());
             componentRegistry->setIndex(_componentRegistries.size());
             _componentRegistries.push_back(componentRegistry);
 
             // Push new to registered backup (will be updated later because the Description data may not be available while the components are being registered)
             // Need to keep track of this because registerComponentImpl can be called multiple times for the same component (one time for each translation unit). We need to be sure that will not push the same componentRegistry twice
-            _componentRegistriesBackupInfo.push_back({componentRegistry->getTypeidHash(), ComponentRegistry::Description{componentRegistry->getTypeidName()}});
+            _componentRegistriesBackupInfo.push_back({componentRegistry->getTypeidHash(), ComponentRegistry::Description{componentRegistry->getTypeidName()}, false});
         }
         else
         {
             // XXX Not removing old components
-            LOG_DEBUG("ComponentManager", "Reloading component [w]$0[]", componentRegistry->getTypeidName());
+            //LOG_DEBUG("ComponentManager", "Reloading component [w]$0[]", componentRegistry->getTypeidName());
             // If the layout changed: (TODO)
             //   1. Save entities with old data
             //   2. Deallocate old memory
@@ -296,7 +296,13 @@ namespace atta
             //   4. Change entity component pointer and copy+format component data
             // If the layout was not changed:
             //   No nothing
-            componentRegistry->setPoolCreated(true);
+            if(_componentRegistries[oldIndex] != componentRegistry)
+            {
+                //LOG_WARN("ComponentManager", "Component registry pointer changed from $0 to $1\n new: $0", _componentRegistries[oldIndex], componentRegistry);
+                _componentRegistries[oldIndex] = componentRegistry;
+            }
+
+            componentRegistry->setPoolCreated(_componentRegistriesBackupInfo[oldIndex].poolCreated);
             componentRegistry->setIndex(oldIndex);
         }
     }
@@ -307,7 +313,8 @@ namespace atta
         {
             if(!reg->getPoolCreated())
             {
-                LOG_DEBUG("ComponentManager", "Create component pool [w]$0[]", reg->getDescription().type);
+                //LOG_DEBUG("ComponentManager", "Create pool [w]$0[] -> $1", reg->getTypeidName(), reg->getPoolCreated());
+                //LOG_DEBUG("ComponentManager", "Create component pool [w]$0[]", reg->getDescription().type);
                 createComponentPool(reg);
                 reg->setPoolCreated(true);
             }
@@ -655,9 +662,9 @@ namespace atta
         // Created pool to new components if necessary
         createComponentPoolsFromRegistered();
 
-        // Update backup info
+        // Update backup info (only now we can guarantee that the description data is available)
         _componentRegistriesBackupInfo.clear();
         for(auto reg : _componentRegistries)
-            _componentRegistriesBackupInfo.push_back({reg->getTypeidHash(), reg->getDescription()});
+            _componentRegistriesBackupInfo.push_back({reg->getTypeidHash(), reg->getDescription(), true});
     }
 }
