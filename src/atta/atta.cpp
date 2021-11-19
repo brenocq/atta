@@ -151,9 +151,8 @@ namespace atta
             if(project)
                 project->onUpdateAfter(dt);
         }
-        else
-            if(project)
-                project->onUIUpdate();
+        if(project)
+            project->onAttaLoop();
 
         FileManager::update();
     }

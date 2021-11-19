@@ -30,8 +30,10 @@ namespace atta
         virtual void onUpdateAfter(float delta) {};
 
         //---------- Editor ----------//
-        virtual void onUIUpdate() {};
         virtual void onUIRender() {};
+
+        //---------- While ----------//
+        virtual void onAttaLoop() {};
     }; 
 }
 
