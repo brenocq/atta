@@ -136,4 +136,14 @@ namespace atta
 
         return memories;
     }
+
+    std::vector<EntityId> Factory::getCloneIds() const
+    {
+        std::vector<EntityId> clones;
+        clones.resize(_maxClones);
+        int i = 0;
+        for(EntityId entity = _firstCloneEid; entity < _firstCloneEid+_maxClones; entity++, i++)
+            clones[i] = entity;
+        return clones;
+    }
 }

@@ -1,0 +1,3 @@
+include("${CMAKE_CURRENT_LIST_DIR}/attaTargets.cmake")
+
+set(atta_INCLUDE_DIRS "@ATTA_INSTALL_INCLUDE@")

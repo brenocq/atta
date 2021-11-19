@@ -13,6 +13,7 @@
 #include <atta/graphicsSystem/windows/glfwWindow.h>
 
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGL.h>
+#include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
 
 #include <atta/graphicsSystem/renderers/fastRenderer.h>
 #include <atta/graphicsSystem/renderers/pbrRenderer.h>

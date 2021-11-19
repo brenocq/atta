@@ -8,8 +8,6 @@
 #define ATTA_CORE_MATH_QUATERNION_H
 
 #include <atta/core/math/vector.h>
-//#include <cmath>
-//#include <cfloat>
 
 namespace atta
 {
@@ -107,9 +105,17 @@ namespace atta
             k += q.k * 0.5f;
         }
 
-        void rotateByVector(const vec3& vector)
+        void rotateAroundAxis(const vec3& axis, float angle)
         {
-            quat q(0, vector.x, vector.y, vector.z);
+            // Axis must be an unit vector
+            // The angle must be in radians
+            // Counter clockwise rotation around the axis
+            float halfAngle = angle/2.0f;
+            float c = cos(halfAngle);
+            float s = sin(halfAngle);
+            quat q(c, s*axis.x, s*axis.y, s*axis.z);
+            q.normalize();
+            normalize();
             (*this) *= q;
         }
 

@@ -7,10 +7,10 @@
 #ifndef ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_SYSTEM_GRAPHICS_MANAGER_H
 #include <atta/graphicsSystem/windows/window.h>
-#include <atta/graphicsSystem/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphicsSystem/layers/layerStack.h>
 #include <atta/graphicsSystem/viewport.h>
 
+#include <atta/graphicsSystem/rendererAPI.h>
 #include <atta/graphicsSystem/image.h>
 #include <atta/graphicsSystem/framebuffer.h>
 #include <atta/graphicsSystem/indexBuffer.h>

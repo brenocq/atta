@@ -10,6 +10,11 @@
 
 namespace atta
 {
+#define COMPONENT_POOL_SID(T) SID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
+#define COMPONENT_POOL_SSID(T) SSID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
+#define COMPONENT_POOL_SID_BY_NAME(typeidTname) SID((std::string("Component_") + typeidTname + "Allocator").c_str())
+#define COMPONENT_POOL_SSID_BY_NAME(typeidTname) SSID((std::string("Component_") + typeidTname + "Allocator").c_str())
+
     using EntityId = int;// Index inside entity pool
     using ComponentId = StringHash;// Component allocator name hash (COMPONENT_POOL_SID(T) result)
 }

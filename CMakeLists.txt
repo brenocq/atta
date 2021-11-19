@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(Atta VERSION 0.0.3.0 LANGUAGES CXX C)
+project(atta VERSION 0.0.3.0 LANGUAGES CXX C)
 
 OPTION(ATTA_BUILD_TESTS
   "Set to ON to build also the test executables"
@@ -186,54 +186,62 @@ if(ATTA_SYSTEM_NAME MATCHES "Web")
 endif()
 
 # Install executables
-install(TARGETS atta
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS atta RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(ATTA_BUILD_TESTS)
-    install(TARGETS atta_test
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(TARGETS atta_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
 # Install includes
+# TODO hardcoded for now
 install(DIRECTORY src/atta/ DESTINATION include/atta
     FILES_MATCHING REGEX ".*\.(h|inl)$")
-
 install(DIRECTORY src/extern/imgui/ DESTINATION include/atta/extern/imgui
     FILES_MATCHING REGEX ".*\.(h|inl)$")
 install(DIRECTORY src/extern/glad/ DESTINATION include/atta/extern/glad
     FILES_MATCHING REGEX ".*\.(h|inl)$")
 install(DIRECTORY src/extern/stb_image/ DESTINATION include/atta/extern/stb_image
     FILES_MATCHING REGEX ".*\.(h|inl)$")
+install(DIRECTORY src/extern/assimp/ DESTINATION include/atta/extern/assimp
+    FILES_MATCHING REGEX ".*\.(h|inl)$")
+list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/imgui)
+list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/glad/include)
+list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/stb_image)
+list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/assimp/include)
+message(${ATTA_INSTALL_INCLUDE})
 
 # Install resources
 install(DIRECTORY resources/ DESTINATION share/atta
     PATTERN "resources/*")
 
 ########## Cmake Package ##########
-#include(CMakePackageConfigHelpers)
+include(CMakePackageConfigHelpers)
 
-# Create version file for find_package
-#write_basic_package_version_file(
-#	"${CMAKE_CURRENT_BINARY_DIR}/AttaConfigVersion.cmake"
-#	VERSION ${PROJECT_VERSION}
-#	COMPATIBILITY SameMajorVersion
-#)
+# Create version and config files for find_package
+write_basic_package_version_file(
+	"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY SameMajorVersion
+)
+configure_package_config_file(attaConfig.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
+)
+install(
+	FILES 
+        "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
+)
 
-# Install cmake package
-#install(TARGETS ${ATTA_LIBS}
-#	EXPORT atta_targets
-#)
-#install(EXPORT atta_targets
-#	FILE AttaTargets.cmake
-#		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Atta
-#)
-#install(
-#	FILES 
-#		"${CMAKE_CURRENT_SOURCE_DIR}/AttaConfig.cmake"
-#		"${CMAKE_CURRENT_BINARY_DIR}/AttaConfigVersion.cmake"
-#	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Atta
-#)
+# Install cmake targets
+install(TARGETS ${ATTA_LIBS}
+	EXPORT atta_targets
+    INCLUDES DESTINATION src/extern
+)
+install(EXPORT atta_targets
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
+	FILE attaTargets.cmake 
+)
 
 ########## CPack (deb package) ##########
 #install(TARGETS atta_core
