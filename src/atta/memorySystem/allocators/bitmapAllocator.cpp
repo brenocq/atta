@@ -92,7 +92,7 @@ namespace atta
 
         // Try to avoid memory fragmentation
         // The next allocation will start the search from the first free block
-        _current = std::min(_current, index);
+        _current = std::min((uint64_t)_current, index);
 
         // XXX Can be faster if set byte to zero
         unsigned numBlocks = size/_blockSize;

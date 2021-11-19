@@ -266,14 +266,52 @@ namespace atta
     {
         ASSERT(_componentRegistries.size() < maxRegisteredComponents, "More components than it is possible to store inside the entityBlock, maximum is $0", maxRegisteredComponents);
 
-        componentRegistry->setIndex(_componentRegistries.size());
-        _componentRegistries.push_back(componentRegistry);
+        // Check if not already registered
+        int oldIndex = -1;
+        for(unsigned i = 0; i < _componentRegistries.size() && i < _componentRegistriesBackupInfo.size(); i++)
+            if(componentRegistry->getTypeidHash() == _componentRegistriesBackupInfo[i].first)
+            {
+                oldIndex = i;
+                break;
+            }
+
+        if(oldIndex == -1)
+        {
+            LOG_DEBUG("ComponentManager", "Registered component [w]$0[]", componentRegistry->getTypeidName());
+            componentRegistry->setIndex(_componentRegistries.size());
+            _componentRegistries.push_back(componentRegistry);
+
+            // Push new to registered backup (will be updated later because the Description data may not be available while the components are being registered)
+            // Need to keep track of this because registerComponentImpl can be called multiple times for the same component (one time for each translation unit). We need to be sure that will not push the same componentRegistry twice
+            _componentRegistriesBackupInfo.push_back({componentRegistry->getTypeidHash(), ComponentRegistry::Description{componentRegistry->getTypeidName()}});
+        }
+        else
+        {
+            // XXX Not removing old components
+            LOG_DEBUG("ComponentManager", "Reloading component [w]$0[]", componentRegistry->getTypeidName());
+            // If the layout changed: (TODO)
+            //   1. Save entities with old data
+            //   2. Deallocate old memory
+            //   3. Allocate new memory
+            //   4. Change entity component pointer and copy+format component data
+            // If the layout was not changed:
+            //   No nothing
+            componentRegistry->setPoolCreated(true);
+            componentRegistry->setIndex(oldIndex);
+        }
     }
 
     void ComponentManager::createComponentPoolsFromRegistered()
     {
         for(auto reg : _componentRegistries)
-            createComponentPool(reg);
+        {
+            if(!reg->getPoolCreated())
+            {
+                LOG_DEBUG("ComponentManager", "Create component pool [w]$0[]", reg->getDescription().type);
+                createComponentPool(reg);
+                reg->setPoolCreated(true);
+            }
+        }
     }
 
     void ComponentManager::createComponentPool(ComponentRegistry* componentRegistry)
@@ -544,6 +582,14 @@ namespace atta
         _factories.clear();
     }
 
+    Factory* ComponentManager::getPrototypeFactoryImpl(EntityId prototype)
+    {
+        for(Factory& factory : _factories)
+            if(factory.getPrototypeId() == prototype)
+                return &factory;
+        LOG_WARN("ComponentManager", "Trying to get factory from entity [w]$0[] that is not a prototype", prototype);
+        return nullptr;
+    }
 
     //----------------------------------------//
     //--------------- Events -----------------//
@@ -605,5 +651,13 @@ namespace atta
         TypedComponentRegistry<ScriptComponent>::description.attributeDescriptions[0].options.clear();
         for(StringId script : e.scriptSids)
             TypedComponentRegistry<ScriptComponent>::description.attributeDescriptions[0].options.insert(std::any(script));
+
+        // Created pool to new components if necessary
+        createComponentPoolsFromRegistered();
+
+        // Update backup info
+        _componentRegistriesBackupInfo.clear();
+        for(auto reg : _componentRegistries)
+            _componentRegistriesBackupInfo.push_back({reg->getTypeidHash(), reg->getDescription()});
     }
 }

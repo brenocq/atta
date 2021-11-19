@@ -14,18 +14,13 @@
 #include <atta/componentSystem/base.h>
 #include <atta/componentSystem/components/component.h>
 #include <atta/componentSystem/factory.h>
+#include <atta/componentSystem/componentRegistry.h>
 
 namespace atta
 {
-#define COMPONENT_POOL_SID(T) SID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
-#define COMPONENT_POOL_SSID(T) SSID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
-#define COMPONENT_POOL_SID_BY_NAME(typeidTname) SID((std::string("Component_") + typeidTname + "Allocator").c_str())
-#define COMPONENT_POOL_SSID_BY_NAME(typeidTname) SSID((std::string("Component_") + typeidTname + "Allocator").c_str())
-
     constexpr unsigned maxRegisteredComponents = 32;
     constexpr unsigned maxEntities = 1024;
 
-    class ComponentRegistry;
     class ComponentManager final
     {
     public:
@@ -60,6 +55,7 @@ namespace atta
         // Getters
         static std::vector<ComponentRegistry*> getComponentRegistries() { return getInstance().getComponentRegistriesImpl(); }
         static std::vector<Factory>& getFactories() { return getInstance().getFactoriesImpl(); }
+        static Factory* getPrototypeFactory(EntityId prototype) { return getInstance().getPrototypeFactoryImpl(prototype); }
 
         // Views
         static std::vector<EntityId> getEntitiesView();
@@ -134,6 +130,9 @@ namespace atta
         size_t _numAttaComponents;// Used to remove custom components form componentRegistries
         std::vector<ComponentRegistry*> _componentRegistries;// All registered components
 
+        // Need to store this because old componentRegistry data is lost when component shared library is reloaded
+        std::vector<std::pair<size_t, ComponentRegistry::Description>> _componentRegistriesBackupInfo;
+
         // Entity views(TODO create views from template?)
         size_t _maxEntities;// Maximum number of entities
         std::set<EntityId> _entities;// View of entities
@@ -149,6 +148,7 @@ namespace atta
         static EntityId createClones(size_t quantity);
         EntityId createClonesImpl(size_t quantity);
         std::vector<Factory>& getFactoriesImpl() { return _factories; }
+        Factory* getPrototypeFactoryImpl(EntityId prototype);
 
         std::vector<Factory> _factories;
         friend Factory;

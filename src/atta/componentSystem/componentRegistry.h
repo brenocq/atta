@@ -8,7 +8,6 @@
 #define ATTA_COMPONENT_SYSTEM_COMPONENT_REGISTRY_H
 #include <atta/componentSystem/base.h>
 #include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentManager.h>
 #include <atta/core/stringId.h>
 
 namespace atta
@@ -19,12 +18,13 @@ namespace atta
     ::atta::ComponentRegistration<TYPE>::reg = \
         ::atta::TypedComponentRegistry<TYPE>::getInstance();
 
+    class ComponentManager;
     class ComponentRegistry
     {
     public:
         using Type = StringId;
         ComponentRegistry(unsigned sizeofT, std::string typeidName, size_t typeidHash):
-            _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _index(0)
+            _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _index(0), _poolCreated(false)
         {
         }
 
@@ -132,8 +132,12 @@ namespace atta
         size_t getTypeidHash() const { return _typeidHash; }
         ComponentId getId() const { return COMPONENT_POOL_SSID_BY_NAME(_typeidName); }
         unsigned getIndex() const { return _index; }
+        bool getPoolCreated() const { return _poolCreated; }
+        void setPoolCreated(bool poolCreated) { _poolCreated = poolCreated; }
 
     protected:
+        void registerToComponentManager();
+
         template<ComponentRegistry::AttributeType attributeType>
         void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {}
 
@@ -144,6 +148,7 @@ namespace atta
         // Component index starting from 0
         // This index is useful to access the entity component without iterating over the entity block
         unsigned _index;
+        bool _poolCreated;
 
     private:
         void setIndex(unsigned index) { _index = index; }

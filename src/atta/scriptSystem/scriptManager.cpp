@@ -7,6 +7,7 @@
 #include <atta/scriptSystem/scriptManager.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/fileWatchEvent.h>
+#include <atta/eventSystem/events/projectBeforeDeserializeEvent.h>
 #include <atta/eventSystem/events/projectOpenEvent.h>
 #include <atta/eventSystem/events/projectCloseEvent.h>
 #include <atta/eventSystem/events/scriptTargetEvent.h>
@@ -37,6 +38,7 @@ namespace atta
 #endif
 
         EventManager::subscribe<FileWatchEvent>(BIND_EVENT_FUNC(ScriptManager::onFileChange));
+        EventManager::subscribe<ProjectBeforeDeserializeEvent>(BIND_EVENT_FUNC(ScriptManager::onProjectOpen));
         EventManager::subscribe<ProjectOpenEvent>(BIND_EVENT_FUNC(ScriptManager::onProjectOpen));
         EventManager::subscribe<ProjectCloseEvent>(BIND_EVENT_FUNC(ScriptManager::onProjectClose));
 
@@ -190,7 +192,7 @@ namespace atta
         if(_projectScript.first == target)
         {
             _projectScript.second->onUnload();
-            ComponentManager::unregisterCustomComponents();
+            //ComponentManager::unregisterCustomComponents();
 
             _projectScript.first = StringId();
             delete _projectScript.second;

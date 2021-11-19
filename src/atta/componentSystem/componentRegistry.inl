@@ -35,7 +35,8 @@ namespace atta
         ComponentRegistry(sizeof(T), typeid(T).name(), typeid(T).hash_code())
     {
         //LOG_DEBUG("TypedComponentRegistry", "Created new registry for $0", typeid(T).name());
-        ComponentManager::registerComponent(dynamic_cast<ComponentRegistry*>(this));
+        //ComponentManager::registerComponent();
+        registerToComponentManager();
     }
 
     template<typename T>

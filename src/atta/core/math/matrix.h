@@ -168,7 +168,7 @@ namespace atta
         mat4 res(1);
         float width = ratio*height;
 
-        res.mat[0][0] = 2 / width;
+        res.mat[0][0] = -2 / width;
         res.mat[1][1] = 2 / height;
         res.mat[2][2] = -1 / depth;
 

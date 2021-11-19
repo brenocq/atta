@@ -7,4 +7,7 @@ set(GLAD_SOURCE
 add_library(glad STATIC
 	${GLAD_SOURCE}
 )
-target_include_directories(glad PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(glad PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:extern/glad/include>
+)

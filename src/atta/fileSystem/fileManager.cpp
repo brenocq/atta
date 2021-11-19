@@ -8,6 +8,7 @@
 #include <atta/fileSystem/watchers/nullFileWatcher.h>
 #include <atta/fileSystem/watchers/linuxFileWatcher.h>
 #include <atta/eventSystem/events/projectOpenEvent.h>
+#include <atta/eventSystem/events/projectBeforeDeserializeEvent.h>
 #include <atta/eventSystem/events/projectCloseEvent.h>
 #include <atta/eventSystem/events/simulationStartEvent.h>
 #include <atta/eventSystem/events/simulationStopEvent.h>
@@ -66,6 +67,9 @@ namespace atta
 
         // Clear components and read project file
         ComponentManager::clear();
+
+        ProjectBeforeDeserializeEvent ed;
+        EventManager::publish(ed);
         _projectSerializer->deserialize();
 
         // Watch project directory file changes

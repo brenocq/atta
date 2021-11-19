@@ -6,10 +6,16 @@
 //--------------------------------------------------
 #include <atta/componentSystem/componentRegistry.h>
 #include <atta/core/math/math.h>
+#include <atta/componentSystem/componentManager.h>
 #include <imgui.h>
 
 namespace atta
 {
+    void ComponentRegistry::registerToComponentManager()
+    {
+        ComponentManager::registerComponent(this);
+    }
+
     unsigned ComponentRegistry::getSerializedSize(Component* component)
     {
         std::ostringstream of;
@@ -84,10 +90,11 @@ namespace atta
             if(max-min >= T(10000))
                 sliderFlags = ImGuiSliderFlags_Logarithmic;
 
+            // Format for scalar
+            ImGui::Text(aDesc.name.c_str());
+
             if(qty == 1)
             {
-                // Format for scalar
-                ImGui::Text(aDesc.name.c_str());
                 if(aDesc.step > 0.0f)
                     ImGui::DragScalar(imguiId.c_str(), dataType, data, step, &min, &max, format.c_str());
                 else
@@ -95,25 +102,26 @@ namespace atta
             }
             else if(qty <= 4)
             {
-                // Format for small vector
-                ImGui::Text(aDesc.name.c_str());
-
                 const std::array<const char*, 4> labels = {"X", "Y", "Z", "W"};
 
                 if(aDesc.step > 0.0f)
-                {
                     for(unsigned i = 0; i < qty; i++)
                         ImGui::DragScalar((labels[i]+imguiId).c_str(), dataType, data+i, step, &min, &max, format.c_str());
-                }
                 else
                     for(unsigned i = 0; i < qty; i++)
                         ImGui::SliderScalar((labels[i]+imguiId).c_str(), dataType, data+i, &min, &max, format.c_str(), sliderFlags);
             }
             else
+            {
                 // Format for arbitrarily long vector
-                for(unsigned i = 0; i < qty; i++)
-                    ImGui::SliderScalar(("Coordinate "+std::to_string(i)+imguiId).c_str(), dataType, data+i, &min, &max, format.c_str(), sliderFlags);
-
+                
+                if(aDesc.step > 0.0f)
+                    for(unsigned i = 0; i < qty; i++)
+                        ImGui::DragScalar((std::to_string(i)+imguiId).c_str(), dataType, data+i, step, &min, &max, format.c_str());
+                else
+                    for(unsigned i = 0; i < qty; i++)
+                        ImGui::SliderScalar((std::to_string(i)+imguiId).c_str(), dataType, data+i, &min, &max, format.c_str(), sliderFlags);
+            }
         }
     }
 
