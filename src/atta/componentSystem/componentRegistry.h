@@ -110,6 +110,7 @@ namespace atta
             std::set<std::any, AttributeOptionCompare> options;
         };
         
+        // FIXME Sometimes crashing when trying to delete the description
         struct Description
         {
             std::string type;

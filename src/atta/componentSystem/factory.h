@@ -25,6 +25,7 @@ namespace atta
         void runScripts(float dt);
 
         EntityId getPrototypeId() const { return _prototypeId; }
+        EntityId getFirstCloneId() const { return _firstCloneEid; }
         std::vector<EntityId> getCloneIds() const;
         uint64_t getMaxClones() const { return _maxClones; }
         std::vector<std::pair<ComponentId, uint8_t*>>& getComponentMemories() { return _componentMemories; }

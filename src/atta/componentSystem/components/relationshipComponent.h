@@ -8,7 +8,6 @@
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_RELATIONSHIP_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
 #include <atta/componentSystem/componentRegistry.h>
-#include <atta/componentSystem/base.h>
 #include <atta/fileSystem/serializer/serializer.h>
 
 namespace atta
