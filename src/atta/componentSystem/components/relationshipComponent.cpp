@@ -4,8 +4,8 @@
 // Date: 2021-11-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/relationshipComponent.h>
+#include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/componentManager.h>
 
 namespace atta

@@ -19,7 +19,7 @@ namespace atta
     public:
         T x,y,z;
     private:
-        T pad;// 4 word alignment
+        //T pad;// 4 word alignment
 
     public:
         point3(): x(0), y(0), z(0) {}
@@ -80,7 +80,19 @@ namespace atta
         point2(point3<T> &p): x(p.x), y(p.y) {}
         template <typename U>
             explicit point2(point2<U> &p): x((T)p.x), y((T)p.y) {}
+
+        std::string toString() const
+        {
+            return std::string("pnt2{") + std::to_string(x) + ", " + std::to_string(y) + "}";
+        }
     };
+
+    // <<
+    template <typename T>
+    inline std::ostream& operator<<(std::ostream& os, const point2<T>& p)
+    {
+        return os << p.toString();
+    }
 
     //---------- Inline functions ----------//
     // Distance
@@ -128,7 +140,7 @@ namespace atta
     template <typename T>
     inline point2<T> min(const point2<T> &p1, const point2<T> &p2)
     {
-        return point3<T>(std::min(p1.x, p2.x), std::min(p1.y, p2.y));
+        return point2<T>(std::min(p1.x, p2.x), std::min(p1.y, p2.y));
     }
 
     // Max
@@ -140,7 +152,7 @@ namespace atta
     template <typename T>
     inline point2<T> max(const point2<T> &p1, const point2<T> &p2)
     {
-        return point3<T>(std::max(p1.x, p2.x), std::max(p1.y, p2.y));
+        return point2<T>(std::max(p1.x, p2.x), std::max(p1.y, p2.y));
     }
 
     using pnt3 = point3<float>;

@@ -41,6 +41,18 @@ namespace atta
     {
     public:
         point2<T> pMin, pMax;
+
+        bounds2()
+        {
+            T minNum = std::numeric_limits<T>::lowest();
+            T maxNum = std::numeric_limits<T>::max();
+
+            pMin = point2<T>(minNum, minNum);
+            pMax = point2<T>(maxNum, maxNum);
+        }
+
+        bounds2(const point2<T> &p): pMin(p), pMax(p) {}
+        bounds2(const point2<T> &p1, const point2<T> &p2): pMin(min(p1, p2)), pMax(max(p1, p2)) {}
     };
 
     //---------- Inline functions ----------//
