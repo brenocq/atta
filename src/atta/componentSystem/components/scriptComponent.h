@@ -17,24 +17,7 @@ namespace atta
         StringId sid;
     };
     ATTA_REGISTER_COMPONENT(ScriptComponent)
-
-    template<>
-    inline ComponentRegistry::Description TypedComponentRegistry<ScriptComponent>::description = 
-    {
-        "Script",
-        {
-            { 
-                ComponentRegistry::AttributeType::STRINGID, 
-                offsetof(ScriptComponent, sid), 
-                "sid", 
-                {},
-                {},
-                {},
-                {}
-            },
-        }
-    };
+    template<> ComponentRegistry::Description& TypedComponentRegistry<ScriptComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H
-

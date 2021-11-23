@@ -17,15 +17,7 @@ namespace atta
         vec3f intensity = vec3(1.0f, 1.0f, 1.0f);
     };
     ATTA_REGISTER_COMPONENT(PointLightComponent)
-
-    template<>
-    inline ComponentRegistry::Description TypedComponentRegistry<PointLightComponent>::description = 
-    {
-        "Point Light",
-        {
-            { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(PointLightComponent, intensity), "intensity", 0.0f, 10.0f }
-        }
-    };
+    template<> ComponentRegistry::Description& TypedComponentRegistry<PointLightComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_POINT_LIGHT_COMPONENT_H

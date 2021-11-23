@@ -26,23 +26,7 @@ namespace atta
         StringId normalTexture = StringId("Empty texture");
     };
     ATTA_REGISTER_COMPONENT(MaterialComponent)
-
-    template<>
-    inline ComponentRegistry::Description TypedComponentRegistry<MaterialComponent>::description = 
-    {
-        "Material",
-        {
-            { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(MaterialComponent, albedo), "albedo", 0.0f, 1.0f },
-            { ComponentRegistry::AttributeType::FLOAT32, offsetof(MaterialComponent, metallic), "metallic", 0.0f, 1.0f },
-            { ComponentRegistry::AttributeType::FLOAT32, offsetof(MaterialComponent, roughness), "roughness", 0.0f, 1.0f },
-            { ComponentRegistry::AttributeType::FLOAT32, offsetof(MaterialComponent, ao), "ao", 0.0f, 1.0f },
-            { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, albedoTexture), "albedoTexture" },
-            { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, metallicTexture), "metallicTexture" },
-            { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, roughnessTexture), "roughnessTexture" },
-            { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, aoTexture), "aoTexture" },
-            { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, normalTexture), "normalTexture" }
-        }
-    };
+    template<> ComponentRegistry::Description& TypedComponentRegistry<MaterialComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_MATERIAL_COMPONENT_H

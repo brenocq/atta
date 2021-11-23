@@ -17,15 +17,7 @@ namespace atta
         vec3f intensity = vec3f(1.0f, 1.0f, 1.0f);
     };
     ATTA_REGISTER_COMPONENT(DirectionalLightComponent)
-
-    template<>
-    inline ComponentRegistry::Description TypedComponentRegistry<DirectionalLightComponent>::description = 
-    {
-        "Directional Light",
-        {
-            { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(DirectionalLightComponent, intensity), "intensity", 0.0f, 10.0f }
-        }
-    };
+    template<> ComponentRegistry::Description& TypedComponentRegistry<DirectionalLightComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_DIRECTIONAL_LIGHT_COMPONENT_H

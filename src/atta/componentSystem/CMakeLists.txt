@@ -6,8 +6,15 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     componentManager.cpp
     componentRegistry.cpp
 
+    components/cameraComponent.cpp
+    components/directionalLightComponent.cpp
+    components/materialComponent.cpp
     components/meshComponent.cpp
+    components/nameComponent.cpp
+    components/pointLightComponent.cpp
+    components/prototypeComponent.cpp
     components/relationshipComponent.cpp
+    components/scriptComponent.cpp
     components/transformComponent.cpp
 )
 

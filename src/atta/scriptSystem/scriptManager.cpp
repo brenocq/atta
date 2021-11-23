@@ -176,9 +176,6 @@ namespace atta
 
             _projectScript.second->onLoad();
         }
-
-        if(script == nullptr && projectScript == nullptr)
-            LOG_WARN("ScriptManager", "Target $0 does not have any script", target);
     }
 
     void ScriptManager::releaseTarget(StringId target)

@@ -18,15 +18,7 @@ namespace atta
         StringId sid;
     };
     ATTA_REGISTER_COMPONENT(MeshComponent)
-
-    template<>
-    inline ComponentRegistry::Description TypedComponentRegistry<MeshComponent>::description = 
-    {
-        "Mesh",
-        {
-            { ComponentRegistry::AttributeType::STRINGID, offsetof(MeshComponent, sid), "sid", {}, {}, {}, {} },
-        }
-    };
+    template<> ComponentRegistry::Description& TypedComponentRegistry<MeshComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H

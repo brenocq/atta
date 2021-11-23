@@ -113,7 +113,7 @@ namespace atta
         // FIXME Sometimes crashing when trying to delete the description
         struct Description
         {
-            std::string type;
+            std::string name;
             std::vector<AttributeDescription> attributeDescriptions;
             unsigned maxInstances = 1024;// Maximum number of component instances
             std::map<std::string, std::function<void(std::ostream& os, void* data)>> serialize;
@@ -175,9 +175,9 @@ namespace atta
         static void deserialize(std::istream& is, T* component) { getInstance().deserializeImpl(is, component); }
 
         std::vector<uint8_t> getDefault() override;
-        Description& getDescription() override { return description; }
 
-        static ComponentRegistry::Description description;
+        Description& getDescription() override;
+        static Description* description;
     private:
         TypedComponentRegistry<T>();
 
@@ -194,18 +194,26 @@ namespace atta
 
     //---------- Default component register description ----------//
     template<typename T>
-    inline ComponentRegistry::Description TypedComponentRegistry<T>::description = 
+    ComponentRegistry::Description& TypedComponentRegistry<T>::getDescription()
     {
-        typeid(T).name(),
+        static ComponentRegistry::Description desc = 
         {
-            { ComponentRegistry::AttributeType::CUSTOM, 0, "custom" },
-        }
-    };
+            typeid(T).name(),
+            {
+                { ComponentRegistry::AttributeType::CUSTOM, 0, "custom" },
+            }
+        };
+
+        return desc;
+    }
+
+    template<typename T>
+    ComponentRegistry::Description* TypedComponentRegistry<T>::description = nullptr;
 
     //---------- Attribute helpers ----------//
     inline std::ostream& operator<<(std::ostream& os, ComponentRegistry& c)
     {
-        return os << c.getDescription().type;
+        return os << c.getDescription().name;
     }
 }
 

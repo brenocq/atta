@@ -142,7 +142,7 @@ namespace atta
         for(auto compReg : ComponentManager::getComponentRegistries())
         {
             // Write name
-            write(oss, compReg->getDescription().type);
+            write(oss, compReg->getDescription().name);
 
             // Get all entities that have this component
             std::vector<std::pair<EntityId,Component*>> pairs;
@@ -232,7 +232,7 @@ namespace atta
             // Find correct component registry
             for(auto componentRegistry : ComponentManager::getComponentRegistries())
             {
-                if(componentRegistry->getDescription().type == marker)
+                if(componentRegistry->getDescription().name == marker)
                 {
                     compReg = componentRegistry;
                     break;
@@ -258,7 +258,7 @@ namespace atta
             // Check finished at right position
             if(int(is.tellg()) != componentSectionEndPos)
             {
-                LOG_WARN("ProjectSerializer", "Expected position ([w]$0[]) and actual position ([w]$1[])does not match for [*w]component $2 section[]. Some data may have been incorrectly initialized for this component", (int)is.tellg(), componentSectionEndPos, compReg->getDescription().type);
+                LOG_WARN("ProjectSerializer", "Expected position ([w]$0[]) and actual position ([w]$1[])does not match for [*w]component $2 section[]. Some data may have been incorrectly initialized for this component", (int)is.tellg(), componentSectionEndPos, compReg->getDescription().name);
                 is.seekg(componentSectionEndPos, std::ios_base::beg);
             }
         }
