@@ -40,21 +40,6 @@ namespace atta
         RendererType rendererType = RendererType::PHONG;
     };
     ATTA_REGISTER_COMPONENT(CameraComponent);
-
-    template<>
-    inline ComponentRegistry::Description TypedComponentRegistry<CameraComponent>::description = 
-    {
-        "Camera",
-        {
-            { ComponentRegistry::AttributeType::UINT32,  offsetof(CameraComponent, width), "width" },
-            { ComponentRegistry::AttributeType::UINT32,  offsetof(CameraComponent, height), "height" },
-            { ComponentRegistry::AttributeType::FLOAT32, offsetof(CameraComponent, fov), "fov", 0.0f, 120.0f },
-            { ComponentRegistry::AttributeType::FLOAT32, offsetof(CameraComponent, far), "far", 0.0f, 10000.0f,  0.5f  },
-            { ComponentRegistry::AttributeType::FLOAT32, offsetof(CameraComponent, near), "near", 0.0f, 10000.0f,  0.5f },
-            { ComponentRegistry::AttributeType::FLOAT32, offsetof(CameraComponent, fps), "fps", 0.0f, 120.0f },
-            { ComponentRegistry::AttributeType::UINT32,  offsetof(CameraComponent, cameraType), "cameraType", {}, {}, {}, { "Fast", "Phong", "Pbr"} },
-            { ComponentRegistry::AttributeType::UINT32,  offsetof(CameraComponent, rendererType), "rendererType", {}, {}, {}, { "Orthographic", "Perspective" } }
-        }
-    };
+    template<> ComponentRegistry::Description& TypedComponentRegistry<CameraComponent>::getDescription();
 }
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H

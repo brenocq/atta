@@ -10,6 +10,22 @@
 
 namespace atta
 {
+    template<>
+    ComponentRegistry::Description& TypedComponentRegistry<TransformComponent>::getDescription()
+    {
+        static ComponentRegistry::Description desc = 
+            {
+                "Transform",
+                {
+                    { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, position),    "position", -1000.0f, 1000.0f, 0.05f },
+                    { ComponentRegistry::AttributeType::QUAT,           offsetof(TransformComponent, orientation), "orientation", -360.0f, 360.0f, 0.5f },
+                    { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, scale),       "scale", 0.0f, 1000.0f, 0.05f }
+                }
+            };
+
+        return desc;
+    }
+
     mat4 TransformComponent::getWorldTransform(EntityId entity)
     {
         // For know there is no fast way to the transform component to know to which entity it belongs to,

@@ -22,17 +22,7 @@ namespace atta
         mat4 getLocalTransform();
     };
     ATTA_REGISTER_COMPONENT(TransformComponent)
-
-    template<>
-    inline ComponentRegistry::Description TypedComponentRegistry<TransformComponent>::description = 
-    {
-        "Transform",
-        {
-            { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, position),    "position", -1000.0f, 1000.0f, 0.05f },
-            { ComponentRegistry::AttributeType::QUAT,           offsetof(TransformComponent, orientation), "orientation", -360.0f, 360.0f, 0.5f },
-            { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(TransformComponent, scale),       "scale", 0.0f, 1000.0f, 0.05f }
-        }
-    };
+    template<> ComponentRegistry::Description& TypedComponentRegistry<TransformComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_TRANSFORM_COMPONENT_H

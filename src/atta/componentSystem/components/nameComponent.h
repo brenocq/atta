@@ -16,17 +16,8 @@ namespace atta
     {
         char name[32];
     };
-
-    template<>
-    inline ComponentRegistry::Description TypedComponentRegistry<NameComponent>::description = 
-    {
-        "Name",
-        {
-            { ComponentRegistry::AttributeType::CHAR, offsetof(NameComponent, name), "name" }
-        }
-    };
-
     ATTA_REGISTER_COMPONENT(NameComponent)
+    template<> ComponentRegistry::Description& TypedComponentRegistry<NameComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_NAME_COMPONENT_H

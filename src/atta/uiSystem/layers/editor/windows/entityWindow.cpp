@@ -145,7 +145,7 @@ namespace atta::ui
             void* component = ComponentManager::getEntityComponentById(compReg->getId(), selected);
             if(component != nullptr)
             {
-                std::string name = compReg->getDescription().type;
+                std::string name = compReg->getDescription().name;
                 if(compReg->getId() != TypedComponentRegistry<RelationshipComponent>::getInstance().getId())
                 {
                     bool open = true;
@@ -175,8 +175,8 @@ namespace atta::ui
                 {
                     if(compReg->getId() != TypedComponentRegistry<RelationshipComponent>::getInstance().getId())
                     {
-                        std::string type = compReg->getDescription().type;
-                        if(ImGui::Selectable((type+"##ComponentAdd"+type).c_str()))
+                        std::string name = compReg->getDescription().name;
+                        if(ImGui::Selectable((name+"##ComponentAdd"+name).c_str()))
                             ComponentManager::addEntityComponentById(compReg->getId(), selected);
                     }
                 }

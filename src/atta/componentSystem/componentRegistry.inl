@@ -34,8 +34,9 @@ namespace atta
     TypedComponentRegistry<T>::TypedComponentRegistry():
         ComponentRegistry(sizeof(T), typeid(T).name(), typeid(T).hash_code())
     {
-        //LOG_DEBUG("TypedComponentRegistry", "Created new registry for $0", typeid(T).name());
-        //ComponentManager::registerComponent();
+        LOG_DEBUG("TypedComponentRegistry", "Created new registry for [w]$0[]", typeid(T).name());
+        description = &getDescription();
+        LOG_DEBUG("TypedComponentRegistry", "Registered [w]$0[]", description->name);
         registerToComponentManager();
     }
 
@@ -44,9 +45,9 @@ namespace atta
     {
         //DASSERT(this != nullptr, "Trying to call TypedComponentRegistry<$0>::renderUI() on nullptr component", std::string(typeid(T).name()));
 
-        const std::vector<AttributeDescription> attributeDescriptions = description.attributeDescriptions;
+        const std::vector<AttributeDescription> attributeDescriptions = description->attributeDescriptions;
 
-        //LOG_DEBUG("TypedComponentRegistry", "[w]Component<$0> $1[] has size $2", typeid(T).name(), description.type, sizeof(T));
+        //LOG_DEBUG("TypedComponentRegistry", "[w]Component<$0> $1[] has size $2", typeid(T).name(), description->name, sizeof(T));
 
         for(unsigned i = 0; i < attributeDescriptions.size(); i++)
         {
@@ -59,7 +60,7 @@ namespace atta
 
             //LOG_DEBUG("TypedComponentRegistry", "  - Attribute [w]$2[] has offset $0 and size $1", aDesc.offset, size, aDesc.name);
 
-            const std::string imguiId = "##"+description.type;
+            const std::string imguiId = "##"+description->name;
             switch(aDesc.type)
             {
                 case AttributeType::CHAR:
@@ -91,16 +92,16 @@ namespace atta
     void TypedComponentRegistry<T>::serializeImpl(std::ostream& os, T* component)
     {
         uint8_t* curr = reinterpret_cast<uint8_t*>(component);
-        for(unsigned i = 0; i < description.attributeDescriptions.size(); i++)
+        for(unsigned i = 0; i < description->attributeDescriptions.size(); i++)
         {
-            auto aDesc = description.attributeDescriptions[i];
-            unsigned size = (i == description.attributeDescriptions.size()-1)
+            auto aDesc = description->attributeDescriptions[i];
+            unsigned size = (i == description->attributeDescriptions.size()-1)
                 ? sizeof(T)-aDesc.offset 
-                : description.attributeDescriptions[i+1].offset - aDesc.offset;
+                : description->attributeDescriptions[i+1].offset - aDesc.offset;
 
             // Custom defined serialization
-            if(description.serialize.find(aDesc.name) != description.serialize.end())
-                description.serialize[aDesc.name](os, (void*)curr);
+            if(description->serialize.find(aDesc.name) != description->serialize.end())
+                description->serialize[aDesc.name](os, (void*)curr);
             // Default serialization
             else
                 switch(aDesc.type)
@@ -124,16 +125,24 @@ namespace atta
     void TypedComponentRegistry<T>::deserializeImpl(std::istream& is, T* component)
     {
         char* curr = reinterpret_cast<char*>(component);
-        for(unsigned i = 0; i < description.attributeDescriptions.size(); i++)
+        for(unsigned i = 0; i < description->attributeDescriptions.size(); i++)
         {
-            auto aDesc = description.attributeDescriptions[i];
-            unsigned size = (i == description.attributeDescriptions.size()-1)
+            auto aDesc = description->attributeDescriptions[i];
+            unsigned size = (i == description->attributeDescriptions.size()-1)
                 ? sizeof(T)-aDesc.offset 
-                : description.attributeDescriptions[i+1].offset - aDesc.offset;
+                : description->attributeDescriptions[i+1].offset - aDesc.offset;
+
+            LOG_DEBUG("TypedComponentRegistry", "Deserializing: $0, attrib: $1", description->name, aDesc.name);
+            //LOG_DEBUG("TypedComponentRegistry", "Deserializing attrib: $0", aDesc.name);
+            //LOG_DEBUG("TypedComponentRegistry", "Deserialize size: $0", description->deserialize.size());
 
             // Custom defined deserialization
-            if(description.deserialize.find(aDesc.name) != description.deserialize.end())
-                description.deserialize[aDesc.name](is, (void*)curr);
+            if(description->deserialize.find(aDesc.name) != description->deserialize.end())
+            {
+                LOG_DEBUG("TypedComponentRegistry", "Found custom deserialize");
+                description->deserialize[aDesc.name](is, (void*)curr);
+                LOG_DEBUG("TypedComponentRegistry", "ok");
+            }
             // Default deserialization
             else
                 switch(aDesc.type)

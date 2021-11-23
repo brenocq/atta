@@ -10,6 +10,45 @@
 
 namespace atta
 {
+    template<>
+    ComponentRegistry::Description& TypedComponentRegistry<RelationshipComponent>::getDescription()
+    {
+        static ComponentRegistry::Description desc = 
+            {
+                "Relationship",
+                {
+                    { ComponentRegistry::AttributeType::UINT32, offsetof(RelationshipComponent, _parent), "parent" },
+                    { ComponentRegistry::AttributeType::CUSTOM, offsetof(RelationshipComponent, _children), "children" }
+                },
+                // Max instances
+                1024,
+                // Serialize
+                {{"children", [](std::ostream& os, void* data)
+                    {
+                        std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
+                        for(EntityId child : *children)
+                            write(os, child);
+                        write(os, EntityId(-1));
+                    }
+                }},
+                // Deserialize
+                {{"children", [](std::istream& is, void* data)
+                    {
+                        std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
+                        EntityId eid;
+                        read(is, eid);
+                        while(eid != -1)
+                        {
+                            children->push_back(eid);
+                            read(is, eid);
+                        }
+                    }
+                }}
+            };
+
+        return desc;
+    }
+
     // Parent operations
     void RelationshipComponent::setParent(EntityId parent, EntityId child)
     {

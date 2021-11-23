@@ -315,7 +315,7 @@ namespace atta
             if(!reg->getPoolCreated())
             {
                 //LOG_DEBUG("ComponentManager", "Create pool [w]$0[] -> $1", reg->getTypeidName(), reg->getPoolCreated());
-                LOG_DEBUG("ComponentManager", "Create component pool [w]$0[]", reg->getDescription().type);
+                LOG_DEBUG("ComponentManager", "Create component pool [w]$0[]", reg->getDescription().name);
                 createComponentPool(reg);
                 reg->setPoolCreated(true);
             }
@@ -325,7 +325,7 @@ namespace atta
     void ComponentManager::createComponentPool(ComponentRegistry* componentRegistry)
     {
         ComponentRegistry::Description desc = componentRegistry->getDescription();
-        std::string name = desc.type;
+        std::string name = desc.name;
         unsigned sizeofT = componentRegistry->getSizeof();
         std::string typeidTName = componentRegistry->getTypeidName();
         unsigned maxCount = desc.maxInstances;
@@ -370,11 +370,11 @@ namespace atta
                 break;
             }
         ASSERT(compReg != nullptr, "Trying to add unknown component with id $0", id);
-        ASSERT(e != nullptr, "Trying to add component [w]$0[] to entity [w]$1[] that was not created", compReg->getDescription().type, entity);
+        ASSERT(e != nullptr, "Trying to add component [w]$0[] to entity [w]$1[] that was not created", compReg->getDescription().name, entity);
 
         if(e->components[compReg->getIndex()] != nullptr)
         {
-            LOG_WARN("ComponentManager", "Could not add component [w]$1[] to entity [w]$0[]. The entity [w]$0[] already has the component [w]$1[]", entity, compReg->getDescription().type);
+            LOG_WARN("ComponentManager", "Could not add component [w]$1[] to entity [w]$0[]. The entity [w]$0[] already has the component [w]$1[]", entity, compReg->getDescription().name);
             return nullptr;
         }
 
@@ -410,7 +410,7 @@ namespace atta
         }
         else
         {
-            LOG_WARN("ComponentManager", "Could not allocate component $0 for entity $1", compReg->getDescription().type, entity);
+            LOG_WARN("ComponentManager", "Could not allocate component $0 for entity $1", compReg->getDescription().name, entity);
             return nullptr;
         }
     }
@@ -490,7 +490,6 @@ namespace atta
 
         // Get entity
         EntityBlock* e = getEntityBlock(entity);
-        ASSERT(e != nullptr, "Trying to get component from entity [w]$0[], but this entity was not created", entity);
 
         // Get component registry
         ComponentRegistry* compReg = nullptr;
@@ -500,6 +499,7 @@ namespace atta
                 compReg = cg; 
                 break;
             }
+        ASSERT(e != nullptr, "Trying to get component [w]$1[] from entity [w]$0[], but this entity was not created", entity, compReg->getDescription().name);
         ASSERT(compReg != nullptr, "Trying to add unknown component with id $0", id);
 
         // Return component
@@ -625,7 +625,7 @@ namespace atta
             case MeshLoadEvent::type:
                 {
                     MeshLoadEvent& e = reinterpret_cast<MeshLoadEvent&>(event);
-                    TypedComponentRegistry<MeshComponent>::description.attributeDescriptions[0].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MeshComponent>::description->attributeDescriptions[0].options.insert(std::any(e.sid));
                     break;
                 }
             default:
@@ -640,11 +640,11 @@ namespace atta
             case TextureLoadEvent::type:
                 {
                     TextureLoadEvent& e = reinterpret_cast<TextureLoadEvent&>(event);
-                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[4].options.insert(std::any(e.sid));
-                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[5].options.insert(std::any(e.sid));
-                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[6].options.insert(std::any(e.sid));
-                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[8].options.insert(std::any(e.sid));
-                    TypedComponentRegistry<MaterialComponent>::description.attributeDescriptions[7].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[4].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[5].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[6].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[8].options.insert(std::any(e.sid));
+                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[7].options.insert(std::any(e.sid));
                     break;
                 }
             default:
@@ -656,9 +656,9 @@ namespace atta
     {
         ScriptTargetEvent& e = reinterpret_cast<ScriptTargetEvent&>(event);
 
-        TypedComponentRegistry<ScriptComponent>::description.attributeDescriptions[0].options.clear();
+        TypedComponentRegistry<ScriptComponent>::description->attributeDescriptions[0].options.clear();
         for(StringId script : e.scriptSids)
-            TypedComponentRegistry<ScriptComponent>::description.attributeDescriptions[0].options.insert(std::any(script));
+            TypedComponentRegistry<ScriptComponent>::description->attributeDescriptions[0].options.insert(std::any(script));
 
         // Created pool to new components if necessary
         createComponentPoolsFromRegistered();
