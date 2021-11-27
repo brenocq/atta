@@ -9,7 +9,11 @@ namespace atta
     template <typename T>
     T* ComponentManager::getEntityComponentImpl(EntityId entity)
     {
-        return reinterpret_cast<T*>(getEntityComponentByIdImpl(COMPONENT_POOL_SSID(T), entity));
+		static int index = -1;
+		if(index == -1)
+			index = TypedComponentRegistry<T>::getInstance().getIndex();
+
+        return reinterpret_cast<T*>(getEntityComponentByIndex(index, entity));
     }
 
     template <typename T>
