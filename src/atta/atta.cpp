@@ -20,6 +20,7 @@
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/graphicsSystem/pipeline.h>
+#include <atta/physicsSystem/physicsManager.h>
 #include <atta/sensorSystem/sensorManager.h>
 #include <atta/uiSystem/uiManager.h>
 
@@ -48,6 +49,7 @@ namespace atta
         GraphicsManager::startUp();
         ui::UIManager::startUp();
         ScriptManager::startUp();
+        PhysicsManager::startUp();
         SensorManager::startUp();
 
         // Atta is the last one to reveice events
@@ -67,6 +69,7 @@ namespace atta
         FileManager::saveProject();
         FileManager::closeProject();
         SensorManager::shutDown();
+        PhysicsManager::shutDown();
         ScriptManager::shutDown();
         ui::UIManager::shutDown();
         GraphicsManager::shutDown();

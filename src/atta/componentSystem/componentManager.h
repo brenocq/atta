@@ -95,6 +95,7 @@ namespace atta
         template <typename T>
         T* getEntityComponentImpl(EntityId entity);
         Component* getEntityComponentByIdImpl(ComponentId id, EntityId entity);
+        Component* getEntityComponentByIndex(unsigned index, EntityId entity);
         std::vector<Component*> getEntityComponentsImpl(EntityId entity);
 
         //----- Views -----//

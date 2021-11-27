@@ -23,6 +23,13 @@ namespace atta::ui
     {
         ImGui::Begin("Scene");
         {
+			if(ImGui::BeginDragDropTarget())
+			{
+				if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("EntityId"))
+					LOG_DEBUG("EntityWindow", "Drop outside");
+				ImGui::EndDragDropTarget();
+			}
+
             renderTree();
             ImGui::Separator();
             renderComponents();
@@ -35,6 +42,7 @@ namespace atta::ui
     {
         std::vector<EntityId> entities = ComponentManager::getEntitiesView();
         int i = 0;
+
         ImGui::Text("Scene");
 
         // Render root entities

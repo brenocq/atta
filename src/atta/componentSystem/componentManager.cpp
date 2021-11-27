@@ -126,7 +126,7 @@ namespace atta
         // Calculate entityId (index inside pool memory)
         EntityId eid = static_cast<EntityId>(pool->getIndex(e));
 
-        for(EntityId i = eid; i < eid+quantity; i++)
+        for(EntityId i = eid; i < EntityId(eid+quantity); i++)
         {
             _noPrototypeView.insert(i);
             _entities.insert(i);
@@ -486,11 +486,6 @@ namespace atta
     //----------------------------------------//
     Component* ComponentManager::getEntityComponentByIdImpl(ComponentId id, EntityId entity)
     {
-        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
-
-        // Get entity
-        EntityBlock* e = getEntityBlock(entity);
-
         // Get component registry
         ComponentRegistry* compReg = nullptr;
         for(auto cg : _componentRegistries)
@@ -499,12 +494,23 @@ namespace atta
                 compReg = cg; 
                 break;
             }
-        ASSERT(e != nullptr, "Trying to get component [w]$1[] from entity [w]$0[], but this entity was not created", entity, compReg->getDescription().name);
         ASSERT(compReg != nullptr, "Trying to add unknown component with id $0", id);
 
-        // Return component
-        return reinterpret_cast<Component*>(e->components[compReg->getIndex()]);
+		return getEntityComponentByIndex(compReg->getIndex(), entity);
     }
+
+    Component* ComponentManager::getEntityComponentByIndex(unsigned index, EntityId entity)
+	{
+        DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+        DASSERT(index < maxRegisteredComponents, "Trying to access component by index outside of range");
+
+        // Get entity
+        EntityBlock* e = getEntityBlock(entity);
+        ASSERT(e != nullptr, "Trying to get component [w]$1[] from entity [w]$0[], but this entity was not created", entity, _componentRegistries[index]->getDescription().name);
+
+        // Return component
+        return reinterpret_cast<Component*>(e->components[index]);
+	}
 
     std::vector<Component*> ComponentManager::getEntityComponentsImpl(EntityId entity)
     {
