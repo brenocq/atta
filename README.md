@@ -21,8 +21,9 @@ This project aims to simulate complex systems like this, mainly composed of robo
 
 ## Architecture
 <p align="center">
- <img src="https://storage.googleapis.com/atta-images/main/arch-2021-09-08.png" height="600">
+ <img src="https://storage.googleapis.com/atta-images/main/github_arch-2021-11-28.png" height="600">
 </p>
+
 
 ## Build & test
 Be sure to clone with the `--recursive` flag. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.\
