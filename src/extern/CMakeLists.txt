@@ -91,3 +91,9 @@ target_include_directories(imguizmo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/imguizmo
 target_link_libraries(imguizmo PRIVATE imgui)
 atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/imguizmo)
 atta_add_libs(imguizmo)
+
+########## box2d ##########
+set(BOX2D_BUILD_UNIT_TESTS OFF CACHE INTERNAL "" FORCE)
+set(BOX2D_BUILD_TESTBED OFF CACHE INTERNAL "" FORCE)
+add_subdirectory(box2d)
+atta_add_libs(box2d)

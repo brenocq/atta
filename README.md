@@ -13,7 +13,115 @@
 
 Atta is a robot simulator for 2D and 3D applications. For now, the core is still under development.
 
-This project is not yet well documented, I am creating a website in parallel to document the source code and project examples, but it is not yet available.
+I am creating a website in parallel to document the source code and project examples, but it is not yet available.
+
+## Features
+- [ ] Doxygen documentation
+- [ ] Build
+  - [x] Linux
+  - [x] Windows
+  - [x] MacOS
+  - [x] Browser
+  - [ ] Android
+- [ ] Component System
+  - [x] Register custom components
+  - [ ] Register custom Views
+  - [x] Single entity operations
+  - [x] Factory and clones
+- [x] Event System
+  - [x] Base events
+  - [x] Publish
+  - [x] Subscribe
+- [ ] File System
+  - [ ] Watchers
+  	- [x] Linux file watcher
+  	- [ ] Windows file watcher
+  	- [ ] MacOS file watcher
+  - [x] Serializers
+  - [x] Project Serializer
+  - [x] Open/Save/Close project
+- [ ] Graphics System
+  - [ ] Renderer APIs
+    - [x] OpenGL
+    - [ ] Vulkan
+  - [ ] Renderers
+    - [x] Fast Renderer
+    - [x] Phong Renderer
+    - [ ] PBR Renderer
+    - [ ] RayTracing Renderer
+  - [ ] Draw command list
+- [ ] IO System
+  - [ ] Camera
+    - [x] Camera Linux
+    - [ ] Camera Windows
+    - [ ] Camera MacOS
+  - [ ] Serial
+    - [x] Serial Linux
+    - [ ] Serial Windows
+    - [ ] Serial MacOS
+  - [ ] Socket
+- [x] Memory System
+  - [x] Allocators
+    - [x] Pool allocator
+    - [x] Bitmap pool allocator
+    - [x] Stack allocator
+    - [x] Malloc allocator
+  - [x] Allocated object
+- [ ] Physics System
+  - [ ] Box2D
+  - [ ] PhysX
+- [x] Resource System
+  - [x] Load models
+  - [x] Load textures
+- [ ] Script System
+  - [ ] Compiler
+  	- [x] Linux Compiler
+  	- [ ] Windows Compiler
+  	- [ ] Linux Compiler
+  - [ ] Linker
+  	- [x] Linux Linker
+  	- [ ] Windows Linker
+  	- [ ] MacOS Linker
+  - [x] Hot reloading
+- [ ] Sensor System
+  - [ ] RGB camera
+  - [ ] RGBD camera
+  - [ ] Lidar
+  - [ ] Ultrasonic
+  - [ ] Infrared
+  - [ ] Touch sensor
+  - [ ] IMU
+  - [ ] Accelerometer
+  - [ ] Gyroscope
+  - [ ] Compass
+- [ ] UI System
+  - [ ] Plot multiple lines
+  - [ ] Plot 2d points
+  - [ ] Plot 3d points
+  - [ ] Command list
+- [ ] Algorithms
+  - [ ] Computer Vision
+  	- [ ] Fast
+  	- [ ] Brief
+  	- [ ] ORB
+  	- [ ] Fundamental matrix
+  	- [ ] Homography matrix
+  	- [x] JPEG
+  - [x] Linear Algebra
+  	- [x] LU
+  	- [x] QR
+  	- [x] SVD
+- [x] Core
+  - [x] Math
+    - [x] Bounds
+    - [x] Ray
+    - [x] Point
+    - [x] Vector
+    - [x] Matrix
+    - [x] Quaternion
+  - [x] Assert
+  - [x] Logging
+  - [x] StringId
 
 ## Why Atta?
 "Atta" comes from the scientific name of a type of leaf-cutting ant that can build nests of up to millions of individuals capable of working together to perform complex tasks.

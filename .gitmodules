@@ -14,3 +14,6 @@
 [submodule "src/imguizmo"]
 	path = src/extern/imguizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "src/extern/box2d"]
+	path = src/extern/box2d
+	url = git@github.com:erincatto/box2d.git
