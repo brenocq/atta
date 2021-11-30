@@ -135,8 +135,7 @@ namespace atta
                 ? sizeof(T)-aDesc.offset 
                 : description->attributeDescriptions[i+1].offset - aDesc.offset;
 
-            LOG_DEBUG("TypedComponentRegistry", "Deserializing: $0, attrib: $1", description->name, aDesc.name);
-            //LOG_DEBUG("TypedComponentRegistry", "Deserializing attrib: $0", aDesc.name);
+            //LOG_DEBUG("TypedComponentRegistry", "Deserializing: $0, attrib: $1", description->name, aDesc.name);
             //LOG_DEBUG("TypedComponentRegistry", "Deserialize size: $0", description->deserialize.size());
 
             // Custom defined deserialization

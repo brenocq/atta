@@ -178,7 +178,6 @@ namespace atta
         {
             for(auto value : aDesc.options)
                 valuesPreview.push_back(std::string(std::any_cast<const char*>(value)));
-            //valuesPreview.push_back(std::any_cast<StringId>(value).getString());
             result = INDEX_AS_RESULT;
         }
         else if(aDesc.options.begin()->type() == typeid(T))

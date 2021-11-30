@@ -18,14 +18,18 @@ namespace atta
 		{
 			DYNAMIC = 0,
 			KINEMATIC,
-			STATIC,
+			STATIC
 		};
 
 		Type type = DYNAMIC;
-		vec2 position = { 0.0f, 0.0f };
-		float angle = 0.0f;
+		// Rigid body state
 		vec2 linearVelocity = { 0.0f, 0.0f };
 		float angularVelocity = 0.0f;
+		// Material properties
+		float density = 1.0f;
+		float friction = 0.5f;
+		float restitution = 0.5f;
+		// Simulation properties
 		float linearDamping = 0.0f;
 		float angularDamping = 0.0f;
 		bool allowSleep = true;

@@ -6,7 +6,9 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     componentManager.cpp
     componentRegistry.cpp
 
+    components/boxCollider2DComponent.cpp
     components/cameraComponent.cpp
+    components/circleCollider2DComponent.cpp
     components/directionalLightComponent.cpp
     components/materialComponent.cpp
     components/meshComponent.cpp
