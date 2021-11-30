@@ -14,6 +14,7 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     components/pointLightComponent.cpp
     components/prototypeComponent.cpp
     components/relationshipComponent.cpp
+	components/rigidBody2DComponent.cpp
     components/scriptComponent.cpp
     components/transformComponent.cpp
 )

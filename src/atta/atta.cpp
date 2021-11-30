@@ -105,11 +105,12 @@ namespace atta
     void Atta::loop()
     {
         if(_shouldFinish) return;
-        float dt = 0.01;// XXX timestamp hardcoded for now
+        float dt = 0.00001;// XXX timestamp hardcoded for now
 
         if(_simulationState == SimulationState::RUNNING)
         {
             // Execute graphics update every X seconds
+			// TODO let the user control how much time is spent rendering
             static clock_t lastTime = std::clock();
             const clock_t currTime = std::clock();
             float timeDiff = float(currTime-lastTime)/CLOCKS_PER_SEC;
@@ -126,6 +127,7 @@ namespace atta
         ProjectScript* project = ScriptManager::getProjectScript();
         if(_simulationState == SimulationState::RUNNING)
         {
+			PhysicsManager::update(dt);
             SensorManager::update(dt);
 
             if(project)

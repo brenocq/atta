@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.12)
 
 set(ATTA_PHYSICS_SYSTEM_SOURCE
     physicsManager.cpp
+	
+	physicsEngines/physicsEngine.cpp
+	physicsEngines/box2DEngine.cpp
 )
 
 add_library(atta_physics_system STATIC
