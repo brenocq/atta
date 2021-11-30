@@ -631,7 +631,17 @@ namespace atta
             case MeshLoadEvent::type:
                 {
                     MeshLoadEvent& e = reinterpret_cast<MeshLoadEvent&>(event);
-                    TypedComponentRegistry<MeshComponent>::description->attributeDescriptions[0].options.insert(std::any(e.sid));
+					bool found = false;
+					for(auto op : TypedComponentRegistry<MeshComponent>::description->attributeDescriptions[0].options)
+						if(std::any_cast<StringId>(op) == e.sid)
+						{
+							found = true;
+							break;
+						}
+
+					if(!found)
+                    	TypedComponentRegistry<MeshComponent>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
+
                     break;
                 }
             default:
@@ -646,11 +656,24 @@ namespace atta
             case TextureLoadEvent::type:
                 {
                     TextureLoadEvent& e = reinterpret_cast<TextureLoadEvent&>(event);
-                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[4].options.insert(std::any(e.sid));
-                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[5].options.insert(std::any(e.sid));
-                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[6].options.insert(std::any(e.sid));
-                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[8].options.insert(std::any(e.sid));
-                    TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[7].options.insert(std::any(e.sid));
+
+					bool found = false;
+					for(auto op : TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[4].options)
+						if(std::any_cast<StringId>(op) == e.sid)
+						{
+							found = true;
+							break;
+						}
+
+					if(!found)
+					{
+						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[4].options.push_back(std::any(e.sid));
+						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[5].options.push_back(std::any(e.sid));
+						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[6].options.push_back(std::any(e.sid));
+						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[8].options.push_back(std::any(e.sid));
+						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[7].options.push_back(std::any(e.sid));
+					}
+
                     break;
                 }
             default:
@@ -664,7 +687,7 @@ namespace atta
 
         TypedComponentRegistry<ScriptComponent>::description->attributeDescriptions[0].options.clear();
         for(StringId script : e.scriptSids)
-            TypedComponentRegistry<ScriptComponent>::description->attributeDescriptions[0].options.insert(std::any(script));
+            TypedComponentRegistry<ScriptComponent>::description->attributeDescriptions[0].options.push_back(std::any(script));
 
         // Created pool to new components if necessary
         createComponentPoolsFromRegistered();

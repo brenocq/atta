@@ -79,26 +79,6 @@ namespace atta
             CUSTOM
         };
 
-        struct AttributeOptionCompare 
-        {
-            inline bool operator()(const std::any& a, const std::any& b) const
-            {
-                if(a.type() != b.type()) return true;
-                if(a.type() == typeid(StringId)) return std::any_cast<StringId>(a).getId() != std::any_cast<StringId>(b).getId();
-                if(a.type() == typeid(uint8_t)) return std::any_cast<uint8_t>(a) != std::any_cast<uint8_t>(b);
-                if(a.type() == typeid(uint16_t)) return std::any_cast<uint16_t>(a) != std::any_cast<uint16_t>(b);
-                if(a.type() == typeid(uint32_t)) return std::any_cast<uint32_t>(a) != std::any_cast<uint32_t>(b);
-                if(a.type() == typeid(uint64_t)) return std::any_cast<uint64_t>(a) != std::any_cast<uint64_t>(b);
-                if(a.type() == typeid(int8_t)) return std::any_cast<int8_t>(a) != std::any_cast<int8_t>(b);
-                if(a.type() == typeid(int16_t)) return std::any_cast<int16_t>(a) != std::any_cast<int16_t>(b);
-                if(a.type() == typeid(int32_t)) return std::any_cast<int32_t>(a) != std::any_cast<int32_t>(b);
-                if(a.type() == typeid(int64_t)) return std::any_cast<int64_t>(a) != std::any_cast<int64_t>(b);
-                if(a.type() == typeid(float)) return std::any_cast<float>(a) != std::any_cast<float>(b);
-                if(a.type() == typeid(double)) return std::any_cast<double>(a) != std::any_cast<double>(b);
-                return true;
-            }
-        };
-
         struct AttributeDescription
         {
             AttributeType type;
@@ -107,7 +87,7 @@ namespace atta
             std::any min;
             std::any max;
             float step;
-            std::set<std::any, AttributeOptionCompare> options;
+            std::vector<std::any> options;
         };
         
         // FIXME Sometimes crashing when trying to delete the description
