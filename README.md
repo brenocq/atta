@@ -68,6 +68,9 @@ I am creating a website in parallel to document the source code and project exam
     - [x] Malloc allocator
   - [x] Allocated object
 - [ ] Physics System
+  - [x] RigidBody2D
+  - [ ] RigidBody3D
+  - [ ] Colliders
   - [ ] Box2D
   - [ ] PhysX
 - [x] Resource System
@@ -84,7 +87,7 @@ I am creating a website in parallel to document the source code and project exam
   	- [ ] MacOS Linker
   - [x] Hot reloading
 - [ ] Sensor System
-  - [ ] RGB camera
+  - [x] RGB camera
   - [ ] RGBD camera
   - [ ] Lidar
   - [ ] Ultrasonic

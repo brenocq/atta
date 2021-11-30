@@ -63,6 +63,9 @@ namespace atta
             const std::string imguiId = "##"+description->name;
             switch(aDesc.type)
             {
+                case AttributeType::BOOL:
+                    ComponentRegistry::renderUIAttribute<AttributeType::BOOL>(aDesc, data, size, imguiId+aDesc.name);
+                    break;
                 case AttributeType::CHAR:
                     ComponentRegistry::renderUIAttribute<AttributeType::CHAR>(aDesc, data, size, imguiId+aDesc.name);
                     break;

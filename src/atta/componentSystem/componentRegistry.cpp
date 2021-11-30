@@ -80,49 +80,66 @@ namespace atta
         ImGuiSliderFlags sliderFlags = ImGuiSliderFlags_None;
 
         unsigned qty = size/sizeof(T);
-        if(aDesc.min.has_value() && aDesc.max.has_value())
-        {
-            T min = std::any_cast<T>(aDesc.min);
-            T max = std::any_cast<T>(aDesc.max);
-            float step = aDesc.step;
+		bool undefinedMinMax = false;
+		T min, max;
 
-            // Logarithmic slider if range is too big
-            if(max-min >= T(10000))
-                sliderFlags = ImGuiSliderFlags_Logarithmic;
+        if(aDesc.min.has_value())
+            min = std::any_cast<T>(aDesc.min);
+		else
+		{
+			undefinedMinMax = true;
+			min = std::numeric_limits<T>::lowest();
+			if constexpr(std::is_same_v<T, float>)
+				min /= 2.0f;
+		}
 
-            // Format for scalar
-            ImGui::Text(aDesc.name.c_str());
+		if(aDesc.max.has_value())
+            max = std::any_cast<T>(aDesc.max);
+		else
+		{
+			undefinedMinMax = true;
+			max = std::numeric_limits<T>::max();
+			if constexpr(std::is_same_v<T, float>)
+				max /= 2.0f;
+		}
 
-            if(qty == 1)
-            {
-                if(aDesc.step > 0.0f)
-                    ImGui::DragScalar(imguiId.c_str(), dataType, data, step, &min, &max, format.c_str());
-                else
-                    ImGui::SliderScalar(imguiId.c_str(), dataType, data, &min, &max, format.c_str(), sliderFlags);
-            }
-            else if(qty <= 4)
-            {
-                const std::array<const char*, 4> labels = {"X", "Y", "Z", "W"};
+		float step = aDesc.step > 0 ? aDesc.step : std::numeric_limits<T>::epsilon();
 
-                if(aDesc.step > 0.0f)
-                    for(unsigned i = 0; i < qty; i++)
-                        ImGui::DragScalar((labels[i]+imguiId).c_str(), dataType, data+i, step, &min, &max, format.c_str());
-                else
-                    for(unsigned i = 0; i < qty; i++)
-                        ImGui::SliderScalar((labels[i]+imguiId).c_str(), dataType, data+i, &min, &max, format.c_str(), sliderFlags);
-            }
-            else
-            {
-                // Format for arbitrarily long vector
-                
-                if(aDesc.step > 0.0f)
-                    for(unsigned i = 0; i < qty; i++)
-                        ImGui::DragScalar((std::to_string(i)+imguiId).c_str(), dataType, data+i, step, &min, &max, format.c_str());
-                else
-                    for(unsigned i = 0; i < qty; i++)
-                        ImGui::SliderScalar((std::to_string(i)+imguiId).c_str(), dataType, data+i, &min, &max, format.c_str(), sliderFlags);
-            }
-        }
+		// Logarithmic slider if range is too big
+		if(max-min >= T(10000) && !undefinedMinMax)
+			sliderFlags = ImGuiSliderFlags_Logarithmic;
+
+		// Format for scalar
+		ImGui::Text(aDesc.name.c_str());
+
+		if(qty == 1)
+		{
+			if(aDesc.step > 0.0f || undefinedMinMax )
+				ImGui::DragScalar(imguiId.c_str(), dataType, data, step, &min, &max, format.c_str());
+			else
+				ImGui::SliderScalar(imguiId.c_str(), dataType, data, &min, &max, format.c_str(), sliderFlags);
+		}
+		else if(qty <= 4)
+		{
+			const std::array<const char*, 4> labels = {"X", "Y", "Z", "W"};
+
+			if(aDesc.step > 0.0f || undefinedMinMax)
+				for(unsigned i = 0; i < qty; i++)
+					ImGui::DragScalar((labels[i]+imguiId).c_str(), dataType, data+i, step, &min, &max, format.c_str());
+			else
+				for(unsigned i = 0; i < qty; i++)
+					ImGui::SliderScalar((labels[i]+imguiId).c_str(), dataType, data+i, &min, &max, format.c_str(), sliderFlags);
+		}
+		else
+		{
+			// Format for arbitrarily long vector
+			if(aDesc.step > 0.0f || undefinedMinMax)
+				for(unsigned i = 0; i < qty; i++)
+					ImGui::DragScalar((std::to_string(i)+imguiId).c_str(), dataType, data+i, step, &min, &max, format.c_str());
+			else
+				for(unsigned i = 0; i < qty; i++)
+					ImGui::SliderScalar((std::to_string(i)+imguiId).c_str(), dataType, data+i, &min, &max, format.c_str(), sliderFlags);
+		}
     }
 
     template<typename T>
@@ -304,6 +321,13 @@ namespace atta
         {
             // TODO text field (do not save StringId!)
         }
+    }
+
+    template<>
+    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::BOOL>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    {
+        bool* data = (bool*)d;
+        ImGui::Checkbox((aDesc.name+"##"+imguiId).c_str(), data);
     }
 
     template<>
