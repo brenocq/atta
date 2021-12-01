@@ -10,8 +10,14 @@
 namespace atta
 {
 	Box2DEngine::Box2DEngine():
-		_world(b2Vec2(0.0f, -10.0f))
+		PhysicsEngine(PhysicsEngine::BOX2D_ENGINE)
 	{
+	}
+
+    void Box2DEngine::start()
+	{
+		_world = std::make_shared<b2World>(b2Vec2(0.0f, -10.0f));
+
 		std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
 		for(EntityId entity : entities)
 		{
@@ -60,7 +66,7 @@ namespace atta
   				bodyDef.awake = rb2d->awake;
   				bodyDef.fixedRotation = rb2d->fixedRotation;
 
-				b2Body* body = _world.CreateBody(&bodyDef);
+				b2Body* body = _world->CreateBody(&bodyDef);
 				_bodies.push_back(std::make_pair(entity, body));
 
 				//----- Attach collider -----//
@@ -91,16 +97,11 @@ namespace atta
 		}
 	}
 
-	Box2DEngine::~Box2DEngine()
-	{
-
-	}
-
     void Box2DEngine::step(float dt)
 	{
 		int velocityIterations = 6;
 		int positionIterations = 2;
-		_world.Step(dt, velocityIterations, positionIterations);
+		_world->Step(dt, velocityIterations, positionIterations);
 		
 		for(auto p : _bodies)
 		{
@@ -119,5 +120,11 @@ namespace atta
 				t->orientation = q;
 			}
 		}
+	}
+
+    void Box2DEngine::stop()
+	{
+		_bodies.clear();
+		_world.reset();
 	}
 }

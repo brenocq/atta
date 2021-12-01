@@ -19,15 +19,19 @@ namespace atta
         static void startUp();
         static void shutDown();
         static void update(float dt);
+		static PhysicsEngine::Type getSelectedEngine() { return getInstance()._engine->getType(); }
+		static void setSelectedEngine(PhysicsEngine::Type type);
 
     private:
         void startUpImpl();
         void shutDownImpl();
         void updateImpl(float dt);
+		void setSelectedEngineImpl(PhysicsEngine::Type type);
 
     	void onSimulationStateChange(Event& event);
 
-		std::shared_ptr<PhysicsEngine> _physicsEngine;
+		std::shared_ptr<PhysicsEngine> _engine;
+		bool _running;
     };
 }
 

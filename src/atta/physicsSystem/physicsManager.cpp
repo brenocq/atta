@@ -9,6 +9,7 @@
 #include <atta/eventSystem/events/simulationStartEvent.h>
 #include <atta/eventSystem/events/simulationStopEvent.h>
 
+#include <atta/physicsSystem/physicsEngines/nullEngine.h>
 #include <atta/physicsSystem/physicsEngines/box2DEngine.h>
 
 namespace atta
@@ -24,6 +25,8 @@ namespace atta
 	{
         EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(PhysicsManager::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(PhysicsManager::onSimulationStateChange));
+		_engine = std::make_shared<NullEngine>();
+		_running = false;
 	}
 
     void PhysicsManager::shutDown() { getInstance().shutDownImpl(); }
@@ -35,8 +38,37 @@ namespace atta
     void PhysicsManager::update(float dt) { getInstance().updateImpl(dt); }
     void PhysicsManager::updateImpl(float dt)
 	{
-		DASSERT(_physicsEngine != nullptr, "Physics engine must not be nullptr while the simulation is running");
-		_physicsEngine->step(dt);
+		DASSERT(_engine != nullptr, "Physics engine must not be nullptr");
+		_engine->step(dt);
+	}
+
+	void PhysicsManager::setSelectedEngine(PhysicsEngine::Type type) { getInstance().setSelectedEngineImpl(type); }
+	void PhysicsManager::setSelectedEngineImpl(PhysicsEngine::Type type)
+	{
+		DASSERT(_engine != nullptr, "Physics engine must not be nullptr");
+		if(type == _engine->getType()) return;
+
+		if(_running)
+			_engine->stop();
+
+		switch(type)
+		{
+			case PhysicsEngine::NULL_ENGINE:
+				_engine = std::make_shared<NullEngine>();
+				break;
+			case PhysicsEngine::BOX2D_ENGINE:
+				_engine = std::make_shared<Box2DEngine>();
+				break;
+			case PhysicsEngine::PHYSX_ENGINE:
+				LOG_WARN("PhysicsManager", "PhysX engine was not implemented yet");
+				_engine = std::make_shared<NullEngine>();
+				break;
+			default:
+				LOG_WARN("PhysicsManager", "Trying to select unknown physics engine");
+		}
+
+		if(_running)
+			_engine->start();
 	}
 
     void PhysicsManager::onSimulationStateChange(Event& event)
@@ -44,23 +76,15 @@ namespace atta
         switch(event.getType())
         {
             case SimulationStartEvent::type:
-                {
-					LOG_DEBUG("PhysicsManager", "Start event");
-
-					_physicsEngine = std::make_shared<Box2DEngine>();
-
-                    break;
-                }
+				_engine->start();
+				_running = true;
+				break;
             case SimulationStopEvent::type:
-                {
-					LOG_DEBUG("PhysicsManager", "Stop event");
-					_physicsEngine.reset();
-                    break;
-                }
+				_engine->stop();
+				_running = false;
+				break;
             default:
-                {
-                    LOG_WARN("PhysicsManager", "Unknown simulation event");
-                }
+                LOG_WARN("PhysicsManager", "Unknown simulation event");
         }
 	}
 }

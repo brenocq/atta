@@ -4,6 +4,7 @@ set(ATTA_PHYSICS_SYSTEM_SOURCE
     physicsManager.cpp
 	
 	physicsEngines/physicsEngine.cpp
+	physicsEngines/nullEngine.cpp
 	physicsEngines/box2DEngine.cpp
 )
 

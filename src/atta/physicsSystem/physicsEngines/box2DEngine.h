@@ -15,12 +15,13 @@ namespace atta
     {
     public:
 		Box2DEngine();
-		~Box2DEngine();
 
+        void start() override;
         void step(float dt) override;
+        void stop() override;
 
 	private:
-		b2World _world;
+		std::shared_ptr<b2World> _world;
 		std::vector<std::pair<EntityId, b2Body*>> _bodies;
     };
 }

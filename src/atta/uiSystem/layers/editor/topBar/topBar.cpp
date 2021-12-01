@@ -17,6 +17,7 @@
 #include <atta/graphicsSystem/cameras/perspectiveCamera.h>
 
 #include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
+#include <atta/uiSystem/layers/editor/systemWindows/physicsSystemWindow.h>
 
 namespace atta::ui
 {
@@ -126,6 +127,8 @@ namespace atta::ui
             {
                 if(ImGui::MenuItem("IO System"))
                     IOSystemWindow::setOpen(true);
+                if(ImGui::MenuItem("Physics System"))
+                    PhysicsSystemWindow::setOpen(true);
                 ImGui::EndMenu();
             }
 

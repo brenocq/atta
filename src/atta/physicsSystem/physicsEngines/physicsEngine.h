@@ -13,8 +13,23 @@ namespace atta
     class PhysicsEngine
     {
     public:
-		virtual ~PhysicsEngine() = default;
+		enum Type
+		{
+			NULL_ENGINE = 0,
+			BOX2D_ENGINE,
+			PHYSX_ENGINE
+		};
+
+		PhysicsEngine(Type type);
+		virtual ~PhysicsEngine() {}
+		virtual void start() = 0;
         virtual void step(float dt) = 0;
+		virtual void stop() = 0;
+
+		Type getType() const { return _type; }
+
+	protected:
+		Type _type;
     };
 }
 
