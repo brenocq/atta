@@ -70,8 +70,8 @@ I am creating a website in parallel to document the source code and project exam
 - [ ] Physics System
   - [x] RigidBody2D
   - [ ] RigidBody3D
-  - [ ] Colliders
-  - [ ] Box2D
+  - [x] Colliders
+  - [x] Box2D
   - [ ] PhysX
 - [x] Resource System
   - [x] Load models
