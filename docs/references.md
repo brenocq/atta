@@ -1,0 +1,10 @@
+# References
+- [Physically Based Rendering](http://www.pbr-book.org/)
+- [Game Physics Engine Development](https://www.amazon.com/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
+- [Real-Time Collision Detection](https://www.amazon.com/Real-Time-Collision-Detection-Interactive-Technology/dp/1558607323)
+- [Computer Graphics Principles and Practice](http://cgpp.net/about.xml)
+- [Programming Massively Parallel Processors](https://www.amazon.com/Programming-Massively-Parallel-Processors-Hands/dp/0128119861)
+- [Numerical Recipes: The Art of Scientific Computing](http://numerical.recipes/com/storefront.html)
+- [Game Programming Patterns](https://gameprogrammingpatterns.com)
+- [Game Engine Architecture](https://www.gameenginebook.com)
+- [C++ Templates: The Complete Guide](http://www.tmplbook.com)

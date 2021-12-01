@@ -4,13 +4,13 @@ project(atta VERSION 0.0.3.0 LANGUAGES CXX C)
 
 OPTION(ATTA_BUILD_TESTS
   "Set to ON to build also the test executables"
-  ON
-)
-
+  ON)
 OPTION(ATTA_WEB_BUILD_MODULE
   "Set to ON to generate only the javascript module"
-  OFF
-)
+  OFF)
+OPTION(ATTA_BUILD_DOCS
+  "Build the documentation"
+  OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -161,6 +161,17 @@ endmacro()
 list(APPEND ATTA_INCLUDE_DIRS ${ATTA_PATH}/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/extern)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta)
+
+
+########## Docs ##########
+if(ATTA_BUILD_DOCS)
+    set(DOXYGEN_SKIP_DOT TRUE)
+    find_package(Doxygen)
+endif()
+
+if(DOXYGEN_FOUND AND ATTA_BUILD_DOCS)
+    add_subdirectory(docs)
+endif()
 
 ########## Testing ##########
 if(ATTA_BUILD_TESTS)
