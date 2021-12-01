@@ -15,131 +15,43 @@ Atta is a robot simulator for 2D and 3D applications. For now, the core is still
 
 I am creating a website in parallel to document the source code and project examples, but it is not yet available.
 
-## Features
-- [ ] Doxygen documentation
-- [ ] Build
-  - [x] Linux
-  - [x] Windows
-  - [x] MacOS
-  - [x] Browser
-  - [ ] Android
-- [ ] Component System
-  - [x] Register custom components
-  - [ ] Register custom Views
-  - [x] Single entity operations
-  - [x] Factory and clones
-- [x] Event System
-  - [x] Base events
-  - [x] Publish
-  - [x] Subscribe
-- [ ] File System
-  - [ ] Watchers
-  	- [x] Linux file watcher
-  	- [ ] Windows file watcher
-  	- [ ] MacOS file watcher
-  - [x] Serializers
-  - [x] Project Serializer
-  - [x] Open/Save/Close project
-- [ ] Graphics System
-  - [ ] Renderer APIs
-    - [x] OpenGL
-    - [ ] Vulkan
-  - [ ] Renderers
-    - [x] Fast Renderer
-    - [x] Phong Renderer
-    - [ ] PBR Renderer
-    - [ ] RayTracing Renderer
-  - [ ] Draw command list
-- [ ] IO System
-  - [ ] Camera
-    - [x] Camera Linux
-    - [ ] Camera Windows
-    - [ ] Camera MacOS
-  - [ ] Serial
-    - [x] Serial Linux
-    - [ ] Serial Windows
-    - [ ] Serial MacOS
-  - [ ] Socket
-- [x] Memory System
-  - [x] Allocators
-    - [x] Pool allocator
-    - [x] Bitmap pool allocator
-    - [x] Stack allocator
-    - [x] Malloc allocator
-  - [x] Allocated object
-- [ ] Physics System
-  - [x] RigidBody2D
-  - [ ] RigidBody3D
-  - [x] Colliders
-  - [x] Box2D
-  - [ ] PhysX
-- [x] Resource System
-  - [x] Load models
-  - [x] Load textures
-- [ ] Script System
-  - [ ] Compiler
-  	- [x] Linux Compiler
-  	- [ ] Windows Compiler
-  	- [ ] Linux Compiler
-  - [ ] Linker
-  	- [x] Linux Linker
-  	- [ ] Windows Linker
-  	- [ ] MacOS Linker
-  - [x] Hot reloading
-- [ ] Sensor System
-  - [x] RGB camera
-  - [ ] RGBD camera
-  - [ ] Lidar
-  - [ ] Ultrasonic
-  - [ ] Infrared
-  - [ ] Touch sensor
-  - [ ] IMU
-  - [ ] Accelerometer
-  - [ ] Gyroscope
-  - [ ] Compass
-- [ ] UI System
-  - [ ] Plot multiple lines
-  - [ ] Plot 2d points
-  - [ ] Plot 3d points
-  - [ ] Command list
-- [ ] Algorithms
-  - [ ] Computer Vision
-  	- [ ] Fast
-  	- [ ] Brief
-  	- [ ] ORB
-  	- [ ] Fundamental matrix
-  	- [ ] Homography matrix
-  	- [x] JPEG
-  - [x] Linear Algebra
-  	- [x] LU
-  	- [x] QR
-  	- [x] SVD
-- [x] Core
-  - [x] Math
-    - [x] Bounds
-    - [x] Ray
-    - [x] Point
-    - [x] Vector
-    - [x] Matrix
-    - [x] Quaternion
-  - [x] Assert
-  - [x] Logging
-  - [x] StringId
+## Progress
+Check the progress of each atta system by **clicking on the buttons below**. Issues with bugs or new ideas are very welcome :)
+
+<p align="center">
+ <a href="https://github.com/brenocq/atta/projects/6" target="_blank"><img src="https://storage.googleapis.com/atta-images/main/physics_system_button_github.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/16" target="_blank"><img src="https://storage.googleapis.com/atta-images/main/graphics_system_button_github.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/9" target="_blank"><img src="https://storage.googleapis.com/atta-images/main/ui_system_button_github.png" height="150"></a>
+</p>
+
+## Architecture
+Atta is composed of decoupled system, the current systems are:
+
+- **Component System**: Manage entities and components
+- **Event System**: Publish and subscribe to atta internal events
+- **File System**: OS agnostic interface to serialize and deserialize data to files
+- **Graphics System**: Online and offline rendering with different levels of realism
+- **IO System**:  OS agnostic interface to peripherals (USB, socket, bluetooth, serial, ...)
+- **Memory System**: Manage atta internal memory to allow fast allocation and deallocation with minimum memory fragmentation
+- **Physics System**: Manage supported physics engines, simulate physics, and solve physics queries (collision, ray casting, ...)
+- **Resources System**: Load, save, and manage memory for resources like meshes, textures, video, ...
+- **Script System**: Compile and link user scripts automatically (hot reloading)
+- **Sensor System**: Update simulated/real sensors at each step
+- **UI System**: User interface graphics layer and UI rendering helpers
+
+Arrows show dependencies between system. Green boxes show which systems/features are implemented.
+<p align="center">
+ <img src="https://storage.googleapis.com/atta-images/main/github_arch-2021-11-28.png" height="600">
+</p>
 
 ## Why Atta?
 "Atta" comes from the scientific name of a type of leaf-cutting ant that can build nests of up to millions of individuals capable of working together to perform complex tasks.
 This project aims to simulate complex systems like this, mainly composed of robots.
 
-## Architecture
-<p align="center">
- <img src="https://storage.googleapis.com/atta-images/main/github_arch-2021-11-28.png" height="600">
-</p>
-
-
 ## Build & test
 Be sure to clone with the `--recursive` flag. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.\
-Atta should build without errors when the compiller supports C++17.\
-If you found any errors when building, do not hesitate to create an issue.
+Atta should build without errors when the compiller supports C++17.
+If you found any errors, please do not hesitate to create an issue.
 
 ```
 $ git clone --recursive git@github.com:brenocq/atta.git
