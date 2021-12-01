@@ -24,6 +24,7 @@
 #include <ImGuizmo.h>
 
 #include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
+#include <atta/uiSystem/layers/editor/systemWindows/physicsSystemWindow.h>
 
 namespace atta::ui
 {
@@ -63,6 +64,7 @@ namespace atta::ui
 
             _entityWindow.render();
             IOSystemWindow::render();
+            PhysicsSystemWindow::render();
 
             ProjectScript* project = ScriptManager::getProjectScript();
             if(project)

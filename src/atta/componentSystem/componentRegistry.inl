@@ -10,6 +10,7 @@ namespace atta
 #define ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE(atribType)\
     template<> void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::atribType> (ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
 
+    ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE(BOOL);
     ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE(CHAR);
     ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE(INT8);
     ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE(INT16);
@@ -61,6 +62,7 @@ namespace atta
             //LOG_DEBUG("TypedComponentRegistry", "  - Attribute [w]$2[] has offset $0 and size $1", aDesc.offset, size, aDesc.name);
 
             const std::string imguiId = "##"+description->name;
+			// XXX Remember to register each attribute with ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE or will get MSVC errors
             switch(aDesc.type)
             {
                 case AttributeType::BOOL:
