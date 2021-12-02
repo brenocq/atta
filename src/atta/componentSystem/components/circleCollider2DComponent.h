@@ -12,6 +12,12 @@
 
 namespace atta
 {
+	/// %Component to create 2D circle collider
+	/** This collider will only work with 2D physics engines.
+	 *
+	 * TransformComponent and RigidBody2DComponent are necessary for the 
+	 * entity to participate in the physics iteration.
+	 */
     struct CircleCollider2DComponent final : public Component
     {
 		float radius = 0.5f;

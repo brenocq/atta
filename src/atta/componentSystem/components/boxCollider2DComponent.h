@@ -12,9 +12,15 @@
 
 namespace atta
 {
+	/// %Component to create 2D box collider
+	/** This collider will only work with 2D physics engines.
+	 *
+	 * TransformComponent and RigidBody2DComponent are necessary for the 
+	 * entity to participate in the physics iteration.
+	 */
     struct BoxCollider2DComponent final : public Component
     {
-		vec2 size = { 1.0f, 1.0f };
+		vec2 size = { 1.0f, 1.0f };//< Box width and height
 		vec2 offset = { 0.0f, 0.0f };
     };
     ATTA_REGISTER_COMPONENT(BoxCollider2DComponent)

@@ -80,48 +80,48 @@ namespace atta
 
                 switch(camera->rendererType)
                 {
-                case CameraComponent::RendererType::FAST:
-                    _cameraRenderers.push_back(std::make_shared<FastRenderer>());
-                break;
-                case CameraComponent::RendererType::PHONG:
-                    _cameraRenderers.push_back(std::make_shared<PhongRenderer>());
-                break;
-                case CameraComponent::RendererType::PBR:
-                    _cameraRenderers.push_back(std::make_shared<PbrRenderer>());
-                break;
-                default:
-                    LOG_WARN("SensorManager", "Invalid camera renderer type $0 for entity $1", (int)camera->rendererType, entity);
+					case CameraComponent::RendererType::FAST:
+						_cameraRenderers.push_back(std::make_shared<FastRenderer>());
+					break;
+					case CameraComponent::RendererType::PHONG:
+						_cameraRenderers.push_back(std::make_shared<PhongRenderer>());
+					break;
+					case CameraComponent::RendererType::PBR:
+						_cameraRenderers.push_back(std::make_shared<PbrRenderer>());
+					break;
+					default:
+						LOG_WARN("SensorManager", "Invalid camera renderer type $0 for entity $1", (int)camera->rendererType, entity);
                 }
                 _cameraRenderers.back()->resize(camera->width, camera->height);
 
                 switch(camera->cameraType)
                 {
-                case CameraComponent::CameraType::ORTHOGRAPHIC:
-                    {
-                        OrthographicCamera::CreateInfo info {};
-                        info.height = camera->fov;// TODO union
-                        info.far = camera->far;
-                        info.ratio = camera->width/(float)camera->height;
+					case CameraComponent::CameraType::ORTHOGRAPHIC:
+						{
+							OrthographicCamera::CreateInfo info {};
+							info.height = camera->fov;// TODO union
+							info.far = camera->far;
+							info.ratio = camera->width/(float)camera->height;
 
-                        _cameraCameras.push_back(
-                                std::static_pointer_cast<Camera>(
-                                    std::make_shared<OrthographicCamera>(info)));
-                        break;
-                    }
-                case CameraComponent::CameraType::PERSPECTIVE:
-                    {
-                        PerspectiveCamera::CreateInfo info {};
-                        info.fov = camera->fov;
-                        info.far = camera->far;
-                        info.near = camera->near;
-                        info.ratio = camera->width/(float)camera->height;
-                        _cameraCameras.push_back(
-                                std::static_pointer_cast<Camera>(
-                                    std::make_shared<PerspectiveCamera>(info)));
-                        break;
-                    }
-                default:
-                    LOG_WARN("SensorManager", "Invalid camera projection type $0 for entity $1", (int)camera->cameraType, entity);
+							_cameraCameras.push_back(
+									std::static_pointer_cast<Camera>(
+										std::make_shared<OrthographicCamera>(info)));
+							break;
+						}
+					case CameraComponent::CameraType::PERSPECTIVE:
+						{
+							PerspectiveCamera::CreateInfo info {};
+							info.fov = camera->fov;
+							info.far = camera->far;
+							info.near = camera->near;
+							info.ratio = camera->width/(float)camera->height;
+							_cameraCameras.push_back(
+									std::static_pointer_cast<Camera>(
+										std::make_shared<PerspectiveCamera>(info)));
+							break;
+						}
+					default:
+						LOG_WARN("SensorManager", "Invalid camera projection type $0 for entity $1", (int)camera->cameraType, entity);
                 }
             }
         }

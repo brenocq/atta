@@ -13,7 +13,17 @@
 
 namespace atta
 {
-    struct CameraComponent : public Component
+	/// %Component to create simulated camera
+	/** A camera is mainly defined by its renderer type and projection 
+	 * matrix (orthographic or perspective). Only objects between the
+	 * far and near plane are rendered. The fps can be
+	 * used to reduce how many times the camera image is rendered.
+	 *
+	 * A TransformComponent is necessary for the camera to be rendered. 
+	 * The camera direction is the same as the entity Z axis, you can 
+	 * change the camera pose by changing the TransformComponent.
+	 */
+    struct CameraComponent final : public Component
     {
         enum class CameraType : uint32_t
         {
@@ -31,10 +41,10 @@ namespace atta
         uint32_t width = 128;
         uint32_t height = 128;
 
-        float fov = 45.0f;
-        float far = 100.0f;
-        float near = 0.001f;
-        float fps = 30;
+        float fov = 45.0f;///< Field of view
+        float far = 100.0f;///< Far plane 
+        float near = 0.001f;///< Near plane
+        float fps = 30;///< Frames per second
 
         CameraType cameraType = CameraType::PERSPECTIVE;
         RendererType rendererType = RendererType::PHONG;

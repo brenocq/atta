@@ -8,8 +8,16 @@ Adapted from: https://github.com/erincatto/box2d/blob/master/docs/extra.css
   --title-text-color: #CCC;
   --body-text-color: #AAA;
   --main-bg-color: #171717;
-  --light-bg-color: #222222;
+  --dark-bg-color: #222222;
+  --light-bg-color: #444444;
   --light-detail-color: #333333;
+  --code-gray-color: #898989;
+  --code-preprocessor-color: #7b9e7b;
+  --code-string-color: #a7a702;
+  --code-char-color: #d787af;
+  --code-keyword-color: #f48202;
+  --code-keyword-type-color: #eba203;
+  --code-keyword-flow-color: #d75f5f;
 }
 
 body {
@@ -34,14 +42,6 @@ div.contents {
 	padding: 0px;
 }
 
-/*
-.image img, object {
-	padding: 10px;
-	margin: 10px 0px;
-	background-color: white;
-	border: 1px solid #000000;
-}
-*/
 
 .caption {
 	padding-top: 10px;
@@ -368,12 +368,12 @@ a.SelectItem:hover {
 #MSearchResultsWindow {
 	border: 1px solid #000000;
 	background: var(--light-detail-color);
-	color: var(--main-color) !important;;
+	color: var(--main-color) !important;
 }
 
 /********** Nav tree **********/
 #nav-tree {
-	background: var(--light-bg-color);
+	background: var(--dark-bg-color);
 }
 
 #nav-tree .selected {
@@ -465,60 +465,6 @@ div.line a {
     color: inherit;
 }
 
-span.keyword {
-	color: #f92472;
-	font-style: italic;
-}
-
-span.keywordtype {
-	color: #67cfc1;
-	font-style: italic;
-}
-
-span.keywordflow {
-	color: #f92472;
-	font-style: italic;
-}
-
-span.comment {
-	color: #74705a;
-}
-
-span.preprocessor {
-	color: #a6e22b;
-}
-
-span.stringliteral {
-	color: #e7db74;
-}
-
-span.charliteral {
-	color: #e7db74;
-}
-
-span.vhdldigit { 
-	color: #ff00ff;
-}
-
-span.vhdlchar { 
-	color: #000000;
-}
-
-span.vhdlkeyword { 
-	color: #700070;
-}
-
-span.vhdllogic { 
-	color: #ff0000;
-}
-
-span.lineno {
-	background: transparent;
-}
-
-span.lineno a {
-	background: transparent;
-}
 
 .mdescLeft, .mdescRight, .memItemLeft, .memItemRight,
 .memTemplItemLeft, .memTemplItemRight, .memTemplParams {
@@ -609,4 +555,78 @@ td.memItemLeft, td.memItemRight {
 h1.glow, h2.glow, h3.glow,
 h4.glow, h5.glow, h6.glow {
 	text-shadow: 0 0 15px var(--main-color);
+}
+
+tr.glow, td.glow {
+	background-color: var(--main-color) !important;
+	box-shadow: 0 0 15px var(--main-color) !important;
+}
+
+/********** Project **********/
+#projectname {
+	font-weight: bold;
+}
+
+/********** Class index **********/
+.classindex.even {
+	background-color: var(--dark-bg-color); 
+}
+
+.classindex.odd {
+	background-color: var(--light-bg-color) !important; 
+}
+
+/********** Class reference **********/
+.dyncontent {
+	background-color: var(--light-bg-color); 
+	padding: 10px;
+	border-radius: 5px;
+}
+
+/********** Labels **********/
+span.mlabel {
+	background-color: var(--main-color); 
+	border: 0px solid;
+}
+
+/********** Code **********/
+span.keyword {
+	color: var(--code-keyword-color);
+	font-style: italic;
+}
+
+span.keywordtype {
+	color: var(--code-keyword-type-color);
+	font-style: italic;
+}
+
+span.keywordflow {
+	color: var(--code-keyword-flow-color);
+	font-style: italic;
+}
+
+span.comment {
+	color: var(--code-gray-color);
+}
+
+span.preprocessor {
+	color: var(--code-preprocessor-color);
+}
+
+span.stringliteral {
+	color: var(--code-string-color);
+}
+
+span.charliteral {
+	color: var(--code-char-color);
+}
+
+span.lineno {
+	background: transparent;
+	border-right: transparent;
+	color: var(--code-gray-color);
+}
+
+span.lineno a {
+	background: transparent;
 }

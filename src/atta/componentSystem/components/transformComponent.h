@@ -12,13 +12,30 @@
 
 namespace atta
 {
+	/// Entity transform
+	/** Define the entity position in the world, its orientation, and
+	 * its scale.
+	 * Only entities with a TransformComponent can be rendered or
+	 * interact physically with other entities.
+	 */
     struct TransformComponent final : public Component
     {
-        vec3f position = vec3();
-        quat orientation = quat();
-        vec3f scale = vec3(1,1,1);
+        vec3f position = vec3();///< Position
+        quat orientation = quat();///< Orientation
+        vec3f scale = vec3(1,1,1);///< Scale
 
+		// Get transform matrix in world coordinate
+		/** If the entity is child of another entity the 
+		 * resulting transform matrix will depend on its
+		 * parent world transform.
+		 *
+		 * The world transform will only differ from the local 
+		 * transform when the entity also has a  RelationshipComponent.
+		 */
         mat4 getWorldTransform(EntityId entity);
+
+		// Get transform matrix in local coordinate
+		/** Transform matrix calculated directly from position/orientation/scale. */
         mat4 getLocalTransform();
     };
     ATTA_REGISTER_COMPONENT(TransformComponent)

@@ -12,9 +12,15 @@
 
 namespace atta
 {
+	/// Script to be executed by the entity
+	/** Each entity can only have one script attached to it.
+	 * scripts are defined in the project folder and the script
+	 * name is the cmake target name.
+	 */
     struct ScriptComponent final : public Component
     {
-        StringId sid;
+		/** The script name is the same as the cmake target name */
+        StringId sid;///< Script name
     };
     ATTA_REGISTER_COMPONENT(ScriptComponent)
     template<> ComponentRegistry::Description& TypedComponentRegistry<ScriptComponent>::getDescription();
