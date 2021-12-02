@@ -11,7 +11,12 @@
  <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-08.gif" height="200">
 </p>
 
-Atta is a robot simulator for 2D and 3D applications. For now, the core is still under development.
+Atta is a robot simulator for 2D and 3D applications mainly focused on multi-robot systems with tons of similar robots. The objectives for this simulator are:
+  - Fast to develop new simulations
+  - Easy to understand
+  - Distribute the processing across CPUs / GPUs / Clusters
+  - Interface between simulated and physical robots
+  - Cross-platform (including web support to easily share the simulations)
 
 I am creating a website in parallel to document the source code and project examples, but it is not yet available.
 
@@ -47,7 +52,7 @@ Atta is composed of decoupled system, the current systems are:
 - **Sensor System**: Update simulated/real sensors at each step
 - **UI System**: User interface graphics layer and UI rendering helpers
 
-Arrows show dependencies between system. Green boxes show which systems/features are implemented.
+Arrows show dependencies between systems. Green boxes show which systems/features are implemented.
 <p align="center">
  <img src="https://storage.googleapis.com/atta-images/main/github_arch-2021-11-28.png" height="600">
 </p>

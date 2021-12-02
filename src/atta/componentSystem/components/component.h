@@ -9,6 +9,7 @@
 
 namespace atta
 {
+	/// Base class for all components
     struct Component
     {
         public:

@@ -12,6 +12,12 @@
 
 namespace atta
 {
+	/// %Component to create point light
+	/** The light position is the entity position, you can change the 
+	 * transform position to change the light position.
+	 *
+	 * A TransformComponent is needed to the light to be rendered.
+	 */
     struct PointLightComponent final : public Component
     {
         vec3f intensity = vec3(1.0f, 1.0f, 1.0f);

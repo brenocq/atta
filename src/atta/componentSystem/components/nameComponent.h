@@ -12,6 +12,7 @@
 
 namespace atta
 {
+	/// %Component to give an entity a name
     struct NameComponent final : public Component
     {
         char name[32];

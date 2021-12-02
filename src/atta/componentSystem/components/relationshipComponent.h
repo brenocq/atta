@@ -12,14 +12,45 @@
 
 namespace atta
 {
+	/// %Component to define relationship between entitities
+	/** Usually relationships are created by making one entity
+	 * child/parent of another entity using the entity tree. 
+	 * Every entity that has a parent or a child has a 
+	 * relationship component.
+	 *
+	 * To keep the hierarchy consistent, the relationship 
+	 * component should only be changed using the available functions.
+	 * \ref _parent and \ref _children 
+	 * should not be modified directly because this can result in breaking 
+	 * other systems.
+	 */
     struct RelationshipComponent final : public Component
     {
-        // To keep the hierarchy consistent, this component can only be changed using these functions
-        // Parent operations
+        //----- Parent operations -----//
+		/// Change or set entity parent
+		/** There is no need to remove the old parent before setting the new
+		 * parent.
+		 *
+		 * Has the same effect of adding a child with 
+		 * RelationshipComponent::addChild.
+		 * */
         static void setParent(EntityId parent, EntityId child);
+		/// Remove entity parent
+		/** Has the same effect of removing a child with 
+		 * RelationshipComponent::removeChild.
+		 */
         static void removeParent(EntityId parent, EntityId child);
-        // Child operations
+
+        //----- Child operations -----//
+		/// Add child entity
+		/** Has the same effect of setting the child parent with
+		 * RelationshipComponent::setParent.
+		 * */
         static void addChild(EntityId parent, EntityId child);
+		/// Remove child entity
+		/** Has the same effect of removing the child parent with 
+		 * RelationshipComponent::removeParent.
+		 * */
         static void removeChild(EntityId parent, EntityId child);
 
         // Get data
