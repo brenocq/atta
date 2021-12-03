@@ -33,6 +33,12 @@ namespace atta
             stringIdTable[_id] = str;
     }
 
+	StringId::StringId(const char* str):
+		StringId(std::string(str))
+	{
+
+	}
+
     StringId::StringId(StringHash id):
         _id(id)
     {

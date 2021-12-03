@@ -161,7 +161,7 @@ namespace atta
         template <typename U>
         vector3(vector4<U> v): x(v.x), y(v.y), z(v.z) {}
         template <typename U>
-        vector3(vector2<U> v, T _z): x(v.x), y(v.y), z(_z) {}
+        vector3(vector2<U> v, T _z = 0.0f): x(v.x), y(v.y), z(_z) {}
         template <typename U>
         vector3(T _x, vector2<U> v): x(_x), y(v.x), z(v.y) {}
 

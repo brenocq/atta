@@ -17,16 +17,22 @@ namespace atta::ui
         void render();
 
     private:
-        void preferences();
-        void openProjectModal();
-        void createProjectModal();
-        void viewportModals();
+        void preferences();///< Render preferences window
+        void openProjectModal();///< Render open project modal
+        void createProjectModal();///< Render create project modal
+        void saveProjectModal();///< Render save project modal
+		/** The viewport modal is used to change the viewport settings */
+        void viewportModals();///< Render viewport modal
 
-        bool _showPreferences;
-        bool _showOpenProject;
-        bool _showCreateProject;
+        bool _showPreferences;///< Show preferences modal
+        bool _showOpenProject;///< Show open project modal
+        bool _showCreateProject;///< Show create project modal
+        bool _showSaveProject;///< Show save project modal
 
-        std::vector<bool> _viewportModals;// True/false for each viewport window
+		bool _quitAfterSaveModal;///< If should quit application after save project modal response
+
+		/** True/false for each viewport window */
+        std::vector<bool> _viewportModals;///< Which viewports should be rendered
     };
 }
 

@@ -8,9 +8,13 @@ set(ATTA_UI_SYSTEM_SOURCE
     layers/editor/dockSpace.cpp
     layers/editor/window.cpp
     layers/editor/topBar/topBar.cpp
+
     layers/editor/windows/entityWindow.cpp
+
     layers/editor/systemWindows/ioSystemWindow.cpp
     layers/editor/systemWindows/physicsSystemWindow.cpp
+
+	layers/editor/drawers/physicsDrawer.cpp
 )
 
 add_library(atta_ui_system STATIC

@@ -40,15 +40,7 @@ namespace atta::ui
                     ImGui::Separator();
 
                     if(ImGui::MenuItem("Close"))
-                    {
-                        FileManager::saveProject();
-                        FileManager::closeProject();
-                        ComponentManager::clear();
-                        ComponentManager::createDefault();
-
-                        // Replace viewports with default
-                        GraphicsManager::createDefaultViewports();
-                    }
+						_showSaveProject = true;
                 }
 
                 if(ImGui::MenuItem("Open"))
@@ -65,8 +57,8 @@ namespace atta::ui
 
                 if(ImGui::MenuItem("Quit"))
                 {
-                    WindowCloseEvent e;
-                    EventManager::publish(e);
+					_showSaveProject = true;
+					_quitAfterSaveModal = true;
                 }
                 ImGui::EndMenu();
             }
@@ -138,6 +130,7 @@ namespace atta::ui
         createProjectModal();
         preferences();
         viewportModals();
+        saveProjectModal();
     }
 
     void TopBar::preferences()
@@ -234,6 +227,54 @@ namespace atta::ui
             ImGui::EndPopup();
         }
     }
+
+    void TopBar::saveProjectModal()
+	{
+        static bool lastShow = false;
+        if(_showSaveProject && !lastShow)
+        {
+            // OBS: Doing this because can't open popup inside menuitem
+            ImGui::OpenPopup("Save Project##SaveProjectModal");
+            lastShow = _showSaveProject;
+        }
+
+        if(ImGui::BeginPopupModal("Save Project##SaveProjectModal"))
+        {
+            ImGui::Text("Do you want to save the project?");
+			if(ImGui::Button("No"))
+			{
+				_showSaveProject = false;
+			}
+			ImGui::SameLine();
+			if(ImGui::Button("Yes"))
+			{
+				_showSaveProject = false;
+				FileManager::saveProject();
+			}
+            ImGui::SetItemDefaultFocus();
+
+			if(!_showSaveProject)
+			{
+				// Close project data
+				FileManager::closeProject();
+				// Replace components with default
+				ComponentManager::clear();
+				ComponentManager::createDefault();
+				// Replace viewports with default
+				GraphicsManager::createDefaultViewports();
+
+				if(_quitAfterSaveModal)
+				{
+                    WindowCloseEvent e;
+                    EventManager::publish(e);
+				}
+
+                ImGui::CloseCurrentPopup();
+			}
+
+            ImGui::EndPopup();
+        }
+	}
 
     void TopBar::viewportModals()
     {

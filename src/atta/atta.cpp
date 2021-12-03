@@ -66,7 +66,8 @@ namespace atta
 
     Atta::~Atta()
     {
-        FileManager::saveProject();
+		// TODO ask user if should close or not
+        //FileManager::saveProject();
         FileManager::closeProject();
         SensorManager::shutDown();
         PhysicsManager::shutDown();

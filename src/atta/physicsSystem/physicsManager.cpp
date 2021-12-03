@@ -25,8 +25,9 @@ namespace atta
 	{
         EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(PhysicsManager::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(PhysicsManager::onSimulationStateChange));
-		_engine = std::make_shared<NullEngine>();
-		_running = false;
+
+		_engine = std::make_shared<Box2DEngine>();
+		_plane2D = Plane2D::Z;
 	}
 
     void PhysicsManager::shutDown() { getInstance().shutDownImpl(); }
@@ -48,8 +49,8 @@ namespace atta
 		DASSERT(_engine != nullptr, "Physics engine must not be nullptr");
 		if(type == _engine->getType()) return;
 
-		if(_running)
-			_engine->stop();
+		bool isRunning = _engine->getRunning();
+		_engine.reset();
 
 		switch(type)
 		{
@@ -67,7 +68,7 @@ namespace atta
 				LOG_WARN("PhysicsManager", "Trying to select unknown physics engine");
 		}
 
-		if(_running)
+		if(isRunning)
 			_engine->start();
 	}
 
@@ -77,11 +78,9 @@ namespace atta
         {
             case SimulationStartEvent::type:
 				_engine->start();
-				_running = true;
 				break;
             case SimulationStopEvent::type:
 				_engine->stop();
-				_running = false;
 				break;
             default:
                 LOG_WARN("PhysicsManager", "Unknown simulation event");

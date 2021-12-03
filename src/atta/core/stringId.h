@@ -17,6 +17,7 @@ namespace atta
     public:
         StringId();
         StringId(std::string str);
+        StringId(const char* str);
         StringId(StringHash id);
 
         const std::string& getString() const;
@@ -24,6 +25,7 @@ namespace atta
 
         inline bool operator==(StringHash sid) const;
         inline bool operator==(std::string str) const;
+        inline bool operator==(const char* str) const;
         inline bool operator==(StringId sid) const;
         inline bool operator!=(StringHash sid) const;
         inline bool operator!=(std::string str) const;
