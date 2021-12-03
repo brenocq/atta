@@ -15,6 +15,7 @@ namespace atta
     {
     public:
 		Box2DEngine();
+		~Box2DEngine();
 
         void start() override;
         void step(float dt) override;

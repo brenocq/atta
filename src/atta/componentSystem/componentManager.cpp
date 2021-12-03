@@ -248,6 +248,7 @@ namespace atta
         epool->clear();
 
         // Clear entity view
+        _entities.clear();
         _noPrototypeView.clear();
         _cloneView.clear();
         _scriptView.clear();

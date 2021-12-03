@@ -70,10 +70,12 @@ namespace atta::ui
             if(project)
                 project->onUIRender();
 
-            ImGui::Begin("Debug");
-            ImGui::Text("Hello, down!");
+            ImGui::Begin("Log");
+            ImGui::Text("Logging not implemented yet");
             ImGui::End();
         }
+
+		_physicsDrawer.update();
         updateViewports();
     }
 
@@ -100,7 +102,7 @@ namespace atta::ui
                     activeViewport = i;
 
                 // Update camera (wheel pressed)
-                if(activeViewport==i)
+                if(activeViewport==i && ImGui::IsWindowHovered())
                 {
                     viewport->getCamera()->setViewportSize(viewport->getWidth(), viewport->getHeight());
                     viewport->getCamera()->move();
@@ -113,15 +115,14 @@ namespace atta::ui
                     ImVec2 window = ImGui::GetWindowPos();
                     ImVec2 cursor = ImGui::GetCursorPos();
                     ImVec2 mouse = ImGui::GetMousePos();
-                    //LOG_DEBUG("EditorLayer", "Mouse: $0,$1\nWindow: $2,$3\nCursor: $4,$5", mouse.x, mouse.y, window.x, window.y, cursor.x, cursor.y);
                     click = { int(mouse.x-window.x-cursor.x), int(mouse.y-window.y-cursor.y) };
-                    //LOG_DEBUG("EditorLayer", "Click pos: $0", click);
                 }
 
                 if(ImGui::IsMouseClicked(1) && ImGui::IsWindowHovered())
                     ImGui::OpenPopup("Editor_AddBasicShape");
                 addBasicShapePopup();
 
+                //----- Keyboard click -----//
                 static ImGuizmo::OPERATION mouseOperation = ImGuizmo::OPERATION::TRANSLATE;
                 static ImGuizmo::MODE mouseMode = ImGuizmo::MODE::LOCAL;
                 static bool snap = false;

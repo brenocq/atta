@@ -14,8 +14,15 @@ namespace atta
 	{
 	}
 
+	Box2DEngine::~Box2DEngine()
+	{
+		if(_running)
+			stop();
+	}
+
     void Box2DEngine::start()
 	{
+		_running = true;
 		_world = std::make_shared<b2World>(b2Vec2(0.0f, -10.0f));
 
 		std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
@@ -44,11 +51,15 @@ namespace atta
 				continue;
 			}
 
+			vec3 position, scale;
+			quat orientation;
+			mat4 m = t->getWorldTransform(entity);
+			m.getPosOriScale(position, orientation, scale);
+
 			if(t && rb2d && (box2d || circle2d))
 			{
 				//----- Create body -----//
 				b2BodyDef bodyDef;
-				LOG_DEBUG("Box2DEngine", "Creating body $0 -> $1", entity, rb2d->type);
 				if(rb2d->type == RigidBody2DComponent::DYNAMIC)
   					bodyDef.type = b2_dynamicBody;
 				else if(rb2d->type == RigidBody2DComponent::KINEMATIC)
@@ -56,8 +67,8 @@ namespace atta
 				else if(rb2d->type == RigidBody2DComponent::STATIC)
   					bodyDef.type = b2_staticBody;
 
-  				bodyDef.position.Set(t->position.x, t->position.y);
-  				bodyDef.angle = -t->orientation.toEuler().z;
+  				bodyDef.position.Set(position.x, position.y);
+  				bodyDef.angle = -orientation.toEuler().z;
   				bodyDef.linearVelocity.Set(rb2d->linearVelocity.x, rb2d->linearVelocity.y);
   				bodyDef.angularVelocity = rb2d->angularVelocity;
   				bodyDef.linearDamping = rb2d->linearDamping;
@@ -75,13 +86,13 @@ namespace atta
 				// Create shape
 				if(box2d)
 				{
-					polygonShape.SetAsBox(box2d->size.x/2.0f, box2d->size.y/2.0f);
+					polygonShape.SetAsBox(scale.x * box2d->size.x/2.0f, scale.y * box2d->size.y/2.0f);
 					fixtureDef.shape = &polygonShape;
 				}
 				else if(circle2d)
 				{
 					b2CircleShape circle;
-					circle.m_radius = circle2d->radius;
+					circle.m_radius = scale.x * circle2d->radius;
 					fixtureDef.shape = &circle;
 				}
 
@@ -91,8 +102,6 @@ namespace atta
 				fixtureDef.restitution = rb2d->restitution;
 				fixtureDef.restitutionThreshold = 0.1f;
 				body->CreateFixture(&fixtureDef);
-
-				LOG_DEBUG("Box2DEngine", "Entity $0 has rigid body 2D!", entity);
 			}
 		}
 	}
@@ -106,17 +115,31 @@ namespace atta
 		for(auto p : _bodies)
 		{
 			auto t = ComponentManager::getEntityComponent<TransformComponent>(p.first);
+			auto r = ComponentManager::getEntityComponent<RelationshipComponent>(p.first);
+			TransformComponent* tp = nullptr;
+			if(r && r->getParent() >= 0)
+				tp = ComponentManager::getEntityComponent<TransformComponent>(r->getParent()); 
 
 			if(t)
 			{
+				// Get parent world transform
+				vec3 positionP, scaleP;
+				quat orientationP;
+				if(tp)
+				{
+					mat4 m = tp->getWorldTransform(r->getParent());
+					m.getPosOriScale(positionP, orientationP, scaleP);
+				}
+
 				// Update position
 				b2Vec2 pos = p.second->GetPosition();
-				t->position = { pos.x, pos.y, 0.0f };
+				t->position = { pos.x-positionP.x, pos.y-positionP.y, 0.0f };
 
 				// Update angle
 				float angle = -p.second->GetAngle();
+				float angleP = tp ? -orientationP.toEuler().z : 0;
 				quat q;
-				q.fromEuler({ 0, 0, angle });
+				q.fromEuler({ 0, 0, angle-angleP });
 				t->orientation = q;
 			}
 		}
@@ -124,6 +147,7 @@ namespace atta
 
     void Box2DEngine::stop()
 	{
+		_running = false;
 		_bodies.clear();
 		_world.reset();
 	}

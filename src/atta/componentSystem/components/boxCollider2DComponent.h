@@ -17,6 +17,14 @@ namespace atta
 	 *
 	 * TransformComponent and RigidBody2DComponent are necessary for the 
 	 * entity to participate in the physics iteration.
+	 *
+	 * The box will also be scaled by the transform scale. If the
+	 * 2D physics plane is set to Z, the final scale would be:
+	 *
+	 * ```cpp
+	 * finalSize.x = size.x * transform.scale.x;
+	 * finalSize.y = size.y * transform.scale.y;
+	 * ```
 	 */
     struct BoxCollider2DComponent final : public Component
     {

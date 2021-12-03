@@ -11,6 +11,7 @@
 #include <atta/uiSystem/layers/editor/dockSpace.h>
 #include <atta/uiSystem/layers/editor/topBar/topBar.h>
 #include <atta/uiSystem/layers/editor/windows/entityWindow.h>
+#include <atta/uiSystem/layers/editor/drawers/physicsDrawer.h>
 
 namespace atta::ui
 {
@@ -42,6 +43,9 @@ namespace atta::ui
         EntityWindow _entityWindow;
 
         EditorState _editorState;
+
+		// Drawers
+		PhysicsDrawer _physicsDrawer;///< Physics drawer
     };
 }
 

@@ -17,6 +17,13 @@ namespace atta
 	 *
 	 * TransformComponent and RigidBody2DComponent are necessary for the 
 	 * entity to participate in the physics iteration.
+	 *
+	 * The circle will also be scaled by the transform scale. If the
+	 * 2D physics plane is set to Z, the final scale would be:
+	 *
+	 * ```cpp
+	 * finalRadius = radius*max(transform.scale.x, transform.scale.y);
+	 * ```
 	 */
     struct CircleCollider2DComponent final : public Component
     {

@@ -15,9 +15,9 @@ namespace atta
     public:
 		NullEngine(): PhysicsEngine(PhysicsEngine::NULL_ENGINE) {}
 
-        void start() override {}
+        void start() override { _running = true; }
         void step(float dt) override {}
-        void stop() override {}
+        void stop() override { _running = false; }
     };
 }
 

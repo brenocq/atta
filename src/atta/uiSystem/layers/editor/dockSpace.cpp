@@ -42,13 +42,13 @@ namespace atta::ui
                 ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 
                 auto dock_id_scene = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.20f, nullptr, &dockspace_id);
-                auto dock_id_debug = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.20f, nullptr, &dockspace_id);
+                auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.20f, nullptr, &dockspace_id);
                 auto dock_id_vp_top = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.00f, nullptr, &dockspace_id);
 
                 // we now dock our windows into the docking node we made above
                 _viewportDockId = dockspace_id;
                 ImGui::DockBuilderDockWindow("Main Viewport###ViewportMain Viewport", dockspace_id);
-                ImGui::DockBuilderDockWindow("Debug", dock_id_debug);
+                ImGui::DockBuilderDockWindow("Log", dock_id_down);
                 ImGui::DockBuilderDockWindow("Scene", dock_id_scene);
                 ImGui::DockBuilderDockWindow("##Toolbar", dock_id_vp_top);
                 ImGui::DockBuilderFinish(dockspace_id);

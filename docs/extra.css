@@ -566,6 +566,9 @@ tr.glow, td.glow {
 #projectname {
 	font-weight: bold;
 }
+#titlearea {
+	display: none;
+}
 
 /********** Class index **********/
 .classindex.even {

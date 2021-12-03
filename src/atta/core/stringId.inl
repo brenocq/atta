@@ -17,6 +17,11 @@ namespace atta
         return getString() == str;
     }
 
+    inline bool StringId::operator==(const char* str) const
+    {
+        return getString() == std::string(str);
+    }
+
     inline bool StringId::operator==(StringId sid) const
     {
         return _id == sid._id;
