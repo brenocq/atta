@@ -72,7 +72,7 @@ namespace atta::ui
 				std::vector<vec3> vertices;
 				for(unsigned i = 0; i < numVertices; i++)
 				{
-					float angle = i/float(numVertices) * 2*M_PI;
+					float angle = i/float(numVertices) * 2*3.1415926535f;
 					vertices.push_back(vec3(cos(angle), sin(angle), 0.0f));
 				}
 

@@ -14,16 +14,16 @@ namespace atta
     class Box2DEngine : public PhysicsEngine
     {
     public:
-		Box2DEngine();
-		~Box2DEngine();
+        Box2DEngine();
+        ~Box2DEngine();
 
         void start() override;
         void step(float dt) override;
         void stop() override;
 
-	private:
-		std::shared_ptr<b2World> _world;
-		std::vector<std::pair<EntityId, b2Body*>> _bodies;
+    private:
+        std::shared_ptr<b2World> _world;
+        std::unordered_map<EntityId, b2Body*> _bodies;
     };
 }
 

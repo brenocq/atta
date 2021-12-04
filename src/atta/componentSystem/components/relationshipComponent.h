@@ -23,6 +23,9 @@ namespace atta
 	 * \ref _parent and \ref _children 
 	 * should not be modified directly because this can result in breaking 
 	 * other systems.
+     *
+     * The TransformComponent is changed when the relationship component changes
+     * so that the entity world transform stays the same
 	 */
     struct RelationshipComponent final : public Component
     {

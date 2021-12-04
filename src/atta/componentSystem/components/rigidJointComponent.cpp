@@ -12,13 +12,13 @@ namespace atta
     ComponentRegistry::Description& TypedComponentRegistry<RigidJointComponent>::getDescription()
     {
         static ComponentRegistry::Description desc = 
+        {
+            "Rigid Joint",
             {
-                "RigidJointComponent",
-                {
-                    { ComponentRegistry::AttributeType::INT32, offsetof(RigidJointComponent, bodyA), "bodyA" },
-                    { ComponentRegistry::AttributeType::INT32, offsetof(RigidJointComponent, bodyB), "bodyB" },
-                }
-            };
+                { ComponentRegistry::AttributeType::INT32, offsetof(RigidJointComponent, bodyA), "bodyA" },
+                { ComponentRegistry::AttributeType::INT32, offsetof(RigidJointComponent, bodyB), "bodyB" },
+            }
+        };
 
         return desc;
     }

@@ -50,4 +50,26 @@ namespace atta
         t.setPosOriScale(position, orientation, scale);
         return t;
     }
+
+
+    mat4 TransformComponent::getEntityWorldTransform(EntityId entity)
+    {
+        EntityId curr = entity;
+        auto t = ComponentManager::getEntityComponent<TransformComponent>(curr);
+        auto r = ComponentManager::getEntityComponent<RelationshipComponent>(curr);
+
+        do
+        {
+            if(t) return t->getWorldTransform(curr);
+
+            curr = r->getParent();
+            if(curr == -1)
+                return mat4(1.0f);
+            else
+            {
+                t = ComponentManager::getEntityComponent<TransformComponent>(curr);
+                r = ComponentManager::getEntityComponent<RelationshipComponent>(curr);
+            }
+        } while(true);
+    }
 }

@@ -8,9 +8,9 @@
 
 namespace atta
 {
-	PhysicsEngine::PhysicsEngine(Type type):
-		_type(type)
-	{
+    PhysicsEngine::PhysicsEngine(Type type):
+        _type(type)
+    {
 
-	}
+    }
 }

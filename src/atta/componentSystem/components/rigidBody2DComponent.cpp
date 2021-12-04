@@ -13,7 +13,7 @@ namespace atta
     {
         static ComponentRegistry::Description desc = 
             {
-                "RigidBody2D",
+                "Rigid Body 2D",
                 {
                     { ComponentRegistry::AttributeType::UINT32, offsetof(RigidBody2DComponent, type), "type", {}, {}, {}, 
 						{ "Dynamic", "Kinematic", "Static" } },
