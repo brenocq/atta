@@ -14,9 +14,12 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     components/meshComponent.cpp
     components/nameComponent.cpp
     components/pointLightComponent.cpp
+    components/prismaticJointComponent.cpp
     components/prototypeComponent.cpp
     components/relationshipComponent.cpp
+    components/revoluteJointComponent.cpp
 	components/rigidBody2DComponent.cpp
+	components/rigidJointComponent.cpp
     components/scriptComponent.cpp
     components/transformComponent.cpp
 )

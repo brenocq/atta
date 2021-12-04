@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/componentSystem/components/relationshipComponent.h>
+#include <atta/componentSystem/components/transformComponent.h>
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/componentManager.h>
 
@@ -81,6 +82,24 @@ namespace atta
             if(childRel->_parent != -1)
                 removeParent(childRel->_parent, child);
 
+            // If has transform component, update to be relative to the parent
+            TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(child);
+            if(t)
+            {
+                mat4 transform = t->getWorldTransform(child);
+                mat4 pTransform = TransformComponent::getEntityWorldTransform(parent);
+
+                transform = inverse(pTransform) * transform;
+
+                vec3 pos, scale;
+                quat ori;
+                transform.getPosOriScale(pos, ori, scale);
+
+                t->position = pos;
+                t->orientation = ori;
+                t->scale = scale;
+            }
+
             // Add new parent
             parentRel->_children.push_back(child);
             childRel->_parent = parent;
@@ -91,17 +110,31 @@ namespace atta
     {
         // Get relationships
         RelationshipComponent* parentRel = ComponentManager::getEntityComponent<RelationshipComponent>(parent);
-        if(!parentRel && parent != -1)
+        if(!parentRel && parent != -1)// Check if parent has relationship component
         {
             LOG_WARN("RelationshipComponent", "Trying to remove wrong parent [w]$0[] from child [w]$1[]", parent, child);
             return;
         }
 
         RelationshipComponent* childRel = ComponentManager::getEntityComponent<RelationshipComponent>(child);
-        if(!childRel)
+        if(!childRel)// Check if child has relationship component
         {
             LOG_WARN("RelationshipComponent", "Trying to remove parent [w]$0[] from child [w]$1[] that does not have a parent", parent, child);
             return;
+        }
+
+        // If has transform component, change to be relative to the world
+        TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(child);
+        if(transform)
+        {
+            mat4 world = transform->getWorldTransform(child);
+            vec3 pos, scale;
+            quat ori;
+            world.getPosOriScale(pos, ori, scale);
+
+            transform->position = pos;
+            transform->orientation = ori;
+            transform->scale = scale;
         }
 
         childRel->_parent = -1;

@@ -12,12 +12,12 @@
 
 namespace atta
 {
-	/// Joint to keep entities fixed to each other
-	/** The relative position and orientation between the entities will not change */
+    /// Joint to keep entities fixed to each other
+    /** The relative position and orientation between the entities will not change */
     struct RigidJointComponent : public Component 
     {
-		EntityId bodyA;///< First attached body
-		EntityId bodyB;///< Second attached body
+        EntityId bodyA;///< First attached body
+        EntityId bodyB;///< Second attached body
     };
     ATTA_REGISTER_COMPONENT(RigidJointComponent)
     template<> ComponentRegistry::Description& TypedComponentRegistry<RigidJointComponent>::getDescription();
