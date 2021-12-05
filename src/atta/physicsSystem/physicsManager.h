@@ -29,6 +29,11 @@ namespace atta
         static Plane2D getPlane2D() { return getInstance()._plane2D; }
         static void setSelectedEngine(PhysicsEngine::Type type);
 
+        //---------- Queries ----------//
+        static std::vector<EntityId> getEntityCollisions(EntityId eid);
+        static std::vector<EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst = true);
+        static bool areColliding(EntityId eid0, EntityId eid1);
+
     private:
         void startUpImpl();
         void shutDownImpl();

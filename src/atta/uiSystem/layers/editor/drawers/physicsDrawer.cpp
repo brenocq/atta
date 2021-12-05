@@ -8,8 +8,8 @@
 #include <atta/graphicsSystem/drawer.h>
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/transformComponent.h>
-#include <atta/componentSystem/components/boxCollider2DComponent.h>
-#include <atta/componentSystem/components/circleCollider2DComponent.h>
+#include <atta/componentSystem/components/boxColliderComponent.h>
+#include <atta/componentSystem/components/sphereColliderComponent.h>
 
 namespace atta::ui
 {
@@ -32,14 +32,14 @@ namespace atta::ui
 			vec4 color = { 0, 1, 0, 1 };
 
 			// Draw box collider
-			auto box = ComponentManager::getEntityComponent<BoxCollider2DComponent>(entity);
+			auto box = ComponentManager::getEntityComponent<BoxColliderComponent>(entity);
 			if(box)
 			{
 				std::vector<vec3> vertices = {{0.5, 0.5, 0}, {-0.5, 0.5, 0}, {-0.5, -0.5, 0}, {0.5, -0.5, 0}};
 
 				// Scale
 				for(auto& v : vertices)
-					v *= vec3(box->size);
+					v *= box->size;
 				for(auto& v : vertices)
 					v *= scale;
 
@@ -54,7 +54,7 @@ namespace atta::ui
 
 				// Translate
 				for(auto& v : vertices)
-					v += vec3(box->offset);
+					v += box->offset;
 				for(auto& v : vertices)
 					v += position;
 
@@ -65,7 +65,7 @@ namespace atta::ui
 			}
 
 			// Draw circle collider
-			auto circle = ComponentManager::getEntityComponent<CircleCollider2DComponent>(entity);
+			auto circle = ComponentManager::getEntityComponent<SphereColliderComponent>(entity);
 			if(circle)
 			{
 				const unsigned numVertices = 32;
@@ -84,7 +84,7 @@ namespace atta::ui
 
 				// Translate
 				for(auto& v : vertices)
-					v += vec3(circle->offset);
+					v += circle->offset;
 				for(auto& v : vertices)
 					v += position;
 

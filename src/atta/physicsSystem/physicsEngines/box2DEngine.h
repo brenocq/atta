@@ -7,6 +7,9 @@
 #ifndef ATTA_PHYSICS_SYSTEM_PHYSICS_ENGINES_BOX2D_ENGINE_H
 #define ATTA_PHYSICS_SYSTEM_PHYSICS_ENGINES_BOX2D_ENGINE_H
 #include <atta/physicsSystem/physicsEngines/physicsEngine.h>
+#include <atta/componentSystem/components/prismaticJointComponent.h>
+#include <atta/componentSystem/components/revoluteJointComponent.h>
+#include <atta/componentSystem/components/rigidJointComponent.h>
 #include "box2d/box2d.h"
 
 namespace atta
@@ -21,9 +24,20 @@ namespace atta
         void step(float dt) override;
         void stop() override;
 
+        std::vector<EntityId> getEntityCollisions(EntityId eid) override;
+        std::vector<EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
+        bool areColliding(EntityId eid0, EntityId eid1) override;
+
     private:
+        std::vector<EntityId> getAABBEntities(vec2 lower, vec2 upper);
+
+        void createPrismaticJoint(PrismaticJointComponent* prismatic);
+        void createRevoluteJoint(RevoluteJointComponent* revolute);
+        void createRigidJoint(RigidJointComponent* rigid);
+
         std::shared_ptr<b2World> _world;
         std::unordered_map<EntityId, b2Body*> _bodies;
+        std::unordered_map<EntityId, std::unordered_set<EntityId>> _collisions;
     };
 }
 

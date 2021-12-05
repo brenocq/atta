@@ -6,9 +6,8 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     componentManager.cpp
     componentRegistry.cpp
 
-    components/boxCollider2DComponent.cpp
+    components/boxColliderComponent.cpp
     components/cameraComponent.cpp
-    components/circleCollider2DComponent.cpp
     components/directionalLightComponent.cpp
     components/materialComponent.cpp
     components/meshComponent.cpp
@@ -21,6 +20,7 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
 	components/rigidBody2DComponent.cpp
 	components/rigidJointComponent.cpp
     components/scriptComponent.cpp
+    components/sphereColliderComponent.cpp
     components/transformComponent.cpp
 )
 
