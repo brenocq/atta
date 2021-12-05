@@ -7,9 +7,8 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_COMPONENTS_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_COMPONENTS_H
 
-#include <atta/componentSystem/components/boxCollider2DComponent.h>
+#include <atta/componentSystem/components/boxColliderComponent.h>
 #include <atta/componentSystem/components/cameraComponent.h>
-#include <atta/componentSystem/components/circleCollider2DComponent.h>
 #include <atta/componentSystem/components/directionalLightComponent.h>
 #include <atta/componentSystem/components/materialComponent.h>
 #include <atta/componentSystem/components/meshComponent.h>
@@ -22,6 +21,7 @@
 #include <atta/componentSystem/components/rigidBody2DComponent.h>
 #include <atta/componentSystem/components/rigidJointComponent.h>
 #include <atta/componentSystem/components/scriptComponent.h>
+#include <atta/componentSystem/components/sphereColliderComponent.h>
 #include <atta/componentSystem/components/transformComponent.h>
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_COMPONENTS_H

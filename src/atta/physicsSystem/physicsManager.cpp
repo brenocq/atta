@@ -72,6 +72,21 @@ namespace atta
             _engine->start();
     }
 
+    std::vector<EntityId> PhysicsManager::getEntityCollisions(EntityId eid)
+    { 
+        return getInstance()._engine->getEntityCollisions(eid);
+    }
+
+    std::vector<EntityId> PhysicsManager::rayCast(vec3 begin, vec3 end, bool onlyFirst)
+    { 
+        return getInstance()._engine->rayCast(begin, end, onlyFirst);
+    }
+
+    bool PhysicsManager::areColliding(EntityId eid0, EntityId eid1)
+    { 
+        return getInstance()._engine->areColliding(eid0, eid1);
+    }
+
     void PhysicsManager::onSimulationStateChange(Event& event)
     {
         switch(event.getType())
