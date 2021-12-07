@@ -1,31 +1,30 @@
 //--------------------------------------------------
 // Atta Component System
-// rigidBody2DComponent.h
-// Date: 2021-11-29
+// rigidBodyComponent.h
+// Date: 2021-12-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_2D_COMPONENT_H
-#define ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_2D_COMPONENT_H
+#ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_COMPONENT_H
+#define ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
 #include <atta/componentSystem/componentRegistry.h>
 #include <atta/core/math/vector.h>
 
 namespace atta
 {
-	/// %Component to make the entity a rigid body for 2D physics
-	/** Every entity that has a RigidBody2DComponent and some 2D collider
-	 * component will be added to the 2D physics simulations.
-	 * **Obs:** The entity **must** have SphereColliderComponent or 
-	 * BoxColliderComponent.
+	/// %Component to make the entity a rigid body.
+	/** Every entity that has a RigidBodyComponent and some collider
+     * (like BoxCollider, SphereCollider) component will be added to 
+     * the physics simulations.
 	 *
 	 * Rigid bodies has physical properties like density, friction coefficient, 
 	 * and restitution coefficient. The object mass will be dependent on the
 	 * collider area and material density.
 	 */
-    struct RigidBody2DComponent final : public Component
+    struct RigidBodyComponent final : public Component
     {
 		/// Rigid body type
-		/** There are three types of 2D rigid body:
+		/** There are three types of  rigid body:
 		 *  - **Dynamic**: Will collide with other rigid bodies.
 		 *  - **Kinematic**: Will not be affected by collisions and move with 
 		 *  constant velocity according to it linearVelocity and angularVelocity
@@ -39,10 +38,20 @@ namespace atta
 			STATIC
 		};
 
+		enum Constraint
+		{
+			FREEZE_ORIENTATION_X = (1 << 0),
+			FREEZE_ORIENTATION_Y = (1 << 1),
+			FREEZE_ORIENTATION_Z = (1 << 2),
+			FREEZE_POSITION_X = (1 << 3),
+			FREEZE_POSITION_Y = (1 << 4),
+			FREEZE_POSITION_Z = (1 << 5),
+		};
+
 		Type type = DYNAMIC;
 		// Rigid body state
-		vec2 linearVelocity = { 0.0f, 0.0f };///< Linear velocity
-		float angularVelocity = 0.0f;///< Angular velocity
+		vec3 linearVelocity = { 0.0f, 0.0f, 0.0f };///< Linear velocity
+        vec3 angularVelocity = { 0.0f, 0.0f, 0.0f };///< Angular velocity
 		// Material properties
 		float mass = 1.0f;///< Physics material mass
 		float friction = 0.5f;///< Physics material friction coefficient
@@ -63,10 +72,11 @@ namespace atta
 		 */
 		bool allowSleep = true;///< If the rigid body can sleep
 		bool awake = true;///< If the rigid body start awake or sleeping
-		bool fixedRotation = false;///< Disable rigid body rotation
+        /** Use RigidBody::Constraint to specify the contraints */
+		uint8_t constraints;///< Rigid body constraints
     };
-    ATTA_REGISTER_COMPONENT(RigidBody2DComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<RigidBody2DComponent>::getDescription();
+    ATTA_REGISTER_COMPONENT(RigidBodyComponent)
+    template<> ComponentRegistry::Description& TypedComponentRegistry<RigidBodyComponent>::getDescription();
 }
 
-#endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_2D_COMPONENT_H
+#endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_COMPONENT_H

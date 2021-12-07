@@ -97,3 +97,13 @@ set(BOX2D_BUILD_UNIT_TESTS OFF CACHE INTERNAL "" FORCE)
 set(BOX2D_BUILD_TESTBED OFF CACHE INTERNAL "" FORCE)
 add_subdirectory(box2d)
 atta_add_libs(box2d)
+
+########## bullet3 ##########
+set(USE_GRAPHICAL_BENCHMARK OFF CACHE INTERNAL "" FORCE)
+set(BUILD_UNIT_TESTS OFF CACHE INTERNAL "" FORCE)
+add_subdirectory(bullet3)
+atta_add_libs(BulletDynamics BulletCollision LinearMath)
+target_include_directories(BulletDynamics PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bullet3/src>
+    $<INSTALL_INTERFACE:extern/bullet3/src>
+)

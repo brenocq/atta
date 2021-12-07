@@ -17,3 +17,6 @@
 [submodule "src/extern/box2d"]
 	path = src/extern/box2d
 	url = git@github.com:erincatto/box2d.git
+[submodule "src/extern/bullet3"]
+	path = src/extern/bullet3
+	url = git@github.com:bulletphysics/bullet3.git

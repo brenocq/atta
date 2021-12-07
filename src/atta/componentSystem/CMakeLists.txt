@@ -18,6 +18,7 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     components/relationshipComponent.cpp
     components/revoluteJointComponent.cpp
 	components/rigidBody2DComponent.cpp
+	components/rigidBodyComponent.cpp
 	components/rigidJointComponent.cpp
     components/scriptComponent.cpp
     components/sphereColliderComponent.cpp
