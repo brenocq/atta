@@ -18,7 +18,7 @@ namespace atta::ui
 	void PhysicsSystemWindow::renderImpl()
 	{
 		ImGui::Text("Physics Engine");
-		std::vector<std::string> physicsEngines = { "Null", "Box2D", "PhysX" };
+		std::vector<std::string> physicsEngines = { "Null", "Box2D", "Bullet" };
 
 		PhysicsEngine::Type selected = PhysicsManager::getSelectedEngine();
 		if(ImGui::BeginCombo(("##"+_name+"SelectEngine").c_str(), physicsEngines[selected].c_str()))

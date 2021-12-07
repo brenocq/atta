@@ -19,6 +19,7 @@
 #include <atta/componentSystem/components/relationshipComponent.h>
 #include <atta/componentSystem/components/revoluteJointComponent.h>
 #include <atta/componentSystem/components/rigidBody2DComponent.h>
+#include <atta/componentSystem/components/rigidBodyComponent.h>
 #include <atta/componentSystem/components/rigidJointComponent.h>
 #include <atta/componentSystem/components/scriptComponent.h>
 #include <atta/componentSystem/components/sphereColliderComponent.h>

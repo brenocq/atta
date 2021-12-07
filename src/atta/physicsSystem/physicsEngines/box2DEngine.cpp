@@ -159,20 +159,28 @@ namespace atta
                 b2FixtureDef fixtureDef;
                 b2PolygonShape polygonShape;
                 // Create shape
+                float area = 1.0f;
                 if(box2d)
                 {
+                    area = scale.x * box2d->size.x * scale.y * box2d->size.y;
                     polygonShape.SetAsBox(scale.x * box2d->size.x/2.0f, scale.y * box2d->size.y/2.0f);
                     fixtureDef.shape = &polygonShape;
                 }
                 else if(circle2d)
                 {
                     b2CircleShape circle;
-                    circle.m_radius = scale.x * circle2d->radius;
+                    circle.m_radius = std::max(scale.x, scale.y) * circle2d->radius;
+                    area = circle.m_radius*circle.m_radius*3.14159265f;
                     fixtureDef.shape = &circle;
+                }
+                if(area == 0.0f)
+                {
+                    LOG_WARN("Box2DEngine", "Rigid body collision shape should not have zero area");
+                    area = 1.0f;
                 }
 
                 // Material properties
-                fixtureDef.density = rb2d->density;
+                fixtureDef.density = rb2d->mass/area;
                 fixtureDef.friction = rb2d->friction;
                 fixtureDef.restitution = rb2d->restitution;
                 fixtureDef.restitutionThreshold = 0.1f;

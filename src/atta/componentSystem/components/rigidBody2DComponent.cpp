@@ -19,7 +19,7 @@ namespace atta
 						{ "Dynamic", "Kinematic", "Static" } },
                     { ComponentRegistry::AttributeType::FLOAT32, offsetof(RigidBody2DComponent, linearVelocity), "linearVelocity", {}, {}, 0.001f },
                     { ComponentRegistry::AttributeType::FLOAT32, offsetof(RigidBody2DComponent, angularVelocity), "angularVelocity", {}, {}, 0.001f },
-                    { ComponentRegistry::AttributeType::FLOAT32, offsetof(RigidBody2DComponent, density), "density", 0.0f, 100.0f, 0.001f },
+                    { ComponentRegistry::AttributeType::FLOAT32, offsetof(RigidBody2DComponent, mass), "mass", 0.0f, 100.0f, 0.001f },
                     { ComponentRegistry::AttributeType::FLOAT32, offsetof(RigidBody2DComponent, friction), "friction", 0.0f, 1.0f, 0.001f },
                     { ComponentRegistry::AttributeType::FLOAT32, offsetof(RigidBody2DComponent, restitution), "restitution", 0.0f, 1.0f, 0.001f },
                     { ComponentRegistry::AttributeType::FLOAT32, offsetof(RigidBody2DComponent, linearDamping), "linearDamping", {}, {}, 0.001f },

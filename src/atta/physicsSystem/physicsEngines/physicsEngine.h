@@ -19,7 +19,7 @@ namespace atta
         {
             NULL_ENGINE = 0,
             BOX2D_ENGINE,
-            PHYSX_ENGINE
+            BULLET_ENGINE
         };
 
         PhysicsEngine(Type type);

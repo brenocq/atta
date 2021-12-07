@@ -11,6 +11,7 @@
 
 #include <atta/physicsSystem/physicsEngines/nullEngine.h>
 #include <atta/physicsSystem/physicsEngines/box2DEngine.h>
+#include <atta/physicsSystem/physicsEngines/bulletEngine.h>
 
 namespace atta
 {
@@ -60,9 +61,8 @@ namespace atta
             case PhysicsEngine::BOX2D_ENGINE:
                 _engine = std::make_shared<Box2DEngine>();
                 break;
-            case PhysicsEngine::PHYSX_ENGINE:
-                LOG_WARN("PhysicsManager", "PhysX engine was not implemented yet");
-                _engine = std::make_shared<NullEngine>();
+            case PhysicsEngine::BULLET_ENGINE:
+                _engine = std::make_shared<BulletEngine>();
                 break;
             default:
                 LOG_WARN("PhysicsManager", "Trying to select unknown physics engine");
