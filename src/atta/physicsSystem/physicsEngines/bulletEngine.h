@@ -40,8 +40,6 @@ namespace atta
         std::shared_ptr<btCollisionDispatcher> _dispatcher;
         std::shared_ptr<btDefaultCollisionConfiguration> _collisionConfiguration;
         btAlignedObjectArray<btCollisionShape*> _collisionShapes;
-
-        std::unordered_map<btRigidBody*, EntityId> _bodyToEntity;
     };
 }
 

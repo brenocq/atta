@@ -92,6 +92,14 @@ namespace atta
             k += q.k * 0.5f;
         }
 
+        bool operator !=(const quat &other)
+        {
+            return std::abs(other.i - i) > 0.00001f || 
+                std::abs(other.j - j) > 0.00001f || 
+                std::abs(other.k - k) > 0.00001f || 
+                std::abs(other.r - r) > 0.00001f;
+        }
+
         void addScaledVector(const vec3& vec, float scale)
         {
             quat q(0,
@@ -123,6 +131,7 @@ namespace atta
 
         void fromEuler(const vec3 &e)
         {
+            // ZYX euler
             r = cos(e.x/2)*cos(e.y/2)*cos(e.z/2)+sin(e.x/2)*sin(e.y/2)*sin(e.z/2);
             i = sin(e.x/2)*cos(e.y/2)*cos(e.z/2)-cos(e.x/2)*sin(e.y/2)*sin(e.z/2);
             j = cos(e.x/2)*sin(e.y/2)*cos(e.z/2)+sin(e.x/2)*cos(e.y/2)*sin(e.z/2);
