@@ -56,7 +56,47 @@ namespace atta
 
     void BulletEngine::step(float dt)
     {
-        _world->stepSimulation(dt);
+		for(int j = _world->getNumCollisionObjects() - 1; j >= 0; j--)
+		{
+			btCollisionObject* obj = _world->getCollisionObjectArray()[j];
+			btRigidBody* body = btRigidBody::upcast(obj);
+            EntityId eid = static_cast<uint8_t*>(obj->getUserPointer()) - static_cast<uint8_t*>(0);
+
+			btTransform trans;
+			if(body && body->getMotionState())
+				body->getMotionState()->getWorldTransform(trans);
+			else
+				trans = obj->getWorldTransform();
+
+            // Check if object was translated
+            auto t = ComponentManager::getEntityComponent<TransformComponent>(eid);
+
+            // Get atta world position and orientation
+            vec3 position, scale;
+            quat orientation;
+            mat4 m = t->getWorldTransform(eid);
+            m.getPosOriScale(position, orientation, scale);
+
+            // Check bullet position and orientation
+            float yaw, pitch, roll;
+            trans.getRotation().getEulerZYX(yaw, pitch, roll);
+            quat physicsOrientation({-roll, -pitch, -yaw});
+            vec3 physicsPosition = { trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ() };
+            if(position != physicsPosition || orientation != physicsOrientation)
+            {
+                //if(position != physicsPosition)
+                //    LOG_DEBUG("BulletEngine", "Different positions for $0: $1 != $2", eid, position, physicsPosition);
+                //if(orientation != physicsOrientation)
+                //    LOG_DEBUG("BulletEngine", "Different orientations for $0: $1 != $2", eid, orientation, physicsOrientation);
+
+                trans = btTransform(btQuaternion(orientation.i, orientation.j, orientation.k, orientation.r), 
+                        btVector3(position.x, position.y, position.z));
+                
+                body->setWorldTransform(trans);
+            }
+        }
+
+        _world->stepSimulation(dt, 4+1, dt/4);
 
 		for(int j = _world->getNumCollisionObjects() - 1; j >= 0; j--)
 		{
@@ -68,9 +108,19 @@ namespace atta
 			else
 				trans = obj->getWorldTransform();
 
-            EntityId eid = _bodyToEntity[body];
+            // Update entity with data changed by engine
+            EntityId eid = static_cast<uint8_t*>(obj->getUserPointer()) - static_cast<uint8_t*>(0);
+            btScalar linearDamping = body->getLinearDamping();
+            btScalar angularDamping = body->getAngularDamping();
+            btVector3 linearVelocity = body->getLinearVelocity();
+            btVector3 angularVelocity = body->getAngularVelocity();
             auto t = ComponentManager::getEntityComponent<TransformComponent>(eid);
+            auto rb = ComponentManager::getEntityComponent<RigidBodyComponent>(eid);
             t->position = { trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ() };
+
+            float yaw, pitch, roll;
+            trans.getRotation().getEulerZYX(yaw, pitch, roll);
+            t->orientation = quat({-roll, -pitch, -yaw});
 		}
     }
 
@@ -176,10 +226,11 @@ namespace atta
         btDefaultMotionState* motionState = new btDefaultMotionState(bodyTransform);
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, colShape, localInertia);
 		btRigidBody* body = new btRigidBody(rbInfo);
+        body->setUserPointer(reinterpret_cast<uint8_t*>(entity));
 
 		//add the body to the dynamics world
 		_world->addRigidBody(body);
-        _bodyToEntity[body] = entity;
+        //_bodyToEntity[body] = entity;
     }
 
     void BulletEngine::createPrismaticJoint(PrismaticJointComponent* prismatic)
