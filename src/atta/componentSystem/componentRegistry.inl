@@ -38,7 +38,7 @@ namespace atta
         LOG_DEBUG("TypedComponentRegistry", "Created new registry for [w]$0[]", typeid(T).name());
         description = &getDescription();
         LOG_DEBUG("TypedComponentRegistry", "Registered [w]$0[]", description->name);
-        registerToComponentManager();
+        ComponentRegistry::registerToComponentManager();
     }
 
     template<typename T>

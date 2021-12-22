@@ -157,7 +157,10 @@ namespace atta
 
                 //----- Attach collider -----//
                 b2FixtureDef fixtureDef;
+                // Shapes
                 b2PolygonShape polygonShape;
+                b2CircleShape circle;
+
                 // Create shape
                 float area = 1.0f;
                 if(box2d)
@@ -168,7 +171,6 @@ namespace atta
                 }
                 else if(circle2d)
                 {
-                    b2CircleShape circle;
                     circle.m_radius = std::max(scale.x, scale.y) * circle2d->radius;
                     area = circle.m_radius*circle.m_radius*3.14159265f;
                     fixtureDef.shape = &circle;

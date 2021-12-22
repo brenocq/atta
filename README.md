@@ -62,7 +62,29 @@ Arrows show dependencies between systems. Green boxes show which systems/feature
 This project aims to simulate complex systems like this, mainly composed of robots.
 
 ## Build & test
-Be sure to clone with the `--recursive` flag. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.\
+#### Dependencies
+To build atta properly, you need to have cmake installed and glfw dependencies (necessary to create windows).
+
+Dependencies for some operating systems:
+
+**Windows:**
+```bash
+$ choco install ninja cmake
+```
+
+**MacOS:**
+```bash
+$ brew install cmake ninja
+```
+
+**Ubuntu:**
+```bash
+$ sudo apt-get install ninja-build cmake xorg-dev
+```
+
+#### Clone
+This step is operating system indepentent. Be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. Be sure to **clone with the `--recursive` flag**. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.
+
 Atta should build without errors when the compiller supports C++17.
 If you found any errors, please do not hesitate to create an issue.
 
