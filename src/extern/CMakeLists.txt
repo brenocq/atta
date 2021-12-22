@@ -46,18 +46,18 @@ endif()
 atta_add_libs(imgui)
 
 ########## assimp ##########
-include(FetchContent)
-
-FetchContent_Declare(
-  assimp
-  GIT_REPOSITORY  "https://github.com/assimp/assimp.git"
-  GIT_TAG         "6841397798051919a23a3fbe1405fd934fb5f39c"
-)
-
-FetchContent_GetProperties(assimp)
-string(TOLOWER "assimp" lcName)
-if(NOT ${lcName}_POPULATED)
-    FetchContent_Populate(assimp)
+#include(FetchContent)
+#
+#FetchContent_Declare(
+#  assimp
+#  GIT_REPOSITORY  "https://github.com/assimp/assimp.git"
+#  GIT_TAG         "6841397798051919a23a3fbe1405fd934fb5f39c"
+#)
+#
+#FetchContent_GetProperties(assimp)
+#string(TOLOWER "assimp" lcName)
+#if(NOT ${lcName}_POPULATED)
+#    FetchContent_Populate(assimp)
 
     set(BUILD_SHARED_LIBS FALSE CACHE INTERNAL "" FORCE)
 
@@ -72,10 +72,10 @@ if(NOT ${lcName}_POPULATED)
     set(ASSIMP_INSTALL_PDB OFF CACHE INTERNAL "" FORCE )
     set(ASSIMP_INSTALL OFF CACHE INTERNAL "" FORCE)
   
-    #add_subdirectory(assimp)
-    add_subdirectory(${${lcName}_SOURCE_DIR} ${${lcName}_BINARY_DIR})
+    add_subdirectory(assimp)
+    #add_subdirectory(${${lcName}_SOURCE_DIR} ${${lcName}_BINARY_DIR})
     atta_add_libs(assimp zlibstatic)
-endif()
+    #endif()
 
 ########## stb_image ##########
 atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/stb_image)
@@ -101,6 +101,10 @@ atta_add_libs(box2d)
 ########## bullet3 ##########
 set(USE_GRAPHICAL_BENCHMARK OFF CACHE INTERNAL "" FORCE)
 set(BUILD_UNIT_TESTS OFF CACHE INTERNAL "" FORCE)
+set(INSTALL_CMAKE_FILES OFF CACHE INTERNAL "" FORCE)
+set(BUILD_BULLET3 OFF CACHE INTERNAL "" FORCE)
+set(BUILD_BULLET2_DEMOS OFF CACHE INTERNAL "" FORCE)
+set(BUILD_OBJ2SDF_EXTRA OFF CACHE INTERNAL "" FORCE)
 add_subdirectory(bullet3)
 atta_add_libs(BulletDynamics BulletCollision LinearMath)
 target_include_directories(BulletDynamics PUBLIC 
