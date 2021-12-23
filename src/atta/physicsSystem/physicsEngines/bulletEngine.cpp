@@ -153,17 +153,18 @@ namespace atta
 
     std::vector<EntityId> BulletEngine::getEntityCollisions(EntityId eid)
     {
-
+        return {};
     }
 
     std::vector<EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst)
     {
-
+        return {};
     }
 
     bool BulletEngine::areColliding(EntityId eid0, EntityId eid1)
     {
 
+        return false;
     }
 
     void BulletEngine::createRigidBody(EntityId entity)
