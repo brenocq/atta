@@ -1,8 +1,10 @@
 set(ATTA_DOXYGEN_MARKDOWN
-    "docs/overview.md"
-    "docs/hello.md"
+    "docs/installation.md"
+    "docs/gettingStarted.md"
+    "docs/systemsOverview.md"
     "docs/references.md"
 )
+
 list(APPEND ATTA_DOXYGEN_SOURCES ${ATTA_DOXYGEN_MARKDOWN})
 file(GLOB_RECURSE ATTA_DOXYGEN_HEADERS "../src/atta/*.h")
 foreach(header IN LISTS ATTA_DOXYGEN_HEADERS)
