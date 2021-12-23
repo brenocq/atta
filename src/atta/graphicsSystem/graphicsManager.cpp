@@ -70,11 +70,16 @@ namespace atta
     void GraphicsManager::shutDown() { getInstance().shutDownImpl(); }
     void GraphicsManager::shutDownImpl()
     {
-        // Frambuffers must be deleted before window deletion
+        // Every reference to the framebuffers must be deleted before window deletion
         for(auto& viewport : _viewports)
             viewport.reset();
+        _viewports.clear();
+        for(auto& viewport : _viewportsNext)
+            viewport.reset();
+        _viewportsNext.clear();
 
         _layerStack.reset();
+        _computeEntityClick.reset();
         _rendererAPI.reset();
         _window.reset();
     }
