@@ -593,6 +593,11 @@ span.mlabel {
 }
 
 /********** Code **********/
+.fragment {
+    border: none !important;
+    border-radius: 5px;
+}
+
 span.keyword {
 	color: var(--code-keyword-color);
 	font-style: italic;
