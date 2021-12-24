@@ -1,0 +1,30 @@
+name: Update README progress buttons
+
+on: push
+
+jobs:
+  updateProgress:
+    name: Update gcloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - name: Decrypt secret
+        working-directory: .github/scripts/updateReadmeProgress
+        run: ./decrypt_secret.sh
+        env:
+          SECRET_GCLOUD: ${{secrets.SECRET_GCLOUD}}
+
+      - name: Setup python env
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+        working-directory: .github/scripts/updateReadmeProgress
+        run: pip install -r requirements.txt
+
+      - name: Update gcloud images
+        working-directory: .github/scripts/updateReadmeProgress
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+        run: python generateProjectButton.py

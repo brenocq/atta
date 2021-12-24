@@ -19,7 +19,7 @@ $ sudo pacman -Sy ninja cmake glfw-x11
 After installing the dependencies, be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. 
 Be sure to **clone with the `--recursive` flag**. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.
 
-Atta should build without errors when the compiller supports C++17. If you found any errors, please do not hesitate to [open an issue]((https://github.com/brenocq/atta/issues).
+Atta should build without errors when the compiller supports C++17. If you found any errors, please do not hesitate to [open an issue](https://github.com/brenocq/atta/issues).
 
 ```bash
 $ git clone --recursive git@github.com:brenocq/atta.git
@@ -42,7 +42,7 @@ choco install ninja cmake
 After installing the dependencies, be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. 
 Be sure to **clone with the `--recursive` flag**. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.
 
-Atta should build without errors when the compiller supports C++17. If you found any errors, please do not hesitate to [open an issue]((https://github.com/brenocq/atta/issues).
+Atta should build without errors when the compiller supports C++17. If you found any errors, please do not hesitate to [open an issue](https://github.com/brenocq/atta/issues).
 
 ```bash
 $ git clone --recursive git@github.com:brenocq/atta.git
@@ -65,7 +65,7 @@ brew install ninja cmake
 After installing the dependencies, be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. 
 Be sure to **clone with the `--recursive` flag**. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.
 
-Atta should build without errors when the compiller supports C++17. If you found any errors, please do not hesitate to [open an issue]((https://github.com/brenocq/atta/issues).
+Atta should build without errors when the compiller supports C++17. If you found any errors, please do not hesitate to [open an issue](https://github.com/brenocq/atta/issues).
 
 ```bash
 $ git clone --recursive git@github.com:brenocq/atta.git

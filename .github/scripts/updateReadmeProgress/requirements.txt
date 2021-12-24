@@ -1,0 +1,3 @@
+PyGithub==1.55
+google-cloud-storage==1.43.0
+opencv-python==4.5.4.60
