@@ -98,6 +98,9 @@ $ ./bin/atta_test
 $ ./bin/atta
 ```
 
+## Discussions
+If you want to contribute, have ideias, or have questions about atta, feel free to [start a discussion](https://github.com/brenocq/atta/discussions).
+
 ## References
 - [(Book) Physically Based Rendering](http://www.pbr-book.org/)
 - [(Book) Game Physics Engine Development](https://www.amazon.com/Game-Physics-Engine-Development-Commercial-Grade/dp/0123819768)
