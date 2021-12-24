@@ -11,6 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pip'
 
       - name: Decrypt secret
         working-directory: ${{env.working-directory}}
@@ -20,9 +23,6 @@ jobs:
 
       - name: Setup python env
         working-directory: ${{env.working-directory}}
-        with:
-          python-version: '3.9'
-          cache: 'pip'
         run: pip install -r requirements.txt
 
       - name: Update gcloud images
