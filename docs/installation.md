@@ -27,8 +27,9 @@ $ cd atta
 $ mkdir build && cd build
 $ cmake ..
 $ make -j
-$ ./bin/atta_test
-$ ./bin/atta
+$ sudo make install
+$ atta_test
+$ atta
 ```
 
 ## Windows

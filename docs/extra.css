@@ -596,6 +596,14 @@ span.mlabel {
 .fragment {
     border: none !important;
     border-radius: 5px;
+
+}
+
+code {
+    background: var(--light-detail-color);
+    border: none !important;
+    border-radius: 5px;
+    padding: 0px 5px;
 }
 
 span.keyword {
@@ -638,3 +646,4 @@ span.lineno {
 span.lineno a {
 	background: transparent;
 }
+
