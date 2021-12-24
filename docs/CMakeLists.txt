@@ -1,6 +1,6 @@
 set(ATTA_DOXYGEN_MARKDOWN
-    "docs/installation.md"
     "docs/gettingStarted.md"
+    "docs/installation.md"
     "docs/systemsOverview.md"
     "docs/references.md"
 )

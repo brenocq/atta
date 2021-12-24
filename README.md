@@ -18,23 +18,24 @@ Atta is a robot simulator for 2D and 3D applications mainly focused on multi-rob
   - Interface between simulated and physical robots
   - Cross-platform (including web support to easily share the simulations)
 
-I am creating a website in parallel to document the source code and project examples, but it is not yet available.
+Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs). You can also test the web build online [here](https://atta.brenocq.com/build).
 
 ## Progress
 Check the progress of each atta system by **clicking on the buttons below**. Issues with bugs or new ideas are very welcome :)
 
 <p align="center">
- <a href="https://github.com/brenocq/atta/projects/8"><img src="https://storage.googleapis.com/atta-images/main/component_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/13"><img src="https://storage.googleapis.com/atta-images/main/event_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/14"><img src="https://storage.googleapis.com/atta-images/main/file_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/16"><img src="https://storage.googleapis.com/atta-images/main/graphics_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/17"><img src="https://storage.googleapis.com/atta-images/main/io_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/15"><img src="https://storage.googleapis.com/atta-images/main/memory_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/6"><img src="https://storage.googleapis.com/atta-images/main/physics_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/12"><img src="https://storage.googleapis.com/atta-images/main/resource_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/11"><img src="https://storage.googleapis.com/atta-images/main/script_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/10"><img src="https://storage.googleapis.com/atta-images/main/sensor_system_button_github.png" height="150"></a>
- <a href="https://github.com/brenocq/atta/projects/9"><img src="https://storage.googleapis.com/atta-images/main/ui_system_button_github.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/8"><img src="https://storage.googleapis.com/atta-images/main/component_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/13"><img src="https://storage.googleapis.com/atta-images/main/event_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/14"><img src="https://storage.googleapis.com/atta-images/main/file_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/16"><img src="https://storage.googleapis.com/atta-images/main/graphics_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/17"><img src="https://storage.googleapis.com/atta-images/main/io_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/15"><img src="https://storage.googleapis.com/atta-images/main/memory_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/6"><img src="https://storage.googleapis.com/atta-images/main/physics_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/12"><img src="https://storage.googleapis.com/atta-images/main/resource_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/11"><img src="https://storage.googleapis.com/atta-images/main/script_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/10"><img src="https://storage.googleapis.com/atta-images/main/sensor_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/9"><img src="https://storage.googleapis.com/atta-images/main/ui_system_button_github_progress.png" height="150"></a>
+ <a href="https://github.com/brenocq/atta/projects/18"><img src="https://storage.googleapis.com/atta-images/main/docs_button_github_progress.png" height="150"></a>
 </p>
 
 ## Architecture
