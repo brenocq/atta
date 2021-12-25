@@ -23,20 +23,18 @@ Check out the atta website for a [getting started guide](https://atta.brenocq.co
 ## Progress
 Check the atta progress by **clicking on the buttons below**. [Issues](https://github.com/brenocq/atta/issues) with bugs and [discussions](https://github.com/brenocq/atta/discussions) with new ideas are very welcome :)
 
-<p align="center">
-    [![ComponentSystem](https://storage.googleapis.com/atta-images/main/component_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/8)
-    [![EventSystem](https://storage.googleapis.com/atta-images/main/event_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/13)
-    [![FileSystem](https://storage.googleapis.com/atta-images/main/file_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/14)
-    [![GraphicsSystem](https://storage.googleapis.com/atta-images/main/graphics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/16)
-    [![IoSystem](https://storage.googleapis.com/atta-images/main/io_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/17)
-    [![MemorySystem](https://storage.googleapis.com/atta-images/main/memory_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/15)
-    [![PhysicsSystem](https://storage.googleapis.com/atta-images/main/physics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/6)
-    [![ResourceSystem](https://storage.googleapis.com/atta-images/main/resource_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/12)
-    [![ScriptSystem](https://storage.googleapis.com/atta-images/main/script_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/11)
-    [![SensorSystem](https://storage.googleapis.com/atta-images/main/sensor_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/10)
-    [![UISystem](https://storage.googleapis.com/atta-images/main/ui_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/9)
-    [![Docs](https://storage.googleapis.com/atta-images/main/docs_button_github_progress.png?)](https://github.com/brenocq/atta/projects/18)
-</p>
+[![ComponentSystem](https://storage.googleapis.com/atta-images/main/component_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/8)
+[![EventSystem](https://storage.googleapis.com/atta-images/main/event_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/13)
+[![FileSystem](https://storage.googleapis.com/atta-images/main/file_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/14)
+[![GraphicsSystem](https://storage.googleapis.com/atta-images/main/graphics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/16)
+[![IOSystem](https://storage.googleapis.com/atta-images/main/io_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/17)
+[![MemorySystem](https://storage.googleapis.com/atta-images/main/memory_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/15)
+[![PhysicsSystem](https://storage.googleapis.com/atta-images/main/physics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/6)
+[![ResourceSystem](https://storage.googleapis.com/atta-images/main/resource_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/12)
+[![ScriptSystem](https://storage.googleapis.com/atta-images/main/script_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/11)
+[![SensorSystem](https://storage.googleapis.com/atta-images/main/sensor_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/10)
+[![UISystem](https://storage.googleapis.com/atta-images/main/ui_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/9)
+[![Docs](https://storage.googleapis.com/atta-images/main/docs_button_github_progress.png?)](https://github.com/brenocq/atta/projects/18)
 
 ## Architecture
 Atta is composed of decoupled system, the current systems are:
