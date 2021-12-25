@@ -54,6 +54,9 @@ for project in repo.get_projects():
         color = (70, 163, 58, 255)
         cv2.ellipse(img, center, axes, angle, startAngle, endAngle, color, thickness)
 
+        # Resize image
+        img = cv2.resize(img, (150, 150), interpolation = cv2.INTER_AREA)
+
         # Update gcloud image
         progressFilename = filename.replace('.png', '_progress.png')
         cv2.imwrite(progressFilename, img)
