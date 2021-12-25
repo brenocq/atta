@@ -64,7 +64,7 @@ namespace atta
                     {
                         EntityId parentId = r->getParent();
                         r = ComponentManager::getEntityComponent<RelationshipComponent>(r->getParent());
-                        for(EntityId entity = _firstCloneEid; entity < _firstCloneEid+_maxClones; entity++)
+                        for(EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid+_maxClones); entity++)
                             r->addChild(parentId, entity);
                     }
                 }
@@ -74,7 +74,7 @@ namespace atta
 
     void Factory::destroyClones()
     {
-        for(EntityId i = _firstCloneEid; i < _firstCloneEid+_maxClones; i++)
+        for(EntityId i = _firstCloneEid; i < EntityId(_firstCloneEid+_maxClones); i++)
             ComponentManager::deleteEntity(i);
         // TODO can be faster if deallocate each component and then deleteEntityOnly
     }
@@ -83,7 +83,7 @@ namespace atta
     {
         // TODO faster
         unsigned cloneId = 0;
-        for(EntityId entity = _firstCloneEid; entity < _firstCloneEid+_maxClones; entity++)
+        for(EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid+_maxClones); entity++)
         {
             ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(entity);
             if(scriptComponent)
@@ -142,7 +142,7 @@ namespace atta
         std::vector<EntityId> clones;
         clones.resize(_maxClones);
         int i = 0;
-        for(EntityId entity = _firstCloneEid; entity < _firstCloneEid+_maxClones; entity++, i++)
+        for(EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid+_maxClones); entity++, i++)
             clones[i] = entity;
         return clones;
     }

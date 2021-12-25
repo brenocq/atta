@@ -50,6 +50,7 @@ namespace atta
          * */
         static mat4 getEntityWorldTransform(EntityId entity);
     };
+
     ATTA_REGISTER_COMPONENT(TransformComponent)
     template<> ComponentRegistry::Description& TypedComponentRegistry<TransformComponent>::getDescription();
 }

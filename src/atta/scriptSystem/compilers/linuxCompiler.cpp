@@ -12,9 +12,12 @@
 
 namespace atta
 {
-    LinuxCompiler::LinuxCompiler()
+    LinuxCompiler::LinuxCompiler():
+        _compiler("g++")
     {
-
+        // Prefer to use clang++ because it is faster
+        if(std::system("clang++ 2> /dev/null"))    
+            _compiler = "clang++";
     }
 
     LinuxCompiler::~LinuxCompiler()
@@ -25,72 +28,47 @@ namespace atta
     void LinuxCompiler::compileAll()
     {
         std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-        //LOG_DEBUG("LinuxCompiler", "Compile all targets");
+        LOG_DEBUG("LinuxCompiler", "Compile all targets");
 
         fs::path projectDir = FileManager::getProject()->getDirectory();
         fs::path buildDir = projectDir / "build";
-        fs::path tempFile = buildDir / "atta.temp";
-        fs::path errorFile = buildDir / "atta.error";
-        tempFile = fs::absolute(tempFile);
-        errorFile = fs::absolute(errorFile);
 
         // Create build directory if does not exists
         if(!fs::exists(buildDir))
             fs::create_directory(buildDir);
 
+        // Create makefiles
         fs::path prevPath = fs::current_path();
         fs::current_path(buildDir);
 #ifdef ATTA_DEBUG_BUILD
-        std::string buildCommand = "cmake -DCMAKE_CUDA_ARCHITECTURES=75 -DCMAKE_BUILD_TYPE=Debug ..";
+        std::string buildCommand = "cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER="+_compiler+" ..";
 #else
-        std::string buildCommand = "cmake -DCMAKE_CUDA_ARCHITECTURES=75 -DCMAKE_BUILD_TYPE=Release ..";
+        std::string buildCommand = "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="+_compiler+" ..";
 #endif
-        buildCommand += " > " + tempFile.string() + " ";
-        buildCommand += "2> " + errorFile.string();
-        std::system(buildCommand.c_str());
+        std::string buildOutput = runCommand(buildCommand);
 
+        // Build makefile
         std::string makeCommand = "make -j";
-        makeCommand += " > " + tempFile.string();
-        makeCommand += " 2> " + errorFile.string();
-        std::system(makeCommand.c_str());
+        std::string makeOutput = runCommand(makeCommand);
         fs::current_path(prevPath);
 
-        //---------- Show default output ----------//
-        std::stringstream tempSS;
-        std::ifstream tempIn(tempFile);
-        tempSS << tempIn.rdbuf();
-        tempIn.close();
-        std::string tempStr = tempSS.str();
+        //---------- Show outputs ----------//
+        LOG_VERBOSE("LinuxCompiler", "Build output: \n$0", buildOutput);
+        LOG_VERBOSE("LinuxCompiler", "Make output: \n$0", makeOutput);
 
-        if(tempStr.size() > 0)
-            LOG_VERBOSE("LinuxCompiler", "Build output: \n$0", tempStr);
-
-        //---------- Show error ----------//
-        std::stringstream errorSS;
-        std::ifstream errorIn(errorFile);
-        errorSS << errorIn.rdbuf();
-        errorIn.close();
-        std::string errorStr = errorSS.str();
-
-        if(errorStr.size() > 0)
-        {
-            LOG_WARN("LinuxCompiler", "Error while compiling project!\n$0", errorStr);
-            return;
-        }
-
-        fs::remove(tempFile);
-        fs::remove(errorFile);
-
+        // Show time
         std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
         auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-        //LOG_INFO("LinuxCompiler", "Time to compile all: $0 ms", micro.count()/1000.0f);
+        LOG_INFO("LinuxCompiler", "Time to compile all: $0 ms", micro.count()/1000.0f);
     }
+
 
     void LinuxCompiler::compileTarget(StringId target)
     {
         std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
-        //LOG_DEBUG("LinuxCompiler", "Compile target $0", target);
+        LOG_DEBUG("LinuxCompiler", "Compile target $0", target);
+        // Check target
         if(_targetFiles.find(target) == _targetFiles.end())
         {
             LOG_WARN("LinuxCompiler", "Could not find target $0", target);
@@ -99,10 +77,6 @@ namespace atta
 
         fs::path projectDir = FileManager::getProject()->getDirectory();
         fs::path buildDir = projectDir / "build";
-        fs::path tempFile = buildDir / "atta.temp";
-        fs::path errorFile = buildDir / "atta.error";
-        tempFile = fs::absolute(tempFile);
-        errorFile = fs::absolute(errorFile);
 
         // Compile all if never compiled
         if(!fs::exists(buildDir))
@@ -111,38 +85,27 @@ namespace atta
             return;
         }
 
+        // Compile target
         fs::path prevPath = fs::current_path();
         fs::current_path(buildDir);
         std::string command = "cmake --build . --parallel --target "+target.getString();
-        //std::string command = "make "+target.getString()+"/fast -j";
-        command += " > " + tempFile.string();
-        command += " 2> " + errorFile.string();
-        std::system(command.c_str());
+        std::string output = runCommand(command);
         fs::current_path(prevPath);
 
-        //std::string makeCommand = "make";
-        //makeCommand += " > " + tempFile.filename().string();
-        //makeCommand += " 2> " + errorFile.filename().string();
-        //std::system(makeCommand.c_str());
-
-        std::stringstream errorSS;
-        std::ifstream errorIn(errorFile);
-        errorSS << errorIn.rdbuf();
-        errorIn.close();
-        std::string errorStr = errorSS.str();
-
-        if(errorStr.size() > 0)
+        if(output.find("Error: could not load cache") != std::string::npos)
         {
-            LOG_WARN("LinuxCompiler", "Error while compiling target $0\n$1", target, errorStr);
+            // Empty build directory, should recompile all targets
+            compileAll();
             return;
         }
 
-        fs::remove(tempFile);
-        fs::remove(errorFile);
+        // Show output
+        LOG_VERBOSE("LinuxCompiler", "Build output:\n$0", output);
 
+        // Show time
         std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
         auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-        //LOG_INFO("LinuxCompiler", "Time to compile target $1: $0 ms", micro.count()/1000.0f, target);
+        LOG_INFO("LinuxCompiler", "Time to compile target $1: $0 ms", micro.count()/1000.0f, target);
     }
 
     void LinuxCompiler::updateTargets()
@@ -170,7 +133,8 @@ namespace atta
                 isTarget = true;
                 continue;
             }
-            if(line.find(".o") != std::string::npos)
+
+            if(line.find(".o") != std::string::npos || line.find("cmake_pch") != std::string::npos)
             {
                 isTarget = false;
                 continue;
@@ -189,6 +153,7 @@ namespace atta
 
     void LinuxCompiler::findTargetFiles(StringId target)
     {
+        // TODO Find a better way to track header files
         _targetFiles[target] = std::vector<fs::path>();
 
         fs::path projectDir = FileManager::getProject()->getDirectory();
@@ -211,19 +176,27 @@ namespace atta
                     size_t start = line.find("\"", end+1);
                     if(start == std::string::npos)	
                     {
-                        //LOG_DEBUG("LinuxCompiler", "Updated target files $0:\n $1", target, _targetFiles[target]);
-                        return;
+                        std::getline(dependIn, line);
+                        if(line.find(")") != std::string::npos)
+                        {
+                            // Finish if reached end of list
+                            //LOG_DEBUG("LinuxCompiler", "Updated target files $0:\n $1", target, _targetFiles[target]);
+                            return;
+                        }
+                        // Next line is still the list, continue checking dependencies 
+                        end = -1;
+                        start = line.find("\"", end+1);
                     }
                     end = line.find("\"", start+1);
 
                     std::string possibleFile = line.substr(start+1, end-start-1);
-                    if(possibleFile.find(".o") == std::string::npos && 
+                    //LOG_DEBUG("LinuxCompiler", "Possible file $0", possibleFile);
+                    if(possibleFile.find(".o") == std::string::npos && possibleFile.find("cmake_pch") == std::string::npos &&
                             possibleFile.find(projectDir.filename()) != std::string::npos)
                     {
                         _targetFiles[target].push_back(possibleFile);
 
                         // If .cpp, add .h too
-                        // TODO Find a better way to track header files
                         size_t pos;
                         if((pos=possibleFile.find(".cpp")) != std::string::npos)
                         {
@@ -236,6 +209,21 @@ namespace atta
             }
         }
         dependIn.close();
+    }
+
+    std::string LinuxCompiler::runCommand(std::string cmd)
+    {
+        std::array<char, 128> buffer;
+        std::string result;
+        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen((cmd+" 2>&1").c_str(), "r"), pclose);
+        if(!pipe)
+        {
+            LOG_WARN("LinuxCompiler", "Could not open pipe");
+            return "";
+        }
+        while(fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+            result += buffer.data();
+        return result;
     }
 }
 

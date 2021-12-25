@@ -21,7 +21,7 @@ Atta is a robot simulator for 2D and 3D applications mainly focused on multi-rob
 Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs). You can also test the web build online [here](https://atta.brenocq.com/build).
 
 ## Progress
-Check the progress of each atta system by **clicking on the buttons below**. Issues with bugs or new ideas are very welcome :)
+Check the atta progress by **clicking on the buttons below**. [Issues](https://github.com/brenocq/atta/issues) with bugs and [discussions](https://github.com/brenocq/atta/discussions) with new ideas are very welcome :)
 
 <p align="center">
  <a href="https://github.com/brenocq/atta/projects/8"><img src="https://storage.googleapis.com/atta-images/main/component_system_button_github_progress.png" height="150"></a>

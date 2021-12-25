@@ -23,6 +23,9 @@ namespace atta
 
 	private:
 		void findTargetFiles(StringId target);
+        std::string runCommand(std::string cmd);
+
+        std::string _compiler;
 	};
 }
 
