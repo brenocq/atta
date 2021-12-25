@@ -27,8 +27,9 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
-#include "core/common.h"
-#include "core/log.h"
-#include "core/assert.h"
+#include <atta/core/common.h>
+#include <atta/core/log.h>
+#include <atta/core/assert.h>
+#include <atta/core/math/math.h>
 
 #endif// ATTA_PRE_COMPILED_HEADER_H

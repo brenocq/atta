@@ -218,7 +218,7 @@ list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/img
 list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/glad/include)
 list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/stb_image)
 list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/assimp/include)
-message(${ATTA_INSTALL_INCLUDE})
+set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/atta/pch.h)
 
 # Install resources
 install(DIRECTORY resources/ DESTINATION share/atta

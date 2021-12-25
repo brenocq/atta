@@ -25,7 +25,7 @@ namespace atta::ui
         {
 			if(ImGui::BeginDragDropTarget())
 			{
-				if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("EntityId"))
+				if(ImGui::AcceptDragDropPayload("EntityId"))
 					LOG_DEBUG("EntityWindow", "Drop outside");
 				ImGui::EndDragDropTarget();
 			}
