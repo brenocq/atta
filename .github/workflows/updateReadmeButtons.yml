@@ -1,6 +1,12 @@
 name: Update readme buttons
 
-on: push
+on: 
+  project_card:
+    types: [created, deleted, moved]
+  project:
+    types: [created, deleted]
+  project_column:
+    types: [created, deleted, updated]
 
 jobs:
   update-images:
