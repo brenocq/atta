@@ -18,7 +18,7 @@ jobs:
       - name: Decrypt secret
         working-directory: ${{env.working-directory}}
         env:
-          SECRET_GCLOUD: ${{secrets.SECRET_GCLOUD}}
+          SECRET_GCLOUD: ${{ secrets.SECRET_GCLOUD }}
         run: ./decrypt_secret.sh
 
       - name: Setup python env
@@ -28,5 +28,6 @@ jobs:
       - name: Update gcloud images
         working-directory: ${{env.working-directory}}
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python updateReadmeButtons.py
