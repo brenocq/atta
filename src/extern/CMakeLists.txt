@@ -111,3 +111,16 @@ target_include_directories(BulletDynamics PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bullet3/src>
     $<INSTALL_INTERFACE:extern/bullet3/src>
 )
+
+########## cpprestsdk ##########
+set(CPPREST_INSTALL_HEADERS OFF CACHE BOOL "" FORCE)
+set(CPPREST_INSTALL OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(cpprestsdk)
+atta_add_libs(cpprest)
+target_include_directories(cpprest PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpprestsdk/Release/include>
+    $<INSTALL_INTERFACE:extern/cpprestsdk/Release/include>
+)

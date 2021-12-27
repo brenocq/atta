@@ -45,8 +45,8 @@ for project in repo.get_projects():
 
         bgRadius = 77
         thickness = 3
-        radius = bgRadius-thickness//2
-        center = (23+bgRadius, 20+bgRadius)
+        radius = bgRadius-thickness//2-1
+        center = (22+bgRadius, 20+bgRadius)
         axes = (radius, radius)
         angle = 270
         startAngle = 0
@@ -55,7 +55,7 @@ for project in repo.get_projects():
         cv2.ellipse(img, center, axes, angle, startAngle, endAngle, color, thickness)
 
         # Resize image
-        img = cv2.resize(img, (150, 150), interpolation = cv2.INTER_AREA)
+        img = cv2.resize(img, (150, 155), interpolation = cv2.INTER_AREA)
 
         # Update gcloud image
         progressFilename = filename.replace('.png', '_progress.png')

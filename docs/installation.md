@@ -8,12 +8,12 @@ Fist, you will need to install atta dependencies.
 
 **Ubuntu:**
 ```bash
-$ sudo apt-get install ninja-build cmake xorg-dev
+$ sudo apt-get install cmake ninja-build xorg-dev openssl libssl-dev libboost-all-dev
 ```
 
 **Arch:**
 ```bash
-$ sudo pacman -Sy ninja cmake glfw-x11
+$ sudo pacman -Sy cmake ninja glfw-x11 boost
 ```
 
 After installing the dependencies, be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. 
@@ -37,6 +37,7 @@ Fist, you will need to install atta dependencies.
 
 ```
 choco install ninja cmake
+> vcpkg install cpprestsdk cpprestsdk:x64-windows
 ```
 
 After installing the dependencies, be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. 
@@ -54,12 +55,11 @@ $ ./bin/atta_test
 $ ./bin/atta
 ```
 
-
 ## MacOS
 Fist, you will need to install atta dependencies.
 
 ```
-brew install ninja cmake
+brew install ninja cmake boost openssl
 ```
 
 After installing the dependencies, be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. 

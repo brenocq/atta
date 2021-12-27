@@ -68,17 +68,18 @@ Dependencies for some operating systems:
 
 **Windows:**
 ```bash
-$ choco install ninja cmake
+> choco install cmake
+> vcpkg install cpprestsdk cpprestsdk:x64-windows
 ```
 
 **MacOS:**
 ```bash
-$ brew install cmake ninja
+$ brew install cmake ninja boost openssl 
 ```
 
 **Ubuntu:**
 ```bash
-$ sudo apt-get install ninja-build cmake xorg-dev
+$ sudo apt-get install cmake ninja-build xorg-dev openssl libssl-dev libboost-all-dev
 ```
 
 #### Clone

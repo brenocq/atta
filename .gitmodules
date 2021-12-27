@@ -20,3 +20,7 @@
 [submodule "src/extern/bullet3"]
 	path = src/extern/bullet3
 	url = git@github.com:bulletphysics/bullet3.git
+[submodule "src/extern/cpprestsdk"]
+	path = src/extern/cpprestsdk
+	url = git@github.com:microsoft/cpprestsdk.git
+    fetchRecurseSubmodules = true
