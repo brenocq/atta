@@ -120,7 +120,14 @@ macro(atta_add_libs)
     foreach(_lib ${ARGN})
         list(APPEND ATTA_LIBS ${_lib})
     endforeach()
-    set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)
+
+    # Update variable
+    get_directory_property(hasParent PARENT_DIRECTORY)
+    if(hasParent)
+        set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)
+    else()
+        set(ATTA_LIBS ${ATTA_LIBS})
+    endif()
 endmacro()
 
 macro(atta_add_include_dirs)
@@ -128,7 +135,14 @@ macro(atta_add_include_dirs)
     foreach(_include_dir ${ARGN})
         list(APPEND ATTA_INCLUDE_DIRS ${_include_dir})
     endforeach()
-    set(ATTA_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS} PARENT_SCOPE)
+
+    # Update variable
+    get_directory_property(hasParent PARENT_DIRECTORY)
+    if(hasParent)
+        set(ATTA_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS} PARENT_SCOPE)
+    else()
+        set(ATTA_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS})
+    endif()
 endmacro()
 
 macro(atta_add_tests)
@@ -136,7 +150,14 @@ macro(atta_add_tests)
     foreach(_test ${ARGN})
         list(APPEND ATTA_TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_test}")
     endforeach()
-    set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
+
+    # Update variable
+    get_directory_property(hasParent PARENT_DIRECTORY)
+    if(hasParent)
+        set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
+    else()
+        set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES})
+    endif()
 endmacro()
 
 macro(atta_target_common target)
@@ -159,7 +180,7 @@ endmacro()
 
 ########## Atta/Extern directories ##########
 list(APPEND ATTA_INCLUDE_DIRS ${ATTA_PATH}/src)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/extern)
+include(${CMAKE_CURRENT_SOURCE_DIR}/src/extern/extern.cmake)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta)
 
 
@@ -245,14 +266,14 @@ install(
 )
 
 # Install cmake targets
-install(TARGETS ${ATTA_LIBS}
-	EXPORT atta_targets
-    INCLUDES DESTINATION src/extern
-)
-install(EXPORT atta_targets
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
-	FILE attaTargets.cmake 
-)
+#install(TARGETS ${ATTA_LIBS}
+#	EXPORT atta_targets
+#    INCLUDES DESTINATION src/extern
+#)
+#install(EXPORT atta_targets
+#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
+#	FILE attaTargets.cmake 
+#)
 
 ########## CPack (deb package) ##########
 #install(TARGETS atta_core

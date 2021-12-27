@@ -24,8 +24,7 @@ jobs:
     - name: Install dependencies on windows
       if: startsWith(matrix.config.os, 'windows')
       run: |
-        choco install ninja cmake
-        ninja --version
+        choco install cmake cpprestsdk
         cmake --version
 
     - name: Configure

@@ -25,15 +25,16 @@ jobs:
       if: startsWith(matrix.config.os, 'ubuntu')
       run: |
         sudo apt-get update
-        sudo apt-get install ninja-build cmake xorg-dev
-        ninja --version
+        sudo apt-get install cmake xorg-dev assimp-utils libcpprest-dev
         cmake --version
         gcc --version
+
     - name: Configure
       run: |
         mkdir build
         cd build
         cmake ..
+
     - name: Build
       run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
 
