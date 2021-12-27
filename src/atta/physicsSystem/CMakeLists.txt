@@ -16,5 +16,5 @@ atta_target_common(atta_physics_system)
 atta_add_libs(atta_physics_system)
 target_link_libraries(atta_physics_system PUBLIC 
     box2d 
-    BulletDynamics BulletCollision LinearMath
+    ${ATTA_BULLET_TARGETS} 
 )
