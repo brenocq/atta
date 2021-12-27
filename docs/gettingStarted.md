@@ -191,19 +191,11 @@ We also need to change the `CMakeLists.txt` so that atta will know how to compil
 # CMakeLists.txt
 cmake_minimum_required(VERSION 3.12)
 project(myProject VERSION 1.0.0 LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Use atta 0.0.0.3 package
-# This is necessary to use headers from atta dependencies
 find_package(atta 0.0.0.3 REQUIRED)
-include_directories(${atta_INCLUDE_DIRS})
 
 # Create gene component target
-add_library(geneComponent SHARED
-    src/geneComponent.cpp
-)
+atta_add_target(geneComponent "src/geneComponent.cpp")
 ```
 
 That's it! If try to add a component now, you will see your GeneComponent there.
@@ -270,10 +262,9 @@ Now we need to update the `CMakeLists.txt` so that this script is compiled, add:
 ```cmake
 # CMakeLists.txt
 
+...
 # Create light script target
-add_library(lightScript SHARED
-    src/lightScript.cpp
-)
+atta_add_target(lightScript "src/lightScript.cpp")
 ```
 
 We can now add a atta::ScriptComponent to the light entity. Because there exists only the `LightScript` on this project, the combo box will show only this script.
@@ -407,10 +398,9 @@ Now we need to update the `CMakeLists.txt` so that this script is compiled, add:
 ```cmake
 # CMakeLists.txt
 
+...
 # Create project script target
-add_library(projectScript SHARED
-    src/projectScript.cpp
-)
+atta_add_target(projectScript "src/projectScript.cpp")
 ```
 
 Now the messages should you printed as you press the buttons.

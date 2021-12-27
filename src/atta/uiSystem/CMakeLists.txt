@@ -7,7 +7,9 @@ set(ATTA_UI_SYSTEM_SOURCE
     layers/editor/editorLayer.cpp
     layers/editor/dockSpace.cpp
     layers/editor/window.cpp
+
     layers/editor/topBar/topBar.cpp
+    layers/editor/topBar/localWindows/repoWindow.cpp
 
     layers/editor/windows/entityWindow.cpp
 
@@ -21,6 +23,6 @@ add_library(atta_ui_system STATIC
     ${ATTA_UI_SYSTEM_SOURCE}
 )
 
-target_link_libraries(atta_ui_system PRIVATE atta_graphics_system atta_io_system atta_cv imguizmo atta_component_system)
+target_link_libraries(atta_ui_system PRIVATE atta_graphics_system atta_io_system atta_cv imguizmo atta_component_system cpprest)
 atta_target_common(atta_ui_system)
 atta_add_libs(atta_ui_system)

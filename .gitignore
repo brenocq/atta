@@ -8,6 +8,7 @@
 # Build
 build/
 scripts/local_*.sh
+projects/
 
 # Visual Studio
 /.vs

@@ -39,6 +39,7 @@ namespace atta
         static fs::path solveResourcePath(fs::path relativePath) { return getInstance().solveResourcePathImpl(relativePath); }
         static std::vector<fs::path> getResourcePaths() { return getInstance().getResourcePathsImpl(); }
         static std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
+        static fs::path getDefaultProjectFolder() { return getInstance()._defaultProjectFolder; }
 
         // Update watcher (TODO remove)
         static void update() { getInstance().updateImpl(); };
@@ -67,6 +68,7 @@ namespace atta
         std::shared_ptr<Project> _project;
         std::shared_ptr<ProjectSerializer> _projectSerializer;
         bool _simulationRunning;
+        fs::path _defaultProjectFolder;///< Default folder to clone published projects and save projects
     };
 }
 

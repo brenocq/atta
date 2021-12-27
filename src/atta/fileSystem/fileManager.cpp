@@ -36,6 +36,9 @@ namespace atta
 
         EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(FileManager::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(FileManager::onSimulationStateChange));
+
+        _defaultProjectFolder = fs::path(ATTA_DIR)/"projects";
+        LOG_DEBUG("FileManager", "default proj folder: $0", _defaultProjectFolder.string());
     }
 
     void FileManager::shutDownImpl()
