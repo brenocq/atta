@@ -5,7 +5,6 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/uiSystem/uiManager.h>
-
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/uiSystem/layers/uiLayer.h>
 #include <atta/uiSystem/layers/editor/editorLayer.h>

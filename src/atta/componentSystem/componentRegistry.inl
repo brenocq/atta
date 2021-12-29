@@ -35,9 +35,9 @@ namespace atta
     TypedComponentRegistry<T>::TypedComponentRegistry():
         ComponentRegistry(sizeof(T), typeid(T).name(), typeid(T).hash_code())
     {
-        LOG_DEBUG("TypedComponentRegistry", "Created new registry for [w]$0[]", typeid(T).name());
+        //LOG_DEBUG("TypedComponentRegistry", "Created new registry for [w]$0[]", typeid(T).name());
         description = &getDescription();
-        LOG_DEBUG("TypedComponentRegistry", "Registered [w]$0[]", description->name);
+        //LOG_DEBUG("TypedComponentRegistry", "Registered [w]$0[]", description->name);
         ComponentRegistry::registerToComponentManager();
     }
 
@@ -45,6 +45,14 @@ namespace atta
     void TypedComponentRegistry<T>::renderUIImpl(T* component)
     {
         //DASSERT(this != nullptr, "Trying to call TypedComponentRegistry<$0>::renderUI() on nullptr component", std::string(typeid(T).name()));
+
+        // Check if full component renderUI was defined
+        if(description->renderUI.find("") != description->renderUI.end())
+        {
+            std::string imguiId = "##"+description->name;
+            description->renderUI[""](reinterpret_cast<void*>(component), imguiId);
+            return;
+        }
 
         const std::vector<AttributeDescription> attributeDescriptions = description->attributeDescriptions;
 

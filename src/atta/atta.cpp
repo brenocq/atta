@@ -122,8 +122,10 @@ namespace atta
             }
         }
         else
+        {
             // Update graphics every frame
             GraphicsManager::update();
+        }
 
         ProjectScript* project = ScriptManager::getProjectScript();
         if(_simulationState == SimulationState::RUNNING)

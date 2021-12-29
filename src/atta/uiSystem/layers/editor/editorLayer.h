@@ -10,7 +10,10 @@
 #include <atta/memorySystem/allocatedObject.h>
 #include <atta/uiSystem/layers/editor/dockSpace.h>
 #include <atta/uiSystem/layers/editor/topBar/topBar.h>
+#include <atta/uiSystem/layers/editor/toolBar/toolBar.h>
 #include <atta/uiSystem/layers/editor/windows/entityWindow.h>
+#include <atta/uiSystem/layers/editor/windows/viewportWindows.h>
+#include <atta/uiSystem/layers/editor/windows/logWindow.h>
 #include <atta/uiSystem/layers/editor/drawers/physicsDrawer.h>
 
 namespace atta::ui
@@ -18,13 +21,6 @@ namespace atta::ui
     class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("GraphicsAllocator")>
     {
     public:
-        enum class EditorState
-        {
-            EDITOR = 0,
-            SIMULATION_RUNNING,
-            SIMULATION_PAUSED,
-        };
-
         EditorLayer();
 
         void onAttach() override;
@@ -33,16 +29,12 @@ namespace atta::ui
         void onUIRender() override;
 
     private:
-        void updateViewports();
-        void toolbar();
-        void addBasicShapePopup();
-        void onSimulationStateChange(Event& event);
-
         DockSpace _dockSpace;
         TopBar _topBar;
+        ToolBar _toolBar;
         EntityWindow _entityWindow;
-
-        EditorState _editorState;
+        LogWindow _logWindow;
+        ViewportWindows _viewportWindows;
 
 		// Drawers
 		PhysicsDrawer _physicsDrawer;///< Physics drawer
