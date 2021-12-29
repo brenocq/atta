@@ -37,9 +37,9 @@ uniform int numPointLights;
 //----- PBR -----//
 uniform vec3 camPos;
 // IBL
-uniform samplerCube irradianceMap;
-uniform samplerCube prefilterMap;
-uniform sampler2D   brdfLUT;
+//uniform samplerCube irradianceMap;
+//uniform samplerCube prefilterMap;
+//uniform sampler2D   brdfLUT;
 
 //----- Material -----//
 uniform Material material;
@@ -111,23 +111,23 @@ void main()
     }
 
     // Diffuse IBL
-    vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+    //vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
 
-    vec3 kS = F;
-    vec3 kD = 1.0 - kS;
-    kD *= 1.0 - metallic;	  
-    vec3 irradiance = texture(irradianceMap, N).rgb;
-    vec3 diffuse = irradiance * albedo;
+    //vec3 kS = F;
+    //vec3 kD = 1.0 - kS;
+    //kD *= 1.0 - metallic;	  
+    //vec3 irradiance = texture(irradianceMap, N).rgb;
+    //vec3 diffuse = /*irradiance */ albedo;
 
     // Specular IBL
-    const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;    
-    vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
-    vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);	
+    //const float MAX_REFLECTION_LOD = 4.0;
+    //vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;    
+    //vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+    //vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);	
 
-    //kD*diffuse + 
-    vec3 ambient = (specular) * ao;
-    vec3 color = ambient + Lo;
+    //vec3 ambient = kD*diffuse + specular * ao;
+    //vec3 color = ambient + Lo;
+    vec3 color = albedo;
 
     // HDR
     color = color / (color + vec3(1.0));

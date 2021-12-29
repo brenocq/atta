@@ -78,22 +78,22 @@ namespace atta
     PbrRenderer::~PbrRenderer()
     {
         // TODO Not everything created is being deleted
-        glDeleteTextures(1, &_envCubemap);
-        glDeleteTextures(1, &_irradianceMap);
-        glDeleteTextures(1, &_prefilterMap);
-        glDeleteTextures(1, &_brdfLUT);
+        //glDeleteTextures(1, &_envCubemap);
+        //glDeleteTextures(1, &_irradianceMap);
+        //glDeleteTextures(1, &_prefilterMap);
+        //glDeleteTextures(1, &_brdfLUT);
     }
 
     void PbrRenderer::render(std::shared_ptr<Camera> camera)
     {
-        if(_firstRender)
-        {
-            brdfLUT();
-            generateCubemap();
-            convoluteCubemap();
-            prefilterCubemap();
-            _firstRender = false;
-        }
+        //if(_firstRender)
+        //{
+        //    brdfLUT();
+        //    generateCubemap();
+        //    convoluteCubemap();
+        //    prefilterCubemap();
+        //    _firstRender = false;
+        //}
 
         std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
 
@@ -105,19 +105,19 @@ namespace atta
             shader->setMat4("view", transpose(camera->getView()));
             shader->setVec3("camPos", camera->getPosition());
 
-            shader->setInt("irradianceMap", 0);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, _irradianceMap);
+            //shader->setInt("irradianceMap", 0);
+            //glActiveTexture(GL_TEXTURE0);
+            //glBindTexture(GL_TEXTURE_2D, 0);
+            //glBindTexture(GL_TEXTURE_CUBE_MAP, _irradianceMap);
 
-            shader->setInt("prefilterMap", 1);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, _prefilterMap);
+            //shader->setInt("prefilterMap", 1);
+            //glActiveTexture(GL_TEXTURE1);
+            //glBindTexture(GL_TEXTURE_CUBE_MAP, _prefilterMap);
 
-            shader->setInt("brdfLUT", 2);
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-            glBindTexture(GL_TEXTURE_2D, _brdfLUT);
+            //shader->setInt("brdfLUT", 2);
+            //glActive'exture(GL_TEXTURE2);
+            //glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+            //glBindTexture(GL_TEXTURE_2D, _brdfLUT);
 
             //----- Lighting -----//
             int numPointLights = 0;
@@ -150,6 +150,7 @@ namespace atta
             }
             shader->setInt("numPointLights", numPointLights);
 
+            //----- Entities -----//
             for(auto entity : entities)
             {
                 MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);

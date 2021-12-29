@@ -9,9 +9,12 @@ set(ATTA_UI_SYSTEM_SOURCE
     layers/editor/window.cpp
 
     layers/editor/topBar/topBar.cpp
+    layers/editor/toolBar/toolBar.cpp
     layers/editor/topBar/localWindows/repoWindow.cpp
 
     layers/editor/windows/entityWindow.cpp
+    layers/editor/windows/logWindow.cpp
+    layers/editor/windows/viewportWindows.cpp
 
     layers/editor/systemWindows/ioSystemWindow.cpp
     layers/editor/systemWindows/physicsSystemWindow.cpp
