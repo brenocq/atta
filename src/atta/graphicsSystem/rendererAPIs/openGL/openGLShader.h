@@ -20,12 +20,16 @@ namespace atta
         void recompile() override;
 
         OpenGLId getId() const { return _id; }
+        std::vector<std::string> getTextureUnits() { return _textureUnits; }
         void deleteShader();
 
         static GLenum convertFileToShaderType(const fs::path& filepath);
 
     private:
+        void extractTextureUnits(const std::stringstream& sstream);
+
         OpenGLId _id;
+        std::vector<std::string> _textureUnits;
     };
 }
 

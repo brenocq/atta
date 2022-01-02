@@ -37,6 +37,7 @@ namespace atta
 
     private:
         OpenGLId _id;
+        std::vector<std::string> _textureUnits;
     };
 }
 

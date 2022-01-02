@@ -9,13 +9,13 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<MeshComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<MeshComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
             {
                 "Mesh",
                 {
-                    { ComponentRegistry::AttributeType::STRINGID, offsetof(MeshComponent, sid), "sid", {}, {}, {}, {} },
+                    { AttributeType::STRINGID, offsetof(MeshComponent, sid), "sid", {}, {}, {}, {} },
                 }
             };
 

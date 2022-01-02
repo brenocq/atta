@@ -7,7 +7,7 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_SPHERE_COLLIDER_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_SPHERE_COLLIDER_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
+#include <atta/componentSystem/componentManager.h>
 #include <atta/core/math/vector.h>
 
 namespace atta
@@ -35,7 +35,7 @@ namespace atta
         void getWorldData(EntityId eid, float& worldRadius, vec3& worldPos);
     };
     ATTA_REGISTER_COMPONENT(SphereColliderComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<SphereColliderComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<SphereColliderComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_SPHERE_COLLIDER_COMPONENT_H

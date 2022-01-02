@@ -5,7 +5,6 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/componentSystem/componentRegistry.h>
-#include <atta/core/math/math.h>
 #include <atta/componentSystem/componentManager.h>
 #include <imgui.h>
 
@@ -27,7 +26,7 @@ namespace atta
     }
 
     template<typename T>
-    void renderSliders(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void renderSliders(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         T* data = (T*)d;
 
@@ -143,7 +142,7 @@ namespace atta
     }
 
     template<typename T>
-    void renderCombo(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void renderCombo(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         T* data = (T*)d;
 
@@ -229,7 +228,7 @@ namespace atta
 
 #define ATTA_RENDER_UI_ATTRIBUTE_NUMBER(AttaType, CppType) \
     template<>\
-    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::AttaType>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)\
+    void ComponentRegistry::renderUIAttribute<AttributeType::AttaType>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)\
     {\
         if(aDesc.options.size() == 0)\
             renderSliders<CppType>(aDesc, d, size, imguiId);\
@@ -249,7 +248,7 @@ namespace atta
     ATTA_RENDER_UI_ATTRIBUTE_NUMBER(FLOAT64, double);
 
     template<>
-    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::QUAT>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         ImGui::Text(aDesc.name.c_str());
 
@@ -283,7 +282,7 @@ namespace atta
     }
 
     template<>
-    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::STRINGID>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void ComponentRegistry::renderUIAttribute<AttributeType::STRINGID>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         StringHash* data = (StringHash*)d;
 
@@ -323,14 +322,14 @@ namespace atta
     }
 
     template<>
-    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::BOOL>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void ComponentRegistry::renderUIAttribute<AttributeType::BOOL>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         bool* data = (bool*)d;
         ImGui::Checkbox((aDesc.name+"##"+imguiId).c_str(), data);
     }
 
     template<>
-    void ComponentRegistry::renderUIAttribute<ComponentRegistry::AttributeType::CHAR>(ComponentRegistry::AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void ComponentRegistry::renderUIAttribute<AttributeType::CHAR>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
     {
         char* data = (char*)d;
         ImGui::InputText((aDesc.name+"##"+imguiId).c_str(), data, size);

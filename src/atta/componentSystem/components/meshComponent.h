@@ -6,9 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
-#include <atta/core/stringId.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -28,7 +26,7 @@ namespace atta
         StringId sid;///< Mesh relative path
     };
     ATTA_REGISTER_COMPONENT(MeshComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<MeshComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<MeshComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_MESH_COMPONENT_H

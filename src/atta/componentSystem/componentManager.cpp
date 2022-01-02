@@ -284,7 +284,7 @@ namespace atta
 
             // Push new to registered backup (will be updated later because the Description data may not be available while the components are being registered)
             // Need to keep track of this because registerComponentImpl can be called multiple times for the same component (one time for each translation unit). We need to be sure that will not push the same componentRegistry twice
-            _componentRegistriesBackupInfo.push_back({componentRegistry->getTypeidHash(), ComponentRegistry::Description{componentRegistry->getTypeidName()}, false});
+            _componentRegistriesBackupInfo.push_back({componentRegistry->getTypeidHash(), ComponentDescription{componentRegistry->getTypeidName()}, false});
         }
         else
         {
@@ -325,7 +325,7 @@ namespace atta
 
     void ComponentManager::createComponentPool(ComponentRegistry* componentRegistry)
     {
-        ComponentRegistry::Description desc = componentRegistry->getDescription();
+        ComponentDescription& desc = componentRegistry->getDescription();
         std::string name = desc.name;
         unsigned sizeofT = componentRegistry->getSizeof();
         std::string typeidTName = componentRegistry->getTypeidName();
@@ -696,6 +696,14 @@ namespace atta
         // Update backup info (only now we can guarantee that the description data is available)
         _componentRegistriesBackupInfo.clear();
         for(auto reg : _componentRegistries)
-            _componentRegistriesBackupInfo.push_back({reg->getTypeidHash(), reg->getDescription(), true});
+        {
+            //LOG_DEBUG("ComponentManager", "Update backup from $0", reg->getDescription().name);
+            ComponentRegistryBackupInfo crbi;
+            crbi.typeidHash = reg->getTypeidHash();
+            crbi.description.name = reg->getDescription().name;
+            crbi.description.attributeDescriptions = reg->getDescription().attributeDescriptions;
+            crbi.poolCreated = true;
+            _componentRegistriesBackupInfo.push_back(crbi);
+        }
     }
 }

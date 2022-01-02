@@ -9,13 +9,13 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<NameComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<NameComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
             {
                 "Name",
                 {
-                    { ComponentRegistry::AttributeType::CHAR, offsetof(NameComponent, name), "name" }
+                    { AttributeType::CHAR, offsetof(NameComponent, name), "name" }
                 }
             };
 

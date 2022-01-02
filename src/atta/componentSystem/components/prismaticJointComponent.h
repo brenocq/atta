@@ -6,10 +6,8 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_PRISMATIC_JOINT_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_PRISMATIC_JOINT_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
+#include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/base.h>
-#include <atta/core/math/math.h>
 
 namespace atta
 {
@@ -36,7 +34,7 @@ namespace atta
         bool collideConnected = false;///< If bodyA and bodyB should collide
     };
     ATTA_REGISTER_COMPONENT(PrismaticJointComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<PrismaticJointComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<PrismaticJointComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_PRISMATIC_JOINT_COMPONENT_BASE_H

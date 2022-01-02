@@ -6,9 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_BOX_COLLIDER_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_BOX_COLLIDER_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
-#include <atta/core/math/vector.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -35,7 +33,7 @@ namespace atta
 		vec3 offset = { 0.0f, 0.0f, 0.0f };///< Offset
     };
     ATTA_REGISTER_COMPONENT(BoxColliderComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<BoxColliderComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<BoxColliderComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_BOX_COLLIDER_COMPONENT_H

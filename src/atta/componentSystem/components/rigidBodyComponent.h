@@ -6,9 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
-#include <atta/core/math/vector.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -76,7 +74,7 @@ namespace atta
 		uint8_t constraints;///< Rigid body constraints
     };
     ATTA_REGISTER_COMPONENT(RigidBodyComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<RigidBodyComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<RigidBodyComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_COMPONENT_H

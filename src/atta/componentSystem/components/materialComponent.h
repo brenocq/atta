@@ -6,10 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_MATERIAL_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_MATERIAL_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
-#include <atta/core/math/math.h>
-#include <atta/core/stringId.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -34,7 +31,7 @@ namespace atta
         StringId normalTexture = StringId("Empty texture");///< Material normal map
     };
     ATTA_REGISTER_COMPONENT(MaterialComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<MaterialComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<MaterialComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_MATERIAL_COMPONENT_H

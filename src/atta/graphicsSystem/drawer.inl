@@ -86,7 +86,10 @@ namespace atta
         else if constexpr(std::is_same<T, Drawer::Point>::value)
             return _points;
         else
+        {
             ASSERT(false, "Drawer get() to unknown type $0", typeid(T).name());
+            return {};
+        }
     }
 
     template <typename T>

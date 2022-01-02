@@ -18,9 +18,20 @@ namespace atta
         // Create shaders (they are compiled at creation)
         for(auto shaderPath : info.shaderPaths)
         {
-            Shader::CreateInfo info {};
+            // Create shader
+            Shader::CreateInfo info{};
             info.filepath = shaderPath;
-            _shaders.push_back(std::static_pointer_cast<Shader>(std::make_shared<OpenGLShader>(info)));
+            std::shared_ptr<OpenGLShader> shader = std::make_shared<OpenGLShader>(info);
+
+            // Get shader texture units
+            if(shader->getTextureUnits().size() > 0)
+            {
+                const std::vector<std::string>& textureUnits = shader->getTextureUnits();
+                _textureUnits.insert(_textureUnits.end(), textureUnits.begin(), textureUnits.end());
+            }
+
+            // Save shader
+            _shaders.push_back(std::static_pointer_cast<Shader>(shader));
         }
 
         recompile();
@@ -133,13 +144,19 @@ namespace atta
         }
 
         GLint imgUnit = -1;
-        glGetUniformiv(_id, getLoc(name), &imgUnit);
+        for(unsigned i = 0; i < _textureUnits.size(); i++)
+            if(_textureUnits[i] == name)
+            {
+                imgUnit = GLint(i);
+                break;
+            }
 
         if(imgUnit == -1)
         {
-            LOG_WARN("OpenGLShaderGroup", "(setTexture) Could not get texture unit for $0", name);
+            LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
             return;
         }
+
         glActiveTexture(GL_TEXTURE0+imgUnit);
         glBindTexture(GL_TEXTURE_2D, image->getId());
     }

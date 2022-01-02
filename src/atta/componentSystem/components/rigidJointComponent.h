@@ -6,8 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_JOINT_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_JOINT_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
+#include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/base.h>
 
 namespace atta
@@ -20,7 +19,7 @@ namespace atta
         EntityId bodyB;///< Second attached body
     };
     ATTA_REGISTER_COMPONENT(RigidJointComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<RigidJointComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<RigidJointComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_JOINT_COMPONENT_BASE_H

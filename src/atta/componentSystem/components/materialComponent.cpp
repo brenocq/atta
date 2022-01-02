@@ -13,21 +13,21 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<MaterialComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<MaterialComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
             {
                 "Material",
                 {
-                    { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(MaterialComponent, albedo), "albedo", 0.0f, 1.0f },
-                    { ComponentRegistry::AttributeType::FLOAT32, offsetof(MaterialComponent, metallic), "metallic", 0.0f, 1.0f },
-                    { ComponentRegistry::AttributeType::FLOAT32, offsetof(MaterialComponent, roughness), "roughness", 0.0f, 1.0f },
-                    { ComponentRegistry::AttributeType::FLOAT32, offsetof(MaterialComponent, ao), "ao", 0.0f, 1.0f },
-                    { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, albedoTexture), "albedoTexture" },
-                    { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, metallicTexture), "metallicTexture" },
-                    { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, roughnessTexture), "roughnessTexture" },
-                    { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, aoTexture), "aoTexture" },
-                    { ComponentRegistry::AttributeType::STRINGID, offsetof(MaterialComponent, normalTexture), "normalTexture" }
+                    { AttributeType::VECTOR_FLOAT32, offsetof(MaterialComponent, albedo), "albedo", 0.0f, 1.0f },
+                    { AttributeType::FLOAT32, offsetof(MaterialComponent, metallic), "metallic", 0.0f, 1.0f },
+                    { AttributeType::FLOAT32, offsetof(MaterialComponent, roughness), "roughness", 0.0f, 1.0f },
+                    { AttributeType::FLOAT32, offsetof(MaterialComponent, ao), "ao", 0.0f, 1.0f },
+                    { AttributeType::STRINGID, offsetof(MaterialComponent, albedoTexture), "albedoTexture" },
+                    { AttributeType::STRINGID, offsetof(MaterialComponent, metallicTexture), "metallicTexture" },
+                    { AttributeType::STRINGID, offsetof(MaterialComponent, roughnessTexture), "roughnessTexture" },
+                    { AttributeType::STRINGID, offsetof(MaterialComponent, aoTexture), "aoTexture" },
+                    { AttributeType::STRINGID, offsetof(MaterialComponent, normalTexture), "normalTexture" }
                 },
                 1024,// Max instances
                 {},// Serialize

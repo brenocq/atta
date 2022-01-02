@@ -37,7 +37,7 @@ add_library(imgui STATIC
 )
 target_include_directories(imgui PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/extern/imgui>
-    $<INSTALL_INTERFACE:extern/imgui>
+    $<INSTALL_INTERFACE:include/atta/extern/imgui>
 )
 target_link_libraries(imgui PRIVATE glfw)
 if(NOT MSVC)

@@ -14,7 +14,9 @@ OPTION(ATTA_BUILD_DOCS
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
+
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     # Set flags necessary for the script system to work correctly
@@ -266,14 +268,13 @@ install(
 )
 
 # Install cmake targets
-#install(TARGETS ${ATTA_LIBS}
-#	EXPORT atta_targets
-#    INCLUDES DESTINATION src/extern
-#)
-#install(EXPORT atta_targets
-#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
-#	FILE attaTargets.cmake 
-#)
+install(TARGETS ${ATTA_LIBS}
+	EXPORT atta_targets
+)
+install(EXPORT atta_targets
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
+	FILE attaTargets.cmake 
+)
 
 ########## CPack (deb package) ##########
 #install(TARGETS atta_core
