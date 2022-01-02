@@ -6,9 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_POINT_LIGHT_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_POINT_LIGHT_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
-#include <atta/core/math/math.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -23,7 +21,7 @@ namespace atta
         vec3f intensity = vec3(1.0f, 1.0f, 1.0f);
     };
     ATTA_REGISTER_COMPONENT(PointLightComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<PointLightComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<PointLightComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_POINT_LIGHT_COMPONENT_H

@@ -6,8 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -24,7 +23,7 @@ namespace atta
         uint64_t maxClones;///< Number of clones to be created
     };
     ATTA_REGISTER_COMPONENT(PrototypeComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<PrototypeComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<PrototypeComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_PROTOTYPE_COMPONENT_H

@@ -12,15 +12,16 @@
 #include <atta/memorySystem/memoryManager.h>
 #include <atta/eventSystem/eventManager.h>
 #include <atta/componentSystem/base.h>
+#include <atta/componentSystem/typedComponentRegistry.h>
 #include <atta/componentSystem/components/component.h>
 #include <atta/componentSystem/factory.h>
-#include <atta/componentSystem/componentRegistry.h>
 
 namespace atta
 {
     constexpr unsigned maxRegisteredComponents = 32;
     constexpr unsigned maxEntities = 1024;
 
+    class ComponentRegistry;
     class ComponentManager final
     {
     public:
@@ -135,7 +136,7 @@ namespace atta
         struct ComponentRegistryBackupInfo
         {
             size_t typeidHash;
-            ComponentRegistry::Description description;
+            ComponentDescription description;
             bool poolCreated;
         };
         std::vector<ComponentRegistryBackupInfo> _componentRegistriesBackupInfo;

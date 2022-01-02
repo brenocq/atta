@@ -6,9 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_NAME_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_NAME_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
-#include <atta/core/math/math.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -18,7 +16,7 @@ namespace atta
         char name[32];
     };
     ATTA_REGISTER_COMPONENT(NameComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<NameComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<NameComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_NAME_COMPONENT_H

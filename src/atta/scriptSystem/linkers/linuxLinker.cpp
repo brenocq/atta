@@ -34,6 +34,7 @@ namespace atta
             ScriptCreator fn = reinterpret_cast<ScriptCreator>(dlsym(fLib, "createScript"));
 
             const char* dlsymError = dlerror();
+            // NOTE commented because a target can not be a entity script target
             //if(dlsymError)
             //{
             //	LOG_WARN("LinuxLinker", "Could not get script from library $0. Error: $1", lib.filename(), dlsymError);
@@ -49,6 +50,7 @@ namespace atta
             ProjectScriptCreator pfn = reinterpret_cast<ProjectScriptCreator>(dlsym(fLib, "createProjectScript"));
 
             dlsymError = dlerror();
+            // NOTE commented because a target can not be a project script target
             //if(dlsymError)
             //{
             //	LOG_WARN("LinuxLinker", "Could not get project script from library $0. Error: $1", lib.filename(), dlsymError);
@@ -64,7 +66,7 @@ namespace atta
 
             std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
             auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-            //LOG_INFO("LinuxLinker", "Time to link: $0 ms", micro.count()/1000.0f);
+            LOG_INFO("LinuxLinker", "Time to link: $0 ms", micro.count()/1000.0f);
         }
         else
         {
@@ -77,7 +79,8 @@ namespace atta
     {
         if(_targetHandles.find(target) != _targetHandles.end())
         {
-            dlclose(_targetHandles[target]);
+            // FIXME error when releasing target
+            //dlclose(_targetHandles[target]);
             _targetHandles.erase(target);
         }
     }

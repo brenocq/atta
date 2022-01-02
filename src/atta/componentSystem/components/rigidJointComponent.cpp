@@ -9,14 +9,14 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<RigidJointComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<RigidJointComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
         {
             "Rigid Joint",
             {
-                { ComponentRegistry::AttributeType::INT32, offsetof(RigidJointComponent, bodyA), "bodyA" },
-                { ComponentRegistry::AttributeType::INT32, offsetof(RigidJointComponent, bodyB), "bodyB" },
+                { AttributeType::INT32, offsetof(RigidJointComponent, bodyA), "bodyA" },
+                { AttributeType::INT32, offsetof(RigidJointComponent, bodyB), "bodyB" },
             }
         };
 

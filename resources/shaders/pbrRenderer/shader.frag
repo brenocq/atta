@@ -37,9 +37,9 @@ uniform int numPointLights;
 //----- PBR -----//
 uniform vec3 camPos;
 // IBL
-//uniform samplerCube irradianceMap;
-//uniform samplerCube prefilterMap;
-//uniform sampler2D   brdfLUT;
+//uniform ssamplerCube irradianceMap;
+//uniform ssamplerCube prefilterMap;
+//uniform ssampler2D   brdfLUT;
 
 //----- Material -----//
 uniform Material material;

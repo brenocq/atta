@@ -9,14 +9,14 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<ScriptComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<ScriptComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
             {
                 "Script",
                 {
                     { 
-                        ComponentRegistry::AttributeType::STRINGID, 
+                        AttributeType::STRINGID, 
                         offsetof(ScriptComponent, sid), 
                         "sid", 
                         {},

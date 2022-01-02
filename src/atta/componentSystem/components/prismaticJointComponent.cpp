@@ -9,24 +9,24 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<PrismaticJointComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<PrismaticJointComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
         {
             "Prismatic Joint",
             {
-                { ComponentRegistry::AttributeType::INT32, offsetof(PrismaticJointComponent, bodyA), "bodyA" },
-                { ComponentRegistry::AttributeType::INT32, offsetof(PrismaticJointComponent, bodyB), "bodyB" },
-                { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJointComponent, anchorA), "anchorA" },
-                { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJointComponent, anchorB), "anchorB" },
-                { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJointComponent, axis), "axis" },
-                { ComponentRegistry::AttributeType::BOOL, offsetof(PrismaticJointComponent, enableLimits), "enableLimits" },
-                { ComponentRegistry::AttributeType::FLOAT32, offsetof(PrismaticJointComponent, lowerTranslation), "lowerTranslation" },
-                { ComponentRegistry::AttributeType::FLOAT32, offsetof(PrismaticJointComponent, upperTranslation), "upperTranslation" },
-                { ComponentRegistry::AttributeType::BOOL, offsetof(PrismaticJointComponent, enableMotor), "enableMotor" },
-                { ComponentRegistry::AttributeType::FLOAT32, offsetof(PrismaticJointComponent, motorSpeed), "motorSpeed" },
-                { ComponentRegistry::AttributeType::FLOAT32, offsetof(PrismaticJointComponent, maxMotorForce), "maxMotorForce" },
-                { ComponentRegistry::AttributeType::BOOL, offsetof(PrismaticJointComponent, collideConnected), "collideConnected" }
+                { AttributeType::INT32, offsetof(PrismaticJointComponent, bodyA), "bodyA" },
+                { AttributeType::INT32, offsetof(PrismaticJointComponent, bodyB), "bodyB" },
+                { AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJointComponent, anchorA), "anchorA" },
+                { AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJointComponent, anchorB), "anchorB" },
+                { AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJointComponent, axis), "axis" },
+                { AttributeType::BOOL, offsetof(PrismaticJointComponent, enableLimits), "enableLimits" },
+                { AttributeType::FLOAT32, offsetof(PrismaticJointComponent, lowerTranslation), "lowerTranslation" },
+                { AttributeType::FLOAT32, offsetof(PrismaticJointComponent, upperTranslation), "upperTranslation" },
+                { AttributeType::BOOL, offsetof(PrismaticJointComponent, enableMotor), "enableMotor" },
+                { AttributeType::FLOAT32, offsetof(PrismaticJointComponent, motorSpeed), "motorSpeed" },
+                { AttributeType::FLOAT32, offsetof(PrismaticJointComponent, maxMotorForce), "maxMotorForce" },
+                { AttributeType::BOOL, offsetof(PrismaticJointComponent, collideConnected), "collideConnected" }
             }
         };
 

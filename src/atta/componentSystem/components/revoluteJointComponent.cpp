@@ -9,25 +9,25 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<RevoluteJointComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<RevoluteJointComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
         {
             "Revolute Joint",
             {
-                { ComponentRegistry::AttributeType::INT32, offsetof(RevoluteJointComponent, bodyA), "bodyA" },
-                { ComponentRegistry::AttributeType::INT32, offsetof(RevoluteJointComponent, bodyB), "bodyB" },
-                { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(RevoluteJointComponent, anchorA), "anchorA" },
-                { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(RevoluteJointComponent, anchorB), "anchorB" },
-                { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(RevoluteJointComponent, axisRotation), "axisRotation" },
-                { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(RevoluteJointComponent, axisZero), "axisZero" },
-                { ComponentRegistry::AttributeType::BOOL, offsetof(RevoluteJointComponent, enableLimits), "enableLimits" },
-                { ComponentRegistry::AttributeType::FLOAT32, offsetof(RevoluteJointComponent, lowerAngle), "lowerAngle" },
-                { ComponentRegistry::AttributeType::FLOAT32, offsetof(RevoluteJointComponent, upperAngle), "upperAngle" },
-                { ComponentRegistry::AttributeType::BOOL, offsetof(RevoluteJointComponent, enableMotor), "enableMotor" },
-                { ComponentRegistry::AttributeType::FLOAT32, offsetof(RevoluteJointComponent, motorSpeed), "motorSpeed" },
-                { ComponentRegistry::AttributeType::FLOAT32, offsetof(RevoluteJointComponent, maxMotorTorque), "maxMotorTorque" },
-                { ComponentRegistry::AttributeType::BOOL, offsetof(RevoluteJointComponent, collideConnected), "collideConnected" },
+                { AttributeType::INT32, offsetof(RevoluteJointComponent, bodyA), "bodyA" },
+                { AttributeType::INT32, offsetof(RevoluteJointComponent, bodyB), "bodyB" },
+                { AttributeType::VECTOR_FLOAT32, offsetof(RevoluteJointComponent, anchorA), "anchorA" },
+                { AttributeType::VECTOR_FLOAT32, offsetof(RevoluteJointComponent, anchorB), "anchorB" },
+                { AttributeType::VECTOR_FLOAT32, offsetof(RevoluteJointComponent, axisRotation), "axisRotation" },
+                { AttributeType::VECTOR_FLOAT32, offsetof(RevoluteJointComponent, axisZero), "axisZero" },
+                { AttributeType::BOOL, offsetof(RevoluteJointComponent, enableLimits), "enableLimits" },
+                { AttributeType::FLOAT32, offsetof(RevoluteJointComponent, lowerAngle), "lowerAngle" },
+                { AttributeType::FLOAT32, offsetof(RevoluteJointComponent, upperAngle), "upperAngle" },
+                { AttributeType::BOOL, offsetof(RevoluteJointComponent, enableMotor), "enableMotor" },
+                { AttributeType::FLOAT32, offsetof(RevoluteJointComponent, motorSpeed), "motorSpeed" },
+                { AttributeType::FLOAT32, offsetof(RevoluteJointComponent, maxMotorTorque), "maxMotorTorque" },
+                { AttributeType::BOOL, offsetof(RevoluteJointComponent, collideConnected), "collideConnected" },
             }
         };
 

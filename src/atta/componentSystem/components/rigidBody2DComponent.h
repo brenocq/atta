@@ -7,7 +7,7 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_2D_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_2D_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
+#include <atta/componentSystem/componentManager.h>
 #include <atta/core/math/vector.h>
 
 namespace atta
@@ -66,7 +66,7 @@ namespace atta
 		bool fixedRotation = false;///< Disable rigid body rotation
     };
     ATTA_REGISTER_COMPONENT(RigidBody2DComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<RigidBody2DComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<RigidBody2DComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_RIGID_BODY_2D_COMPONENT_H

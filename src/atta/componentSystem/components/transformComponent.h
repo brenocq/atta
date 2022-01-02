@@ -6,9 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_TRANSFORM_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_TRANSFORM_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
-#include <atta/core/math/math.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -52,7 +50,7 @@ namespace atta
     };
 
     ATTA_REGISTER_COMPONENT(TransformComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<TransformComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<TransformComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_TRANSFORM_COMPONENT_H

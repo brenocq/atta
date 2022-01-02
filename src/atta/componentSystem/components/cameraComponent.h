@@ -7,7 +7,7 @@
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H
 #include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
+#include <atta/componentSystem/componentManager.h>
 #include <atta/graphicsSystem/renderers/renderer.h>
 #include <atta/graphicsSystem/cameras/camera.h>
 
@@ -50,6 +50,6 @@ namespace atta
         RendererType rendererType = RendererType::PHONG;
     };
     ATTA_REGISTER_COMPONENT(CameraComponent);
-    template<> ComponentRegistry::Description& TypedComponentRegistry<CameraComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<CameraComponent>::getDescription();
 }
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_CAMERA_COMPONENT_H

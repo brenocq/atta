@@ -9,13 +9,13 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<PointLightComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<PointLightComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
             {
                 "Point Light",
                 {
-                    { ComponentRegistry::AttributeType::VECTOR_FLOAT32, offsetof(PointLightComponent, intensity), "intensity", 0.0f, 10.0f }
+                    { AttributeType::VECTOR_FLOAT32, offsetof(PointLightComponent, intensity), "intensity", 0.0f, 10.0f }
                 }
             };
 

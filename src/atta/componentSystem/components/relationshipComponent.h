@@ -6,8 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_RELATIONSHIP_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_RELATIONSHIP_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
+#include <atta/componentSystem/componentManager.h>
 #include <atta/fileSystem/serializer/serializer.h>
 
 namespace atta
@@ -65,7 +64,7 @@ namespace atta
         std::vector<EntityId> _children;
     };
     ATTA_REGISTER_COMPONENT(RelationshipComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<RelationshipComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<RelationshipComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_RELATIONSHIP_COMPONENT_H

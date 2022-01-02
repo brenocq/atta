@@ -6,9 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H
 #define ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H
-#include <atta/componentSystem/components/component.h>
-#include <atta/componentSystem/componentRegistry.h>
-#include <atta/core/stringId.h>
+#include <atta/componentSystem/componentManager.h>
 
 namespace atta
 {
@@ -23,7 +21,7 @@ namespace atta
         StringId sid;///< Script name
     };
     ATTA_REGISTER_COMPONENT(ScriptComponent)
-    template<> ComponentRegistry::Description& TypedComponentRegistry<ScriptComponent>::getDescription();
+    template<> ComponentDescription& TypedComponentRegistry<ScriptComponent>::getDescription();
 }
 
 #endif// ATTA_COMPONENT_SYSTEM_COMPONENTS_SCRIPT_COMPONENT_H

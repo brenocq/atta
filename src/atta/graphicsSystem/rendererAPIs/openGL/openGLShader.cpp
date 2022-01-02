@@ -36,6 +36,10 @@ namespace atta
         fileSS << file.rdbuf();
         file.close();
 
+        // Extract texture units from fragment shader
+        if(convertFileToShaderType(_filepath) == GL_FRAGMENT_SHADER)
+            extractTextureUnits(fileSS);
+
         // Compile
         std::string codeStr = fileSS.str();
         const char* code = codeStr.c_str();
@@ -57,6 +61,35 @@ namespace atta
     {
         glDeleteShader(_id);
         _id = 0;
+    }
+
+    void OpenGLShader::extractTextureUnits(const std::stringstream& sstream)
+    {
+        // TODO ignore commented sampler2D
+        std::string s = sstream.str();
+
+        int currIdx = 0;
+        while(true)
+        {
+            // Check if line defined a sampler2D
+            size_t marker = s.find("uniform sampler2D", currIdx);
+            if(marker != std::string::npos)
+            {
+                // Extract uniform name
+                size_t endMarker = marker+18;
+                size_t endName = s.find(';', endMarker);
+                if(endName == std::string::npos)
+                    continue;
+                std::string name = s.substr(endMarker, endName-endMarker);
+
+                //LOG_DEBUG("OpenGLShader", "Found texture unit: [w]$0[] ($1)", name, currIdx);
+                _textureUnits.push_back(name);
+                currIdx = endName+1;
+            }
+            else
+                break;
+        }
+        
     }
 
     //------------------------------------------------//

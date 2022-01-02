@@ -10,14 +10,14 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<SphereColliderComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<SphereColliderComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
             {
                 "Sphere Collider",
                 {
-                    { ComponentRegistry::AttributeType::FLOAT32, offsetof(SphereColliderComponent, radius), "radius", 0.0001f, 2000.0f, 0.01f },
-                    { ComponentRegistry::AttributeType::FLOAT32, offsetof(SphereColliderComponent, offset), "offset", -2000.0f, 2000.0f,  0.01f  }
+                    { AttributeType::FLOAT32, offsetof(SphereColliderComponent, radius), "radius", 0.0001f, 2000.0f, 0.01f },
+                    { AttributeType::FLOAT32, offsetof(SphereColliderComponent, offset), "offset", -2000.0f, 2000.0f,  0.01f  }
                 }
             };
 

@@ -12,14 +12,14 @@
 namespace atta
 {
     template<>
-    ComponentRegistry::Description& TypedComponentRegistry<RelationshipComponent>::getDescription()
+    ComponentDescription& TypedComponentRegistry<RelationshipComponent>::getDescription()
     {
-        static ComponentRegistry::Description desc = 
+        static ComponentDescription desc = 
             {
                 "Relationship",
                 {
-                    { ComponentRegistry::AttributeType::UINT32, offsetof(RelationshipComponent, _parent), "parent" },
-                    { ComponentRegistry::AttributeType::CUSTOM, offsetof(RelationshipComponent, _children), "children" }
+                    { AttributeType::UINT32, offsetof(RelationshipComponent, _parent), "parent" },
+                    { AttributeType::CUSTOM, offsetof(RelationshipComponent, _children), "children" }
                 },
                 // Max instances
                 1024,

@@ -5,6 +5,7 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     factory.cpp
     componentManager.cpp
     componentRegistry.cpp
+    typedComponentRegistry.cpp
 
     components/boxColliderComponent.cpp
     components/cameraComponent.cpp

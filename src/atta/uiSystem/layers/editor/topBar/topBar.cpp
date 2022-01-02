@@ -248,15 +248,16 @@ namespace atta::ui
             // Open client and make request
             client = std::make_shared<http_client>("https://raw.githubusercontent.com/brenocq-atta/projects/main/projects.json");
             client->request(methods::GET)
-                .then([&](http_response response)
+                .then([](http_response response)
                 {
                     if(response.status_code() == status_codes::OK)
                     {
                         response.headers().set_content_type(U("application/json"));
                         return response.extract_json();
                     }
+                    return pplx::task<json::value>{};
                 })
-                .then([&publishedProjects](const pplx::task<json::value>& task)
+                .then([](const pplx::task<json::value>& task)
                 {
                     try
                     {
