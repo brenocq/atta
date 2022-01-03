@@ -27,8 +27,7 @@ namespace atta
         void* getImGuiTexture() const override { return _geometryPipeline->getImGuiTexture(); }
 
     private:
-        void generateCubemap();
-        void convoluteCubemap();
+        void irradianceCubemap();
         void prefilterCubemap();
         void brdfLUT();
 
@@ -37,12 +36,9 @@ namespace atta
         std::unique_ptr<DrawerPipeline> _drawerPipeline;
 
         std::shared_ptr<ShaderGroup> _backgroundShader;
-        //bool _hasEnvTexture;
         bool _firstRender;
-        unsigned int _envCubemap;
-        unsigned int _irradianceMap;
-        unsigned int _prefilterMap;
-        unsigned int _brdfLUT;
+        StringId _lastEnvironmentMap;
+        mat3 _environmentMapOri;
     };
 }
 

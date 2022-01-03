@@ -28,7 +28,11 @@ namespace atta
         void renderQuad() override;
         void renderQuad3() override;
         void renderCube() override;
-        void framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer) override;
+        void renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) override;
+
+        void generateCubemap(StringId textureSid, mat4 rotationMatrix = mat4(1.0f)) override;
+        void generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) override;
+        void generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) override;
 
         void* getImGuiImage(StringId sid) const override;
 
@@ -37,6 +41,7 @@ namespace atta
         void onTextureLoadEvent(Event& event);
 
         std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> getOpenGLImages() const { return _openGLImages; };
+        std::unordered_map<StringHash, OpenGLId> getOpenGLCubemaps() const { return _openGLCubemaps; };
 
     private:
         void initializeMesh(StringId sid);
@@ -45,6 +50,7 @@ namespace atta
         std::shared_ptr<Window> _window;
         std::unordered_map<StringHash, std::shared_ptr<OpenGLMesh>> _openGLMeshes;
         std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> _openGLImages;
+        std::unordered_map<StringHash, OpenGLId> _openGLCubemaps;
 
         std::shared_ptr<OpenGLShaderGroup> _quadShader;
 

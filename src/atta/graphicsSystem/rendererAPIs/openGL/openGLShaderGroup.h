@@ -30,6 +30,7 @@ namespace atta
         void setMat3(const char* name, const mat3& m) override;
         void setMat4(const char* name, const mat4& m) override;
         void setTexture(const char* name, StringId sid) override;
+        void setCubemap(const char* name, StringId sid) override;
 
         inline unsigned int getLoc(const char* name);
 

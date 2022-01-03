@@ -32,7 +32,11 @@ namespace atta
         if(extension != ".hdr")
             _data = stbi_load(absolutePath.string().c_str(), &width, &height, &channels, 0); 
         else
+        {
+            stbi_set_flip_vertically_on_load(true);
             _data = reinterpret_cast<uint8_t*>(stbi_loadf(absolutePath.string().c_str(), &width, &height, &channels, 0)); 
+            stbi_set_flip_vertically_on_load(false);
+        }
 
         if(_data)
         {

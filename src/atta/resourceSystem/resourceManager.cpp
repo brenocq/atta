@@ -53,8 +53,8 @@ namespace atta
 
     void ResourceManager::loadResourcesRecursively(fs::path directory)
     {
-        static const std::vector<std::string> meshExtensions { ".obj" };//, ".3ds", ".fbx", ".stl", ".ply" };
-        static const std::vector<std::string> textureExtensions { ".jpg", ".jpeg", ".png", ".hdr" };
+        static const std::vector<std::string> meshExtensions { ".obj", ".fbx", ".FBX", ".fbx" };//, ".3ds", ".stl", ".ply" };
+        static const std::vector<std::string> textureExtensions { ".jpg", ".jpeg", ".png", ".hdr", ".tga" };
 
         for(auto file : FileManager::getDirectoryFilesRecursive(directory))
         {
@@ -62,7 +62,7 @@ namespace atta
             for(auto& extension : meshExtensions)
                 if(extension == file.extension().string())
                 {
-                    //LOG_DEBUG("ResourceManager", "Resource mesh: $0", file.string());
+                    LOG_DEBUG("ResourceManager", "Resource mesh: [w]$0[]", file.string());
                     ResourceManager::get<Mesh>(file.string());
                     break;
                 }
@@ -70,7 +70,7 @@ namespace atta
             for(auto& extension : textureExtensions)
                 if(extension == file.extension().string())
                 {
-                    LOG_DEBUG("ResourceManager", "Resource texture: $0", file.string());
+                    LOG_DEBUG("ResourceManager", "Resource texture: [w]$0[]", file.string());
                     ResourceManager::get<Texture>(file.string());
                     break;
                 }
