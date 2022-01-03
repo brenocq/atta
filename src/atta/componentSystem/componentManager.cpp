@@ -658,22 +658,41 @@ namespace atta
                 {
                     TextureLoadEvent& e = reinterpret_cast<TextureLoadEvent&>(event);
 
-					bool found = false;
-					for(auto op : TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[4].options)
-						if(std::any_cast<StringId>(op) == e.sid)
-						{
-							found = true;
-							break;
-						}
+                    // Update material options
+                    {
+                        bool found = false;
+                        for(auto op : TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[4].options)
+                            if(std::any_cast<StringId>(op) == e.sid)
+                            {
+                                found = true;
+                                break;
+                            }
 
-					if(!found)
-					{
-						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[4].options.push_back(std::any(e.sid));
-						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[5].options.push_back(std::any(e.sid));
-						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[6].options.push_back(std::any(e.sid));
-						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[8].options.push_back(std::any(e.sid));
-						TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[7].options.push_back(std::any(e.sid));
-					}
+                        if(!found)
+                        {
+                            TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[4].options.push_back(std::any(e.sid));
+                            TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[5].options.push_back(std::any(e.sid));
+                            TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[6].options.push_back(std::any(e.sid));
+                            TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[8].options.push_back(std::any(e.sid));
+                            TypedComponentRegistry<MaterialComponent>::description->attributeDescriptions[7].options.push_back(std::any(e.sid));
+                        }
+                    }
+
+                    // Update environment light options
+                    {
+                        bool found = false;
+                        for(auto op : TypedComponentRegistry<EnvironmentLightComponent>::description->attributeDescriptions[0].options)
+                            if(std::any_cast<StringId>(op) == e.sid)
+                            {
+                                found = true;
+                                break;
+                            }
+
+                        if(!found)
+                        {
+                            TypedComponentRegistry<EnvironmentLightComponent>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
+                        }
+                    }
 
                     break;
                 }

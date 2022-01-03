@@ -15,8 +15,9 @@ namespace atta
         glGenTextures(1, &_id);
         glBindTexture(GL_TEXTURE_2D, _id);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        GLint wrapMode = info.samplerWrap == Image::Wrap::CLAMP ? GL_CLAMP_TO_EDGE : GL_REPEAT;
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);	
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -24,12 +25,10 @@ namespace atta
         GLenum dataType = OpenGLImage::convertDataType(_format);
         GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
         GLenum format = OpenGLImage::convertFormat(_format);
-        if(info.data)
-            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, info.data);
-        else
-            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, 0);
 
-        if(_format == Format::RGB || _format == Format::RGBA)
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, info.data);
+
+        if(info.mipLevels > 1)//_format == Format::RGB || _format == Format::RGBA)
             glGenerateMipmap(GL_TEXTURE_2D);
     }
 
@@ -61,6 +60,7 @@ namespace atta
             case Format::RED32I: return GL_R32I;
             case Format::RGB: return GL_RGB8;
             case Format::RGBA: return GL_RGBA8;
+            case Format::RG16F: return GL_RG16F;
             case Format::RGB16F: return GL_RGB16F;
             case Format::DEPTH32F: return GL_R32F;
             case Format::DEPTH24_STENCIL8: return GL_DEPTH24_STENCIL8;
@@ -75,6 +75,7 @@ namespace atta
             case Format::NONE: break;
             case Format::RED: return GL_RED;
             case Format::RED32I: return GL_RED_INTEGER;
+            case Format::RG16F: return GL_RG;
             case Format::RGB16F:
             case Format::RGB: return GL_RGB;
             case Format::RGBA: return GL_RGBA;
@@ -91,6 +92,7 @@ namespace atta
             case Format::NONE: break;
             case Format::RED:return GL_RED;
             case Format::RED32I: return GL_R32I;
+            case Format::RG16F: return GL_RG16F;
             case Format::RGB16F: return GL_RGB16F;
             case Format::RGB: return GL_RGB;
             case Format::RGBA: return GL_RGBA;
@@ -109,6 +111,7 @@ namespace atta
             case Format::RGB: 
             case Format::RGBA: return GL_UNSIGNED_BYTE;
             case Format::RED32I: return GL_INT;
+            case Format::RG16F:
             case Format::RGB16F:
             case Format::DEPTH32F: return GL_FLOAT;
             case Format::DEPTH24_STENCIL8: return GL_UNSIGNED_INT_24_8;

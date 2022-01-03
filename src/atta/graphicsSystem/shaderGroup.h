@@ -38,6 +38,7 @@ namespace atta
         virtual void setMat3(const char* name, const mat3& m) = 0;
         virtual void setMat4(const char* name, const mat4& m) = 0;
         virtual void setTexture(const char* name, StringId sid) = 0;
+        virtual void setCubemap(const char* name, StringId sid) = 0;
 
     protected:
         std::vector<std::shared_ptr<Shader>> _shaders;

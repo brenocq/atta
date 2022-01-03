@@ -1,11 +1,16 @@
 #version 300 es
-in vec3 aPos;
-in vec2 aTexCoords;
+//in vec3 aPos;
+//in vec2 aTexCoords;
+in vec3 inPos;
+in vec3 inNormal;
+in vec2 inTexCoords;
 
 out vec2 TexCoords;
+out vec3 Pos;
 
 void main()
 {
-    TexCoords = aTexCoords;
-    gl_Position = vec4(aPos, 1.0);
+    TexCoords = inTexCoords;
+    Pos = inPos;
+    gl_Position = vec4(inPos, 1.0);
 }

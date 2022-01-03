@@ -143,11 +143,11 @@ namespace atta
             return;
         }
 
-        GLint imgUnit = -1;
+        int imgUnit = -1;
         for(unsigned i = 0; i < _textureUnits.size(); i++)
             if(_textureUnits[i] == name)
             {
-                imgUnit = GLint(i);
+                imgUnit = int(i);
                 break;
             }
 
@@ -157,8 +157,45 @@ namespace atta
             return;
         }
 
+        // Ensure image is set to write texture unit
+        GLint imageLocation = glGetUniformLocation(_id, name);
+        glUniform1i(imageLocation, imgUnit);
+
+        // Activate texture unit
         glActiveTexture(GL_TEXTURE0+imgUnit);
         glBindTexture(GL_TEXTURE_2D, image->getId());
+    }
+
+    void OpenGLShaderGroup::setCubemap(const char* name, StringId sid)
+    {
+        std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(GraphicsManager::getRendererAPI());
+        if(renderer->getOpenGLCubemaps().find(sid.getId()) == renderer->getOpenGLCubemaps().end())
+        {
+            LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to use cubemap that was never generated: $0 = \"$1\"", name, sid);
+            return;
+        }
+        OpenGLId cubemap = renderer->getOpenGLCubemaps()[sid.getId()];
+
+        int imgUnit = -1;
+        for(unsigned i = 0; i < _textureUnits.size(); i++)
+            if(_textureUnits[i] == name)
+            {
+                imgUnit = int(i);
+                break;
+            }
+        if(imgUnit == -1)
+        {
+            LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
+            return;
+        }
+
+        // Ensure image is set to write texture unit
+        GLint imageLocation = glGetUniformLocation(_id , name);
+        glUniform1i(imageLocation, imgUnit);
+
+        // Activate texture unit
+        glActiveTexture(GL_TEXTURE0 + imgUnit);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
     }
 
     unsigned int OpenGLShaderGroup::getLoc(const char* name)

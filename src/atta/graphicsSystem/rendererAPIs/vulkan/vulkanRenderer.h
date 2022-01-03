@@ -26,6 +26,11 @@ namespace atta
         void renderQuad() override;
         void renderQuad3() override;
         void renderCube() override;
+        void renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) override;
+
+        void generateCubemap(StringId textureSid, mat4 rotationMatrix = mat4(1.0f)) override;
+        void generatePorcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) override;
+        void generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) override;
     };
 }
 

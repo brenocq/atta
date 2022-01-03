@@ -10,6 +10,7 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
     components/boxColliderComponent.cpp
     components/cameraComponent.cpp
     components/directionalLightComponent.cpp
+    components/environmentLightComponent.cpp
     components/materialComponent.cpp
     components/meshComponent.cpp
     components/nameComponent.cpp

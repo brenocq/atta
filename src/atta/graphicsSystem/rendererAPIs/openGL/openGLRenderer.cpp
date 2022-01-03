@@ -104,13 +104,13 @@ namespace atta
         //---------- Quad3 ----------//
         {
             float vertices[] = {
-                // positions          // normal           // texCoords
-                -1.0f, 1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
-                -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f,
-                1.0f,  -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
-                -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,
-                1.0f,  -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,
-                1.0f, 1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+                // positions          // normal            // texCoords
+                -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,
+                -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
+                 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
+                -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,
+                 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
+                 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
             };
 
             // screen quad VAO
@@ -131,17 +131,17 @@ namespace atta
         {
             float vertices[] = {
                 // back face
-                -1.0f, -1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-                1.0f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-                1.0f, -1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
-                1.0f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-                -1.0f, -1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-                -1.0f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+                -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+                 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+                -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
                 // front face
                 -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-                1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-                1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-                1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+                 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+                 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
                 -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
                 -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
                 // left face
@@ -152,24 +152,24 @@ namespace atta
                 -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
                 -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
                 // right face
-                1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-                1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-                1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right
-                1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-                1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-                1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
+                 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+                 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right
+                 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+                 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+                 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
                 // bottom face
                 -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-                1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-                1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-                1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+                 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+                 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+                 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
                 -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
                 -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
                 // top face
                 -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-                1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-                1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right
-                1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+                 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right
+                 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
                 -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
                 -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
             };
@@ -200,6 +200,10 @@ namespace atta
     OpenGLRenderer::~OpenGLRenderer()
     {
         _openGLMeshes.clear();
+
+        // Delete cubemaps
+        for(auto tex : _openGLCubemaps)
+            glDeleteTextures(1, &tex.second);
     }
 
     void OpenGLRenderer::beginFrame()
@@ -227,14 +231,14 @@ namespace atta
 
     void OpenGLRenderer::renderQuad()
     {
-        // Render quad in NDC
+        // Can be used to render quads only with position and texture
         glBindVertexArray(_quadVAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 
     void OpenGLRenderer::renderQuad3()
     {
-        // Render quad in NDC
+        // Rendereres should use this function to render quads
         glBindVertexArray(_quad3VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
@@ -268,7 +272,7 @@ namespace atta
         initializeTexture(e.sid);
     }
 
-    void OpenGLRenderer::framebufferToScreen(std::shared_ptr<Framebuffer> framebuffer)
+    void OpenGLRenderer::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer)
     {
         glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
 
@@ -280,6 +284,192 @@ namespace atta
         glDisable(GL_DEPTH_TEST);
         glBindTexture(GL_TEXTURE_2D, openGLImage->getId());
         renderQuad();
+    }
+
+    void OpenGLRenderer::generateCubemap(StringId textureSid, mat4 rotationMatrix)
+    {
+        // Ensure that the texture was loaded
+        ResourceManager::get<Texture>(fs::path(textureSid.getString()));
+
+        // Output texture id
+        unsigned int cubemap;
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+
+        unsigned int captureFBO;
+        unsigned int captureRBO;
+        glGenFramebuffers(1, &captureFBO);
+        glGenRenderbuffers(1, &captureRBO);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+
+        //---------- Equirectangular to cubemap ----------//
+        ShaderGroup::CreateInfo shaderGroupInfo {};
+        shaderGroupInfo.shaderPaths = {"shaders/compute/equiToCubemap.vert", "shaders/compute/equiToCubemap.frag"};
+        shaderGroupInfo.debugName = StringId("EquiToCubemap Shader Group");
+        std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+
+        // Create cubemap texture
+        glGenTextures(1, &cubemap);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+        for(unsigned int i = 0; i < 6; ++i)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+        }
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Projection and view matrices
+        mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
+
+        mat3 rot{rotationMatrix};
+        mat4 captureViews[] =
+        {
+            // Converting from equirectangular to atta coordinate system
+            lookAt(vec3(0.0f, 0.0f, 0.0f), rot*vec3( 0.0f,  0.0f,  1.0f), rot*vec3(-1.0f,  0.0f,  0.0f)),// X+
+            lookAt(vec3(0.0f, 0.0f, 0.0f), rot*vec3( 0.0f,  0.0f, -1.0f), rot*vec3(-1.0f,  0.0f,  0.0f)),// X-
+            lookAt(vec3(0.0f, 0.0f, 0.0f), rot*vec3( 1.0f,  0.0f,  0.0f), rot*vec3( 0.0f,  1.0f,  0.0f)),// Y+
+            lookAt(vec3(0.0f, 0.0f, 0.0f), rot*vec3(-1.0f,  0.0f,  0.0f), rot*vec3( 0.0f,  -1.0f, 0.0f)),// Y-
+            lookAt(vec3(0.0f, 0.0f, 0.0f), rot*vec3( 0.0f,  1.0f,  0.0f), rot*vec3(-1.0f,  0.0f,  0.0f)),// Z+
+            lookAt(vec3(0.0f, 0.0f, 0.0f), rot*vec3( 0.0f, -1.0f,  0.0f), rot*vec3(-1.0f,  0.0f,  0.0f)) // Z-
+        };
+
+        // Convert texture to cubemap
+        shader->bind();
+        shader->setMat4("projection", transpose(captureProjection));
+        shader->setTexture("equirectangularMap", textureSid);
+        glViewport(0, 0, 512, 512);
+        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+        for(unsigned int i = 0; i < 6; i++)
+        {
+            shader->setMat4("view", transpose(captureViews[i]));
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            renderCube();
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Delete old cubemap if necessary
+        if(_openGLCubemaps.find(textureSid.getId()) != _openGLCubemaps.end())
+            glDeleteTextures(1, &_openGLCubemaps[textureSid.getId()]);
+        
+        _openGLCubemaps[textureSid.getId()] = cubemap;
+    }
+
+    void OpenGLRenderer::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo)
+    {
+        unsigned int cubemap;
+        ASSERT(gpcInfo.numMipLevels >= 1, "[OpenGLRenderer] [w](generateProcessedCubemap)[] The number of mipmap levels must be greater than 0, but it is [w]$0[]", gpcInfo.numMipLevels);
+        ASSERT(gpcInfo.width > 0, "[OpenGLRenderer] [w](generateProcessedCubemap)[] The width should be grater than 0, but it is [w]$0[]", gpcInfo.width);
+        ASSERT(gpcInfo.height > 0, "[OpenGLRenderer] [w](generateProcessedCubemap)[] The height should be grater than 0, but it is [w]$0[]", gpcInfo.height);
+        ASSERT(gpcInfo.cubemapSid != "Not defined"_sid, "[OpenGLRenderer] [w](generateProcessedCubemap)[] cubemapSid was not defined");
+        ASSERT(gpcInfo.func, "[OpenGLRenderer] [w](generateProcessedCubemap)[] func must be defined. The shader probably needs the view and projection matrices");
+
+        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+        unsigned int captureFBO;
+        unsigned int captureRBO;
+        glGenFramebuffers(1, &captureFBO);
+        glGenRenderbuffers(1, &captureRBO);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+
+        // Projection and view matrices
+        mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
+        mat4 captureViews[] =
+        {
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)),
+            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f))
+        };
+
+        glGenTextures(1, &cubemap);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+        for(unsigned int i = 0; i < 6; i++)
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, gpcInfo.width, gpcInfo.height, 0, GL_RGB, GL_FLOAT, nullptr);
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, gpcInfo.numMipLevels == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR); 
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        if(gpcInfo.numMipLevels > 1)
+            glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+        gpcInfo.shader->bind();
+        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+        for(unsigned int mip = 0; mip < gpcInfo.numMipLevels; mip++)
+        {
+            // reisze framebuffer according to mip-level size.
+            unsigned int mipWidth  = gpcInfo.width * std::pow(0.5, mip);
+            unsigned int mipHeight = gpcInfo.height * std::pow(0.5, mip);
+            glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+            glViewport(0, 0, mipWidth, mipHeight);
+
+            for(unsigned int i = 0; i < 6; i++)
+            {
+                if(gpcInfo.func)
+                    gpcInfo.func(gpcInfo.shader, captureProjection, captureViews[i], i, mip);
+
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, mip);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                GraphicsManager::getRendererAPI()->renderCube();
+            }
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        _openGLCubemaps[gpcInfo.cubemapSid.getId()] = cubemap;
+    }
+
+
+    void OpenGLRenderer::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo)
+    {
+        ASSERT(gptInfo.textureSid != "Not defined"_sid, "[OpenGLRenderer] [w](generateProcessedTexture)[] textureSid was not defined");
+
+        std::shared_ptr<OpenGLImage> image;
+        Image::CreateInfo info = gptInfo.imageInfo;
+        image = std::make_shared<OpenGLImage>(info);
+
+        unsigned int captureFBO;
+        unsigned int captureRBO;
+        glGenFramebuffers(1, &captureFBO);
+        glGenRenderbuffers(1, &captureRBO);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+
+        // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
+        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, image->getWidth(), image->getHeight());
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, image->getId(), 0);
+
+        glViewport(0, 0, image->getWidth(), image->getHeight());
+        gptInfo.shader->bind();
+        if(gptInfo.func)
+            gptInfo.func(gptInfo.shader);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        GraphicsManager::getRendererAPI()->renderQuad3();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        _openGLImages[gptInfo.textureSid.getId()] = image;
     }
 
     void OpenGLRenderer::initializeMesh(StringId sid)
@@ -311,6 +501,6 @@ namespace atta
         info.debugName = sid;
         _openGLImages[sid.getId()] = std::make_shared<OpenGLImage>(info);
 
-        //LOG_DEBUG("OpenGLRenderer", "Texture loaded! [w]$0[] -> $1 ($2)", sid, _openGLImages[sid.getId()]->getId(), info.format == Image::Format::RGB16F);
+        //LOG_DEBUG("OpenGLRenderer", "Texture loaded! [w]$0[] -> $1", sid, _openGLImages[sid.getId()]->getId());
     }
 }

@@ -21,6 +21,7 @@ namespace atta
             RGBA,// 4 bytes
             RED32I,// 4 byte
 
+            RG16F,
             RGB16F,
             DEPTH32F,
             DEPTH24_STENCIL8,

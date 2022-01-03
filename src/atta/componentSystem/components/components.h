@@ -10,6 +10,7 @@
 #include <atta/componentSystem/components/boxColliderComponent.h>
 #include <atta/componentSystem/components/cameraComponent.h>
 #include <atta/componentSystem/components/directionalLightComponent.h>
+#include <atta/componentSystem/components/environmentLightComponent.h>
 #include <atta/componentSystem/components/materialComponent.h>
 #include <atta/componentSystem/components/meshComponent.h>
 #include <atta/componentSystem/components/nameComponent.h>

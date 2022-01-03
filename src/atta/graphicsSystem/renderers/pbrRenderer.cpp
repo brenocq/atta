@@ -8,7 +8,6 @@
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/graphicsSystem/framebuffer.h>
 #include <atta/graphicsSystem/renderPass.h>
-#include <atta/graphicsSystem/rendererAPIs/openGL/openGLShaderGroup.h>
 
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
@@ -19,12 +18,13 @@
 #include <atta/componentSystem/components/materialComponent.h>
 #include <atta/componentSystem/components/pointLightComponent.h>
 #include <atta/componentSystem/components/directionalLightComponent.h>
+#include <atta/componentSystem/components/environmentLightComponent.h>
 #include <atta/componentSystem/factory.h>
 
 namespace atta
 {
     PbrRenderer::PbrRenderer():
-        Renderer("PbrRenderer"), _firstRender(true)
+        Renderer("PbrRenderer"), _firstRender(true), _lastEnvironmentMap(StringId("Not defined"))
     {
         // Framebuffer
         Framebuffer::CreateInfo framebufferInfo {};
@@ -66,68 +66,82 @@ namespace atta
         _selectedPipeline = std::make_unique<SelectedPipeline>(geometryRenderPass, geometryPipelineInfo.layout);
         _drawerPipeline = std::make_unique<DrawerPipeline>(geometryRenderPass);
 
-        ////---------- Create background shader ----------//
-        //{
-        //    ShaderGroup::CreateInfo bgShaderGroupInfo {};
-        //    bgShaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/background.vert", "shaders/pbrRenderer/background.frag"};
-        //    bgShaderGroupInfo.debugName = StringId("PBR background Shader Group");
-        //    _backgroundShader = GraphicsManager::create<ShaderGroup>(bgShaderGroupInfo);
-        //}
+        //---------- Create background shader ----------//
+        {
+            ShaderGroup::CreateInfo bgShaderGroupInfo {};
+            bgShaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/background.vert", "shaders/pbrRenderer/background.frag"};
+            bgShaderGroupInfo.debugName = StringId("PBR background Shader Group");
+            _backgroundShader = GraphicsManager::create<ShaderGroup>(bgShaderGroupInfo);
+        }
     }
 
     PbrRenderer::~PbrRenderer()
     {
-        // TODO Not everything created is being deleted
-        //glDeleteTextures(1, &_envCubemap);
-        //glDeleteTextures(1, &_irradianceMap);
-        //glDeleteTextures(1, &_prefilterMap);
-        //glDeleteTextures(1, &_brdfLUT);
     }
 
     void PbrRenderer::render(std::shared_ptr<Camera> camera)
     {
-        //if(_firstRender)
-        //{
-        //    brdfLUT();
-        //    generateCubemap();
-        //    convoluteCubemap();
-        //    prefilterCubemap();
-        //    _firstRender = false;
-        //}
+        if(_firstRender)
+        {
+            brdfLUT();
+            _firstRender = false;
+        }
 
         std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
 
+        // Generate envmap if necessary
+        bool foundEnvMap = false;
+        for(auto entity : entities)
+        {
+            EnvironmentLightComponent* el = ComponentManager::getEntityComponent<EnvironmentLightComponent>(entity);
+
+            if(el)
+            {
+                foundEnvMap = true;
+                if(el->sid != _lastEnvironmentMap)
+                {
+                    _lastEnvironmentMap = el->sid;
+                    GraphicsManager::getRendererAPI()->generateCubemap(_lastEnvironmentMap);
+                    irradianceCubemap();
+                    prefilterCubemap();
+                }
+            }
+        }
+        if(!foundEnvMap)
+            _lastEnvironmentMap = StringId("Not defined");
+
         _geometryPipeline->begin();
         {
+            //---------- PBR shader ----------//
             std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
             shader->bind();
+
             shader->setMat4("projection", transpose(camera->getProj()));
             shader->setMat4("view", transpose(camera->getView()));
             shader->setVec3("camPos", camera->getPosition());
+            if(_lastEnvironmentMap != "Not defined"_sid)
+            {
+                shader->setCubemap("irradianceMap", "PbrRenderer::irradiance");
+                shader->setCubemap("prefilterMap", "PbrRenderer::prefilter");
+                shader->setTexture("brdfLUT", "PbrRenderer::brdfLUT");
+                shader->setInt("environmentLightDefined", 1);
+                shader->setMat3("environmentLightOri", mat3(1.0f));
+            }
+            else
+                shader->setInt("environmentLightDefined", 0);
 
-            //shader->setInt("irradianceMap", 0);
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_2D, 0);
-            //glBindTexture(GL_TEXTURE_CUBE_MAP, _irradianceMap);
-
-            //shader->setInt("prefilterMap", 1);
-            //glActiveTexture(GL_TEXTURE1);
-            //glBindTexture(GL_TEXTURE_CUBE_MAP, _prefilterMap);
-
-            //shader->setInt("brdfLUT", 2);
-            //glActive'exture(GL_TEXTURE2);
-            //glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-            //glBindTexture(GL_TEXTURE_2D, _brdfLUT);
 
             //----- Lighting -----//
+            _environmentMapOri = mat3(1.0f);
             int numPointLights = 0;
             for(auto entity : entities)
             {
                 TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
                 PointLightComponent* pl = ComponentManager::getEntityComponent<PointLightComponent>(entity);
                 DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
+                EnvironmentLightComponent* el = ComponentManager::getEntityComponent<EnvironmentLightComponent>(entity);
 
-                if(transform && (pl || dl))
+                if(transform && (pl || dl || el))
                 {
                     if(pl && numPointLights < 10)
                     {
@@ -144,8 +158,15 @@ namespace atta
                         shader->setVec3("directionalLight.direction", before);
                         shader->setVec3("directionalLight.intensity", dl->intensity);
                     }
+                    if(el)
+                    {
+                        mat4 ori;
+                        ori.setPosOri(vec3(0.0f), transform->orientation);
+                        _environmentMapOri = mat3(ori);
+                        shader->setMat3("environmentLightOri", transpose(_environmentMapOri));
+                    }
                     if(numPointLights++ == 10)
-                        LOG_WARN("PhongRenderer", "Maximum number of point lights reached, 10 lights");
+                        LOG_WARN("PbrRenderer", "Maximum number of point lights reached, 10 lights");
                 }
             }
             shader->setInt("numPointLights", numPointLights);
@@ -213,20 +234,24 @@ namespace atta
                         shader->setFloat("material.metallic", material.metallic);
                         shader->setFloat("material.roughness", material.roughness);
                         shader->setFloat("material.ao", material.ao);
-                        shader->setFloat("material.hasNormalTexture", 0);
+                        shader->setInt("material.hasNormalTexture", 0);
                     }
 
                     GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
                 }
             }
 
-            //_backgroundShader->bind();
-            //_backgroundShader->setMat4("projection", transpose(camera->getProj()));
-            //_backgroundShader->setMat4("view", transpose(camera->getView()));
-            //_backgroundShader->setInt("environmentMap", 0);
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
-            //GraphicsManager::getRendererAPI()->renderCube();
+            //---------- Background shader ----------//
+            if(_lastEnvironmentMap != "Not defined"_sid)
+            {
+                _backgroundShader->bind();
+                _backgroundShader->setMat4("projection", transpose(camera->getProj()));
+                _backgroundShader->setMat4("view", transpose(camera->getView()));
+                _backgroundShader->setCubemap("environmentMap", _lastEnvironmentMap);
+                _backgroundShader->setMat3("environmentMapOri", _environmentMapOri);
+
+                GraphicsManager::getRendererAPI()->renderCube();
+            }
 
         }
         _geometryPipeline->end();
@@ -245,248 +270,82 @@ namespace atta
         }
     }
 
-    void PbrRenderer::generateCubemap()
+    void PbrRenderer::irradianceCubemap()
     {
-        StringId sid("textures/white.jpg");
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-        unsigned int captureFBO;
-        unsigned int captureRBO;
-        glGenFramebuffers(1, &captureFBO);
-        glGenRenderbuffers(1, &captureRBO);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
-        //---------- Equirectangular to cubemap ----------//
-        ShaderGroup::CreateInfo shaderGroupInfo {};
-        shaderGroupInfo.shaderPaths = {"shaders/compute/equiToCubemap.vert", "shaders/compute/equiToCubemap.frag"};
-        shaderGroupInfo.debugName = StringId("EquiToCubemap Shader Group");
-        std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
-
-        ResourceManager::get<Texture>(fs::path(sid.getString()));// Load
-        glGenTextures(1, &_envCubemap);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
-        for(unsigned int i = 0; i < 6; ++i)
-        {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
-        }
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        // Projection and view matrices
-        mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
-        mat4 captureViews[] =
-        {
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f))
-        };
-
-        // Convert HDR equirectangular environment map to cubemap equivalent
-        shader->bind();
-        shader->setMat4("projection", transpose(captureProjection));
-        shader->setTexture("equirectangularMap", sid);
-        glViewport(0, 0, 512, 512);
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        for(unsigned int i = 0; i < 6; ++i)
-        {
-            shader->setMat4("view", transpose(captureViews[i]));
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _envCubemap, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            GraphicsManager::getRendererAPI()->renderCube();
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
-    void PbrRenderer::convoluteCubemap()
-    {
-        unsigned int captureFBO;
-        unsigned int captureRBO;
-        glGenFramebuffers(1, &captureFBO);
-        glGenRenderbuffers(1, &captureRBO);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
-
-
-        // Projection and view matrices
-        mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
-        mat4 captureViews[] =
-        {
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f))
-        };
-
-        glGenTextures(1, &_irradianceMap);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, _irradianceMap);
-        for (unsigned int i = 0; i < 6; ++i)
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, nullptr);
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
-
+        // Create shader
         ShaderGroup::CreateInfo shaderGroupInfo {};
         shaderGroupInfo.shaderPaths = {"shaders/compute/irradiance.vert", "shaders/compute/irradiance.frag"};
         shaderGroupInfo.debugName = StringId("Irradiance Shader Group");
         std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
 
-        shader->bind();
-        shader->setMat4("projection", transpose(captureProjection));
-        shader->setInt("equirectangularMap", 0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
-
-        glViewport(0, 0, 32, 32); // don't forget to configure the viewport to the capture dimensions.
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            shader->setMat4("view", transpose(captureViews[i]));
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _irradianceMap, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            GraphicsManager::getRendererAPI()->renderCube();
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // Generate irradiance cubemap
+        RendererAPI::GenerateProcessedCubemapInfo info;
+        info.cubemapSid = StringId("PbrRenderer::irradiance");
+        info.shader = shader;
+        info.width = 128;
+        info.height = 128;
+        info.numMipLevels = 1;
+        info.func = [&](std::shared_ptr<ShaderGroup> shader, mat4 proj, mat4 view, int face, int mipLevel) 
+            {
+                if(mipLevel == 0 && face == 0)
+                {
+                    shader->setCubemap("environmentMap", _lastEnvironmentMap);
+                    shader->setMat4("projection", transpose(proj));
+                }
+                shader->setMat4("view", transpose(view));
+            };
+        GraphicsManager::getRendererAPI()->generateProcessedCubemap(info);
     }
 
     void PbrRenderer::prefilterCubemap()
     {
-        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
-        unsigned int captureFBO;
-        unsigned int captureRBO;
-        glGenFramebuffers(1, &captureFBO);
-        glGenRenderbuffers(1, &captureRBO);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
-
-        // Projection and view matrices
-        mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
-        mat4 captureViews[] =
-        {
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)),
-            lookAt(vec3(0.0f, 0.0f, 0.0f), vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f))
-        };
-
-
-        glGenTextures(1, &_prefilterMap);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, _prefilterMap);
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 128, 128, 0, GL_RGB, GL_FLOAT, nullptr);
-        }
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
+        // Create shader
         ShaderGroup::CreateInfo shaderGroupInfo {};
         shaderGroupInfo.shaderPaths = {"shaders/compute/prefilter.vert", "shaders/compute/prefilter.frag"};
         shaderGroupInfo.debugName = StringId("Prefilter Shader Group");
         std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
 
-        shader->bind();
-        shader->setMat4("projection", transpose(captureProjection));
-        shader->setInt("equirectangularMap", 0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, _envCubemap);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        unsigned int maxMipLevels = 5;
-        for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
-        {
-            // reisze framebuffer according to mip-level size.
-            unsigned int mipWidth  = 128 * std::pow(0.5, mip);
-            unsigned int mipHeight = 128 * std::pow(0.5, mip);
-            glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
-            glViewport(0, 0, mipWidth, mipHeight);
-
-            float roughness = (float)mip / (float)(maxMipLevels - 1);
-            shader->setFloat("roughness", roughness);
-            for (unsigned int i = 0; i < 6; ++i)
+        // Generate prefilter cubemap
+        RendererAPI::GenerateProcessedCubemapInfo info;
+        info.cubemapSid = StringId("PbrRenderer::prefilter");
+        info.shader = shader;
+        info.width = 512;
+        info.height = 512;
+        info.numMipLevels = 5;
+        info.func = [&](std::shared_ptr<ShaderGroup> shader, mat4 proj, mat4 view, int face, int mipLevel) 
             {
-                shader->setMat4("view", transpose(captureViews[i]));
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, _prefilterMap, mip);
+                if(mipLevel == 0 && face == 0)
+                {
+                    shader->setCubemap("environmentMap", _lastEnvironmentMap);
+                    shader->setMat4("projection", transpose(proj));
+                }
 
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                GraphicsManager::getRendererAPI()->renderCube();
-            }
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                shader->setMat4("view", transpose(view));
+
+                float roughness = (float)mipLevel / (float)(info.numMipLevels - 1);
+                shader->setFloat("roughness", roughness);
+            };
+        GraphicsManager::getRendererAPI()->generateProcessedCubemap(info);
     }
 
     void PbrRenderer::brdfLUT()
     {
-        unsigned int captureFBO;
-        unsigned int captureRBO;
-        glGenFramebuffers(1, &captureFBO);
-        glGenRenderbuffers(1, &captureRBO);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
-
-        glGenTextures(1, &_brdfLUT);
-        // pre-allocate enough memory for the LUT texture.
-        glBindTexture(GL_TEXTURE_2D, _brdfLUT);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
-        // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
-        glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _brdfLUT, 0);
-
         ShaderGroup::CreateInfo shaderGroupInfo {};
         shaderGroupInfo.shaderPaths = {"shaders/compute/brdf.vert", "shaders/compute/brdf.frag"};
         shaderGroupInfo.debugName = StringId("BRDF LUT Shader Group");
         std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
 
-        glViewport(0, 0, 512, 512);
-        shader->bind();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        GraphicsManager::getRendererAPI()->renderQuad();
+        // Generate brdf LUT
+        RendererAPI::GenerateProcessedTextureInfo info;
+        info.textureSid = StringId("PbrRenderer::brdfLUT");
+        info.shader = shader;
+        info.imageInfo.format = Image::Format::RG16F;
+        info.imageInfo.samplerWrap = Image::Wrap::REPEAT;
+        info.imageInfo.width = 512;
+        info.imageInfo.height = 512;
+        info.imageInfo.mipLevels = 1;
+        info.imageInfo.debugName = StringId("PbrRenderer brdfLUT image");
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        GraphicsManager::getRendererAPI()->generateProcessedTexture(info);
     }
 }

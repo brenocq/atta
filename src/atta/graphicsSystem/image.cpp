@@ -25,6 +25,7 @@ namespace atta
             case Format::RGB: return 3;
             case Format::RGBA: return 4;
             case Format::RED32I: return 4;
+            case Format::RG16F: return 2;
             case Format::RGB16F: return 3;
             default: break;
         }

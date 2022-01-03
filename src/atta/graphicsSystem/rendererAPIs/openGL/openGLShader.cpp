@@ -72,11 +72,14 @@ namespace atta
         while(true)
         {
             // Check if line defined a sampler2D
-            size_t marker = s.find("uniform sampler2D", currIdx);
+            size_t marker2D = s.find("uniform sampler2D", currIdx);
+            size_t markerCube = s.find("uniform samplerCube", currIdx);
+            size_t marker = std::min(marker2D, markerCube);
+
             if(marker != std::string::npos)
             {
                 // Extract uniform name
-                size_t endMarker = marker+18;
+                size_t endMarker = s.find(' ', marker+9)+1;
                 size_t endName = s.find(';', endMarker);
                 if(endName == std::string::npos)
                     continue;
