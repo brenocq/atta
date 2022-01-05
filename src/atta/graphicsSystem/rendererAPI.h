@@ -35,6 +35,7 @@ namespace atta
         virtual void renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) = 0;
 
         virtual void generateCubemap(StringId textureSid, mat4 rotationMatrix = mat4(1.0f)) = 0;
+
         struct GenerateProcessedCubemapInfo
         {
             StringId cubemapSid = StringId("Not defined");

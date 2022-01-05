@@ -24,6 +24,7 @@ const float PI = 3.14159265359;
 //---------- Variables ----------//
 //----- In/Out -----//
 in vec3 worldPos;
+in vec4 posDirectionalLightSpace;
 in vec3 normal;
 in vec2 texCoord;
 out vec4 FragColor;
@@ -32,15 +33,18 @@ out vec4 FragColor;
 #define MAX_NUM_POINT_LIGHTS 10
 uniform PointLight pointLights[MAX_NUM_POINT_LIGHTS];
 uniform DirectionalLight directionalLight;
-uniform int numPointLights;
-uniform int environmentLightDefined;
+uniform sampler2D directionalShadowMap;
 uniform mat3 environmentLightOri;
+
+uniform int numPointLights;
+uniform int numDirectionalLights;
+uniform int numEnvironmentLights;
 
 //----- PBR -----//
 uniform vec3 camPos;
 // IBL
-uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
+uniform samplerCube irradianceMap;
 uniform sampler2D brdfLUT;
 
 //----- Material -----//
@@ -52,6 +56,9 @@ uniform sampler2D aoTexture;
 uniform sampler2D normalTexture;
 
 //---------- Definitions ----------//
+vec3 calcLightContribution(vec3 L, vec3 N, vec3 V, vec3 radiance, vec3 albedo, float metallic, float roughness, vec3 F0);
+float directionalShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir);
+
 float distributionGGX(vec3 N, vec3 H, float roughness);// Distribution of microsurface normals
 float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness);// Microsurface shadowing
 vec3 fresnelSchlick(float cosTheta, vec3 F0);// Reflect-refract ratio
@@ -87,33 +94,27 @@ void main()
     //----- Point lights -----//
     for(int i = 0; i < numPointLights; i++)
     {
-        // Light radiance
         vec3 L = normalize(pointLights[i].position - worldPos);
         vec3 H = normalize(V + L);
         float dist = length(pointLights[i].position - worldPos);
         float attenuation = 1.0/(dist * dist);
         vec3 radiance = pointLights[i].intensity * attenuation;
-
-        // Cook-torrance BRDF
-        float D = distributionGGX(N, H, roughness);       
-        float G = geometrySmith(N, V, L, roughness); 
-        vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-
-        vec3 numerator = D * G * F;
-        float denominator = 4.0f * max(dot(N, V), 0.0) * max(dot(N, L), 0.0)  + 0.0001;
-        vec3 specular = numerator/denominator;
-
-        vec3 kS = F;
-        vec3 kD = vec3(1.0) - kS;
-        kD *= 1.0 - metallic;
-
-        // Add outgoing radiance to Lo
-        float NdotL = max(dot(N, L), 0.0);
-        Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+        Lo += calcLightContribution(L, N, V, radiance, albedo, metallic, roughness, F0);
     }
 
+    //----- Directional light -----//
+    if(numDirectionalLights == 1)
+    {
+        vec3 L = -directionalLight.direction;
+        vec3 radiance = directionalLight.intensity;
+
+        float shadow = directionalShadowCalculation(posDirectionalLightSpace, N, L);
+        Lo += calcLightContribution(L, N, V, radiance, albedo, metallic, roughness, F0) * (1.0f - shadow);
+    }
+
+    //----- Environment light -----//
     vec3 ambient = vec3(0.0f);
-    if(environmentLightDefined != 0)
+    if(numEnvironmentLights == 1)
     {
         // Diffuse IBL
         vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
@@ -133,6 +134,7 @@ void main()
     }
     else
         ambient = vec3(0.03) * albedo * ao;
+
     vec3 color = ambient + Lo;
 
     // HDR tonemapping
@@ -141,6 +143,56 @@ void main()
     color = pow(color, vec3(1.0/2.2));
 
     FragColor = vec4(color, 1.0f);
+}
+
+vec3 calcLightContribution(vec3 L, vec3 N, vec3 V, vec3 radiance, vec3 albedo, float metallic, float roughness, vec3 F0)
+{
+    vec3 H = normalize(V + L);
+
+    // Cook-torrance BRDF
+    float D = distributionGGX(N, H, roughness);       
+    float G = geometrySmith(N, V, L, roughness); 
+    vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+    vec3 numerator = D * G * F;
+    float denominator = 4.0f * max(dot(N, V), 0.0) * max(dot(N, L), 0.0)  + 0.0001;
+    vec3 specular = numerator/denominator;
+
+    vec3 kS = F;
+    vec3 kD = vec3(1.0) - kS;
+    kD *= 1.0 - metallic;
+
+    // Add outgoing radiance to Lo
+    float NdotL = max(dot(N, L), 0.0);
+    return (kD * albedo / PI + specular) * radiance * NdotL;
+}
+
+float directionalShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
+{
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(directionalShadowMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    float shadow = 0.0;
+    ivec2 texSize = textureSize(directionalShadowMap, 0);
+    vec2 texelSize = 1.0f/vec2(texSize);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(directionalShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    return shadow;
 }
 
 //---------- Declarations ----------//
