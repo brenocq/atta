@@ -73,6 +73,40 @@ namespace atta
             bgShaderGroupInfo.debugName = StringId("PBR background Shader Group");
             _backgroundShader = GraphicsManager::create<ShaderGroup>(bgShaderGroupInfo);
         }
+
+        //---------- Shadow mapping ----------//
+        {
+            // Framebuffer
+            Framebuffer::CreateInfo framebufferInfo {};
+            framebufferInfo.attachments.push_back({Image::Format::DEPTH32F});
+            framebufferInfo.width = 1024;
+            framebufferInfo.height = 1024;
+            framebufferInfo.debugName = StringId("PbrRenderer::shadowMap::framebuffer");
+            std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
+
+            // Shader Group
+            ShaderGroup::CreateInfo shaderGroupInfo {};
+            shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/shadow.vert", "shaders/pbrRenderer/shadow.frag"};
+            shaderGroupInfo.debugName = StringId("PbrRenderer::shadowMap::shaderGroup");
+            std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+
+            // Render Pass
+            RenderPass::CreateInfo renderPassInfo {};
+            renderPassInfo.framebuffer = framebuffer;
+            renderPassInfo.debugName = StringId("PbrRenderer::shadowMap::renderPass");
+            std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+
+            // Vertex input layout
+            Pipeline::CreateInfo pipelineInfo {};
+            pipelineInfo.shaderGroup = shaderGroup;
+            pipelineInfo.renderPass = renderPass;
+            pipelineInfo.layout = {
+                { "inPosition", VertexBufferElement::Type::VEC3 },
+                { "inNormal", VertexBufferElement::Type::VEC3 },
+                { "inTexCoord", VertexBufferElement::Type::VEC2 }
+            };
+            _shadowMapPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+        }
     }
 
     PbrRenderer::~PbrRenderer()
@@ -110,6 +144,79 @@ namespace atta
         if(!foundEnvMap)
             _lastEnvironmentMap = StringId("Not defined");
 
+        shadowPass();
+        geometryPass(camera);
+
+        _selectedPipeline->render(camera);
+        _drawerPipeline->render(camera);
+    }
+
+    void PbrRenderer::resize(uint32_t width, uint32_t height)
+    {
+        if(width != _width || height != _height)
+        {
+            _geometryPipeline->getRenderPass()->getFramebuffer()->resize(width, height);
+            _width = width;
+            _height = height;
+        }
+    }
+
+    void PbrRenderer::shadowPass()
+    {
+        std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
+
+        //----- Directional shadow mapping -----//
+        EntityId directionalLightEntity = -1;
+        for(auto entity : entities)
+        {
+            DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
+            if(dl)
+            {
+                directionalLightEntity = entity;
+                break;
+            }
+        }
+
+        if(directionalLightEntity != -1)
+        {
+            _shadowMapPipeline->begin();
+            {
+                std::shared_ptr<ShaderGroup> shader = _shadowMapPipeline->getShaderGroup();
+                shader->bind();
+
+                // Create light matrix
+                DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(directionalLightEntity);
+                TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(directionalLightEntity);
+
+                float height = 10.0f;
+                float ratio = 1.0f;
+                float far = 10.0f;
+                mat4 proj = orthographic(height, ratio, far);
+                mat4 view;
+                view.setPosOri(vec3(), t->orientation);
+                _directionalLightMatrix = proj*view;
+                shader->setMat4("lightSpaceMatrix", transpose(_directionalLightMatrix));
+
+                // Fill shadow map rendering the scene
+                for(auto entity : entities)
+                {
+                    MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
+                    TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+
+                    if(mesh && transform)
+                    {
+                        shader->setMat4("model", transpose(transform->getWorldTransform(entity)));
+                        GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+                    }
+                }
+            }
+            _shadowMapPipeline->end();
+        }
+    }
+
+    void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera)
+    {
+        std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
         _geometryPipeline->begin();
         {
             //---------- PBR shader ----------//
@@ -119,21 +226,25 @@ namespace atta
             shader->setMat4("projection", transpose(camera->getProj()));
             shader->setMat4("view", transpose(camera->getView()));
             shader->setVec3("camPos", camera->getPosition());
+            shader->setMat4("directionalLightMatrix", transpose(_directionalLightMatrix));
+            shader->setTexture("directionalShadowMap", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
+
             if(_lastEnvironmentMap != "Not defined"_sid)
             {
                 shader->setCubemap("irradianceMap", "PbrRenderer::irradiance");
                 shader->setCubemap("prefilterMap", "PbrRenderer::prefilter");
                 shader->setTexture("brdfLUT", "PbrRenderer::brdfLUT");
-                shader->setInt("environmentLightDefined", 1);
+                shader->setInt("numEnvironmentLights", 1);
                 shader->setMat3("environmentLightOri", mat3(1.0f));
             }
             else
-                shader->setInt("environmentLightDefined", 0);
+                shader->setInt("numEnvironmentLights", 0);
 
 
             //----- Lighting -----//
             _environmentMapOri = mat3(1.0f);
             int numPointLights = 0;
+            int numDirectionalLights = 0;
             for(auto entity : entities)
             {
                 TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
@@ -152,11 +263,13 @@ namespace atta
                     }
                     if(dl)
                     {
-                        vec3 before = { 0.0f, -1.0f, 0.0f };
-                        //vec3 direction;
-                        //transform->orientation.transformVector(before, direction);
-                        shader->setVec3("directionalLight.direction", before);
+                        vec3 base = { 0.0f, 0.0f, -1.0f };
+                        mat4 rotation;
+                        rotation.setPosOri({0,0,0}, transform->orientation);
+                        base = transpose(mat3(rotation)) * base;
+                        shader->setVec3("directionalLight.direction", base);
                         shader->setVec3("directionalLight.intensity", dl->intensity);
+                        numDirectionalLights++;
                     }
                     if(el)
                     {
@@ -170,6 +283,7 @@ namespace atta
                 }
             }
             shader->setInt("numPointLights", numPointLights);
+            shader->setInt("numDirectionalLights", numDirectionalLights ? 1 : 0);
 
             //----- Entities -----//
             for(auto entity : entities)
@@ -230,6 +344,8 @@ namespace atta
                     else
                     {
                         MaterialComponent material {};
+                        //shader->setTexture("albedoTexture", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
+                        //shader->setVec3("material.albedo", {-1, -1, -1});
                         shader->setVec3("material.albedo", material.albedo);
                         shader->setFloat("material.metallic", material.metallic);
                         shader->setFloat("material.roughness", material.roughness);
@@ -248,6 +364,7 @@ namespace atta
                 _backgroundShader->setMat4("projection", transpose(camera->getProj()));
                 _backgroundShader->setMat4("view", transpose(camera->getView()));
                 _backgroundShader->setCubemap("environmentMap", _lastEnvironmentMap);
+                //_backgroundShader->setCubemap("environmentMap", "PbrRenderer::irradiance");
                 _backgroundShader->setMat3("environmentMapOri", _environmentMapOri);
 
                 GraphicsManager::getRendererAPI()->renderCube();
@@ -255,19 +372,6 @@ namespace atta
 
         }
         _geometryPipeline->end();
-
-        _selectedPipeline->render(camera);
-        _drawerPipeline->render(camera);
-    }
-
-    void PbrRenderer::resize(uint32_t width, uint32_t height)
-    {
-        if(width != _width || height != _height)
-        {
-            _geometryPipeline->getRenderPass()->getFramebuffer()->resize(width, height);
-            _width = width;
-            _height = height;
-        }
     }
 
     void PbrRenderer::irradianceCubemap()

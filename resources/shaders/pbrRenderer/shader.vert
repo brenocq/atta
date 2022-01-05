@@ -7,8 +7,10 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
 uniform mat4 invModel;
+uniform mat4 directionalLightMatrix;
 
 out vec3 worldPos;
+out vec4 posDirectionalLightSpace;
 out vec3 normal;
 out vec2 texCoord;
 
@@ -29,6 +31,7 @@ void main()
     gl_Position = projection * coordImage;
 
     worldPos = coord.xyz;
+    posDirectionalLightSpace = directionalLightMatrix*vec4(worldPos, 1.0f);
     normal = mat3(transpose(invModel))*inNormal;
     texCoord = inTexCoord;
 }

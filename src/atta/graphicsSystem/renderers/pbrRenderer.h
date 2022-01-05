@@ -7,6 +7,7 @@
 #ifndef ATTA_GRAPHICS_SYSTEM_RENDERERS_PBR_RENDERER_H
 #define ATTA_GRAPHICS_SYSTEM_RENDERERS_PBR_RENDERER_H
 #include <atta/graphicsSystem/pipeline.h>
+#include <atta/graphicsSystem/image.h>
 #include <atta/graphicsSystem/renderers/renderer.h>
 #include <atta/graphicsSystem/renderers/common/selectedPipeline.h>
 #include <atta/graphicsSystem/renderers/common/drawerPipeline.h>
@@ -27,6 +28,9 @@ namespace atta
         void* getImGuiTexture() const override { return _geometryPipeline->getImGuiTexture(); }
 
     private:
+        void shadowPass();
+        void geometryPass(std::shared_ptr<Camera> camera);
+
         void irradianceCubemap();
         void prefilterCubemap();
         void brdfLUT();
@@ -37,8 +41,17 @@ namespace atta
 
         std::shared_ptr<ShaderGroup> _backgroundShader;
         bool _firstRender;
+
+        //----- Lighting -----//
+        // Directional light
+        mat3 _directionalLightMatrix;
+        // Environment light
         StringId _lastEnvironmentMap;
         mat3 _environmentMapOri;
+
+        // Shadow mapping
+        std::shared_ptr<Pipeline> _shadowMapPipeline;
+        //std::shared_ptr<Image> _directionalLightShadowMap;
     };
 }
 
