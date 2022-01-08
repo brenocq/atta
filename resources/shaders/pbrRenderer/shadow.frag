@@ -1,7 +1,7 @@
 #version 300 es
 //--------------------------------------------------
 // Atta Shaders
-// shadow.vert
+// shadow.frag
 // Date: 2022-01-04
 // By Breno Cunha Queiroz
 //--------------------------------------------------

@@ -32,6 +32,7 @@ namespace atta
         void setTexture(const char* name, StringId sid) override;
         void setTexture(const char* name, std::shared_ptr<Image> image) override;
         void setCubemap(const char* name, StringId sid) override;
+        void setCubemap(const char* name, std::shared_ptr<Image> image) override;
 
         inline unsigned int getLoc(const char* name);
 

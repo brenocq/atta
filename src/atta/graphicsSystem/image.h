@@ -7,6 +7,7 @@
 #ifndef ATTA_GRAPHICS_SYSTEM_IMAGE_H
 #define ATTA_GRAPHICS_SYSTEM_IMAGE_H
 #include <atta/core/stringId.h>
+#include <atta/graphicsSystem/base.h>
 
 namespace atta
 {
@@ -31,16 +32,21 @@ namespace atta
         {
             NONE = 0,
             CLAMP,
-            REPEAT
+            REPEAT,
+            BORDER// Clamp to border
         };
 
         struct CreateInfo
         {
             Format format = Format::RGBA;
             Wrap samplerWrap = Wrap::REPEAT;
+            /// Image border color
+            /** Only used when samplerWrap is set to BORDER */
+            vec4 borderColor = vec4(1.0f);
             uint32_t width = 1;
             uint32_t height = 1;
             uint32_t mipLevels = 1;
+            bool isCubemap = false;
             StringId debugName = StringId("Unnamed Image");
             uint8_t* data = nullptr;
         };
@@ -49,12 +55,15 @@ namespace atta
         virtual ~Image() = default;
 
         virtual void write(void* data) = 0;
+        virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
 
+        GfxId getId() const { return _id; }
         Format getFormat() const { return _format; }
         Wrap getSamplerWrap() const { return _samplerWrap; }
         uint32_t getWidth() const { return _width; }
         uint32_t getHeight() const { return _height; }
         float getRatio() const { return _width/static_cast<float>(_height); }
+        bool isCubemap() const { return _isCubemap; }
         virtual void* getImGuiImage() = 0;
 
         static uint32_t getFormatSize(Format format);
@@ -62,13 +71,17 @@ namespace atta
         static bool isStencilFormat(Format format);
 
     protected:
+        GfxId _id;
         Format _format;
         Wrap _samplerWrap;
+        vec4 _borderColor;
         uint32_t _width;
         uint32_t _height;
         uint32_t _mipLevels;
+        bool _isCubemap;
 
         const StringId _debugName;
+        uint8_t* _data;
     };
 }
 

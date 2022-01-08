@@ -51,7 +51,8 @@ namespace atta
 
         // Shadow mapping
         std::shared_ptr<Pipeline> _shadowMapPipeline;
-        //std::shared_ptr<Image> _directionalLightShadowMap;
+        std::shared_ptr<Pipeline> _omniShadowMapPipeline;
+        std::shared_ptr<Image> _omnidirectionalShadowMap;
     };
 }
 

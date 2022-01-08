@@ -37,6 +37,6 @@ namespace atta
         return reinterpret_cast<void*>(
                 std::static_pointer_cast<OpenGLImage>(
                     _renderPass->getFramebuffer()->getImage(0)
-                    )->getId());
+                    )->getImGuiImage());
     }
 }

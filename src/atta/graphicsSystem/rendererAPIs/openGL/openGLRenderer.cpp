@@ -257,7 +257,7 @@ namespace atta
             LOG_WARN("OpenGLRenderer", "Trying to get ImGui image that was never initialized '[w]$0[]'", sid);
             return nullptr;
         }
-        return reinterpret_cast<void*>(_openGLImages.at(sid.getId())->getId());
+        return reinterpret_cast<void*>(_openGLImages.at(sid.getId())->getImGuiImage());
     }
 
     void OpenGLRenderer::onMeshLoadEvent(Event& event)

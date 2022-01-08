@@ -232,6 +232,45 @@ namespace atta
         //LOG_DEBUG("OpenGLShaderGroup", "Bind $0 to texture unit $1, id $2 -> $3", name, imgUnit, cubemap, _textureUnits);
     }
 
+    void OpenGLShaderGroup::setCubemap(const char* name, std::shared_ptr<Image> inImage)
+    {
+        std::shared_ptr<OpenGLImage> image = std::static_pointer_cast<OpenGLImage>(inImage);
+
+        if(!image)
+        {
+            LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that was never created", name);
+            return;
+        }
+
+        if(!image->isCubemap())
+        {
+            LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that is not a cubemap", name);
+            return;
+        }
+
+        int imgUnit = -1;
+        for(unsigned i = 0; i < _textureUnits.size(); i++)
+            if(_textureUnits[i] == name)
+            {
+                imgUnit = int(i)+1;
+                break;
+            }
+
+        if(imgUnit == -1)
+        {
+            LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
+            return;
+        }
+
+        // Ensure image is set to write texture unit
+        GLint imageLocation = glGetUniformLocation(_id, name);
+        glUniform1i(imageLocation, imgUnit);
+
+        // Activate texture unit
+        glActiveTexture(GL_TEXTURE0+imgUnit);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, image->getId());
+    }
+
     unsigned int OpenGLShaderGroup::getLoc(const char* name)
     {
         return glGetUniformLocation(_id, name);

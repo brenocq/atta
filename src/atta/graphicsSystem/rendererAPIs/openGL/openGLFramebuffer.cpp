@@ -12,23 +12,31 @@ namespace atta
     OpenGLFramebuffer::OpenGLFramebuffer(const Framebuffer::CreateInfo& info):
         Framebuffer(info), _id(0), _depthAttachmentIndex(-1), _stencilAttachmentIndex(-1)
     {
-        // Populate color and depth attachments
+        // Check consistency and populate color and depth attachments
         int i = 0;
         for(auto attachment : _attachments)
         {
-            if(Image::isDepthFormat(attachment.format))
+            // Check attachment consistency
+            DASSERT(!(attachment.image != nullptr && attachment.format != Image::Format::NONE), "Should not create an attachment with format and image defined. Plese check the attachments for [w]$0", _debugName);
+
+            // Check only one depth and stencil attachments
+            Image::Format format = attachment.image != nullptr ? attachment.image->getFormat() : attachment.format;
+            if(Image::isDepthFormat(format))
             {
-                DASSERT(_depthAttachmentIndex == -1, "It is not possible to create frameBuffer with more than one depth attachment");
+                DASSERT(_depthAttachmentIndex == -1, "It is not possible to create framebuffer with more than one depth attachment");
                 _depthAttachmentIndex = i;
             }
 
-            if(Image::isStencilFormat(attachment.format))
+            if(Image::isStencilFormat(format))
             {
-                DASSERT(_stencilAttachmentIndex == -1, "It is not possible to create frameBuffer with more than one stencil attachment");
+                DASSERT(_stencilAttachmentIndex == -1, "It is not possible to create framebuffer with more than one stencil attachment");
                 _stencilAttachmentIndex = i;
             }
             i++;
         }
+
+        // Create attachments
+        createAttachments();
 
         resize(_width, _height, true);
     }
@@ -37,6 +45,64 @@ namespace atta
     {
         if(_id)
             glDeleteFramebuffers(1, &_id);
+    }
+
+    void OpenGLFramebuffer::createAttachments()
+    {
+        // Create attachment images
+        for(unsigned i = 0; i < _attachments.size(); i++)
+        {
+            std::shared_ptr<OpenGLImage> image;
+            if(_attachments[i].image)
+            {
+                // If already created
+                image = std::dynamic_pointer_cast<OpenGLImage>(_attachments[i].image);
+            }
+            else
+            {
+                // If create from format
+                Image::CreateInfo info;
+                info.format = _attachments[i].format;
+                info.width = _width;
+                info.height = _height;
+                image = std::make_shared<OpenGLImage>(info);
+            }
+            _images[i] = image;
+        }
+    }
+
+    void OpenGLFramebuffer::bindAttachments()
+    {
+        // Bind attachment images
+        unsigned colorIndex = 0;
+
+        for(unsigned i = 0; i < _images.size(); i++)
+        {
+            bool isColor = (i != _depthAttachmentIndex) && (i != _stencilAttachmentIndex);
+            if(i == _depthAttachmentIndex)
+            {
+                if(!_images[i]->isCubemap())
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _images[i]->getId(), 0);
+                else
+                    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _images[i]->getId(), 0);
+            }
+            if(i == _stencilAttachmentIndex)
+            {
+                if(!_images[i]->isCubemap())
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _images[i]->getId(), 0);
+                else
+                    glFramebufferTexture(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, _images[i]->getId(), 0);
+            }
+
+            if(isColor)
+            {
+                if(!_images[i]->isCubemap())
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+colorIndex, GL_TEXTURE_2D, _images[i]->getId(), 0);
+                else
+                    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+colorIndex, _images[i]->getId(), 0);
+                colorIndex++;
+            }
+        }
     }
 
     void OpenGLFramebuffer::bind(bool clear)
@@ -79,22 +145,18 @@ namespace atta
         _height = height;
 
         if(_id)
-        {
             glDeleteFramebuffers(1, &_id);
-            _images.clear();
-        }
 
         glGenFramebuffers(1, &_id);
         glBindFramebuffer(GL_FRAMEBUFFER, _id);
 
-        //----- Create attachment images -----//
+        //----- Update attachment images -----//
+        // Resize attachments
         for(unsigned i = 0; i < _attachments.size(); i++)
-        {
-            if(i == (unsigned)_depthAttachmentIndex)
-                _images[i] = createDepthAttachment(_attachments[i].format);
-            else
-                _images[i] = createColorAttachment(_attachments[i].format, static_cast<int>(i));
-        }
+            _images[i]->resize(width, height, forceRecreate);
+
+        // Bind attachments
+        bindAttachments();
 
         //----- Check framebuffer-----//
         ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, 
@@ -110,39 +172,6 @@ namespace atta
         int pixel;
         glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
         return pixel;
-    }
-
-    //------------------------------------------------//
-    //------------- Attachment creation --------------//
-    //------------------------------------------------//
-    std::shared_ptr<Image> OpenGLFramebuffer::createColorAttachment(Image::Format format, int index)
-    {
-        std::shared_ptr<OpenGLImage> image;
-        Image::CreateInfo info;
-        info.format = format;
-        info.width = _width;
-        info.height = _height;
-        image = std::make_shared<OpenGLImage>(info);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+index, GL_TEXTURE_2D, image->getId(), 0);
-
-        return std::static_pointer_cast<Image>(image);
-    }
-
-    std::shared_ptr<Image> OpenGLFramebuffer::createDepthAttachment(Image::Format format)
-    {
-        std::shared_ptr<OpenGLImage> image;
-        Image::CreateInfo info;
-        info.format = format;
-        info.width = _width;
-        info.height = _height;
-        image = std::make_shared<OpenGLImage>(info);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, image->getId(), 0);
-        if(_stencilAttachmentIndex == _depthAttachmentIndex)
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, image->getId(), 0);
-
-        return std::static_pointer_cast<Image>(image);
     }
 
     //------------------------------------------------//

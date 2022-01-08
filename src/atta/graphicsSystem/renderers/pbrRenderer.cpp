@@ -74,11 +74,20 @@ namespace atta
             _backgroundShader = GraphicsManager::create<ShaderGroup>(bgShaderGroupInfo);
         }
 
-        //---------- Shadow mapping ----------//
+        //---------- Directional shadow mapping ----------//
         {
             // Framebuffer
+            Image::CreateInfo imageInfo;
+            imageInfo.format = Image::Format::DEPTH32F;
+            imageInfo.samplerWrap = Image::Wrap::BORDER;
+            imageInfo.borderColor = vec4(1.0f);
+            imageInfo.width = 1024;
+            imageInfo.height = 1024;
+            imageInfo.debugName = StringId("PbrRenderer::dirShadowMap::image");
+            std::shared_ptr<Image> depthImage = GraphicsManager::create<Image>(imageInfo);
+
             Framebuffer::CreateInfo framebufferInfo {};
-            framebufferInfo.attachments.push_back({Image::Format::DEPTH32F});
+            framebufferInfo.attachments.push_back({Image::Format::NONE, depthImage});
             framebufferInfo.width = 1024;
             framebufferInfo.height = 1024;
             framebufferInfo.debugName = StringId("PbrRenderer::shadowMap::framebuffer");
@@ -106,6 +115,48 @@ namespace atta
                 { "inTexCoord", VertexBufferElement::Type::VEC2 }
             };
             _shadowMapPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+        }
+
+        //---------- Omnidirectional shadow mapping ----------//
+        {
+            // Framebuffer
+            Image::CreateInfo imageInfo;
+            imageInfo.format = Image::Format::DEPTH32F;
+            imageInfo.width = 1024;
+            imageInfo.height = 1024;
+            imageInfo.isCubemap = true;
+            imageInfo.debugName = StringId("PbrRenderer::omniShadowMap::image");
+            _omnidirectionalShadowMap = GraphicsManager::create<Image>(imageInfo);
+
+            Framebuffer::CreateInfo framebufferInfo {};
+            framebufferInfo.attachments.push_back({Image::Format::NONE, _omnidirectionalShadowMap});
+            framebufferInfo.width = 1024;
+            framebufferInfo.height = 1024;
+            framebufferInfo.debugName = StringId("PbrRenderer::omniShadowMap::framebuffer");
+            std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
+
+            // Shader Group
+            ShaderGroup::CreateInfo shaderGroupInfo {};
+            shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/omniShadow.vert", "shaders/pbrRenderer/omniShadow.geom", "shaders/pbrRenderer/omniShadow.frag"};
+            shaderGroupInfo.debugName = StringId("PbrRenderer::omniShadowMap::shaderGroup");
+            std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+
+            // Render Pass
+            RenderPass::CreateInfo renderPassInfo {};
+            renderPassInfo.framebuffer = framebuffer;
+            renderPassInfo.debugName = StringId("PbrRenderer::omniShadowMap::renderPass");
+            std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+
+            // Vertex input layout
+            Pipeline::CreateInfo pipelineInfo {};
+            pipelineInfo.shaderGroup = shaderGroup;
+            pipelineInfo.renderPass = renderPass;
+            pipelineInfo.layout = {
+                { "inPosition", VertexBufferElement::Type::VEC3 },
+                { "inNormal", VertexBufferElement::Type::VEC3 },
+                { "inTexCoord", VertexBufferElement::Type::VEC2 }
+            };
+            _omniShadowMapPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
         }
     }
 
@@ -185,12 +236,11 @@ namespace atta
                 shader->bind();
 
                 // Create light matrix
-                DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(directionalLightEntity);
                 TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(directionalLightEntity);
 
                 float height = 10.0f;
                 float ratio = 1.0f;
-                float far = 10.0f;
+                float far = 25.0f;
                 mat4 proj = orthographic(height, ratio, far);
                 mat4 view;
                 view.setPosOri(vec3(), t->orientation);
@@ -212,6 +262,70 @@ namespace atta
             }
             _shadowMapPipeline->end();
         }
+
+        //----- Omnidirectional shadow mapping -----//
+        EntityId pointLightEntity = -1;
+        for(auto entity : entities)
+        {
+            PointLightComponent* pl = ComponentManager::getEntityComponent<PointLightComponent>(entity);
+            if(pl)
+            {
+                pointLightEntity = entity;
+                break;
+            }
+        }
+
+        if(pointLightEntity != -1)
+        {
+            _omniShadowMapPipeline->begin();
+            {
+                std::shared_ptr<ShaderGroup> shader = _omniShadowMapPipeline->getShaderGroup();
+                shader->bind();
+
+                // Create light matrix
+                TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(pointLightEntity);
+
+                // TODO world position
+                float fov = radians(90.0f);
+                float ratio = 1.0f;
+                float near = 0.01f;
+                float far = 25.0f;
+                mat4 proj = perspective(fov, ratio, near, far);
+                std::vector<mat4> shadowMatrices = 
+                {
+                    proj * lookAt(t->position, t->position+vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
+                    proj * lookAt(t->position, t->position+vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)),
+                    proj * lookAt(t->position, t->position+vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)),
+                    proj * lookAt(t->position, t->position+vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)),
+                    proj * lookAt(t->position, t->position+vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)),
+                    proj * lookAt(t->position, t->position+vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f))
+                };
+
+                shader->setMat4("shadowMatrices[0]", transpose(shadowMatrices[0]));
+                shader->setMat4("shadowMatrices[1]", transpose(shadowMatrices[1]));
+                shader->setMat4("shadowMatrices[2]", transpose(shadowMatrices[2]));
+                shader->setMat4("shadowMatrices[3]", transpose(shadowMatrices[3]));
+                shader->setMat4("shadowMatrices[4]", transpose(shadowMatrices[4]));
+                shader->setMat4("shadowMatrices[5]", transpose(shadowMatrices[5]));
+                shader->setMat4("model", transpose(t->getWorldTransform(pointLightEntity)));
+                shader->setVec3("lightPos", t->position);
+                shader->setFloat("far_plane", far);
+
+                // Fill shadow map rendering the scene
+                for(auto entity : entities)
+                {
+                    MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
+                    TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+
+                    if(mesh && transform)
+                    {
+                        shader->setMat4("model", transpose(transform->getWorldTransform(entity)));
+                        GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+                    }
+                }
+            }
+            _omniShadowMapPipeline->end();
+        }
     }
 
     void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera)
@@ -228,6 +342,8 @@ namespace atta
             shader->setVec3("camPos", camera->getPosition());
             shader->setMat4("directionalLightMatrix", transpose(_directionalLightMatrix));
             shader->setTexture("directionalShadowMap", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
+            shader->setCubemap("omniShadowMap", _omnidirectionalShadowMap);
+            shader->setFloat("omniFarPlane", 25.0f);
 
             if(_lastEnvironmentMap != "Not defined"_sid)
             {
@@ -364,6 +480,7 @@ namespace atta
                 _backgroundShader->setMat4("projection", transpose(camera->getProj()));
                 _backgroundShader->setMat4("view", transpose(camera->getView()));
                 _backgroundShader->setCubemap("environmentMap", _lastEnvironmentMap);
+                //_backgroundShader->setCubemap("environmentMap", _omnidirectionalShadowMap);
                 //_backgroundShader->setCubemap("environmentMap", "PbrRenderer::irradiance");
                 _backgroundShader->setMat3("environmentMapOri", _environmentMapOri);
 

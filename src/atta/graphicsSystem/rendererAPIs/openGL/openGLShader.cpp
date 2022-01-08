@@ -103,7 +103,8 @@ namespace atta
         std::string extension = filepath.extension().string();
         if(extension == ".vert") return GL_VERTEX_SHADER;
         if(extension == ".frag") return GL_FRAGMENT_SHADER;
-        ASSERT(false, "Unknown shader file format [w]$0[]. Instead of [*w]$1[], it should be [w].vert[] or [w].frag[]",
+        if(extension == ".geom") return GL_GEOMETRY_SHADER;
+        ASSERT(false, "Unknown shader file format [w]$0[]. Instead of [*w]$1[], it should be [w].vert[], [w].frag[], or [w].geom[]",
                 filepath.string(), extension);
         return 0;
     }

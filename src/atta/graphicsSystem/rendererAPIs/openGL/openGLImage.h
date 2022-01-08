@@ -23,14 +23,10 @@ namespace atta
         static GLenum convertDataType(Format format);
         static GLenum convertSamplerWrap(Wrap samplerWrap);
 
-        OpenGLId getId() const { return _id; }
-
         void write(void* data) override;
-        void* getImGuiImage() override { return reinterpret_cast<void*>(_id); }
+        void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
-    private:
-        OpenGLId _id;
-        //OpenGLId _samplerId;
+        void* getImGuiImage() override { return reinterpret_cast<void*>(OpenGLId(_id)); }
     };
 }
 

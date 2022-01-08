@@ -29,20 +29,14 @@ namespace atta
         //const std::vector<std::shared_ptr<Image>>& getColorAttachments() const { return _colorAttachments; };
 
     private:
-        std::shared_ptr<Image> createColorAttachment(Image::Format format, int index);
-        std::shared_ptr<Image> createDepthAttachment(Image::Format format);
+        void createAttachments();
+        void bindAttachments();
 
         OpenGLId _id;
 
         // Attachments
-        //std::vector<std::shared_ptr<Image>> _colorAttachments;
-        //std::shared_ptr<Image> _depthAttachment;
         int _depthAttachmentIndex;
         int _stencilAttachmentIndex;
-
-        // Attachment formats
-        //std::vector<Image::Format> _colorAttachmentFormats;
-        //Image::Format _depthAttachmentFormat;
     };
 }
 
