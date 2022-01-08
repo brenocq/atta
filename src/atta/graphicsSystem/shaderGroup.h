@@ -41,6 +41,7 @@ namespace atta
         virtual void setTexture(const char* name, StringId sid) = 0;
         virtual void setTexture(const char* name, std::shared_ptr<Image> image) = 0;
         virtual void setCubemap(const char* name, StringId sid) = 0;
+        virtual void setCubemap(const char* name, std::shared_ptr<Image> image) = 0;
 
     protected:
         std::vector<std::shared_ptr<Shader>> _shaders;

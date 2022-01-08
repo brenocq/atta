@@ -9,43 +9,100 @@
 namespace atta
 {
     OpenGLImage::OpenGLImage(const Image::CreateInfo& info):
-        Image(info), _id(0)//, _samplerId(0)
+        Image(info)
     {
-        // Create texture
-        glGenTextures(1, &_id);
-        glBindTexture(GL_TEXTURE_2D, _id);
-
-        GLint wrapMode = info.samplerWrap == Image::Wrap::CLAMP ? GL_CLAMP_TO_EDGE : GL_REPEAT;
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);	
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        // Populate data and generate mipmap
-        GLenum dataType = OpenGLImage::convertDataType(_format);
-        GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
-        GLenum format = OpenGLImage::convertFormat(_format);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, info.data);
-
-        if(info.mipLevels > 1)//_format == Format::RGB || _format == Format::RGBA)
-            glGenerateMipmap(GL_TEXTURE_2D);
+        resize(_width, _height, true);
     }
 
     OpenGLImage::~OpenGLImage()
     {
         if(_id)
+        {
             glDeleteTextures(1, &_id);
+        }
     }
 
     void OpenGLImage::write(void* data)
     {
-        glBindTexture(GL_TEXTURE_2D, _id);
+        if(!_isCubemap)
+        {
+            glBindTexture(GL_TEXTURE_2D, _id);
+            GLenum dataType = OpenGLImage::convertDataType(_format);
+            GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
+            GLenum format = OpenGLImage::convertFormat(_format);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, data);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        else
+            LOG_WARN("OpenGLImage", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
+    }
+
+    void OpenGLImage::resize(uint32_t width, uint32_t height, bool forceRecreate)
+    {
+        // Check if size was not changed
+        if(!forceRecreate && (_width == width && _height == height))
+            return;
+        _width = width;
+        _height = height;
+
+        if(_id)
+            glDeleteTextures(1, &_id);
+
+        unsigned test;
+        glGenTextures(1, &test);
+        _id = test;
+
+        // Populate data and generate mipmap
         GLenum dataType = OpenGLImage::convertDataType(_format);
         GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
         GLenum format = OpenGLImage::convertFormat(_format);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, data);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        GLint wrapMode = convertSamplerWrap(_samplerWrap);
+
+        if(!_isCubemap)
+        {
+            // Create 2D texture
+            glBindTexture(GL_TEXTURE_2D, _id);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);	
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            if(_samplerWrap == Image::Wrap::BORDER)
+            {
+                float borderColor[] = { _borderColor.x, _borderColor.y, _borderColor.z, _borderColor.w };
+                glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+            }
+
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, _data);
+
+            if(_mipLevels > 1)
+                glGenerateMipmap(GL_TEXTURE_2D);
+        }
+        else
+        {
+            // Create cubemap
+            glBindTexture(GL_TEXTURE_CUBE_MAP, _id);
+
+            for(unsigned int i = 0; i < 6; i++)
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, _width, _height, 0, format, dataType, _data);
+                //glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, _width, _height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, wrapMode);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, wrapMode);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, wrapMode);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            if(_samplerWrap == Image::Wrap::BORDER)
+            {
+                float borderColor[] = { _borderColor.x, _borderColor.y, _borderColor.z, _borderColor.w };
+                glTexParameterfv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, borderColor);  
+            }
+
+            if(_mipLevels > 1)
+                glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+        }
     }
 
     //------------------------------------------------//
@@ -126,6 +183,7 @@ namespace atta
             case Wrap::NONE: break;
             case Wrap::CLAMP: return GL_CLAMP_TO_EDGE;
             case Wrap::REPEAT: return GL_REPEAT;
+            case Wrap::BORDER: return GL_CLAMP_TO_BORDER;
         }
         ASSERT(false, "Could not convert sampler wrap to openGL sampler wrap. Unknown sampler wrap");
     }

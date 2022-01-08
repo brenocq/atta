@@ -9,9 +9,9 @@
 namespace atta
 {
     Image::Image(const CreateInfo& info):
-        _format(info.format), _samplerWrap(info.samplerWrap), 
-        _width(info.width), _height(info.height), _mipLevels(info.mipLevels),
-        _debugName(info.debugName)
+        _id(0), _format(info.format), _samplerWrap(info.samplerWrap), _borderColor(info.borderColor),
+        _width(info.width), _height(info.height), _mipLevels(info.mipLevels), _isCubemap(info.isCubemap),
+        _debugName(info.debugName), _data(info.data)
     {
 
     }

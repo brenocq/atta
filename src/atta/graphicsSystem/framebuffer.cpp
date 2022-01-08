@@ -11,7 +11,7 @@ namespace atta
     Framebuffer::Framebuffer(const CreateInfo& info):
         _width(info.width), _height(info.height), 
         _clearColor(info.clearColor), _clearOnLoad(info.clearOnLoad),
-        _attachments(info.attachments), _samples(info.samples), _images(info.images),
+        _attachments(info.attachments),
         _debugName(info.debugName)
     {
         DASSERT(_attachments.size() > 0, "It is not possible to create framebuffer with no attachments");

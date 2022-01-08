@@ -17,7 +17,13 @@ namespace atta
     public:
         struct Attachment
         {
-            Image::Format format = Image::Format::RGBA;
+            /// Create image from format
+            /** Can provide only the format to be faster. The image will be created when the framebuffer is created */
+            Image::Format format = Image::Format::NONE;
+
+            /// Use image that was already created
+            /** Does not need to define the format when attaching an image directly */
+            std::shared_ptr<Image> image = nullptr;
         };
 
         struct CreateInfo
@@ -28,10 +34,6 @@ namespace atta
             bool clearOnLoad = true;
 
             std::vector<Attachment> attachments = {};
-            uint32_t samples = 1;
-
-            // TODO possibility of using one already created image (attachment id and image ptr)
-            std::map<uint32_t, std::shared_ptr<Image>> images;
 
             StringId debugName = StringId("Unnamed Framebuffer");
         };
@@ -55,7 +57,6 @@ namespace atta
         bool _clearOnLoad;
 
         std::vector<Attachment> _attachments;
-        uint32_t _samples;
         std::map<uint32_t, std::shared_ptr<Image>> _images;
 
         const StringId _debugName;
