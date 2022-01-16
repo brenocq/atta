@@ -5,9 +5,7 @@ set(ATTA_EVENT_SYSTEM_SOURCE
     eventManager.cpp
     )
 
-add_library(atta_event_system STATIC
-    ${ATTA_EVENT_SYSTEM_SOURCE}
-    )
+add_library(atta_event_system STATIC ${ATTA_EVENT_SYSTEM_SOURCE})
 atta_target_common(atta_event_system)
 atta_add_libs(atta_event_system)
 

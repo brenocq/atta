@@ -26,6 +26,6 @@ add_library(atta_ui_system STATIC
     ${ATTA_UI_SYSTEM_SOURCE}
 )
 
-target_link_libraries(atta_ui_system PRIVATE atta_graphics_system atta_io_system atta_cv imguizmo atta_component_system ${ATTA_CPPRESTSDK_TARGETS})
+target_link_libraries(atta_ui_system PRIVATE atta_graphics_system atta_io_system atta_cv atta_component_system ${ATTA_IMGUIZMO_TARGETS} ${ATTA_CPPRESTSDK_TARGETS})
 atta_target_common(atta_ui_system)
 atta_add_libs(atta_ui_system)

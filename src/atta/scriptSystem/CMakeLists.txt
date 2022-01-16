@@ -12,8 +12,6 @@ set(ATTA_SCRIPT_SYSTEM_SOURCE
     linkers/linuxLinker.cpp
 )
 
-add_library(atta_script_system STATIC
-    ${ATTA_SCRIPT_SYSTEM_SOURCE}
-)
+add_library(atta_script_system STATIC ${ATTA_SCRIPT_SYSTEM_SOURCE})
 atta_target_common(atta_script_system)
 atta_add_libs(atta_script_system)

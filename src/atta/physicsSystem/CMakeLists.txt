@@ -14,7 +14,4 @@ add_library(atta_physics_system STATIC
 )
 atta_target_common(atta_physics_system)
 atta_add_libs(atta_physics_system)
-target_link_libraries(atta_physics_system PUBLIC 
-    box2d 
-    ${ATTA_BULLET_TARGETS} 
-)
+target_link_libraries(atta_physics_system PUBLIC ${ATTA_BOX2D_TARGETS} ${ATTA_BULLET_TARGETS})
