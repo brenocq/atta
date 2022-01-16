@@ -2,10 +2,16 @@ set(ATTA_ASSIMP_SUPPORT FALSE)
 set(ATTA_ASSIMP_TARGETS "")
 
 find_package(assimp)
-if(assimp_FOUND AND FALSE)
+if(assimp_FOUND)
     atta_log(Success Extern "Assimp support (installed)")
+
     set(ATTA_ASSIMP_TARGETS ${ASSIMP_LIBRARIES})
     set(ATTA_ASSIMP_SUPPORT TRUE)
+
+    # TODO Fix assimp include
+    get_property(fix_assimp_includes TARGET ${ATTA_ASSIMP_TARGETS} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+    list(REMOVE_ITEM fix_assimp_includes "/usr/local/src/extern")
+    set_property(TARGET ${ATTA_ASSIMP_TARGETS} PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${fix_assimp_includes})
 else()
     set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT FALSE CACHE INTERNAL "" FORCE)
     set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE INTERNAL "" FORCE)

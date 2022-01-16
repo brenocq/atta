@@ -18,8 +18,6 @@ jobs:
     steps:
     - name: Checkout atta
       uses: actions/checkout@v2
-      with:
-        submodules: true
 
     - name: Install dependencies on macos
       if: startsWith(matrix.config.os, 'macos')

@@ -18,21 +18,15 @@ jobs:
     steps:
     - name: Checkout atta
       uses: actions/checkout@v2
-      with:
-        submodules: true
 
     - name: Install dependencies on ubuntu
       if: startsWith(matrix.config.os, 'ubuntu')
       run: |
         sudo apt-get update
-        sudo apt-get install cmake xorg-dev libcpprest-dev
+        sudo apt-get install cmake xorg-dev \
+          assimp-utils libbullet-dev libcpprest-dev 
         cmake --version
         gcc --version
-
-    - name: Update submodules
-      run: |
-        git pull --recurse-submodules
-        git submodule update --remote --recursive
 
     - name: Configure
       run: |

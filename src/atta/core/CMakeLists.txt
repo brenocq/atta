@@ -11,9 +11,7 @@ set(ATTA_CORE_SOURCE
     math/ray.cpp
     )
 
-add_library(atta_core STATIC
-    ${ATTA_CORE_SOURCE}
-    )
+add_library(atta_core STATIC ${ATTA_CORE_SOURCE})
 atta_target_common(atta_core)
 atta_add_libs(atta_core)
 

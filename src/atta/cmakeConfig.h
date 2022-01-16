@@ -10,7 +10,7 @@
 #ifdef ATTA_OS_WEB
 #define ATTA_DIR "/"
 #else
-#define ATTA_DIR "/home/breno/Downloads/atta"
+#define ATTA_DIR "/home/breno/Github/atta"
 #endif
 
 #define ATTA_VERSION "0.0.3.0"

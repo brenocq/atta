@@ -11,9 +11,7 @@ set(ATTA_MEMORY_SYSTEM_SOURCES
     allocators/bitmapAllocator.cpp
     )
 
-add_library(atta_memory_system STATIC
-    ${ATTA_MEMORY_SYSTEM_SOURCES}
-    )
+add_library(atta_memory_system STATIC ${ATTA_MEMORY_SYSTEM_SOURCES})
 atta_target_common(atta_memory_system)
 atta_add_libs(atta_memory_system)
 

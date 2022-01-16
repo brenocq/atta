@@ -62,7 +62,7 @@ This project aims to simulate complex systems like this, mainly composed of robo
 
 ## Build & test
 #### Dependencies
-To build atta properly, you need to have cmake installed and glfw dependencies (necessary to create windows).
+To build atta properly, you need to have cmake installed. You will also need the dependencies for _glfw_ (necessary to create windows) and _cpprestsdk_ (necessary to access the network).
 
 Dependencies for some operating systems:
 
@@ -74,22 +74,20 @@ Dependencies for some operating systems:
 
 **MacOS:**
 ```bash
-$ brew install cmake ninja boost openssl 
+$ brew install cmake boost openssl 
 ```
 
 **Ubuntu:**
 ```bash
-$ sudo apt-get install cmake ninja-build xorg-dev openssl libssl-dev libboost-all-dev
+$ sudo apt-get install cmake xorg-dev openssl libssl-dev libboost-all-dev
 ```
 
 #### Clone
-This step is operating system indepentent. Be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. Be sure to **clone with the `--recursive` flag**. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.
-
-Atta should build without errors when the compiller supports C++17.
+This step is operating system indepentent. Be sure to have your **github ssh key properly configured**. Atta should build without errors when the compiller supports C++17.
 If you found any errors, please do not hesitate to create an issue.
 
 ```
-$ git clone --recursive git@github.com:brenocq/atta.git
+$ git clone git@github.com:brenocq/atta.git
 $ cd atta
 $ mkdir build && cd build
 $ cmake ..
@@ -99,7 +97,7 @@ $ ./bin/atta
 ```
 
 ## Discussions
-If you want to contribute, have ideias, or have questions about atta, feel free to [start a discussion](https://github.com/brenocq/atta/discussions).
+If you want to contribute, have ideas, or have questions about atta, feel free to [start a discussion](https://github.com/brenocq/atta/discussions).
 
 ## References
 - [(Book) Physically Based Rendering](http://www.pbr-book.org/)
