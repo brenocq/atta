@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
 project(atta VERSION 0.0.3.0 LANGUAGES CXX C)
 
@@ -172,7 +172,6 @@ endmacro()
 
 macro(atta_create_local_test target sources libs)
 if(ATTA_BUILD_TESTS)
-    message(${sources})
     add_executable(${target} ${sources})
     atta_target_common(${target})
     target_link_libraries(${target} PRIVATE ${libs} gtest_main)
@@ -180,7 +179,40 @@ if(ATTA_BUILD_TESTS)
 endif()
 endmacro()
 
+if(NOT WIN32)
+  string(ASCII 27 Esc)
+  set(Reset       "${Esc}[m")
+  set(Bold        "${Esc}[1m")
+  set(Red         "${Esc}[31m")
+  set(Green       "${Esc}[32m")
+  set(Yellow      "${Esc}[33m")
+  set(Blue        "${Esc}[34m")
+  set(Magenta     "${Esc}[35m")
+  set(Cyan        "${Esc}[36m")
+  set(White       "${Esc}[37m")
+  set(BoldRed     "${Esc}[1;31m")
+  set(BoldGreen   "${Esc}[1;32m")
+  set(BoldYellow  "${Esc}[1;33m")
+  set(BoldBlue    "${Esc}[1;34m")
+  set(BoldMagenta "${Esc}[1;35m")
+  set(BoldCyan    "${Esc}[1;36m")
+  set(BoldWhite   "${Esc}[1;37m")
+endif()
+
+macro(atta_log type tag message)
+    set(atta_log_color ${Reset})
+    if(${type} STREQUAL "Debug")
+        set(atta_log_color ${Magenta})
+    elseif(${type} STREQUAL "Info")
+        set(atta_log_color ${Cyan})
+    elseif(${type} STREQUAL "Success")
+        set(atta_log_color ${Green})
+    endif()
+    message(STATUS "${Bold}${atta_log_color}[${tag}] ${Reset}${atta_log_color}${message}${Reset}")
+endmacro()
+
 ########## Atta/Extern directories ##########
+include(FetchContent)
 list(APPEND ATTA_INCLUDE_DIRS ${ATTA_PATH}/src)
 include(${CMAKE_CURRENT_SOURCE_DIR}/src/extern/extern.cmake)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta)
@@ -218,63 +250,63 @@ if(ATTA_SYSTEM_NAME MATCHES "Web")
         set_target_properties(atta PROPERTIES SUFFIX ".html")
     endif()
 endif()
-
 # Install executables
-install(TARGETS atta RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-if(ATTA_BUILD_TESTS)
-    install(TARGETS atta_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-endif()
 
-# Install includes
-# TODO hardcoded for now
-install(DIRECTORY src/atta/ DESTINATION include/atta
-    FILES_MATCHING REGEX ".*\.(h|inl)$")
-install(DIRECTORY src/extern/imgui/ DESTINATION include/atta/extern/imgui
-    FILES_MATCHING REGEX ".*\.(h|inl)$")
-install(DIRECTORY src/extern/glad/ DESTINATION include/atta/extern/glad
-    FILES_MATCHING REGEX ".*\.(h|inl)$")
-install(DIRECTORY src/extern/stb_image/ DESTINATION include/atta/extern/stb_image
-    FILES_MATCHING REGEX ".*\.(h|inl)$")
-install(DIRECTORY src/extern/assimp/ DESTINATION include/atta/extern/assimp
-    FILES_MATCHING REGEX ".*\.(h|inl)$")
-list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/imgui)
-list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/glad/include)
-list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/stb_image)
-list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/assimp/include)
-set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/atta/pch.h)
-
-# Install resources
-install(DIRECTORY resources/ DESTINATION share/atta
-    PATTERN "resources/*")
+#install(TARGETS atta RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+#if(ATTA_BUILD_TESTS)
+#    install(TARGETS atta_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+#endif()
+#
+## Install includes
+## TODO hardcoded for now
+#install(DIRECTORY src/atta/ DESTINATION include/atta
+#    FILES_MATCHING REGEX ".*\.(h|inl)$")
+#install(DIRECTORY src/extern/imgui/ DESTINATION include/atta/extern/imgui
+#    FILES_MATCHING REGEX ".*\.(h|inl)$")
+#install(DIRECTORY src/extern/glad/ DESTINATION include/atta/extern/glad
+#    FILES_MATCHING REGEX ".*\.(h|inl)$")
+#install(DIRECTORY src/extern/stb_image/ DESTINATION include/atta/extern/stb_image
+#    FILES_MATCHING REGEX ".*\.(h|inl)$")
+#install(DIRECTORY src/extern/assimp/ DESTINATION include/atta/extern/assimp
+#    FILES_MATCHING REGEX ".*\.(h|inl)$")
+#list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/imgui)
+#list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/glad/include)
+#list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/stb_image)
+#list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/assimp/include)
+#set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/atta/pch.h)
+#
+## Install resources
+#install(DIRECTORY resources/ DESTINATION share/atta
+#    PATTERN "resources/*")
 
 ########## Cmake Package ##########
-include(CMakePackageConfigHelpers)
-
-# Create version and config files for find_package
-write_basic_package_version_file(
-	"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
-	VERSION ${PROJECT_VERSION}
-	COMPATIBILITY SameMajorVersion
-)
-configure_package_config_file(attaConfig.cmake.in
-    "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
-)
-install(
-	FILES 
-        "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
-		"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
-)
-
-# Install cmake targets
-install(TARGETS ${ATTA_LIBS}
-	EXPORT atta_targets
-)
-install(EXPORT atta_targets
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
-	FILE attaTargets.cmake 
-)
+#include(CMakePackageConfigHelpers)
+#
+## Create version and config files for find_package
+#write_basic_package_version_file(
+#	"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
+#	VERSION ${PROJECT_VERSION}
+#	COMPATIBILITY SameMajorVersion
+#)
+#configure_package_config_file(attaConfig.cmake.in
+#    "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
+#    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
+#)
+#install(
+#	FILES 
+#        "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
+#		"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
+#	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
+#)
+#
+## Install cmake targets
+#install(TARGETS ${ATTA_LIBS}
+#	EXPORT atta_targets
+#)
+#install(EXPORT atta_targets
+#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
+#	FILE attaTargets.cmake 
+#)
 
 ########## CPack (deb package) ##########
 #install(TARGETS atta_core
