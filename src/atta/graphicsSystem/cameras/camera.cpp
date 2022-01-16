@@ -72,23 +72,24 @@ namespace atta
         if(ImGui::IsKeyDown('W') || ImGui::IsKeyDown('S'))
         {
             int key = 0;
-            if(io.KeysDownDuration['W'] > 0 && io.KeysDownDuration['S']>0)
-                if(io.KeysDownDuration['W'] < io.KeysDownDuration['S'])
+            
+            if(ImGui::GetKeyData('W')->DownDuration > 0 && ImGui::GetKeyData('S')->DownDuration>0)
+                if(ImGui::GetKeyData('W')->DownDuration < ImGui::GetKeyData('S')->DownDuration)
                     key = 'W';
                 else
                     key = 'S';
-            else if(io.KeysDownDuration['W'] > 0)
+            else if(ImGui::GetKeyData('W')->DownDuration > 0)
                 key = 'W';
-            else if(io.KeysDownDuration['S'] > 0)
+            else if(ImGui::GetKeyData('S')->DownDuration > 0)
                 key = 'S';
 
             if(key)
             {
-                if(io.KeysDownDuration[key] < lastTimeFront)
+                if(ImGui::GetKeyData(key)->DownDuration < lastTimeFront)
                     lastTimeFront = 0;
 
-                float delta = (io.KeysDownDuration[key] - lastTimeFront) * (key == 'W'?1:-1) * _speed;
-                lastTimeFront = io.KeysDownDuration[key];
+                float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeFront) * (key == 'W'?1:-1) * _speed;
+                lastTimeFront = ImGui::GetKeyData(key)->DownDuration;
                 _position += _front*delta;
             }
         }
@@ -97,23 +98,23 @@ namespace atta
         if(ImGui::IsKeyDown('A') || ImGui::IsKeyDown('D'))
         {
             int key = 0;
-            if(io.KeysDownDuration['A'] > 0 && io.KeysDownDuration['D']>0)
-                if(io.KeysDownDuration['A'] < io.KeysDownDuration['D'])
+            if(ImGui::GetKeyData('A')->DownDuration > 0 && ImGui::GetKeyData('D')->DownDuration>0)
+                if(ImGui::GetKeyData('A')->DownDuration < ImGui::GetKeyData('D')->DownDuration)
                     key = 'A';
                 else
                     key = 'D';
-            else if(io.KeysDownDuration['A'] > 0)
+            else if(ImGui::GetKeyData('A')->DownDuration > 0)
                 key = 'A';
-            else if(io.KeysDownDuration['D'] > 0)
+            else if(ImGui::GetKeyData('D')->DownDuration > 0)
                 key = 'D';
 
             if(key)
             {
-                if(io.KeysDownDuration[key] < lastTimeLeft)
+                if(ImGui::GetKeyData(key)->DownDuration < lastTimeLeft)
                     lastTimeLeft = 0;
 
-                float delta = (io.KeysDownDuration[key] - lastTimeLeft) * (key == 'A'?1:-1) * _speed;
-                lastTimeLeft = io.KeysDownDuration[key];
+                float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeLeft) * (key == 'A'?1:-1) * _speed;
+                lastTimeLeft = ImGui::GetKeyData(key)->DownDuration;
                 _position += _left*delta;
             }
         }
@@ -122,23 +123,23 @@ namespace atta
         if(ImGui::IsKeyDown('E') || ImGui::IsKeyDown('Q'))
         {
             int key = 0;
-            if(io.KeysDownDuration['E'] > 0 && io.KeysDownDuration['Q']>0)
-                if(io.KeysDownDuration['E'] < io.KeysDownDuration['Q'])
+            if(ImGui::GetKeyData('E')->DownDuration > 0 && ImGui::GetKeyData('Q')->DownDuration>0)
+                if(ImGui::GetKeyData('E')->DownDuration < ImGui::GetKeyData('Q')->DownDuration)
                     key = 'E';
                 else
                     key = 'Q';
-            else if(io.KeysDownDuration['E'] > 0)
+            else if(ImGui::GetKeyData('E')->DownDuration > 0)
                 key = 'E';
-            else if(io.KeysDownDuration['Q'] > 0)
+            else if(ImGui::GetKeyData('Q')->DownDuration > 0)
                 key = 'Q';
 
             if(key)
             {
-                if(io.KeysDownDuration[key] < lastTimeUp)
+                if(ImGui::GetKeyData(key)->DownDuration < lastTimeUp)
                     lastTimeUp = 0;
 
-                float delta = (io.KeysDownDuration[key] - lastTimeUp) * (key == 'E'?1:-1) * _speed;
-                lastTimeUp = io.KeysDownDuration[key];
+                float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeUp) * (key == 'E'?1:-1) * _speed;
+                lastTimeUp = ImGui::GetKeyData(key)->DownDuration;
                 _position += _up*delta;
             }
         }
