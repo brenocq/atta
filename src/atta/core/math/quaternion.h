@@ -127,23 +127,50 @@ namespace atta
             (*this) *= q;
         }
 
-        void transformVector(const vec3& before, const vec3& after);
+        void rotationFromVectors(const vec3& before, const vec3& after)
+        {
+            // Given two vectors, return the quaternion representing the shortest rotation between the two vectors
+            vec3 rotAxis = cross(before, after);
+            float cosTheta = dot(before, after);
+            float halfAngle = acos(cosTheta)*0.5f;
+            // Degenerated cases
+            if(cosTheta==1)// Equal directions
+                return;
+            else if(cosTheta==-1)// Opposite directions
+            {
+                // Choose one of the tangent vectors
+                if(before.x>before.y)
+                    rotAxis = cross(before, vec3(0,1,0));
+                else
+                    rotAxis = cross(before, vec3(1,0,0));
+            }
+            rotAxis.normalize();
+            float cosHalfAngle = cos(halfAngle);
+            float sinHalfAngle = sin(halfAngle);
+
+            // Create rotation quaternion
+            r = cosHalfAngle;
+            i = sinHalfAngle*rotAxis.x;
+            j = sinHalfAngle*rotAxis.y;
+            k = sinHalfAngle*rotAxis.z;
+        }
 
         void fromEuler(const vec3 &e)
         {
             // ZYX euler
-            r = cos(e.x/2)*cos(e.y/2)*cos(e.z/2)+sin(e.x/2)*sin(e.y/2)*sin(e.z/2);
-            i = sin(e.x/2)*cos(e.y/2)*cos(e.z/2)-cos(e.x/2)*sin(e.y/2)*sin(e.z/2);
-            j = cos(e.x/2)*sin(e.y/2)*cos(e.z/2)+sin(e.x/2)*cos(e.y/2)*sin(e.z/2);
-            k = cos(e.x/2)*cos(e.y/2)*sin(e.z/2)-sin(e.x/2)*sin(e.y/2)*cos(e.z/2);
+            r = cos(e.x/2.0)*cos(e.y/2.0)*cos(e.z/2.0)+sin(e.x/2.0)*sin(e.y/2.0)*sin(e.z/2.0);
+            i = sin(e.x/2.0)*cos(e.y/2.0)*cos(e.z/2.0)-cos(e.x/2.0)*sin(e.y/2.0)*sin(e.z/2.0);
+            j = cos(e.x/2.0)*sin(e.y/2.0)*cos(e.z/2.0)+sin(e.x/2.0)*cos(e.y/2.0)*sin(e.z/2.0);
+            k = cos(e.x/2.0)*cos(e.y/2.0)*sin(e.z/2.0)-sin(e.x/2.0)*sin(e.y/2.0)*cos(e.z/2.0);
+            normalize();
         }
 
         vec3 toEuler() const
         {
             vec3 e;
-            e.x = atan2(2*(r*i+j*k), 1-2*(i*i+j*j));
-            e.y = asin(2*(r*j-k*i));
-            e.z = atan2(2*(r*k+i*j), 1-2*(j*j+k*k));
+            e.x = atan2(2.0*(r*i+j*k), 1-2.0*(i*i+j*j));
+            e.y = asin(2.0*(r*j-k*i));
+            e.z = atan2(2.0*(r*k+i*j), 1-2.0*(j*j+k*k));
             return e;
         }
 

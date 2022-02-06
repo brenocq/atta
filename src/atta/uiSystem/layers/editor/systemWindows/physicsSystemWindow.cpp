@@ -7,7 +7,6 @@
 #include <atta/uiSystem/layers/editor/systemWindows/physicsSystemWindow.h>
 #include <atta/physicsSystem/physicsManager.h>
 
-
 namespace atta::ui
 {
 	PhysicsSystemWindow::PhysicsSystemWindow()

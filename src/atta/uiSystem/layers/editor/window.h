@@ -28,6 +28,7 @@ template<typename T>
 
         static std::string getName() { return getInstance()._name; }
         static StringId getSID() { return getInstance()._sid; }
+        static bool getOpen() { return getInstance()._open; }
 
     protected:
         void setName(std::string name) 

@@ -97,6 +97,8 @@ namespace atta::ui
         ImGui::PopStyleColor(3);
         ImGui::PopStyleVar(1);
         ImGui::End();
+
+        handleShortcuts();
     }
 
     void ToolBar::onSimulationStateChange(Event& event)
@@ -127,6 +129,81 @@ namespace atta::ui
             {
                 LOG_WARN("EditorLayer", "Unknown simulation event");
             }
+        }
+    }
+
+    void ToolBar::handleShortcuts()
+    {
+        // Play/pause shortcut
+        if(ImGui::IsKeyPressed('P'))
+        {
+            switch(_editorState)
+            {
+            case EditorState::EDITOR:
+            case EditorState::SIMULATION_PAUSED:
+                changeState(EditorState::SIMULATION_RUNNING);
+                break;
+            case EditorState::SIMULATION_RUNNING:
+                changeState(EditorState::SIMULATION_PAUSED);
+                break;
+            }
+        }
+
+        // Stop shortcut
+        if(ImGui::IsKeyPressed('S'))
+            changeState(EditorState::EDITOR);
+    }
+
+    void ToolBar::changeState(ToolBar::EditorState newState)
+    {
+        switch(newState)
+        {
+            case EditorState::EDITOR:
+            {
+                if(_editorState != EditorState::EDITOR)
+                {
+                    SimulationStopEvent e;
+                    EventManager::publish(e);
+                }
+                _editorState = EditorState::EDITOR;
+                break;
+            }
+            case EditorState::SIMULATION_RUNNING:
+            {
+                if(_editorState == EditorState::SIMULATION_PAUSED)
+                {
+                    SimulationContinueEvent e;
+                    EventManager::publish(e);
+                }
+                else if(_editorState == EditorState::EDITOR)
+                {
+                    SimulationStartEvent e;
+                    EventManager::publish(e);
+                }
+                _editorState = EditorState::SIMULATION_RUNNING;
+                break;
+            }
+            case EditorState::SIMULATION_PAUSED:
+            {
+                // If it is not running, need to start the simulation
+                if(_editorState == EditorState::EDITOR)
+                {
+                    SimulationStartEvent e;
+                    EventManager::publish(e);
+                    _editorState = EditorState::SIMULATION_RUNNING;
+                }
+
+                // After the simulation is started, it is possible to pause
+                if(_editorState == EditorState::SIMULATION_RUNNING)
+                {
+                    SimulationPauseEvent e;
+                    EventManager::publish(e);
+                    _editorState = EditorState::SIMULATION_PAUSED;
+                }
+                break;
+            }
+            default:
+                LOG_WARN("ToolBar", "Try to change editor state to an invalid one");
         }
     }
 }

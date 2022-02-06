@@ -333,14 +333,14 @@ void LightScript::update(Entity entity, float dt)
 ### Project Script
 There is only one project script per project, and it has functions that are independent of entities.
 Some of the functions that exists are:
- - `onStart()`:** Called every time the **start button** is pressed.
- - `onStop()`:** Called every time the **stop button** is pressed.
- - `onPause()`:** Called every time the **pause button** is pressed.
- - `onContinue()`:** Called every time the **continue button** is pressed.
- - `onUpdateBefore(float delta)`:** Called every step before all scripts are executed.
- - `onUpdateAfter(float delta)`:** Called every step after all scripts are executed.
- - `onUIRender()`:** Called by the UI system, can be used to render user interfaces.
- - `onAttaLoop()`:** Executed inside the atta main loop.
+ - `onStart()`: Called every time the **start button** is pressed.
+ - `onStop()`: Called every time the **stop button** is pressed.
+ - `onPause()`: Called every time the **pause button** is pressed.
+ - `onContinue()`: Called every time the **continue button** is pressed.
+ - `onUpdateBefore(float delta)`: Called every step before all scripts are executed.
+ - `onUpdateAfter(float delta)`: Called every step after all scripts are executed.
+ - `onUIRender()`: Called by the UI system, can be used to render user interfaces.
+ - `onAttaLoop()`: Executed inside the atta main loop.
 
 Lets now create the project script to test some of these functions.
 
