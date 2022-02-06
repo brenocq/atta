@@ -253,32 +253,32 @@ if(ATTA_SYSTEM_NAME MATCHES "Web")
 endif()
 # Install executables
 
-#install(TARGETS atta RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-#if(ATTA_BUILD_TESTS)
-#    install(TARGETS atta_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-#endif()
-#
+install(TARGETS atta RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+if(ATTA_BUILD_TESTS)
+    install(TARGETS atta_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
+
 ## Install includes
-## TODO hardcoded for now
-#install(DIRECTORY src/atta/ DESTINATION include/atta
+# TODO hardcoded for now
+install(DIRECTORY src/atta/ DESTINATION include/atta
+    FILES_MATCHING REGEX ".*\.(h|inl)$")
+install(DIRECTORY src/build/_deps/imgui-src/ DESTINATION include/atta/extern/imgui
+    FILES_MATCHING REGEX ".*\.(h|inl)$")
+install(DIRECTORY src/extern/glad/ DESTINATION include/atta/extern/glad
+    FILES_MATCHING REGEX ".*\.(h|inl)$")
+install(DIRECTORY src/extern/stb_image/ DESTINATION include/atta/extern/stb_image
+    FILES_MATCHING REGEX ".*\.(h|inl)$")
+#install(DIRECTORY src/build/_deps/assimp/ DESTINATION include/atta/extern/assimp
 #    FILES_MATCHING REGEX ".*\.(h|inl)$")
-#install(DIRECTORY src/extern/imgui/ DESTINATION include/atta/extern/imgui
-#    FILES_MATCHING REGEX ".*\.(h|inl)$")
-#install(DIRECTORY src/extern/glad/ DESTINATION include/atta/extern/glad
-#    FILES_MATCHING REGEX ".*\.(h|inl)$")
-#install(DIRECTORY src/extern/stb_image/ DESTINATION include/atta/extern/stb_image
-#    FILES_MATCHING REGEX ".*\.(h|inl)$")
-#install(DIRECTORY src/extern/assimp/ DESTINATION include/atta/extern/assimp
-#    FILES_MATCHING REGEX ".*\.(h|inl)$")
-#list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/imgui)
-#list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/glad/include)
-#list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/stb_image)
+list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/imgui)
+list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/glad/include)
+list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/stb_image)
 #list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/assimp/include)
-#set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/atta/pch.h)
-#
-## Install resources
-#install(DIRECTORY resources/ DESTINATION share/atta
-#    PATTERN "resources/*")
+set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/atta/pch.h)
+
+# Install resources
+install(DIRECTORY resources/ DESTINATION share/atta
+    PATTERN "resources/*")
 
 ########## Cmake Package ##########
 #include(CMakePackageConfigHelpers)

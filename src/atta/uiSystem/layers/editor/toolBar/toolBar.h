@@ -18,6 +18,7 @@ namespace atta::ui
         void render();
         
     private:
+        void handleShortcuts();
         void onSimulationStateChange(Event& event);
 
         enum class EditorState
@@ -26,6 +27,7 @@ namespace atta::ui
             SIMULATION_RUNNING,
             SIMULATION_PAUSED,
         };
+        void changeState(EditorState newState);
 
         EditorState _editorState;
     };

@@ -15,6 +15,7 @@ set(ATTA_UI_SYSTEM_SOURCE
     layers/editor/windows/entityWindow.cpp
     layers/editor/windows/logWindow.cpp
     layers/editor/windows/viewportWindows.cpp
+    layers/editor/windows/utils/fileSelectionWindow.cpp
 
     layers/editor/systemWindows/ioSystemWindow.cpp
     layers/editor/systemWindows/physicsSystemWindow.cpp

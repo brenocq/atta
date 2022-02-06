@@ -18,6 +18,7 @@
 
 #include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
 #include <atta/uiSystem/layers/editor/systemWindows/physicsSystemWindow.h>
+#include <atta/uiSystem/layers/editor/windows/utils/fileSelectionWindow.h>
 
 #include <cpprest/http_client.h>
 #include <cpprest/json.h>
@@ -56,7 +57,10 @@ namespace atta::ui
                 if(ImGui::BeginMenu("Open"))
                 {
                     if(ImGui::MenuItem("From file"))
-                        _showOpenProject = true;
+                    {
+                        FileSelectionWindow::setOpen(true);
+                        _waitingChooseAttaFile = true;
+                    }
                     if(ImGui::MenuItem("From published"))
                         _showOpenPublished = true;
 
@@ -176,43 +180,19 @@ namespace atta::ui
 
     void TopBar::openProjectModal()
     {
-        static bool lastShow = false;
-        if(_showOpenProject && !lastShow)
+        // Check if user chose some file
+        if(_waitingChooseAttaFile && !FileSelectionWindow::getChosenFile().empty())
         {
-            // OBS: Doing this because can't open popup inside menuitem
-            ImGui::OpenPopup("Open Project##OpenProjectModal");
-            lastShow = _showOpenProject;
-        }
-
-        if(ImGui::BeginPopupModal("Open Project##OpenProjectModal"))
-        {
-            ImGui::Text("For now, you need to paste the absolute location for the .atta file below");
-            ImGui::Separator();
-
-            static char buf[254] = "";
-            ImGui::InputText("##openProjectAttaPath", buf, sizeof(buf));
-
-            if(ImGui::Button("Cancel"))
+            _waitingChooseAttaFile = false;
+            if(fs::exists(FileSelectionWindow::getChosenFile()))
             {
-                ImGui::CloseCurrentPopup();
-                _showOpenProject = false;
-                lastShow = false;
-            }
-
-            ImGui::SameLine();
-
-            if(ImGui::Button("Open"))
-            { 
                 FileManager::saveProject();
-                FileManager::openProject(fs::path(buf));
-                ImGui::CloseCurrentPopup();
-                _showOpenProject = false;
-                lastShow = false;
+                FileManager::openProject(FileSelectionWindow::getChosenFile());
             }
-            ImGui::SetItemDefaultFocus();
-
-            ImGui::EndPopup();
         }
+        // If was closed and no file was selected
+        if(!FileSelectionWindow::getOpen())
+            _waitingChooseAttaFile = false;
     }
 
     void TopBar::openPublishedWindow()

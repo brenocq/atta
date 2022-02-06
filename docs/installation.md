@@ -8,71 +8,62 @@ Fist, you will need to install atta dependencies.
 
 **Ubuntu:**
 ```bash
-$ sudo apt-get install cmake ninja-build xorg-dev openssl libssl-dev libboost-all-dev
+sudo apt-get install cmake xorg-dev openssl libssl-dev libboost-all-dev
 ```
 
 **Arch:**
 ```bash
-$ sudo pacman -Sy cmake ninja glfw-x11 boost
+sudo pacman -Sy cmake glfw-x11 boost
 ```
-
-After installing the dependencies, be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. 
-Be sure to **clone with the `--recursive` flag**. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.
 
 Atta should build without errors when the compiller supports C++17. If you found any errors, please do not hesitate to [open an issue](https://github.com/brenocq/atta/issues).
 
 ```bash
-$ git clone --recursive git@github.com:brenocq/atta.git
-$ cd atta
-$ mkdir build && cd build
-$ cmake ..
-$ make -j
-$ sudo make install
-$ atta_test
-$ atta
+git clone git@github.com:brenocq/atta.git
+cd atta
+mkdir build && cd build
+cmake ..
+make -j
+sudo make install
+atta_test
+atta
 ```
 
 ## Windows
 Fist, you will need to install atta dependencies.
 
+```bash
+choco install cmake
+vcpkg install cpprestsdk cpprestsdk:x64-windows
 ```
-choco install ninja cmake
-> vcpkg install cpprestsdk cpprestsdk:x64-windows
-```
-
-After installing the dependencies, be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. 
-Be sure to **clone with the `--recursive` flag**. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.
 
 Atta should build without errors when the compiller supports C++17. If you found any errors, please do not hesitate to [open an issue](https://github.com/brenocq/atta/issues).
 
 ```bash
-$ git clone --recursive git@github.com:brenocq/atta.git
-$ cd atta
-$ mkdir build && cd build
-$ cmake ..
-$ make -j
-$ ./bin/atta_test
-$ ./bin/atta
+git clone git@github.com:brenocq/atta.git
+cd atta
+mkdir build && cd build
+cmake ..
+make -j
+./bin/atta_test
+./bin/atta
 ```
 
 ## MacOS
 Fist, you will need to install atta dependencies.
 
+```bash
+brew install cmake boost openssl 
 ```
-brew install ninja cmake boost openssl
-```
-
-After installing the dependencies, be sure to have your **github ssh key properly configured**, you will be asked to insert the password many times. 
-Be sure to **clone with the `--recursive` flag**. If you accidentally cloned without this flag, please run `git submodule update --init --recursive` to clone the submodules.
 
 Atta should build without errors when the compiller supports C++17. If you found any errors, please do not hesitate to [open an issue](https://github.com/brenocq/atta/issues).
 
 ```bash
-$ git clone --recursive git@github.com:brenocq/atta.git
-$ cd atta
-$ mkdir build && cd build
-$ cmake ..
-$ make -j
-$ ./bin/atta_test
-$ ./bin/atta
+git clone git@github.com:brenocq/atta.git
+cd atta
+mkdir build && cd build
+cmake ..
+make -j
+./bin/atta_test
+./bin/atta
 ```

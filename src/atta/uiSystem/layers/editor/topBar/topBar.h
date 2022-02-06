@@ -26,6 +26,7 @@ namespace atta::ui
 		/** The viewport modal is used to change the viewport settings */
         void viewportModals();///< Render viewport modal
 
+        bool _waitingChooseAttaFile;
         bool _showPreferences;///< Show preferences modal
         bool _showOpenProject;///< Show open project modal
         bool _showOpenPublished;///< Show open published project window

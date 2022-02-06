@@ -12,6 +12,7 @@
 
 #include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
 #include <atta/uiSystem/layers/editor/systemWindows/physicsSystemWindow.h>
+#include <atta/uiSystem/layers/editor/windows/utils/fileSelectionWindow.h>
 
 namespace atta::ui
 {
@@ -37,8 +38,8 @@ namespace atta::ui
         _dockSpace.render();
 
         // Demo
-        //bool demo = true;
-        //ImGui::ShowDemoWindow(&demo);
+        bool demo = true;
+        ImGui::ShowDemoWindow(&demo);
 
         // Top interface
         _topBar.render();
@@ -55,6 +56,9 @@ namespace atta::ui
         // System windows
         IOSystemWindow::render();
         PhysicsSystemWindow::render();
+
+        // Windows utils
+        FileSelectionWindow::render();
 
         // Project UI
         ProjectScript* project = ScriptManager::getProjectScript();

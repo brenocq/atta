@@ -68,32 +68,32 @@ Dependencies for some operating systems:
 
 **Windows:**
 ```bash
-> choco install cmake
-> vcpkg install cpprestsdk cpprestsdk:x64-windows
+choco install cmake
+vcpkg install cpprestsdk cpprestsdk:x64-windows
 ```
 
 **MacOS:**
 ```bash
-$ brew install cmake boost openssl 
+brew install cmake boost openssl 
 ```
 
 **Ubuntu:**
 ```bash
-$ sudo apt-get install cmake xorg-dev openssl libssl-dev libboost-all-dev
+sudo apt-get install cmake xorg-dev openssl libssl-dev libboost-all-dev
 ```
 
 #### Clone
 This step is operating system indepentent. Be sure to have your **github ssh key properly configured**. Atta should build without errors when the compiller supports C++17.
 If you found any errors, please do not hesitate to create an issue.
 
-```
-$ git clone git@github.com:brenocq/atta.git
-$ cd atta
-$ mkdir build && cd build
-$ cmake ..
-$ make -j
-$ ./bin/atta_test
-$ ./bin/atta
+```bash
+git clone git@github.com:brenocq/atta.git
+cd atta
+mkdir build && cd build
+cmake ..
+make -j
+./bin/atta_test
+./bin/atta
 ```
 
 ## Discussions
