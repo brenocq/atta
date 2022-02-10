@@ -20,6 +20,7 @@
 #include <atta/uiSystem/layers/editor/systemWindows/physicsSystemWindow.h>
 #include <atta/uiSystem/layers/editor/windows/utils/fileSelectionWindow.h>
 
+#ifdef ATTA_CPPRESTSDK_SUPPORT 
 #include <cpprest/http_client.h>
 #include <cpprest/json.h>
 #include <cpprest/filestream.h>
@@ -29,6 +30,7 @@ using namespace web::http;                  // Common HTTP functionality
 using namespace web::http::client;          // HTTP client features
 using namespace concurrency::streams;       // Asynchronous streams
 using namespace web::json;
+#endif// ATTA_CPPRESTSDK_SUPPORT 
 
 namespace atta::ui
 {
@@ -197,6 +199,7 @@ namespace atta::ui
 
     void TopBar::openPublishedWindow()
     {
+#ifdef ATTA_CPPRESTSDK_SUPPORT 
         static bool lastShow = false;
         std::string modalName = "Open Published##OpenPUblishedModal";
         static std::shared_ptr<http_client> client;
@@ -396,6 +399,7 @@ namespace atta::ui
             }
             ImGui::End();
         }
+#endif// ATTA_CPPRESTSDK_SUPPORT 
     }
 
     void TopBar::createProjectModal()
