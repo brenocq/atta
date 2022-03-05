@@ -5,6 +5,9 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/componentSystem/components/cameraComponent.h>
+#include <atta/eventSystem/eventManager.h>
+#include <atta/eventSystem/events/uiCameraComponentEvent.h>
+#include <imgui.h>
 
 namespace atta
 {
@@ -22,9 +25,39 @@ namespace atta
                     { AttributeType::FLOAT32, offsetof(CameraComponent, near), "near", 0.0f, 10000.0f,  0.5f },
                     { AttributeType::FLOAT32, offsetof(CameraComponent, fps), "fps", 0.0f, 120.0f },
                     { AttributeType::UINT32,  offsetof(CameraComponent, cameraType), "cameraType", {}, {}, {}, 
-                        { "Fast", "Phong", "Pbr"} },
+                        { "Orthographic", "Perspective" } },
                     { AttributeType::UINT32,  offsetof(CameraComponent, rendererType), "rendererType", {}, {}, {}, 
-                        { "Orthographic", "Perspective" } }
+                        { "Fast", "Phong", "Pbr"} }
+                },
+                1024,// Max instances
+                {},// Serialize
+                {},// Deserialize
+                {// renderUI
+                    {"", [=](void* data, std::string imguiId)// Define how the component will be rendered
+                        {
+                            const std::vector<AttributeDescription> aDescs = 
+                                TypedComponentRegistry<CameraComponent>::getDescription().attributeDescriptions;
+
+                            if(ImGui::Button(("View image"+imguiId+"image").c_str()))
+                            {
+                                UICameraComponentEvent event;
+                                event.component = static_cast<CameraComponent*>(data);
+                                event.uiEvent = UICameraComponentEvent::UIEvent::VIEW_BUTTON_CLICKED;
+                                EventManager::publish(event);
+                            }
+
+                            for(unsigned i = 0; i < aDescs.size(); i++)
+                            {
+                                // Calculate data and size
+                                float size = (i != aDescs.size()-1) ? 
+                                    aDescs[i+1].offset - aDescs[i].offset : 
+                                    sizeof(CameraComponent) - aDescs[i].offset;
+                                void* attribData = (void*)((uint8_t*)data+aDescs[i].offset);
+
+                                ComponentRegistry::renderUIAttribute(aDescs[i], attribData, size, imguiId+aDescs[i].name);
+                            }
+                        }
+                    }
                 }
             };
 

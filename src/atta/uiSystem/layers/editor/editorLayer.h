@@ -15,6 +15,7 @@
 #include <atta/uiSystem/layers/editor/windows/viewportWindows.h>
 #include <atta/uiSystem/layers/editor/windows/logWindow.h>
 #include <atta/uiSystem/layers/editor/drawers/physicsDrawer.h>
+#include <atta/uiSystem/layers/editor/drawers/sensorDrawer.h>
 
 namespace atta::ui
 {
@@ -29,6 +30,8 @@ namespace atta::ui
         void onUIRender() override;
 
     private:
+        void renderCameraWindows();
+
         DockSpace _dockSpace;
         TopBar _topBar;
         ToolBar _toolBar;
@@ -38,6 +41,7 @@ namespace atta::ui
 
 		// Drawers
 		PhysicsDrawer _physicsDrawer;///< Physics drawer
+		SensorDrawer _sensorDrawer;///< Sensor drawer
     };
 }
 

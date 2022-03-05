@@ -154,8 +154,10 @@ namespace atta
         }
         _geometryPipeline->end();
 
-        _selectedPipeline->render(camera);
-        _drawerPipeline->render(camera);
+        if(_renderSelected)
+            _selectedPipeline->render(camera);
+        if(_renderDrawer)
+            _drawerPipeline->render(camera);
     }
 
     void PhongRenderer::resize(uint32_t width, uint32_t height)

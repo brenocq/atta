@@ -30,7 +30,9 @@ namespace atta
 
         int width, height, channels;
         if(extension != ".hdr")
+        {
             _data = stbi_load(absolutePath.string().c_str(), &width, &height, &channels, 0); 
+        }
         else
         {
             stbi_set_flip_vertically_on_load(true);

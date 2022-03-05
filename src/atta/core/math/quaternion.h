@@ -11,6 +11,7 @@
 
 namespace atta
 {
+    class mat3;
     class quat
     {
     public:
@@ -167,12 +168,32 @@ namespace atta
 
         vec3 toEuler() const
         {
+            // ZYX euler
             vec3 e;
             e.x = atan2(2.0*(r*i+j*k), 1-2.0*(i*i+j*j));
             e.y = asin(2.0*(r*j-k*i));
             e.z = atan2(2.0*(r*k+i*j), 1-2.0*(j*j+k*k));
             return e;
         }
+
+        void fromAxisAngle(const vec3 &v)
+        {
+            // TODO validate
+            float angle = v.length();
+            vec3 axis = atta::normalize(v);
+            float halfAngle = angle/2.0f;
+            float c = cos(halfAngle);
+            float s = sin(halfAngle);
+            r = c;
+            i = s*axis.x;
+            j = s*axis.y;
+            k = s*axis.z;
+        }
+
+        // TODO
+        vec3 toAxisAngle() const;
+        // TODO
+        mat3 toRotationMatrix() const;
 
         std::string toString() const
         {

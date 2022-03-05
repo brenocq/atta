@@ -21,6 +21,7 @@ set(ATTA_UI_SYSTEM_SOURCE
     layers/editor/systemWindows/physicsSystemWindow.cpp
 
 	layers/editor/drawers/physicsDrawer.cpp
+	layers/editor/drawers/sensorDrawer.cpp
 )
 
 add_library(atta_ui_system STATIC

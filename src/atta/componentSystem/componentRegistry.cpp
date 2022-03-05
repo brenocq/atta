@@ -226,6 +226,44 @@ namespace atta
 
     }
 
+#define ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(ComponentType) \
+                case AttributeType::ComponentType:\
+                case AttributeType::VECTOR_##ComponentType:\
+                    ComponentRegistry::renderUIAttribute<AttributeType::ComponentType>(aDesc, d, size, imguiId+aDesc.name);\
+                    break;\
+
+    void ComponentRegistry::renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    {
+        // XXX Remember to register each attribute with ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE or will get MSVC errors
+        switch(aDesc.type)
+        {
+            case AttributeType::BOOL:
+                ComponentRegistry::renderUIAttribute<AttributeType::BOOL>(aDesc, d, size, imguiId+aDesc.name);
+                break;
+            case AttributeType::CHAR:
+                ComponentRegistry::renderUIAttribute<AttributeType::CHAR>(aDesc, d, size, imguiId+aDesc.name);
+                break;
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT8)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT16)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT32)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT64)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT8)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT16)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT32)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT64)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(FLOAT32)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(FLOAT64)
+            case AttributeType::QUAT:
+                ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(aDesc, d, size, imguiId+aDesc.name);
+                break;
+            case AttributeType::STRINGID:
+                ComponentRegistry::renderUIAttribute<AttributeType::STRINGID>(aDesc, d, size, imguiId+aDesc.name);
+                break;
+            default:
+                break;
+        }
+    }
+
 #define ATTA_RENDER_UI_ATTRIBUTE_NUMBER(AttaType, CppType) \
     template<>\
     void ComponentRegistry::renderUIAttribute<AttributeType::AttaType>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)\
