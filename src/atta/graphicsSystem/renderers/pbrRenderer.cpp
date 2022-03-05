@@ -169,37 +169,41 @@ namespace atta
         if(_firstRender)
         {
             brdfLUT();
-            _firstRender = false;
         }
 
         std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
 
-        // Generate envmap if necessary
-        bool foundEnvMap = false;
+        // Check current envinroment map
+        StringId currEnvironmentMap = StringId("textures/white.jpg");// Default environment map is white texture
         for(auto entity : entities)
         {
             EnvironmentLightComponent* el = ComponentManager::getEntityComponent<EnvironmentLightComponent>(entity);
 
             if(el)
             {
-                foundEnvMap = true;
-                if(el->sid != _lastEnvironmentMap)
-                {
-                    _lastEnvironmentMap = el->sid;
-                    GraphicsManager::getRendererAPI()->generateCubemap(_lastEnvironmentMap);
-                    irradianceCubemap();
-                    prefilterCubemap();
-                }
+                currEnvironmentMap = el->sid;
+                break;
             }
         }
-        if(!foundEnvMap)
-            _lastEnvironmentMap = StringId("Not defined");
 
+        // Recreate environment map if it is different from last one
+        if(currEnvironmentMap != _lastEnvironmentMap)
+        {
+            _lastEnvironmentMap = currEnvironmentMap;
+            GraphicsManager::getRendererAPI()->generateCubemap(_lastEnvironmentMap);
+            irradianceCubemap();
+            prefilterCubemap();
+        }
+            
         shadowPass();
         geometryPass(camera);
 
-        _selectedPipeline->render(camera);
-        _drawerPipeline->render(camera);
+        if(_renderSelected)
+            _selectedPipeline->render(camera);
+        if(_renderDrawer)
+            _drawerPipeline->render(camera);
+
+        _firstRender = false;
     }
 
     void PbrRenderer::resize(uint32_t width, uint32_t height)
@@ -221,7 +225,8 @@ namespace atta
         for(auto entity : entities)
         {
             DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
-            if(dl)
+            TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
+            if(dl && t)
             {
                 directionalLightEntity = entity;
                 break;
@@ -268,7 +273,8 @@ namespace atta
         for(auto entity : entities)
         {
             PointLightComponent* pl = ComponentManager::getEntityComponent<PointLightComponent>(entity);
-            if(pl)
+            TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
+            if(pl && t)
             {
                 pointLightEntity = entity;
                 break;
@@ -345,16 +351,19 @@ namespace atta
             shader->setCubemap("omniShadowMap", _omnidirectionalShadowMap);
             shader->setFloat("omniFarPlane", 25.0f);
 
+            // Always set environment textures (if there is no environment map, use white texture)
+            shader->setCubemap("irradianceMap", "PbrRenderer::irradiance");
+            shader->setCubemap("prefilterMap", "PbrRenderer::prefilter");
+            shader->setTexture("brdfLUT", "PbrRenderer::brdfLUT");
+
             if(_lastEnvironmentMap != "Not defined"_sid)
-            {
-                shader->setCubemap("irradianceMap", "PbrRenderer::irradiance");
-                shader->setCubemap("prefilterMap", "PbrRenderer::prefilter");
-                shader->setTexture("brdfLUT", "PbrRenderer::brdfLUT");
                 shader->setInt("numEnvironmentLights", 1);
-                shader->setMat3("environmentLightOri", mat3(1.0f));
-            }
             else
+            {
+                LOG_WARN("PbrRenderer", "Number of environment light should always be 1 (white texture if not defined)");
                 shader->setInt("numEnvironmentLights", 0);
+            }
+            shader->setMat3("environmentLightOri", mat3(1.0f));
 
 
             //----- Lighting -----//

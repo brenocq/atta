@@ -138,8 +138,10 @@ void main()
 
         ambient = (kD*diffuse + specular) * ao;
     }
-    else
-        ambient = vec3(0.03) * albedo * ao;
+    else if(numEnvironmentLights == 0)
+    {
+        ambient = vec3(0.3) * albedo * ao;
+    }
 
     vec3 color = ambient + Lo;
 
@@ -184,19 +186,19 @@ float directionalShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lig
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    float bias = max(0.01 * (1.0 - dot(normal, lightDir)), 0.0001);
     float shadow = 0.0;
     ivec2 texSize = textureSize(directionalShadowMap, 0);
     vec2 texelSize = 1.0f/vec2(texSize);
-    for(int x = -1; x <= 1; ++x)
+    for(int x = -2; x <= 2; ++x)
     {
-        for(int y = -1; y <= 1; ++y)
+        for(int y = -2; y <= 2; ++y)
         {
             float pcfDepth = texture(directionalShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
             shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
         }
     }
-    shadow /= 9.0;
+    shadow /= 25.0;
 
     if(projCoords.z > 1.0)
         shadow = 0.0;

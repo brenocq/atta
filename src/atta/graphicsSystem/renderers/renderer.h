@@ -16,7 +16,7 @@ namespace atta
     class Renderer : public Serializable
     {
     public:
-        Renderer(const char* name): _name(StringId(name)) {}
+        Renderer(const char* name): _name(StringId(name)), _renderDrawer(true), _renderSelected(true) {}
         virtual ~Renderer() = default;
 
         virtual void render(std::shared_ptr<Camera> camera) = 0;
@@ -29,6 +29,9 @@ namespace atta
         std::string getName() const { return _name.getString(); }
         StringId getSID() const { return _name; }
 
+        void setRenderDrawer(bool renderDrawer) { _renderDrawer = renderDrawer; }
+        void setRenderSelected(bool renderSelected) { _renderSelected = renderSelected; }
+
         void serialize(std::ostream& os) override;
         void deserialize(std::istream& is) override;
         unsigned getSerializedSize() { return Serializable::getSerializedSize(this); }
@@ -37,6 +40,8 @@ namespace atta
         uint32_t _width;
         uint32_t _height;
         StringId _name;
+        bool _renderDrawer;
+        bool _renderSelected;
     };
 }
 

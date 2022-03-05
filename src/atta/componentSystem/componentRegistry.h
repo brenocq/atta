@@ -43,6 +43,7 @@ namespace atta
 
         template<AttributeType attributeType>
         void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {}
+        void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId);
 
         unsigned _sizeof;// sizeof(T)
         std::string _typeidName;// typeid(T).name()

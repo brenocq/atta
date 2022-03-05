@@ -162,6 +162,7 @@ namespace atta
         if(project)
             project->onAttaLoop();
 
+        SensorManager::update();
         FileManager::update();
     }
 

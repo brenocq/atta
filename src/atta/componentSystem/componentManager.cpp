@@ -12,6 +12,10 @@
 #include <atta/eventSystem/events/meshLoadEvent.h>
 #include <atta/eventSystem/events/textureLoadEvent.h>
 #include <atta/eventSystem/events/scriptTargetEvent.h>
+#include <atta/eventSystem/events/createEntityEvent.h>
+#include <atta/eventSystem/events/createComponentEvent.h>
+#include <atta/eventSystem/events/deleteEntityEvent.h>
+#include <atta/eventSystem/events/deleteComponentEvent.h>
 #include <cstring>
 
 namespace atta
@@ -132,6 +136,11 @@ namespace atta
             _entities.insert(i);
         }
 
+        // Publish create entity event
+        CreateEntityEvent event;
+        event.entityId = eid;
+        EventManager::publish(event);
+
         return eid;
     }
 
@@ -185,6 +194,11 @@ namespace atta
         _noPrototypeView.erase(entity);
         _cloneView.erase(entity);
         _scriptView.erase(entity);
+
+        // Publish delete entity event
+        DeleteEntityEvent event;
+        event.entityId = entity;
+        EventManager::publish(event);
     }
 
     void ComponentManager::deleteEntityOnly(EntityId entity) { return getInstance().deleteEntityOnlyImpl(entity); }
@@ -205,6 +219,11 @@ namespace atta
         _noPrototypeView.erase(entity);
         _cloneView.erase(entity);
         _scriptView.erase(entity);
+
+        // Publish delete entity event
+        DeleteEntityEvent event;
+        event.entityId = entity;
+        EventManager::publish(event);
     }
 
     EntityId ComponentManager::copyEntity(EntityId entity) { return getInstance().copyEntityImpl(entity); }
@@ -407,6 +426,13 @@ namespace atta
             // Add component to entity
             e->components[compReg->getIndex()] = reinterpret_cast<void*>(component);
 
+            // Publish create component event
+            CreateComponentEvent event;
+            event.componentId = id;
+            event.entityId = entity;
+            event.component = component;
+            EventManager::publish(event);
+
             return component;
         }
         else
@@ -430,22 +456,33 @@ namespace atta
         else
             LOG_WARN("ComponentManager", "Trying to override entity [w]$0[] component pointer. Returning already allocated one", entity);
 
+        ComponentId id = _componentRegistries[index]->getId();
+
         // Remove entity from some views if it is a prototype
-        if(_componentRegistries[index]->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
+        if(id == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
         {
             _noPrototypeView.erase(entity);
             _scriptView.erase(entity);
         }
 
         // Add entity to script view if it is not prototype and has script component
-        if(_componentRegistries[index]->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
+        if(id == COMPONENT_POOL_SID_BY_NAME(typeid(ScriptComponent).name()))
         {
             PrototypeComponent* pc = getEntityComponent<PrototypeComponent>(entity);
             if(pc == nullptr)
                 _scriptView.insert(entity);
         }
 
-        return reinterpret_cast<Component*>(e->components[index]);
+        Component* componentPtr = reinterpret_cast<Component*>(e->components[index]);
+
+        // Publish create component event
+        CreateComponentEvent event;
+        event.componentId = id;
+        event.entityId = entity;
+        event.component = componentPtr;
+        EventManager::publish(event);
+
+        return componentPtr;
     }
 
     void ComponentManager::removeEntityComponentByIdImpl(ComponentId id, EntityId entity)
@@ -480,6 +517,12 @@ namespace atta
             _scriptView.erase(entity);
         if(id == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
             _noPrototypeView.insert(entity);
+
+        // Publish delete component event
+        DeleteComponentEvent event;
+        event.componentId = id;
+        event.entityId = entity;
+        EventManager::publish(event);
     }
 
     //----------------------------------------//

@@ -2,13 +2,14 @@ set(ATTA_ASSIMP_SUPPORT FALSE)
 set(ATTA_ASSIMP_TARGETS "")
 
 find_package(assimp)
-if(assimp_FOUND)
+# TODO work with installed assimp
+if(assimp_FOUND AND FALSE)
     atta_log(Success Extern "Assimp support (installed)")
 
     set(ATTA_ASSIMP_TARGETS ${ASSIMP_LIBRARIES})
     set(ATTA_ASSIMP_SUPPORT TRUE)
 
-    # TODO Fix assimp include
+    # TODO Fix assimp include (not working yet, directory must exist to compile)
     get_property(fix_assimp_includes TARGET ${ATTA_ASSIMP_TARGETS} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
     list(REMOVE_ITEM fix_assimp_includes "/usr/local/src/extern")
     set_property(TARGET ${ATTA_ASSIMP_TARGETS} PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${fix_assimp_includes})
