@@ -25,6 +25,7 @@ namespace atta
         virtual uint32_t getWidth() const = 0;
         virtual uint32_t getHeight() const = 0;
         virtual void* getImGuiTexture() const = 0;
+        virtual std::shared_ptr<Framebuffer> getFramebuffer() = 0;
 
         std::string getName() const { return _name.getString(); }
         StringId getSID() const { return _name; }

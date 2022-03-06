@@ -25,6 +25,7 @@ namespace atta
         uint32_t getWidth() const override { return _geometryPipeline->getRenderPass()->getFramebuffer()->getWidth(); };
         uint32_t getHeight() const override { return _geometryPipeline->getRenderPass()->getFramebuffer()->getHeight(); };
         void* getImGuiTexture() const override { return _geometryPipeline->getImGuiTexture(); }
+        std::shared_ptr<Framebuffer> getFramebuffer() { return _geometryPipeline->getRenderPass()->getFramebuffer(); }
 
     private:
         std::shared_ptr<Pipeline> _geometryPipeline;

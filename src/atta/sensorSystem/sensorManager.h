@@ -39,6 +39,7 @@ namespace atta
             std::shared_ptr<Camera> camera;///< Camera view and projection matrices
             float lastTime;///< Used to render with the correct fps
             bool showWindow;///< If the camera details window is open or not
+            std::vector<uint8_t> data;///< Camera rendered image
         };
         static std::vector<CameraInfo>& getCameraInfos();
 
