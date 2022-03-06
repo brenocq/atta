@@ -111,12 +111,12 @@ namespace atta
             shader->setInt("numPointLights", numPointLights);
 
             // Ambient
-            shader->setVec3("ambientColor", {0.2f, 0.2f, 0.2f});
+            shader->setVec3("ambientColor", {0.3f, 0.3f, 0.3f});
             shader->setFloat("ambientStrength", 1.0f);
             // Diffuse
             shader->setFloat("diffuseStrength", 1.0f);
             // Specular
-            shader->setFloat("specularStrength", 1.0f);
+            shader->setFloat("specularStrength", 0.5f);
 
             for(auto entity : entities)
             {
@@ -133,10 +133,37 @@ namespace atta
 
                     if(material)
                     {
-                        shader->setVec3("material.albedo", material->albedo);
-                        shader->setFloat("material.metallic", material->metallic);
-                        shader->setFloat("material.roughness", material->roughness);
-                        shader->setFloat("material.ao", material->ao);
+                        if(material->albedoTexture.getId() != SID("Empty texture"))
+                        {
+                            shader->setTexture("albedoTexture", material->albedoTexture);
+                            shader->setVec3("material.albedo", {-1, -1, -1});
+                        }
+                        else
+                            shader->setVec3("material.albedo", material->albedo);
+
+                        if(material->metallicTexture.getId() != SID("Empty texture"))
+                        {
+                            shader->setTexture("metallicTexture", material->metallicTexture);
+                            shader->setFloat("material.metallic", -1);
+                        }
+                        else
+                            shader->setFloat("material.metallic", material->metallic);
+
+                        if(material->roughnessTexture.getId() != SID("Empty texture"))
+                        {
+                            shader->setTexture("roughnessTexture", material->roughnessTexture);
+                            shader->setFloat("material.roughness", -1);
+                        }
+                        else
+                            shader->setFloat("material.roughness", material->roughness);
+
+                        if(material->aoTexture.getId() != SID("Empty texture"))
+                        {
+                            shader->setTexture("aoTexture", material->aoTexture);
+                            shader->setFloat("material.ao", -1);
+                        }
+                        else
+                            shader->setFloat("material.ao", material->ao);
                     }
                     else
                     {
