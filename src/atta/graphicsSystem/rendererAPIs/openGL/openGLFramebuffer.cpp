@@ -174,6 +174,21 @@ namespace atta
         return pixel;
     }
 
+    std::vector<uint8_t> OpenGLFramebuffer::readImage(unsigned attachmentIndex)
+    {
+        int numChannels = Image::getFormatSize(_attachments[attachmentIndex].format);
+        GLenum formatOpenGL = OpenGLImage::convertFormat(_attachments[attachmentIndex].format);
+        GLenum dataTypeOpenGL = OpenGLImage::convertDataType(_attachments[attachmentIndex].format);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, _id);
+        glViewport(0, 0, _width, _height);
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+        std::vector<uint8_t> data(_width*_height*numChannels);
+        glReadPixels(0, 0, _width, _height, formatOpenGL, dataTypeOpenGL, &data[0]);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        return data;
+    }
+
     //------------------------------------------------//
     //---------- Atta to OpenGL conversions ----------//
     //------------------------------------------------//

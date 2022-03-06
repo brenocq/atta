@@ -48,6 +48,8 @@ namespace atta
 
         CameraType cameraType = CameraType::PERSPECTIVE;
         RendererType rendererType = RendererType::PHONG;
+
+        const std::vector<uint8_t>& getFrame();
     };
     ATTA_REGISTER_COMPONENT(CameraComponent);
     template<> ComponentDescription& TypedComponentRegistry<CameraComponent>::getDescription();

@@ -243,6 +243,7 @@ namespace atta
             if(change >= 1.0f/_cameras[i].component->fps)
             {
                 _cameras[i].renderer->render(_cameras[i].camera);
+                _cameras[i].data = _cameras[i].renderer->getFramebuffer()->readImage(0);
             }
         }
     }
