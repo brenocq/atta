@@ -10,6 +10,7 @@ uniform mat4 invModel;
 
 out vec3 fragPos;
 out vec3 normal;
+out vec2 texCoord;
 
 void main()
 {
@@ -18,4 +19,5 @@ void main()
 
     fragPos = coord.xyz;
     normal = mat3(transpose(invModel))*inNormal;
+    texCoord = inTexCoord;
 }
