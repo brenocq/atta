@@ -291,7 +291,7 @@ namespace atta
         ImGui::Text(aDesc.name.c_str());
 
         quat* q = (quat*)d;
-        vec3 ori = degrees(q->toEuler());
+        vec3 euler = degrees(q->toEuler());
         bool oriChanged = false;
 
         float min = 0.0f;
@@ -304,19 +304,23 @@ namespace atta
         if(aDesc.step > 0.0f)
         {
             float step = aDesc.step;
-            oriChanged |= ImGui::DragFloat(("Roll"+imguiId).c_str(), &ori.x, step, min, max, "%.2f", ImGuiSliderFlags_None);
-            oriChanged |= ImGui::DragFloat(("Pitch"+imguiId).c_str(), &ori.y, step, min, max, "%.2f", ImGuiSliderFlags_None);
-            oriChanged |= ImGui::DragFloat(("Yaw"+imguiId).c_str(), &ori.z, step, min, max, "%.2f", ImGuiSliderFlags_None);
+            oriChanged |= ImGui::DragFloat(("Roll"+imguiId).c_str(), &euler.x, step, min, max, "%.2f", ImGuiSliderFlags_None);
+            oriChanged |= ImGui::DragFloat(("Pitch"+imguiId).c_str(), &euler.y, step, min, max, "%.2f", ImGuiSliderFlags_None);
+            oriChanged |= ImGui::DragFloat(("Yaw"+imguiId).c_str(), &euler.z, step, min, max, "%.2f", ImGuiSliderFlags_None);
         }
         else
         {
-            oriChanged |= ImGui::SliderScalar(("Roll"+imguiId).c_str(), ImGuiDataType_Float, &ori.x, &min, &max, "%.2f");
-            oriChanged |= ImGui::SliderScalar(("Pitch"+imguiId).c_str(), ImGuiDataType_Float, &ori.y, &min, &max, "%.2f");
-            oriChanged |= ImGui::SliderScalar(("Yaw"+imguiId).c_str(), ImGuiDataType_Float, &ori.z, &min, &max, "%.2f");
+            oriChanged |= ImGui::SliderScalar(("Roll"+imguiId).c_str(), ImGuiDataType_Float, &euler.x, &min, &max, "%.2f");
+            oriChanged |= ImGui::SliderScalar(("Pitch"+imguiId).c_str(), ImGuiDataType_Float, &euler.y, &min, &max, "%.2f");
+            oriChanged |= ImGui::SliderScalar(("Yaw"+imguiId).c_str(), ImGuiDataType_Float, &euler.z, &min, &max, "%.2f");
         }
 
         if(oriChanged)
-            *q = quat(radians(ori));
+        {
+            vec3 deltaEuler = radians(euler)-q->toEuler();
+            quat deltaRot = quat(deltaEuler);
+            *q *= deltaRot;;
+        }
     }
 
     template<>

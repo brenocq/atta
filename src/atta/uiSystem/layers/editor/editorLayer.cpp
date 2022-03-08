@@ -15,6 +15,8 @@
 #include <atta/uiSystem/layers/editor/windows/utils/fileSelectionWindow.h>
 
 #include <atta/sensorSystem/sensorManager.h>
+#include <atta/componentSystem/componentManager.h>
+#include <atta/componentSystem/components/nameComponent.h>
 
 namespace atta::ui
 {
@@ -79,7 +81,9 @@ namespace atta::ui
         {
             if(cameras[i].showWindow)
             {
-                ImGui::Begin(("Camera##CameraWindow"+std::to_string(cameras[i].entity)).c_str(), &(cameras[i].showWindow));
+                NameComponent* name = ComponentManager::getEntityComponent<NameComponent>(cameras[i].entity);
+                std::string windowName = name != nullptr ? name->name : "Camera";
+                ImGui::Begin((windowName+"##CameraWindow"+std::to_string(cameras[i].entity)).c_str(), &(cameras[i].showWindow));
                 {
                     ImVec2 size = ImVec2(cameras[i].renderer->getWidth(), cameras[i].renderer->getHeight());
                     ImGui::Image(cameras[i].renderer->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));

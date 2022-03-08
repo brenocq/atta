@@ -61,6 +61,13 @@ namespace atta
             return result;
         }
 
+        quat operator -()
+        {
+            quat q = (*this);
+            q.r *= -1;
+            return q;
+        }
+
         // Multiply scalar
         template <typename U>
         void operator*=(const U value)
