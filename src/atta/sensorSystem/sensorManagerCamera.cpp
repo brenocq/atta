@@ -66,15 +66,12 @@ namespace atta
         switch(camera->rendererType)
         {
             case CameraComponent::RendererType::FAST:
-                LOG_VERBOSE("SensorManager", "$0 is FAST", entity);
                 cameraInfo.renderer = std::make_shared<FastRenderer>();
                 break;
             case CameraComponent::RendererType::PHONG:
-                LOG_VERBOSE("SensorManager", "$0 is PHONG", entity);
                 cameraInfo.renderer = std::make_shared<PhongRenderer>();
                 break;
             case CameraComponent::RendererType::PBR:
-                LOG_VERBOSE("SensorManager", "$0 is PBR", entity);
                 cameraInfo.renderer = std::make_shared<PbrRenderer>();
             break;
             default:
@@ -190,8 +187,6 @@ namespace atta
                     persCam->setFov(radians(_cameras[i].component->fov));
                 }
 
-                // TODO camera width/height
-
                 // Update renderer
                 CameraComponent::RendererType currRendererType;
                 if(_cameras[i].renderer->getName() == "FastRenderer")
@@ -206,15 +201,12 @@ namespace atta
                     switch(_cameras[i].component->rendererType)
                     {
                         case CameraComponent::RendererType::FAST:
-                            LOG_VERBOSE("SensorManager", "up $0 is FAST", entity);
                             _cameras[i].renderer = std::make_shared<FastRenderer>();
                             break;
                         case CameraComponent::RendererType::PHONG:
-                            LOG_VERBOSE("SensorManager", "up $0 is PHONG", entity);
                             _cameras[i].renderer = std::make_shared<PhongRenderer>();
                             break;
                         case CameraComponent::RendererType::PBR:
-                            LOG_VERBOSE("SensorManager", "up $0 is PBR", entity);
                             _cameras[i].renderer = std::make_shared<PbrRenderer>();
                         break;
                         default:
@@ -222,8 +214,10 @@ namespace atta
                     }
                     _cameras[i].renderer->setRenderDrawer(false);
                     _cameras[i].renderer->setRenderSelected(false);
-                    _cameras[i].renderer->resize(_cameras[i].component->width, _cameras[i].component->height);
                 }
+
+                // Update camera width/height
+                _cameras[i].renderer->resize(_cameras[i].component->width, _cameras[i].component->height);
                 
                 // TODO camera projection
             }

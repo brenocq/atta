@@ -111,7 +111,7 @@ namespace atta::ui
                 //----- ImGuizmo -----//
                 bool imGuizmoUsingMouse = false;
                 EntityId entity = ComponentManager::getSelectedEntity();
-                if(entity >= 0 && ImGui::IsWindowHovered())
+                if(entity >= 0)
                 {
                     TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
 
@@ -139,6 +139,14 @@ namespace atta::ui
                             imGuizmoUsingMouse = true;
                             transform.transpose();
 
+                            // Get changed
+                            vec3 pos, scale;
+                            quat newOri;
+                            transform.getPosOriScale(pos, newOri, scale);
+                            vec3 oriDelta = newOri.toEuler()-t->orientation.toEuler();
+                            quat ori;
+                            ori.fromEuler(t->orientation.toEuler() + oriDelta);
+
                             // Delta world to local
                             RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
                             if(r && r->getParent() != -1)
@@ -155,14 +163,28 @@ namespace atta::ui
                                         break;
                                 }
 
-                                // If found some entity with transform component, convert world transform to local
-                                // newM1 = M2^(-1)*M3^(-1)*M3*M2*M1
-                                // newM1 = (M3*M2)^(-1)*M3*M2*M1
-                                if(pt) transform = inverse(pt->getWorldTransform(parentId)) * transform;
+                                // If found some entity with transform component, convert result to be relative to it
+                                if(pt)
+                                {
+                                    vec3 pPos, pScale;
+                                    quat pOri;
+                                    mat4 pTransform = pt->getWorldTransform(parentId);
+                                    pTransform.getPosOriScale(pPos, pOri, pScale);
+
+                                    // Calculate pos ori scale relative to parent
+                                    pos -= pPos;
+                                    scale /= pScale;
+                                    ori = ori*(-pOri);// Rotation from pOri to ori
+                                }
                             }
 
                             // Update entity transform
-                            transform.getPosOriScale(t->position, t->orientation, t->scale);
+                            if(mouseOperation == ImGuizmo::OPERATION::TRANSLATE)
+                                t->position = pos;
+                            else if(mouseOperation == ImGuizmo::OPERATION::ROTATE)
+                                t->orientation = ori;
+                            else if(mouseOperation == ImGuizmo::OPERATION::SCALE)
+                                t->scale = scale;
                         }
                     }
                 }
