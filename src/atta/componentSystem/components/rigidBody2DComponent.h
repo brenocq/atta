@@ -63,7 +63,36 @@ namespace atta
 		 */
 		bool allowSleep = true;///< If the rigid body can sleep
 		bool awake = true;///< If the rigid body start awake or sleeping
-		bool fixedRotation = false;///< Disable rigid body rotation
+        bool fixedRotation = false;///< Disable rigid body rotation
+
+        /// Set the position of the body's origin and rotation.
+        /// @param position position of the body's origin
+        /// @param angle orientation in radians
+        void setTransform(vec2 position, float angle);
+        /// Set linear velocity
+        /// @param vel velocity in meters/second
+        void setLinearVelocity(vec2 vel);
+        /// Set angular velocity
+        /// @param omega velocity in radians/second
+        void setAngularVelocity(float omega);
+
+        /// Apply a force at a world point. If the force is not applied at the center of mass, 
+        /// it will generate a torque and affect the angular velocity. This wakes up the body.
+        /// @param force the world force vector in Newtons (N).
+        /// @param point the world position of the point of application.
+        /// @param wake also wake up the body
+        void applyForce(vec2 force, vec2 point, bool wake = true);
+
+        /// Apply a force to the body's center of mass.
+        /// @param force the world force vector in Newtons (N).
+        /// @param wake also wake up the body
+        void applyForceToCenter(vec2 force, bool wake = true);
+
+        /// Apply a torque. This affects the angular velocity without affecting 
+        /// the linear velocity of the center of mass.
+        /// @param torque about the z-axis (out of the screen), usually in N-m.
+        /// @param wake also wake up the body
+        void applyTorque(float torque, bool wake = true);
     };
     ATTA_REGISTER_COMPONENT(RigidBody2DComponent)
     template<> ComponentDescription& TypedComponentRegistry<RigidBody2DComponent>::getDescription();

@@ -951,4 +951,194 @@ namespace atta
         res += "\n [" + std::to_string(data[6]) + ", " + std::to_string(data[7]) + ", " + std::to_string(data[8]) + "]]";
         return res;
     }
+
+    //------------------------------------------------------------//
+    //--------------------------- mat2 ---------------------------//
+    //------------------------------------------------------------//
+    mat2::mat2()
+    {
+        data[0] = data[1] = data[2] = data[3] = 0; 
+    }
+
+    mat2::mat2(float diag)
+    {
+        data[1] = data[2] = 0;
+        data[0] = data[3] = diag;
+    }
+
+    // Creates a new matrix from three components (column vectors)
+    mat2::mat2(const vec2& colOne, const vec2& colTwo)
+    {
+        setColumns(colOne, colTwo);
+    }
+
+    // Creates a new matrix with explicit coefficients.
+    mat2::mat2(float c0, float c1, float c2, float c3)
+    {
+        data[0] = c0; data[1] = c1;
+        data[2] = c2; data[3] = c3;
+    }
+
+    mat2::mat2(const mat4 &mat)
+    {
+        data[0] = mat.data[0]; data[1] = mat.data[1];
+        data[2] = mat.data[4]; data[3] = mat.data[5];
+    }
+
+    mat2::mat2(const mat3 &mat)
+    {
+        data[0] = mat.data[0]; data[1] = mat.data[1];
+        data[2] = mat.data[3]; data[3] = mat.data[4];
+    }
+
+    vec2 mat2::getDiagonal()
+    {
+        return vec2(data[0], data[3]);
+    }
+
+    void mat2::setDiagonal(vec2 diag)
+    {
+        data[0] = diag.x;
+        data[3] = diag.y;
+    }
+
+    void mat2::setDiagonal(float a, float b)
+    {
+        data[0] = a;
+        data[3] = b;
+    }
+
+    void mat2::setColumns(const vec2& colOne, const vec2& colTwo)
+    {
+        data[0] = colOne.x; data[1] = colTwo.x;
+        data[2] = colOne.y; data[3] = colTwo.y;
+    }
+
+    // Transform the vector
+    vec2 mat2::operator*(const vec2& vector) const
+    {
+        return vec2(
+                vector.x * data[0] + vector.y * data[1],
+                vector.x * data[2] + vector.y * data[3]
+                );
+    }
+
+    // Transform the vector
+    vec2 mat2::transform(const vec2& vector) const
+    {
+        return (*this) * vector;
+    }
+
+    // Transform the vector by the transpose of this matrix
+    // Example usage: When multiplying by the inverse of an orthogonal matrix (phy local->world to world->local)
+    vec2 mat2::transformTranspose(const vec2& vector) const
+    {
+        return vec2(
+                vector.x * data[0] + vector.y * data[2],
+                vector.x * data[1] + vector.y * data[3]
+                );
+    }
+
+    // Get row i
+    vec2 mat2::getRowVector(int i) const
+    {
+        return vec2(data[i*2], data[i*2+1]);
+    }
+
+    // Get column i
+    vec2 mat2::getColumnVector(int i) const
+    {
+        return vec2(data[i], data[i+2]);
+    }
+
+    // Sets matrix to be the inverse of the another
+    void mat2::setInverse(const mat2 &m)
+    {
+        LOG_WARN("mat2", "Inverse was not implemented yet");
+    }
+
+    // Inverts this matrix
+    void mat2::invert()
+    {
+        mat2 ori = *this;
+        setInverse(ori);
+    }
+
+    void mat2::transpose()
+    {
+        std::swap(data[1], data[2]);
+    }
+
+    // Multiply matrices
+    mat2 mat2::operator*(const mat2 &o) const
+    {
+        return mat2(
+                data[0]*o.data[0] + data[1]*o.data[2],
+                data[0]*o.data[1] + data[1]*o.data[3],
+
+                data[2]*o.data[0] + data[3]*o.data[2],
+                data[2]*o.data[1] + data[3]*o.data[3]
+                );
+    }
+
+    mat2 mat2::operator()(const mat2 &o) const
+    {
+        return (*this)*o;
+    }
+
+    void mat2::operator*=(const mat2 &o)
+    {
+        mat2 res = (*this)*o;
+        data[0] = res.data[0];
+        data[1] = res.data[1];
+        data[2] = res.data[2];
+        data[3] = res.data[3];
+    }
+
+    // Multiply matrix with scalar
+    mat2 mat2::operator*(const float scalar) const
+    {
+        mat2 result;
+        result.data[0] = data[0]*scalar; result.data[1] = data[1]*scalar;
+        result.data[2] = data[2]*scalar; result.data[3] = data[3]*scalar;
+
+        return result;
+    }
+
+    void mat2::operator*=(const float scalar)
+    {
+        data[0] *= scalar; data[1] *= scalar;
+        data[2] *= scalar; data[3] *= scalar;
+    }
+
+    // Component-wise addition
+    mat2 mat2::operator+(const mat2 &o) const
+    {
+        mat2 result;
+        result.data[0] = data[0]+o.data[0]; result.data[1] = data[1]+o.data[1];
+        result.data[2] = data[2]+o.data[2]; result.data[3] = data[3]+o.data[3];
+
+        return result;
+    }
+
+    // Component-wise addition
+    void mat2::operator+=(const mat2 &o)
+    {
+        data[0] += o.data[0]; data[1] += o.data[1];
+        data[2] += o.data[2]; data[3] += o.data[3];
+    }
+
+    // Set the matrix to be the rotation matrix to the given quaternion
+    void mat2::setOrientation(float angle)
+    {
+        data[0] = cos(angle); data[1] = -sin(angle);
+        data[2] = sin(angle); data[3] = cos(angle);
+    }
+
+    std::string mat2::toString() const
+    {
+        std::string res = "\n[[" + std::to_string(data[0]) + ", " + std::to_string(data[1]) + ", " +  "],";
+        res += "\n [" + std::to_string(data[2]) + ", " + std::to_string(data[3]) + "]]";
+        return res;
+    }
 }

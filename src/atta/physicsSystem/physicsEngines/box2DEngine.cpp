@@ -5,7 +5,6 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/physicsSystem/physicsEngines/box2DEngine.h>
-#include <atta/componentSystem/components/rigidBody2DComponent.h>
 #include <atta/componentSystem/components/transformComponent.h>
 #include <atta/componentSystem/components/relationshipComponent.h>
 #include <atta/componentSystem/components/boxColliderComponent.h>
@@ -89,7 +88,7 @@ namespace atta
     void Box2DEngine::start()
     {
         _running = true;
-        _world = std::make_shared<b2World>(b2Vec2(0.0f, -10.0f));
+        _world = std::make_shared<b2World>(b2Vec2(0.0f, 0.0f));
 
         // Create contact listener
         // TODO need to free?
@@ -132,6 +131,8 @@ namespace atta
 
             if(t && rb2d && (box2d || circle2d))
             {
+                _componentToEntity[rb2d] = entity;
+
                 //----- Create body -----//
                 b2BodyDef bodyDef;
                 if(rb2d->type == RigidBody2DComponent::DYNAMIC)
@@ -209,39 +210,55 @@ namespace atta
         int positionIterations = 2;
         _world->Step(dt, velocityIterations, positionIterations);
 
+        // Update transform components
         for(auto p : _bodies)
         {
             auto t = ComponentManager::getEntityComponent<TransformComponent>(p.first);
-            auto r = ComponentManager::getEntityComponent<RelationshipComponent>(p.first);
-            TransformComponent* tp = nullptr;
-            if(r && r->getParent() >= 0)
-                tp = ComponentManager::getEntityComponent<TransformComponent>(r->getParent()); 
-
             if(t)
             {
-                // Get old transform
+                // Transform data
                 vec3 position;
                 quat orientation;
                 vec3 scale;
-                mat4 m = t->getWorldTransform(p.first);
-                m.getPosOriScale(position, orientation, scale);
-                // Calculate new transform (after physics step)
+
+                // Get new transform (after physics step)
                 b2Vec2 pos = p.second->GetPosition();
                 position = { pos.x, pos.y, 0.0f };
                 orientation.fromEuler({ 0, 0, -p.second->GetAngle() });
+                scale = t->scale;
 
                 // Update pos/ori/scale to be local to parent
-                if(tp)
+                RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(p.first);
+                if(r && r->getParent() != -1)
                 {
-                    mat4 childTransform;
-                    childTransform.setPosOriScale(position, orientation, scale);
+                    // Get transform of the first entity that has transform when going up in the hierarchy
+                    TransformComponent* pt = nullptr;
+                    EntityId parentId = -1;
+                    while(pt == nullptr)
+                    {
+                        parentId = r->getParent();
+                        pt = ComponentManager::getEntityComponent<TransformComponent>(parentId);
+                        r = ComponentManager::getEntityComponent<RelationshipComponent>(parentId);
+                        if(r->getParent() == -1)
+                            break;
+                    }
 
-                    mat4 parentTransform = tp->getWorldTransform(r->getParent());
-                    mat4 finalTransform = inverse(parentTransform) * childTransform;
-                    finalTransform.getPosOriScale(position, orientation, scale);
+                    // If found some entity with transform component, convert result to be relative to it
+                    if(pt)
+                    {
+                        vec3 pPos, pScale;
+                        quat pOri;
+                        mat4 pTransform = pt->getWorldTransform(parentId);
+                        pTransform.getPosOriScale(pPos, pOri, pScale);
+
+                        // Calculate pos ori scale relative to parent
+                        position -= pPos;
+                        scale /= pScale;
+                        orientation = orientation*(-pOri);// Rotation from pOri to ori
+                    }
                 }
 
-                // Update
+                // Update transform
                 t->position = position;
                 t->orientation = orientation;
                 t->scale = scale;
@@ -259,6 +276,7 @@ namespace atta
     {
         _running = false;
         _bodies.clear();
+        _componentToEntity.clear();
         _world.reset();
     }
 
@@ -402,4 +420,34 @@ namespace atta
         return callback.entities;
     }
 
+    // RigidBody2DComponent interface
+    void Box2DEngine::setTransform(RigidBody2DComponent* rb2d, vec2 position, float angle)
+    {
+       _bodies[_componentToEntity[rb2d]]->SetTransform(b2Vec2(position.x, position.y), angle);
+    }
+
+    void Box2DEngine::setLinearVelocity(RigidBody2DComponent* rb2d, vec2 vel)
+    {
+       _bodies[_componentToEntity[rb2d]]->SetLinearVelocity(b2Vec2(vel.x, vel.y));
+    }
+    
+    void Box2DEngine::setAngularVelocity(RigidBody2DComponent* rb2d, float omega)
+    {
+       _bodies[_componentToEntity[rb2d]]->SetAngularVelocity(omega);
+    }
+
+    void Box2DEngine::applyForce(RigidBody2DComponent* rb2d, vec2 force, vec2 point, bool wake)
+    {
+       _bodies[_componentToEntity[rb2d]]->ApplyForce(b2Vec2(force.x, force.y), b2Vec2(point.x, point.y), wake);
+    }
+
+    void Box2DEngine::applyForceToCenter(RigidBody2DComponent* rb2d, vec2 force, bool wake)
+    {
+       _bodies[_componentToEntity[rb2d]]->ApplyForceToCenter(b2Vec2(force.x, force.y), wake);
+    }
+
+    void Box2DEngine::applyTorque(RigidBody2DComponent* rb2d, float torque, bool wake)
+    {
+       _bodies[_componentToEntity[rb2d]]->ApplyTorque(torque, wake);
+    }
 }

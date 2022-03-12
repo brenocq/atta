@@ -12,9 +12,15 @@
 
 namespace atta
 {
+    /// Framebuffer interface
+    /** This interface is implemented for each RendererAPI. The framebuffer have multiple attachments. 
+     * Usually one attachment is used for the output image, and the other to render the depth values. 
+     * But one framebuffer can have any number of attachments
+    **/
     class Framebuffer
     {
     public:
+        /// Framebuffer attachment. Only the format or the image should be defined
         struct Attachment
         {
             /// Create image from format
@@ -22,16 +28,15 @@ namespace atta
             Image::Format format = Image::Format::NONE;
 
             /// Use image that was already created
-            /** Does not need to define the format when attaching an image directly */
+            /** Does not need to define the format when attaching an image directly. The (width, height) should be the same as the framebuffer **/
             std::shared_ptr<Image> image = nullptr;
         };
 
         struct CreateInfo
         {
-            uint32_t width;
-            uint32_t height;
-            vec4 clearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
-            bool clearOnLoad = true;
+            uint32_t width;///< Framebuffer width
+            uint32_t height;///< Framebuffer height
+            vec4 clearColor = { 0.0f, 0.0f, 0.0f, 0.0f };///< Color to be used when cleaning the color attachments
 
             std::vector<Attachment> attachments = {};
 
@@ -55,7 +60,6 @@ namespace atta
         uint32_t _width;
         uint32_t _height;
         vec4 _clearColor;
-        bool _clearOnLoad;
 
         std::vector<Attachment> _attachments;
         std::map<uint32_t, std::shared_ptr<Image>> _images;

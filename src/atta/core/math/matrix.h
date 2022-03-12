@@ -298,6 +298,85 @@ namespace atta
     }
 
     //------------------------------------------------------------//
+    //--------------------------- mat2 ---------------------------//
+    //------------------------------------------------------------//
+    class mat2
+    {
+    public:
+        union
+        {
+            float data[4];
+            float mat[2][2];
+        };
+
+        mat2();
+        mat2(float diag);
+        mat2(const vec2& colOne, const vec2& colTwo);
+        mat2(float c0, float c1, float c2, float c3);
+        mat2(const mat4 &mat);
+        mat2(const mat3 &mat);
+
+        vec2 getDiagonal();
+        void setDiagonal(vec2 diag);
+        void setDiagonal(float a, float b);
+
+        // Set matrix from three column vectors
+        void setColumns(const vec2& colOne, const vec2& colTwo);
+
+        // Transform the vector
+        vec2 operator*(const vec2 &vector) const;
+
+        // Transform the vector
+        vec2 transform(const vec2 &vector) const;
+
+        // Transform the vector by the transpose of this matrix
+        vec2 transformTranspose(const vec2 &vector) const;
+
+        // Get row i
+        vec2 getRowVector(int i) const;
+
+        // Get column i
+        vec2 getColumnVector(int i) const;
+
+        // Sets matrix to be the inverse of the another
+        void setInverse(const mat2 &m);
+
+        // Inverts this matrix
+        void invert();
+
+        // Transpose this matrix
+        void transpose();
+
+        // Multiply matrices
+        mat2 operator*(const mat2 &o) const;
+        mat2 operator()(const mat2 &o) const;
+
+        void operator*=(const mat2 &o);
+
+        // Multiply matrix with scalar
+        mat2 operator*(const float scalar) const;
+        void operator*=(const float scalar);
+
+        // Component-wise addition
+        mat2 operator+(const mat2 &o) const;
+
+        // Component-wise addition
+        void operator+=(const mat2 &o);
+
+        // Set the matrix to be the rotation matrix to the given angle
+        void setOrientation(float angle);
+
+        std::string toString() const;
+    };
+
+    // <<
+    template <typename T>
+    inline std::ostream& operator<<(std::ostream& os, const mat2& m)
+    {
+        return os << m.toString();
+    }
+
+    //------------------------------------------------------------//
     //--------------------------- mat ---------------------------//
     //------------------------------------------------------------//
     template <typename T>
