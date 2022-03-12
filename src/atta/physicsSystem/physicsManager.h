@@ -28,6 +28,7 @@ namespace atta
         static PhysicsEngine::Type getSelectedEngine() { return getInstance()._engine->getType(); }
         static Plane2D getPlane2D() { return getInstance()._plane2D; }
         static void setSelectedEngine(PhysicsEngine::Type type);
+        static std::shared_ptr<PhysicsEngine> getPhysicsEngine() { return getInstance()._engine; }
 
         //---------- Queries ----------//
         static std::vector<EntityId> getEntityCollisions(EntityId eid);

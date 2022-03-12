@@ -41,13 +41,15 @@ namespace atta
             Format format = Format::RGBA;
             Wrap samplerWrap = Wrap::REPEAT;
             /// Image border color
-            /** Only used when samplerWrap is set to BORDER */
+            /** Only used when samplerWrap is set to BORDER **/
             vec4 borderColor = vec4(1.0f);
             uint32_t width = 1;
             uint32_t height = 1;
             uint32_t mipLevels = 1;
             bool isCubemap = false;
             StringId debugName = StringId("Unnamed Image");
+            /// Image data
+            /** Can provide initialization data. If not provided, a black image will be created **/
             uint8_t* data = nullptr;
         };
 

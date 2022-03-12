@@ -10,7 +10,7 @@ namespace atta
 {
     Framebuffer::Framebuffer(const CreateInfo& info):
         _width(info.width), _height(info.height), 
-        _clearColor(info.clearColor), _clearOnLoad(info.clearOnLoad),
+        _clearColor(info.clearColor),
         _attachments(info.attachments),
         _debugName(info.debugName)
     {

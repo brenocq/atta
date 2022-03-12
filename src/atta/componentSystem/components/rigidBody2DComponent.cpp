@@ -5,6 +5,8 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/componentSystem/components/rigidBody2DComponent.h>
+#include <atta/physicsSystem/physicsManager.h>
+#include <atta/physicsSystem/physicsEngines/box2DEngine.h>
 
 namespace atta
 {
@@ -31,5 +33,71 @@ namespace atta
             };
 
         return desc;
+    }
+
+    void RigidBody2DComponent::setTransform(vec2 position, float angle)
+    {
+        if(PhysicsManager::getSelectedEngine() == PhysicsEngine::BOX2D_ENGINE)
+        {
+            std::shared_ptr<Box2DEngine> b2Engine = std::static_pointer_cast<Box2DEngine>(PhysicsManager::getPhysicsEngine());
+            b2Engine->setTransform(this, position, angle);
+        }
+        else
+            LOG_WARN("RigidBody2DComponent", "Could not execute [w]setTransform[], box2D is not the current physics engine.");
+    }
+
+    void RigidBody2DComponent::setLinearVelocity(vec2 vel)
+    {
+        if(PhysicsManager::getSelectedEngine() == PhysicsEngine::BOX2D_ENGINE)
+        {
+            std::shared_ptr<Box2DEngine> b2Engine = std::static_pointer_cast<Box2DEngine>(PhysicsManager::getPhysicsEngine());
+            b2Engine->setLinearVelocity(this, vel);
+        }
+        else
+            LOG_WARN("RigidBody2DComponent", "Could not execute [w]setLinearVelocity[], box2D is not the current physics engine.");
+    }
+
+    void RigidBody2DComponent::setAngularVelocity(float omega)
+    {
+        if(PhysicsManager::getSelectedEngine() == PhysicsEngine::BOX2D_ENGINE)
+        {
+            std::shared_ptr<Box2DEngine> b2Engine = std::static_pointer_cast<Box2DEngine>(PhysicsManager::getPhysicsEngine());
+            b2Engine->setAngularVelocity(this, omega);
+        }
+        else
+            LOG_WARN("RigidBody2DComponent", "Could not execute [w]setAngularVelocity[], box2D is not the current physics engine.");
+    }
+
+    void RigidBody2DComponent::applyForce(vec2 force, vec2 point, bool wake)
+    {
+        if(PhysicsManager::getSelectedEngine() == PhysicsEngine::BOX2D_ENGINE)
+        {
+            std::shared_ptr<Box2DEngine> b2Engine = std::static_pointer_cast<Box2DEngine>(PhysicsManager::getPhysicsEngine());
+            b2Engine->applyForce(this, force, point, wake);
+        }
+        else
+            LOG_WARN("RigidBody2DComponent", "Could not execute [w]applyForce[], box2D is not the current physics engine.");
+    }
+
+    void RigidBody2DComponent::applyForceToCenter(vec2 force, bool wake)
+    {
+        if(PhysicsManager::getSelectedEngine() == PhysicsEngine::BOX2D_ENGINE)
+        {
+            std::shared_ptr<Box2DEngine> b2Engine = std::static_pointer_cast<Box2DEngine>(PhysicsManager::getPhysicsEngine());
+            b2Engine->applyForceToCenter(this, force, wake);
+        }
+        else
+            LOG_WARN("RigidBody2DComponent", "Could not execute [w]applyForceToCenter[], box2D is not the current physics engine.");
+    }
+    
+    void RigidBody2DComponent::applyTorque(float torque, bool wake)
+    {
+        if(PhysicsManager::getSelectedEngine() == PhysicsEngine::BOX2D_ENGINE)
+        {
+            std::shared_ptr<Box2DEngine> b2Engine = std::static_pointer_cast<Box2DEngine>(PhysicsManager::getPhysicsEngine());
+            b2Engine->applyTorque(this, torque, wake);
+        }
+        else
+            LOG_WARN("RigidBody2DComponent", "Could not execute [w]applyTorque[], box2D is not the current physics engine.");
     }
 }

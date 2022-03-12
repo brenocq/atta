@@ -134,8 +134,10 @@ namespace atta::ui
 
     void ToolBar::handleShortcuts()
     {
+        bool notMoving = !ImGui::IsMouseDown(ImGuiMouseButton_Middle);
+
         // Play/pause shortcut
-        if(ImGui::IsKeyPressed('P'))
+        if(ImGui::IsKeyPressed('P') && notMoving)
         {
             switch(_editorState)
             {
@@ -150,7 +152,7 @@ namespace atta::ui
         }
 
         // Stop shortcut
-        if(ImGui::IsKeyPressed('S'))
+        if(ImGui::IsKeyPressed('S') && notMoving)
             changeState(EditorState::EDITOR);
     }
 

@@ -8,6 +8,7 @@
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/componentSystem/componentManager.h>
 #include <atta/componentSystem/components/transformComponent.h>
+#include <atta/componentSystem/components/rigidBody2DComponent.h>
 #include <atta/componentSystem/components/relationshipComponent.h>
 #include <atta/componentSystem/components/nameComponent.h>
 #include <atta/componentSystem/components/meshComponent.h>
@@ -185,6 +186,22 @@ namespace atta::ui
                                 t->orientation = ori;
                             else if(mouseOperation == ImGuizmo::OPERATION::SCALE)
                                 t->scale = scale;
+
+                            RigidBody2DComponent* rb2d = ComponentManager::getEntityComponent<RigidBody2DComponent>(entity);
+                            if(rb2d)
+                            {
+                                if(mouseOperation == ImGuizmo::OPERATION::TRANSLATE ||
+                                     mouseOperation == ImGuizmo::OPERATION::ROTATE)
+                                {
+                                    vec2 pos = vec2(t->position);
+                                    float angle = -t->orientation.toEuler().z;
+                                    rb2d->setTransform(pos, angle);
+                                }
+                                else if(mouseOperation == ImGuizmo::OPERATION::SCALE)
+                                {
+                                    // TODO Recreate box2d rigid body
+                                }
+                            }
                         }
                     }
                 }
