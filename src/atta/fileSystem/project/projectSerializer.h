@@ -32,6 +32,9 @@ namespace atta
         void serializeHeader(std::ofstream& os);
         Header deserializeHeader(std::ifstream& is);
 
+        void serializeConfig(std::ofstream& os);
+        void deserializeConfig(std::ifstream& is);
+
         void serializeComponentSystem(std::ofstream& os);
         void deserializeComponentSystem(std::ifstream& is);
 

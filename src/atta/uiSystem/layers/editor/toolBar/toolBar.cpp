@@ -11,6 +11,7 @@
 #include <atta/eventSystem/events/simulationContinueEvent.h>
 #include <atta/eventSystem/events/simulationPauseEvent.h>
 #include <atta/eventSystem/events/simulationStopEvent.h>
+#include <atta/core/config.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -93,6 +94,22 @@ namespace atta::ui
                     LOG_WARN("EditorLayer", "Invalid editor state: [w]$0[]", static_cast<int>(_editorState));
                 }
             }
+            ImGui::SameLine();
+
+            float dt = Config::getDt();
+            float step = 1.0f;
+            if(dt > 0.0f)
+                while(step > dt) step /= 10.0f;
+            step/=10;
+
+            int width = 100;
+            int padding = 30;
+            ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - width - padding);
+            ImGui::SetCursorPosY(7);
+            ImGui::PushItemWidth(width);
+            ImGui::DragFloat("dt", &dt, step, 0.000001f, 1.0f, "%.6f");
+            float dtClean = int(dt/step)*step;// Ex: 0.001234f -> 0.001200f
+            Config::setDt(dtClean > 0.0f ? dtClean : dt);
         }
         ImGui::PopStyleColor(3);
         ImGui::PopStyleVar(1);
