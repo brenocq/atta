@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 set(ATTA_CORE_SOURCE
     stringId.cpp
+    config.cpp
 
     math/bounds.cpp
     math/common.cpp
@@ -9,7 +10,7 @@ set(ATTA_CORE_SOURCE
     math/point.cpp
     math/quaternion.cpp
     math/ray.cpp
-    )
+)
 
 add_library(atta_core STATIC ${ATTA_CORE_SOURCE})
 atta_target_common(atta_core)

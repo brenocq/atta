@@ -16,6 +16,7 @@
 #include <atta/resourceSystem/resources/texture.h>
 
 #include <atta/graphicsSystem/graphicsManager.h>
+#include <atta/core/config.h>
 
 namespace atta
 {
@@ -36,6 +37,7 @@ namespace atta
         std::ofstream os(attaTemp, std::ofstream::trunc | std::ofstream::binary);
 
         serializeHeader(os);
+        serializeConfig(os);
         serializeComponentSystem(os);
         serializeGraphicsSystem(os);
         write(os, "end");
@@ -61,7 +63,9 @@ namespace atta
         {
             std::string marker;
             read(is, marker);
-            if(marker == "comp")
+            if(marker == "config")
+                deserializeConfig(is);
+            else if(marker == "comp")
                 deserializeComponentSystem(is);
             else if(marker == "gfx")
                 deserializeGraphicsSystem(is);
@@ -120,6 +124,40 @@ namespace atta
             }
         }
         return header;
+    }
+
+    void ProjectSerializer::serializeConfig(std::ofstream& os)
+    {
+        write(os, "config");
+
+        // Dt
+        write(os, "dt");
+        write(os, Config::getDt());
+
+        write(os, "cend");
+    }
+
+    void ProjectSerializer::deserializeConfig(std::ifstream& is)
+    {
+        std::string marker;
+        while(true)
+        {
+            read(is, marker);
+            if(marker == "dt")
+            {
+                float dt;
+                read(is, dt);
+                Config::setDt(dt);
+            }
+            else if(marker == "cend")
+            {
+                return;
+            }
+            else
+            {
+                LOG_WARN("ProjectSerializer", "Unknown marker found at the config [w]$0[]", marker);
+            }
+        }
     }
 
     void ProjectSerializer::serializeComponentSystem(std::ofstream& os)

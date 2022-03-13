@@ -90,9 +90,7 @@ namespace atta::ui
 
 				for(unsigned i = 0; i < numVertices; i++)
 					Drawer::add(Drawer::Line(vertices[i], vertices[(i-1)%numVertices], color, color), "atta::ui::PhysicsDrawer");
-
 			}
 		}
-
 	}
 }

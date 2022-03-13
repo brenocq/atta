@@ -23,6 +23,7 @@
 #include <atta/physicsSystem/physicsManager.h>
 #include <atta/sensorSystem/sensorManager.h>
 #include <atta/uiSystem/uiManager.h>
+#include <atta/core/config.h>
 
 // Include execute code
 #include <atta/scriptSystem/script.h>
@@ -37,6 +38,7 @@ namespace atta
     Atta::Atta(const CreateInfo& info):
         _shouldFinish(false), _simulationState(SimulationState::NOT_RUNNING)
     {
+        Config::init();
         FileManager::startUp();
 
         uint64_t size = 1.5 * 1024UL * 1024UL * 1024UL;
@@ -106,7 +108,7 @@ namespace atta
     void Atta::loop()
     {
         if(_shouldFinish) return;
-        float dt = 0.00001;// XXX timestamp hardcoded for now
+        float dt = Config::getDt();
 
         ProjectScript* project = ScriptManager::getProjectScript();
         if(_simulationState == SimulationState::RUNNING)
