@@ -8,6 +8,7 @@
 #define ATTA_IO_SYSTEM_IO_MANAGER_H
 #include <atta/ioSystem/camera/camera.h>
 #include <atta/ioSystem/serial/serial.h>
+#include <atta/ioSystem/bluetooth/bluetooth.h>
 
 namespace atta::io
 {

@@ -21,19 +21,24 @@ namespace atta::ui
         IOSystemWindow();
         void renderImpl();
 
+        void bluetoothTabItem();
+
+        void cameraTabItem();
+
         void serialTabItem();
         void serialUpdateConsole(std::string deviceName);
 
-        void cameraTabItem();
+        // Bluetooth
+        std::shared_ptr<io::Bluetooth> _bluetooth;
+
+        // Camera
+        std::unordered_map<std::string, std::shared_ptr<io::Camera>> _cameras;
+        std::unordered_map<std::string, std::shared_ptr<Image>> _cameraImages;
 
         // Serial
         std::unordered_map<std::string, std::shared_ptr<io::Serial>> _serials;
         std::unordered_map<std::string, std::vector<char>> _serialInputBuf;
         std::unordered_map<std::string, std::vector<char>> _serialConsoleBuf;
-
-        // Camera
-        std::unordered_map<std::string, std::shared_ptr<io::Camera>> _cameras;
-        std::unordered_map<std::string, std::shared_ptr<Image>> _cameraImages;
 
         friend Window<IOSystemWindow>;
     };

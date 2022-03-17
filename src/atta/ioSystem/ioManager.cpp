@@ -7,6 +7,7 @@
 #include <atta/ioSystem/ioManager.h>
 #include <atta/ioSystem/camera/linuxCamera.h>
 #include <atta/ioSystem/serial/linuxSerial.h>
+#include <atta/ioSystem/bluetooth/linuxBluetooth.h>
 
 namespace atta::io
 {
@@ -50,6 +51,17 @@ namespace atta::io
         return std::static_pointer_cast<io::Serial>(std::make_shared<io::LinuxSerial>(info));
 #else
         LOG_WARN("IOManager", "io::Serial not implemented for this operating system");
+        return nullptr;
+#endif
+    }
+
+    template <>
+    std::shared_ptr<io::Bluetooth> IOManager::createImpl<io::Bluetooth>(io::Bluetooth::CreateInfo info)
+    {
+#ifdef ATTA_OS_LINUX
+        return std::static_pointer_cast<io::Bluetooth>(std::make_shared<io::LinuxBluetooth>(info));
+#else
+        LOG_WARN("IOManager", "io::Bluetooth not implemented for this operating system");
         return nullptr;
 #endif
     }

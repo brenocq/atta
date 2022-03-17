@@ -9,10 +9,15 @@ set(ATTA_IO_SYSTEM_SOURCE
     serial/serial.cpp
     serial/linuxSerial.cpp
 
+    bluetooth/bluetooth.cpp
+    bluetooth/linuxBluetooth.cpp
+
     http/http.cpp
     http/httpCppRestSdk.cpp
 )
 
 add_library(atta_io_system STATIC ${ATTA_IO_SYSTEM_SOURCE})
+target_link_libraries(atta_io_system ${ATTA_SYSTEMD_TARGETS})
+
 atta_target_common(atta_io_system)
 atta_add_libs(atta_io_system)

@@ -13,7 +13,7 @@
 
 namespace atta::io
 {
-    class LinuxSerial : public Serial
+    class LinuxSerial final : public Serial
     {
     public:
         LinuxSerial(Serial::CreateInfo info);
