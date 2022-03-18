@@ -35,7 +35,8 @@ namespace atta::io
         virtual bool connect(std::array<uint8_t, 6> mac) = 0;
 
         std::vector<Device> getDevices() { return _devices; }
-
+        static std::string MACToString(std::array<uint8_t, 6> mac);
+        static std::array<uint8_t, 6> stringToMAC(std::string mac);
     protected:
         StringId _debugName;
         std::vector<Device> _devices;

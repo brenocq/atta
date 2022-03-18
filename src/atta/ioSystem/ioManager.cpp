@@ -58,8 +58,13 @@ namespace atta::io
     template <>
     std::shared_ptr<io::Bluetooth> IOManager::createImpl<io::Bluetooth>(io::Bluetooth::CreateInfo info)
     {
-#ifdef ATTA_OS_LINUX
+#if defined(ATTA_OS_LINUX)
+    #if defined(ATTA_SYSTEMD_SUPPORT)
         return std::static_pointer_cast<io::Bluetooth>(std::make_shared<io::LinuxBluetooth>(info));
+    #else
+        LOG_WARN("IOManager", "io::Bluetooth not supported when [w]systemd[] is not installed");
+        return nullptr;
+    #endif
 #else
         LOG_WARN("IOManager", "io::Bluetooth not implemented for this operating system");
         return nullptr;

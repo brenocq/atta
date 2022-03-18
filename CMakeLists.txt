@@ -162,6 +162,21 @@ macro(atta_add_tests)
     endif()
 endmacro()
 
+macro(atta_add_definition)
+    # Used to add a define when compiling
+    foreach(_definition ${ARGN})
+        list(APPEND ATTA_DEFINITIONS ${_definition})
+    endforeach()
+
+    # Update variable
+    get_directory_property(hasParent PARENT_DIRECTORY)
+    if(hasParent)
+        set(ATTA_DEFINITIONS ${ATTA_DEFINITIONS} PARENT_SCOPE)
+    else()
+        set(ATTA_DEFINITIONS ${ATTA_DEFINITIONS})
+    endif()
+endmacro()
+
 macro(atta_target_common target)
     # Common to all targets
     target_precompile_headers(${target} PRIVATE ${ATTA_PCH})
@@ -207,6 +222,8 @@ macro(atta_log type tag message)
         set(atta_log_color ${Cyan})
     elseif(${type} STREQUAL "Success")
         set(atta_log_color ${Green})
+    elseif(${type} STREQUAL "Warn")
+        set(atta_log_color ${Yellow})
     endif()
     message(STATUS "${Bold}${atta_log_color}[${tag}] ${Reset}${atta_log_color}${message}${Reset}")
 endmacro()
