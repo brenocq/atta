@@ -4,12 +4,14 @@
 // Date: 2022-03-17
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#if defined(ATTA_OS_LINUX) && defined(ATTA_SYSTEMD_SUPPORT)
 #include <atta/ioSystem/bluetooth/linuxBluetooth.h>
+// Thanks to https://github.com/infsoft-locaware/blzlib
 
 namespace atta::io
 {
     LinuxBluetooth::LinuxBluetooth(Bluetooth::CreateInfo info):
-        Bluetooth(info)
+        Bluetooth(info), _bus(nullptr), _scanSlot(nullptr)
     {
 
     }
@@ -76,7 +78,6 @@ namespace atta::io
             return false;
         }
 
-
         int r = sd_bus_process(_bus, NULL);
         if(r < 0) 
         {
@@ -84,7 +85,7 @@ namespace atta::io
             return false;
         }
 
-        r = sd_bus_wait(_bus, 10);// Wait 0.01 ms
+        r = sd_bus_wait(_bus, 100);// Wait 0.1 ms
         if(r < 0 && -r != EINTR)
         {
             LOG_ERROR(_debugName.getString(), "Update failed to wait: [w]$0", strerror(-r));
@@ -96,18 +97,43 @@ namespace atta::io
 
     int LinuxBluetooth::bluezScanCallback(sd_bus_message* m, void* user, sd_bus_error* err)
     {
-        //LinuxBluetooth* linuxBluetooth = static_cast<LinuxBluetooth*>(user);
+        LinuxBluetooth* linuxBluetooth = static_cast<LinuxBluetooth*>(user);
+        if(linuxBluetooth == nullptr)
+        {
+            LOG_ERROR("io::LinuxBluetooth", "Scan callback to unknown instance");
+            return -1;
+        }
 
-        //if(linuxBluetooth == nullptr)
-        //{
-        //    LOG_ERROR("io::LinuxBluetooth", "Scan callback to unknown instance");
-        //    return -1;
-        //}
+        const char* opath;
 
-        int* data = (int*)user;
-        LOG_VERBOSE("io::LinuxBluetooth", "Callback something $0", *data);
+        // Read object path
+        int r = sd_bus_message_read_basic(m, 'o', &opath);
+        if(r < 0)
+        {
+            LOG_ERROR("io::LinuxBluetooth", "Failed to read bus message");
+            return r;
+        }
 
-        return 0;//msg_parse_object(m, ctx->path, MSG_DEVICE_SCAN, ctx);
+        // Check if the message is to this adapter
+        std::string adapter = linuxBluetooth->getAdapter();
+        if(strncmp(opath, adapter.c_str(), adapter.size()) == 0)
+        {
+            // Parse message
+            return linuxBluetooth->bluezParseInterfaces(m, opath, MSG_DEVICE_SCAN);
+        }
+        else
+        {
+            // Skip message
+            r = sd_bus_message_skip(m, "a{sa{sv}}");
+            if(r < 0)
+            {
+                LOG_ERROR("io::LinuxBluetooth", "Failed to skip bus message");
+                return r;
+            }
+            LOG_VERBOSE("io::LinuxBluetooth", "Skip message to $0", opath);
+        }
+
+        return 0;
     }
 
     bool LinuxBluetooth::startScan()
@@ -115,11 +141,9 @@ namespace atta::io
         sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
-        static int oi = 10;
         r = sd_bus_match_signal(_bus, &_scanSlot, "org.bluez", "/",
                 "org.freedesktop.DBus.ObjectManager",
-                "InterfacesAdded", &atta::io::LinuxBluetooth::bluezScanCallback, &oi);
-        
+                "InterfacesAdded", &atta::io::LinuxBluetooth::bluezScanCallback, this);
 
         if(r < 0)
         {
@@ -168,3 +192,5 @@ namespace atta::io
 
     }
 }
+#include <atta/ioSystem/bluetooth/linuxBluetoothMsg.cpp>
+#endif//ATTA_OS_LINUX && ATTA_SYSTEMD_SUPPORT 
