@@ -226,20 +226,20 @@ namespace atta::io
     //----------------------------------------//
     //--------------- Connect ----------------//
     //----------------------------------------//
-    int LinuxBluetooth::bluezConnectCallback(sd_bus_message* m, void* user, sd_bus_error* err)
+    int LinuxBluetooth::bluezDeviceCallback(sd_bus_message* m, void* user, sd_bus_error* err)
     {
-        LOG_INFO("io::LinuxBluetooth", "Connect callback");
         //----- Unpack payload -----//
         CallbackPayload* cPayload = static_cast<CallbackPayload*>(user);
         LinuxBluetooth* linuxBluetooth = nullptr;
         LinuxDevice* lDev = nullptr;
         Device* dev = nullptr;
-        if(unpackCallbackPayload(cPayload, &linuxBluetooth, &lDev, &dev) < 0)
+        // Because this callback will be called multiple times, we will not free the CallbackPayload
+        if(unpackCallbackPayload(cPayload, &linuxBluetooth, &lDev, &dev, false) < 0)
             return -1;
 
         //----- Success -----//
         linuxBluetooth->bluezParseInterface(m, nullptr, MSG_DEVICE, lDev);
-        LOG_SUCCESS("io::LinuxBluetooth", "Connected to [w]$0[]", MACToString(lDev->mac));
+        LOG_INFO("io::LinuxBluetooth", "Device [w]$0[] properties changed", MACToString(lDev->mac));
 
         return 0;
     }
@@ -276,19 +276,6 @@ namespace atta::io
         }
         dev->connected = false;
         lDev->servicesResolved = false;
-
-        // Create device path based on MAC address
-        lDev->path = _adapter + "/dev_XX_XX_XX_XX_XX_XX";
-        r = snprintf(lDev->path.data(), lDev->path.size()+1,
-                "%s/dev_%02X_%02X_%02X_%02X_%02X_%02X", _adapter.c_str(), mac[5],
-                mac[4], mac[3], mac[2], mac[1], mac[0]);
-
-        if(r < 0)
-        {
-            LOG_ERROR(_debugName.getString(), "Failed to contruct device path for [w]$0[]", MACToString(mac));
-            sd_bus_error_free(&error);
-            return false;
-        }
 
         //----- Get connection status -----//
         // Check if it already is connected
@@ -334,6 +321,9 @@ namespace atta::io
                 return false;
             }
             lDev->servicesResolved = sr;
+
+            // Populate services
+            populateDeviceServices(lDev);
         }
         else if(connStatus == UNDEFINED)
         {
@@ -344,9 +334,9 @@ namespace atta::io
 
         //----- Register connect signal -----//
         // Connect signal for device properties changed 
-        r = sd_bus_match_signal(_bus, &lDev->connectSlot, "org.bluez",
+        r = sd_bus_match_signal(_bus, &lDev->signalSlot, "org.bluez",
                 lDev->path.c_str(), "org.freedesktop.DBus.Properties",
-                "PropertiesChanged", &LinuxBluetooth::bluezConnectCallback, allocPayload(mac));
+                "PropertiesChanged", &LinuxBluetooth::bluezDeviceCallback, allocPayload(mac));
         if(r < 0)
         {
             LOG_ERROR(_debugName.getString(), "Failed to add connect signal");
@@ -378,7 +368,6 @@ namespace atta::io
 
     int LinuxBluetooth::bluezConnectKnownCallback(sd_bus_message* reply, void* user, sd_bus_error* err)
     {
-        LOG_INFO("io::LinuxBluetooth", "Connect known callback");
         int r = 0;
 
         //----- Unpack payload -----//
@@ -401,6 +390,7 @@ namespace atta::io
         //----- Success -----//
         dev->connected = true;
         LOG_SUCCESS("io::LinuxBluetooth", "Connected to [w]$0[]", MACToString(lDev->mac));
+        linuxBluetooth->populateDeviceServices(lDev);
 
         return r;
     }
@@ -567,13 +557,276 @@ namespace atta::io
 
     bool LinuxBluetooth::disconnect(std::array<uint8_t, 6> mac)
     {
+        LinuxDevice* lDev;
+        Device* dev;
+        for(unsigned i = 0; i < _devices.size(); i++)
+            if(_devices[i].mac == mac)
+            {
+                lDev = &_linuxDevices[i];
+                dev = &_devices[i];
+            }
+
+        if(!dev || !lDev)
+             return false;
+    
+         if(lDev->signalSlot) lDev->signalSlot = sd_bus_slot_unref(lDev->signalSlot);
+    
+         if(dev->connected)
+         {
+             sd_bus_error error = SD_BUS_ERROR_NULL;
+             int r;
+    
+             r = sd_bus_call_method(_bus, "org.bluez", lDev->path.c_str(),
+                                    "org.bluez.Device1", "Disconnect", &error, NULL,
+                                    "");
+    
+             if(r < 0)
+             {
+                LOG_ERROR(_debugName.getString(), "Failed to disconnect [w]$0[]: $1", MACToString(mac), error.message);
+                sd_bus_error_free(&error);
+                return r;
+             }
+            sd_bus_error_free(&error);
+         }
+
+         dev->connected = false;
+         LOG_INFO(_debugName.getString(), "[w]$0[] disconnected", MACToString(mac));
+
+         return true;
+    }
+
+    //----------------------------------------//
+    //------- Services/Characteristics -------//
+    //----------------------------------------//
+    bool LinuxBluetooth::populateDeviceServices(LinuxDevice* lDev)
+    {
+        LOG_INFO(_debugName.getString(), "[*w](populateDeviceServices) [w]$0[]", MACToString(lDev->mac));
+
+        // Get device
+        Device* dev = nullptr;
+        for(unsigned i = 0; i < _devices.size(); i++)
+            if(_devices[i].mac == lDev->mac)
+            {
+                dev = &_devices[i];
+                break;
+            }
+
+        //---------- Solve services ----------//
+        // Get services
+        char** serviceUUIDs = nullptr;
+        sd_bus_error error = SD_BUS_ERROR_NULL;
+        int r = sd_bus_get_property_strv(_bus, "org.bluez", lDev->path.c_str(),
+                "org.bluez.Device1", "UUIDs", &error,
+                &serviceUUIDs);
+
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to get [w]$0[] services: $1", MACToString(lDev->mac), error.message);
+            sd_bus_error_free(&error);
+            return false;
+        }
+        sd_bus_error_free(&error);
+
+        // Populate services
+        dev->services.clear();
+        lDev->services.clear();
+        if(serviceUUIDs != nullptr)
+            for(int i = 0; serviceUUIDs[i] != nullptr; i++)
+            {
+                Service serv {};
+                LinuxService lServ {};
+                lServ.uuid = serv.uuid = std::string(serviceUUIDs[i]);
+                dev->services.push_back(serv);
+                lDev->services.push_back(lServ);
+                LOG_INFO(_debugName.getString(), "(populateDeviceServices) [w]$0[] service $1", MACToString(lDev->mac), serv.uuid);
+            }
+
+        //---------- Solve characteristics ----------//
+        for(LinuxService& lServ : lDev->services)
+            populateServiceChars(lDev, &lServ);
+
         return true;
+    }
+
+    bool LinuxBluetooth::populateServiceChars(LinuxDevice* lDev, LinuxService* lServ)
+    {
+        sd_bus_error error = SD_BUS_ERROR_NULL;
+        sd_bus_message* reply = NULL;
+        int r;
+
+        r = sd_bus_call_method(_bus, "org.bluez", "/",
+                "org.freedesktop.DBus.ObjectManager",
+                "GetManagedObjects", &error, &reply, "");
+
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "(populateServiceChars) Failed to get managed objects: $0", error.message);
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(reply);
+            return false;
+        }
+
+        // Find linux service path
+        r = bluezParseObjects(reply, lDev->path.c_str(), MSG_SERVICE, lServ);
+        LOG_DEBUG(_debugName.getString(), "Solve serv $0 ($1) -> $2", lServ->uuid, MACToString(lDev->mac), lServ->path);
+
+        // Parse all characteristics data
+        if(lServ->path != "")
+        {
+            sd_bus_message_rewind(reply, true);
+            r = bluezParseObjects(reply, lServ->path.c_str(), MSG_CHARS, lServ);
+            for(LinuxChar ch : lServ->chars)
+                LOG_DEBUG(_debugName.getString(), "Char $0 -> $1", ch.uuid, ch.path);
+        }
+
+        sd_bus_error_free(&error);
+        sd_bus_message_unref(reply);
+        return r >= 0;
+    }
+
+    //----------------------------------------//
+    //---------- Read/Write/Notify -----------//
+    //----------------------------------------//
+    bool LinuxBluetooth::readChar(const Char& ch, uint8_t* data, size_t* len)
+    {
+        LinuxChar* lch = nullptr;
+        for(auto& lDev : _linuxDevices)
+            for(auto& lServ : lDev.services)
+                for(auto& llch : lServ.chars)
+                    if(llch.uuid == ch.uuid)
+                        lch = &llch;
+        if(lch == nullptr)
+        {
+            LOG_ERROR(_debugName.getString(), "Could not find registered characteristic to read");
+            return false;
+        }
+
+        sd_bus_error error = SD_BUS_ERROR_NULL;
+        sd_bus_message* reply = NULL;
+        const void* ptr;
+        size_t rlen = -1;
+        int r;
+
+        if(!bool(ch.flags & (CharFlags::READ)))
+        {
+            LOG_ERROR(_debugName.getString(), "Characteristic does not support read");
+            return false;
+        }
+
+        r = sd_bus_call_method(_bus, "org.bluez", lch->path.c_str(),
+                "org.bluez.GattCharacteristic1", "ReadValue", &error,
+                &reply, "a{sv}", 0);
+
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Read char failed: $0", error.message);
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(reply);
+            return false;
+        }
+
+        r = sd_bus_message_read_array(reply, 'y', &ptr, &rlen);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Read char failed to read result: $0", error.message);
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(reply);
+            return false;
+        }
+
+        if(rlen > 0)
+            memcpy(data, ptr, rlen < *len ? rlen : *len);
+
+        *len = rlen;
+
+        return r >= 0;
+    }
+
+    bool LinuxBluetooth::writeChar(const Char& ch, const uint8_t* data, size_t len)
+    {
+        LinuxChar* lch = nullptr;
+        for(auto& lDev : _linuxDevices)
+            for(auto& lServ : lDev.services)
+                for(auto& llch : lServ.chars)
+                    if(llch.uuid == ch.uuid)
+                        lch = &llch;
+        if(lch == nullptr)
+        {
+            LOG_ERROR(_debugName.getString(), "Could not find registered characteristic to write");
+            return false;
+        }
+
+        sd_bus_error error = SD_BUS_ERROR_NULL;
+        sd_bus_message* call = NULL;
+        sd_bus_message* reply = NULL;
+        int r;
+
+        if(!bool(ch.flags & (CharFlags::ANY_WRITE)))
+        {
+            LOG_ERROR(_debugName.getString(), "Characteristic does not support write");
+            return false;
+        }
+
+        r = sd_bus_message_new_method_call(
+                _bus, &call, "org.bluez", lch->path.c_str(),
+                "org.bluez.GattCharacteristic1", "WriteValue");
+
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Write char failed (create message)");
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(call);
+            sd_bus_message_unref(reply);
+            return false;
+        }
+
+        r = sd_bus_message_append_array(call, 'y', data, len);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Write char failed (append array)");
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(call);
+            sd_bus_message_unref(reply);
+            return false;
+        }
+
+        r = sd_bus_message_open_container(call, 'a', "{sv}");
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Write char failed (open container)");
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(call);
+            sd_bus_message_unref(reply);
+            return false;
+        }
+
+        r = sd_bus_message_close_container(call);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Write char failed (close container)");
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(call);
+            sd_bus_message_unref(reply);
+            return false;
+        }
+
+        r = sd_bus_call(_bus, call, 0, &error, &reply);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Write char failed to write: $0", error.message);
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(call);
+            sd_bus_message_unref(reply);
+            return false;
+        }
+
+        return r >= 0;
     }
 
     //----------------------------------------//
     //---------- Callback Payloads -----------//
     //----------------------------------------//
-    int LinuxBluetooth::unpackCallbackPayload(CallbackPayload* cPayload, LinuxBluetooth** linuxBluetooth, LinuxDevice** lDev, Device** dev)
+    int LinuxBluetooth::unpackCallbackPayload(CallbackPayload* cPayload, LinuxBluetooth** linuxBluetooth, LinuxDevice** lDev, Device** dev, bool release)
     {
         if(cPayload == nullptr || (cPayload != nullptr && cPayload->linuxBluetooth == nullptr))
         {
@@ -600,7 +853,8 @@ namespace atta::io
         }
 
         // Free payload
-        (*linuxBluetooth)->freePayload(cPayload);
+        if(release)
+            (*linuxBluetooth)->freePayload(cPayload);
 
         return 0;
     }
@@ -617,8 +871,8 @@ namespace atta::io
         return nullptr;
     }
 
-    {
     void LinuxBluetooth::freePayload(CallbackPayload* cPayload)
+    {
         cPayload->linuxBluetooth = nullptr;
         std::fill(std::begin(cPayload->mac), std::end(cPayload->mac), 0);
     }

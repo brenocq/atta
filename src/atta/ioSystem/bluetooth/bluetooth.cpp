@@ -33,4 +33,12 @@ namespace atta::io
         sscanf(in, "%2hhx:%2hhx:%2hhx:%2hhx:%2hhx:%2hhx", MAC_PARR_rev(out));
         return out;
     }
+
+    Bluetooth::Device* Bluetooth::getDevice(std::array<uint8_t, 6> mac)
+    {
+        for(Device& dev : _devices)
+            if(dev.mac == mac)
+                return &dev;
+        return nullptr;
+    }
 }

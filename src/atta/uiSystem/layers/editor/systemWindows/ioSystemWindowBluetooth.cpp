@@ -21,7 +21,7 @@ namespace atta::ui
             if(_bluetooth)
             {
                 _bluetooth->start();
-                //_bluetooth->startScan();
+                _bluetooth->startScan();
             }
             else
             {
@@ -63,7 +63,20 @@ namespace atta::ui
                     ImGui::TableSetColumnIndex(3);
                     if(devices[i].connected)
                     {
-                        ImGui::Button("Open");
+                        if(ImGui::Button(("Disconnect##DisconnectBluetooth"+std::to_string(i)).c_str()))
+                            _bluetooth->disconnect(devices[i].mac);
+                        ImGui::SameLine();
+                        if(ImGui::Button(("View##ViewBluetooth"+std::to_string(i)).c_str()))
+                        {
+                            // Append window if does not exist yet
+                            std::array<uint8_t, 6> mac = devices[i].mac;
+                            bool found = false;
+                            for(auto bview : _bluetoothViews)
+                                if(bview == mac)
+                                    found = true;
+                            if(!found)
+                                _bluetoothViews.push_back(mac);
+                        }
                     }
                     else
                     {
@@ -73,6 +86,63 @@ namespace atta::ui
                 }
             }
             ImGui::EndTable();
+        }
+    }
+
+    void IOSystemWindow::bluetoothViews()
+    {
+        for(int i = _bluetoothViews.size()-1; i >= 0; i--)
+        {
+            auto mac = _bluetoothViews[i];
+            std::string macStr = io::Bluetooth::MACToString(mac);
+            bool open = true;
+            io::Bluetooth::Device* dev = _bluetooth->getDevice(mac);
+
+            ImGui::Begin((macStr+"##View"+macStr).c_str(), &open);
+            {
+                if(dev != nullptr)
+                {
+                    // Services
+                    for(auto& serv : dev->services)
+                    {
+                        std::string servName  = "Service " + serv.uuid;
+                        if(ImGui::TreeNode(servName.c_str()))
+                        {
+                            // Characteristics
+                            for(auto& ch : serv.chars)
+                            {
+                                std::string chName  = "Char " + ch.uuid;
+                                if(ImGui::TreeNode(chName.c_str()))
+                                {
+                                    ImGui::Text("Actions: ");
+                                    if(bool(ch.flags & (io::Bluetooth::CharFlags::ANY_WRITE)))
+                                    {
+                                        ImGui::SameLine();
+                                        ImGui::Button(("Write##Write"+ch.uuid).c_str());
+                                    }
+                                    if(bool(ch.flags & io::Bluetooth::CharFlags::READ))
+                                    {
+                                        ImGui::SameLine();
+                                        ImGui::Button(("Read##Read"+ch.uuid).c_str());
+                                    }
+                                    if(bool(ch.flags & io::Bluetooth::CharFlags::NOTIFY))
+                                    {
+                                        ImGui::SameLine();
+                                        ImGui::Button(("Notify##Notify"+ch.uuid).c_str());
+                                    }
+                                    ImGui::TreePop();
+                                }
+                            }
+                            ImGui::TreePop();
+                        }
+                    }
+                }
+                else
+                    ImGui::Text("Failed to access bluetooth device");
+            }
+            ImGui::End();
+            if(!open)
+                _bluetoothViews.erase(_bluetoothViews.begin() + i);
         }
     }
 }

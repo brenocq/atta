@@ -9,8 +9,9 @@ namespace atta::io
 {
     #define RETURN_FOUND 1000// Used to indicate that found what was looking for
 
-    int LinuxBluetooth::bluezParseObjects(sd_bus_message* m, const char* adapter, BluezMsgType msgType)
+    int LinuxBluetooth::bluezParseObjects(sd_bus_message* m, const char* adapter, BluezMsgType msgType, void* user)
     {
+        //LOG_VERBOSE("io::LinuxBluetooth", "Parse objects $0", adapter);
         // Enter array of objects
         int r = sd_bus_message_enter_container(m, 'a', "{oa{sa{sv}}}");
         if(r < 0)
@@ -22,7 +23,7 @@ namespace atta::io
         // Enter next object
         while((r = sd_bus_message_enter_container(m, 'e', "oa{sa{sv}}")) > 0)
         {
-            r = bluezParseObject(m, adapter, msgType);
+            r = bluezParseObject(m, adapter, msgType, user);
             if(r < 0 || r == RETURN_FOUND)
                 return r;
 
@@ -51,7 +52,7 @@ namespace atta::io
         return r;
     }
 
-    int LinuxBluetooth::bluezParseObject(sd_bus_message* m, const char* adapter, BluezMsgType msgType)
+    int LinuxBluetooth::bluezParseObject(sd_bus_message* m, const char* adapter, BluezMsgType msgType, void* user)
     {
         const char* opath;
 
@@ -67,7 +68,7 @@ namespace atta::io
         if(strncmp(opath, adapter, strlen(adapter)) == 0)
         {
             // Parse array of interfaces
-            r = bluezParseInterfaces(m, opath, msgType);
+            r = bluezParseInterfaces(m, opath, msgType, user);
         }
         else
         {
@@ -83,12 +84,13 @@ namespace atta::io
         return r;
     }
 
-    int LinuxBluetooth::bluezParseInterfaces(sd_bus_message* m, const char* opath, BluezMsgType msgType)
+    int LinuxBluetooth::bluezParseInterfaces(sd_bus_message* m, const char* opath, BluezMsgType msgType, void* user)
     {
-        LOG_VERBOSE("io::LinuxBluetooth", "Parse message $0", opath);
+        //LOG_VERBOSE("io::LinuxBluetooth", "Parse interfaces $0", opath);
         // Enter array of interface
         int r = sd_bus_message_enter_container(m, 'a', "{sa{sv}}");
-        if(r < 0) {
+        if(r < 0)
+        {
             LOG_ERROR(_debugName.getString(), "Failed to parse interface (enter container)");
             return r;
         }
@@ -96,7 +98,7 @@ namespace atta::io
         // Enter next dict entry
         while((r = sd_bus_message_enter_container(m, 'e', "sa{sv}")) > 0)
         {
-            r = bluezParseInterface(m, opath, msgType);
+            r = bluezParseInterface(m, opath, msgType, user);
             if(r < 0 || r == RETURN_FOUND)
             {
                 return r;
@@ -141,7 +143,7 @@ namespace atta::io
             return r;
         }
 
-        LOG_VERBOSE(_debugName.getString(), "[*w]Interface $0", intf);
+        //LOG_VERBOSE(_debugName.getString(), "[*w]Interface $0 (op:$1)", intf, opath);
 
         // If know this interface, parse and return
         switch(msgType)
@@ -169,6 +171,8 @@ namespace atta::io
                         {
                             _devices.push_back(dev);
                             _linuxDevices.push_back(devL);
+                            if(dev.connected)
+                                populateDeviceServices(&_linuxDevices.back());
                         }
 
                         return r;
@@ -179,27 +183,60 @@ namespace atta::io
                 {
                     if(strcmp(intf, "org.bluez.Device1") == 0)
                     {
-                        // Get device information
-                        Device dev {};
-                        LinuxDevice devL {};
-                        r = bluezParseDevice1(m, opath, &dev, &devL);
-
-                        bool found = false;
-                        for(Device& d : _devices)
+                        // Update device information
+                        LinuxDevice* lDev = static_cast<LinuxDevice*>(user);
+                        Device* dev = nullptr;
+                        for(unsigned i = 0; i < _devices.size(); i++)
+                            if(_devices[i].mac == lDev->mac)
+                                dev = &_devices[i];
+                        if(dev == nullptr)
                         {
-                            if(d.mac == dev.mac)
-                            {
-                                d = dev;
-                                found = true;
-                                break;
-                            }
-                        }
-                        if(!found)
-                        {
-                            _devices.push_back(dev);
-                            _linuxDevices.push_back(devL);
+                            LOG_WARN(_debugName.getString(), "Unable to find device when parsing Device1 interface");
+                            return r;
                         }
 
+                        r = bluezParseDevice1(m, opath, dev, lDev);
+                        return r;
+                    }
+                    break;
+                }
+            case MSG_SERVICE:
+                {
+                    if(strcmp(intf, "org.bluez.GattService1") == 0)
+                    {
+                        LinuxService* lServ = static_cast<LinuxService*>(user);
+                        if(lServ == nullptr)
+                        {
+                            LOG_WARN(_debugName.getString(), "Unable to find service when parsing Service1 interface");
+                            return r;
+                        }
+
+                        r = bluezParseService1(m, opath, lServ);
+                        return r;
+                    }
+                    break;
+                }
+            case MSG_CHARS:
+                {
+                    if(strcmp(intf, "org.bluez.GattCharacteristic1") == 0)
+                    {
+                        LinuxService* lServ = static_cast<LinuxService*>(user);
+                        Service* serv = nullptr;
+                        for(Device& device : _devices)
+                            for(Service& s : device.services)
+                                if(s.uuid == lServ->uuid)
+                                    serv = &s;
+                        if(lServ == nullptr || serv == nullptr)
+                        {
+                            LOG_WARN(_debugName.getString(), "Unable to find service when parsing Characteristic1 interface");
+                            return r;
+                        }
+
+                        LinuxChar lch {};
+                        Char ch {};
+                        r = bluezParseCharacteristic1(m, opath, &ch, &lch);
+                        lServ->chars.push_back(lch);
+                        serv->chars.push_back(ch);
                         return r;
                     }
                     break;
@@ -213,75 +250,6 @@ namespace atta::io
             LOG_ERROR(_debugName.getString(), "Failed to skip unknown interface");
             return r;
         }
-
-
-        //if (act == MSG_SERV_FIND && strcmp(intf, "org.bluez.GattService1") == 0) {
-        //    /* find service by UUID, returns RETURN_FOUND if found, user
-        //     * points to a blz_serv where the UUID to look for is filled */
-        //    r = msg_parse_service1(m, opath, user);
-        //} else if (act == MSG_CHAR_FIND 
-        //        && strcmp(intf, "org.bluez.GattCharacteristic1") == 0) {
-        //    /* find char by UUID, returns RETURN_FOUND if found, user
-        //     * points to a blz_char where the UUID to look for is filled */
-        //    r = msg_parse_characteristic1(m, opath, user);
-        //} else if (act == MSG_CHAR_COUNT
-        //        && strcmp(intf, "org.bluez.GattCharacteristic1") == 0) {
-        //    /* just count the times the GattCharacteristic1 interface was
-        //     * found, user just is an int pointer */
-        //    int* cnt = user;
-        //    (*cnt)++;          
-        //    r = sd_bus_message_skip(m, "a{sv}");
-        //    if (r < 0) {
-        //        LOG_ERR("BLZ error parse 1intf 2");
-        //    }
-        //} else if (act == MSG_CHARS_ALL 
-        //        && strcmp(intf, "org.bluez.GattCharacteristic1") == 0) {
-        //    /* get UUIDs from all characteristics. user points to the service
-        //     * where enough space for them has already been allocated */
-        //    blz_serv* srv = user;
-        //    blz_char ch = {0}; // temporary char
-        //    r = msg_parse_characteristic1(m, opath, &ch);
-        //    if (r < 0) {       
-        //        return r;      
-        //    }
-        //    /* copy UUID */
-        //    srv->char_uuids[srv->chars_idx] = strdup(ch.uuid);
-        //    srv->chars_idx++;  
-        //    return 0; // override RETURN_FOUND this would stop the loop
-        //} else if (act == MSG_DEVICE && strcmp(intf, "org.bluez.Device1") == 0) {
-        //    /* parse device properties, user points to device */
-        //    r = msg_parse_device1(m, opath, user);
-        //} else if (act == MSG_DEVICE_SCAN 
-        //        && strcmp(intf, "org.bluez.Device1") == 0) {
-        //    /* used in scan callback. user points to a blz* where the scan_cb
-        //     * can be found. create a temporary device, parse all info into
-        //     * it and then call callback */
-        //    blz_dev dev = {0};
-        //    r = msg_parse_device1(m, opath, &dev);
-        //    if (r < 0) {
-        //        return r;
-        //    }
-
-        //    /* callback */
-        //    blz_ctx* ctx = user;
-        //    if (ctx != NULL && ctx->scan_cb != NULL) {
-        //        ctx->scan_cb(dev.mac, BLZ_ADDR_UNKNOWN, dev.rssi, NULL, 0,
-        //                ctx->scan_user);
-        //    }
-
-        //    /* free uuids of temporary device */
-        //    for (int i = 0;
-        //            dev.service_uuids != NULL && dev.service_uuids[i] != NULL; i++) {
-        //        free(dev.service_uuids[i]);
-        //    }
-        //    free(dev.service_uuids);
-        //} else {
-        //    /* unknown interface or action */
-        //    r = sd_bus_message_skip(m, "a{sv}");
-        //    if (r < 0) {
-        //        LOG_ERR("BLZ error parse 1intf 3");
-        //    }
-        //}
         return r;
     }
 
@@ -318,14 +286,28 @@ namespace atta::io
             {
                 r = bluezReadVariant(m, "s", &str);
                 if(r < 0) return r;
+                
+                // Set MAC
                 dev->mac = Bluetooth::stringToMAC(std::string(str));
                 lDev->mac = dev->mac;
+
+                // Create device path based on MAC address
+                lDev->path = _adapter + "/dev_XX_XX_XX_XX_XX_XX";
+                r = snprintf(lDev->path.data(), lDev->path.size()+1,
+                        "%s/dev_%02X_%02X_%02X_%02X_%02X_%02X", _adapter.c_str(), dev->mac[5],
+                        dev->mac[4], dev->mac[3], dev->mac[2], dev->mac[1], dev->mac[0]);
+                if(r < 0)
+                {
+                    LOG_ERROR(_debugName.getString(), "Failed to contruct device path for [w]$0[]", MACToString(dev->mac));
+                    return r;
+                }
             }
             else if(strcmp(str, "UUIDs") == 0)
             {
-                char** service_uuids;
-                r = bluezReadVariant(m, &service_uuids);
+                char** serviceUUIDs = nullptr;
+                r = bluezReadVariant(m, &serviceUUIDs);
                 if(r < 0) return r;
+                // Will be populated with LinuxBluetooth::PopulateDeviceServices
             }
             else if(strcmp(str, "ServicesResolved") == 0)
             {
@@ -375,6 +357,166 @@ namespace atta::io
             return r;
         }
 
+        return r;
+    }
+
+    int LinuxBluetooth::bluezParseService1(sd_bus_message* m, const char* opath, LinuxService* lServ)
+    {
+        const char* str;
+        const char* uuid;
+
+        // Enter array of dict entries
+        int r = sd_bus_message_enter_container(m, 'a', "{sv}");
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse service1 (enter container)");
+            return r;          
+        }
+
+        // Enter next dict
+        while((r = sd_bus_message_enter_container(m, 'e', "sv")) > 0)
+        {
+            // Property name
+            r = sd_bus_message_read_basic(m, 's', &str);
+            if(r < 0)
+            {
+                LOG_ERROR(_debugName.getString(), "Failed to parse service1 (read basic)");
+                return r;
+            }
+
+            if(strcmp(str, "UUID") == 0)
+            { 
+                r = bluezReadVariant(m, "s", &uuid);
+                if(r < 0)
+                {
+                    LOG_ERROR(_debugName.getString(), "Failed to parse service1 (read UUID)");
+                    return r;
+                }
+            } 
+            else
+            {
+                r = sd_bus_message_skip(m, "v");
+                if(r < 0)
+                {
+                    LOG_ERROR(_debugName.getString(), "Failed to parse service1 (skip basic)");
+                    return r;
+                }
+            }
+
+            // Exit dict
+            r = sd_bus_message_exit_container(m);
+            if(r < 0)
+            {
+                LOG_ERROR(_debugName.getString(), "Failed to parse service1 (exit container)");
+                return r;
+            }
+        }
+
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse service1 (next container)");
+            return r;
+        }
+        // Exit array
+        r = sd_bus_message_exit_container(m);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse service1 (exit container)");
+            return r;
+        }
+
+        // if UUID matched, update service path
+        if(strcasecmp(uuid, lServ->uuid.c_str()) == 0)
+        {
+            // Save object path and UUID
+            lServ->path = std::string(opath);
+            return RETURN_FOUND;
+        }
+
+        return r;
+    }
+
+    int LinuxBluetooth::bluezParseCharacteristic1(sd_bus_message* m, const char* opath, Char* ch, LinuxChar* lch)
+    {
+        const char* str;
+        const char* uuid;
+        char** flags;
+   
+        // Enter array of dict entries
+        int r = sd_bus_message_enter_container(m, 'a', "{sv}");
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse characteristic1 (enter container)");
+            return r;
+        }
+   
+        // Enter next dict
+        while((r = sd_bus_message_enter_container(m, 'e', "sv")) > 0)
+        {
+            // Property name
+            r = sd_bus_message_read_basic(m, 's', &str);
+            if(r < 0)
+            {
+                LOG_ERROR(_debugName.getString(), "Failed to parse characteristic1 (read basic)");
+                return r;
+            }
+   
+            if(strcmp(str, "UUID") == 0)
+            {
+                r = bluezReadVariant(m, "s", &uuid);
+                if(r < 0) return r;
+            }
+            else if(strcmp(str, "Flags") == 0)
+            {
+                r = bluezReadVariant(m, &flags);
+                if(r < 0) return r;
+            }
+            else
+            {
+                r = sd_bus_message_skip(m, "v");
+                if(r < 0) return r;
+            }
+   
+            // Exit dict
+            r = sd_bus_message_exit_container(m);
+            if(r < 0)
+            {
+                LOG_ERROR(_debugName.getString(), "Failed to parse characteristic1 (exit dict)");
+                return r;
+            }
+        }
+
+        // Exit array
+        r = sd_bus_message_exit_container(m);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse characteristic1 (exit container)");
+            return r;
+        }
+    
+        ch->uuid = std::string(uuid);
+        ch->flags = CharFlags::NONE;
+        lch->uuid = std::string(uuid);
+        lch->path = std::string(opath);
+
+        // Convert flags
+        for(int i = 0; flags != nullptr && flags[i] != nullptr; i++)
+        {
+            if(strcmp(flags[i], "broadcast") == 0)
+                ch->flags |= CharFlags::BROADCAST;
+            else if(strcmp(flags[i], "read") == 0)
+                ch->flags |= CharFlags::READ;
+            else if(strcmp(flags[i], "write-without-response") == 0)
+                ch->flags |= CharFlags::WRITE_NO_RESPONSE;
+            else if(strcmp(flags[i], "write") == 0)
+                ch->flags |= CharFlags::WRITE;
+            else if(strcmp(flags[i], "notify") == 0)
+                ch->flags |= CharFlags::NOTIFY;
+            else if(strcmp(flags[i], "indicate") == 0)
+                ch->flags |= CharFlags::INDICATE;
+            free(flags[i]);
+        }
+        free(flags);
         return r;
     }
 

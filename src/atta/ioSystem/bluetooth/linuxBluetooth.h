@@ -26,6 +26,9 @@ namespace atta::io
         bool connect(std::array<uint8_t, 6> mac) override;
         bool disconnect(std::array<uint8_t, 6> mac) override;
 
+        bool readChar(const Char& ch, uint8_t* data, size_t* len) override;
+        bool writeChar(const Char& ch, const uint8_t* data, size_t len) override;
+
         struct CallbackPayload
         {
             LinuxBluetooth* linuxBluetooth = nullptr;
@@ -33,7 +36,7 @@ namespace atta::io
         };
 
         static int bluezScanCallback(sd_bus_message* m, void* user, sd_bus_error* err);
-        static int bluezConnectCallback(sd_bus_message* m, void* user, sd_bus_error* err);
+        static int bluezDeviceCallback(sd_bus_message* m, void* user, sd_bus_error* err);
         static int bluezConnectKnownCallback(sd_bus_message* reply, void* user, sd_bus_error* err);
         static int bluezConnectUnknownCallback(sd_bus_message* reply, void* user, sd_bus_error* err);
         std::string getAdapter() const { return _adapter; }
@@ -42,33 +45,53 @@ namespace atta::io
         enum BluezMsgType
         {
             MSG_DEVICE_SCAN = 0,
-            MSG_DEVICE
+            MSG_DEVICE,
+            MSG_SERVICE,
+            MSG_CHARS
+        };
+
+        struct LinuxChar
+        {
+            std::string uuid;
+            std::string path;
+        };
+
+        struct LinuxService
+        {
+            std::string uuid;
+            std::string path;
+            std::vector<LinuxChar> chars;
         };
 
         struct LinuxDevice
         {
             std::array<uint8_t, 6> mac;
             std::string path;
-            sd_bus_slot* connectSlot = nullptr;
+            sd_bus_slot* signalSlot = nullptr;
             char** serviceUUIDs = nullptr;
             bool connectAsyncDone = false;
             bool servicesResolved = false;
+            std::vector<LinuxService> services;
         };
 
         bool populateKnownDevices();
         bool bluezConnectKnown(LinuxDevice* lDev);
         bool bluezConnectUnknown(LinuxDevice* lDev);
+        bool populateDeviceServices(LinuxDevice* lDev);
+        bool populateServiceChars(LinuxDevice* lDev, LinuxService* lServ);
 
-        int bluezParseObjects(sd_bus_message* m, const char* adapter, BluezMsgType msgType);
-        int bluezParseObject(sd_bus_message* m, const char* adapter, BluezMsgType msgType);
-        int bluezParseInterfaces(sd_bus_message* m, const char* opath, BluezMsgType msgType);
+        int bluezParseObjects(sd_bus_message* m, const char* adapter, BluezMsgType msgType, void* user = nullptr);
+        int bluezParseObject(sd_bus_message* m, const char* adapter, BluezMsgType msgType, void* user = nullptr);
+        int bluezParseInterfaces(sd_bus_message* m, const char* opath, BluezMsgType msgType, void* user = nullptr);
         int bluezParseInterface(sd_bus_message* m, const char* opath, BluezMsgType msgType, void* user = nullptr);
         int bluezParseDevice1(sd_bus_message* m, const char* opath, Device* dev, LinuxDevice* devL);
+        int bluezParseService1(sd_bus_message* m, const char* opath, LinuxService* lServ);
+        int bluezParseCharacteristic1(sd_bus_message* m, const char* opath, Char* ch, LinuxChar* lch);
         int bluezReadVariant(sd_bus_message* m, char* type, void* dest);
         int bluezReadVariant(sd_bus_message* m, char*** dest);
         int bluezAppendProperty(sd_bus_message* m, const char* name, char type, const void* value);
 
-        static int unpackCallbackPayload(CallbackPayload* cPayload, LinuxBluetooth** linuxBluetooth, LinuxDevice** lDev, Device** dev);
+        static int unpackCallbackPayload(CallbackPayload* cPayload, LinuxBluetooth** linuxBluetooth, LinuxDevice** lDev, Device** dev, bool release = true);
         CallbackPayload* allocPayload(std::array<uint8_t, 6> mac);
         void freePayload(CallbackPayload* cPayload);
 
