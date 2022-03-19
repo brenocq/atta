@@ -21,7 +21,7 @@ namespace atta::ui
             if(_bluetooth)
             {
                 _bluetooth->start();
-                _bluetooth->startScan();
+                //_bluetooth->startScan();
             }
             else
             {
@@ -37,12 +37,13 @@ namespace atta::ui
             ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
    
         ImVec2 outer_size = ImVec2(0.0f,  0.0f);
-        if(ImGui::BeginTable("bluetoothDevicesTable", 3, flags, outer_size))
+        if(ImGui::BeginTable("bluetoothDevicesTable", 4, flags, outer_size))
         {
-            ImGui::TableSetupScrollFreeze(0, 3); // Make top row always visible
+            ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_None);
             ImGui::TableSetupColumn("MAC", ImGuiTableColumnFlags_None);
             ImGui::TableSetupColumn("RSSI", ImGuiTableColumnFlags_None);
+            ImGui::TableSetupColumn("Connected", ImGuiTableColumnFlags_None);
             ImGui::TableHeadersRow();
    
             // Show list with clipper to support big lists
@@ -59,11 +60,16 @@ namespace atta::ui
                     ImGui::Text("%s", io::Bluetooth::MACToString(devices[i].mac).c_str());
                     ImGui::TableSetColumnIndex(2);
                     ImGui::Text("%d", devices[i].rssi);
-   
-                    //bool selected = _selectedImage == imageIdx;
-                    //std::string name = "Image "+std::to_string(imageIdx)+"###Image"+std::to_string(imageIdx);
-                    //if(ImGui::Selectable(name.c_str(), &selected))
-                    //    _selectedImage = imageIdx;
+                    ImGui::TableSetColumnIndex(3);
+                    if(devices[i].connected)
+                    {
+                        ImGui::Button("Open");
+                    }
+                    else
+                    {
+                        if(ImGui::Button(("Connect##ConnectBluetooth"+std::to_string(i)).c_str()))
+                            _bluetooth->connect(devices[i].mac);
+                    }
                 }
             }
             ImGui::EndTable();
