@@ -22,6 +22,7 @@ namespace atta::ui
         void renderImpl();
 
         void bluetoothTabItem();
+        void bluetoothViews();
 
         void cameraTabItem();
 
@@ -30,6 +31,7 @@ namespace atta::ui
 
         // Bluetooth
         std::shared_ptr<io::Bluetooth> _bluetooth;
+        std::vector<std::array<uint8_t, 6>> _bluetoothViews;
 
         // Camera
         std::unordered_map<std::string, std::shared_ptr<io::Camera>> _cameras;

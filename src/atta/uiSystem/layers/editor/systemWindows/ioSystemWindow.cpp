@@ -35,6 +35,8 @@ namespace atta::ui
             }
             ImGui::EndTabBar();
         }
+
+        bluetoothViews();
     }
 }
 
