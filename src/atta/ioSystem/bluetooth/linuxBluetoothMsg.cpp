@@ -8,7 +8,81 @@
 namespace atta::io
 {
     #define RETURN_FOUND 1000// Used to indicate that found what was looking for
-                             //
+
+    int LinuxBluetooth::bluezParseObjects(sd_bus_message* m, const char* adapter, BluezMsgType msgType)
+    {
+        // Enter array of objects
+        int r = sd_bus_message_enter_container(m, 'a', "{oa{sa{sv}}}");
+        if(r < 0)
+        {           
+            LOG_ERROR(_debugName.getString(), "Failed to parse objects (enter container)");
+            return r;          
+        }
+
+        // Enter next object
+        while((r = sd_bus_message_enter_container(m, 'e', "oa{sa{sv}}")) > 0)
+        {
+            r = bluezParseObject(m, adapter, msgType);
+            if(r < 0 || r == RETURN_FOUND)
+                return r;
+
+            // Exit dict
+            r = sd_bus_message_exit_container(m);
+            if(r < 0)
+            {
+                LOG_ERROR(_debugName.getString(), "Failed to parse objects (exit object)");
+                return r;
+            }
+        }
+
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse objects (next object)");
+            return r;
+        }
+
+        // Exit array
+        r = sd_bus_message_exit_container(m);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse objects (exit array)");
+            return r;
+        }
+        return r;
+    }
+
+    int LinuxBluetooth::bluezParseObject(sd_bus_message* m, const char* adapter, BluezMsgType msgType)
+    {
+        const char* opath;
+
+        // Object path
+        int r = sd_bus_message_read_basic(m, 'o', &opath);
+        if(r < 0) 
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse object (read basic)");
+            return r;
+        }
+
+        // Check if it is below our own adapter path
+        if(strncmp(opath, adapter, strlen(adapter)) == 0)
+        {
+            // Parse array of interfaces
+            r = bluezParseInterfaces(m, opath, msgType);
+        }
+        else
+        {
+            // Ignore
+            r = sd_bus_message_skip(m, "a{sa{sv}}");
+            if(r < 0)
+            {
+                LOG_ERROR(_debugName.getString(), "Failed to parse object (skip interface)");
+                return r;
+            }
+        }           
+
+        return r;
+    }
+
     int LinuxBluetooth::bluezParseInterfaces(sd_bus_message* m, const char* opath, BluezMsgType msgType)
     {
         LOG_VERBOSE("io::LinuxBluetooth", "Parse message $0", opath);
@@ -55,7 +129,7 @@ namespace atta::io
         return r;
     }
 
-    int LinuxBluetooth::bluezParseInterface(sd_bus_message* m, const char* opath, BluezMsgType msgType)
+    int LinuxBluetooth::bluezParseInterface(sd_bus_message* m, const char* opath, BluezMsgType msgType, void* user)
     {
         const char* intf;      
 
@@ -67,6 +141,8 @@ namespace atta::io
             return r;
         }
 
+        LOG_VERBOSE(_debugName.getString(), "[*w]Interface $0", intf);
+
         // If know this interface, parse and return
         switch(msgType)
         {
@@ -76,8 +152,9 @@ namespace atta::io
                     {
                         // Get device information
                         Device dev {};
-                        r = bluezParseDevice1(m, opath, &dev);
-                        
+                        LinuxDevice devL {};
+                        r = bluezParseDevice1(m, opath, &dev, &devL);
+
                         bool found = false;
                         for(Device& d : _devices)
                         {
@@ -89,7 +166,39 @@ namespace atta::io
                             }
                         }
                         if(!found)
+                        {
                             _devices.push_back(dev);
+                            _linuxDevices.push_back(devL);
+                        }
+
+                        return r;
+                    }
+                    break;
+                }
+            case MSG_DEVICE:
+                {
+                    if(strcmp(intf, "org.bluez.Device1") == 0)
+                    {
+                        // Get device information
+                        Device dev {};
+                        LinuxDevice devL {};
+                        r = bluezParseDevice1(m, opath, &dev, &devL);
+
+                        bool found = false;
+                        for(Device& d : _devices)
+                        {
+                            if(d.mac == dev.mac)
+                            {
+                                d = dev;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(!found)
+                        {
+                            _devices.push_back(dev);
+                            _linuxDevices.push_back(devL);
+                        }
 
                         return r;
                     }
@@ -176,7 +285,7 @@ namespace atta::io
         return r;
     }
 
-    int LinuxBluetooth::bluezParseDevice1(sd_bus_message* m, const char* opath, Device* dev)
+    int LinuxBluetooth::bluezParseDevice1(sd_bus_message* m, const char* opath, Device* dev, LinuxDevice* lDev)
     {
         const char* str;
 
@@ -210,6 +319,7 @@ namespace atta::io
                 r = bluezReadVariant(m, "s", &str);
                 if(r < 0) return r;
                 dev->mac = Bluetooth::stringToMAC(std::string(str));
+                lDev->mac = dev->mac;
             }
             else if(strcmp(str, "UUIDs") == 0)
             {
@@ -222,7 +332,7 @@ namespace atta::io
                 int b;
                 r = bluezReadVariant(m, "b", &b);
                 if(r < 0) return r;
-                //dev->services_resolved = b;
+                lDev->servicesResolved = b;
             }
             else if(strcmp(str, "Connected") == 0)
             {
@@ -314,6 +424,57 @@ namespace atta::io
         if(r < 0)
         {
             LOG_ERROR(_debugName.getString(), "Failed to parse variant (exit container)");
+            return r;
+        }
+
+        return r;
+    }
+
+    int LinuxBluetooth::bluezAppendProperty(sd_bus_message* m, const char* name, char type, const void* value)
+    {
+        // Open dict
+        int r = sd_bus_message_open_container(m, 'e', "sv");
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to append property (open container)");
+            return r;
+        }
+
+        r = sd_bus_message_append_basic(m, 's', name);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to append property (append variant)");
+            return r;
+        }
+
+        // Open variant
+        r = sd_bus_message_open_container(m, 'v', "s");
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to append property (open variant)");
+            return r;
+        }
+
+        r = sd_bus_message_append_basic(m, type, value);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to append property (append variant basic)");
+            return r;
+        }
+
+        // Close variant
+        r = sd_bus_message_close_container(m);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to append property (close variant)");
+            return r;
+        }
+
+        // Close dict
+        r = sd_bus_message_close_container(m);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to append property (close container)");
             return r;
         }
 

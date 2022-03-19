@@ -21,7 +21,7 @@ namespace atta::io
     std::string Bluetooth::MACToString(std::array<uint8_t, 6> mac)
     {
         std::string out = "--:--:--:--:--:--";
-        snprintf(out.data(), out.size()+1, "%02x:%02x:%02x:%02x:%02x:%02x", MAC_PARR(mac));
+        snprintf(out.data(), out.size()+1, "%02X:%02X:%02X:%02X:%02X:%02X", MAC_PARR(mac));
         return out;
     }
 
