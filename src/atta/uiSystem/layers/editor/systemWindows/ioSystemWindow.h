@@ -31,7 +31,21 @@ namespace atta::ui
 
         // Bluetooth
         std::shared_ptr<io::Bluetooth> _bluetooth;
-        std::vector<std::array<uint8_t, 6>> _bluetoothViews;
+
+        struct BluetoothViewDataChar
+        {
+            std::string uuid;
+            std::array<char, 20> read;
+            std::array<char, 20> write;
+            std::array<char, 20> notify;
+        };
+
+        struct BluetoothViewData
+        {
+            std::array<uint8_t, 6> mac;
+            std::vector<BluetoothViewDataChar> chars;
+        };
+        std::vector<BluetoothViewData> _bluetoothViews;
 
         // Camera
         std::unordered_map<std::string, std::shared_ptr<io::Camera>> _cameras;

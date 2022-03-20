@@ -32,11 +32,14 @@ namespace atta::io
             ANY_WRITE         = 0b01001100
         };
 
+        struct Char;
+        using NotifyFunction = std::function<void(const Char& ch, const uint8_t* data, size_t len)>;
         struct Char
         {
             std::string uuid;
             CharFlags flags;
             bool notifying;
+            NotifyFunction notifyFunction = nullptr;
         };
 
         struct Service
@@ -64,8 +67,11 @@ namespace atta::io
         virtual bool stopScan() = 0;
         virtual bool connect(std::array<uint8_t, 6> mac) = 0;
         virtual bool disconnect(std::array<uint8_t, 6> mac) = 0;
+
         virtual bool readChar(const Char& ch, uint8_t* data, size_t* len) = 0;
         virtual bool writeChar(const Char& ch, const uint8_t* data, size_t len) = 0;
+        virtual bool notifyCharStart(const Char& ch, NotifyFunction func) = 0;
+        virtual bool notifyCharStop(const Char& ch) = 0;
 
         Device* getDevice(std::array<uint8_t, 6> mac);
         std::vector<Device>& getDevices() { return _devices; }

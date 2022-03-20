@@ -240,6 +240,7 @@ namespace atta::io
         //----- Success -----//
         linuxBluetooth->bluezParseInterface(m, nullptr, MSG_DEVICE, lDev);
         LOG_INFO("io::LinuxBluetooth", "Device [w]$0[] properties changed", MACToString(lDev->mac));
+        linuxBluetooth->populateDeviceServices(lDev);
 
         return 0;
     }
@@ -668,15 +669,12 @@ namespace atta::io
 
         // Find linux service path
         r = bluezParseObjects(reply, lDev->path.c_str(), MSG_SERVICE, lServ);
-        LOG_DEBUG(_debugName.getString(), "Solve serv $0 ($1) -> $2", lServ->uuid, MACToString(lDev->mac), lServ->path);
 
         // Parse all characteristics data
         if(lServ->path != "")
         {
             sd_bus_message_rewind(reply, true);
             r = bluezParseObjects(reply, lServ->path.c_str(), MSG_CHARS, lServ);
-            for(LinuxChar ch : lServ->chars)
-                LOG_DEBUG(_debugName.getString(), "Char $0 -> $1", ch.uuid, ch.path);
         }
 
         sd_bus_error_free(&error);
@@ -687,6 +685,7 @@ namespace atta::io
     //----------------------------------------//
     //---------- Read/Write/Notify -----------//
     //----------------------------------------//
+    //---------- Read -----------//
     bool LinuxBluetooth::readChar(const Char& ch, uint8_t* data, size_t* len)
     {
         LinuxChar* lch = nullptr;
@@ -709,7 +708,7 @@ namespace atta::io
 
         if(!bool(ch.flags & (CharFlags::READ)))
         {
-            LOG_ERROR(_debugName.getString(), "Characteristic does not support read");
+            LOG_ERROR(_debugName.getString(), "Characteristic [w]$0[] does not support read", ch.uuid);
             return false;
         }
 
@@ -742,6 +741,7 @@ namespace atta::io
         return r >= 0;
     }
 
+    //---------- Write -----------//
     bool LinuxBluetooth::writeChar(const Char& ch, const uint8_t* data, size_t len)
     {
         LinuxChar* lch = nullptr;
@@ -763,7 +763,7 @@ namespace atta::io
 
         if(!bool(ch.flags & (CharFlags::ANY_WRITE)))
         {
-            LOG_ERROR(_debugName.getString(), "Characteristic does not support write");
+            LOG_ERROR(_debugName.getString(), "Characteristic [w]$0[] does not support write", ch.uuid);
             return false;
         }
 
@@ -823,10 +823,152 @@ namespace atta::io
         return r >= 0;
     }
 
+    //---------- Notify -----------//
+    int LinuxBluetooth::bluezNotifyCallback(sd_bus_message* m, void* user, sd_bus_error* err)
+    {
+        int r;
+        const void* ptr = nullptr;
+        size_t len;
+
+        //----- Unpack payload -----//
+        NotifyCallbackPayload* cPayload = static_cast<NotifyCallbackPayload*>(user);
+        LinuxBluetooth* linuxBluetooth = nullptr;
+        LinuxChar* lch = nullptr;
+        Char* ch = nullptr;
+        if(unpackCallbackPayload(cPayload, &linuxBluetooth, &lch, &ch, false) < 0)
+            return -1;
+
+        //----- Check error -----//
+        if(ch == nullptr || lch == nullptr || ch->notifyFunction == nullptr)
+        {
+            LOG_ERROR("io::LinuxBluetooth", "Characteristic [w]$0[] has no notify function set", ch->uuid);
+            return -1;
+        }
+
+        r = linuxBluetooth->bluezParseNotify(m, ch, lch, &ptr, &len);
+
+        if(r > 0 && ptr != nullptr && ch->notifyFunction)
+            ch->notifyFunction(*ch, (uint8_t*)ptr, len);
+
+        return 0;
+    }
+
+    bool LinuxBluetooth::notifyCharStart(const Char& ch, NotifyFunction func)
+    {
+        Char* cch = nullptr;
+        LinuxChar* lch = nullptr;
+        LinuxDevice* lDev = nullptr;
+        for(auto& llDev : _linuxDevices)
+            for(auto& lServ : llDev.services)
+                for(auto& llch : lServ.chars)
+                    if(llch.uuid == ch.uuid)
+                    {
+                        lch = &llch;
+                        lDev = &llDev;
+                    }
+        for(auto& llDev : _devices)
+            for(auto& lServ : llDev.services)
+                for(auto& llch : lServ.chars)
+                    if(llch.uuid == ch.uuid)
+                    {
+                        cch = &llch;
+                    }
+        if(lch == nullptr)
+        {
+            LOG_ERROR(_debugName.getString(), "Could not find registered characteristic to start notify");
+            return false;
+        }
+
+        sd_bus_error error = SD_BUS_ERROR_NULL;
+        sd_bus_message* reply = NULL;   
+        int r;
+
+        if(!bool(ch.flags & (CharFlags::NOTIFY|CharFlags::INDICATE)))
+        {
+            LOG_ERROR(_debugName.getString(), "Characteristic [w]$0[] does not support notify", ch.uuid);
+            return false;
+        }
+        cch->notifyFunction = func;
+
+        r = sd_bus_match_signal(_bus, &lch->notifySlot, "org.bluez",
+                lch->path.c_str(), "org.freedesktop.DBus.Properties",
+                "PropertiesChanged", &LinuxBluetooth::bluezNotifyCallback, allocPayload(lDev->mac, lch->uuid));
+
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "(notifyCharStart) Failed to register notify");
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(reply);    
+            return -1;
+        }
+
+        r = sd_bus_call_method(_bus, "org.bluez", lch->path.c_str(),
+                "org.bluez.GattCharacteristic1", "StartNotify",
+                &error, &reply, "");
+
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "(notifyCharStart) Failed to start notify: $0", error.message);
+            sd_bus_error_free(&error);
+            sd_bus_message_unref(reply);    
+            return -1;
+        }
+
+        return 0;
+    }
+
+    bool LinuxBluetooth::notifyCharStop(const Char& ch)
+    {
+        Char* cch = nullptr;
+        LinuxChar* lch = nullptr;
+        LinuxDevice* lDev = nullptr;
+        for(auto& llDev : _linuxDevices)
+            for(auto& lServ : llDev.services)
+                for(auto& llch : lServ.chars)
+                    if(llch.uuid == ch.uuid)
+                    {
+                        lch = &llch;
+                        lDev = &llDev;
+                    }
+        for(auto& llDev : _devices)
+            for(auto& lServ : llDev.services)
+                for(auto& llch : lServ.chars)
+                    if(llch.uuid == ch.uuid)
+                    {
+                        cch = &llch;
+                    }
+
+        sd_bus_error error = SD_BUS_ERROR_NULL;
+        sd_bus_message* reply = NULL;   
+        int r;
+
+        if(cch == nullptr || lch == nullptr || lch->notifySlot == nullptr)
+        {
+            LOG_ERROR(_debugName.getString(), "(notifyCharStop) Failed to find registered characteristic");
+            return false;   
+        }
+
+        r = sd_bus_call_method(_bus, "org.bluez", lch->path.c_str(),
+                "org.bluez.GattCharacteristic1", "StopNotify",
+                &error, &reply, "");            
+
+        if(r < 0)
+            LOG_ERROR(_debugName.getString(), "(notifyCharStop) Failed to stop notify: $0", error.message);
+
+        lch->notifySlot = sd_bus_slot_unref(lch->notifySlot);
+        cch->notifyFunction = nullptr;
+        cch->notifying = false;
+
+        sd_bus_error_free(&error);
+        sd_bus_message_unref(reply);    
+        return r >= 0;
+    }
+
     //----------------------------------------//
     //---------- Callback Payloads -----------//
     //----------------------------------------//
-    int LinuxBluetooth::unpackCallbackPayload(CallbackPayload* cPayload, LinuxBluetooth** linuxBluetooth, LinuxDevice** lDev, Device** dev, bool release)
+    int LinuxBluetooth::unpackCallbackPayload(CallbackPayload* cPayload, LinuxBluetooth** linuxBluetooth, 
+            LinuxDevice** lDev, Device** dev, bool release)
     {
         if(cPayload == nullptr || (cPayload != nullptr && cPayload->linuxBluetooth == nullptr))
         {
@@ -859,6 +1001,51 @@ namespace atta::io
         return 0;
     }
 
+    int LinuxBluetooth::unpackCallbackPayload(NotifyCallbackPayload* cPayload, LinuxBluetooth** linuxBluetooth, 
+            LinuxChar** lch, Char** ch, bool release)
+    {
+        if(cPayload == nullptr || (cPayload != nullptr && cPayload->linuxBluetooth == nullptr))
+        {
+            LOG_ERROR("io::LinuxBluetooth", "(unpackCallbackPayload notify) Undefined notify payload");
+            return -1;
+        }
+        *linuxBluetooth = cPayload->linuxBluetooth;
+
+        // Get characteristic
+        bool found = false;
+        for(unsigned i = 0; i < (*linuxBluetooth)->_devices.size(); i++)
+            if((*linuxBluetooth)->_devices[i].mac == cPayload->mac)
+            {
+                for(unsigned s = 0; s < (*linuxBluetooth)->_devices[i].services.size(); s++)
+                {
+                    for(unsigned c = 0; c < (*linuxBluetooth)->_devices[i].services[s].chars.size(); c++)
+                    {
+                        if((*linuxBluetooth)->_devices[i].services[s].chars[c].uuid == cPayload->uuid)
+                        {
+                            *lch = &(*linuxBluetooth)->_linuxDevices[i].services[s].chars[c];
+                            *ch = &(*linuxBluetooth)->_devices[i].services[s].chars[c];
+                            found = true;
+                            break;
+                        }
+                    }
+
+                }
+                break;
+            }
+
+        if(!found)
+        {
+            LOG_ERROR("io::LinuxBluetooth", "(unpackCallbackPayload notify) Unable to find characteristic");
+            return -1;
+        }
+
+        // Free payload
+        if(release)
+            (*linuxBluetooth)->freePayload(cPayload);
+
+        return 0;
+    }
+
     LinuxBluetooth::CallbackPayload* LinuxBluetooth::allocPayload(std::array<uint8_t, 6> mac)
     {
         for(auto& cPayload : _callbackPayloads)
@@ -875,6 +1062,26 @@ namespace atta::io
     {
         cPayload->linuxBluetooth = nullptr;
         std::fill(std::begin(cPayload->mac), std::end(cPayload->mac), 0);
+    }
+
+    LinuxBluetooth::NotifyCallbackPayload* LinuxBluetooth::allocPayload(std::array<uint8_t, 6> mac, std::string uuid)
+    {
+        for(auto& cPayload : _notifyCallbackPayloads)
+            if(cPayload.linuxBluetooth == nullptr)
+            {
+                cPayload.linuxBluetooth = this;
+                cPayload.mac = mac;
+                cPayload.uuid = uuid;
+                return &cPayload;
+            }
+        return nullptr;
+    }
+
+    void LinuxBluetooth::freePayload(NotifyCallbackPayload* cPayload)
+    {
+        cPayload->linuxBluetooth = nullptr;
+        std::fill(std::begin(cPayload->mac), std::end(cPayload->mac), 0);
+        cPayload->uuid = "";
     }
 }
 #include <atta/ioSystem/bluetooth/linuxBluetoothMsg.cpp>

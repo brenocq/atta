@@ -520,6 +520,89 @@ namespace atta::io
         return r;
     }
 
+    int LinuxBluetooth::bluezParseNotify(sd_bus_message* m, Char* ch, LinuxChar* lch, const void** ptr, size_t* len)
+    {
+        int r;
+        char* str;             
+
+        // Interface name
+        r = sd_bus_message_read_basic(m, 's', &str);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse notify (read interface name)");
+            return -2;         
+        }
+
+        // Ignore all other interfaces
+        if(strcmp(str, "org.bluez.GattCharacteristic1") != 0)
+        {
+            LOG_VERBOSE(_debugName.getString(), "Parse notify ignored interface $0", str);
+            return 0;
+        }
+
+        // Enter array of dict entries
+        r = sd_bus_message_enter_container(m, 'a', "{sv}");
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse notify (enter dict)");
+            return -2;
+        }
+
+        // Enter first element
+        r = sd_bus_message_enter_container(m, 'e', "sv");
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse notify (enter first element)");
+            return -2;
+        }
+
+        // Property name
+        r = sd_bus_message_read_basic(m, 's', &str);
+        if(r < 0)
+        {
+            LOG_ERROR(_debugName.getString(), "Failed to parse notify (read element name)");
+            return -2;
+        }
+
+        // Ignore all except Value
+        if(strcmp(str, "Notifying") == 0)
+        {
+            int b;
+            r = bluezReadVariant(m, "b", &b); 
+            if(r < 0)
+            {
+                return -2;
+            }
+            ch->notifying = b;
+        }
+        else if(strcmp(str, "Value") == 0)
+        {
+            // Enter variant
+            r = sd_bus_message_enter_container(m, 'v', "ay");
+            if(r < 0)
+            {
+                LOG_ERROR(_debugName.getString(), "Failed to parse notify (enter value variant)");
+                return -2;
+            }
+
+            // Get byte array
+            r = sd_bus_message_read_array(m, 'y', ptr, len);
+            if(r < 0)
+            {
+                LOG_ERROR(_debugName.getString(), "Failed to parse notify (read byte array)");
+                return -2;
+            }
+        }
+        else
+        {
+            LOG_VERBOSE(_debugName.getString(), "Parse notify ignored property $0", str);
+            return 0;
+        }
+
+        // No need to exit containers as we stop parsing
+        return r;
+    }
+
     int LinuxBluetooth::bluezReadVariant(sd_bus_message* m, char* type, void* dest)
     {
         int r = sd_bus_message_enter_container(m, 'v', type);

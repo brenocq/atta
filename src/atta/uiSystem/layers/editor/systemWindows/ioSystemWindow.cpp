@@ -37,6 +37,8 @@ namespace atta::ui
         }
 
         bluetoothViews();
+        if(_bluetooth)
+            _bluetooth->update();
     }
 }
 

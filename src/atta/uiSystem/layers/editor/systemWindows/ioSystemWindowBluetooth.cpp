@@ -22,6 +22,7 @@ namespace atta::ui
             {
                 _bluetooth->start();
                 _bluetooth->startScan();
+                _bluetooth->update();
             }
             else
             {
@@ -29,7 +30,6 @@ namespace atta::ui
                 return;
             }
         }
-        _bluetooth->update();
         std::vector<io::Bluetooth::Device> devices = _bluetooth->getDevices();
 
         static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | 
@@ -72,10 +72,21 @@ namespace atta::ui
                             std::array<uint8_t, 6> mac = devices[i].mac;
                             bool found = false;
                             for(auto bview : _bluetoothViews)
-                                if(bview == mac)
+                                if(bview.mac == mac)
                                     found = true;
                             if(!found)
-                                _bluetoothViews.push_back(mac);
+                            {
+                                BluetoothViewData b {};
+                                b.mac = mac;
+                                for(auto& serv : devices[i].services)
+                                    for(auto& ch : serv.chars)
+                                    {
+                                        BluetoothViewDataChar cData {};
+                                        cData.uuid = ch.uuid;
+                                        b.chars.push_back(cData);
+                                    }
+                                _bluetoothViews.push_back(b);
+                            }
                         }
                     }
                     else
@@ -93,7 +104,7 @@ namespace atta::ui
     {
         for(int i = _bluetoothViews.size()-1; i >= 0; i--)
         {
-            auto mac = _bluetoothViews[i];
+            auto mac = _bluetoothViews[i].mac;
             std::string macStr = io::Bluetooth::MACToString(mac);
             bool open = true;
             io::Bluetooth::Device* dev = _bluetooth->getDevice(mac);
@@ -114,21 +125,104 @@ namespace atta::ui
                                 std::string chName  = "Char " + ch.uuid;
                                 if(ImGui::TreeNode(chName.c_str()))
                                 {
+                                    unsigned charIdx = 0;
+                                    for(; charIdx < _bluetoothViews[i].chars.size(); charIdx++)
+                                        if(_bluetoothViews[i].chars[charIdx].uuid == ch.uuid)
+                                            break;
+
                                     ImGui::Text("Actions: ");
+                                    //---------- Write ----------//
                                     if(bool(ch.flags & (io::Bluetooth::CharFlags::ANY_WRITE)))
                                     {
+                                        ImGui::Separator();
+                                        ImGui::Text("Write");
+
+                                        //----- Write input field -----//
+                                        bool reclaimFocus = false;
+                                        ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags_EnterReturnsTrue;
+                                        if(ImGui::InputText(("###InputWrite"+ch.uuid).c_str(), 
+                                                    _bluetoothViews[i].chars[charIdx].write.data(), 
+                                                    _bluetoothViews[i].chars[charIdx].write.size(), 
+                                                    inputTextFlags))
+                                        {
+                                            // Write to char when enter is pressed
+                                            _bluetooth->writeChar(ch, 
+                                                    (uint8_t*)_bluetoothViews[i].chars[charIdx].write.data(), 
+                                                    strlen(_bluetoothViews[i].chars[charIdx].write.data()));
+
+                                            // Clear write field
+                                            _bluetoothViews[i].chars[charIdx].write[0] = '\0';
+                                            reclaimFocus = true;
+                                        }
+                                        ImGui::SetItemDefaultFocus();
+                                        if(reclaimFocus)
+                                            ImGui::SetKeyboardFocusHere(-1);// Auto focus previous widget
+
+                                        //----- Write button -----//
                                         ImGui::SameLine();
-                                        ImGui::Button(("Write##Write"+ch.uuid).c_str());
+                                        if(ImGui::Button(("Write##Write"+ch.uuid).c_str()))
+                                        {
+                                            // Write to char when enter is pressed
+                                            _bluetooth->writeChar(ch, 
+                                                    (uint8_t*)_bluetoothViews[i].chars[charIdx].write.data(), 
+                                                    strlen(_bluetoothViews[i].chars[charIdx].write.data()));
+
+                                            // Clear write field
+                                            _bluetoothViews[i].chars[charIdx].write[0] = '\0';
+                                        }
                                     }
                                     if(bool(ch.flags & io::Bluetooth::CharFlags::READ))
                                     {
+                                        ImGui::Separator();
+                                        ImGui::Text("Read");
+                                        if(ImGui::Button(("Read##Read"+ch.uuid).c_str()))
+                                        {
+                                            size_t size = _bluetoothViews[i].chars[charIdx].read.size()-1;
+                                            _bluetooth->readChar(ch, 
+                                                    (uint8_t*)_bluetoothViews[i].chars[charIdx].read.data(), 
+                                                    &size);
+                                            _bluetoothViews[i].chars[charIdx].read[size] = '\0';
+                                        }
                                         ImGui::SameLine();
-                                        ImGui::Button(("Read##Read"+ch.uuid).c_str());
+                                        ImGui::TextUnformatted(_bluetoothViews[i].chars[charIdx].read.data());
                                     }
                                     if(bool(ch.flags & io::Bluetooth::CharFlags::NOTIFY))
                                     {
+                                        ImGui::Separator();
+                                        if(!ch.notifying)
+                                        {
+                                            if(ImGui::Button(("Start notify##StartNotify"+ch.uuid).c_str()))
+                                            {
+                                                _bluetooth->notifyCharStart(ch, [&](const io::Bluetooth::Char& ch, 
+                                                            const uint8_t* data, size_t len)
+                                                        {
+                                                            unsigned i = 0;
+                                                            for(BluetoothViewData& bViews : _bluetoothViews)
+                                                            {
+                                                                unsigned c = 0;
+                                                                for(BluetoothViewDataChar& viewCh : bViews.chars)
+                                                                {
+                                                                    if(viewCh.uuid == ch.uuid)
+                                                                    {
+                                                                        size_t l = std::min(len, viewCh.notify.size()-1);
+                                                                        std::copy((char*)data, (char*)data+l, viewCh.notify.data());
+                                                                        viewCh.notify[l] = '\0';
+                                                                    }
+                                                                    c++;
+                                                                }
+                                                                i++;
+                                                            }
+                                                        }
+                                                    );
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if(ImGui::Button(("Stop notify##StopNotify"+ch.uuid).c_str()))
+                                                _bluetooth->notifyCharStop(ch);
+                                        }
                                         ImGui::SameLine();
-                                        ImGui::Button(("Notify##Notify"+ch.uuid).c_str());
+                                        ImGui::TextUnformatted(_bluetoothViews[i].chars[charIdx].notify.data());
                                     }
                                     ImGui::TreePop();
                                 }
