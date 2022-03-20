@@ -28,6 +28,8 @@ namespace atta::io
 
         bool readChar(const Char& ch, uint8_t* data, size_t* len) override;
         bool writeChar(const Char& ch, const uint8_t* data, size_t len) override;
+        bool notifyCharStart(const Char& ch, NotifyFunction func) override;
+        bool notifyCharStop(const Char& ch) override;
 
         struct CallbackPayload
         {
@@ -35,10 +37,18 @@ namespace atta::io
             std::array<uint8_t, 6> mac;
         };
 
+        struct NotifyCallbackPayload
+        {
+            LinuxBluetooth* linuxBluetooth = nullptr;
+            std::array<uint8_t, 6> mac;// Device MAC
+            std::string uuid;// Characteristic UUID
+        };
+
         static int bluezScanCallback(sd_bus_message* m, void* user, sd_bus_error* err);
         static int bluezDeviceCallback(sd_bus_message* m, void* user, sd_bus_error* err);
         static int bluezConnectKnownCallback(sd_bus_message* reply, void* user, sd_bus_error* err);
         static int bluezConnectUnknownCallback(sd_bus_message* reply, void* user, sd_bus_error* err);
+        static int bluezNotifyCallback(sd_bus_message* m, void* user, sd_bus_error* err);
         std::string getAdapter() const { return _adapter; }
 
     private:
@@ -54,6 +64,7 @@ namespace atta::io
         {
             std::string uuid;
             std::string path;
+            sd_bus_slot* notifySlot = nullptr;
         };
 
         struct LinuxService
@@ -87,20 +98,25 @@ namespace atta::io
         int bluezParseDevice1(sd_bus_message* m, const char* opath, Device* dev, LinuxDevice* devL);
         int bluezParseService1(sd_bus_message* m, const char* opath, LinuxService* lServ);
         int bluezParseCharacteristic1(sd_bus_message* m, const char* opath, Char* ch, LinuxChar* lch);
+        int bluezParseNotify(sd_bus_message* m, Char* ch, LinuxChar* lch, const void** ptr, size_t* len);
         int bluezReadVariant(sd_bus_message* m, char* type, void* dest);
         int bluezReadVariant(sd_bus_message* m, char*** dest);
         int bluezAppendProperty(sd_bus_message* m, const char* name, char type, const void* value);
 
         static int unpackCallbackPayload(CallbackPayload* cPayload, LinuxBluetooth** linuxBluetooth, LinuxDevice** lDev, Device** dev, bool release = true);
+        static int unpackCallbackPayload(NotifyCallbackPayload* cPayload, LinuxBluetooth** linuxBluetooth, LinuxChar** lch, Char** ch, bool release = true);
         CallbackPayload* allocPayload(std::array<uint8_t, 6> mac);
         void freePayload(CallbackPayload* cPayload);
+        NotifyCallbackPayload* allocPayload(std::array<uint8_t, 6> mac, std::string uuid);
+        void freePayload(NotifyCallbackPayload* cPayload);
 
         std::string _adapter;
         sd_bus* _bus;
         sd_bus_slot* _scanSlot;
 
         std::vector<LinuxDevice> _linuxDevices;// 1 to 1 relationship with _devices vector
-        std::array<CallbackPayload, 10> _callbackPayloads;// At most 10 callbacks at the same time
+        std::array<CallbackPayload, 50> _callbackPayloads;// At most 50 callbacks at the same time
+        std::array<NotifyCallbackPayload, 50> _notifyCallbackPayloads;// At most 50 notify callbacks at the same time
     };
 }
 
