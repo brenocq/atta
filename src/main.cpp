@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
         else
         {
             fs::path attaFile(argv[1]);
-            info.projectFile = attaFile;
+            info.projectFile = fs::absolute(attaFile);
         }
     }
 
