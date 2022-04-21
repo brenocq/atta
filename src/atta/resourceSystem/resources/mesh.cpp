@@ -37,11 +37,14 @@ namespace atta
 
     void Mesh::processNode(aiNode *node, const aiScene *scene)
     {
+        //LOG_DEBUG("Mesh", "Process node $0", std::string(node->mName.C_Str()));
+
         // Process all the node's meshes (if any)
         for(uint32_t i = 0; i < node->mNumMeshes; i++)
         {
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]]; 
             processMesh(mesh, scene);
+            //LOG_DEBUG("Mesh", " - Process mesh $0", std::string(mesh->mName.C_Str()));
         }
 
         // Then do the same for each of its children
@@ -53,6 +56,7 @@ namespace atta
 
     void Mesh::processMesh(aiMesh *mesh, const aiScene *scene)
     {
+        unsigned startIndex = _vertices.size();
         for(uint32_t i = 0; i < mesh->mNumVertices; i++)
         {
             Vertex vertex;
@@ -75,7 +79,7 @@ namespace atta
         {
             aiFace face = mesh->mFaces[i];
             for(uint32_t j = 0; j < face.mNumIndices; j++)
-                _indices.push_back(face.mIndices[j]);
+                _indices.push_back(startIndex + face.mIndices[j]);
         }
     }
 }
