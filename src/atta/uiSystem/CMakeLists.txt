@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.12)
 set(ATTA_UI_SYSTEM_SOURCE
     uiManager.cpp
 
+    widgets/plot.cpp
+
     layers/uiLayer.cpp
     layers/editor/editorLayer.cpp
     layers/editor/dockSpace.cpp

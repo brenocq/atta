@@ -22,7 +22,7 @@ set(ATTA_MEMORY_SYSTEM_TEST_SOURCES
     tests/bitmapAllocator.cpp
     tests/allocatedObject.cpp
     tests/speed.cpp
-    )
+)
 # Add to global test
 atta_add_tests(${ATTA_MEMORY_SYSTEM_TEST_SOURCES})
 
@@ -31,4 +31,4 @@ atta_create_local_test(
     atta_memory_system_test
     "${ATTA_MEMORY_SYSTEM_TEST_SOURCES}"
     "atta_memory_system"
-    )
+)
