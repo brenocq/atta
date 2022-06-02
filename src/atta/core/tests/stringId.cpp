@@ -8,6 +8,7 @@
 #include <atta/core/stringId.h>
 
 using namespace atta;
+
 namespace
 {
     TEST(Core_StringId, ConstexprLiteral)

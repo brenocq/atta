@@ -30,6 +30,8 @@ namespace atta::ui
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 
+        // Don't save imgui.ini
+        io.IniFilename = NULL;
 #ifdef ATTA_OS_WEB
         // Disable file-system access when building with Emscripten (no fopen() of the imgui.init file)
         io.IniFilename = NULL;
