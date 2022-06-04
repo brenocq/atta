@@ -36,22 +36,30 @@ namespace atta
         fs::path attaTemp = _project->getFile();
         attaTemp.replace_extension(".atta.temp");
 
-        //std::ofstream os(attaTemp, std::ofstream::trunc | std::ofstream::binary);
+        // Load data to section 
+        Section section;
+        serializeHeader(section);
+
+        LOG_DEBUG("ProjectSerializer", "Saving project: [w]$0", section);
+
+        // Write to file
+        std::ofstream os(attaTemp, std::ofstream::trunc | std::ofstream::binary);
+        section.serialize(os);
+        os.close();
+
+        // Override atta file with temp file
+        fs::rename(attaTemp, _project->getFile());
 
         //serializeHeader(os);
         //serializeConfig(os);
         //serializeComponentSystem(os);
         //serializeGraphicsSystem(os);
         //write(os, "end");
-
-        //os.close();
-
-        // Override atta file with temp file
-        //fs::rename(attaTemp, _project->getFile());
     }
 
     void ProjectSerializer::deserialize()
     {
+        Section section;
         //fs::path attaFile = _project->getFile();
 
         //std::ifstream is(attaFile, std::ifstream::in | std::ifstream::binary);

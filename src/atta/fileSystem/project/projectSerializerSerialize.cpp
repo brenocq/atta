@@ -7,20 +7,12 @@
 
 namespace atta
 {
-    //void ProjectSerializer::serializeHeader(std::ofstream& os)
-    //{
-    //    // Atta info
-    //    //write(os, "atta");
-    //    //uint16_t version[] = { ATTA_VERSION_MAJOR, ATTA_VERSION_MINOR, ATTA_VERSION_PATCH, ATTA_VERSION_TWEAK };
-    //    //write(os, version);// Version
-
-    //    //// Project info
-    //    //write(os, "proj");
-    //    //write(os, _project->getName());// Project name
-    //    //uint32_t saveCounter = 0;
-    //    //write(os, saveCounter);// Save counter (number of times that was saved)
-    //    //write(os, "hend");
-    //}
+    void ProjectSerializer::serializeHeader(Section& section)
+    {
+        Section& header = section["header"];
+        header["version"] = std::vector<uint16_t>{ ATTA_VERSION_MAJOR, ATTA_VERSION_MINOR, ATTA_VERSION_PATCH, ATTA_VERSION_TWEAK };
+        header["projectName"] = std::string(_project->getName());
+    }
 
     //void ProjectSerializer::serializeConfig(std::ofstream& os)
     //{
