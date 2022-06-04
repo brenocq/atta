@@ -7,6 +7,7 @@
 #ifndef ATTA_FILE_SYSTEM_PROJECT_PROJECT_SERIALIZER_H
 #define ATTA_FILE_SYSTEM_PROJECT_PROJECT_SERIALIZER_H
 #include <atta/fileSystem/project/project.h>
+#include <atta/fileSystem/serializer/section.h>
 
 namespace atta
 {
@@ -20,8 +21,8 @@ namespace atta
         void deserialize();
 
     private:
-        //void serializeHeader(std::ofstream& os);
-        //Header deserializeHeader(std::ifstream& is);
+        void serializeHeader(Section& section);
+        void deserializeHeader(Section& section);
 
         //void serializeConfig(std::ofstream& os);
         //void deserializeConfig(std::ifstream& is);

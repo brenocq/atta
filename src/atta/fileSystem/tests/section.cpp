@@ -13,14 +13,14 @@ using namespace testing;
 
 namespace
 {
-    TEST(File_Section, Value)
+    TEST(File_Section, Data)
     {
         Section section;
         EXPECT_EQ(section.isUndefined(), true);
 
         section = int(10);
         EXPECT_EQ(int(section), 10);
-        EXPECT_EQ(section.isValue(), true);
+        EXPECT_EQ(section.isData(), true);
         EXPECT_EQ(section.isVector(), false);
         EXPECT_EQ(section.isMap(), false);
         EXPECT_EQ(section.isUndefined(), false);
@@ -36,13 +36,13 @@ namespace
 
         // Assign vector
         std::vector<int> vec = {0, 1, 2};
-        EXPECT_EQ(section.isValue(), true);
+        EXPECT_EQ(section.isData(), true);
         section = vec;
         ASSERT_THAT(std::vector<int>(section), ElementsAre(0, 1, 2));
 
         // Assign initializer list
         section = {1, 2, 3, 4};
-        EXPECT_EQ(section.isValue(), true);
+        EXPECT_EQ(section.isData(), true);
         ASSERT_THAT(std::vector<int>(section), ElementsAre(1, 2, 3, 4));
     }
 
@@ -62,7 +62,7 @@ namespace
         // Reset section to be a value
         section = 1.0f;
         EXPECT_EQ(float(section), 1.0f);
-        EXPECT_EQ(section.isValue(), true);
+        EXPECT_EQ(section.isData(), true);
 
         // Nested section as map of values
         section["child0"]["int"] = 1;
@@ -118,6 +118,8 @@ namespace
         ASSERT_THAT(values, ElementsAre(1, 2));
     }
 
+
+
     TEST(File_Section, Example)
     {
         Section section;
@@ -127,16 +129,21 @@ namespace
         section["header"]["projName"] = std::string("myProject");
 
         // Component system section
-        struct TestComponent { int test; };
+        struct TestComponent
+        {
+            int test;
+        };
+
         Section testComponent;
-        testComponent["entities"] = {1, 2, 3, 4, 5};
-        testComponent["components"] = {TestComponent{1}, TestComponent{2}, TestComponent{3}};
+        testComponent["entities"] = {1, 2, 3};
+        testComponent["components"] = { TestComponent{1}, TestComponent{2}, TestComponent{3} };
         section["componentSystem"]["components"]["testComponent0"] = testComponent;
         section["componentSystem"]["components"]["testComponent1"] = testComponent;
+
         EXPECT_EQ(section["componentSystem"].size(), 1);
         EXPECT_EQ(section["componentSystem"]["components"].size(), 2);
         EXPECT_EQ(section["componentSystem"]["components"]["testComponent0"].size(), 2);
-        ASSERT_THAT(std::vector<int>(section["componentSystem"]["components"]["testComponent0"]["entities"]), ElementsAre(1, 2, 3, 4, 5));
+        ASSERT_THAT(std::vector<int>(section["componentSystem"]["components"]["testComponent0"]["entities"]), ElementsAre(1, 2, 3));
         ASSERT_THAT(std::vector<TestComponent>(section["componentSystem"]["components"]["testComponent1"]["components"])[1].test, 2);
 
         // Resource system section
@@ -156,6 +163,7 @@ namespace
         section["resourceSystem"]["materials"] = { material0, material1 };
         section["resourceSystem"]["materials"].push_back(material2);
         section["resourceSystem"]["materials"] += material3;
+
         EXPECT_EQ(section["resourceSystem"]["materials"].size(), 4);
         EXPECT_EQ(std::string(section["resourceSystem"]["materials"][0]["name"]), "mat0");
         EXPECT_EQ(vec3(section["resourceSystem"]["materials"][0]["albedo"]).x, 1.0f);

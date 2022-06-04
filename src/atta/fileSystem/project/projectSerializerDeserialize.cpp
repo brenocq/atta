@@ -7,8 +7,8 @@
 
 namespace atta
 {
-    //ProjectSerializer::Header ProjectSerializer::deserializeHeader(std::ifstream& is)
-    //{
+    void ProjectSerializer::deserializeHeader(Section& is)
+    {
     //    //std::string marker;
     //    //Header header;
 
@@ -35,7 +35,7 @@ namespace atta
     //    //    }
     //    //}
     //    //return header;
-    //}
+    }
 
     //void ProjectSerializer::deserializeConfig(std::ifstream& is)
     //{
