@@ -6,36 +6,81 @@
 //--------------------------------------------------
 #ifndef ATTA_FILE_SYSTEM_SERIALIZER_SECTION_H
 #define ATTA_FILE_SYSTEM_SERIALIZER_SECTION_H
+#include <atta/fileSystem/serializer/serializable.h>
 
 namespace atta
 {
+    /// Section Data
+    /** Store the binary data for each data and its type so that it is possible to print SectionData and serialize it
+     **/
+    class SectionData : Serializable
+    {
+    public:
+        SectionData();
+
+        void clear();
+
+        template<typename T>
+        void operator=(T&& value);
+
+        template<typename T>
+        T get() const;
+        template<typename T>
+        const T* getPtr() const;
+        template<typename T>
+        T* getPtr();
+
+        size_t getTypeHash() const;
+
+        std::string toString() const;
+        void serialize(std::ostream& os) override;
+        void deserialize(std::istream& is) override;
+
+    private:
+        using TypeHash = size_t;
+        std::vector<uint8_t> _data;
+        TypeHash _typeHash;
+
+        using PrintFunction = std::function<std::string(std::vector<uint8_t> data)>;
+
+        template<typename T>
+        static void registerType();
+        static std::unordered_map<TypeHash, PrintFunction> _typeToString;
+    };
+
     /** There are three main possibilities for a section:
      *  - Map of sections (data as std::map<std::string, Section>)
      *  - Vector of sections (data as std::vector<Section>)
      *  - Data 
      **/
-    class Section
+    class Section : Serializable
     {
     public:
         Section();
         template <typename T>
         Section(T value);
 
+        Section(const Section& section);
+
         // Check type
         bool isUndefined() const;
         bool isMap() const;
         bool isVector() const;
-        bool isValue() const;
+        bool isData() const;
 
         size_t size() const;
         std::string toString() const;
 
-        //----- Value -----//
-        /// Assign value
+        //----- Data -----//
+        /// Get data
+        SectionData& data();
+        const SectionData& data() const;
+
+        /// Assign data
         template <typename T>
         void operator=(T value);
 
-        /// Get value (casting)
+        /// Get data (casting)
         template <typename T>
         operator T();
 
@@ -66,8 +111,23 @@ namespace atta
         template <typename T>
         void operator=(std::initializer_list<T> list);
 
+        //----- Serialization -----//
+        void serialize(std::ostream& os) override;
+        void deserialize(std::istream& is) override;
+
     private:
-        std::any _data;
+        enum Type
+        {
+            UNDEFINED = 0,
+            MAP,
+            VECTOR,
+            DATA
+        };
+
+        std::map<std::string, Section> _map;
+        std::vector<Section> _vector;
+        SectionData _data;
+        Type _type;
     };
 
     // <<
