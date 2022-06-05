@@ -5,7 +5,6 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/fileSystem/serializer/section.h>
-#include <atta/fileSystem/serializer/serializer.h>
 
 namespace atta
 {
@@ -33,12 +32,12 @@ namespace atta
     {
         if(_typeHash == 0)
         {
-            LOG_WARN("SectionData", "Trying to convert uninitialized type to string");
+            LOG_WARN("SectionData", "Trying to call [w]toString()[] in uninitialized type");
             return "";
         }
         else if(_typeToString.find(_typeHash) == _typeToString.end())
         {
-            LOG_WARN("SectionData", "Trying to convert unknown type to string");
+            LOG_WARN("SectionData", "Trying to call [w]toString()[] in data with unknown type");
             return "";
         }
         else
@@ -235,7 +234,7 @@ namespace atta
         }
         else if(isMap())
         {
-            write<uint8_t>(os, 0);
+            write<size_t>(os, 0);
             write<char>(os, '{');
             for(auto& [key, val] : map())
             {
@@ -246,12 +245,11 @@ namespace atta
         }
         else if(isVector())
         {
-            write<uint8_t>(os, 0);
+            write<size_t>(os, 0);
             write<char>(os, '[');
             unsigned i = 0;
             for(auto& el : vector())
             {
-                os << el.toString();
                 el.serialize(os);
                 if(++i != size())
                     write<char>(os, ',');
@@ -262,37 +260,92 @@ namespace atta
 
     void Section::deserialize(std::istream& is)
     {
-        Section section;
         std::vector<Section*> levels;
-        levels.push_back(&section);
+        _type = UNDEFINED;
+        levels.push_back(this);
 
         do
         {
-            size_t size;
-            read<size_t>(is, size);
-            if(size == 0)
+            if(levels.back()->_type == UNDEFINED)
             {
-                // Section is map or vector
-                char open;
-                read<char>(is, open);
-                if(open == '{')
+                // Discover type
+                size_t size;
+                std::streampos oldPos = is.tellg();
+                read<size_t>(is, size);
+                if(size == 0)
                 {
-                    
-                }
-                else if(open == '[')
-                {
+                   // Section is map or vector
+                    oldPos = is.tellg();
+                    char open;
+                    read<char>(is, open);
+                    if(open == '{')
+                    {
+                        // Section is map
+                        levels.back()->_type = MAP;
+                    }
+                    else if(open == '[')
+                    {
+                        is.seekg(oldPos);
 
+                        // Section is vector
+                        levels.back()->_type = VECTOR;
+                    }
+                    else
+                        LOG_ERROR("FileSystem::Section", "Could not deserialize, was expecting [w]'{'[] or [w]'['[] but found [w]'$0'[]", open);
                 }
                 else
                 {
-                    LOG_ERROR("FileSystem::Section", "Could not deserialize, was expecting [w]'{'[] or [w]'['[] but found [w]'$0'[]", open);
+                    is.seekg(oldPos);
+
+                    // Section is data
+                    levels.back()->data().deserialize(is);
+                    levels.pop_back();
                 }
             }
-            else
+            else if(levels.back()->_type == MAP)
             {
-                // Section is data
-                //levels.back()->deserialize(is);
+                std::streampos oldPos = is.tellg();
+                char close;
+                read<char>(is, close);
+                if(close == '}')
+                {
+                    // Finished reading map
+                    levels.pop_back();
+                }
+                else
+                {
+                    is.seekg(oldPos);
+
+                    // Read map pair key
+                    std::string key;
+                    read<std::string>(is, key);
+
+                    // Read map pair value
+                    Section value;
+                    (*levels.back())[key] = value;
+                    levels.push_back(&((*levels.back())[key]));
+                }
             }
-        } while(levels.size() > 0);
+            else if(levels.back()->_type == VECTOR)
+            {
+                char close;
+                read<char>(is, close);
+                if(close == ']')
+                {
+                    // Finished reading map
+                    levels.pop_back();
+                }
+                else if(close == '[' || close == ',')
+                {
+                    // Read vector data
+                    levels.back()->push_back(Section{});// Add to vector
+                    levels.push_back(&(levels.back()->back()));
+                }
+                else
+                    LOG_ERROR("FileSystem::Section", "Could not deserialize, wrong data when reading vector, should be [w]][] or [w],[]", close);
+            }
+            else
+                LOG_ERROR("FileSystem::Section", "Could not deserialize, Section is of type that is not expected");
+        } while(!levels.empty());
     }
 }
