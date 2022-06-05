@@ -7,6 +7,7 @@
 #ifndef ATTA_FILE_SYSTEM_SERIALIZER_SECTION_H
 #define ATTA_FILE_SYSTEM_SERIALIZER_SECTION_H
 #include <atta/fileSystem/serializer/serializable.h>
+#include <atta/fileSystem/serializer/serializer.h>
 
 namespace atta
 {
@@ -24,11 +25,13 @@ namespace atta
         void operator=(T&& value);
 
         template<typename T>
-        T get() const;
+        T get();
         template<typename T>
-        const T* getPtr() const;
+        T getConst() const;
         template<typename T>
         T* getPtr();
+        template<typename T>
+        T* getPtrConst() const;
 
         size_t getTypeHash() const;
 
