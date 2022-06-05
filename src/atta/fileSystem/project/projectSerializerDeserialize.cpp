@@ -37,8 +37,8 @@ namespace atta
     //    //return header;
     }
 
-    //void ProjectSerializer::deserializeConfig(std::ifstream& is)
-    //{
+    void ProjectSerializer::deserializeConfig(Section& is)
+    {
     //    //std::string marker;
     //    //while(true)
     //    //{
@@ -58,7 +58,7 @@ namespace atta
     //    //        LOG_WARN("ProjectSerializer", "Unknown marker found at the config [w]$0[]", marker);
     //    //    }
     //    //}
-    //}
+    }
 
     //void ProjectSerializer::deserializeComponentSystem(std::ifstream& is)
     //{

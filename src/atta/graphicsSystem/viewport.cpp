@@ -15,6 +15,12 @@
 
 namespace atta
 {
+    Viewport::Viewport():
+        Viewport(CreateInfo{})
+    {
+
+    }
+
     Viewport::Viewport(CreateInfo info):
         _sid(info.sid), _renderer(info.renderer), _camera(info.camera)
     {

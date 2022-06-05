@@ -23,6 +23,7 @@ namespace atta
             std::shared_ptr<Camera> camera = nullptr;
             std::string name;
         };
+        Viewport();
         Viewport(CreateInfo info);
         ~Viewport();
 

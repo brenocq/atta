@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <atta/fileSystem/serializer/section.h>
+#include <atta/core/stringId.h>
 
 using namespace atta;
 using namespace testing;
@@ -118,8 +119,6 @@ namespace
         ASSERT_THAT(values, ElementsAre(1, 2));
     }
 
-
-
     TEST(File_Section, Example)
     {
         Section section;
@@ -173,6 +172,90 @@ namespace
         EXPECT_EQ(std::string(section["resourceSystem"]["materials"][2]["name"]), "mat2");
         EXPECT_EQ(std::string(section["resourceSystem"]["materials"][3]["name"]), "mat3");
 
-        LOG_DEBUG("FileSystem::tests::section", "Example: [w]$0[]", section);
+        //LOG_DEBUG("FileSystem::tests::section", "Example: [w]$0[]", section);
+    }
+
+    class MyObject : public Serializable
+    {
+    public: 
+        void serialize(std::ostream& os) override
+        {
+            write<float>(os, f);
+            write<StringId>(os, id);
+            write<std::string>(os, s);
+        }
+
+        void deserialize(std::istream& is) override
+        {
+            read<float>(is, f);
+            read<StringId>(is, id);
+            read<std::string>(is, s);
+        }
+
+        unsigned getSerializedSize() { return Serializable::getSerializedSize(this); }
+
+        float f;
+        StringId id;
+        std::string s;
+    };
+
+    TEST(File_Section, Serialization)
+    {
+        Section original;
+        Section deserialized;
+
+        // Create data to be serialized
+        original["one"] = uint8_t(1);
+        original["two"] = int(2);
+        original["three"] = float(3);
+        original["header"]["name"] = std::string("thisIsMyName");
+        original["header"]["version"] = std::vector<uint16_t>{1, 0, 0, 10};
+        original["components"].push_back(Section{});
+        original["components"].push_back(Section{});
+        original["components"][0] = std::pair<int, char>{10, 'i'};
+        original["components"][1] = std::pair<int, char>{20, 'j'};
+
+        MyObject object;
+        object.f = 1.0f;
+        object.id = StringId("MyObject");
+        object.s = "MyObject";
+        original["object"] = object;// Serializable object
+
+        // Check serialized
+        EXPECT_EQ(uint8_t(original["one"]), 1);
+        EXPECT_EQ(int(original["two"]), 2);
+        EXPECT_EQ(float(original["three"]), 3);
+        EXPECT_EQ(std::string(original["header"]["name"]), "thisIsMyName");
+        ASSERT_THAT(std::vector<uint16_t>(original["header"]["version"]), ElementsAre(1, 0, 0, 10));
+        EXPECT_EQ((std::pair<int, char>(original["components"][0])), std::make_pair(10, 'i'));
+        EXPECT_EQ((std::pair<int, char>(original["components"][1])), std::make_pair(20, 'j'));
+        MyObject objectCurr {};
+        objectCurr = MyObject(original["object"]);
+        EXPECT_EQ(objectCurr.f, 1.0f);
+        EXPECT_EQ(objectCurr.id, StringId("MyObject"));
+        EXPECT_EQ(objectCurr.s, "MyObject");
+
+        // Serialize and deserialize
+        std::stringstream ss;
+        original.serialize(ss);
+        deserialized.deserialize(ss);
+
+        // Check deserialized
+        EXPECT_EQ(uint8_t(deserialized["one"]), 1);
+        EXPECT_EQ(int(deserialized["two"]), 2);
+        EXPECT_EQ(float(deserialized["three"]), 3);
+        EXPECT_EQ(std::string(deserialized["header"]["name"]), "thisIsMyName");
+        ASSERT_THAT(std::vector<uint16_t>(deserialized["header"]["version"]), ElementsAre(1, 0, 0, 10));
+        EXPECT_EQ((std::pair<int, char>(deserialized["components"][0])), std::make_pair(10, 'i'));
+        EXPECT_EQ((std::pair<int, char>(deserialized["components"][1])), std::make_pair(20, 'j'));
+        MyObject objectFinal;
+        objectFinal = MyObject(deserialized["object"]);
+        EXPECT_EQ(objectCurr.f, 1.0f);
+        EXPECT_EQ(objectCurr.id, StringId("MyObject"));
+        EXPECT_EQ(objectCurr.s, "MyObject");
+
+        // Debug print
+        //LOG_DEBUG("Tests", "original: \n[w]$0", original);
+        //LOG_DEBUG("Tests", "deserialized: \n[w]$0", deserialized);
     }
 }

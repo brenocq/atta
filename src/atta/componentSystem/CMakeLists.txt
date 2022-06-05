@@ -28,7 +28,8 @@ set(ATTA_COMPONENT_SYSTEM_SOURCE
 )
 
 add_library(atta_component_system STATIC ${ATTA_COMPONENT_SYSTEM_SOURCE})
-target_link_libraries(atta_component_system PUBLIC ${ATTA_IMGUI_TARGETS})
+target_link_libraries(atta_component_system PUBLIC ${ATTA_IMGUI_TARGETS} 
+    atta_physics_system atta_memory_system atta_sensor_system atta_script_system)
 
 atta_target_common(atta_component_system)
 atta_add_libs(atta_component_system)
