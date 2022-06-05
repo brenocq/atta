@@ -38,57 +38,49 @@ namespace atta
 
         // Load data to section 
         Section section;
-        serializeHeader(section);
+        serializeHeader(section["header"]);
+        serializeConfig(section["config"]);
+        serializeComponentSystem(section["componentSystem"]);
+        serializeGraphicsSystem(section["graphicsSystem"]);
+        //LOG_DEBUG("ProjectSerializer", "Saving project: [w]$0", section);
 
-        LOG_DEBUG("ProjectSerializer", "Saving project: [w]$0", section);
-
-        // Write to file
+        // Serialize version
         std::ofstream os(attaTemp, std::ofstream::trunc | std::ofstream::binary);
+        std::string version = "ATTA" + 
+            std::to_string(ATTA_VERSION_MAJOR) + "." + 
+            std::to_string(ATTA_VERSION_MINOR) + "." +
+            std::to_string(ATTA_VERSION_PATCH) + "." +
+            std::to_string(ATTA_VERSION_TWEAK);
+        write(os, version);
+
+        // Serialize data
         section.serialize(os);
         os.close();
 
         // Override atta file with temp file
         fs::rename(attaTemp, _project->getFile());
-
-        //serializeHeader(os);
-        //serializeConfig(os);
-        //serializeComponentSystem(os);
-        //serializeGraphicsSystem(os);
-        //write(os, "end");
     }
 
     void ProjectSerializer::deserialize()
     {
         Section section;
-        //fs::path attaFile = _project->getFile();
+        fs::path attaFile = _project->getFile();
 
-        //std::ifstream is(attaFile, std::ifstream::in | std::ifstream::binary);
+        std::ifstream is(attaFile, std::ifstream::in | std::ifstream::binary);
 
-        //Header header = deserializeHeader(is);
-        ////LOG_VERBOSE("ProjectSerializer", "[*y]Header:[]\n\tversion:$0.$1.$2.$3\n\tproj:$4\n\tcounter:$5", 
-        ////		header.version[0], header.version[1], header.version[2], header.version[3], 
-        ////		header.projectName, header.saveCounter);
+        // Deserialize version
+        std::string version;
+        read(is, version);
+        //LOG_DEBUG("ProjectSerializer", "Version: [w]$0", version);
+        section.deserialize(is);
+        is.close();
 
-        //while(is)
-        //{
-        //    std::string marker;
-        //    read(is, marker);
-        //    if(marker == "config")
-        //        deserializeConfig(is);
-        //    else if(marker == "comp")
-        //        deserializeComponentSystem(is);
-        //    else if(marker == "gfx")
-        //        deserializeGraphicsSystem(is);
-        //    else if(marker == "end")
-        //        break;
-        //    else
-        //    {
-        //        LOG_WARN("ProjectSerializer", "Unknown marker [w]$0[]. The file may be corrupted", marker);
-        //        break;
-        //    }
-        //}
-
-        //is.close();
+        // Deserialize data
+        deserializeHeader(section["header"]);
+        deserializeConfig(section["config"]);
+        deserializeComponentSystem(section["componentSystem"]);
+        deserializeGraphicsSystem(section["graphicsSystem"]);
+        //LOG_DEBUG("ProjectSerializer", "Reading project: [w]$0", section);
     }
 }
 
