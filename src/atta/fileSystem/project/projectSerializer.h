@@ -24,8 +24,8 @@ namespace atta
         void serializeHeader(Section& section);
         void deserializeHeader(Section& section);
 
-        //void serializeConfig(std::ofstream& os);
-        //void deserializeConfig(std::ifstream& is);
+        void serializeConfig(Section& section);
+        void deserializeConfig(Section& section);
 
         //void serializeComponentSystem(std::ofstream& os);
         //void deserializeComponentSystem(std::ifstream& is);

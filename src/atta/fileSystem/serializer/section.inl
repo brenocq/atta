@@ -17,16 +17,30 @@ namespace atta
     void SectionData::operator=(T&& value)
     {
         using U = std::decay_t<T>;
+        registerType<U>();
+        _typeHash = typeid(U).hash_code();
+
+        //----- Store serializable object -----//
+        if constexpr(std::is_base_of_v<atta::Serializable, U>)
+        {
+            // Allocate space and copy to _data
+            _data.resize(value.getSerializedSize());
+
+            // Serialize to temporary buffer
+            std::stringstream ss;
+            value.serialize(ss);
+
+            // Copy to _data
+            ss.seekg(0, std::ios_base::beg);
+            ss.read((char*)_data.data(), _data.size());
+        }
         //----- Store std::vector -----//
-        if constexpr(is_specialization<U, std::vector>::value)
+        else if constexpr(is_specialization<U, std::vector>::value)
         {
             // If it is std::vector
             using V = typename U::value_type;
 
             //LOG_DEBUG("SectionData", "Attrib vector $0", typeid(V).name());
-            _typeHash = typeid(std::vector<V>).hash_code();
-
-            registerType<U>();
 
             // Allocate space
             _data.resize(sizeof(V)*value.size());
@@ -43,9 +57,6 @@ namespace atta
         else if constexpr(std::is_same_v<U, std::string>)
         {
             // If it is std::string
-            _typeHash = typeid(std::string).hash_code();
-            registerType<std::string>();
-
             _data.resize(value.size());
             for(unsigned i = 0; i < value.size(); i++)
                 _data[i] = value[i];
@@ -55,10 +66,6 @@ namespace atta
         {
             // If it is any other type
             //LOG_DEBUG("SectionData", "Attrib $0", typeid(T).name());
-            _typeHash = typeid(U).hash_code();
-
-            registerType<U>();
-
             _data.resize(sizeof(U));
             U* u = (U*)_data.data();
             *u = value;
@@ -66,15 +73,34 @@ namespace atta
     }
 
     template<typename T>
-    T SectionData::get() const
+    T SectionData::get()
     {
+        // Set type if it was not set yet
+        if(_typeHash == 0) _typeHash = typeid(T).hash_code();
+        return getConst<T>();
+    }
+
+    template<typename T>
+    T SectionData::getConst() const
+    {
+        //----- Get serializable object -----//
+        if constexpr(std::is_base_of_v<atta::Serializable, T>)
+        {
+            // Serialize to temporary buffer
+            std::stringstream ss;
+            write(ss, _data.data(), _data.size());
+            
+            T t;
+            t.deserialize(ss);
+            return t;
+        }
         //----- Get std::vector -----//
-        if constexpr(is_specialization<T, std::vector>::value)
+        else if constexpr(is_specialization<T, std::vector>::value)
         {
             using V = typename T::value_type;// Vector value type
 
             // Build vector from data and return
-            if(_data.size() > 0 && typeid(T).hash_code() == _typeHash)
+            if(_data.size() > 0 && _typeHash == typeid(T).hash_code())
             {
                 // Create return vector
                 T vec;
@@ -103,7 +129,7 @@ namespace atta
         else
         {
             // Return data
-            const T* ptr = getPtr<T>();
+            const T* ptr = getPtrConst<T>();
             if(ptr == nullptr)
                 return T{};
             else
@@ -115,21 +141,17 @@ namespace atta
     }
 
     template<typename T>
-    const T* SectionData::getPtr() const
+    T* SectionData::getPtr()
     {
-        if(_data.size() > 0 && typeid(T).hash_code() == _typeHash)
-            return (const T*)&_data.at(0);
-        else
-        {
-            LOG_WARN("Filesystem::SectionData", "Wrong section casting to [w]$0[], value is of type [w]$1[]", typeid(T).name(), _typeHash);
-            return nullptr;
-        }
+        // Set type if it was not set yet
+        if(_typeHash == 0) _typeHash = typeid(T).hash_code();
+        return getPtrConst<T>();
     }
 
     template<typename T>
-    T* SectionData::getPtr()
+    T* SectionData::getPtrConst() const
     {
-        if(_data.size() > 0 && typeid(T).hash_code() == _typeHash)
+        if(_data.size() > 0 && _typeHash == typeid(T).hash_code())
             return (T*)&_data[0];
         else 
         {

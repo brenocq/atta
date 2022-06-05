@@ -14,16 +14,16 @@ namespace atta
         header["projectName"] = std::string(_project->getName());
     }
 
-    //void ProjectSerializer::serializeConfig(std::ofstream& os)
-    //{
-    //    //write(os, "config");
+    void ProjectSerializer::serializeConfig(Section& section)
+    {
+        //write(os, "config");
 
-    //    //// Dt
-    //    //write(os, "dt");
-    //    //write(os, Config::getDt());
+        //// Dt
+        //write(os, "dt");
+        //write(os, Config::getDt());
 
-    //    //write(os, "cend");
-    //}
+        //write(os, "cend");
+    }
 
     //void ProjectSerializer::serializeComponentSystem(std::ofstream& os)
     //{
