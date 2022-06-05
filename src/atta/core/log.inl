@@ -6,6 +6,20 @@
 //--------------------------------------------------
 namespace atta
 {
+    template<typename S, typename T>
+    class is_streamable
+    {
+        template<typename SS, typename TT>
+        static auto test(int)
+        -> decltype( std::declval<SS&>() << std::declval<TT>(), std::true_type() );
+
+        template<typename, typename>
+        static auto test(...) -> std::false_type;
+
+    public:
+        static const bool value = decltype(test<S,T>(0))::value;
+    };
+
     template<class...Args>
     void Log::verbose(std::string tag, std::string text, Args&&... args)
     {
@@ -55,7 +69,11 @@ namespace atta
         s << "{";
         for(typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii)
         {
-            s << *ii;
+            if constexpr(is_streamable<Tstream, T>::value)
+                s << *ii;
+            else
+                s << "?";
+
             if(ii < v.end()-1)
                 s << ", ";
         }
@@ -67,7 +85,12 @@ namespace atta
     std::string getArgStr(T t)
     {
         std::stringstream ss;
-        ss << t;
+
+        if constexpr(is_streamable<std::stringstream, T>::value)
+            ss << t;
+        else
+            ss << typeid(T).name();
+
         return ss.str();
     }
 

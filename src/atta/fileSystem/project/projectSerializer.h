@@ -7,6 +7,7 @@
 #ifndef ATTA_FILE_SYSTEM_PROJECT_PROJECT_SERIALIZER_H
 #define ATTA_FILE_SYSTEM_PROJECT_PROJECT_SERIALIZER_H
 #include <atta/fileSystem/project/project.h>
+#include <atta/fileSystem/serializer/section.h>
 
 namespace atta
 {
@@ -20,26 +21,17 @@ namespace atta
         void deserialize();
 
     private:
-        struct Header {
-            // Atta
-            uint16_t version[4];
+        void serializeHeader(Section& section);
+        void deserializeHeader(Section& section);
 
-            // Project
-            std::string projectName;	
-            uint32_t saveCounter;	
-        };
+        void serializeConfig(Section& section);
+        void deserializeConfig(Section& section);
 
-        void serializeHeader(std::ofstream& os);
-        Header deserializeHeader(std::ifstream& is);
+        void serializeComponentSystem(Section& section);
+        void deserializeComponentSystem(Section& section);
 
-        void serializeConfig(std::ofstream& os);
-        void deserializeConfig(std::ifstream& is);
-
-        void serializeComponentSystem(std::ofstream& os);
-        void deserializeComponentSystem(std::ifstream& is);
-
-        void serializeGraphicsSystem(std::ofstream& os);
-        void deserializeGraphicsSystem(std::ifstream& is);
+        void serializeGraphicsSystem(Section& section);
+        void deserializeGraphicsSystem(Section& section);
 
         std::shared_ptr<Project> _project;
     };

@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <gtest/gtest.h>
 #include <atta/core/math/math.h>
+
 using namespace atta;
 
 namespace

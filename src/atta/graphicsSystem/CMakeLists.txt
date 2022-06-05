@@ -46,11 +46,13 @@ set(ATTA_GRAPHICS_SYSTEM_SOURCE
 
     layers/layer.cpp
     layers/layerStack.cpp
-    )
+)
 
 add_library(atta_graphics_system STATIC
     ${ATTA_GRAPHICS_SYSTEM_SOURCE}
-    )
-target_link_libraries(atta_graphics_system PUBLIC ${ATTA_GLFW_TARGETS} ${ATTA_GLAD_TARGETS} ${ATTA_IMGUI_TARGETS})
+)
+target_link_libraries(atta_graphics_system PUBLIC ${ATTA_GLFW_TARGETS} ${ATTA_GLAD_TARGETS} ${ATTA_IMGUI_TARGETS} 
+    atta_core atta_component_system atta_file_system atta_resource_system atta_ui_system)
+
 atta_target_common(atta_graphics_system)
 atta_add_libs(atta_graphics_system)

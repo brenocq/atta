@@ -36,11 +36,10 @@ namespace atta
         os.write(reinterpret_cast<const char*>(&x), sizeof(T)*N);
     }
 
-    template <typename It>
-    inline void write(std::ostream& os, It begin, It end)
+    template <typename T>
+    inline void write(std::ostream& os, T* x, size_t size)
     {
-        using Type = std::remove_pointer_t<std::remove_reference_t<It>>;
-        os.write(reinterpret_cast<const char*>(begin), sizeof(Type)*(end-begin));
+        os.write(reinterpret_cast<const char*>(x), size);
     }
 
     //--------------------------//
@@ -82,5 +81,11 @@ namespace atta
     inline void read(std::istream& is, T(&x)[N])
     {
         is.read(reinterpret_cast<char*>(&x), sizeof(T)*N);
+    }
+
+    template<typename T>
+    inline void read(std::istream& is, T* x, size_t size)
+    {
+        is.read(reinterpret_cast<char*>(x), size);
     }
 }
