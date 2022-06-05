@@ -221,6 +221,10 @@ namespace
         object.s = "MyObject";
         original["object"] = object;// Serializable object
 
+        object.id = StringId("Objects");
+        object.s = "Objects";
+        original["objects"] = { object, object, object };// Serializable multiple objects
+
         // Check serialized
         EXPECT_EQ(uint8_t(original["one"]), 1);
         EXPECT_EQ(int(original["two"]), 2);
@@ -229,11 +233,12 @@ namespace
         ASSERT_THAT(std::vector<uint16_t>(original["header"]["version"]), ElementsAre(1, 0, 0, 10));
         EXPECT_EQ((std::pair<int, char>(original["components"][0])), std::make_pair(10, 'i'));
         EXPECT_EQ((std::pair<int, char>(original["components"][1])), std::make_pair(20, 'j'));
-        MyObject objectCurr {};
-        objectCurr = MyObject(original["object"]);
-        EXPECT_EQ(objectCurr.f, 1.0f);
-        EXPECT_EQ(objectCurr.id, StringId("MyObject"));
-        EXPECT_EQ(objectCurr.s, "MyObject");
+        EXPECT_EQ(MyObject(original["object"]).f, 1.0f);
+        EXPECT_EQ(MyObject(original["object"]).id, StringId("MyObject"));
+        EXPECT_EQ(MyObject(original["object"]).s, "MyObject");
+        EXPECT_EQ(std::vector<MyObject>(original["objects"]).size(), 3);
+        EXPECT_EQ(std::vector<MyObject>(original["objects"])[0].id, StringId("Objects"));
+        EXPECT_EQ(std::vector<MyObject>(original["objects"])[1].s, "Objects");
 
         // Serialize and deserialize
         std::stringstream ss;
@@ -248,11 +253,12 @@ namespace
         ASSERT_THAT(std::vector<uint16_t>(deserialized["header"]["version"]), ElementsAre(1, 0, 0, 10));
         EXPECT_EQ((std::pair<int, char>(deserialized["components"][0])), std::make_pair(10, 'i'));
         EXPECT_EQ((std::pair<int, char>(deserialized["components"][1])), std::make_pair(20, 'j'));
-        MyObject objectFinal;
-        objectFinal = MyObject(deserialized["object"]);
-        EXPECT_EQ(objectCurr.f, 1.0f);
-        EXPECT_EQ(objectCurr.id, StringId("MyObject"));
-        EXPECT_EQ(objectCurr.s, "MyObject");
+        EXPECT_EQ(MyObject(deserialized["object"]).f, 1.0f);
+        EXPECT_EQ(MyObject(deserialized["object"]).id, StringId("MyObject"));
+        EXPECT_EQ(MyObject(deserialized["object"]).s, "MyObject");
+        EXPECT_EQ(std::vector<MyObject>(deserialized["objects"]).size(), 3);
+        EXPECT_EQ(std::vector<MyObject>(deserialized["objects"])[0].id, StringId("Objects"));
+        EXPECT_EQ(std::vector<MyObject>(deserialized["objects"])[1].s, "Objects");
 
         // Debug print
         //LOG_DEBUG("Tests", "original: \n[w]$0", original);

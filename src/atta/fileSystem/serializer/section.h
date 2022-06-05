@@ -17,6 +17,7 @@ namespace atta
     class SectionData : Serializable
     {
     public:
+        using TypeHash = StringId;
         SectionData();
 
         void clear();
@@ -33,14 +34,13 @@ namespace atta
         template<typename T>
         T* getPtrConst() const;
 
-        size_t getTypeHash() const;
+        TypeHash getTypeHash() const;
 
         std::string toString() const;
         void serialize(std::ostream& os) override;
         void deserialize(std::istream& is) override;
 
     private:
-        using TypeHash = size_t;
         std::vector<uint8_t> _data;
         TypeHash _typeHash;
 
