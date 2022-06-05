@@ -9,36 +9,36 @@
 namespace atta
 {
     //---------- SectionData ----------//
-    std::unordered_map<size_t, SectionData::PrintFunction> SectionData::_typeToString = {};
+    std::unordered_map<SectionData::TypeHash, SectionData::PrintFunction> SectionData::_typeToString = {};
 
     SectionData::SectionData():
-        _typeHash(0)
+        _typeHash("undefined"_ssid)
     {
 
     }
 
     void SectionData::clear()
     {
-        _typeHash = 0;
+        _typeHash = "undefined"_sid;
         _data.clear();
     }
 
-    size_t SectionData::getTypeHash() const
+    SectionData::TypeHash SectionData::getTypeHash() const
     {
         return _typeHash;
     }
 
     std::string SectionData::toString() const
     {
-        if(_typeHash == 0)
+        if(_typeHash == "undefined"_sid)
         {
-            LOG_WARN("SectionData", "Trying to call [w]toString()[] in uninitialized type");
-            return "";
+            //LOG_WARN("SectionData", "Trying to call [w]toString()[] in data with undefined type");
+            return "undefined";
         }
         else if(_typeToString.find(_typeHash) == _typeToString.end())
         {
-            LOG_WARN("SectionData", "Trying to call [w]toString()[] in data with unknown type");
-            return "";
+            //LOG_WARN("SectionData", "Trying to call [w]toString()[] in data with unknown type");
+            return "unknown";
         }
         else
         {
@@ -59,7 +59,8 @@ namespace atta
         size_t size;
         read<size_t>(is, size);
         _data.resize(size);
-        read(is, _data.data(), _data.size());
+        if(size > 0)
+            read(is, _data.data(), _data.size());
     }
 
     //---------- Section ----------//
@@ -226,7 +227,7 @@ namespace atta
     {
         if(isUndefined()) 
         {
-            os << "undefined";
+            write<size_t>(os, 0);
         }
         else if(isData())
         {
@@ -234,7 +235,7 @@ namespace atta
         }
         else if(isMap())
         {
-            write<size_t>(os, 0);
+            write<size_t>(os, std::numeric_limits<size_t>::max());
             write<char>(os, '{');
             for(auto& [key, val] : map())
             {
@@ -245,7 +246,7 @@ namespace atta
         }
         else if(isVector())
         {
-            write<size_t>(os, 0);
+            write<size_t>(os, std::numeric_limits<size_t>::max());
             write<char>(os, '[');
             unsigned i = 0;
             for(auto& el : vector())
@@ -272,7 +273,7 @@ namespace atta
                 size_t size;
                 std::streampos oldPos = is.tellg();
                 read<size_t>(is, size);
-                if(size == 0)
+                if(size == std::numeric_limits<size_t>::max())
                 {
                    // Section is map or vector
                     oldPos = is.tellg();

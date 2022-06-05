@@ -27,11 +27,11 @@ namespace atta
         void serializeConfig(Section& section);
         void deserializeConfig(Section& section);
 
-        //void serializeComponentSystem(std::ofstream& os);
-        //void deserializeComponentSystem(std::ifstream& is);
+        void serializeComponentSystem(Section& section);
+        void deserializeComponentSystem(Section& section);
 
-        //void serializeGraphicsSystem(std::ofstream& os);
-        //void deserializeGraphicsSystem(std::ifstream& is);
+        void serializeGraphicsSystem(Section& section);
+        void deserializeGraphicsSystem(Section& section);
 
         std::shared_ptr<Project> _project;
     };
