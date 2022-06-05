@@ -15,14 +15,16 @@ namespace atta
     inline void write(std::ostream& os, T x);
     template<typename T, size_t N>
     inline void write(std::ostream& os, T(&x)[N]);
-    template <typename It>
-    inline void write(std::ostream& os, It begin, It end);
+    template <typename T>
+    inline void write(std::ostream& os, T* x, size_t size);
 
     // Helpers to read binary data
     template <typename T>
     inline void read(std::istream& is, T& x);
     template<typename T, size_t N>
     inline void read(std::istream& is, T(&x)[N]);
+    template<typename T>
+    inline void read(std::istream& is, T* x, size_t size);
 }
 
 #include <atta/fileSystem/serializer/serializer.inl>

@@ -1,5 +1,5 @@
 if(ATTA_BUILD_TESTS)
-    option(BUILD_GMOCK OFF)
+    option(BUILD_GMOCK ON)
     option(INSTALL_GTEST OFF)
 
     FetchContent_Declare(
