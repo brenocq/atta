@@ -13,31 +13,40 @@ namespace atta::io
     class Http
     {
     public:
-        struct CreateInfo 
-        {
-            std::string url = "";
-            StringId debugName = StringId("Unnamed io::Http");
-        };
+        Http(std::string url): _url(url) {}
+        ~Http() = default;
 
-        Http(CreateInfo info);
-        ~Http();
-
-        struct Content
+        struct Request
         {
-            std::vector<std::pair<std::string, std::string>> headers;
-            std::vector<std::pair<std::string, std::string>> params;
+            std::map<std::string, std::string> headers;
+            std::map<std::string, std::string> params;
             std::string body;
         };
 
-        Content get(Content content);
-        Content post(Content content);
-        Content put(Content content);
+        struct Response
+        {
+            unsigned statusCode;
+            std::map<std::string, std::string> headers;
+            std::string body;
+        };
+
+        enum RequestType
+        {
+            POST,
+            GET,
+            PUT
+        };
+
+        Response get(const Request& req = {}) { return request(req, GET); }
+        Response post(const Request& req = {}) { return request(req, POST); }
+        Response put(const Request& req = {}) { return request(req, PUT); }
+        Response request(const Request& req, RequestType reqType);
         
         static const std::string implType;// Which implementation is being used
         static const bool supported;// If the http is implemented for this build
+
     private:
         std::string _url;
-        StringId _debugName;
     };
 }
 
