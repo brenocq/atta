@@ -13,7 +13,7 @@ namespace atta::ui
     RepoWindow::RepoWindow(fs::path repoPath):
         _repoPath(repoPath), _shouldClose(false)
     {
-        _title = repoPath.filename();
+        _title = repoPath.filename().string();
         _description = "Repository without description";
         if(fs::exists(repoPath/"README.md"))
         {
