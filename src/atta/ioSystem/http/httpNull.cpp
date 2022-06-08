@@ -10,7 +10,8 @@
 
 namespace atta::io
 {
-    const std::string Http::_implType = "null";
+    const std::string Http::implType = "null";
+    const bool Http::supported = false;
 
     Http::Http(Http::CreateInfo info)
     {

@@ -12,7 +12,8 @@ using namespace boost::network;
 
 namespace atta::io
 {
-    const std::string Http::_implType = "cppnetlib";
+    const std::string Http::implType = "cppnetlib";
+    const bool Http::supported = true;
 
     Http::Http(Http::CreateInfo info)
     {

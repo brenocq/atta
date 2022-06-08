@@ -33,12 +33,11 @@ namespace atta::io
         Content post(Content content);
         Content put(Content content);
         
-        static std::string getImplType() { return _implType; }
-
+        static const std::string implType;// Which implementation is being used
+        static const bool supported;// If the http is implemented for this build
     private:
         std::string _url;
         StringId _debugName;
-        static const std::string _implType;// Which implementation is being used
     };
 }
 

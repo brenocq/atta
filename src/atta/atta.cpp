@@ -56,7 +56,7 @@ namespace atta
         PhysicsManager::startUp();
         SensorManager::startUp();
 
-        LOG_DEBUG("Http", "type $0", io::Http::getImplType());
+        LOG_DEBUG("Http", "implType $0 supported $1", io::Http::implType, io::Http::supported);
 
         // Atta is the last one to reveice events
         EventManager::subscribe<WindowCloseEvent>(BIND_EVENT_FUNC(Atta::onWindowClose));
