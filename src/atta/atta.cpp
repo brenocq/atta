@@ -57,6 +57,12 @@ namespace atta
         SensorManager::startUp();
 
         LOG_DEBUG("Http", "implType $0 supported $1", io::Http::implType, io::Http::supported);
+        if(io::Http::supported)
+        {
+            io::Http req("https://raw.githubusercontent.com/brenocq-atta/projects/main/projects.json");
+            io::Http::Response res = req.get();
+            LOG_DEBUG("Http", "status $1 body $0", res.body, res.statusCode);
+        }
 
         // Atta is the last one to reveice events
         EventManager::subscribe<WindowCloseEvent>(BIND_EVENT_FUNC(Atta::onWindowClose));

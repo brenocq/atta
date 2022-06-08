@@ -13,28 +13,8 @@ namespace atta::io
     const std::string Http::implType = "web";
     const bool Http::supported = false;
 
-    Http::Http(Http::CreateInfo info)
+    Http::Response Http::request(const Http::Request& req, Http::RequestType reqType)
     {
-
-    }
-
-    Http::~Http()
-    {
-
-    }
-
-    Http::Content Http::get(Http::Content content)
-    {
-
-    }
-    
-    Http::Content Http::post(Http::Content content)
-    {
-
-    }
-
-    Http::Content Http::put(Http::Content content)
-    {
-
+        return {};
     }
 }
