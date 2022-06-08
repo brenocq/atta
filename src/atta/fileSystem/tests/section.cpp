@@ -99,7 +99,7 @@ namespace
 
     TEST(File_Section, Vector)
     {
-        Section section = std::vector<Section>();
+        Section section{std::vector<Section>()};
         EXPECT_EQ(section.isVector(), true);
         section = std::vector<Section>();
         EXPECT_EQ(section.isVector(), true);
