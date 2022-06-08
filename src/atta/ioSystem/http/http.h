@@ -20,7 +20,7 @@ namespace atta::io
         };
 
         Http(CreateInfo info);
-        virtual ~Http() = default;
+        ~Http();
 
         struct Content
         {
@@ -29,13 +29,16 @@ namespace atta::io
             std::string body;
         };
 
-        virtual Content get(Content content) = 0;
-        virtual Content post(Content content) = 0;
-        virtual Content put(Content content) = 0;
+        Content get(Content content);
+        Content post(Content content);
+        Content put(Content content);
+        
+        static std::string getImplType() { return _implType; }
 
-    protected:
+    private:
         std::string _url;
         StringId _debugName;
+        static const std::string _implType;// Which implementation is being used
     };
 }
 

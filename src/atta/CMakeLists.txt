@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.12)
 
 set(ATTA_SOURCE
     atta.cpp
-    )
+)
 
 add_library(atta_lib STATIC
     ${ATTA_SOURCE}
-    )
+)
 atta_target_common(atta_lib)
 atta_add_libs(atta_lib)
 

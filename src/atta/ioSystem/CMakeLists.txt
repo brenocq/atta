@@ -12,12 +12,20 @@ set(ATTA_IO_SYSTEM_SOURCE
     bluetooth/bluetooth.cpp
     bluetooth/linuxBluetooth.cpp
 
-    http/http.cpp
-    http/httpCppRestSdk.cpp
+    # http implementation is chosen based on the operating system
 )
 
+if(ATTA_CPPNETLIB_SUPPORT AND (NOT (ATTA_SYSTEM_NAME MATCHES "Web")))
+    list(APPEND ATTA_IO_SYSTEM_SOURCE http/httpCppNetlib.cpp)
+elseif(ATTA_SYSTEM_NAME MATCHES "Web")
+    list(APPEND ATTA_IO_SYSTEM_SOURCE http/httpWeb.cpp)
+else()
+    list(APPEND ATTA_IO_SYSTEM_SOURCE http/httpNull.cpp)
+endif()
+
+
 add_library(atta_io_system STATIC ${ATTA_IO_SYSTEM_SOURCE})
-target_link_libraries(atta_io_system ${ATTA_SYSTEMD_TARGETS})
+target_link_libraries(atta_io_system ${ATTA_SYSTEMD_TARGETS} ${ATTA_CPPNETLIB_TARGETS})
 
 atta_target_common(atta_io_system)
 atta_add_libs(atta_io_system)
