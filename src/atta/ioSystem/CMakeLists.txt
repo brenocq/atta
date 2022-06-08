@@ -15,11 +15,12 @@ set(ATTA_IO_SYSTEM_SOURCE
     # http implementation is chosen based on the operating system
 )
 
-if(ATTA_CPPNETLIB_SUPPORT AND (NOT (ATTA_SYSTEM_NAME MATCHES "Web")))
+if(ATTA_CPPNETLIB_SUPPORT AND (ATTA_SYSTEM_NAME MATCHES "Linux"))
     list(APPEND ATTA_IO_SYSTEM_SOURCE http/httpCppNetlib.cpp)
 elseif(ATTA_SYSTEM_NAME MATCHES "Web")
     list(APPEND ATTA_IO_SYSTEM_SOURCE http/httpWeb.cpp)
 else()
+    # Windows and MacOS without support yet
     list(APPEND ATTA_IO_SYSTEM_SOURCE http/httpNull.cpp)
 endif()
 

@@ -43,9 +43,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)#----- MacOS build
     set(ATTA_SYSTEM_NAME "MacOS")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
 
-    # Fix boost build issue (redefinition of 'get_pointer')
-    list(APPEND ATTA_OPTIONS _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR)
-
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)#----- Linux build
     set(ATTA_SYSTEM_NAME "Linux")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_LINUX")
