@@ -61,7 +61,7 @@ namespace atta
     public:
         Section();
         template <typename T>
-        Section(T value);
+        explicit Section(T value);
 
         Section(const Section& section);
 
@@ -94,6 +94,7 @@ namespace atta
 
         /// Map access
         Section& operator[](std::string key);
+        Section& operator[](const char* key);
 
         //----- Vector -----//
         /// Get vector
