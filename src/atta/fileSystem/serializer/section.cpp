@@ -184,10 +184,10 @@ namespace atta
         return map()[key];
     }
 
-    Section& Section::operator[](const char* key)
-    {
-        return map()[std::string(key)];
-    }
+    //Section& Section::operator[](const char* key)
+    //{
+    //    return map()[std::string(key)];
+    //}
 
     //---------- Vector ----------//
     std::vector<Section>& Section::vector()

@@ -85,7 +85,7 @@ namespace atta
 
         /// Get data (casting)
         template <typename T>
-        operator T();
+        explicit operator T();
 
         //----- Map -----//
         /// Get map
@@ -94,7 +94,7 @@ namespace atta
 
         /// Map access
         Section& operator[](std::string key);
-        Section& operator[](const char* key);
+        //Section& operator[](const char* key);
 
         //----- Vector -----//
         /// Get vector
