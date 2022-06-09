@@ -13,6 +13,7 @@ set(ATTA_IO_SYSTEM_SOURCE
     bluetooth/linuxBluetooth.cpp
 
     # http implementation is chosen based on the operating system
+    http/json.cpp
 )
 
 set(ATTA_IO_SYSTEM_LIBS
@@ -35,3 +36,17 @@ target_link_libraries(atta_io_system ${ATTA_IO_SYSTEM_LIBS})
 
 atta_target_common(atta_io_system)
 atta_add_libs(atta_io_system)
+
+########## Testing ##########
+set(ATTA_IO_SYSTEM_TEST_SOURCES
+    tests/json.cpp
+)
+# Add to global test
+atta_add_tests(${ATTA_IO_SYSTEM_TEST_SOURCES})
+
+# Create local test
+atta_create_local_test(
+    atta_io_system_test
+    "${ATTA_IO_SYSTEM_TEST_SOURCES}"
+    "atta_io_system"
+)

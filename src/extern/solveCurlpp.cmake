@@ -2,9 +2,13 @@ set(ATTA_CURLPP_SUPPORT FALSE)
 set(ATTA_CURLPP_TARGETS "")
 
 if(ATTA_SYSTEM_NAME MATCHES "Linux")
-    set(CURLPP_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
-    set(CURLPP_BUILD_EXAMPLES OFF CACHE INTERNAL "" FORCE)
-    set(Uri_WARNINGS_AS_ERRORS OFF CACHE INTERNAL "" FORCE)
+    # Fetch curl if not installed
+    find_package(CURL)
+    if(NOT CURL_FOUND)
+        FetchContent_Declare(CURL GIT_REPOSITORY https://github.com/curl/curl.git)
+        atta_log(Info Extern "Fetching curl... (curlpp dependency)")
+        FetchContent_MakeAvailable(CURL)
+    endif()
 
     FetchContent_Declare(
         curlpp
@@ -12,10 +16,10 @@ if(ATTA_SYSTEM_NAME MATCHES "Linux")
         GIT_TAG "236a1c5c116f68fd7c8ba9be5edbf492824e5295"
         GIT_PROGRESS TRUE
     )
-    atta_log(Info Extern "Fetching cpp-netlib...")
+    atta_log(Info Extern "Fetching curlpp...")
     FetchContent_MakeAvailable(curlpp)
 
-    atta_log(Success Extern "cpp-netlib supported (source)")
+    atta_log(Success Extern "curlpp supported (source)")
     set(ATTA_CURLPP_SUPPORT TRUE)
     set(ATTA_CURLPP_TARGETS curlpp_static)
 endif()
