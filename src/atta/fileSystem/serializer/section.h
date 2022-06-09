@@ -94,7 +94,6 @@ namespace atta
 
         /// Map access
         Section& operator[](std::string key);
-        //Section& operator[](const char* key);
 
         //----- Vector -----//
         /// Get vector
