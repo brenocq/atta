@@ -1,15 +1,8 @@
 set(ATTA_CURLPP_SUPPORT FALSE)
 set(ATTA_CURLPP_TARGETS "")
 
-if(ATTA_SYSTEM_NAME MATCHES "Linux")
-    # Fetch curl if not installed
-    find_package(CURL)
-    if(NOT CURL_FOUND)
-        FetchContent_Declare(CURL GIT_REPOSITORY https://github.com/curl/curl.git)
-        atta_log(Info Extern "Fetching curl... (curlpp dependency)")
-        FetchContent_MakeAvailable(CURL)
-    endif()
-
+find_package(CURL)
+if((ATTA_SYSTEM_NAME MATCHES "Linux") AND CURL_FOUND)
     FetchContent_Declare(
         curlpp
         GIT_REPOSITORY "https://github.com/jpbarrette/curlpp"
