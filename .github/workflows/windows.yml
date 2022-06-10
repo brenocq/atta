@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies on windows
       if: startsWith(matrix.config.os, 'windows')
       run: |
-        choco install cmake cpprestsdk
+        choco install cmake
         cmake --version
 
     - name: Configure

@@ -24,7 +24,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install cmake xorg-dev \
-          assimp-utils libbullet-dev libcpprest-dev 
+          assimp-utils libbullet-dev curl 
         cmake --version
         gcc --version
 

@@ -20,17 +20,17 @@
 #include <atta/uiSystem/layers/editor/systemWindows/physicsSystemWindow.h>
 #include <atta/uiSystem/layers/editor/windows/utils/fileSelectionWindow.h>
 
-#ifdef ATTA_CPPRESTSDK_SUPPORT 
-#include <cpprest/http_client.h>
-#include <cpprest/json.h>
-#include <cpprest/filestream.h>
-using namespace utility;                    // Common utilities like string conversions
-using namespace web;                        // Common features like URIs.
-using namespace web::http;                  // Common HTTP functionality
-using namespace web::http::client;          // HTTP client features
-using namespace concurrency::streams;       // Asynchronous streams
-using namespace web::json;
-#endif// ATTA_CPPRESTSDK_SUPPORT 
+//#ifdef ATTA_CPPRESTSDK_SUPPORT 
+//#include <cpprest/http_client.h>
+//#include <cpprest/json.h>
+//#include <cpprest/filestream.h>
+//using namespace utility;                    // Common utilities like string conversions
+//using namespace web;                        // Common features like URIs.
+//using namespace web::http;                  // Common HTTP functionality
+//using namespace web::http::client;          // HTTP client features
+//using namespace concurrency::streams;       // Asynchronous streams
+//using namespace web::json;
+//#endif// ATTA_CPPRESTSDK_SUPPORT 
 
 namespace atta::ui
 {
@@ -199,207 +199,207 @@ namespace atta::ui
 
     void TopBar::openPublishedWindow()
     {
-#ifdef ATTA_CPPRESTSDK_SUPPORT 
-        static bool lastShow = false;
-        std::string modalName = "Open Published##OpenPUblishedModal";
-        static std::shared_ptr<http_client> client;
-
-        struct PublishedProject {
-            // Get from json
-            std::string repoUrl;
-            std::string reponame;
-            std::string username;
-
-            // Get from project readme
-            std::string title;
-            std::string description;
-            std::string image;
-            bool readmeInitialized;
-            std::shared_ptr<http_client> readmeClient;
-
-            // Get image
-            bool imageInitialized;
-            std::shared_ptr<http_client> imageClient;
-        };
-        static std::vector<PublishedProject> publishedProjects;
-
-        if(_showOpenPublished && !lastShow)
-        {
-            // OBS: Doing this because can't open popup inside menuitem
-            lastShow = _showOpenPublished;
-
-            // Open client and make request
-            client = std::make_shared<http_client>("https://raw.githubusercontent.com/brenocq-atta/projects/main/projects.json");
-            client->request(methods::GET)
-                .then([](http_response response)
-                {
-                    if(response.status_code() == status_codes::OK)
-                    {
-                        response.headers().set_content_type(U("application/json"));
-                        return response.extract_json();
-                    }
-                    return pplx::task<json::value>{};
-                })
-                .then([](const pplx::task<json::value>& task)
-                {
-                    try
-                    {
-                        json::value json = task.get();
-
-                        // Update published projects
-                        publishedProjects.clear();
-                        for(auto project : json.at("projects").as_array())
-                        {
-                            PublishedProject p;
-                            p.repoUrl = project["repo"].as_string();
-                            p.readmeInitialized = false;
-                            p.imageInitialized = false;
-
-                            int start = 19;// https://github.com/
-                            int userRepoDash = p.repoUrl.find('/', start);
-                            p.username = p.repoUrl.substr(start, userRepoDash-start);
-                            p.reponame = p.repoUrl.substr(userRepoDash+1, p.repoUrl.size()-userRepoDash+1);
-                            std::string readmeUrl = "https://raw.githubusercontent.com/" + p.username + "/" + p.reponame + "/main/README.md";
-
-                            p.title = p.reponame;
-                            p.description = "Project published by " + p.username;
-
-                            p.readmeClient = std::make_shared<http_client>(readmeUrl);
-                            publishedProjects.push_back(p);
-                        }
-                    }
-                    catch (const http_exception& e)
-                    {
-                        LOG_WARN("TopBar", "Could not get published projects json: $0", e.what());
-                    }
-                    catch (const json::json_exception& e)
-                    {
-                        LOG_WARN("TopBar", "Could not serialize published json: $0", e.what());
-                    }
-                });
-        }
-
-        if(_showOpenPublished)
-        {
-            if(ImGui::Begin(modalName.c_str(), &_showOpenPublished))
-            {
-                // Check initialization
-                for(PublishedProject& project : publishedProjects)
-                {
-                    // Get project information from readme metadata
-                    if(!project.readmeInitialized)
-                    {
-                        project.readmeInitialized = true;
-                        project.readmeClient->request(methods::GET)
-                            .then([&](http_response response)
-                            {
-                                if(response.status_code() == status_codes::OK)
-                                    return response.extract_string();
-                            })
-                            .then([&project](const pplx::task<string_t>& task)
-                            {
-                                std::string readmeStr = task.get();
-                                // Check if readme contains metadata
-                                if(readmeStr.substr(0,3) == "---")
-                                {
-                                    int start = 4;
-                                    while(true)
-                                    {
-                                        size_t endMark = readmeStr.find(':', start);
-                                        size_t nl = readmeStr.find('\n', start);
-                                        size_t endMeta = readmeStr.find("---", start);
-                                        if(endMark == std::string::npos ||
-                                                nl == std::string::npos ||
-                                                endMeta == std::string::npos)// File not well formated
-                                            break;
-                                        if(endMeta < nl)// End of metadata
-                                            break;
-
-                                        std::string marker = readmeStr.substr(start, endMark-start);
-                                        std::string value = readmeStr.substr(endMark+1, nl-endMark-1l);
-                                        if(value[0] == ' ') value = value.substr(1, value.size()-1);
-
-                                        if(marker == "title")
-                                            project.title = value;
-                                        else if(marker == "description")
-                                            project.description = value;
-                                        else if(marker == "image")
-                                            project.image = value;
-
-                                        start = nl+1;
-                                    }
-                                }
-                            });
-                    }
-                }
-
-
-                // Render projects
-                ImGui::Text("Collection of published projects");
-                ImGui::Separator();
-
-                if(ImGui::BeginTable("publishedProjectTable", 3, ImGuiTableFlags_Borders))
-                {
-                    ImGui::TableSetupColumn("desc", ImGuiTableColumnFlags_WidthStretch, 300.0f);
-                    ImGui::TableSetupColumn("user", ImGuiTableColumnFlags_WidthFixed, 100.0f);
-                    ImGui::TableSetupColumn("open", ImGuiTableColumnFlags_WidthFixed, 40.0f);
-                    
-                    for(PublishedProject& project : publishedProjects)
-                    {
-                        ImGui::TableNextColumn();
-                        ImGui::Text(project.title.c_str());
-                        ImGui::Spacing();
-                        ImGui::Text(project.description.c_str());
-
-                        ImGui::TableNextColumn();
-                        ImGui::Text(project.username.c_str());
-
-                        ImGui::TableNextColumn();
-
-                        fs::path pathToClone = FileManager::getDefaultProjectFolder();
-                        fs::path repoPath = pathToClone/project.reponame;
-                        if(!fs::exists(repoPath))
-                        {
-                            // Clone repo if not cloned yet
-                            if(ImGui::Button(("Clone###CloneButton"+project.repoUrl).c_str()))
-                            {
-                                fs::path prevPath = fs::current_path();
-                                if(!fs::exists(pathToClone))
-                                    fs::create_directories(pathToClone);
-                                fs::current_path(pathToClone);
-                                std::string command = "git clone git@github.com:" + project.username+"/"+project.reponame+".git";
-                                LOG_VERBOSE("TopBar", "Running command: $0", command);
-                                std::system(command.c_str());
-                                fs::current_path(prevPath);
-                            }
-                        }
-                        else
-                        {
-                            // Open repo project
-                            if(ImGui::Button(("Open###OpenButton"+project.repoUrl).c_str()))
-                            {
-                                bool alreadyOpen = false;
-                                for(auto& rw : _repoWindows)
-                                    if(rw.getRepoPath() == repoPath)
-                                    {
-                                        alreadyOpen = true;
-                                        break;
-                                    }
-
-                                if(!alreadyOpen)
-                                    _repoWindows.push_back(RepoWindow(repoPath));
-                            }
-                        }
-
-                        ImGui::TableNextRow();
-                    }
-
-                    ImGui::EndTable();
-                }
-            }
-            ImGui::End();
-        }
-#endif// ATTA_CPPRESTSDK_SUPPORT 
+//#ifdef ATTA_CPPRESTSDK_SUPPORT 
+//        static bool lastShow = false;
+//        std::string modalName = "Open Published##OpenPUblishedModal";
+//        static std::shared_ptr<http_client> client;
+//
+//        struct PublishedProject {
+//            // Get from json
+//            std::string repoUrl;
+//            std::string reponame;
+//            std::string username;
+//
+//            // Get from project readme
+//            std::string title;
+//            std::string description;
+//            std::string image;
+//            bool readmeInitialized;
+//            std::shared_ptr<http_client> readmeClient;
+//
+//            // Get image
+//            bool imageInitialized;
+//            std::shared_ptr<http_client> imageClient;
+//        };
+//        static std::vector<PublishedProject> publishedProjects;
+//
+//        if(_showOpenPublished && !lastShow)
+//        {
+//            // OBS: Doing this because can't open popup inside menuitem
+//            lastShow = _showOpenPublished;
+//
+//            // Open client and make request
+//            client = std::make_shared<http_client>("https://raw.githubusercontent.com/brenocq-atta/projects/main/projects.json");
+//            client->request(methods::GET)
+//                .then([](http_response response)
+//                {
+//                    if(response.status_code() == status_codes::OK)
+//                    {
+//                        response.headers().set_content_type(U("application/json"));
+//                        return response.extract_json();
+//                    }
+//                    return pplx::task<json::value>{};
+//                })
+//                .then([](const pplx::task<json::value>& task)
+//                {
+//                    try
+//                    {
+//                        json::value json = task.get();
+//
+//                        // Update published projects
+//                        publishedProjects.clear();
+//                        for(auto project : json.at("projects").as_array())
+//                        {
+//                            PublishedProject p;
+//                            p.repoUrl = project["repo"].as_string();
+//                            p.readmeInitialized = false;
+//                            p.imageInitialized = false;
+//
+//                            int start = 19;// https://github.com/
+//                            int userRepoDash = p.repoUrl.find('/', start);
+//                            p.username = p.repoUrl.substr(start, userRepoDash-start);
+//                            p.reponame = p.repoUrl.substr(userRepoDash+1, p.repoUrl.size()-userRepoDash+1);
+//                            std::string readmeUrl = "https://raw.githubusercontent.com/" + p.username + "/" + p.reponame + "/main/README.md";
+//
+//                            p.title = p.reponame;
+//                            p.description = "Project published by " + p.username;
+//
+//                            p.readmeClient = std::make_shared<http_client>(readmeUrl);
+//                            publishedProjects.push_back(p);
+//                        }
+//                    }
+//                    catch (const http_exception& e)
+//                    {
+//                        LOG_WARN("TopBar", "Could not get published projects json: $0", e.what());
+//                    }
+//                    catch (const json::json_exception& e)
+//                    {
+//                        LOG_WARN("TopBar", "Could not serialize published json: $0", e.what());
+//                    }
+//                });
+//        }
+//
+//        if(_showOpenPublished)
+//        {
+//            if(ImGui::Begin(modalName.c_str(), &_showOpenPublished))
+//            {
+//                // Check initialization
+//                for(PublishedProject& project : publishedProjects)
+//                {
+//                    // Get project information from readme metadata
+//                    if(!project.readmeInitialized)
+//                    {
+//                        project.readmeInitialized = true;
+//                        project.readmeClient->request(methods::GET)
+//                            .then([&](http_response response)
+//                            {
+//                                if(response.status_code() == status_codes::OK)
+//                                    return response.extract_string();
+//                            })
+//                            .then([&project](const pplx::task<string_t>& task)
+//                            {
+//                                std::string readmeStr = task.get();
+//                                // Check if readme contains metadata
+//                                if(readmeStr.substr(0,3) == "---")
+//                                {
+//                                    int start = 4;
+//                                    while(true)
+//                                    {
+//                                        size_t endMark = readmeStr.find(':', start);
+//                                        size_t nl = readmeStr.find('\n', start);
+//                                        size_t endMeta = readmeStr.find("---", start);
+//                                        if(endMark == std::string::npos ||
+//                                                nl == std::string::npos ||
+//                                                endMeta == std::string::npos)// File not well formated
+//                                            break;
+//                                        if(endMeta < nl)// End of metadata
+//                                            break;
+//
+//                                        std::string marker = readmeStr.substr(start, endMark-start);
+//                                        std::string value = readmeStr.substr(endMark+1, nl-endMark-1l);
+//                                        if(value[0] == ' ') value = value.substr(1, value.size()-1);
+//
+//                                        if(marker == "title")
+//                                            project.title = value;
+//                                        else if(marker == "description")
+//                                            project.description = value;
+//                                        else if(marker == "image")
+//                                            project.image = value;
+//
+//                                        start = nl+1;
+//                                    }
+//                                }
+//                            });
+//                    }
+//                }
+//
+//
+//                // Render projects
+//                ImGui::Text("Collection of published projects");
+//                ImGui::Separator();
+//
+//                if(ImGui::BeginTable("publishedProjectTable", 3, ImGuiTableFlags_Borders))
+//                {
+//                    ImGui::TableSetupColumn("desc", ImGuiTableColumnFlags_WidthStretch, 300.0f);
+//                    ImGui::TableSetupColumn("user", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+//                    ImGui::TableSetupColumn("open", ImGuiTableColumnFlags_WidthFixed, 40.0f);
+//                    
+//                    for(PublishedProject& project : publishedProjects)
+//                    {
+//                        ImGui::TableNextColumn();
+//                        ImGui::Text(project.title.c_str());
+//                        ImGui::Spacing();
+//                        ImGui::Text(project.description.c_str());
+//
+//                        ImGui::TableNextColumn();
+//                        ImGui::Text(project.username.c_str());
+//
+//                        ImGui::TableNextColumn();
+//
+//                        fs::path pathToClone = FileManager::getDefaultProjectFolder();
+//                        fs::path repoPath = pathToClone/project.reponame;
+//                        if(!fs::exists(repoPath))
+//                        {
+//                            // Clone repo if not cloned yet
+//                            if(ImGui::Button(("Clone###CloneButton"+project.repoUrl).c_str()))
+//                            {
+//                                fs::path prevPath = fs::current_path();
+//                                if(!fs::exists(pathToClone))
+//                                    fs::create_directories(pathToClone);
+//                                fs::current_path(pathToClone);
+//                                std::string command = "git clone git@github.com:" + project.username+"/"+project.reponame+".git";
+//                                LOG_VERBOSE("TopBar", "Running command: $0", command);
+//                                std::system(command.c_str());
+//                                fs::current_path(prevPath);
+//                            }
+//                        }
+//                        else
+//                        {
+//                            // Open repo project
+//                            if(ImGui::Button(("Open###OpenButton"+project.repoUrl).c_str()))
+//                            {
+//                                bool alreadyOpen = false;
+//                                for(auto& rw : _repoWindows)
+//                                    if(rw.getRepoPath() == repoPath)
+//                                    {
+//                                        alreadyOpen = true;
+//                                        break;
+//                                    }
+//
+//                                if(!alreadyOpen)
+//                                    _repoWindows.push_back(RepoWindow(repoPath));
+//                            }
+//                        }
+//
+//                        ImGui::TableNextRow();
+//                    }
+//
+//                    ImGui::EndTable();
+//                }
+//            }
+//            ImGui::End();
+//        }
+//#endif// ATTA_CPPRESTSDK_SUPPORT 
     }
 
     void TopBar::createProjectModal()

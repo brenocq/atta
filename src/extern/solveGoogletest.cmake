@@ -9,4 +9,6 @@ if(ATTA_BUILD_TESTS)
         GIT_PROGRESS TRUE
     )
     FetchContent_MakeAvailable(googletest)
+    atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/googletest-src/googlemock/include/)
+    atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/googletest-src/googletest/include/)
 endif()

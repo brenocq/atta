@@ -61,7 +61,7 @@ namespace atta
     public:
         Section();
         template <typename T>
-        Section(T value);
+        explicit Section(T value);
 
         Section(const Section& section);
 
@@ -85,7 +85,7 @@ namespace atta
 
         /// Get data (casting)
         template <typename T>
-        operator T();
+        explicit operator T();
 
         //----- Map -----//
         /// Get map

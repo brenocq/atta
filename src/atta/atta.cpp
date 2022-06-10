@@ -25,6 +25,8 @@
 #include <atta/uiSystem/uiManager.h>
 #include <atta/core/config.h>
 
+#include <atta/ioSystem/http/http.h>
+
 // Include execute code
 #include <atta/scriptSystem/script.h>
 #include <atta/componentSystem/components/scriptComponent.h>
@@ -53,6 +55,14 @@ namespace atta
         ScriptManager::startUp();
         PhysicsManager::startUp();
         SensorManager::startUp();
+
+        LOG_DEBUG("Http", "implType $0 supported $1", io::Http::implType, io::Http::supported);
+        if(io::Http::supported)
+        {
+            io::Http req("https://raw.githubusercontent.com/brenocq-atta/projects/main/projects.json");
+            io::Http::Response res = req.get();
+            LOG_DEBUG("Http", "status $1 body $0", res.body, res.statusCode);
+        }
 
         // Atta is the last one to reveice events
         EventManager::subscribe<WindowCloseEvent>(BIND_EVENT_FUNC(Atta::onWindowClose));
