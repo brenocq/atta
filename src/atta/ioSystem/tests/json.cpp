@@ -189,4 +189,88 @@ namespace
         EXPECT_EQ(int(json.vector()[1].map()["num1"]), 3);
         EXPECT_EQ(std::string(json.vector()[1].map()["str1"]), "hey");
     }
+
+    TEST(IO_Json, Dump_Null)
+    {
+        io::Json json;
+        std::string j = "null";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+    }
+
+    TEST(IO_Json, Dump_Bool)
+    {
+        io::Json json;
+        std::string j = "true";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+
+        j = "false";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+    }
+
+    TEST(IO_Json, Dump_Int)
+    {
+        io::Json json;
+        std::string j = "314";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+
+        j = "-42";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+    }
+
+    TEST(IO_Json, Dump_Float)
+    {
+        io::Json json;
+        std::string j = "3.140000";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+
+        j = "-42.000000";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+    }
+    
+    TEST(IO_Json, Dump_String)
+    {
+        io::Json json;
+        std::string j = R"("My \"cool\" String")";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+    }
+
+    TEST(IO_Json, Dump_Map)
+    {
+        io::Json json;
+        std::string j = R"({"myBool": true, "myInt": 1, "myMap": {"test": null}})";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+    }
+
+    TEST(IO_Json, Dump_Vector)
+    {
+        io::Json json;
+        std::string j = "[3, 1, 4, 1, 5]";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+
+        j = R"(["1st", "2nd", "3rd", "4th", "5th"])";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+    }
+
+    TEST(IO_Json, Dump_Complex)
+    {
+        io::Json json;
+        std::string j = R"({"myBool": true, "myFloat": -42.000000, "myInt": 1, "myMap": {"test": null}, "myVector": ["one", "two", "three"]})";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+
+        j = R"([{"age": 42, "name": "Neymar"}, {"age": -10, "name": "Ronaldinho"}, {"age": 110, "name": "Pelé"}])";
+        EXPECT_EQ(json.parse(j), true);
+        EXPECT_EQ(json.dump(), j);
+    }
 }
