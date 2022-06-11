@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.0.3.0 LANGUAGES CXX C)
+project(atta VERSION 0.0.3.2 LANGUAGES CXX C)
 
 OPTION(ATTA_BUILD_TESTS
   "Set to ON to build also the test executables"
@@ -257,82 +257,86 @@ if(ATTA_BUILD_TESTS)
     gtest_discover_tests(atta_test)
 endif()
 
-########## Install ##########
+########## Executable ##########
 add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 atta_target_common(atta)
 target_link_libraries(atta PUBLIC ${ATTA_LIBS})
 
+# Web build
 if(ATTA_SYSTEM_NAME MATCHES "Web")
     set_target_properties(atta PROPERTIES LINK_FLAGS "${ATTA_LINK_PROP}")
     if(NOT ATTA_WEB_BUILD_MODULE)
         set_target_properties(atta PROPERTIES SUFFIX ".html")
     endif()
 endif()
-# Install executables
 
-install(TARGETS atta RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+########## Install files ##########
+# Install atta executable
+install(TARGETS atta 
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/atta-${CMAKE_PROJECT_VERSION}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/atta-${CMAKE_PROJECT_VERSION}
+)
+# Install atta-X.X.X.X executable
+install(FILES $<TARGET_FILE:atta> TYPE BIN RENAME atta-${CMAKE_PROJECT_VERSION} PERMISSIONS WORLD_EXECUTE)
+
+# Install atta_test-X.X.X.X executable
 if(ATTA_BUILD_TESTS)
     install(TARGETS atta_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES $<TARGET_FILE:atta_test> TYPE BIN RENAME atta_test-${CMAKE_PROJECT_VERSION} PERMISSIONS WORLD_EXECUTE)
 endif()
 
-## Install includes
-# TODO hardcoded for now
-install(DIRECTORY src/atta/ DESTINATION include/atta
+# Install atta includes
+install(DIRECTORY src/atta/ DESTINATION include/atta-${CMAKE_PROJECT_VERSION}/atta
     FILES_MATCHING REGEX ".*\.(h|inl)$")
-install(DIRECTORY src/build/_deps/imgui-src/ DESTINATION include/atta/extern/imgui
+
+# Install extern includes
+install(DIRECTORY build/_deps/imgui-src/ DESTINATION include/atta-${CMAKE_PROJECT_VERSION}/extern/imgui
     FILES_MATCHING REGEX ".*\.(h|inl)$")
-install(DIRECTORY src/extern/glad/ DESTINATION include/atta/extern/glad
+install(DIRECTORY src/extern/glad/ DESTINATION include/atta-${CMAKE_PROJECT_VERSION}/extern/glad
     FILES_MATCHING REGEX ".*\.(h|inl)$")
-install(DIRECTORY src/extern/stb_image/ DESTINATION include/atta/extern/stb_image
+install(DIRECTORY src/extern/stb_image/ DESTINATION include/atta-${CMAKE_PROJECT_VERSION}/extern/stb_image
     FILES_MATCHING REGEX ".*\.(h|inl)$")
-#install(DIRECTORY src/build/_deps/assimp/ DESTINATION include/atta/extern/assimp
-#    FILES_MATCHING REGEX ".*\.(h|inl)$")
-list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/imgui)
-list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/glad/include)
-list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/stb_image)
-#list(APPEND ATTA_INSTALL_INCLUDE ${CMAKE_INSTALL_PREFIX}/include/atta/extern/assimp/include)
-set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/atta/pch.h)
+
+# Set install variables
+list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION})
+list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION}/extern/imgui)
+list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION}/extern/glad/include)
+list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION}/extern/stb_image)
+set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION}/atta/pch.h)
+set(ATTA_INSTALL_LIBRARIES ${ATTA_LIBS})
 
 # Install resources
-install(DIRECTORY resources/ DESTINATION share/atta
-    PATTERN "resources/*")
+install(DIRECTORY resources/ DESTINATION share/atta-${CMAKE_PROJECT_VERSION} PATTERN "resources/*")
 
 ########## Cmake Package ##########
-#include(CMakePackageConfigHelpers)
-#
-## Create version and config files for find_package
-#write_basic_package_version_file(
-#	"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
-#	VERSION ${PROJECT_VERSION}
-#	COMPATIBILITY SameMajorVersion
-#)
-#configure_package_config_file(attaConfig.cmake.in
-#    "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
-#    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
-#)
-#install(
-#	FILES 
-#        "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
-#		"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
-#	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
-#)
-#
-## Install cmake targets
-#install(TARGETS ${ATTA_LIBS}
-#	EXPORT atta_targets
-#)
-#install(EXPORT atta_targets
-#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta
-#	FILE attaTargets.cmake 
-#)
+include(CMakePackageConfigHelpers)
 
-########## CPack (deb package) ##########
-#install(TARGETS atta_core
-#	COMPONENT atta_component
-#)
-#
-#set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
-#set(CPACK_COMPONENTS_ALL atta_component)
-#set(CPACK_DEBIAN_PACKAGE_MAINTAINER "BrenoCQ")
-#set(CPACK_DEBIAN_PACKAGE_DEPENDS "xorg-dev;libglfw3-dev")
-#include(CPack)
+# Create version and config files for find_package
+write_basic_package_version_file(
+	"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY SameMajorVersion
+)
+configure_package_config_file(attaConfig.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta-${CMAKE_PROJECT_VERSION}
+)
+install(
+	FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta-${CMAKE_PROJECT_VERSION}
+)
+
+# Install atta libraries
+install(TARGETS ${ATTA_LIBS}
+	EXPORT atta_targets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/atta-${CMAKE_PROJECT_VERSION}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/atta-${CMAKE_PROJECT_VERSION}
+)
+# Write cmake targets
+install(EXPORT atta_targets
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta-${CMAKE_PROJECT_VERSION}
+	FILE attaTargets.cmake
+)

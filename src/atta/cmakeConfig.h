@@ -13,10 +13,10 @@
 #define ATTA_DIR "/home/breno/Github/atta"
 #endif
 
-#define ATTA_VERSION "0.0.3.0"
+#define ATTA_VERSION "0.0.3.2"
 #define ATTA_VERSION_MAJOR 0
 #define ATTA_VERSION_MINOR 0
 #define ATTA_VERSION_PATCH 3
-#define ATTA_VERSION_TWEAK 0
+#define ATTA_VERSION_TWEAK 2
 
 #endif// ATTA_CMAKE_CONFIG

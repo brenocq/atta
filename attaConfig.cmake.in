@@ -4,8 +4,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(atta_INCLUDE_DIRS "@ATTA_INSTALL_INCLUDE@")
+set(atta_LIBRARIES "@ATTA_INSTALL_LIBRARIES@")
+set(atta_INCLUDE_DIRS "@ATTA_INSTALL_INCLUDE_DIRS@")
 set(atta_PCH "@ATTA_INSTALL_PCH@")
+set(atta_FOUND TRUE)
 
 macro(atta_add_target target sources)
     add_library(${target} SHARED
