@@ -13,6 +13,7 @@ set(ATTA_UI_SYSTEM_SOURCE
     layers/editor/topBar/topBar.cpp
     layers/editor/toolBar/toolBar.cpp
     layers/editor/topBar/localWindows/repoWindow.cpp
+    layers/editor/topBar/localWindows/versionWindow.cpp
 
     layers/editor/windows/entityWindow.cpp
     layers/editor/windows/logWindow.cpp

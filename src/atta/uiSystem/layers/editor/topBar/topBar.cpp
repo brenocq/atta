@@ -5,6 +5,9 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/uiSystem/layers/editor/topBar/topBar.h>
+
+#include <atta/uiSystem/layers/editor/topBar/localWindows/versionWindow.h>
+
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/eventSystem/events/windowCloseEvent.h>
 #include <atta/eventSystem/eventManager.h>
@@ -19,18 +22,6 @@
 #include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
 #include <atta/uiSystem/layers/editor/systemWindows/physicsSystemWindow.h>
 #include <atta/uiSystem/layers/editor/windows/utils/fileSelectionWindow.h>
-
-//#ifdef ATTA_CPPRESTSDK_SUPPORT 
-//#include <cpprest/http_client.h>
-//#include <cpprest/json.h>
-//#include <cpprest/filestream.h>
-//using namespace utility;                    // Common utilities like string conversions
-//using namespace web;                        // Common features like URIs.
-//using namespace web::http;                  // Common HTTP functionality
-//using namespace web::http::client;          // HTTP client features
-//using namespace concurrency::streams;       // Asynchronous streams
-//using namespace web::json;
-//#endif// ATTA_CPPRESTSDK_SUPPORT 
 
 namespace atta::ui
 {
@@ -145,6 +136,13 @@ namespace atta::ui
                     IOSystemWindow::setOpen(true);
                 if(ImGui::MenuItem("Physics System"))
                     PhysicsSystemWindow::setOpen(true);
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Help"))
+            {
+                if(ImGui::MenuItem("Version"))
+                    VersionWindow::setOpen(true);
                 ImGui::EndMenu();
             }
 
