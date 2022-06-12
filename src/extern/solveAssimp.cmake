@@ -31,7 +31,7 @@ else()
         GIT_PROGRESS TRUE
     )
     atta_log(Info Extern "Fetching Assimp...")
-    FetchContent_MakeAvailable(assimp)
+    atta_FetchContent_MakeAvailable(assimp) 
 
     atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/assimp-src/include)
     atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/assimp-build/include)

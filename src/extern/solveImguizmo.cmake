@@ -12,8 +12,8 @@ FetchContent_MakeAvailable(imguizmo)
 add_library(imguizmo STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imguizmo-src/ImGuizmo.cpp
 )
-target_include_directories(imguizmo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imguizmo-src)
-target_include_directories(imguizmo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imgui-src)
+#target_include_directories(imguizmo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imguizmo-src)
+#target_include_directories(imguizmo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imgui-src)
 target_link_libraries(imguizmo PRIVATE imgui)
 
 atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imguizmo-src)

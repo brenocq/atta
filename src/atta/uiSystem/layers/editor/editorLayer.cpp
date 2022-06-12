@@ -13,6 +13,7 @@
 #include <atta/uiSystem/layers/editor/systemWindows/ioSystemWindow.h>
 #include <atta/uiSystem/layers/editor/systemWindows/physicsSystemWindow.h>
 #include <atta/uiSystem/layers/editor/windows/utils/fileSelectionWindow.h>
+#include <atta/uiSystem/layers/editor/topBar/localWindows/versionWindow.h>
 
 #include <atta/sensorSystem/sensorManager.h>
 #include <atta/componentSystem/componentManager.h>
@@ -64,6 +65,9 @@ namespace atta::ui
 
         // Windows utils
         FileSelectionWindow::render();
+
+        // Topbar windows
+        VersionWindow::render();
 
         renderCameraWindows();
 
