@@ -24,6 +24,7 @@
 #include <atta/sensorSystem/sensorManager.h>
 #include <atta/uiSystem/uiManager.h>
 #include <atta/core/config.h>
+#include <atta/cmakeConfig.h>
 
 #include <atta/ioSystem/http/http.h>
 
@@ -64,8 +65,18 @@ namespace atta
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 
         LOG_SUCCESS("Atta", "Initialized");
+#ifdef ATTA_STATIC_PROJECT
+        fs::path projectFile = fs::path(ATTA_STATIC_PROJECT_FILE);
+        // If project is built statically, open project
+        FileManager::openProject(projectFile);
+
+        if(!info.projectFile.empty() && info.projectFile != projectFile)
+            LOG_WARN("Atta", "Project [w]$0[] will not be open because atta was built statically linked to [w]$1[]", info.projectFile, projectFile);
+#else
+        // If a project was defined as argument, open project
         if(!info.projectFile.empty())
             FileManager::openProject(info.projectFile);
+#endif
     }
 
     Atta::~Atta()

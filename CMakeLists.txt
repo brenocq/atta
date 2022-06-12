@@ -1,16 +1,19 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.0.3.3 LANGUAGES CXX C)
+project(atta VERSION 0.0.3.4 LANGUAGES CXX C)
 
 OPTION(ATTA_BUILD_TESTS
-  "Set to ON to build also the test executables"
-  ON)
+    "Set to ON to build also the test executables"
+    ON)
 OPTION(ATTA_WEB_BUILD_MODULE
-  "Set to ON to generate only the javascript module"
-  OFF)
+    "Set to ON to generate only the javascript module"
+    OFF)
 OPTION(ATTA_BUILD_DOCS
-  "Build the documentation"
-  OFF)
+    "Build the documentation"
+    OFF)
+option(ATTA_STATIC_PROJECT_FILE 
+    "Project to be linked statically to atta" 
+    "")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,104 +21,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
 
-
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     # Set flags necessary for the script system to work correctly
     set(CMAKE_CXX_FLAGS "-Wl,--export-dynamic")
     set(CMAKE_EXE_LINKER_FLAGS "-Wl,--export-dynamic")
 endif()
-
-########## Build Types ##########
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
-endif()
-
-########## OS Specific ##########
-message(STATUS "System name: ${CMAKE_SYSTEM_NAME}")
-if(CMAKE_SYSTEM_NAME STREQUAL Windows)#----- Windows build
-    set(ATTA_SYSTEM_NAME "Windows")
-    list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
-    # Force google test to link the runtimes dynamically (to avoid visual studio link error)
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    # Fix assert __VA_ARGS__ expansion
-    list(APPEND ATTA_OPTIONS /Zc:preprocessor)
-
-elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)#----- MacOS build
-    set(ATTA_SYSTEM_NAME "MacOS")
-    list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
-
-elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)#----- Linux build
-    set(ATTA_SYSTEM_NAME "Linux")
-    list(APPEND ATTA_DEFINITIONS "ATTA_OS_LINUX")
-
-elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
-    set(ATTA_SYSTEM_NAME "Web")
-    list(APPEND ATTA_DEFINITIONS "ATTA_OS_WEB")
-
-    # Configure web build
-    set(ATTA_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
-
-    # Configure emscripten link flags
-    set(EMSCRIPTEN_LINK_PROPERTIES "-s USE_WEBGL2=1 -s USE_GLFW=3")
-    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1")
-    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1 -s FORCE_FILESYSTEM=1")
-    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ../resources")
-    if(ATTA_WEB_BUILD_MODULE)
-        message(STATUS "Building only javascript module")
-        set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s WASM=1 -s ENVIRONMENT=web -s MODULARIZE=1 -s EXPORT_NAME=AttaModule -s EXPORT_NAME='createModule' -s SINGLE_FILE=1 -s USE_ES6_IMPORT_META=0 --use-preload-plugins")
-    endif()
-    list(APPEND ATTA_LINK_PROP ${EMSCRIPTEN_LINK_PROPERTIES})
-else()#----- Unknown build
-    message(SEND_ERROR "Unknown system name: ${CMAKE_SYSTEM_NAME}")
-endif()
-
-########## Options ##########
-##### Debug #####
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    if(MSVC)
-        #list(APPEND ATTA_OPTIONS /W4 /WX)
-    else()
-        list(APPEND ATTA_OPTIONS -g -Wall -Wextra -Wpedantic)
-        # Profilling
-        list(APPEND ATTA_OPTIONS -fno-omit-frame-pointer)
-        # Unused parameter
-        list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
-        # Math anonymous union 
-        #list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
-        # Glad opengl definitions
-        #list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
-        # Scripting
-        #list(APPEND ATTA_OPTIONS -Wl,--no-undefined -rdynamic)
-        #list(APPEND ATTA_OPTIONS -Wl,--export-dynamic)
-    endif()
-endif()
-
-##### Releaese #####
-if(CMAKE_BUILD_TYPE MATCHES Release)
-    if(MSVC)
-        list(APPEND ATTA_OPTIONS /O2)
-    else()
-        list(APPEND ATTA_OPTIONS -O3)
-    endif()
-endif()
-
-##### Default #####
-if(MSVC)
-else()
-    # ImGui warnings
-    list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn -Wno-format-security)
-    # Useful to ignore
-    list(APPEND ATTA_OPTIONS -Wno-missing-field-initializers -Wno-invalid-offsetof -Wno-char-subscripts)
-endif()
-
-########## Output Directories ##########
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "" FORCE)
-set(ATTA_TEST_PATH ${CMAKE_BINARY_DIR}/bin/tests CACHE INTERNAL "" FORCE)
-set(ATTA_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
-
-########## Precompiled Headers ##########
-list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
 
 ########## Macros ##########
 macro(atta_add_libs)
@@ -229,12 +139,112 @@ macro(atta_log type tag message)
     message(STATUS "${Bold}${atta_log_color}[${tag}] ${Reset}${atta_log_color}${message}${Reset}")
 endmacro()
 
+########## Build Types ##########
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
+endif()
+
+if(ATTA_STATIC_PROJECT_FILE)
+    set(ATTA_STATIC_PROJECT TRUE)
+    list(APPEND ATTA_DEFINITIONS "ATTA_STATIC_PROJECT")
+    atta_log(Info "Main" "Building atta statically linked to ${ATTA_STATIC_PROJECT_FILE}")
+else()
+    set(ATTA_STATIC_PROJECT FALSE)
+endif()
+
+########## OS Specific ##########
+message(STATUS "System name: ${CMAKE_SYSTEM_NAME}")
+if(CMAKE_SYSTEM_NAME STREQUAL Windows)#----- Windows build
+    set(ATTA_SYSTEM_NAME "Windows")
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
+    # Force google test to link the runtimes dynamically (to avoid visual studio link error)
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    # Fix assert __VA_ARGS__ expansion
+    list(APPEND ATTA_OPTIONS /Zc:preprocessor)
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)#----- MacOS build
+    set(ATTA_SYSTEM_NAME "MacOS")
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)#----- Linux build
+    set(ATTA_SYSTEM_NAME "Linux")
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_LINUX")
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
+    set(ATTA_SYSTEM_NAME "Web")
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_WEB")
+
+    # Configure web build
+    set(ATTA_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
+
+    # Configure emscripten link flags
+    set(EMSCRIPTEN_LINK_PROPERTIES "-s USE_WEBGL2=1 -s USE_GLFW=3")
+    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1")
+    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1 -s FORCE_FILESYSTEM=1")
+    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ../resources")
+    if(ATTA_WEB_BUILD_MODULE)
+        message(STATUS "Building only javascript module")
+        set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s WASM=1 -s ENVIRONMENT=web -s MODULARIZE=1 -s EXPORT_NAME=AttaModule -s EXPORT_NAME='createModule' -s SINGLE_FILE=1 -s USE_ES6_IMPORT_META=0 --use-preload-plugins")
+    endif()
+    list(APPEND ATTA_LINK_PROP ${EMSCRIPTEN_LINK_PROPERTIES})
+else()#----- Unknown build
+    message(SEND_ERROR "Unknown system name: ${CMAKE_SYSTEM_NAME}")
+endif()
+
+########## Options ##########
+##### Debug #####
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    if(MSVC)
+        #list(APPEND ATTA_OPTIONS /W4 /WX)
+    else()
+        list(APPEND ATTA_OPTIONS -g -Wall -Wextra -Wpedantic)
+        # Profilling
+        list(APPEND ATTA_OPTIONS -fno-omit-frame-pointer)
+        # Unused parameter
+        list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
+        # Math anonymous union 
+        #list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
+        # Glad opengl definitions
+        #list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
+        # Scripting
+        #list(APPEND ATTA_OPTIONS -Wl,--no-undefined -rdynamic)
+        #list(APPEND ATTA_OPTIONS -Wl,--export-dynamic)
+    endif()
+endif()
+
+##### Releaese #####
+if(CMAKE_BUILD_TYPE MATCHES Release)
+    if(MSVC)
+        list(APPEND ATTA_OPTIONS /O2)
+    else()
+        list(APPEND ATTA_OPTIONS -O3)
+    endif()
+endif()
+
+##### Default #####
+if(MSVC)
+else()
+    # ImGui warnings
+    list(APPEND ATTA_OPTIONS -Wno-invalid-noreturn -Wno-format-security)
+    # Useful to ignore
+    list(APPEND ATTA_OPTIONS -Wno-missing-field-initializers -Wno-invalid-offsetof -Wno-char-subscripts)
+endif()
+
+########## Output Directories ##########
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "" FORCE)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE INTERNAL "" FORCE)
+set(ATTA_TEST_PATH ${CMAKE_BINARY_DIR}/bin/tests CACHE INTERNAL "" FORCE)
+set(ATTA_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
+
+########## Precompiled Headers ##########
+list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
+
+
 ########## Atta/Extern directories ##########
 include(FetchContent)
 list(APPEND ATTA_INCLUDE_DIRS ${ATTA_PATH}/src)
 include(${CMAKE_CURRENT_SOURCE_DIR}/src/extern/extern.cmake)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/atta)
-
 
 ########## Docs ##########
 if(ATTA_BUILD_DOCS)
@@ -270,6 +280,28 @@ if(ATTA_SYSTEM_NAME MATCHES "Web")
         set_target_properties(atta PROPERTIES SUFFIX ".html")
     endif()
 endif()
+
+########## Static project ##########
+if(ATTA_STATIC_PROJECT)
+    get_filename_component(projectDirectory ${ATTA_STATIC_PROJECT_FILE} DIRECTORY)
+    add_subdirectory(${projectDirectory} ${projectDirectory}/build)
+    # The project targets will are saved to ATTA_PROJECT_TARGETS (atta_add_target macro)
+    #message("------------> ${projectDirectory} targets ${ATTA_PROJECT_TARGETS}")
+    target_link_libraries(atta PUBLIC ${ATTA_PROJECT_TARGETS})
+
+    # Populate ATTA_STATIC_PROJECT_SCRIPTS to write includes to scripts.h file
+    set(ATTA_STATIC_PROJECT_SCRIPTS "")
+    foreach(projHeader IN LISTS ATTA_PROJECT_HEADERS)
+        if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/${possible}")
+            set(ATTA_STATIC_PROJECT_SCRIPTS "${ATTA_STATIC_PROJECT_SCRIPTS}#include \"${projHeader}\"\n")
+        endif()
+    endforeach()
+endif()
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/scriptSystem/scripts.h.in" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/scriptSystem/scripts.h"
+)
 
 ########## Install files ##########
 # Install atta executable

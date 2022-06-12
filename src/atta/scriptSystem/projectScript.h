@@ -35,14 +35,21 @@ namespace atta
         //---------- While ----------//
         virtual void onAttaLoop() {};
     }; 
-}
 
-#define ATTA_REGISTER_PROJECT_SCRIPT(DerivedProjectScript) \
-extern "C" {\
-    atta::ProjectScript* createProjectScript()\
-    {\
-        return static_cast<atta::ProjectScript*>(new DerivedProjectScript());\
-    }\
+#ifdef ATTA_STATIC_PROJECT
+    template<typename T> class ProjectScriptRegistration { static ProjectScript* reg; };
+#define ATTA_REGISTER_PROJECT_SCRIPT(TYPE) \
+    template<> inline ::atta::Script* ::atta::ProjectScriptRegistration<TYPE>::reg = ::atta::ScriptManager::registerProjectScript(#TYPE, new TYPE());
+#else
+#define ATTA_REGISTER_PROJECT_SCRIPT(TYPE) \
+    extern "C" {\
+        std::pair<std::string, atta::ProjectScript*> createProjectScript()\
+        {\
+            return { #TYPE, static_cast<atta::ProjectScript*>(new TYPE()) };\
+        }\
+    }
+#endif
+
 }
 
 #endif// ATTA_SCRIPT_SYSTEM_PROJECT_SCRIPT_H

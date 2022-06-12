@@ -10,9 +10,36 @@ set(atta_PCH "@ATTA_INSTALL_PCH@")
 set(atta_FOUND TRUE)
 
 macro(atta_add_target target sources)
-    add_library(${target} SHARED
-        ${sources}
-    )
+    if(ATTA_STATIC_PROJECT)
+        add_library(${target} STATIC ${sources})
+    else()
+        add_library(${target} SHARED ${sources})
+    endif()
+
     target_include_directories(${target} PRIVATE ${atta_INCLUDE_DIRS})
     target_precompile_headers(${target} PRIVATE ${atta_PCH})
+
+    # This variable is used to include headers when building statically (necessary to register scripts)
+    set(headers "")
+    string(REGEX REPLACE "[.]cpp$" ".h" possibleh ${sources})
+    string(REGEX REPLACE "[.]cpp$" ".hpp" possiblehpp ${sources})
+    set(possibles ${possibleh};${possiblehpp})
+    foreach(possible IN LISTS possibles)
+        if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/${possible}")
+            list(APPEND headers "${CMAKE_CURRENT_LIST_DIR}/${possible}")
+        endif()
+    endforeach()
+    list(APPEND ATTA_PROJECT_HEADERS ${headers})
+
+    # This variable is used to know which targets shuld be linked to atta when building statically
+    list(APPEND ATTA_PROJECT_TARGETS ${target})
+    # Update variable
+    get_directory_property(hasParent PARENT_DIRECTORY)
+    if(hasParent)
+        set(ATTA_PROJECT_TARGETS ${ATTA_PROJECT_TARGETS} PARENT_SCOPE)
+        set(ATTA_PROJECT_HEADERS ${ATTA_PROJECT_HEADERS} PARENT_SCOPE)
+    else()
+        set(ATTA_PROJECT_TARGETS ${ATTA_PROJECT_TARGETS})
+        set(ATTA_PROJECT_HEADERS ${ATTA_PROJECT_HEADERS})
+    endif()
 endmacro()

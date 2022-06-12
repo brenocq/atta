@@ -37,16 +37,18 @@ namespace atta::ui
         {
             if(ImGui::BeginMenu("File"))
             {
-
                 if(FileManager::isProjectOpen())
                 {
                     ImGui::Text(FileManager::getProject()->getName().c_str());
                     ImGui::Separator();
 
+#ifndef ATTA_STATIC_PROJECT
                     if(ImGui::MenuItem("Close"))
 						_showSaveProject = true;
+#endif
                 }
 
+#ifndef ATTA_STATIC_PROJECT
                 if(ImGui::BeginMenu("Open"))
                 {
                     if(ImGui::MenuItem("From file"))
@@ -59,14 +61,17 @@ namespace atta::ui
 
                     ImGui::EndMenu();
                 }
+#endif
 
 
                 if(FileManager::isProjectOpen())
                     if(ImGui::MenuItem("Save"))
                         FileManager::saveProject();
 
+#ifndef ATTA_STATIC_PROJECT
                 if(ImGui::MenuItem("Save as"))
                     _showCreateProject = true;
+#endif
 
                 ImGui::Separator();
 
