@@ -33,7 +33,10 @@ namespace atta::ui
             ImGui::SameLine();
 
             if(ImGui::Button(("Open##Open"+iv).c_str()))
+            {
                 std::system((iv+"&").c_str());
+                exit(0);
+            }
         }
 
 	}
