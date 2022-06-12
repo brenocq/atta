@@ -6,9 +6,13 @@
 //--------------------------------------------------
 #ifndef ATTA_SCRIPT_SYSTEM_SCRIPT_MANAGER_H
 #define ATTA_SCRIPT_SYSTEM_SCRIPT_MANAGER_H
+#include <atta/scriptSystem/script.h>
+#include <atta/scriptSystem/projectScript.h>
+#ifndef ATTA_STATIC_PROJECT
 #include <atta/eventSystem/event.h>
 #include <atta/scriptSystem/compilers/compiler.h>
 #include <atta/scriptSystem/linkers/linker.h>
+#endif
 
 namespace atta
 {
@@ -25,6 +29,11 @@ namespace atta
         static ProjectScript* getProjectScript();
         static StringId getProjectScriptSid();
 
+#ifdef ATTA_STATIC_PROJECT
+        static ProjectScript* registerProjectScript(std::string name, ProjectScript* projectScript);
+        static Script* registerScript(std::string name, Script* script);
+#endif
+
     private:
         void startUpImpl();
         void shutDownImpl();
@@ -35,6 +44,7 @@ namespace atta
         ProjectScript* getProjectScriptImpl() const;
         StringId getProjectScriptSidImpl() const;
 
+#ifndef ATTA_STATIC_PROJECT
         // Handle events
         void onFileChange(Event& event);
         void onProjectOpen(Event& event);
@@ -47,10 +57,11 @@ namespace atta
 
         std::shared_ptr<Compiler> _compiler;
         std::shared_ptr<Linker> _linker;
+        std::map<StringId, StringId> _targetToScript;// Convert target name to script name
+#endif
 
         std::unordered_map<StringId, Script*> _scripts;
         std::pair<StringId, ProjectScript*> _projectScript;
-
     };
 }
 

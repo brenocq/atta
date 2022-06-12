@@ -18,7 +18,7 @@ namespace atta
         Linker() = default;
         virtual ~Linker() = default;
 
-        virtual void linkTarget(StringId target, Script** script, ProjectScript** projectScript) = 0;
+        virtual void linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) = 0;
         virtual void releaseTarget(StringId target) = 0;
     };
 }
