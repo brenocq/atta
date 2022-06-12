@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.0.3.2 LANGUAGES CXX C)
+project(atta VERSION 0.0.3.3 LANGUAGES CXX C)
 
 OPTION(ATTA_BUILD_TESTS
   "Set to ON to build also the test executables"
@@ -309,6 +309,14 @@ set(ATTA_INSTALL_LIBRARIES ${ATTA_LIBS})
 
 # Install resources
 install(DIRECTORY resources/ DESTINATION share/atta-${CMAKE_PROJECT_VERSION} PATTERN "resources/*")
+
+# Uninstall target
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/attaUninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/attaUninstall.cmake"
+    @ONLY)
+add_custom_target(uninstall
+    "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/attaUninstall.cmake")
 
 ########## Cmake Package ##########
 include(CMakePackageConfigHelpers)
