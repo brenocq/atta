@@ -10,11 +10,15 @@ if((ATTA_SYSTEM_NAME MATCHES "Linux") AND CURL_FOUND)
         GIT_PROGRESS TRUE
     )
     atta_log(Info Extern "Fetching curlpp...")
-    FetchContent_MakeAvailable(curlpp)
+    atta_FetchContent_MakeAvailable(curlpp) 
+
+    # Fix INTERFACE_INCLUDE_DIRECTORIES to not include local build
+    set_property(TARGET curlpp_static PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
 
     atta_log(Success Extern "curlpp supported (source)")
     set(ATTA_CURLPP_SUPPORT TRUE)
     set(ATTA_CURLPP_TARGETS curlpp_static)
+    atta_add_libs(${ATTA_CURLPP_TARGETS})
 endif()
 
 if(ATTA_CURLPP_SUPPORT)

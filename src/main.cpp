@@ -1,5 +1,5 @@
-#include "atta/atta.h"
-#include "atta/cmakeConfig.h"
+#include <atta/atta.h>
+#include <atta/cmakeConfig.h>
 
 int main(int argc, char *argv[])
 {
