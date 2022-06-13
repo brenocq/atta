@@ -24,11 +24,11 @@ namespace atta
         void setBool(const char* name, bool b) override;
         void setInt(const char* name, int i) override;
         void setFloat(const char* name, float f) override;
-        void setVec2(const char* name, const vec2& v) override;
-        void setVec3(const char* name, const vec3& v) override;
-        void setVec4(const char* name, const vec4& v) override;
-        void setMat3(const char* name, const mat3& m) override;
-        void setMat4(const char* name, const mat4& m) override;
+        void setVec2(const char* name, vec2 v) override;
+        void setVec3(const char* name, vec3 v) override;
+        void setVec4(const char* name, vec4 v) override;
+        void setMat3(const char* name, mat3 m) override;
+        void setMat4(const char* name, mat4 m) override;
         void setTexture(const char* name, StringId sid) override;
         void setTexture(const char* name, std::shared_ptr<Image> image) override;
         void setCubemap(const char* name, StringId sid) override;

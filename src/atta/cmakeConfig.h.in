@@ -22,4 +22,15 @@
 // Directory to look which atta versions are installed
 #define ATTA_INSTALLED_VERSIONS_DIR "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@"
 
+// Project path when atta is built statically linked to one project
+#ifdef ATTA_STATIC_PROJECT 
+
+#ifdef ATTA_OS_WEB
+#define ATTA_STATIC_PROJECT_FILE "/project/project.atta"
+#else
+#define ATTA_STATIC_PROJECT_FILE "@ATTA_STATIC_PROJECT_FILE@"
+#endif
+
+#endif
+
 #endif// ATTA_CMAKE_CONFIG

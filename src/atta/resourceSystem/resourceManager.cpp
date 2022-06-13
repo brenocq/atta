@@ -25,7 +25,7 @@ namespace atta
         //----- System Memory -----//
         // Get main memory
         Allocator* mainAllocator = MemoryManager::getAllocator(SSID("MainAllocator"));
-        size_t size = 512*1024*1024;// 512MB
+        size_t size = 128*1024*1024;// 128MB
         // Alloc memory inside main memory
         uint8_t* resourceMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
         _allocator = new BitmapAllocator(resourceMemory, size);

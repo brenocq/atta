@@ -71,7 +71,6 @@ namespace atta
         // Deserialize version
         std::string version;
         read(is, version);
-        //LOG_DEBUG("ProjectSerializer", "Version: [w]$0", version);
         section.deserialize(is);
         is.close();
 
@@ -80,7 +79,6 @@ namespace atta
         deserializeConfig(section["config"]);
         deserializeComponentSystem(section["componentSystem"]);
         deserializeGraphicsSystem(section["graphicsSystem"]);
-        //LOG_DEBUG("ProjectSerializer", "Reading project: [w]$0", section);
     }
 }
 
