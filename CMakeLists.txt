@@ -195,7 +195,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
         endif()
 
         set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file project/project.atta")
-        message("-------------> ${EMSCRIPTEN_LINK_PROPERTIES}")
     endif()
 
     if(ATTA_WEB_BUILD_MODULE)

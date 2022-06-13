@@ -33,11 +33,11 @@ namespace atta
         virtual void setBool(const char* name, bool b) = 0;
         virtual void setInt(const char* name, int i) = 0;
         virtual void setFloat(const char* name, float f) = 0;
-        virtual void setVec2(const char* name, const vec2& v) = 0;
-        virtual void setVec3(const char* name, const vec3& v) = 0;
-        virtual void setVec4(const char* name, const vec4& v) = 0;
-        virtual void setMat3(const char* name, const mat3& m) = 0;
-        virtual void setMat4(const char* name, const mat4& m) = 0;
+        virtual void setVec2(const char* name, vec2 v) = 0;
+        virtual void setVec3(const char* name, vec3 v) = 0;
+        virtual void setVec4(const char* name, vec4 v) = 0;
+        virtual void setMat3(const char* name, mat3 m) = 0;
+        virtual void setMat4(const char* name, mat4 m) = 0;
         virtual void setTexture(const char* name, StringId sid) = 0;
         virtual void setTexture(const char* name, std::shared_ptr<Image> image) = 0;
         virtual void setCubemap(const char* name, StringId sid) = 0;
