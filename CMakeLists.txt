@@ -153,7 +153,7 @@ else()
 endif()
 
 ########## OS Specific ##########
-message(STATUS "System name: ${CMAKE_SYSTEM_NAME}")
+atta_log(Info "Main" "System name: ${CMAKE_SYSTEM_NAME}")
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)#----- Windows build
     set(ATTA_SYSTEM_NAME "Windows")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
@@ -182,6 +182,22 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1 -s FORCE_FILESYSTEM=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ../resources")
+
+
+    if(ATTA_STATIC_PROJECT_FILE)
+        # Copy project file
+        configure_file(${ATTA_STATIC_PROJECT_FILE} project/project.atta COPYONLY)
+
+        get_filename_component(projectDir ${ATTA_STATIC_PROJECT_FILE} DIRECTORY)
+        if(EXISTS "${projectDir}/resources")
+            file(COPY "${projectDir}/resources" DESTINATION "project")
+            set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file project/resources")
+        endif()
+
+        set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file project/project.atta")
+        message("-------------> ${EMSCRIPTEN_LINK_PROPERTIES}")
+    endif()
+
     if(ATTA_WEB_BUILD_MODULE)
         message(STATUS "Building only javascript module")
         set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s WASM=1 -s ENVIRONMENT=web -s MODULARIZE=1 -s EXPORT_NAME=AttaModule -s EXPORT_NAME='createModule' -s SINGLE_FILE=1 -s USE_ES6_IMPORT_META=0 --use-preload-plugins")
@@ -273,20 +289,19 @@ add_executable(atta "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 atta_target_common(atta)
 target_link_libraries(atta PUBLIC ${ATTA_LIBS})
 
-# Web build
-if(ATTA_SYSTEM_NAME MATCHES "Web")
-    set_target_properties(atta PROPERTIES LINK_FLAGS "${ATTA_LINK_PROP}")
-    if(NOT ATTA_WEB_BUILD_MODULE)
-        set_target_properties(atta PROPERTIES SUFFIX ".html")
-    endif()
-endif()
-
 ########## Static project ##########
 if(ATTA_STATIC_PROJECT)
+    # Instead of looking for atta installed in the machine, use the one being built (must for web build)
+    set(CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR};${CMAKE_MODULE_PATH}")
+    file(WRITE ${CMAKE_BINARY_DIR}/Findatta.cmake "include(attaConfig)")
+    set(ATTA_INSTALL_LIBRARIES ${ATTA_LIBS})
+    set(ATTA_INSTALL_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS})
+    set(ATTA_INSTALL_PCH ${ATTA_PCH})
+    configure_file(attaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake" @ONLY)
+
     get_filename_component(projectDirectory ${ATTA_STATIC_PROJECT_FILE} DIRECTORY)
     add_subdirectory(${projectDirectory} ${projectDirectory}/build)
     # The project targets will are saved to ATTA_PROJECT_TARGETS (atta_add_target macro)
-    #message("------------> ${projectDirectory} targets ${ATTA_PROJECT_TARGETS}")
     target_link_libraries(atta PUBLIC ${ATTA_PROJECT_TARGETS})
 
     # Populate ATTA_STATIC_PROJECT_SCRIPTS to write includes to scripts.h file
@@ -303,81 +318,94 @@ configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/scriptSystem/scripts.h"
 )
 
-########## Install files ##########
-# Install atta executable
-install(TARGETS atta 
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/atta-${CMAKE_PROJECT_VERSION}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/atta-${CMAKE_PROJECT_VERSION}
-)
-# Install atta-X.X.X.X executable
-install(FILES $<TARGET_FILE:atta> TYPE BIN RENAME atta-${CMAKE_PROJECT_VERSION} PERMISSIONS WORLD_EXECUTE)
-
-# Install atta_test-X.X.X.X executable
-if(ATTA_BUILD_TESTS)
-    install(TARGETS atta_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-    install(FILES $<TARGET_FILE:atta_test> TYPE BIN RENAME atta_test-${CMAKE_PROJECT_VERSION} PERMISSIONS WORLD_EXECUTE)
+# Web build
+if(ATTA_SYSTEM_NAME MATCHES "Web")
+    set_target_properties(atta PROPERTIES LINK_FLAGS "${ATTA_LINK_PROP}")
+    if(NOT ATTA_WEB_BUILD_MODULE)
+        set_target_properties(atta PROPERTIES SUFFIX ".html")
+    endif()
 endif()
 
-# Install atta includes
-install(DIRECTORY src/atta/ DESTINATION include/atta-${CMAKE_PROJECT_VERSION}/atta
-    FILES_MATCHING REGEX ".*\.(h|inl)$")
+########## Install/Uninstall ##########
+if(NOT (ATTA_SYSTEM_NAME MATCHES "Web"))
+    ########## Install files ##########
+    set(ATTA_VERSION_SAFE atta-${CMAKE_PROJECT_VERSION})
 
-# Install extern includes
-install(DIRECTORY build/_deps/imgui-src/ DESTINATION include/atta-${CMAKE_PROJECT_VERSION}/extern/imgui
-    FILES_MATCHING REGEX ".*\.(h|inl)$")
-install(DIRECTORY src/extern/glad/ DESTINATION include/atta-${CMAKE_PROJECT_VERSION}/extern/glad
-    FILES_MATCHING REGEX ".*\.(h|inl)$")
-install(DIRECTORY src/extern/stb_image/ DESTINATION include/atta-${CMAKE_PROJECT_VERSION}/extern/stb_image
-    FILES_MATCHING REGEX ".*\.(h|inl)$")
+    # Install atta executable
+    install(TARGETS atta 
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ATTA_VERSION_SAFE}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ATTA_VERSION_SAFE}
+    )
+    # Install atta-X.X.X.X executable
+    install(FILES $<TARGET_FILE:atta> TYPE BIN RENAME ${ATTA_VERSION_SAFE} PERMISSIONS WORLD_EXECUTE)
 
-# Set install variables
-list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION})
-list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION}/extern/imgui)
-list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION}/extern/glad/include)
-list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION}/extern/stb_image)
-set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/atta-${CMAKE_PROJECT_VERSION}/atta/pch.h)
-set(ATTA_INSTALL_LIBRARIES ${ATTA_LIBS})
+    # Install atta_test-X.X.X.X executable
+    if(ATTA_BUILD_TESTS)
+        install(TARGETS atta_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+        install(FILES $<TARGET_FILE:atta_test> TYPE BIN RENAME atta_test-${CMAKE_PROJECT_VERSION} PERMISSIONS WORLD_EXECUTE)
+    endif()
 
-# Install resources
-install(DIRECTORY resources/ DESTINATION share/atta-${CMAKE_PROJECT_VERSION} PATTERN "resources/*")
+    # Install atta includes
+    install(DIRECTORY src/atta/ DESTINATION include/${ATTA_VERSION_SAFE}/atta
+        FILES_MATCHING REGEX ".*\.(h|inl)$")
 
-# Uninstall target
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/attaUninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/attaUninstall.cmake"
-    @ONLY)
-add_custom_target(uninstall
-    "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/attaUninstall.cmake")
+    # Install extern includes
+    install(DIRECTORY build/_deps/imgui-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/imgui
+        FILES_MATCHING REGEX ".*\.(h|inl)$")
+    install(DIRECTORY src/extern/glad/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/glad
+        FILES_MATCHING REGEX ".*\.(h|inl)$")
+    install(DIRECTORY src/extern/stb_image/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/stb_image
+        FILES_MATCHING REGEX ".*\.(h|inl)$")
 
-########## Cmake Package ##########
-include(CMakePackageConfigHelpers)
+    # Set install variables
+    list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE})
+    list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/imgui)
+    list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/glad/include)
+    list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/stb_image)
+    set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/atta/pch.h)
+    set(ATTA_INSTALL_LIBRARIES ${ATTA_LIBS})
 
-# Create version and config files for find_package
-write_basic_package_version_file(
-	"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
-	VERSION ${PROJECT_VERSION}
-	COMPATIBILITY SameMajorVersion
-)
-configure_package_config_file(attaConfig.cmake.in
-    "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta-${CMAKE_PROJECT_VERSION}
-)
-install(
-	FILES
+    # Install resources
+    install(DIRECTORY resources/ DESTINATION share/${ATTA_VERSION_SAFE} PATTERN "resources/*")
+
+    # Uninstall target
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/attaUninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/attaUninstall.cmake"
+        @ONLY)
+    add_custom_target(uninstall
+        "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/attaUninstall.cmake")
+
+    ########## Cmake Package ##########
+    include(CMakePackageConfigHelpers)
+
+    # Create version and config files for find_package
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
+    configure_package_config_file(attaConfig.cmake.in
         "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
-		"${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta-${CMAKE_PROJECT_VERSION}
-)
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${ATTA_VERSION_SAFE}
+    )
+    install(
+        FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/attaConfigVersion.cmake"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${ATTA_VERSION_SAFE}
+    )
 
-# Install atta libraries
-install(TARGETS ${ATTA_LIBS}
-	EXPORT atta_targets
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/atta-${CMAKE_PROJECT_VERSION}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/atta-${CMAKE_PROJECT_VERSION}
-)
-# Write cmake targets
-install(EXPORT atta_targets
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/atta-${CMAKE_PROJECT_VERSION}
-	FILE attaTargets.cmake
-)
+    # Install atta libraries
+    install(TARGETS ${ATTA_LIBS}
+        EXPORT atta_targets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/${ATTA_VERSION_SAFE}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${ATTA_VERSION_SAFE}
+    )
+    # Write cmake targets
+    install(EXPORT atta_targets
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${ATTA_VERSION_SAFE}
+        FILE attaTargets.cmake
+    )
+endif()

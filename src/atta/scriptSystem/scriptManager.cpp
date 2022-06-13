@@ -35,8 +35,6 @@ namespace atta
         for(auto [script, value] : _scripts)
             if(script != _projectScript.first)
                 scripts.push_back(script);
-
-        LOG_DEBUG("ScriptManager", "Scripts: $0", scripts);
         return scripts;
     }
 

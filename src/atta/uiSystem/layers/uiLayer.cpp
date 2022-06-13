@@ -27,8 +27,8 @@ namespace atta::ui
         ImGui::CreateContext();
 
         ImGuiIO& io = ImGui::GetIO(); (void)io;
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// Enable Keyboard Controls
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;// Enable Docking
 
         // Don't save imgui.ini
         io.IniFilename = NULL;
@@ -37,13 +37,13 @@ namespace atta::ui
         io.IniFilename = NULL;
 #else
         // Multiple viewports not supported for the web
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;// Enable Multi-Viewport
 #endif
 
-        setTheme();
         GLFWwindow* window = glfwGetCurrentContext();
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 100");
+        setTheme();
     }
 
     void UILayer::onDetach()

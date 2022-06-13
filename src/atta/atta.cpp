@@ -44,8 +44,8 @@ namespace atta
         Config::init();
         FileManager::startUp();
 
-        uint64_t size = 1.5 * 1024UL * 1024UL * 1024UL;
-        _mainAllocator = new StackAllocator(size);// Allocate 1.5GB for the whole system
+        uint64_t size = 1.0 * 1024UL * 1024UL * 1024UL;
+        _mainAllocator = new StackAllocator(size);// Allocate 1.0GB for the whole system
         MemoryManager::registerAllocator(SSID("MainAllocator"), 
                 static_cast<Allocator*>(_mainAllocator));
 

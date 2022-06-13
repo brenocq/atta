@@ -1,12 +1,13 @@
 //--------------------------------------------------
 // Atta - Script System
-// scripts.h           
+// scripts.h
 // Date: 2022-06-12
 // By Breno Cunha Queiroz  
 //--------------------------------------------------
 #ifndef ATTA_SCRIPT_SYSTEM_SCRIPTS   
 #define ATTA_SCRIPT_SYSTEM_SCRIPTS   
 
+// Include scripts from the project
 @ATTA_STATIC_PROJECT_SCRIPTS@
 
 #endif// ATTA_SCRIPT_SYSTEM_SCRIPTS
