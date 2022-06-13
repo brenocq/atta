@@ -327,7 +327,8 @@ if(ATTA_SYSTEM_NAME MATCHES "Web")
 endif()
 
 ########## Install/Uninstall ##########
-if(NOT (ATTA_SYSTEM_NAME MATCHES "Web"))
+# Do not allow to install web build and static build
+if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     ########## Install files ##########
     set(ATTA_VERSION_SAFE atta-${CMAKE_PROJECT_VERSION})
 
