@@ -16,7 +16,7 @@ namespace atta
         NullLinker() = default;
         ~NullLinker() = default;
 
-        void linkTarget(StringId target, Script** script, ProjectScript** projectScript) override;
+        void linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) override;
         virtual void releaseTarget(StringId target) override {};
     };
 }

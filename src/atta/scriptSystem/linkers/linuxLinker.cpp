@@ -14,7 +14,7 @@
 
 namespace atta
 {
-    void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript)
+    void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name)
     {
         *script = nullptr;
         *projectScript = nullptr;
@@ -30,36 +30,26 @@ namespace atta
         if(fLib)
         {
             //---------- Script ----------//
-            using ScriptCreator = atta::Script* (*)();
+            using ScriptCreator = std::pair<std::string, atta::Script*> (*)();
             ScriptCreator fn = reinterpret_cast<ScriptCreator>(dlsym(fLib, "createScript"));
 
             const char* dlsymError = dlerror();
-            // NOTE commented because a target can not be a entity script target
-            //if(dlsymError)
-            //{
-            //	LOG_WARN("LinuxLinker", "Could not get script from library $0. Error: $1", lib.filename(), dlsymError);
-            //	dlclose(fLib);
-            //	return;
-            //}
-
             if(!dlsymError)
-                *script = fn();
+            {
+                *script = fn().second;
+                name = fn().first;
+            }
 
             //---------- Project Script ----------//
-            using ProjectScriptCreator = atta::ProjectScript* (*)();
+            using ProjectScriptCreator = std::pair<std::string, atta::ProjectScript*> (*)();
             ProjectScriptCreator pfn = reinterpret_cast<ProjectScriptCreator>(dlsym(fLib, "createProjectScript"));
 
             dlsymError = dlerror();
-            // NOTE commented because a target can not be a project script target
-            //if(dlsymError)
-            //{
-            //	LOG_WARN("LinuxLinker", "Could not get project script from library $0. Error: $1", lib.filename(), dlsymError);
-            //	dlclose(fLib);
-            //	return;
-            //}
-
             if(!dlsymError)
-                *projectScript = pfn();
+            {
+                *projectScript = pfn().second;
+                name = pfn().first;
+            }
 
             // Save library pointer to delete later
             _targetHandles[target] = fLib;

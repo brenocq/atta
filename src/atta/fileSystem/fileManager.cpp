@@ -37,8 +37,8 @@ namespace atta
         EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(FileManager::onSimulationStateChange));
         EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(FileManager::onSimulationStateChange));
 
+        // Default folder to clone published projects
         _defaultProjectFolder = fs::path(ATTA_DIR)/"projects";
-        LOG_DEBUG("FileManager", "default proj folder: $0", _defaultProjectFolder.string());
     }
 
     void FileManager::shutDownImpl()
@@ -48,6 +48,13 @@ namespace atta
 
     bool FileManager::openProjectImpl(fs::path projectFile)
     {
+#ifdef ATTA_STATIC_PROJECT
+        if(projectFile != fs::path(ATTA_STATIC_PROJECT_FILE))
+        {
+            LOG_WARN("FileManager", "It is not possible to open project [w]$0[], atta was built linked statically to [w]$0[]", projectFile, fs::path(ATTA_STATIC_PROJECT_FILE));
+            return false;
+        }
+#endif
         // Check valid project file (skip file check if first time saving this project)
         if(!fs::exists(projectFile))
         {
@@ -86,6 +93,7 @@ namespace atta
 
     bool FileManager::createProjectImpl(fs::path projectFile)
     {
+#ifndef ATTA_STATIC_PROJECT
         if(projectFile.extension() != ".atta")
         {
             LOG_WARN("FileManager", "Project file must have .atta extension [w]$0[]", fs::absolute(projectFile));
@@ -108,6 +116,9 @@ namespace atta
 
         ProjectOpenEvent e;
         EventManager::publish(e);
+#else
+        LOG_WARN("FileManager", "It is not possible to create a project when atta is statically linked to a project");
+#endif
 
         return true;
     }
@@ -126,6 +137,7 @@ namespace atta
 
     void FileManager::closeProjectImpl()
     {
+#ifndef ATTA_STATIC_PROJECT
         if(_project == nullptr)
             return;
 
@@ -136,6 +148,7 @@ namespace atta
 
         ProjectCloseEvent e;
         EventManager::publish(e);
+#endif
     }
 
     bool FileManager::isProjectOpenImpl() const

@@ -18,14 +18,23 @@ namespace atta
 		virtual ~Script() {};  
 		virtual void update(Entity entity, float dt) = 0;
 	}; 
+
+#ifdef ATTA_STATIC_PROJECT
+    template<typename T> class ScriptRegistration { static Script* reg; };
+#define ATTA_REGISTER_SCRIPT(TYPE) \
+    template<> \
+    inline ::atta::Script* ::atta::ScriptRegistration<TYPE>::reg = ::atta::ScriptManager::registerScript(#TYPE, new TYPE());
+#else
+#define ATTA_REGISTER_SCRIPT(TYPE) \
+    extern "C" {\
+        std::pair<std::string, atta::Script*> createScript()\
+        {\
+            return { #TYPE, static_cast<atta::Script*>(new TYPE()) };\
+        }\
+    }
+#endif
+
 }
 
-#define ATTA_REGISTER_SCRIPT(DerivedScript) \
-extern "C" {\
-    atta::Script* createScript()\
-    {\
-        return static_cast<atta::Script*>(new DerivedScript());\
-    }\
-}
 
 #endif// ATTA_SCRIPT_SYSTEM_SCRIPT_H
