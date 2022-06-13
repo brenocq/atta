@@ -50,14 +50,14 @@ namespace atta
 
     void SectionData::serialize(std::ostream& os)
     {
-        write<size_t>(os, _data.size());
+        write<uint32_t>(os, _data.size());
         write(os, _data.data(), _data.size());
     }
 
     void SectionData::deserialize(std::istream& is)
     {
-        size_t size;
-        read<size_t>(is, size);
+        uint32_t size;
+        read<uint32_t>(is, size);
         _data.resize(size);
         if(size > 0)
             read(is, _data.data(), _data.size());
@@ -227,7 +227,7 @@ namespace atta
     {
         if(isUndefined()) 
         {
-            write<size_t>(os, 0);
+            write<uint32_t>(os, 0);
         }
         else if(isData())
         {
@@ -235,7 +235,7 @@ namespace atta
         }
         else if(isMap())
         {
-            write<size_t>(os, std::numeric_limits<size_t>::max());
+            write<uint32_t>(os, std::numeric_limits<uint32_t>::max());
             write<char>(os, '{');
             for(auto& [key, val] : map())
             {
@@ -246,7 +246,7 @@ namespace atta
         }
         else if(isVector())
         {
-            write<size_t>(os, std::numeric_limits<size_t>::max());
+            write<uint32_t>(os, std::numeric_limits<uint32_t>::max());
             write<char>(os, '[');
             unsigned i = 0;
             for(auto& el : vector())
@@ -270,15 +270,15 @@ namespace atta
             if(levels.back()->_type == UNDEFINED)
             {
                 // Discover type
-                size_t size;
+                uint32_t size;
                 std::streampos oldPos = is.tellg();
-                read<size_t>(is, size);
-                if(size == std::numeric_limits<size_t>::max())
+                read<uint32_t>(is, size);
+                if(size == std::numeric_limits<uint32_t>::max())
                 {
-                   // Section is map or vector
+                    // Section is map or vector
                     oldPos = is.tellg();
                     char open;
-                    read<char>(is, open);
+                    read(is, open);
                     if(open == '{')
                     {
                         // Section is map
@@ -292,7 +292,7 @@ namespace atta
                         levels.back()->_type = VECTOR;
                     }
                     else
-                        LOG_ERROR("FileSystem::Section", "Could not deserialize, was expecting [w]'{'[] or [w]'['[] but found [w]'$0'[]", open);
+                        LOG_ERROR("FileSystem::Section", "Could not deserialize, was expecting [w]'{'[] or [w]'['[] but found [w]'$0'[]", char(open));
                 }
                 else
                 {
@@ -307,7 +307,7 @@ namespace atta
             {
                 std::streampos oldPos = is.tellg();
                 char close;
-                read<char>(is, close);
+                read(is, close);
                 if(close == '}')
                 {
                     // Finished reading map
@@ -330,7 +330,7 @@ namespace atta
             else if(levels.back()->_type == VECTOR)
             {
                 char close;
-                read<char>(is, close);
+                read(is, close);
                 if(close == ']')
                 {
                     // Finished reading map

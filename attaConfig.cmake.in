@@ -1,4 +1,6 @@
-include("${CMAKE_CURRENT_LIST_DIR}/attaTargets.cmake")
+if(NOT ATTA_STATIC_PROJECT)
+    include("${CMAKE_CURRENT_LIST_DIR}/attaTargets.cmake")
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

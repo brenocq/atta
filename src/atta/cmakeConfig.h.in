@@ -26,7 +26,7 @@
 #ifdef ATTA_STATIC_PROJECT 
 
 #ifdef ATTA_OS_WEB
-#define ATTA_STATIC_PROJECT_FILE "/project.atta"
+#define ATTA_STATIC_PROJECT_FILE "/project/project.atta"
 #else
 #define ATTA_STATIC_PROJECT_FILE "@ATTA_STATIC_PROJECT_FILE@"
 #endif
