@@ -184,6 +184,11 @@ namespace atta
         return map()[key];
     }
 
+    bool Section::contains(std::string key)
+    {
+        return map().find(key) != map().end();
+    }
+
     //---------- Vector ----------//
     std::vector<Section>& Section::vector()
     {

@@ -144,7 +144,7 @@ namespace atta
         _scripts.erase(_targetToScript[target]);
 
         // Delete project script
-        if(_projectScript.first == _targetToScript[target])
+        if(_projectScript.first != StringId() && _projectScript.first == _targetToScript[target])
         {
             _projectScript.second->onUnload();
             //ComponentManager::unregisterCustomComponents();

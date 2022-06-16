@@ -95,6 +95,8 @@ namespace atta
         /// Map access
         Section& operator[](std::string key);
 
+        bool contains(std::string key);
+
         //----- Vector -----//
         /// Get vector
         std::vector<Section>& vector();

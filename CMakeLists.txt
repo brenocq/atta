@@ -140,6 +140,7 @@ macro(atta_log type tag message)
 endmacro()
 
 ########## Build Types ##########
+atta_log(Info "Main" "cmake build type: ${CMAKE_BUILD_TYPE}")
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
 endif()
@@ -153,7 +154,7 @@ else()
 endif()
 
 ########## OS Specific ##########
-atta_log(Info "Main" "System name: ${CMAKE_SYSTEM_NAME}")
+atta_log(Info "Main" "cmake system name: ${CMAKE_SYSTEM_NAME}")
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)#----- Windows build
     set(ATTA_SYSTEM_NAME "Windows")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
@@ -217,6 +218,8 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
         list(APPEND ATTA_OPTIONS -fno-omit-frame-pointer)
         # Unused parameter
         list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
+        # Script C linkage
+        list(APPEND ATTA_OPTIONS -Wno-return-type-c-linkage)
         # Math anonymous union 
         #list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
         # Glad opengl definitions

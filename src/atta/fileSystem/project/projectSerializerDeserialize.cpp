@@ -35,15 +35,18 @@ namespace atta
             std::string name = compReg->getDescription().name;
 
             // Get all entities that have this component
-            std::vector<EntityId> eids = std::vector<EntityId>(section["components"][name]["entityIds"]);
-            std::vector<uint8_t> componentsData = std::vector<uint8_t>(section["components"][name]["data"]);
-            std::stringstream ss;
-            write(ss, componentsData.data(), componentsData.size());
-
-            for(EntityId eid : eids)
+            if(section["components"].contains(name))
             {
-                Component* component = ComponentManager::addEntityComponentById(compReg->getId(), eid);
-                compReg->deserialize(ss, component);
+                std::vector<EntityId> eids = std::vector<EntityId>(section["components"][name]["entityIds"]);
+                std::vector<uint8_t> componentsData = std::vector<uint8_t>(section["components"][name]["data"]);
+                std::stringstream ss;
+                write(ss, componentsData.data(), componentsData.size());
+
+                for(EntityId eid : eids)
+                {
+                    Component* component = ComponentManager::addEntityComponentById(compReg->getId(), eid);
+                    compReg->deserialize(ss, component);
+                }
             }
         }
     }

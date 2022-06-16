@@ -27,7 +27,7 @@ namespace atta
 #else
 #define ATTA_REGISTER_SCRIPT(TYPE) \
     extern "C" {\
-        std::pair<std::string, atta::Script*> createScript()\
+        std::pair<const char*, atta::Script*> createScript()\
         {\
             return { #TYPE, static_cast<atta::Script*>(new TYPE()) };\
         }\
