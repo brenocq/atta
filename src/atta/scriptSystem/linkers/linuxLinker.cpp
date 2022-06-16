@@ -30,25 +30,25 @@ namespace atta
         if(fLib)
         {
             //---------- Script ----------//
-            using ScriptCreator = std::pair<std::string, atta::Script*> (*)();
+            using ScriptCreator = std::pair<const char*, atta::Script*> (*)();
             ScriptCreator fn = reinterpret_cast<ScriptCreator>(dlsym(fLib, "createScript"));
 
             const char* dlsymError = dlerror();
             if(!dlsymError)
             {
                 *script = fn().second;
-                name = fn().first;
+                name = std::string(fn().first);
             }
 
             //---------- Project Script ----------//
-            using ProjectScriptCreator = std::pair<std::string, atta::ProjectScript*> (*)();
+            using ProjectScriptCreator = std::pair<const char*, atta::ProjectScript*> (*)();
             ProjectScriptCreator pfn = reinterpret_cast<ProjectScriptCreator>(dlsym(fLib, "createProjectScript"));
 
             dlsymError = dlerror();
             if(!dlsymError)
             {
                 *projectScript = pfn().second;
-                name = pfn().first;
+                name = std::string(pfn().first);
             }
 
             // Save library pointer to delete later
@@ -56,7 +56,12 @@ namespace atta
 
             std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
             auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-            LOG_INFO("LinuxLinker", "Time to link: $0 ms", micro.count()/1000.0f);
+
+            std::string type;
+            if(*projectScript) type = "ProjectScript " + name;
+            else if(*script) type = "Script " + name;
+            else type = "Component";
+            LOG_INFO("LinuxLinker", "Time to link [w]$0[]: $1 ms ($2)", target, micro.count()/1000.0f, type);
         }
         else
         {

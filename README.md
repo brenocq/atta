@@ -11,14 +11,15 @@
  <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-08.gif" height="200">
 </p>
 
-Atta is a robot simulator for 2D and 3D applications mainly focused on multi-robot systems with tons of similar robots. The objectives for this simulator are:
-  - Fast to develop new simulations
-  - Easy to understand
-  - Distribute the processing across CPUs / GPUs / Clusters
+Atta is a robot engine mainly focused on multi-robot systems with tons of similar robots. The objectives for this simulator are:
+  - Fast development (hot-reload)
+  - Easy to get started
+  - Distribute processing across CPUs / GPUs / Clusters
   - Interface between simulated and physical robots
-  - Cross-platform (including web support to easily share the simulations)
+  - Cross-platform (linux/macos/windows/web/android(?))
+  - Link to test published projects online ([example](https://atta.brenocq.com/projects/brenocq-atta/tutorial))
 
-Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs). You can also test the web build online [here](https://atta.brenocq.com/build).
+Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs). You can also test published projects online [here](https://atta.brenocq.com/build).
 
 ## Progress
 Check the atta progress by **clicking on the buttons below**. [Issues](https://github.com/brenocq/atta/issues) with bugs and [discussions](https://github.com/brenocq/atta/discussions) with new ideas are very welcome :)
@@ -35,6 +36,8 @@ Check the atta progress by **clicking on the buttons below**. [Issues](https://g
 [![SensorSystem](https://storage.googleapis.com/atta-images/main/sensor_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/10)
 [![UISystem](https://storage.googleapis.com/atta-images/main/ui_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/9)
 [![Docs](https://storage.googleapis.com/atta-images/main/docs_button_github_progress.png?)](https://github.com/brenocq/atta/projects/18)
+
+_Obs: There is a github workflow to update the progress bar of each icon automatically heh_
 
 ## Architecture
 Atta is composed of decoupled system, the current systems are:
@@ -62,39 +65,39 @@ This project aims to simulate complex systems like this, mainly composed of robo
 
 ## Build & test
 #### Dependencies
-To build atta properly, you need to have cmake installed. You will also need the dependencies for _glfw_ (necessary to create windows) and _cpprestsdk_ (necessary to access the network).
-
+To build atta properly, you need to have cmake installed.
 Dependencies for some operating systems:
 
 **Windows:**
 ```bash
 choco install cmake
-vcpkg install cpprestsdk cpprestsdk:x64-windows
 ```
 
 **MacOS:**
 ```bash
-brew install cmake boost openssl 
+brew install cmake
 ```
 
-**Ubuntu:**
+**Linux:**
 ```bash
-sudo apt-get install cmake xorg-dev openssl libssl-dev libboost-all-dev
+sudo apt-get install cmake xorg-dev curl
 ```
 
 #### Clone
-This step is operating system indepentent. Be sure to have your **github ssh key properly configured**. Atta should build without errors when the compiller supports C++17.
-If you found any errors, please do not hesitate to create an issue.
+This step is operating system indepentent. Be sure to have your **github ssh key properly configured**. Atta should build without errors when the **compiller supports C++17** (g++ >= 9.0).
+
+If you found any errors, please do not hesitate to [create an issue](https://github.com/brenocq/atta/issues/new?assignees=brenocq&labels=fix&template=bug_report.md&title=).
 
 ```bash
 git clone git@github.com:brenocq/atta.git
 cd atta
-mkdir build && cd build
-cmake ..
-make -j
+./scripts/build.sh --help
+./scripts/build.sh
 ./bin/atta_test
 ./bin/atta
 ```
+
+_Obs: The build script should help the user with dependencies. If you found ploblems please let me know_
 
 ## Discussions
 If you want to contribute, have ideas, or have questions about atta, feel free to [start a discussion](https://github.com/brenocq/atta/discussions).
