@@ -39,11 +39,11 @@ namespace atta
 #ifdef ATTA_STATIC_PROJECT
     template<typename T> class ProjectScriptRegistration { static ProjectScript* reg; };
 #define ATTA_REGISTER_PROJECT_SCRIPT(TYPE) \
-    template<> inline ::atta::Script* ::atta::ProjectScriptRegistration<TYPE>::reg = ::atta::ScriptManager::registerProjectScript(#TYPE, new TYPE());
+    template<> inline ::atta::ProjectScript* ::atta::ProjectScriptRegistration<TYPE>::reg = ::atta::ScriptManager::registerProjectScript(#TYPE, new TYPE());
 #else
 #define ATTA_REGISTER_PROJECT_SCRIPT(TYPE) \
     extern "C" {\
-        std::pair<std::string, atta::ProjectScript*> createProjectScript()\
+        std::pair<const char*, atta::ProjectScript*> createProjectScript()\
         {\
             return { #TYPE, static_cast<atta::ProjectScript*>(new TYPE()) };\
         }\

@@ -18,6 +18,7 @@ option(ATTA_STATIC_PROJECT_FILE
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(ATTA_VERSION_SAFE atta-${CMAKE_PROJECT_VERSION})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
 
@@ -140,6 +141,7 @@ macro(atta_log type tag message)
 endmacro()
 
 ########## Build Types ##########
+atta_log(Info "Main" "cmake build type: ${CMAKE_BUILD_TYPE}")
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
 endif()
@@ -153,7 +155,7 @@ else()
 endif()
 
 ########## OS Specific ##########
-atta_log(Info "Main" "System name: ${CMAKE_SYSTEM_NAME}")
+atta_log(Info "Main" "cmake system name: ${CMAKE_SYSTEM_NAME}")
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)#----- Windows build
     set(ATTA_SYSTEM_NAME "Windows")
     list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
@@ -217,6 +219,8 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
         list(APPEND ATTA_OPTIONS -fno-omit-frame-pointer)
         # Unused parameter
         list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
+        # Script C linkage
+        list(APPEND ATTA_OPTIONS -Wno-return-type-c-linkage)
         # Math anonymous union 
         #list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
         # Glad opengl definitions
@@ -329,7 +333,6 @@ endif()
 # Do not allow to install web build and static build
 if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     ########## Install files ##########
-    set(ATTA_VERSION_SAFE atta-${CMAKE_PROJECT_VERSION})
 
     # Install atta executable
     install(TARGETS atta 
@@ -353,6 +356,8 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     # Install extern includes
     install(DIRECTORY build/_deps/imgui-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/imgui
         FILES_MATCHING REGEX ".*\.(h|inl)$")
+    install(DIRECTORY build/_deps/implot-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/implot
+        FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY src/extern/glad/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/glad
         FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY src/extern/stb_image/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/stb_image
@@ -361,6 +366,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     # Set install variables
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE})
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/imgui)
+    list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/implot)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/glad/include)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/stb_image)
     set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/atta/pch.h)
