@@ -112,6 +112,7 @@ If you want to contribute, have ideas, or have questions about atta, feel free t
 - [(Book) Game Programming Patterns](https://gameprogrammingpatterns.com)
 - [(Book) Game Engine Architecture](https://www.gameenginebook.com)
 - [(Book) C++ Templates: The Complete Guide](http://www.tmplbook.com)
+- [(Book) Introduction to MultiAgent Systems](https://www.amazon.com/Introduction-MultiAgent-Systems-Michael-Wooldridge/dp/0470519460)
 
 ## License
 This project is licensed under the MIT License - check [LICENSE](LICENSE) for details.
