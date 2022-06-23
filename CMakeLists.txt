@@ -18,6 +18,7 @@ option(ATTA_STATIC_PROJECT_FILE
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(ATTA_VERSION_SAFE atta-${CMAKE_PROJECT_VERSION})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
 
@@ -332,7 +333,6 @@ endif()
 # Do not allow to install web build and static build
 if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     ########## Install files ##########
-    set(ATTA_VERSION_SAFE atta-${CMAKE_PROJECT_VERSION})
 
     # Install atta executable
     install(TARGETS atta 
@@ -356,6 +356,8 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     # Install extern includes
     install(DIRECTORY build/_deps/imgui-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/imgui
         FILES_MATCHING REGEX ".*\.(h|inl)$")
+    install(DIRECTORY build/_deps/implot-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/implot
+        FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY src/extern/glad/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/glad
         FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY src/extern/stb_image/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/stb_image
@@ -364,6 +366,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     # Set install variables
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE})
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/imgui)
+    list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/implot)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/glad/include)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/stb_image)
     set(ATTA_INSTALL_PCH ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/atta/pch.h)

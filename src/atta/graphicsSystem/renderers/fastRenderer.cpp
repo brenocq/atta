@@ -89,7 +89,15 @@ namespace atta
                     shader->setMat4("model", model);
 
                     if(material)
-                        shader->setVec3("albedo", material->albedo);
+                    {
+                        if(material->albedoTexture.getId() != SID("Empty texture"))
+                        {
+                            shader->setTexture("albedoTexture", material->albedoTexture);
+                            shader->setVec3("albedo", {-1, -1, -1});
+                        }
+                        else
+                            shader->setVec3("albedo", material->albedo);
+                    }
                     else
                     {
                         MaterialComponent material {};

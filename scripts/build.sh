@@ -6,6 +6,8 @@ BUILD_PATH="$SCRIPT_PATH/../build"
 CMAKE_BUILD_TYPE="-DCMAKE_BUILD_TYPE=Release"
 CMAKE_ATTA_STATIC=""
 BUILD_TYPE="default"
+RUN_AFTER="false"
+INSTALL_AFTER="false"
 
 printHelp()
 {
@@ -28,6 +30,12 @@ printHelp()
    echo "-s or --static <project_file>"
    echo "        Build statically linked to a project."
    echo "        The file should be a valid .atta"
+   echo
+   echo "-r or --run"
+   echo "        Run after build."
+   echo
+   echo "-i or --install"
+   echo "        Install after build."
    exit
 }
 
@@ -54,8 +62,22 @@ safeBuild()
 buildDefault()
 {
     echo "---------- Building ----------"
+    # Build
     cmake $CMAKE_BUILD_TYPE $CMAKE_ATTA_STATIC ..
     make -j
+
+    # Install
+    if [[ "$INSTALL_AFTER" == "true" ]]; then
+        echo "---------- Installing ----------"
+       sudo make install
+    fi
+
+    # Run
+    if [[ "$RUN_AFTER" == "true" ]]; then
+        echo "---------- Running ----------"
+        bin/atta
+    fi
+
     exit
 }
 
@@ -77,7 +99,13 @@ buildWeb()
     echo "---------- Building web ----------"
     emcmake cmake $CMAKE_MODULE $CMAKE_BUILD_TYPE $CMAKE_ATTA_STATIC ..
     make -j
-    #emrun bin/atta.html
+
+    # Run
+    if [[ "$RUN_AFTER" == "true" ]]; then
+        echo "---------- Running web ----------"
+        emrun bin/atta.html
+    fi
+
     exit
 }
 
@@ -97,6 +125,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     -d|--debug)
       CMAKE_BUILD_TYPE="-DCMAKE_BUILD_TYPE=Debug"
+      shift # past argument
+      ;;
+    -r|--run)
+      RUN_AFTER="true"
+      shift # past argument
+      ;;
+    -i|--install)
+      INSTALL_AFTER="true"
       shift # past argument
       ;;
     -t|--type)
