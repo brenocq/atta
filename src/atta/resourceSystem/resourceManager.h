@@ -22,9 +22,10 @@ namespace atta
         static void startUp();
         static void shutDown();
 
+        template <typename R, typename... Args>
+        static R* create(const fs::path& filename, Args... args) { return getInstance().createImpl<R>(filename, args...); }
         template <typename R>
         static R* get(const fs::path& filename) { return getInstance().getImpl<R>(filename); }
-
         template <typename R>
         static std::vector<StringId> getResources() { return getInstance().getResourcesImpl<R>(); }
 
@@ -34,6 +35,8 @@ namespace atta
         void loadResourcesRecursively(fs::path directory);
         void onProjectOpen(Event& event);
 
+        template <typename R, typename... Args>
+        R* createImpl(const fs::path& filename, Args... args);
         template <typename R>
         R* getImpl(const fs::path& filename);
         template <typename R>

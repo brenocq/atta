@@ -55,6 +55,15 @@ namespace atta
             glGetShaderInfoLog(_id, 512, NULL, infoLog);
             ASSERT(false, "Failed to compile shader [*w]$0[]:[w]\n$1", _filepath.string(), infoLog);
         }
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        // color attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+        // texture coord attribute
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
     }
 
     void OpenGLShader::deleteShader()
