@@ -39,6 +39,7 @@ namespace atta
         // Handle events
         void onMeshLoadEvent(Event& event);
         void onTextureLoadEvent(Event& event);
+        void onTextureUpdateEvent(Event& event);
 
         std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> getOpenGLImages() const { return _openGLImages; };
         std::unordered_map<StringHash, OpenGLId> getOpenGLCubemaps() const { return _openGLCubemaps; };

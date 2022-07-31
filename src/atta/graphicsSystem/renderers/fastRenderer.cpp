@@ -52,7 +52,7 @@ namespace atta
         pipelineInfo.layout = {
             { "inPosition", VertexBufferElement::Type::VEC3 },
             { "inNormal", VertexBufferElement::Type::VEC3 },
-            { "inTexCoord", VertexBufferElement::Type::VEC2 }
+            { "inputTexCoord", VertexBufferElement::Type::VEC2 }
         };
         pipelineInfo.renderPass = renderPass;
         _geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
@@ -72,7 +72,7 @@ namespace atta
         std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
         _geometryPipeline->begin();
         {
-            std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());
+            std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
 
             shader->setMat4("projection", transpose(camera->getProj()));
             shader->setMat4("view", transpose(camera->getView()));
@@ -103,8 +103,6 @@ namespace atta
                         MaterialComponent material {};
                         shader->setVec3("albedo", material.albedo);
                     }
-
-                    //if(entity == ComponentManager::getSelectedEntity())
 
                     // Draw mesh
                     GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);

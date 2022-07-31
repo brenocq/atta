@@ -7,6 +7,7 @@ CMAKE_BUILD_TYPE="-DCMAKE_BUILD_TYPE=Release"
 CMAKE_ATTA_STATIC=""
 BUILD_TYPE="default"
 RUN_AFTER="false"
+PROJECT_TO_RUN=""
 INSTALL_AFTER="false"
 
 printHelp()
@@ -33,6 +34,9 @@ printHelp()
    echo
    echo "-r or --run"
    echo "        Run after build."
+   echo
+   echo "-p or --project <project_file>"
+   echo "        Specify project to run."
    echo
    echo "-i or --install"
    echo "        Install after build."
@@ -75,7 +79,7 @@ buildDefault()
     # Run
     if [[ "$RUN_AFTER" == "true" ]]; then
         echo "---------- Running ----------"
-        bin/atta
+        bin/atta $PROJECT_TO_RUN
     fi
 
     exit
@@ -130,6 +134,11 @@ while [[ $# -gt 0 ]]; do
     -r|--run)
       RUN_AFTER="true"
       shift # past argument
+      ;;
+    -p|--project)
+      PROJECT_TO_RUN="$2"
+      shift # past argument
+      shift # past value
       ;;
     -i|--install)
       INSTALL_AFTER="true"

@@ -20,9 +20,6 @@ namespace atta
         {
             GLenum openGLType = convertBaseType(element.type);
 
-            // Enable attribute
-            glEnableVertexAttribArray(i);
-
             // Define attribute format
             if(openGLType == GL_INT)
             {
@@ -41,6 +38,9 @@ namespace atta
                         _layout.getStride(), 
                         reinterpret_cast<void*>(element.offset));
             }
+
+            // Enable attribute
+            glEnableVertexAttribArray(i);
             i++;
         }
     }
