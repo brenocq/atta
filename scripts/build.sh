@@ -28,6 +28,9 @@ printHelp()
    echo "-d or --debug"
    echo "        Build with debug information."
    echo
+   echo "-g or --gdb"
+   echo "        Run with gdb."
+   echo
    echo "-s or --static <project_file>"
    echo "        Build statically linked to a project."
    echo "        The file should be a valid .atta"
@@ -79,7 +82,11 @@ buildDefault()
     # Run
     if [[ "$RUN_AFTER" == "true" ]]; then
         echo "---------- Running ----------"
-        bin/atta $PROJECT_TO_RUN
+        if [[ "$USE_GDB" == "true" ]]; then
+            gdb -ex r --args bin/atta $PROJECT_TO_RUN
+        else
+            bin/atta $PROJECT_TO_RUN
+        fi
     fi
 
     exit
@@ -129,6 +136,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     -d|--debug)
       CMAKE_BUILD_TYPE="-DCMAKE_BUILD_TYPE=Debug"
+      shift # past argument
+      ;;
+    -g|--gdb)
+      USE_GDB="true"
+      RUN_AFTER="true"
       shift # past argument
       ;;
     -r|--run)

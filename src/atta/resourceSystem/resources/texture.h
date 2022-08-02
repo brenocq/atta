@@ -36,6 +36,7 @@ namespace atta
 
         void resize(uint32_t width, uint32_t height);
         void update();
+        void saveToFile();
 
         uint32_t getWidth() const { return _width; }
         uint32_t getHeight() const { return _height; }

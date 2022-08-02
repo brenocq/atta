@@ -146,7 +146,6 @@ namespace atta
             return;
         }
         lastWarns[sid] = false;
-        LOG_DEBUG("OpenGLShaderGroup", "Setting $0 as $1", name, sid);
 
         int imgUnit = -1;
         for(unsigned i = 0; i < _textureUnits.size(); i++)
@@ -169,7 +168,6 @@ namespace atta
         // Activate texture unit
         glActiveTexture(GL_TEXTURE0+imgUnit);
         glBindTexture(GL_TEXTURE_2D, image->getId());
-        LOG_DEBUG("OpenGLShaderGroup", "[*b]Unit $0 to $1", imgUnit, (int)image->getId());
     }
 
     void OpenGLShaderGroup::setTexture(const char* name, std::shared_ptr<Image> inImage)

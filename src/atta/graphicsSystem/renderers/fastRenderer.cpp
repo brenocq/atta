@@ -8,7 +8,6 @@
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/graphicsSystem/framebuffer.h>
 #include <atta/graphicsSystem/renderPass.h>
-
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLShaderGroup.h>
 
 #include <atta/resourceSystem/resourceManager.h>
@@ -25,6 +24,7 @@ namespace atta
     FastRenderer::FastRenderer():
         Renderer("FastRenderer")
     {
+        //---------- Create geometry pipeline ----------//
         // Framebuffer
         Framebuffer::CreateInfo framebufferInfo {};
         framebufferInfo.attachments.push_back({Image::Format::RGB});
@@ -52,12 +52,12 @@ namespace atta
         pipelineInfo.layout = {
             { "inPosition", VertexBufferElement::Type::VEC3 },
             { "inNormal", VertexBufferElement::Type::VEC3 },
-            { "inputTexCoord", VertexBufferElement::Type::VEC2 }
+            { "inTexCoord", VertexBufferElement::Type::VEC2 }
         };
         pipelineInfo.renderPass = renderPass;
         _geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
 
-        //---------- Selected pipeline ----------//
+        //---------- Common pipelines ----------//
         _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
         _drawerPipeline = std::make_unique<DrawerPipeline>(renderPass);
     }

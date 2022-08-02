@@ -60,8 +60,7 @@ void main()
     // Initialize material
     albedo = material.albedo;
     if(albedo.x < 0.0f)
-        //albedo = texture(albedoTexture, texCoord).rgb;
-        albedo = vec3(texCoord.x, texCoord.y, 1.0f);
+        albedo = texture(albedoTexture, texCoord).rgb;
 
     metallic = material.metallic;
     if(metallic < 0.0f)

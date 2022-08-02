@@ -36,7 +36,7 @@ namespace atta
         // Receives a relative resource path and searches the registered directories for that file
         // By default searches on the <ATTA_DIR>/resources and <PROJECT_DIR>/resources directories
         // The return is the absolute resource path
-        static fs::path solveResourcePath(fs::path relativePath) { return getInstance().solveResourcePathImpl(relativePath); }
+        static fs::path solveResourcePath(fs::path relativePath, bool mustExist = true) { return getInstance().solveResourcePathImpl(relativePath, mustExist); }
         static std::vector<fs::path> getResourcePaths() { return getInstance().getResourcePathsImpl(); }
         static std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
         static fs::path getDefaultProjectFolder() { return getInstance()._defaultProjectFolder; }
@@ -55,7 +55,7 @@ namespace atta
         bool isProjectOpenImpl() const;
         std::shared_ptr<Project> getProjectImpl() const { return _project; }
 
-        fs::path solveResourcePathImpl(fs::path relativePath);
+        fs::path solveResourcePathImpl(fs::path relativePath, bool mustExist);
         std::vector<fs::path> getResourcePathsImpl() const;
 
         // Handle events

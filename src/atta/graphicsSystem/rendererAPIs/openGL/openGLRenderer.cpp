@@ -276,7 +276,6 @@ namespace atta
 
     void OpenGLRenderer::onTextureUpdateEvent(Event& event)
     {
-
         TextureUpdateEvent& e = reinterpret_cast<TextureUpdateEvent&>(event);
         //OpenGLRenderer::initializeTexture(e.sid);
         Texture* texture = ResourceManager::get<Texture>(e.sid.getString());

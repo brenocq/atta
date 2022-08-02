@@ -41,7 +41,6 @@ namespace atta
 
     void OpenGLImage::resize(uint32_t width, uint32_t height, bool forceRecreate)
     {
-        LOG_DEBUG("OpenGlImage", "Resize -> $0 ($1)", (int)_id, _debugName);
         // Check if size was not changed
         if(!forceRecreate && (_width == width && _height == height))
             return;
