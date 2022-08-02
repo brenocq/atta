@@ -136,12 +136,16 @@ namespace atta
     {
         std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(GraphicsManager::getRendererAPI());
         std::shared_ptr<OpenGLImage> image = renderer->getOpenGLImages()[sid.getId()];
+        static std::map<StringId, bool> lastWarns;// Used to avoid spamming warn
 
         if(!image)
         {
-            LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to use image that was never loaded: $0 = \"$1\"", name, sid);
+            if(!lastWarns[sid])
+                LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to use image that was never loaded: $0 = \"$1\"", name, sid);
+            lastWarns[sid] = true;
             return;
         }
+        lastWarns[sid] = false;
 
         int imgUnit = -1;
         for(unsigned i = 0; i < _textureUnits.size(); i++)

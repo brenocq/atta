@@ -8,7 +8,6 @@
 #include <atta/graphicsSystem/graphicsManager.h>
 #include <atta/graphicsSystem/framebuffer.h>
 #include <atta/graphicsSystem/renderPass.h>
-
 #include <atta/graphicsSystem/rendererAPIs/openGL/openGLShaderGroup.h>
 
 #include <atta/resourceSystem/resourceManager.h>
@@ -25,6 +24,7 @@ namespace atta
     FastRenderer::FastRenderer():
         Renderer("FastRenderer")
     {
+        //---------- Create geometry pipeline ----------//
         // Framebuffer
         Framebuffer::CreateInfo framebufferInfo {};
         framebufferInfo.attachments.push_back({Image::Format::RGB});
@@ -57,7 +57,7 @@ namespace atta
         pipelineInfo.renderPass = renderPass;
         _geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
 
-        //---------- Selected pipeline ----------//
+        //---------- Common pipelines ----------//
         _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
         _drawerPipeline = std::make_unique<DrawerPipeline>(renderPass);
     }
@@ -72,7 +72,7 @@ namespace atta
         std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
         _geometryPipeline->begin();
         {
-            std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());
+            std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
 
             shader->setMat4("projection", transpose(camera->getProj()));
             shader->setMat4("view", transpose(camera->getView()));
@@ -103,8 +103,6 @@ namespace atta
                         MaterialComponent material {};
                         shader->setVec3("albedo", material.albedo);
                     }
-
-                    //if(entity == ComponentManager::getSelectedEntity())
 
                     // Draw mesh
                     GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);

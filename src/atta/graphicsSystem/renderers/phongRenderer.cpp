@@ -73,8 +73,8 @@ namespace atta
         std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
         _geometryPipeline->begin();
         {
-            // Camera
             std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
+
             shader->setMat4("projection", transpose(camera->getProj()));
             shader->setMat4("view", transpose(camera->getView()));
             shader->setVec3("viewPos", camera->getPosition());

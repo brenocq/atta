@@ -15,7 +15,7 @@ namespace atta
         _directory(file.parent_path())
     {
         fs::path projectResourcePath = _directory/"resources";
-        if(exists(projectResourcePath))
+        if(fs::exists(projectResourcePath))
             _resourceRootPaths.push_back(projectResourcePath);
         _resourceRootPaths.push_back(fs::path(ATTA_DIR)/"resources");
 
@@ -32,13 +32,18 @@ namespace atta
         return _directory/"snapshots";
     }
 
-    fs::path Project::solveResourcePath(fs::path relativePath)
+    fs::path Project::solveResourcePath(fs::path relativePath, bool mustExist)
     {
-        for(auto& root : _resourceRootPaths)	
+        if(!mustExist)
+            return _directory/"resources"/relativePath;
+        else
         {
-            fs::path full = root/relativePath;
-            if(fs::exists(full))
-                return full;
+            for(auto& root : _resourceRootPaths)	
+            {
+                fs::path full = root/relativePath;
+                if(fs::exists(full))
+                    return full;
+            }
         }
 
         return fs::path();

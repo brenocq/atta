@@ -2,11 +2,10 @@
 precision mediump float;
 
 in vec2 texCoord;
+out vec4 FragColor;
 
 uniform vec3 albedo;
 uniform sampler2D albedoTexture;
-
-out vec4 FragColor;
 
 void main()
 {

@@ -26,11 +26,13 @@ namespace atta
     {
         if(!_isCubemap)
         {
-            glBindTexture(GL_TEXTURE_2D, _id);
+            //LOG_DEBUG("OpenGlImage", "Writing $0 -> $1 ($2)", data, (int)_id, _debugName);
             GLenum dataType = OpenGLImage::convertDataType(_format);
             GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
             GLenum format = OpenGLImage::convertFormat(_format);
-            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, data);
+
+            glBindTexture(GL_TEXTURE_2D, _id);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _width, _height, format, dataType, data);
             glBindTexture(GL_TEXTURE_2D, 0);
         }
         else

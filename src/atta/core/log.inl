@@ -82,7 +82,7 @@ namespace atta
     }
 
     template<typename T>
-    std::string getArgStr(T t)
+    std::string getArgStr(const T& t)
     {
         std::stringstream ss;
 

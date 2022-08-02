@@ -12,6 +12,7 @@
 #include <atta/eventSystem/eventManager.h>
 #include <atta/eventSystem/events/meshLoadEvent.h>
 #include <atta/eventSystem/events/textureLoadEvent.h>
+#include <atta/eventSystem/events/textureUpdateEvent.h>
 #include <atta/resourceSystem/resourceManager.h>
 #include <atta/resourceSystem/resources/mesh.h>
 #include <GLFW/glfw3.h>
@@ -69,6 +70,7 @@ namespace atta
         // Subscribe to events
         EventManager::subscribe<MeshLoadEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
         EventManager::subscribe<TextureLoadEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onTextureLoadEvent));
+        EventManager::subscribe<TextureUpdateEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onTextureUpdateEvent));
 
         // Quad shader
         ShaderGroup::CreateInfo shaderGroupInfo {};
@@ -270,6 +272,29 @@ namespace atta
     {
         TextureLoadEvent& e = reinterpret_cast<TextureLoadEvent&>(event);
         initializeTexture(e.sid);
+    }
+
+    void OpenGLRenderer::onTextureUpdateEvent(Event& event)
+    {
+        TextureUpdateEvent& e = reinterpret_cast<TextureUpdateEvent&>(event);
+        //OpenGLRenderer::initializeTexture(e.sid);
+        Texture* texture = ResourceManager::get<Texture>(e.sid.getString());
+        if(texture == nullptr)
+        {
+            LOG_WARN("OpenGLRenderer", "Could not initialize OpenGL texture from [w]$0[], texture resource does not exists", e.sid.getString());
+            return;
+        }
+        if(_openGLImages.find(e.sid.getId()) == _openGLImages.end())
+        {
+            LOG_WARN("OpenGLRenderer", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
+            return;
+        }
+
+        std::shared_ptr<OpenGLImage> image = _openGLImages[e.sid.getId()];
+        if(texture->getWidth() != image->getWidth() || texture->getHeight() != image->getHeight())
+            image->resize(texture->getWidth(), texture->getHeight());
+        else
+            image->write(texture->getData());
     }
 
     void OpenGLRenderer::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer)
