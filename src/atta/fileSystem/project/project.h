@@ -25,7 +25,7 @@ namespace atta
         std::vector<fs::path> getResourceRootPaths() const { return _resourceRootPaths; }
 
     private:
-        fs::path solveResourcePath(fs::path relativePath);
+        fs::path solveResourcePath(fs::path relativePath, bool mustExist = true);
 
         std::string _name;
 

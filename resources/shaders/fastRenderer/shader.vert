@@ -1,13 +1,12 @@
 #version 300 es
-in vec3 inPosition;
-in vec3 inNormal;
-in vec2 inTexCoord;
+layout (location = 0) in vec3 inPosition;
+layout (location = 1) in vec3 inNormal;
+layout (location = 2) in vec2 inTexCoord;
+out vec2 texCoord;
 
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
-
-out vec2 texCoord;
 
 void main()
 {

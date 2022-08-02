@@ -162,14 +162,14 @@ namespace atta
         _fileWatcher->update();
     }
 
-    fs::path FileManager::solveResourcePathImpl(fs::path relativePath)
+    fs::path FileManager::solveResourcePathImpl(fs::path relativePath, bool mustExist)
     {
         if(_project != nullptr)
-            return _project->solveResourcePath(relativePath);
+            return _project->solveResourcePath(relativePath, mustExist);
         else
         {
             fs::path full = fs::path(ATTA_DIR)/"resources"/relativePath;
-            if(fs::exists(full))
+            if(!mustExist || fs::exists(full))
                 return full;
             else 
                 return fs::path();

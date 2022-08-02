@@ -12,6 +12,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 namespace atta
 {
@@ -63,6 +65,8 @@ namespace atta
         }
 
         _data = new uint8_t[_width*_height*_channels*getBytesPerChannel(_format)];
+        for(int i = 0; i < _width*_height*_channels*getBytesPerChannel(_format); i++)
+            _data[i] = 0;
     }
 
     Texture::~Texture()
@@ -72,9 +76,9 @@ namespace atta
 
     void Texture::resize(uint32_t width, uint32_t height)
     {
-        delete[] _data;
         _width = width;
         _height = height;
+        delete[] _data;
         _data = new uint8_t[_width*_height*_channels*getBytesPerChannel(_format)];
 
         update();
@@ -84,6 +88,27 @@ namespace atta
     {
         TextureUpdateEvent e(_id);
         EventManager::publish(e);
+    }
+
+    void Texture::saveToFile()
+    {
+        fs::path absolutePath = FileManager::solveResourcePath(_filename, false);
+        fs::create_directories(absolutePath.parent_path());
+
+        // Save buffer as image
+        if(absolutePath.extension() == fs::path(".jpeg") || absolutePath.extension() == fs::path(".jpg"))
+        {
+            LOG_DEBUG("Texture", "Saving [w]$0[] as JPG image", absolutePath.string());
+            stbi_write_jpg(absolutePath.string().c_str(), _width, _height, _channels, _data, _channels*_width);
+        }
+        else if(absolutePath.extension() == fs::path(".png"))
+        {
+            LOG_DEBUG("Texture", "Saving [w]$0[] as PNG image", absolutePath.string());
+            stbi_write_png(absolutePath.string().c_str(), _width, _height, _channels, _data, _channels*_width);
+        }
+        else
+            LOG_WARN("Texture", "Unknown image extension '[w]$0[]' when trying to save [w]$1[]", 
+                    absolutePath.extension().string(), absolutePath.string());
     }
 
     uint32_t Texture::getBytesPerChannel(Format format)
