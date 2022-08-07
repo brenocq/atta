@@ -22,7 +22,7 @@ void EntityWindow::render() {
     {
         if (ImGui::BeginDragDropTarget()) {
             if (ImGui::AcceptDragDropPayload("component::EntityId"))
-                LOG_DEBUG("EntityWindow", "Drop outside");
+                LOG_DEBUG("ui::EntityWindow", "Drop outside");
             ImGui::EndDragDropTarget();
         }
 

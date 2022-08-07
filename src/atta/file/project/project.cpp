@@ -15,7 +15,7 @@ Project::Project(fs::path file) : _name(file.stem().string()), _file(fs::absolut
         _resourceRootPaths.push_back(projectResourcePath);
     _resourceRootPaths.push_back(fs::path(ATTA_DIR) / "resources");
 
-    LOG_DEBUG("Project", "Opened project [*g]$0[] ([w]$1[])", _name, _file);
+    LOG_DEBUG("file::Project", "Opened project [*g]$0[] ([w]$1[])", _name, _file);
 }
 
 fs::path Project::getBuildDirectory() { return _directory / "build"; }

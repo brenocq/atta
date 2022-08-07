@@ -102,7 +102,7 @@ void OpenGLShaderGroup::setTexture(const char* name, StringId sid) {
 
     if (!image) {
         if (!lastWarns[sid])
-            LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to use image that was never loaded: $0 = \"$1\"", name, sid);
+            LOG_WARN("graphics::OpenGLShaderGroup", "(setTexture) Trying to use image that was never loaded: $0 = \"$1\"", name, sid);
         lastWarns[sid] = true;
         return;
     }
@@ -116,7 +116,7 @@ void OpenGLShaderGroup::setTexture(const char* name, StringId sid) {
         }
 
     if (imgUnit == -1) {
-        LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setTexture) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 
@@ -133,7 +133,7 @@ void OpenGLShaderGroup::setTexture(const char* name, std::shared_ptr<Image> inIm
     std::shared_ptr<OpenGLImage> image = std::static_pointer_cast<OpenGLImage>(inImage);
 
     if (!image) {
-        LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to set [w]$0[] with image that was never created", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setTexture) Trying to set [w]$0[] with image that was never created", name);
         return;
     }
 
@@ -145,7 +145,7 @@ void OpenGLShaderGroup::setTexture(const char* name, std::shared_ptr<Image> inIm
         }
 
     if (imgUnit == -1) {
-        LOG_WARN("OpenGLShaderGroup", "(setTexture) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setTexture) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 
@@ -161,7 +161,7 @@ void OpenGLShaderGroup::setTexture(const char* name, std::shared_ptr<Image> inIm
 void OpenGLShaderGroup::setCubemap(const char* name, StringId sid) {
     std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(Manager::getRendererAPI());
     if (renderer->getOpenGLCubemaps().find(sid.getId()) == renderer->getOpenGLCubemaps().end()) {
-        LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to use cubemap that was never generated: $0 = \"$1\"", name, sid);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to use cubemap that was never generated: $0 = \"$1\"", name, sid);
         return;
     }
     OpenGLId cubemap = renderer->getOpenGLCubemaps()[sid.getId()];
@@ -173,7 +173,7 @@ void OpenGLShaderGroup::setCubemap(const char* name, StringId sid) {
             break;
         }
     if (imgUnit == -1) {
-        LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 
@@ -184,19 +184,19 @@ void OpenGLShaderGroup::setCubemap(const char* name, StringId sid) {
     // Activate texture unit
     glActiveTexture(GL_TEXTURE0 + imgUnit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-    // LOG_DEBUG("OpenGLShaderGroup", "Bind $0 to texture unit $1, id $2 -> $3", name, imgUnit, cubemap, _textureUnits);
+    // LOG_DEBUG("graphics::OpenGLShaderGroup", "Bind $0 to texture unit $1, id $2 -> $3", name, imgUnit, cubemap, _textureUnits);
 }
 
 void OpenGLShaderGroup::setCubemap(const char* name, std::shared_ptr<Image> inImage) {
     std::shared_ptr<OpenGLImage> image = std::static_pointer_cast<OpenGLImage>(inImage);
 
     if (!image) {
-        LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that was never created", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that was never created", name);
         return;
     }
 
     if (!image->isCubemap()) {
-        LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that is not a cubemap", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that is not a cubemap", name);
         return;
     }
 
@@ -208,7 +208,7 @@ void OpenGLShaderGroup::setCubemap(const char* name, std::shared_ptr<Image> inIm
         }
 
     if (imgUnit == -1) {
-        LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 

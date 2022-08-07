@@ -95,7 +95,7 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                     shader->setVec3("directionalLight.intensity", dl->intensity);
                 }
                 if (numPointLights++ == 10)
-                    LOG_WARN("PhongRenderer", "Maximum number of point lights reached, 10 lights");
+                    LOG_WARN("graphics::PhongRenderer", "Maximum number of point lights reached, 10 lights");
             }
         }
         shader->setInt("numPointLights", numPointLights);

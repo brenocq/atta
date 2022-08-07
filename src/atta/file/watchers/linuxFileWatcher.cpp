@@ -27,7 +27,7 @@ LinuxFileWatcher::LinuxFileWatcher() {
 
     _inotifyFd = inotify_init();
     if (_inotifyFd < 0) {
-        LOG_WARN("LinuxFileWatcher", "Could not initialize inotify! Error ($0): $1", _inotifyFd, std::strerror(errno));
+        LOG_WARN("file::LinuxFileWatcher", "Could not initialize inotify! Error ($0): $1", _inotifyFd, std::strerror(errno));
         return;
     }
 }
@@ -46,12 +46,12 @@ void LinuxFileWatcher::addWatch(fs::path directory) {
     // Get watch descriptor
     int wd = inotify_add_watch(_inotifyFd, fs::absolute(directory).c_str(), IN_MODIFY);
     if (wd < 0) {
-        LOG_WARN("LinuxFileWatcher", "Could not add watch to $0! (Error ($1): $2)", directory, wd, std::strerror(errno));
+        LOG_WARN("file::LinuxFileWatcher", "Could not add watch to $0! (Error ($1): $2)", directory, wd, std::strerror(errno));
         return;
     }
 
     _pathsToWatch[directory] = wd;
-    // LOG_INFO("LinuxFileWatcher", "Watcher $0 created", directory, wd);
+    // LOG_INFO("file::LinuxFileWatcher", "Watcher $0 created", directory, wd);
 
     // Add subdirectories
     for (auto& p : fs::directory_iterator(directory))
@@ -85,10 +85,10 @@ void LinuxFileWatcher::checkAndRead() {
     ret = select(_inotifyFd + 1, &rfds, NULL, NULL, &time);
 
     if (ret < 0) {
-        LOG_WARN("LinuxFileWatcher", "Error when trying to select inotify file descriptor. Error ($0): $1", ret, std::strerror(errno));
+        LOG_WARN("file::LinuxFileWatcher", "Error when trying to select inotify file descriptor. Error ($0): $1", ret, std::strerror(errno));
         return;
     } else if (!ret) {
-        // LOG_WARN("LinuxFileWatcher", "Timeout when trying to select inotify file descriptor. Error ($0): $1", ret, std::strerror(errno));
+        // LOG_WARN("file::LinuxFileWatcher", "Timeout when trying to select inotify file descriptor. Error ($0): $1", ret, std::strerror(errno));
         return;
     } else if (FD_ISSET(_inotifyFd, &rfds)) {
         readEvents();
@@ -98,7 +98,7 @@ void LinuxFileWatcher::checkAndRead() {
 void LinuxFileWatcher::readEvents() {
     int len = read(_inotifyFd, _buf, _bufLen);
     if (len < 0) {
-        LOG_WARN("LinuxFileWatcher", "Error when trying to read inotify file descriptor. Error ($0): $1", len, std::strerror(errno));
+        LOG_WARN("file::LinuxFileWatcher", "Error when trying to read inotify file descriptor. Error ($0): $1", len, std::strerror(errno));
         return;
     } else if (len > 0) {
         int i = 0;
@@ -115,8 +115,8 @@ void LinuxFileWatcher::readEvents() {
 
 void LinuxFileWatcher::publishEvent(struct inotify_event* ievent) {
     if (ievent->len) {
-        // LOG_DEBUG("LinuxFileWatcher", "name=$0", ievent->name);
-        // LOG_DEBUG("LinuxFileWatcher", "wd=$0 cookie=$2 len=$3",
+        // LOG_DEBUG("file::LinuxFileWatcher", "name=$0", ievent->name);
+        // LOG_DEBUG("file::LinuxFileWatcher", "wd=$0 cookie=$2 len=$3",
         //		ievent->wd,
         //		ievent->cookie, ievent->len);
 

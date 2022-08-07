@@ -18,7 +18,7 @@ OpenGLImage::~OpenGLImage() {
 
 void OpenGLImage::write(void* data) {
     if (!_isCubemap) {
-        // LOG_DEBUG("OpenGlImage", "Writing $0 -> $1 ($2)", data, (int)_id, _debugName);
+        // LOG_DEBUG("graphics::OpenGlImage", "Writing $0 -> $1 ($2)", data, (int)_id, _debugName);
         GLenum dataType = OpenGLImage::convertDataType(_format);
         GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
         GLenum format = OpenGLImage::convertFormat(_format);
@@ -27,7 +27,7 @@ void OpenGLImage::write(void* data) {
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _width, _height, format, dataType, data);
         glBindTexture(GL_TEXTURE_2D, 0);
     } else
-        LOG_WARN("OpenGLImage", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
+        LOG_WARN("graphics::OpenGLImage", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
 }
 
 void OpenGLImage::resize(uint32_t width, uint32_t height, bool forceRecreate) {

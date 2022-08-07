@@ -83,7 +83,7 @@ void OpenGLShader::extractTextureUnits(const std::stringstream& sstream) {
                 continue;
             std::string name = s.substr(endMarker, endName - endMarker);
 
-            // LOG_DEBUG("OpenGLShader", "Found texture unit: [w]$0[] ($1)", name, currIdx);
+            // LOG_DEBUG("graphics::OpenGLShader", "Found texture unit: [w]$0[] ($1)", name, currIdx);
             _textureUnits.push_back(name);
             currIdx = endName + 1;
         } else

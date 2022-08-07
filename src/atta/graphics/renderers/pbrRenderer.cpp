@@ -329,7 +329,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
         if (_lastEnvironmentMap != "Not defined"_sid)
             shader->setInt("numEnvironmentLights", 1);
         else {
-            LOG_WARN("PbrRenderer", "Number of environment light should always be 1 (white texture if not defined)");
+            LOG_WARN("graphics::PbrRenderer", "Number of environment light should always be 1 (white texture if not defined)");
             shader->setInt("numEnvironmentLights", 0);
         }
         shader->setMat3("environmentLightOri", mat3(1.0f));
@@ -367,7 +367,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                     shader->setMat3("environmentLightOri", transpose(_environmentMapOri));
                 }
                 if (numPointLights++ == 10)
-                    LOG_WARN("PbrRenderer", "Maximum number of point lights reached, 10 lights");
+                    LOG_WARN("graphics::PbrRenderer", "Maximum number of point lights reached, 10 lights");
             }
         }
         shader->setInt("numPointLights", numPointLights);

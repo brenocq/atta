@@ -36,7 +36,7 @@ void ProjectSerializer::serialize() {
     serializeConfig(section["config"]);
     serializeComponentSystem(section["componentSystem"]);
     serializeGraphicsSystem(section["graphicsSystem"]);
-    // LOG_DEBUG("ProjectSerializer", "Saving project: [w]$0", section);
+    // LOG_DEBUG("file::ProjectSerializer", "Saving project: [w]$0", section);
 
     // Serialize version
     std::ofstream os(attaTemp, std::ofstream::trunc | std::ofstream::binary);

@@ -23,7 +23,7 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
     fs::path projectDir = file::Manager::getProject()->getDirectory();
     fs::path lib = projectDir / "build" / ("lib" + target.getString() + ".so").c_str();
 
-    // LOG_DEBUG("LinuxLinker", "Linking target $0", lib);
+    // LOG_DEBUG("script::LinuxLinker", "Linking target $0", lib);
 
     void* fLib = dlopen(fs::absolute(lib).c_str(), RTLD_LAZY);
     if (fLib) {
@@ -60,9 +60,9 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
             type = "Script " + name;
         else
             type = "Component";
-        LOG_INFO("LinuxLinker", "Time to link [w]$0[]: $1 ms ($2)", target, micro.count() / 1000.0f, type);
+        LOG_INFO("script::LinuxLinker", "Time to link [w]$0[]: $1 ms ($2)", target, micro.count() / 1000.0f, type);
     } else {
-        LOG_WARN("LinuxLinker", "Cannot open library $0. Error: $1", lib.filename(), dlerror());
+        LOG_WARN("script::LinuxLinker", "Cannot open library $0. Error: $1", lib.filename(), dlerror());
         return;
     }
 }

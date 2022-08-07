@@ -30,10 +30,10 @@ OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window) : RendererAPI(Ren
     ASSERT(status, "Failed to initialize Glad!");
 
     // Print info
-    // LOG_INFO("OpenGLRenderer", "GPU Info:");
-    // LOG_INFO("OpenGLRenderer", "  - Vendor: $0", glGetString(GL_VENDOR));
-    // LOG_INFO("OpenGLRenderer", "  - Renderer: $0", glGetString(GL_RENDERER));
-    // LOG_INFO("OpenGLRenderer", "  - Version: $0", glGetString(GL_VERSION));
+    // LOG_INFO("graphics::OpenGLRenderer", "GPU Info:");
+    // LOG_INFO("graphics::OpenGLRenderer", "  - Vendor: $0", glGetString(GL_VENDOR));
+    // LOG_INFO("graphics::OpenGLRenderer", "  - Renderer: $0", glGetString(GL_RENDERER));
+    // LOG_INFO("graphics::OpenGLRenderer", "  - Version: $0", glGetString(GL_VERSION));
 
 #if defined(ATTA_DEBUG_BUILD) && !defined(ATTA_OS_WEB)
     // Enable Debug
@@ -211,7 +211,7 @@ void OpenGLRenderer::endFrame() {}
 
 void OpenGLRenderer::renderMesh(StringId meshSid) {
     if (_openGLMeshes.find(meshSid.getId()) == _openGLMeshes.end()) {
-        LOG_WARN("OpenGLRenderer", "Trying to render mesh that was never initialized '[w]$0[]'", meshSid);
+        LOG_WARN("graphics::OpenGLRenderer", "Trying to render mesh that was never initialized '[w]$0[]'", meshSid);
         return;
     }
 
@@ -238,7 +238,7 @@ void OpenGLRenderer::renderCube() {
 
 void* OpenGLRenderer::getImGuiImage(StringId sid) const {
     if (_openGLImages.find(sid.getId()) == _openGLImages.end()) {
-        LOG_WARN("OpenGLRenderer", "Trying to get ImGui image that was never initialized '[w]$0[]'", sid);
+        LOG_WARN("graphics::OpenGLRenderer", "Trying to get ImGui image that was never initialized '[w]$0[]'", sid);
         return nullptr;
     }
     return reinterpret_cast<void*>(_openGLImages.at(sid.getId())->getImGuiImage());
@@ -258,11 +258,11 @@ void OpenGLRenderer::onImageUpdateEvent(event::Event& event) {
     event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
     resource::Image* image = resource::Manager::get<resource::Image>(e.sid.getString());
     if (image == nullptr) {
-        LOG_WARN("OpenGLRenderer", "Could not initialize OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
+        LOG_WARN("graphics::OpenGLRenderer", "Could not initialize OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
         return;
     }
     if (_openGLImages.find(e.sid.getId()) == _openGLImages.end()) {
-        LOG_WARN("OpenGLRenderer", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
+        LOG_WARN("graphics::OpenGLRenderer", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
         return;
     }
 
@@ -276,7 +276,7 @@ void OpenGLRenderer::onImageUpdateEvent(event::Event& event) {
 void OpenGLRenderer::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) {
     glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
 
-    LOG_DEBUG("OpenGLRenderer", "Framebuffer from framebufferToScreen");
+    LOG_DEBUG("graphics::OpenGLRenderer", "Framebuffer from framebufferToScreen");
     std::shared_ptr<OpenGLFramebuffer> openGLFramebuffer = std::static_pointer_cast<OpenGLFramebuffer>(framebuffer);
     std::shared_ptr<OpenGLImage> openGLImage = std::static_pointer_cast<OpenGLImage>(openGLFramebuffer->getImage(0));
 
@@ -465,13 +465,13 @@ void OpenGLRenderer::generateProcessedTexture(GenerateProcessedTextureInfo gptIn
 
 void OpenGLRenderer::initializeMesh(StringId sid) {
     _openGLMeshes[sid.getId()] = std::make_shared<OpenGLMesh>(sid);
-    // LOG_DEBUG("OpenGLRenderer", "Mesh loaded! [w]$0[]", sid);
+    // LOG_DEBUG("graphics::OpenGLRenderer", "Mesh loaded! [w]$0[]", sid);
 }
 
 void OpenGLRenderer::initializeImage(StringId sid) {
     resource::Image* image = resource::Manager::get<resource::Image>(sid.getString());
     if (image == nullptr)
-        LOG_WARN("OpenGLRenderer", "Could not initialize OpenGL image from [w]$0[]", sid.getString());
+        LOG_WARN("graphics::OpenGLRenderer", "Could not initialize OpenGL image from [w]$0[]", sid.getString());
 
     Image::CreateInfo info{};
     info.width = image->getWidth();
@@ -490,7 +490,7 @@ void OpenGLRenderer::initializeImage(StringId sid) {
     info.debugName = sid;
     _openGLImages[sid.getId()] = std::make_shared<OpenGLImage>(info);
 
-    // LOG_DEBUG("OpenGLRenderer", "Texture loaded! [w]$0[] -> $1", sid, _openGLImages[sid.getId()]->getId());
+    // LOG_DEBUG("graphics::OpenGLRenderer", "Texture loaded! [w]$0[] -> $1", sid, _openGLImages[sid.getId()]->getId());
 }
 
 } // namespace atta::graphics

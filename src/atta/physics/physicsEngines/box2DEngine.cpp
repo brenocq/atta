@@ -93,17 +93,17 @@ void Box2DEngine::start() {
             continue;
 
         if (!t && rb2d) {
-            LOG_WARN("box2DEngine", "Entity [w]$0[] is a rigid body but does not have a transform component", entity);
+            LOG_WARN("physics::box2DEngine", "Entity [w]$0[] is a rigid body but does not have a transform component", entity);
             continue;
         }
 
         if (rb2d && !(box2d || circle2d)) {
-            LOG_WARN("box2DEngine", "Entity [w]$0[] is a rigid body but does not have any collider component", entity);
+            LOG_WARN("physics::box2DEngine", "Entity [w]$0[] is a rigid body but does not have any collider component", entity);
             continue;
         }
 
         if (box2d && circle2d) {
-            LOG_WARN("box2DEngine", "Entity [w]$0[] must have only one collider", entity);
+            LOG_WARN("physics::box2DEngine", "Entity [w]$0[] must have only one collider", entity);
             continue;
         }
 

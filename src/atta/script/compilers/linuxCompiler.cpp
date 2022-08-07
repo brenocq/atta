@@ -23,7 +23,7 @@ LinuxCompiler::~LinuxCompiler() {}
 
 void LinuxCompiler::compileAll() {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-    LOG_DEBUG("LinuxCompiler", "Compile all targets");
+    LOG_DEBUG("script::LinuxCompiler", "Compile all targets");
 
     fs::path projectDir = file::Manager::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
@@ -48,22 +48,22 @@ void LinuxCompiler::compileAll() {
     fs::current_path(prevPath);
 
     //---------- Show outputs ----------//
-    LOG_VERBOSE("LinuxCompiler", "Build output: \n$0", buildOutput);
-    LOG_VERBOSE("LinuxCompiler", "Make output: \n$0", makeOutput);
+    LOG_VERBOSE("script::LinuxCompiler", "Build output: \n$0", buildOutput);
+    LOG_VERBOSE("script::LinuxCompiler", "Make output: \n$0", makeOutput);
 
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-    LOG_INFO("LinuxCompiler", "Time to compile all: $0 ms", micro.count() / 1000.0f);
+    LOG_INFO("script::LinuxCompiler", "Time to compile all: $0 ms", micro.count() / 1000.0f);
 }
 
 void LinuxCompiler::compileTarget(StringId target) {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
-    LOG_DEBUG("LinuxCompiler", "Compile target $0", target);
+    LOG_DEBUG("script::LinuxCompiler", "Compile target $0", target);
     // Check target
     if (_targetFiles.find(target) == _targetFiles.end()) {
-        LOG_WARN("LinuxCompiler", "Could not find target $0", target);
+        LOG_WARN("script::LinuxCompiler", "Could not find target $0", target);
         return;
     }
 
@@ -90,12 +90,12 @@ void LinuxCompiler::compileTarget(StringId target) {
     }
 
     // Show output
-    LOG_VERBOSE("LinuxCompiler", "Build output:\n$0", output);
+    LOG_VERBOSE("script::LinuxCompiler", "Build output:\n$0", output);
 
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-    LOG_INFO("LinuxCompiler", "Time to compile target $1: $0 ms", micro.count() / 1000.0f, target);
+    LOG_INFO("script::LinuxCompiler", "Time to compile target $1: $0 ms", micro.count() / 1000.0f, target);
 }
 
 void LinuxCompiler::updateTargets() {
@@ -158,7 +158,7 @@ void LinuxCompiler::findTargetFiles(StringId target) {
                     std::getline(dependIn, line);
                     if (line.find(")") != std::string::npos) {
                         // Finish if reached end of list
-                        // LOG_DEBUG("LinuxCompiler", "Updated target files $0:\n $1", target, _targetFiles[target]);
+                        // LOG_DEBUG("script::LinuxCompiler", "Updated target files $0:\n $1", target, _targetFiles[target]);
                         return;
                     }
                     // Next line is still the list, continue checking dependencies
@@ -168,7 +168,7 @@ void LinuxCompiler::findTargetFiles(StringId target) {
                 end = line.find("\"", start + 1);
 
                 std::string possibleFile = line.substr(start + 1, end - start - 1);
-                // LOG_DEBUG("LinuxCompiler", "Possible file $0", possibleFile);
+                // LOG_DEBUG("script::LinuxCompiler", "Possible file $0", possibleFile);
                 if (possibleFile.find(".o") == std::string::npos && possibleFile.find("cmake_pch") == std::string::npos &&
                     possibleFile.find(projectDir.filename()) != std::string::npos) {
                     _targetFiles[target].push_back(possibleFile);
@@ -192,7 +192,7 @@ std::string LinuxCompiler::runCommand(std::string cmd) {
     std::string result;
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen((cmd + " 2>&1").c_str(), "r"), pclose);
     if (!pipe) {
-        LOG_WARN("LinuxCompiler", "Could not open pipe");
+        LOG_WARN("script::LinuxCompiler", "Could not open pipe");
         return "";
     }
     while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)

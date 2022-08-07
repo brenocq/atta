@@ -86,9 +86,6 @@ void Manager::createDefaultImpl() {
 void Manager::createEntityPool() {
     const size_t entityMemorySize = ceil(_maxEntities / 8.0f) + sizeof(EntityBlock) * _maxEntities; // Memory for bitmap + pool blocks
 
-    // LOG_VERBOSE("Manager", "Allocating memory for entities. $0MB\n - Entity block size: $1.\n - Limits: \n    - $2 entities\n    - $3
-    // components per entity", entityMemorySize/(1024*1024.0f), sizeof(EntityId), _maxEntities, sizeof(EntityBlock)/sizeof(void*));
-
     // Allocate from component system memory
     uint8_t* entityMemory =
         reinterpret_cast<uint8_t*>(_allocator->allocBytes(entityMemorySize, sizeof(EntityBlock))); // TODO Probably not aligned because of the bitmap
@@ -104,7 +101,7 @@ EntityId Manager::createEntityImpl(EntityId entity, size_t quantity) {
     memory::BitmapAllocator* pool = memory::Manager::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
 
     if (entity != -1 && pool->getBlockBit(entity)) {
-        LOG_WARN("Manager", "Trying to create entity [w]$0[] that already exists", entity);
+        LOG_WARN("component::Manager", "Trying to create entity [w]$0[] that already exists", entity);
         return -1;
     }
 
@@ -277,7 +274,7 @@ void Manager::registerComponentImpl(ComponentRegistry* componentRegistry) {
         }
 
     if (oldIndex == -1) {
-        LOG_DEBUG("Manager", "Registered component [w]$0[]", componentRegistry->getTypeidName());
+        LOG_DEBUG("component::Manager", "Registered component [w]$0[]", componentRegistry->getTypeidName());
         componentRegistry->setIndex(_componentRegistries.size());
         _componentRegistries.push_back(componentRegistry);
 
@@ -288,7 +285,7 @@ void Manager::registerComponentImpl(ComponentRegistry* componentRegistry) {
             {componentRegistry->getTypeidHash(), ComponentDescription{componentRegistry->getTypeidName()}, false});
     } else {
         // XXX Not removing old components
-        // LOG_DEBUG("Manager", "Reloading component [w]$0[]", componentRegistry->getTypeidName());
+        // LOG_DEBUG("component::Manager", "Reloading component [w]$0[]", componentRegistry->getTypeidName());
         // If the layout changed: (TODO)
         //   1. Save entities with old data
         //   2. Deallocate old memory
@@ -297,7 +294,7 @@ void Manager::registerComponentImpl(ComponentRegistry* componentRegistry) {
         // If the layout was not changed:
         //   No nothing
         if (_componentRegistries[oldIndex] != componentRegistry) {
-            // LOG_WARN("Manager", "Component registry pointer changed from $0 to $1\n new: $0", _componentRegistries[oldIndex],
+            // LOG_WARN("component::Manager", "Component registry pointer changed from $0 to $1\n new: $0", _componentRegistries[oldIndex],
             // componentRegistry);
             _componentRegistries[oldIndex] = componentRegistry;
         }
@@ -311,8 +308,7 @@ void Manager::createComponentPoolsFromRegistered() {
     for (auto reg : _componentRegistries) {
         // TODO Remove custom component registry when it is not loaded (pointer to random data)
         if (!reg->getPoolCreated()) {
-            // LOG_DEBUG("Manager", "Create pool [w]$0[] -> $1", reg->getTypeidName(), reg->getPoolCreated());
-            LOG_DEBUG("Manager", "Create component pool [w]$0[]", reg->getDescription().name);
+            LOG_DEBUG("component::Manager", "Create component pool [w]$0[]", reg->getDescription().name);
             createComponentPool(reg);
             reg->setPoolCreated(true);
         }
@@ -332,7 +328,7 @@ void Manager::createComponentPool(ComponentRegistry* componentRegistry) {
 
     uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(size, sizeofT));
     DASSERT(componentMemory != nullptr, "Could not allocate component system memory for " + name);
-    LOG_INFO("Component Manager", "Allocated memory for component $0 ($1). $2MB ($5 instances) -> memory space:($3 $4)", name, typeidTName,
+    LOG_INFO("component::Manager", "Allocated memory for component $0 ($1). $2MB ($5 instances) -> memory space:($3 $4)", name, typeidTName,
              maxCount * sizeofT / (1024 * 1024.0f), (void*)(componentMemory), (void*)(componentMemory + maxCount * sizeofT), maxCount);
 
     // Create pool allocator
@@ -366,8 +362,8 @@ Component* Manager::addEntityComponentByIdImpl(ComponentId id, EntityId entity) 
     ASSERT(e != nullptr, "Trying to add component [w]$0[] to entity [w]$1[] that was not created", compReg->getDescription().name, entity);
 
     if (e->components[compReg->getIndex()] != nullptr) {
-        LOG_WARN("Manager", "Could not add component [w]$1[] to entity [w]$0[]. The entity [w]$0[] already has the component [w]$1[]", entity,
-                 compReg->getDescription().name);
+        LOG_WARN("component::Manager", "Could not add component [w]$1[] to entity [w]$0[]. The entity [w]$0[] already has the component [w]$1[]",
+                 entity, compReg->getDescription().name);
         return nullptr;
     }
 
@@ -405,7 +401,7 @@ Component* Manager::addEntityComponentByIdImpl(ComponentId id, EntityId entity) 
 
         return component;
     } else {
-        LOG_WARN("Manager", "Could not allocate component $0 for entity $1", compReg->getDescription().name, entity);
+        LOG_WARN("component::Manager", "Could not allocate component $0 for entity $1", compReg->getDescription().name, entity);
         return nullptr;
     }
 }
@@ -421,7 +417,7 @@ Component* Manager::addEntityComponentPtrImpl(EntityId entity, unsigned index, u
     if (e->components[index] == nullptr)
         e->components[index] = reinterpret_cast<void*>(component);
     else
-        LOG_WARN("Manager", "Trying to override entity [w]$0[] component pointer. Returning already allocated one", entity);
+        LOG_WARN("component::Manager", "Trying to override entity [w]$0[] component pointer. Returning already allocated one", entity);
 
     ComponentId id = _componentRegistries[index]->getId();
 
@@ -586,7 +582,7 @@ Factory* Manager::getPrototypeFactoryImpl(EntityId prototype) {
     for (Factory& factory : _factories)
         if (factory.getPrototypeId() == prototype)
             return &factory;
-    LOG_WARN("Manager", "Trying to get factory from entity [w]$0[] that is not a prototype", prototype);
+    LOG_WARN("component::Manager", "Trying to get factory from entity [w]$0[] that is not a prototype", prototype);
     return nullptr;
 }
 
@@ -599,7 +595,7 @@ void Manager::onSimulationStateChange(event::Event& event) {
     } else if (event.getType() == event::SimulationStop::type) {
         destroyFactories();
     } else {
-        LOG_WARN("Manager", "Received simulation event that was not be handled (type=[w]$0[])", event.getType());
+        LOG_WARN("component::Manager", "Received simulation event that was not be handled (type=[w]$0[])", event.getType());
     }
 }
 
@@ -681,7 +677,6 @@ void Manager::onScriptEvent(event::Event& event) {
     // Update backup info (only now we can guarantee that the description data is available)
     _componentRegistriesBackupInfo.clear();
     for (auto reg : _componentRegistries) {
-        // LOG_DEBUG("Manager", "Update backup from $0", reg->getDescription().name);
         ComponentRegistryBackupInfo crbi;
         crbi.typeidHash = reg->getTypeidHash();
         crbi.description.name = reg->getDescription().name;

@@ -19,8 +19,8 @@
 #include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/graphics/renderers/phongRenderer.h>
 
-#include <atta/ui/layers/editor/systemWindows/ioSystemWindow.h>
-#include <atta/ui/layers/editor/systemWindows/physicsSystemWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
 
 namespace atta::ui {
@@ -118,11 +118,11 @@ void TopBar::render() {
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Systems")) {
+        if (ImGui::BeginMenu("Modules")) {
             if (ImGui::MenuItem("IO Module"))
-                IOSystemWindow::setOpen(true);
+                IOModuleWindow::setOpen(true);
             if (ImGui::MenuItem("Physics Module"))
-                PhysicsSystemWindow::setOpen(true);
+                PhysicsModuleWindow::setOpen(true);
             ImGui::EndMenu();
         }
 
@@ -246,11 +246,11 @@ void TopBar::openPublishedWindow() {
     //                    }
     //                    catch (const http_exception& e)
     //                    {
-    //                        LOG_WARN("TopBar", "Could not get published projects json: $0", e.what());
+    //                        LOG_WARN("ui::TopBar", "Could not get published projects json: $0", e.what());
     //                    }
     //                    catch (const json::json_exception& e)
     //                    {
-    //                        LOG_WARN("TopBar", "Could not serialize published json: $0", e.what());
+    //                        LOG_WARN("ui::TopBar", "Could not serialize published json: $0", e.what());
     //                    }
     //                });
     //        }
@@ -344,7 +344,7 @@ void TopBar::openPublishedWindow() {
     //                                    fs::create_directories(pathToClone);
     //                                fs::current_path(pathToClone);
     //                                std::string command = "git clone git@github.com:" + project.username+"/"+project.reponame+".git";
-    //                                LOG_VERBOSE("TopBar", "Running command: $0", command);
+    //                                LOG_VERBOSE("ui::TopBar", "Running command: $0", command);
     //                                std::system(command.c_str());
     //                                fs::current_path(prevPath);
     //                            }

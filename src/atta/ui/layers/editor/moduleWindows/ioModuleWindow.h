@@ -1,11 +1,11 @@
 //--------------------------------------------------
 // Atta UI Module
-// ioSystemWindow.h
+// ioModuleWindow.h
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_LAYERS_EDITOR_WINDOWS_IO_WINDOW_H
-#define ATTA_UI_LAYERS_EDITOR_WINDOWS_IO_WINDOW_H
+#ifndef ATTA_UI_LAYERS_EDITOR_WINDOWS_IO_MODULE_WINDOW_H
+#define ATTA_UI_LAYERS_EDITOR_WINDOWS_IO_MODULE_WINDOW_H
 
 #include <atta/ui/layers/editor/window.h>
 
@@ -16,9 +16,9 @@
 
 namespace atta::ui {
 
-class IOSystemWindow : public Window<IOSystemWindow> {
+class IOModuleWindow : public Window<IOModuleWindow> {
   private:
-    IOSystemWindow();
+    IOModuleWindow();
     void renderImpl();
 
     void bluetoothTabItem();
@@ -54,9 +54,9 @@ class IOSystemWindow : public Window<IOSystemWindow> {
     std::unordered_map<std::string, std::vector<char>> _serialInputBuf;
     std::unordered_map<std::string, std::vector<char>> _serialConsoleBuf;
 
-    friend Window<IOSystemWindow>;
+    friend Window<IOModuleWindow>;
 };
 
 } // namespace atta::ui
 
-#endif // ATTA_UI_LAYERS_EDITOR_WINDOWS_IO_WINDOW_H
+#endif // ATTA_UI_LAYERS_EDITOR_WINDOWS_IO_MODULE_WINDOW_H

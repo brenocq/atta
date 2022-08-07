@@ -28,7 +28,7 @@ void Manager::shutDownImpl() {
 }
 
 ProjectScript* Manager::registerProjectScript(std::string name, ProjectScript* projectScript) {
-    LOG_VERBOSE("Manager", "Registering project script [w]$0[]", name);
+    LOG_VERBOSE("script::Manager", "Registering project script [w]$0[]", name);
     getInstance()._projectScript.first = StringId(name);
     getInstance()._projectScript.second = projectScript;
 
@@ -36,7 +36,7 @@ ProjectScript* Manager::registerProjectScript(std::string name, ProjectScript* p
 }
 
 Script* Manager::registerScript(std::string name, Script* script) {
-    LOG_VERBOSE("Manager", "Registering script [w]$0[]", name);
+    LOG_VERBOSE("script::Manager", "Registering script [w]$0[]", name);
     getInstance()._scripts[StringId(name)] = script;
 
     return script;

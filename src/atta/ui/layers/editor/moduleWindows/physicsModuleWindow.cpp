@@ -1,17 +1,17 @@
 //--------------------------------------------------
 // Atta UI Module
-// physicsSystemWindow.cpp
+// physicsModuleWindow.cpp
 // Date: 2021-12-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/physics/manager.h>
-#include <atta/ui/layers/editor/systemWindows/physicsSystemWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
 
 namespace atta::ui {
 
-PhysicsSystemWindow::PhysicsSystemWindow() { setName("Physics Module"); }
+PhysicsModuleWindow::PhysicsModuleWindow() { setName("Physics Module"); }
 
-void PhysicsSystemWindow::renderImpl() {
+void PhysicsModuleWindow::renderImpl() {
     ImGui::Text("Physics Engine");
     std::vector<std::string> physicsEngines = {"Null", "Box2D", "Bullet"};
 

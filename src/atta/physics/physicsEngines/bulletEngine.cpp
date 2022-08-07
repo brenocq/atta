@@ -156,17 +156,17 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
         return;
 
     if (!t && rb) {
-        LOG_WARN("box2DEngine", "Entity [w]$0[] is a rigid body but does not have a transform component", entity);
+        LOG_WARN("physics::BulletEngine", "Entity [w]$0[] is a rigid body but does not have a transform component", entity);
         return;
     }
 
     if (rb && !(box || sphere)) {
-        LOG_WARN("box2DEngine", "Entity [w]$0[] is a rigid body but does not have any collider component", entity);
+        LOG_WARN("physics::BulletEngine", "Entity [w]$0[] is a rigid body but does not have any collider component", entity);
         return;
     }
 
     if (box && sphere) {
-        LOG_WARN("box2DEngine", "Entity [w]$0[] must have only one collider", entity);
+        LOG_WARN("physics::BulletEngine", "Entity [w]$0[] must have only one collider", entity);
         return;
     }
 

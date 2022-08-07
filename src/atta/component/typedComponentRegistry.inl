@@ -8,10 +8,8 @@ namespace atta::component {
 
 template <typename T>
 TypedComponentRegistry<T>::TypedComponentRegistry() : ComponentRegistry(sizeof(T), typeid(T).name(), typeid(T).hash_code()) {
-    // LOG_DEBUG("TypedComponentRegistry", "Created new registry for [w]$0[]", typeid(T).name());
     description = &getDescription(); // Initialize description static variable
     ComponentRegistry::registerToManager();
-    // LOG_DEBUG("TypedComponentRegistry", "Registered [w]$0[]", description->name);
 }
 
 template <typename T>
@@ -77,10 +75,6 @@ void TypedComponentRegistry<T>::deserializeImpl(std::istream& is, T* component) 
         auto aDesc = description->attributeDescriptions[i];
         unsigned size = (i == description->attributeDescriptions.size() - 1) ? sizeof(T) - aDesc.offset
                                                                              : description->attributeDescriptions[i + 1].offset - aDesc.offset;
-
-        // LOG_DEBUG("TypedComponentRegistry", "Deserializing: $0, attrib: $1", description->name, aDesc.name);
-        // LOG_DEBUG("TypedComponentRegistry", "Deserialize size: $0", description->deserialize.size());
-
         // Custom defined deserialization
         if (description->deserialize.find(aDesc.name) != description->deserialize.end()) {
             description->deserialize[aDesc.name](is, (void*)curr);

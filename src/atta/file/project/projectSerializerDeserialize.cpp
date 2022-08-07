@@ -19,7 +19,7 @@ void ProjectSerializer::deserializeComponentSystem(Section& section) {
     for (auto id : entities) {
         component::EntityId res = component::Manager::createEntity(id);
         if (res != id)
-            LOG_WARN("ProjectSerializer", "Could not create entity with id $0", id);
+            LOG_WARN("file::ProjectSerializer", "Could not create entity with id $0", id);
     }
 
     // Create and assign components

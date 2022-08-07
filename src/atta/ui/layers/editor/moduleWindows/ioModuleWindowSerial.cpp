@@ -1,12 +1,12 @@
 //--------------------------------------------------
 // Atta UI Module
-// ioSystemWindowSerial.cpp
+// ioModuleWindowSerial.cpp
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 namespace atta::ui {
 
-void IOSystemWindow::serialTabItem() {
+void IOModuleWindow::serialTabItem() {
     auto deviceNames = io::Serial::getAvailableDeviceNames();
 
     // Remove disconnected devices
@@ -20,7 +20,7 @@ repeatSerialErase:
         }
     }
 
-    if (ImGui::BeginTabBar("##IOSystemWindowSerialTab", ImGuiTabBarFlags_None)) {
+    if (ImGui::BeginTabBar("##IOModuleWindowSerialTab", ImGuiTabBarFlags_None)) {
         for (auto& name : deviceNames) {
             // Initialize if it is first time
             if (_serials.find(name) == _serials.end()) {
@@ -37,7 +37,7 @@ repeatSerialErase:
             }
 
             // Serial console tab
-            if (ImGui::BeginTabItem((name + "##IOSystemWindowSerialTab" + name).c_str())) {
+            if (ImGui::BeginTabItem((name + "##IOModuleWindowSerialTab" + name).c_str())) {
                 //---------- Input ----------//
                 bool reclaimFocus = false;
                 ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags_EnterReturnsTrue;
@@ -107,7 +107,7 @@ repeatSerialErase:
     }
 }
 
-void IOSystemWindow::serialUpdateConsole(std::string deviceName) {
+void IOModuleWindow::serialUpdateConsole(std::string deviceName) {
     // Update console every 0.01 seconds
     const float updateTime = 0.1f;
     static clock_t lastTime = std::clock();

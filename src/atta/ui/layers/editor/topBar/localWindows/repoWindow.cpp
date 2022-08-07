@@ -73,7 +73,7 @@ RepoWindow::ReadmeMetadata RepoWindow::parseReadmeMetadata(fs::path readme) {
 
     // Check if file is a README.md file
     if (readme.filename().string() != "README.md") {
-        LOG_WARN("RepoWindow", "(parseReadmeMetadata) Expected readme file, but got $0", readme.filename().string());
+        LOG_WARN("ui::RepoWindow", "(parseReadmeMetadata) Expected readme file, but got $0", readme.filename().string());
         return meta;
     }
 
@@ -115,7 +115,7 @@ RepoWindow::ReadmeMetadata RepoWindow::parseReadmeMetadata(fs::path readme) {
         readmeFile.close();
     } else {
         // Could no open file, return
-        LOG_WARN("RepoWindow", "(parseReadmeMetadata) Could not open $0", readme.string());
+        LOG_WARN("ui::RepoWindow", "(parseReadmeMetadata) Could not open $0", readme.string());
         return meta;
     }
     return meta;

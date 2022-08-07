@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.14)
 set(ATTA_UI_MODULE_SOURCE
     manager.cpp
 
-    widgets/plot.cpp
-
     layers/uiLayer.cpp
     layers/editor/editorLayer.cpp
     layers/editor/dockSpace.cpp
@@ -20,8 +18,8 @@ set(ATTA_UI_MODULE_SOURCE
     layers/editor/windows/viewportWindows.cpp
     layers/editor/windows/utils/fileSelectionWindow.cpp
 
-    layers/editor/systemWindows/ioSystemWindow.cpp
-    layers/editor/systemWindows/physicsSystemWindow.cpp
+    layers/editor/moduleWindows/ioModuleWindow.cpp
+    layers/editor/moduleWindows/physicsModuleWindow.cpp
 
 	layers/editor/drawers/physicsDrawer.cpp
 	layers/editor/drawers/sensorDrawer.cpp

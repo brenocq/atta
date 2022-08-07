@@ -86,10 +86,10 @@ void Viewport::deserialize(std::istream& is) {
         _renderer = std::make_shared<PbrRenderer>();
         _renderer->deserialize(is);
     } else if (rendererName.size() == 0) {
-        LOG_WARN("Viewport", "No renderer deserialized, using default renderer");
+        LOG_WARN("graphics::Viewport", "No renderer deserialized, using default renderer");
         _renderer = std::make_shared<PhongRenderer>();
     } else {
-        LOG_WARN("Viewport", "Unknown renderer [w]$0[] when deserializing", rendererName);
+        LOG_WARN("graphics::Viewport", "Unknown renderer [w]$0[] when deserializing", rendererName);
         _renderer = std::make_shared<PhongRenderer>();
         _renderer->deserialize(is);
     }
@@ -104,10 +104,10 @@ void Viewport::deserialize(std::istream& is) {
         _camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
         _camera->deserialize(is);
     } else if (cameraName.size() == 0) {
-        LOG_WARN("Viewport", "No camera deserialized, using default camera");
+        LOG_WARN("graphics::Viewport", "No camera deserialized, using default camera");
         _camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
     } else {
-        LOG_WARN("Viewport", "Unknown camera [w]$0[] when deserializing. This may break the serialization", cameraName);
+        LOG_WARN("graphics::Viewport", "Unknown camera [w]$0[] when deserializing. This may break the serialization", cameraName);
         _camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
     }
 }

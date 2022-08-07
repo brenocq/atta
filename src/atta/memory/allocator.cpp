@@ -23,7 +23,7 @@ Allocator::Allocator(uint8_t* memory, uint64_t size) {
 }
 
 Allocator::~Allocator() {
-    // LOG_DEBUG("Allocator", "Freeing $0GB", _size/1024/1024/1024);
+    // LOG_DEBUG("memory::Allocator", "Freeing $0GB", _size/1024/1024/1024);
     if (_shouldFree)
         delete _memory;
 }

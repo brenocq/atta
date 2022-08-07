@@ -1,19 +1,19 @@
 //--------------------------------------------------
 // Atta UI Module
-// ioSystemWindowCamera.cpp
+// ioModuleWindowCamera.cpp
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 namespace atta::ui {
 
-void IOSystemWindow::cameraTabItem() {
+void IOModuleWindow::cameraTabItem() {
     static auto deviceNames = io::Camera::getAvailableDeviceNames();
     std::vector<std::string> devicesWithError;
 
     if (ImGui::Button("Refresh"))
         deviceNames = io::Camera::getAvailableDeviceNames();
 
-    if (ImGui::BeginTabBar("##IOSystemWindowCameraTab", ImGuiTabBarFlags_None)) {
+    if (ImGui::BeginTabBar("##IOModuleWindowCameraTab", ImGuiTabBarFlags_None)) {
         for (std::string& name : deviceNames) {
             // Initialize camera if not initialized yet
             if (_cameras.find(name) == _cameras.end() || _cameras[name] == nullptr) {
@@ -21,7 +21,7 @@ void IOSystemWindow::cameraTabItem() {
                 info.deviceName = name;
                 info.debugName = StringId("[atta::ui] " + info.deviceName + " camera");
                 _cameras[name] = io::Manager::create<io::Camera>(info);
-                LOG_DEBUG("IOSystemWindow", "Starting device $0, $1", name, _cameras[name] == nullptr);
+                LOG_DEBUG("ui::IOModuleWindow", "Starting device $0, $1", name, _cameras[name] == nullptr);
                 if (_cameras[name] && _cameras[name]->start()) {
                     graphics::Image::CreateInfo imgInfo{};
                     imgInfo.width = _cameras[name]->getResolution().width;
@@ -29,7 +29,7 @@ void IOSystemWindow::cameraTabItem() {
                     imgInfo.format = graphics::Image::Format::RGBA;
                     imgInfo.debugName = StringId("[atta::ui] " + info.deviceName + " image");
                     _cameraImages[name] = graphics::Manager::create<graphics::Image>(imgInfo);
-                    LOG_DEBUG("IOSystemWindow", "Camera $0 initialized", name);
+                    LOG_DEBUG("ui::IOModuleWindow", "Camera $0 initialized", name);
                 } else {
                     // Failed to initialize, remove from deviceNames
                     _cameras[name].reset();
@@ -39,11 +39,11 @@ void IOSystemWindow::cameraTabItem() {
                 }
             }
 
-            if (_cameras[name] && ImGui::BeginTabItem((name + "##IOSystemWindowCameraTab" + name).c_str())) {
+            if (_cameras[name] && ImGui::BeginTabItem((name + "##IOModuleWindowCameraTab" + name).c_str())) {
                 //---------- Camera image ----------//
                 // If some error occured in the camera (e.g. disconnected), stop showing
                 if (!_cameras[name]->readFrame()) {
-                    LOG_DEBUG("IOSystemWindow", "Could not read frame, removing device", name);
+                    LOG_DEBUG("ui::IOModuleWindow", "Could not read frame, removing device", name);
                     _cameras[name].reset();
                     _cameraImages[name].reset();
                     devicesWithError.push_back(name);

@@ -93,7 +93,8 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
         event::Manager::publish(e);
     });
 
-    glfwSetErrorCallback([](int error, const char* description) { LOG_ERROR("Window", "GLFW error($0): $1", error, std::string(description)); });
+    glfwSetErrorCallback(
+        [](int error, const char* description) { LOG_ERROR("graphics::Window", "GLFW error($0): $1", error, std::string(description)); });
 
     glfwMakeContextCurrent(_window);
 

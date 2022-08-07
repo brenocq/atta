@@ -42,7 +42,7 @@ void FileSelectionWindow::renderImpl() {
         if (fs::exists(testNewPath))
             setPath(testNewPath);
         else {
-            LOG_WARN("FileSelectionWindow", "Trying to change to invalid path [w]$0[]", _currPathBuffer.data());
+            LOG_WARN("ui::FileSelectionWindow", "Trying to change to invalid path [w]$0[]", _currPathBuffer.data());
             setPath(_currPath);
         }
     }

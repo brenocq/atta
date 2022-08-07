@@ -80,7 +80,7 @@ void ToolBar::render() {
             break;
         }
         default: {
-            LOG_WARN("EditorLayer", "Invalid editor state: [w]$0[]", static_cast<int>(_editorState));
+            LOG_WARN("ui::EditorLayer", "Invalid editor state: [w]$0[]", static_cast<int>(_editorState));
         }
         }
         ImGui::SameLine();
@@ -127,7 +127,7 @@ void ToolBar::onSimulationStateChange(event::Event& event) {
         break;
     }
     default: {
-        LOG_WARN("EditorLayer", "Unknown simulation event");
+        LOG_WARN("ui::EditorLayer", "Unknown simulation event");
     }
     }
 }

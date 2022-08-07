@@ -135,8 +135,9 @@ void renderCombo(AttributeDescription aDesc, void* d, unsigned size, std::string
     unsigned qty = size / sizeof(T);
 #ifdef ATTA_DEBUG_BUILD
     if (qty != 1) {
-        LOG_WARN("Component", "The component attribute [w]$0[] cannot be rendered with options because it is composed of multiple [w]$1[] values",
-                 aDesc.name, typeid(T).name());
+        LOG_WARN("component::ComponentRegistry",
+                 "The component attribute [w]$0[] cannot be rendered with options because it is composed of multiple [w]$1[] values", aDesc.name,
+                 typeid(T).name());
         return;
     }
 
@@ -151,7 +152,7 @@ void renderCombo(AttributeDescription aDesc, void* d, unsigned size, std::string
     // Check if they are value entries
     for (auto it = aDesc.options.begin(); it != aDesc.options.end(); it++)
         if (it->type() != typeid(const char*) && it->type() != typeid(T)) {
-            LOG_WARN("Component",
+            LOG_WARN("component::ComponentRegistry",
                      "The component attribute [w]$0[] cannot be rendered because the values inside its "
                      "atta::ComponentRegistry::AttributeDescriptoin::options should be all of type [w]const char*[] or [w]$1[]",
                      aDesc.name, typeid(T).name());

@@ -1,12 +1,12 @@
 //--------------------------------------------------
 // Atta UI Module
-// ioSystemWindowBluetooth.cpp
+// ioModuleWindowBluetooth.cpp
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 namespace atta::ui {
 
-void IOSystemWindow::bluetoothTabItem() {
+void IOModuleWindow::bluetoothTabItem() {
     static bool bluetoothSupport = true;
     if (!bluetoothSupport)
         return;
@@ -85,7 +85,7 @@ void IOSystemWindow::bluetoothTabItem() {
     }
 }
 
-void IOSystemWindow::bluetoothViews() {
+void IOModuleWindow::bluetoothViews() {
     for (int i = _bluetoothViews.size() - 1; i >= 0; i--) {
         auto mac = _bluetoothViews[i].mac;
         std::string macStr = io::Bluetooth::MACToString(mac);

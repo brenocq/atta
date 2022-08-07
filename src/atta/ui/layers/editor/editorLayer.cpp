@@ -10,8 +10,8 @@
 #include <atta/ui/layers/editor/editorLayer.h>
 #include <imgui_internal.h>
 
-#include <atta/ui/layers/editor/systemWindows/ioSystemWindow.h>
-#include <atta/ui/layers/editor/systemWindows/physicsSystemWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
 #include <atta/ui/layers/editor/topBar/localWindows/versionWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
 
@@ -50,8 +50,8 @@ void EditorLayer::onUIRender() {
     _viewportWindows.render();
 
     // Module windows
-    IOSystemWindow::render();
-    PhysicsSystemWindow::render();
+    IOModuleWindow::render();
+    PhysicsModuleWindow::render();
 
     // Windows utils
     FileSelectionWindow::render();
