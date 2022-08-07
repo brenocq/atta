@@ -10,6 +10,7 @@ macro(atta_FetchContent_MakeAvailable target)
     endif()
 endmacro()
 
+include(solveResources)
 include(solveGoogletest)
 include(solveGlfw)
 include(solveGlad)
