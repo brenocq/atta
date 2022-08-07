@@ -6,32 +6,32 @@
 //--------------------------------------------------
 #include <atta/atta.h>
 
-#include <atta/eventSystem/eventManager.h>
-#include <atta/eventSystem/events/windowCloseEvent.h>
-#include <atta/eventSystem/events/simulationStartEvent.h>
-#include <atta/eventSystem/events/simulationContinueEvent.h>
-#include <atta/eventSystem/events/simulationPauseEvent.h>
-#include <atta/eventSystem/events/simulationStopEvent.h>
+#include <atta/event/eventManager.h>
+#include <atta/event/events/windowCloseEvent.h>
+#include <atta/event/events/simulationStartEvent.h>
+#include <atta/event/events/simulationContinueEvent.h>
+#include <atta/event/events/simulationPauseEvent.h>
+#include <atta/event/events/simulationStopEvent.h>
 
-#include <atta/memorySystem/memoryManager.h>
-#include <atta/componentSystem/componentManager.h>
-#include <atta/fileSystem/fileManager.h>
-#include <atta/scriptSystem/scriptManager.h>
-#include <atta/resourceSystem/resourceManager.h>
-#include <atta/graphicsSystem/graphicsManager.h>
-#include <atta/graphicsSystem/pipeline.h>
-#include <atta/physicsSystem/physicsManager.h>
-#include <atta/sensorSystem/sensorManager.h>
-#include <atta/uiSystem/uiManager.h>
+#include <atta/memory/memoryManager.h>
+#include <atta/component/componentManager.h>
+#include <atta/file/fileManager.h>
+#include <atta/script/scriptManager.h>
+#include <atta/resource/resourceManager.h>
+#include <atta/graphics/graphicsManager.h>
+#include <atta/graphics/pipeline.h>
+#include <atta/physics/physicsManager.h>
+#include <atta/sensor/sensorManager.h>
+#include <atta/ui/uiManager.h>
 #include <atta/core/config.h>
 #include <atta/cmakeConfig.h>
 
-#include <atta/ioSystem/http/http.h>
+#include <atta/io/http/http.h>
 
 // Include execute code
-#include <atta/scriptSystem/script.h>
-#include <atta/componentSystem/components/scriptComponent.h>
-#include <atta/componentSystem/components/prototypeComponent.h>
+#include <atta/script/script.h>
+#include <atta/component/components/scriptComponent.h>
+#include <atta/component/components/prototypeComponent.h>
 
 // TODO move to another class
 #include <ctime>

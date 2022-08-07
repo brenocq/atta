@@ -1,0 +1,20 @@
+//--------------------------------------------------
+// Atta Component Module
+// component.h
+// Date: 2021-11-03
+// By Breno Cunha Queiroz
+//--------------------------------------------------
+#ifndef ATTA_COMPONENT_COMPONENTS_COMPONENT_H
+#define ATTA_COMPONENT_COMPONENTS_COMPONENT_H
+
+namespace atta
+{
+	/// Base class for all components
+    struct Component
+    {
+        public:
+            ~Component() = default;
+    };
+}
+
+#endif// ATTA_COMPONENT_COMPONENTS_COMPONENT_H

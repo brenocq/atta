@@ -6,8 +6,8 @@
 //--------------------------------------------------
 #ifndef ATTA_ATTA_H
 #define ATTA_ATTA_H
-#include <atta/memorySystem/allocators/stackAllocator.h>
-#include <atta/eventSystem/eventManager.h>
+#include <atta/memory/allocators/stackAllocator.h>
+#include <atta/event/eventManager.h>
 
 namespace atta
 {
