@@ -5,11 +5,12 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 namespace atta::component {
+
 template <typename T>
 TypedComponentRegistry<T>::TypedComponentRegistry() : ComponentRegistry(sizeof(T), typeid(T).name(), typeid(T).hash_code()) {
     // LOG_DEBUG("TypedComponentRegistry", "Created new registry for [w]$0[]", typeid(T).name());
     description = &getDescription(); // Initialize description static variable
-    ComponentRegistry::registerToComponentManager();
+    ComponentRegistry::registerToManager();
     // LOG_DEBUG("TypedComponentRegistry", "Registered [w]$0[]", description->name);
 }
 
@@ -121,4 +122,5 @@ std::vector<uint8_t> TypedComponentRegistry<T>::getDefault() {
     *newComponent = T{};
     return defaultData;
 }
+
 } // namespace atta::component

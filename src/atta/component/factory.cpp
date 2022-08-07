@@ -5,37 +5,37 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/componentRegistry.h>
-#include <atta/component/components/prototypeComponent.h>
-#include <atta/component/components/relationshipComponent.h>
-#include <atta/component/components/scriptComponent.h>
+#include <atta/component/components/prototype.h>
+#include <atta/component/components/relationship.h>
+#include <atta/component/components/script.h>
 #include <atta/component/factory.h>
-#include <atta/script/scriptManager.h>
+#include <atta/script/manager.h>
 
 namespace atta::component {
 Factory::Factory(EntityId prototypeId) : _prototypeId(prototypeId) {
-    PrototypeComponent* prototype = ComponentManager::getEntityComponent<PrototypeComponent>(_prototypeId);
+    Prototype* prototype = component::Manager::getEntityComponent<Prototype>(_prototypeId);
     _maxClones = prototype->maxClones;
 }
 
 void Factory::createClones() {
     // Create entityId for each clone
-    _firstCloneEid = ComponentManager::createClones(_maxClones);
+    _firstCloneEid = component::Manager::createClones(_maxClones);
 
     // FIXME not working recursive prototypes yet
-    for (auto compReg : ComponentManager::getComponentRegistries()) {
+    for (auto compReg : component::Manager::getComponentRegistries()) {
         // Check if prototype entity has this component
-        Component* prototypeComponent = ComponentManager::getEntityComponentById(compReg->getId(), _prototypeId);
+        Component* prototypeComponent = component::Manager::getEntityComponentById(compReg->getId(), _prototypeId);
         if (prototypeComponent) {
             // XXX For now, just ignore the prototype component when clonnning
-            if (compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(PrototypeComponent).name()))
+            if (compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(Prototype).name()))
                 continue;
 
             // Get component allocator pool
-            BitmapAllocator* cpool = ComponentManager::getInstance().getComponentAllocator(compReg);
+            memory::BitmapAllocator* cpool = component::Manager::getInstance().getComponentAllocator(compReg);
             size_t componentSize = (size_t)compReg->getSizeof();
 
             // Copy default data from prototype entity component to clone components
-            if (compReg->getId() != COMPONENT_POOL_SID_BY_NAME(typeid(RelationshipComponent).name())) {
+            if (compReg->getId() != COMPONENT_POOL_SID_BY_NAME(typeid(Relationship).name())) {
                 // Allocate memory for each clone
                 uint8_t* mem = (uint8_t*)cpool->allocBytes(_maxClones * componentSize, componentSize);
                 _componentMemories.push_back(std::make_pair(compReg->getId(), mem));
@@ -46,14 +46,14 @@ void Factory::createClones() {
 
                 // Add allocated component to clone entities
                 for (unsigned i = 0; i < _maxClones; i++)
-                    ComponentManager::addEntityComponentPtr(_firstCloneEid + i, compReg->getIndex(), mem + componentSize * i);
+                    component::Manager::addEntityComponentPtr(_firstCloneEid + i, compReg->getIndex(), mem + componentSize * i);
             } else {
-                // XXX Not sure how will work with the RelationshipComponent because it has std::vector
+                // XXX Not sure how will work with the Relationship because it has std::vector
                 // If the prototype entity has parent, set the parent as parent of clones as well
-                RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(_prototypeId);
+                Relationship* r = component::Manager::getEntityComponent<Relationship>(_prototypeId);
                 if (r->getParent() != -1) {
                     EntityId parentId = r->getParent();
-                    r = ComponentManager::getEntityComponent<RelationshipComponent>(r->getParent());
+                    r = component::Manager::getEntityComponent<Relationship>(r->getParent());
                     for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++)
                         r->addChild(parentId, entity);
                 }
@@ -64,7 +64,7 @@ void Factory::createClones() {
 
 void Factory::destroyClones() {
     for (EntityId i = _firstCloneEid; i < EntityId(_firstCloneEid + _maxClones); i++)
-        ComponentManager::deleteEntity(i);
+        component::Manager::deleteEntity(i);
     // TODO can be faster if deallocate each component and then deleteEntityOnly
 }
 
@@ -72,9 +72,9 @@ void Factory::runScripts(float dt) {
     // TODO faster
     unsigned cloneId = 0;
     for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++) {
-        ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(entity);
+        Script* scriptComponent = component::Manager::getEntityComponent<Script>(entity);
         if (scriptComponent) {
-            Script* script = ScriptManager::getScript(scriptComponent->sid);
+            script::Script* script = script::Manager::getScript(scriptComponent->sid);
             if (script)
                 script->update(Entity(entity, cloneId), dt);
         }
@@ -82,10 +82,10 @@ void Factory::runScripts(float dt) {
     }
 
     // Example using componentMemories to set Entity component vector
-    // ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(_prototypeId);
+    // Script* scriptComponent = component::Manager::getEntityComponent<script::Script>(_prototypeId);
     // if(scriptComponent)
     //{
-    //    Script* script = ScriptManager::getScript(scriptComponent->sid);
+    //    Script* script = script::Manager::getScript(scriptComponent->sid);
     //    if(script)
     //    {
     //        // Execute each clone script with the right component

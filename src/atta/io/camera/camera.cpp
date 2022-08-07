@@ -8,6 +8,7 @@
 #include <atta/io/camera/linuxCamera.h>
 
 namespace atta::io {
+
 Camera::Camera(CreateInfo info)
     : _deviceName(info.deviceName), _pixelFormat(info.pixelFormat), _resolution(info.resolution), _fps(info.fps), _debugName(info.debugName) {}
 
@@ -32,4 +33,5 @@ std::vector<std::string> Camera::getAvailableDeviceNames() {
     std::sort(deviceNames.begin(), deviceNames.end());
     return deviceNames;
 }
+
 } // namespace atta::io

@@ -6,10 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SHADER_H
 #define ATTA_GRAPHICS_SHADER_H
-#include <atta/core/stringId.h>
 #include <atta/graphics/shaderUniform.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
+
 class Shader {
   public:
     struct CreateInfo {
@@ -26,6 +27,7 @@ class Shader {
     fs::path _filepath;
     std::unordered_map<std::string, ShaderUniform> _uniforms;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_SHADER_H

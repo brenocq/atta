@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_SCRIPT_MODULE_SOURCE
-    fileManager.cpp
+    manager.cpp
 
     watchers/fileWatcher.cpp
     watchers/nullFileWatcher.cpp

@@ -1,37 +1,38 @@
 //--------------------------------------------------
 // Atta Component Module
-// materialComponent.cpp
+// material.cpp
 // Date: 2021-11-23
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/componentRegistry.h>
-#include <atta/component/components/materialComponent.h>
-#include <atta/resource/resourceManager.h>
-#include <atta/resource/resources/texture.h>
+#include <atta/component/components/material.h>
+#include <atta/resource/manager.h>
+#include <atta/resource/resources/image.h>
 #include <imgui.h>
 
 namespace atta::component {
+
 template <>
-ComponentDescription& TypedComponentRegistry<MaterialComponent>::getDescription() {
+ComponentDescription& TypedComponentRegistry<Material>::getDescription() {
     static ComponentDescription desc = {
         "Material",
-        {{AttributeType::VECTOR_FLOAT32, offsetof(MaterialComponent, albedo), "albedo", 0.0f, 1.0f},
-         {AttributeType::FLOAT32, offsetof(MaterialComponent, metallic), "metallic", 0.0f, 1.0f},
-         {AttributeType::FLOAT32, offsetof(MaterialComponent, roughness), "roughness", 0.0f, 1.0f},
-         {AttributeType::FLOAT32, offsetof(MaterialComponent, ao), "ao", 0.0f, 1.0f},
-         {AttributeType::STRINGID, offsetof(MaterialComponent, albedoTexture), "albedoTexture"},
-         {AttributeType::STRINGID, offsetof(MaterialComponent, metallicTexture), "metallicTexture"},
-         {AttributeType::STRINGID, offsetof(MaterialComponent, roughnessTexture), "roughnessTexture"},
-         {AttributeType::STRINGID, offsetof(MaterialComponent, aoTexture), "aoTexture"},
-         {AttributeType::STRINGID, offsetof(MaterialComponent, normalTexture), "normalTexture"}},
+        {{AttributeType::VECTOR_FLOAT32, offsetof(Material, albedo), "albedo", 0.0f, 1.0f},
+         {AttributeType::FLOAT32, offsetof(Material, metallic), "metallic", 0.0f, 1.0f},
+         {AttributeType::FLOAT32, offsetof(Material, roughness), "roughness", 0.0f, 1.0f},
+         {AttributeType::FLOAT32, offsetof(Material, ao), "ao", 0.0f, 1.0f},
+         {AttributeType::STRINGID, offsetof(Material, albedoTexture), "albedoTexture"},
+         {AttributeType::STRINGID, offsetof(Material, metallicTexture), "metallicTexture"},
+         {AttributeType::STRINGID, offsetof(Material, roughnessTexture), "roughnessTexture"},
+         {AttributeType::STRINGID, offsetof(Material, aoTexture), "aoTexture"},
+         {AttributeType::STRINGID, offsetof(Material, normalTexture), "normalTexture"}},
         1024,                                      // Max instances
         {},                                        // Serialize
         {},                                        // Deserialize
         {                                          // renderUI
          {"", [=](void* data, std::string imguiId) // Define how the component will be rendered
           {
-              const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<MaterialComponent>::getDescription().attributeDescriptions;
-              MaterialComponent* m = static_cast<MaterialComponent*>(data);
+              const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<Material>::getDescription().attributeDescriptions;
+              Material* m = static_cast<Material*>(data);
 
               bool albedoFromImage = m->albedoTexture != "Empty texture"_sid;
               bool metallicFromImage = m->metallicTexture != "Empty texture"_sid;
@@ -42,7 +43,7 @@ ComponentDescription& TypedComponentRegistry<MaterialComponent>::getDescription(
               // albedo-metallic-roughness-ao
               std::vector<bool*> fromImage = {&albedoFromImage, &metallicFromImage, &roughnessFromImage, &aoFromImage};
               std::vector<StringId*> attribTextures = {&(m->albedoTexture), &(m->metallicTexture), &(m->roughnessTexture), &(m->aoTexture)};
-              std::vector<StringId> textures = ResourceManager::getResources<Texture>();
+              std::vector<StringId> textures = resource::Manager::getResources<resource::Image>();
 
               for (unsigned i = 0; i <= 3; i++) {
                   std::string name = aDescs[i].name;
@@ -68,12 +69,12 @@ ComponentDescription& TypedComponentRegistry<MaterialComponent>::getDescription(
                       }
                   }
 
-                  ImGui::Checkbox(("from image?##" + name + "MaterialComponent").c_str(), fromImage[i]);
+                  ImGui::Checkbox(("from image?##" + name + "Material").c_str(), fromImage[i]);
                   ImGui::Separator();
               }
 
               ImGui::Text("normal");
-              ImGui::Checkbox("use##NormalMaterialComponent", &useNormal);
+              ImGui::Checkbox("use##NormalMaterial", &useNormal);
 
               // Initialize if some checkbox changed
               // Plain color to image
@@ -103,4 +104,5 @@ ComponentDescription& TypedComponentRegistry<MaterialComponent>::getDescription(
 
     return desc;
 }
+
 } // namespace atta::component

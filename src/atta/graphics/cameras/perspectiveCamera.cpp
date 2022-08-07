@@ -8,6 +8,7 @@
 #include <atta/graphics/cameras/perspectiveCamera.h>
 
 namespace atta::graphics {
+
 PerspectiveCamera::PerspectiveCamera(CreateInfo info) : Camera("PerspectiveCamera"), _near(info.near), _far(info.far), _fov(info.fov) {
     _position = info.position;
     _front = normalize(info.lookAt - info.position);
@@ -32,29 +33,30 @@ mat4 PerspectiveCamera::getProj() const {
 }
 
 void PerspectiveCamera::serialize(std::ostream& os) {
-    write(os, std::string("PerspectiveCamera"));
-    write(os, _position);
-    write(os, _left);
-    write(os, _up);
-    write(os, _front);
-    write(os, _ratio);
-    write(os, _control);
-    write(os, _speed);
-    write(os, _near);
-    write(os, _far);
-    write(os, _fov);
+    file::write(os, std::string("PerspectiveCamera"));
+    file::write(os, _position);
+    file::write(os, _left);
+    file::write(os, _up);
+    file::write(os, _front);
+    file::write(os, _ratio);
+    file::write(os, _control);
+    file::write(os, _speed);
+    file::write(os, _near);
+    file::write(os, _far);
+    file::write(os, _fov);
 }
 
 void PerspectiveCamera::deserialize(std::istream& is) {
-    read(is, _position);
-    read(is, _left);
-    read(is, _up);
-    read(is, _front);
-    read(is, _ratio);
-    read(is, _control);
-    read(is, _speed);
-    read(is, _near);
-    read(is, _far);
-    read(is, _fov);
+    file::read(is, _position);
+    file::read(is, _left);
+    file::read(is, _up);
+    file::read(is, _front);
+    file::read(is, _ratio);
+    file::read(is, _control);
+    file::read(is, _speed);
+    file::read(is, _near);
+    file::read(is, _far);
+    file::read(is, _fov);
 }
+
 } // namespace atta::graphics

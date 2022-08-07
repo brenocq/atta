@@ -8,6 +8,7 @@
 #include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
 
 namespace atta::graphics {
+
 OpenGLFramebuffer::OpenGLFramebuffer(const Framebuffer::CreateInfo& info)
     : Framebuffer(info), _id(0), _depthAttachmentIndex(-1), _stencilAttachmentIndex(-1) {
     // Check consistency and populate color and depth attachments
@@ -178,4 +179,5 @@ GLenum OpenGLFramebuffer::convertDepthAttachmentType(Image::Format format) {
     }
     ASSERT(false, "Could not convert format to openGL depth attachment");
 }
+
 } // namespace atta::graphics

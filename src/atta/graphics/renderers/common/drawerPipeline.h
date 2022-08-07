@@ -10,6 +10,7 @@
 #include <atta/graphics/pipeline.h>
 
 namespace atta::graphics {
+
 class DrawerPipeline final {
   public:
     DrawerPipeline(std::shared_ptr<RenderPass> renderPass);
@@ -20,6 +21,7 @@ class DrawerPipeline final {
     std::shared_ptr<Pipeline> _linePipeline;
     std::shared_ptr<Pipeline> _pointPipeline;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERERS_COMMON_DRAWER_PIPELINE_H

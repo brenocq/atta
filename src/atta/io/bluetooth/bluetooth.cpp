@@ -7,6 +7,7 @@
 #include <atta/io/bluetooth/bluetooth.h>
 
 namespace atta::io {
+
 // MAC parameter, reverse (little-endian)
 #define MAC_PARR(x) x[5], x[4], x[3], x[2], x[1], x[0]
 #define MAC_PARR_rev(x) &x[5], &x[4], &x[3], &x[2], &x[1], &x[0]
@@ -33,4 +34,5 @@ Bluetooth::Device* Bluetooth::getDevice(std::array<uint8_t, 6> mac) {
             return &dev;
     return nullptr;
 }
+
 } // namespace atta::io

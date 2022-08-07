@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
-set(ATTA_CORE_SOURCE
+set(ATTA_UTILS_SOURCE
     stringId.cpp
     config.cpp
 
@@ -12,26 +12,26 @@ set(ATTA_CORE_SOURCE
     math/ray.cpp
 )
 
-add_library(atta_core STATIC ${ATTA_CORE_SOURCE})
-atta_target_common(atta_core)
-atta_add_libs(atta_core)
+add_library(atta_utils STATIC ${ATTA_UTILS_SOURCE})
+atta_target_common(atta_utils)
+atta_add_libs(atta_utils)
 
 ########## Testing ##########
-set(ATTA_CORE_TEST_SOURCES
+set(ATTA_UTILS_TEST_SOURCES
     tests/stringId.cpp
     tests/math.cpp
-    )
+)
 # Add to global test
-atta_add_tests(${ATTA_CORE_TEST_SOURCES})
+atta_add_tests(${ATTA_UTILS_TEST_SOURCES})
 
 # Create local tests
 atta_create_local_test(
-    atta_core_string_id_test 
+    atta_utils_string_id_test 
     "tests/stringId.cpp"
-    "atta_core"
-    )
+    "atta_utils"
+)
 atta_create_local_test(
-    atta_core_math_test 
+    atta_utils_math_test 
     "tests/math.cpp"
-    "atta_core"
-    )
+    "atta_utils"
+)

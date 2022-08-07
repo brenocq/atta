@@ -8,6 +8,7 @@
 #include <atta/ui/layers/editor/systemWindows/ioSystemWindow.h>
 
 namespace atta::ui {
+
 IOSystemWindow::IOSystemWindow() { setName("IO Module"); }
 
 void IOSystemWindow::renderImpl() {
@@ -31,6 +32,7 @@ void IOSystemWindow::renderImpl() {
     if (_bluetooth)
         _bluetooth->update();
 }
+
 } // namespace atta::ui
 
 #include <atta/ui/layers/editor/systemWindows/ioSystemWindowBluetooth.cpp>

@@ -4,7 +4,7 @@
 // Date: 2020-12-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/math/matrix.h>
+#include <atta/utils/math/matrix.h>
 
 namespace atta {
 //------------------------------------------------------------//

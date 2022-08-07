@@ -1,22 +1,24 @@
 //--------------------------------------------------
 // Atta Component Module
-// boxColliderComponent.h
+// boxCollider.h
 // Date: 2021-11-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_BOX_COLLIDER_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_BOX_COLLIDER_COMPONENT_H
-#include <atta/component/componentManager.h>
+#ifndef ATTA_COMPONENT_COMPONENTS_BOX_COLLIDER_H
+#define ATTA_COMPONENT_COMPONENTS_BOX_COLLIDER_H
+
+#include <atta/component/manager.h>
 
 namespace atta::component {
+
 /// %Component to create a box collider
 /** This collider can be used both with 2D and 3D physics.
  * If using 2D physics, will be a square instead of a box.
  *
- * TransformComponent and RigidBody2DComponent are necessary for the
+ * Transform and RigidBody2DComponent are necessary for the
  * entity to participate in the physics iteration.
  *
- * The box will also be scaled by the TransformComponent world scale.
+ * The box will also be scaled by the Transform world scale.
  *
  * When using 2D physics, the best
  * box face is chosen to create the square. If the 2D physics plane
@@ -30,9 +32,10 @@ struct BoxCollider final : public Component {
     vec3 size = {1.0f, 1.0f, 1.0f};   ///< Size
     vec3 offset = {0.0f, 0.0f, 0.0f}; ///< Offset
 };
-ATTA_REGISTER_COMPONENT(BoxColliderComponent)
+ATTA_REGISTER_COMPONENT(BoxCollider)
 template <>
-ComponentDescription& TypedComponentRegistry<BoxColliderComponent>::getDescription();
+ComponentDescription& TypedComponentRegistry<BoxCollider>::getDescription();
+
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_BOX_COLLIDER_COMPONENT_H
+#endif // ATTA_COMPONENT_COMPONENTS_BOX_COLLIDER_H

@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_IMAGE_H
 #define ATTA_GRAPHICS_IMAGE_H
-#include <atta/core/stringId.h>
+
 #include <atta/graphics/base.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
+
 class Image {
   public:
     enum class Format {
@@ -80,6 +82,7 @@ class Image {
     const StringId _debugName;
     uint8_t* _data;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_IMAGE_H

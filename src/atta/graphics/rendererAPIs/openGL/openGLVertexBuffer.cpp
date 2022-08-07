@@ -7,6 +7,7 @@
 #include <atta/graphics/rendererAPIs/openGL/openGLVertexBuffer.h>
 
 namespace atta::graphics {
+
 OpenGLVertexBuffer::OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info) : VertexBuffer(info), _id(0) {
     glGenBuffers(1, &_id);
     glBindBuffer(GL_ARRAY_BUFFER, _id);
@@ -73,4 +74,5 @@ GLenum OpenGLVertexBuffer::convertBaseType(VertexBufferElement::Type type) {
     }
     ASSERT(false, "Unknown vertex buffer element type");
 }
+
 } // namespace atta::graphics

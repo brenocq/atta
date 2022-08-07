@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_SHADER_GROUP_H
 #define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_SHADER_GROUP_H
+
 #include <atta/graphics/rendererAPIs/openGL/base.h>
 #include <atta/graphics/shaderGroup.h>
 
 namespace atta::graphics {
+
 class OpenGLShaderGroup final : public ShaderGroup {
   public:
     OpenGLShaderGroup(const ShaderGroup::CreateInfo& info);
@@ -40,6 +42,7 @@ class OpenGLShaderGroup final : public ShaderGroup {
     OpenGLId _id;
     std::vector<std::string> _textureUnits;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_SHADER_GROUP_H

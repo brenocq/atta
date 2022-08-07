@@ -9,6 +9,7 @@
 #include <atta/memory/allocator.h>
 
 namespace atta::memory {
+
 // Allocator for variable-size objects, free bytes are known using a bitmap
 // The first memory bytes are used by the bitmap
 //
@@ -54,6 +55,7 @@ class BitmapAllocator final : public Allocator {
     size_t _blockSize;
     size_t _current; // Position to start free space search
 };
+
 } // namespace atta::memory
 
 #include <atta/memory/allocators/bitmapAllocator.inl>

@@ -7,6 +7,7 @@
 #include <atta/io/http/json.h>
 
 namespace atta::io {
+
 const std::vector<std::string> typeToString = {"none", "bool", "int", "float", "std::string", "std::vector<Json>", "std::map<std::string, Json>"};
 
 Json::Json(std::string str) : _type(NONE) { parse(str); }
@@ -194,6 +195,7 @@ Json::operator std::string() const {
         return "";
     }
 }
+
 } // namespace atta::io
 
 #include <atta/io/http/jsonParse.cpp>

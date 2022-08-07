@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_SHADER_UNIFORM_H
 
 namespace atta::graphics {
+
 class ShaderUniform final {
   public:
     enum class Type { NONE = 0, BOOL, INT, UINT, FLOAT, VEC2, VEC3, VEC4, IVEC2, IVEC3, IVEC4, MAT3, MAT4 };
@@ -24,6 +25,7 @@ class ShaderUniform final {
     uint32_t _size;
     uint32_t _offset;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_SHADER_UNIFORM_H

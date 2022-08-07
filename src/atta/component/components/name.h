@@ -1,21 +1,24 @@
 //--------------------------------------------------
 // Atta Component Module
-// nameComponent.h
+// name.h
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_NAME_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_NAME_COMPONENT_H
-#include <atta/component/componentManager.h>
+#ifndef ATTA_COMPONENT_COMPONENTS_NAME_H
+#define ATTA_COMPONENT_COMPONENTS_NAME_H
+
+#include <atta/component/manager.h>
 
 namespace atta::component {
+
 /// %Component to give an entity a name
 struct Name final : public Component {
     char name[32];
 };
-ATTA_REGISTER_COMPONENT(NameComponent)
+ATTA_REGISTER_COMPONENT(Name)
 template <>
-ComponentDescription& TypedComponentRegistry<NameComponent>::getDescription();
+ComponentDescription& TypedComponentRegistry<Name>::getDescription();
+
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_NAME_COMPONENT_H
+#endif // ATTA_COMPONENT_COMPONENTS_NAME_H

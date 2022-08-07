@@ -6,21 +6,22 @@
 //--------------------------------------------------
 #include <atta/component/componentRegistry.h>
 #include <atta/component/components/components.h>
-#include <atta/resource/resourceManager.h>
+#include <atta/resource/manager.h>
 #include <atta/resource/resources/mesh.h>
-#include <atta/script/scriptManager.h>
-#include <atta/sensor/sensorManager.h>
+#include <atta/script/manager.h>
+#include <atta/sensor/manager.h>
 #include <atta/ui/layers/editor/windows/entityWindow.h>
 #include <imgui.h>
 
 namespace atta::ui {
+
 EntityWindow::EntityWindow() {}
 
 void EntityWindow::render() {
     ImGui::Begin("Scene");
     {
         if (ImGui::BeginDragDropTarget()) {
-            if (ImGui::AcceptDragDropPayload("EntityId"))
+            if (ImGui::AcceptDragDropPayload("component::EntityId"))
                 LOG_DEBUG("EntityWindow", "Drop outside");
             ImGui::EndDragDropTarget();
         }
@@ -34,14 +35,14 @@ void EntityWindow::render() {
 }
 
 void EntityWindow::renderTree() {
-    std::vector<EntityId> entities = ComponentManager::getEntitiesView();
+    std::vector<component::EntityId> entities = component::Manager::getEntitiesView();
     int i = 0;
 
     ImGui::Text("Scene");
 
     // Render root entities
-    for (EntityId entity : entities) {
-        RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
+    for (component::EntityId entity : entities) {
+        component::Relationship* r = component::Manager::getEntityComponent<component::Relationship>(entity);
         if (!r || (r && r->getParent() == -1))
             renderTreeNode(entity, i);
     }
@@ -51,31 +52,31 @@ void EntityWindow::renderTree() {
     ImVec2 window = ImGui::GetWindowSize();
     ImGui::SetCursorPos(ImVec2((window.x - size) * 0.5f, cursor.y));
     if (ImGui::Button("Create entity", ImVec2(size, 0)))
-        ComponentManager::createEntity();
+        component::Manager::createEntity();
 
     //----- Operations -----//
     for (auto entity : _entitiesToDelete)
-        ComponentManager::deleteEntity(entity);
+        component::Manager::deleteEntity(entity);
     _entitiesToDelete.clear();
 
     for (auto entity : _entitiesToCopy) {
-        EntityId copied = ComponentManager::copyEntity(entity);
-        ComponentManager::setSelectedEntity(copied);
+        component::EntityId copied = component::Manager::copyEntity(entity);
+        component::Manager::setSelectedEntity(copied);
     }
     _entitiesToCopy.clear();
 }
 
-void EntityWindow::renderTreeNode(EntityId entity, int& i) {
+void EntityWindow::renderTreeNode(component::EntityId entity, int& i) {
     //----- Name -----//
     std::string name = "<Entity " + std::to_string(entity) + ">";
-    NameComponent* n = ComponentManager::getEntityComponent<NameComponent>(entity);
-    RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
+    component::Name* n = component::Manager::getEntityComponent<component::Name>(entity);
+    component::Relationship* r = component::Manager::getEntityComponent<component::Relationship>(entity);
     if (n)
         name = n->name;
 
     //----- Selected -----//
     ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-    if (entity == ComponentManager::getSelectedEntity())
+    if (entity == component::Manager::getSelectedEntity())
         nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
     //----- Leaf/Node -----//
@@ -88,7 +89,7 @@ void EntityWindow::renderTreeNode(EntityId entity, int& i) {
 
     //----- Select entity -----//
     if (ImGui::IsItemClicked())
-        ComponentManager::setSelectedEntity(entity);
+        component::Manager::setSelectedEntity(entity);
 
     //----- Popup -----//
     if (ImGui::BeginPopupContextItem()) {
@@ -102,15 +103,15 @@ void EntityWindow::renderTreeNode(EntityId entity, int& i) {
 
     //----- Drag/Drop entities -----//
     if (ImGui::BeginDragDropSource()) {
-        ImGui::SetDragDropPayload("EntityId", &entity, sizeof(EntityId));
+        ImGui::SetDragDropPayload("component::EntityId", &entity, sizeof(component::EntityId));
         ImGui::Text(name.c_str());
         ImGui::EndDragDropSource();
     }
     if (ImGui::BeginDragDropTarget()) {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("EntityId")) {
-            DASSERT(payload->DataSize == sizeof(EntityId), "Payload data should have same size as EntityId");
-            EntityId childEntity = *(const EntityId*)payload->Data;
-            RelationshipComponent::setParent(entity, childEntity);
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("component::EntityId")) {
+            DASSERT(payload->DataSize == sizeof(component::EntityId), "Payload data should have same size as component::EntityId");
+            component::EntityId childEntity = *(const component::EntityId*)payload->Data;
+            component::Relationship::setParent(entity, childEntity);
         }
         ImGui::EndDragDropTarget();
     }
@@ -125,23 +126,23 @@ void EntityWindow::renderTreeNode(EntityId entity, int& i) {
 }
 
 void EntityWindow::renderComponents() {
-    EntityId selected = ComponentManager::getSelectedEntity();
+    component::EntityId selected = component::Manager::getSelectedEntity();
     if (selected == -1)
         return;
 
-    ImGui::Text("Components (EntityId: %d)", selected);
+    ImGui::Text("Components (component::EntityId: %d)", selected);
 
     // Render options to edit each component
-    for (auto compReg : ComponentManager::getComponentRegistries()) {
-        void* component = ComponentManager::getEntityComponentById(compReg->getId(), selected);
+    for (auto compReg : component::Manager::getComponentRegistries()) {
+        void* component = component::Manager::getEntityComponentById(compReg->getId(), selected);
         if (component != nullptr) {
             std::string name = compReg->getDescription().name;
-            if (compReg->getId() != TypedComponentRegistry<RelationshipComponent>::getInstance().getId()) {
+            if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
                 bool open = true;
                 if (ImGui::CollapsingHeader((name + "##Components" + name + "Header").c_str(), &open))
-                    compReg->renderUI((Component*)component);
+                    compReg->renderUI((component::Component*)component);
                 if (!open)
-                    ComponentManager::removeEntityComponentById(compReg->getId(), selected);
+                    component::Manager::removeEntityComponentById(compReg->getId(), selected);
             }
         }
     }
@@ -155,13 +156,13 @@ void EntityWindow::renderComponents() {
         ImGui::OpenPopup("Scene_ComponentAdd");
 
     if (ImGui::BeginPopup("Scene_ComponentAdd")) {
-        for (auto compReg : ComponentManager::getComponentRegistries()) {
-            void* component = ComponentManager::getEntityComponentById(compReg->getId(), selected);
+        for (auto compReg : component::Manager::getComponentRegistries()) {
+            void* component = component::Manager::getEntityComponentById(compReg->getId(), selected);
             if (component == nullptr) {
-                if (compReg->getId() != TypedComponentRegistry<RelationshipComponent>::getInstance().getId()) {
+                if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
                     std::string name = compReg->getDescription().name;
                     if (ImGui::Selectable((name + "##ComponentAdd" + name).c_str()))
-                        ComponentManager::addEntityComponentById(compReg->getId(), selected);
+                        component::Manager::addEntityComponentById(compReg->getId(), selected);
                 }
             }
         }
@@ -170,7 +171,7 @@ void EntityWindow::renderComponents() {
 }
 
 void EntityWindow::textureCombo(std::string comboId, StringId& sid) {
-    std::vector<StringId> textures = ResourceManager::getResources<Texture>();
+    std::vector<StringId> textures = resource::Manager::getResources<resource::Image>();
 
     if (sid == "Empty texture") {
         DASSERT(textures.size() > 0, "At least one texture should be loaded to the memory");
@@ -190,15 +191,16 @@ void EntityWindow::textureCombo(std::string comboId, StringId& sid) {
 
 void EntityWindow::renderCameraWindows() {
     for (auto eid : _cameraWindows) {
-        CameraComponent* camera = ComponentManager::getEntityComponent<CameraComponent>(eid);
+        component::Camera* camera = component::Manager::getEntityComponent<component::Camera>(eid);
         bool open = true;
         ImGui::Begin(("Camera Entity " + std::to_string(eid)).c_str(), &open);
         ImVec2 size = ImVec2(camera->width, camera->height);
-        ImGui::Image(SensorManager::getEntityCameraImGuiTexture(eid), size, ImVec2(0, 0), ImVec2(1, 1));
+        ImGui::Image(sensor::Manager::getEntityCameraImGuiTexture(eid), size, ImVec2(0, 0), ImVec2(1, 1));
         ImGui::End();
 
         if (!open)
             _cameraWindows.erase(eid);
     }
 }
+
 } // namespace atta::ui

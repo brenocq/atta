@@ -4,7 +4,7 @@
 // Date: 2020-12-11
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/math/common.h>
+#include <atta/utils/math/common.h>
 
 namespace atta {
 float radians(float degrees) { return degrees * 0.01745329251f; }

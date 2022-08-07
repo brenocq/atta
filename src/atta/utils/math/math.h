@@ -4,15 +4,15 @@
 // Date: 2021-01-08
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_MATH_MATH_H
-#define ATTA_CORE_MATH_MATH_H
+#ifndef ATTA_UTILS_MATH_MATH_H
+#define ATTA_UTILS_MATH_MATH_H
 
-#include <atta/core/math/bounds.h>
-#include <atta/core/math/common.h>
-#include <atta/core/math/matrix.h>
-#include <atta/core/math/point.h>
-#include <atta/core/math/quaternion.h>
-#include <atta/core/math/ray.h>
-#include <atta/core/math/vector.h>
+#include <atta/utils/math/bounds.h>
+#include <atta/utils/math/common.h>
+#include <atta/utils/math/matrix.h>
+#include <atta/utils/math/point.h>
+#include <atta/utils/math/quaternion.h>
+#include <atta/utils/math/ray.h>
+#include <atta/utils/math/vector.h>
 
-#endif // ATTA_CORE_MATH_MATH_H
+#endif // ATTA_UTILS_MATH_MATH_H

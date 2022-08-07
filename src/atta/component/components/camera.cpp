@@ -1,16 +1,17 @@
 //--------------------------------------------------
 // Atta Component Module
-// cameraComponent.cpp
+// camera.cpp
 // Date: 2021-11-23
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/components/cameraComponent.h>
-#include <atta/event/eventManager.h>
-#include <atta/event/events/uiCameraComponentEvent.h>
-#include <atta/sensor/sensorManager.h>
+#include <atta/component/components/camera.h>
+#include <atta/event/events/uiCameraComponent.h>
+#include <atta/event/manager.h>
+#include <atta/sensor/manager.h>
 #include <imgui.h>
 
 namespace atta::component {
+
 template <>
 ComponentDescription& TypedComponentRegistry<Camera>::getDescription() {
     static ComponentDescription desc = {
@@ -32,10 +33,10 @@ ComponentDescription& TypedComponentRegistry<Camera>::getDescription() {
               const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<Camera>::getDescription().attributeDescriptions;
 
               if (ImGui::Button(("View image" + imguiId + "image").c_str())) {
-                  UICameraComponentEvent event;
+                  event::UiCameraComponent event;
                   event.component = static_cast<Camera*>(data);
-                  event.uiEvent = UICameraComponentEvent::UIEvent::VIEW_BUTTON_CLICKED;
-                  EventManager::publish(event);
+                  event.uiEvent = event::UiCameraComponent::UiEvent::VIEW_BUTTON_CLICKED;
+                  event::Manager::publish(event);
               }
 
               for (unsigned i = 0; i < aDescs.size(); i++) {
@@ -51,11 +52,12 @@ ComponentDescription& TypedComponentRegistry<Camera>::getDescription() {
 }
 
 const std::vector<uint8_t>& Camera::getFrame() {
-    std::vector<SensorManager::CameraInfo>& cameraInfos = SensorManager::getCameraInfos();
+    std::vector<sensor::Manager::CameraInfo>& cameraInfos = sensor::Manager::getCameraInfos();
     for (auto& cameraInfo : cameraInfos)
         if (cameraInfo.component == this)
             return cameraInfo.data;
     LOG_ERROR("component::Camera", "Could not get camera frame from SensorManager");
     return {};
 }
+
 } // namespace atta::component

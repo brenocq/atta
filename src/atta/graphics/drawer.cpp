@@ -7,6 +7,7 @@
 #include <atta/graphics/drawer.h>
 
 namespace atta::graphics {
+
 Drawer::Drawer()
     : _maxNumberOfLines(100000), _currNumberOfLines(0), _linesChanged(false), _maxNumberOfPoints(1000000), _currNumberOfPoints(0),
       _pointsChanged(false) {
@@ -54,4 +55,5 @@ void Drawer::clearImpl() {
     _linesChanged = false;
     _pointsChanged = false;
 }
+
 } // namespace atta::graphics

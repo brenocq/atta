@@ -7,10 +7,11 @@
 #include <atta/graphics/rendererAPIs/openGL/openGLShader.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 
-#include <atta/graphics/graphicsManager.h>
+#include <atta/graphics/manager.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
 
 namespace atta::graphics {
+
 OpenGLShaderGroup::OpenGLShaderGroup(const ShaderGroup::CreateInfo& info) : ShaderGroup(info), _id(0) {
     // Create shaders (they are compiled at creation)
     for (auto shaderPath : info.shaderPaths) {
@@ -95,7 +96,7 @@ void OpenGLShaderGroup::setMat3(const char* name, mat3 m) { glUniformMatrix3fv(g
 void OpenGLShaderGroup::setMat4(const char* name, mat4 m) { glUniformMatrix4fv(getLoc(name), 1, GL_FALSE, m.data); }
 
 void OpenGLShaderGroup::setTexture(const char* name, StringId sid) {
-    std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(GraphicsManager::getRendererAPI());
+    std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(Manager::getRendererAPI());
     std::shared_ptr<OpenGLImage> image = renderer->getOpenGLImages()[sid.getId()];
     static std::map<StringId, bool> lastWarns; // Used to avoid spamming warn
 
@@ -158,7 +159,7 @@ void OpenGLShaderGroup::setTexture(const char* name, std::shared_ptr<Image> inIm
 }
 
 void OpenGLShaderGroup::setCubemap(const char* name, StringId sid) {
-    std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(GraphicsManager::getRendererAPI());
+    std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(Manager::getRendererAPI());
     if (renderer->getOpenGLCubemaps().find(sid.getId()) == renderer->getOpenGLCubemaps().end()) {
         LOG_WARN("OpenGLShaderGroup", "(setCubemap) Trying to use cubemap that was never generated: $0 = \"$1\"", name, sid);
         return;
@@ -221,4 +222,5 @@ void OpenGLShaderGroup::setCubemap(const char* name, std::shared_ptr<Image> inIm
 }
 
 unsigned int OpenGLShaderGroup::getLoc(const char* name) { return glGetUniformLocation(_id, name); }
+
 } // namespace atta::graphics

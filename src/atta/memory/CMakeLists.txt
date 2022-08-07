@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_MEMORY_MODULE_SOURCES
-    memoryManager.cpp
+    manager.cpp
     allocator.cpp
     allocatedObject.cpp
     allocators/stackAllocator.cpp
@@ -9,7 +9,7 @@ set(ATTA_MEMORY_MODULE_SOURCES
     allocators/poolAllocatorT.cpp
     allocators/mallocAllocator.cpp
     allocators/bitmapAllocator.cpp
-    )
+)
 
 add_library(atta_memory_module STATIC ${ATTA_MEMORY_MODULE_SOURCES})
 atta_target_common(atta_memory_module)

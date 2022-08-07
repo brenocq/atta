@@ -4,14 +4,16 @@
 // Date: 2021-08-20
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/stringId.h>
 #include <atta/memory/allocatedObject.h>
 #include <atta/memory/allocators/mallocAllocator.h>
 #include <atta/memory/allocators/stackAllocator.h>
-#include <atta/memory/memoryManager.h>
+#include <atta/memory/manager.h>
+#include <atta/utils/stringId.h>
 #include <gtest/gtest.h>
 
+using namespace atta;
 using namespace atta::memory;
+
 namespace {
 constexpr int NUM_IT = 1000;
 constexpr int NUM_OBJ = 5000;
@@ -31,9 +33,9 @@ struct TestCpp {
 class Memory_Speed : public ::testing::Test {
   public:
     void SetUp() {
-        MemoryManager::registerAllocator(SID("Stack"), static_cast<Allocator*>(new StackAllocator(sizeof(TestStack) * NUM_OBJ)));
+        memory::Manager::registerAllocator(SID("Stack"), static_cast<Allocator*>(new StackAllocator(sizeof(TestStack) * NUM_OBJ)));
 
-        MemoryManager::registerAllocator(SID("Malloc"), static_cast<Allocator*>(new MallocAllocator()));
+        memory::Manager::registerAllocator(SID("Malloc"), static_cast<Allocator*>(new MallocAllocator()));
     }
 };
 
@@ -49,7 +51,7 @@ TEST_F(Memory_Speed, DefaultNewCpp) {
     }
 }
 
-TEST_F(Memory_Speed, MallocWithMemoryManager) {
+TEST_F(Memory_Speed, MallocWithManager) {
     TestMalloc* a[NUM_OBJ];
     for (int it = 0; it < NUM_IT; it++) {
         for (int i = 0; i < NUM_OBJ; i++) {
@@ -75,7 +77,7 @@ TEST_F(Memory_Speed, StackObj) {
 }
 
 TEST_F(Memory_Speed, StackPtr) {
-    StackAllocator* stack = MemoryManager::getAllocator<StackAllocator>(SID("Stack"));
+    StackAllocator* stack = memory::Manager::getAllocator<StackAllocator>(SID("Stack"));
     TestStack* a[NUM_OBJ];
     for (int it = 0; it < NUM_IT; it++) {
         for (int i = 0; i < NUM_OBJ; i++) {
@@ -88,7 +90,7 @@ TEST_F(Memory_Speed, StackPtr) {
     EXPECT_EQ(stack->getUsedMemory(), 0);
 }
 
-TEST_F(Memory_Speed, StackWithMemoryManager) {
+TEST_F(Memory_Speed, StackWithManager) {
     TestStack* a[NUM_OBJ];
     for (int it = 0; it < NUM_IT; it++) {
         for (int i = 0; i < NUM_OBJ; i++) {
@@ -99,7 +101,7 @@ TEST_F(Memory_Speed, StackWithMemoryManager) {
         }
     }
 
-    StackAllocator* stack = MemoryManager::getAllocator<StackAllocator>(SID("Stack"));
+    StackAllocator* stack = memory::Manager::getAllocator<StackAllocator>(SID("Stack"));
     EXPECT_EQ(stack->getUsedMemory(), 0);
 }
 } // namespace

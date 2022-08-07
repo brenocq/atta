@@ -6,12 +6,14 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERERS_FAST_RENDERER_H
 #define ATTA_GRAPHICS_RENDERERS_FAST_RENDERER_H
+
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
 #include <atta/graphics/renderers/common/selectedPipeline.h>
 #include <atta/graphics/renderers/renderer.h>
 
 namespace atta::graphics {
+
 class FastRenderer final : public Renderer {
   public:
     FastRenderer();
@@ -30,6 +32,7 @@ class FastRenderer final : public Renderer {
     std::unique_ptr<SelectedPipeline> _selectedPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERERS_FAST_RENDERER_H

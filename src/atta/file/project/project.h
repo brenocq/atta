@@ -9,7 +9,8 @@
 #include <atta/file/project/project.h>
 
 namespace atta::file {
-class FileManager;
+
+class Manager;
 class Project final {
   public:
     Project(fs::path file);
@@ -32,8 +33,9 @@ class Project final {
 
     std::vector<fs::path> _resourceRootPaths;
 
-    friend FileManager;
+    friend Manager;
 };
+
 } // namespace atta::file
 
 #endif // ATTA_FILE_PROJECT_PROJECT_H

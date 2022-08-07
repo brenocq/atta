@@ -7,5 +7,7 @@
 #include <atta/physics/physicsEngines/physicsEngine.h>
 
 namespace atta::physics {
+
 PhysicsEngine::PhysicsEngine(Type type) : _type(type) {}
+
 } // namespace atta::physics

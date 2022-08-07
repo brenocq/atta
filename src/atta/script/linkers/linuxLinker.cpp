@@ -6,20 +6,21 @@
 //--------------------------------------------------
 #include <atta/script/linkers/linuxLinker.h>
 #ifdef ATTA_OS_LINUX
-#include <atta/file/fileManager.h>
+#include <atta/file/manager.h>
 #include <atta/script/script.h>
 #include <dlfcn.h>
 
 #include <chrono>
 
 namespace atta::script {
+
 void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) {
     *script = nullptr;
     *projectScript = nullptr;
 
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
-    fs::path projectDir = FileManager::getProject()->getDirectory();
+    fs::path projectDir = file::Manager::getProject()->getDirectory();
     fs::path lib = projectDir / "build" / ("lib" + target.getString() + ".so").c_str();
 
     // LOG_DEBUG("LinuxLinker", "Linking target $0", lib);
@@ -27,7 +28,7 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
     void* fLib = dlopen(fs::absolute(lib).c_str(), RTLD_LAZY);
     if (fLib) {
         //---------- Script ----------//
-        using ScriptCreator = std::pair<const char*, atta::Script*> (*)();
+        using ScriptCreator = std::pair<const char*, Script*> (*)();
         ScriptCreator fn = reinterpret_cast<ScriptCreator>(dlsym(fLib, "createScript"));
 
         const char* dlsymError = dlerror();
@@ -37,7 +38,7 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
         }
 
         //---------- Project Script ----------//
-        using ProjectScriptCreator = std::pair<const char*, atta::ProjectScript*> (*)();
+        using ProjectScriptCreator = std::pair<const char*, ProjectScript*> (*)();
         ProjectScriptCreator pfn = reinterpret_cast<ProjectScriptCreator>(dlsym(fLib, "createProjectScript"));
 
         dlsymError = dlerror();
@@ -73,5 +74,7 @@ void LinuxLinker::releaseTarget(StringId target) {
         _targetHandles.erase(target);
     }
 }
+
 } // namespace atta::script
+
 #endif // ATTA_OS_LINUX

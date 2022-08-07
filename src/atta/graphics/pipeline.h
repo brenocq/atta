@@ -6,12 +6,14 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_PIPELINE_H
 #define ATTA_GRAPHICS_PIPELINE_H
-#include <atta/core/stringId.h>
+
 #include <atta/graphics/renderPass.h>
 #include <atta/graphics/shaderGroup.h>
 #include <atta/graphics/vertexBuffer.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
+
 class Pipeline {
   public:
     enum PrimitiveTopology { NONE, POINT, LINE, TRIANGLE, LINE_STRIP, TRIANGLE_STRIP, TRIANGLE_FAN };
@@ -52,6 +54,7 @@ class Pipeline {
 
     const StringId _debugName;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_PIPELINE_H

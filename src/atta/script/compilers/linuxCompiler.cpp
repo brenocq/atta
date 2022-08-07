@@ -5,12 +5,14 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifdef ATTA_OS_LINUX
-#include <atta/file/fileManager.h>
+
+#include <atta/file/manager.h>
 #include <atta/script/compilers/linuxCompiler.h>
 
 #include <chrono>
 
 namespace atta::script {
+
 LinuxCompiler::LinuxCompiler() : _compiler("g++") {
     // Prefer to use clang++ because it is faster
     if (std::system("clang++ 2> /dev/null"))
@@ -23,7 +25,7 @@ void LinuxCompiler::compileAll() {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
     LOG_DEBUG("LinuxCompiler", "Compile all targets");
 
-    fs::path projectDir = FileManager::getProject()->getDirectory();
+    fs::path projectDir = file::Manager::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
 
     // Create build directory if does not exists
@@ -65,7 +67,7 @@ void LinuxCompiler::compileTarget(StringId target) {
         return;
     }
 
-    fs::path projectDir = FileManager::getProject()->getDirectory();
+    fs::path projectDir = file::Manager::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
 
     // Compile all if never compiled
@@ -97,7 +99,7 @@ void LinuxCompiler::compileTarget(StringId target) {
 }
 
 void LinuxCompiler::updateTargets() {
-    fs::path projectDir = FileManager::getProject()->getDirectory();
+    fs::path projectDir = file::Manager::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
     fs::path tempFile = buildDir / "atta.temp";
 
@@ -137,7 +139,7 @@ void LinuxCompiler::findTargetFiles(StringId target) {
     // TODO Find a better way to track header files
     _targetFiles[target] = std::vector<fs::path>();
 
-    fs::path projectDir = FileManager::getProject()->getDirectory();
+    fs::path projectDir = file::Manager::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
     fs::path dependFile = buildDir / "CMakeFiles" / (target.getString() + ".dir").c_str() / "DependInfo.cmake";
 
@@ -197,6 +199,7 @@ std::string LinuxCompiler::runCommand(std::string cmd) {
         result += buffer.data();
     return result;
 }
+
 } // namespace atta::script
 
 #endif // ATTA_OS_LINUX

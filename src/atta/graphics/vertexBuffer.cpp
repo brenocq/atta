@@ -7,6 +7,7 @@
 #include <atta/graphics/vertexBuffer.h>
 
 namespace atta::graphics {
+
 VertexBufferElement::VertexBufferElement(std::string name_, Type type_, bool normalized_)
     : name(name_), type(type_), size(sizeFromType(type_)), offset(0), normalized(normalized_) {}
 
@@ -78,4 +79,5 @@ void VertexBufferLayout::calculateOffsetsAndStride() {
 }
 
 VertexBuffer::VertexBuffer(const CreateInfo& info) : _layout(info.layout), _usage(info.usage), _size(info.size), _data(info.data) {}
+
 } // namespace atta::graphics

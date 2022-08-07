@@ -4,12 +4,12 @@
 // Date: 2020-12-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_MATH_RAY_H
-#define ATTA_CORE_MATH_RAY_H
+#ifndef ATTA_UTILS_MATH_RAY_H
+#define ATTA_UTILS_MATH_RAY_H
 
-#include <atta/core/math/common.h>
-#include <atta/core/math/point.h>
-#include <atta/core/math/vector.h>
+#include <atta/utils/math/common.h>
+#include <atta/utils/math/point.h>
+#include <atta/utils/math/vector.h>
 
 namespace atta {
 //---------- Ray ----------//
@@ -47,4 +47,4 @@ class rayDifferential : public ray {
 };
 } // namespace atta
 
-#endif // ATTA_CORE_MATH_RAY_H
+#endif // ATTA_UTILS_MATH_RAY_H

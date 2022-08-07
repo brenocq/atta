@@ -6,12 +6,14 @@
 //--------------------------------------------------
 #ifndef ATTA_UI_LAYERS_EDITOR_WINDOW_H
 #define ATTA_UI_LAYERS_EDITOR_WINDOW_H
-#include <atta/component/componentManager.h>
+
 #include <atta/component/entity.h>
-#include <atta/core/stringId.h>
+#include <atta/component/manager.h>
+#include <atta/utils/stringId.h>
 #include <imgui.h>
 
 namespace atta::ui {
+
 template <typename T>
 class Window {
   public:
@@ -50,5 +52,6 @@ void Window<T>::render() {
         ImGui::End();
     }
 }
+
 } // namespace atta::ui
 #endif // ATTA_UI_LAYERS_EDITOR_WINDOW_H

@@ -7,6 +7,7 @@
 #include <atta/memory/allocators/stackAllocator.h>
 
 namespace atta::memory {
+
 StackAllocator::StackAllocator(uint64_t size) : Allocator(size), _current(0) {}
 
 StackAllocator::StackAllocator(uint8_t* memory, uint64_t size) : Allocator(memory, size), _current(0) {}
@@ -31,4 +32,5 @@ void StackAllocator::freeBytes(void* ptr, size_t size, size_t align) {
     if (reinterpret_cast<uint8_t*>(ptr) + size == &_memory[_current])
         _current -= size;
 }
+
 } // namespace atta::memory

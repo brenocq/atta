@@ -4,17 +4,18 @@
 // Date: 2022-06-12
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/componentManager.h>
-#include <atta/event/events/fileWatchEvent.h>
-#include <atta/event/events/projectBeforeDeserializeEvent.h>
-#include <atta/event/events/projectCloseEvent.h>
-#include <atta/event/events/projectOpenEvent.h>
+#include <atta/component/manager.h>
+#include <atta/event/events/fileWatch.h>
+#include <atta/event/events/projectBeforeDeserialize.h>
+#include <atta/event/events/projectClose.h>
+#include <atta/event/events/projectOpen.h>
 #include <atta/script/compilers/linuxCompiler.h>
 #include <atta/script/compilers/nullCompiler.h>
 #include <atta/script/linkers/linuxLinker.h>
 #include <atta/script/linkers/nullLinker.h>
 
 namespace atta::script {
+
 void Manager::startUp() { getInstance().startUpImpl(); }
 void Manager::startUpImpl() {
 #ifdef ATTA_OS_LINUX
@@ -25,10 +26,10 @@ void Manager::startUpImpl() {
     _linker = std::static_pointer_cast<Linker>(std::make_shared<NullLinker>());
 #endif
 
-    EventManager::subscribe<FileWatchEvent>(BIND_EVENT_FUNC(Manager::onFileChange));
-    EventManager::subscribe<ProjectBeforeDeserializeEvent>(BIND_EVENT_FUNC(Manager::onProjectOpen));
-    EventManager::subscribe<ProjectOpenEvent>(BIND_EVENT_FUNC(Manager::onProjectOpen));
-    EventManager::subscribe<ProjectCloseEvent>(BIND_EVENT_FUNC(Manager::onProjectClose));
+    event::Manager::subscribe<event::FileWatch>(BIND_EVENT_FUNC(Manager::onFileChange));
+    event::Manager::subscribe<event::ProjectBeforeDeserialize>(BIND_EVENT_FUNC(Manager::onProjectOpen));
+    event::Manager::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
+    event::Manager::subscribe<event::ProjectClose>(BIND_EVENT_FUNC(Manager::onProjectClose));
 
     _projectScript = std::make_pair(StringId(), nullptr);
 }
@@ -36,8 +37,8 @@ void Manager::startUpImpl() {
 void Manager::shutDown() { getInstance().shutDownImpl(); }
 void Manager::shutDownImpl() {}
 
-void Manager::onFileChange(Event& event) {
-    FileWatchEvent& e = reinterpret_cast<FileWatchEvent&>(event);
+void Manager::onFileChange(event::Event& event) {
+    event::FileWatch& e = reinterpret_cast<event::FileWatch&>(event);
 
     if (e.file.filename() == "CMakeLists.txt") {
         updateAllTargets();
@@ -50,29 +51,29 @@ void Manager::onFileChange(Event& event) {
                 updateTarget(target.first);
 
     // Publish event
-    ScriptTargetEvent evt;
+    event::ScriptTarget evt;
     evt.scriptSids = getScriptSids();
-    EventManager::publish(evt);
+    event::Manager::publish(evt);
 }
 
-void Manager::onProjectOpen(Event& event) {
+void Manager::onProjectOpen(event::Event& event) {
     updateAllTargets();
 
     // Publish event
-    ScriptTargetEvent evt;
+    event::ScriptTarget evt;
     evt.scriptSids = getScriptSids();
-    EventManager::publish(evt);
+    event::Manager::publish(evt);
 }
 
-void Manager::onProjectClose(Event& event) {
+void Manager::onProjectClose(event::Event& event) {
     // Release all targets
     for (auto target : _compiler->getTargets())
         releaseTarget(target);
 
     // Publish event
-    ScriptTargetEvent evt;
+    event::ScriptTarget evt;
     evt.scriptSids = getScriptSids();
-    EventManager::publish(evt);
+    event::Manager::publish(evt);
 }
 
 void Manager::updateAllTargets() {
@@ -134,7 +135,7 @@ void Manager::releaseTarget(StringId target) {
     // Delete project script
     if (_projectScript.first != StringId() && _projectScript.first == _targetToScript[target]) {
         _projectScript.second->onUnload();
-        // ComponentManager::unregisterCustomComponents();
+        // component::Manager::unregisterCustomComponents();
 
         _projectScript.first = StringId();
         delete _projectScript.second;
@@ -146,4 +147,5 @@ void Manager::releaseTarget(StringId target) {
     // Release target
     _linker->releaseTarget(target);
 }
+
 } // namespace atta::script

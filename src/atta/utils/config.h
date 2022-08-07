@@ -1,11 +1,11 @@
 //--------------------------------------------------
-// Atta Config
+// Atta Utils Module
 // config.h
 // Date: 2022-03-12
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_CONFIG_H
-#define ATTA_CORE_CONFIG_H
+#ifndef ATTA_UTILS_CONFIG_H
+#define ATTA_UTILS_CONFIG_H
 
 namespace atta {
 class Config final {

@@ -1,10 +1,10 @@
 //--------------------------------------------------
-// Atta String ID
+// Atta Utils Module
 // stringId.cpp
 // Date: 2021-08-18
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/stringId.h>
+#include <atta/utils/stringId.h>
 
 namespace atta {
 static std::unordered_map<StringHash, std::string> stringIdTable;

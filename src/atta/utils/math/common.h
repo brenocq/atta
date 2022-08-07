@@ -4,10 +4,10 @@
 // Date: 2020-12-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_MATH_COMMON_H
-#define ATTA_CORE_MATH_COMMON_H
+#ifndef ATTA_UTILS_MATH_COMMON_H
+#define ATTA_UTILS_MATH_COMMON_H
 
-#include <atta/core/math/vector.h>
+#include <atta/utils/math/vector.h>
 
 namespace atta {
 float radians(float degrees);
@@ -20,4 +20,4 @@ static constexpr float infinity = std::numeric_limits<float>::infinity();
 static constexpr float machineEpsilon = std::numeric_limits<float>::epsilon() * 0.5;
 } // namespace atta
 
-#endif // ATTA_CORE_MATH_COMMON_H
+#endif // ATTA_UTILS_MATH_COMMON_H

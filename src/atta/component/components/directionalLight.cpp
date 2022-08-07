@@ -1,16 +1,18 @@
 //--------------------------------------------------
 // Atta Component Module
-// directionalLightComponent.cpp
+// directionalLight.cpp
 // Date: 2021-11-23
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/components/directionalLightComponent.h>
+#include <atta/component/components/directionalLight.h>
 
 namespace atta::component {
+
 template <>
-ComponentDescription& TypedComponentRegistry<DirectionalLightComponent>::getDescription() {
+ComponentDescription& TypedComponentRegistry<DirectionalLight>::getDescription() {
     static ComponentDescription desc = {"Directional Light",
-                                        {{AttributeType::VECTOR_FLOAT32, offsetof(DirectionalLightComponent, intensity), "intensity", 0.0f, 10.0f}}};
+                                        {{AttributeType::VECTOR_FLOAT32, offsetof(DirectionalLight, intensity), "intensity", 0.0f, 10.0f}}};
     return desc;
 }
+
 } // namespace atta::component

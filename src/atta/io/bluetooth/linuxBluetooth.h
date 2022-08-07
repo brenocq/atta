@@ -7,10 +7,12 @@
 #ifndef ATTA_IO_BLUETOOTH_LINUX_BLUETOOTH_H
 #define ATTA_IO_BLUETOOTH_LINUX_BLUETOOTH_H
 #if defined(ATTA_OS_LINUX) && defined(ATTA_SYSTEMD_SUPPORT)
+
 #include <atta/io/bluetooth/bluetooth.h>
 #include <systemd/sd-bus.h>
 
 namespace atta::io {
+
 class LinuxBluetooth final : public Bluetooth {
   public:
     LinuxBluetooth(Bluetooth::CreateInfo info);
@@ -107,6 +109,7 @@ class LinuxBluetooth final : public Bluetooth {
     std::array<CallbackPayload, 50> _callbackPayloads;             // At most 50 callbacks at the same time
     std::array<NotifyCallbackPayload, 50> _notifyCallbackPayloads; // At most 50 notify callbacks at the same time
 };
+
 } // namespace atta::io
 
 #endif // ATTA_OS_LINUX && ATTA_SYSTEMD_SUPPORT

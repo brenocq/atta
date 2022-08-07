@@ -4,8 +4,8 @@
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::ui {
+
 void IOSystemWindow::cameraTabItem() {
     static auto deviceNames = io::Camera::getAvailableDeviceNames();
     std::vector<std::string> devicesWithError;
@@ -20,15 +20,15 @@ void IOSystemWindow::cameraTabItem() {
                 io::Camera::CreateInfo info{};
                 info.deviceName = name;
                 info.debugName = StringId("[atta::ui] " + info.deviceName + " camera");
-                _cameras[name] = io::IOManager::create<io::Camera>(info);
+                _cameras[name] = io::Manager::create<io::Camera>(info);
                 LOG_DEBUG("IOSystemWindow", "Starting device $0, $1", name, _cameras[name] == nullptr);
                 if (_cameras[name] && _cameras[name]->start()) {
-                    Image::CreateInfo imgInfo{};
+                    graphics::Image::CreateInfo imgInfo{};
                     imgInfo.width = _cameras[name]->getResolution().width;
                     imgInfo.height = _cameras[name]->getResolution().height;
-                    imgInfo.format = Image::Format::RGBA;
+                    imgInfo.format = graphics::Image::Format::RGBA;
                     imgInfo.debugName = StringId("[atta::ui] " + info.deviceName + " image");
-                    _cameraImages[name] = GraphicsManager::create<Image>(imgInfo);
+                    _cameraImages[name] = graphics::Manager::create<graphics::Image>(imgInfo);
                     LOG_DEBUG("IOSystemWindow", "Camera $0 initialized", name);
                 } else {
                     // Failed to initialize, remove from deviceNames
@@ -169,4 +169,5 @@ void IOSystemWindow::cameraTabItem() {
                 }
     }
 }
+
 } // namespace atta::ui

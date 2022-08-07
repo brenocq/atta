@@ -1,26 +1,28 @@
 //--------------------------------------------------
 // Atta Component Module
-// cameraComponent.h
+// camera.h
 // Date: 2021-09-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_CAMERA_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_CAMERA_COMPONENT_H
-#include <atta/component/componentManager.h>
+#ifndef ATTA_COMPONENT_COMPONENTS_CAMERA_H
+#define ATTA_COMPONENT_COMPONENTS_CAMERA_H
+
 #include <atta/component/components/component.h>
+#include <atta/component/manager.h>
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/renderers/renderer.h>
 
 namespace atta::component {
+
 /// %Component to create simulated camera
 /** A camera is mainly defined by its renderer type and projection
  * matrix (orthographic or perspective). Only objects between the
  * far and near plane are rendered. The fps can be
  * used to reduce how many times the camera image is rendered.
  *
- * A TransformComponent is necessary for the camera to be rendered.
+ * A Transform is necessary for the camera to be rendered.
  * The camera direction is the same as the entity Z axis, you can
- * change the camera pose by changing the TransformComponent.
+ * change the camera pose by changing the Transform.
  */
 struct Camera final : public Component {
     enum class CameraType : uint32_t { ORTHOGRAPHIC = 0, PERSPECTIVE };
@@ -43,5 +45,7 @@ struct Camera final : public Component {
 ATTA_REGISTER_COMPONENT(Camera);
 template <>
 ComponentDescription& TypedComponentRegistry<Camera>::getDescription();
+
 } // namespace atta::component
-#endif // ATTA_COMPONENT_COMPONENTS_CAMERA_COMPONENT_H
+
+#endif // ATTA_COMPONENT_COMPONENTS_CAMERA_H

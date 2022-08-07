@@ -4,12 +4,12 @@
 // Date: 2020-12-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_MATH_MATRIX_HH
-#define ATTA_CORE_MATH_MATRIX_HH
+#ifndef ATTA_UTILS_MATH_MATRIX_HH
+#define ATTA_UTILS_MATH_MATRIX_HH
 
-#include <atta/core/math/point.h>
-#include <atta/core/math/quaternion.h>
-#include <atta/core/math/vector.h>
+#include <atta/utils/math/point.h>
+#include <atta/utils/math/quaternion.h>
+#include <atta/utils/math/vector.h>
 
 namespace atta {
 class mat3;
@@ -454,5 +454,5 @@ using matd = matrix<double>;
 using mati = matrix<int>;
 } // namespace atta
 
-#include <atta/core/math/matrix.inl>
-#endif // ATTA_CORE_MATH_MATRIX_H
+#include <atta/utils/math/matrix.inl>
+#endif // ATTA_UTILS_MATH_MATRIX_H

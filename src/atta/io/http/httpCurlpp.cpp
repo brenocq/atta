@@ -15,6 +15,7 @@
 #include <curlpp/cURLpp.hpp>
 
 namespace atta::io {
+
 const std::string Http::implType = "curlpp";
 const bool Http::supported = true;
 
@@ -94,4 +95,5 @@ Http::Response Http::request(const Http::Request& req, Http::RequestType reqType
     }
     return res;
 }
+
 } // namespace atta::io

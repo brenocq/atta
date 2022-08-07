@@ -8,6 +8,7 @@
 #define ATTA_UI_LAYERS_EDITOR_DRAWERS_SENSOR_DRAWER_H
 
 namespace atta::ui {
+
 /// Drawer used to draw sensor lines
 class SensorDrawer {
   public:
@@ -15,6 +16,7 @@ class SensorDrawer {
   private:
     void updateCameras();
 };
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_LAYERS_EDITOR_DRAWERS_SENSOR_DRAWER_H

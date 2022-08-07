@@ -7,6 +7,7 @@
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
 
 namespace atta::ui {
+
 FileSelectionWindow::FileSelectionWindow() {
     setName("File Selection");
     setPathImpl(fs::current_path());
@@ -145,4 +146,5 @@ void FileSelectionWindow::renderFileTree() {
         ImGui::EndTable();
     }
 }
+
 } // namespace atta::ui

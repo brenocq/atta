@@ -9,6 +9,7 @@
 #include <atta/graphics/rendererAPI.h>
 
 namespace atta::graphics {
+
 class VulkanRenderer final : public RendererAPI {
   public:
     VulkanRenderer();
@@ -30,6 +31,7 @@ class VulkanRenderer final : public RendererAPI {
     void generatePorcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) override;
     void generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) override;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_APIS_VULKAN_VULKAN_RENDERER_H

@@ -4,23 +4,23 @@
 // Date: 2021-12-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/config.h>
-#include <atta/event/eventManager.h>
-#include <atta/event/events/simulationContinueEvent.h>
-#include <atta/event/events/simulationPauseEvent.h>
-#include <atta/event/events/simulationStartEvent.h>
-#include <atta/event/events/simulationStopEvent.h>
-#include <atta/graphics/graphicsManager.h>
+#include <atta/event/events/simulationContinue.h>
+#include <atta/event/events/simulationPause.h>
+#include <atta/event/events/simulationStart.h>
+#include <atta/event/events/simulationStop.h>
+#include <atta/event/manager.h>
+#include <atta/graphics/manager.h>
 #include <atta/ui/layers/editor/toolBar/toolBar.h>
+#include <atta/utils/config.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 
 namespace atta::ui {
 ToolBar::ToolBar() : _editorState(EditorState::EDITOR) {
-    EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
-    EventManager::subscribe<SimulationContinueEvent>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
-    EventManager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
-    EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
 }
 
 void ToolBar::render() {
@@ -43,9 +43,10 @@ void ToolBar::render() {
         switch (_editorState) {
         case EditorState::EDITOR: {
             ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f));
-            if (ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-                SimulationStartEvent e;
-                EventManager::publish(e);
+            if (ImGui::ImageButton(graphics::Manager::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
+                                   0)) {
+                event::SimulationStart e;
+                event::Manager::publish(e);
                 _editorState = EditorState::SIMULATION_RUNNING;
             }
             break;
@@ -54,25 +55,26 @@ void ToolBar::render() {
         case EditorState::SIMULATION_PAUSED: {
             ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - buttonH / 2 - 2.0f);
             if (_editorState == EditorState::SIMULATION_RUNNING)
-                if (ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/pause.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
+                if (ImGui::ImageButton(graphics::Manager::getImGuiImage("icons/pause.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
                                        0)) {
-                    SimulationPauseEvent e;
-                    EventManager::publish(e);
+                    event::SimulationPause e;
+                    event::Manager::publish(e);
                     _editorState = EditorState::SIMULATION_PAUSED;
                 }
             if (_editorState == EditorState::SIMULATION_PAUSED)
-                if (ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
+                if (ImGui::ImageButton(graphics::Manager::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
                                        0)) {
-                    SimulationContinueEvent e;
-                    EventManager::publish(e);
+                    event::SimulationContinue e;
+                    event::Manager::publish(e);
                     _editorState = EditorState::SIMULATION_RUNNING;
                 }
 
             ImGui::SameLine();
             ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) + buttonH / 2 + 2.0f);
-            if (ImGui::ImageButton(GraphicsManager::getImGuiImage("icons/stop.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-                SimulationStopEvent e;
-                EventManager::publish(e);
+            if (ImGui::ImageButton(graphics::Manager::getImGuiImage("icons/stop.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
+                                   0)) {
+                event::SimulationStop e;
+                event::Manager::publish(e);
                 _editorState = EditorState::EDITOR;
             }
             break;
@@ -106,21 +108,21 @@ void ToolBar::render() {
     handleShortcuts();
 }
 
-void ToolBar::onSimulationStateChange(Event& event) {
+void ToolBar::onSimulationStateChange(event::Event& event) {
     switch (event.getType()) {
-    case SimulationStartEvent::type: {
+    case event::SimulationStart::type: {
         _editorState = EditorState::SIMULATION_RUNNING;
         break;
     }
-    case SimulationContinueEvent::type: {
+    case event::SimulationContinue::type: {
         _editorState = EditorState::SIMULATION_RUNNING;
         break;
     }
-    case SimulationPauseEvent::type: {
+    case event::SimulationPause::type: {
         _editorState = EditorState::SIMULATION_PAUSED;
         break;
     }
-    case SimulationStopEvent::type: {
+    case event::SimulationStop::type: {
         _editorState = EditorState::EDITOR;
         break;
     }
@@ -155,19 +157,19 @@ void ToolBar::changeState(ToolBar::EditorState newState) {
     switch (newState) {
     case EditorState::EDITOR: {
         if (_editorState != EditorState::EDITOR) {
-            SimulationStopEvent e;
-            EventManager::publish(e);
+            event::SimulationStop e;
+            event::Manager::publish(e);
         }
         _editorState = EditorState::EDITOR;
         break;
     }
     case EditorState::SIMULATION_RUNNING: {
         if (_editorState == EditorState::SIMULATION_PAUSED) {
-            SimulationContinueEvent e;
-            EventManager::publish(e);
+            event::SimulationContinue e;
+            event::Manager::publish(e);
         } else if (_editorState == EditorState::EDITOR) {
-            SimulationStartEvent e;
-            EventManager::publish(e);
+            event::SimulationStart e;
+            event::Manager::publish(e);
         }
         _editorState = EditorState::SIMULATION_RUNNING;
         break;
@@ -175,15 +177,15 @@ void ToolBar::changeState(ToolBar::EditorState newState) {
     case EditorState::SIMULATION_PAUSED: {
         // If it is not running, need to start the simulation
         if (_editorState == EditorState::EDITOR) {
-            SimulationStartEvent e;
-            EventManager::publish(e);
+            event::SimulationStart e;
+            event::Manager::publish(e);
             _editorState = EditorState::SIMULATION_RUNNING;
         }
 
         // After the simulation is started, it is possible to pause
         if (_editorState == EditorState::SIMULATION_RUNNING) {
-            SimulationPauseEvent e;
-            EventManager::publish(e);
+            event::SimulationPause e;
+            event::Manager::publish(e);
             _editorState = EditorState::SIMULATION_PAUSED;
         }
         break;

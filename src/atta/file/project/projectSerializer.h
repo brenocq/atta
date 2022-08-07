@@ -10,6 +10,7 @@
 #include <atta/file/serializer/section.h>
 
 namespace atta::file {
+
 class ProjectSerializer final {
   public:
     ProjectSerializer(std::shared_ptr<Project> project);
@@ -33,6 +34,7 @@ class ProjectSerializer final {
 
     std::shared_ptr<Project> _project;
 };
+
 } // namespace atta::file
 
 #endif // ATTA_FILE_PROJECT_PROJECT_SERIALIZER_H

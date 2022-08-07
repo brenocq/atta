@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta String ID
+// Atta Utils Module
 // stringId.inl
 // Date: 2021-08-19
 // By Breno Cunha Queiroz

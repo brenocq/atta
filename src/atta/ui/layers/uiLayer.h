@@ -6,11 +6,13 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_LAYERS_INTERNAL_UI_LAYER_H
 #define ATTA_GRAPHICS_LAYERS_INTERNAL_UI_LAYER_H
+
 #include <atta/graphics/layers/layer.h>
 #include <atta/memory/allocatedObject.h>
 
 namespace atta::ui {
-class UILayer final : public Layer, public AllocatedObject<UILayer, SID("GraphicsAllocator")> {
+
+class UILayer final : public graphics::Layer, public memory::AllocatedObject<UILayer, SID("GraphicsAllocator")> {
   public:
     UILayer();
 
@@ -25,6 +27,7 @@ class UILayer final : public Layer, public AllocatedObject<UILayer, SID("Graphic
   private:
     void setTheme();
 };
+
 } // namespace atta::ui
 
 #endif // ATTA_GRAPHICS_LAYERS_INTERNAL_UI_LAYER_H

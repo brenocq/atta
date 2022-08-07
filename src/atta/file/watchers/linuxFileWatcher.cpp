@@ -5,8 +5,8 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifdef ATTA_OS_LINUX
-#include <atta/event/eventManager.h>
-#include <atta/event/events/fileWatchEvent.h>
+#include <atta/event/events/fileWatch.h>
+#include <atta/event/manager.h>
 #include <atta/file/watchers/linuxFileWatcher.h>
 
 #include <unistd.h> // read
@@ -15,6 +15,7 @@
 #include <cstring>
 
 namespace atta::file {
+
 constexpr size_t EVENT_SIZE = sizeof(struct inotify_event);
 int LinuxFileWatcher::_inotifyFd = -1;
 
@@ -121,24 +122,25 @@ void LinuxFileWatcher::publishEvent(struct inotify_event* ievent) {
 
         for (auto pathToWatch : _pathsToWatch) {
             if (pathToWatch.second == ievent->wd) {
-                FileWatchEvent e;
+                event::FileWatch e;
 
                 if (ievent->mask & IN_MODIFY)
-                    e.action = static_cast<FileWatchEvent::Action>(e.action | FileWatchEvent::MODIFY);
+                    e.action = static_cast<event::FileWatch::Action>(e.action | event::FileWatch::MODIFY);
                 if (ievent->mask & IN_DELETE)
-                    e.action = static_cast<FileWatchEvent::Action>(e.action | FileWatchEvent::DELETE);
+                    e.action = static_cast<event::FileWatch::Action>(e.action | event::FileWatch::DELETE);
                 if (ievent->mask & IN_OPEN)
-                    e.action = static_cast<FileWatchEvent::Action>(e.action | FileWatchEvent::OPEN);
+                    e.action = static_cast<event::FileWatch::Action>(e.action | event::FileWatch::OPEN);
                 if (ievent->mask & IN_CLOSE)
-                    e.action = static_cast<FileWatchEvent::Action>(e.action | FileWatchEvent::CLOSE);
+                    e.action = static_cast<event::FileWatch::Action>(e.action | event::FileWatch::CLOSE);
 
                 e.file = pathToWatch.first / ievent->name;
 
-                EventManager::publish(e);
+                event::Manager::publish(e);
                 break;
             }
         }
     }
 }
+
 } // namespace atta::file
 #endif // ATTA_OS_LINUX

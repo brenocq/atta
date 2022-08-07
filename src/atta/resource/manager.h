@@ -6,12 +6,14 @@
 //--------------------------------------------------
 #ifndef ATTA_RESOURCE_RESOURCE_MANAGER_H
 #define ATTA_RESOURCE_RESOURCE_MANAGER_H
-#include <atta/core/stringId.h>
-#include <atta/event/eventManager.h>
+
+#include <atta/event/manager.h>
 #include <atta/memory/allocators/bitmapAllocator.h>
 #include <atta/resource/resources/resources.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::resource {
+
 class Manager final {
   public:
     using ResourceType = size_t;
@@ -37,7 +39,7 @@ class Manager final {
     void startUpImpl();
     void shutDownImpl();
     void loadResourcesRecursively(fs::path directory);
-    void onProjectOpen(Event& event);
+    void onProjectOpen(event::Event& event);
 
     template <typename R, typename... Args>
     R* createImpl(const fs::path& filename, Args... args);
@@ -49,11 +51,13 @@ class Manager final {
     template <typename R>
     void createLoadEvent(R* resource, StringId sid);
 
-    BitmapAllocator* _allocator;
+    memory::BitmapAllocator* _allocator;
     std::unordered_map<StringHash, uint8_t*> _resourceMap;
     std::unordered_map<ResourceType, std::vector<StringId>> _resourcesByType;
 };
+
 } // namespace atta::resource
 
-#include <atta/resource/resourceManager.inl>
+#include <atta/resource/manager.inl>
+
 #endif // ATTA_RESOURCE_RESOURCE_MANAGER_H

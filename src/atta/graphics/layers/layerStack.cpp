@@ -7,6 +7,7 @@
 #include <atta/graphics/layers/layerStack.h>
 
 namespace atta::graphics {
+
 LayerStack::LayerStack() { _uiLayer = nullptr; }
 
 LayerStack::~LayerStack() {
@@ -48,4 +49,5 @@ void LayerStack::render() {
         _uiLayer->end();
     }
 }
+
 } // namespace atta::graphics

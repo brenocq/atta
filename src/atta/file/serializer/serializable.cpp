@@ -7,6 +7,7 @@
 #include <atta/file/serializer/serializable.h>
 
 namespace atta::file {
+
 unsigned Serializable::getSerializedSize(void* object) {
     std::ostringstream of;
     std::basic_ostream<char>::pos_type posBefore = of.tellp();
@@ -15,4 +16,5 @@ unsigned Serializable::getSerializedSize(void* object) {
     unsigned size = (int)of.tellp() - posBefore;
     return size;
 }
+
 } // namespace atta::file

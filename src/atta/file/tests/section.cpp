@@ -4,11 +4,12 @@
 // Date: 2022-06-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/stringId.h>
 #include <atta/file/serializer/section.h>
+#include <atta/utils/stringId.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+using namespace atta;
 using namespace atta::file;
 using namespace testing;
 

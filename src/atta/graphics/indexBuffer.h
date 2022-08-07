@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_INDEX_BUFFER_H
 
 namespace atta::graphics {
+
 class IndexBuffer {
   public:
     struct CreateInfo {
@@ -29,6 +30,7 @@ class IndexBuffer {
     uint32_t _size;
     const uint8_t* _data;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_INDEX_BUFFER_H

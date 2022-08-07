@@ -4,20 +4,26 @@
 // Date: 2021-08-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
+
 #include <GLFW/glfw3.h>
-#include <atta/event/eventManager.h>
-#include <atta/event/events/meshLoadEvent.h>
-#include <atta/event/events/textureLoadEvent.h>
-#include <atta/event/events/textureUpdateEvent.h>
-#include <atta/graphics/graphicsManager.h>
+
+#include <atta/event/events/imageLoad.h>
+#include <atta/event/events/imageUpdate.h>
+#include <atta/event/events/meshLoad.h>
+#include <atta/event/manager.h>
+
+#include <atta/graphics/manager.h>
 #include <atta/graphics/rendererAPIs/openGL/base.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLFramebuffer.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
-#include <atta/resource/resourceManager.h>
+
+#include <atta/resource/manager.h>
+#include <atta/resource/resources/image.h>
 #include <atta/resource/resources/mesh.h>
 
 namespace atta::graphics {
+
 OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window) : RendererAPI(RendererAPI::OPENGL), _window(window) {
     // Initialize GLAD
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -64,9 +70,9 @@ OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window) : RendererAPI(Ren
     glEnable(GL_DEPTH_TEST);
 
     // Subscribe to events
-    EventManager::subscribe<MeshLoadEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
-    EventManager::subscribe<TextureLoadEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onTextureLoadEvent));
-    EventManager::subscribe<TextureUpdateEvent>(BIND_EVENT_FUNC(OpenGLRenderer::onTextureUpdateEvent));
+    event::Manager::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
+    event::Manager::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(OpenGLRenderer::onImageLoadEvent));
+    event::Manager::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(OpenGLRenderer::onImageUpdateEvent));
 
     // Quad shader
     ShaderGroup::CreateInfo shaderGroupInfo{};
@@ -180,11 +186,11 @@ OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window) : RendererAPI(Ren
     }
 
     // Initialize meshes already loaded (create vertex/indices)
-    for (auto meshSid : ResourceManager::getResources<Mesh>())
+    for (auto meshSid : resource::Manager::getResources<resource::Mesh>())
         initializeMesh(meshSid);
     // Initialize textures already loaded
-    for (auto texSid : ResourceManager::getResources<Texture>())
-        initializeTexture(texSid);
+    for (auto imgSid : resource::Manager::getResources<resource::Image>())
+        initializeImage(imgSid);
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
@@ -238,22 +244,21 @@ void* OpenGLRenderer::getImGuiImage(StringId sid) const {
     return reinterpret_cast<void*>(_openGLImages.at(sid.getId())->getImGuiImage());
 }
 
-void OpenGLRenderer::onMeshLoadEvent(Event& event) {
-    MeshLoadEvent& e = reinterpret_cast<MeshLoadEvent&>(event);
+void OpenGLRenderer::onMeshLoadEvent(event::Event& event) {
+    event::MeshLoad& e = reinterpret_cast<event::MeshLoad&>(event);
     initializeMesh(e.sid);
 }
 
-void OpenGLRenderer::onTextureLoadEvent(Event& event) {
-    TextureLoadEvent& e = reinterpret_cast<TextureLoadEvent&>(event);
-    initializeTexture(e.sid);
+void OpenGLRenderer::onImageLoadEvent(event::Event& event) {
+    event::ImageLoad& e = reinterpret_cast<event::ImageLoad&>(event);
+    initializeImage(e.sid);
 }
 
-void OpenGLRenderer::onTextureUpdateEvent(Event& event) {
-    TextureUpdateEvent& e = reinterpret_cast<TextureUpdateEvent&>(event);
-    // OpenGLRenderer::initializeTexture(e.sid);
-    Texture* texture = ResourceManager::get<Texture>(e.sid.getString());
-    if (texture == nullptr) {
-        LOG_WARN("OpenGLRenderer", "Could not initialize OpenGL texture from [w]$0[], texture resource does not exists", e.sid.getString());
+void OpenGLRenderer::onImageUpdateEvent(event::Event& event) {
+    event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
+    resource::Image* image = resource::Manager::get<resource::Image>(e.sid.getString());
+    if (image == nullptr) {
+        LOG_WARN("OpenGLRenderer", "Could not initialize OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
         return;
     }
     if (_openGLImages.find(e.sid.getId()) == _openGLImages.end()) {
@@ -261,11 +266,11 @@ void OpenGLRenderer::onTextureUpdateEvent(Event& event) {
         return;
     }
 
-    std::shared_ptr<OpenGLImage> image = _openGLImages[e.sid.getId()];
-    if (texture->getWidth() != image->getWidth() || texture->getHeight() != image->getHeight())
-        image->resize(texture->getWidth(), texture->getHeight());
+    std::shared_ptr<OpenGLImage> openGLImage = _openGLImages[e.sid.getId()];
+    if (openGLImage->getWidth() != image->getWidth() || openGLImage->getHeight() != image->getHeight())
+        openGLImage->resize(image->getWidth(), image->getHeight());
     else
-        image->write(texture->getData());
+        openGLImage->write(image->getData());
 }
 
 void OpenGLRenderer::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) {
@@ -283,7 +288,7 @@ void OpenGLRenderer::renderFramebufferToQuad(std::shared_ptr<Framebuffer> frameb
 
 void OpenGLRenderer::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
     // Ensure that the texture was loaded
-    ResourceManager::get<Texture>(fs::path(textureSid.getString()));
+    resource::Manager::get<resource::Image>(fs::path(textureSid.getString()));
 
     // Output texture id
     unsigned int cubemap;
@@ -305,7 +310,7 @@ void OpenGLRenderer::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/compute/equiToCubemap.vert", "shaders/compute/equiToCubemap.frag"};
     shaderGroupInfo.debugName = StringId("EquiToCubemap Shader Group");
-    std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shader = Manager::create<ShaderGroup>(shaderGroupInfo);
 
     // Create cubemap texture
     glGenTextures(1, &cubemap);
@@ -416,7 +421,7 @@ void OpenGLRenderer::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcIn
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, mip);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            GraphicsManager::getRendererAPI()->renderCube();
+            Manager::getRendererAPI()->renderCube();
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -452,7 +457,7 @@ void OpenGLRenderer::generateProcessedTexture(GenerateProcessedTextureInfo gptIn
         gptInfo.func(gptInfo.shader);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    GraphicsManager::getRendererAPI()->renderQuad3();
+    Manager::getRendererAPI()->renderQuad3();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     _openGLImages[gptInfo.textureSid.getId()] = image;
@@ -463,23 +468,23 @@ void OpenGLRenderer::initializeMesh(StringId sid) {
     // LOG_DEBUG("OpenGLRenderer", "Mesh loaded! [w]$0[]", sid);
 }
 
-void OpenGLRenderer::initializeTexture(StringId sid) {
-    Texture* texture = ResourceManager::get<Texture>(sid.getString());
-    if (texture == nullptr)
-        LOG_WARN("OpenGLRenderer", "Could not initialize OpenGL texture from [w]$0[]", sid.getString());
+void OpenGLRenderer::initializeImage(StringId sid) {
+    resource::Image* image = resource::Manager::get<resource::Image>(sid.getString());
+    if (image == nullptr)
+        LOG_WARN("OpenGLRenderer", "Could not initialize OpenGL image from [w]$0[]", sid.getString());
 
     Image::CreateInfo info{};
-    info.width = texture->getWidth();
-    info.height = texture->getHeight();
-    info.data = texture->getData();
-    if (texture->getChannels() == 4)
+    info.width = image->getWidth();
+    info.height = image->getHeight();
+    info.data = image->getData();
+    if (image->getChannels() == 4)
         info.format = Image::Format::RGBA;
-    else if (texture->getChannels() == 3)
-        if (texture->getFormat() == Texture::Format::RGB8)
+    else if (image->getChannels() == 3)
+        if (image->getFormat() == resource::Image::Format::RGB8)
             info.format = Image::Format::RGB;
         else
             info.format = Image::Format::RGB16F;
-    else if (texture->getChannels() == 1)
+    else if (image->getChannels() == 1)
         info.format = Image::Format::RED;
 
     info.debugName = sid;
@@ -487,4 +492,5 @@ void OpenGLRenderer::initializeTexture(StringId sid) {
 
     // LOG_DEBUG("OpenGLRenderer", "Texture loaded! [w]$0[] -> $1", sid, _openGLImages[sid.getId()]->getId());
 }
+
 } // namespace atta::graphics

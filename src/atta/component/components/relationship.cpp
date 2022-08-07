@@ -1,56 +1,56 @@
 //--------------------------------------------------
 // Atta Component Module
-// relationshipComponent.cpp
+// relationship.cpp
 // Date: 2021-11-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/componentManager.h>
-#include <atta/component/components/relationshipComponent.h>
-#include <atta/component/components/transformComponent.h>
+#include <atta/component/components/relationship.h>
+#include <atta/component/components/transform.h>
+#include <atta/component/manager.h>
 
 namespace atta::component {
 template <>
-ComponentDescription& TypedComponentRegistry<RelationshipComponent>::getDescription() {
-    static ComponentDescription desc = {"Relationship",
-                                        {{AttributeType::UINT32, offsetof(RelationshipComponent, _parent), "parent"},
-                                         {AttributeType::CUSTOM, offsetof(RelationshipComponent, _children), "children"}},
-                                        // Max instances
-                                        1024,
-                                        // Serialize
-                                        {{"children",
-                                          [](std::ostream& os, void* data) {
-                                              std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
-                                              for (EntityId child : *children)
-                                                  write(os, child);
-                                              write(os, EntityId(-1));
-                                          }}},
-                                        // Deserialize
-                                        {{"children", [](std::istream& is, void* data) {
-                                              std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
-                                              EntityId eid;
-                                              read(is, eid);
-                                              while (eid != -1) {
-                                                  children->push_back(eid);
-                                                  read(is, eid);
-                                              }
-                                          }}}};
+ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
+    static ComponentDescription desc = {
+        "component::Relationship",
+        {{AttributeType::UINT32, offsetof(Relationship, _parent), "parent"}, {AttributeType::CUSTOM, offsetof(Relationship, _children), "children"}},
+        // Max instances
+        1024,
+        // Serialize
+        {{"children",
+          [](std::ostream& os, void* data) {
+              std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
+              for (EntityId child : *children)
+                  file::write(os, child);
+              file::write(os, EntityId(-1));
+          }}},
+        // Deserialize
+        {{"children", [](std::istream& is, void* data) {
+              std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
+              EntityId eid;
+              file::read(is, eid);
+              while (eid != -1) {
+                  children->push_back(eid);
+                  file::read(is, eid);
+              }
+          }}}};
 
     return desc;
 }
 
 // Parent operations
-void RelationshipComponent::setParent(EntityId parent, EntityId child) {
+void Relationship::setParent(EntityId parent, EntityId child) {
     // Get relationships
-    RelationshipComponent* parentRel = ComponentManager::getEntityComponent<RelationshipComponent>(parent);
+    Relationship* parentRel = component::Manager::getEntityComponent<Relationship>(parent);
     if (!parentRel)
-        parentRel = ComponentManager::addEntityComponent<RelationshipComponent>(parent);
-    RelationshipComponent* childRel = ComponentManager::getEntityComponent<RelationshipComponent>(child);
+        parentRel = component::Manager::addEntityComponent<Relationship>(parent);
+    Relationship* childRel = component::Manager::getEntityComponent<Relationship>(child);
     if (!childRel)
-        childRel = ComponentManager::addEntityComponent<RelationshipComponent>(child);
+        childRel = component::Manager::addEntityComponent<Relationship>(child);
 
     // Check if entity can be children (avoid recursive)
     bool canBeParent = true;
-    RelationshipComponent* r = parentRel;
+    Relationship* r = parentRel;
     if (r && r->_parent != -1) {
         // From the parent, going up in the hierarchy, can't find the child
         if (r->_parent == child)
@@ -62,7 +62,7 @@ void RelationshipComponent::setParent(EntityId parent, EntityId child) {
             if (r->_parent == -1)
                 r = nullptr;
             else
-                r = ComponentManager::getEntityComponent<RelationshipComponent>(r->_parent);
+                r = component::Manager::getEntityComponent<Relationship>(r->_parent);
         }
     }
 
@@ -73,10 +73,10 @@ void RelationshipComponent::setParent(EntityId parent, EntityId child) {
             removeParent(childRel->_parent, child);
 
         // If has transform component, update to be relative to the parent
-        TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(child);
+        Transform* t = component::Manager::getEntityComponent<Transform>(child);
         if (t) {
             mat4 transform = t->getWorldTransform(child);
-            mat4 pTransform = TransformComponent::getEntityWorldTransform(parent);
+            mat4 pTransform = Transform::getEntityWorldTransform(parent);
 
             transform = inverse(pTransform) * transform;
 
@@ -95,24 +95,24 @@ void RelationshipComponent::setParent(EntityId parent, EntityId child) {
     }
 }
 
-void RelationshipComponent::removeParent(EntityId parent, EntityId child) {
+void Relationship::removeParent(EntityId parent, EntityId child) {
     // Get relationships
-    RelationshipComponent* parentRel = ComponentManager::getEntityComponent<RelationshipComponent>(parent);
+    Relationship* parentRel = component::Manager::getEntityComponent<Relationship>(parent);
     if (!parentRel && parent != -1) // Check if parent has relationship component
     {
-        LOG_WARN("RelationshipComponent", "Trying to remove wrong parent [w]$0[] from child [w]$1[]", parent, child);
+        LOG_WARN("component::Relationship", "Trying to remove wrong parent [w]$0[] from child [w]$1[]", parent, child);
         return;
     }
 
-    RelationshipComponent* childRel = ComponentManager::getEntityComponent<RelationshipComponent>(child);
+    Relationship* childRel = component::Manager::getEntityComponent<Relationship>(child);
     if (!childRel) // Check if child has relationship component
     {
-        LOG_WARN("RelationshipComponent", "Trying to remove parent [w]$0[] from child [w]$1[] that does not have a parent", parent, child);
+        LOG_WARN("component::Relationship", "Trying to remove parent [w]$0[] from child [w]$1[] that does not have a parent", parent, child);
         return;
     }
 
     // If has transform component, change to be relative to the world
-    TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(child);
+    Transform* transform = component::Manager::getEntityComponent<Transform>(child);
     if (transform) {
         mat4 world = transform->getWorldTransform(child);
         vec3 pos, scale;
@@ -134,12 +134,13 @@ void RelationshipComponent::removeParent(EntityId parent, EntityId child) {
                 break;
             }
         if (!found)
-            LOG_WARN("RelationshipComponent", "Removed wrong parent [w]$0[] from child [w]$1[]", parent, child);
+            LOG_WARN("component::Relationship", "Removed wrong parent [w]$0[] from child [w]$1[]", parent, child);
     }
 }
 
 // Child operations
-void RelationshipComponent::addChild(EntityId parent, EntityId child) { setParent(parent, child); }
+void Relationship::addChild(EntityId parent, EntityId child) { setParent(parent, child); }
 
-void RelationshipComponent::removeChild(EntityId parent, EntityId child) { removeParent(parent, child); }
+void Relationship::removeChild(EntityId parent, EntityId child) { removeParent(parent, child); }
+
 } // namespace atta::component

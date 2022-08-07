@@ -36,6 +36,7 @@ include(cmake/log.cmake)
 
 ########## Build Types ##########
 atta_log(Info "Main" "cmake build type: ${CMAKE_BUILD_TYPE}")
+atta_log(Info "Main" "cmake build dir: ${CMAKE_BINARY_DIR}")
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
 endif()
@@ -194,7 +195,7 @@ if(ATTA_STATIC_PROJECT)
     set(ATTA_INSTALL_LIBRARIES ${ATTA_LIBS})
     set(ATTA_INSTALL_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS})
     set(ATTA_INSTALL_PCH ${ATTA_PCH})
-    configure_file(attaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake" @ONLY)
+    configure_file(cmake/attaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake" @ONLY)
 
     get_filename_component(projectDirectory ${ATTA_STATIC_PROJECT_FILE} DIRECTORY)
     add_subdirectory(${projectDirectory} ${projectDirectory}/build)
@@ -211,8 +212,8 @@ if(ATTA_STATIC_PROJECT)
 endif()
 
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/scriptSystem/scripts.h.in" 
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/scriptSystem/scripts.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/script/scripts.h.in" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/script/scripts.h"
 )
 
 # Web build
@@ -271,7 +272,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
 
     # Uninstall target
     configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/attaUninstall.cmake.in"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/attaUninstall.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/attaUninstall.cmake"
         @ONLY)
     add_custom_target(uninstall
@@ -286,7 +287,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY SameMajorVersion
     )
-    configure_package_config_file(attaConfig.cmake.in
+    configure_package_config_file(cmake/attaConfig.cmake.in
         "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
         INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${ATTA_VERSION_SAFE}
     )

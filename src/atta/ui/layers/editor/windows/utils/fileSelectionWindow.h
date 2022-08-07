@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_UI_LAYERS_EDITOR_WINDOWS_UTILS_FILE_SELECTION_WINDOW_H
 #define ATTA_UI_LAYERS_EDITOR_WINDOWS_UTILS_FILE_SELECTION_WINDOW_H
+
 #include <atta/ui/layers/editor/window.h>
 
 namespace atta::ui {
+
 class FileSelectionWindow : public Window<FileSelectionWindow> {
   public:
     void setPath(fs::path currPath);
@@ -29,6 +31,7 @@ class FileSelectionWindow : public Window<FileSelectionWindow> {
 
     friend Window<FileSelectionWindow>;
 };
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_LAYERS_EDITOR_WINDOWS_UTILS_FILE_SELECTION_WINDOW_H

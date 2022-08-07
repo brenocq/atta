@@ -19,6 +19,7 @@
 #define V4L2_ERROR_MSG(cmd) LOG_WARN("io::LinuxCamera", "Failed to run $0 for device '$3'. Error $1: $2", cmd, errno, strerror(errno), _deviceName)
 
 namespace atta::io {
+
 LinuxCamera::LinuxCamera(Camera::CreateInfo info) : Camera(info), _fd(-1) {}
 
 LinuxCamera::~LinuxCamera() {
@@ -450,5 +451,7 @@ bool LinuxCamera::startCapturing() {
 
     return true;
 }
+
 } // namespace atta::io
+
 #endif // ATTA_OS_LINUX

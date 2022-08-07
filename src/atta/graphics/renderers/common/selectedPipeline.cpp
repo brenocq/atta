@@ -4,27 +4,28 @@
 // Date: 2021-11-15
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/graphicsManager.h>
+#include <atta/graphics/manager.h>
 #include <atta/graphics/renderers/common/selectedPipeline.h>
 
 #include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 
-#include <atta/component/componentManager.h>
-#include <atta/component/components/meshComponent.h>
-#include <atta/component/components/transformComponent.h>
+#include <atta/component/components/mesh.h>
+#include <atta/component/components/transform.h>
+#include <atta/component/manager.h>
 
 namespace atta::graphics {
+
 SelectedPipeline::SelectedPipeline(std::shared_ptr<RenderPass> renderPass, VertexBufferLayout layout) {
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/common/selected.vert", "shaders/common/selected.frag"};
     shaderGroupInfo.debugName = StringId("SelectedPipeline Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
 
     Pipeline::CreateInfo pipelineInfo{};
     pipelineInfo.shaderGroup = shaderGroup;
     pipelineInfo.layout = layout;
     pipelineInfo.renderPass = renderPass;
-    _pipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+    _pipeline = Manager::create<Pipeline>(pipelineInfo);
 }
 
 void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
@@ -39,10 +40,10 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
         shader->setMat4("projection", transpose(camera->getProj()));
         shader->setMat4("view", transpose(camera->getView()));
 
-        EntityId entity = ComponentManager::getSelectedEntity();
+        component::EntityId entity = component::Manager::getSelectedEntity();
         if (entity != -1) {
-            MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
-            TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+            component::Mesh* mesh = component::Manager::getEntityComponent<component::Mesh>(entity);
+            component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
 
             if (mesh && transform) {
                 // Draw mesh normal size
@@ -58,7 +59,7 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
                 glDisable(GL_DEPTH_TEST);
                 glStencilFunc(GL_ALWAYS, 1, 0xFF);
                 glStencilMask(0xFF); // Update stencil
-                GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+                Manager::getRendererAPI()->renderMesh(mesh->sid);
 
                 // Draw scaled mesh
                 float distance = (camera->getPosition() - pos).length();
@@ -69,7 +70,7 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
 
                 glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
                 glStencilMask(0x00); // Do not update stencil
-                GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+                Manager::getRendererAPI()->renderMesh(mesh->sid);
 
                 glEnable(GL_DEPTH_TEST);
                 glStencilMask(0xFF);
@@ -79,4 +80,5 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
     }
     _pipeline->end();
 }
+
 } // namespace atta::graphics

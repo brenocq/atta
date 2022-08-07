@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_LAYERS_LAYER_STACK_H
 #define ATTA_GRAPHICS_LAYERS_LAYER_STACK_H
+
 #include <atta/graphics/layers/layer.h>
 #include <atta/ui/layers/uiLayer.h>
 
 namespace atta::graphics {
+
 class LayerStack {
   public:
     LayerStack();
@@ -29,6 +31,7 @@ class LayerStack {
     std::vector<Layer*> _layers;
     ui::UILayer* _uiLayer;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_LAYERS_LAYER_STACK_H

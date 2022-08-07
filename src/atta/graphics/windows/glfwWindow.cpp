@@ -4,13 +4,13 @@
 // Date: 2021-08-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/event/events/windowCloseEvent.h>
-#include <atta/event/events/windowFocusEvent.h>
-#include <atta/event/events/windowKeyboardButtonEvent.h>
-#include <atta/event/events/windowMouseButtonEvent.h>
-#include <atta/event/events/windowMouseMoveEvent.h>
-#include <atta/event/events/windowMouseScrollEvent.h>
-#include <atta/event/events/windowResizeEvent.h>
+#include <atta/event/events/windowClose.h>
+#include <atta/event/events/windowFocus.h>
+#include <atta/event/events/windowKeyboardButton.h>
+#include <atta/event/events/windowMouseButton.h>
+#include <atta/event/events/windowMouseMove.h>
+#include <atta/event/events/windowMouseScroll.h>
+#include <atta/event/events/windowResize.h>
 #include <atta/graphics/windows/glfwWindow.h>
 #include <glad/glad.h>
 
@@ -21,6 +21,7 @@ EM_JS(int, canvas_get_height, (), { return Module.canvas.height; });
 #endif
 
 namespace atta::graphics {
+
 unsigned GlfwWindow::_glfwWindowCounter = 0;
 
 GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
@@ -37,59 +38,59 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
     glfwSetWindowUserPointer(_window, this);
 
     glfwSetWindowCloseCallback(_window, [](GLFWwindow* window) {
-        WindowCloseEvent e;
-        EventManager::publish(e);
+        event::WindowClose e;
+        event::Manager::publish(e);
     });
 
     glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, int width, int height) {
         GlfwWindow& w = *(GlfwWindow*)glfwGetWindowUserPointer(window);
         w._width = width;
         w._height = height;
-        WindowResizeEvent e((size_t)width, (size_t)height);
-        EventManager::publish(e);
+        event::WindowResize e((size_t)width, (size_t)height);
+        event::Manager::publish(e);
     });
 
     glfwSetCursorEnterCallback(_window, [](GLFWwindow* window, int entered) {
-        WindowFocusEvent e(entered != 0);
-        EventManager::publish(e);
+        event::WindowFocus e(entered != 0);
+        event::Manager::publish(e);
     });
 
     glfwSetCursorPosCallback(_window, [](GLFWwindow* window, double xPos, double yPos) {
-        WindowMouseMoveEvent e((float)xPos, (float)yPos);
-        EventManager::publish(e);
+        event::WindowMouseMove e((float)xPos, (float)yPos);
+        event::Manager::publish(e);
     });
 
     glfwSetScrollCallback(_window, [](GLFWwindow* window, double dx, double dy) {
-        WindowMouseScrollEvent e((float)dx, (float)dy);
-        EventManager::publish(e);
+        event::WindowMouseScroll e((float)dx, (float)dy);
+        event::Manager::publish(e);
     });
 
     glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) {
         if (action == GLFW_PRESS) {
-            WindowMouseButtonEvent e(button, WindowMouseButtonEvent::Action::PRESS);
-            EventManager::publish(e);
+            event::WindowMouseButton e(button, event::WindowMouseButton::Action::PRESS);
+            event::Manager::publish(e);
         } else if (action == GLFW_RELEASE) {
-            WindowMouseButtonEvent e(button, WindowMouseButtonEvent::Action::RELEASE);
-            EventManager::publish(e);
+            event::WindowMouseButton e(button, event::WindowMouseButton::Action::RELEASE);
+            event::Manager::publish(e);
         }
     });
 
     glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        WindowKeyboardButtonEvent::Action a;
+        event::WindowKeyboardButton::Action a;
         switch (action) {
         case GLFW_PRESS:
-            a = WindowKeyboardButtonEvent::Action::PRESS;
+            a = event::WindowKeyboardButton::Action::PRESS;
             break;
         case GLFW_REPEAT:
-            a = WindowKeyboardButtonEvent::Action::REPEAT;
+            a = event::WindowKeyboardButton::Action::REPEAT;
             break;
         case GLFW_RELEASE:
-            a = WindowKeyboardButtonEvent::Action::RELEASE;
+            a = event::WindowKeyboardButton::Action::RELEASE;
             break;
         }
 
-        WindowKeyboardButtonEvent e(key, a);
-        EventManager::publish(e);
+        event::WindowKeyboardButton e(key, a);
+        event::Manager::publish(e);
     });
 
     glfwSetErrorCallback([](int error, const char* description) { LOG_ERROR("Window", "GLFW error($0): $1", error, std::string(description)); });
@@ -120,4 +121,5 @@ void GlfwWindow::update() {
 }
 
 void GlfwWindow::swapBuffers() { glfwSwapBuffers(_window); }
+
 } // namespace atta::graphics

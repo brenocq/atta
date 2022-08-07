@@ -4,11 +4,12 @@
 // Date: 2021-12-26
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/file/fileManager.h>
+#include <atta/file/manager.h>
 #include <atta/ui/layers/editor/topBar/localWindows/repoWindow.h>
 #include <imgui.h>
 
 namespace atta::ui {
+
 RepoWindow::RepoWindow(fs::path repoPath) : _repoPath(repoPath), _shouldClose(false) {
     _title = repoPath.filename().string();
     _description = "Repository without description";
@@ -44,7 +45,7 @@ void RepoWindow::render() {
                 // Open project button
                 ImGui::TableNextColumn();
                 if (ImGui::Button(("Open###RepoWindowOpenButton" + project.attaFile.string()).c_str()))
-                    FileManager::openProject(project.attaFile);
+                    file::Manager::openProject(project.attaFile);
                 ImGui::TableNextRow();
             }
 
@@ -119,4 +120,5 @@ RepoWindow::ReadmeMetadata RepoWindow::parseReadmeMetadata(fs::path readme) {
     }
     return meta;
 }
+
 } // namespace atta::ui

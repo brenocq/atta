@@ -9,17 +9,18 @@
 #include <atta/file/serializer/section.h>
 #include <atta/file/serializer/serializer.h>
 
-#include <atta/component/componentManager.h>
 #include <atta/component/components/components.h>
+#include <atta/component/manager.h>
 
-#include <atta/resource/resourceManager.h>
+#include <atta/resource/manager.h>
+#include <atta/resource/resources/image.h>
 #include <atta/resource/resources/mesh.h>
-#include <atta/resource/resources/texture.h>
 
-#include <atta/core/config.h>
-#include <atta/graphics/graphicsManager.h>
+#include <atta/graphics/manager.h>
+#include <atta/utils/config.h>
 
 namespace atta::file {
+
 ProjectSerializer::ProjectSerializer(std::shared_ptr<Project> project) : _project(project) {}
 
 ProjectSerializer::~ProjectSerializer() {}
@@ -69,6 +70,7 @@ void ProjectSerializer::deserialize() {
     deserializeComponentSystem(section["componentSystem"]);
     deserializeGraphicsSystem(section["graphicsSystem"]);
 }
+
 } // namespace atta::file
 
 #include <atta/file/project/projectSerializerDeserialize.cpp>

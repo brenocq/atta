@@ -8,6 +8,7 @@
 #include <imgui_internal.h>
 
 namespace atta::graphics {
+
 void Camera::update() {
     _front = normalize(_front);
     _left = cross(_up, _front);
@@ -161,4 +162,5 @@ void Camera::renderUI() {
         ImGui::EndCombo();
     }
 }
+
 } // namespace atta::graphics

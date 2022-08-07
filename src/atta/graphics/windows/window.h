@@ -6,10 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_WINDOWS_WINDOW_H
 #define ATTA_GRAPHICS_WINDOWS_WINDOW_H
-#include <atta/core/stringId.h>
-#include <atta/event/eventManager.h>
+#include <atta/event/manager.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
+
 class Window {
   public:
     struct CreateInfo {
@@ -18,7 +19,7 @@ class Window {
         size_t height = 900;
     };
 
-    enum class Event : atta::Event::Type {
+    enum class Event : event::Event::Type {
         MOUSE_MOVE = SID("Window_MouseMove"),
         MOUSE_BUTTON = SID("Window_MouseButton"),
         MOUSE_SCROLL = SID("Window_MouseScroll"),
@@ -42,6 +43,7 @@ class Window {
     std::string _title;
     size_t _width, _height;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_WINDOWS_WINDOW_H

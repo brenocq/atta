@@ -7,9 +7,11 @@
 #ifndef ATTA_SCRIPT_LINKERS_LINUX_LINKER_H
 #define ATTA_SCRIPT_LINKERS_LINUX_LINKER_H
 #ifdef ATTA_OS_LINUX
+
 #include <atta/script/linkers/linker.h>
 
 namespace atta::script {
+
 class LinuxLinker : public Linker {
   public:
     LinuxLinker() = default;
@@ -21,6 +23,7 @@ class LinuxLinker : public Linker {
   private:
     std::unordered_map<StringId, void*> _targetHandles;
 };
+
 } // namespace atta::script
 
 #endif // ATTA_OS_LINUX

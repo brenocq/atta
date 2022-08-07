@@ -7,6 +7,7 @@
 #include <atta/memory/allocators/poolAllocator.h>
 
 namespace atta::memory {
+
 PoolAllocator::PoolAllocator(size_t blockCount, size_t minBlockSize, size_t blockAlign)
     : Allocator(blockAlign == 0 ? std::max((size_t)sizeof(Node), minBlockSize) * blockCount : blockAlign * blockCount),
       _blockSize(std::max((size_t)sizeof(Node), minBlockSize)), _blockCount(blockCount), _blockAlign(blockAlign == 0 ? _blockSize : blockAlign),
@@ -83,4 +84,5 @@ void PoolAllocator::freeBytes(void* ptr, size_t size, size_t align) {
     // Update list root
     _freeList = node;
 }
+
 } // namespace atta::memory

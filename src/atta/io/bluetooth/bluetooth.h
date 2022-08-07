@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_IO_BLUETOOTH_BLUETOOTH_H
 #define ATTA_IO_BLUETOOTH_BLUETOOTH_H
-#include <atta/core/stringId.h>
+
+#include <atta/utils/stringId.h>
 
 namespace atta::io {
+
 class Bluetooth {
   public:
     struct CreateInfo {
@@ -89,6 +91,7 @@ inline Bluetooth::CharFlags& operator|=(Bluetooth::CharFlags& a, Bluetooth::Char
 inline Bluetooth::CharFlags operator&(Bluetooth::CharFlags a, Bluetooth::CharFlags b) {
     return static_cast<Bluetooth::CharFlags>(static_cast<int>(a) & static_cast<int>(b));
 }
+
 } // namespace atta::io
 
 #endif // ATTA_IO_BLUETOOTH_BLUETOOTH_H

@@ -6,13 +6,15 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_DRAWER_H
 #define ATTA_GRAPHICS_DRAWER_H
-#include <atta/core/math/math.h>
-#include <atta/core/stringId.h>
+
+#include <atta/utils/math/math.h>
+#include <atta/utils/stringId.h>
 
 // TODO Abstract renderer API
 #include <atta/graphics/rendererAPIs/openGL/base.h>
 
 namespace atta::graphics {
+
 // Used to draw 3d objects, mainly for debugging and visualization
 class Drawer {
   public:
@@ -108,5 +110,7 @@ class Drawer {
     OpenGLId _pointVBO;
 };
 } // namespace atta::graphics
+
 #include <atta/graphics/drawer.inl>
+
 #endif // ATTA_GRAPHICS_DRAWER_H

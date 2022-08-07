@@ -4,10 +4,10 @@
 // Date: 2020-12-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_MATH_QUATERNION_H
-#define ATTA_CORE_MATH_QUATERNION_H
+#ifndef ATTA_UTILS_MATH_QUATERNION_H
+#define ATTA_UTILS_MATH_QUATERNION_H
 
-#include <atta/core/math/vector.h>
+#include <atta/utils/math/vector.h>
 
 namespace atta {
 class mat3;
@@ -198,4 +198,4 @@ inline vec3 quatToEuler(const quat& q) {
 // <<
 inline std::ostream& operator<<(std::ostream& os, const quat& q) { return os << q.toString(); }
 } // namespace atta
-#endif // ATTA_CORE_MATH_QUATERNION_H
+#endif // ATTA_UTILS_MATH_QUATERNION_H

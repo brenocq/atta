@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
 #define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
+
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/rendererAPIs/openGL/base.h>
 
 namespace atta::graphics {
+
 class OpenGLFramebuffer final : public Framebuffer {
   public:
     OpenGLFramebuffer(const Framebuffer::CreateInfo& info);
@@ -35,6 +37,7 @@ class OpenGLFramebuffer final : public Framebuffer {
     int _depthAttachmentIndex;
     int _stencilAttachmentIndex;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_FRAMEBUFFER_H

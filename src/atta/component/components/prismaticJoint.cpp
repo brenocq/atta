@@ -1,28 +1,30 @@
 //--------------------------------------------------
 // Atta Component Module
-// prismaticJointComponent.cpp
+// prismaticJoint.cpp
 // Date: 2021-12-04
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/components/prismaticJointComponent.h>
+#include <atta/component/components/prismaticJoint.h>
 
 namespace atta::component {
+
 template <>
-ComponentDescription& TypedComponentRegistry<PrismaticJointComponent>::getDescription() {
+ComponentDescription& TypedComponentRegistry<PrismaticJoint>::getDescription() {
     static ComponentDescription desc = {"Prismatic Joint",
-                                        {{AttributeType::INT32, offsetof(PrismaticJointComponent, bodyA), "bodyA"},
-                                         {AttributeType::INT32, offsetof(PrismaticJointComponent, bodyB), "bodyB"},
-                                         {AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJointComponent, anchorA), "anchorA"},
-                                         {AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJointComponent, anchorB), "anchorB"},
-                                         {AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJointComponent, axis), "axis"},
-                                         {AttributeType::BOOL, offsetof(PrismaticJointComponent, enableLimits), "enableLimits"},
-                                         {AttributeType::FLOAT32, offsetof(PrismaticJointComponent, lowerTranslation), "lowerTranslation"},
-                                         {AttributeType::FLOAT32, offsetof(PrismaticJointComponent, upperTranslation), "upperTranslation"},
-                                         {AttributeType::BOOL, offsetof(PrismaticJointComponent, enableMotor), "enableMotor"},
-                                         {AttributeType::FLOAT32, offsetof(PrismaticJointComponent, motorSpeed), "motorSpeed"},
-                                         {AttributeType::FLOAT32, offsetof(PrismaticJointComponent, maxMotorForce), "maxMotorForce"},
-                                         {AttributeType::BOOL, offsetof(PrismaticJointComponent, collideConnected), "collideConnected"}}};
+                                        {{AttributeType::INT32, offsetof(PrismaticJoint, bodyA), "bodyA"},
+                                         {AttributeType::INT32, offsetof(PrismaticJoint, bodyB), "bodyB"},
+                                         {AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJoint, anchorA), "anchorA"},
+                                         {AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJoint, anchorB), "anchorB"},
+                                         {AttributeType::VECTOR_FLOAT32, offsetof(PrismaticJoint, axis), "axis"},
+                                         {AttributeType::BOOL, offsetof(PrismaticJoint, enableLimits), "enableLimits"},
+                                         {AttributeType::FLOAT32, offsetof(PrismaticJoint, lowerTranslation), "lowerTranslation"},
+                                         {AttributeType::FLOAT32, offsetof(PrismaticJoint, upperTranslation), "upperTranslation"},
+                                         {AttributeType::BOOL, offsetof(PrismaticJoint, enableMotor), "enableMotor"},
+                                         {AttributeType::FLOAT32, offsetof(PrismaticJoint, motorSpeed), "motorSpeed"},
+                                         {AttributeType::FLOAT32, offsetof(PrismaticJoint, maxMotorForce), "maxMotorForce"},
+                                         {AttributeType::BOOL, offsetof(PrismaticJoint, collideConnected), "collideConnected"}}};
 
     return desc;
 }
+
 } // namespace atta::component

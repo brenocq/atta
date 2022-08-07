@@ -1,18 +1,19 @@
 //--------------------------------------------------
 // Atta Component Module
-// revoluteJointComponent.h
+// revoluteJoint.h
 // Date: 2021-12-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_REVOLUTE_JOINT_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_REVOLUTE_JOINT_COMPONENT_H
+
+#ifndef ATTA_COMPONENT_COMPONENTS_REVOLUTE_JOINT_H
+#define ATTA_COMPONENT_COMPONENTS_REVOLUTE_JOINT_H
 #include <atta/component/base.h>
-#include <atta/component/componentManager.h>
+#include <atta/component/manager.h>
 
 namespace atta::component {
 /// Revolute joint between entities
 /** Each body have a anchor point on its local space. This joint can be used as a motor. */
-struct RevoluteJointComponent : public Component {
+struct RevoluteJoint : public Component {
     EntityId bodyA; ///< First attached body
     EntityId bodyB; ///< Second attached body
 
@@ -32,9 +33,10 @@ struct RevoluteJointComponent : public Component {
 
     bool collideConnected = false; ///< If bodyA and bodyB should collide
 };
-ATTA_REGISTER_COMPONENT(RevoluteJointComponent)
+ATTA_REGISTER_COMPONENT(RevoluteJoint)
 template <>
-ComponentDescription& TypedComponentRegistry<RevoluteJointComponent>::getDescription();
+ComponentDescription& TypedComponentRegistry<RevoluteJoint>::getDescription();
+
 } // namespace atta::component
 
 #endif // ATTA_COMPONENT_COMPONENTS_REVOLUTE_JOINT_COMPONENT_BASE_H

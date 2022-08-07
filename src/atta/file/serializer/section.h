@@ -10,6 +10,7 @@
 #include <atta/file/serializer/serializer.h>
 
 namespace atta::file {
+
 /// Section Data
 /** Store the binary data for each data and its type so that it is possible to print SectionData and serialize it
  **/
@@ -128,7 +129,9 @@ class Section : Serializable {
 
 // <<
 inline std::ostream& operator<<(std::ostream& os, const Section& v) { return os << v.toString(); }
+
 } // namespace atta::file
+
 #include <atta/file/serializer/section.inl>
 
 #endif // ATTA_FILE_SERIALIZER_SECTION_H

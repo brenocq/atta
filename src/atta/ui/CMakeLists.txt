@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_UI_MODULE_SOURCE
-    uiManager.cpp
+    manager.cpp
 
     widgets/plot.cpp
 

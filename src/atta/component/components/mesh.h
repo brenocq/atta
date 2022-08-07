@@ -1,19 +1,21 @@
 //--------------------------------------------------
 // Atta Component Module
-// meshComponent.h
+// mesh.h
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_MESH_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_MESH_COMPONENT_H
-#include <atta/component/componentManager.h>
+#ifndef ATTA_COMPONENT_COMPONENTS_MESH_H
+#define ATTA_COMPONENT_COMPONENTS_MESH_H
+
+#include <atta/component/manager.h>
 
 namespace atta::component {
+
 /// %Component to define entity mesh
-/** The entity must also have a TransformComponent to be rendered.
+/** The entity must also have a Transform to be rendered.
  */
 struct Mesh final : public Component {
-    MeshComponent();
+    Mesh();
     /** The StringId string is the mesh path relative to the resource directory.
      * The resource directory can be the project resource directory or the atta
      * default resource directory.
@@ -23,9 +25,10 @@ struct Mesh final : public Component {
      * */
     StringId sid; ///< Mesh relative path
 };
-ATTA_REGISTER_COMPONENT(MeshComponent)
+ATTA_REGISTER_COMPONENT(Mesh)
 template <>
-ComponentDescription& TypedComponentRegistry<MeshComponent>::getDescription();
+ComponentDescription& TypedComponentRegistry<Mesh>::getDescription();
+
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_MESH_COMPONENT_H
+#endif // ATTA_COMPONENT_COMPONENTS_MESH_H

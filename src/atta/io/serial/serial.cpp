@@ -7,6 +7,7 @@
 #include <atta/io/serial/serial.h>
 
 namespace atta::io {
+
 Serial::Serial(CreateInfo info)
     : _deviceName(info.deviceName), _baudRate(info.baudRate), _parityBit(info.parityBit), _twoStopBits(info.twoStopBits), _rtsCts(info.rtsCts),
       _timeout(info.timeout), _debugName(info.debugName) {
@@ -26,4 +27,5 @@ std::vector<std::string> Serial::getAvailableDeviceNames() {
 #endif
     return deviceNames;
 }
+
 } // namespace atta::io

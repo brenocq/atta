@@ -1,25 +1,26 @@
 //--------------------------------------------------
 // Atta Component Module
-// meshComponent.cpp
+// mesh.cpp
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/components/meshComponent.h>
+#include <atta/component/components/mesh.h>
 
 namespace atta::component {
+
 template <>
-ComponentDescription& TypedComponentRegistry<MeshComponent>::getDescription() {
+ComponentDescription& TypedComponentRegistry<Mesh>::getDescription() {
     static ComponentDescription desc = {"Mesh",
                                         {
-                                            {AttributeType::STRINGID, offsetof(MeshComponent, sid), "sid", {}, {}, {}, {}},
+                                            {AttributeType::STRINGID, offsetof(Mesh, sid), "sid", {}, {}, {}, {}},
                                         }};
 
     return desc;
 }
 
-MeshComponent::MeshComponent() {
-    if (TypedComponentRegistry<MeshComponent>::description->attributeDescriptions[0].options.size())
-        sid = std::any_cast<StringId>(*(TypedComponentRegistry<MeshComponent>::description->attributeDescriptions[0].options.begin()));
+Mesh::Mesh() {
+    if (TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options.size())
+        sid = std::any_cast<StringId>(*(TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options.begin()));
 }
 
 } // namespace atta::component

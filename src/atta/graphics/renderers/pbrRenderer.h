@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERERS_PBR_RENDERER_H
 #define ATTA_GRAPHICS_RENDERERS_PBR_RENDERER_H
+
 #include <atta/graphics/image.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
@@ -13,6 +14,7 @@
 #include <atta/graphics/renderers/renderer.h>
 
 namespace atta::graphics {
+
 class PbrRenderer final : public Renderer {
   public:
     PbrRenderer();
@@ -53,6 +55,7 @@ class PbrRenderer final : public Renderer {
     std::shared_ptr<Pipeline> _omniShadowMapPipeline;
     std::shared_ptr<Image> _omnidirectionalShadowMap;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERERS_PBR_RENDERER_H

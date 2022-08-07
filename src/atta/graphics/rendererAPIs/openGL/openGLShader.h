@@ -10,6 +10,7 @@
 #include <atta/graphics/shader.h>
 
 namespace atta::graphics {
+
 class OpenGLShader final : public Shader {
   public:
     OpenGLShader(const Shader::CreateInfo& info);
@@ -29,6 +30,7 @@ class OpenGLShader final : public Shader {
     OpenGLId _id;
     std::vector<std::string> _textureUnits;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_SHADER_H

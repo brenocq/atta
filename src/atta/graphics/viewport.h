@@ -6,13 +6,15 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_VIEWPORT_H
 #define ATTA_GRAPHICS_VIEWPORT_H
-#include <atta/core/stringId.h>
+
 #include <atta/file/serializer/serializable.h>
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/renderers/renderer.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
-class Viewport final : public Serializable {
+
+class Viewport final : public file::Serializable {
   public:
     struct CreateInfo {
         StringId sid = StringId("Unnamed viewport");
@@ -42,7 +44,7 @@ class Viewport final : public Serializable {
     // Serializable
     void serialize(std::ostream& os) override;
     void deserialize(std::istream& is) override;
-    unsigned getSerializedSize() { return Serializable::getSerializedSize(this); }
+    unsigned getSerializedSize() { return file::Serializable::getSerializedSize(this); }
     // UI
     void renderUI();
 
@@ -58,6 +60,7 @@ class Viewport final : public Serializable {
     std::string _name;
     std::vector<char> _inputText;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_VIEWPORT_H

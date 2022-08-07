@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_BASE_H
 
 namespace atta::graphics {
+
 struct GfxId {
     uint64_t data;
 
@@ -23,6 +24,7 @@ struct GfxId {
     // uint64_t* operator&() { return &data; }
     uint32_t* operator&() { return reinterpret_cast<uint32_t*>(&data); }
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_BASE_H

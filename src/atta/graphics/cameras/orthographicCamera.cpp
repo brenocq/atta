@@ -9,6 +9,7 @@
 #include <imgui.h>
 
 namespace atta::graphics {
+
 OrthographicCamera::OrthographicCamera(CreateInfo info) : Camera("OrthographicCamera"), _far(info.far), _height(info.height) {
     _position = info.position;
     _front = normalize(info.lookAt - info.position);
@@ -28,28 +29,28 @@ mat4 OrthographicCamera::getView() const { return lookAt(_position, _position + 
 mat4 OrthographicCamera::getProj() const { return orthographic(_height, _ratio, _far); }
 
 void OrthographicCamera::serialize(std::ostream& os) {
-    write(os, std::string("OrthographicCamera"));
-    write(os, _position);
-    write(os, _left);
-    write(os, _up);
-    write(os, _front);
-    write(os, _ratio);
-    write(os, _control);
-    write(os, _speed);
-    write(os, _far);
-    write(os, _height);
+    file::write(os, std::string("OrthographicCamera"));
+    file::write(os, _position);
+    file::write(os, _left);
+    file::write(os, _up);
+    file::write(os, _front);
+    file::write(os, _ratio);
+    file::write(os, _control);
+    file::write(os, _speed);
+    file::write(os, _far);
+    file::write(os, _height);
 }
 
 void OrthographicCamera::deserialize(std::istream& is) {
-    read(is, _position);
-    read(is, _left);
-    read(is, _up);
-    read(is, _front);
-    read(is, _ratio);
-    read(is, _control);
-    read(is, _speed);
-    read(is, _far);
-    read(is, _height);
+    file::read(is, _position);
+    file::read(is, _left);
+    file::read(is, _up);
+    file::read(is, _front);
+    file::read(is, _ratio);
+    file::read(is, _control);
+    file::read(is, _speed);
+    file::read(is, _far);
+    file::read(is, _height);
 }
 
 void OrthographicCamera::movePlanar() {
@@ -67,4 +68,5 @@ void OrthographicCamera::movePlanar() {
         _position += -x * _left + -y * _up;
     }
 }
+
 } // namespace atta::graphics

@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_UI_LAYERS_EDITOR_EDITOR_LAYER_H
 #define ATTA_UI_LAYERS_EDITOR_EDITOR_LAYER_H
+
 #include <atta/graphics/layers/layer.h>
 #include <atta/memory/allocatedObject.h>
 #include <atta/ui/layers/editor/dockSpace.h>
@@ -18,7 +19,8 @@
 #include <atta/ui/layers/editor/windows/viewportWindows.h>
 
 namespace atta::ui {
-class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID("GraphicsAllocator")> {
+
+class EditorLayer final : public graphics::Layer, public memory::AllocatedObject<EditorLayer, SID("GraphicsAllocator")> {
   public:
     EditorLayer();
 
@@ -41,6 +43,7 @@ class EditorLayer final : public Layer, public AllocatedObject<EditorLayer, SID(
     PhysicsDrawer _physicsDrawer; ///< Physics drawer
     SensorDrawer _sensorDrawer;   ///< Sensor drawer
 };
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_LAYERS_EDITOR_EDITOR_LAYER_H

@@ -8,6 +8,7 @@
 #include <atta/graphics/rendererAPIs/openGL/openGLPipeline.h>
 
 namespace atta::graphics {
+
 OpenGLPipeline::OpenGLPipeline(const Pipeline::CreateInfo& info) : Pipeline(info) {
     DASSERT(_renderPass, "Can not create pipeline without render pass");
     DASSERT(_shaderGroup, "Can not create pipeline without shader group");
@@ -28,4 +29,5 @@ void OpenGLPipeline::end() {
 void* OpenGLPipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<OpenGLImage>(_renderPass->getFramebuffer()->getImage(0))->getImGuiImage());
 }
+
 } // namespace atta::graphics

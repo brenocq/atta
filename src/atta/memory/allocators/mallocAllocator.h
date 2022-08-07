@@ -9,6 +9,7 @@
 #include <atta/memory/allocator.h>
 
 namespace atta::memory {
+
 // Allocator for profiling purpose only, it uses malloc() behind
 class MallocAllocator final : public Allocator {
   public:
@@ -19,6 +20,7 @@ class MallocAllocator final : public Allocator {
 
   private:
 };
+
 } // namespace atta::memory
 
 #endif // ATTA_MEMORY_ALLOCATORS_MALLOC_ALLOCATOR_H

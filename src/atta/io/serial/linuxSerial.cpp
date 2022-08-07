@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 namespace atta::io {
+
 LinuxSerial::LinuxSerial(Serial::CreateInfo info) : Serial(info) {
     if (_timeout > 25.5f) {
         LOG_WARN("io::LinuxSerial", "Maximum linux serial timeout is 25.5 seconds, using 25.5 seconds as timeout");
@@ -153,6 +154,7 @@ bool LinuxSerial::setBaudRate(unsigned baudRate) {
     _baudRate = baudRate;
     return true;
 }
+
 } // namespace atta::io
 
 #endif // ATTA_OS_LINUX

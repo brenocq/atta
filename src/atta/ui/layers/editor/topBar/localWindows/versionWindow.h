@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_UI_LAYERS_EDITOR_TOP_BAR_LOCAL_WINDOWS_VERSION_WINDOW_H
 #define ATTA_UI_LAYERS_EDITOR_TOP_BAR_LOCAL_WINDOWS_VERSION_WINDOW_H
-#include <atta/physics/physicsManager.h>
+
+#include <atta/physics/manager.h>
 #include <atta/ui/layers/editor/window.h>
 
 namespace atta::ui {
+
 class VersionWindow : public Window<VersionWindow> {
   private:
     VersionWindow();
@@ -20,6 +22,7 @@ class VersionWindow : public Window<VersionWindow> {
 
     friend Window<VersionWindow>;
 };
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_LAYERS_EDITOR_TOP_BAR_LOCAL_WINDOWS_VERSION_WINDOW_H

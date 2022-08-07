@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_IO_SERIAL_SERIAL_H
 #define ATTA_IO_SERIAL_SERIAL_H
-#include <atta/core/stringId.h>
+
+#include <atta/utils/stringId.h>
 
 namespace atta::io {
+
 class Serial {
   public:
     struct CreateInfo {
@@ -48,6 +50,7 @@ class Serial {
     float _timeout;
     StringId _debugName;
 };
+
 } // namespace atta::io
 
 #endif // ATTA_IO_SERIAL_SERIAL_H

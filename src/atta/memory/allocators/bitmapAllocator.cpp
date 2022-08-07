@@ -7,6 +7,7 @@
 #include <atta/memory/allocators/bitmapAllocator.h>
 
 namespace atta::memory {
+
 BitmapAllocator::BitmapAllocator(uint64_t size, uint32_t blockSize) : Allocator(size), _blockSize(blockSize), _current(0) { init(); }
 
 BitmapAllocator::BitmapAllocator(uint8_t* memory, uint64_t size, uint32_t blockSize) : Allocator(memory, size), _blockSize(blockSize), _current(0) {
@@ -111,4 +112,5 @@ void BitmapAllocator::setBlockBit(uint64_t index, bool bit) {
     _memory[index / 8] = (_memory[index / 8] & ~(1 << (index % 8))) // Clear bit
                          + (1 << (index % 8)) * bit;                // Set bit
 }
+
 } // namespace atta::memory

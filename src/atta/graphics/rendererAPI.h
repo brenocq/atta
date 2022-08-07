@@ -6,11 +6,13 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERER_API_H
 #define ATTA_GRAPHICS_RENDERER_API_H
-#include <atta/core/stringId.h>
+
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
+
 class ShaderGroup;
 class RendererAPI {
   public:
@@ -56,6 +58,7 @@ class RendererAPI {
   protected:
     Type _type;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_API_H

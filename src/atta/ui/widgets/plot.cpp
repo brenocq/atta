@@ -7,6 +7,7 @@
 #include <atta/ui/widgets/plot.h>
 
 namespace atta::ui {
+
 void plot(InfoOneLine info) {
     InfoMultiLine infom;
     if (info.x.size()) {
@@ -24,4 +25,5 @@ void plot(InfoOneLine info) {
 }
 
 void plot(InfoMultiLine info) {}
+
 } // namespace atta::ui

@@ -6,13 +6,15 @@
 //--------------------------------------------------
 #ifndef ATTA_PHYSICS_PHYSICS_ENGINES_BULLET_ENGINE_H
 #define ATTA_PHYSICS_PHYSICS_ENGINES_BULLET_ENGINE_H
+
 #include "btBulletDynamicsCommon.h"
-#include <atta/component/components/prismaticJointComponent.h>
-#include <atta/component/components/revoluteJointComponent.h>
-#include <atta/component/components/rigidJointComponent.h>
+#include <atta/component/components/prismaticJoint.h>
+#include <atta/component/components/revoluteJoint.h>
+#include <atta/component/components/rigidJoint.h>
 #include <atta/physics/physicsEngines/physicsEngine.h>
 
 namespace atta::physics {
+
 class BulletEngine : public PhysicsEngine {
   public:
     BulletEngine();
@@ -22,15 +24,15 @@ class BulletEngine : public PhysicsEngine {
     void step(float dt) override;
     void stop() override;
 
-    std::vector<EntityId> getEntityCollisions(EntityId eid) override;
-    std::vector<EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
-    bool areColliding(EntityId eid0, EntityId eid1) override;
+    std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) override;
+    std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
+    bool areColliding(component::EntityId eid0, component::EntityId eid1) override;
 
   private:
-    void createRigidBody(EntityId entity);
-    void createPrismaticJoint(PrismaticJointComponent* prismatic);
-    void createRevoluteJoint(RevoluteJointComponent* revolute);
-    void createRigidJoint(RigidJointComponent* rigid);
+    void createRigidBody(component::EntityId entity);
+    void createPrismaticJoint(component::PrismaticJoint* prismatic);
+    void createRevoluteJoint(component::RevoluteJoint* revolute);
+    void createRigidJoint(component::RigidJoint* rigid);
 
     std::shared_ptr<btDiscreteDynamicsWorld> _world;
     std::shared_ptr<btSequentialImpulseConstraintSolver> _solver;
@@ -39,6 +41,7 @@ class BulletEngine : public PhysicsEngine {
     std::shared_ptr<btDefaultCollisionConfiguration> _collisionConfiguration;
     btAlignedObjectArray<btCollisionShape*> _collisionShapes;
 };
+
 } // namespace atta::physics
 
 #endif // ATTA_PHYSICS_PHYSICS_ENGINES_BULLET_ENGINE_H

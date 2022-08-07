@@ -4,8 +4,8 @@
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::ui {
+
 void IOSystemWindow::bluetoothTabItem() {
     static bool bluetoothSupport = true;
     if (!bluetoothSupport)
@@ -14,7 +14,7 @@ void IOSystemWindow::bluetoothTabItem() {
     if (!_bluetooth) {
         io::Bluetooth::CreateInfo info;
         info.debugName = StringId("io::Bluetooth");
-        _bluetooth = io::IOManager::create<io::Bluetooth>(info);
+        _bluetooth = io::Manager::create<io::Bluetooth>(info);
 
         if (_bluetooth) {
             _bluetooth->start();
@@ -194,4 +194,5 @@ void IOSystemWindow::bluetoothViews() {
             _bluetoothViews.erase(_bluetoothViews.begin() + i);
     }
 }
+
 } // namespace atta::ui

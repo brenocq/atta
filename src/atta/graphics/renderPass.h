@@ -6,10 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDER_PASS_H
 #define ATTA_GRAPHICS_RENDER_PASS_H
-#include <atta/core/stringId.h>
 #include <atta/graphics/framebuffer.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
+
 class RenderPass {
   public:
     struct CreateInfo {
@@ -30,6 +31,7 @@ class RenderPass {
 
     const StringId _debugName;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDER_PASS_H

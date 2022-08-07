@@ -4,11 +4,11 @@
 // Date: 2020-12-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_MATH_BOUNDS_H
-#define ATTA_CORE_MATH_BOUNDS_H
+#ifndef ATTA_UTILS_MATH_BOUNDS_H
+#define ATTA_UTILS_MATH_BOUNDS_H
 
-#include <atta/core/math/point.h>
-#include <atta/core/math/ray.h>
+#include <atta/utils/math/point.h>
+#include <atta/utils/math/ray.h>
 
 namespace atta {
 //---------- Bounds 3 ----------//
@@ -147,4 +147,4 @@ using bnd2d = bounds2<double>;
 using bnd2i = bounds2<int>;
 } // namespace atta
 
-#endif // ATTA_CORE_MATH_BOUNDS_H
+#endif // ATTA_UTILS_MATH_BOUNDS_H

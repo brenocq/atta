@@ -23,7 +23,7 @@ else()
     atta_log(Info Extern "Fetching Box2D...")
     FetchContent_MakeAvailable(box2d)
 
-    atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/box2d-src/include)
+    atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/box2d-src/include)
     atta_add_libs(box2d)
 
     atta_log(Success Extern "Box2D support (source)")

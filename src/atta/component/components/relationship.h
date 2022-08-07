@@ -1,15 +1,17 @@
 //--------------------------------------------------
 // Atta Component Module
-// relationshipComponent.h
+// relationship.h
 // Date: 2021-09-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_COMPONENT_H
-#include <atta/component/componentManager.h>
+#ifndef ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H
+#define ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H
+
+#include <atta/component/manager.h>
 #include <atta/file/serializer/serializer.h>
 
 namespace atta::component {
+
 /// %Component to define relationship between entitities
 /** Usually relationships are created by making one entity
  * child/parent of another entity using the entity tree.
@@ -22,7 +24,7 @@ namespace atta::component {
  * should not be modified directly because this can result in breaking
  * other systems.
  *
- * The TransformComponent is changed when the relationship component changes
+ * The Transform is changed when the relationship component changes
  * so that the entity world transform stays the same
  */
 struct Relationship final : public Component {
@@ -32,24 +34,24 @@ struct Relationship final : public Component {
      * parent.
      *
      * Has the same effect of adding a child with
-     * RelationshipComponent::addChild.
+     * Relationship::addChild.
      * */
     static void setParent(EntityId parent, EntityId child);
     /// Remove entity parent
     /** Has the same effect of removing a child with
-     * RelationshipComponent::removeChild.
+     * Relationship::removeChild.
      */
     static void removeParent(EntityId parent, EntityId child);
 
     //----- Child operations -----//
     /// Add child entity
     /** Has the same effect of setting the child parent with
-     * RelationshipComponent::setParent.
+     * Relationship::setParent.
      * */
     static void addChild(EntityId parent, EntityId child);
     /// Remove child entity
     /** Has the same effect of removing the child parent with
-     * RelationshipComponent::removeParent.
+     * Relationship::removeParent.
      * */
     static void removeChild(EntityId parent, EntityId child);
 
@@ -61,9 +63,10 @@ struct Relationship final : public Component {
     EntityId _parent = -1;
     std::vector<EntityId> _children;
 };
-ATTA_REGISTER_COMPONENT(RelationshipComponent)
+ATTA_REGISTER_COMPONENT(Relationship)
 template <>
-ComponentDescription& TypedComponentRegistry<RelationshipComponent>::getDescription();
+ComponentDescription& TypedComponentRegistry<Relationship>::getDescription();
+
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_COMPONENT_H
+#endif // ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H

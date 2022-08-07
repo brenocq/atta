@@ -6,14 +6,15 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H
 #define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H
+
 #include <atta/graphics/rendererAPI.h>
-#include <atta/graphics/rendererAPIs/openGL/base.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLMesh.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
+
 class OpenGLRenderer final : public RendererAPI {
   public:
     OpenGLRenderer(std::shared_ptr<Window> window);
@@ -35,16 +36,16 @@ class OpenGLRenderer final : public RendererAPI {
     void* getImGuiImage(StringId sid) const override;
 
     // Handle events
-    void onMeshLoadEvent(Event& event);
-    void onTextureLoadEvent(Event& event);
-    void onTextureUpdateEvent(Event& event);
+    void onMeshLoadEvent(event::Event& event);
+    void onImageLoadEvent(event::Event& event);
+    void onImageUpdateEvent(event::Event& event);
 
     std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> getOpenGLImages() const { return _openGLImages; };
     std::unordered_map<StringHash, OpenGLId> getOpenGLCubemaps() const { return _openGLCubemaps; };
 
   private:
     void initializeMesh(StringId sid);
-    void initializeTexture(StringId sid);
+    void initializeImage(StringId sid);
 
     std::shared_ptr<Window> _window;
     std::unordered_map<StringHash, std::shared_ptr<OpenGLMesh>> _openGLMeshes;
@@ -60,6 +61,7 @@ class OpenGLRenderer final : public RendererAPI {
     OpenGLId _cubeVBO;
     OpenGLId _cubeVAO;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H

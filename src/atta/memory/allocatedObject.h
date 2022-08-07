@@ -6,9 +6,10 @@
 //--------------------------------------------------
 #ifndef ATTA_MEMORY_ALLOCATED_OBJECT_H
 #define ATTA_MEMORY_ALLOCATED_OBJECT_H
-#include <atta/core/stringId.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::memory {
+
 // Objects that want to be allocated using atta allocators should derive from this class
 // and specify the allocator stringHash
 template <class Object, StringHash allocatorId>
@@ -51,6 +52,7 @@ class AllocatedObject {
     static inline void* allocBytes(size_t size, size_t align);
     static inline void freeBytes(void* ptr, size_t size, size_t align);
 };
+
 } // namespace atta::memory
 
 #include <atta/memory/allocatedObject.inl>

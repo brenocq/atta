@@ -5,11 +5,13 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/event/event.h>
-#include <atta/event/eventManager.h>
-#include <atta/event/events/windowMouseMoveEvent.h>
+#include <atta/event/events/windowMouseMove.h>
+#include <atta/event/manager.h>
 #include <gtest/gtest.h>
 
+using namespace atta;
 using namespace atta::event;
+
 namespace {
 class TestEvent : public EventTyped<SID("TestEvent")> {
   public:
@@ -41,29 +43,29 @@ class TestObserver {
 };
 
 TEST(EventSystem, Publish) {
-    EventManager::clear();
+    event::Manager::clear();
 
     TestEvent e{2};
-    EventManager::publish(e);
+    event::Manager::publish(e);
 
     EXPECT_EQ(e.handled, false);
     EXPECT_EQ(e.getValue(), 2);
 }
 
 TEST(EventSystem, Subscribe) {
-    EventManager::clear();
+    event::Manager::clear();
 
     using namespace std::placeholders;
 
     TestObserver observer;
 
-    EventManager::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer, _1));
+    event::Manager::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer, _1));
 
     EXPECT_EQ(observer.getSum(), 0);
 }
 
 TEST(EventSystem, MultipleEventsObservers) {
-    EventManager::clear();
+    event::Manager::clear();
     using namespace std::placeholders;
 
     TestObserver observer0;
@@ -74,18 +76,18 @@ TEST(EventSystem, MultipleEventsObservers) {
     TestEvent e2{4};
 
     // Event will be discarted because no one was subscribed to it, will not be handled
-    EventManager::publish(e0);
+    event::Manager::publish(e0);
 
     // The observer0 should not receive testEvents, so its sum stays in 0
-    EventManager::subscribe<WindowMouseMoveEvent>(std::bind(&TestObserver::handle, &observer0, _1));
+    event::Manager::subscribe<event::WindowMouseMove>(std::bind(&TestObserver::handle, &observer0, _1));
     // The observer1 receives all testEvents after subscription
-    EventManager::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer1, _1));
+    event::Manager::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer1, _1));
     // Because observer1 will consume the events, observer2 will not receive any event
-    EventManager::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer2, _1));
+    event::Manager::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer2, _1));
 
     // Publish more two events, 2+4=6
-    EventManager::publish(e1);
-    EventManager::publish(e2);
+    event::Manager::publish(e1);
+    event::Manager::publish(e2);
 
     EXPECT_EQ(observer0.getSum(), 0);
     EXPECT_EQ(observer1.getSum(), 6);

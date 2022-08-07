@@ -1,20 +1,22 @@
 //--------------------------------------------------
 // Atta Component Module
-// materialComponent.h
+// material.h
 // Date: 2021-09-18
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_MATERIAL_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_MATERIAL_COMPONENT_H
-#include <atta/component/componentManager.h>
+#ifndef ATTA_COMPONENT_COMPONENTS_MATERIAL_H
+#define ATTA_COMPONENT_COMPONENTS_MATERIAL_H
+
+#include <atta/component/manager.h>
 
 namespace atta::component {
+
 /// %Component to define entity rendering material
 /** When the texture is not defined, the same value is
  * used to the whole mesh. If the texture is defined, the attribute can
  * vary along the mesh.
  *
- * The entity must have TransformComponent and MeshComponent to be rendered.
+ * The entity must have Transform and Mesh to be rendered.
  */
 struct Material final : public Component {
     vec3f albedo = vec3(1.0f, 0.0f, 1.0f); ///< Material albedo
@@ -23,14 +25,15 @@ struct Material final : public Component {
     float ao = 1.0f;                       ///< Ambient occlusion coefficient. 0->totally occluded, 1->not occluded
 
     StringId albedoTexture = StringId("Empty texture");    ///< Override with texture
-    StringId metallicTexture = StringId("Empty texture");  ///< Override MaterialComponent::metallic with texture
-    StringId roughnessTexture = StringId("Empty texture"); ///< Override MaterialComponent::roughness with texture
-    StringId aoTexture = StringId("Empty texture");        ///< Override MaterialComponent::ao with texture
+    StringId metallicTexture = StringId("Empty texture");  ///< Override Material::metallic with texture
+    StringId roughnessTexture = StringId("Empty texture"); ///< Override Material::roughness with texture
+    StringId aoTexture = StringId("Empty texture");        ///< Override Material::ao with texture
     StringId normalTexture = StringId("Empty texture");    ///< Material normal map
 };
-ATTA_REGISTER_COMPONENT(MaterialComponent)
+ATTA_REGISTER_COMPONENT(Material)
 template <>
-ComponentDescription& TypedComponentRegistry<MaterialComponent>::getDescription();
+ComponentDescription& TypedComponentRegistry<Material>::getDescription();
+
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_MATERIAL_COMPONENT_H
+#endif // ATTA_COMPONENT_COMPONENTS_MATERIAL_H

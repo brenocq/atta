@@ -7,6 +7,7 @@
 #include <atta/memory/allocator.h>
 
 namespace atta::memory {
+
 Allocator::Allocator(uint64_t size) {
     _memory = new (std::nothrow) uint8_t[size];
     ASSERT(_memory != nullptr, "Could not allocate enough memory. Failed to allocate $0MB", size / 1024.0 / 1024.0);
@@ -31,4 +32,5 @@ bool Allocator::owns(void* ptr) {
     uint8_t* uptr = reinterpret_cast<uint8_t*>(ptr);
     return uptr >= _memory && uptr < _memory + _size;
 }
+
 } // namespace atta::memory

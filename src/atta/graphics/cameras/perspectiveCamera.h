@@ -9,6 +9,7 @@
 #include <atta/graphics/cameras/camera.h>
 
 namespace atta::graphics {
+
 class PerspectiveCamera : public Camera {
   public:
     struct CreateInfo {
@@ -35,6 +36,7 @@ class PerspectiveCamera : public Camera {
     float _far;
     float _fov;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_CAMERAS_PERSPECTIVE_CAMERA_H

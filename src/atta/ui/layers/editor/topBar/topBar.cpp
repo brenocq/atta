@@ -8,10 +8,10 @@
 
 #include <atta/ui/layers/editor/topBar/localWindows/versionWindow.h>
 
-#include <atta/event/eventManager.h>
-#include <atta/event/events/windowCloseEvent.h>
-#include <atta/file/fileManager.h>
-#include <atta/graphics/graphicsManager.h>
+#include <atta/event/events/windowClose.h>
+#include <atta/event/manager.h>
+#include <atta/file/manager.h>
+#include <atta/graphics/manager.h>
 #include <imgui.h>
 
 #include <atta/graphics/cameras/perspectiveCamera.h>
@@ -24,13 +24,14 @@
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
 
 namespace atta::ui {
+
 TopBar::TopBar() : _showPreferences(false) {}
 
 void TopBar::render() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
-            if (FileManager::isProjectOpen()) {
-                ImGui::Text(FileManager::getProject()->getName().c_str());
+            if (file::Manager::isProjectOpen()) {
+                ImGui::Text(file::Manager::getProject()->getName().c_str());
                 ImGui::Separator();
 
 #ifndef ATTA_STATIC_PROJECT
@@ -52,9 +53,9 @@ void TopBar::render() {
             }
 #endif
 
-            if (FileManager::isProjectOpen())
+            if (file::Manager::isProjectOpen())
                 if (ImGui::MenuItem("Save"))
-                    FileManager::saveProject();
+                    file::Manager::saveProject();
 
 #ifndef ATTA_STATIC_PROJECT
             if (ImGui::MenuItem("Save as"))
@@ -78,7 +79,7 @@ void TopBar::render() {
         }
 
         if (ImGui::BeginMenu("Viewports")) {
-            std::vector<std::shared_ptr<Viewport>> viewports = GraphicsManager::getViewports();
+            std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::Manager::getViewports();
             _viewportModals.resize(viewports.size());
             int i = 0;
             for (auto viewport : viewports) {
@@ -105,12 +106,13 @@ void TopBar::render() {
                 }
 
                 // Create viewport
-                Viewport::CreateInfo viewportInfo;
-                viewportInfo.renderer = std::make_shared<PhongRenderer>();
-                viewportInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{}));
+                graphics::Viewport::CreateInfo viewportInfo;
+                viewportInfo.renderer = std::make_shared<graphics::PhongRenderer>();
+                viewportInfo.camera = std::static_pointer_cast<graphics::Camera>(
+                    std::make_shared<graphics::PerspectiveCamera>(graphics::PerspectiveCamera::CreateInfo{}));
                 viewportInfo.sid = StringId("Viewport " + std::to_string(newViewportNumber));
-                std::shared_ptr<Viewport> viewport = std::make_shared<Viewport>(viewportInfo);
-                GraphicsManager::addViewport(viewport);
+                std::shared_ptr<graphics::Viewport> viewport = std::make_shared<graphics::Viewport>(viewportInfo);
+                graphics::Manager::addViewport(viewport);
             }
 
             ImGui::EndMenu();
@@ -163,8 +165,8 @@ void TopBar::openProjectModal() {
     if (_waitingChooseAttaFile && !FileSelectionWindow::getChosenFile().empty()) {
         _waitingChooseAttaFile = false;
         if (fs::exists(FileSelectionWindow::getChosenFile())) {
-            FileManager::saveProject();
-            FileManager::openProject(FileSelectionWindow::getChosenFile());
+            file::Manager::saveProject();
+            file::Manager::openProject(FileSelectionWindow::getChosenFile());
         }
     }
     // If was closed and no file was selected
@@ -330,7 +332,7 @@ void TopBar::openPublishedWindow() {
     //
     //                        ImGui::TableNextColumn();
     //
-    //                        fs::path pathToClone = FileManager::getDefaultProjectFolder();
+    //                        fs::path pathToClone = file::Manager::getDefaultProjectFolder();
     //                        fs::path repoPath = pathToClone/project.reponame;
     //                        if(!fs::exists(repoPath))
     //                        {
@@ -400,7 +402,7 @@ void TopBar::createProjectModal() {
         ImGui::SameLine();
 
         if (ImGui::Button("Create")) {
-            FileManager::createProject(fs::path(buf));
+            file::Manager::createProject(fs::path(buf));
             ImGui::CloseCurrentPopup();
             _showCreateProject = false;
             lastShow = false;
@@ -427,22 +429,22 @@ void TopBar::saveProjectModal() {
         ImGui::SameLine();
         if (ImGui::Button("Yes")) {
             _showSaveProject = false;
-            FileManager::saveProject();
+            file::Manager::saveProject();
         }
         ImGui::SetItemDefaultFocus();
 
         if (!_showSaveProject) {
             // Close project data
-            FileManager::closeProject();
+            file::Manager::closeProject();
             // Replace components with default
-            ComponentManager::clear();
-            ComponentManager::createDefault();
+            component::Manager::clear();
+            component::Manager::createDefault();
             // Replace viewports with default
-            GraphicsManager::createDefaultViewports();
+            graphics::Manager::createDefaultViewports();
 
             if (_quitAfterSaveModal) {
-                WindowCloseEvent e;
-                EventManager::publish(e);
+                event::WindowClose e;
+                event::Manager::publish(e);
             }
 
             ImGui::CloseCurrentPopup();
@@ -453,7 +455,7 @@ void TopBar::saveProjectModal() {
 }
 
 void TopBar::viewportModals() {
-    std::vector<std::shared_ptr<Viewport>> viewports = GraphicsManager::getViewports();
+    std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::Manager::getViewports();
     static std::vector<bool> newViewportModals; // If first time creating the modal
     _viewportModals.resize(viewports.size());
 
@@ -475,7 +477,7 @@ void TopBar::viewportModals() {
 
                 ImGui::Separator();
                 if (ImGui::Button("Delete Viewport")) {
-                    GraphicsManager::removeViewport(viewports[i]);
+                    graphics::Manager::removeViewport(viewports[i]);
                     ImGui::End();
                     break;
                 }
@@ -486,4 +488,5 @@ void TopBar::viewportModals() {
     }
     newViewportModals = _viewportModals;
 }
+
 } // namespace atta::ui

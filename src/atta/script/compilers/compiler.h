@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_SCRIPT_COMPILERS_COMPILER_H
 #define ATTA_SCRIPT_COMPILERS_COMPILER_H
-#include <atta/core/stringId.h>
+
+#include <atta/utils/stringId.h>
 
 namespace atta::script {
+
 class Compiler {
   public:
     Compiler() = default;
@@ -24,6 +26,7 @@ class Compiler {
   protected:
     std::map<StringId, std::vector<fs::path>> _targetFiles;
 };
+
 } // namespace atta::script
 
 #endif // ATTA_SCRIPT_COMPILERS_COMPILER_H

@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_CAMERAS_ORTHOGRAPHIC_CAMERA_H
 #define ATTA_GRAPHICS_CAMERAS_ORTHOGRAPHIC_CAMERA_H
+
 #include <atta/graphics/cameras/camera.h>
 
 namespace atta::graphics {
+
 class OrthographicCamera : public Camera {
   public:
     struct CreateInfo {
@@ -34,6 +36,7 @@ class OrthographicCamera : public Camera {
     float _far;
     float _height;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_CAMERAS_ORTHOGRAPHIC_CAMERA_H

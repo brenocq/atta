@@ -6,11 +6,13 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_FRAMEBUFFER_H
 #define ATTA_GRAPHICS_FRAMEBUFFER_H
-#include <atta/core/math/vector.h>
-#include <atta/core/stringId.h>
+
 #include <atta/graphics/image.h>
+#include <atta/utils/math/vector.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
+
 /// Framebuffer interface
 /** This interface is implemented for each RendererAPI. The framebuffer have multiple attachments.
  * Usually one attachment is used for the output image, and the other to render the depth values.
@@ -62,6 +64,7 @@ class Framebuffer {
 
     const StringId _debugName;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_FRAMEBUFFER_H

@@ -9,6 +9,7 @@
 #include <atta/memory/allocator.h>
 
 namespace atta::memory {
+
 // Allocator to objects of variable size. To deallocate can return stack to saved marker.
 // Can free the memory using rollback or deallocate
 class StackAllocator final : public Allocator {
@@ -41,6 +42,7 @@ class StackAllocator final : public Allocator {
   private:
     size_t _current;
 };
+
 } // namespace atta::memory
 
 #include <atta/memory/allocators/stackAllocator.inl>

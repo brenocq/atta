@@ -4,11 +4,11 @@
 // Date: 2020-12-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_MATH_POINT_H
-#define ATTA_CORE_MATH_POINT_H
+#ifndef ATTA_UTILS_MATH_POINT_H
+#define ATTA_UTILS_MATH_POINT_H
 
 //#include <math.h>
-#include <atta/core/math/vector.h>
+#include <atta/utils/math/vector.h>
 
 namespace atta {
 //---------- Point3 ----------//
@@ -141,4 +141,4 @@ using pnt2d = point2<double>;
 using pnt2i = point2<int>;
 } // namespace atta
 
-#endif // ATTA_CORE_MATH_POINT_H
+#endif // ATTA_UTILS_MATH_POINT_H

@@ -4,7 +4,7 @@
 // Date: 2021-08-18
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/math/math.h>
+#include <atta/utils/math/math.h>
 #include <gtest/gtest.h>
 
 using namespace atta;

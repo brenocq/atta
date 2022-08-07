@@ -4,11 +4,12 @@
 // Date: 2021-09-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/event/eventManager.h>
-#include <atta/event/events/scriptTargetEvent.h>
-#include <atta/script/scriptManager.h>
+#include <atta/event/events/scriptTarget.h>
+#include <atta/event/manager.h>
+#include <atta/script/manager.h>
 
 namespace atta::script {
+
 Manager& Manager::getInstance() {
     static Manager instance;
     return instance;
@@ -38,10 +39,11 @@ ProjectScript* Manager::getProjectScriptImpl() const { return _projectScript.sec
 
 StringId Manager::getProjectScriptSid() { return getInstance().getProjectScriptSidImpl(); }
 StringId Manager::getProjectScriptSidImpl() const { return _projectScript.first; }
+
 } // namespace atta::script
 
 #ifdef ATTA_STATIC_PROJECT
-#include <atta/script/scriptManagerStatic.cpp>
+#include <atta/script/managerStatic.cpp>
 #else
-#include <atta/script/scriptManagerDynamic.cpp>
+#include <atta/script/managerDynamic.cpp>
 #endif

@@ -6,13 +6,15 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERER_H
 #define ATTA_GRAPHICS_RENDERER_H
-#include <atta/core/stringId.h>
+
 #include <atta/file/serializer/serializable.h>
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/framebuffer.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
-class Renderer : public Serializable {
+
+class Renderer : public file::Serializable {
   public:
     Renderer(const char* name) : _name(StringId(name)), _renderDrawer(true), _renderSelected(true) {}
     virtual ~Renderer() = default;
@@ -42,6 +44,7 @@ class Renderer : public Serializable {
     bool _renderDrawer;
     bool _renderSelected;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_H

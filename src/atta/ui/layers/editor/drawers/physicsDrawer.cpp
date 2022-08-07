@@ -4,21 +4,22 @@
 // Date: 2021-12-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/componentManager.h>
-#include <atta/component/components/boxColliderComponent.h>
-#include <atta/component/components/sphereColliderComponent.h>
-#include <atta/component/components/transformComponent.h>
+#include <atta/component/components/boxCollider.h>
+#include <atta/component/components/sphereCollider.h>
+#include <atta/component/components/transform.h>
+#include <atta/component/manager.h>
 #include <atta/graphics/drawer.h>
 #include <atta/ui/layers/editor/drawers/physicsDrawer.h>
 
 namespace atta::ui {
-void PhysicsDrawer::update() {
-    Drawer::clear<Drawer::Line>("atta::ui::PhysicsDrawer");
 
-    std::vector<EntityId> entities = ComponentManager::getEntitiesView();
+void PhysicsDrawer::update() {
+    graphics::Drawer::clear<graphics::Drawer::Line>("atta::ui::PhysicsDrawer");
+
+    std::vector<component::EntityId> entities = component::Manager::getEntitiesView();
     for (auto entity : entities) {
         // Get transform
-        auto t = ComponentManager::getEntityComponent<TransformComponent>(entity);
+        auto t = component::Manager::getEntityComponent<component::Transform>(entity);
         if (!t)
             continue;
         vec3 position, scale;
@@ -30,7 +31,7 @@ void PhysicsDrawer::update() {
         vec4 color = {0, 1, 0, 1};
 
         // Draw box collider
-        auto box = ComponentManager::getEntityComponent<BoxColliderComponent>(entity);
+        auto box = component::Manager::getEntityComponent<component::BoxCollider>(entity);
         if (box) {
             std::vector<vec3> vertices = {{0.5, 0.5, 0}, {-0.5, 0.5, 0}, {-0.5, -0.5, 0}, {0.5, -0.5, 0}};
 
@@ -54,14 +55,14 @@ void PhysicsDrawer::update() {
             for (auto& v : vertices)
                 v += position;
 
-            Drawer::add(Drawer::Line(vertices[0], vertices[1], color, color), "atta::ui::PhysicsDrawer");
-            Drawer::add(Drawer::Line(vertices[1], vertices[2], color, color), "atta::ui::PhysicsDrawer");
-            Drawer::add(Drawer::Line(vertices[2], vertices[3], color, color), "atta::ui::PhysicsDrawer");
-            Drawer::add(Drawer::Line(vertices[3], vertices[0], color, color), "atta::ui::PhysicsDrawer");
+            graphics::Drawer::add(graphics::Drawer::Line(vertices[0], vertices[1], color, color), "atta::ui::PhysicsDrawer");
+            graphics::Drawer::add(graphics::Drawer::Line(vertices[1], vertices[2], color, color), "atta::ui::PhysicsDrawer");
+            graphics::Drawer::add(graphics::Drawer::Line(vertices[2], vertices[3], color, color), "atta::ui::PhysicsDrawer");
+            graphics::Drawer::add(graphics::Drawer::Line(vertices[3], vertices[0], color, color), "atta::ui::PhysicsDrawer");
         }
 
         // Draw circle collider
-        auto circle = ComponentManager::getEntityComponent<SphereColliderComponent>(entity);
+        auto circle = component::Manager::getEntityComponent<component::SphereCollider>(entity);
         if (circle) {
             const unsigned numVertices = 32;
             std::vector<vec3> vertices;
@@ -83,8 +84,9 @@ void PhysicsDrawer::update() {
                 v += position;
 
             for (unsigned i = 0; i < numVertices; i++)
-                Drawer::add(Drawer::Line(vertices[i], vertices[(i - 1) % numVertices], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[i], vertices[(i - 1) % numVertices], color, color), "atta::ui::PhysicsDrawer");
         }
     }
 }
+
 } // namespace atta::ui

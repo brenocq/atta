@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_SENSOR_MODULE_SOURCE
     manager.cpp

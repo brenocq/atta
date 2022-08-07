@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_IO_HTTP_HTTP_H
 #define ATTA_IO_HTTP_HTTP_H
-#include <atta/core/stringId.h>
+
+#include <atta/utils/stringId.h>
 
 namespace atta::io {
+
 class Http {
   public:
     Http(std::string url) : _url(url) {}
@@ -39,6 +41,7 @@ class Http {
   private:
     std::string _url;
 };
+
 } // namespace atta::io
 
 #endif // ATTA_IO_HTTP_HTTP_H

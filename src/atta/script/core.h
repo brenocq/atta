@@ -7,8 +7,6 @@
 #ifndef ATTA_SCRIPT_CORE_H
 #define ATTA_SCRIPT_CORE_H
 
-namespace scr = atta::script;
-
 #include <atta/script/manager.h>
 #include <atta/script/projectScript.h>
 #include <atta/script/script.h>

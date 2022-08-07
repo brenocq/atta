@@ -4,8 +4,8 @@
 // Date: 2021-11-12
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::file {
+
 //--------------------------//
 //--------- WRITE ----------//
 //--------------------------//
@@ -78,4 +78,5 @@ template <typename T>
 inline void read(std::istream& is, T* x, size_t size) {
     is.read(reinterpret_cast<char*>(x), size);
 }
+
 } // namespace atta::file

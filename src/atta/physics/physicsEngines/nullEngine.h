@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_PHYSICS_PHYSICS_ENGINES_NULL_ENGINE_H
 #define ATTA_PHYSICS_PHYSICS_ENGINES_NULL_ENGINE_H
+
 #include <atta/physics/physicsEngines/physicsEngine.h>
 
 namespace atta::physics {
+
 class NullEngine : public PhysicsEngine {
   public:
     NullEngine() : PhysicsEngine(PhysicsEngine::NULL_ENGINE) {}
@@ -17,6 +19,7 @@ class NullEngine : public PhysicsEngine {
     void step(float dt) override {}
     void stop() override { _running = false; }
 };
+
 } // namespace atta::physics
 
 #endif // ATTA_PHYSICS_PHYSICS_ENGINES_NULL_ENGINE_H

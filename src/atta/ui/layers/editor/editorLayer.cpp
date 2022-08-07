@@ -4,9 +4,9 @@
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/graphicsManager.h>
-#include <atta/resource/resourceManager.h>
-#include <atta/script/scriptManager.h>
+#include <atta/graphics/manager.h>
+#include <atta/resource/manager.h>
+#include <atta/script/manager.h>
 #include <atta/ui/layers/editor/editorLayer.h>
 #include <imgui_internal.h>
 
@@ -15,12 +15,13 @@
 #include <atta/ui/layers/editor/topBar/localWindows/versionWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
 
-#include <atta/component/componentManager.h>
-#include <atta/component/components/nameComponent.h>
-#include <atta/sensor/sensorManager.h>
+#include <atta/component/components/name.h>
+#include <atta/component/manager.h>
+#include <atta/sensor/manager.h>
 
 namespace atta::ui {
-EditorLayer::EditorLayer() : Layer(StringId("GraphicsEditorLayer")) {}
+
+EditorLayer::EditorLayer() : graphics::Layer(StringId("GraphicsEditorLayer")) {}
 
 void EditorLayer::onAttach() {}
 
@@ -61,17 +62,17 @@ void EditorLayer::onUIRender() {
     renderCameraWindows();
 
     // Project UI
-    ProjectScript* project = ScriptManager::getProjectScript();
+    script::ProjectScript* project = script::Manager::getProjectScript();
     if (project)
         project->onUIRender();
 }
 
 void EditorLayer::renderCameraWindows() {
     // TODO think another way to show camera windows
-    std::vector<SensorManager::CameraInfo>& cameras = SensorManager::getCameraInfos();
+    std::vector<sensor::Manager::CameraInfo>& cameras = sensor::Manager::getCameraInfos();
     for (uint32_t i = 0; i < cameras.size(); i++) {
         if (cameras[i].showWindow) {
-            NameComponent* name = ComponentManager::getEntityComponent<NameComponent>(cameras[i].entity);
+            component::Name* name = component::Manager::getEntityComponent<component::Name>(cameras[i].entity);
             std::string windowName = name != nullptr ? name->name : "Camera";
             ImGui::Begin((windowName + "##CameraWindow" + std::to_string(cameras[i].entity)).c_str(), &(cameras[i].showWindow));
             {
@@ -82,4 +83,5 @@ void EditorLayer::renderCameraWindows() {
         }
     }
 }
+
 } // namespace atta::ui

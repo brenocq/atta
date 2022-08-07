@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_IO_CAMERA_LINUX_CAMERA_H
 #define ATTA_IO_CAMERA_LINUX_CAMERA_H
+
 #ifdef ATTA_OS_LINUX
 #include <atta/io/camera/camera.h>
 
 namespace atta::io {
+
 class LinuxCamera : public Camera {
   public:
     LinuxCamera(Camera::CreateInfo info);
@@ -42,6 +44,7 @@ class LinuxCamera : public Camera {
     std::vector<Buffer> _buffers;
     std::vector<Camera::FormatInfo> _availableFormats;
 };
+
 } // namespace atta::io
 
 #endif // ATTA_OS_LINUX

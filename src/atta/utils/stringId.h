@@ -1,11 +1,11 @@
 //--------------------------------------------------
-// Atta String ID
+// Atta Utils Module
 // stringId.h
 // Date: 2021-08-18
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_STRING_ID_H
-#define ATTA_CORE_STRING_ID_H
+#ifndef ATTA_UTILS_STRING_ID_H
+#define ATTA_UTILS_STRING_ID_H
 #include <cstdint>
 
 namespace atta {
@@ -66,5 +66,5 @@ struct hash<atta::StringId> {
 };
 } // namespace std
 
-#include <atta/core/stringId.inl>
-#endif // ATTA_CORE_STRING_ID_H
+#include <atta/utils/stringId.inl>
+#endif // ATTA_UTILS_STRING_ID_H

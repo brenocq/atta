@@ -7,5 +7,7 @@
 #include <atta/graphics/shaderUniform.h>
 
 namespace atta::graphics {
+
 ShaderUniform::ShaderUniform(std::string name, Type type, uint32_t size, uint32_t offset) : _name(name), _type(type), _size(size), _offset(offset) {}
+
 } // namespace atta::graphics

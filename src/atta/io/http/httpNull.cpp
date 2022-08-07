@@ -9,8 +9,10 @@
 #include <atta/io/http/http.h>
 
 namespace atta::io {
+
 const std::string Http::implType = "null";
 const bool Http::supported = false;
 
 Http::Response Http::request(const Http::Request& req, Http::RequestType reqType) { return {}; }
+
 } // namespace atta::io

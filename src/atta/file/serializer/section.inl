@@ -4,8 +4,8 @@
 // Date: 2022-04-22
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::file {
+
 template <typename Test, template <typename...> class Ref>
 struct is_specialization : std::false_type {};
 template <template <typename...> class Ref, typename... Args>
@@ -19,7 +19,7 @@ void SectionData::operator=(T&& value) {
     _typeHash = StringId(typeid(U).name());
 
     //----- Store serializable object -----//
-    if constexpr (std::is_base_of_v<atta::Serializable, U>) {
+    if constexpr (std::is_base_of_v<Serializable, U>) {
         // Allocate space and copy to _data
         _data.resize(value.getSerializedSize());
 
@@ -36,7 +36,7 @@ void SectionData::operator=(T&& value) {
         // If it is std::vector
         using V = typename U::value_type;
 
-        if constexpr (std::is_base_of_v<atta::Serializable, V>) {
+        if constexpr (std::is_base_of_v<Serializable, V>) {
             // If it is std::vector of serializable
             _data.clear();
             for (auto el : value) {
@@ -98,7 +98,7 @@ T SectionData::getConst() const {
         return T{};
 
     //----- Get serializable object -----//
-    if constexpr (std::is_base_of_v<atta::Serializable, T>) {
+    if constexpr (std::is_base_of_v<Serializable, T>) {
         // Serialize to temporary buffer
         std::stringstream ss;
         write(ss, _data.data(), _data.size());
@@ -116,7 +116,7 @@ T SectionData::getConst() const {
             // Create return vector
             T vec;
 
-            if constexpr (std::is_base_of_v<atta::Serializable, V>) {
+            if constexpr (std::is_base_of_v<Serializable, V>) {
                 // If it is std::vector of serializable
 
                 // Serialize to temporary buffer
@@ -140,8 +140,8 @@ T SectionData::getConst() const {
             return vec;
 
         } else {
-            LOG_WARN("Filesystem::SectionData", "Wrong section casting to [w]$0[] (aka [w]std::vector<$1>[]), value is of type [w]$2[]",
-                     typeid(T).name(), typeid(V).name(), _typeHash);
+            LOG_WARN("file::SectionData", "Wrong section casting to [w]$0[] (aka [w]std::vector<$1>[]), value is of type [w]$2[]", typeid(T).name(),
+                     typeid(V).name(), _typeHash);
             return T{};
         }
     }
@@ -179,7 +179,7 @@ T* SectionData::getPtrConst() const {
     if (_data.size() > 0 && _typeHash == StringId(typeid(T).name()))
         return (T*)&_data[0];
     else {
-        LOG_WARN("Filesystem::SectionData", "Wrong section casting to [w]$0[], value is of type [w]$1[]", typeid(T).name(), _typeHash);
+        LOG_WARN("file::SectionData", "Wrong section casting to [w]$0[], value is of type [w]$1[]", typeid(T).name(), _typeHash);
         return nullptr;
     }
 }
@@ -261,8 +261,9 @@ Section::operator T() {
     if (isData())
         return _data.get<T>();
     else
-        LOG_WARN("Filesystem::Section", "Trying to cast section as [w]$0[], but this section is not data", typeid(T).name());
+        LOG_WARN("file::Section", "Trying to cast section as [w]$0[], but this section is not data", typeid(T).name());
 
     return T{};
 }
+
 } // namespace atta::file

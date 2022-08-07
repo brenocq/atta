@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_LAYERS_LAYER_H
 #define ATTA_GRAPHICS_LAYERS_LAYER_H
-#include <atta/core/stringId.h>
+
+#include <atta/utils/stringId.h>
 
 namespace atta::graphics {
+
 class Layer {
   public:
     Layer(StringId sid = StringId("Layer"));
@@ -25,6 +27,7 @@ class Layer {
   private:
     StringId _sid;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_LAYERS_LAYER_H

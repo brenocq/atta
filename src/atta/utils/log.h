@@ -1,11 +1,11 @@
 //--------------------------------------------------
-// Atta Log
+// Atta Utils Module
 // log.h
 // Date: 2021-08-11
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_LOG_H
-#define ATTA_CORE_LOG_H
+#ifndef ATTA_UTILS_LOG_H
+#define ATTA_UTILS_LOG_H
 
 //---------------------------------//
 //------ Terminal Color Code ------//
@@ -120,5 +120,5 @@ class Log final {
 #define LOG_WARN(...) atta::Log::warning(__VA_ARGS__)
 #define LOG_ERROR(...) atta::Log::error(__VA_ARGS__)
 
-#include <atta/core/log.inl>
-#endif // ATTA_CORE_LOG_H
+#include <atta/utils/log.inl>
+#endif // ATTA_UTILS_LOG_H

@@ -21,7 +21,7 @@ if(NOT ATTA_SYSTEM_NAME MATCHES "Web")
             GIT_PROGRESS TRUE
         )
 
-        atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/glfw-src/include)
+        atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/glfw-src/include)
         atta_add_libs(glfw)
 
         atta_log("Info" "Extern" "Fetching GLFW...")

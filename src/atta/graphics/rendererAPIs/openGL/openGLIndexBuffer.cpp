@@ -7,6 +7,7 @@
 #include <atta/graphics/rendererAPIs/openGL/openGLIndexBuffer.h>
 
 namespace atta::graphics {
+
 OpenGLIndexBuffer::OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info) : IndexBuffer(info), _id(0) {
     glGenBuffers(1, &_id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id);
@@ -21,4 +22,5 @@ OpenGLIndexBuffer::~OpenGLIndexBuffer() {
 }
 
 void OpenGLIndexBuffer::bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id); }
+
 } // namespace atta::graphics

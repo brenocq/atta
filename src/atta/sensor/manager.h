@@ -6,9 +6,10 @@
 //--------------------------------------------------
 #ifndef ATTA_SENSOR_MANAGER_H
 #define ATTA_SENSOR_MANAGER_H
+
 #include <atta/component/base.h>
 #include <atta/component/components/camera.h>
-#include <atta/event/eventManager.h>
+#include <atta/event/manager.h>
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/renderers/renderer.h>
 
@@ -20,7 +21,7 @@ class Manager final {
 
     // Camera
     struct CameraInfo {
-        EntityId entity;
+        component::EntityId entity;
         component::Camera* component;
         std::shared_ptr<graphics::Renderer> renderer; ///< Camera renderer (fast, phong, PBR, ...)
         std::shared_ptr<graphics::Camera> camera;     ///< Camera view and projection matrices
@@ -29,50 +30,46 @@ class Manager final {
         std::vector<uint8_t> data;                    ///< Camera rendered image
     };
 
+    static void startUp();
+    static void shutDown();
+
+    /// Update executed inside atta main loop
+    /** Used to update the sensor internal model to keep it always updated (ex: the camera transform)**/
+    static void update();
+
+    ///< Update executed at each simulation step
+    /** Used to update the sensor data itself (ex: camera image rendering) **/
+    static void update(float dt);
+
+    static void* getEntityCameraImGuiTexture(component::EntityId eid);
+
+    static std::vector<CameraInfo>& getCameraInfos();
+
   private:
     // Interface
     void startUpImpl();
     void shutDownImpl();
     void updateImpl();
     void updateImpl(float dt);
-    friend std::vector<Manager::CameraInfo>& getCameraInfos();
 
     // Handle events
-    void onSimulationStateChange(Event& event);
-    void onComponentChange(Event& event);
-    void onComponentUi(Event& event);
+    void onSimulationStateChange(event::Event& event);
+    void onComponentChange(event::Event& event);
+    void onComponentUi(event::Event& event);
 
     // Camera
     void unregisterCameras();
     void registerCameras();
-    void registerCamera(EntityId entity, Camera* camera);
-    void unregisterCamera(EntityId entity);
+    void registerCamera(component::EntityId entity, component::Camera* camera);
+    void unregisterCamera(component::EntityId entity);
     void updateCamerasModel();    ///< Update camera poses and parameeters
     void updateCameras(float dt); ///< Render cameras when necessary
-    void* getEntityCameraImGuiTextureImpl(EntityId eid);
-    void cameraCheckUiEvents(Event& event);
+    void* getEntityCameraImGuiTextureImpl(component::EntityId eid);
+    void cameraCheckUiEvents(event::Event& event);
 
     float _currTime;
     std::vector<CameraInfo> _cameras;
 };
-
-//-------------------------------//
-//---------- Interface ----------//
-//-------------------------------//
-void startUp();
-void shutDown();
-
-/// Update executed inside atta main loop
-/** Used to update the sensor internal model to keep it always updated (ex: the camera transform)**/
-void update();
-
-///< Update executed at each simulation step
-/** Used to update the sensor data itself (ex: camera image rendering) **/
-void update(float dt);
-
-void* getEntityCameraImGuiTexture(EntityId eid);
-
-std::vector<Manager::CameraInfo>& getCameraInfos();
 
 } // namespace atta::sensor
 

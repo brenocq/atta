@@ -7,9 +7,11 @@
 #include <atta/script/linkers/nullLinker.h>
 
 namespace atta::script {
+
 void NullLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) {
     *script = nullptr;
     *projectScript = nullptr;
     name = "";
 }
+
 } // namespace atta::script

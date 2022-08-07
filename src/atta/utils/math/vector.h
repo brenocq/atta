@@ -4,8 +4,8 @@
 // Date: 2020-12-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_MATH_VECTOR_H
-#define ATTA_CORE_MATH_VECTOR_H
+#ifndef ATTA_UTILS_MATH_VECTOR_H
+#define ATTA_UTILS_MATH_VECTOR_H
 
 namespace atta {
 template <typename T>
@@ -526,8 +526,8 @@ struct hash<atta::vec2> {
 };
 } // namespace std
 
-#include <atta/core/math/vector.inl>
-#include <atta/core/math/vector2.inl>
-#include <atta/core/math/vector3.inl>
-#include <atta/core/math/vector4.inl>
-#endif // ATTA_CORE_MATH_VECTOR_H
+#include <atta/utils/math/vector.inl>
+#include <atta/utils/math/vector2.inl>
+#include <atta/utils/math/vector3.inl>
+#include <atta/utils/math/vector4.inl>
+#endif // ATTA_UTILS_MATH_VECTOR_H

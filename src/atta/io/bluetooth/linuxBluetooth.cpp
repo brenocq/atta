@@ -9,6 +9,7 @@
 // Thanks to https://github.com/infsoft-locaware/blzlib
 
 namespace atta::io {
+
 LinuxBluetooth::LinuxBluetooth(Bluetooth::CreateInfo info) : Bluetooth(info), _bus(nullptr), _scanSlot(nullptr) {
     // Clear callback payload
     for (auto& cPayload : _callbackPayloads) {
@@ -927,6 +928,9 @@ void LinuxBluetooth::freePayload(NotifyCallbackPayload* cPayload) {
     std::fill(std::begin(cPayload->mac), std::end(cPayload->mac), 0);
     cPayload->uuid = "";
 }
+
 } // namespace atta::io
+
 #include <atta/io/bluetooth/linuxBluetoothMsg.cpp>
+
 #endif // ATTA_OS_LINUX && ATTA_SYSTEMD_SUPPORT

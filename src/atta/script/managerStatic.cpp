@@ -7,6 +7,7 @@
 #include <atta/script/scripts.h>
 
 namespace atta::script {
+
 void Manager::startUp() { getInstance().startUpImpl(); }
 void Manager::startUpImpl() {
     // Publish registered scripts. Need to do here because scripts are
@@ -40,4 +41,5 @@ Script* Manager::registerScript(std::string name, Script* script) {
 
     return script;
 }
+
 } // namespace atta::script

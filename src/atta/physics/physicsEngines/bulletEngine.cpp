@@ -4,13 +4,14 @@
 // Date: 2021-12-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/components/boxColliderComponent.h>
-#include <atta/component/components/rigidBodyComponent.h>
-#include <atta/component/components/sphereColliderComponent.h>
-#include <atta/component/components/transformComponent.h>
+#include <atta/component/components/boxCollider.h>
+#include <atta/component/components/rigidBody.h>
+#include <atta/component/components/sphereCollider.h>
+#include <atta/component/components/transform.h>
 #include <atta/physics/physicsEngines/bulletEngine.h>
 
 namespace atta::physics {
+
 BulletEngine::BulletEngine() : PhysicsEngine(PhysicsEngine::BULLET_ENGINE) {}
 
 BulletEngine::~BulletEngine() {
@@ -29,16 +30,16 @@ void BulletEngine::start() {
     _world = std::make_shared<btDiscreteDynamicsWorld>(_dispatcher.get(), _broadPhase.get(), _solver.get(), _collisionConfiguration.get());
     _world->setGravity(btVector3(0, 0, -10));
 
-    std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::Manager::getNoPrototypeView();
     //---------- Create rigid bodies ----------//
-    for (EntityId entity : entities)
+    for (component::EntityId entity : entities)
         createRigidBody(entity);
 
     //---------- Create joints ----------//
-    for (EntityId entity : entities) {
-        auto prismatic = ComponentManager::getEntityComponent<PrismaticJointComponent>(entity);
-        auto revolute = ComponentManager::getEntityComponent<RevoluteJointComponent>(entity);
-        auto rigid = ComponentManager::getEntityComponent<RigidJointComponent>(entity);
+    for (component::EntityId entity : entities) {
+        auto prismatic = component::Manager::getEntityComponent<component::PrismaticJoint>(entity);
+        auto revolute = component::Manager::getEntityComponent<component::RevoluteJoint>(entity);
+        auto rigid = component::Manager::getEntityComponent<component::RigidJoint>(entity);
 
         if (prismatic)
             createPrismaticJoint(prismatic);
@@ -53,7 +54,7 @@ void BulletEngine::step(float dt) {
     for (int j = _world->getNumCollisionObjects() - 1; j >= 0; j--) {
         btCollisionObject* obj = _world->getCollisionObjectArray()[j];
         btRigidBody* body = btRigidBody::upcast(obj);
-        EntityId eid = static_cast<uint8_t*>(obj->getUserPointer()) - static_cast<uint8_t*>(0);
+        component::EntityId eid = static_cast<uint8_t*>(obj->getUserPointer()) - static_cast<uint8_t*>(0);
 
         btTransform trans;
         if (body && body->getMotionState())
@@ -62,7 +63,7 @@ void BulletEngine::step(float dt) {
             trans = obj->getWorldTransform();
 
         // Check if object was translated
-        auto t = ComponentManager::getEntityComponent<TransformComponent>(eid);
+        auto t = component::Manager::getEntityComponent<component::Transform>(eid);
 
         // Get atta world position and orientation
         vec3 position, scale;
@@ -100,13 +101,13 @@ void BulletEngine::step(float dt) {
             trans = obj->getWorldTransform();
 
         // Update entity with data changed by engine
-        EntityId eid = static_cast<uint8_t*>(obj->getUserPointer()) - static_cast<uint8_t*>(0);
+        component::EntityId eid = static_cast<uint8_t*>(obj->getUserPointer()) - static_cast<uint8_t*>(0);
         btScalar linearDamping = body->getLinearDamping();
         btScalar angularDamping = body->getAngularDamping();
         btVector3 linearVelocity = body->getLinearVelocity();
         btVector3 angularVelocity = body->getAngularVelocity();
-        auto t = ComponentManager::getEntityComponent<TransformComponent>(eid);
-        auto rb = ComponentManager::getEntityComponent<RigidBodyComponent>(eid);
+        auto t = component::Manager::getEntityComponent<component::Transform>(eid);
+        auto rb = component::Manager::getEntityComponent<component::RigidBody>(eid);
         t->position = {trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()};
 
         float yaw, pitch, roll;
@@ -139,17 +140,17 @@ void BulletEngine::stop() {
     _world.reset();
 }
 
-std::vector<EntityId> BulletEngine::getEntityCollisions(EntityId eid) { return {}; }
+std::vector<component::EntityId> BulletEngine::getEntityCollisions(component::EntityId eid) { return {}; }
 
-std::vector<EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) { return {}; }
+std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) { return {}; }
 
-bool BulletEngine::areColliding(EntityId eid0, EntityId eid1) { return false; }
+bool BulletEngine::areColliding(component::EntityId eid0, component::EntityId eid1) { return false; }
 
-void BulletEngine::createRigidBody(EntityId entity) {
-    auto t = ComponentManager::getEntityComponent<TransformComponent>(entity);
-    auto rb = ComponentManager::getEntityComponent<RigidBodyComponent>(entity);
-    auto box = ComponentManager::getEntityComponent<BoxColliderComponent>(entity);
-    auto sphere = ComponentManager::getEntityComponent<SphereColliderComponent>(entity);
+void BulletEngine::createRigidBody(component::EntityId entity) {
+    auto t = component::Manager::getEntityComponent<component::Transform>(entity);
+    auto rb = component::Manager::getEntityComponent<component::RigidBody>(entity);
+    auto box = component::Manager::getEntityComponent<component::BoxCollider>(entity);
+    auto sphere = component::Manager::getEntityComponent<component::SphereCollider>(entity);
 
     if (!rb)
         return;
@@ -190,7 +191,7 @@ void BulletEngine::createRigidBody(EntityId entity) {
     // Calculate mass and inertia
     btScalar mass = rb->mass;
     btVector3 localInertia(0, 0, 0);
-    if (rb->type == RigidBodyComponent::DYNAMIC)
+    if (rb->type == component::RigidBody::DYNAMIC)
         colShape->calculateLocalInertia(mass, localInertia);
     else
         mass = 0.0f;
@@ -206,10 +207,10 @@ void BulletEngine::createRigidBody(EntityId entity) {
     //_bodyToEntity[body] = entity;
 }
 
-void BulletEngine::createPrismaticJoint(PrismaticJointComponent* prismatic) {}
+void BulletEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {}
 
-void BulletEngine::createRevoluteJoint(RevoluteJointComponent* revolute) {}
+void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {}
 
-void BulletEngine::createRigidJoint(RigidJointComponent* rigid) {}
+void BulletEngine::createRigidJoint(component::RigidJoint* rigid) {}
 
 } // namespace atta::physics

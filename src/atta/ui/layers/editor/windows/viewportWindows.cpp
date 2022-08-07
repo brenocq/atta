@@ -4,22 +4,25 @@
 // Date: 2021-12-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <ImGuizmo.h>
-#include <atta/component/componentManager.h>
-#include <atta/component/components/materialComponent.h>
-#include <atta/component/components/meshComponent.h>
-#include <atta/component/components/nameComponent.h>
-#include <atta/component/components/relationshipComponent.h>
-#include <atta/component/components/rigidBody2DComponent.h>
-#include <atta/component/components/transformComponent.h>
-#include <atta/graphics/graphicsManager.h>
+#include <atta/component/components/material.h>
+#include <atta/component/components/mesh.h>
+#include <atta/component/components/name.h>
+#include <atta/component/components/relationship.h>
+#include <atta/component/components/rigidBody2D.h>
+#include <atta/component/components/transform.h>
+#include <atta/component/manager.h>
+#include <atta/graphics/manager.h>
 #include <atta/ui/layers/editor/windows/viewportWindows.h>
+
 #include <imgui.h>
 #include <imgui_internal.h>
 
+#include <ImGuizmo.h>
+
 namespace atta::ui {
+
 void ViewportWindows::render() {
-    std::vector<std::shared_ptr<Viewport>> viewports = GraphicsManager::getViewports();
+    std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::Manager::getViewports();
     static int activeViewport = 0;
 
     int i = -1;
@@ -93,9 +96,9 @@ void ViewportWindows::render() {
 
             //----- ImGuizmo -----//
             bool imGuizmoUsingMouse = false;
-            EntityId entity = ComponentManager::getSelectedEntity();
+            component::EntityId entity = component::Manager::getSelectedEntity();
             if (entity >= 0) {
-                TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
+                component::Transform* t = component::Manager::getEntityComponent<component::Transform>(entity);
 
                 if (t) {
                     ImGuizmo::SetOrthographic(viewport->getCamera()->getName() == "OrthographicCamera");
@@ -128,15 +131,15 @@ void ViewportWindows::render() {
                         ori.fromEuler(t->orientation.toEuler() + oriDelta);
 
                         // Delta world to local
-                        RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
+                        component::Relationship* r = component::Manager::getEntityComponent<component::Relationship>(entity);
                         if (r && r->getParent() != -1) {
                             // Get transform of the first entity that has transform when going up in the hierarchy
-                            TransformComponent* pt = nullptr;
-                            EntityId parentId = -1;
+                            component::Transform* pt = nullptr;
+                            component::EntityId parentId = -1;
                             while (pt == nullptr) {
                                 parentId = r->getParent();
-                                pt = ComponentManager::getEntityComponent<TransformComponent>(parentId);
-                                r = ComponentManager::getEntityComponent<RelationshipComponent>(parentId);
+                                pt = component::Manager::getEntityComponent<component::Transform>(parentId);
+                                r = component::Manager::getEntityComponent<component::Relationship>(parentId);
                                 if (r->getParent() == -1)
                                     break;
                             }
@@ -163,7 +166,7 @@ void ViewportWindows::render() {
                         else if (mouseOperation == ImGuizmo::OPERATION::SCALE)
                             t->scale = scale;
 
-                        RigidBody2DComponent* rb2d = ComponentManager::getEntityComponent<RigidBody2DComponent>(entity);
+                        component::RigidBody2D* rb2d = component::Manager::getEntityComponent<component::RigidBody2D>(entity);
                         if (rb2d) {
                             if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
                                 vec2 pos = vec2(t->position);
@@ -180,8 +183,8 @@ void ViewportWindows::render() {
             //----- Mouse click selection -----//
             if (!imGuizmoUsingMouse) {
                 if (click.x >= 0 && click.y >= 0 && click.x < (int)viewport->getWidth() && click.y < (int)viewport->getHeight()) {
-                    EntityId eid = GraphicsManager::viewportEntityClick(viewport, click);
-                    ComponentManager::setSelectedEntity(eid);
+                    component::EntityId eid = graphics::Manager::viewportEntityClick(viewport, click);
+                    component::Manager::setSelectedEntity(eid);
                 }
             }
 
@@ -217,7 +220,7 @@ void ViewportWindows::render() {
         ImGui::PopStyleVar(1);
 
         if (!open)
-            GraphicsManager::removeViewport(viewport);
+            graphics::Manager::removeViewport(viewport);
     }
 }
 
@@ -229,15 +232,15 @@ void ViewportWindows::addBasicShapePopup() {
         unsigned i = 0;
         for (auto shape : basicShapes) {
             if (ImGui::Selectable((shape + "##AddBasicShape" + shape).c_str())) {
-                EntityId eid = ComponentManager::createEntity();
-                NameComponent* n = ComponentManager::addEntityComponent<NameComponent>(eid);
+                component::EntityId eid = component::Manager::createEntity();
+                component::Name* n = component::Manager::addEntityComponent<component::Name>(eid);
                 strcpy(n->name, shape.c_str());
-                ComponentManager::addEntityComponent<TransformComponent>(eid);
-                MeshComponent* m = ComponentManager::addEntityComponent<MeshComponent>(eid);
+                component::Manager::addEntityComponent<component::Transform>(eid);
+                component::Mesh* m = component::Manager::addEntityComponent<component::Mesh>(eid);
                 m->sid = basicShapesMesh[i];
-                MaterialComponent* mat = ComponentManager::addEntityComponent<MaterialComponent>(eid);
+                component::Material* mat = component::Manager::addEntityComponent<component::Material>(eid);
                 mat->albedo = vec3(0.5f, 0.5f, 0.5f);
-                ComponentManager::setSelectedEntity(eid);
+                component::Manager::setSelectedEntity(eid);
             }
             i++;
         }

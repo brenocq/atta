@@ -7,6 +7,7 @@
 #include <atta/graphics/rendererAPI.h>
 
 namespace atta::graphics {
+
 RendererAPI::RendererAPI(Type type) : _type(type) {}
 
 } // namespace atta::graphics

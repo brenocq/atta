@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_RESOURCE_RESOURCE_H
 #define ATTA_RESOURCE_RESOURCE_H
-#include <atta/core/stringId.h>
+
+#include <atta/utils/stringId.h>
 
 namespace atta::resource {
+
 class Resource {
   public:
     Resource(const fs::path filename);
@@ -22,6 +24,7 @@ class Resource {
     fs::path _filename;
     uint8_t* _data;
 };
+
 } // namespace atta::resource
 
 #endif // ATTA_RESOURCE_RESOURCE_H

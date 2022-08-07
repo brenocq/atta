@@ -10,6 +10,7 @@
 #include <atta/graphics/pipeline.h>
 
 namespace atta::graphics {
+
 class SelectedPipeline final {
   public:
     SelectedPipeline(std::shared_ptr<RenderPass> renderPass, VertexBufferLayout layout);
@@ -19,6 +20,7 @@ class SelectedPipeline final {
   private:
     std::shared_ptr<Pipeline> _pipeline;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H

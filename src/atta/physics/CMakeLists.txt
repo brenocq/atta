@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_PHYSICS_MODULE_SOURCE
-    physicsManager.cpp
+    manager.cpp
 	
 	physicsEngines/physicsEngine.cpp
 	physicsEngines/nullEngine.cpp

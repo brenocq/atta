@@ -6,9 +6,10 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_BASE_H
 #define ATTA_COMPONENT_BASE_H
-#include <atta/core/stringId.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::component {
+
 #define COMPONENT_POOL_SID(T) SID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
 #define COMPONENT_POOL_SSID(T) SSID((std::string("Component_") + typeid(T).name() + "Allocator").c_str())
 #define COMPONENT_POOL_SID_BY_NAME(typeidTname) SID((std::string("Component_") + typeidTname + "Allocator").c_str())
@@ -86,6 +87,7 @@ struct ComponentDescription {
     std::map<std::string, std::function<void(std::istream& is, void* data)>> deserialize;
     std::map<std::string, std::function<void(void* data, std::string imguiId)>> renderUI;
 };
+
 } // namespace atta::component
 
 #endif // ATTA_COMPONENT_BASE_H

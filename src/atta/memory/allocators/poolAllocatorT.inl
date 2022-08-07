@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 namespace atta::memory {
+
 template <typename T>
 PoolAllocatorT<T>::PoolAllocatorT(size_t countBlocks, size_t blockAlign) : PoolAllocator(countBlocks, sizeof(T), blockAlign) {}
 
@@ -32,4 +33,5 @@ template <typename T>
 T* PoolAllocatorT<T>::getBlock(uint64_t index) {
     return static_cast<T*>(PoolAllocator::getBlock(index));
 }
+
 } // namespace atta::memory

@@ -5,18 +5,19 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/drawer.h>
-#include <atta/sensor/sensorManager.h>
+#include <atta/sensor/manager.h>
 #include <atta/ui/layers/editor/drawers/sensorDrawer.h>
 
 namespace atta::ui {
+
 void SensorDrawer::update() { updateCameras(); }
 
 void SensorDrawer::updateCameras() {
-    Drawer::clear<Drawer::Line>("atta::sensor::Camera"_ssid);
-    std::vector<SensorManager::CameraInfo>& cameras = SensorManager::getCameraInfos();
+    graphics::Drawer::clear<graphics::Drawer::Line>("atta::sensor::Camera"_ssid);
+    std::vector<sensor::Manager::CameraInfo>& cameras = sensor::Manager::getCameraInfos();
     for (uint32_t i = 0; i < cameras.size(); i++) {
-        CameraComponent* cameraComponent = cameras[i].component;
-        std::shared_ptr<Camera> camera = cameras[i].camera;
+        component::Camera* cameraComponent = cameras[i].component;
+        std::shared_ptr<graphics::Camera> camera = cameras[i].camera;
         vec3 pos = camera->getPosition();
         vec3 front = camera->getFront();
         vec3 up = camera->getUp();
@@ -32,15 +33,16 @@ void SensorDrawer::updateCameras() {
         vec3 bl = midLeft - midUp;
         vec3 br = -midLeft - midUp;
 
-        Drawer::add(Drawer::Line(pos, plane + tl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
-        Drawer::add(Drawer::Line(pos, plane + tr, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
-        Drawer::add(Drawer::Line(pos, plane + bl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
-        Drawer::add(Drawer::Line(pos, plane + br, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
+        graphics::Drawer::add(graphics::Drawer::Line(pos, plane + tl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
+        graphics::Drawer::add(graphics::Drawer::Line(pos, plane + tr, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
+        graphics::Drawer::add(graphics::Drawer::Line(pos, plane + bl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
+        graphics::Drawer::add(graphics::Drawer::Line(pos, plane + br, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
 
-        Drawer::add(Drawer::Line(plane + tl, plane + tr, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
-        Drawer::add(Drawer::Line(plane + tr, plane + br, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
-        Drawer::add(Drawer::Line(plane + br, plane + bl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
-        Drawer::add(Drawer::Line(plane + bl, plane + tl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
+        graphics::Drawer::add(graphics::Drawer::Line(plane + tl, plane + tr, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
+        graphics::Drawer::add(graphics::Drawer::Line(plane + tr, plane + br, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
+        graphics::Drawer::add(graphics::Drawer::Line(plane + br, plane + bl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
+        graphics::Drawer::add(graphics::Drawer::Line(plane + bl, plane + tl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
     }
 }
+
 } // namespace atta::ui

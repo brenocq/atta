@@ -8,6 +8,7 @@
 #define ATTA_SCRIPT_PROJECT_SCRIPT_H
 
 namespace atta::script {
+
 class ProjectScript {
   public:
     ProjectScript() = default;

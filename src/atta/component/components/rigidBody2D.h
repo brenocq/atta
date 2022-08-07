@@ -1,21 +1,23 @@
 //--------------------------------------------------
 // Atta Component Module
-// rigidBody2DComponent.h
+// rigidBody2D.h
 // Date: 2021-11-29
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_RIGID_BODY_2D_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_RIGID_BODY_2D_COMPONENT_H
-#include <atta/component/componentManager.h>
+#ifndef ATTA_COMPONENT_COMPONENTS_RIGID_BODY_2D_H
+#define ATTA_COMPONENT_COMPONENTS_RIGID_BODY_2D_H
+
 #include <atta/component/components/component.h>
-#include <atta/core/math/vector.h>
+#include <atta/component/manager.h>
+#include <atta/utils/math/vector.h>
 
 namespace atta::component {
+
 /// %Component to make the entity a rigid body for 2D physics
-/** Every entity that has a RigidBody2DComponent and some 2D collider
+/** Every entity that has a RigidBody2D and some 2D collider
  * component will be added to the 2D physics simulations.
  * **Obs:** The entity **must** have SphereColliderComponent or
- * BoxColliderComponent.
+ * BoxCollider.
  *
  * Rigid bodies has physical properties like density, friction coefficient,
  * and restitution coefficient. The object mass will be dependent on the
@@ -87,9 +89,10 @@ struct RigidBody2D final : public Component {
     /// @param wake also wake up the body
     void applyTorque(float torque, bool wake = true);
 };
-ATTA_REGISTER_COMPONENT(RigidBody2DComponent)
+ATTA_REGISTER_COMPONENT(RigidBody2D)
 template <>
-ComponentDescription& TypedComponentRegistry<RigidBody2DComponent>::getDescription();
+ComponentDescription& TypedComponentRegistry<RigidBody2D>::getDescription();
+
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_RIGID_BODY_2D_COMPONENT_H
+#endif // ATTA_COMPONENT_COMPONENTS_RIGID_BODY_2D_H

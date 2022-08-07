@@ -4,7 +4,6 @@
 // Date: 2021-09-25
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::sensor {
 
 void Manager::registerCameras() {
@@ -55,16 +54,16 @@ void Manager::registerCamera(component::EntityId entity, component::Camera* came
     // Create renderer
     switch (camera->rendererType) {
     case component::Camera::RendererType::FAST:
-        cameraInfo.renderer = std::make_shared<FastRenderer>();
+        cameraInfo.renderer = std::make_shared<graphics::FastRenderer>();
         break;
     case component::Camera::RendererType::PHONG:
-        cameraInfo.renderer = std::make_shared<PhongRenderer>();
+        cameraInfo.renderer = std::make_shared<graphics::PhongRenderer>();
         break;
     case component::Camera::RendererType::PBR:
-        cameraInfo.renderer = std::make_shared<PbrRenderer>();
+        cameraInfo.renderer = std::make_shared<graphics::PbrRenderer>();
         break;
     default:
-        LOG_WARN("Manager", "Invalid camera renderer type $0 for entity $1", (int)camera->rendererType, entity);
+        LOG_WARN("sensor::Manager", "Invalid camera renderer type $0 for entity $1", (int)camera->rendererType, entity);
     }
     cameraInfo.renderer->setRenderDrawer(false);
     cameraInfo.renderer->setRenderSelected(false);
@@ -73,31 +72,31 @@ void Manager::registerCamera(component::EntityId entity, component::Camera* came
     // Create camera (view/projection matrices)
     switch (camera->cameraType) {
     case component::Camera::CameraType::ORTHOGRAPHIC: {
-        OrthographicCamera::CreateInfo info{};
+        graphics::OrthographicCamera::CreateInfo info{};
         info.height = camera->fov; // TODO union
         info.far = camera->far;
         info.ratio = camera->width / (float)camera->height;
 
-        cameraInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<OrthographicCamera>(info));
+        cameraInfo.camera = std::static_pointer_cast<graphics::Camera>(std::make_shared<graphics::OrthographicCamera>(info));
         break;
     }
     case component::Camera::CameraType::PERSPECTIVE: {
-        PerspectiveCamera::CreateInfo info{};
+        graphics::PerspectiveCamera::CreateInfo info{};
         info.fov = camera->fov;
         info.far = camera->far;
         info.near = camera->near;
         info.ratio = camera->width / (float)camera->height;
-        cameraInfo.camera = std::static_pointer_cast<Camera>(std::make_shared<PerspectiveCamera>(info));
+        cameraInfo.camera = std::static_pointer_cast<graphics::Camera>(std::make_shared<graphics::PerspectiveCamera>(info));
         break;
     }
     default:
-        LOG_WARN("Manager", "Invalid camera projection type $0 for entity $1", (int)camera->cameraType, entity);
+        LOG_WARN("sensor::Manager", "Invalid camera projection type $0 for entity $1", (int)camera->cameraType, entity);
     }
 
     _cameras.push_back(cameraInfo);
 }
 
-void Manager::unregisterCamera(EntityId entity) {
+void Manager::unregisterCamera(component::EntityId entity) {
     bool found = false;
     for (int i = _cameras.size() - 1; i >= 0; i--) {
         if (_cameras[i].entity == entity) {
@@ -108,15 +107,15 @@ void Manager::unregisterCamera(EntityId entity) {
     }
 
     if (!found)
-        LOG_WARN("Manager", "Could not unregister camera from entity [w]$0[], camera was not registered before", entity);
+        LOG_WARN("sensor::Manager", "Could not unregister camera from entity [w]$0[], camera was not registered before", entity);
 }
 
 void Manager::updateCamerasModel() {
     //----- Update camera pose and parameters -----//
     for (size_t i = 0; i < _cameras.size(); i++) {
-        EntityId entity = _cameras[i].entity;
-        TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
-        RelationshipComponent* relationship = ComponentManager::getEntityComponent<RelationshipComponent>(entity);
+        component::EntityId entity = _cameras[i].entity;
+        component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
+        component::Relationship* relationship = component::Manager::getEntityComponent<component::Relationship>(entity);
         if (transform) {
             // Calculate position
             vec3 position;
@@ -135,7 +134,7 @@ void Manager::updateCamerasModel() {
             rotation.mat[1][1] /= transform->scale.y;
             rotation.mat[2][2] /= transform->scale.z;
             while (relationship && relationship->getParent() >= 0) {
-                TransformComponent* ptransform = ComponentManager::getEntityComponent<TransformComponent>(relationship->getParent());
+                component::Transform* ptransform = component::Manager::getEntityComponent<component::Transform>(relationship->getParent());
                 if (ptransform) {
                     mat4 protation;
                     protation.setPosOriScale(ptransform->position, ptransform->orientation, ptransform->scale);
@@ -147,7 +146,7 @@ void Manager::updateCamerasModel() {
                     protation.mat[2][2] /= ptransform->scale.z;
                     rotation = protation * rotation;
                 }
-                relationship = ComponentManager::getEntityComponent<RelationshipComponent>(relationship->getParent());
+                relationship = component::Manager::getEntityComponent<component::Relationship>(relationship->getParent());
             }
 
             // Update camera pose
@@ -158,7 +157,7 @@ void Manager::updateCamerasModel() {
 
             // Update camera fov
             if (_cameras[i].component->cameraType == component::Camera::CameraType::PERSPECTIVE) {
-                std::shared_ptr<PerspectiveCamera> persCam = std::static_pointer_cast<PerspectiveCamera>(_cameras[i].camera);
+                std::shared_ptr<graphics::PerspectiveCamera> persCam = std::static_pointer_cast<graphics::PerspectiveCamera>(_cameras[i].camera);
                 persCam->setFov(radians(_cameras[i].component->fov));
             }
 
@@ -174,16 +173,16 @@ void Manager::updateCamerasModel() {
             if (_cameras[i].component->rendererType != currRendererType) {
                 switch (_cameras[i].component->rendererType) {
                 case component::Camera::RendererType::FAST:
-                    _cameras[i].renderer = std::make_shared<FastRenderer>();
+                    _cameras[i].renderer = std::make_shared<graphics::FastRenderer>();
                     break;
                 case component::Camera::RendererType::PHONG:
-                    _cameras[i].renderer = std::make_shared<PhongRenderer>();
+                    _cameras[i].renderer = std::make_shared<graphics::PhongRenderer>();
                     break;
                 case component::Camera::RendererType::PBR:
-                    _cameras[i].renderer = std::make_shared<PbrRenderer>();
+                    _cameras[i].renderer = std::make_shared<graphics::PbrRenderer>();
                     break;
                 default:
-                    LOG_WARN("Manager", "Invalid camera renderer type $0 for entity $1", (int)_cameras[i].component->rendererType,
+                    LOG_WARN("sensor::Manager", "Invalid camera renderer type $0 for entity $1", (int)_cameras[i].component->rendererType,
                              _cameras[i].entity);
                 }
                 _cameras[i].renderer->setRenderDrawer(false);
@@ -195,7 +194,7 @@ void Manager::updateCamerasModel() {
 
             // TODO camera projection
         } else {
-            LOG_WARN("Manager", "The camera entity must have a transform component to be rendered");
+            LOG_WARN("sensor::Manager", "The camera entity must have a transform component to be rendered");
         }
     }
 }
@@ -211,15 +210,15 @@ void Manager::updateCameras(float dt) {
     }
 }
 
-void* Manager::getEntityCameraImGuiTexture(EntityId eid) { return getInstance().getEntityCameraImGuiTextureImpl(eid); }
-void* Manager::getEntityCameraImGuiTextureImpl(EntityId eid) {
+void* Manager::getEntityCameraImGuiTexture(component::EntityId eid) { return getInstance().getEntityCameraImGuiTextureImpl(eid); }
+void* Manager::getEntityCameraImGuiTextureImpl(component::EntityId eid) {
     for (size_t i = 0; i < _cameras.size(); i++)
         if (_cameras[i].entity == eid)
             return _cameras[i].renderer->getImGuiTexture();
     return nullptr;
 }
 
-void Manager::cameraCheckUIEvents(Event& event) {
+void Manager::cameraCheckUiEvents(event::Event& event) {
     switch (event.getType()) {
     case event::UiCameraComponent::type: {
         event::UiCameraComponent& e = reinterpret_cast<event::UiCameraComponent&>(event);

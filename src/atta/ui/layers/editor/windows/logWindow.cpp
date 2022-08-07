@@ -8,9 +8,11 @@
 #include <imgui.h>
 
 namespace atta::ui {
+
 void LogWindow::render() {
     ImGui::Begin("Log");
     ImGui::Text("Logging not implemented yet");
     ImGui::End();
 }
+
 } // namespace atta::ui

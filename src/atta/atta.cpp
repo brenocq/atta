@@ -6,12 +6,12 @@
 //--------------------------------------------------
 #include <atta/atta.h>
 
-#include <atta/event/eventManager.h>
-#include <atta/event/events/simulationContinueEvent.h>
-#include <atta/event/events/simulationPauseEvent.h>
-#include <atta/event/events/simulationStartEvent.h>
-#include <atta/event/events/simulationStopEvent.h>
-#include <atta/event/events/windowCloseEvent.h>
+#include <atta/event/event.h>
+#include <atta/event/events/simulationContinue.h>
+#include <atta/event/events/simulationPause.h>
+#include <atta/event/events/simulationStart.h>
+#include <atta/event/events/simulationStop.h>
+#include <atta/event/events/windowClose.h>
 
 #include <atta/component/manager.h>
 #include <atta/file/manager.h>
@@ -24,12 +24,12 @@
 #include <atta/ui/manager.h>
 
 #include <atta/cmakeConfig.h>
-#include <atta/core/config.h>
 #include <atta/graphics/pipeline.h>
+#include <atta/utils/config.h>
 
 // Include execute code
-#include <atta/component/components/prototypeComponent.h>
-#include <atta/component/components/scriptComponent.h>
+#include <atta/component/components/prototype.h>
+#include <atta/component/components/script.h>
 #include <atta/script/script.h>
 
 // TODO move to another class
@@ -41,23 +41,23 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(Simu
     file::Manager::startUp();
 
     uint64_t size = 1.0 * 1024UL * 1024UL * 1024UL;
-    _mainAllocator = new StackAllocator(size); // Allocate 1.0GB for the whole system
-    MemoryManager::registerAllocator(SSID("MainAllocator"), static_cast<Allocator*>(_mainAllocator));
+    _mainAllocator = new memory::StackAllocator(size); // Allocate 1.0GB for the whole system
+    memory::Manager::registerAllocator(SSID("MainAllocator"), static_cast<memory::Allocator*>(_mainAllocator));
 
     component::Manager::startUp();
     resource::Manager::startUp();
     graphics::Manager::startUp();
-    ui::UIManager::startUp();
+    ui::Manager::startUp();
     script::Manager::startUp();
     physics::Manager::startUp();
     sensor::Manager::startUp();
 
     // Atta is the last one to reveice events
-    event::Manager::subscribe<WindowCloseEvent>(BIND_EVENT_FUNC(Atta::onWindowClose));
-    event::Manager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::Manager::subscribe<SimulationContinueEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::Manager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::Manager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::Manager::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
+    event::Manager::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 
     LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
@@ -112,7 +112,7 @@ void Atta::loop() {
         return;
     float dt = Config::getDt();
 
-    ProjectScript* project = script::Manager::getProjectScript();
+    script::ProjectScript* project = script::Manager::getProjectScript();
     if (_simulationState == SimulationState::RUNNING) {
         physics::Manager::update(dt);
         sensor::Manager::update(dt);
@@ -122,15 +122,15 @@ void Atta::loop() {
 
         // Run entity scripts
         // TODO keep list of entities that have script (and are not prototype entities)
-        std::vector<EntityId> entities = component::Manager::getScriptView();
-        for (EntityId entity : entities) {
-            ScriptComponent* scriptComponent = component::Manager::getEntityComponent<ScriptComponent>(entity);
-            PrototypeComponent* prototypeComponent = component::Manager::getEntityComponent<PrototypeComponent>(entity);
+        std::vector<component::EntityId> entities = component::Manager::getScriptView();
+        for (component::EntityId entity : entities) {
+            component::Script* scriptComponent = component::Manager::getEntityComponent<component::Script>(entity);
+            component::Prototype* prototypeComponent = component::Manager::getEntityComponent<component::Prototype>(entity);
             if (scriptComponent && !prototypeComponent) {
                 // std::vector<Component*> components = component::Manager::getEntityComponents(entity);
-                Script* script = script::Manager::getScript(scriptComponent->sid);
+                script::Script* script = script::Manager::getScript(scriptComponent->sid);
                 if (script)
-                    script->update(Entity(entity), dt);
+                    script->update(component::Entity(entity), dt);
             }
         }
 
@@ -163,30 +163,30 @@ void Atta::loop() {
     }
 }
 
-void Atta::onWindowClose(Event& event) { _shouldFinish = true; }
+void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }
 
-void Atta::onSimulationStateChange(Event& event) {
-    ProjectScript* project = script::Manager::getProjectScript();
+void Atta::onSimulationStateChange(event::Event& event) {
+    script::ProjectScript* project = script::Manager::getProjectScript();
     switch (event.getType()) {
-    case SimulationStartEvent::type: {
+    case event::SimulationStart::type: {
         if (project)
             project->onStart();
         _simulationState = SimulationState::RUNNING;
         break;
     }
-    case SimulationContinueEvent::type: {
+    case event::SimulationContinue::type: {
         if (project)
             project->onContinue();
         _simulationState = SimulationState::RUNNING;
         break;
     }
-    case SimulationPauseEvent::type: {
+    case event::SimulationPause::type: {
         if (project)
             project->onPause();
         _simulationState = SimulationState::PAUSED;
         break;
     }
-    case SimulationStopEvent::type: {
+    case event::SimulationStop::type: {
         if (project)
             project->onStop();
         _simulationState = SimulationState::NOT_RUNNING;

@@ -1,25 +1,27 @@
 //--------------------------------------------------
 // Atta Component Module
-// environmentLightComponent.cpp
+// environmentLight.cpp
 // Date: 2022-01-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/components/environmentLightComponent.h>
+#include <atta/component/components/environmentLight.h>
 
 namespace atta::component {
+
 template <>
-ComponentDescription& TypedComponentRegistry<EnvironmentLightComponent>::getDescription() {
+ComponentDescription& TypedComponentRegistry<EnvironmentLight>::getDescription() {
     static ComponentDescription desc = {"Environment Light",
                                         {
-                                            {AttributeType::STRINGID, offsetof(EnvironmentLightComponent, sid), "sid", {}, {}, {}, {}},
+                                            {AttributeType::STRINGID, offsetof(EnvironmentLight, sid), "sid", {}, {}, {}, {}},
                                         },
                                         1};
 
     return desc;
 }
 
-EnvironmentLightComponent::EnvironmentLightComponent() {
-    if (TypedComponentRegistry<EnvironmentLightComponent>::description->attributeDescriptions[0].options.size())
-        sid = std::any_cast<StringId>(*(TypedComponentRegistry<EnvironmentLightComponent>::description->attributeDescriptions[0].options.begin()));
+EnvironmentLight::EnvironmentLight() {
+    if (TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.size())
+        sid = std::any_cast<StringId>(*(TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.begin()));
 }
+
 } // namespace atta::component

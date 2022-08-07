@@ -8,6 +8,7 @@
 #include <imgui_internal.h>
 
 namespace atta::ui {
+
 void DockSpace::render() {
     //----- Create DockSpace -----//
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -53,4 +54,5 @@ void DockSpace::render() {
     }
     ImGui::End();
 }
+
 } // namespace atta::ui

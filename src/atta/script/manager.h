@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_SCRIPT_MANAGER_H
 #define ATTA_SCRIPT_MANAGER_H
+
 #include <atta/script/projectScript.h>
 #include <atta/script/script.h>
 #ifndef ATTA_STATIC_PROJECT
@@ -15,6 +16,7 @@
 #endif
 
 namespace atta::script {
+
 class Manager final {
   public:
     static Manager& getInstance();
@@ -44,9 +46,9 @@ class Manager final {
 
 #ifndef ATTA_STATIC_PROJECT
     // Handle events
-    void onFileChange(Event& event);
-    void onProjectOpen(Event& event);
-    void onProjectClose(Event& event);
+    void onFileChange(event::Event& event);
+    void onProjectOpen(event::Event& event);
+    void onProjectClose(event::Event& event);
 
     void updateAllTargets();
     void updateTarget(StringId target);
@@ -61,6 +63,7 @@ class Manager final {
     std::unordered_map<StringId, Script*> _scripts;
     std::pair<StringId, ProjectScript*> _projectScript;
 };
+
 } // namespace atta::script
 
 #endif // ATTA_SCRIPT_MANAGER_H

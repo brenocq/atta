@@ -1,24 +1,26 @@
 //--------------------------------------------------
 // Atta Component Module
-// transformComponent.h
+// transform.h
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_TRANSFORM_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_TRANSFORM_COMPONENT_H
-#include <atta/component/componentManager.h>
+#ifndef ATTA_COMPONENT_COMPONENTS_TRANSFORM_H
+#define ATTA_COMPONENT_COMPONENTS_TRANSFORM_H
+
+#include <atta/component/manager.h>
 
 namespace atta::component {
+
 /// Entity transform
 /** Define the entity position, orientation, and
  * scale.
  *
- * Only entities with a TransformComponent can be rendered or
+ * Only entities with a Transform can be rendered or
  * interact physically with other entities.
  *
  * The transform data is represented on the entity's local
  * coordinate system, if the entity has a parent
- * (RelationshipComponent), the local position/orientation/scale
+ * (Relationship), the local position/orientation/scale
  * can different from the world position/orientation/scale.
  */
 struct Transform final : public Component {
@@ -32,7 +34,7 @@ struct Transform final : public Component {
      * parent world transform.
      *
      * The world transform will only differ from the local
-     * transform when the entity also has a  RelationshipComponent.
+     * transform when the entity also has a  Relationship.
      */
     mat4 getWorldTransform(EntityId entity);
 
@@ -47,9 +49,10 @@ struct Transform final : public Component {
     static mat4 getEntityWorldTransform(EntityId entity);
 };
 
-ATTA_REGISTER_COMPONENT(TransformComponent)
+ATTA_REGISTER_COMPONENT(Transform)
 template <>
-ComponentDescription& TypedComponentRegistry<TransformComponent>::getDescription();
+ComponentDescription& TypedComponentRegistry<Transform>::getDescription();
+
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_TRANSFORM_COMPONENT_H
+#endif // ATTA_COMPONENT_COMPONENTS_TRANSFORM_H

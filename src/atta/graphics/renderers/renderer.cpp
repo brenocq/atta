@@ -8,17 +8,19 @@
 #include <atta/graphics/renderers/renderer.h>
 
 namespace atta::graphics {
+
 void Renderer::serialize(std::ostream& os) {
-    write(os, _name);
-    write(os, _width);
-    write(os, _height);
+    file::write(os, _name);
+    file::write(os, _width);
+    file::write(os, _height);
 }
 
 void Renderer::deserialize(std::istream& is) {
-    // Name should be read before to know which renderer to deserialize
+    // Name should be file::read before to know which renderer to deserialize
     decltype(_width) width, height;
-    read(is, width);
-    read(is, height);
+    file::read(is, width);
+    file::read(is, height);
     resize(width, height);
 }
+
 } // namespace atta::graphics

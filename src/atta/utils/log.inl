@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Log
+// Atta Utils Module
 // log.inl
 // Date: 2021-08-11
 // By Breno Cunha Queiroz

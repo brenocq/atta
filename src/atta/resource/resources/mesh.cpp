@@ -7,21 +7,22 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <atta/file/fileManager.h>
+#include <atta/file/manager.h>
 #include <atta/resource/resources/mesh.h>
 
 namespace atta::resource {
-Mesh::Mesh(const fs::path& filename) : Resource(filename) { loadMesh(); }
+
+Mesh::Mesh(const fs::path& filename) : Resource(filename) { load(); }
 
 //---------- Assimp mesh loading ----------//
-void Mesh::loadMesh() {
-    fs::path absolutePath = FileManager::solveResourcePath(_filename);
+void Mesh::load() {
+    fs::path absolutePath = file::Manager::solveResourcePath(_filename);
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(absolutePath.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        LOG_ERROR("Mesh", "Failed to load mesh [w]$0. Assimp Error: $1", fs::absolute(_filename).string(), importer.GetErrorString());
+        LOG_ERROR("resource::Mesh", "Failed to load mesh [w]$0. Assimp Error: $1", fs::absolute(_filename).string(), importer.GetErrorString());
         return;
     }
 
@@ -29,13 +30,13 @@ void Mesh::loadMesh() {
 }
 
 void Mesh::processNode(aiNode* node, const aiScene* scene) {
-    // LOG_DEBUG("Mesh", "Process node $0", std::string(node->mName.C_Str()));
+    // LOG_DEBUG("resource::Mesh", "Process node $0", std::string(node->mName.C_Str()));
 
     // Process all the node's meshes (if any)
     for (uint32_t i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         processMesh(mesh, scene);
-        // LOG_DEBUG("Mesh", " - Process mesh $0", std::string(mesh->mName.C_Str()));
+        // LOG_DEBUG("resource::Mesh", " - Process mesh $0", std::string(mesh->mName.C_Str()));
     }
 
     // Then do the same for each of its children
@@ -68,4 +69,5 @@ void Mesh::processMesh(aiMesh* mesh, const aiScene* scene) {
             _indices.push_back(startIndex + face.mIndices[j]);
     }
 }
+
 } // namespace atta::resource

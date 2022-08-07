@@ -4,22 +4,23 @@
 // Date: 2021-11-29
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/components/boxColliderComponent.h>
-#include <atta/component/components/relationshipComponent.h>
-#include <atta/component/components/sphereColliderComponent.h>
-#include <atta/component/components/transformComponent.h>
+#include <atta/component/components/boxCollider.h>
+#include <atta/component/components/relationship.h>
+#include <atta/component/components/sphereCollider.h>
+#include <atta/component/components/transform.h>
 #include <atta/physics/physicsEngines/box2DEngine.h>
 
 namespace atta::physics {
+
 //---------- Callbacks ----------//
 class ContactListener : public b2ContactListener {
   public:
-    ContactListener(std::unordered_map<EntityId, std::unordered_set<EntityId>>& collisions) : _collisions(collisions) {}
+    ContactListener(std::unordered_map<component::EntityId, std::unordered_set<component::EntityId>>& collisions) : _collisions(collisions) {}
 
     void BeginContact(b2Contact* contact) override {
         if (contact->IsTouching()) {
-            EntityId eidA = contact->GetFixtureA()->GetBody()->GetUserData().pointer;
-            EntityId eidB = contact->GetFixtureB()->GetBody()->GetUserData().pointer;
+            component::EntityId eidA = contact->GetFixtureA()->GetBody()->GetUserData().pointer;
+            component::EntityId eidB = contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
             _collisions[eidA].insert(eidB);
             _collisions[eidB].insert(eidA);
@@ -27,15 +28,15 @@ class ContactListener : public b2ContactListener {
     }
 
     void EndContact(b2Contact* contact) override {
-        EntityId eidA = contact->GetFixtureA()->GetBody()->GetUserData().pointer;
-        EntityId eidB = contact->GetFixtureB()->GetBody()->GetUserData().pointer;
+        component::EntityId eidA = contact->GetFixtureA()->GetBody()->GetUserData().pointer;
+        component::EntityId eidB = contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
         _collisions[eidA].erase(eidB);
         _collisions[eidB].erase(eidA);
     }
 
   private:
-    std::unordered_map<EntityId, std::unordered_set<EntityId>>& _collisions;
+    std::unordered_map<component::EntityId, std::unordered_set<component::EntityId>>& _collisions;
 };
 
 class EntityCollisionQueryCallback : public b2QueryCallback {
@@ -45,7 +46,7 @@ class EntityCollisionQueryCallback : public b2QueryCallback {
         return true;
     }
 
-    std::vector<EntityId> entities;
+    std::vector<component::EntityId> entities;
 };
 
 class RayCastCallback : public b2RayCastCallback {
@@ -57,7 +58,7 @@ class RayCastCallback : public b2RayCastCallback {
         return _onlyFirst ? 0 : 1;
     }
 
-    std::vector<EntityId> entities;
+    std::vector<component::EntityId> entities;
 
   private:
     bool _onlyFirst;
@@ -80,13 +81,13 @@ void Box2DEngine::start() {
     ContactListener* contactlistener = new ContactListener(_collisions);
     _world->SetContactListener(contactlistener);
 
-    std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::Manager::getNoPrototypeView();
     //---------- Create rigid bodies ----------//
-    for (EntityId entity : entities) {
-        auto t = ComponentManager::getEntityComponent<TransformComponent>(entity);
-        auto rb2d = ComponentManager::getEntityComponent<RigidBody2DComponent>(entity);
-        auto box2d = ComponentManager::getEntityComponent<BoxColliderComponent>(entity);
-        auto circle2d = ComponentManager::getEntityComponent<SphereColliderComponent>(entity);
+    for (component::EntityId entity : entities) {
+        auto t = component::Manager::getEntityComponent<component::Transform>(entity);
+        auto rb2d = component::Manager::getEntityComponent<component::RigidBody2D>(entity);
+        auto box2d = component::Manager::getEntityComponent<component::BoxCollider>(entity);
+        auto circle2d = component::Manager::getEntityComponent<component::SphereCollider>(entity);
 
         if (!rb2d)
             continue;
@@ -116,11 +117,11 @@ void Box2DEngine::start() {
 
             //----- Create body -----//
             b2BodyDef bodyDef;
-            if (rb2d->type == RigidBody2DComponent::DYNAMIC)
+            if (rb2d->type == component::RigidBody2D::DYNAMIC)
                 bodyDef.type = b2_dynamicBody;
-            else if (rb2d->type == RigidBody2DComponent::KINEMATIC)
+            else if (rb2d->type == component::RigidBody2D::KINEMATIC)
                 bodyDef.type = b2_kinematicBody;
-            else if (rb2d->type == RigidBody2DComponent::STATIC)
+            else if (rb2d->type == component::RigidBody2D::STATIC)
                 bodyDef.type = b2_staticBody;
 
             bodyDef.position.Set(position.x, position.y);
@@ -169,10 +170,10 @@ void Box2DEngine::start() {
     }
 
     //---------- Create joints ----------//
-    for (EntityId entity : entities) {
-        auto prismatic = ComponentManager::getEntityComponent<PrismaticJointComponent>(entity);
-        auto revolute = ComponentManager::getEntityComponent<RevoluteJointComponent>(entity);
-        auto rigid = ComponentManager::getEntityComponent<RigidJointComponent>(entity);
+    for (component::EntityId entity : entities) {
+        auto prismatic = component::Manager::getEntityComponent<component::PrismaticJoint>(entity);
+        auto revolute = component::Manager::getEntityComponent<component::RevoluteJoint>(entity);
+        auto rigid = component::Manager::getEntityComponent<component::RigidJoint>(entity);
 
         if (prismatic)
             createPrismaticJoint(prismatic);
@@ -190,9 +191,9 @@ void Box2DEngine::step(float dt) {
 
     // Update transform components
     for (auto p : _bodies) {
-        auto t = ComponentManager::getEntityComponent<TransformComponent>(p.first);
+        auto t = component::Manager::getEntityComponent<component::Transform>(p.first);
         if (t) {
-            // Transform data
+            // component::Transform data
             vec3 position;
             quat orientation;
             vec3 scale;
@@ -204,15 +205,15 @@ void Box2DEngine::step(float dt) {
             scale = t->scale;
 
             // Update pos/ori/scale to be local to parent
-            RelationshipComponent* r = ComponentManager::getEntityComponent<RelationshipComponent>(p.first);
+            component::Relationship* r = component::Manager::getEntityComponent<component::Relationship>(p.first);
             if (r && r->getParent() != -1) {
                 // Get transform of the first entity that has transform when going up in the hierarchy
-                TransformComponent* pt = nullptr;
-                EntityId parentId = -1;
+                component::Transform* pt = nullptr;
+                component::EntityId parentId = -1;
                 while (pt == nullptr) {
                     parentId = r->getParent();
-                    pt = ComponentManager::getEntityComponent<TransformComponent>(parentId);
-                    r = ComponentManager::getEntityComponent<RelationshipComponent>(parentId);
+                    pt = component::Manager::getEntityComponent<component::Transform>(parentId);
+                    r = component::Manager::getEntityComponent<component::Relationship>(parentId);
                     if (r->getParent() == -1)
                         break;
                 }
@@ -239,8 +240,8 @@ void Box2DEngine::step(float dt) {
     }
 
     // Testing
-    // std::vector<EntityId> collisions = getEntityCollisions(p.first);
-    // std::vector<EntityId> collisions = getRayCastCollisions({-10,-10,0}, {10,10,0}, false);
+    // std::vector<component::EntityId> collisions = getEntityCollisions(p.first);
+    // std::vector<component::EntityId> collisions = getRayCastCollisions({-10,-10,0}, {10,10,0}, false);
     // if(collisions.size())
     //    LOG_DEBUG("Box2DEngine", "Ray cast collisions: $0", collisions);
 }
@@ -252,7 +253,7 @@ void Box2DEngine::stop() {
     _world.reset();
 }
 
-void Box2DEngine::createPrismaticJoint(PrismaticJointComponent* prismatic) {
+void Box2DEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
     b2Body* bodyA;
     b2Body* bodyB;
     if (_bodies.find(prismatic->bodyA) == _bodies.end() || _bodies.find(prismatic->bodyB) == _bodies.end()) {
@@ -263,7 +264,7 @@ void Box2DEngine::createPrismaticJoint(PrismaticJointComponent* prismatic) {
         bodyB = _bodies[prismatic->bodyB];
     }
 
-    auto t = ComponentManager::getEntityComponent<TransformComponent>(prismatic->bodyA);
+    auto t = component::Manager::getEntityComponent<component::Transform>(prismatic->bodyA);
 
     b2PrismaticJointDef pjd;
     pjd.Initialize(bodyA, bodyB, b2Vec2(t->position.x, t->position.y), b2Vec2(prismatic->axis.x, prismatic->axis.y));
@@ -282,7 +283,7 @@ void Box2DEngine::createPrismaticJoint(PrismaticJointComponent* prismatic) {
     _world->CreateJoint(&pjd);
 }
 
-void Box2DEngine::createRevoluteJoint(RevoluteJointComponent* revolute) {
+void Box2DEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
     b2Body* bodyA;
     b2Body* bodyB;
     if (_bodies.find(revolute->bodyA) == _bodies.end() || _bodies.find(revolute->bodyB) == _bodies.end()) {
@@ -293,7 +294,7 @@ void Box2DEngine::createRevoluteJoint(RevoluteJointComponent* revolute) {
         bodyB = _bodies[revolute->bodyB];
     }
 
-    auto t = ComponentManager::getEntityComponent<TransformComponent>(revolute->bodyA);
+    auto t = component::Manager::getEntityComponent<component::Transform>(revolute->bodyA);
 
     b2RevoluteJointDef rjd;
     rjd.Initialize(bodyA, bodyB, b2Vec2(t->position.x, t->position.y));
@@ -312,7 +313,7 @@ void Box2DEngine::createRevoluteJoint(RevoluteJointComponent* revolute) {
     _world->CreateJoint(&rjd);
 }
 
-void Box2DEngine::createRigidJoint(RigidJointComponent* rigid) {
+void Box2DEngine::createRigidJoint(component::RigidJoint* rigid) {
     b2Body* bodyA;
     b2Body* bodyB;
     if (_bodies.find(rigid->bodyA) == _bodies.end() || _bodies.find(rigid->bodyB) == _bodies.end()) {
@@ -323,8 +324,8 @@ void Box2DEngine::createRigidJoint(RigidJointComponent* rigid) {
         bodyB = _bodies[rigid->bodyB];
     }
 
-    auto ta = ComponentManager::getEntityComponent<TransformComponent>(rigid->bodyA);
-    auto tb = ComponentManager::getEntityComponent<TransformComponent>(rigid->bodyB);
+    auto ta = component::Manager::getEntityComponent<component::Transform>(rigid->bodyA);
+    auto tb = component::Manager::getEntityComponent<component::Transform>(rigid->bodyB);
     vec3 worldDir = tb->position - ta->position;
     vec3 localDir = inverse(ta->getWorldTransform(rigid->bodyA)) * worldDir;
     vec3 localDirNorm = normalize(localDir);
@@ -341,26 +342,26 @@ void Box2DEngine::createRigidJoint(RigidJointComponent* rigid) {
     _world->CreateJoint(&pjd);
 }
 
-std::vector<EntityId> Box2DEngine::getEntityCollisions(EntityId eid) {
+std::vector<component::EntityId> Box2DEngine::getEntityCollisions(component::EntityId eid) {
     if (_collisions.find(eid) != _collisions.end()) {
-        std::vector<EntityId> collisions(_collisions[eid].begin(), _collisions[eid].end());
+        std::vector<component::EntityId> collisions(_collisions[eid].begin(), _collisions[eid].end());
         return collisions;
     } else
         return {};
 }
 
-std::vector<EntityId> Box2DEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
+std::vector<component::EntityId> Box2DEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
     RayCastCallback rc(onlyFirst);
     _world->RayCast(&rc, b2Vec2(begin.x, begin.y), b2Vec2(end.x, end.y));
 
     return rc.entities;
 }
 
-bool Box2DEngine::areColliding(EntityId eid0, EntityId eid1) {
+bool Box2DEngine::areColliding(component::EntityId eid0, component::EntityId eid1) {
     return _collisions.find(eid0) != _collisions.end() && _collisions[eid0].find(eid1) != _collisions[eid0].end();
 }
 
-std::vector<EntityId> Box2DEngine::getAABBEntities(vec2 lower, vec2 upper) {
+std::vector<component::EntityId> Box2DEngine::getAABBEntities(vec2 lower, vec2 upper) {
     EntityCollisionQueryCallback callback;
 
     b2AABB aabb;
@@ -371,24 +372,25 @@ std::vector<EntityId> Box2DEngine::getAABBEntities(vec2 lower, vec2 upper) {
     return callback.entities;
 }
 
-// RigidBody2DComponent interface
-void Box2DEngine::setTransform(RigidBody2DComponent* rb2d, vec2 position, float angle) {
+// component::RigidBody2D interface
+void Box2DEngine::setTransform(component::RigidBody2D* rb2d, vec2 position, float angle) {
     _bodies[_componentToEntity[rb2d]]->SetTransform(b2Vec2(position.x, position.y), angle);
 }
 
-void Box2DEngine::setLinearVelocity(RigidBody2DComponent* rb2d, vec2 vel) {
+void Box2DEngine::setLinearVelocity(component::RigidBody2D* rb2d, vec2 vel) {
     _bodies[_componentToEntity[rb2d]]->SetLinearVelocity(b2Vec2(vel.x, vel.y));
 }
 
-void Box2DEngine::setAngularVelocity(RigidBody2DComponent* rb2d, float omega) { _bodies[_componentToEntity[rb2d]]->SetAngularVelocity(omega); }
+void Box2DEngine::setAngularVelocity(component::RigidBody2D* rb2d, float omega) { _bodies[_componentToEntity[rb2d]]->SetAngularVelocity(omega); }
 
-void Box2DEngine::applyForce(RigidBody2DComponent* rb2d, vec2 force, vec2 point, bool wake) {
+void Box2DEngine::applyForce(component::RigidBody2D* rb2d, vec2 force, vec2 point, bool wake) {
     _bodies[_componentToEntity[rb2d]]->ApplyForce(b2Vec2(force.x, force.y), b2Vec2(point.x, point.y), wake);
 }
 
-void Box2DEngine::applyForceToCenter(RigidBody2DComponent* rb2d, vec2 force, bool wake) {
+void Box2DEngine::applyForceToCenter(component::RigidBody2D* rb2d, vec2 force, bool wake) {
     _bodies[_componentToEntity[rb2d]]->ApplyForceToCenter(b2Vec2(force.x, force.y), wake);
 }
 
-void Box2DEngine::applyTorque(RigidBody2DComponent* rb2d, float torque, bool wake) { _bodies[_componentToEntity[rb2d]]->ApplyTorque(torque, wake); }
+void Box2DEngine::applyTorque(component::RigidBody2D* rb2d, float torque, bool wake) { _bodies[_componentToEntity[rb2d]]->ApplyTorque(torque, wake); }
+
 } // namespace atta::physics

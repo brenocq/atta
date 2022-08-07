@@ -30,11 +30,11 @@ class Atta {
     };
 
     // Handle events
-    void onWindowClose(Event& event);
-    void onSimulationStateChange(Event& event);
+    void onWindowClose(event::Event& event);
+    void onSimulationStateChange(event::Event& event);
 
     // Memory
-    StackAllocator* _mainAllocator;
+    memory::StackAllocator* _mainAllocator;
 
     // State
     bool _shouldFinish;

@@ -7,9 +7,11 @@
 #ifndef ATTA_SCRIPT_COMPILERS_LINUX_COMPILER_H
 #define ATTA_SCRIPT_COMPILERS_LINUX_COMPILER_H
 #ifdef ATTA_OS_LINUX
+
 #include <atta/script/compilers/compiler.h>
 
 namespace atta::script {
+
 class LinuxCompiler : public Compiler {
   public:
     LinuxCompiler();
@@ -25,6 +27,7 @@ class LinuxCompiler : public Compiler {
 
     std::string _compiler;
 };
+
 } // namespace atta::script
 
 #endif // ATTA_OS_LINUX

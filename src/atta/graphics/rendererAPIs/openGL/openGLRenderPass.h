@@ -9,6 +9,7 @@
 #include <atta/graphics/renderPass.h>
 
 namespace atta::graphics {
+
 class OpenGLRenderPass final : public RenderPass {
   public:
     OpenGLRenderPass(const RenderPass::CreateInfo& info);
@@ -17,6 +18,7 @@ class OpenGLRenderPass final : public RenderPass {
     void begin(bool clear = true) override;
     void end() override;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDER_PASS_H

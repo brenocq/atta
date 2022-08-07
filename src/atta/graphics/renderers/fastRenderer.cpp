@@ -4,22 +4,24 @@
 // Date: 2021-09-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/framebuffer.h>
-#include <atta/graphics/graphicsManager.h>
-#include <atta/graphics/renderPass.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 #include <atta/graphics/renderers/fastRenderer.h>
 
-#include <atta/resource/resourceManager.h>
+#include <atta/graphics/framebuffer.h>
+#include <atta/graphics/manager.h>
+#include <atta/graphics/renderPass.h>
+#include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
+
+#include <atta/resource/manager.h>
 #include <atta/resource/resources/mesh.h>
 
-#include <atta/component/componentManager.h>
-#include <atta/component/components/materialComponent.h>
-#include <atta/component/components/meshComponent.h>
-#include <atta/component/components/transformComponent.h>
+#include <atta/component/components/material.h>
+#include <atta/component/components/mesh.h>
+#include <atta/component/components/transform.h>
 #include <atta/component/factory.h>
+#include <atta/component/manager.h>
 
 namespace atta::graphics {
+
 FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     //---------- Create geometry pipeline ----------//
     // Framebuffer
@@ -29,19 +31,19 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     framebufferInfo.width = 500;
     framebufferInfo.height = 500;
     framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
-    std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
+    std::shared_ptr<Framebuffer> framebuffer = Manager::create<Framebuffer>(framebufferInfo);
 
     // Shader Group
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/fastRenderer/shader.vert", "shaders/fastRenderer/shader.frag"};
     shaderGroupInfo.debugName = StringId("FastRenderer Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
 
     // Render Pass
     RenderPass::CreateInfo renderPassInfo{};
     renderPassInfo.framebuffer = framebuffer;
     renderPassInfo.debugName = StringId("FastRenderer Render Pass");
-    std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+    std::shared_ptr<RenderPass> renderPass = Manager::create<RenderPass>(renderPassInfo);
 
     Pipeline::CreateInfo pipelineInfo{};
     // Vertex input layout
@@ -50,7 +52,7 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
                            {"inNormal", VertexBufferElement::Type::VEC3},
                            {"inTexCoord", VertexBufferElement::Type::VEC2}};
     pipelineInfo.renderPass = renderPass;
-    _geometryPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+    _geometryPipeline = Manager::create<Pipeline>(pipelineInfo);
 
     //---------- Common pipelines ----------//
     _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
@@ -60,7 +62,7 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
 FastRenderer::~FastRenderer() {}
 
 void FastRenderer::render(std::shared_ptr<Camera> camera) {
-    std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::Manager::getNoPrototypeView();
     _geometryPipeline->begin();
     {
         std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
@@ -69,9 +71,9 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
         shader->setMat4("view", transpose(camera->getView()));
 
         for (auto entity : entities) {
-            MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
-            TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
-            MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
+            component::Mesh* mesh = component::Manager::getEntityComponent<component::Mesh>(entity);
+            component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
+            component::Material* material = component::Manager::getEntityComponent<component::Material>(entity);
 
             if (mesh && transform) {
                 mat4 model = transpose(transform->getWorldTransform(entity));
@@ -84,12 +86,12 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                     } else
                         shader->setVec3("albedo", material->albedo);
                 } else {
-                    MaterialComponent material{};
+                    component::Material material{};
                     shader->setVec3("albedo", material.albedo);
                 }
 
                 // Draw mesh
-                GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+                Manager::getRendererAPI()->renderMesh(mesh->sid);
             }
         }
     }
@@ -108,4 +110,5 @@ void FastRenderer::resize(uint32_t width, uint32_t height) {
         _height = height;
     }
 }
+
 } // namespace atta::graphics

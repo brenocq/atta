@@ -6,6 +6,7 @@
 //--------------------------------------------------
 
 namespace atta::graphics {
+
 // Draw 3d objects
 template <typename T>
 void Drawer::add(T obj, StringId group) {
@@ -183,4 +184,5 @@ void Drawer::drawImpl() {
 //---------- Line specific ----------//
 
 //---------- Point specific ----------//
+
 } // namespace atta::graphics

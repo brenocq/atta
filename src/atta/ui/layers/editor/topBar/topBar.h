@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_UI_LAYERS_EDITOR_TOP_BAR_TOP_BAR_H
 #define ATTA_UI_LAYERS_EDITOR_TOP_BAR_TOP_BAR_H
+
 #include <atta/ui/layers/editor/topBar/localWindows/repoWindow.h>
 
 namespace atta::ui {

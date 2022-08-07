@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_UI_LAYERS_EDITOR_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
 #define ATTA_UI_LAYERS_EDITOR_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
-#include <atta/component/componentManager.h>
+
 #include <atta/component/entity.h>
+#include <atta/component/manager.h>
 
 namespace atta::ui {
+
 class RepoWindow {
   public:
     RepoWindow(fs::path repoPath);
@@ -43,6 +45,7 @@ class RepoWindow {
 
     bool _shouldClose;
 };
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_LAYERS_EDITOR_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H

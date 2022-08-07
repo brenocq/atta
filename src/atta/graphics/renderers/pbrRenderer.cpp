@@ -4,24 +4,26 @@
 // Date: 2021-09-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/framebuffer.h>
-#include <atta/graphics/graphicsManager.h>
-#include <atta/graphics/renderPass.h>
 #include <atta/graphics/renderers/pbrRenderer.h>
 
-#include <atta/resource/resourceManager.h>
+#include <atta/graphics/framebuffer.h>
+#include <atta/graphics/manager.h>
+#include <atta/graphics/renderPass.h>
+
+#include <atta/resource/manager.h>
 #include <atta/resource/resources/mesh.h>
 
-#include <atta/component/componentManager.h>
-#include <atta/component/components/directionalLightComponent.h>
-#include <atta/component/components/environmentLightComponent.h>
-#include <atta/component/components/materialComponent.h>
-#include <atta/component/components/meshComponent.h>
-#include <atta/component/components/pointLightComponent.h>
-#include <atta/component/components/transformComponent.h>
+#include <atta/component/components/directionalLight.h>
+#include <atta/component/components/environmentLight.h>
+#include <atta/component/components/material.h>
+#include <atta/component/components/mesh.h>
+#include <atta/component/components/pointLight.h>
+#include <atta/component/components/transform.h>
 #include <atta/component/factory.h>
+#include <atta/component/manager.h>
 
 namespace atta::graphics {
+
 PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastEnvironmentMap(StringId("Not defined")) {
     // Framebuffer
     Framebuffer::CreateInfo framebufferInfo{};
@@ -30,7 +32,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
     framebufferInfo.width = 500;
     framebufferInfo.height = 500;
     framebufferInfo.debugName = StringId("PbrRenderer Framebuffer");
-    std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
+    std::shared_ptr<Framebuffer> framebuffer = Manager::create<Framebuffer>(framebufferInfo);
 
     //---------- Create geometry pipeline ----------//
     Pipeline::CreateInfo geometryPipelineInfo{};
@@ -40,13 +42,13 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         ShaderGroup::CreateInfo shaderGroupInfo{};
         shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/shader.vert", "shaders/pbrRenderer/shader.frag"};
         shaderGroupInfo.debugName = StringId("PbrRenderer Shader Group");
-        std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+        std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
 
         // Render Pass
         RenderPass::CreateInfo renderPassInfo{};
         renderPassInfo.framebuffer = framebuffer;
         renderPassInfo.debugName = StringId("PbrRenderer Render Pass");
-        geometryRenderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+        geometryRenderPass = Manager::create<RenderPass>(renderPassInfo);
 
         // Vertex input layout
         geometryPipelineInfo.shaderGroup = shaderGroup;
@@ -54,7 +56,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
                                        {"inNormal", VertexBufferElement::Type::VEC3},
                                        {"inTexCoord", VertexBufferElement::Type::VEC2}};
         geometryPipelineInfo.renderPass = geometryRenderPass;
-        _geometryPipeline = GraphicsManager::create<Pipeline>(geometryPipelineInfo);
+        _geometryPipeline = Manager::create<Pipeline>(geometryPipelineInfo);
     }
 
     //---------- Common pipelines ----------//
@@ -66,7 +68,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         ShaderGroup::CreateInfo bgShaderGroupInfo{};
         bgShaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/background.vert", "shaders/pbrRenderer/background.frag"};
         bgShaderGroupInfo.debugName = StringId("PBR background Shader Group");
-        _backgroundShader = GraphicsManager::create<ShaderGroup>(bgShaderGroupInfo);
+        _backgroundShader = Manager::create<ShaderGroup>(bgShaderGroupInfo);
     }
 
     //---------- Directional shadow mapping ----------//
@@ -79,26 +81,26 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         imageInfo.width = 1024;
         imageInfo.height = 1024;
         imageInfo.debugName = StringId("PbrRenderer::dirShadowMap::image");
-        std::shared_ptr<Image> depthImage = GraphicsManager::create<Image>(imageInfo);
+        std::shared_ptr<Image> depthImage = Manager::create<Image>(imageInfo);
 
         Framebuffer::CreateInfo framebufferInfo{};
         framebufferInfo.attachments.push_back({Image::Format::NONE, depthImage});
         framebufferInfo.width = 1024;
         framebufferInfo.height = 1024;
         framebufferInfo.debugName = StringId("PbrRenderer::shadowMap::framebuffer");
-        std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
+        std::shared_ptr<Framebuffer> framebuffer = Manager::create<Framebuffer>(framebufferInfo);
 
         // Shader Group
         ShaderGroup::CreateInfo shaderGroupInfo{};
         shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/shadow.vert", "shaders/pbrRenderer/shadow.frag"};
         shaderGroupInfo.debugName = StringId("PbrRenderer::shadowMap::shaderGroup");
-        std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+        std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
 
         // Render Pass
         RenderPass::CreateInfo renderPassInfo{};
         renderPassInfo.framebuffer = framebuffer;
         renderPassInfo.debugName = StringId("PbrRenderer::shadowMap::renderPass");
-        std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+        std::shared_ptr<RenderPass> renderPass = Manager::create<RenderPass>(renderPassInfo);
 
         // Vertex input layout
         Pipeline::CreateInfo pipelineInfo{};
@@ -107,7 +109,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         pipelineInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
                                {"inNormal", VertexBufferElement::Type::VEC3},
                                {"inTexCoord", VertexBufferElement::Type::VEC2}};
-        _shadowMapPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+        _shadowMapPipeline = Manager::create<Pipeline>(pipelineInfo);
     }
 
     //---------- Omnidirectional shadow mapping ----------//
@@ -119,27 +121,27 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         imageInfo.height = 1024;
         imageInfo.isCubemap = true;
         imageInfo.debugName = StringId("PbrRenderer::omniShadowMap::image");
-        _omnidirectionalShadowMap = GraphicsManager::create<Image>(imageInfo);
+        _omnidirectionalShadowMap = Manager::create<Image>(imageInfo);
 
         Framebuffer::CreateInfo framebufferInfo{};
         framebufferInfo.attachments.push_back({Image::Format::NONE, _omnidirectionalShadowMap});
         framebufferInfo.width = 1024;
         framebufferInfo.height = 1024;
         framebufferInfo.debugName = StringId("PbrRenderer::omniShadowMap::framebuffer");
-        std::shared_ptr<Framebuffer> framebuffer = GraphicsManager::create<Framebuffer>(framebufferInfo);
+        std::shared_ptr<Framebuffer> framebuffer = Manager::create<Framebuffer>(framebufferInfo);
 
         // Shader Group
         ShaderGroup::CreateInfo shaderGroupInfo{};
         shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/omniShadow.vert", "shaders/pbrRenderer/omniShadow.geom",
                                        "shaders/pbrRenderer/omniShadow.frag"};
         shaderGroupInfo.debugName = StringId("PbrRenderer::omniShadowMap::shaderGroup");
-        std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+        std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
 
         // Render Pass
         RenderPass::CreateInfo renderPassInfo{};
         renderPassInfo.framebuffer = framebuffer;
         renderPassInfo.debugName = StringId("PbrRenderer::omniShadowMap::renderPass");
-        std::shared_ptr<RenderPass> renderPass = GraphicsManager::create<RenderPass>(renderPassInfo);
+        std::shared_ptr<RenderPass> renderPass = Manager::create<RenderPass>(renderPassInfo);
 
         // Vertex input layout
         Pipeline::CreateInfo pipelineInfo{};
@@ -148,7 +150,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         pipelineInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
                                {"inNormal", VertexBufferElement::Type::VEC3},
                                {"inTexCoord", VertexBufferElement::Type::VEC2}};
-        _omniShadowMapPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+        _omniShadowMapPipeline = Manager::create<Pipeline>(pipelineInfo);
     }
 }
 
@@ -159,12 +161,12 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
         brdfLUT();
     }
 
-    std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::Manager::getNoPrototypeView();
 
     // Check current envinroment map
     StringId currEnvironmentMap = StringId("textures/white.jpg"); // Default environment map is white texture
     for (auto entity : entities) {
-        EnvironmentLightComponent* el = ComponentManager::getEntityComponent<EnvironmentLightComponent>(entity);
+        component::EnvironmentLight* el = component::Manager::getEntityComponent<component::EnvironmentLight>(entity);
 
         if (el) {
             currEnvironmentMap = el->sid;
@@ -175,7 +177,7 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
     // Recreate environment map if it is different from last one
     if (currEnvironmentMap != _lastEnvironmentMap) {
         _lastEnvironmentMap = currEnvironmentMap;
-        GraphicsManager::getRendererAPI()->generateCubemap(_lastEnvironmentMap);
+        Manager::getRendererAPI()->generateCubemap(_lastEnvironmentMap);
         irradianceCubemap();
         prefilterCubemap();
     }
@@ -200,13 +202,13 @@ void PbrRenderer::resize(uint32_t width, uint32_t height) {
 }
 
 void PbrRenderer::shadowPass() {
-    std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::Manager::getNoPrototypeView();
 
     //----- Directional shadow mapping -----//
-    EntityId directionalLightEntity = -1;
+    component::EntityId directionalLightEntity = -1;
     for (auto entity : entities) {
-        DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
-        TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
+        component::DirectionalLight* dl = component::Manager::getEntityComponent<component::DirectionalLight>(entity);
+        component::Transform* t = component::Manager::getEntityComponent<component::Transform>(entity);
         if (dl && t) {
             directionalLightEntity = entity;
             break;
@@ -220,7 +222,7 @@ void PbrRenderer::shadowPass() {
             shader->bind();
 
             // Create light matrix
-            TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(directionalLightEntity);
+            component::Transform* t = component::Manager::getEntityComponent<component::Transform>(directionalLightEntity);
 
             float height = 10.0f;
             float ratio = 1.0f;
@@ -233,12 +235,12 @@ void PbrRenderer::shadowPass() {
 
             // Fill shadow map rendering the scene
             for (auto entity : entities) {
-                MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
-                TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+                component::Mesh* mesh = component::Manager::getEntityComponent<component::Mesh>(entity);
+                component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
 
                 if (mesh && transform) {
                     shader->setMat4("model", transpose(transform->getWorldTransform(entity)));
-                    GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+                    Manager::getRendererAPI()->renderMesh(mesh->sid);
                 }
             }
         }
@@ -246,10 +248,10 @@ void PbrRenderer::shadowPass() {
     }
 
     //----- Omnidirectional shadow mapping -----//
-    EntityId pointLightEntity = -1;
+    component::EntityId pointLightEntity = -1;
     for (auto entity : entities) {
-        PointLightComponent* pl = ComponentManager::getEntityComponent<PointLightComponent>(entity);
-        TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(entity);
+        component::PointLight* pl = component::Manager::getEntityComponent<component::PointLight>(entity);
+        component::Transform* t = component::Manager::getEntityComponent<component::Transform>(entity);
         if (pl && t) {
             pointLightEntity = entity;
             break;
@@ -263,7 +265,7 @@ void PbrRenderer::shadowPass() {
             shader->bind();
 
             // Create light matrix
-            TransformComponent* t = ComponentManager::getEntityComponent<TransformComponent>(pointLightEntity);
+            component::Transform* t = component::Manager::getEntityComponent<component::Transform>(pointLightEntity);
 
             // TODO world position
             float fov = radians(90.0f);
@@ -290,12 +292,12 @@ void PbrRenderer::shadowPass() {
 
             // Fill shadow map rendering the scene
             for (auto entity : entities) {
-                MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
-                TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
+                component::Mesh* mesh = component::Manager::getEntityComponent<component::Mesh>(entity);
+                component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
 
                 if (mesh && transform) {
                     shader->setMat4("model", transpose(transform->getWorldTransform(entity)));
-                    GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+                    Manager::getRendererAPI()->renderMesh(mesh->sid);
                 }
             }
         }
@@ -304,7 +306,7 @@ void PbrRenderer::shadowPass() {
 }
 
 void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
-    std::vector<EntityId> entities = ComponentManager::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::Manager::getNoPrototypeView();
     _geometryPipeline->begin();
     {
         //---------- PBR shader ----------//
@@ -337,10 +339,10 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
         int numPointLights = 0;
         int numDirectionalLights = 0;
         for (auto entity : entities) {
-            TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
-            PointLightComponent* pl = ComponentManager::getEntityComponent<PointLightComponent>(entity);
-            DirectionalLightComponent* dl = ComponentManager::getEntityComponent<DirectionalLightComponent>(entity);
-            EnvironmentLightComponent* el = ComponentManager::getEntityComponent<EnvironmentLightComponent>(entity);
+            component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
+            component::PointLight* pl = component::Manager::getEntityComponent<component::PointLight>(entity);
+            component::DirectionalLight* dl = component::Manager::getEntityComponent<component::DirectionalLight>(entity);
+            component::EnvironmentLight* el = component::Manager::getEntityComponent<component::EnvironmentLight>(entity);
 
             if (transform && (pl || dl || el)) {
                 if (pl && numPointLights < 10) {
@@ -373,9 +375,9 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
 
         //----- Entities -----//
         for (auto entity : entities) {
-            MeshComponent* mesh = ComponentManager::getEntityComponent<MeshComponent>(entity);
-            TransformComponent* transform = ComponentManager::getEntityComponent<TransformComponent>(entity);
-            MaterialComponent* material = ComponentManager::getEntityComponent<MaterialComponent>(entity);
+            component::Mesh* mesh = component::Manager::getEntityComponent<component::Mesh>(entity);
+            component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
+            component::Material* material = component::Manager::getEntityComponent<component::Material>(entity);
 
             if (mesh && transform) {
                 mat4 model = transpose(transform->getWorldTransform(entity));
@@ -414,7 +416,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                     } else
                         shader->setInt("material.hasNormalTexture", 0);
                 } else {
-                    MaterialComponent material{};
+                    component::Material material{};
                     // shader->setTexture("albedoTexture", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
                     // shader->setVec3("material.albedo", {-1, -1, -1});
                     shader->setVec3("material.albedo", material.albedo);
@@ -424,7 +426,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                     shader->setInt("material.hasNormalTexture", 0);
                 }
 
-                GraphicsManager::getRendererAPI()->renderMesh(mesh->sid);
+                Manager::getRendererAPI()->renderMesh(mesh->sid);
             }
         }
 
@@ -438,7 +440,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
             //_backgroundShader->setCubemap("environmentMap", "PbrRenderer::irradiance");
             _backgroundShader->setMat3("environmentMapOri", _environmentMapOri);
 
-            GraphicsManager::getRendererAPI()->renderCube();
+            Manager::getRendererAPI()->renderCube();
         }
     }
     _geometryPipeline->end();
@@ -449,7 +451,7 @@ void PbrRenderer::irradianceCubemap() {
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/compute/irradiance.vert", "shaders/compute/irradiance.frag"};
     shaderGroupInfo.debugName = StringId("Irradiance Shader Group");
-    std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shader = Manager::create<ShaderGroup>(shaderGroupInfo);
 
     // Generate irradiance cubemap
     RendererAPI::GenerateProcessedCubemapInfo info;
@@ -465,7 +467,7 @@ void PbrRenderer::irradianceCubemap() {
         }
         shader->setMat4("view", transpose(view));
     };
-    GraphicsManager::getRendererAPI()->generateProcessedCubemap(info);
+    Manager::getRendererAPI()->generateProcessedCubemap(info);
 }
 
 void PbrRenderer::prefilterCubemap() {
@@ -473,7 +475,7 @@ void PbrRenderer::prefilterCubemap() {
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/compute/prefilter.vert", "shaders/compute/prefilter.frag"};
     shaderGroupInfo.debugName = StringId("Prefilter Shader Group");
-    std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shader = Manager::create<ShaderGroup>(shaderGroupInfo);
 
     // Generate prefilter cubemap
     RendererAPI::GenerateProcessedCubemapInfo info;
@@ -493,14 +495,14 @@ void PbrRenderer::prefilterCubemap() {
         float roughness = (float)mipLevel / (float)(info.numMipLevels - 1);
         shader->setFloat("roughness", roughness);
     };
-    GraphicsManager::getRendererAPI()->generateProcessedCubemap(info);
+    Manager::getRendererAPI()->generateProcessedCubemap(info);
 }
 
 void PbrRenderer::brdfLUT() {
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/compute/brdf.vert", "shaders/compute/brdf.frag"};
     shaderGroupInfo.debugName = StringId("BRDF LUT Shader Group");
-    std::shared_ptr<ShaderGroup> shader = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shader = Manager::create<ShaderGroup>(shaderGroupInfo);
 
     // Generate brdf LUT
     RendererAPI::GenerateProcessedTextureInfo info;
@@ -513,6 +515,7 @@ void PbrRenderer::brdfLUT() {
     info.imageInfo.mipLevels = 1;
     info.imageInfo.debugName = StringId("PbrRenderer brdfLUT image");
 
-    GraphicsManager::getRendererAPI()->generateProcessedTexture(info);
+    Manager::getRendererAPI()->generateProcessedTexture(info);
 }
+
 } // namespace atta::graphics

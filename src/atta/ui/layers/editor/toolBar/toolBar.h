@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_UI_LAYERS_EDITOR_TOOL_BAR_TOOL_BAR_H
 #define ATTA_UI_LAYERS_EDITOR_TOOL_BAR_TOOL_BAR_H
+
 #include <atta/event/event.h>
 
 namespace atta::ui {
+
 class ToolBar {
   public:
     ToolBar();
@@ -17,7 +19,7 @@ class ToolBar {
 
   private:
     void handleShortcuts();
-    void onSimulationStateChange(Event& event);
+    void onSimulationStateChange(event::Event& event);
 
     enum class EditorState {
         EDITOR = 0,
@@ -28,6 +30,7 @@ class ToolBar {
 
     EditorState _editorState;
 };
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_LAYERS_EDITOR_TOOL_BAR_TOOL_BAR_H

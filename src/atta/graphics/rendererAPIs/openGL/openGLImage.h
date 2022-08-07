@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_IMAGE_H
 #define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_IMAGE_H
+
 #include <atta/graphics/image.h>
 #include <atta/graphics/rendererAPIs/openGL/base.h>
 
 namespace atta::graphics {
+
 class OpenGLImage final : public Image {
   public:
     OpenGLImage(const Image::CreateInfo& info);
@@ -26,6 +28,7 @@ class OpenGLImage final : public Image {
 
     void* getImGuiImage() override { return reinterpret_cast<void*>(OpenGLId(_id)); }
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_IMAGE_H

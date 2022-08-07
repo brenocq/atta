@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_INDEX_BUFFER_H
 #define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_INDEX_BUFFER_H
+
 #include <atta/graphics/indexBuffer.h>
 #include <atta/graphics/rendererAPIs/openGL/base.h>
 
 namespace atta::graphics {
+
 class OpenGLIndexBuffer final : public IndexBuffer {
   public:
     OpenGLIndexBuffer(const IndexBuffer::CreateInfo& info);
@@ -22,6 +24,7 @@ class OpenGLIndexBuffer final : public IndexBuffer {
   private:
     OpenGLId _id;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_INDEX_BUFFER_H

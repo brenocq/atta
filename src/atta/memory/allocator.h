@@ -8,6 +8,7 @@
 #define ATTA_MEMORY_ALLOCATOR_H
 
 namespace atta::memory {
+
 class Allocator {
   public:
     // Allocate memory
@@ -37,6 +38,7 @@ class Allocator {
     uint64_t _size;
     bool _shouldFree; // True if _memory was allocated by this allocator
 };
+
 } // namespace atta::memory
 
 #endif // ATTA_MEMORY_ALLOCATOR_H

@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SHADER_GROUP_H
 #define ATTA_GRAPHICS_SHADER_GROUP_H
-#include <atta/core/math/math.h>
+
 #include <atta/graphics/shader.h>
+#include <atta/utils/math/math.h>
 
 namespace atta::graphics {
+
 class Image;
 class ShaderGroup {
   public:
@@ -45,6 +47,7 @@ class ShaderGroup {
 
     const StringId _debugName;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_SHADER_GROUP_H

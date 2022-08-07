@@ -24,7 +24,7 @@ else()
     atta_log(Info Extern "Fetching Bullet...")
     FetchContent_MakeAvailable(bullet3)
 
-    atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/bullet3-src/src)
+    atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/bullet3-src/src)
     set(ATTA_BULLET_TARGETS "BulletDynamics;BulletCollision;LinearMath")
     atta_add_libs(${ATTA_BULLET_TARGETS})
 

@@ -7,6 +7,7 @@
 #include <atta/graphics/rendererAPIs/vulkan/vulkanRenderer.h>
 
 namespace atta::graphics {
+
 VulkanRenderer::VulkanRenderer() {}
 
 VulkanRenderer::~VulkanRenderer() {}
@@ -24,4 +25,5 @@ void VulkanRenderer::renderQuad() {}
 void VulkanRenderer::renderQuad3() {}
 
 void VulkanRenderer::renderCube() {}
+
 } // namespace atta::graphics

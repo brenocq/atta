@@ -6,9 +6,10 @@
 //--------------------------------------------------
 #ifndef ATTA_EVENT_EVENT_H
 #define ATTA_EVENT_EVENT_H
-#include <atta/core/stringId.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::event {
+
 class Event {
   public:
     using Type = StringHash;
@@ -35,6 +36,7 @@ class EventTyped : public Event {
 
     static const Event::Type type = type_;
 };
+
 } // namespace atta::event
 
 #endif // ATTA_EVENT_EVENT_H

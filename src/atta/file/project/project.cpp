@@ -8,6 +8,7 @@
 #include <atta/file/project/project.h>
 
 namespace atta::file {
+
 Project::Project(fs::path file) : _name(file.stem().string()), _file(fs::absolute(file)), _directory(file.parent_path()) {
     fs::path projectResourcePath = _directory / "resources";
     if (fs::exists(projectResourcePath))
@@ -34,4 +35,5 @@ fs::path Project::solveResourcePath(fs::path relativePath, bool mustExist) {
 
     return fs::path();
 }
+
 } // namespace atta::file

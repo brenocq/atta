@@ -1,11 +1,11 @@
 //--------------------------------------------------
-// Atta Common
+// Atta Utils Module
 // common.h
 // Date: 2021-08-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_COMMON_H
-#define ATTA_CORE_COMMON_H
+#ifndef ATTA_UTILS_COMMON_H
+#define ATTA_UTILS_COMMON_H
 
 namespace atta {
 
@@ -13,4 +13,4 @@ namespace atta {
 
 } // namespace atta
 
-#endif ATTA_CORE_COMMON_H
+#endif ATTA_UTILS_COMMON_H

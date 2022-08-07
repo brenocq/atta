@@ -7,6 +7,7 @@
 #include <atta/file/serializer/section.h>
 
 namespace atta::file {
+
 //---------- SectionData ----------//
 std::unordered_map<SectionData::TypeHash, SectionData::PrintFunction> SectionData::_typeToString = {};
 
@@ -206,7 +207,7 @@ void Section::deserialize(std::istream& is) {
                     // Section is vector
                     levels.back()->_type = VECTOR;
                 } else
-                    LOG_ERROR("FileSystem::Section", "Could not deserialize, was expecting [w]'{'[] or [w]'['[] but found [w]'$0'[]", char(open));
+                    LOG_ERROR("file::Section", "Could not deserialize, was expecting [w]'{'[] or [w]'['[] but found [w]'$0'[]", char(open));
             } else {
                 is.seekg(oldPos);
 
@@ -244,9 +245,10 @@ void Section::deserialize(std::istream& is) {
                 levels.back()->push_back(Section{}); // Add to vector
                 levels.push_back(&(levels.back()->back()));
             } else
-                LOG_ERROR("FileSystem::Section", "Could not deserialize, wrong data when reading vector, should be [w]][] or [w],[]", close);
+                LOG_ERROR("file::Section", "Could not deserialize, wrong data when reading vector, should be [w]][] or [w],[]", close);
         } else
-            LOG_ERROR("FileSystem::Section", "Could not deserialize, Section is of type that is not expected");
+            LOG_ERROR("file::Section", "Could not deserialize, Section is of type that is not expected");
     } while (!levels.empty());
 }
+
 } // namespace atta::file

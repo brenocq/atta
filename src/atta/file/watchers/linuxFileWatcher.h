@@ -12,6 +12,7 @@
 
 namespace atta::file {
 class LinuxFileWatcher : public FileWatcher {
+
   public:
     LinuxFileWatcher();
     ~LinuxFileWatcher();
@@ -33,6 +34,7 @@ class LinuxFileWatcher : public FileWatcher {
     char* _buf;
     size_t _bufLen;
 };
+
 } // namespace atta::file
 
 #endif // ATTA_OS_LINUX

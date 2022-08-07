@@ -4,8 +4,8 @@
 // Date: 2022-06-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::io {
+
 bool Json::parse(const std::string& str) {
     bool res;
     unsigned pos = 0;
@@ -236,4 +236,5 @@ std::map<std::string, Json> Json::parseMap(const std::string& str, unsigned& pos
     res = true;
     return result;
 }
+
 } // namespace atta::io

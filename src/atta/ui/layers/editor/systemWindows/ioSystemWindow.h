@@ -6,14 +6,16 @@
 //--------------------------------------------------
 #ifndef ATTA_UI_LAYERS_EDITOR_WINDOWS_IO_WINDOW_H
 #define ATTA_UI_LAYERS_EDITOR_WINDOWS_IO_WINDOW_H
+
 #include <atta/ui/layers/editor/window.h>
 
-#include <atta/io/ioManager.h>
+#include <atta/io/manager.h>
 
-#include <atta/graphics/graphicsManager.h>
 #include <atta/graphics/image.h>
+#include <atta/graphics/manager.h>
 
 namespace atta::ui {
+
 class IOSystemWindow : public Window<IOSystemWindow> {
   private:
     IOSystemWindow();
@@ -45,7 +47,7 @@ class IOSystemWindow : public Window<IOSystemWindow> {
 
     // Camera
     std::unordered_map<std::string, std::shared_ptr<io::Camera>> _cameras;
-    std::unordered_map<std::string, std::shared_ptr<Image>> _cameraImages;
+    std::unordered_map<std::string, std::shared_ptr<graphics::Image>> _cameraImages;
 
     // Serial
     std::unordered_map<std::string, std::shared_ptr<io::Serial>> _serials;
@@ -54,6 +56,7 @@ class IOSystemWindow : public Window<IOSystemWindow> {
 
     friend Window<IOSystemWindow>;
 };
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_LAYERS_EDITOR_WINDOWS_IO_WINDOW_H

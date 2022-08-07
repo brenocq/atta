@@ -6,14 +6,17 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_TYPED_COMPONENT_REGISTRY_H
 #define ATTA_COMPONENT_TYPED_COMPONENT_REGISTRY_H
+
 #include <atta/component/base.h>
 #include <atta/component/componentRegistry.h>
 #include <atta/component/components/component.h>
 
 namespace atta::component {
+
 #define ATTA_REGISTER_COMPONENT(TYPE)                                                                                                                \
     template <>                                                                                                                                      \
-    inline ::atta::TypedComponentRegistry<TYPE>& ::atta::ComponentRegistration<TYPE>::reg = ::atta::TypedComponentRegistry<TYPE>::getInstance();
+    inline ::atta::component::TypedComponentRegistry<TYPE>& ::atta::component::ComponentRegistration<TYPE>::reg =                                    \
+        ::atta::component::TypedComponentRegistry<TYPE>::getInstance();
 
 template <typename T>
 class TypedComponentRegistry : public ComponentRegistry {
@@ -62,9 +65,11 @@ ComponentDescription* TypedComponentRegistry<T>::description = nullptr;
 
 template <typename T>
 class ComponentRegistration {
-    static ::atta::TypedComponentRegistry<T>& reg;
+    static ::atta::component::TypedComponentRegistry<T>& reg;
 };
+
 } // namespace atta::component
 
 #include <atta/component/typedComponentRegistry.inl>
+
 #endif // ATTA_COMPONENT_TYPED_COMPONENT_REGISTRY_H

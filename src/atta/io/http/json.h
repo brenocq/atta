@@ -8,6 +8,7 @@
 #define ATTA_IO_HTTP_JSON_H
 
 namespace atta::io {
+
 class Json {
   public:
     Json() : _type(NONE) {}
@@ -65,6 +66,7 @@ class Json {
     } _value;
     Type _type;
 };
+
 } // namespace atta::io
 
 #endif // ATTA_IO_HTTP_JSON_H

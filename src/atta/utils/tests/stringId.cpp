@@ -4,7 +4,7 @@
 // Date: 2021-08-18
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/stringId.h>
+#include <atta/utils/stringId.h>
 #include <gtest/gtest.h>
 
 using namespace atta;

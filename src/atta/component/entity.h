@@ -7,7 +7,7 @@
 #ifndef ATTA_COMPONENT_ENTITY_H
 #define ATTA_COMPONENT_ENTITY_H
 #include <atta/component/base.h>
-#include <atta/component/componentManager.h>
+#include <atta/component/manager.h>
 
 namespace atta::component {
 class Entity {
@@ -16,7 +16,7 @@ class Entity {
 
     template <typename T>
     T* getComponent() {
-        return ComponentManager::getEntityComponent<T>(_id);
+        return component::Manager::getEntityComponent<T>(_id);
     }
 
     EntityId getId() const { return _id; }

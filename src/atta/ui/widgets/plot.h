@@ -8,6 +8,7 @@
 #define ATTA_UI_WIDGETS_PLOT_H
 
 namespace atta::ui {
+
 struct InfoOneLine {
     std::vector<float> x;
     std::vector<float> y;
@@ -28,6 +29,7 @@ struct InfoMultiLine {
 
 void plot(InfoOneLine info);
 void plot(InfoMultiLine info);
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_WIDGETS_PLOT_H

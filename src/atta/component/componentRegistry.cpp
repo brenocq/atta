@@ -4,12 +4,12 @@
 // Date: 2021-11-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/componentManager.h>
 #include <atta/component/componentRegistry.h>
+#include <atta/component/manager.h>
 #include <imgui.h>
 
 namespace atta::component {
-void ComponentRegistry::registerToComponentManager() { ComponentManager::registerComponent(this); }
+void ComponentRegistry::registerToManager() { component::Manager::registerComponent(this); }
 
 unsigned ComponentRegistry::getSerializedSize(Component* component) {
     std::ostringstream of;

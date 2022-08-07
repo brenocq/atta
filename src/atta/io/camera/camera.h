@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_IO_CAMERA_CAMERA_H
 #define ATTA_IO_CAMERA_CAMERA_H
-#include <atta/core/stringId.h>
+
+#include <atta/utils/stringId.h>
 
 namespace atta::io {
+
 class Camera {
   public:
     enum PixelFormat {
@@ -68,6 +70,7 @@ class Camera {
     bool _capturing;
     std::vector<uint8_t> _frame;
 };
+
 } // namespace atta::io
 
 #endif // ATTA_IO_CAMERA_CAMERA_H

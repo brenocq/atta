@@ -5,11 +5,12 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/drawer.h>
-#include <atta/graphics/graphicsManager.h>
+#include <atta/graphics/manager.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
 
 namespace atta::graphics {
+
 DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
     //---------- Create line pipeline ----------//
     {
@@ -17,14 +18,14 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
         ShaderGroup::CreateInfo shaderGroupInfo{};
         shaderGroupInfo.shaderPaths = {"shaders/line/shader.vert", "shaders/line/shader.frag"};
         shaderGroupInfo.debugName = StringId("DrawerPipeline Line Shader Group");
-        std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+        std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
 
         Pipeline::CreateInfo pipelineInfo{};
         // Vertex input layout
         pipelineInfo.shaderGroup = shaderGroup;
         pipelineInfo.layout = {{"inPos", VertexBufferElement::Type::VEC3}, {"inColor", VertexBufferElement::Type::VEC4}};
         pipelineInfo.renderPass = renderPass;
-        _linePipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+        _linePipeline = Manager::create<Pipeline>(pipelineInfo);
     }
 
     //---------- Create point pipeline ----------//
@@ -33,14 +34,14 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
         ShaderGroup::CreateInfo shaderGroupInfo{};
         shaderGroupInfo.shaderPaths = {"shaders/point/shader.vert", "shaders/point/shader.frag"};
         shaderGroupInfo.debugName = StringId("DrawerPipeline Point Shader Group");
-        std::shared_ptr<ShaderGroup> shaderGroup = GraphicsManager::create<ShaderGroup>(shaderGroupInfo);
+        std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
 
         Pipeline::CreateInfo pipelineInfo{};
         // Vertex input layout
         pipelineInfo.shaderGroup = shaderGroup;
         pipelineInfo.layout = {{"inPos", VertexBufferElement::Type::VEC3}, {"inColor", VertexBufferElement::Type::VEC4}};
         pipelineInfo.renderPass = renderPass;
-        _pointPipeline = GraphicsManager::create<Pipeline>(pipelineInfo);
+        _pointPipeline = Manager::create<Pipeline>(pipelineInfo);
     }
 }
 
@@ -65,4 +66,5 @@ void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
     }
     _pointPipeline->end();
 }
+
 } // namespace atta::graphics

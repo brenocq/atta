@@ -7,5 +7,7 @@
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
+
 Window::Window(const CreateInfo& info) : _title(info.title), _width(info.width), _height(info.height) {}
+
 } // namespace atta::graphics

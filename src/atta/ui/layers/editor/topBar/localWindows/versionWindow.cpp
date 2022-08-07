@@ -9,6 +9,7 @@
 #include <imgui_internal.h>
 
 namespace atta::ui {
+
 VersionWindow::VersionWindow() { setName("Version"); }
 
 void VersionWindow::renderImpl() {
@@ -45,4 +46,5 @@ void VersionWindow::checkInstalledVersions() {
         }
     }
 }
+
 } // namespace atta::ui

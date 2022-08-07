@@ -6,10 +6,12 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_VERTEX_BUFFER_H
 #define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_VERTEX_BUFFER_H
+
 #include <atta/graphics/rendererAPIs/openGL/base.h>
 #include <atta/graphics/vertexBuffer.h>
 
 namespace atta::graphics {
+
 class OpenGLVertexBuffer final : public VertexBuffer {
   public:
     OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info);
@@ -25,6 +27,7 @@ class OpenGLVertexBuffer final : public VertexBuffer {
 
     OpenGLId _id;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_VERTEX_BUFFER_H

@@ -9,6 +9,7 @@
 #include <atta/memory/allocator.h>
 
 namespace atta::memory {
+
 class PoolAllocator : public Allocator {
   public:
     // If blockAlign is set to zero, no alignment
@@ -39,6 +40,7 @@ class PoolAllocator : public Allocator {
     size_t _blockAlign;
     Node* _freeList;
 };
+
 } // namespace atta::memory
 
 #endif // ATTA_MEMORY_ALLOCATORS_POOL_ALLOCATOR_H

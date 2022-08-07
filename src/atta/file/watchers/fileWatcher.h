@@ -8,6 +8,7 @@
 #define ATTA_FILE_WATCHER_FILE_WATCHER_H
 
 namespace atta::file {
+
 class FileWatcher {
   public:
     FileWatcher() = default;
@@ -20,6 +21,7 @@ class FileWatcher {
   protected:
     std::map<fs::path, int> _pathsToWatch;
 };
+
 } // namespace atta::file
 
 #endif // ATTA_FILE_WATCHER_FILE_WATCHER_H

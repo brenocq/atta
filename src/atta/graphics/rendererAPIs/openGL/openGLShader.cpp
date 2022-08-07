@@ -4,10 +4,11 @@
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/file/fileManager.h>
+#include <atta/file/manager.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLShader.h>
 
 namespace atta::graphics {
+
 OpenGLShader::OpenGLShader(const Shader::CreateInfo& info) : Shader(info), _id(0) { recompile(); }
 
 OpenGLShader::~OpenGLShader() {
@@ -24,7 +25,7 @@ void OpenGLShader::recompile() {
 
     // Read file
     std::stringstream fileSS;
-    fs::path absolutePath = FileManager::solveResourcePath(_filepath);
+    fs::path absolutePath = file::Manager::solveResourcePath(_filepath);
     std::ifstream file(absolutePath);
     fileSS << file.rdbuf();
     file.close();
@@ -105,4 +106,5 @@ GLenum OpenGLShader::convertFileToShaderType(const fs::path& filepath) {
            extension);
     return 0;
 }
+
 } // namespace atta::graphics

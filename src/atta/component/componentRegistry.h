@@ -8,10 +8,10 @@
 #define ATTA_COMPONENT_COMPONENT_REGISTRY_H
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
-#include <atta/core/stringId.h>
+#include <atta/utils/stringId.h>
 
 namespace atta::component {
-class ComponentManager;
+class Manager;
 class ComponentRegistry {
   public:
     using Type = StringId;
@@ -35,7 +35,7 @@ class ComponentRegistry {
     void setPoolCreated(bool poolCreated) { _poolCreated = poolCreated; }
 
   protected:
-    void registerToComponentManager();
+    void registerToManager();
 
     template <AttributeType attributeType>
     void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {}
@@ -52,7 +52,7 @@ class ComponentRegistry {
 
   private:
     void setIndex(unsigned index) { _index = index; }
-    friend ComponentManager;
+    friend Manager;
 };
 
 //---------- Attribute helpers ----------//

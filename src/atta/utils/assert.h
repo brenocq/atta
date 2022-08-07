@@ -1,11 +1,11 @@
 //--------------------------------------------------
-// Atta Assertion
+// Atta Utils Module
 // assert.h
 // Date: 2021-02-11
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_CORE_ASSERT_H
-#define ATTA_CORE_ASSERT_H
+#ifndef ATTA_UTILS_ASSERT_H
+#define ATTA_UTILS_ASSERT_H
 #include <assert.h>
 
 namespace atta {
@@ -46,4 +46,4 @@ namespace atta {
 #endif
 
 } // namespace atta
-#endif // ATTA_CORE_ASSERT_H
+#endif // ATTA_UTILS_ASSERT_H

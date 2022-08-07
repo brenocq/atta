@@ -7,5 +7,7 @@
 #include <atta/graphics/indexBuffer.h>
 
 namespace atta::graphics {
+
 IndexBuffer::IndexBuffer(const CreateInfo& info) : _offset(info.offset), _size(info.size), _data(info.data) {}
+
 } // namespace atta::graphics

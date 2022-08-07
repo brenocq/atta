@@ -7,7 +7,9 @@
 #include <atta/memory/allocators/poolAllocatorT.h>
 #include <gtest/gtest.h>
 
+using namespace atta;
 using namespace atta::memory;
+
 namespace {
 class TestObject {
   public:

@@ -7,7 +7,9 @@
 #include <atta/memory/allocators/bitmapAllocator.h>
 #include <gtest/gtest.h>
 
+using namespace atta;
 using namespace atta::memory;
+
 namespace {
 TEST(Memory_BitmapAllocator, DataMemorySize) {
     BitmapAllocator a0(1);

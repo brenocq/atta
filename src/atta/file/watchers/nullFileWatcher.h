@@ -9,6 +9,7 @@
 #include <atta/file/watchers/fileWatcher.h>
 
 namespace atta::file {
+
 class NullFileWatcher : public FileWatcher {
   public:
     NullFileWatcher() = default;
@@ -19,6 +20,7 @@ class NullFileWatcher : public FileWatcher {
 
     void update() override;
 };
+
 } // namespace atta::file
 
 #endif // ATTA_FILE_WATCHER_NULL_FILE_WATCHER_H

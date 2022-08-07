@@ -7,6 +7,7 @@
 #include <atta/script/compilers/compiler.h>
 
 namespace atta::script {
+
 std::vector<StringId> Compiler::getTargets() const {
     std::vector<StringId> targets;
     targets.clear();
@@ -16,4 +17,5 @@ std::vector<StringId> Compiler::getTargets() const {
 
     return targets;
 }
+
 } // namespace atta::script

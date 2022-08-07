@@ -1,10 +1,10 @@
 //--------------------------------------------------
-// Atta Config
+// Atta Utils Module
 // config.cpp
 // Date: 2022-03-12
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/core/config.h>
+#include <atta/utils/config.h>
 
 namespace atta {
 Config& Config::getInstance() {

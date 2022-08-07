@@ -1,7 +1,7 @@
 //----------------------------------------
-// Atta Log
+// Atta Utils Module
 // log.cpp
 // Date: 2021-08-16
 // By Breno Cunha Queiroz
 //----------------------------------------
-#include <atta/core/log.h>
+#include <atta/utils/log.h>

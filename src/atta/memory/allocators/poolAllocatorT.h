@@ -9,6 +9,7 @@
 #include <atta/memory/allocators/poolAllocator.h>
 
 namespace atta::memory {
+
 template <typename T>
 class PoolAllocatorT final : public PoolAllocator {
   public:
@@ -26,6 +27,7 @@ class PoolAllocatorT final : public PoolAllocator {
     uint64_t getIndex(T* block);
     T* getBlock(uint64_t index); // Return the block even if it is free, this can broke the pool allocator
 };
+
 } // namespace atta::memory
 
 #include <atta/memory/allocators/poolAllocatorT.inl>

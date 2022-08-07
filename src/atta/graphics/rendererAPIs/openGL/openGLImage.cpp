@@ -7,6 +7,7 @@
 #include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
 
 namespace atta::graphics {
+
 OpenGLImage::OpenGLImage(const Image::CreateInfo& info) : Image(info) { resize(_width, _height, true); }
 
 OpenGLImage::~OpenGLImage() {
@@ -198,4 +199,5 @@ GLenum OpenGLImage::convertSamplerWrap(Wrap samplerWrap) {
     }
     ASSERT(false, "Could not convert sampler wrap to openGL sampler wrap. Unknown sampler wrap");
 }
+
 } // namespace atta::graphics

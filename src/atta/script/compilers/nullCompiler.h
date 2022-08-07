@@ -6,9 +6,11 @@
 //--------------------------------------------------
 #ifndef ATTA_SCRIPT_COMPILERS_NULL_COMPILER_H
 #define ATTA_SCRIPT_COMPILERS_NULL_COMPILER_H
+
 #include <atta/script/compilers/compiler.h>
 
 namespace atta::script {
+
 class NullCompiler : public Compiler {
   public:
     NullCompiler() = default;
@@ -17,6 +19,7 @@ class NullCompiler : public Compiler {
     void compileTarget(StringId target) override{};
     void updateTargets() override{};
 };
+
 } // namespace atta::script
 
 #endif // ATTA_SCRIPT_COMPILERS_NULL_COMPILER_H

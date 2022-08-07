@@ -4,8 +4,8 @@
 // Date: 2022-03-18
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::io {
+
 #define RETURN_FOUND 1000 // Used to indicate that found what was looking for
 
 int LinuxBluetooth::bluezParseObjects(sd_bus_message* m, const char* adapter, BluezMsgType msgType, void* user) {
@@ -601,4 +601,5 @@ int LinuxBluetooth::bluezAppendProperty(sd_bus_message* m, const char* name, cha
 
     return r;
 }
+
 } // namespace atta::io

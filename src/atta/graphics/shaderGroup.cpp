@@ -7,5 +7,7 @@
 #include <atta/graphics/shaderGroup.h>
 
 namespace atta::graphics {
+
 ShaderGroup::ShaderGroup(const CreateInfo& info) : _debugName(info.debugName) {}
+
 } // namespace atta::graphics

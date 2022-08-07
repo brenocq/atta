@@ -1,16 +1,17 @@
 //--------------------------------------------------
 // Atta Component Module
-// rigidBodyComponent.h
+// rigidBody.h
 // Date: 2021-12-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_RIGID_BODY_COMPONENT_H
-#define ATTA_COMPONENT_COMPONENTS_RIGID_BODY_COMPONENT_H
-#include <atta/component/componentManager.h>
+#ifndef ATTA_COMPONENT_COMPONENTS_RIGID_BODY_H
+#define ATTA_COMPONENT_COMPONENTS_RIGID_BODY_H
+
+#include <atta/component/manager.h>
 
 namespace atta::component {
 /// %Component to make the entity a rigid body.
-/** Every entity that has a RigidBodyComponent and some collider
+/** Every entity that has a RigidBody and some collider
  * (like BoxCollider, SphereCollider) component will be added to
  * the physics simulations.
  *
@@ -65,9 +66,10 @@ struct RigidBody final : public Component {
                             /** Use RigidBody::Constraint to specify the contraints */
     uint8_t constraints;    ///< Rigid body constraints
 };
-ATTA_REGISTER_COMPONENT(RigidBodyComponent)
+ATTA_REGISTER_COMPONENT(RigidBody)
 template <>
-ComponentDescription& TypedComponentRegistry<RigidBodyComponent>::getDescription();
+ComponentDescription& TypedComponentRegistry<RigidBody>::getDescription();
+
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_RIGID_BODY_COMPONENT_H
+#endif // ATTA_COMPONENT_COMPONENTS_RIGID_BODY_H

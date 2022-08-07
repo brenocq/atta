@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_VERTEX_BUFFER_H
 
 namespace atta::graphics {
+
 //---------- VertexBufferElement ----------//
 class VertexBufferElement final {
   public:
@@ -76,6 +77,7 @@ class VertexBuffer {
     uint32_t _size;
     const uint8_t* _data;
 };
+
 } // namespace atta::graphics
 
 #endif // ATTA_GRAPHICS_VERTEX_BUFFER_H
