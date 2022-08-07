@@ -9,28 +9,27 @@
 #include <atta/component/componentManager.h>
 #include <atta/component/entity.h>
 
-namespace atta::ui
-{
-    class EntityWindow
-    {
-    public:
-        EntityWindow();
+namespace atta::ui {
+class EntityWindow {
+  public:
+    EntityWindow();
 
-        void render();
-    private:
-        void renderTree();
-        void renderTreeNode(EntityId entity, int& i);
+    void render();
 
-        void renderComponents();
-        void renderCameraWindows();
-        void textureCombo(std::string comboId, StringId& sid);
+  private:
+    void renderTree();
+    void renderTreeNode(EntityId entity, int& i);
 
-        std::unordered_set<EntityId> _cameraWindows;
+    void renderComponents();
+    void renderCameraWindows();
+    void textureCombo(std::string comboId, StringId& sid);
 
-        // TODO Move this to undo/redo code
-        std::vector<EntityId> _entitiesToDelete;
-        std::vector<EntityId> _entitiesToCopy;
-    };
-}
+    std::unordered_set<EntityId> _cameraWindows;
 
-#endif// ATTA_UI_LAYERS_EDITOR_WINDOWS_ENTITY_WINDOW_H
+    // TODO Move this to undo/redo code
+    std::vector<EntityId> _entitiesToDelete;
+    std::vector<EntityId> _entitiesToCopy;
+};
+} // namespace atta::ui
+
+#endif // ATTA_UI_LAYERS_EDITOR_WINDOWS_ENTITY_WINDOW_H

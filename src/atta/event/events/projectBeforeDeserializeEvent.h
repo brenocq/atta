@@ -8,12 +8,10 @@
 #define ATTA_EVENT_EVENTS_PROJECT_BEFORE_DESERIALIZE_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class ProjectBeforeDeserializeEvent : public EventTyped<SID("ProjectBeforeDeserializeEvent")>
-    {
-    public:
-    };
-}
+namespace atta::event {
+class ProjectBeforeDeserializeEvent : public EventTyped<SID("ProjectBeforeDeserializeEvent")> {
+  public:
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_PROJECT_BEFORE_DESERIALIZE_EVENT_H
+#endif // ATTA_EVENT_EVENTS_PROJECT_BEFORE_DESERIALIZE_EVENT_H

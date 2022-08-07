@@ -7,14 +7,12 @@
 #ifndef ATTA_COMPONENT_COMPONENTS_COMPONENT_H
 #define ATTA_COMPONENT_COMPONENTS_COMPONENT_H
 
-namespace atta
-{
-	/// Base class for all components
-    struct Component
-    {
-        public:
-            ~Component() = default;
-    };
-}
+namespace atta::component {
+/// Base class for all components
+struct Component {
+  public:
+    ~Component() = default;
+};
+} // namespace atta::component
 
-#endif// ATTA_COMPONENT_COMPONENTS_COMPONENT_H
+#endif // ATTA_COMPONENT_COMPONENTS_COMPONENT_H

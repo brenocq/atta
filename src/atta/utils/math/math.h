@@ -15,4 +15,4 @@
 #include <atta/core/math/ray.h>
 #include <atta/core/math/vector.h>
 
-#endif// ATTA_CORE_MATH_MATH_H
+#endif // ATTA_CORE_MATH_MATH_H

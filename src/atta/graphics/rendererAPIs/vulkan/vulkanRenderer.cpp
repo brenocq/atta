@@ -6,53 +6,22 @@
 //--------------------------------------------------
 #include <atta/graphics/rendererAPIs/vulkan/vulkanRenderer.h>
 
-namespace atta
-{
-    VulkanRenderer::VulkanRenderer()
-    {
+namespace atta::graphics {
+VulkanRenderer::VulkanRenderer() {}
 
-    }
+VulkanRenderer::~VulkanRenderer() {}
 
-    VulkanRenderer::~VulkanRenderer()
-    {
+void VulkanRenderer::beginFrame() {}
+void VulkanRenderer::endFrame() {}
 
-    }
+void VulkanRenderer::beginRenderPass() {}
+void VulkanRenderer::endRenderPass() {}
 
-    void VulkanRenderer::beginFrame()
-    {
+void VulkanRenderer::renderMesh() {}
 
-    }
-    void VulkanRenderer::endFrame()
-    {
+void VulkanRenderer::renderQuad() {}
 
-    }
+void VulkanRenderer::renderQuad3() {}
 
-    void VulkanRenderer::beginRenderPass()
-    {
-
-    }
-    void VulkanRenderer::endRenderPass()
-    {
-
-    }
-
-    void VulkanRenderer::renderMesh()
-    {
-
-    }
-
-    void VulkanRenderer::renderQuad()
-    {
-
-    }
-
-    void VulkanRenderer::renderQuad3()
-    {
-
-    }
-
-    void VulkanRenderer::renderCube()
-    {
-
-    }
-}
+void VulkanRenderer::renderCube() {}
+} // namespace atta::graphics

@@ -6,7 +6,4 @@
 //--------------------------------------------------
 #include <atta/event/event.h>
 
-namespace atta
-{
-}
-
+namespace atta::event {}

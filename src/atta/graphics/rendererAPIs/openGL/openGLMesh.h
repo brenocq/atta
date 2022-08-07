@@ -6,27 +6,25 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_MESH_H
 #define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_MESH_H
-#include <atta/graphics/rendererAPIs/openGL/openGLVertexBuffer.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLIndexBuffer.h>
 #include <atta/core/stringId.h>
+#include <atta/graphics/rendererAPIs/openGL/openGLIndexBuffer.h>
+#include <atta/graphics/rendererAPIs/openGL/openGLVertexBuffer.h>
 
-namespace atta
-{
-    class OpenGLMesh final
-    {
-    public:
-        OpenGLMesh(StringId sid);
-        ~OpenGLMesh();
+namespace atta::graphics {
+class OpenGLMesh final {
+  public:
+    OpenGLMesh(StringId sid);
+    ~OpenGLMesh();
 
-        void draw();
+    void draw();
 
-    private:
-        std::shared_ptr<OpenGLVertexBuffer> _vertexBuffer;
-        std::shared_ptr<OpenGLIndexBuffer> _indexBuffer;
-        StringId _sid;
+  private:
+    std::shared_ptr<OpenGLVertexBuffer> _vertexBuffer;
+    std::shared_ptr<OpenGLIndexBuffer> _indexBuffer;
+    StringId _sid;
 
-        OpenGLId _id;
-    };
-}
+    OpenGLId _id;
+};
+} // namespace atta::graphics
 
-#endif// ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_MESH_H
+#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_MESH_H

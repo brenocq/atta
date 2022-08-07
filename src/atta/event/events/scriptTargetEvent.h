@@ -8,13 +8,11 @@
 #define ATTA_EVENT_EVENTS_SCRIPT_TARGET_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class ScriptTargetEvent : public EventTyped<SID("ScriptTargetEvent")>
-    {
-    public:
-        std::vector<StringId> scriptSids;
-    };
-}
+namespace atta::event {
+class ScriptTargetEvent : public EventTyped<SID("ScriptTargetEvent")> {
+  public:
+    std::vector<StringId> scriptSids;
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_SCRIPT_TARGET_EVENT_H
+#endif // ATTA_EVENT_EVENTS_SCRIPT_TARGET_EVENT_H

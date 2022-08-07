@@ -8,13 +8,11 @@
 #define ATTA_EVENT_EVENTS_SIMULATION_START_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class SimulationStartEvent : public EventTyped<SID("SimulationStartEvent")>
-    {
-    public:
-        SimulationStartEvent() = default;
-    };
-}
+namespace atta::event {
+class SimulationStartEvent : public EventTyped<SID("SimulationStartEvent")> {
+  public:
+    SimulationStartEvent() = default;
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_SIMULATION_START_EVENT_H
+#endif // ATTA_EVENT_EVENTS_SIMULATION_START_EVENT_H

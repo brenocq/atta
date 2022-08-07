@@ -8,9 +8,8 @@
 #define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_BASE_H
 #include <glad/glad.h>
 
-namespace atta
-{
-    using OpenGLId = uint32_t;
+namespace atta::graphics {
+using OpenGLId = uint32_t;
 }
 
-#endif// ATTA_GRAPHICS_RENDERER_APIS_OPENGL_BASE_H
+#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_BASE_H

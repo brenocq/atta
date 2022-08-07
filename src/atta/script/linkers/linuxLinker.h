@@ -9,21 +9,19 @@
 #ifdef ATTA_OS_LINUX
 #include <atta/script/linkers/linker.h>
 
-namespace atta
-{
-    class LinuxLinker : public Linker
-    {
-    public:
-        LinuxLinker() = default;
-        ~LinuxLinker() = default;
+namespace atta::script {
+class LinuxLinker : public Linker {
+  public:
+    LinuxLinker() = default;
+    ~LinuxLinker() = default;
 
-        void linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) override;
-        void releaseTarget(StringId target) override;
+    void linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) override;
+    void releaseTarget(StringId target) override;
 
-    private:
-        std::unordered_map<StringId, void*> _targetHandles;
-    };
-}
+  private:
+    std::unordered_map<StringId, void*> _targetHandles;
+};
+} // namespace atta::script
 
-#endif// ATTA_OS_LINUX
-#endif// ATTA_SCRIPT_LINKERS_LINUX_LINKER_H
+#endif // ATTA_OS_LINUX
+#endif // ATTA_SCRIPT_LINKERS_LINUX_LINKER_H

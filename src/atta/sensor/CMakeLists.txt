@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 set(ATTA_SENSOR_MODULE_SOURCE
-    sensorManager.cpp
+    manager.cpp
 )
 
 add_library(atta_sensor_module STATIC

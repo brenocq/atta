@@ -11,22 +11,20 @@
 #include <GLFW/glfw3.h>
 #include <atta/graphics/windows/window.h>
 
-namespace atta
-{
-    class GlfwWindow final : public Window
-    {
-    public:
-        GlfwWindow(const Window::CreateInfo& info);
-        ~GlfwWindow();
+namespace atta::graphics {
+class GlfwWindow final : public Window {
+  public:
+    GlfwWindow(const Window::CreateInfo& info);
+    ~GlfwWindow();
 
-        void update() override;
-        void swapBuffers() override;
+    void update() override;
+    void swapBuffers() override;
 
-    private:
-        GLFWwindow* _window;
-        static unsigned _glfwWindowCounter;
-    };
-}
+  private:
+    GLFWwindow* _window;
+    static unsigned _glfwWindowCounter;
+};
+} // namespace atta::graphics
 
 //#endif// ATTA_OS_XXX
-#endif// ATTA_GRAPHICS_WINDOWS_GLFW_WINDOW_H
+#endif // ATTA_GRAPHICS_WINDOWS_GLFW_WINDOW_H

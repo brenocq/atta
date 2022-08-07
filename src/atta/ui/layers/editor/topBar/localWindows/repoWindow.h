@@ -9,44 +9,40 @@
 #include <atta/component/componentManager.h>
 #include <atta/component/entity.h>
 
-namespace atta::ui
-{
-    class RepoWindow
-    {
-    public:
-        RepoWindow(fs::path repoPath);
+namespace atta::ui {
+class RepoWindow {
+  public:
+    RepoWindow(fs::path repoPath);
 
-        void render();
+    void render();
 
-        fs::path getRepoPath() { return _repoPath; }
-        bool getShouldClose() { return _shouldClose; }
+    fs::path getRepoPath() { return _repoPath; }
+    bool getShouldClose() { return _shouldClose; }
 
-    private:
-        struct ReadmeMetadata
-        {
-            std::string title;
-            std::string description;
-            std::string image;
-        };
-
-        struct ProjectInfo
-        {
-            ReadmeMetadata metadata;
-            fs::path attaFile;
-        };
-
-        /// Search for projects recursivelly and populate _projects
-        void findProjects();
-        /// Parse README.md file and extract metadata
-        ReadmeMetadata parseReadmeMetadata(fs::path readme);
-
-        fs::path _repoPath;
-        std::string _title;
-        std::string _description;
-        std::vector<ProjectInfo> _projects;
-
-        bool _shouldClose;
+  private:
+    struct ReadmeMetadata {
+        std::string title;
+        std::string description;
+        std::string image;
     };
-}
 
-#endif// ATTA_UI_LAYERS_EDITOR_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
+    struct ProjectInfo {
+        ReadmeMetadata metadata;
+        fs::path attaFile;
+    };
+
+    /// Search for projects recursivelly and populate _projects
+    void findProjects();
+    /// Parse README.md file and extract metadata
+    ReadmeMetadata parseReadmeMetadata(fs::path readme);
+
+    fs::path _repoPath;
+    std::string _title;
+    std::string _description;
+    std::vector<ProjectInfo> _projects;
+
+    bool _shouldClose;
+};
+} // namespace atta::ui
+
+#endif // ATTA_UI_LAYERS_EDITOR_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H

@@ -6,15 +6,13 @@
 //--------------------------------------------------
 #ifndef ATTA_EVENT_EVENTS_DELETE_ENTITY_EVENT_H
 #define ATTA_EVENT_EVENTS_DELETE_ENTITY_EVENT_H
-#include <atta/event/event.h>
 #include <atta/component/componentManager.h>
+#include <atta/event/event.h>
 
-namespace atta
-{
-    class DeleteEntityEvent : public EventTyped<SID("DeleteEntityEvent")>
-    {
-    public:
-        EntityId entityId;
-    };
-}
-#endif// ATTA_EVENT_EVENTS_DELETE_ENTITY_EVENT_H
+namespace atta::event {
+class DeleteEntityEvent : public EventTyped<SID("DeleteEntityEvent")> {
+  public:
+    EntityId entityId;
+};
+} // namespace atta::event
+#endif // ATTA_EVENT_EVENTS_DELETE_ENTITY_EVENT_H

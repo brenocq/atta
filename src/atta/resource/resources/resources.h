@@ -7,7 +7,7 @@
 #ifndef ATTA_RESOURCE_RESOURCES_RESOURCES_H
 #define ATTA_RESOURCE_RESOURCES_RESOURCES_H
 
+#include <atta/resource/resources/image.h>
 #include <atta/resource/resources/mesh.h>
-#include <atta/resource/resources/texture.h>
 
-#endif// ATTA_RESOURCE_RESOURCES_RESOURCES_H
+#endif // ATTA_RESOURCE_RESOURCES_RESOURCES_H

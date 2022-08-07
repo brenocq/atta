@@ -6,21 +6,19 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H
 #define ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H
-#include <atta/graphics/pipeline.h>
 #include <atta/graphics/cameras/camera.h>
+#include <atta/graphics/pipeline.h>
 
-namespace atta
-{
-    class SelectedPipeline final
-    {
-    public:
-        SelectedPipeline(std::shared_ptr<RenderPass> renderPass, VertexBufferLayout layout);
+namespace atta::graphics {
+class SelectedPipeline final {
+  public:
+    SelectedPipeline(std::shared_ptr<RenderPass> renderPass, VertexBufferLayout layout);
 
-        void render(std::shared_ptr<Camera> camera);
+    void render(std::shared_ptr<Camera> camera);
 
-    private:
-        std::shared_ptr<Pipeline> _pipeline;
-    };
-}
+  private:
+    std::shared_ptr<Pipeline> _pipeline;
+};
+} // namespace atta::graphics
 
-#endif// ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H
+#endif // ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H

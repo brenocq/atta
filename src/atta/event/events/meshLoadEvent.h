@@ -8,15 +8,13 @@
 #define ATTA_EVENT_EVENTS_MESH_LOAD_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class MeshLoadEvent : public EventTyped<SID("MeshLoadEvent")>
-    {
-    public:
-        MeshLoadEvent(StringId sid_): sid(sid_) {}
+namespace atta::event {
+class MeshLoadEvent : public EventTyped<SID("MeshLoadEvent")> {
+  public:
+    MeshLoadEvent(StringId sid_) : sid(sid_) {}
 
-        const StringId sid;
-    };
-}
+    const StringId sid;
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_MESH_LOAD_EVENT_H
+#endif // ATTA_EVENT_EVENTS_MESH_LOAD_EVENT_H

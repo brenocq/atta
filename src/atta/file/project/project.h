@@ -8,35 +8,32 @@
 #define ATTA_FILE_PROJECT_PROJECT_H
 #include <atta/file/project/project.h>
 
-namespace atta
-{
-    class FileManager;
-    class Project final
-    {
-    public:
-        Project(fs::path file);
+namespace atta::file {
+class FileManager;
+class Project final {
+  public:
+    Project(fs::path file);
 
-        std::string getName() { return _name; }
-        fs::path getFile() const { return _file; }
-        fs::path getDirectory() const { return _directory; }
+    std::string getName() { return _name; }
+    fs::path getFile() const { return _file; }
+    fs::path getDirectory() const { return _directory; }
 
-        fs::path getBuildDirectory();
-        fs::path getSnapshotDirectory();
-        std::vector<fs::path> getResourceRootPaths() const { return _resourceRootPaths; }
+    fs::path getBuildDirectory();
+    fs::path getSnapshotDirectory();
+    std::vector<fs::path> getResourceRootPaths() const { return _resourceRootPaths; }
 
-    private:
-        fs::path solveResourcePath(fs::path relativePath, bool mustExist = true);
+  private:
+    fs::path solveResourcePath(fs::path relativePath, bool mustExist = true);
 
-        std::string _name;
+    std::string _name;
 
-        fs::path _file;// .atta file
-        fs::path _directory;
+    fs::path _file; // .atta file
+    fs::path _directory;
 
-        std::vector<fs::path> _resourceRootPaths;
+    std::vector<fs::path> _resourceRootPaths;
 
-        friend FileManager;
-    };
-}
+    friend FileManager;
+};
+} // namespace atta::file
 
-#endif// ATTA_FILE_PROJECT_PROJECT_H
-
+#endif // ATTA_FILE_PROJECT_PROJECT_H

@@ -7,14 +7,12 @@
 #ifndef ATTA_UI_LAYERS_EDITOR_DRAWERS_PHYSICS_DRAWER_H
 #define ATTA_UI_LAYERS_EDITOR_DRAWERS_PHYSICS_DRAWER_H
 
-namespace atta::ui
-{
-	/// Drawer used to draw physics collider lines
-    class PhysicsDrawer
-    {
-    public:
-        void update();///< Update physics collider lines
-    };
-}
+namespace atta::ui {
+/// Drawer used to draw physics collider lines
+class PhysicsDrawer {
+  public:
+    void update(); ///< Update physics collider lines
+};
+} // namespace atta::ui
 
-#endif// ATTA_UI_LAYERS_EDITOR_DRAWERS_PHYSICS_DRAWER_H
+#endif // ATTA_UI_LAYERS_EDITOR_DRAWERS_PHYSICS_DRAWER_H

@@ -6,17 +6,15 @@
 //--------------------------------------------------
 #ifndef ATTA_EVENT_EVENTS_CREATE_COMPONENT_EVENT_H
 #define ATTA_EVENT_EVENTS_CREATE_COMPONENT_EVENT_H
-#include <atta/event/event.h>
 #include <atta/component/componentManager.h>
+#include <atta/event/event.h>
 
-namespace atta
-{
-    class CreateComponentEvent : public EventTyped<SID("CreateComponentEvent")>
-    {
-    public:
-        ComponentId componentId;
-        EntityId entityId;
-        Component* component;
-    };
-}
-#endif// ATTA_EVENT_EVENTS_CREATE_COMPONENT_EVENT_H
+namespace atta::event {
+class CreateComponentEvent : public EventTyped<SID("CreateComponentEvent")> {
+  public:
+    ComponentId componentId;
+    EntityId entityId;
+    Component* component;
+};
+} // namespace atta::event
+#endif // ATTA_EVENT_EVENTS_CREATE_COMPONENT_EVENT_H

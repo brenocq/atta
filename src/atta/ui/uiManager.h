@@ -7,19 +7,17 @@
 #ifndef ATTA_UI_UI_MANAGER_H
 #define ATTA_UI_UI_MANAGER_H
 
-namespace atta::ui
-{
-    class UIManager final
-    {
-    public:
-        static UIManager& getInstance();
-        static void startUp();
-        static void shutDown();
+namespace atta::ui {
+class UIManager final {
+  public:
+    static UIManager& getInstance();
+    static void startUp();
+    static void shutDown();
 
-    private:
-        void startUpImpl();
-        void shutDownImpl();
-    };
-}
+  private:
+    void startUpImpl();
+    void shutDownImpl();
+};
+} // namespace atta::ui
 
-#endif// ATTA_UI_UI_MANAGER_H
+#endif // ATTA_UI_UI_MANAGER_H

@@ -6,11 +6,6 @@
 //--------------------------------------------------
 #include <atta/physics/physicsEngines/physicsEngine.h>
 
-namespace atta
-{
-    PhysicsEngine::PhysicsEngine(Type type):
-        _type(type)
-    {
-
-    }
-}
+namespace atta::physics {
+PhysicsEngine::PhysicsEngine(Type type) : _type(type) {}
+} // namespace atta::physics

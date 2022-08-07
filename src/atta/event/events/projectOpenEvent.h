@@ -8,12 +8,10 @@
 #define ATTA_EVENT_EVENTS_PROJECT_OPEN_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class ProjectOpenEvent : public EventTyped<SID("ProjectOpenEvent")>
-    {
-    public:
-    };
-}
+namespace atta::event {
+class ProjectOpenEvent : public EventTyped<SID("ProjectOpenEvent")> {
+  public:
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_PROJECT_OPEN_EVENT_H
+#endif // ATTA_EVENT_EVENTS_PROJECT_OPEN_EVENT_H

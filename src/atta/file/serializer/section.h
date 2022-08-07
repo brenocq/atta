@@ -9,139 +9,126 @@
 #include <atta/file/serializer/serializable.h>
 #include <atta/file/serializer/serializer.h>
 
-namespace atta
-{
-    /// Section Data
-    /** Store the binary data for each data and its type so that it is possible to print SectionData and serialize it
-     **/
-    class SectionData : Serializable
-    {
-    public:
-        using TypeHash = StringId;
-        SectionData();
+namespace atta::file {
+/// Section Data
+/** Store the binary data for each data and its type so that it is possible to print SectionData and serialize it
+ **/
+class SectionData : Serializable {
+  public:
+    using TypeHash = StringId;
+    SectionData();
 
-        void clear();
+    void clear();
 
-        template<typename T>
-        void operator=(T&& value);
+    template <typename T>
+    void operator=(T&& value);
 
-        template<typename T>
-        T get();
-        template<typename T>
-        T getConst() const;
-        template<typename T>
-        T* getPtr();
-        template<typename T>
-        T* getPtrConst() const;
+    template <typename T>
+    T get();
+    template <typename T>
+    T getConst() const;
+    template <typename T>
+    T* getPtr();
+    template <typename T>
+    T* getPtrConst() const;
 
-        TypeHash getTypeHash() const;
+    TypeHash getTypeHash() const;
 
-        std::string toString() const;
-        void serialize(std::ostream& os) override;
-        void deserialize(std::istream& is) override;
+    std::string toString() const;
+    void serialize(std::ostream& os) override;
+    void deserialize(std::istream& is) override;
 
-    private:
-        std::vector<uint8_t> _data;
-        TypeHash _typeHash;
+  private:
+    std::vector<uint8_t> _data;
+    TypeHash _typeHash;
 
-        using PrintFunction = std::function<std::string(std::vector<uint8_t> data)>;
+    using PrintFunction = std::function<std::string(std::vector<uint8_t> data)>;
 
-        template<typename T>
-        static void registerType();
-        static std::unordered_map<TypeHash, PrintFunction> _typeToString;
-    };
+    template <typename T>
+    static void registerType();
+    static std::unordered_map<TypeHash, PrintFunction> _typeToString;
+};
 
-    /** There are three main possibilities for a section:
-     *  - Map of sections (data as std::map<std::string, Section>)
-     *  - Vector of sections (data as std::vector<Section>)
-     *  - Data 
-     **/
-    class Section : Serializable
-    {
-    public:
-        Section();
-        template <typename T>
-        explicit Section(T value);
+/** There are three main possibilities for a section:
+ *  - Map of sections (data as std::map<std::string, Section>)
+ *  - Vector of sections (data as std::vector<Section>)
+ *  - Data
+ **/
+class Section : Serializable {
+  public:
+    Section();
+    template <typename T>
+    explicit Section(T value);
 
-        Section(const Section& section);
+    Section(const Section& section);
 
-        // Check type
-        bool isUndefined() const;
-        bool isMap() const;
-        bool isVector() const;
-        bool isData() const;
+    // Check type
+    bool isUndefined() const;
+    bool isMap() const;
+    bool isVector() const;
+    bool isData() const;
 
-        size_t size() const;
-        std::string toString() const;
+    size_t size() const;
+    std::string toString() const;
 
-        //----- Data -----//
-        /// Get data
-        SectionData& data();
-        const SectionData& data() const;
+    //----- Data -----//
+    /// Get data
+    SectionData& data();
+    const SectionData& data() const;
 
-        /// Assign data
-        template <typename T>
-        void operator=(T value);
+    /// Assign data
+    template <typename T>
+    void operator=(T value);
 
-        /// Get data (casting)
-        template <typename T>
-        explicit operator T();
+    /// Get data (casting)
+    template <typename T>
+    explicit operator T();
 
-        //----- Map -----//
-        /// Get map
-        std::map<std::string, Section>& map();
-        const std::map<std::string, Section>& map() const;
+    //----- Map -----//
+    /// Get map
+    std::map<std::string, Section>& map();
+    const std::map<std::string, Section>& map() const;
 
-        /// Map access
-        Section& operator[](std::string key);
+    /// Map access
+    Section& operator[](std::string key);
 
-        bool contains(std::string key);
+    bool contains(std::string key);
 
-        //----- Vector -----//
-        /// Get vector
-        std::vector<Section>& vector();
-        const std::vector<Section>& vector() const;
+    //----- Vector -----//
+    /// Get vector
+    std::vector<Section>& vector();
+    const std::vector<Section>& vector() const;
 
-        /// Vector access
-        Section& operator[](unsigned i);
-        
-        /// Push to vector
-        void push_back(Section section);
-        void operator+=(Section section);
+    /// Vector access
+    Section& operator[](unsigned i);
 
-        /// Get last section
-        Section& back();
+    /// Push to vector
+    void push_back(Section section);
+    void operator+=(Section section);
 
-        /// Assign vector of values
-        template <typename T>
-        void operator=(std::initializer_list<T> list);
+    /// Get last section
+    Section& back();
 
-        //----- Serialization -----//
-        void serialize(std::ostream& os) override;
-        void deserialize(std::istream& is) override;
+    /// Assign vector of values
+    template <typename T>
+    void operator=(std::initializer_list<T> list);
 
-    private:
-        enum Type
-        {
-            UNDEFINED = 0,
-            MAP,
-            VECTOR,
-            DATA
-        };
+    //----- Serialization -----//
+    void serialize(std::ostream& os) override;
+    void deserialize(std::istream& is) override;
 
-        std::map<std::string, Section> _map;
-        std::vector<Section> _vector;
-        SectionData _data;
-        Type _type;
-    };
+  private:
+    enum Type { UNDEFINED = 0, MAP, VECTOR, DATA };
 
-    // <<
-    inline std::ostream& operator<<(std::ostream& os, const Section& v)
-    {
-        return os << v.toString();
-    }
-}
+    std::map<std::string, Section> _map;
+    std::vector<Section> _vector;
+    SectionData _data;
+    Type _type;
+};
+
+// <<
+inline std::ostream& operator<<(std::ostream& os, const Section& v) { return os << v.toString(); }
+} // namespace atta::file
 #include <atta/file/serializer/section.inl>
 
-
-#endif// ATTA_FILE_SERIALIZER_SECTION_H
+#endif // ATTA_FILE_SERIALIZER_SECTION_H

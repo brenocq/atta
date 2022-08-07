@@ -10,31 +10,30 @@
 #include <atta/file/watchers/fileWatcher.h>
 #include <sys/inotify.h>
 
-namespace atta
-{
-    class LinuxFileWatcher : public FileWatcher
-    {
-    public:
-        LinuxFileWatcher();
-        ~LinuxFileWatcher();
+namespace atta::file {
+class LinuxFileWatcher : public FileWatcher {
+  public:
+    LinuxFileWatcher();
+    ~LinuxFileWatcher();
 
-        void addWatch(fs::path directory) override;
-        void removeWatch(fs::path directory) override;
+    void addWatch(fs::path directory) override;
+    void removeWatch(fs::path directory) override;
 
-        void update() override;
-    private:
-        void checkAndRead();
-        void readEvents();
+    void update() override;
 
-        void publishEvent(struct inotify_event* ievent);
+  private:
+    void checkAndRead();
+    void readEvents();
 
-        static int _inotifyFd;
+    void publishEvent(struct inotify_event* ievent);
 
-        // Buffer to receive events
-        char* _buf;
-        size_t _bufLen;
-    };
-}
+    static int _inotifyFd;
 
-#endif// ATTA_OS_LINUX
-#endif// ATTA_FILE_WATCHER_LINUX_FILE_WATCHER_H
+    // Buffer to receive events
+    char* _buf;
+    size_t _bufLen;
+};
+} // namespace atta::file
+
+#endif // ATTA_OS_LINUX
+#endif // ATTA_FILE_WATCHER_LINUX_FILE_WATCHER_H

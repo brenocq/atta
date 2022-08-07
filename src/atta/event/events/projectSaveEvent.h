@@ -8,12 +8,10 @@
 #define ATTA_EVENT_EVENTS_PROJECT_SAVE_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class ProjectSaveEvent : public EventTyped<SID("ProjectSaveEvent")>
-    {
-    public:
-    };
-}
+namespace atta::event {
+class ProjectSaveEvent : public EventTyped<SID("ProjectSaveEvent")> {
+  public:
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_PROJECT_SAVE_EVENT_H
+#endif // ATTA_EVENT_EVENTS_PROJECT_SAVE_EVENT_H

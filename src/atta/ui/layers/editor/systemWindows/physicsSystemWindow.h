@@ -6,20 +6,17 @@
 //--------------------------------------------------
 #ifndef ATTA_UI_LAYERS_EDITOR_WINDOWS_PHYSICS_WINDOW_H
 #define ATTA_UI_LAYERS_EDITOR_WINDOWS_PHYSICS_WINDOW_H
-#include <atta/ui/layers/editor/window.h>
 #include <atta/physics/physicsManager.h>
+#include <atta/ui/layers/editor/window.h>
 
+namespace atta::ui {
+class PhysicsSystemWindow : public Window<PhysicsSystemWindow> {
+  private:
+    PhysicsSystemWindow();
+    void renderImpl();
 
-namespace atta::ui
-{
-    class PhysicsSystemWindow : public Window<PhysicsSystemWindow>
-    {
-    private:
-        PhysicsSystemWindow();
-        void renderImpl();
+    friend Window<PhysicsSystemWindow>;
+};
+} // namespace atta::ui
 
-        friend Window<PhysicsSystemWindow>;
-    };
-}
-
-#endif// ATTA_UI_LAYERS_EDITOR_WINDOWS_PHYSICS_WINDOW_H
+#endif // ATTA_UI_LAYERS_EDITOR_WINDOWS_PHYSICS_WINDOW_H

@@ -7,22 +7,20 @@
 #ifndef ATTA_CORE_CONFIG_H
 #define ATTA_CORE_CONFIG_H
 
-namespace atta
-{
-    class Config final
-    {
-    public:
-        static Config& getInstance();
-        static void init();
+namespace atta {
+class Config final {
+  public:
+    static Config& getInstance();
+    static void init();
 
-        static float getDt() { return getInstance()._dt; }
-        static void setDt(float dt) { getInstance()._dt = dt; }
+    static float getDt() { return getInstance()._dt; }
+    static void setDt(float dt) { getInstance()._dt = dt; }
 
-    private:
-        void initImpl();
+  private:
+    void initImpl();
 
-        float _dt;
-    };
-}
+    float _dt;
+};
+} // namespace atta
 
-#endif// ATTA_PHYSICS_PHYSICS_MANAGER_H
+#endif // ATTA_PHYSICS_PHYSICS_MANAGER_H

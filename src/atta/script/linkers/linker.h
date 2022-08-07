@@ -6,21 +6,19 @@
 //--------------------------------------------------
 #ifndef ATTA_SCRIPT_LINKERS_LINKER_H
 #define ATTA_SCRIPT_LINKERS_LINKER_H
-#include <atta/script/script.h>
-#include <atta/script/projectScript.h>
 #include <atta/core/stringId.h>
+#include <atta/script/projectScript.h>
+#include <atta/script/script.h>
 
-namespace atta
-{
-    class Linker
-    {
-    public:
-        Linker() = default;
-        virtual ~Linker() = default;
+namespace atta::script {
+class Linker {
+  public:
+    Linker() = default;
+    virtual ~Linker() = default;
 
-        virtual void linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) = 0;
-        virtual void releaseTarget(StringId target) = 0;
-    };
-}
+    virtual void linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) = 0;
+    virtual void releaseTarget(StringId target) = 0;
+};
+} // namespace atta::script
 
-#endif// ATTA_SCRIPT_LINKERS_LINKER_H
+#endif // ATTA_SCRIPT_LINKERS_LINKER_H

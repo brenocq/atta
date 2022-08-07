@@ -8,29 +8,26 @@
 #define ATTA_UI_LAYERS_EDITOR_TOOL_BAR_TOOL_BAR_H
 #include <atta/event/event.h>
 
-namespace atta::ui
-{
-    class ToolBar
-    {
-    public:
-        ToolBar();
+namespace atta::ui {
+class ToolBar {
+  public:
+    ToolBar();
 
-        void render();
-        
-    private:
-        void handleShortcuts();
-        void onSimulationStateChange(Event& event);
+    void render();
 
-        enum class EditorState
-        {
-            EDITOR = 0,
-            SIMULATION_RUNNING,
-            SIMULATION_PAUSED,
-        };
-        void changeState(EditorState newState);
+  private:
+    void handleShortcuts();
+    void onSimulationStateChange(Event& event);
 
-        EditorState _editorState;
+    enum class EditorState {
+        EDITOR = 0,
+        SIMULATION_RUNNING,
+        SIMULATION_PAUSED,
     };
-}
+    void changeState(EditorState newState);
 
-#endif// ATTA_UI_LAYERS_EDITOR_TOOL_BAR_TOOL_BAR_H
+    EditorState _editorState;
+};
+} // namespace atta::ui
+
+#endif // ATTA_UI_LAYERS_EDITOR_TOOL_BAR_TOOL_BAR_H

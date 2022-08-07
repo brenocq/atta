@@ -7,17 +7,16 @@
 #ifndef ATTA_UI_LAYERS_EDITOR_DOCK_SPACE_H
 #define ATTA_UI_LAYERS_EDITOR_DOCK_SPACE_H
 
-namespace atta::ui
-{
-    class DockSpace
-    {
-    public:
-        void render();
+namespace atta::ui {
+class DockSpace {
+  public:
+    void render();
 
-        unsigned getViewportDockId() { return _viewportDockId; }
-    private:
-        unsigned _viewportDockId;
-    };
-}
+    unsigned getViewportDockId() { return _viewportDockId; }
 
-#endif// ATTA_UI_LAYERS_EDITOR_DOCK_SPACE_H
+  private:
+    unsigned _viewportDockId;
+};
+} // namespace atta::ui
+
+#endif // ATTA_UI_LAYERS_EDITOR_DOCK_SPACE_H

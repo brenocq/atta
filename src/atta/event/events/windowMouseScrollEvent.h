@@ -8,16 +8,13 @@
 #define ATTA_EVENT_EVENTS_WINDOW_MOUSE_SCROLL_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class WindowMouseScrollEvent : public EventTyped<SID("WindowMouseScrollEvent")>
-    {
-    public:
-        WindowMouseScrollEvent(float dx_, float dy_): 
-            dx(dx_), dy(dy_) {}
+namespace atta::event {
+class WindowMouseScrollEvent : public EventTyped<SID("WindowMouseScrollEvent")> {
+  public:
+    WindowMouseScrollEvent(float dx_, float dy_) : dx(dx_), dy(dy_) {}
 
-        float dx, dy;
-    };
-}
+    float dx, dy;
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_WINDOW_MOUSE_SCROLL_H
+#endif // ATTA_EVENT_EVENTS_WINDOW_MOUSE_SCROLL_H

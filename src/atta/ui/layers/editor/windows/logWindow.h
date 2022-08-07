@@ -7,13 +7,11 @@
 #ifndef ATTA_UI_LAYERS_EDITOR_WINDOWS_LOG_WINDOW_H
 #define ATTA_UI_LAYERS_EDITOR_WINDOWS_LOG_WINDOW_H
 
-namespace atta::ui
-{
-    class LogWindow
-    {
-    public:
-        void render();
-    };
-}
+namespace atta::ui {
+class LogWindow {
+  public:
+    void render();
+};
+} // namespace atta::ui
 
-#endif// ATTA_UI_LAYERS_EDITOR_WINDOWS_LOG_WINDOW_H
+#endif // ATTA_UI_LAYERS_EDITOR_WINDOWS_LOG_WINDOW_H

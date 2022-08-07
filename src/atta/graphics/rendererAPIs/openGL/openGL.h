@@ -12,11 +12,10 @@
 #include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLIndexBuffer.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLPipeline.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLRenderPass.h>
+#include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLShader.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLVertexBuffer.h>
 
-#endif// ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_H
-
+#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_H

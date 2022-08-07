@@ -8,17 +8,15 @@
 #define ATTA_SCRIPT_LINKERS_NULL_LINKER_H
 #include <atta/script/linkers/linker.h>
 
-namespace atta
-{
-    class NullLinker : public Linker
-    {
-    public:
-        NullLinker() = default;
-        ~NullLinker() = default;
+namespace atta::script {
+class NullLinker : public Linker {
+  public:
+    NullLinker() = default;
+    ~NullLinker() = default;
 
-        void linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) override;
-        virtual void releaseTarget(StringId target) override {};
-    };
-}
+    void linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) override;
+    virtual void releaseTarget(StringId target) override{};
+};
+} // namespace atta::script
 
-#endif// ATTA_SCRIPT_LINKERS_NULL_LINKER_H
+#endif // ATTA_SCRIPT_LINKERS_NULL_LINKER_H

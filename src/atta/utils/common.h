@@ -7,11 +7,10 @@
 #ifndef ATTA_CORE_COMMON_H
 #define ATTA_CORE_COMMON_H
 
-namespace atta
-{
+namespace atta {
 
 #define BIT(i) (1 << i);
 
-}
+} // namespace atta
 
 #endif ATTA_CORE_COMMON_H

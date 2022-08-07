@@ -8,17 +8,15 @@
 #define ATTA_SCRIPT_COMPILERS_NULL_COMPILER_H
 #include <atta/script/compilers/compiler.h>
 
-namespace atta
-{
-    class NullCompiler : public Compiler
-    {
-    public:
-        NullCompiler() = default;
+namespace atta::script {
+class NullCompiler : public Compiler {
+  public:
+    NullCompiler() = default;
 
-        void compileAll() override {};
-        void compileTarget(StringId target) override {};
-        void updateTargets() override {};
-    };
-}
+    void compileAll() override{};
+    void compileTarget(StringId target) override{};
+    void updateTargets() override{};
+};
+} // namespace atta::script
 
-#endif// ATTA_SCRIPT_COMPILERS_NULL_COMPILER_H
+#endif // ATTA_SCRIPT_COMPILERS_NULL_COMPILER_H

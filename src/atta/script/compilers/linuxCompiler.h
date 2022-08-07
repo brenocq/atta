@@ -9,25 +9,23 @@
 #ifdef ATTA_OS_LINUX
 #include <atta/script/compilers/compiler.h>
 
-namespace atta
-{
-	class LinuxCompiler : public Compiler
-	{
-	public:
-		LinuxCompiler();
-		~LinuxCompiler();
+namespace atta::script {
+class LinuxCompiler : public Compiler {
+  public:
+    LinuxCompiler();
+    ~LinuxCompiler();
 
-		void compileAll() override;
-		void compileTarget(StringId target) override;
-		void updateTargets() override;
+    void compileAll() override;
+    void compileTarget(StringId target) override;
+    void updateTargets() override;
 
-	private:
-		void findTargetFiles(StringId target);
-        std::string runCommand(std::string cmd);
+  private:
+    void findTargetFiles(StringId target);
+    std::string runCommand(std::string cmd);
 
-        std::string _compiler;
-	};
-}
+    std::string _compiler;
+};
+} // namespace atta::script
 
-#endif// ATTA_OS_LINUX
-#endif// ATTA_SCRIPT_COMPILERS_LINUX_COMPILER_H
+#endif // ATTA_OS_LINUX
+#endif // ATTA_SCRIPT_COMPILERS_LINUX_COMPILER_H

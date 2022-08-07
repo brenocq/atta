@@ -8,12 +8,10 @@
 #define ATTA_EVENT_EVENTS_WINDOW_CLOSE_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class WindowCloseEvent : public EventTyped<SID("WindowCloseEvent")>
-    {
-    public:
-    };
-}
+namespace atta::event {
+class WindowCloseEvent : public EventTyped<SID("WindowCloseEvent")> {
+  public:
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_WINDOW_CLOSE_H
+#endif // ATTA_EVENT_EVENTS_WINDOW_CLOSE_H

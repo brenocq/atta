@@ -8,38 +8,33 @@
 #define ATTA_EVENT_EVENT_H
 #include <atta/core/stringId.h>
 
-namespace atta
-{
-    class Event
-    {
-    public:
-        using Type = StringHash;
+namespace atta::event {
+class Event {
+  public:
+    using Type = StringHash;
 
-        Event(Event::Type type): _type(type) {}
-        virtual ~Event() = default;
+    Event(Event::Type type) : _type(type) {}
+    virtual ~Event() = default;
 
-        Event::Type getType() const { return _type; }
-        std::string getName() const { return StringId(_type).getString(); }
+    Event::Type getType() const { return _type; }
+    std::string getName() const { return StringId(_type).getString(); }
 
-        bool handled = false;
-    private:
-        Event::Type _type;
-    };
+    bool handled = false;
 
-    inline std::ostream& operator<<(std::ostream& os, const Event& e)
-    {
-        return os << e.getName();
-    }
+  private:
+    Event::Type _type;
+};
 
-    // TODO Template char* argument to save the string name when attributing the static member
-    template <Event::Type type_>
-    class EventTyped : public Event
-    {
-    public:
-        EventTyped(): Event(type_) {}
+inline std::ostream& operator<<(std::ostream& os, const Event& e) { return os << e.getName(); }
 
-        static const Event::Type type = type_;
-    };
-}
+// TODO Template char* argument to save the string name when attributing the static member
+template <Event::Type type_>
+class EventTyped : public Event {
+  public:
+    EventTyped() : Event(type_) {}
 
-#endif// ATTA_EVENT_EVENT_H
+    static const Event::Type type = type_;
+};
+} // namespace atta::event
+
+#endif // ATTA_EVENT_EVENT_H

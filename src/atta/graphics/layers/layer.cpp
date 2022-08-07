@@ -6,11 +6,6 @@
 //--------------------------------------------------
 #include <atta/graphics/layers/layer.h>
 
-namespace atta
-{
-    Layer::Layer(StringId sid):
-        _sid(sid)
-    {
-
-    }
-}
+namespace atta::graphics {
+Layer::Layer(StringId sid) : _sid(sid) {}
+} // namespace atta::graphics

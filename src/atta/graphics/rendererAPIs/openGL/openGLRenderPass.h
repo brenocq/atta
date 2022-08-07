@@ -8,17 +8,15 @@
 #define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDER_PASS_H
 #include <atta/graphics/renderPass.h>
 
-namespace atta
-{
-    class OpenGLRenderPass final : public RenderPass
-    {
-    public:
-        OpenGLRenderPass(const RenderPass::CreateInfo& info);
-        ~OpenGLRenderPass();
+namespace atta::graphics {
+class OpenGLRenderPass final : public RenderPass {
+  public:
+    OpenGLRenderPass(const RenderPass::CreateInfo& info);
+    ~OpenGLRenderPass();
 
-        void begin(bool clear = true) override;
-        void end() override;
-    };
-}
+    void begin(bool clear = true) override;
+    void end() override;
+};
+} // namespace atta::graphics
 
-#endif// ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDER_PASS_H
+#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDER_PASS_H

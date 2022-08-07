@@ -6,11 +6,6 @@
 //--------------------------------------------------
 #include <atta/graphics/shader.h>
 
-namespace atta
-{
-    Shader::Shader(const CreateInfo& info):
-        _filepath(info.filepath)
-    {
-
-    }
-}
+namespace atta::graphics {
+Shader::Shader(const CreateInfo& info) : _filepath(info.filepath) {}
+} // namespace atta::graphics

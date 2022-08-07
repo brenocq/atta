@@ -9,26 +9,23 @@
 #include <atta/core/stringId.h>
 #include <atta/graphics/shaderUniform.h>
 
-namespace atta
-{
-    class Shader
-    {
-    public:
-        struct CreateInfo
-        {
-            fs::path filepath;
-        };
-
-        Shader(const CreateInfo& info);
-        virtual ~Shader() = default;
-
-        virtual void recompile() = 0;
-        fs::path getFilepath() const { return _filepath; }
-
-    protected:
-        fs::path _filepath;
-        std::unordered_map<std::string, ShaderUniform> _uniforms;
+namespace atta::graphics {
+class Shader {
+  public:
+    struct CreateInfo {
+        fs::path filepath;
     };
-}
 
-#endif// ATTA_GRAPHICS_SHADER_H
+    Shader(const CreateInfo& info);
+    virtual ~Shader() = default;
+
+    virtual void recompile() = 0;
+    fs::path getFilepath() const { return _filepath; }
+
+  protected:
+    fs::path _filepath;
+    std::unordered_map<std::string, ShaderUniform> _uniforms;
+};
+} // namespace atta::graphics
+
+#endif // ATTA_GRAPHICS_SHADER_H

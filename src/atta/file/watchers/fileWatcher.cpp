@@ -6,15 +6,8 @@
 //--------------------------------------------------
 #include <atta/file/watchers/fileWatcher.h>
 
-namespace atta
-{
-    void FileWatcher::addWatch(fs::path directory)
-    {
-        _pathsToWatch[directory] = -1;
-    }
+namespace atta::file {
+void FileWatcher::addWatch(fs::path directory) { _pathsToWatch[directory] = -1; }
 
-    void FileWatcher::removeWatch(fs::path directory)
-    {
-        _pathsToWatch.erase(directory);
-    }
-}
+void FileWatcher::removeWatch(fs::path directory) { _pathsToWatch.erase(directory); }
+} // namespace atta::file

@@ -8,15 +8,13 @@
 #define ATTA_EVENT_EVENTS_TEXTURE_LOAD_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class TextureLoadEvent : public EventTyped<SID("TextureLoadEvent")>
-    {
-    public:
-        TextureLoadEvent(StringId sid_): sid(sid_) {}
+namespace atta::event {
+class TextureLoadEvent : public EventTyped<SID("TextureLoadEvent")> {
+  public:
+    TextureLoadEvent(StringId sid_) : sid(sid_) {}
 
-        const StringId sid;
-    };
-}
+    const StringId sid;
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_TEXTURE_LOAD_EVENT_H
+#endif // ATTA_EVENT_EVENTS_TEXTURE_LOAD_EVENT_H

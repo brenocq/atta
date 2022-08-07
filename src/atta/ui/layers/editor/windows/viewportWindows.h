@@ -9,16 +9,14 @@
 #include <atta/component/componentManager.h>
 #include <atta/component/entity.h>
 
-namespace atta::ui
-{
-    class ViewportWindows
-    {
-    public:
-        void render();
+namespace atta::ui {
+class ViewportWindows {
+  public:
+    void render();
 
-    private:
-        void addBasicShapePopup();
-    };
-}
+  private:
+    void addBasicShapePopup();
+};
+} // namespace atta::ui
 
-#endif// ATTA_UI_LAYERS_EDITOR_WINDOWS_VIEWPORT_WINDOWS_H
+#endif // ATTA_UI_LAYERS_EDITOR_WINDOWS_VIEWPORT_WINDOWS_H

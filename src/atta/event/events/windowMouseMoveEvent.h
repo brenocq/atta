@@ -8,16 +8,13 @@
 #define ATTA_EVENT_EVENTS_WINDOW_MOUSE_MOVE_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class WindowMouseMoveEvent : public EventTyped<SID("WindowMouseMoveEvent")>
-    {
-    public:
-        WindowMouseMoveEvent(float x_, float y_): 
-            x(x_), y(y_) {}
+namespace atta::event {
+class WindowMouseMoveEvent : public EventTyped<SID("WindowMouseMoveEvent")> {
+  public:
+    WindowMouseMoveEvent(float x_, float y_) : x(x_), y(y_) {}
 
-        float x, y;
-    };
-}
+    float x, y;
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_WINDOW_MOUSE_MOVE_H
+#endif // ATTA_EVENT_EVENTS_WINDOW_MOUSE_MOVE_H

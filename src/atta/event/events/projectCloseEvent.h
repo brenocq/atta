@@ -8,12 +8,10 @@
 #define ATTA_EVENT_EVENTS_PROJECT_CLOSE_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class ProjectCloseEvent : public EventTyped<SID("ProjectCloseEvent")>
-    {
-    public:
-    };
-}
+namespace atta::event {
+class ProjectCloseEvent : public EventTyped<SID("ProjectCloseEvent")> {
+  public:
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_PROJECT_CLOSE_EVENT_H
+#endif // ATTA_EVENT_EVENTS_PROJECT_CLOSE_EVENT_H

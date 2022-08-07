@@ -6,25 +6,23 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_COMPUTE_ENTITY_CLICK_H
 #define ATTA_GRAPHICS_COMPUTE_ENTITY_CLICK_H
-#include <atta/core/math/math.h>
 #include <atta/component/base.h>
+#include <atta/core/math/math.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/viewport.h>
 
-namespace atta
-{
-    class EntityClick
-    {
-    public:
-        EntityClick();
+namespace atta::graphics {
+class EntityClick {
+  public:
+    EntityClick();
 
-        EntityId click(std::shared_ptr<Viewport> viewport, vec2i pos);
+    EntityId click(std::shared_ptr<Viewport> viewport, vec2i pos);
 
-    private:
-        uint32_t _width;
-        uint32_t _height;
-        std::shared_ptr<Pipeline> _geometryPipeline;
-    };
-}
+  private:
+    uint32_t _width;
+    uint32_t _height;
+    std::shared_ptr<Pipeline> _geometryPipeline;
+};
+} // namespace atta::graphics
 
-#endif// ATTA_GRAPHICS_COMPUTE_ENTITY_CLICK_H
+#endif // ATTA_GRAPHICS_COMPUTE_ENTITY_CLICK_H

@@ -9,19 +9,17 @@
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/rendererAPIs/openGL/base.h>
 
-namespace atta
-{
-    class OpenGLPipeline final : public Pipeline
-    {
-    public:
-        OpenGLPipeline(const Pipeline::CreateInfo& info);
-        ~OpenGLPipeline();
+namespace atta::graphics {
+class OpenGLPipeline final : public Pipeline {
+  public:
+    OpenGLPipeline(const Pipeline::CreateInfo& info);
+    ~OpenGLPipeline();
 
-        void begin(bool clear = true) override;
-        void end() override;
+    void begin(bool clear = true) override;
+    void end() override;
 
-        void* getImGuiTexture() const override;
-    };
-}
+    void* getImGuiTexture() const override;
+};
+} // namespace atta::graphics
 
-#endif// ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_PIPELINE_H
+#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_PIPELINE_H

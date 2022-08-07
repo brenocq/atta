@@ -9,24 +9,22 @@
 #include <atta/graphics/layers/layer.h>
 #include <atta/memory/allocatedObject.h>
 
-namespace atta::ui
-{
-    class UILayer final : public Layer, public AllocatedObject<UILayer, SID("GraphicsAllocator")>
-    {
-    public:
-        UILayer();
+namespace atta::ui {
+class UILayer final : public Layer, public AllocatedObject<UILayer, SID("GraphicsAllocator")> {
+  public:
+    UILayer();
 
-        void onAttach() override;
-        void onDetach() override;
-        void onRender() override;
-        void onUIRender() override;
+    void onAttach() override;
+    void onDetach() override;
+    void onRender() override;
+    void onUIRender() override;
 
-        void begin();
-        void end();
+    void begin();
+    void end();
 
-    private:
-        void setTheme();
-    };
-}
+  private:
+    void setTheme();
+};
+} // namespace atta::ui
 
-#endif// ATTA_GRAPHICS_LAYERS_INTERNAL_UI_LAYER_H
+#endif // ATTA_GRAPHICS_LAYERS_INTERNAL_UI_LAYER_H

@@ -26,4 +26,4 @@
 #include <atta/component/components/sphereColliderComponent.h>
 #include <atta/component/components/transformComponent.h>
 
-#endif// ATTA_COMPONENT_COMPONENTS_COMPONENTS_H
+#endif // ATTA_COMPONENT_COMPONENTS_COMPONENTS_H

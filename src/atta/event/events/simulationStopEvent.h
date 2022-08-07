@@ -8,13 +8,11 @@
 #define ATTA_EVENT_EVENTS_SIMULATION_STOP_EVENT_H
 #include <atta/event/event.h>
 
-namespace atta
-{
-    class SimulationStopEvent : public EventTyped<SID("SimulationStopEvent")>
-    {
-    public:
-        SimulationStopEvent() = default;
-    };
-}
+namespace atta::event {
+class SimulationStopEvent : public EventTyped<SID("SimulationStopEvent")> {
+  public:
+    SimulationStopEvent() = default;
+};
+} // namespace atta::event
 
-#endif// ATTA_EVENT_EVENTS_SIMULATION_STOP_EVENT_H
+#endif // ATTA_EVENT_EVENTS_SIMULATION_STOP_EVENT_H

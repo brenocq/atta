@@ -6,11 +6,6 @@
 //--------------------------------------------------
 #include <atta/component/entity.h>
 
-namespace atta
-{
-    Entity::Entity(EntityId id, int cloneId):
-        _id(id), _cloneId(cloneId)
-    {
-
-    }
-}
+namespace atta::component {
+Entity::Entity(EntityId id, int cloneId) : _id(id), _cloneId(cloneId) {}
+} // namespace atta::component
