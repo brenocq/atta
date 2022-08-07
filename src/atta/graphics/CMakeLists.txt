@@ -52,7 +52,7 @@ add_library(atta_graphics_module STATIC
     ${ATTA_GRAPHICS_MODULE_SOURCE}
 )
 target_link_libraries(atta_graphics_module PUBLIC ${ATTA_GLFW_TARGETS} ${ATTA_GLAD_TARGETS} ${ATTA_IMGUI_TARGETS} 
-    atta_core atta_component_module atta_file_module atta_resource_module atta_ui_module)
+    atta_component_module atta_file_module atta_resource_module atta_ui_module atta_utils)
 
 atta_target_common(atta_graphics_module)
 atta_add_libs(atta_graphics_module)
