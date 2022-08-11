@@ -26,9 +26,7 @@ set(ATTA_ASSIMP_TARGETS "")
     set(ASSIMP_INSTALL OFF CACHE INTERNAL "" FORCE)
     FetchContent_Declare(
         assimp
-        GIT_REPOSITORY "https://github.com/assimp/assimp"
-        GIT_TAG "5976d5443739714f4d8fe8a4cc5a041c8bb5a967"
-        GIT_PROGRESS TRUE
+        URL "https://storage.googleapis.com/atta-repos/assimp-5.2.4-light.zip"
     )
     atta_log(Info Extern "Fetching Assimp...")
     atta_FetchContent_MakeAvailable(assimp) 

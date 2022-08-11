@@ -17,8 +17,9 @@ else()
     FetchContent_Declare(
         box2d
         GIT_REPOSITORY "https://github.com/erincatto/box2d"
-        GIT_TAG "9dc24a6fd4f32442c4bcf80791de47a0a7d25afb"
+        GIT_TAG "v2.4.1"
         GIT_PROGRESS TRUE
+        GIT_SHALLOW TRUE
     )
     atta_log(Info Extern "Fetching Box2D...")
     FetchContent_MakeAvailable(box2d)

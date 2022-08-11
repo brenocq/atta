@@ -4,8 +4,9 @@ set(ATTA_IMPLOT_TARGETS "")
 FetchContent_Declare(
     implot
     GIT_REPOSITORY "https://github.com/epezent/implot"
-    GIT_TAG "3dd7e75c7de3ea6f6030ed7c0b654a31158d6abb"
+    GIT_TAG "v0.13"
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 
 atta_log(Info Extern "Fetching ImPlot...")

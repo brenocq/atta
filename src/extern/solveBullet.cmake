@@ -18,8 +18,9 @@ else()
     FetchContent_Declare(
         bullet3
         GIT_REPOSITORY "https://github.com/bulletphysics/bullet3"
-        GIT_TAG "478da7469a34074aa051e8720734287ca371fd3e"
+        GIT_TAG "3.24"
         GIT_PROGRESS TRUE
+        GIT_SHALLOW TRUE
     )
     atta_log(Info Extern "Fetching Bullet...")
     FetchContent_MakeAvailable(bullet3)

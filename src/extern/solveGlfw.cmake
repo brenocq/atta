@@ -17,8 +17,9 @@ if(NOT ATTA_SYSTEM_NAME MATCHES "Web")
         FetchContent_Declare(
             glfw
             GIT_REPOSITORY "https://github.com/glfw/glfw"
-            GIT_TAG "df8d7bc892937a8b0f7c604c92a9f64f383cf48c"
+            GIT_TAG "3.3.8"
             GIT_PROGRESS TRUE
+            GIT_SHALLOW TRUE
         )
 
         atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/glfw-src/include)
