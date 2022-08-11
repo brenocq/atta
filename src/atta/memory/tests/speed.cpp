@@ -7,7 +7,7 @@
 #include <atta/memory/allocatedObject.h>
 #include <atta/memory/allocators/mallocAllocator.h>
 #include <atta/memory/allocators/stackAllocator.h>
-#include <atta/memory/manager.h>
+#include <atta/memory/interface.h>
 #include <atta/utils/stringId.h>
 #include <gtest/gtest.h>
 
@@ -33,9 +33,9 @@ struct TestCpp {
 class Memory_Speed : public ::testing::Test {
   public:
     void SetUp() {
-        memory::Manager::registerAllocator(SID("Stack"), static_cast<Allocator*>(new StackAllocator(sizeof(TestStack) * NUM_OBJ)));
+        memory::registerAllocator(SID("Stack"), static_cast<Allocator*>(new StackAllocator(sizeof(TestStack) * NUM_OBJ)));
 
-        memory::Manager::registerAllocator(SID("Malloc"), static_cast<Allocator*>(new MallocAllocator()));
+        memory::registerAllocator(SID("Malloc"), static_cast<Allocator*>(new MallocAllocator()));
     }
 };
 
@@ -77,7 +77,7 @@ TEST_F(Memory_Speed, StackObj) {
 }
 
 TEST_F(Memory_Speed, StackPtr) {
-    StackAllocator* stack = memory::Manager::getAllocator<StackAllocator>(SID("Stack"));
+    StackAllocator* stack = memory::getAllocator<StackAllocator>(SID("Stack"));
     TestStack* a[NUM_OBJ];
     for (int it = 0; it < NUM_IT; it++) {
         for (int i = 0; i < NUM_OBJ; i++) {
@@ -101,7 +101,7 @@ TEST_F(Memory_Speed, StackWithManager) {
         }
     }
 
-    StackAllocator* stack = memory::Manager::getAllocator<StackAllocator>(SID("Stack"));
+    StackAllocator* stack = memory::getAllocator<StackAllocator>(SID("Stack"));
     EXPECT_EQ(stack->getUsedMemory(), 0);
 }
 } // namespace

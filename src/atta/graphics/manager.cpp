@@ -4,25 +4,23 @@
 // Date: 2021-08-23
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/event/manager.h>
+#include <atta/graphics/interface.h>
 #include <atta/graphics/manager.h>
-#include <atta/memory/allocators/stackAllocator.h>
-#include <atta/memory/manager.h>
-
-#include <atta/graphics/windows/glfwWindow.h>
-#include <atta/graphics/windows/nullWindow.h>
-
-#include <atta/graphics/rendererAPIs/openGL/openGL.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
-
-#include <atta/graphics/renderers/fastRenderer.h>
-#include <atta/graphics/renderers/pbrRenderer.h>
-#include <atta/graphics/renderers/phongRenderer.h>
 
 #include <atta/graphics/cameras/orthographicCamera.h>
 #include <atta/graphics/cameras/perspectiveCamera.h>
-
 #include <atta/graphics/drawer.h>
+#include <atta/graphics/rendererAPIs/openGL/openGL.h>
+#include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
+#include <atta/graphics/renderers/fastRenderer.h>
+#include <atta/graphics/renderers/pbrRenderer.h>
+#include <atta/graphics/renderers/phongRenderer.h>
+#include <atta/graphics/windows/glfwWindow.h>
+#include <atta/graphics/windows/nullWindow.h>
+
+#include <atta/event/manager.h>
+#include <atta/memory/allocators/stackAllocator.h>
+#include <atta/memory/interface.h>
 
 namespace atta::graphics {
 
@@ -31,17 +29,16 @@ Manager& Manager::getInstance() {
     return instance;
 }
 
-void Manager::startUp() { getInstance().startUpImpl(); }
 void Manager::startUpImpl() {
     //----- Module Memory -----//
     // Get main memory
-    memory::Allocator* mainAllocator = memory::Manager::getAllocator(SSID("MainAllocator"));
+    memory::Allocator* mainAllocator = memory::getAllocator(SSID("MainAllocator"));
     size_t size = 32 * 1024 * 1024; // 32MB
     // Alloc memory inside main memory
     uint8_t* graphicsMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
     // Create new allocator with graphics memory
     memory::StackAllocator* graphics = new memory::StackAllocator(graphicsMemory, size);
-    memory::Manager::registerAllocator(SSID("GraphicsAllocator"), static_cast<memory::Allocator*>(graphics));
+    memory::registerAllocator(SSID("GraphicsAllocator"), static_cast<memory::Allocator*>(graphics));
 
     //----- Window -----//
     Window::CreateInfo windowInfo{};
@@ -65,7 +62,6 @@ void Manager::startUpImpl() {
     // Drawer::add(Drawer::Point({0,0,1}, {0,0,1,1}));
 }
 
-void Manager::shutDown() { getInstance().shutDownImpl(); }
 void Manager::shutDownImpl() {
     // Every reference to the framebuffers must be deleted before window deletion
     for (auto& viewport : _viewports)
@@ -81,7 +77,6 @@ void Manager::shutDownImpl() {
     _window.reset();
 }
 
-void Manager::update() { getInstance().updateImpl(); }
 void Manager::updateImpl() {
     // Update viewport if it was changed
     if (_swapViewports) {
@@ -103,22 +98,18 @@ void Manager::updateImpl() {
     _window->swapBuffers();
 }
 
-void Manager::pushLayer(Layer* layer) { getInstance().pushLayerImpl(layer); }
 void Manager::pushLayerImpl(Layer* layer) { _layerStack->push(layer); }
 
-void Manager::clearViewports() { return getInstance().clearViewportsImpl(); }
 void Manager::clearViewportsImpl() {
     _viewportsNext.clear();
     _swapViewports = true;
 }
 
-void Manager::addViewport(std::shared_ptr<Viewport> viewport) { return getInstance().addViewportImpl(viewport); }
 void Manager::addViewportImpl(std::shared_ptr<Viewport> viewport) {
     _viewportsNext.push_back(viewport);
     _swapViewports = true;
 }
 
-void Manager::removeViewport(std::shared_ptr<Viewport> viewport) { return getInstance().removeViewportImpl(viewport); }
 void Manager::removeViewportImpl(std::shared_ptr<Viewport> viewport) {
     // TODO make it work with zero viewports
     if (_viewportsNext.size() > 1) {
@@ -133,7 +124,6 @@ void Manager::removeViewportImpl(std::shared_ptr<Viewport> viewport) {
     }
 }
 
-void Manager::createDefaultViewports() { getInstance().createDefaultViewportsImpl(); }
 void Manager::createDefaultViewportsImpl() {
     _viewportsNext.clear();
 
@@ -145,9 +135,6 @@ void Manager::createDefaultViewportsImpl() {
     _swapViewports = true;
 }
 
-component::EntityId Manager::viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos) {
-    return getInstance().viewportEntityClickImpl(viewport, pos);
-}
 component::EntityId Manager::viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos) {
     return _computeEntityClick->click(viewport, pos);
 }

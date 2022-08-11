@@ -9,10 +9,10 @@
 
 #include <atta/ui/layers/editor/window.h>
 
-#include <atta/io/manager.h>
+#include <atta/io/interface.h>
 
 #include <atta/graphics/image.h>
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 
 namespace atta::ui {
 

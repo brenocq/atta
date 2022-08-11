@@ -20,7 +20,7 @@ void IOModuleWindow::cameraTabItem() {
                 io::Camera::CreateInfo info{};
                 info.deviceName = name;
                 info.debugName = StringId("[atta::ui] " + info.deviceName + " camera");
-                _cameras[name] = io::Manager::create<io::Camera>(info);
+                _cameras[name] = io::create<io::Camera>(info);
                 LOG_DEBUG("ui::IOModuleWindow", "Starting device $0, $1", name, _cameras[name] == nullptr);
                 if (_cameras[name] && _cameras[name]->start()) {
                     graphics::Image::CreateInfo imgInfo{};
@@ -28,7 +28,7 @@ void IOModuleWindow::cameraTabItem() {
                     imgInfo.height = _cameras[name]->getResolution().height;
                     imgInfo.format = graphics::Image::Format::RGBA;
                     imgInfo.debugName = StringId("[atta::ui] " + info.deviceName + " image");
-                    _cameraImages[name] = graphics::Manager::create<graphics::Image>(imgInfo);
+                    _cameraImages[name] = graphics::create<graphics::Image>(imgInfo);
                     LOG_DEBUG("ui::IOModuleWindow", "Camera $0 initialized", name);
                 } else {
                     // Failed to initialize, remove from deviceNames

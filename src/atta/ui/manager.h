@@ -7,13 +7,16 @@
 #ifndef ATTA_UI_MANAGER_H
 #define ATTA_UI_MANAGER_H
 
+#include <atta/ui/interface.h>
+
 namespace atta::ui {
 
 class Manager final {
   public:
     static Manager& getInstance();
-    static void startUp();
-    static void shutDown();
+
+    friend void startUp();
+    friend void shutDown();
 
   private:
     void startUpImpl();

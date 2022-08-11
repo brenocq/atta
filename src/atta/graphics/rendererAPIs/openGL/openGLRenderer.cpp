@@ -13,12 +13,12 @@
 #include <atta/event/events/meshLoad.h>
 #include <atta/event/manager.h>
 
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 #include <atta/graphics/rendererAPIs/openGL/base.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLFramebuffer.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
 
-#include <atta/resource/manager.h>
+#include <atta/resource/interface.h>
 #include <atta/resource/resources/image.h>
 #include <atta/resource/resources/mesh.h>
 
@@ -186,10 +186,10 @@ OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window) : RendererAPI(Ren
     }
 
     // Initialize meshes already loaded (create vertex/indices)
-    for (auto meshSid : resource::Manager::getResources<resource::Mesh>())
+    for (auto meshSid : resource::getResources<resource::Mesh>())
         initializeMesh(meshSid);
     // Initialize textures already loaded
-    for (auto imgSid : resource::Manager::getResources<resource::Image>())
+    for (auto imgSid : resource::getResources<resource::Image>())
         initializeImage(imgSid);
 }
 
@@ -256,7 +256,7 @@ void OpenGLRenderer::onImageLoadEvent(event::Event& event) {
 
 void OpenGLRenderer::onImageUpdateEvent(event::Event& event) {
     event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
-    resource::Image* image = resource::Manager::get<resource::Image>(e.sid.getString());
+    resource::Image* image = resource::get<resource::Image>(e.sid.getString());
     if (image == nullptr) {
         LOG_WARN("graphics::OpenGLRenderer", "Could not initialize OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
         return;
@@ -288,7 +288,7 @@ void OpenGLRenderer::renderFramebufferToQuad(std::shared_ptr<Framebuffer> frameb
 
 void OpenGLRenderer::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
     // Ensure that the texture was loaded
-    resource::Manager::get<resource::Image>(fs::path(textureSid.getString()));
+    resource::get<resource::Image>(fs::path(textureSid.getString()));
 
     // Output texture id
     unsigned int cubemap;
@@ -310,7 +310,7 @@ void OpenGLRenderer::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/compute/equiToCubemap.vert", "shaders/compute/equiToCubemap.frag"};
     shaderGroupInfo.debugName = StringId("EquiToCubemap Shader Group");
-    std::shared_ptr<ShaderGroup> shader = Manager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shader = graphics::create<ShaderGroup>(shaderGroupInfo);
 
     // Create cubemap texture
     glGenTextures(1, &cubemap);
@@ -421,7 +421,7 @@ void OpenGLRenderer::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcIn
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, mip);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            Manager::getRendererAPI()->renderCube();
+            graphics::getRendererAPI()->renderCube();
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -457,7 +457,7 @@ void OpenGLRenderer::generateProcessedTexture(GenerateProcessedTextureInfo gptIn
         gptInfo.func(gptInfo.shader);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    Manager::getRendererAPI()->renderQuad3();
+    graphics::getRendererAPI()->renderQuad3();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     _openGLImages[gptInfo.textureSid.getId()] = image;
@@ -469,7 +469,7 @@ void OpenGLRenderer::initializeMesh(StringId sid) {
 }
 
 void OpenGLRenderer::initializeImage(StringId sid) {
-    resource::Image* image = resource::Manager::get<resource::Image>(sid.getString());
+    resource::Image* image = resource::get<resource::Image>(sid.getString());
     if (image == nullptr)
         LOG_WARN("graphics::OpenGLRenderer", "Could not initialize OpenGL image from [w]$0[]", sid.getString());
 

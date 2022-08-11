@@ -7,53 +7,37 @@
 #ifndef ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 
-#include <atta/graphics/layers/layerStack.h>
-#include <atta/graphics/viewport.h>
-#include <atta/graphics/windows/window.h>
-
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/indexBuffer.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderPass.h>
-#include <atta/graphics/rendererAPI.h>
 #include <atta/graphics/shader.h>
 #include <atta/graphics/shaderGroup.h>
 #include <atta/graphics/vertexBuffer.h>
 
 #include <atta/graphics/compute/entityClick.h>
 
-#include <atta/component/base.h>
-
 namespace atta::graphics {
 
 class Manager final {
   public:
     static Manager& getInstance();
-    static void startUp();
-    static void shutDown();
 
-    static void update();
-    static void pushLayer(Layer* layer);
-
-    // Used to create the object (image/pipeline/renderPass/...) based on the current rendererAPI
-    // e.g.: Manager::create<Pipeline>(pipelineInfo) will create OpenGLPipeline or
-    // VulkanPipeline or ... depending on the current renderering API
+    friend void startUp();
+    friend void shutDown();
+    friend void update();
+    friend void pushLayer(Layer* layer);
     template <typename T, typename... Args>
-    static std::shared_ptr<T> create(Args... args) {
-        return getInstance().createImpl<T>(args...);
-    }
-    static std::shared_ptr<RendererAPI> getRendererAPI() { return getInstance().getRendererAPIImpl(); };
-
-    //----- Viewport -----//
-    static std::vector<std::shared_ptr<Viewport>> getViewports() { return getInstance().getViewportsImpl(); }
-    static void clearViewports();
-    static void addViewport(std::shared_ptr<Viewport> viewport);
-    static void removeViewport(std::shared_ptr<Viewport> viewport);
-    static void createDefaultViewports();
-    static component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
-
-    static void* getImGuiImage(StringId sid) { return getInstance().getImGuiImageImpl(sid); }
+    friend std::shared_ptr<T> create(Args... args);
+    friend std::shared_ptr<RendererAPI> getRendererAPI();
+    friend std::vector<std::shared_ptr<Viewport>> getViewports();
+    friend void clearViewports();
+    friend void addViewport(std::shared_ptr<Viewport> viewport);
+    friend void removeViewport(std::shared_ptr<Viewport> viewport);
+    friend void createDefaultViewports();
+    friend component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
+    friend void* getImGuiImage(StringId sid);
 
   private:
     void startUpImpl();

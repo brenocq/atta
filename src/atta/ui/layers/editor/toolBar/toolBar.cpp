@@ -9,7 +9,7 @@
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/manager.h>
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 #include <atta/ui/layers/editor/toolBar/toolBar.h>
 #include <atta/utils/config.h>
 #include <imgui.h>
@@ -43,8 +43,7 @@ void ToolBar::render() {
         switch (_editorState) {
         case EditorState::EDITOR: {
             ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f));
-            if (ImGui::ImageButton(graphics::Manager::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
-                                   0)) {
+            if (ImGui::ImageButton(graphics::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
                 event::SimulationStart e;
                 event::Manager::publish(e);
                 _editorState = EditorState::SIMULATION_RUNNING;
@@ -55,15 +54,13 @@ void ToolBar::render() {
         case EditorState::SIMULATION_PAUSED: {
             ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - buttonH / 2 - 2.0f);
             if (_editorState == EditorState::SIMULATION_RUNNING)
-                if (ImGui::ImageButton(graphics::Manager::getImGuiImage("icons/pause.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
-                                       0)) {
+                if (ImGui::ImageButton(graphics::getImGuiImage("icons/pause.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
                     event::SimulationPause e;
                     event::Manager::publish(e);
                     _editorState = EditorState::SIMULATION_PAUSED;
                 }
             if (_editorState == EditorState::SIMULATION_PAUSED)
-                if (ImGui::ImageButton(graphics::Manager::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
-                                       0)) {
+                if (ImGui::ImageButton(graphics::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
                     event::SimulationContinue e;
                     event::Manager::publish(e);
                     _editorState = EditorState::SIMULATION_RUNNING;
@@ -71,8 +68,7 @@ void ToolBar::render() {
 
             ImGui::SameLine();
             ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) + buttonH / 2 + 2.0f);
-            if (ImGui::ImageButton(graphics::Manager::getImGuiImage("icons/stop.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1),
-                                   0)) {
+            if (ImGui::ImageButton(graphics::getImGuiImage("icons/stop.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
                 event::SimulationStop e;
                 event::Manager::publish(e);
                 _editorState = EditorState::EDITOR;

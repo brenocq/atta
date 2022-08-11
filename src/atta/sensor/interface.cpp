@@ -22,4 +22,3 @@ std::vector<CameraInfo>& getCameraInfos() { return Manager::getInstance()._camer
 void* getEntityCameraImGuiTexture(component::EntityId eid) { return Manager::getInstance().getEntityCameraImGuiTextureImpl(eid); }
 
 } // namespace atta::sensor
-

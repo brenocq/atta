@@ -7,7 +7,7 @@
 #include <atta/graphics/compute/entityClick.h>
 
 #include <atta/graphics/framebuffer.h>
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 #include <atta/graphics/renderPass.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 
@@ -25,20 +25,20 @@ EntityClick::EntityClick() : _width(500), _height(500) {
     framebufferInfo.width = _width;
     framebufferInfo.height = _height;
     framebufferInfo.debugName = StringId("EntityClick Framebuffer");
-    std::shared_ptr<Framebuffer> framebuffer = Manager::create<Framebuffer>(framebufferInfo);
+    std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
     // Render Pass
     RenderPass::CreateInfo renderPassInfo{};
     renderPassInfo.framebuffer = framebuffer;
     renderPassInfo.debugName = StringId("EntityClick Render Pass");
-    std::shared_ptr<RenderPass> renderPass = Manager::create<RenderPass>(renderPassInfo);
+    std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
 
     //---------- Graphics pipeline ----------//
     // Shader Group
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/compute/entityClick.vert", "shaders/compute/entityClick.frag"};
     shaderGroupInfo.debugName = StringId("EntityClick Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
 
     Pipeline::CreateInfo pipelineInfo{};
     // Vertex input layout
@@ -47,7 +47,7 @@ EntityClick::EntityClick() : _width(500), _height(500) {
                            {"inNormal", VertexBufferElement::Type::VEC3},
                            {"inTexCoord", VertexBufferElement::Type::VEC2}};
     pipelineInfo.renderPass = renderPass;
-    _geometryPipeline = Manager::create<Pipeline>(pipelineInfo);
+    _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 }
 
 component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i pos) {
@@ -75,7 +75,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
         shader->setMat4("projection", m);
         shader->setMat4("view", m);
         shader->setInt("entityId", -1);
-        Manager::getRendererAPI()->renderQuad3();
+        graphics::getRendererAPI()->renderQuad3();
         glEnable(GL_DEPTH_TEST);
         glClear(GL_DEPTH_BUFFER_BIT); // XXX Not sure why but it only works in the browser if clear the depth buffer
 
@@ -96,7 +96,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
                 maxEid = std::max((int)maxEid, entity);
 
                 // Draw mesh
-                Manager::getRendererAPI()->renderMesh(mesh->sid);
+                graphics::getRendererAPI()->renderMesh(mesh->sid);
             }
         }
 

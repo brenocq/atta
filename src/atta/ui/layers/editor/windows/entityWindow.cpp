@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/component/componentRegistry.h>
 #include <atta/component/components/components.h>
-#include <atta/resource/manager.h>
+#include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>
 #include <atta/script/manager.h>
 #include <atta/sensor/manager.h>
@@ -171,7 +171,7 @@ void EntityWindow::renderComponents() {
 }
 
 void EntityWindow::textureCombo(std::string comboId, StringId& sid) {
-    std::vector<StringId> textures = resource::Manager::getResources<resource::Image>();
+    std::vector<StringId> textures = resource::getResources<resource::Image>();
 
     if (sid == "Empty texture") {
         DASSERT(textures.size() > 0, "At least one texture should be loaded to the memory");

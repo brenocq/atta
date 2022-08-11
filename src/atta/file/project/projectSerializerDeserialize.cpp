@@ -43,11 +43,11 @@ void ProjectSerializer::deserializeComponentSystem(Section& section) {
 
 void ProjectSerializer::deserializeGraphicsSystem(Section& section) {
     std::vector<graphics::Viewport> viewports = std::vector<graphics::Viewport>(section["viewports"]);
-    graphics::Manager::clearViewports();
+    graphics::clearViewports();
     for (auto& viewport : viewports) {
         std::shared_ptr<graphics::Viewport> v = std::make_shared<graphics::Viewport>();
         *v = viewport;
-        graphics::Manager::addViewport(v);
+        graphics::addViewport(v);
     }
 }
 

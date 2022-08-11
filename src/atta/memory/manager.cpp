@@ -4,11 +4,15 @@
 // Date: 2021-08-20
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/memory/interface.h>
 #include <atta/memory/manager.h>
 
 namespace atta::memory {
 
-void Manager::registerAllocator(StringHash hash, Allocator* alloc) { getInstance().registerAllocatorImpl(hash, alloc); }
+Manager& Manager::getInstance() {
+    static Manager instance;
+    return instance;
+}
 
 Allocator* Manager::getAllocatorImpl(StringHash hash) {
     auto allocator = _allocators.find(hash);

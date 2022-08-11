@@ -8,9 +8,9 @@
 #define ATTA_COMPONENT_INTERFACE_H
 
 #include <atta/component/base.h>
-#include <atta/component/typedComponentRegistry.h>
 #include <atta/component/components/component.h>
 #include <atta/component/factory.h>
+#include <atta/component/typedComponentRegistry.h>
 
 namespace atta::component {
 
@@ -75,6 +75,6 @@ T* getEntityComponent(EntityId entity) {
     return Manager::getInstance().getEntityComponentImpl<T>(entity);
 }
 
-} // namespace atta::compoent
+} // namespace atta::component
 
 #endif // ATTA_COMPONENT_INTERFACE_H

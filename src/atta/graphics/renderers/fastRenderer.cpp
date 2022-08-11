@@ -7,11 +7,11 @@
 #include <atta/graphics/renderers/fastRenderer.h>
 
 #include <atta/graphics/framebuffer.h>
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 #include <atta/graphics/renderPass.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 
-#include <atta/resource/manager.h>
+#include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>
 
 #include <atta/component/components/material.h>
@@ -31,19 +31,19 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     framebufferInfo.width = 500;
     framebufferInfo.height = 500;
     framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
-    std::shared_ptr<Framebuffer> framebuffer = Manager::create<Framebuffer>(framebufferInfo);
+    std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
     // Shader Group
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/fastRenderer/shader.vert", "shaders/fastRenderer/shader.frag"};
     shaderGroupInfo.debugName = StringId("FastRenderer Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
 
     // Render Pass
     RenderPass::CreateInfo renderPassInfo{};
     renderPassInfo.framebuffer = framebuffer;
     renderPassInfo.debugName = StringId("FastRenderer Render Pass");
-    std::shared_ptr<RenderPass> renderPass = Manager::create<RenderPass>(renderPassInfo);
+    std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
 
     Pipeline::CreateInfo pipelineInfo{};
     // Vertex input layout
@@ -52,7 +52,7 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
                            {"inNormal", VertexBufferElement::Type::VEC3},
                            {"inTexCoord", VertexBufferElement::Type::VEC2}};
     pipelineInfo.renderPass = renderPass;
-    _geometryPipeline = Manager::create<Pipeline>(pipelineInfo);
+    _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 
     //---------- Common pipelines ----------//
     _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
@@ -91,7 +91,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                 }
 
                 // Draw mesh
-                Manager::getRendererAPI()->renderMesh(mesh->sid);
+                graphics::getRendererAPI()->renderMesh(mesh->sid);
             }
         }
     }

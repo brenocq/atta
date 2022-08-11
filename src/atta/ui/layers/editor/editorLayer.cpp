@@ -4,8 +4,8 @@
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/manager.h>
-#include <atta/resource/manager.h>
+#include <atta/graphics/interface.h>
+#include <atta/resource/interface.h>
 #include <atta/script/interface.h>
 #include <atta/ui/layers/editor/editorLayer.h>
 #include <imgui_internal.h>

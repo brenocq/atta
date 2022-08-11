@@ -11,7 +11,7 @@
 #include <atta/event/events/windowClose.h>
 #include <atta/event/manager.h>
 #include <atta/file/manager.h>
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 #include <imgui.h>
 
 #include <atta/graphics/cameras/perspectiveCamera.h>
@@ -79,7 +79,7 @@ void TopBar::render() {
         }
 
         if (ImGui::BeginMenu("Viewports")) {
-            std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::Manager::getViewports();
+            std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
             _viewportModals.resize(viewports.size());
             int i = 0;
             for (auto viewport : viewports) {
@@ -112,7 +112,7 @@ void TopBar::render() {
                     std::make_shared<graphics::PerspectiveCamera>(graphics::PerspectiveCamera::CreateInfo{}));
                 viewportInfo.sid = StringId("Viewport " + std::to_string(newViewportNumber));
                 std::shared_ptr<graphics::Viewport> viewport = std::make_shared<graphics::Viewport>(viewportInfo);
-                graphics::Manager::addViewport(viewport);
+                graphics::addViewport(viewport);
             }
 
             ImGui::EndMenu();
@@ -440,7 +440,7 @@ void TopBar::saveProjectModal() {
             component::clear();
             component::createDefault();
             // Replace viewports with default
-            graphics::Manager::createDefaultViewports();
+            graphics::createDefaultViewports();
 
             if (_quitAfterSaveModal) {
                 event::WindowClose e;
@@ -455,7 +455,7 @@ void TopBar::saveProjectModal() {
 }
 
 void TopBar::viewportModals() {
-    std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::Manager::getViewports();
+    std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
     static std::vector<bool> newViewportModals; // If first time creating the modal
     _viewportModals.resize(viewports.size());
 
@@ -477,7 +477,7 @@ void TopBar::viewportModals() {
 
                 ImGui::Separator();
                 if (ImGui::Button("Delete Viewport")) {
-                    graphics::Manager::removeViewport(viewports[i]);
+                    graphics::removeViewport(viewports[i]);
                     ImGui::End();
                     break;
                 }

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_PHYSICS_MODULE_SOURCE
+    interface.cpp
     manager.cpp
 	
 	physicsEngines/physicsEngine.cpp

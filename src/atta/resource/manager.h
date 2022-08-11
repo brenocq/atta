@@ -10,7 +10,6 @@
 #include <atta/event/manager.h>
 #include <atta/memory/allocators/bitmapAllocator.h>
 #include <atta/resource/resources/resources.h>
-#include <atta/utils/stringId.h>
 
 namespace atta::resource {
 
@@ -19,21 +18,15 @@ class Manager final {
     using ResourceType = size_t;
 
     static Manager& getInstance();
-    static void startUp();
-    static void shutDown();
 
+    friend void startUp();
+    friend void shutDown();
     template <typename R, typename... Args>
-    static R* create(const fs::path& filename, Args... args) {
-        return getInstance().createImpl<R>(filename, args...);
-    }
+    friend R* create(const fs::path& filename, Args... args);
     template <typename R>
-    static R* get(const fs::path& filename) {
-        return getInstance().getImpl<R>(filename);
-    }
+    friend R* get(const fs::path& filename);
     template <typename R>
-    static std::vector<StringId> getResources() {
-        return getInstance().getResourcesImpl<R>();
-    }
+    friend std::vector<StringId> getResources();
 
   private:
     void startUpImpl();

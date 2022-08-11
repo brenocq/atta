@@ -4,7 +4,7 @@
 // Date: 2021-08-21
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/memory/manager.h>
+#include <atta/memory/interface.h>
 
 namespace atta::memory {
 
@@ -118,7 +118,7 @@ void AllocatedObject<Object, allocatorId>::operator delete[](void* ptr, std::siz
 template <class Object, StringHash allocatorId>
 // It is faster to use last allocator pointer than accessing the Manager unordered_map
 Allocator* getLastAllocator() {
-    static Allocator** allocator = Manager::getAllocatorPtr<Allocator>(allocatorId);
+    static Allocator** allocator = memory::getAllocatorPtr<Allocator>(allocatorId);
 
     // Try to allocate using last used allocator
     if (allocator != nullptr && *allocator != nullptr)

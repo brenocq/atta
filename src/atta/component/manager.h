@@ -14,7 +14,7 @@
 #include <atta/memory/allocators/bitmapAllocator.h>
 #include <atta/memory/allocators/poolAllocatorT.h>
 #include <atta/memory/allocators/stackAllocator.h>
-#include <atta/memory/manager.h>
+#include <atta/memory/interface.h>
 
 namespace atta::component {
 

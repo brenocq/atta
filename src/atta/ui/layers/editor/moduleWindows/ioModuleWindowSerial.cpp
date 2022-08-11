@@ -29,7 +29,7 @@ repeatSerialErase:
                 info.baudRate = 9600;
                 info.timeout = 0.0f;
                 info.debugName = StringId("[atta::ui] " + info.deviceName + " serial");
-                _serials[name] = io::Manager::create<io::Serial>(info);
+                _serials[name] = io::create<io::Serial>(info);
                 _serials[name]->start();
 
                 _serialInputBuf[name].resize(1024);

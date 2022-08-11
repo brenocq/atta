@@ -4,12 +4,14 @@
 // Date: 2021-09-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/resource/interface.h>
+#include <atta/resource/manager.h>
+
 #include <atta/event/events/imageLoad.h>
 #include <atta/event/events/meshLoad.h>
 #include <atta/event/events/projectOpen.h>
 #include <atta/file/manager.h>
-#include <atta/memory/manager.h>
-#include <atta/resource/manager.h>
+#include <atta/memory/interface.h>
 
 namespace atta::resource {
 
@@ -18,16 +20,15 @@ Manager& Manager::getInstance() {
     return instance;
 }
 
-void Manager::startUp() { getInstance().startUpImpl(); }
 void Manager::startUpImpl() {
     //----- Module Memory -----//
     // Get main memory
-    memory::Allocator* mainAllocator = memory::Manager::getAllocator(SSID("MainAllocator"));
+    memory::Allocator* mainAllocator = memory::getAllocator(SSID("MainAllocator"));
     size_t size = 128 * 1024 * 1024; // 128MB
     // Alloc memory inside main memory
     uint8_t* resourceMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
     _allocator = new memory::BitmapAllocator(resourceMemory, size);
-    memory::Manager::registerAllocator(SSID("ResourceAllocator"), static_cast<memory::Allocator*>(_allocator));
+    memory::registerAllocator(SSID("ResourceAllocator"), static_cast<memory::Allocator*>(_allocator));
 
     // Subscribe to project open (load project events when opened)
     event::Manager::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
@@ -37,7 +38,6 @@ void Manager::startUpImpl() {
         loadResourcesRecursively(resourcePath);
 }
 
-void Manager::shutDown() { getInstance().shutDownImpl(); }
 void Manager::shutDownImpl() {}
 
 void Manager::onProjectOpen(event::Event& event) {
@@ -54,14 +54,14 @@ void Manager::loadResourcesRecursively(fs::path directory) {
         for (auto& extension : meshExtensions)
             if (extension == file.extension().string()) {
                 LOG_DEBUG("resource::Manager", "Resource mesh: [w]$0[]", file.string());
-                Manager::get<Mesh>(file.string());
+                resource::get<Mesh>(file.string());
                 break;
             }
         // Load as image
         for (auto& extension : imageExtensions)
             if (extension == file.extension().string()) {
                 LOG_DEBUG("resource::Manager", "Resource image: [w]$0[]", file.string());
-                Manager::get<Image>(file.string());
+                resource::get<Image>(file.string());
                 break;
             }
     }

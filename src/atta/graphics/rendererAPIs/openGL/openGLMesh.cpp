@@ -5,13 +5,13 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/rendererAPIs/openGL/openGLMesh.h>
-#include <atta/resource/manager.h>
+#include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>
 
 namespace atta::graphics {
 
 OpenGLMesh::OpenGLMesh(StringId sid) : _sid(sid), _id(0) {
-    resource::Mesh* mesh = resource::Manager::get<resource::Mesh>(sid.getString());
+    resource::Mesh* mesh = resource::get<resource::Mesh>(sid.getString());
 
     glGenVertexArrays(1, &_id);
     glBindVertexArray(_id);

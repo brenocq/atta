@@ -11,7 +11,7 @@
 #include <atta/component/components/rigidBody2D.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 #include <atta/ui/layers/editor/windows/viewportWindows.h>
 
 #include <imgui.h>
@@ -22,7 +22,7 @@
 namespace atta::ui {
 
 void ViewportWindows::render() {
-    std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::Manager::getViewports();
+    std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
     static int activeViewport = 0;
 
     int i = -1;
@@ -183,7 +183,7 @@ void ViewportWindows::render() {
             //----- Mouse click selection -----//
             if (!imGuizmoUsingMouse) {
                 if (click.x >= 0 && click.y >= 0 && click.x < (int)viewport->getWidth() && click.y < (int)viewport->getHeight()) {
-                    component::EntityId eid = graphics::Manager::viewportEntityClick(viewport, click);
+                    component::EntityId eid = graphics::viewportEntityClick(viewport, click);
                     component::setSelectedEntity(eid);
                 }
             }
@@ -220,7 +220,7 @@ void ViewportWindows::render() {
         ImGui::PopStyleVar(1);
 
         if (!open)
-            graphics::Manager::removeViewport(viewport);
+            graphics::removeViewport(viewport);
     }
 }
 

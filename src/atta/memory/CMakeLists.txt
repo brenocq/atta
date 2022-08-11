@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_MEMORY_MODULE_SOURCES
+    interface.cpp
     manager.cpp
     allocator.cpp
     allocatedObject.cpp

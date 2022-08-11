@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_UI_MODULE_SOURCE
+    interface.cpp
     manager.cpp
 
     layers/uiLayer.cpp

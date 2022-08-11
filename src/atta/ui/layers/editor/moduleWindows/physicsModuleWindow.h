@@ -7,7 +7,7 @@
 #ifndef ATTA_UI_LAYERS_EDITOR_WINDOWS_PHYSICS_MODULE_WINDOW_H
 #define ATTA_UI_LAYERS_EDITOR_WINDOWS_PHYSICS_MODULE_WINDOW_H
 
-#include <atta/physics/manager.h>
+#include <atta/physics/interface.h>
 #include <atta/ui/layers/editor/window.h>
 
 namespace atta::ui {

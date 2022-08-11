@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/drawer.h>
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
 
@@ -18,14 +18,14 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
         ShaderGroup::CreateInfo shaderGroupInfo{};
         shaderGroupInfo.shaderPaths = {"shaders/line/shader.vert", "shaders/line/shader.frag"};
         shaderGroupInfo.debugName = StringId("DrawerPipeline Line Shader Group");
-        std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
+        std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
 
         Pipeline::CreateInfo pipelineInfo{};
         // Vertex input layout
         pipelineInfo.shaderGroup = shaderGroup;
         pipelineInfo.layout = {{"inPos", VertexBufferElement::Type::VEC3}, {"inColor", VertexBufferElement::Type::VEC4}};
         pipelineInfo.renderPass = renderPass;
-        _linePipeline = Manager::create<Pipeline>(pipelineInfo);
+        _linePipeline = graphics::create<Pipeline>(pipelineInfo);
     }
 
     //---------- Create point pipeline ----------//
@@ -34,14 +34,14 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
         ShaderGroup::CreateInfo shaderGroupInfo{};
         shaderGroupInfo.shaderPaths = {"shaders/point/shader.vert", "shaders/point/shader.frag"};
         shaderGroupInfo.debugName = StringId("DrawerPipeline Point Shader Group");
-        std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
+        std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
 
         Pipeline::CreateInfo pipelineInfo{};
         // Vertex input layout
         pipelineInfo.shaderGroup = shaderGroup;
         pipelineInfo.layout = {{"inPos", VertexBufferElement::Type::VEC3}, {"inColor", VertexBufferElement::Type::VEC4}};
         pipelineInfo.renderPass = renderPass;
-        _pointPipeline = Manager::create<Pipeline>(pipelineInfo);
+        _pointPipeline = graphics::create<Pipeline>(pipelineInfo);
     }
 }
 

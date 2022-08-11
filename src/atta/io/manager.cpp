@@ -16,13 +16,10 @@ Manager& Manager::getInstance() {
     return instance;
 }
 
-void Manager::startUp() { getInstance().startUpImpl(); }
 void Manager::startUpImpl() {}
 
-void Manager::shutDown() { getInstance().shutDownImpl(); }
 void Manager::shutDownImpl() {}
 
-void Manager::update() { getInstance().updateImpl(); }
 void Manager::updateImpl() {}
 
 //---------- Register OS specific implementations ----------//

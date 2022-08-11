@@ -14,7 +14,7 @@ void IOModuleWindow::bluetoothTabItem() {
     if (!_bluetooth) {
         io::Bluetooth::CreateInfo info;
         info.debugName = StringId("io::Bluetooth");
-        _bluetooth = io::Manager::create<io::Bluetooth>(info);
+        _bluetooth = io::create<io::Bluetooth>(info);
 
         if (_bluetooth) {
             _bluetooth->start();

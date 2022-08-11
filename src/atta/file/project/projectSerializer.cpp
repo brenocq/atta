@@ -12,11 +12,11 @@
 #include <atta/component/components/components.h>
 #include <atta/component/interface.h>
 
-#include <atta/resource/manager.h>
+#include <atta/resource/interface.h>
 #include <atta/resource/resources/image.h>
 #include <atta/resource/resources/mesh.h>
 
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 #include <atta/utils/config.h>
 
 namespace atta::file {

@@ -54,7 +54,7 @@ void ProjectSerializer::serializeComponentSystem(Section& section) {
 }
 
 void ProjectSerializer::serializeGraphicsSystem(Section& section) {
-    std::vector<std::shared_ptr<graphics::Viewport>> pviewports = graphics::Manager::getViewports();
+    std::vector<std::shared_ptr<graphics::Viewport>> pviewports = graphics::getViewports();
     std::vector<graphics::Viewport> viewports;
     for (auto pv : pviewports)
         viewports.push_back(*pv);

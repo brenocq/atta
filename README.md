@@ -11,30 +11,30 @@
  <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-08.gif" height="200">
 </p>
 
-Atta is a robot engine mainly focused on multi-robot systems with tons of similar robots. The objectives for this simulator are:
-  - Fast development (hot-reload)
+Atta is a robotics simulator, mainly focused on multi-robot systems with tons of similar robots. The objectives for this simulator are:
   - Easy to get started
   - Distribute processing across CPUs / GPUs / Clusters
+  - Fast development (with hot-reload)
   - Interface between simulated and physical robots
+  - Easy to share simulation with others
   - Cross-platform (linux/macos/windows/web/android(?))
-  - Link to test published projects online ([example](https://atta.brenocq.com/projects/brenocq-atta/tutorial))
 
 Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs). You can also test published projects online [here](https://atta.brenocq.com/build).
 
 ## Progress
 Check the atta progress by **clicking on the buttons below**. [Issues](https://github.com/brenocq/atta/issues) with bugs and [discussions](https://github.com/brenocq/atta/discussions) with new ideas are very welcome :)
 
-[![ComponentSystem](https://storage.googleapis.com/atta-images/main/component_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/8)
-[![EventSystem](https://storage.googleapis.com/atta-images/main/event_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/13)
-[![FileSystem](https://storage.googleapis.com/atta-images/main/file_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/14)
-[![GraphicsSystem](https://storage.googleapis.com/atta-images/main/graphics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/16)
-[![IOSystem](https://storage.googleapis.com/atta-images/main/io_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/17)
-[![MemorySystem](https://storage.googleapis.com/atta-images/main/memory_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/15)
-[![PhysicsSystem](https://storage.googleapis.com/atta-images/main/physics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/6)
-[![ResourceSystem](https://storage.googleapis.com/atta-images/main/resource_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/12)
-[![ScriptSystem](https://storage.googleapis.com/atta-images/main/script_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/11)
-[![SensorSystem](https://storage.googleapis.com/atta-images/main/sensor_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/10)
-[![UISystem](https://storage.googleapis.com/atta-images/main/ui_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/9)
+[![ComponentModule](https://storage.googleapis.com/atta-images/main/component_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/8)
+[![EventModule](https://storage.googleapis.com/atta-images/main/event_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/13)
+[![FileModule](https://storage.googleapis.com/atta-images/main/file_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/14)
+[![GraphicsModule](https://storage.googleapis.com/atta-images/main/graphics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/16)
+[![IOModule](https://storage.googleapis.com/atta-images/main/io_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/17)
+[![MemoryModule](https://storage.googleapis.com/atta-images/main/memory_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/15)
+[![PhysicsModule](https://storage.googleapis.com/atta-images/main/physics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/6)
+[![ResourceModule](https://storage.googleapis.com/atta-images/main/resource_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/12)
+[![ScriptModule](https://storage.googleapis.com/atta-images/main/script_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/11)
+[![SensorModule](https://storage.googleapis.com/atta-images/main/sensor_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/10)
+[![UIModule](https://storage.googleapis.com/atta-images/main/ui_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/9)
 [![Docs](https://storage.googleapis.com/atta-images/main/docs_button_github_progress.png?)](https://github.com/brenocq/atta/projects/18)
 
 _Obs: There is a github workflow to update the progress bar of each icon automatically heh_
@@ -42,17 +42,17 @@ _Obs: There is a github workflow to update the progress bar of each icon automat
 ## Architecture
 Atta is composed of decoupled system, the current systems are:
 
-- **Component System**: Manage entities and components
-- **Event System**: Publish and subscribe to atta internal events
-- **File System**: OS agnostic interface to serialize and deserialize data to files
-- **Graphics System**: Online and offline rendering with different levels of realism
-- **IO System**:  OS agnostic interface to peripherals (USB, socket, bluetooth, serial, ...)
-- **Memory System**: Manage atta internal memory to allow fast allocation and deallocation with minimum memory fragmentation
-- **Physics System**: Manage supported physics engines, simulate physics, and solve physics queries (collision, ray casting, ...)
-- **Resources System**: Load, save, and manage memory for resources like meshes, textures, video, ...
-- **Script System**: Compile and link user scripts automatically (hot reloading)
-- **Sensor System**: Update simulated/real sensors at each step
-- **UI System**: User interface graphics layer and UI rendering helpers
+- **Component Module**: Manage entities and components
+- **Event Module**: Publish and subscribe to atta internal events
+- **File Module**: OS agnostic interface to serialize and deserialize data to files
+- **Graphics Module**: Online and offline rendering with different levels of realism
+- **IO Module**:  OS agnostic interface to peripherals (USB, socket, bluetooth, serial, ...)
+- **Memory Module**: Manage atta internal memory to allow fast allocation and deallocation with minimum memory fragmentation
+- **Physics Module**: Manage supported physics engines, simulate physics, and solve physics queries (collision, ray casting, ...)
+- **Resources Module**: Load, save, and manage memory for resources like meshes, textures, video, ...
+- **Script Module**: Compile and link user scripts automatically (hot reloading)
+- **Sensor Module**: Update simulated/real sensors at each step
+- **UI Module**: User interface graphics layer and UI rendering helpers
 
 Arrows show dependencies between systems. Green boxes show which systems/features are implemented.
 <p align="center">

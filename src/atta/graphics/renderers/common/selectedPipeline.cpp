@@ -4,7 +4,7 @@
 // Date: 2021-11-15
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/manager.h>
+#include <atta/graphics/interface.h>
 #include <atta/graphics/renderers/common/selectedPipeline.h>
 
 #include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
@@ -19,13 +19,13 @@ SelectedPipeline::SelectedPipeline(std::shared_ptr<RenderPass> renderPass, Verte
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/common/selected.vert", "shaders/common/selected.frag"};
     shaderGroupInfo.debugName = StringId("SelectedPipeline Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = Manager::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
 
     Pipeline::CreateInfo pipelineInfo{};
     pipelineInfo.shaderGroup = shaderGroup;
     pipelineInfo.layout = layout;
     pipelineInfo.renderPass = renderPass;
-    _pipeline = Manager::create<Pipeline>(pipelineInfo);
+    _pipeline = graphics::create<Pipeline>(pipelineInfo);
 }
 
 void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
@@ -59,7 +59,7 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
                 glDisable(GL_DEPTH_TEST);
                 glStencilFunc(GL_ALWAYS, 1, 0xFF);
                 glStencilMask(0xFF); // Update stencil
-                Manager::getRendererAPI()->renderMesh(mesh->sid);
+                graphics::getRendererAPI()->renderMesh(mesh->sid);
 
                 // Draw scaled mesh
                 float distance = (camera->getPosition() - pos).length();
@@ -70,7 +70,7 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
 
                 glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
                 glStencilMask(0x00); // Do not update stencil
-                Manager::getRendererAPI()->renderMesh(mesh->sid);
+                graphics::getRendererAPI()->renderMesh(mesh->sid);
 
                 glEnable(GL_DEPTH_TEST);
                 glStencilMask(0xFF);

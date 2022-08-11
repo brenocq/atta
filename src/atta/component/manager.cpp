@@ -30,7 +30,7 @@ void Manager::startUpImpl() {
 
     //----- Module Memory -----//
     // Get main memory
-    memory::Allocator* mainAllocator = memory::Manager::getAllocator(SSID("MainAllocator"));
+    memory::Allocator* mainAllocator = memory::getAllocator(SSID("MainAllocator"));
     size_t size = 128 * 1024 * 1024; // 128MB
     // Alloc memory inside main memory
     uint8_t* componentMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
@@ -38,7 +38,7 @@ void Manager::startUpImpl() {
 
     // Create new allocator from component memory
     _allocator = new memory::StackAllocator(componentMemory, size);
-    memory::Manager::registerAllocator(SSID("ComponentAllocator"), static_cast<memory::Allocator*>(_allocator));
+    memory::registerAllocator(SSID("ComponentAllocator"), static_cast<memory::Allocator*>(_allocator));
 
     createEntityPool();
     createComponentPoolsFromRegistered();
@@ -97,12 +97,12 @@ void Manager::createEntityPool() {
     ASSERT(entityMemory != nullptr, "Could not allocate component system entity memory");
 
     // Create entity bitmap pool allocator
-    memory::Manager::registerAllocator(SSID("Component_EntityAllocator"), static_cast<memory::Allocator*>(new memory::BitmapAllocator(
-                                                                              entityMemory, entityMemorySize, sizeof(EntityBlock))));
+    memory::registerAllocator(SSID("Component_EntityAllocator"),
+                              static_cast<memory::Allocator*>(new memory::BitmapAllocator(entityMemory, entityMemorySize, sizeof(EntityBlock))));
 }
 
 EntityId Manager::createEntityImpl(EntityId entity, size_t quantity) {
-    memory::BitmapAllocator* pool = memory::Manager::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
+    memory::BitmapAllocator* pool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
 
     if (entity != -1 && pool->getBlockBit(entity)) {
         LOG_WARN("component::Manager", "Trying to create entity [w]$0[] that already exists", entity);
@@ -147,7 +147,7 @@ EntityId Manager::createClonesImpl(size_t quantity) {
 
 void Manager::deleteEntityImpl(EntityId entity) {
     // Get entity
-    memory::BitmapAllocator* epool = memory::Manager::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
+    memory::BitmapAllocator* epool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
     EntityBlock* e = epool->getBlock<EntityBlock>(entity);
     ASSERT(e != nullptr, "Trying to delete entity [w]$0[] that never was created", entity);
 
@@ -166,7 +166,7 @@ void Manager::deleteEntityImpl(EntityId entity) {
     for (unsigned i = 0; i < _componentRegistries.size(); i++)
         if (e->components[i] != nullptr) {
             // Get component pool
-            memory::BitmapAllocator* cpool = memory::Manager::getAllocator<memory::BitmapAllocator>(_componentRegistries[i]->getId());
+            memory::BitmapAllocator* cpool = memory::getAllocator<memory::BitmapAllocator>(_componentRegistries[i]->getId());
 
             // Free component
             cpool->free(e->components[i]);
@@ -191,7 +191,7 @@ void Manager::deleteEntityImpl(EntityId entity) {
 
 void Manager::deleteEntityOnlyImpl(EntityId entity) {
     // Get entity
-    memory::BitmapAllocator* epool = memory::Manager::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
+    memory::BitmapAllocator* epool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
     EntityBlock* e = epool->getBlock<EntityBlock>(entity);
     ASSERT(e != nullptr, "Trying to delete entity [w]$0[] that never was created", entity);
 
@@ -243,7 +243,7 @@ EntityId Manager::copyEntityImpl(EntityId entity) {
 
 void Manager::clearImpl() {
     // Clear entities
-    memory::BitmapAllocator* epool = memory::Manager::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
+    memory::BitmapAllocator* epool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
     epool->clear();
 
     // Clear entity view
@@ -258,7 +258,7 @@ void Manager::clearImpl() {
 }
 
 memory::BitmapAllocator* Manager::getComponentAllocator(ComponentRegistry* compReg) {
-    return memory::Manager::getAllocator<memory::BitmapAllocator>(COMPONENT_POOL_SID_BY_NAME(compReg->getTypeidName()));
+    return memory::getAllocator<memory::BitmapAllocator>(COMPONENT_POOL_SID_BY_NAME(compReg->getTypeidName()));
 }
 
 void Manager::registerComponentImpl(ComponentRegistry* componentRegistry) {
@@ -332,8 +332,8 @@ void Manager::createComponentPool(ComponentRegistry* componentRegistry) {
              maxCount * sizeofT / (1024 * 1024.0f), (void*)(componentMemory), (void*)(componentMemory + maxCount * sizeofT), maxCount);
 
     // Create pool allocator
-    memory::Manager::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName),
-                                       static_cast<memory::Allocator*>(new memory::BitmapAllocator(componentMemory, size, sizeofT)));
+    memory::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName),
+                              static_cast<memory::Allocator*>(new memory::BitmapAllocator(componentMemory, size, sizeofT)));
 }
 
 void Manager::unregisterCustomComponentsImpl() {
@@ -368,7 +368,7 @@ Component* Manager::addEntityComponentByIdImpl(ComponentId id, EntityId entity) 
     }
 
     // Alloc component
-    memory::BitmapAllocator* cpool = memory::Manager::getAllocator<memory::BitmapAllocator>(id);
+    memory::BitmapAllocator* cpool = memory::getAllocator<memory::BitmapAllocator>(id);
     Component* component = cpool->alloc<Component>();
 
     if (component) {
@@ -464,7 +464,7 @@ void Manager::removeEntityComponentByIdImpl(ComponentId id, EntityId entity) {
     ASSERT(compReg != nullptr, "Trying to add unknown component with id $0", id);
 
     // Get component pool
-    memory::BitmapAllocator* cpool = memory::Manager::getAllocator<memory::BitmapAllocator>(id);
+    memory::BitmapAllocator* cpool = memory::getAllocator<memory::BitmapAllocator>(id);
 
     // Free component
     cpool->free(e->components[compReg->getIndex()]);
@@ -549,7 +549,7 @@ std::vector<EntityId> Manager::getScriptViewImpl() { return std::vector<EntityId
 //----------- Memory Management ----------//
 //----------------------------------------//
 Manager::EntityBlock* Manager::getEntityBlock(EntityId eid) {
-    memory::BitmapAllocator* epool = memory::Manager::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
+    memory::BitmapAllocator* epool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
     return epool->getBlock<EntityBlock>(eid);
 }
 

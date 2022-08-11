@@ -14,14 +14,14 @@
 #include <atta/event/events/windowClose.h>
 
 #include <atta/component/interface.h>
-#include <atta/file/manager.h>
-#include <atta/graphics/manager.h>
-#include <atta/memory/manager.h>
-#include <atta/physics/manager.h>
-#include <atta/resource/manager.h>
+#include <atta/file/interface.h>
+#include <atta/graphics/interface.h>
+#include <atta/memory/interface.h>
+#include <atta/physics/interface.h>
+#include <atta/resource/interface.h>
 #include <atta/script/interface.h>
 #include <atta/sensor/interface.h>
-#include <atta/ui/manager.h>
+#include <atta/ui/interface.h>
 
 #include <atta/cmakeConfig.h>
 #include <atta/graphics/pipeline.h>
@@ -42,14 +42,14 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(Simu
 
     uint64_t size = 1.0 * 1024UL * 1024UL * 1024UL;
     _mainAllocator = new memory::StackAllocator(size); // Allocate 1.0GB for the whole system
-    memory::Manager::registerAllocator(SSID("MainAllocator"), static_cast<memory::Allocator*>(_mainAllocator));
+    memory::registerAllocator(SSID("MainAllocator"), static_cast<memory::Allocator*>(_mainAllocator));
 
     component::startUp();
-    resource::Manager::startUp();
-    graphics::Manager::startUp();
-    ui::Manager::startUp();
+    resource::startUp();
+    graphics::startUp();
+    ui::startUp();
     script::startUp();
-    physics::Manager::startUp();
+    physics::startUp();
     sensor::startUp();
 
     // Atta is the last one to reveice events
@@ -79,11 +79,11 @@ Atta::~Atta() {
     // file::saveProject();
     file::closeProject();
     sensor::shutDown();
-    physics::Manager::shutDown();
+    physics::shutDown();
     script::shutDown();
-    ui::Manager::shutDown();
-    graphics::Manager::shutDown();
-    resource::Manager::shutDown();
+    ui::shutDown();
+    graphics::shutDown();
+    resource::shutDown();
     component::shutDown();
     file::shutDown();
 
@@ -114,7 +114,7 @@ void Atta::loop() {
 
     script::ProjectScript* project = script::getProjectScript();
     if (_simulationState == SimulationState::RUNNING) {
-        physics::Manager::update(dt);
+        physics::update(dt);
         sensor::update(dt);
 
         if (project)
@@ -154,12 +154,12 @@ void Atta::loop() {
         const clock_t currTime = std::clock();
         float timeDiff = float(currTime - lastTime) / CLOCKS_PER_SEC;
         if (timeDiff > 0.03f) {
-            graphics::Manager::update();
+            graphics::update();
             lastTime = currTime;
         }
     } else {
         // Update graphics every frame
-        graphics::Manager::update();
+        graphics::update();
     }
 }
 

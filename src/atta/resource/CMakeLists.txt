@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_RESOURCE_MODULE_SOURCE
+    interface.cpp
     manager.cpp
-    resource.cpp
 
+    resource.cpp
     resources/mesh.cpp
     resources/image.cpp
 )

@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/memory/allocatedObject.h>
 #include <atta/memory/allocators/stackAllocator.h>
-#include <atta/memory/manager.h>
+#include <atta/memory/interface.h>
 #include <atta/utils/stringId.h>
 #include <gtest/gtest.h>
 
@@ -17,9 +17,9 @@ namespace {
 class Memory_AllocatedObject : public ::testing::Test {
   public:
     void SetUp() {
-        memory::Manager::registerAllocator(SID("Stack_TestA"), static_cast<Allocator*>(new StackAllocator(sizeof(int) * 3)));
+        memory::registerAllocator(SID("Stack_TestA"), static_cast<Allocator*>(new StackAllocator(sizeof(int) * 3)));
 
-        memory::Manager::registerAllocator(SID("Stack_TestB"), static_cast<Allocator*>(new StackAllocator(sizeof(int) * 2)));
+        memory::registerAllocator(SID("Stack_TestB"), static_cast<Allocator*>(new StackAllocator(sizeof(int) * 2)));
     }
 };
 
@@ -44,7 +44,7 @@ TEST_F(Memory_AllocatedObject, New) {
     TestA* a1 = new (std::nothrow) TestA(1);
     EXPECT_EQ(a1->x, 1);
 
-    TestA* a2 = memory::Manager::getAllocator<StackAllocator>(SID("Stack_TestA"))->alloc<TestA>();
+    TestA* a2 = memory::getAllocator<StackAllocator>(SID("Stack_TestA"))->alloc<TestA>();
     new (a2) TestA(2);
     EXPECT_EQ(a2->x, 2);
 
@@ -52,17 +52,17 @@ TEST_F(Memory_AllocatedObject, New) {
     EXPECT_EQ(b0->x, 4);
 
     //----- Check stack size -----//
-    StackAllocator* stackA = memory::Manager::getAllocator<StackAllocator>(SID("Stack_TestA"));
+    StackAllocator* stackA = memory::getAllocator<StackAllocator>(SID("Stack_TestA"));
     EXPECT_EQ(stackA->getSize(), sizeof(int) * 3);
     EXPECT_EQ(stackA->getUsedMemory(), sizeof(int) * 3);
 
-    StackAllocator* stackB = memory::Manager::getAllocator<StackAllocator>(SID("Stack_TestB"));
+    StackAllocator* stackB = memory::getAllocator<StackAllocator>(SID("Stack_TestB"));
     EXPECT_EQ(stackB->getSize(), sizeof(int) * 2);
     EXPECT_EQ(stackB->getUsedMemory(), sizeof(int));
 }
 
 TEST_F(Memory_AllocatedObject, Delete) {
-    StackAllocator* stackA = memory::Manager::getAllocator<StackAllocator>(SID("Stack_TestA"));
+    StackAllocator* stackA = memory::getAllocator<StackAllocator>(SID("Stack_TestA"));
     stackA->clear();
     EXPECT_EQ(stackA->getSize(), sizeof(int) * 3);
     EXPECT_EQ(stackA->getUsedMemory(), 0);
@@ -92,12 +92,12 @@ TEST_F(Memory_AllocatedObject, NewArray) {
     EXPECT_EQ(a[1].x, 1);
     EXPECT_EQ(a[2].x, 1);
 
-    StackAllocator* stackA = memory::Manager::getAllocator<StackAllocator>(SID("Stack_TestA"));
+    StackAllocator* stackA = memory::getAllocator<StackAllocator>(SID("Stack_TestA"));
     stackA->clear();
 }
 
 TEST_F(Memory_AllocatedObject, DeleteArray) {
-    StackAllocator* stackA = memory::Manager::getAllocator<StackAllocator>(SID("Stack_TestA"));
+    StackAllocator* stackA = memory::getAllocator<StackAllocator>(SID("Stack_TestA"));
     TestA* a0 = new TestA(0);
 
     TestA* a = new TestA[2];

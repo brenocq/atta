@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/component/componentRegistry.h>
 #include <atta/component/components/material.h>
-#include <atta/resource/manager.h>
+#include <atta/resource/interface.h>
 #include <atta/resource/resources/image.h>
 #include <imgui.h>
 
@@ -43,7 +43,7 @@ ComponentDescription& TypedComponentRegistry<Material>::getDescription() {
               // albedo-metallic-roughness-ao
               std::vector<bool*> fromImage = {&albedoFromImage, &metallicFromImage, &roughnessFromImage, &aoFromImage};
               std::vector<StringId*> attribTextures = {&(m->albedoTexture), &(m->metallicTexture), &(m->roughnessTexture), &(m->aoTexture)};
-              std::vector<StringId> textures = resource::Manager::getResources<resource::Image>();
+              std::vector<StringId> textures = resource::getResources<resource::Image>();
 
               for (unsigned i = 0; i <= 3; i++) {
                   std::string name = aDescs[i].name;

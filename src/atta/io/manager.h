@@ -4,8 +4,8 @@
 // Date: 2021-09-26
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_IO_IO_MANAGER_H
-#define ATTA_IO_IO_MANAGER_H
+#ifndef ATTA_IO_MANAGER_H
+#define ATTA_IO_MANAGER_H
 
 #include <atta/io/bluetooth/bluetooth.h>
 #include <atta/io/camera/camera.h>
@@ -16,18 +16,12 @@ namespace atta::io {
 class Manager final {
   public:
     static Manager& getInstance();
-    static void startUp();
-    static void shutDown();
 
-    static void update();
-
-    // Used to create objects (camera/bluetooth/uart/...) based on the current operating system
-    // e.g.: io::Manager::create<io::Camera>(cameraInfo) will create io::LinuxCameraUSB or
-    // io::WindowsCameraUSB or ... depending on the current operating system
+    friend void startUp();
+    friend void shutDown();
+    friend void update();
     template <typename T, typename... Args>
-    static std::shared_ptr<T> create(Args... args) {
-        return getInstance().createImpl<T>(args...);
-    }
+    friend std::shared_ptr<T> create(Args... args);
 
   private:
     void startUpImpl();
@@ -40,4 +34,4 @@ class Manager final {
 } // namespace atta::io
 
 #include <atta/io/manager.inl>
-#endif // ATTA_IO_IO_MANAGER_H
+#endif // ATTA_IO_MANAGER_H
