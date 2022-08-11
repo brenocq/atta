@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::component {
 template <>
@@ -41,12 +41,12 @@ ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
 // Parent operations
 void Relationship::setParent(EntityId parent, EntityId child) {
     // Get relationships
-    Relationship* parentRel = component::Manager::getEntityComponent<Relationship>(parent);
+    Relationship* parentRel = component::getEntityComponent<Relationship>(parent);
     if (!parentRel)
-        parentRel = component::Manager::addEntityComponent<Relationship>(parent);
-    Relationship* childRel = component::Manager::getEntityComponent<Relationship>(child);
+        parentRel = component::addEntityComponent<Relationship>(parent);
+    Relationship* childRel = component::getEntityComponent<Relationship>(child);
     if (!childRel)
-        childRel = component::Manager::addEntityComponent<Relationship>(child);
+        childRel = component::addEntityComponent<Relationship>(child);
 
     // Check if entity can be children (avoid recursive)
     bool canBeParent = true;
@@ -62,7 +62,7 @@ void Relationship::setParent(EntityId parent, EntityId child) {
             if (r->_parent == -1)
                 r = nullptr;
             else
-                r = component::Manager::getEntityComponent<Relationship>(r->_parent);
+                r = component::getEntityComponent<Relationship>(r->_parent);
         }
     }
 
@@ -73,7 +73,7 @@ void Relationship::setParent(EntityId parent, EntityId child) {
             removeParent(childRel->_parent, child);
 
         // If has transform component, update to be relative to the parent
-        Transform* t = component::Manager::getEntityComponent<Transform>(child);
+        Transform* t = component::getEntityComponent<Transform>(child);
         if (t) {
             mat4 transform = t->getWorldTransform(child);
             mat4 pTransform = Transform::getEntityWorldTransform(parent);
@@ -97,14 +97,14 @@ void Relationship::setParent(EntityId parent, EntityId child) {
 
 void Relationship::removeParent(EntityId parent, EntityId child) {
     // Get relationships
-    Relationship* parentRel = component::Manager::getEntityComponent<Relationship>(parent);
+    Relationship* parentRel = component::getEntityComponent<Relationship>(parent);
     if (!parentRel && parent != -1) // Check if parent has relationship component
     {
         LOG_WARN("component::Relationship", "Trying to remove wrong parent [w]$0[] from child [w]$1[]", parent, child);
         return;
     }
 
-    Relationship* childRel = component::Manager::getEntityComponent<Relationship>(child);
+    Relationship* childRel = component::getEntityComponent<Relationship>(child);
     if (!childRel) // Check if child has relationship component
     {
         LOG_WARN("component::Relationship", "Trying to remove parent [w]$0[] from child [w]$1[] that does not have a parent", parent, child);
@@ -112,7 +112,7 @@ void Relationship::removeParent(EntityId parent, EntityId child) {
     }
 
     // If has transform component, change to be relative to the world
-    Transform* transform = component::Manager::getEntityComponent<Transform>(child);
+    Transform* transform = component::getEntityComponent<Transform>(child);
     if (transform) {
         mat4 world = transform->getWorldTransform(child);
         vec3 pos, scale;

@@ -9,22 +9,22 @@
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/script.h>
 #include <atta/component/factory.h>
-#include <atta/script/manager.h>
+#include <atta/script/interface.h>
 
 namespace atta::component {
 Factory::Factory(EntityId prototypeId) : _prototypeId(prototypeId) {
-    Prototype* prototype = component::Manager::getEntityComponent<Prototype>(_prototypeId);
+    Prototype* prototype = component::getEntityComponent<Prototype>(_prototypeId);
     _maxClones = prototype->maxClones;
 }
 
 void Factory::createClones() {
     // Create entityId for each clone
-    _firstCloneEid = component::Manager::createClones(_maxClones);
+    _firstCloneEid = component::Manager::getInstance().createClonesImpl(_maxClones);
 
     // FIXME not working recursive prototypes yet
-    for (auto compReg : component::Manager::getComponentRegistries()) {
+    for (auto compReg : component::getComponentRegistries()) {
         // Check if prototype entity has this component
-        Component* prototypeComponent = component::Manager::getEntityComponentById(compReg->getId(), _prototypeId);
+        Component* prototypeComponent = component::getEntityComponentById(compReg->getId(), _prototypeId);
         if (prototypeComponent) {
             // XXX For now, just ignore the prototype component when clonnning
             if (compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(Prototype).name()))
@@ -46,14 +46,14 @@ void Factory::createClones() {
 
                 // Add allocated component to clone entities
                 for (unsigned i = 0; i < _maxClones; i++)
-                    component::Manager::addEntityComponentPtr(_firstCloneEid + i, compReg->getIndex(), mem + componentSize * i);
+                    component::addEntityComponentPtr(_firstCloneEid + i, compReg->getIndex(), mem + componentSize * i);
             } else {
                 // XXX Not sure how will work with the Relationship because it has std::vector
                 // If the prototype entity has parent, set the parent as parent of clones as well
-                Relationship* r = component::Manager::getEntityComponent<Relationship>(_prototypeId);
+                Relationship* r = component::getEntityComponent<Relationship>(_prototypeId);
                 if (r->getParent() != -1) {
                     EntityId parentId = r->getParent();
-                    r = component::Manager::getEntityComponent<Relationship>(r->getParent());
+                    r = component::getEntityComponent<Relationship>(r->getParent());
                     for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++)
                         r->addChild(parentId, entity);
                 }
@@ -64,7 +64,7 @@ void Factory::createClones() {
 
 void Factory::destroyClones() {
     for (EntityId i = _firstCloneEid; i < EntityId(_firstCloneEid + _maxClones); i++)
-        component::Manager::deleteEntity(i);
+        component::deleteEntity(i);
     // TODO can be faster if deallocate each component and then deleteEntityOnly
 }
 
@@ -72,9 +72,9 @@ void Factory::runScripts(float dt) {
     // TODO faster
     unsigned cloneId = 0;
     for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++) {
-        Script* scriptComponent = component::Manager::getEntityComponent<Script>(entity);
+        Script* scriptComponent = component::getEntityComponent<Script>(entity);
         if (scriptComponent) {
-            script::Script* script = script::Manager::getScript(scriptComponent->sid);
+            script::Script* script = script::getScript(scriptComponent->sid);
             if (script)
                 script->update(Entity(entity, cloneId), dt);
         }
@@ -82,10 +82,10 @@ void Factory::runScripts(float dt) {
     }
 
     // Example using componentMemories to set Entity component vector
-    // Script* scriptComponent = component::Manager::getEntityComponent<script::Script>(_prototypeId);
+    // Script* scriptComponent = component::getEntityComponent<script::Script>(_prototypeId);
     // if(scriptComponent)
     //{
-    //    Script* script = script::Manager::getScript(scriptComponent->sid);
+    //    Script* script = script::getScript(scriptComponent->sid);
     //    if(script)
     //    {
     //        // Execute each clone script with the right component

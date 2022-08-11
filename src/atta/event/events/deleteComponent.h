@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_EVENT_EVENTS_DELETE_COMPONENT_H
 #define ATTA_EVENT_EVENTS_DELETE_COMPONENT_H
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/event/event.h>
 
 namespace atta::event {

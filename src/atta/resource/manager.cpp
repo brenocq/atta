@@ -33,7 +33,7 @@ void Manager::startUpImpl() {
     event::Manager::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
 
     // Default resources
-    for (auto& resourcePath : file::Manager::getResourcePaths())
+    for (auto& resourcePath : file::getResourcePaths())
         loadResourcesRecursively(resourcePath);
 }
 
@@ -41,7 +41,7 @@ void Manager::shutDown() { getInstance().shutDownImpl(); }
 void Manager::shutDownImpl() {}
 
 void Manager::onProjectOpen(event::Event& event) {
-    for (auto& resourcePath : file::Manager::getResourcePaths())
+    for (auto& resourcePath : file::getResourcePaths())
         loadResourcesRecursively(resourcePath);
 }
 
@@ -49,7 +49,7 @@ void Manager::loadResourcesRecursively(fs::path directory) {
     static const std::vector<std::string> meshExtensions{".obj", ".fbx", ".FBX", ".fbx"}; //, ".3ds", ".stl", ".ply" };
     static const std::vector<std::string> imageExtensions{".jpg", ".jpeg", ".png", ".hdr", ".tga"};
 
-    for (auto file : file::Manager::getDirectoryFilesRecursive(directory)) {
+    for (auto file : file::getDirectoryFilesRecursive(directory)) {
         // Load as meshe
         for (auto& extension : meshExtensions)
             if (extension == file.extension().string()) {

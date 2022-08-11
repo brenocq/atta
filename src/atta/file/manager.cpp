@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/cmakeConfig.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/event/events/projectBeforeDeserialize.h>
 #include <atta/event/events/projectClose.h>
 #include <atta/event/events/projectOpen.h>
@@ -21,6 +21,11 @@
 #endif
 
 namespace atta::file {
+
+Manager& Manager::getInstance() {
+    static Manager instance;
+    return instance;
+}
 
 void Manager::startUpImpl() {
     _project = nullptr;
@@ -69,7 +74,7 @@ bool Manager::openProjectImpl(fs::path projectFile) {
     _projectSerializer = std::make_shared<ProjectSerializer>(_project);
 
     // Clear components and read project file
-    component::Manager::clear();
+    component::clear();
 
     event::ProjectBeforeDeserialize ed;
     event::Manager::publish(ed);
@@ -163,7 +168,7 @@ std::vector<fs::path> Manager::getResourcePathsImpl() const {
         return {fs::path(ATTA_DIR) / "resources"};
 }
 
-std::vector<fs::path> Manager::getDirectoryFilesRecursive(fs::path directory) {
+std::vector<fs::path> Manager::getDirectoryFilesRecursiveImpl(fs::path directory) {
     std::vector<fs::path> files;
 #ifndef ATTA_OS_WEB
     for (auto& p : fs::recursive_directory_iterator(directory))

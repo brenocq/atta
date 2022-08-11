@@ -20,6 +20,11 @@
 
 namespace atta::component {
 
+Manager& Manager::getInstance() {
+    static Manager instance;
+    return instance;
+}
+
 void Manager::startUpImpl() {
     _maxEntities = maxEntities;
 
@@ -96,7 +101,6 @@ void Manager::createEntityPool() {
                                                                               entityMemory, entityMemorySize, sizeof(EntityBlock))));
 }
 
-EntityId Manager::createEntity(EntityId entity) { return getInstance().createEntityImpl(entity); }
 EntityId Manager::createEntityImpl(EntityId entity, size_t quantity) {
     memory::BitmapAllocator* pool = memory::Manager::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
 
@@ -134,7 +138,6 @@ EntityId Manager::createEntityImpl(EntityId entity, size_t quantity) {
     return eid;
 }
 
-EntityId Manager::createClones(size_t quantity) { return getInstance().createClonesImpl(quantity); }
 EntityId Manager::createClonesImpl(size_t quantity) {
     EntityId eid = createEntityImpl(-1, quantity);
     for (EntityId i = eid; i < eid + EntityId(quantity); i++)
@@ -142,7 +145,6 @@ EntityId Manager::createClonesImpl(size_t quantity) {
     return eid;
 }
 
-void Manager::deleteEntity(EntityId entity) { getInstance().deleteEntityImpl(entity); }
 void Manager::deleteEntityImpl(EntityId entity) {
     // Get entity
     memory::BitmapAllocator* epool = memory::Manager::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
@@ -187,7 +189,6 @@ void Manager::deleteEntityImpl(EntityId entity) {
     event::Manager::publish(event);
 }
 
-void Manager::deleteEntityOnly(EntityId entity) { return getInstance().deleteEntityOnlyImpl(entity); }
 void Manager::deleteEntityOnlyImpl(EntityId entity) {
     // Get entity
     memory::BitmapAllocator* epool = memory::Manager::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
@@ -211,7 +212,6 @@ void Manager::deleteEntityOnlyImpl(EntityId entity) {
     event::Manager::publish(event);
 }
 
-EntityId Manager::copyEntity(EntityId entity) { return getInstance().copyEntityImpl(entity); }
 EntityId Manager::copyEntityImpl(EntityId entity) {
     // Get entity
     EntityBlock* e = getEntityBlock(entity);
@@ -529,16 +529,12 @@ std::vector<Component*> Manager::getEntityComponentsImpl(EntityId entity) {
 //----------------------------------------//
 //----------------- Views ----------------//
 //----------------------------------------//
-std::vector<EntityId> Manager::getEntitiesView() { return getInstance().getEntitiesViewImpl(); }
 std::vector<EntityId> Manager::getEntitiesViewImpl() { return std::vector<EntityId>(_entities.begin(), _entities.end()); }
 
-std::vector<EntityId> Manager::getNoPrototypeView() { return getInstance().getNoPrototypeViewImpl(); }
 std::vector<EntityId> Manager::getNoPrototypeViewImpl() { return std::vector<EntityId>(_noPrototypeView.begin(), _noPrototypeView.end()); }
 
-std::vector<EntityId> Manager::getCloneView() { return getInstance().getCloneViewImpl(); }
 std::vector<EntityId> Manager::getCloneViewImpl() { return std::vector<EntityId>(_cloneView.begin(), _cloneView.end()); }
 
-std::vector<EntityId> Manager::getNoCloneView() { return getInstance().getNoCloneViewImpl(); }
 std::vector<EntityId> Manager::getNoCloneViewImpl() {
     std::vector<EntityId> noClones;
     for (auto entity : getEntitiesView())
@@ -547,7 +543,6 @@ std::vector<EntityId> Manager::getNoCloneViewImpl() {
     return noClones;
 }
 
-std::vector<EntityId> Manager::getScriptView() { return getInstance().getScriptViewImpl(); }
 std::vector<EntityId> Manager::getScriptViewImpl() { return std::vector<EntityId>(_scriptView.begin(), _scriptView.end()); }
 
 //----------------------------------------//

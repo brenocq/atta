@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_COMPONENT_MODULE_SOURCE
+    interface.cpp
+    manager.cpp
+
     entity.cpp
     factory.cpp
-    manager.cpp
     componentRegistry.cpp
     typedComponentRegistry.cpp
 

@@ -7,7 +7,7 @@
 #ifndef ATTA_PHYSICS_PHYSICS_ENGINES_PHYSICS_ENGINE_H
 #define ATTA_PHYSICS_PHYSICS_ENGINES_PHYSICS_ENGINE_H
 
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/utils/math/math.h>
 
 namespace atta::physics {

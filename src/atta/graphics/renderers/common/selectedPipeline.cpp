@@ -11,7 +11,7 @@
 
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::graphics {
 
@@ -40,10 +40,10 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
         shader->setMat4("projection", transpose(camera->getProj()));
         shader->setMat4("view", transpose(camera->getView()));
 
-        component::EntityId entity = component::Manager::getSelectedEntity();
+        component::EntityId entity = component::getSelectedEntity();
         if (entity != -1) {
-            component::Mesh* mesh = component::Manager::getEntityComponent<component::Mesh>(entity);
-            component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
+            component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
+            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
 
             if (mesh && transform) {
                 // Draw mesh normal size

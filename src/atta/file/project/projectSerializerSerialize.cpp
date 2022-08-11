@@ -15,18 +15,18 @@ void ProjectSerializer::serializeConfig(Section& section) { section["dt"] = floa
 
 void ProjectSerializer::serializeComponentSystem(Section& section) {
     // Serialize entity ids
-    std::vector<component::EntityId> entities = component::Manager::getNoCloneView();
+    std::vector<component::EntityId> entities = component::getNoCloneView();
     section["entityIds"] = entities;
 
     // Serialize components
-    for (auto compReg : component::Manager::getComponentRegistries()) {
+    for (auto compReg : component::getComponentRegistries()) {
         std::string name = compReg->getDescription().name;
 
         // Get all entities that have this component
         std::vector<component::EntityId> eids;
         std::vector<component::Component*> components;
         for (auto entity : entities) {
-            component::Component* comp = component::Manager::getEntityComponentById(compReg->getId(), entity);
+            component::Component* comp = component::getEntityComponentById(compReg->getId(), entity);
             if (comp != nullptr) {
                 eids.push_back(entity);
                 components.push_back(comp);

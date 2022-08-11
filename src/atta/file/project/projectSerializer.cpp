@@ -10,7 +10,7 @@
 #include <atta/file/serializer/serializer.h>
 
 #include <atta/component/components/components.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 #include <atta/resource/manager.h>
 #include <atta/resource/resources/image.h>

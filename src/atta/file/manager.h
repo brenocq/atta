@@ -7,7 +7,7 @@
 #ifndef ATTA_FILE_FILE_MANAGER_H
 #define ATTA_FILE_FILE_MANAGER_H
 #include <atta/event/manager.h>
-#include <atta/file/project/project.h>
+#include <atta/file/interface.h>
 #include <atta/file/project/projectSerializer.h>
 #include <atta/file/watchers/fileWatcher.h>
 
@@ -15,34 +15,21 @@ namespace atta::file {
 
 class Manager final {
   public:
-    static Manager& getInstance() {
-        static Manager instance;
-        return instance;
-    }
+    static Manager& getInstance();
 
-    static void startUp() { getInstance().startUpImpl(); }
-    static void shutDown() { getInstance().shutDownImpl(); }
-
-    // Project
-    static bool openProject(fs::path projectFile) { return getInstance().openProjectImpl(projectFile); }
-    static bool createProject(fs::path projectFile) { return getInstance().createProjectImpl(projectFile); }
-    static void saveProject() { getInstance().saveProjectImpl(); }
-    static void closeProject() { getInstance().closeProjectImpl(); }
-    static bool isProjectOpen() { return getInstance().isProjectOpenImpl(); }
-    static std::shared_ptr<Project> getProject() { return getInstance().getProjectImpl(); }
-
-    // Receives a relative resource path and searches the registered directories for that file
-    // By default searches on the <ATTA_DIR>/resources and <PROJECT_DIR>/resources directories
-    // The return is the absolute resource path
-    static fs::path solveResourcePath(fs::path relativePath, bool mustExist = true) {
-        return getInstance().solveResourcePathImpl(relativePath, mustExist);
-    }
-    static std::vector<fs::path> getResourcePaths() { return getInstance().getResourcePathsImpl(); }
-    static std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
-    static fs::path getDefaultProjectFolder() { return getInstance()._defaultProjectFolder; }
-
-    // Update watcher (TODO remove)
-    static void update() { getInstance().updateImpl(); };
+    friend void startUp();
+    friend void shutDown();
+    friend bool openProject(fs::path projectFile);
+    friend bool createProject(fs::path projectFile);
+    friend void saveProject();
+    friend void closeProject();
+    friend bool isProjectOpen();
+    friend std::shared_ptr<Project> getProject();
+    friend fs::path solveResourcePath(fs::path relativePath, bool mustExist);
+    friend std::vector<fs::path> getResourcePaths();
+    friend std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
+    friend fs::path getDefaultProjectFolder();
+    friend void update();
 
   private:
     void startUpImpl();
@@ -57,6 +44,7 @@ class Manager final {
 
     fs::path solveResourcePathImpl(fs::path relativePath, bool mustExist);
     std::vector<fs::path> getResourcePathsImpl() const;
+    std::vector<fs::path> getDirectoryFilesRecursiveImpl(fs::path directory);
 
     // Handle events
     void onSimulationStateChange(event::Event& event);

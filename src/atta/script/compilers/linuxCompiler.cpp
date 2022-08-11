@@ -25,7 +25,7 @@ void LinuxCompiler::compileAll() {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
     LOG_DEBUG("script::LinuxCompiler", "Compile all targets");
 
-    fs::path projectDir = file::Manager::getProject()->getDirectory();
+    fs::path projectDir = file::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
 
     // Create build directory if does not exists
@@ -67,7 +67,7 @@ void LinuxCompiler::compileTarget(StringId target) {
         return;
     }
 
-    fs::path projectDir = file::Manager::getProject()->getDirectory();
+    fs::path projectDir = file::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
 
     // Compile all if never compiled
@@ -99,7 +99,7 @@ void LinuxCompiler::compileTarget(StringId target) {
 }
 
 void LinuxCompiler::updateTargets() {
-    fs::path projectDir = file::Manager::getProject()->getDirectory();
+    fs::path projectDir = file::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
     fs::path tempFile = buildDir / "atta.temp";
 
@@ -139,7 +139,7 @@ void LinuxCompiler::findTargetFiles(StringId target) {
     // TODO Find a better way to track header files
     _targetFiles[target] = std::vector<fs::path>();
 
-    fs::path projectDir = file::Manager::getProject()->getDirectory();
+    fs::path projectDir = file::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
     fs::path dependFile = buildDir / "CMakeFiles" / (target.getString() + ".dir").c_str() / "DependInfo.cmake";
 

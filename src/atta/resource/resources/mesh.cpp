@@ -16,7 +16,7 @@ Mesh::Mesh(const fs::path& filename) : Resource(filename) { load(); }
 
 //---------- Assimp mesh loading ----------//
 void Mesh::load() {
-    fs::path absolutePath = file::Manager::solveResourcePath(_filename);
+    fs::path absolutePath = file::solveResourcePath(_filename);
 
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(absolutePath.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);

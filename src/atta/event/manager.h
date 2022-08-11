@@ -14,10 +14,7 @@ namespace atta::event {
 
 class Manager final {
   public:
-    static Manager& getInstance() {
-        static Manager instance;
-        return instance;
-    }
+    static Manager& getInstance();
 
     using Callback = std::function<void(Event&)>;
 

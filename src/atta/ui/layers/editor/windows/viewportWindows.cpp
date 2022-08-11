@@ -10,7 +10,7 @@
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/rigidBody2D.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/graphics/manager.h>
 #include <atta/ui/layers/editor/windows/viewportWindows.h>
 
@@ -96,9 +96,9 @@ void ViewportWindows::render() {
 
             //----- ImGuizmo -----//
             bool imGuizmoUsingMouse = false;
-            component::EntityId entity = component::Manager::getSelectedEntity();
+            component::EntityId entity = component::getSelectedEntity();
             if (entity >= 0) {
-                component::Transform* t = component::Manager::getEntityComponent<component::Transform>(entity);
+                component::Transform* t = component::getEntityComponent<component::Transform>(entity);
 
                 if (t) {
                     ImGuizmo::SetOrthographic(viewport->getCamera()->getName() == "OrthographicCamera");
@@ -131,15 +131,15 @@ void ViewportWindows::render() {
                         ori.fromEuler(t->orientation.toEuler() + oriDelta);
 
                         // Delta world to local
-                        component::Relationship* r = component::Manager::getEntityComponent<component::Relationship>(entity);
+                        component::Relationship* r = component::getEntityComponent<component::Relationship>(entity);
                         if (r && r->getParent() != -1) {
                             // Get transform of the first entity that has transform when going up in the hierarchy
                             component::Transform* pt = nullptr;
                             component::EntityId parentId = -1;
                             while (pt == nullptr) {
                                 parentId = r->getParent();
-                                pt = component::Manager::getEntityComponent<component::Transform>(parentId);
-                                r = component::Manager::getEntityComponent<component::Relationship>(parentId);
+                                pt = component::getEntityComponent<component::Transform>(parentId);
+                                r = component::getEntityComponent<component::Relationship>(parentId);
                                 if (r->getParent() == -1)
                                     break;
                             }
@@ -166,7 +166,7 @@ void ViewportWindows::render() {
                         else if (mouseOperation == ImGuizmo::OPERATION::SCALE)
                             t->scale = scale;
 
-                        component::RigidBody2D* rb2d = component::Manager::getEntityComponent<component::RigidBody2D>(entity);
+                        component::RigidBody2D* rb2d = component::getEntityComponent<component::RigidBody2D>(entity);
                         if (rb2d) {
                             if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
                                 vec2 pos = vec2(t->position);
@@ -184,7 +184,7 @@ void ViewportWindows::render() {
             if (!imGuizmoUsingMouse) {
                 if (click.x >= 0 && click.y >= 0 && click.x < (int)viewport->getWidth() && click.y < (int)viewport->getHeight()) {
                     component::EntityId eid = graphics::Manager::viewportEntityClick(viewport, click);
-                    component::Manager::setSelectedEntity(eid);
+                    component::setSelectedEntity(eid);
                 }
             }
 
@@ -232,15 +232,15 @@ void ViewportWindows::addBasicShapePopup() {
         unsigned i = 0;
         for (auto shape : basicShapes) {
             if (ImGui::Selectable((shape + "##AddBasicShape" + shape).c_str())) {
-                component::EntityId eid = component::Manager::createEntity();
-                component::Name* n = component::Manager::addEntityComponent<component::Name>(eid);
+                component::EntityId eid = component::createEntity();
+                component::Name* n = component::addEntityComponent<component::Name>(eid);
                 strcpy(n->name, shape.c_str());
-                component::Manager::addEntityComponent<component::Transform>(eid);
-                component::Mesh* m = component::Manager::addEntityComponent<component::Mesh>(eid);
+                component::addEntityComponent<component::Transform>(eid);
+                component::Mesh* m = component::addEntityComponent<component::Mesh>(eid);
                 m->sid = basicShapesMesh[i];
-                component::Material* mat = component::Manager::addEntityComponent<component::Material>(eid);
+                component::Material* mat = component::addEntityComponent<component::Material>(eid);
                 mat->albedo = vec3(0.5f, 0.5f, 0.5f);
-                component::Manager::setSelectedEntity(eid);
+                component::setSelectedEntity(eid);
             }
             i++;
         }

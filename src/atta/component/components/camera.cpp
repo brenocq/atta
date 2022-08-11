@@ -7,7 +7,7 @@
 #include <atta/component/components/camera.h>
 #include <atta/event/events/uiCameraComponent.h>
 #include <atta/event/manager.h>
-#include <atta/sensor/manager.h>
+#include <atta/sensor/interface.h>
 #include <imgui.h>
 
 namespace atta::component {
@@ -52,11 +52,11 @@ ComponentDescription& TypedComponentRegistry<Camera>::getDescription() {
 }
 
 const std::vector<uint8_t>& Camera::getFrame() {
-    std::vector<sensor::Manager::CameraInfo>& cameraInfos = sensor::Manager::getCameraInfos();
+    std::vector<sensor::CameraInfo>& cameraInfos = sensor::getCameraInfos();
     for (auto& cameraInfo : cameraInfos)
         if (cameraInfo.component == this)
             return cameraInfo.data;
-    LOG_ERROR("component::Camera", "Could not get camera frame from SensorManager");
+    LOG_ERROR("component::Camera", "Could not get camera frame from sensor::Manager");
     return {};
 }
 

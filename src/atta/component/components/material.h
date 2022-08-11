@@ -7,7 +7,7 @@
 #ifndef ATTA_COMPONENT_COMPONENTS_MATERIAL_H
 #define ATTA_COMPONENT_COMPONENTS_MATERIAL_H
 
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::component {
 

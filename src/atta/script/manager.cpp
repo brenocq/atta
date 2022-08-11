@@ -15,7 +15,6 @@ Manager& Manager::getInstance() {
     return instance;
 }
 
-Script* Manager::getScript(StringId target) { return getInstance().getScriptImpl(target); }
 Script* Manager::getScriptImpl(StringId target) const {
     if (_scripts.find(target) != _scripts.end())
         return _scripts.at(target);
@@ -25,7 +24,6 @@ Script* Manager::getScriptImpl(StringId target) const {
     }
 }
 
-std::vector<StringId> Manager::getScriptSids() { return getInstance().getScriptSidsImpl(); }
 std::vector<StringId> Manager::getScriptSidsImpl() const {
     std::vector<StringId> scripts;
     for (auto [script, value] : _scripts)
@@ -34,10 +32,8 @@ std::vector<StringId> Manager::getScriptSidsImpl() const {
     return scripts;
 }
 
-ProjectScript* Manager::getProjectScript() { return getInstance().getProjectScriptImpl(); }
 ProjectScript* Manager::getProjectScriptImpl() const { return _projectScript.second; }
 
-StringId Manager::getProjectScriptSid() { return getInstance().getProjectScriptSidImpl(); }
 StringId Manager::getProjectScriptSidImpl() const { return _projectScript.first; }
 
 } // namespace atta::script

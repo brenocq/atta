@@ -13,7 +13,7 @@
 
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::graphics {
 
@@ -63,7 +63,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
     }
 
     // Render entity ids
-    std::vector<component::EntityId> entities = component::Manager::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::getNoPrototypeView();
 
     _geometryPipeline->begin();
     {
@@ -84,8 +84,8 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
         shader->setMat4("view", transpose(viewport->getCamera()->getView()));
 
         for (auto entity : entities) {
-            component::Mesh* mesh = component::Manager::getEntityComponent<component::Mesh>(entity);
-            component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
+            component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
+            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
 
             if (mesh && transform) {
                 mat4 model = transpose(transform->getWorldTransform(entity));

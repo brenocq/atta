@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::component {
 
@@ -24,13 +24,13 @@ mat4 Transform::getWorldTransform(EntityId entity) {
     // For know there is no fast way to the transform component to know to which entity it belongs to,
     // so we receive the EntityId by argument
     mat4 t = getLocalTransform();
-    Relationship* relationship = component::Manager::getEntityComponent<Relationship>(entity);
+    Relationship* relationship = component::getEntityComponent<Relationship>(entity);
 
     while (relationship && relationship->getParent() >= 0) {
-        Transform* ptransform = component::Manager::getEntityComponent<Transform>(relationship->getParent());
+        Transform* ptransform = component::getEntityComponent<Transform>(relationship->getParent());
         if (ptransform)
             t = ptransform->getLocalTransform() * t;
-        relationship = component::Manager::getEntityComponent<Relationship>(relationship->getParent());
+        relationship = component::getEntityComponent<Relationship>(relationship->getParent());
     }
 
     return t;
@@ -44,8 +44,8 @@ mat4 Transform::getLocalTransform() {
 
 mat4 Transform::getEntityWorldTransform(EntityId entity) {
     EntityId curr = entity;
-    auto t = component::Manager::getEntityComponent<Transform>(curr);
-    auto r = component::Manager::getEntityComponent<Relationship>(curr);
+    auto t = component::getEntityComponent<Transform>(curr);
+    auto r = component::getEntityComponent<Relationship>(curr);
 
     do {
         if (t)
@@ -55,8 +55,8 @@ mat4 Transform::getEntityWorldTransform(EntityId entity) {
         if (curr == -1)
             return mat4(1.0f);
         else {
-            t = component::Manager::getEntityComponent<Transform>(curr);
-            r = component::Manager::getEntityComponent<Relationship>(curr);
+            t = component::getEntityComponent<Transform>(curr);
+            r = component::getEntityComponent<Relationship>(curr);
         }
     } while (true);
 }

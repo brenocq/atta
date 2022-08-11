@@ -8,6 +8,11 @@
 
 namespace atta::event {
 
+Manager& Manager::getInstance() {
+    static Manager instance;
+    return instance;
+}
+
 void Manager::subscribeImpl(Event::Type type, Callback&& callback) { _observers[type].push_back(callback); }
 
 void Manager::publishImpl(Event& event) const {

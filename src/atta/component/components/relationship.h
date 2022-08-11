@@ -7,7 +7,7 @@
 #ifndef ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H
 #define ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H
 
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/file/serializer/serializer.h>
 
 namespace atta::component {

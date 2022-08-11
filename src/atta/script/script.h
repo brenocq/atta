@@ -7,7 +7,7 @@
 #ifndef ATTA_SCRIPT_SCRIPT_H
 #define ATTA_SCRIPT_SCRIPT_H
 #include <atta/component/entity.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::script {
 

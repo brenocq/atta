@@ -8,7 +8,6 @@
 
 namespace atta::script {
 
-void Manager::startUp() { getInstance().startUpImpl(); }
 void Manager::startUpImpl() {
     // Publish registered scripts. Need to do here because scripts are
     // registered before ComponentSystem::startUp())
@@ -17,7 +16,6 @@ void Manager::startUpImpl() {
     EventManager::publish(evt);
 }
 
-void Manager::shutDown() { getInstance().shutDownImpl(); }
 void Manager::shutDownImpl() {
     if (_projectScript.second != nullptr)
         delete _projectScript.second;
@@ -25,21 +23,6 @@ void Manager::shutDownImpl() {
     for (auto& [key, s] : _scripts)
         delete s;
     _scripts.clear();
-}
-
-ProjectScript* Manager::registerProjectScript(std::string name, ProjectScript* projectScript) {
-    LOG_VERBOSE("script::Manager", "Registering project script [w]$0[]", name);
-    getInstance()._projectScript.first = StringId(name);
-    getInstance()._projectScript.second = projectScript;
-
-    return projectScript;
-}
-
-Script* Manager::registerScript(std::string name, Script* script) {
-    LOG_VERBOSE("script::Manager", "Registering script [w]$0[]", name);
-    getInstance()._scripts[StringId(name)] = script;
-
-    return script;
 }
 
 } // namespace atta::script

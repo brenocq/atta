@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/drawer.h>
-#include <atta/sensor/manager.h>
+#include <atta/sensor/interface.h>
 #include <atta/ui/layers/editor/drawers/sensorDrawer.h>
 
 namespace atta::ui {
@@ -14,7 +14,7 @@ void SensorDrawer::update() { updateCameras(); }
 
 void SensorDrawer::updateCameras() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::sensor::Camera"_ssid);
-    std::vector<sensor::Manager::CameraInfo>& cameras = sensor::Manager::getCameraInfos();
+    std::vector<sensor::CameraInfo>& cameras = sensor::getCameraInfos();
     for (uint32_t i = 0; i < cameras.size(); i++) {
         component::Camera* cameraComponent = cameras[i].component;
         std::shared_ptr<graphics::Camera> camera = cameras[i].camera;

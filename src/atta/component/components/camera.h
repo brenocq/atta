@@ -8,7 +8,7 @@
 #define ATTA_COMPONENT_COMPONENTS_CAMERA_H
 
 #include <atta/component/components/component.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/renderers/renderer.h>
 

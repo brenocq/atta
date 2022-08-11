@@ -20,7 +20,7 @@
 #include <atta/component/components/pointLight.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/factory.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::graphics {
 
@@ -64,7 +64,7 @@ PhongRenderer::PhongRenderer() : Renderer("PhongRenderer") {
 PhongRenderer::~PhongRenderer() {}
 
 void PhongRenderer::render(std::shared_ptr<Camera> camera) {
-    std::vector<component::EntityId> entities = component::Manager::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::getNoPrototypeView();
     _geometryPipeline->begin();
     {
         std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
@@ -76,9 +76,9 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
         //----- Lighting -----//
         int numPointLights = 0;
         for (auto entity : entities) {
-            component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
-            component::PointLight* pl = component::Manager::getEntityComponent<component::PointLight>(entity);
-            component::DirectionalLight* dl = component::Manager::getEntityComponent<component::DirectionalLight>(entity);
+            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
+            component::PointLight* pl = component::getEntityComponent<component::PointLight>(entity);
+            component::DirectionalLight* dl = component::getEntityComponent<component::DirectionalLight>(entity);
 
             if (transform && (pl || dl)) {
                 if (pl && numPointLights < 10) {
@@ -109,9 +109,9 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
         shader->setFloat("specularStrength", 0.5f);
 
         for (auto entity : entities) {
-            component::Mesh* mesh = component::Manager::getEntityComponent<component::Mesh>(entity);
-            component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
-            component::Material* material = component::Manager::getEntityComponent<component::Material>(entity);
+            component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
+            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
+            component::Material* material = component::getEntityComponent<component::Material>(entity);
 
             if (mesh && transform) {
                 mat4 model = transpose(transform->getWorldTransform(entity));

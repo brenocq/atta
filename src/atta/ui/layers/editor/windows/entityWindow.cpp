@@ -35,14 +35,14 @@ void EntityWindow::render() {
 }
 
 void EntityWindow::renderTree() {
-    std::vector<component::EntityId> entities = component::Manager::getEntitiesView();
+    std::vector<component::EntityId> entities = component::getEntitiesView();
     int i = 0;
 
     ImGui::Text("Scene");
 
     // Render root entities
     for (component::EntityId entity : entities) {
-        component::Relationship* r = component::Manager::getEntityComponent<component::Relationship>(entity);
+        component::Relationship* r = component::getEntityComponent<component::Relationship>(entity);
         if (!r || (r && r->getParent() == -1))
             renderTreeNode(entity, i);
     }
@@ -52,16 +52,16 @@ void EntityWindow::renderTree() {
     ImVec2 window = ImGui::GetWindowSize();
     ImGui::SetCursorPos(ImVec2((window.x - size) * 0.5f, cursor.y));
     if (ImGui::Button("Create entity", ImVec2(size, 0)))
-        component::Manager::createEntity();
+        component::createEntity();
 
     //----- Operations -----//
     for (auto entity : _entitiesToDelete)
-        component::Manager::deleteEntity(entity);
+        component::deleteEntity(entity);
     _entitiesToDelete.clear();
 
     for (auto entity : _entitiesToCopy) {
-        component::EntityId copied = component::Manager::copyEntity(entity);
-        component::Manager::setSelectedEntity(copied);
+        component::EntityId copied = component::copyEntity(entity);
+        component::setSelectedEntity(copied);
     }
     _entitiesToCopy.clear();
 }
@@ -69,14 +69,14 @@ void EntityWindow::renderTree() {
 void EntityWindow::renderTreeNode(component::EntityId entity, int& i) {
     //----- Name -----//
     std::string name = "<Entity " + std::to_string(entity) + ">";
-    component::Name* n = component::Manager::getEntityComponent<component::Name>(entity);
-    component::Relationship* r = component::Manager::getEntityComponent<component::Relationship>(entity);
+    component::Name* n = component::getEntityComponent<component::Name>(entity);
+    component::Relationship* r = component::getEntityComponent<component::Relationship>(entity);
     if (n)
         name = n->name;
 
     //----- Selected -----//
     ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-    if (entity == component::Manager::getSelectedEntity())
+    if (entity == component::getSelectedEntity())
         nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
     //----- Leaf/Node -----//
@@ -89,7 +89,7 @@ void EntityWindow::renderTreeNode(component::EntityId entity, int& i) {
 
     //----- Select entity -----//
     if (ImGui::IsItemClicked())
-        component::Manager::setSelectedEntity(entity);
+        component::setSelectedEntity(entity);
 
     //----- Popup -----//
     if (ImGui::BeginPopupContextItem()) {
@@ -126,15 +126,15 @@ void EntityWindow::renderTreeNode(component::EntityId entity, int& i) {
 }
 
 void EntityWindow::renderComponents() {
-    component::EntityId selected = component::Manager::getSelectedEntity();
+    component::EntityId selected = component::getSelectedEntity();
     if (selected == -1)
         return;
 
     ImGui::Text("Components (component::EntityId: %d)", selected);
 
     // Render options to edit each component
-    for (auto compReg : component::Manager::getComponentRegistries()) {
-        void* component = component::Manager::getEntityComponentById(compReg->getId(), selected);
+    for (auto compReg : component::getComponentRegistries()) {
+        void* component = component::getEntityComponentById(compReg->getId(), selected);
         if (component != nullptr) {
             std::string name = compReg->getDescription().name;
             if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
@@ -142,7 +142,7 @@ void EntityWindow::renderComponents() {
                 if (ImGui::CollapsingHeader((name + "##Components" + name + "Header").c_str(), &open))
                     compReg->renderUI((component::Component*)component);
                 if (!open)
-                    component::Manager::removeEntityComponentById(compReg->getId(), selected);
+                    component::removeEntityComponentById(compReg->getId(), selected);
             }
         }
     }
@@ -156,13 +156,13 @@ void EntityWindow::renderComponents() {
         ImGui::OpenPopup("Scene_ComponentAdd");
 
     if (ImGui::BeginPopup("Scene_ComponentAdd")) {
-        for (auto compReg : component::Manager::getComponentRegistries()) {
-            void* component = component::Manager::getEntityComponentById(compReg->getId(), selected);
+        for (auto compReg : component::getComponentRegistries()) {
+            void* component = component::getEntityComponentById(compReg->getId(), selected);
             if (component == nullptr) {
                 if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
                     std::string name = compReg->getDescription().name;
                     if (ImGui::Selectable((name + "##ComponentAdd" + name).c_str()))
-                        component::Manager::addEntityComponentById(compReg->getId(), selected);
+                        component::addEntityComponentById(compReg->getId(), selected);
                 }
             }
         }
@@ -191,11 +191,11 @@ void EntityWindow::textureCombo(std::string comboId, StringId& sid) {
 
 void EntityWindow::renderCameraWindows() {
     for (auto eid : _cameraWindows) {
-        component::Camera* camera = component::Manager::getEntityComponent<component::Camera>(eid);
+        component::Camera* camera = component::getEntityComponent<component::Camera>(eid);
         bool open = true;
         ImGui::Begin(("Camera Entity " + std::to_string(eid)).c_str(), &open);
         ImVec2 size = ImVec2(camera->width, camera->height);
-        ImGui::Image(sensor::Manager::getEntityCameraImGuiTexture(eid), size, ImVec2(0, 0), ImVec2(1, 1));
+        ImGui::Image(sensor::getEntityCameraImGuiTexture(eid), size, ImVec2(0, 0), ImVec2(1, 1));
         ImGui::End();
 
         if (!open)

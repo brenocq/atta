@@ -25,7 +25,7 @@ void OpenGLShader::recompile() {
 
     // Read file
     std::stringstream fileSS;
-    fs::path absolutePath = file::Manager::solveResourcePath(_filepath);
+    fs::path absolutePath = file::solveResourcePath(_filepath);
     std::ifstream file(absolutePath);
     fileSS << file.rdbuf();
     file.close();

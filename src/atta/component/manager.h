@@ -7,10 +7,7 @@
 #ifndef ATTA_COMPONENT_MANAGER_H
 #define ATTA_COMPONENT_MANAGER_H
 
-#include <atta/component/base.h>
-#include <atta/component/components/component.h>
-#include <atta/component/factory.h>
-#include <atta/component/typedComponentRegistry.h>
+// XXX for now manage.h should not be included, include interface.h instead
 
 #include <atta/event/manager.h>
 
@@ -27,58 +24,37 @@ constexpr unsigned maxEntities = 1024;
 class ComponentRegistry;
 class Manager final {
   public:
-    static Manager& getInstance() {
-        static Manager instance;
-        return instance;
-    }
+    static Manager& getInstance();
 
-    static void startUp() { getInstance().startUpImpl(); }
-    static void shutDown() { getInstance().shutDownImpl(); }
-
-    // Create/destroy entity
-    static EntityId createEntity(EntityId entity = -1); // Can try to create entity with specific EntityId
-    static void deleteEntity(EntityId entity);          // Delete entity and deallocate components
-    static void deleteEntityOnly(EntityId entity);      // Delete entity without deallocating components
-    static EntityId copyEntity(EntityId entity);
-
-    // Add entity component
+    friend void startUp();
+    friend void shutDown();
+    friend EntityId createEntity(EntityId entity);
+    friend void deleteEntity(EntityId entity);
+    friend void deleteEntityOnly(EntityId entity);
+    friend EntityId copyEntity(EntityId entity);
     template <typename T>
-    static T* addEntityComponent(EntityId entity) {
-        return getInstance().addEntityComponentImpl<T>(entity);
-    }
-    static Component* addEntityComponentById(ComponentId id, EntityId entity) { return getInstance().addEntityComponentByIdImpl(id, entity); }
-    static Component* addEntityComponentPtr(EntityId entity, unsigned index, uint8_t* component) {
-        return getInstance().addEntityComponentPtrImpl(entity, index, component);
-    }
-    // Get entity component
+    friend T* addEntityComponent(EntityId entity);
+    friend Component* addEntityComponentById(ComponentId id, EntityId entity);
+    friend Component* addEntityComponentPtr(EntityId entity, unsigned index, uint8_t* component);
     template <typename T>
-    static T* getEntityComponent(EntityId entity) {
-        return getInstance().getEntityComponentImpl<T>(entity);
-    }
-    static Component* getEntityComponentById(ComponentId id, EntityId entity) { return getInstance().getEntityComponentByIdImpl(id, entity); }
-    static std::vector<Component*> getEntityComponents(EntityId entity) { return getInstance().getEntityComponentsImpl(entity); }
-    // Remove entity component
-    static void removeEntityComponentById(ComponentId id, EntityId entity) { getInstance().removeEntityComponentByIdImpl(id, entity); }
-
-    // Getters
-    static std::vector<ComponentRegistry*> getComponentRegistries() { return getInstance().getComponentRegistriesImpl(); }
-    static std::vector<Factory>& getFactories() { return getInstance().getFactoriesImpl(); }
-    static Factory* getPrototypeFactory(EntityId prototype) { return getInstance().getPrototypeFactoryImpl(prototype); }
-
-    // Views
-    static std::vector<EntityId> getEntitiesView();
-    static std::vector<EntityId> getNoPrototypeView();
-    static std::vector<EntityId> getCloneView();
-    static std::vector<EntityId> getNoCloneView();
-    static std::vector<EntityId> getScriptView();
-    static EntityId getSelectedEntity() { return getInstance()._selectedEntity; }
-    static void setSelectedEntity(EntityId eid) { getInstance()._selectedEntity = eid; }
-
-    // Memory management
-    static void createDefault() { getInstance().createDefaultImpl(); }
-    static void clear() { getInstance().clearImpl(); }
-    static void registerComponent(ComponentRegistry* componentRegistry) { return getInstance().registerComponentImpl(componentRegistry); }
-    static void unregisterCustomComponents() { getInstance().unregisterCustomComponentsImpl(); }
+    friend T* getEntityComponent(EntityId entity);
+    friend Component* getEntityComponentById(ComponentId id, EntityId entity);
+    friend std::vector<Component*> getEntityComponents(EntityId entity);
+    friend void removeEntityComponentById(ComponentId id, EntityId entity);
+    friend std::vector<ComponentRegistry*> getComponentRegistries();
+    friend std::vector<Factory>& getFactories();
+    friend Factory* getPrototypeFactory(EntityId prototype);
+    friend std::vector<EntityId> getEntitiesView();
+    friend std::vector<EntityId> getNoPrototypeView();
+    friend std::vector<EntityId> getCloneView();
+    friend std::vector<EntityId> getNoCloneView();
+    friend std::vector<EntityId> getScriptView();
+    friend EntityId getSelectedEntity();
+    friend void setSelectedEntity(EntityId eid);
+    friend void createDefault();
+    friend void clear();
+    friend void registerComponent(ComponentRegistry* componentRegistry);
+    friend void unregisterCustomComponents();
 
   private:
     //----- Startup/ShutDown -----//
@@ -158,7 +134,6 @@ class Manager final {
     void onSimulationStateChange(event::Event& event);
     void createFactories();
     void destroyFactories();
-    static EntityId createClones(size_t quantity);
     EntityId createClonesImpl(size_t quantity);
     std::vector<Factory>& getFactoriesImpl() { return _factories; }
     Factory* getPrototypeFactoryImpl(EntityId prototype);

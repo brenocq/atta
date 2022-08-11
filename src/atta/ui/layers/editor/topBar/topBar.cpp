@@ -30,8 +30,8 @@ TopBar::TopBar() : _showPreferences(false) {}
 void TopBar::render() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
-            if (file::Manager::isProjectOpen()) {
-                ImGui::Text(file::Manager::getProject()->getName().c_str());
+            if (file::isProjectOpen()) {
+                ImGui::Text(file::getProject()->getName().c_str());
                 ImGui::Separator();
 
 #ifndef ATTA_STATIC_PROJECT
@@ -53,9 +53,9 @@ void TopBar::render() {
             }
 #endif
 
-            if (file::Manager::isProjectOpen())
+            if (file::isProjectOpen())
                 if (ImGui::MenuItem("Save"))
-                    file::Manager::saveProject();
+                    file::saveProject();
 
 #ifndef ATTA_STATIC_PROJECT
             if (ImGui::MenuItem("Save as"))
@@ -165,8 +165,8 @@ void TopBar::openProjectModal() {
     if (_waitingChooseAttaFile && !FileSelectionWindow::getChosenFile().empty()) {
         _waitingChooseAttaFile = false;
         if (fs::exists(FileSelectionWindow::getChosenFile())) {
-            file::Manager::saveProject();
-            file::Manager::openProject(FileSelectionWindow::getChosenFile());
+            file::saveProject();
+            file::openProject(FileSelectionWindow::getChosenFile());
         }
     }
     // If was closed and no file was selected
@@ -332,7 +332,7 @@ void TopBar::openPublishedWindow() {
     //
     //                        ImGui::TableNextColumn();
     //
-    //                        fs::path pathToClone = file::Manager::getDefaultProjectFolder();
+    //                        fs::path pathToClone = file::getDefaultProjectFolder();
     //                        fs::path repoPath = pathToClone/project.reponame;
     //                        if(!fs::exists(repoPath))
     //                        {
@@ -402,7 +402,7 @@ void TopBar::createProjectModal() {
         ImGui::SameLine();
 
         if (ImGui::Button("Create")) {
-            file::Manager::createProject(fs::path(buf));
+            file::createProject(fs::path(buf));
             ImGui::CloseCurrentPopup();
             _showCreateProject = false;
             lastShow = false;
@@ -429,16 +429,16 @@ void TopBar::saveProjectModal() {
         ImGui::SameLine();
         if (ImGui::Button("Yes")) {
             _showSaveProject = false;
-            file::Manager::saveProject();
+            file::saveProject();
         }
         ImGui::SetItemDefaultFocus();
 
         if (!_showSaveProject) {
             // Close project data
-            file::Manager::closeProject();
+            file::closeProject();
             // Replace components with default
-            component::Manager::clear();
-            component::Manager::createDefault();
+            component::clear();
+            component::createDefault();
             // Replace viewports with default
             graphics::Manager::createDefaultViewports();
 

@@ -17,13 +17,13 @@ void ProjectSerializer::deserializeComponentSystem(Section& section) {
     // Create entities
     std::vector<component::EntityId> entities = std::vector<component::EntityId>(section["entityIds"]);
     for (auto id : entities) {
-        component::EntityId res = component::Manager::createEntity(id);
+        component::EntityId res = component::createEntity(id);
         if (res != id)
             LOG_WARN("file::ProjectSerializer", "Could not create entity with id $0", id);
     }
 
     // Create and assign components
-    for (auto compReg : component::Manager::getComponentRegistries()) {
+    for (auto compReg : component::getComponentRegistries()) {
         std::string name = compReg->getDescription().name;
 
         // Get all entities that have this component
@@ -34,7 +34,7 @@ void ProjectSerializer::deserializeComponentSystem(Section& section) {
             write(ss, componentsData.data(), componentsData.size());
 
             for (auto eid : eids) {
-                component::Component* component = component::Manager::addEntityComponentById(compReg->getId(), eid);
+                component::Component* component = component::addEntityComponentById(compReg->getId(), eid);
                 compReg->deserialize(ss, component);
             }
         }

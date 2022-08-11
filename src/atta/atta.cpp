@@ -13,14 +13,14 @@
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/windowClose.h>
 
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/file/manager.h>
 #include <atta/graphics/manager.h>
 #include <atta/memory/manager.h>
 #include <atta/physics/manager.h>
 #include <atta/resource/manager.h>
-#include <atta/script/manager.h>
-#include <atta/sensor/manager.h>
+#include <atta/script/interface.h>
+#include <atta/sensor/interface.h>
 #include <atta/ui/manager.h>
 
 #include <atta/cmakeConfig.h>
@@ -38,19 +38,19 @@
 namespace atta {
 Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(SimulationState::NOT_RUNNING) {
     Config::init();
-    file::Manager::startUp();
+    file::startUp();
 
     uint64_t size = 1.0 * 1024UL * 1024UL * 1024UL;
     _mainAllocator = new memory::StackAllocator(size); // Allocate 1.0GB for the whole system
     memory::Manager::registerAllocator(SSID("MainAllocator"), static_cast<memory::Allocator*>(_mainAllocator));
 
-    component::Manager::startUp();
+    component::startUp();
     resource::Manager::startUp();
     graphics::Manager::startUp();
     ui::Manager::startUp();
-    script::Manager::startUp();
+    script::startUp();
     physics::Manager::startUp();
-    sensor::Manager::startUp();
+    sensor::startUp();
 
     // Atta is the last one to reveice events
     event::Manager::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
@@ -63,29 +63,29 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(Simu
 #ifdef ATTA_STATIC_PROJECT
     fs::path projectFile = fs::path(ATTA_STATIC_PROJECT_FILE);
     // If project is built statically, open project
-    file::Manager::openProject(projectFile);
+    file::openProject(projectFile);
 
     if (!info.projectFile.empty() && info.projectFile != projectFile)
         LOG_WARN("Atta", "Project [w]$0[] will not be open because atta was built statically linked to [w]$1[]", info.projectFile, projectFile);
 #else
     // If a project was defined as argument, open project
     if (!info.projectFile.empty())
-        file::Manager::openProject(info.projectFile);
+        file::openProject(info.projectFile);
 #endif
 }
 
 Atta::~Atta() {
     // TODO ask user if should close or not
-    // file::Manager::saveProject();
-    file::Manager::closeProject();
-    sensor::Manager::shutDown();
+    // file::saveProject();
+    file::closeProject();
+    sensor::shutDown();
     physics::Manager::shutDown();
-    script::Manager::shutDown();
+    script::shutDown();
     ui::Manager::shutDown();
     graphics::Manager::shutDown();
     resource::Manager::shutDown();
-    component::Manager::shutDown();
-    file::Manager::shutDown();
+    component::shutDown();
+    file::shutDown();
 
     delete _mainAllocator;
     LOG_SUCCESS("Atta", "Finished");
@@ -112,30 +112,30 @@ void Atta::loop() {
         return;
     float dt = Config::getDt();
 
-    script::ProjectScript* project = script::Manager::getProjectScript();
+    script::ProjectScript* project = script::getProjectScript();
     if (_simulationState == SimulationState::RUNNING) {
         physics::Manager::update(dt);
-        sensor::Manager::update(dt);
+        sensor::update(dt);
 
         if (project)
             project->onUpdateBefore(dt);
 
         // Run entity scripts
         // TODO keep list of entities that have script (and are not prototype entities)
-        std::vector<component::EntityId> entities = component::Manager::getScriptView();
+        std::vector<component::EntityId> entities = component::getScriptView();
         for (component::EntityId entity : entities) {
-            component::Script* scriptComponent = component::Manager::getEntityComponent<component::Script>(entity);
-            component::Prototype* prototypeComponent = component::Manager::getEntityComponent<component::Prototype>(entity);
+            component::Script* scriptComponent = component::getEntityComponent<component::Script>(entity);
+            component::Prototype* prototypeComponent = component::getEntityComponent<component::Prototype>(entity);
             if (scriptComponent && !prototypeComponent) {
-                // std::vector<Component*> components = component::Manager::getEntityComponents(entity);
-                script::Script* script = script::Manager::getScript(scriptComponent->sid);
+                // std::vector<Component*> components = component::getEntityComponents(entity);
+                script::Script* script = script::getScript(scriptComponent->sid);
                 if (script)
                     script->update(component::Entity(entity), dt);
             }
         }
 
         // Run clone scripts
-        for (auto& factory : component::Manager::getFactories())
+        for (auto& factory : component::getFactories())
             factory.runScripts(dt);
 
         if (project)
@@ -144,8 +144,8 @@ void Atta::loop() {
     if (project)
         project->onAttaLoop();
 
-    sensor::Manager::update();
-    file::Manager::update();
+    sensor::update();
+    file::update();
 
     if (_simulationState == SimulationState::RUNNING) {
         // Execute graphics update every X seconds
@@ -166,7 +166,7 @@ void Atta::loop() {
 void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }
 
 void Atta::onSimulationStateChange(event::Event& event) {
-    script::ProjectScript* project = script::Manager::getProjectScript();
+    script::ProjectScript* project = script::getProjectScript();
     switch (event.getType()) {
     case event::SimulationStart::type: {
         if (project)

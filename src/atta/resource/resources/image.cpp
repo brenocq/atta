@@ -76,7 +76,7 @@ void Image::update() {
 }
 
 void Image::saveToFile() {
-    fs::path absolutePath = file::Manager::solveResourcePath(_filename, false);
+    fs::path absolutePath = file::solveResourcePath(_filename, false);
     fs::create_directories(absolutePath.parent_path());
 
     // Save buffer as image
@@ -94,7 +94,7 @@ void Image::saveToFile() {
 uint32_t Image::getBytesPerChannel(Format format) { return format == Format::RGB16F ? 2 : 1; }
 
 void Image::load() {
-    fs::path absolutePath = file::Manager::solveResourcePath(_filename);
+    fs::path absolutePath = file::solveResourcePath(_filename);
     std::string extension = _filename.extension().string();
 
     uint8_t* data = nullptr;

@@ -12,8 +12,8 @@ void Manager::registerCameras() {
         camerasToDelete.insert(ci.entity);
 
     // Add new cameras
-    for (component::EntityId entity : component::Manager::getEntitiesView()) {
-        component::Camera* camera = component::Manager::getEntityComponent<component::Camera>(entity);
+    for (component::EntityId entity : component::getEntitiesView()) {
+        component::Camera* camera = component::getEntityComponent<component::Camera>(entity);
 
         if (camera) {
             // Check if camera was not registered yet
@@ -114,8 +114,8 @@ void Manager::updateCamerasModel() {
     //----- Update camera pose and parameters -----//
     for (size_t i = 0; i < _cameras.size(); i++) {
         component::EntityId entity = _cameras[i].entity;
-        component::Transform* transform = component::Manager::getEntityComponent<component::Transform>(entity);
-        component::Relationship* relationship = component::Manager::getEntityComponent<component::Relationship>(entity);
+        component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
+        component::Relationship* relationship = component::getEntityComponent<component::Relationship>(entity);
         if (transform) {
             // Calculate position
             vec3 position;
@@ -134,7 +134,7 @@ void Manager::updateCamerasModel() {
             rotation.mat[1][1] /= transform->scale.y;
             rotation.mat[2][2] /= transform->scale.z;
             while (relationship && relationship->getParent() >= 0) {
-                component::Transform* ptransform = component::Manager::getEntityComponent<component::Transform>(relationship->getParent());
+                component::Transform* ptransform = component::getEntityComponent<component::Transform>(relationship->getParent());
                 if (ptransform) {
                     mat4 protation;
                     protation.setPosOriScale(ptransform->position, ptransform->orientation, ptransform->scale);
@@ -146,7 +146,7 @@ void Manager::updateCamerasModel() {
                     protation.mat[2][2] /= ptransform->scale.z;
                     rotation = protation * rotation;
                 }
-                relationship = component::Manager::getEntityComponent<component::Relationship>(relationship->getParent());
+                relationship = component::getEntityComponent<component::Relationship>(relationship->getParent());
             }
 
             // Update camera pose
@@ -210,7 +210,6 @@ void Manager::updateCameras(float dt) {
     }
 }
 
-void* Manager::getEntityCameraImGuiTexture(component::EntityId eid) { return getInstance().getEntityCameraImGuiTextureImpl(eid); }
 void* Manager::getEntityCameraImGuiTextureImpl(component::EntityId eid) {
     for (size_t i = 0; i < _cameras.size(); i++)
         if (_cameras[i].entity == eid)
@@ -231,7 +230,5 @@ void Manager::cameraCheckUiEvents(event::Event& event) {
     }
     }
 }
-
-std::vector<Manager::CameraInfo>& Manager::getCameraInfos() { return getInstance()._cameras; }
 
 } // namespace atta::sensor

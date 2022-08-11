@@ -30,16 +30,16 @@ void BulletEngine::start() {
     _world = std::make_shared<btDiscreteDynamicsWorld>(_dispatcher.get(), _broadPhase.get(), _solver.get(), _collisionConfiguration.get());
     _world->setGravity(btVector3(0, 0, -10));
 
-    std::vector<component::EntityId> entities = component::Manager::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::getNoPrototypeView();
     //---------- Create rigid bodies ----------//
     for (component::EntityId entity : entities)
         createRigidBody(entity);
 
     //---------- Create joints ----------//
     for (component::EntityId entity : entities) {
-        auto prismatic = component::Manager::getEntityComponent<component::PrismaticJoint>(entity);
-        auto revolute = component::Manager::getEntityComponent<component::RevoluteJoint>(entity);
-        auto rigid = component::Manager::getEntityComponent<component::RigidJoint>(entity);
+        auto prismatic = component::getEntityComponent<component::PrismaticJoint>(entity);
+        auto revolute = component::getEntityComponent<component::RevoluteJoint>(entity);
+        auto rigid = component::getEntityComponent<component::RigidJoint>(entity);
 
         if (prismatic)
             createPrismaticJoint(prismatic);
@@ -63,7 +63,7 @@ void BulletEngine::step(float dt) {
             trans = obj->getWorldTransform();
 
         // Check if object was translated
-        auto t = component::Manager::getEntityComponent<component::Transform>(eid);
+        auto t = component::getEntityComponent<component::Transform>(eid);
 
         // Get atta world position and orientation
         vec3 position, scale;
@@ -106,8 +106,8 @@ void BulletEngine::step(float dt) {
         btScalar angularDamping = body->getAngularDamping();
         btVector3 linearVelocity = body->getLinearVelocity();
         btVector3 angularVelocity = body->getAngularVelocity();
-        auto t = component::Manager::getEntityComponent<component::Transform>(eid);
-        auto rb = component::Manager::getEntityComponent<component::RigidBody>(eid);
+        auto t = component::getEntityComponent<component::Transform>(eid);
+        auto rb = component::getEntityComponent<component::RigidBody>(eid);
         t->position = {trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()};
 
         float yaw, pitch, roll;
@@ -147,10 +147,10 @@ std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, boo
 bool BulletEngine::areColliding(component::EntityId eid0, component::EntityId eid1) { return false; }
 
 void BulletEngine::createRigidBody(component::EntityId entity) {
-    auto t = component::Manager::getEntityComponent<component::Transform>(entity);
-    auto rb = component::Manager::getEntityComponent<component::RigidBody>(entity);
-    auto box = component::Manager::getEntityComponent<component::BoxCollider>(entity);
-    auto sphere = component::Manager::getEntityComponent<component::SphereCollider>(entity);
+    auto t = component::getEntityComponent<component::Transform>(entity);
+    auto rb = component::getEntityComponent<component::RigidBody>(entity);
+    auto box = component::getEntityComponent<component::BoxCollider>(entity);
+    auto sphere = component::getEntityComponent<component::SphereCollider>(entity);
 
     if (!rb)
         return;

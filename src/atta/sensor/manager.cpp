@@ -8,7 +8,7 @@
 
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 #include <atta/event/events/createComponent.h>
 #include <atta/event/events/deleteComponent.h>
@@ -30,7 +30,6 @@ Manager& Manager::getInstance() {
     return instance;
 }
 
-void Manager::startUp() { getInstance().startUpImpl(); }
 void Manager::startUpImpl() {
     // Subscribe to simulation events
     event::Manager::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
@@ -47,18 +46,15 @@ void Manager::startUpImpl() {
     registerCameras();
 }
 
-void Manager::shutDown() { getInstance().shutDownImpl(); }
 void Manager::shutDownImpl() {
     // Destroy sensors
     unregisterCameras();
 }
 
-void Manager::update() { getInstance().updateImpl(); }
 void Manager::updateImpl() {
     updateCamerasModel(); // Update camera pose and internal paramters
 }
 
-void Manager::update(float dt) { getInstance().updateImpl(dt); }
 void Manager::updateImpl(float dt) {
     _currTime += dt;
     updateCameras(dt); // Render images when necessary

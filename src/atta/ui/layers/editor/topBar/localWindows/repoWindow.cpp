@@ -45,7 +45,7 @@ void RepoWindow::render() {
                 // Open project button
                 ImGui::TableNextColumn();
                 if (ImGui::Button(("Open###RepoWindowOpenButton" + project.attaFile.string()).c_str()))
-                    file::Manager::openProject(project.attaFile);
+                    file::openProject(project.attaFile);
                 ImGui::TableNextRow();
             }
 

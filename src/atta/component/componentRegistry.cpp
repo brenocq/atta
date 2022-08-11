@@ -5,11 +5,11 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/componentRegistry.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <imgui.h>
 
 namespace atta::component {
-void ComponentRegistry::registerToManager() { component::Manager::registerComponent(this); }
+void ComponentRegistry::registerToManager() { component::registerComponent(this); }
 
 unsigned ComponentRegistry::getSerializedSize(Component* component) {
     std::ostringstream of;

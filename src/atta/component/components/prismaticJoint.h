@@ -8,7 +8,7 @@
 #define ATTA_COMPONENT_COMPONENTS_PRISMATIC_JOINT_H
 
 #include <atta/component/base.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::component {
 

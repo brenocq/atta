@@ -20,18 +20,16 @@ namespace atta::script {
 class Manager final {
   public:
     static Manager& getInstance();
-    static void startUp();
-    static void shutDown();
 
-    static Script* getScript(StringId target);
-    static std::vector<StringId> getScriptSids();
-
-    static ProjectScript* getProjectScript();
-    static StringId getProjectScriptSid();
-
+    friend void startUp();
+    friend void shutDown();
+    friend Script* getScript(StringId target);
+    friend std::vector<StringId> getScriptSids();
+    friend ProjectScript* getProjectScript();
+    friend StringId getProjectScriptSid();
 #ifdef ATTA_STATIC_PROJECT
-    static ProjectScript* registerProjectScript(std::string name, ProjectScript* projectScript);
-    static Script* registerScript(std::string name, Script* script);
+    friend ProjectScript* registerProjectScript(std::string name, ProjectScript* projectScript);
+    friend Script* registerScript(std::string name, Script* script);
 #endif
 
   private:

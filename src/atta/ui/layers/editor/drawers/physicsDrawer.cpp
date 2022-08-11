@@ -7,7 +7,7 @@
 #include <atta/component/components/boxCollider.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/graphics/drawer.h>
 #include <atta/ui/layers/editor/drawers/physicsDrawer.h>
 
@@ -16,10 +16,10 @@ namespace atta::ui {
 void PhysicsDrawer::update() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::ui::PhysicsDrawer");
 
-    std::vector<component::EntityId> entities = component::Manager::getEntitiesView();
+    std::vector<component::EntityId> entities = component::getEntitiesView();
     for (auto entity : entities) {
         // Get transform
-        auto t = component::Manager::getEntityComponent<component::Transform>(entity);
+        auto t = component::getEntityComponent<component::Transform>(entity);
         if (!t)
             continue;
         vec3 position, scale;
@@ -31,7 +31,7 @@ void PhysicsDrawer::update() {
         vec4 color = {0, 1, 0, 1};
 
         // Draw box collider
-        auto box = component::Manager::getEntityComponent<component::BoxCollider>(entity);
+        auto box = component::getEntityComponent<component::BoxCollider>(entity);
         if (box) {
             std::vector<vec3> vertices = {{0.5, 0.5, 0}, {-0.5, 0.5, 0}, {-0.5, -0.5, 0}, {0.5, -0.5, 0}};
 
@@ -62,7 +62,7 @@ void PhysicsDrawer::update() {
         }
 
         // Draw circle collider
-        auto circle = component::Manager::getEntityComponent<component::SphereCollider>(entity);
+        auto circle = component::getEntityComponent<component::SphereCollider>(entity);
         if (circle) {
             const unsigned numVertices = 32;
             std::vector<vec3> vertices;

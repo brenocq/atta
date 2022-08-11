@@ -4,7 +4,7 @@
 // Date: 2022-06-12
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/event/events/fileWatch.h>
 #include <atta/event/events/projectBeforeDeserialize.h>
 #include <atta/event/events/projectClose.h>
@@ -16,7 +16,6 @@
 
 namespace atta::script {
 
-void Manager::startUp() { getInstance().startUpImpl(); }
 void Manager::startUpImpl() {
 #ifdef ATTA_OS_LINUX
     _compiler = std::static_pointer_cast<Compiler>(std::make_shared<LinuxCompiler>());
@@ -34,7 +33,6 @@ void Manager::startUpImpl() {
     _projectScript = std::make_pair(StringId(), nullptr);
 }
 
-void Manager::shutDown() { getInstance().shutDownImpl(); }
 void Manager::shutDownImpl() {}
 
 void Manager::onFileChange(event::Event& event) {
@@ -52,7 +50,7 @@ void Manager::onFileChange(event::Event& event) {
 
     // Publish event
     event::ScriptTarget evt;
-    evt.scriptSids = getScriptSids();
+    evt.scriptSids = getScriptSidsImpl();
     event::Manager::publish(evt);
 }
 
@@ -61,7 +59,7 @@ void Manager::onProjectOpen(event::Event& event) {
 
     // Publish event
     event::ScriptTarget evt;
-    evt.scriptSids = getScriptSids();
+    evt.scriptSids = getScriptSidsImpl();
     event::Manager::publish(evt);
 }
 
@@ -72,7 +70,7 @@ void Manager::onProjectClose(event::Event& event) {
 
     // Publish event
     event::ScriptTarget evt;
-    evt.scriptSids = getScriptSids();
+    evt.scriptSids = getScriptSidsImpl();
     event::Manager::publish(evt);
 }
 
@@ -135,7 +133,7 @@ void Manager::releaseTarget(StringId target) {
     // Delete project script
     if (_projectScript.first != StringId() && _projectScript.first == _targetToScript[target]) {
         _projectScript.second->onUnload();
-        // component::Manager::unregisterCustomComponents();
+        // component::unregisterCustomComponents();
 
         _projectScript.first = StringId();
         delete _projectScript.second;

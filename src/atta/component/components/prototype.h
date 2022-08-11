@@ -7,7 +7,7 @@
 #ifndef ATTA_COMPONENT_COMPONENTS_PROTOTYPE_H
 #define ATTA_COMPONENT_COMPONENTS_PROTOTYPE_H
 
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::component {
 

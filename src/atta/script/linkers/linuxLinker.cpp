@@ -20,7 +20,7 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
 
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
-    fs::path projectDir = file::Manager::getProject()->getDirectory();
+    fs::path projectDir = file::getProject()->getDirectory();
     fs::path lib = projectDir / "build" / ("lib" + target.getString() + ".so").c_str();
 
     // LOG_DEBUG("script::LinuxLinker", "Linking target $0", lib);

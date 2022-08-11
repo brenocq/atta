@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/graphics/manager.h>
 #include <atta/resource/manager.h>
-#include <atta/script/manager.h>
+#include <atta/script/interface.h>
 #include <atta/ui/layers/editor/editorLayer.h>
 #include <imgui_internal.h>
 
@@ -16,7 +16,7 @@
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
 
 #include <atta/component/components/name.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/sensor/manager.h>
 
 namespace atta::ui {
@@ -62,17 +62,17 @@ void EditorLayer::onUIRender() {
     renderCameraWindows();
 
     // Project UI
-    script::ProjectScript* project = script::Manager::getProjectScript();
+    script::ProjectScript* project = script::getProjectScript();
     if (project)
         project->onUIRender();
 }
 
 void EditorLayer::renderCameraWindows() {
     // TODO think another way to show camera windows
-    std::vector<sensor::Manager::CameraInfo>& cameras = sensor::Manager::getCameraInfos();
+    std::vector<sensor::CameraInfo>& cameras = sensor::getCameraInfos();
     for (uint32_t i = 0; i < cameras.size(); i++) {
         if (cameras[i].showWindow) {
-            component::Name* name = component::Manager::getEntityComponent<component::Name>(cameras[i].entity);
+            component::Name* name = component::getEntityComponent<component::Name>(cameras[i].entity);
             std::string windowName = name != nullptr ? name->name : "Camera";
             ImGui::Begin((windowName + "##CameraWindow" + std::to_string(cameras[i].entity)).c_str(), &(cameras[i].showWindow));
             {

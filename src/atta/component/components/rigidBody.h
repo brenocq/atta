@@ -7,7 +7,7 @@
 #ifndef ATTA_COMPONENT_COMPONENTS_RIGID_BODY_H
 #define ATTA_COMPONENT_COMPONENTS_RIGID_BODY_H
 
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 
 namespace atta::component {
 /// %Component to make the entity a rigid body.

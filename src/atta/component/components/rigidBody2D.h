@@ -8,7 +8,7 @@
 #define ATTA_COMPONENT_COMPONENTS_RIGID_BODY_2D_H
 
 #include <atta/component/components/component.h>
-#include <atta/component/manager.h>
+#include <atta/component/interface.h>
 #include <atta/utils/math/vector.h>
 
 namespace atta::component {
