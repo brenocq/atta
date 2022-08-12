@@ -26,15 +26,13 @@ set(ATTA_ASSIMP_TARGETS "")
     set(ASSIMP_INSTALL OFF CACHE INTERNAL "" FORCE)
     FetchContent_Declare(
         assimp
-        GIT_REPOSITORY "https://github.com/assimp/assimp"
-        GIT_TAG "5976d5443739714f4d8fe8a4cc5a041c8bb5a967"
-        GIT_PROGRESS TRUE
+        URL "https://storage.googleapis.com/atta-deps/assimp-5.2.4-light.zip"
     )
     atta_log(Info Extern "Fetching Assimp...")
     atta_FetchContent_MakeAvailable(assimp) 
 
-    atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/assimp-src/include)
-    atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/assimp-build/include)
+    atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/assimp-src/include)
+    atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/assimp-build/include)
     atta_add_libs(assimp)
 
     atta_log(Success Extern "Assimp support (source)")

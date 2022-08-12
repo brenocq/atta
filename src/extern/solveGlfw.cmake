@@ -3,12 +3,12 @@ set(ATTA_GLFW_TARGETS "")
 
 if(NOT ATTA_SYSTEM_NAME MATCHES "Web")
     #find_package(glfw3)
-    if(glfw3_FOUND)
-        atta_add_libs(glfw)
-        atta_log(Success Extern "GLFW support (installed)")
-        set(ATTA_GLFW_SUPPORT TRUE)
-        set(ATTA_GLFW_TARGETS glfw)
-    else()
+    #if(glfw3_FOUND)
+    #    atta_add_libs(glfw)
+    #    atta_log(Success Extern "GLFW support (installed)")
+    #    set(ATTA_GLFW_SUPPORT TRUE)
+    #    set(ATTA_GLFW_TARGETS glfw)
+    #else()
         set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
         set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
         set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -17,11 +17,12 @@ if(NOT ATTA_SYSTEM_NAME MATCHES "Web")
         FetchContent_Declare(
             glfw
             GIT_REPOSITORY "https://github.com/glfw/glfw"
-            GIT_TAG "df8d7bc892937a8b0f7c604c92a9f64f383cf48c"
+            GIT_TAG "3.3.8"
             GIT_PROGRESS TRUE
+            GIT_SHALLOW TRUE
         )
 
-        atta_add_include_dirs(${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/glfw-src/include)
+        atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/glfw-src/include)
         atta_add_libs(glfw)
 
         atta_log("Info" "Extern" "Fetching GLFW...")
@@ -30,5 +31,5 @@ if(NOT ATTA_SYSTEM_NAME MATCHES "Web")
         atta_log(Success Extern "GLFW support (source)")
         set(ATTA_GLFW_SUPPORT TRUE)
         set(ATTA_GLFW_TARGETS glfw)
-    endif()
+    #endif()
 endif()

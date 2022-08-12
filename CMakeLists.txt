@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.0.3.5 LANGUAGES CXX C)
+project(atta VERSION 0.0.3.6 LANGUAGES CXX C)
 
 OPTION(ATTA_BUILD_TESTS
     "Set to ON to build also the test executables"
@@ -29,119 +29,14 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 endif()
 
 ########## Macros ##########
-macro(atta_add_libs)
-    # Used by atta systems to register itself to be linked with the atta target
-    foreach(_lib ${ARGN})
-        list(APPEND ATTA_LIBS ${_lib})
-    endforeach()
+include(cmake/macros.cmake)
 
-    # Update variable
-    get_directory_property(hasParent PARENT_DIRECTORY)
-    if(hasParent)
-        set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)
-    else()
-        set(ATTA_LIBS ${ATTA_LIBS})
-    endif()
-endmacro()
-
-macro(atta_add_include_dirs)
-    # Used by atta systems to include directories to all targets
-    foreach(_include_dir ${ARGN})
-        list(APPEND ATTA_INCLUDE_DIRS ${_include_dir})
-    endforeach()
-
-    # Update variable
-    get_directory_property(hasParent PARENT_DIRECTORY)
-    if(hasParent)
-        set(ATTA_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS} PARENT_SCOPE)
-    else()
-        set(ATTA_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS})
-    endif()
-endmacro()
-
-macro(atta_add_tests)
-    # Used by atta systems to add tests to the atta_test target
-    foreach(_test ${ARGN})
-        list(APPEND ATTA_TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_test}")
-    endforeach()
-
-    # Update variable
-    get_directory_property(hasParent PARENT_DIRECTORY)
-    if(hasParent)
-        set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
-    else()
-        set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES})
-    endif()
-endmacro()
-
-macro(atta_add_definition)
-    # Used to add a define when compiling
-    foreach(_definition ${ARGN})
-        list(APPEND ATTA_DEFINITIONS ${_definition})
-    endforeach()
-
-    # Update variable
-    get_directory_property(hasParent PARENT_DIRECTORY)
-    if(hasParent)
-        set(ATTA_DEFINITIONS ${ATTA_DEFINITIONS} PARENT_SCOPE)
-    else()
-        set(ATTA_DEFINITIONS ${ATTA_DEFINITIONS})
-    endif()
-endmacro()
-
-macro(atta_target_common target)
-    # Common to all targets
-    target_precompile_headers(${target} PRIVATE ${ATTA_PCH})
-    target_include_directories(${target} PRIVATE ${ATTA_INCLUDE_DIRS})
-    target_compile_options(${target} PRIVATE ${ATTA_OPTIONS})
-    target_compile_definitions(${target} PRIVATE ${ATTA_DEFINITIONS})
-endmacro()
-
-macro(atta_create_local_test target sources libs)
-if(ATTA_BUILD_TESTS)
-    add_executable(${target} ${sources})
-    atta_target_common(${target})
-    target_link_libraries(${target} PRIVATE ${libs} gtest_main)
-    set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ATTA_TEST_PATH})
-endif()
-endmacro()
-
-if(NOT WIN32)
-  string(ASCII 27 Esc)
-  set(Reset       "${Esc}[m")
-  set(Bold        "${Esc}[1m")
-  set(Red         "${Esc}[31m")
-  set(Green       "${Esc}[32m")
-  set(Yellow      "${Esc}[33m")
-  set(Blue        "${Esc}[34m")
-  set(Magenta     "${Esc}[35m")
-  set(Cyan        "${Esc}[36m")
-  set(White       "${Esc}[37m")
-  set(BoldRed     "${Esc}[1;31m")
-  set(BoldGreen   "${Esc}[1;32m")
-  set(BoldYellow  "${Esc}[1;33m")
-  set(BoldBlue    "${Esc}[1;34m")
-  set(BoldMagenta "${Esc}[1;35m")
-  set(BoldCyan    "${Esc}[1;36m")
-  set(BoldWhite   "${Esc}[1;37m")
-endif()
-
-macro(atta_log type tag message)
-    set(atta_log_color ${Reset})
-    if(${type} STREQUAL "Debug")
-        set(atta_log_color ${Magenta})
-    elseif(${type} STREQUAL "Info")
-        set(atta_log_color ${Cyan})
-    elseif(${type} STREQUAL "Success")
-        set(atta_log_color ${Green})
-    elseif(${type} STREQUAL "Warn")
-        set(atta_log_color ${Yellow})
-    endif()
-    message(STATUS "${Bold}${atta_log_color}[${tag}] ${Reset}${atta_log_color}${message}${Reset}")
-endmacro()
+########## Log ##########
+include(cmake/log.cmake)
 
 ########## Build Types ##########
 atta_log(Info "Main" "cmake build type: ${CMAKE_BUILD_TYPE}")
+atta_log(Info "Main" "cmake build dir: ${CMAKE_BINARY_DIR}")
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
 endif()
@@ -183,7 +78,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(EMSCRIPTEN_LINK_PROPERTIES "-s USE_WEBGL2=1 -s USE_GLFW=3")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1 -s FORCE_FILESYSTEM=1")
-    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ../resources")
+    set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
 
     if(ATTA_STATIC_PROJECT_FILE)
@@ -300,7 +195,7 @@ if(ATTA_STATIC_PROJECT)
     set(ATTA_INSTALL_LIBRARIES ${ATTA_LIBS})
     set(ATTA_INSTALL_INCLUDE_DIRS ${ATTA_INCLUDE_DIRS})
     set(ATTA_INSTALL_PCH ${ATTA_PCH})
-    configure_file(attaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake" @ONLY)
+    configure_file(cmake/attaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake" @ONLY)
 
     get_filename_component(projectDirectory ${ATTA_STATIC_PROJECT_FILE} DIRECTORY)
     add_subdirectory(${projectDirectory} ${projectDirectory}/build)
@@ -317,8 +212,8 @@ if(ATTA_STATIC_PROJECT)
 endif()
 
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/scriptSystem/scripts.h.in" 
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/scriptSystem/scripts.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/script/scripts.h.in" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/script/scripts.h"
 )
 
 # Web build
@@ -377,7 +272,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
 
     # Uninstall target
     configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/attaUninstall.cmake.in"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/attaUninstall.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/attaUninstall.cmake"
         @ONLY)
     add_custom_target(uninstall
@@ -392,7 +287,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY SameMajorVersion
     )
-    configure_package_config_file(attaConfig.cmake.in
+    configure_package_config_file(cmake/attaConfig.cmake.in
         "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake"
         INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${ATTA_VERSION_SAFE}
     )

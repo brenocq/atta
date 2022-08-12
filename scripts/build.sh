@@ -2,7 +2,8 @@
 set -e
 
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-BUILD_PATH="$SCRIPT_PATH/../build"
+SOURCE_PATH="$SCRIPT_PATH/.."
+BUILD_PATH="$SOURCE_PATH/build"
 CMAKE_BUILD_TYPE="-DCMAKE_BUILD_TYPE=Release"
 CMAKE_ATTA_STATIC=""
 BUILD_TYPE="default"
@@ -46,31 +47,31 @@ printHelp()
    exit
 }
 
-safeBuild()
-{
-    CACHE_FILE=$BUILD_PATH/.buildsh_type
-    IS_STATIC="-static"
-    if [[ -z $CMAKE_ATTA_STATIC ]]; then
-        IS_STATIC=""
-    fi
-
-    # If total rebuild is necessary, build folder content is deleted
-    if test -f "$CACHE_FILE"; then
-        LAST_BUILD_TYPE="$(cat $CACHE_FILE)"
-        if [[ "$LAST_BUILD_TYPE" != "$BUILD_TYPE$IS_STATIC" ]]; then
-            echo "[build.sh] Deleting $BUILD_PATH/* ($LAST_BUILD_TYPE != $BUILD_TYPE$IS_STATIC)"
-            rm -rf $BUILD_PATH/*
-        fi
-        rm $BUILD_PATH/.buildsh_type
-    fi
-    echo "$BUILD_TYPE$IS_STATIC" >> $CACHE_FILE
-}
+#safeBuild()
+#{
+#    CACHE_FILE=$BUILD_PATH/.buildsh_type
+#    IS_STATIC="-static"
+#    if [[ -z $CMAKE_ATTA_STATIC ]]; then
+#        IS_STATIC=""
+#    fi
+#
+#    # If total rebuild is necessary, build folder content is deleted
+#    if test -f "$CACHE_FILE"; then
+#        LAST_BUILD_TYPE="$(cat $CACHE_FILE)"
+#        if [[ "$LAST_BUILD_TYPE" != "$BUILD_TYPE$IS_STATIC" ]]; then
+#            echo "[build.sh] Deleting $BUILD_PATH/* ($LAST_BUILD_TYPE != $BUILD_TYPE$IS_STATIC)"
+#            rm -rf $BUILD_PATH/*
+#        fi
+#        rm $BUILD_PATH/.buildsh_type
+#    fi
+#    echo "$BUILD_TYPE$IS_STATIC" >> $CACHE_FILE
+#}
 
 buildDefault()
 {
     echo "---------- Building ----------"
     # Build
-    cmake $CMAKE_BUILD_TYPE $CMAKE_ATTA_STATIC ..
+    cmake $CMAKE_BUILD_TYPE $CMAKE_ATTA_STATIC $SOURCE_PATH
     make -j
 
     # Install
@@ -108,7 +109,7 @@ buildWeb()
 
     # Build
     echo "---------- Building web ----------"
-    emcmake cmake $CMAKE_MODULE $CMAKE_BUILD_TYPE $CMAKE_ATTA_STATIC ..
+    emcmake cmake $CMAKE_MODULE $CMAKE_BUILD_TYPE $CMAKE_ATTA_STATIC $SOURCE_PATH
     make -j
 
     # Run
@@ -123,7 +124,7 @@ buildWeb()
 buildDocs()
 {
     echo "---------- Building docs ----------"
-    cmake -ATTA_BUILD_DOCS=ON -DATTA_BUILD_TESTS=OFF ..
+    cmake -ATTA_BUILD_DOCS=ON -DATTA_BUILD_TESTS=OFF $SOURCE_PATH
     make -j
     exit
 }
@@ -175,10 +176,11 @@ done
 
 
 # Change to build directory
+BUILD_PATH="$BUILD_PATH/$BUILD_TYPE"
 mkdir -p $BUILD_PATH && cd $BUILD_PATH
 
 # Build
-safeBuild
+#safeBuild
 case $BUILD_TYPE in
 default)
   buildDefault

@@ -1,0 +1,64 @@
+//--------------------------------------------------
+// Atta File Module
+// manager.h
+// Date: 2021-09-05
+// By Breno Cunha Queiroz
+//--------------------------------------------------
+#ifndef ATTA_FILE_FILE_MANAGER_H
+#define ATTA_FILE_FILE_MANAGER_H
+#include <atta/event/manager.h>
+#include <atta/file/interface.h>
+#include <atta/file/project/projectSerializer.h>
+#include <atta/file/watchers/fileWatcher.h>
+
+namespace atta::file {
+
+class Manager final {
+  public:
+    static Manager& getInstance();
+
+    friend void startUp();
+    friend void shutDown();
+    friend bool openProject(fs::path projectFile);
+    friend bool createProject(fs::path projectFile);
+    friend void saveProject();
+    friend void closeProject();
+    friend bool isProjectOpen();
+    friend std::shared_ptr<Project> getProject();
+    friend fs::path solveResourcePath(fs::path relativePath, bool mustExist);
+    friend std::vector<fs::path> getResourcePaths();
+    friend std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
+    friend fs::path getDefaultProjectFolder();
+    friend void update();
+
+  private:
+    void startUpImpl();
+    void shutDownImpl();
+
+    bool openProjectImpl(fs::path projectFile);
+    bool createProjectImpl(fs::path projectFile);
+    void saveProjectImpl();
+    void closeProjectImpl();
+    bool isProjectOpenImpl() const;
+    std::shared_ptr<Project> getProjectImpl() const { return _project; }
+
+    fs::path solveResourcePathImpl(fs::path relativePath, bool mustExist);
+    std::vector<fs::path> getResourcePathsImpl() const;
+    std::vector<fs::path> getDirectoryFilesRecursiveImpl(fs::path directory);
+
+    // Handle events
+    void onSimulationStateChange(event::Event& event);
+
+    // TODO remove
+    void updateImpl();
+
+    std::shared_ptr<FileWatcher> _fileWatcher;
+    std::shared_ptr<Project> _project;
+    std::shared_ptr<ProjectSerializer> _projectSerializer;
+    bool _simulationRunning;
+    fs::path _defaultProjectFolder; ///< Default folder to clone published projects and save projects
+};
+
+} // namespace atta::file
+
+#endif // ATTA_FILE_FILE_MANAGER_H

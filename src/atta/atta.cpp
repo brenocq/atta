@@ -1,224 +1,200 @@
 //--------------------------------------------------
-// Atta Pre Compiled Header
+// Atta
 // atta.cpp
 // Date: 2021-08-17
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/atta.h>
 
-#include <atta/eventSystem/eventManager.h>
-#include <atta/eventSystem/events/windowCloseEvent.h>
-#include <atta/eventSystem/events/simulationStartEvent.h>
-#include <atta/eventSystem/events/simulationContinueEvent.h>
-#include <atta/eventSystem/events/simulationPauseEvent.h>
-#include <atta/eventSystem/events/simulationStopEvent.h>
+#include <atta/event/event.h>
+#include <atta/event/events/simulationContinue.h>
+#include <atta/event/events/simulationPause.h>
+#include <atta/event/events/simulationStart.h>
+#include <atta/event/events/simulationStop.h>
+#include <atta/event/events/windowClose.h>
 
-#include <atta/memorySystem/memoryManager.h>
-#include <atta/componentSystem/componentManager.h>
-#include <atta/fileSystem/fileManager.h>
-#include <atta/scriptSystem/scriptManager.h>
-#include <atta/resourceSystem/resourceManager.h>
-#include <atta/graphicsSystem/graphicsManager.h>
-#include <atta/graphicsSystem/pipeline.h>
-#include <atta/physicsSystem/physicsManager.h>
-#include <atta/sensorSystem/sensorManager.h>
-#include <atta/uiSystem/uiManager.h>
-#include <atta/core/config.h>
+#include <atta/component/interface.h>
+#include <atta/file/interface.h>
+#include <atta/graphics/interface.h>
+#include <atta/memory/interface.h>
+#include <atta/physics/interface.h>
+#include <atta/resource/interface.h>
+#include <atta/script/interface.h>
+#include <atta/sensor/interface.h>
+#include <atta/ui/interface.h>
+
 #include <atta/cmakeConfig.h>
-
-#include <atta/ioSystem/http/http.h>
+#include <atta/graphics/pipeline.h>
+#include <atta/utils/config.h>
 
 // Include execute code
-#include <atta/scriptSystem/script.h>
-#include <atta/componentSystem/components/scriptComponent.h>
-#include <atta/componentSystem/components/prototypeComponent.h>
+#include <atta/component/components/prototype.h>
+#include <atta/component/components/script.h>
+#include <atta/script/script.h>
 
 // TODO move to another class
 #include <ctime>
 
-namespace atta
-{
-    Atta::Atta(const CreateInfo& info):
-        _shouldFinish(false), _simulationState(SimulationState::NOT_RUNNING)
-    {
-        Config::init();
-        FileManager::startUp();
+namespace atta {
+Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(SimulationState::NOT_RUNNING) {
+    Config::init();
+    file::startUp();
 
-        uint64_t size = 1.0 * 1024UL * 1024UL * 1024UL;
-        _mainAllocator = new StackAllocator(size);// Allocate 1.0GB for the whole system
-        MemoryManager::registerAllocator(SSID("MainAllocator"), 
-                static_cast<Allocator*>(_mainAllocator));
+    uint64_t size = 1.0 * 1024UL * 1024UL * 1024UL;
+    _mainAllocator = new memory::StackAllocator(size); // Allocate 1.0GB for the whole system
+    memory::registerAllocator(SSID("MainAllocator"), static_cast<memory::Allocator*>(_mainAllocator));
 
-        ComponentManager::startUp();
-        ResourceManager::startUp();
-        GraphicsManager::startUp();
-        ui::UIManager::startUp();
-        ScriptManager::startUp();
-        PhysicsManager::startUp();
-        SensorManager::startUp();
+    component::startUp();
+    resource::startUp();
+    graphics::startUp();
+    ui::startUp();
+    script::startUp();
+    physics::startUp();
+    sensor::startUp();
 
-        // Atta is the last one to reveice events
-        EventManager::subscribe<WindowCloseEvent>(BIND_EVENT_FUNC(Atta::onWindowClose));
-        EventManager::subscribe<SimulationStartEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-        EventManager::subscribe<SimulationContinueEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-        EventManager::subscribe<SimulationPauseEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-        EventManager::subscribe<SimulationStopEvent>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    // Atta is the last one to reveice events
+    event::Manager::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
+    event::Manager::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::Manager::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 
-        LOG_SUCCESS("Atta", "Initialized");
+    LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
-        fs::path projectFile = fs::path(ATTA_STATIC_PROJECT_FILE);
-        // If project is built statically, open project
-        FileManager::openProject(projectFile);
+    fs::path projectFile = fs::path(ATTA_STATIC_PROJECT_FILE);
+    // If project is built statically, open project
+    file::openProject(projectFile);
 
-        if(!info.projectFile.empty() && info.projectFile != projectFile)
-            LOG_WARN("Atta", "Project [w]$0[] will not be open because atta was built statically linked to [w]$1[]", info.projectFile, projectFile);
+    if (!info.projectFile.empty() && info.projectFile != projectFile)
+        LOG_WARN("Atta", "Project [w]$0[] will not be open because atta was built statically linked to [w]$1[]", info.projectFile, projectFile);
 #else
-        // If a project was defined as argument, open project
-        if(!info.projectFile.empty())
-            FileManager::openProject(info.projectFile);
+    // If a project was defined as argument, open project
+    if (!info.projectFile.empty())
+        file::openProject(info.projectFile);
 #endif
-    }
+}
 
-    Atta::~Atta()
-    {
-		// TODO ask user if should close or not
-        //FileManager::saveProject();
-        FileManager::closeProject();
-        SensorManager::shutDown();
-        PhysicsManager::shutDown();
-        ScriptManager::shutDown();
-        ui::UIManager::shutDown();
-        GraphicsManager::shutDown();
-        ResourceManager::shutDown();
-        ComponentManager::shutDown();
-        FileManager::shutDown();
+Atta::~Atta() {
+    // TODO ask user if should close or not
+    // file::saveProject();
+    file::closeProject();
+    sensor::shutDown();
+    physics::shutDown();
+    script::shutDown();
+    ui::shutDown();
+    graphics::shutDown();
+    resource::shutDown();
+    component::shutDown();
+    file::shutDown();
 
-        delete _mainAllocator;
-        LOG_SUCCESS("Atta", "Finished");
-    }
+    delete _mainAllocator;
+    LOG_SUCCESS("Atta", "Finished");
+}
 
 #ifdef ATTA_OS_WEB
-    #include <emscripten.h>
-    void attaLoop(void* atta)
-    {
-        ((Atta*)atta)->loop();
-    }
+#include <emscripten.h>
+void attaLoop(void* atta) { ((Atta*)atta)->loop(); }
 
-    void Atta::run()
-    {
-        // When atta is being executed by the browser, the browser controls the main loop
-        //emscripten_request_animation_frame_loop(attaLoop, this);
-        emscripten_set_main_loop_arg((em_arg_callback_func)attaLoop, this, 0, 1);
-    }
+void Atta::run() {
+    // When atta is being executed by the browser, the browser controls the main loop
+    // emscripten_request_animation_frame_loop(attaLoop, this);
+    emscripten_set_main_loop_arg((em_arg_callback_func)attaLoop, this, 0, 1);
+}
 #else
-    void Atta::run()
-    {
-        while(!_shouldFinish)
-            loop();
-    }
+void Atta::run() {
+    while (!_shouldFinish)
+        loop();
+}
 #endif
 
-    void Atta::loop()
-    {
-        if(_shouldFinish) return;
-        float dt = Config::getDt();
+void Atta::loop() {
+    if (_shouldFinish)
+        return;
+    float dt = Config::getDt();
 
-        ProjectScript* project = ScriptManager::getProjectScript();
-        if(_simulationState == SimulationState::RUNNING)
-        {
-			PhysicsManager::update(dt);
-            SensorManager::update(dt);
+    script::ProjectScript* project = script::getProjectScript();
+    if (_simulationState == SimulationState::RUNNING) {
+        physics::update(dt);
+        sensor::update(dt);
 
-            if(project)
-                project->onUpdateBefore(dt);
+        if (project)
+            project->onUpdateBefore(dt);
 
-            // Run entity scripts
-            // TODO keep list of entities that have script (and are not prototype entities)
-            std::vector<EntityId> entities = ComponentManager::getScriptView();
-            for(EntityId entity : entities)
-            {
-                ScriptComponent* scriptComponent = ComponentManager::getEntityComponent<ScriptComponent>(entity);
-                PrototypeComponent* prototypeComponent = ComponentManager::getEntityComponent<PrototypeComponent>(entity);
-                if(scriptComponent && !prototypeComponent)
-                {
-                    //std::vector<Component*> components = ComponentManager::getEntityComponents(entity);
-                    Script* script = ScriptManager::getScript(scriptComponent->sid);
-                    if(script)
-                        script->update(Entity(entity), dt);
-                }
-            }
-
-            // Run clone scripts
-            for(auto& factory : ComponentManager::getFactories())
-                factory.runScripts(dt);
-
-            if(project)
-                project->onUpdateAfter(dt);
-        }
-        if(project)
-            project->onAttaLoop();
-
-        SensorManager::update();
-        FileManager::update();
-
-        if(_simulationState == SimulationState::RUNNING)
-        {
-            // Execute graphics update every X seconds
-			// TODO let the user control how much time is spent rendering
-            static clock_t lastTime = std::clock();
-            const clock_t currTime = std::clock();
-            float timeDiff = float(currTime-lastTime)/CLOCKS_PER_SEC;
-            if(timeDiff > 0.03f)
-            {
-                GraphicsManager::update();
-                lastTime = currTime;
+        // Run entity scripts
+        // TODO keep list of entities that have script (and are not prototype entities)
+        std::vector<component::EntityId> entities = component::getScriptView();
+        for (component::EntityId entity : entities) {
+            component::Script* scriptComponent = component::getEntityComponent<component::Script>(entity);
+            component::Prototype* prototypeComponent = component::getEntityComponent<component::Prototype>(entity);
+            if (scriptComponent && !prototypeComponent) {
+                // std::vector<Component*> components = component::getEntityComponents(entity);
+                script::Script* script = script::getScript(scriptComponent->sid);
+                if (script)
+                    script->update(component::Entity(entity), dt);
             }
         }
-        else
-        {
-            // Update graphics every frame
-            GraphicsManager::update();
-        }
-    }
 
-    void Atta::onWindowClose(Event& event)
-    {
-        _shouldFinish = true;
-    }
+        // Run clone scripts
+        for (auto& factory : component::getFactories())
+            factory.runScripts(dt);
 
-    void Atta::onSimulationStateChange(Event& event)
-    {
-        ProjectScript* project = ScriptManager::getProjectScript();
-        switch(event.getType())
-        {
-            case SimulationStartEvent::type:
-                {
-                    if(project) project->onStart();
-                    _simulationState = SimulationState::RUNNING;
-                    break;
-                }
-            case SimulationContinueEvent::type:
-                {
-                    if(project) project->onContinue();
-                    _simulationState = SimulationState::RUNNING;
-                    break;
-                }
-            case SimulationPauseEvent::type:
-                {
-                    if(project) project->onPause();
-                    _simulationState = SimulationState::PAUSED;
-                    break;
-                }
-            case SimulationStopEvent::type:
-                {
-                    if(project) project->onStop();
-                    _simulationState = SimulationState::NOT_RUNNING;
-                    break;
-                }
-            default:
-                {
-                    LOG_WARN("Atta", "Unknown simulation event");
-                }
+        if (project)
+            project->onUpdateAfter(dt);
+    }
+    if (project)
+        project->onAttaLoop();
+
+    sensor::update();
+    file::update();
+
+    if (_simulationState == SimulationState::RUNNING) {
+        // Execute graphics update every X seconds
+        // TODO let the user control how much time is spent rendering
+        static clock_t lastTime = std::clock();
+        const clock_t currTime = std::clock();
+        float timeDiff = float(currTime - lastTime) / CLOCKS_PER_SEC;
+        if (timeDiff > 0.03f) {
+            graphics::update();
+            lastTime = currTime;
         }
+    } else {
+        // Update graphics every frame
+        graphics::update();
     }
 }
+
+void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }
+
+void Atta::onSimulationStateChange(event::Event& event) {
+    script::ProjectScript* project = script::getProjectScript();
+    switch (event.getType()) {
+    case event::SimulationStart::type: {
+        if (project)
+            project->onStart();
+        _simulationState = SimulationState::RUNNING;
+        break;
+    }
+    case event::SimulationContinue::type: {
+        if (project)
+            project->onContinue();
+        _simulationState = SimulationState::RUNNING;
+        break;
+    }
+    case event::SimulationPause::type: {
+        if (project)
+            project->onPause();
+        _simulationState = SimulationState::PAUSED;
+        break;
+    }
+    case event::SimulationStop::type: {
+        if (project)
+            project->onStop();
+        _simulationState = SimulationState::NOT_RUNNING;
+        break;
+    }
+    default: {
+        LOG_WARN("Atta", "Unknown simulation event");
+    }
+    }
+}
+} // namespace atta

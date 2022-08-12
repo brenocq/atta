@@ -7,29 +7,28 @@
 #ifndef ATTA_PRE_COMPILED_HEADER_H
 #define ATTA_PRE_COMPILED_HEADER_H
 
-#include <vector>
+#include <any>
 #include <array>
-#include <string>
-#include <memory>
+#include <cmath>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <map>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <set>
-#include <any>
-#include <limits>
-#include <cmath>
-#include <sstream>
-#include <iostream>
-#include <cstring>
-#include <fstream>
-#include <filesystem>
+#include <vector>
 namespace fs = std::filesystem;
 
-#include <atta/core/common.h>
-#include <atta/core/log.h>
-#include <atta/core/assert.h>
-#include <atta/core/math/math.h>
+#include <atta/utils/assert.h>
+#include <atta/utils/common.h>
+#include <atta/utils/log.h>
+#include <atta/utils/math/math.h>
 
-#endif// ATTA_PRE_COMPILED_HEADER_H
+#endif // ATTA_PRE_COMPILED_HEADER_H
