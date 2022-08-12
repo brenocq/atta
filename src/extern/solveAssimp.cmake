@@ -26,7 +26,7 @@ set(ATTA_ASSIMP_TARGETS "")
     set(ASSIMP_INSTALL OFF CACHE INTERNAL "" FORCE)
     FetchContent_Declare(
         assimp
-        URL "https://storage.googleapis.com/atta-repos/assimp-5.2.4-light.zip"
+        URL "https://storage.googleapis.com/atta-deps/assimp-5.2.4-light.zip"
     )
     atta_log(Info Extern "Fetching Assimp...")
     atta_FetchContent_MakeAvailable(assimp) 
