@@ -9,7 +9,7 @@
 build/
 scripts/local_*.sh
 projects/
-resources/
+/resources/
 
 # Visual Studio
 /.vs
