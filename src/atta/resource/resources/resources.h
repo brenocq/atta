@@ -8,6 +8,7 @@
 #define ATTA_RESOURCE_RESOURCES_RESOURCES_H
 
 #include <atta/resource/resources/image.h>
+#include <atta/resource/resources/material.h>
 #include <atta/resource/resources/mesh.h>
 
 #endif // ATTA_RESOURCE_RESOURCES_RESOURCES_H

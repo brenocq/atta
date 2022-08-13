@@ -12,7 +12,7 @@
 
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 
 namespace atta::physics {
 
@@ -22,8 +22,8 @@ Manager& Manager::getInstance() {
 }
 
 void Manager::startUpImpl() {
-    event::Manager::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
-    event::Manager::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
+    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
+    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
 
     _engine = std::make_shared<Box2DEngine>();
     _plane2D = Plane2D::Z;

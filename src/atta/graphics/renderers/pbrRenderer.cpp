@@ -317,14 +317,14 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
         shader->setMat4("view", transpose(camera->getView()));
         shader->setVec3("camPos", camera->getPosition());
         shader->setMat4("directionalLightMatrix", transpose(_directionalLightMatrix));
-        shader->setTexture("directionalShadowMap", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
+        shader->setImage("directionalShadowMap", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
         shader->setCubemap("omniShadowMap", _omnidirectionalShadowMap);
         shader->setFloat("omniFarPlane", 25.0f);
 
         // Always set environment textures (if there is no environment map, use white texture)
         shader->setCubemap("irradianceMap", "PbrRenderer::irradiance");
         shader->setCubemap("prefilterMap", "PbrRenderer::prefilter");
-        shader->setTexture("brdfLUT", "PbrRenderer::brdfLUT");
+        shader->setImage("brdfLUT", "PbrRenderer::brdfLUT");
 
         if (_lastEnvironmentMap != "Not defined"_sid)
             shader->setInt("numEnvironmentLights", 1);
@@ -377,7 +377,8 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
         for (auto entity : entities) {
             component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
             component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
-            component::Material* material = component::getEntityComponent<component::Material>(entity);
+            component::Material* compMat = component::getEntityComponent<component::Material>(entity);
+            resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {
                 mat4 model = transpose(transform->getWorldTransform(entity));
@@ -386,43 +387,41 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                 shader->setMat4("invModel", invModel);
 
                 if (material) {
-                    if (material->albedoTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("albedoTexture", material->albedoTexture);
+                    if (material->albedoIsImage()) {
+                        shader->setImage("albedoTexture", material->albedoImage);
                         shader->setVec3("material.albedo", {-1, -1, -1});
                     } else
                         shader->setVec3("material.albedo", material->albedo);
 
-                    if (material->metallicTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("metallicTexture", material->metallicTexture);
+                    if (material->metallicIsImage()) {
+                        shader->setImage("metallicTexture", material->metallicImage);
                         shader->setFloat("material.metallic", -1);
                     } else
                         shader->setFloat("material.metallic", material->metallic);
 
-                    if (material->roughnessTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("roughnessTexture", material->roughnessTexture);
+                    if (material->roughnessIsImage()) {
+                        shader->setImage("roughnessTexture", material->roughnessImage);
                         shader->setFloat("material.roughness", -1);
                     } else
                         shader->setFloat("material.roughness", material->roughness);
 
-                    if (material->aoTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("aoTexture", material->aoTexture);
+                    if (material->aoIsImage()) {
+                        shader->setImage("aoTexture", material->aoImage);
                         shader->setFloat("material.ao", -1);
                     } else
                         shader->setFloat("material.ao", material->ao);
 
-                    if (material->normalTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("normalTexture", material->normalTexture);
+                    if (material->hasNormalImage()) {
+                        shader->setImage("normalTexture", material->normalImage);
                         shader->setInt("material.hasNormalTexture", 1);
                     } else
                         shader->setInt("material.hasNormalTexture", 0);
                 } else {
-                    component::Material material{};
-                    // shader->setTexture("albedoTexture", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
-                    // shader->setVec3("material.albedo", {-1, -1, -1});
-                    shader->setVec3("material.albedo", material.albedo);
-                    shader->setFloat("material.metallic", material.metallic);
-                    shader->setFloat("material.roughness", material.roughness);
-                    shader->setFloat("material.ao", material.ao);
+                    resource::Material::CreateInfo defaultMaterial{};
+                    shader->setVec3("material.albedo", defaultMaterial.albedo);
+                    shader->setFloat("material.metallic", defaultMaterial.metallic);
+                    shader->setFloat("material.roughness", defaultMaterial.roughness);
+                    shader->setFloat("material.ao", defaultMaterial.ao);
                     shader->setInt("material.hasNormalTexture", 0);
                 }
 

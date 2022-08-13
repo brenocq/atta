@@ -11,7 +11,7 @@
 #include <atta/event/events/imageLoad.h>
 #include <atta/event/events/imageUpdate.h>
 #include <atta/event/events/meshLoad.h>
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 
 #include <atta/graphics/interface.h>
 #include <atta/graphics/rendererAPIs/openGL/base.h>
@@ -70,9 +70,9 @@ OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window) : RendererAPI(Ren
     glEnable(GL_DEPTH_TEST);
 
     // Subscribe to events
-    event::Manager::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
-    event::Manager::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(OpenGLRenderer::onImageLoadEvent));
-    event::Manager::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(OpenGLRenderer::onImageUpdateEvent));
+    event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
+    event::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(OpenGLRenderer::onImageLoadEvent));
+    event::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(OpenGLRenderer::onImageUpdateEvent));
 
     // Quad shader
     ShaderGroup::CreateInfo shaderGroupInfo{};
@@ -341,7 +341,7 @@ void OpenGLRenderer::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
     // Convert texture to cubemap
     shader->bind();
     shader->setMat4("projection", transpose(captureProjection));
-    shader->setTexture("equirectangularMap", textureSid);
+    shader->setImage("equirectangularMap", textureSid);
     glViewport(0, 0, 512, 512);
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
     for (unsigned int i = 0; i < 6; i++) {

@@ -32,15 +32,15 @@ Manager& Manager::getInstance() {
 
 void Manager::startUpImpl() {
     // Subscribe to simulation events
-    event::Manager::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
-    event::Manager::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
+    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
+    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
 
     // Subscribe to component events
-    event::Manager::subscribe<event::CreateComponent>(BIND_EVENT_FUNC(Manager::onComponentChange));
-    event::Manager::subscribe<event::DeleteComponent>(BIND_EVENT_FUNC(Manager::onComponentChange));
+    event::subscribe<event::CreateComponent>(BIND_EVENT_FUNC(Manager::onComponentChange));
+    event::subscribe<event::DeleteComponent>(BIND_EVENT_FUNC(Manager::onComponentChange));
 
     // Subscribe to component ui events
-    event::Manager::subscribe<event::UiCameraComponent>(BIND_EVENT_FUNC(Manager::onComponentUi));
+    event::subscribe<event::UiCameraComponent>(BIND_EVENT_FUNC(Manager::onComponentUi));
 
     // Initialize sensors (component events generated before startup were not received)
     registerCameras();

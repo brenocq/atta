@@ -17,6 +17,8 @@ void shutDown();
 template <typename R, typename... Args>
 R* create(const fs::path& filename, Args... args);
 template <typename R>
+void destroy(const fs::path& filename);
+template <typename R>
 R* get(const fs::path& filename);
 template <typename R>
 std::vector<StringId> getResources();
@@ -30,6 +32,10 @@ namespace atta::resource {
 template <typename R, typename... Args>
 R* create(const fs::path& filename, Args... args) {
     return Manager::getInstance().createImpl<R>(filename, args...);
+}
+template <typename R>
+void destroy(const fs::path& filename) {
+    Manager::getInstance().destroyImpl<R>(filename);
 }
 template <typename R>
 R* get(const fs::path& filename) {

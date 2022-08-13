@@ -9,7 +9,7 @@
 #include <atta/ui/layers/editor/topBar/localWindows/versionWindow.h>
 
 #include <atta/event/events/windowClose.h>
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 #include <atta/file/manager.h>
 #include <atta/graphics/interface.h>
 #include <imgui.h>
@@ -444,7 +444,7 @@ void TopBar::saveProjectModal() {
 
             if (_quitAfterSaveModal) {
                 event::WindowClose e;
-                event::Manager::publish(e);
+                event::publish(e);
             }
 
             ImGui::CloseCurrentPopup();

@@ -39,7 +39,7 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
 
     glfwSetWindowCloseCallback(_window, [](GLFWwindow* window) {
         event::WindowClose e;
-        event::Manager::publish(e);
+        event::publish(e);
     });
 
     glfwSetWindowSizeCallback(_window, [](GLFWwindow* window, int width, int height) {
@@ -47,31 +47,31 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
         w._width = width;
         w._height = height;
         event::WindowResize e((size_t)width, (size_t)height);
-        event::Manager::publish(e);
+        event::publish(e);
     });
 
     glfwSetCursorEnterCallback(_window, [](GLFWwindow* window, int entered) {
         event::WindowFocus e(entered != 0);
-        event::Manager::publish(e);
+        event::publish(e);
     });
 
     glfwSetCursorPosCallback(_window, [](GLFWwindow* window, double xPos, double yPos) {
         event::WindowMouseMove e((float)xPos, (float)yPos);
-        event::Manager::publish(e);
+        event::publish(e);
     });
 
     glfwSetScrollCallback(_window, [](GLFWwindow* window, double dx, double dy) {
         event::WindowMouseScroll e((float)dx, (float)dy);
-        event::Manager::publish(e);
+        event::publish(e);
     });
 
     glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods) {
         if (action == GLFW_PRESS) {
             event::WindowMouseButton e(button, event::WindowMouseButton::Action::PRESS);
-            event::Manager::publish(e);
+            event::publish(e);
         } else if (action == GLFW_RELEASE) {
             event::WindowMouseButton e(button, event::WindowMouseButton::Action::RELEASE);
-            event::Manager::publish(e);
+            event::publish(e);
         }
     });
 
@@ -90,7 +90,7 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
         }
 
         event::WindowKeyboardButton e(key, a);
-        event::Manager::publish(e);
+        event::publish(e);
     });
 
     glfwSetErrorCallback(

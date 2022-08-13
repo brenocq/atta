@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/component/components/camera.h>
 #include <atta/event/events/uiCameraComponent.h>
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 #include <atta/sensor/interface.h>
 #include <imgui.h>
 
@@ -36,7 +36,7 @@ ComponentDescription& TypedComponentRegistry<Camera>::getDescription() {
                   event::UiCameraComponent event;
                   event.component = static_cast<Camera*>(data);
                   event.uiEvent = event::UiCameraComponent::UiEvent::VIEW_BUTTON_CLICKED;
-                  event::Manager::publish(event);
+                  event::publish(event);
               }
 
               for (unsigned i = 0; i < aDescs.size(); i++) {

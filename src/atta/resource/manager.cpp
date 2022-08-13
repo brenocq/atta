@@ -8,6 +8,7 @@
 #include <atta/resource/manager.h>
 
 #include <atta/event/events/imageLoad.h>
+#include <atta/event/events/materialLoad.h>
 #include <atta/event/events/meshLoad.h>
 #include <atta/event/events/projectOpen.h>
 #include <atta/file/manager.h>
@@ -31,7 +32,7 @@ void Manager::startUpImpl() {
     memory::registerAllocator(SSID("ResourceAllocator"), static_cast<memory::Allocator*>(_allocator));
 
     // Subscribe to project open (load project events when opened)
-    event::Manager::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
+    event::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
 
     // Default resources
     for (auto& resourcePath : file::getResourcePaths())
@@ -70,12 +71,17 @@ void Manager::loadResourcesRecursively(fs::path directory) {
 template <>
 void Manager::createLoadEvent<Mesh>(Mesh* resource, StringId sid) {
     event::MeshLoad e(sid);
-    event::Manager::publish(e);
+    event::publish(e);
 }
 template <>
 void Manager::createLoadEvent<Image>(Image* resource, StringId sid) {
     event::ImageLoad e(sid);
-    event::Manager::publish(e);
+    event::publish(e);
+}
+template <>
+void Manager::createLoadEvent<Material>(Material* resource, StringId sid) {
+    event::MaterialLoad e(sid);
+    event::publish(e);
 }
 
 } // namespace atta::resource

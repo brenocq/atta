@@ -6,26 +6,17 @@
 //--------------------------------------------------
 #ifndef ATTA_EVENT_EVENT_MANAGER_H
 #define ATTA_EVENT_EVENT_MANAGER_H
-#include <atta/event/event.h>
 
 namespace atta::event {
-
-#define BIND_EVENT_FUNC(x) std::bind(&x, this, std::placeholders::_1)
 
 class Manager final {
   public:
     static Manager& getInstance();
 
-    using Callback = std::function<void(Event&)>;
-
-    // static void subscribe(Event::Type type, Callback&& callback) { getInstance().subscribeImpl(type, std::move(callback)); }
     template <typename E>
-    static void subscribe(Callback&& callback) {
-        getInstance().subscribeImpl(E::type, std::move(callback));
-    }
-    // static void subscribe(Event::Type type, Callback&& callback) { getInstance()._observers[type].push_back(callback); }
-    static void publish(Event& event) { getInstance().publishImpl(event); }
-    static void clear() { getInstance().clearImpl(); }
+    friend void subscribe(Callback&& callback);
+    friend void publish(Event& event);
+    friend void clear();
 
   private:
     void subscribeImpl(Event::Type type, Callback&& callback);

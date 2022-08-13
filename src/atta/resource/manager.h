@@ -7,7 +7,7 @@
 #ifndef ATTA_RESOURCE_RESOURCE_MANAGER_H
 #define ATTA_RESOURCE_RESOURCE_MANAGER_H
 
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 #include <atta/memory/allocators/bitmapAllocator.h>
 #include <atta/resource/resources/resources.h>
 
@@ -24,6 +24,8 @@ class Manager final {
     template <typename R, typename... Args>
     friend R* create(const fs::path& filename, Args... args);
     template <typename R>
+    friend void destroy(const fs::path& filename);
+    template <typename R>
     friend R* get(const fs::path& filename);
     template <typename R>
     friend std::vector<StringId> getResources();
@@ -36,6 +38,8 @@ class Manager final {
 
     template <typename R, typename... Args>
     R* createImpl(const fs::path& filename, Args... args);
+    template <typename R>
+    void destroyImpl(const fs::path& filename);
     template <typename R>
     R* getImpl(const fs::path& filename);
     template <typename R>

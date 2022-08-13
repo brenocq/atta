@@ -18,7 +18,7 @@
 #include <atta/graphics/windows/glfwWindow.h>
 #include <atta/graphics/windows/nullWindow.h>
 
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 #include <atta/memory/allocators/stackAllocator.h>
 #include <atta/memory/interface.h>
 

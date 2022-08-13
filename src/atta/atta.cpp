@@ -44,8 +44,8 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(Simu
     _mainAllocator = new memory::StackAllocator(size); // Allocate 1.0GB for the whole system
     memory::registerAllocator(SSID("MainAllocator"), static_cast<memory::Allocator*>(_mainAllocator));
 
-    component::startUp();
     resource::startUp();
+    component::startUp();
     graphics::startUp();
     ui::startUp();
     script::startUp();
@@ -53,11 +53,11 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(Simu
     sensor::startUp();
 
     // Atta is the last one to reveice events
-    event::Manager::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
-    event::Manager::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::Manager::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::Manager::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::Manager::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
+    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 
     LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
@@ -83,8 +83,8 @@ Atta::~Atta() {
     script::shutDown();
     ui::shutDown();
     graphics::shutDown();
-    resource::shutDown();
     component::shutDown();
+    resource::shutDown();
     file::shutDown();
 
     delete _mainAllocator;

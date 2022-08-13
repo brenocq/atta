@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_EVENT_MODULE_SOURCE
     event.cpp
+    interface.cpp
     manager.cpp
 )
 

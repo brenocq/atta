@@ -38,8 +38,8 @@ void Manager::startUpImpl() {
     _fileWatcher = std::static_pointer_cast<FileWatcher>(std::make_shared<NullFileWatcher>());
 #endif
 
-    event::Manager::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
-    event::Manager::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
+    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
+    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
 
     // Default folder to clone published projects
     _defaultProjectFolder = fs::path(ATTA_DIR) / "projects";
@@ -77,14 +77,14 @@ bool Manager::openProjectImpl(fs::path projectFile) {
     component::clear();
 
     event::ProjectBeforeDeserialize ed;
-    event::Manager::publish(ed);
+    event::publish(ed);
     _projectSerializer->deserialize();
 
     // Watch project directory file changes
     _fileWatcher->addWatch(_project->getDirectory());
 
     event::ProjectOpen e;
-    event::Manager::publish(e);
+    event::publish(e);
 
     return true;
 }
@@ -111,7 +111,7 @@ bool Manager::createProjectImpl(fs::path projectFile) {
     _fileWatcher->addWatch(_project->getDirectory());
 
     event::ProjectOpen e;
-    event::Manager::publish(e);
+    event::publish(e);
 #else
     LOG_WARN("file::Manager", "It is not possible to create a project when atta is statically linked to a project");
 #endif
@@ -122,7 +122,7 @@ bool Manager::createProjectImpl(fs::path projectFile) {
 void Manager::saveProjectImpl() {
     if (_simulationRunning) {
         event::SimulationStop e;
-        event::Manager::publish(e);
+        event::publish(e);
     }
 
     if (_projectSerializer)
@@ -140,7 +140,7 @@ void Manager::closeProjectImpl() {
     _projectSerializer.reset();
 
     event::ProjectClose e;
-    event::Manager::publish(e);
+    event::publish(e);
 #endif
 }
 

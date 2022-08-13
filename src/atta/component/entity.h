@@ -15,6 +15,11 @@ class Entity {
     Entity(EntityId id, int cloneId = 0);
 
     template <typename T>
+    T* addComponent() {
+        return component::addEntityComponent<T>(_id);
+    }
+
+    template <typename T>
     T* getComponent() {
         return component::getEntityComponent<T>(_id);
     }

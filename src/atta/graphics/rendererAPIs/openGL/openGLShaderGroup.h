@@ -29,8 +29,8 @@ class OpenGLShaderGroup final : public ShaderGroup {
     void setVec4(const char* name, vec4 v) override;
     void setMat3(const char* name, mat3 m) override;
     void setMat4(const char* name, mat4 m) override;
-    void setTexture(const char* name, StringId sid) override;
-    void setTexture(const char* name, std::shared_ptr<Image> image) override;
+    void setImage(const char* name, StringId sid) override;
+    void setImage(const char* name, std::shared_ptr<Image> image) override;
     void setCubemap(const char* name, StringId sid) override;
     void setCubemap(const char* name, std::shared_ptr<Image> image) override;
 

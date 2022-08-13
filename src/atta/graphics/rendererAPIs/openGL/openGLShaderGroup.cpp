@@ -95,14 +95,14 @@ void OpenGLShaderGroup::setMat3(const char* name, mat3 m) { glUniformMatrix3fv(g
 
 void OpenGLShaderGroup::setMat4(const char* name, mat4 m) { glUniformMatrix4fv(getLoc(name), 1, GL_FALSE, m.data); }
 
-void OpenGLShaderGroup::setTexture(const char* name, StringId sid) {
+void OpenGLShaderGroup::setImage(const char* name, StringId sid) {
     std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(graphics::getRendererAPI());
     std::shared_ptr<OpenGLImage> image = renderer->getOpenGLImages()[sid.getId()];
     static std::map<StringId, bool> lastWarns; // Used to avoid spamming warn
 
     if (!image) {
         if (!lastWarns[sid])
-            LOG_WARN("graphics::OpenGLShaderGroup", "(setTexture) Trying to use image that was never loaded: $0 = \"$1\"", name, sid);
+            LOG_WARN("graphics::OpenGLShaderGroup", "(setImage) Trying to use image that was never loaded: $0 = \"$1\"", name, sid);
         lastWarns[sid] = true;
         return;
     }
@@ -116,7 +116,7 @@ void OpenGLShaderGroup::setTexture(const char* name, StringId sid) {
         }
 
     if (imgUnit == -1) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setTexture) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setImage) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 
@@ -129,11 +129,11 @@ void OpenGLShaderGroup::setTexture(const char* name, StringId sid) {
     glBindTexture(GL_TEXTURE_2D, image->getId());
 }
 
-void OpenGLShaderGroup::setTexture(const char* name, std::shared_ptr<Image> inImage) {
+void OpenGLShaderGroup::setImage(const char* name, std::shared_ptr<Image> inImage) {
     std::shared_ptr<OpenGLImage> image = std::static_pointer_cast<OpenGLImage>(inImage);
 
     if (!image) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setTexture) Trying to set [w]$0[] with image that was never created", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setImage) Trying to set [w]$0[] with image that was never created", name);
         return;
     }
 
@@ -145,7 +145,7 @@ void OpenGLShaderGroup::setTexture(const char* name, std::shared_ptr<Image> inIm
         }
 
     if (imgUnit == -1) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setTexture) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("graphics::OpenGLShaderGroup", "(setImage) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 

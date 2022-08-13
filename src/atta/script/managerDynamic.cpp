@@ -25,10 +25,10 @@ void Manager::startUpImpl() {
     _linker = std::static_pointer_cast<Linker>(std::make_shared<NullLinker>());
 #endif
 
-    event::Manager::subscribe<event::FileWatch>(BIND_EVENT_FUNC(Manager::onFileChange));
-    event::Manager::subscribe<event::ProjectBeforeDeserialize>(BIND_EVENT_FUNC(Manager::onProjectOpen));
-    event::Manager::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
-    event::Manager::subscribe<event::ProjectClose>(BIND_EVENT_FUNC(Manager::onProjectClose));
+    event::subscribe<event::FileWatch>(BIND_EVENT_FUNC(Manager::onFileChange));
+    event::subscribe<event::ProjectBeforeDeserialize>(BIND_EVENT_FUNC(Manager::onProjectOpen));
+    event::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
+    event::subscribe<event::ProjectClose>(BIND_EVENT_FUNC(Manager::onProjectClose));
 
     _projectScript = std::make_pair(StringId(), nullptr);
 }
@@ -51,7 +51,7 @@ void Manager::onFileChange(event::Event& event) {
     // Publish event
     event::ScriptTarget evt;
     evt.scriptSids = getScriptSidsImpl();
-    event::Manager::publish(evt);
+    event::publish(evt);
 }
 
 void Manager::onProjectOpen(event::Event& event) {
@@ -60,7 +60,7 @@ void Manager::onProjectOpen(event::Event& event) {
     // Publish event
     event::ScriptTarget evt;
     evt.scriptSids = getScriptSidsImpl();
-    event::Manager::publish(evt);
+    event::publish(evt);
 }
 
 void Manager::onProjectClose(event::Event& event) {
@@ -71,7 +71,7 @@ void Manager::onProjectClose(event::Event& event) {
     // Publish event
     event::ScriptTarget evt;
     evt.scriptSids = getScriptSidsImpl();
-    event::Manager::publish(evt);
+    event::publish(evt);
 }
 
 void Manager::updateAllTargets() {
