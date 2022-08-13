@@ -7,6 +7,7 @@ set(ATTA_RESOURCE_MODULE_SOURCE
     resource.cpp
     resources/mesh.cpp
     resources/image.cpp
+    resources/material.cpp
 )
 
 add_library(atta_resource_module STATIC

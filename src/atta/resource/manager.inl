@@ -26,6 +26,23 @@ R* Manager::createImpl(const fs::path& filename, Args... args) {
 }
 
 template <typename R>
+void Manager::destroyImpl(const fs::path& filename) {
+    StringId sid = StringId(filename.string());
+    if (_resourceMap.find(sid.getId()) != _resourceMap.end()) {
+        R* r = reinterpret_cast<R*>(_resourceMap[sid.getId()]);
+        delete r;
+        // Remove sid from map
+        _resourceMap.erase(sid.getId());
+        // Remove sid from vector
+        std::vector<StringId> resources;
+        for(StringId rsid : _resourcesByType[typeid(R).hash_code()])
+            if(rsid != sid)
+                resources.push_back(rsid);
+        _resourcesByType[typeid(R).hash_code()] = resources;
+    }
+}
+
+template <typename R>
 R* Manager::getImpl(const fs::path& filename) {
     StringId sid = StringId(filename.string());
     if (_resourceMap.find(sid.getId()) == _resourceMap.end()) {
@@ -46,6 +63,18 @@ template <>
 void Manager::createLoadEvent<Mesh>(Mesh* resource, StringId sid);
 template <>
 void Manager::createLoadEvent<Image>(Image* resource, StringId sid);
+template <>
+void Manager::createLoadEvent<Material>(Material* resource, StringId sid);
+
+template <typename R>
+void Manager::destroyResourcesImpl() {
+    for(StringId sid : getResources<R>())
+    {
+        delete reinterpret_cast<R*>(_resourceMap[sid.getId()]);
+        _resourceMap.erase(sid.getId());
+    }
+    _resourcesByType.erase(typeid(R).hash_code());
+}
 
 template <typename R>
 std::vector<StringId> Manager::getResourcesImpl() {

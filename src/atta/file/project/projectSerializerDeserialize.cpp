@@ -13,7 +13,7 @@ void ProjectSerializer::deserializeHeader(Section& section) {
 
 void ProjectSerializer::deserializeConfig(Section& section) { Config::setDt(float(section["dt"])); }
 
-void ProjectSerializer::deserializeComponentSystem(Section& section) {
+void ProjectSerializer::deserializeComponentModule(Section& section) {
     // Create entities
     std::vector<component::EntityId> entities = std::vector<component::EntityId>(section["entityIds"]);
     for (auto id : entities) {
@@ -41,13 +41,30 @@ void ProjectSerializer::deserializeComponentSystem(Section& section) {
     }
 }
 
-void ProjectSerializer::deserializeGraphicsSystem(Section& section) {
+void ProjectSerializer::deserializeGraphicsModule(Section& section) {
     std::vector<graphics::Viewport> viewports = std::vector<graphics::Viewport>(section["viewports"]);
     graphics::clearViewports();
     for (auto& viewport : viewports) {
         std::shared_ptr<graphics::Viewport> v = std::make_shared<graphics::Viewport>();
         *v = viewport;
         graphics::addViewport(v);
+    }
+}
+
+void ProjectSerializer::deserializeResourceModule(Section& section) {
+    std::vector<resource::Material> materials = std::vector<resource::Material>(section["materials"]);
+    resource::destroyResources<resource::Material>();
+    for (resource::Material material : materials) {
+        resource::Material::CreateInfo info {};
+        info.color = material.color;
+        info.metallic = material.metallic;
+        info.roughness = material.roughness;
+        info.ao = material.ao;
+        info.colorImage = material.colorImage;
+        info.metallicImage = material.metallicImage;
+        info.roughnessImage = material.roughnessImage;
+        info.aoImage = material.aoImage;
+        resource::create<resource::Material>(material.getId().getString(), info);
     }
 }
 

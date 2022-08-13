@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifdef ATTA_OS_LINUX
 #include <atta/event/events/fileWatch.h>
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 #include <atta/file/watchers/linuxFileWatcher.h>
 
 #include <unistd.h> // read
@@ -135,7 +135,7 @@ void LinuxFileWatcher::publishEvent(struct inotify_event* ievent) {
 
                 e.file = pathToWatch.first / ievent->name;
 
-                event::Manager::publish(e);
+                event::publish(e);
                 break;
             }
         }

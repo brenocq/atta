@@ -12,6 +12,8 @@
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
 #include <atta/graphics/interface.h>
+#include <atta/resource/interface.h>
+#include <atta/resource/resources/material.h>
 #include <atta/ui/layers/editor/windows/viewportWindows.h>
 
 #include <imgui.h>
@@ -238,8 +240,10 @@ void ViewportWindows::addBasicShapePopup() {
                 component::addEntityComponent<component::Transform>(eid);
                 component::Mesh* m = component::addEntityComponent<component::Mesh>(eid);
                 m->sid = basicShapesMesh[i];
+                resource::Material* matRes = resource::create<resource::Material>("defaultMaterial." + std::to_string(eid), resource::Material::CreateInfo{});
+                matRes->color = vec3(0.5f, 0.5f, 0.5f);
                 component::Material* mat = component::addEntityComponent<component::Material>(eid);
-                mat->albedo = vec3(0.5f, 0.5f, 0.5f);
+                mat->sid = matRes->getId();
                 component::setSelectedEntity(eid);
             }
             i++;

@@ -37,8 +37,8 @@ class ShaderGroup {
     virtual void setVec4(const char* name, vec4 v) = 0;
     virtual void setMat3(const char* name, mat3 m) = 0;
     virtual void setMat4(const char* name, mat4 m) = 0;
-    virtual void setTexture(const char* name, StringId sid) = 0;
-    virtual void setTexture(const char* name, std::shared_ptr<Image> image) = 0;
+    virtual void setImage(const char* name, StringId sid) = 0;
+    virtual void setImage(const char* name, std::shared_ptr<Image> image) = 0;
     virtual void setCubemap(const char* name, StringId sid) = 0;
     virtual void setCubemap(const char* name, std::shared_ptr<Image> image) = 0;
 

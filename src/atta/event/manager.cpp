@@ -4,6 +4,7 @@
 // Date: 2021-08-17
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/event/interface.h>
 #include <atta/event/manager.h>
 
 namespace atta::event {

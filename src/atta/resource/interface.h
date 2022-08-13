@@ -17,7 +17,11 @@ void shutDown();
 template <typename R, typename... Args>
 R* create(const fs::path& filename, Args... args);
 template <typename R>
+void destroy(const fs::path& filename);
+template <typename R>
 R* get(const fs::path& filename);
+template <typename R>
+void destroyResources();
 template <typename R>
 std::vector<StringId> getResources();
 
@@ -32,8 +36,16 @@ R* create(const fs::path& filename, Args... args) {
     return Manager::getInstance().createImpl<R>(filename, args...);
 }
 template <typename R>
+void destroy(const fs::path& filename) {
+    Manager::getInstance().destroyImpl<R>(filename);
+}
+template <typename R>
 R* get(const fs::path& filename) {
     return Manager::getInstance().getImpl<R>(filename);
+}
+template <typename R>
+void destroyResources() {
+    return Manager::getInstance().destroyResourcesImpl<R>();
 }
 template <typename R>
 std::vector<StringId> getResources() {

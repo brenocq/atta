@@ -34,8 +34,9 @@ void ProjectSerializer::serialize() {
     Section section;
     serializeHeader(section["header"]);
     serializeConfig(section["config"]);
-    serializeComponentSystem(section["componentSystem"]);
-    serializeGraphicsSystem(section["graphicsSystem"]);
+    serializeComponentModule(section["componentModule"]);
+    serializeGraphicsModule(section["graphicsModule"]);
+    serializeResourceModule(section["resourceModule"]);
     // LOG_DEBUG("file::ProjectSerializer", "Saving project: [w]$0", section);
 
     // Serialize version
@@ -67,8 +68,9 @@ void ProjectSerializer::deserialize() {
     // Deserialize data
     deserializeHeader(section["header"]);
     deserializeConfig(section["config"]);
-    deserializeComponentSystem(section["componentSystem"]);
-    deserializeGraphicsSystem(section["graphicsSystem"]);
+    deserializeComponentModule(section["componentModule"]);
+    deserializeGraphicsModule(section["graphicsModule"]);
+    deserializeResourceModule(section["resourceModule"]);
 }
 
 } // namespace atta::file

@@ -16,6 +16,8 @@
 #include <atta/event/events/scriptTarget.h>
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
+#include <atta/resource/interface.h>
+#include <atta/resource/resources/material.h>
 #include <cstring>
 
 namespace atta::component {
@@ -47,11 +49,11 @@ void Manager::startUpImpl() {
     _customComponentsMarker = _allocator->getMarker();
     _numAttaComponents = _componentRegistries.size();
 
-    event::Manager::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
-    event::Manager::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
-    event::Manager::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshEvent));
-    event::Manager::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(Manager::onImageEvent));
-    event::Manager::subscribe<event::ScriptTarget>(BIND_EVENT_FUNC(Manager::onScriptEvent));
+    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
+    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
+    event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshEvent));
+    event::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(Manager::onImageEvent));
+    event::subscribe<event::ScriptTarget>(BIND_EVENT_FUNC(Manager::onScriptEvent));
 
     // Default entity
     createDefaultImpl();
@@ -70,8 +72,10 @@ void Manager::createDefaultImpl() {
     Mesh* m = addEntityComponent<Mesh>(cube);
     m->sid = StringId("meshes/cube.obj");
 
+    resource::Material* rmt = resource::create<resource::Material>("Material", resource::Material::CreateInfo{});
+    rmt->color = {0.5, 0.5, 0.5};
     Material* mt = addEntityComponent<Material>(cube);
-    mt->albedo = {0.5, 0.5, 0.5};
+    mt->setResource(rmt);
 
     // Light entity
     EntityId light = createEntity();
@@ -133,7 +137,7 @@ EntityId Manager::createEntityImpl(EntityId entity, size_t quantity) {
     // Publish create entity event
     event::CreateEntity event;
     event.entityId = eid;
-    event::Manager::publish(event);
+    event::publish(event);
 
     return eid;
 }
@@ -186,7 +190,7 @@ void Manager::deleteEntityImpl(EntityId entity) {
     // Publish delete entity event
     event::DeleteEntity event;
     event.entityId = entity;
-    event::Manager::publish(event);
+    event::publish(event);
 }
 
 void Manager::deleteEntityOnlyImpl(EntityId entity) {
@@ -209,7 +213,7 @@ void Manager::deleteEntityOnlyImpl(EntityId entity) {
     // Publish delete entity event
     event::DeleteEntity event;
     event.entityId = entity;
-    event::Manager::publish(event);
+    event::publish(event);
 }
 
 EntityId Manager::copyEntityImpl(EntityId entity) {
@@ -397,7 +401,7 @@ Component* Manager::addEntityComponentByIdImpl(ComponentId id, EntityId entity) 
         event.componentId = id;
         event.entityId = entity;
         event.component = component;
-        event::Manager::publish(event);
+        event::publish(event);
 
         return component;
     } else {
@@ -441,7 +445,7 @@ Component* Manager::addEntityComponentPtrImpl(EntityId entity, unsigned index, u
     event.componentId = id;
     event.entityId = entity;
     event.component = componentPtr;
-    event::Manager::publish(event);
+    event::publish(event);
 
     return componentPtr;
 }
@@ -481,7 +485,7 @@ void Manager::removeEntityComponentByIdImpl(ComponentId id, EntityId entity) {
     event::DeleteComponent event;
     event.componentId = id;
     event.entityId = entity;
-    event::Manager::publish(event);
+    event::publish(event);
 }
 
 //----------------------------------------//

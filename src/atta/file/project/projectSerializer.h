@@ -26,11 +26,14 @@ class ProjectSerializer final {
     void serializeConfig(Section& section);
     void deserializeConfig(Section& section);
 
-    void serializeComponentSystem(Section& section);
-    void deserializeComponentSystem(Section& section);
+    void serializeComponentModule(Section& section);
+    void deserializeComponentModule(Section& section);
 
-    void serializeGraphicsSystem(Section& section);
-    void deserializeGraphicsSystem(Section& section);
+    void serializeGraphicsModule(Section& section);
+    void deserializeGraphicsModule(Section& section);
+
+    void serializeResourceModule(Section& section);
+    void deserializeResourceModule(Section& section);
 
     std::shared_ptr<Project> _project;
 };

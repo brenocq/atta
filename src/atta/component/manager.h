@@ -9,7 +9,7 @@
 
 // XXX for now manage.h should not be included, include interface.h instead
 
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 
 #include <atta/memory/allocators/bitmapAllocator.h>
 #include <atta/memory/allocators/poolAllocatorT.h>

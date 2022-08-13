@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/event/events/scriptTarget.h>
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 #include <atta/script/manager.h>
 
 namespace atta::script {

@@ -9,7 +9,7 @@
 
 #include <atta/sensor/interface.h>
 
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 
 namespace atta::sensor {
 

@@ -12,97 +12,165 @@
 
 namespace atta::component {
 
+void renderComboImage(std::string attribute, StringId& image) {
+    bool isImage = (image != resource::Material::emptyImage);
+    std::string imguiId = attribute;
+    if (isImage) {
+        std::string selectedName = image.getString();
+        if (ImGui::BeginCombo(("##ComboImage" + imguiId).c_str(), selectedName.c_str())) {
+            std::vector<StringId> rImages = resource::getResources<resource::Image>();
+            for (StringId rImage : rImages) {
+                const bool selected = (rImage == image);
+                if (ImGui::Selectable(rImage.getString().c_str(), selected))
+                    image = rImage;
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    }
+
+    if (ImGui::Checkbox(("Is image##IsImage" + imguiId).c_str(), &isImage))
+        image = isImage ? "textures/white.jpg"_sid : resource::Material::emptyImage;
+}
+
+void renderImGui(void* data, std::string imguiId) {
+    Material* material = static_cast<Material*>(data);
+    resource::Material* m = resource::get<resource::Material>(material->sid.getString());
+    if (m == nullptr)
+        return;
+
+    std::string selectedName = material->sid.getString();
+
+    //---------- Selection ----------//
+    if (ImGui::BeginCombo(("##Combo" + imguiId).c_str(), selectedName.c_str())) {
+        std::vector<StringId> rMaterials = resource::getResources<resource::Material>();
+        for (StringId rMaterial : rMaterials) {
+            const bool selected = (rMaterial == material->sid);
+            if (ImGui::Selectable(rMaterial.getString().c_str(), selected))
+                material->sid = rMaterial;
+            if (selected)
+                ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
+
+    //---------- Create ----------//
+    static bool warnDuplicated = false;
+    ImGui::SameLine();
+    if (ImGui::Button("+")) {
+        ImGui::OpenPopup("Create material");
+        warnDuplicated = false;
+    }
+
+    if (ImGui::BeginPopupModal("Create material")) {
+        ImGui::Text("What will be the material name?");
+
+        // Name input
+        static char buf[64] = "Material";
+        ImGui::InputText("##MaterialName", buf, sizeof(buf) / sizeof(char));
+
+        // Warn if duplicated
+        if (warnDuplicated)
+            ImGui::Text("A material with this name already exists.");
+
+        // Cancel button
+        if (ImGui::Button("Cancel"))
+            ImGui::CloseCurrentPopup();
+
+        // Create button
+        ImGui::SameLine();
+        if (ImGui::Button("Create")) {
+            std::string bufStr(buf);
+            std::vector<StringId> matSids = resource::getResources<resource::Material>();
+
+            // Check if is duplicated
+            warnDuplicated = false;
+            for (StringId matSid : matSids)
+                if (matSid.getString() == bufStr) {
+                    warnDuplicated = true;
+                    break;
+                }
+
+            // If not duplicated, create
+            if (!warnDuplicated) {
+                resource::Material* created = resource::create<resource::Material>(bufStr, resource::Material::CreateInfo{});
+                if (created)
+                    material->sid = created->getId();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+        ImGui::EndPopup();
+    }
+
+    //---------- Delete ----------//
+    ImGui::SameLine();
+    if (ImGui::Button("-"))
+        ImGui::OpenPopup("Delete material");
+    if (ImGui::BeginPopupModal("Delete material")) {
+        ImGui::Text("Are you sure you want to delete this material?");
+        ImGui::Text("All component::Material that use this material\n"
+                    "will lose the reference.");
+        if (ImGui::Button("Cancel")) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Delete")) {
+            resource::destroy<resource::Material>(material->sid.getString());
+            material->sid = "Material";
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
+    //---------- Edit ----------//
+    ImGui::Text("Color");
+    if (!m->colorIsImage()) {
+        ImGui::SliderFloat("R##ColorR", &m->color.x, 0.0f, 1.0f);
+        ImGui::SliderFloat("G##ColorG", &m->color.y, 0.0f, 1.0f);
+        ImGui::SliderFloat("B##ColorB", &m->color.z, 0.0f, 1.0f);
+    }
+    renderComboImage("Color", m->colorImage);
+    if (!m->roughnessIsImage()) {
+        ImGui::Text("Roughness");
+        ImGui::SliderFloat("##Roughness", &m->roughness, 0.0f, 1.0f);
+    }
+    renderComboImage("Roughness", m->roughnessImage);
+    if (!m->metallicIsImage()) {
+        ImGui::Text("Metallic");
+        ImGui::SliderFloat("##Metallic", &m->metallic, 0.0f, 1.0f);
+    }
+    renderComboImage("Metallic", m->metallicImage);
+    if (!m->aoIsImage()) {
+        ImGui::Text("AO");
+        ImGui::SliderFloat("##AO", &m->ao, 0.0f, 1.0f);
+    }
+    renderComboImage("AO", m->aoImage);
+}
+
 template <>
 ComponentDescription& TypedComponentRegistry<Material>::getDescription() {
-    static ComponentDescription desc = {
-        "Material",
-        {{AttributeType::VECTOR_FLOAT32, offsetof(Material, albedo), "albedo", 0.0f, 1.0f},
-         {AttributeType::FLOAT32, offsetof(Material, metallic), "metallic", 0.0f, 1.0f},
-         {AttributeType::FLOAT32, offsetof(Material, roughness), "roughness", 0.0f, 1.0f},
-         {AttributeType::FLOAT32, offsetof(Material, ao), "ao", 0.0f, 1.0f},
-         {AttributeType::STRINGID, offsetof(Material, albedoTexture), "albedoTexture"},
-         {AttributeType::STRINGID, offsetof(Material, metallicTexture), "metallicTexture"},
-         {AttributeType::STRINGID, offsetof(Material, roughnessTexture), "roughnessTexture"},
-         {AttributeType::STRINGID, offsetof(Material, aoTexture), "aoTexture"},
-         {AttributeType::STRINGID, offsetof(Material, normalTexture), "normalTexture"}},
-        1024,                                      // Max instances
-        {},                                        // Serialize
-        {},                                        // Deserialize
-        {                                          // renderUI
-         {"", [=](void* data, std::string imguiId) // Define how the component will be rendered
-          {
-              const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<Material>::getDescription().attributeDescriptions;
-              Material* m = static_cast<Material*>(data);
-
-              bool albedoFromImage = m->albedoTexture != "Empty texture"_sid;
-              bool metallicFromImage = m->metallicTexture != "Empty texture"_sid;
-              bool roughnessFromImage = m->roughnessTexture != "Empty texture"_sid;
-              bool aoFromImage = m->aoTexture != "Empty texture"_sid;
-              bool useNormal = m->normalTexture != "Empty texture"_sid;
-
-              // albedo-metallic-roughness-ao
-              std::vector<bool*> fromImage = {&albedoFromImage, &metallicFromImage, &roughnessFromImage, &aoFromImage};
-              std::vector<StringId*> attribTextures = {&(m->albedoTexture), &(m->metallicTexture), &(m->roughnessTexture), &(m->aoTexture)};
-              std::vector<StringId> textures = resource::getResources<resource::Image>();
-
-              for (unsigned i = 0; i <= 3; i++) {
-                  std::string name = aDescs[i].name;
-                  if (!(*fromImage[i])) {
-                      float size = aDescs[i + 1].offset - aDescs[i].offset;
-                      void* attribData = (void*)((uint8_t*)data + aDescs[i].offset);
-                      ComponentRegistry::renderUIAttribute<AttributeType::FLOAT32>(aDescs[i], attribData, size, imguiId + aDescs[i].name);
-                  } else {
-                      ImGui::Text(name.c_str());
-                      // TODO search using texture selection utils window
-                      // ImGui::SameLine();
-                      // ImGui::Button("Change");
-
-                      if (ImGui::BeginCombo(("Texture##combo" + attribTextures[i]->getString() + imguiId).c_str(),
-                                            fs::path(attribTextures[i]->getString()).string().c_str())) {
-                          for (size_t j = 0; j < textures.size(); j++) {
-                              if (ImGui::Selectable(fs::path(textures[j].getString()).string().c_str(), *attribTextures[i] == textures[j]))
-                                  *attribTextures[i] = textures[j];
-                              if (textures[j] == *attribTextures[i])
-                                  ImGui::SetItemDefaultFocus();
-                          }
-                          ImGui::EndCombo();
-                      }
-                  }
-
-                  ImGui::Checkbox(("from image?##" + name + "Material").c_str(), fromImage[i]);
-                  ImGui::Separator();
-              }
-
-              ImGui::Text("normal");
-              ImGui::Checkbox("use##NormalMaterial", &useNormal);
-
-              // Initialize if some checkbox changed
-              // Plain color to image
-              if (albedoFromImage && m->albedoTexture == "Empty texture"_sid)
-                  m->albedoTexture = "textures/white.jpg"_sid;
-              if (metallicFromImage && m->metallicTexture == "Empty texture"_sid)
-                  m->metallicTexture = "textures/white.jpg"_sid;
-              if (roughnessFromImage && m->roughnessTexture == "Empty texture"_sid)
-                  m->roughnessTexture = "textures/white.jpg"_sid;
-              if (aoFromImage && m->aoTexture == "Empty texture"_sid)
-                  m->aoTexture = "textures/white.jpg"_sid;
-              if (useNormal && m->normalTexture == "Empty texture"_sid)
-                  m->normalTexture = "textures/white.jpg"_sid;
-
-              // Image to plain color
-              if (!albedoFromImage && m->albedoTexture != "Empty texture"_sid)
-                  m->albedoTexture = "Empty texture"_sid;
-              if (!metallicFromImage && m->metallicTexture != "Empty texture"_sid)
-                  m->metallicTexture = "Empty texture"_sid;
-              if (!roughnessFromImage && m->roughnessTexture != "Empty texture"_sid)
-                  m->roughnessTexture = "Empty texture"_sid;
-              if (!aoFromImage && m->aoTexture != "Empty texture"_sid)
-                  m->aoTexture = "Empty texture"_sid;
-              if (!useNormal && m->normalTexture != "Empty texture"_sid)
-                  m->normalTexture = "Empty texture"_sid;
-          }}}};
+    static ComponentDescription desc = {"Material",
+                                        {{AttributeType::STRINGID, offsetof(Material, sid), "sid", {}, {}, {}, {}}},
+                                        1024, // Max instances
+                                        {},   // Serialize
+                                        {},   // Deserialize
+                                        {     // renderUI
+                                         {
+                                             "", renderImGui // Define how the component will be rendered
+                                         }}};
 
     return desc;
+}
+
+resource::Material* Material::getResource() const { return resource::get<resource::Material>(sid.getString()); }
+
+void Material::setResource(const resource::Material* material) {
+    if (material == nullptr) {
+        LOG_WARN("component::Material", "Could not set resource because it is nullptr");
+        return;
+    }
+    sid = material->getId();
 }
 
 } // namespace atta::component

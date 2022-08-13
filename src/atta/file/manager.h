@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_FILE_FILE_MANAGER_H
 #define ATTA_FILE_FILE_MANAGER_H
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 #include <atta/file/interface.h>
 #include <atta/file/project/projectSerializer.h>
 #include <atta/file/watchers/fileWatcher.h>

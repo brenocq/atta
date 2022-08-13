@@ -8,6 +8,7 @@
 #define ATTA_COMPONENT_COMPONENTS_MATERIAL_H
 
 #include <atta/component/interface.h>
+#include <atta/resource/resources/material.h>
 
 namespace atta::component {
 
@@ -19,16 +20,10 @@ namespace atta::component {
  * The entity must have Transform and Mesh to be rendered.
  */
 struct Material final : public Component {
-    vec3f albedo = vec3(1.0f, 0.0f, 1.0f); ///< Material albedo
-    float metallic = 0.0f;                 ///< Metallic coefficient. 0->dielectric, 1->metal
-    float roughness = 0.5f;                ///< Roughness coefficient. 0->very smooth, 1->very rough
-    float ao = 1.0f;                       ///< Ambient occlusion coefficient. 0->totally occluded, 1->not occluded
+    StringId sid = "Material"; ///< Material name
 
-    StringId albedoTexture = StringId("Empty texture");    ///< Override with texture
-    StringId metallicTexture = StringId("Empty texture");  ///< Override Material::metallic with texture
-    StringId roughnessTexture = StringId("Empty texture"); ///< Override Material::roughness with texture
-    StringId aoTexture = StringId("Empty texture");        ///< Override Material::ao with texture
-    StringId normalTexture = StringId("Empty texture");    ///< Material normal map
+    resource::Material* getResource() const;
+    void setResource(const resource::Material* material);
 };
 ATTA_REGISTER_COMPONENT(Material)
 template <>

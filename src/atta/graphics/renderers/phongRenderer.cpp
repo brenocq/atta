@@ -111,7 +111,8 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
         for (auto entity : entities) {
             component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
             component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
-            component::Material* material = component::getEntityComponent<component::Material>(entity);
+            component::Material* compMat = component::getEntityComponent<component::Material>(entity);
+            resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {
                 mat4 model = transpose(transform->getWorldTransform(entity));
@@ -120,32 +121,32 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                 shader->setMat4("invModel", invModel);
 
                 if (material) {
-                    if (material->albedoTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("albedoTexture", material->albedoTexture);
+                    if (material->colorIsImage()) {
+                        shader->setImage("albedoTexture", material->colorImage);
                         shader->setVec3("material.albedo", {-1, -1, -1});
                     } else
-                        shader->setVec3("material.albedo", material->albedo);
+                        shader->setVec3("material.albedo", material->color);
 
-                    if (material->metallicTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("metallicTexture", material->metallicTexture);
+                    if (material->metallicIsImage()) {
+                        shader->setImage("metallicTexture", material->metallicImage);
                         shader->setFloat("material.metallic", -1);
                     } else
                         shader->setFloat("material.metallic", material->metallic);
 
-                    if (material->roughnessTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("roughnessTexture", material->roughnessTexture);
+                    if (material->roughnessIsImage()) {
+                        shader->setImage("roughnessTexture", material->roughnessImage);
                         shader->setFloat("material.roughness", -1);
                     } else
                         shader->setFloat("material.roughness", material->roughness);
 
-                    if (material->aoTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("aoTexture", material->aoTexture);
+                    if (material->aoIsImage()) {
+                        shader->setImage("aoTexture", material->aoImage);
                         shader->setFloat("material.ao", -1);
                     } else
                         shader->setFloat("material.ao", material->ao);
                 } else {
-                    component::Material material{};
-                    shader->setVec3("material.albedo", material.albedo);
+                    resource::Material::CreateInfo material{};
+                    shader->setVec3("material.albedo", material.color);
                     shader->setFloat("material.metallic", material.metallic);
                     shader->setFloat("material.roughness", material.roughness);
                     shader->setFloat("material.ao", material.ao);

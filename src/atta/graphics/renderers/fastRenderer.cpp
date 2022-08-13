@@ -73,21 +73,22 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
         for (auto entity : entities) {
             component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
             component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
-            component::Material* material = component::getEntityComponent<component::Material>(entity);
+            component::Material* compMat = component::getEntityComponent<component::Material>(entity);
+            resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {
                 mat4 model = transpose(transform->getWorldTransform(entity));
                 shader->setMat4("model", model);
 
                 if (material) {
-                    if (material->albedoTexture.getId() != SID("Empty texture")) {
-                        shader->setTexture("albedoTexture", material->albedoTexture);
+                    if (material->colorIsImage()) {
+                        shader->setImage("albedoTexture", material->colorImage);
                         shader->setVec3("albedo", {-1, -1, -1});
                     } else
-                        shader->setVec3("albedo", material->albedo);
+                        shader->setVec3("albedo", material->color);
                 } else {
-                    component::Material material{};
-                    shader->setVec3("albedo", material.albedo);
+                    resource::Material::CreateInfo defaultMaterial {};
+                    shader->setVec3("albedo", defaultMaterial.color);
                 }
 
                 // Draw mesh

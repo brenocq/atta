@@ -8,7 +8,7 @@
 #include <atta/resource/resources/image.h>
 
 #include <atta/event/events/imageUpdate.h>
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -72,7 +72,7 @@ void Image::resize(uint32_t width, uint32_t height) {
 
 void Image::update() {
     event::ImageUpdate e(_id);
-    event::Manager::publish(e);
+    event::publish(e);
 }
 
 void Image::saveToFile() {

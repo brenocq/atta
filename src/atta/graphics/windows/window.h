@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_WINDOWS_WINDOW_H
 #define ATTA_GRAPHICS_WINDOWS_WINDOW_H
-#include <atta/event/manager.h>
+#include <atta/event/interface.h>
 #include <atta/utils/stringId.h>
 
 namespace atta::graphics {
