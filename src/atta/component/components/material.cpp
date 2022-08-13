@@ -124,13 +124,13 @@ void renderImGui(void* data, std::string imguiId) {
     }
 
     //---------- Edit ----------//
-    ImGui::Text("Albedo");
-    if (!m->albedoIsImage()) {
-        ImGui::SliderFloat("R##AlbedoR", &m->albedo.x, 0.0f, 1.0f);
-        ImGui::SliderFloat("G##AlbedoG", &m->albedo.y, 0.0f, 1.0f);
-        ImGui::SliderFloat("B##AlbedoB", &m->albedo.z, 0.0f, 1.0f);
+    ImGui::Text("Color");
+    if (!m->colorIsImage()) {
+        ImGui::SliderFloat("R##ColorR", &m->color.x, 0.0f, 1.0f);
+        ImGui::SliderFloat("G##ColorG", &m->color.y, 0.0f, 1.0f);
+        ImGui::SliderFloat("B##ColorB", &m->color.z, 0.0f, 1.0f);
     }
-    renderComboImage("Albedo", m->albedoImage);
+    renderComboImage("Color", m->colorImage);
     if (!m->roughnessIsImage()) {
         ImGui::Text("Roughness");
         ImGui::SliderFloat("##Roughness", &m->roughness, 0.0f, 1.0f);

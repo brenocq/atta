@@ -67,6 +67,16 @@ template <>
 void Manager::createLoadEvent<Material>(Material* resource, StringId sid);
 
 template <typename R>
+void Manager::destroyResourcesImpl() {
+    for(StringId sid : getResources<R>())
+    {
+        delete reinterpret_cast<R*>(_resourceMap[sid.getId()]);
+        _resourceMap.erase(sid.getId());
+    }
+    _resourcesByType.erase(typeid(R).hash_code());
+}
+
+template <typename R>
 std::vector<StringId> Manager::getResourcesImpl() {
     return _resourcesByType[typeid(R).hash_code()];
 }

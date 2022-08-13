@@ -13,7 +13,7 @@ void ProjectSerializer::serializeHeader(Section& section) {
 
 void ProjectSerializer::serializeConfig(Section& section) { section["dt"] = float(Config::getDt()); }
 
-void ProjectSerializer::serializeComponentSystem(Section& section) {
+void ProjectSerializer::serializeComponentModule(Section& section) {
     // Serialize entity ids
     std::vector<component::EntityId> entities = component::getNoCloneView();
     section["entityIds"] = entities;
@@ -53,12 +53,23 @@ void ProjectSerializer::serializeComponentSystem(Section& section) {
     }
 }
 
-void ProjectSerializer::serializeGraphicsSystem(Section& section) {
+void ProjectSerializer::serializeGraphicsModule(Section& section) {
     std::vector<std::shared_ptr<graphics::Viewport>> pviewports = graphics::getViewports();
     std::vector<graphics::Viewport> viewports;
     for (auto pv : pviewports)
         viewports.push_back(*pv);
     section["viewports"] = viewports;
+}
+
+void ProjectSerializer::serializeResourceModule(Section& section) {
+    std::vector<StringId> materialSids = resource::getResources<resource::Material>();
+    std::vector<resource::Material> materials;
+    for (StringId sid : materialSids)
+    {
+        resource::Material* m = resource::get<resource::Material>(sid.getString());
+        if(m) materials.push_back(*m);
+    }
+    section["materials"] = materials;
 }
 
 } // namespace atta::file

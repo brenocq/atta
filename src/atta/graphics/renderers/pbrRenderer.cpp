@@ -387,11 +387,11 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                 shader->setMat4("invModel", invModel);
 
                 if (material) {
-                    if (material->albedoIsImage()) {
-                        shader->setImage("albedoTexture", material->albedoImage);
+                    if (material->colorIsImage()) {
+                        shader->setImage("albedoTexture", material->colorImage);
                         shader->setVec3("material.albedo", {-1, -1, -1});
                     } else
-                        shader->setVec3("material.albedo", material->albedo);
+                        shader->setVec3("material.albedo", material->color);
 
                     if (material->metallicIsImage()) {
                         shader->setImage("metallicTexture", material->metallicImage);
@@ -418,7 +418,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                         shader->setInt("material.hasNormalTexture", 0);
                 } else {
                     resource::Material::CreateInfo defaultMaterial{};
-                    shader->setVec3("material.albedo", defaultMaterial.albedo);
+                    shader->setVec3("material.albedo", defaultMaterial.color);
                     shader->setFloat("material.metallic", defaultMaterial.metallic);
                     shader->setFloat("material.roughness", defaultMaterial.roughness);
                     shader->setFloat("material.ao", defaultMaterial.ao);

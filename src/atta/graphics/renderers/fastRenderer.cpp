@@ -81,14 +81,14 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                 shader->setMat4("model", model);
 
                 if (material) {
-                    if (material->albedoIsImage()) {
-                        shader->setImage("albedoTexture", material->albedoImage);
+                    if (material->colorIsImage()) {
+                        shader->setImage("albedoTexture", material->colorImage);
                         shader->setVec3("albedo", {-1, -1, -1});
                     } else
-                        shader->setVec3("albedo", material->albedo);
+                        shader->setVec3("albedo", material->color);
                 } else {
                     resource::Material::CreateInfo defaultMaterial {};
-                    shader->setVec3("albedo", defaultMaterial.albedo);
+                    shader->setVec3("albedo", defaultMaterial.color);
                 }
 
                 // Draw mesh

@@ -21,6 +21,8 @@ void destroy(const fs::path& filename);
 template <typename R>
 R* get(const fs::path& filename);
 template <typename R>
+void destroyResources();
+template <typename R>
 std::vector<StringId> getResources();
 
 } // namespace atta::resource
@@ -40,6 +42,10 @@ void destroy(const fs::path& filename) {
 template <typename R>
 R* get(const fs::path& filename) {
     return Manager::getInstance().getImpl<R>(filename);
+}
+template <typename R>
+void destroyResources() {
+    return Manager::getInstance().destroyResourcesImpl<R>();
 }
 template <typename R>
 std::vector<StringId> getResources() {

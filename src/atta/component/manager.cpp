@@ -73,7 +73,7 @@ void Manager::createDefaultImpl() {
     m->sid = StringId("meshes/cube.obj");
 
     resource::Material* rmt = resource::create<resource::Material>("Material", resource::Material::CreateInfo{});
-    rmt->albedo = {0.5, 0.5, 0.5};
+    rmt->color = {0.5, 0.5, 0.5};
     Material* mt = addEntityComponent<Material>(cube);
     mt->setResource(rmt);
 

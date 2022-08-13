@@ -6,9 +6,9 @@
 *.spv
 
 # Build
-build/
-scripts/local_*.sh
-projects/
+/build/
+/scripts/local_*.sh
+/projects/
 /resources/
 
 # Visual Studio
@@ -16,7 +16,7 @@ projects/
 /CMakeSettings.json
 
 # Local config
-src/atta/cmakeConfig.h
+/src/atta/cmakeConfig.h
 
 # ImGui
 imgui.ini

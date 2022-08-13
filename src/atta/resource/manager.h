@@ -28,6 +28,8 @@ class Manager final {
     template <typename R>
     friend R* get(const fs::path& filename);
     template <typename R>
+    friend void destroyResources();
+    template <typename R>
     friend std::vector<StringId> getResources();
 
   private:
@@ -42,6 +44,8 @@ class Manager final {
     void destroyImpl(const fs::path& filename);
     template <typename R>
     R* getImpl(const fs::path& filename);
+    template <typename R>
+    void destroyResourcesImpl();
     template <typename R>
     std::vector<StringId> getResourcesImpl();
 

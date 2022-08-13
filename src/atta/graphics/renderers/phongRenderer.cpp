@@ -121,11 +121,11 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                 shader->setMat4("invModel", invModel);
 
                 if (material) {
-                    if (material->albedoIsImage()) {
-                        shader->setImage("albedoTexture", material->albedoImage);
+                    if (material->colorIsImage()) {
+                        shader->setImage("albedoTexture", material->colorImage);
                         shader->setVec3("material.albedo", {-1, -1, -1});
                     } else
-                        shader->setVec3("material.albedo", material->albedo);
+                        shader->setVec3("material.albedo", material->color);
 
                     if (material->metallicIsImage()) {
                         shader->setImage("metallicTexture", material->metallicImage);
@@ -146,7 +146,7 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                         shader->setFloat("material.ao", material->ao);
                 } else {
                     resource::Material::CreateInfo material{};
-                    shader->setVec3("material.albedo", material.albedo);
+                    shader->setVec3("material.albedo", material.color);
                     shader->setFloat("material.metallic", material.metallic);
                     shader->setFloat("material.roughness", material.roughness);
                     shader->setFloat("material.ao", material.ao);
