@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Core Tests
+// Atta Utils Tests
 // stringId.cpp
 // Date: 2021-08-18
 // By Breno Cunha Queiroz
@@ -10,13 +10,13 @@
 using namespace atta;
 
 namespace {
-TEST(Core_StringId, ConstexprLiteral) {
+TEST(Utils_StringId, ConstexprLiteral) {
     EXPECT_EQ(SID("test string"), "test string"_sid);
     EXPECT_NE(SID("test"), SID("string"));
     EXPECT_NE("test"_sid, "string"_sid);
 }
 
-TEST(Core_StringId, StringTable) {
+TEST(Utils_StringId, StringTable) {
     StringId sid0{"test0"};
     StringId sid1{"test1"};
 

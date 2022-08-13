@@ -165,7 +165,11 @@ ComponentDescription& TypedComponentRegistry<Material>::getDescription() {
 
 resource::Material* Material::getResource() const { return resource::get<resource::Material>(sid.getString()); }
 
-void Material::setResource(const resource::Material* material) {
+void Material::set(StringId material) {
+    sid = material;
+}
+
+void Material::set(const resource::Material* material) {
     if (material == nullptr) {
         LOG_WARN("component::Material", "Could not set resource because it is nullptr");
         return;

@@ -100,7 +100,7 @@ void ViewportWindows::render() {
             bool imGuizmoUsingMouse = false;
             component::EntityId entity = component::getSelectedEntity();
             if (entity >= 0) {
-                component::Transform* t = component::getEntityComponent<component::Transform>(entity);
+                component::Transform* t = component::getComponent<component::Transform>(entity);
 
                 if (t) {
                     ImGuizmo::SetOrthographic(viewport->getCamera()->getName() == "OrthographicCamera");
@@ -133,15 +133,15 @@ void ViewportWindows::render() {
                         ori.fromEuler(t->orientation.toEuler() + oriDelta);
 
                         // Delta world to local
-                        component::Relationship* r = component::getEntityComponent<component::Relationship>(entity);
+                        component::Relationship* r = component::getComponent<component::Relationship>(entity);
                         if (r && r->getParent() != -1) {
                             // Get transform of the first entity that has transform when going up in the hierarchy
                             component::Transform* pt = nullptr;
                             component::EntityId parentId = -1;
                             while (pt == nullptr) {
                                 parentId = r->getParent();
-                                pt = component::getEntityComponent<component::Transform>(parentId);
-                                r = component::getEntityComponent<component::Relationship>(parentId);
+                                pt = component::getComponent<component::Transform>(parentId);
+                                r = component::getComponent<component::Relationship>(parentId);
                                 if (r->getParent() == -1)
                                     break;
                             }
@@ -168,7 +168,7 @@ void ViewportWindows::render() {
                         else if (mouseOperation == ImGuizmo::OPERATION::SCALE)
                             t->scale = scale;
 
-                        component::RigidBody2D* rb2d = component::getEntityComponent<component::RigidBody2D>(entity);
+                        component::RigidBody2D* rb2d = component::getComponent<component::RigidBody2D>(entity);
                         if (rb2d) {
                             if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
                                 vec2 pos = vec2(t->position);
@@ -235,14 +235,14 @@ void ViewportWindows::addBasicShapePopup() {
         for (auto shape : basicShapes) {
             if (ImGui::Selectable((shape + "##AddBasicShape" + shape).c_str())) {
                 component::EntityId eid = component::createEntity();
-                component::Name* n = component::addEntityComponent<component::Name>(eid);
+                component::Name* n = component::addComponent<component::Name>(eid);
                 strcpy(n->name, shape.c_str());
-                component::addEntityComponent<component::Transform>(eid);
-                component::Mesh* m = component::addEntityComponent<component::Mesh>(eid);
+                component::addComponent<component::Transform>(eid);
+                component::Mesh* m = component::addComponent<component::Mesh>(eid);
                 m->sid = basicShapesMesh[i];
                 resource::Material* matRes = resource::create<resource::Material>("defaultMaterial." + std::to_string(eid), resource::Material::CreateInfo{});
                 matRes->color = vec3(0.5f, 0.5f, 0.5f);
-                component::Material* mat = component::addEntityComponent<component::Material>(eid);
+                component::Material* mat = component::addComponent<component::Material>(eid);
                 mat->sid = matRes->getId();
                 component::setSelectedEntity(eid);
             }

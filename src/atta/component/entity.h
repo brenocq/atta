@@ -7,21 +7,23 @@
 #ifndef ATTA_COMPONENT_ENTITY_H
 #define ATTA_COMPONENT_ENTITY_H
 #include <atta/component/base.h>
-#include <atta/component/interface.h>
 
 namespace atta::component {
+
 class Entity {
   public:
-    Entity(EntityId id, int cloneId = 0);
+    Entity(EntityId id);
+    Entity(EntityId id, int cloneId);
+    operator EntityId() const { return _id; }
 
     template <typename T>
-    T* addComponent() {
-        return component::addEntityComponent<T>(_id);
+    T* add() {
+        return component::addComponent<T>(_id);
     }
 
     template <typename T>
-    T* getComponent() {
-        return component::getEntityComponent<T>(_id);
+    T* get() {
+        return component::getComponent<T>(_id);
     }
 
     EntityId getId() const { return _id; }
@@ -31,6 +33,7 @@ class Entity {
     EntityId _id;
     int _cloneId;
 };
+
 } // namespace atta::component
 
 #endif // ATTA_COMPONENT_ENTITY_H

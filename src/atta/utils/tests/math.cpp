@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Core Tests
+// Atta Utils Tests
 // stringId.cpp
 // Date: 2021-08-18
 // By Breno Cunha Queiroz
@@ -10,7 +10,7 @@
 using namespace atta;
 
 namespace {
-TEST(Core_Math_Vector, Create) {
+TEST(Utils_Math_Vector, Create) {
     //---------- vec2 ----------//
     {
         vec2 v0(0.0f, 1.0f);
@@ -153,7 +153,7 @@ TEST(Core_Math_Vector, Create) {
     }
 }
 
-TEST(Core_Math_Vector, BasicVectorOperations) {
+TEST(Utils_Math_Vector, BasicVectorOperations) {
     vec2 v2_0(0.0f, 1.0f);
     vec2 v2_1(1.0f, 0.0f);
     vec3 v3_0(0.0f, 1.0f, 2.0f);
@@ -234,7 +234,7 @@ TEST(Core_Math_Vector, BasicVectorOperations) {
     }
 }
 
-TEST(Core_Math_Vector, BasicScalarOperations) {
+TEST(Utils_Math_Vector, BasicScalarOperations) {
     vec2 v2(0.0f, 1.0f);
     vec3 v3(0.0f, 1.0f, 2.0f);
     vec4 v4(0.0f, 1.0f, 2.0f, 3.0f);
@@ -312,7 +312,7 @@ TEST(Core_Math_Vector, BasicScalarOperations) {
     }
 }
 
-TEST(Core_Math_Vector, LogicalOperations) {
+TEST(Utils_Math_Vector, LogicalOperations) {
     EXPECT_FALSE(vec2(0.0f, 1.1f) == vec2(0.0f, 1.0f));
     EXPECT_FALSE(vec3(0.0f, 1.1f, 2.2f) == vec3(0.0f, 1.0f, 2.0f));
     EXPECT_FALSE(vec4(0.0f, 1.1f, 2.2f, 3.3f) == vec4(0.0f, 1.0f, 2.0f, 3.0f));
@@ -356,7 +356,7 @@ TEST(Core_Math_Vector, LogicalOperations) {
     EXPECT_TRUE(vec4(0.0f, 1.0f, 2.0f, 3.0f) >= vec4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
-TEST(Core_Math_Vector, SpecialFunctions) {
+TEST(Utils_Math_Vector, SpecialFunctions) {
     // vec2
     {
         vec2 v(1.0f, 2.0f);
@@ -463,7 +463,7 @@ TEST(Core_Math_Vector, SpecialFunctions) {
     }
 }
 
-TEST(Core_Math_Vector, TypeDeduction) {
+TEST(Utils_Math_Vector, TypeDeduction) {
     {
         vector<float> v0 = {1.0f, 2.0f};
         vector<int> v1 = {1, 2};
@@ -480,7 +480,7 @@ TEST(Core_Math_Vector, TypeDeduction) {
 }
 
 //#include <immintrin.h>
-// TEST(Core_Math_Vector, SIMD128)
+// TEST(Utils_Math_Vector, SIMD128)
 //{
 //	class Vec128
 //	{
@@ -550,7 +550,7 @@ TEST(Core_Math_Vector, TypeDeduction) {
 //	};
 //}
 
-// TEST(Core_Math_Vector, SIMD256)
+// TEST(Utils_Math_Vector, SIMD256)
 //{
 //	class Vec256
 //	{

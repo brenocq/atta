@@ -23,7 +23,8 @@ struct Material final : public Component {
     StringId sid = "Material"; ///< Material name
 
     resource::Material* getResource() const;
-    void setResource(const resource::Material* material);
+    void set(StringId sid);
+    void set(const resource::Material* material);
 };
 ATTA_REGISTER_COMPONENT(Material)
 template <>

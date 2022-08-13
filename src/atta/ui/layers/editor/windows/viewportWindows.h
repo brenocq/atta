@@ -7,7 +7,6 @@
 #ifndef ATTA_UI_LAYERS_EDITOR_WINDOWS_VIEWPORT_WINDOWS_H
 #define ATTA_UI_LAYERS_EDITOR_WINDOWS_VIEWPORT_WINDOWS_H
 
-#include <atta/component/entity.h>
 #include <atta/component/interface.h>
 
 namespace atta::ui {

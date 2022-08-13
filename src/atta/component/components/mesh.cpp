@@ -23,4 +23,6 @@ Mesh::Mesh() {
         sid = std::any_cast<StringId>(*(TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options.begin()));
 }
 
+void Mesh::set(std::string mesh) { sid = StringId(mesh); }
+
 } // namespace atta::component

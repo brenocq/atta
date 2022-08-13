@@ -166,7 +166,7 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
     // Check current envinroment map
     StringId currEnvironmentMap = StringId("textures/white.jpg"); // Default environment map is white texture
     for (auto entity : entities) {
-        component::EnvironmentLight* el = component::getEntityComponent<component::EnvironmentLight>(entity);
+        component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
 
         if (el) {
             currEnvironmentMap = el->sid;
@@ -207,8 +207,8 @@ void PbrRenderer::shadowPass() {
     //----- Directional shadow mapping -----//
     component::EntityId directionalLightEntity = -1;
     for (auto entity : entities) {
-        component::DirectionalLight* dl = component::getEntityComponent<component::DirectionalLight>(entity);
-        component::Transform* t = component::getEntityComponent<component::Transform>(entity);
+        component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
+        component::Transform* t = component::getComponent<component::Transform>(entity);
         if (dl && t) {
             directionalLightEntity = entity;
             break;
@@ -222,7 +222,7 @@ void PbrRenderer::shadowPass() {
             shader->bind();
 
             // Create light matrix
-            component::Transform* t = component::getEntityComponent<component::Transform>(directionalLightEntity);
+            component::Transform* t = component::getComponent<component::Transform>(directionalLightEntity);
 
             float height = 10.0f;
             float ratio = 1.0f;
@@ -235,8 +235,8 @@ void PbrRenderer::shadowPass() {
 
             // Fill shadow map rendering the scene
             for (auto entity : entities) {
-                component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
-                component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
+                component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+                component::Transform* transform = component::getComponent<component::Transform>(entity);
 
                 if (mesh && transform) {
                     shader->setMat4("model", transpose(transform->getWorldTransform(entity)));
@@ -250,8 +250,8 @@ void PbrRenderer::shadowPass() {
     //----- Omnidirectional shadow mapping -----//
     component::EntityId pointLightEntity = -1;
     for (auto entity : entities) {
-        component::PointLight* pl = component::getEntityComponent<component::PointLight>(entity);
-        component::Transform* t = component::getEntityComponent<component::Transform>(entity);
+        component::PointLight* pl = component::getComponent<component::PointLight>(entity);
+        component::Transform* t = component::getComponent<component::Transform>(entity);
         if (pl && t) {
             pointLightEntity = entity;
             break;
@@ -265,7 +265,7 @@ void PbrRenderer::shadowPass() {
             shader->bind();
 
             // Create light matrix
-            component::Transform* t = component::getEntityComponent<component::Transform>(pointLightEntity);
+            component::Transform* t = component::getComponent<component::Transform>(pointLightEntity);
 
             // TODO world position
             float fov = radians(90.0f);
@@ -292,8 +292,8 @@ void PbrRenderer::shadowPass() {
 
             // Fill shadow map rendering the scene
             for (auto entity : entities) {
-                component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
-                component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
+                component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+                component::Transform* transform = component::getComponent<component::Transform>(entity);
 
                 if (mesh && transform) {
                     shader->setMat4("model", transpose(transform->getWorldTransform(entity)));
@@ -339,10 +339,10 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
         int numPointLights = 0;
         int numDirectionalLights = 0;
         for (auto entity : entities) {
-            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
-            component::PointLight* pl = component::getEntityComponent<component::PointLight>(entity);
-            component::DirectionalLight* dl = component::getEntityComponent<component::DirectionalLight>(entity);
-            component::EnvironmentLight* el = component::getEntityComponent<component::EnvironmentLight>(entity);
+            component::Transform* transform = component::getComponent<component::Transform>(entity);
+            component::PointLight* pl = component::getComponent<component::PointLight>(entity);
+            component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
+            component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
 
             if (transform && (pl || dl || el)) {
                 if (pl && numPointLights < 10) {
@@ -375,9 +375,9 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
 
         //----- Entities -----//
         for (auto entity : entities) {
-            component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
-            component::Material* compMat = component::getEntityComponent<component::Material>(entity);
+            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+            component::Transform* transform = component::getComponent<component::Transform>(entity);
+            component::Material* compMat = component::getComponent<component::Material>(entity);
             resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {

@@ -24,6 +24,7 @@ struct Mesh final : public Component {
      * the StringId string should be "myMeshes/robot.obj".
      * */
     StringId sid; ///< Mesh relative path
+    void set(std::string mesh);
 };
 ATTA_REGISTER_COMPONENT(Mesh)
 template <>

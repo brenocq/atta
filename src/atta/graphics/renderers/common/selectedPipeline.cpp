@@ -42,8 +42,8 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
 
         component::EntityId entity = component::getSelectedEntity();
         if (entity != -1) {
-            component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
+            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+            component::Transform* transform = component::getComponent<component::Transform>(entity);
 
             if (mesh && transform) {
                 // Draw mesh normal size

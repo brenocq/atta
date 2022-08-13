@@ -14,34 +14,36 @@
 
 namespace atta::component {
 
+class Entity;
+
 void startUp();
 void shutDown();
 
 // Create/destroy entity
-EntityId createEntity(EntityId entity = -1); // Can *try* to create entity with specific EntityId
-void deleteEntity(EntityId entity);          // Delete entity and deallocate components
-void deleteEntityOnly(EntityId entity);      // Delete entity without deallocating components
-EntityId copyEntity(EntityId entity);
+Entity createEntity(EntityId entity = -1); // Can *try* to create entity with specific EntityId
+void deleteEntity(Entity entity);          // Delete entity and deallocate components
+void deleteEntityOnly(Entity entity);      // Delete entity without deallocating components
+Entity copyEntity(Entity entity);
 
-// Add entity component
+// Add component
 template <typename T>
-T* addEntityComponent(EntityId entity);
-Component* addEntityComponentById(ComponentId id, EntityId entity);
-Component* addEntityComponentPtr(EntityId entity, unsigned index, uint8_t* component);
+T* addComponent(Entity entity);
+Component* addComponentById(ComponentId id, Entity entity);
+Component* addComponentPtr(Entity entity, unsigned index, uint8_t* component);
 
-// Get entity component
+// Get component
 template <typename T>
-T* getEntityComponent(EntityId entity);
-Component* getEntityComponentById(ComponentId id, EntityId entity);
-std::vector<Component*> getEntityComponents(EntityId entity);
+T* getComponent(Entity entity);
+Component* getComponentById(ComponentId id, Entity entity);
+std::vector<Component*> getComponents(Entity entity);
 
-// Remove entity component
-void removeEntityComponentById(ComponentId id, EntityId entity);
+// Remove component
+void removeComponentById(ComponentId id, Entity entity);
 
 // Getters
 std::vector<ComponentRegistry*> getComponentRegistries();
 std::vector<Factory>& getFactories();
-Factory* getPrototypeFactory(EntityId prototype);
+Factory* getPrototypeFactory(Entity prototype);
 
 // Views
 std::vector<EntityId> getEntitiesView();
@@ -49,8 +51,8 @@ std::vector<EntityId> getNoPrototypeView();
 std::vector<EntityId> getCloneView();
 std::vector<EntityId> getNoCloneView();
 std::vector<EntityId> getScriptView();
-EntityId getSelectedEntity();
-void setSelectedEntity(EntityId eid);
+Entity getSelectedEntity();
+void setSelectedEntity(Entity entity);
 
 // Memory management
 void createDefault();
@@ -61,18 +63,19 @@ void unregisterCustomComponents();
 } // namespace atta::component
 
 // Template definitions
+#include <atta/component/entity.h>
 #include <atta/component/manager.h>
 
 namespace atta::component {
 
 template <typename T>
-T* addEntityComponent(EntityId entity) {
-    return Manager::getInstance().addEntityComponentImpl<T>(entity);
+T* addComponent(Entity entity) {
+    return Manager::getInstance().addComponentImpl<T>(entity);
 }
 
 template <typename T>
-T* getEntityComponent(EntityId entity) {
-    return Manager::getInstance().getEntityComponentImpl<T>(entity);
+T* getComponent(Entity entity) {
+    return Manager::getInstance().getComponentImpl<T>(entity);
 }
 
 } // namespace atta::component

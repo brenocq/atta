@@ -42,7 +42,7 @@ void EntityWindow::renderTree() {
 
     // Render root entities
     for (component::EntityId entity : entities) {
-        component::Relationship* r = component::getEntityComponent<component::Relationship>(entity);
+        component::Relationship* r = component::getComponent<component::Relationship>(entity);
         if (!r || (r && r->getParent() == -1))
             renderTreeNode(entity, i);
     }
@@ -69,8 +69,8 @@ void EntityWindow::renderTree() {
 void EntityWindow::renderTreeNode(component::EntityId entity, int& i) {
     //----- Name -----//
     std::string name = "<Entity " + std::to_string(entity) + ">";
-    component::Name* n = component::getEntityComponent<component::Name>(entity);
-    component::Relationship* r = component::getEntityComponent<component::Relationship>(entity);
+    component::Name* n = component::getComponent<component::Name>(entity);
+    component::Relationship* r = component::getComponent<component::Relationship>(entity);
     if (n)
         name = n->name;
 
@@ -134,7 +134,7 @@ void EntityWindow::renderComponents() {
 
     // Render options to edit each component
     for (auto compReg : component::getComponentRegistries()) {
-        void* component = component::getEntityComponentById(compReg->getId(), selected);
+        void* component = component::getComponentById(compReg->getId(), selected);
         if (component != nullptr) {
             std::string name = compReg->getDescription().name;
             if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
@@ -142,7 +142,7 @@ void EntityWindow::renderComponents() {
                 if (ImGui::CollapsingHeader((name + "##Components" + name + "Header").c_str(), &open))
                     compReg->renderUI((component::Component*)component);
                 if (!open)
-                    component::removeEntityComponentById(compReg->getId(), selected);
+                    component::removeComponentById(compReg->getId(), selected);
             }
         }
     }
@@ -157,12 +157,12 @@ void EntityWindow::renderComponents() {
 
     if (ImGui::BeginPopup("Scene_ComponentAdd")) {
         for (auto compReg : component::getComponentRegistries()) {
-            void* component = component::getEntityComponentById(compReg->getId(), selected);
+            void* component = component::getComponentById(compReg->getId(), selected);
             if (component == nullptr) {
                 if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
                     std::string name = compReg->getDescription().name;
                     if (ImGui::Selectable((name + "##ComponentAdd" + name).c_str()))
-                        component::addEntityComponentById(compReg->getId(), selected);
+                        component::addComponentById(compReg->getId(), selected);
                 }
             }
         }
@@ -191,7 +191,7 @@ void EntityWindow::textureCombo(std::string comboId, StringId& sid) {
 
 void EntityWindow::renderCameraWindows() {
     for (auto eid : _cameraWindows) {
-        component::Camera* camera = component::getEntityComponent<component::Camera>(eid);
+        component::Camera* camera = component::getComponent<component::Camera>(eid);
         bool open = true;
         ImGui::Begin(("Camera Entity " + std::to_string(eid)).c_str(), &open);
         ImVec2 size = ImVec2(camera->width, camera->height);

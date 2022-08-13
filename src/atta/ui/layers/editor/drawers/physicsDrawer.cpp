@@ -19,7 +19,7 @@ void PhysicsDrawer::update() {
     std::vector<component::EntityId> entities = component::getEntitiesView();
     for (auto entity : entities) {
         // Get transform
-        auto t = component::getEntityComponent<component::Transform>(entity);
+        auto t = component::getComponent<component::Transform>(entity);
         if (!t)
             continue;
         vec3 position, scale;
@@ -31,7 +31,7 @@ void PhysicsDrawer::update() {
         vec4 color = {0, 1, 0, 1};
 
         // Draw box collider
-        auto box = component::getEntityComponent<component::BoxCollider>(entity);
+        auto box = component::getComponent<component::BoxCollider>(entity);
         if (box) {
             std::vector<vec3> vertices = {{0.5, 0.5, 0}, {-0.5, 0.5, 0}, {-0.5, -0.5, 0}, {0.5, -0.5, 0}};
 
@@ -62,7 +62,7 @@ void PhysicsDrawer::update() {
         }
 
         // Draw circle collider
-        auto circle = component::getEntityComponent<component::SphereCollider>(entity);
+        auto circle = component::getComponent<component::SphereCollider>(entity);
         if (circle) {
             const unsigned numVertices = 32;
             std::vector<vec3> vertices;

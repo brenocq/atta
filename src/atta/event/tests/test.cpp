@@ -42,7 +42,7 @@ class TestObserver {
     int _sum;
 };
 
-TEST(EventSystem, Publish) {
+TEST(Event, Publish) {
     event::clear();
 
     TestEvent e{2};
@@ -52,7 +52,7 @@ TEST(EventSystem, Publish) {
     EXPECT_EQ(e.getValue(), 2);
 }
 
-TEST(EventSystem, Subscribe) {
+TEST(Event, Subscribe) {
     event::clear();
 
     using namespace std::placeholders;
@@ -64,7 +64,7 @@ TEST(EventSystem, Subscribe) {
     EXPECT_EQ(observer.getSum(), 0);
 }
 
-TEST(EventSystem, MultipleEventsObservers) {
+TEST(Event, MultipleEventsObservers) {
     event::clear();
     using namespace std::placeholders;
 

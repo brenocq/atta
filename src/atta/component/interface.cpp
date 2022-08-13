@@ -12,26 +12,26 @@ void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
 // Create/destroy entity
-EntityId createEntity(EntityId entity) { return Manager::getInstance().createEntityImpl(entity); }
-void deleteEntity(EntityId entity) { return Manager::getInstance().deleteEntityImpl(entity); }
-void deleteEntityOnly(EntityId entity) { return Manager::getInstance().deleteEntityOnlyImpl(entity); }
-EntityId copyEntity(EntityId entity) { return Manager::getInstance().copyEntityImpl(entity); }
+Entity createEntity(EntityId entity) { return Manager::getInstance().createEntityImpl(entity); }
+void deleteEntity(Entity entity) { return Manager::getInstance().deleteEntityImpl(entity); }
+void deleteEntityOnly(Entity entity) { return Manager::getInstance().deleteEntityOnlyImpl(entity); }
+Entity copyEntity(Entity entity) { return Manager::getInstance().copyEntityImpl(entity); }
 
 // Add entity component
-Component* addEntityComponentById(ComponentId id, EntityId entity) { return Manager::getInstance().addEntityComponentByIdImpl(id, entity); }
-Component* addEntityComponentPtr(EntityId entity, unsigned index, uint8_t* component) {
-    return Manager::getInstance().addEntityComponentPtrImpl(entity, index, component);
+Component* addComponentById(ComponentId id, Entity entity) { return Manager::getInstance().addComponentByIdImpl(id, entity); }
+Component* addComponentPtr(Entity entity, unsigned index, uint8_t* component) {
+    return Manager::getInstance().addComponentPtrImpl(entity, index, component);
 }
 // Get entity component
-Component* getEntityComponentById(ComponentId id, EntityId entity) { return Manager::getInstance().getEntityComponentByIdImpl(id, entity); }
-std::vector<Component*> getEntityComponents(EntityId entity) { return Manager::getInstance().getEntityComponentsImpl(entity); }
+Component* getComponentById(ComponentId id, Entity entity) { return Manager::getInstance().getComponentByIdImpl(id, entity); }
+std::vector<Component*> getComponents(Entity entity) { return Manager::getInstance().getComponentsImpl(entity); }
 // Remove entity component
-void removeEntityComponentById(ComponentId id, EntityId entity) { Manager::getInstance().removeEntityComponentByIdImpl(id, entity); }
+void removeComponentById(ComponentId id, Entity entity) { Manager::getInstance().removeComponentByIdImpl(id, entity); }
 
 // Getters
 std::vector<ComponentRegistry*> getComponentRegistries() { return Manager::getInstance().getComponentRegistriesImpl(); }
 std::vector<Factory>& getFactories() { return Manager::getInstance().getFactoriesImpl(); }
-Factory* getPrototypeFactory(EntityId prototype) { return Manager::getInstance().getPrototypeFactoryImpl(prototype); }
+Factory* getPrototypeFactory(Entity prototype) { return Manager::getInstance().getPrototypeFactoryImpl(prototype); }
 
 // Views
 std::vector<EntityId> getEntitiesView() { return Manager::getInstance().getEntitiesViewImpl(); }
@@ -39,8 +39,8 @@ std::vector<EntityId> getNoPrototypeView() { return Manager::getInstance().getNo
 std::vector<EntityId> getCloneView() { return Manager::getInstance().getCloneViewImpl(); }
 std::vector<EntityId> getNoCloneView() { return Manager::getInstance().getNoCloneViewImpl(); }
 std::vector<EntityId> getScriptView() { return Manager::getInstance().getScriptViewImpl(); }
-EntityId getSelectedEntity() { return Manager::getInstance()._selectedEntity; }
-void setSelectedEntity(EntityId eid) { Manager::getInstance()._selectedEntity = eid; }
+Entity getSelectedEntity() { return Manager::getInstance()._selectedEntity; }
+void setSelectedEntity(Entity eid) { Manager::getInstance()._selectedEntity = eid; }
 
 // Memory management
 void createDefault() { Manager::getInstance().createDefaultImpl(); }

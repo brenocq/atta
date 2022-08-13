@@ -37,9 +37,9 @@ void BulletEngine::start() {
 
     //---------- Create joints ----------//
     for (component::EntityId entity : entities) {
-        auto prismatic = component::getEntityComponent<component::PrismaticJoint>(entity);
-        auto revolute = component::getEntityComponent<component::RevoluteJoint>(entity);
-        auto rigid = component::getEntityComponent<component::RigidJoint>(entity);
+        auto prismatic = component::getComponent<component::PrismaticJoint>(entity);
+        auto revolute = component::getComponent<component::RevoluteJoint>(entity);
+        auto rigid = component::getComponent<component::RigidJoint>(entity);
 
         if (prismatic)
             createPrismaticJoint(prismatic);
@@ -63,7 +63,7 @@ void BulletEngine::step(float dt) {
             trans = obj->getWorldTransform();
 
         // Check if object was translated
-        auto t = component::getEntityComponent<component::Transform>(eid);
+        auto t = component::getComponent<component::Transform>(eid);
 
         // Get atta world position and orientation
         vec3 position, scale;
@@ -106,8 +106,8 @@ void BulletEngine::step(float dt) {
         btScalar angularDamping = body->getAngularDamping();
         btVector3 linearVelocity = body->getLinearVelocity();
         btVector3 angularVelocity = body->getAngularVelocity();
-        auto t = component::getEntityComponent<component::Transform>(eid);
-        auto rb = component::getEntityComponent<component::RigidBody>(eid);
+        auto t = component::getComponent<component::Transform>(eid);
+        auto rb = component::getComponent<component::RigidBody>(eid);
         t->position = {trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()};
 
         float yaw, pitch, roll;
@@ -147,10 +147,10 @@ std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, boo
 bool BulletEngine::areColliding(component::EntityId eid0, component::EntityId eid1) { return false; }
 
 void BulletEngine::createRigidBody(component::EntityId entity) {
-    auto t = component::getEntityComponent<component::Transform>(entity);
-    auto rb = component::getEntityComponent<component::RigidBody>(entity);
-    auto box = component::getEntityComponent<component::BoxCollider>(entity);
-    auto sphere = component::getEntityComponent<component::SphereCollider>(entity);
+    auto t = component::getComponent<component::Transform>(entity);
+    auto rb = component::getComponent<component::RigidBody>(entity);
+    auto box = component::getComponent<component::BoxCollider>(entity);
+    auto sphere = component::getComponent<component::SphereCollider>(entity);
 
     if (!rb)
         return;

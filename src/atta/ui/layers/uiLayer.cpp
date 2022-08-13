@@ -15,7 +15,7 @@
 
 namespace atta::ui {
 
-UILayer::UILayer() : Layer(StringId("GraphicsLayerUI")) {}
+UILayer::UILayer() : graphics::Layer(StringId("GraphicsLayerUI")) {}
 
 void UILayer::onAttach() {
     IMGUI_CHECKVERSION();

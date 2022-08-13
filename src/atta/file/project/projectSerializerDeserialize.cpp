@@ -34,7 +34,7 @@ void ProjectSerializer::deserializeComponentModule(Section& section) {
             write(ss, componentsData.data(), componentsData.size());
 
             for (auto eid : eids) {
-                component::Component* component = component::addEntityComponentById(compReg->getId(), eid);
+                component::Component* component = component::addComponentById(compReg->getId(), eid);
                 compReg->deserialize(ss, component);
             }
         }

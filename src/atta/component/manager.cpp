@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/component/components/components.h>
 #include <atta/component/factory.h>
+#include <atta/component/interface.h>
 #include <atta/component/manager.h>
 #include <atta/event/events/createComponent.h>
 #include <atta/event/events/createEntity.h>
@@ -63,33 +64,23 @@ void Manager::shutDownImpl() {}
 
 void Manager::createDefaultImpl() {
     // Cube entity
-    EntityId cube = createEntity();
-    Transform* t = addEntityComponent<Transform>(cube);
-
-    Name* n = addEntityComponent<Name>(cube);
-    strcpy(n->name, "Cube");
-
-    Mesh* m = addEntityComponent<Mesh>(cube);
-    m->sid = StringId("meshes/cube.obj");
+    Entity cube = createEntity();
+    cube.add<Transform>();
+    cube.add<Name>()->set("Cube");
+    cube.add<Mesh>()->set("meshes/cube.obj");
 
     resource::Material* rmt = resource::create<resource::Material>("Material", resource::Material::CreateInfo{});
     rmt->color = {0.5, 0.5, 0.5};
-    Material* mt = addEntityComponent<Material>(cube);
-    mt->setResource(rmt);
+    cube.add<Material>()->set(rmt);
 
     // Light entity
-    EntityId light = createEntity();
-    t = addEntityComponent<Transform>(light);
+    Entity light = createEntity();
+    Transform* t = light.add<Transform>();
     t->position = {0.6, 0.6, 0.6};
     t->scale = {0.05, 0.05, 0.05};
-
-    n = addEntityComponent<Name>(light);
-    strcpy(n->name, "Point light");
-
-    m = addEntityComponent<Mesh>(light);
-    m->sid = StringId("meshes/sphere.obj");
-
-    addEntityComponent<PointLight>(light);
+    light.add<Name>()->set("Point light");
+    light.add<Mesh>()->set("meshes/sphere.obj");
+    light.add<PointLight>();
 }
 
 void Manager::createEntityPool() {
@@ -105,12 +96,12 @@ void Manager::createEntityPool() {
                               static_cast<memory::Allocator*>(new memory::BitmapAllocator(entityMemory, entityMemorySize, sizeof(EntityBlock))));
 }
 
-EntityId Manager::createEntityImpl(EntityId entity, size_t quantity) {
+Entity Manager::createEntityImpl(EntityId entity, size_t quantity) {
     memory::BitmapAllocator* pool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
 
     if (entity != -1 && pool->getBlockBit(entity)) {
         LOG_WARN("component::Manager", "Trying to create entity [w]$0[] that already exists", entity);
-        return -1;
+        return Entity(-1);
     }
 
     // Alloc entity
@@ -138,8 +129,9 @@ EntityId Manager::createEntityImpl(EntityId entity, size_t quantity) {
     event::CreateEntity event;
     event.entityId = eid;
     event::publish(event);
+    LOG_DEBUG("component::Manager", "Entity $0 created", eid);
 
-    return eid;
+    return Entity(eid);
 }
 
 EntityId Manager::createClonesImpl(size_t quantity) {
@@ -149,17 +141,19 @@ EntityId Manager::createClonesImpl(size_t quantity) {
     return eid;
 }
 
-void Manager::deleteEntityImpl(EntityId entity) {
+void Manager::deleteEntityImpl(Entity entity) {
+    EntityId eid = entity.getId();
+
     // Get entity
     memory::BitmapAllocator* epool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
-    EntityBlock* e = epool->getBlock<EntityBlock>(entity);
-    ASSERT(e != nullptr, "Trying to delete entity [w]$0[] that never was created", entity);
+    EntityBlock* e = epool->getBlock<EntityBlock>(eid);
+    ASSERT(e != nullptr, "Trying to delete entity [w]$0[] that never was created", eid);
 
     // Delete children and remove parent relationship
-    Relationship* r = getEntityComponent<Relationship>(entity);
+    Relationship* r = getComponent<Relationship>(eid);
     if (r) {
         if (r->getParent() != -1)
-            r->removeParent(r->getParent(), entity);
+            r->removeParent(r->getParent(), eid);
 
         auto children = r->getChildren();
         for (auto child : children)
@@ -177,58 +171,62 @@ void Manager::deleteEntityImpl(EntityId entity) {
         }
 
     // Unselect
-    if (_selectedEntity == entity)
+    if (_selectedEntity == eid)
         _selectedEntity = -1;
 
     // Free entity
     epool->free<EntityBlock>(e);
-    _entities.erase(entity);
-    _noPrototypeView.erase(entity);
-    _cloneView.erase(entity);
-    _scriptView.erase(entity);
+    _entities.erase(eid);
+    _noPrototypeView.erase(eid);
+    _cloneView.erase(eid);
+    _scriptView.erase(eid);
 
     // Publish delete entity event
     event::DeleteEntity event;
-    event.entityId = entity;
+    event.entityId = eid;
     event::publish(event);
 }
 
-void Manager::deleteEntityOnlyImpl(EntityId entity) {
+void Manager::deleteEntityOnlyImpl(Entity entity) {
+    EntityId eid = entity.getId();
+
     // Get entity
     memory::BitmapAllocator* epool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
-    EntityBlock* e = epool->getBlock<EntityBlock>(entity);
-    ASSERT(e != nullptr, "Trying to delete entity [w]$0[] that never was created", entity);
+    EntityBlock* e = epool->getBlock<EntityBlock>(eid);
+    ASSERT(e != nullptr, "Trying to delete entity [w]$0[] that never was created", eid);
 
     // Unselect
-    if (_selectedEntity == entity)
+    if (_selectedEntity == eid)
         _selectedEntity = -1;
 
     // Free entity
     epool->free<EntityBlock>(e);
-    _entities.erase(entity);
-    _noPrototypeView.erase(entity);
-    _cloneView.erase(entity);
-    _scriptView.erase(entity);
+    _entities.erase(eid);
+    _noPrototypeView.erase(eid);
+    _cloneView.erase(eid);
+    _scriptView.erase(eid);
 
     // Publish delete entity event
     event::DeleteEntity event;
-    event.entityId = entity;
+    event.entityId = eid;
     event::publish(event);
 }
 
-EntityId Manager::copyEntityImpl(EntityId entity) {
-    // Get entity
-    EntityBlock* e = getEntityBlock(entity);
-    ASSERT(e != nullptr, "Trying to copy entity [w]$0[] that does not exists", entity);
+Entity Manager::copyEntityImpl(Entity entity) {
+    EntityId eid = entity.getId();
 
-    EntityId newEntity = createEntity();
+    // Get entity
+    EntityBlock* e = getEntityBlock(eid);
+    ASSERT(e != nullptr, "Trying to copy entity [w]$0[] that does not exists", eid);
+
+    Entity newEntity = createEntity();
 
     // Delete allocated components
     for (auto compReg : _componentRegistries) {
         // If base entity has this component
-        Component* baseComponent = getEntityComponentById(compReg->getId(), entity);
+        Component* baseComponent = getComponentById(compReg->getId(), entity);
         if (baseComponent) {
-            Component* component = addEntityComponentById(compReg->getId(), newEntity);
+            Component* component = addComponentById(compReg->getId(), newEntity);
 
             // TODO implement component copy operator
             if (compReg->getId() != TypedComponentRegistry<Relationship>::getInstance().getId())
@@ -349,11 +347,12 @@ void Manager::unregisterCustomComponentsImpl() {
 //----------------------------------------//
 //--------- Remove/Add component ---------//
 //----------------------------------------//
-Component* Manager::addEntityComponentByIdImpl(ComponentId id, EntityId entity) {
-    ASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+Component* Manager::addComponentByIdImpl(ComponentId id, Entity entity) {
+    EntityId eid = entity.getId();
+    ASSERT(eid < (int)_maxEntities, "Trying to access entity outside of range");
 
     // Get entity
-    EntityBlock* e = getEntityBlock(entity);
+    EntityBlock* e = getEntityBlock(eid);
 
     // Get component registry
     ComponentRegistry* compReg = nullptr;
@@ -363,11 +362,11 @@ Component* Manager::addEntityComponentByIdImpl(ComponentId id, EntityId entity) 
             break;
         }
     ASSERT(compReg != nullptr, "Trying to add unknown component with id $0", id);
-    ASSERT(e != nullptr, "Trying to add component [w]$0[] to entity [w]$1[] that was not created", compReg->getDescription().name, entity);
+    ASSERT(e != nullptr, "Trying to add component [w]$0[] to entity [w]$1[] that was not created", compReg->getDescription().name, eid);
 
     if (e->components[compReg->getIndex()] != nullptr) {
-        LOG_WARN("component::Manager", "Could not add component [w]$1[] to entity [w]$0[]. The entity [w]$0[] already has the component [w]$1[]",
-                 entity, compReg->getDescription().name);
+        LOG_WARN("component::Manager", "Could not add component [w]$1[] to entity [w]$0[]. The entity [w]$0[] already has the component [w]$1[]", eid,
+                 compReg->getDescription().name);
         return nullptr;
     }
 
@@ -382,15 +381,15 @@ Component* Manager::addEntityComponentByIdImpl(ComponentId id, EntityId entity) 
 
         // Remove entity from some views if it is a prototype
         if (id == COMPONENT_POOL_SID_BY_NAME(typeid(Prototype).name())) {
-            _noPrototypeView.erase(entity);
-            _scriptView.erase(entity);
+            _noPrototypeView.erase(eid);
+            _scriptView.erase(eid);
         }
 
         // Add entity to script view if it is not prototype and has script component
         if (id == COMPONENT_POOL_SID_BY_NAME(typeid(Script).name())) {
-            Prototype* pc = getEntityComponent<Prototype>(entity);
+            Prototype* pc = getComponent<Prototype>(eid);
             if (pc == nullptr)
-                _scriptView.insert(entity);
+                _scriptView.insert(eid);
         }
 
         // Add component to entity
@@ -399,7 +398,7 @@ Component* Manager::addEntityComponentByIdImpl(ComponentId id, EntityId entity) 
         // Publish create component event
         event::CreateComponent event;
         event.componentId = id;
-        event.entityId = entity;
+        event.entityId = eid;
         event.component = component;
         event::publish(event);
 
@@ -410,32 +409,33 @@ Component* Manager::addEntityComponentByIdImpl(ComponentId id, EntityId entity) 
     }
 }
 
-Component* Manager::addEntityComponentPtrImpl(EntityId entity, unsigned index, uint8_t* component) {
-    DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+Component* Manager::addComponentPtrImpl(Entity entity, unsigned index, uint8_t* component) {
+    EntityId eid = entity.getId();
+    DASSERT(eid < (int)_maxEntities, "Trying to access entity outside of range");
 
     // Get entity
-    EntityBlock* e = getEntityBlock(entity);
-    ASSERT(e != nullptr, "Trying to add component pointer to entity [w]$0[] that was not created", entity);
+    EntityBlock* e = getEntityBlock(eid);
+    ASSERT(e != nullptr, "Trying to add component pointer to entity [w]$0[] that was not created", eid);
 
     // Add pointer to entity
     if (e->components[index] == nullptr)
         e->components[index] = reinterpret_cast<void*>(component);
     else
-        LOG_WARN("component::Manager", "Trying to override entity [w]$0[] component pointer. Returning already allocated one", entity);
+        LOG_WARN("component::Manager", "Trying to override entity [w]$0[] component pointer. Returning already allocated one", eid);
 
     ComponentId id = _componentRegistries[index]->getId();
 
     // Remove entity from some views if it is a prototype
     if (id == COMPONENT_POOL_SID_BY_NAME(typeid(Prototype).name())) {
-        _noPrototypeView.erase(entity);
-        _scriptView.erase(entity);
+        _noPrototypeView.erase(eid);
+        _scriptView.erase(eid);
     }
 
     // Add entity to script view if it is not prototype and has script component
     if (id == COMPONENT_POOL_SID_BY_NAME(typeid(Script).name())) {
-        Prototype* pc = getEntityComponent<Prototype>(entity);
+        Prototype* pc = getComponent<Prototype>(eid);
         if (pc == nullptr)
-            _scriptView.insert(entity);
+            _scriptView.insert(eid);
     }
 
     Component* componentPtr = reinterpret_cast<Component*>(e->components[index]);
@@ -443,20 +443,21 @@ Component* Manager::addEntityComponentPtrImpl(EntityId entity, unsigned index, u
     // Publish create component event
     event::CreateComponent event;
     event.componentId = id;
-    event.entityId = entity;
+    event.entityId = eid;
     event.component = componentPtr;
     event::publish(event);
 
     return componentPtr;
 }
 
-void Manager::removeEntityComponentByIdImpl(ComponentId id, EntityId entity) {
-    DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+void Manager::removeComponentByIdImpl(ComponentId id, Entity entity) {
+    EntityId eid = entity.getId();
+    DASSERT(eid < (int)_maxEntities, "Trying to access entity outside of range");
     // TODO View inconsistencity if more than one script/prototype component was added
 
     // Get entity
-    EntityBlock* e = getEntityBlock(entity);
-    ASSERT(e != nullptr, "Trying to remove component from entity [w]$0[] that was not created", entity);
+    EntityBlock* e = getEntityBlock(eid);
+    ASSERT(e != nullptr, "Trying to remove component from entity [w]$0[] that was not created", eid);
 
     // Get component registry
     ComponentRegistry* compReg = nullptr;
@@ -477,21 +478,22 @@ void Manager::removeEntityComponentByIdImpl(ComponentId id, EntityId entity) {
     e->components[compReg->getIndex()] = nullptr;
 
     if (id == COMPONENT_POOL_SID_BY_NAME(typeid(Script).name()))
-        _scriptView.erase(entity);
+        _scriptView.erase(eid);
     if (id == COMPONENT_POOL_SID_BY_NAME(typeid(Prototype).name()))
-        _noPrototypeView.insert(entity);
+        _noPrototypeView.insert(eid);
 
     // Publish delete component event
     event::DeleteComponent event;
     event.componentId = id;
-    event.entityId = entity;
+    event.entityId = eid;
     event::publish(event);
 }
 
 //----------------------------------------//
 //--------- Get entity component ---------//
 //----------------------------------------//
-Component* Manager::getEntityComponentByIdImpl(ComponentId id, EntityId entity) {
+Component* Manager::getComponentByIdImpl(ComponentId id, Entity entity) {
+    EntityId eid = entity.getId();
     // Get component registry
     ComponentRegistry* compReg = nullptr;
     for (auto cg : _componentRegistries)
@@ -501,15 +503,16 @@ Component* Manager::getEntityComponentByIdImpl(ComponentId id, EntityId entity) 
         }
     ASSERT(compReg != nullptr, "Trying to add unknown component with id $0", id);
 
-    return getEntityComponentByIndex(compReg->getIndex(), entity);
+    return getComponentByIndex(compReg->getIndex(), eid);
 }
 
-Component* Manager::getEntityComponentByIndex(unsigned index, EntityId entity) {
-    DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+Component* Manager::getComponentByIndex(unsigned index, Entity entity) {
+    EntityId eid = entity.getId();
+    DASSERT(eid < (int)_maxEntities, "Trying to access entity outside of range");
     DASSERT(index < maxRegisteredComponents, "Trying to access component by index outside of range");
 
     // Get entity
-    EntityBlock* e = getEntityBlock(entity);
+    EntityBlock* e = getEntityBlock(eid);
     ASSERT(e != nullptr, "Trying to get component [w]$1[] from entity [w]$0[], but this entity was not created", entity,
            _componentRegistries[index]->getDescription().name);
 
@@ -517,11 +520,12 @@ Component* Manager::getEntityComponentByIndex(unsigned index, EntityId entity) {
     return reinterpret_cast<Component*>(e->components[index]);
 }
 
-std::vector<Component*> Manager::getEntityComponentsImpl(EntityId entity) {
-    DASSERT(entity < (int)_maxEntities, "Trying to access entity outside of range");
+std::vector<Component*> Manager::getComponentsImpl(Entity entity) {
+    EntityId eid = entity.getId();
+    DASSERT(eid < (int)_maxEntities, "Trying to access entity outside of range");
 
-    EntityBlock* e = getEntityBlock(entity);
-    ASSERT(e != nullptr, "Trying to remove component from entity [w]$0[] that was not created", entity);
+    EntityBlock* e = getEntityBlock(eid);
+    ASSERT(e != nullptr, "Trying to remove component from entity [w]$0[] that was not created", eid);
 
     std::vector<Component*> components;
     for (size_t i = 0; i < sizeof(EntityBlock) / sizeof(void*); i++)
@@ -563,7 +567,7 @@ Manager::EntityBlock* Manager::getEntityBlock(EntityId eid) {
 void Manager::createFactories() {
     // Create factory for each entity that has prototype
     for (EntityId entity : getEntitiesView()) {
-        Prototype* prototype = getEntityComponentImpl<Prototype>(entity);
+        Prototype* prototype = getComponentImpl<Prototype>(entity);
         if (prototype && prototype->maxClones > 0) {
             _factories.emplace_back(entity);
             _factories.back().createClones();
@@ -577,7 +581,7 @@ void Manager::destroyFactories() {
     _factories.clear();
 }
 
-Factory* Manager::getPrototypeFactoryImpl(EntityId prototype) {
+Factory* Manager::getPrototypeFactoryImpl(Entity prototype) {
     for (Factory& factory : _factories)
         if (factory.getPrototypeId() == prototype)
             return &factory;

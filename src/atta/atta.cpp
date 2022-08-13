@@ -124,10 +124,10 @@ void Atta::loop() {
         // TODO keep list of entities that have script (and are not prototype entities)
         std::vector<component::EntityId> entities = component::getScriptView();
         for (component::EntityId entity : entities) {
-            component::Script* scriptComponent = component::getEntityComponent<component::Script>(entity);
-            component::Prototype* prototypeComponent = component::getEntityComponent<component::Prototype>(entity);
+            component::Script* scriptComponent = component::getComponent<component::Script>(entity);
+            component::Prototype* prototypeComponent = component::getComponent<component::Prototype>(entity);
             if (scriptComponent && !prototypeComponent) {
-                // std::vector<Component*> components = component::getEntityComponents(entity);
+                // std::vector<Component*> components = component::getComponents(entity);
                 script::Script* script = script::getScript(scriptComponent->sid);
                 if (script)
                     script->update(component::Entity(entity), dt);

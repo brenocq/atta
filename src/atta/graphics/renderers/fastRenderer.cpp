@@ -71,9 +71,9 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
         shader->setMat4("view", transpose(camera->getView()));
 
         for (auto entity : entities) {
-            component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
-            component::Material* compMat = component::getEntityComponent<component::Material>(entity);
+            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+            component::Transform* transform = component::getComponent<component::Transform>(entity);
+            component::Material* compMat = component::getComponent<component::Material>(entity);
             resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {

@@ -84,10 +84,10 @@ void Box2DEngine::start() {
     std::vector<component::EntityId> entities = component::getNoPrototypeView();
     //---------- Create rigid bodies ----------//
     for (component::EntityId entity : entities) {
-        auto t = component::getEntityComponent<component::Transform>(entity);
-        auto rb2d = component::getEntityComponent<component::RigidBody2D>(entity);
-        auto box2d = component::getEntityComponent<component::BoxCollider>(entity);
-        auto circle2d = component::getEntityComponent<component::SphereCollider>(entity);
+        auto t = component::getComponent<component::Transform>(entity);
+        auto rb2d = component::getComponent<component::RigidBody2D>(entity);
+        auto box2d = component::getComponent<component::BoxCollider>(entity);
+        auto circle2d = component::getComponent<component::SphereCollider>(entity);
 
         if (!rb2d)
             continue;
@@ -171,9 +171,9 @@ void Box2DEngine::start() {
 
     //---------- Create joints ----------//
     for (component::EntityId entity : entities) {
-        auto prismatic = component::getEntityComponent<component::PrismaticJoint>(entity);
-        auto revolute = component::getEntityComponent<component::RevoluteJoint>(entity);
-        auto rigid = component::getEntityComponent<component::RigidJoint>(entity);
+        auto prismatic = component::getComponent<component::PrismaticJoint>(entity);
+        auto revolute = component::getComponent<component::RevoluteJoint>(entity);
+        auto rigid = component::getComponent<component::RigidJoint>(entity);
 
         if (prismatic)
             createPrismaticJoint(prismatic);
@@ -191,7 +191,7 @@ void Box2DEngine::step(float dt) {
 
     // Update transform components
     for (auto p : _bodies) {
-        auto t = component::getEntityComponent<component::Transform>(p.first);
+        auto t = component::getComponent<component::Transform>(p.first);
         if (t) {
             // component::Transform data
             vec3 position;
@@ -205,15 +205,15 @@ void Box2DEngine::step(float dt) {
             scale = t->scale;
 
             // Update pos/ori/scale to be local to parent
-            component::Relationship* r = component::getEntityComponent<component::Relationship>(p.first);
+            component::Relationship* r = component::getComponent<component::Relationship>(p.first);
             if (r && r->getParent() != -1) {
                 // Get transform of the first entity that has transform when going up in the hierarchy
                 component::Transform* pt = nullptr;
                 component::EntityId parentId = -1;
                 while (pt == nullptr) {
                     parentId = r->getParent();
-                    pt = component::getEntityComponent<component::Transform>(parentId);
-                    r = component::getEntityComponent<component::Relationship>(parentId);
+                    pt = component::getComponent<component::Transform>(parentId);
+                    r = component::getComponent<component::Relationship>(parentId);
                     if (r->getParent() == -1)
                         break;
                 }
@@ -264,7 +264,7 @@ void Box2DEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
         bodyB = _bodies[prismatic->bodyB];
     }
 
-    auto t = component::getEntityComponent<component::Transform>(prismatic->bodyA);
+    auto t = component::getComponent<component::Transform>(prismatic->bodyA);
 
     b2PrismaticJointDef pjd;
     pjd.Initialize(bodyA, bodyB, b2Vec2(t->position.x, t->position.y), b2Vec2(prismatic->axis.x, prismatic->axis.y));
@@ -294,7 +294,7 @@ void Box2DEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
         bodyB = _bodies[revolute->bodyB];
     }
 
-    auto t = component::getEntityComponent<component::Transform>(revolute->bodyA);
+    auto t = component::getComponent<component::Transform>(revolute->bodyA);
 
     b2RevoluteJointDef rjd;
     rjd.Initialize(bodyA, bodyB, b2Vec2(t->position.x, t->position.y));
@@ -324,8 +324,8 @@ void Box2DEngine::createRigidJoint(component::RigidJoint* rigid) {
         bodyB = _bodies[rigid->bodyB];
     }
 
-    auto ta = component::getEntityComponent<component::Transform>(rigid->bodyA);
-    auto tb = component::getEntityComponent<component::Transform>(rigid->bodyB);
+    auto ta = component::getComponent<component::Transform>(rigid->bodyA);
+    auto tb = component::getComponent<component::Transform>(rigid->bodyB);
     vec3 worldDir = tb->position - ta->position;
     vec3 localDir = inverse(ta->getWorldTransform(rigid->bodyA)) * worldDir;
     vec3 localDirNorm = normalize(localDir);

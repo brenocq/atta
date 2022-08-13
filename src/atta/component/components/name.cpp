@@ -15,4 +15,9 @@ ComponentDescription& TypedComponentRegistry<Name>::getDescription() {
     return desc;
 }
 
+void Name::set(std::string n)
+{
+    strcpy(name, n.c_str());
+}
+
 } // namespace atta::component

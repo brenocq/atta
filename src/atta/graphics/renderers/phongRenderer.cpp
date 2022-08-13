@@ -76,9 +76,9 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
         //----- Lighting -----//
         int numPointLights = 0;
         for (auto entity : entities) {
-            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
-            component::PointLight* pl = component::getEntityComponent<component::PointLight>(entity);
-            component::DirectionalLight* dl = component::getEntityComponent<component::DirectionalLight>(entity);
+            component::Transform* transform = component::getComponent<component::Transform>(entity);
+            component::PointLight* pl = component::getComponent<component::PointLight>(entity);
+            component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
 
             if (transform && (pl || dl)) {
                 if (pl && numPointLights < 10) {
@@ -109,9 +109,9 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
         shader->setFloat("specularStrength", 0.5f);
 
         for (auto entity : entities) {
-            component::Mesh* mesh = component::getEntityComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getEntityComponent<component::Transform>(entity);
-            component::Material* compMat = component::getEntityComponent<component::Material>(entity);
+            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+            component::Transform* transform = component::getComponent<component::Transform>(entity);
+            component::Material* compMat = component::getComponent<component::Material>(entity);
             resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {

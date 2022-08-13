@@ -7,7 +7,6 @@
 #ifndef ATTA_UI_LAYERS_EDITOR_WINDOW_H
 #define ATTA_UI_LAYERS_EDITOR_WINDOW_H
 
-#include <atta/component/entity.h>
 #include <atta/component/interface.h>
 #include <atta/utils/stringId.h>
 #include <imgui.h>

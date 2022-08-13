@@ -28,29 +28,29 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
-    friend EntityId createEntity(EntityId entity);
-    friend void deleteEntity(EntityId entity);
-    friend void deleteEntityOnly(EntityId entity);
-    friend EntityId copyEntity(EntityId entity);
+    friend Entity createEntity(EntityId entity);
+    friend void deleteEntity(Entity entity);
+    friend void deleteEntityOnly(Entity entity);
+    friend Entity copyEntity(Entity entity);
     template <typename T>
-    friend T* addEntityComponent(EntityId entity);
-    friend Component* addEntityComponentById(ComponentId id, EntityId entity);
-    friend Component* addEntityComponentPtr(EntityId entity, unsigned index, uint8_t* component);
+    friend T* addComponent(Entity entity);
+    friend Component* addComponentById(ComponentId id, Entity entity);
+    friend Component* addComponentPtr(Entity entity, unsigned index, uint8_t* component);
     template <typename T>
-    friend T* getEntityComponent(EntityId entity);
-    friend Component* getEntityComponentById(ComponentId id, EntityId entity);
-    friend std::vector<Component*> getEntityComponents(EntityId entity);
-    friend void removeEntityComponentById(ComponentId id, EntityId entity);
+    friend T* getComponent(Entity entity);
+    friend Component* getComponentById(ComponentId id, Entity entity);
+    friend std::vector<Component*> getComponents(Entity entity);
+    friend void removeComponentById(ComponentId id, Entity entity);
     friend std::vector<ComponentRegistry*> getComponentRegistries();
     friend std::vector<Factory>& getFactories();
-    friend Factory* getPrototypeFactory(EntityId prototype);
+    friend Factory* getPrototypeFactory(Entity prototype);
     friend std::vector<EntityId> getEntitiesView();
     friend std::vector<EntityId> getNoPrototypeView();
     friend std::vector<EntityId> getCloneView();
     friend std::vector<EntityId> getNoCloneView();
     friend std::vector<EntityId> getScriptView();
-    friend EntityId getSelectedEntity();
-    friend void setSelectedEntity(EntityId eid);
+    friend Entity getSelectedEntity();
+    friend void setSelectedEntity(Entity entity);
     friend void createDefault();
     friend void clear();
     friend void registerComponent(ComponentRegistry* componentRegistry);
@@ -65,22 +65,22 @@ class Manager final {
     void createEntityPool();
 
     //----- Entity -----//
-    EntityId createEntityImpl(EntityId entity = -1, size_t quantity = 1);
-    void deleteEntityImpl(EntityId entity);
-    void deleteEntityOnlyImpl(EntityId entity);
-    EntityId copyEntityImpl(EntityId entity);
+    Entity createEntityImpl(EntityId entity = -1, size_t quantity = 1);
+    void deleteEntityImpl(Entity entity);
+    void deleteEntityOnlyImpl(Entity entity);
+    Entity copyEntityImpl(Entity entity);
 
     //----- Component -----//
     template <typename T>
-    T* addEntityComponentImpl(EntityId entity);
-    Component* addEntityComponentByIdImpl(ComponentId id, EntityId entity);
-    Component* addEntityComponentPtrImpl(EntityId entity, unsigned index, uint8_t* component);
-    void removeEntityComponentByIdImpl(ComponentId id, EntityId entity);
+    T* addComponentImpl(Entity entity);
+    Component* addComponentByIdImpl(ComponentId id, Entity entity);
+    Component* addComponentPtrImpl(Entity entity, unsigned index, uint8_t* component);
+    void removeComponentByIdImpl(ComponentId id, Entity entity);
     template <typename T>
-    T* getEntityComponentImpl(EntityId entity);
-    Component* getEntityComponentByIdImpl(ComponentId id, EntityId entity);
-    Component* getEntityComponentByIndex(unsigned index, EntityId entity);
-    std::vector<Component*> getEntityComponentsImpl(EntityId entity);
+    T* getComponentImpl(Entity entity);
+    Component* getComponentByIdImpl(ComponentId id, Entity entity);
+    Component* getComponentByIndex(unsigned index, Entity entity);
+    std::vector<Component*> getComponentsImpl(Entity entity);
 
     //----- Views -----//
     // TODO Hardcoded, think some way using templates
@@ -136,7 +136,7 @@ class Manager final {
     void destroyFactories();
     EntityId createClonesImpl(size_t quantity);
     std::vector<Factory>& getFactoriesImpl() { return _factories; }
-    Factory* getPrototypeFactoryImpl(EntityId prototype);
+    Factory* getPrototypeFactoryImpl(Entity prototype);
 
     std::vector<Factory> _factories;
     friend Factory;

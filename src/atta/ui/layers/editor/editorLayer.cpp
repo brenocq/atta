@@ -72,7 +72,7 @@ void EditorLayer::renderCameraWindows() {
     std::vector<sensor::CameraInfo>& cameras = sensor::getCameraInfos();
     for (uint32_t i = 0; i < cameras.size(); i++) {
         if (cameras[i].showWindow) {
-            component::Name* name = component::getEntityComponent<component::Name>(cameras[i].entity);
+            component::Name* name = component::getComponent<component::Name>(cameras[i].entity);
             std::string windowName = name != nullptr ? name->name : "Camera";
             ImGui::Begin((windowName + "##CameraWindow" + std::to_string(cameras[i].entity)).c_str(), &(cameras[i].showWindow));
             {

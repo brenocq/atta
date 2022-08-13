@@ -14,6 +14,7 @@ namespace atta::component {
 /// %Component to give an entity a name
 struct Name final : public Component {
     char name[32];
+    void set(std::string n);
 };
 ATTA_REGISTER_COMPONENT(Name)
 template <>

@@ -4,8 +4,8 @@
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_LAYERS_INTERNAL_UI_LAYER_H
-#define ATTA_GRAPHICS_LAYERS_INTERNAL_UI_LAYER_H
+#ifndef ATTA_UI_LAYERS_UI_LAYER_H
+#define ATTA_UI_LAYERS_UI_LAYER_H
 
 #include <atta/graphics/layers/layer.h>
 #include <atta/memory/allocatedObject.h>
@@ -30,4 +30,4 @@ class UILayer final : public graphics::Layer, public memory::AllocatedObject<UIL
 
 } // namespace atta::ui
 
-#endif // ATTA_GRAPHICS_LAYERS_INTERNAL_UI_LAYER_H
+#endif // ATTA_UI_LAYERS_UI_LAYER_H

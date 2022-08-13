@@ -26,7 +26,7 @@ void ProjectSerializer::serializeComponentModule(Section& section) {
         std::vector<component::EntityId> eids;
         std::vector<component::Component*> components;
         for (auto entity : entities) {
-            component::Component* comp = component::getEntityComponentById(compReg->getId(), entity);
+            component::Component* comp = component::getComponentById(compReg->getId(), entity);
             if (comp != nullptr) {
                 eids.push_back(entity);
                 components.push_back(comp);

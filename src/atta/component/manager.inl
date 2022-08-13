@@ -7,17 +7,17 @@
 namespace atta::component {
 
 template <typename T>
-T* Manager::getEntityComponentImpl(EntityId entity) {
+T* Manager::getComponentImpl(Entity entity) {
     static int index = -1;
     if (index == -1)
         index = TypedComponentRegistry<T>::getInstance().getIndex();
 
-    return reinterpret_cast<T*>(getEntityComponentByIndex(index, entity));
+    return reinterpret_cast<T*>(getComponentByIndex(index, entity));
 }
 
 template <typename T>
-T* Manager::addEntityComponentImpl(EntityId entity) {
-    return reinterpret_cast<T*>(addEntityComponentByIdImpl(COMPONENT_POOL_SSID(T), entity));
+T* Manager::addComponentImpl(Entity entity) {
+    return reinterpret_cast<T*>(addComponentByIdImpl(COMPONENT_POOL_SSID(T), entity));
 }
 
 } // namespace atta::component
