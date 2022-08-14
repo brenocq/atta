@@ -9,11 +9,11 @@
 
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
-#include <atta/component/factory.h>
 #include <atta/component/typedComponentRegistry.h>
 
 namespace atta::component {
 
+class Factory;
 class Entity;
 
 void startUp();
@@ -43,7 +43,7 @@ void removeComponentById(ComponentId id, Entity entity);
 // Getters
 std::vector<ComponentRegistry*> getComponentRegistries();
 std::vector<Factory>& getFactories();
-Factory* getPrototypeFactory(Entity prototype);
+Factory* getFactory(Entity prototype);
 
 // Views
 std::vector<EntityId> getEntitiesView();

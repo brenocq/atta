@@ -45,6 +45,7 @@ class Manager final {
 #ifndef ATTA_STATIC_PROJECT
     // Handle events
     void onFileChange(event::Event& event);
+    void onProjectBeforeDeserialize(event::Event& event);
     void onProjectOpen(event::Event& event);
     void onProjectClose(event::Event& event);
 
@@ -53,6 +54,7 @@ class Manager final {
     void linkTarget(StringId target);
     void releaseTarget(StringId target);
 
+    bool _projectDeserialized;
     std::shared_ptr<Compiler> _compiler;
     std::shared_ptr<Linker> _linker;
     std::map<StringId, StringId> _targetToScript; // Convert target name to script name

@@ -249,9 +249,9 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
         FILES_MATCHING REGEX ".*\.(h|inl)$")
 
     # Install extern includes
-    install(DIRECTORY build/_deps/imgui-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/imgui
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/_deps/imgui-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/imgui
         FILES_MATCHING REGEX ".*\.(h|inl)$")
-    install(DIRECTORY build/_deps/implot-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/implot
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/_deps/implot-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/implot
         FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY src/extern/glad/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/glad
         FILES_MATCHING REGEX ".*\.(h|inl)$")

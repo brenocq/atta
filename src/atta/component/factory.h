@@ -9,6 +9,7 @@
 #include <atta/component/base.h>
 
 namespace atta::component {
+class Entity;
 class ComponentRegistry;
 class Factory {
   public:
@@ -24,6 +25,7 @@ class Factory {
 
     EntityId getPrototypeId() const { return _prototypeId; }
     EntityId getFirstCloneId() const { return _firstCloneEid; }
+    std::vector<Entity> getClones() const;
     std::vector<EntityId> getCloneIds() const;
     uint64_t getMaxClones() const { return _maxClones; }
     uint64_t getNumClones() const { return _maxClones; }

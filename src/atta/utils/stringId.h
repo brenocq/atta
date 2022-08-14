@@ -40,24 +40,24 @@ class StringId {
 };
 
 inline std::ostream& operator<<(std::ostream& os, const StringId& sid);
+} // namespace atta
 
 //----- (S)tring (ID) -----
 // Convert at compile-time the string to its hash
 // Can be used with templates, constexpr, switch case, etc
-constexpr StringHash SID(const char* str);
-constexpr StringHash operator""_sid(const char* str, std::size_t);
+constexpr atta::StringHash SID(const char* str);
+constexpr atta::StringHash operator""_sid(const char* str, std::size_t);
 //----- (S)aved (S)tring (ID) -----
 // SSID is compiled like SID if not compiling as debug
 // When compiling as debug, SSID executes at runtime and add
 // an entry to the stringId table (useful for debugging)
 #ifdef ATTA_DEBUG_BUILD
-StringHash SSID(const char* str);
-StringHash operator""_ssid(const char* str, std::size_t);
+atta::StringHash SSID(const char* str);
+atta::StringHash operator""_ssid(const char* str, std::size_t);
 #else
 constexpr auto SSID = SID;
-constexpr StringHash operator""_ssid(const char* str, std::size_t) { return SSID(str); }
+constexpr atta::StringHash operator""_ssid(const char* str, std::size_t) { return SSID(str); }
 #endif
-} // namespace atta
 
 namespace std {
 template <>

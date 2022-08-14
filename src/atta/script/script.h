@@ -24,11 +24,11 @@ class ScriptRegistration {
 };
 #define ATTA_REGISTER_SCRIPT(TYPE)                                                                                                                   \
     template <>                                                                                                                                      \
-    inline ::atta::Script* ::atta::ScriptRegistration<TYPE>::reg = ::atta::script::Manager::registerScript(#TYPE, new TYPE());
+    inline ::atta::script::Script* ::atta::script::ScriptRegistration<TYPE>::reg = ::atta::script::registerScript(#TYPE, new TYPE());
 #else
 #define ATTA_REGISTER_SCRIPT(TYPE)                                                                                                                   \
     extern "C" {                                                                                                                                     \
-    std::pair<const char*, atta::Script*> createScript() { return {#TYPE, static_cast<atta::Script*>(new TYPE())}; }                                 \
+    std::pair<const char*, atta::script::Script*> createScript() { return {#TYPE, static_cast<atta::script::Script*>(new TYPE())}; }                                 \
     }
 #endif
 

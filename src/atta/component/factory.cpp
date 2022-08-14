@@ -9,6 +9,7 @@
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/script.h>
 #include <atta/component/factory.h>
+#include <atta/component/interface.h>
 #include <atta/script/interface.h>
 
 namespace atta::component {
@@ -119,6 +120,15 @@ std::vector<uint8_t*> Factory::getMemories() const {
         memories.push_back(memory);
 
     return memories;
+}
+
+std::vector<Entity> Factory::getClones() const {
+    std::vector<Entity> clones;
+    clones.resize(_maxClones);
+    int i = 0;
+    for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++, i++)
+        clones[i] = Entity(entity, i);
+    return clones;
 }
 
 std::vector<EntityId> Factory::getCloneIds() const {

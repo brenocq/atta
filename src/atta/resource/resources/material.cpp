@@ -61,7 +61,6 @@ void Material::serialize(std::ostream& os) {
     file::write(os, roughnessImage);
     file::write(os, aoImage);
     file::write(os, normalImage);
-    LOG_DEBUG("res::Material", "Values $0 $1 $2 $3 $4", colorImage, metallicImage, roughnessImage, aoImage, normalImage);
 }
 
 void Material::deserialize(std::istream& is) {

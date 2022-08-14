@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 namespace atta {
+
 //---------- Class inline methods ----------//
 inline bool StringId::operator==(StringHash sid) const { return _id == sid; }
 
@@ -27,10 +28,6 @@ inline bool StringId::operator>(StringId other) const { return _id > other._id; 
 //---------- Extern inline functions ----------//
 inline std::ostream& operator<<(std::ostream& os, const StringId& sid) { return os << sid.getString(); }
 
-constexpr StringHash SID(const char* str) { return StringId::crc32b(str); }
-
-constexpr StringHash operator""_sid(const char* str, std::size_t) { return SID(str); }
-
 constexpr StringHash StringId::crc32b(const char* str) {
     // Reference: Book Hacker's Delight 2nd Edition
     const char* message = str;
@@ -50,4 +47,9 @@ constexpr StringHash StringId::crc32b(const char* str) {
     }
     return ~crc;
 }
+
 } // namespace atta
+
+constexpr atta::StringHash SID(const char* str) { return atta::StringId::crc32b(str); }
+
+constexpr atta::StringHash operator""_sid(const char* str, std::size_t) { return SID(str); }

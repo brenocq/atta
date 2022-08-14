@@ -20,8 +20,10 @@ void renderComboImage(std::string attribute, StringId& image) {
         if (ImGui::BeginCombo(("##ComboImage" + imguiId).c_str(), selectedName.c_str())) {
             std::vector<StringId> rImages = resource::getResources<resource::Image>();
             for (StringId rImage : rImages) {
+                std::string imageStr = rImage.getString();
+                if(imageStr == "") imageStr = "##";
                 const bool selected = (rImage == image);
-                if (ImGui::Selectable(rImage.getString().c_str(), selected))
+                if (ImGui::Selectable(imageStr.c_str(), selected))
                     image = rImage;
                 if (selected)
                     ImGui::SetItemDefaultFocus();
@@ -46,8 +48,10 @@ void renderImGui(void* data, std::string imguiId) {
     if (ImGui::BeginCombo(("##Combo" + imguiId).c_str(), selectedName.c_str())) {
         std::vector<StringId> rMaterials = resource::getResources<resource::Material>();
         for (StringId rMaterial : rMaterials) {
+            std::string materialStr = rMaterial.getString();
+            if(materialStr == "") materialStr = "##";
             const bool selected = (rMaterial == material->sid);
-            if (ImGui::Selectable(rMaterial.getString().c_str(), selected))
+            if (ImGui::Selectable(materialStr.c_str(), selected))
                 material->sid = rMaterial;
             if (selected)
                 ImGui::SetItemDefaultFocus();
@@ -165,9 +169,7 @@ ComponentDescription& TypedComponentRegistry<Material>::getDescription() {
 
 resource::Material* Material::getResource() const { return resource::get<resource::Material>(sid.getString()); }
 
-void Material::set(StringId material) {
-    sid = material;
-}
+void Material::set(StringId material) { sid = material; }
 
 void Material::set(const resource::Material* material) {
     if (material == nullptr) {

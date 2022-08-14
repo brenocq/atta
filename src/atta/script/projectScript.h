@@ -34,17 +34,23 @@ class ProjectScript {
     //---------- While ----------//
     virtual void onAttaLoop(){};
 };
+} // namespace atta::script
 
 #ifdef ATTA_STATIC_PROJECT
+#include <atta/script/interface.h>
+namespace atta::script {
 template <typename T>
 class ProjectScriptRegistration {
     static ProjectScript* reg;
 };
+} // namespace atta::script
 #define ATTA_REGISTER_PROJECT_SCRIPT(TYPE)                                                                                                           \
     template <>                                                                                                                                      \
     inline ::atta::script::ProjectScript* ::atta::script::ProjectScriptRegistration<TYPE>::reg =                                                     \
-        ::atta::script::Manager::registerProjectScript(#TYPE, new TYPE());
+        ::atta::script::registerProjectScript(#TYPE, new TYPE());
+
 #else
+
 #define ATTA_REGISTER_PROJECT_SCRIPT(TYPE)                                                                                                           \
     extern "C" {                                                                                                                                     \
     std::pair<const char*, atta::script::ProjectScript*> createProjectScript() {                                                                     \
@@ -52,7 +58,5 @@ class ProjectScriptRegistration {
     }                                                                                                                                                \
     }
 #endif
-
-} // namespace atta::script
 
 #endif // ATTA_SCRIPT_PROJECT_SCRIPT_H

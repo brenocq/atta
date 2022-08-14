@@ -5,6 +5,8 @@ SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 SOURCE_PATH="$SCRIPT_PATH/.."
 BUILD_PATH="$SOURCE_PATH/build"
 CMAKE_BUILD_TYPE="-DCMAKE_BUILD_TYPE=Release"
+BUILD_PATH_TYPE=""
+BUILD_PATH_SUFIX="release"
 CMAKE_ATTA_STATIC=""
 BUILD_TYPE="default"
 RUN_AFTER="false"
@@ -137,6 +139,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     -d|--debug)
       CMAKE_BUILD_TYPE="-DCMAKE_BUILD_TYPE=Debug"
+      BUILD_PATH_SUFIX="debug"
       shift # past argument
       ;;
     -g|--gdb)
@@ -159,6 +162,9 @@ while [[ $# -gt 0 ]]; do
       ;;
     -t|--type)
       BUILD_TYPE="$2"
+      if [[ "$BUILD_TYPE" != "default" ]]; then
+          BUILD_PATH_TYPE="$BUILD_TYPE-"
+      fi
       shift # past argument
       shift # past value
       ;;
@@ -176,7 +182,7 @@ done
 
 
 # Change to build directory
-BUILD_PATH="$BUILD_PATH/$BUILD_TYPE"
+BUILD_PATH="$BUILD_PATH/$BUILD_PATH_TYPE$BUILD_PATH_SUFIX"
 mkdir -p $BUILD_PATH && cd $BUILD_PATH
 
 # Build

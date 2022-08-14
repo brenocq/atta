@@ -31,7 +31,7 @@ void removeComponentById(ComponentId id, Entity entity) { Manager::getInstance()
 // Getters
 std::vector<ComponentRegistry*> getComponentRegistries() { return Manager::getInstance().getComponentRegistriesImpl(); }
 std::vector<Factory>& getFactories() { return Manager::getInstance().getFactoriesImpl(); }
-Factory* getPrototypeFactory(Entity prototype) { return Manager::getInstance().getPrototypeFactoryImpl(prototype); }
+Factory* getFactory(Entity prototype) { return Manager::getInstance().getFactoryImpl(prototype); }
 
 // Views
 std::vector<EntityId> getEntitiesView() { return Manager::getInstance().getEntitiesViewImpl(); }

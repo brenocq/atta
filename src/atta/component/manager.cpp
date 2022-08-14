@@ -129,7 +129,6 @@ Entity Manager::createEntityImpl(EntityId entity, size_t quantity) {
     event::CreateEntity event;
     event.entityId = eid;
     event::publish(event);
-    LOG_DEBUG("component::Manager", "Entity $0 created", eid);
 
     return Entity(eid);
 }
@@ -581,7 +580,7 @@ void Manager::destroyFactories() {
     _factories.clear();
 }
 
-Factory* Manager::getPrototypeFactoryImpl(Entity prototype) {
+Factory* Manager::getFactoryImpl(Entity prototype) {
     for (Factory& factory : _factories)
         if (factory.getPrototypeId() == prototype)
             return &factory;
@@ -627,24 +626,6 @@ void Manager::onImageEvent(event::Event& event) {
     switch (event.getType()) {
     case event::ImageLoad::type: {
         event::ImageLoad& e = reinterpret_cast<event::ImageLoad&>(event);
-
-        // Update material options
-        {
-            bool found = false;
-            for (auto op : TypedComponentRegistry<Material>::description->attributeDescriptions[4].options)
-                if (std::any_cast<StringId>(op) == e.sid) {
-                    found = true;
-                    break;
-                }
-
-            if (!found) {
-                TypedComponentRegistry<Material>::description->attributeDescriptions[4].options.push_back(std::any(e.sid));
-                TypedComponentRegistry<Material>::description->attributeDescriptions[5].options.push_back(std::any(e.sid));
-                TypedComponentRegistry<Material>::description->attributeDescriptions[6].options.push_back(std::any(e.sid));
-                TypedComponentRegistry<Material>::description->attributeDescriptions[8].options.push_back(std::any(e.sid));
-                TypedComponentRegistry<Material>::description->attributeDescriptions[7].options.push_back(std::any(e.sid));
-            }
-        }
 
         // Update environment light options
         {

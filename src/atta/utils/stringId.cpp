@@ -46,9 +46,10 @@ std::vector<std::string> StringId::getStrings() {
     return strings;
 }
 
-#ifdef ATTA_DEBUG_BUILD
-StringHash SSID(const char* str) { return StringId(str).getId(); }
-
-StringHash operator""_ssid(const char* str, std::size_t) { return SSID(str); }
-#endif
 } // namespace atta
+
+#ifdef ATTA_DEBUG_BUILD
+atta::StringHash SSID(const char* str) { return atta::StringId(str).getId(); }
+
+atta::StringHash operator""_ssid(const char* str, std::size_t) { return SSID(str); }
+#endif

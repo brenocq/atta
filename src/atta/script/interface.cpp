@@ -30,7 +30,7 @@ ProjectScript* registerProjectScript(std::string name, ProjectScript* projectScr
     return projectScript;
 }
 
-Script* Manager::registerScript(std::string name, Script* script) {
+Script* registerScript(std::string name, Script* script) {
     LOG_VERBOSE("script::Manager", "Registering script [w]$0[]", name);
     Manager::getInstance()._scripts[StringId(name)] = script;
 

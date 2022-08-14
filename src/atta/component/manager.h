@@ -15,6 +15,7 @@
 #include <atta/memory/allocators/poolAllocatorT.h>
 #include <atta/memory/allocators/stackAllocator.h>
 #include <atta/memory/interface.h>
+#include <atta/component/factory.h>
 
 namespace atta::component {
 
@@ -43,7 +44,7 @@ class Manager final {
     friend void removeComponentById(ComponentId id, Entity entity);
     friend std::vector<ComponentRegistry*> getComponentRegistries();
     friend std::vector<Factory>& getFactories();
-    friend Factory* getPrototypeFactory(Entity prototype);
+    friend Factory* getFactory(Entity prototype);
     friend std::vector<EntityId> getEntitiesView();
     friend std::vector<EntityId> getNoPrototypeView();
     friend std::vector<EntityId> getCloneView();
@@ -136,7 +137,7 @@ class Manager final {
     void destroyFactories();
     EntityId createClonesImpl(size_t quantity);
     std::vector<Factory>& getFactoriesImpl() { return _factories; }
-    Factory* getPrototypeFactoryImpl(Entity prototype);
+    Factory* getFactoryImpl(Entity prototype);
 
     std::vector<Factory> _factories;
     friend Factory;

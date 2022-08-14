@@ -12,17 +12,18 @@ namespace atta::component {
 
 class Entity {
   public:
+    Entity();
     Entity(EntityId id);
     Entity(EntityId id, int cloneId);
     operator EntityId() const { return _id; }
 
     template <typename T>
-    T* add() {
+    T* add() const {
         return component::addComponent<T>(_id);
     }
 
     template <typename T>
-    T* get() {
+    T* get() const {
         return component::getComponent<T>(_id);
     }
 

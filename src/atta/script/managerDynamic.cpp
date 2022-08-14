@@ -26,10 +26,11 @@ void Manager::startUpImpl() {
 #endif
 
     event::subscribe<event::FileWatch>(BIND_EVENT_FUNC(Manager::onFileChange));
-    event::subscribe<event::ProjectBeforeDeserialize>(BIND_EVENT_FUNC(Manager::onProjectOpen));
+    event::subscribe<event::ProjectBeforeDeserialize>(BIND_EVENT_FUNC(Manager::onProjectBeforeDeserialize));
     event::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
     event::subscribe<event::ProjectClose>(BIND_EVENT_FUNC(Manager::onProjectClose));
 
+    _projectDeserialized = false;
     _projectScript = std::make_pair(StringId(), nullptr);
 }
 
@@ -54,13 +55,24 @@ void Manager::onFileChange(event::Event& event) {
     event::publish(evt);
 }
 
-void Manager::onProjectOpen(event::Event& event) {
+void Manager::onProjectBeforeDeserialize(event::Event& event) {
+    // Load scripts and components. It is necessary to do it before deserializing
+    // the project to be able to deserialize custom components
+    _projectDeserialized = false;
     updateAllTargets();
 
     // Publish event
     event::ScriptTarget evt;
     evt.scriptSids = getScriptSidsImpl();
     event::publish(evt);
+}
+
+void Manager::onProjectOpen(event::Event& event) {
+    _projectDeserialized = true;
+
+    // Make sure to call onLoad only after the project is deserialized
+    if (_projectScript.second)
+        _projectScript.second->onLoad();
 }
 
 void Manager::onProjectClose(event::Event& event) {
@@ -116,8 +128,8 @@ void Manager::linkTarget(StringId target) {
 
         _projectScript.first = StringId(name);
         _projectScript.second = projectScript;
-
-        _projectScript.second->onLoad();
+        if (_projectDeserialized)
+            _projectScript.second->onLoad();
     }
 
     if (script || projectScript)

@@ -11,9 +11,9 @@ namespace atta::script {
 void Manager::startUpImpl() {
     // Publish registered scripts. Need to do here because scripts are
     // registered before ComponentSystem::startUp())
-    ScriptTargetEvent evt;
+    event::ScriptTarget evt;
     evt.scriptSids = getScriptSids();
-    EventManager::publish(evt);
+    event::publish(evt);
 }
 
 void Manager::shutDownImpl() {
