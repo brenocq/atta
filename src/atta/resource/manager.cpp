@@ -54,14 +54,12 @@ void Manager::loadResourcesRecursively(fs::path directory) {
         // Load as meshe
         for (auto& extension : meshExtensions)
             if (extension == file.extension().string()) {
-                LOG_DEBUG("resource::Manager", "Resource mesh: [w]$0[]", file.string());
                 resource::get<Mesh>(file.string());
                 break;
             }
         // Load as image
         for (auto& extension : imageExtensions)
             if (extension == file.extension().string()) {
-                LOG_DEBUG("resource::Manager", "Resource image: [w]$0[]", file.string());
                 resource::get<Image>(file.string());
                 break;
             }

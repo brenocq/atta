@@ -9,6 +9,7 @@
 #include <atta/script/interface.h>
 #include <atta/ui/layers/editor/editorLayer.h>
 #include <imgui_internal.h>
+#include <implot.h>
 
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
@@ -33,8 +34,9 @@ void EditorLayer::onUIRender() {
     _dockSpace.render();
 
     // Demo
-    // bool demo = true;
+    bool demo = true;
     // ImGui::ShowDemoWindow(&demo);
+    // ImPlot::ShowDemoWindow(&demo);
 
     // Top interface
     _topBar.render();

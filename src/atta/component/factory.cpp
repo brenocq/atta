@@ -104,6 +104,14 @@ void Factory::runScripts(float dt) {
     //}
 }
 
+EntityId Factory::getPrototypeId() const { return _prototypeId; }
+EntityId Factory::getFirstCloneId() const { return _firstCloneEid; }
+Entity Factory::getFirstClone() const { return Entity{_firstCloneEid}; }
+Entity Factory::getLastClone() const { return Entity{_firstCloneEid + static_cast<EntityId>(_maxClones) - 1}; }
+uint64_t Factory::getMaxClones() const { return _maxClones; }
+uint64_t Factory::getNumClones() const { return _maxClones; }
+std::vector<std::pair<ComponentId, uint8_t*>>& Factory::getComponentMemories() { return _componentMemories; }
+
 std::vector<ComponentId> Factory::getComponentsIds() const {
     std::vector<ComponentId> components;
 

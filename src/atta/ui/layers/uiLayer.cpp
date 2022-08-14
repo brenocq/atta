@@ -8,10 +8,9 @@
 // ImGui backends
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-// ImGui window managing
 #include <GLFW/glfw3.h>
-// ImGuizmo
 #include <ImGuizmo.h>
+#include <implot.h>
 
 namespace atta::ui {
 
@@ -20,6 +19,7 @@ UILayer::UILayer() : graphics::Layer(StringId("GraphicsLayerUI")) {}
 void UILayer::onAttach() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO();
     (void)io;

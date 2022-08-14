@@ -6,12 +6,12 @@
 //--------------------------------------------------
 #include <atta/ui/layers/editor/windows/logWindow.h>
 #include <imgui.h>
+#include <implot.h>
 
 namespace atta::ui {
 
 void LogWindow::render() {
     ImGui::Begin("Log");
-    ImGui::Text("Logging not implemented yet");
     ImGui::End();
 }
 

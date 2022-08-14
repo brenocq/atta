@@ -48,12 +48,20 @@ Drawer& Drawer::getInstance() {
     return drawer;
 }
 
-void Drawer::clear() { getInstance().clearImpl(); }
-void Drawer::clearImpl() {
-    _currNumberOfLines = 0;
-    _currNumberOfPoints = 0;
-    _linesChanged = false;
-    _pointsChanged = false;
+void Drawer::clear(StringId group) { getInstance().clearImpl(group); }
+void Drawer::clearImpl(StringId group) {
+    if(group == "No group"_sid)
+    {
+        _currNumberOfLines = 0;
+        _currNumberOfPoints = 0;
+        _linesChanged = false;
+        _pointsChanged = false;
+    }
+    else
+    {
+        clearImpl<Line>(group);
+        clearImpl<Point>(group);
+    }
 }
 
 } // namespace atta::graphics

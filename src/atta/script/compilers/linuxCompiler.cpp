@@ -23,7 +23,7 @@ LinuxCompiler::~LinuxCompiler() {}
 
 void LinuxCompiler::compileAll() {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-    LOG_DEBUG("script::LinuxCompiler", "Compile all targets");
+    //LOG_DEBUG("script::LinuxCompiler", "Compile all targets");
 
     fs::path projectDir = file::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
@@ -54,13 +54,13 @@ void LinuxCompiler::compileAll() {
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-    LOG_INFO("script::LinuxCompiler", "Time to compile all: $0 ms", micro.count() / 1000.0f);
+    //LOG_INFO("script::LinuxCompiler", "Time to compile all: $0 ms", micro.count() / 1000.0f);
 }
 
 void LinuxCompiler::compileTarget(StringId target) {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
-    LOG_DEBUG("script::LinuxCompiler", "Compile target $0", target);
+    //LOG_DEBUG("script::LinuxCompiler", "Compile target $0", target);
     // Check target
     if (_targetFiles.find(target) == _targetFiles.end()) {
         LOG_WARN("script::LinuxCompiler", "Could not find target $0", target);
@@ -95,7 +95,7 @@ void LinuxCompiler::compileTarget(StringId target) {
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-    LOG_INFO("script::LinuxCompiler", "Time to compile target $1: $0 ms", micro.count() / 1000.0f, target);
+    //LOG_INFO("script::LinuxCompiler", "Time to compile target $1: $0 ms", micro.count() / 1000.0f, target);
 }
 
 void LinuxCompiler::updateTargets() {

@@ -275,7 +275,6 @@ void Manager::registerComponentImpl(ComponentRegistry* componentRegistry) {
         }
 
     if (oldIndex == -1) {
-        LOG_DEBUG("component::Manager", "Registered component [w]$0[]", componentRegistry->getTypeidName());
         componentRegistry->setIndex(_componentRegistries.size());
         _componentRegistries.push_back(componentRegistry);
 
@@ -309,7 +308,6 @@ void Manager::createComponentPoolsFromRegistered() {
     for (auto reg : _componentRegistries) {
         // TODO Remove custom component registry when it is not loaded (pointer to random data)
         if (!reg->getPoolCreated()) {
-            LOG_DEBUG("component::Manager", "Create component pool [w]$0[]", reg->getDescription().name);
             createComponentPool(reg);
             reg->setPoolCreated(true);
         }
@@ -329,8 +327,8 @@ void Manager::createComponentPool(ComponentRegistry* componentRegistry) {
 
     uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(size, sizeofT));
     DASSERT(componentMemory != nullptr, "Could not allocate component system memory for " + name);
-    LOG_INFO("component::Manager", "Allocated memory for component $0 ($1). $2MB ($5 instances) -> memory space:($3 $4)", name, typeidTName,
-             maxCount * sizeofT / (1024 * 1024.0f), (void*)(componentMemory), (void*)(componentMemory + maxCount * sizeofT), maxCount);
+    //LOG_INFO("component::Manager", "Allocated memory for component $0 ($1). $2MB ($5 instances) -> memory space:($3 $4)", name, typeidTName,
+    //         maxCount * sizeofT / (1024 * 1024.0f), (void*)(componentMemory), (void*)(componentMemory + maxCount * sizeofT), maxCount);
 
     // Create pool allocator
     memory::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName),

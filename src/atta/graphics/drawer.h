@@ -41,7 +41,7 @@ class Drawer {
     static void add(T obj, StringId group = StringId("No group"));
     template <typename T>
     static void clear(StringId group = StringId("No group")); // Clear lines or points of specific group
-    static void clear();                                      // Clear all lines and points
+    static void clear(StringId group = StringId("No group")); // Clear specific group or all groups
 
     // Get data
     template <typename T>
@@ -65,10 +65,10 @@ class Drawer {
 
     // Draw 3d objects implementation
     template <typename T>
-    void addImpl(T obj, StringId group = StringId("No group"));
+    void addImpl(T obj, StringId group);
     template <typename T>
-    void clearImpl(StringId group = StringId("No group"));
-    void clearImpl();
+    void clearImpl(StringId group);
+    void clearImpl(StringId group);
 
     // Get data implementation
     template <typename T>

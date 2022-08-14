@@ -23,13 +23,15 @@ class Factory {
     T* getComponent(uint64_t cloneId = 0);
     void runScripts(float dt);
 
-    EntityId getPrototypeId() const { return _prototypeId; }
-    EntityId getFirstCloneId() const { return _firstCloneEid; }
+    EntityId getPrototypeId() const;
+    EntityId getFirstCloneId() const;
     std::vector<Entity> getClones() const;
     std::vector<EntityId> getCloneIds() const;
-    uint64_t getMaxClones() const { return _maxClones; }
-    uint64_t getNumClones() const { return _maxClones; }
-    std::vector<std::pair<ComponentId, uint8_t*>>& getComponentMemories() { return _componentMemories; }
+    Entity getFirstClone() const;
+    Entity getLastClone() const;
+    uint64_t getMaxClones() const;
+    uint64_t getNumClones() const;
+    std::vector<std::pair<ComponentId, uint8_t*>>& getComponentMemories();
     std::vector<ComponentId> getComponentsIds() const;
     std::vector<uint8_t*> getMemories() const;
 

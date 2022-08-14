@@ -60,7 +60,7 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
             type = "Script " + name;
         else
             type = "Component";
-        LOG_INFO("script::LinuxLinker", "Time to link [w]$0[]: $1 ms ($2)", target, micro.count() / 1000.0f, type);
+        //LOG_INFO("script::LinuxLinker", "Time to link [w]$0[]: $1 ms ($2)", target, micro.count() / 1000.0f, type);
     } else {
         LOG_WARN("script::LinuxLinker", "Cannot open library $0. Error: $1", lib.filename(), dlerror());
         return;
