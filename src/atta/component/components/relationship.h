@@ -61,7 +61,7 @@ struct Relationship final : public Component {
 
     // Data
     EntityId _parent = -1;
-    std::vector<EntityId> _children;
+    std::vector<EntityId> _children = {};
 };
 ATTA_REGISTER_COMPONENT(Relationship)
 template <>

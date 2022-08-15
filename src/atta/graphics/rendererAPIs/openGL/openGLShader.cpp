@@ -46,7 +46,7 @@ void OpenGLShader::recompile() {
     glGetShaderiv(_id, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(_id, 512, NULL, infoLog);
-        ASSERT(false, "Failed to compile shader [*w]$0[]:[w]\n$1", _filepath.string(), infoLog);
+        ASSERT(false, "Failed to compile shader [*w]$0[]:[w]\n$1\ncode->$2", fs::absolute(_filepath).string(), infoLog, code);
     }
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);

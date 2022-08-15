@@ -12,7 +12,7 @@ namespace atta::component {
 template <>
 ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
     static ComponentDescription desc = {
-        "component::Relationship",
+        "Relationship",
         {{AttributeType::UINT32, offsetof(Relationship, _parent), "parent"}, {AttributeType::CUSTOM, offsetof(Relationship, _children), "children"}},
         // Max instances
         1024,
@@ -28,6 +28,9 @@ ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
         {{"children", [](std::istream& is, void* data) {
               std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
               EntityId eid;
+#ifdef ATTA_OS_WEB
+              file::read(is, eid);// For some reason the first one is always zero when building for the web
+#endif
               file::read(is, eid);
               while (eid != -1) {
                   children->push_back(eid);

@@ -15,7 +15,7 @@ namespace atta::component {
 #define COMPONENT_POOL_SID_BY_NAME(typeidTname) SID((std::string("Component_") + typeidTname + "Allocator").c_str())
 #define COMPONENT_POOL_SSID_BY_NAME(typeidTname) SSID((std::string("Component_") + typeidTname + "Allocator").c_str())
 
-using EntityId = int;           // Index inside entity pool
+using EntityId = int32_t;           // Index inside entity pool
 using ComponentId = StringHash; // Component allocator name hash (COMPONENT_POOL_SID(T) result)
 
 enum class AttributeType {

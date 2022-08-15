@@ -14,6 +14,9 @@ void Manager::startUpImpl() {
     event::ScriptTarget evt;
     evt.scriptSids = getScriptSids();
     event::publish(evt);
+
+    if(_projectScript.second)
+        _projectScript.second->onLoad();
 }
 
 void Manager::shutDownImpl() {

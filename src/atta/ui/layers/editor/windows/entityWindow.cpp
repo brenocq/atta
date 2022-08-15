@@ -130,7 +130,7 @@ void EntityWindow::renderComponents() {
     if (selected == -1)
         return;
 
-    ImGui::Text("Components (component::EntityId: %d)", selected);
+    ImGui::Text("Components (EntityId: %d)", selected);
 
     // Render options to edit each component
     for (auto compReg : component::getComponentRegistries()) {
