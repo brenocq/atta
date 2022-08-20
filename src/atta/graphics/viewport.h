@@ -58,7 +58,7 @@ class Viewport final : public file::Serializable {
 
     // UI
     std::string _name;
-    std::vector<char> _inputText;
+    char _inputText[50];
 };
 
 } // namespace atta::graphics

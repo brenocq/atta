@@ -23,10 +23,10 @@ Viewport::Viewport(CreateInfo info) : _sid(info.sid), _renderer(info.renderer), 
     else
         _name = info.name;
 
-    _inputText.resize(50);
     unsigned i = 0;
     for (auto c : _name)
         _inputText[i++] = c;
+    _inputText[i] = '\0';
 }
 
 Viewport::~Viewport() {}
@@ -68,10 +68,10 @@ void Viewport::deserialize(std::istream& is) {
     // Read string
     file::read(is, _sid);
     file::read(is, _name);
-    _inputText.resize(50);
     unsigned i = 0;
     for (auto c : _name)
         _inputText[i++] = c;
+    _inputText[i] = '\0';
 
     //----- Read renderer -----//
     std::string rendererName;
@@ -115,8 +115,8 @@ void Viewport::deserialize(std::istream& is) {
 void Viewport::renderUI() {
     //---------- Name ----------//
     ImGui::Text("Name");
-    ImGui::InputText(("##ViewportName" + _sid.getString()).c_str(), _inputText.data(), _inputText.size());
-    _name = std::string(_inputText.begin(), _inputText.end());
+    ImGui::InputText(("##ViewportName" + _sid.getString()).c_str(), _inputText, sizeof(_inputText)/sizeof(char));
+    _name = std::string(_inputText);
 
     //---------- Renderer ----------//
     ImGui::Separator();

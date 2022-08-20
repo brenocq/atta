@@ -70,7 +70,10 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(Simu
 #else
     // If a project was defined as argument, open project
     if (!info.projectFile.empty())
+    {
+        graphics::update();// Need to update to register the viewports
         file::openProject(info.projectFile);
+    }
 #endif
 }
 

@@ -32,24 +32,27 @@ void ProjectSerializer::serializeComponentModule(Section& section) {
                 components.push_back(comp);
             }
         }
-        section["components"][name]["entityIds"] = eids;
+        if(eids.size())
+        {
+            section["components"][name]["entityIds"] = eids;
 
-        // Serialize components
-        std::vector<uint8_t> componentsData;
-        for (component::Component* component : components) {
-            size_t size = compReg->getSerializedSize(component);
-            // Create temporary buffer
-            std::vector<uint8_t> temp(size);
-            // Serialize to temporary buffer
-            std::stringstream ss;
-            compReg->serialize(ss, component);
-            ss.seekg(0, std::ios_base::beg);
-            ss.read((char*)temp.data(), temp.size());
+            // Serialize components
+            std::vector<uint8_t> componentsData;
+            for (component::Component* component : components) {
+                size_t size = compReg->getSerializedSize(component);
+                // Create temporary buffer
+                std::vector<uint8_t> temp(size);
+                // Serialize to temporary buffer
+                std::stringstream ss;
+                compReg->serialize(ss, component);
+                ss.seekg(0, std::ios_base::beg);
+                ss.read((char*)temp.data(), temp.size());
 
-            // Copy from temporary buffer to componentsData
-            componentsData.insert(componentsData.end(), temp.begin(), temp.end());
+                // Copy from temporary buffer to componentsData
+                componentsData.insert(componentsData.end(), temp.begin(), temp.end());
+            }
+            section["components"][name]["data"] = componentsData;
         }
-        section["components"][name]["data"] = componentsData;
     }
 }
 

@@ -129,24 +129,24 @@ void ToolBar::onSimulationStateChange(event::Event& event) {
 }
 
 void ToolBar::handleShortcuts() {
-    bool notMoving = !ImGui::IsMouseDown(ImGuiMouseButton_Middle);
+    //bool notMoving = !ImGui::IsMouseDown(ImGuiMouseButton_Middle);
 
     // Play/pause shortcut
-    if (ImGui::IsKeyPressed('P') && notMoving) {
-        switch (_editorState) {
-        case EditorState::EDITOR:
-        case EditorState::SIMULATION_PAUSED:
-            changeState(EditorState::SIMULATION_RUNNING);
-            break;
-        case EditorState::SIMULATION_RUNNING:
-            changeState(EditorState::SIMULATION_PAUSED);
-            break;
-        }
-    }
+    //if (ImGui::IsKeyPressed('P') && notMoving) {
+    //    switch (_editorState) {
+    //    case EditorState::EDITOR:
+    //    case EditorState::SIMULATION_PAUSED:
+    //        changeState(EditorState::SIMULATION_RUNNING);
+    //        break;
+    //    case EditorState::SIMULATION_RUNNING:
+    //        changeState(EditorState::SIMULATION_PAUSED);
+    //        break;
+    //    }
+    //}
 
-    // Stop shortcut
-    if (ImGui::IsKeyPressed('S') && notMoving)
-        changeState(EditorState::EDITOR);
+    //// Stop shortcut
+    //if (ImGui::IsKeyPressed('S') && notMoving)
+    //    changeState(EditorState::EDITOR);
 }
 
 void ToolBar::changeState(ToolBar::EditorState newState) {

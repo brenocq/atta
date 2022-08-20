@@ -23,7 +23,7 @@ class LinuxCompiler : public Compiler {
 
   private:
     void findTargetFiles(StringId target);
-    std::string runCommand(std::string cmd);
+    std::string runCommand(std::string cmd, bool print = false, bool keepColors = false);
 
     std::string _compiler;
 };

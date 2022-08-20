@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/components/script.h>
+#include <atta/script/interface.h>
 
 namespace atta::component {
 
@@ -16,6 +17,11 @@ ComponentDescription& TypedComponentRegistry<Script>::getDescription() {
                                         }};
 
     return desc;
+}
+
+Script::Script() {
+    if (!script::getScriptSids().empty())
+        sid = script::getScriptSids()[0];
 }
 
 } // namespace atta::component

@@ -23,7 +23,7 @@ LinuxCompiler::~LinuxCompiler() {}
 
 void LinuxCompiler::compileAll() {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-    //LOG_DEBUG("script::LinuxCompiler", "Compile all targets");
+    // LOG_DEBUG("script::LinuxCompiler", "Compile all targets");
 
     fs::path projectDir = file::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
@@ -40,28 +40,24 @@ void LinuxCompiler::compileAll() {
 #else
     std::string buildCommand = "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=" + _compiler + " ..";
 #endif
-    std::string buildOutput = runCommand(buildCommand);
+    runCommand(buildCommand, true, true);
 
     // Build makefile
     std::string makeCommand = "make -j";
-    std::string makeOutput = runCommand(makeCommand);
+    runCommand(makeCommand, true, true);
     fs::current_path(prevPath);
-
-    //---------- Show outputs ----------//
-    LOG_VERBOSE("script::LinuxCompiler", "Build output: \n$0", buildOutput);
-    LOG_VERBOSE("script::LinuxCompiler", "Make output: \n$0", makeOutput);
 
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-    //LOG_INFO("script::LinuxCompiler", "Time to compile all: $0 ms", micro.count() / 1000.0f);
+    LOG_INFO("script::LinuxCompiler", "Time to compile all: $0 ms", micro.count() / 1000.0f);
 }
 
 void LinuxCompiler::compileTarget(StringId target) {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
-    //LOG_DEBUG("script::LinuxCompiler", "Compile target $0", target);
-    // Check target
+    // LOG_DEBUG("script::LinuxCompiler", "Compile target $0", target);
+    //  Check target
     if (_targetFiles.find(target) == _targetFiles.end()) {
         LOG_WARN("script::LinuxCompiler", "Could not find target $0", target);
         return;
@@ -80,7 +76,7 @@ void LinuxCompiler::compileTarget(StringId target) {
     fs::path prevPath = fs::current_path();
     fs::current_path(buildDir);
     std::string command = "cmake --build . --parallel --target " + target.getString();
-    std::string output = runCommand(command);
+    std::string output = runCommand(command, true, true);
     fs::current_path(prevPath);
 
     if (output.find("Error: could not load cache") != std::string::npos) {
@@ -89,13 +85,10 @@ void LinuxCompiler::compileTarget(StringId target) {
         return;
     }
 
-    // Show output
-    LOG_VERBOSE("script::LinuxCompiler", "Build output:\n$0", output);
-
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-    //LOG_INFO("script::LinuxCompiler", "Time to compile target $1: $0 ms", micro.count() / 1000.0f, target);
+    LOG_INFO("script::LinuxCompiler", "Time to compile target $1: $0 ms", micro.count() / 1000.0f, target);
 }
 
 void LinuxCompiler::updateTargets() {
@@ -187,16 +180,24 @@ void LinuxCompiler::findTargetFiles(StringId target) {
     dependIn.close();
 }
 
-std::string LinuxCompiler::runCommand(std::string cmd) {
-    std::array<char, 128> buffer;
+std::string LinuxCompiler::runCommand(std::string cmd, bool print, bool keepColors) {
+    std::array<char, 512> buffer;
     std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen((cmd + " 2>&1").c_str(), "r"), pclose);
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(((keepColors ? "unbuffer " : "") + cmd + " 2>&1").c_str(), "r"), pclose);
     if (!pipe) {
         LOG_WARN("script::LinuxCompiler", "Could not open pipe");
         return "";
     }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        if (print) {
+            // Print each line
+            std::string line = buffer.data();
+            line.resize(line.size() - 1); // Remove '\n'
+            LOG_DEBUG("script::LinuxCompiler", "[w]$0", line);
+        }
+        // Add buffer to result string
         result += buffer.data();
+    }
     return result;
 }
 

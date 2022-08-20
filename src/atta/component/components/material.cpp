@@ -21,7 +21,8 @@ void renderComboImage(std::string attribute, StringId& image) {
             std::vector<StringId> rImages = resource::getResources<resource::Image>();
             for (StringId rImage : rImages) {
                 std::string imageStr = rImage.getString();
-                if(imageStr == "") imageStr = "##";
+                if (imageStr == "")
+                    imageStr = "##";
                 const bool selected = (rImage == image);
                 if (ImGui::Selectable(imageStr.c_str(), selected))
                     image = rImage;
@@ -36,7 +37,7 @@ void renderComboImage(std::string attribute, StringId& image) {
         image = isImage ? "textures/white.jpg"_sid : resource::Material::emptyImage;
 }
 
-void renderImGui(void* data, std::string imguiId) {
+void materialRenderImGui(void* data, std::string imguiId) {
     Material* material = static_cast<Material*>(data);
     resource::Material* m = resource::get<resource::Material>(material->sid.getString());
     if (m == nullptr)
@@ -49,7 +50,8 @@ void renderImGui(void* data, std::string imguiId) {
         std::vector<StringId> rMaterials = resource::getResources<resource::Material>();
         for (StringId rMaterial : rMaterials) {
             std::string materialStr = rMaterial.getString();
-            if(materialStr == "") materialStr = "##";
+            if (materialStr == "")
+                materialStr = "##";
             const bool selected = (rMaterial == material->sid);
             if (ImGui::Selectable(materialStr.c_str(), selected))
                 material->sid = rMaterial;
@@ -135,18 +137,21 @@ void renderImGui(void* data, std::string imguiId) {
         ImGui::SliderFloat("B##ColorB", &m->color.z, 0.0f, 1.0f);
     }
     renderComboImage("Color", m->colorImage);
+
+    ImGui::Text("Roughness");
     if (!m->roughnessIsImage()) {
-        ImGui::Text("Roughness");
         ImGui::SliderFloat("##Roughness", &m->roughness, 0.0f, 1.0f);
     }
     renderComboImage("Roughness", m->roughnessImage);
+
+    ImGui::Text("Metallic");
     if (!m->metallicIsImage()) {
-        ImGui::Text("Metallic");
         ImGui::SliderFloat("##Metallic", &m->metallic, 0.0f, 1.0f);
     }
     renderComboImage("Metallic", m->metallicImage);
+
+    ImGui::Text("AO");
     if (!m->aoIsImage()) {
-        ImGui::Text("AO");
         ImGui::SliderFloat("##AO", &m->ao, 0.0f, 1.0f);
     }
     renderComboImage("AO", m->aoImage);
@@ -161,13 +166,14 @@ ComponentDescription& TypedComponentRegistry<Material>::getDescription() {
                                         {},   // Deserialize
                                         {     // renderUI
                                          {
-                                             "", renderImGui // Define how the component will be rendered
+                                             "", materialRenderImGui // Define how the component will be rendered
                                          }}};
 
     return desc;
 }
 
 resource::Material* Material::getResource() const { return resource::get<resource::Material>(sid.getString()); }
+void Material::setResource(const resource::Material* material) { set(material); }
 
 void Material::set(StringId material) { sid = material; }
 

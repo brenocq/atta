@@ -16,6 +16,7 @@ namespace atta::component {
  * name is the cmake target name.
  */
 struct Script final : public Component {
+    Script();
     /** The script name is the same as the cmake target name */
     StringId sid; ///< Script name
 };

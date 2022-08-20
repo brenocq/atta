@@ -55,23 +55,22 @@ bool Manager::openProjectImpl(fs::path projectFile) {
         return false;
     }
 #endif
-    // Check valid project file (skip file check if first time saving this project)
-    if (!fs::exists(projectFile)) {
-        LOG_WARN("file::Manager", "Could not find file [w]$0[]", fs::absolute(projectFile));
-        return false;
-    }
     if (projectFile.extension() != ".atta") {
-        LOG_WARN("file::Manager", "Project file must have .atta extension [w]$0[]", fs::absolute(projectFile));
+        LOG_WARN("file::Manager", "The project file must have [w].atta[] extension, but it is [w]$0[]", fs::absolute(projectFile));
         return false;
     }
 
-    // Project open project is it exists
+    // Close open project is it exists
     if (_project != nullptr)
         closeProjectImpl();
 
     // Update project
     _project = std::make_shared<Project>(projectFile);
     _projectSerializer = std::make_shared<ProjectSerializer>(_project);
+
+    // Create .atta file if it does not exists yet
+    if(!fs::exists(projectFile))
+        _projectSerializer->serialize();
 
     // Clear components and read project file
     component::clear();

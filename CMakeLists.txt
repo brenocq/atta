@@ -252,7 +252,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     install(DIRECTORY ${CMAKE_BINARY_DIR}/_deps/imgui-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/imgui
         FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY ${CMAKE_BINARY_DIR}/_deps/implot-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/implot
-        FILES_MATCHING REGEX ".*\.(h|inl)$")
+        FILES_MATCHING REGEX ".*\.(h|cpp)$")
     install(DIRECTORY src/extern/glad/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/glad
         FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY src/extern/stb_image/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/stb_image

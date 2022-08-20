@@ -4,7 +4,7 @@
 // Date: 2021-08-11
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-namespace atta {
+
 template <typename S, typename T>
 class is_streamable {
     template <typename SS, typename TT>
@@ -16,6 +16,25 @@ class is_streamable {
   public:
     static const bool value = decltype(test<S, T>(0))::value;
 };
+
+// std::vector overload
+template <typename Tstream, typename T>
+Tstream& operator<<(Tstream& s, const std::vector<T>& v) {
+    s << "{";
+    for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii) {
+        if constexpr (is_streamable<Tstream, T>::value)
+            s << *ii;
+        else
+            s << "?";
+
+        if (ii < v.end() - 1)
+            s << ", ";
+    }
+    s << "}";
+    return s;
+}
+
+namespace atta {
 
 template <class... Args>
 void Log::verbose(std::string tag, std::string text, Args&&... args) {
@@ -51,23 +70,6 @@ template <class... Args>
 void Log::error(std::string tag, std::string text, Args&&... args) {
     if (logLevel <= LOG_LEVEL_ERROR)
         log(COLOR_BOLD_RED, tag, COLOR_RESET_RED, text, args...);
-}
-
-// std::vector overload
-template <typename Tstream, typename T>
-std::ostream& operator<<(Tstream& s, const std::vector<T>& v) {
-    s << "{";
-    for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii) {
-        if constexpr (is_streamable<Tstream, T>::value)
-            s << *ii;
-        else
-            s << "?";
-
-        if (ii < v.end() - 1)
-            s << ", ";
-    }
-    s << "}";
-    return s;
 }
 
 template <typename T>
