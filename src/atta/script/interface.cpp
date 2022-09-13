@@ -23,7 +23,6 @@ StringId getProjectScriptSid() { return Manager::getInstance().getProjectScriptS
 
 #ifdef ATTA_STATIC_PROJECT
 ProjectScript* registerProjectScript(std::string name, ProjectScript* projectScript) {
-    LOG_VERBOSE("script::Manager", "Registering project script [w]$0[]", name);
     Manager::getInstance()._projectScript.first = StringId(name);
     Manager::getInstance()._projectScript.second = projectScript;
 
@@ -31,7 +30,6 @@ ProjectScript* registerProjectScript(std::string name, ProjectScript* projectScr
 }
 
 Script* registerScript(std::string name, Script* script) {
-    LOG_VERBOSE("script::Manager", "Registering script [w]$0[]", name);
     Manager::getInstance()._scripts[StringId(name)] = script;
 
     return script;

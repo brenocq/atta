@@ -6,8 +6,8 @@
 //--------------------------------------------------
 
 // std::vector overload
-template <typename Tstream, typename T>
-Tstream& operator<<(Tstream& s, const std::vector<T>& v) {
+template <typename T>
+std::stringstream& operator<<(std::stringstream& s, const std::vector<T>& v) {
     s << "{";
     for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii) {
         s << *ii;
@@ -113,8 +113,7 @@ void Log::log(const char* tagColor, std::string tag, const char* textColor, std:
             }
             i++; // Skip color and ]
         } else if (text[i] == '$') {
-            if(text[i+1] == 'x')
-            {
+            if (text[i + 1] == 'x') {
                 // Hex print
                 i++;
                 finalText << std::hex << "0x";
@@ -122,18 +121,14 @@ void Log::log(const char* tagColor, std::string tag, const char* textColor, std:
                 if (idx < sizeof...(Args))
                     finalText << std::stoi(argsStr[idx]);
                 finalText << std::dec;
-            }
-            else if(text[i+1] == 'b')
-            {
+            } else if (text[i + 1] == 'b') {
                 // Binary print
                 i++;
                 finalText << "0b";
                 size_t idx = static_cast<size_t>(text[++i] - '0');
                 if (idx < sizeof...(Args))
                     finalText << std::bitset<CHAR_BIT>(std::stoi(argsStr[idx]));
-            }
-            else
-            {
+            } else {
                 // Stream print
                 size_t idx = static_cast<size_t>(text[++i] - '0');
                 if (idx < sizeof...(Args))

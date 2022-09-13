@@ -33,17 +33,6 @@ Allocator** Manager::getAllocatorPtrImpl(StringHash hash) {
 }
 
 void Manager::registerAllocatorImpl(StringHash hash, Allocator* alloc) {
-    // if(_allocators.find(hash) != _allocators.end())
-    //{
-    //	// Delete old allocator
-    //	//delete _allocators[hash];
-    //	// Add new allocator
-    //	_allocators[hash] = alloc;
-    // }
-    // else
-    //{
-    // }
-
     // Just replaces the pointer, does not delete the allocator
     _allocators[hash] = alloc;
 }

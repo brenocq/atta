@@ -42,11 +42,11 @@ class Manager final {
     ProjectScript* getProjectScriptImpl() const;
     StringId getProjectScriptSidImpl() const;
 
-#ifndef ATTA_STATIC_PROJECT
     // Handle events
+    void onProjectOpen(event::Event& event);
+#ifndef ATTA_STATIC_PROJECT
     void onFileChange(event::Event& event);
     void onProjectBeforeDeserialize(event::Event& event);
-    void onProjectOpen(event::Event& event);
     void onProjectClose(event::Event& event);
 
     void updateAllTargets();
