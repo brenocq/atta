@@ -5,28 +5,12 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 
-template <typename S, typename T>
-class is_streamable {
-    template <typename SS, typename TT>
-    static auto test(int) -> decltype(std::declval<SS&>() << std::declval<TT>(), std::true_type());
-
-    template <typename, typename>
-    static auto test(...) -> std::false_type;
-
-  public:
-    static const bool value = decltype(test<S, T>(0))::value;
-};
-
 // std::vector overload
 template <typename Tstream, typename T>
 Tstream& operator<<(Tstream& s, const std::vector<T>& v) {
     s << "{";
     for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii) {
-        if constexpr (is_streamable<Tstream, T>::value)
-            s << *ii;
-        else
-            s << "?";
-
+        s << *ii;
         if (ii < v.end() - 1)
             s << ", ";
     }
@@ -75,12 +59,7 @@ void Log::error(std::string tag, std::string text, Args&&... args) {
 template <typename T>
 std::string getArgStr(const T& t) {
     std::stringstream ss;
-
-    if constexpr (is_streamable<std::stringstream, T>::value)
-        ss << t;
-    else
-        ss << typeid(T).name();
-
+    ss << t;
     return ss.str();
 }
 
@@ -134,9 +113,32 @@ void Log::log(const char* tagColor, std::string tag, const char* textColor, std:
             }
             i++; // Skip color and ]
         } else if (text[i] == '$') {
-            size_t idx = static_cast<size_t>(text[++i] - '0');
-            if (idx < sizeof...(Args))
-                finalText << argsStr[idx];
+            if(text[i+1] == 'x')
+            {
+                // Hex print
+                i++;
+                finalText << std::hex << "0x";
+                size_t idx = static_cast<size_t>(text[++i] - '0');
+                if (idx < sizeof...(Args))
+                    finalText << std::stoi(argsStr[idx]);
+                finalText << std::dec;
+            }
+            else if(text[i+1] == 'b')
+            {
+                // Binary print
+                i++;
+                finalText << "0b";
+                size_t idx = static_cast<size_t>(text[++i] - '0');
+                if (idx < sizeof...(Args))
+                    finalText << std::bitset<CHAR_BIT>(std::stoi(argsStr[idx]));
+            }
+            else
+            {
+                // Stream print
+                size_t idx = static_cast<size_t>(text[++i] - '0');
+                if (idx < sizeof...(Args))
+                    finalText << argsStr[idx];
+            }
         } else
             finalText << text[i];
     }

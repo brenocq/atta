@@ -8,6 +8,7 @@
 
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>
+#include <atta/component/components/camera.h>
 #include <atta/component/interface.h>
 
 #include <atta/event/events/createComponent.h>

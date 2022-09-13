@@ -5,6 +5,7 @@ SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 SOURCE_PATH="$SCRIPT_PATH/.."
 BUILD_PATH="$SOURCE_PATH/build"
 CMAKE_BUILD_TYPE="-DCMAKE_BUILD_TYPE=Release"
+CMAKE_COMPILER=""
 BUILD_NAME_PREFIX=""
 BUILD_NAME="release"
 BUILD_NAME_SUFIX=""
@@ -35,6 +36,9 @@ printHelp()
    echo "-g or --gdb"
    echo "        Run with gdb."
    echo
+   echo "-c or --compiler <name>"
+   echo "        Select the compiler."
+   echo
    echo "-s or --static <project_file>"
    echo "        Build statically linked to a project."
    echo "        The file should be a valid .atta"
@@ -50,31 +54,11 @@ printHelp()
    exit
 }
 
-#safeBuild()
-#{
-#    CACHE_FILE=$BUILD_PATH/.buildsh_type
-#    IS_STATIC="-static"
-#    if [[ -z $CMAKE_ATTA_STATIC ]]; then
-#        IS_STATIC=""
-#    fi
-#
-#    # If total rebuild is necessary, build folder content is deleted
-#    if test -f "$CACHE_FILE"; then
-#        LAST_BUILD_TYPE="$(cat $CACHE_FILE)"
-#        if [[ "$LAST_BUILD_TYPE" != "$BUILD_TYPE$IS_STATIC" ]]; then
-#            echo "[build.sh] Deleting $BUILD_PATH/* ($LAST_BUILD_TYPE != $BUILD_TYPE$IS_STATIC)"
-#            rm -rf $BUILD_PATH/*
-#        fi
-#        rm $BUILD_PATH/.buildsh_type
-#    fi
-#    echo "$BUILD_TYPE$IS_STATIC" >> $CACHE_FILE
-#}
-
 buildDefault()
 {
     echo "---------- Building ----------"
     # Build
-    cmake $CMAKE_BUILD_TYPE $CMAKE_ATTA_STATIC $SOURCE_PATH
+    cmake $CMAKE_BUILD_TYPE $CMAKE_COMPILER $CMAKE_ATTA_STATIC $SOURCE_PATH
     make -j
 
     # Install
@@ -161,6 +145,11 @@ while [[ $# -gt 0 ]]; do
       INSTALL_AFTER="true"
       shift # past argument
       ;;
+      -c|--compiler)
+      CMAKE_COMPILER="-DCMAKE_CXX_COMPILER=$2"
+      shift # past argument
+      shift # past vlaue
+      ;;
     -t|--type)
       BUILD_TYPE="$2"
       if [[ "$BUILD_TYPE" != "default" ]]; then
@@ -188,7 +177,6 @@ BUILD_PATH="$BUILD_PATH/$BUILD_NAME_PREFIX$BUILD_NAME$BUILD_NAME_SUFIX"
 mkdir -p $BUILD_PATH && cd $BUILD_PATH
 
 # Build
-#safeBuild
 case $BUILD_TYPE in
 default)
   buildDefault

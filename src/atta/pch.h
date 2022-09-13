@@ -9,8 +9,10 @@
 
 #include <any>
 #include <array>
+#include <bitset>
 #include <cmath>
 #include <cstring>
+#include <climits>
 #include <filesystem>
 #include <fstream>
 #include <functional>
