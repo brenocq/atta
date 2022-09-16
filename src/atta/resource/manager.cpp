@@ -47,7 +47,7 @@ void Manager::onProjectOpen(event::Event& event) {
 }
 
 void Manager::loadResourcesRecursively(fs::path directory) {
-    static const std::vector<std::string> meshExtensions{".obj", ".fbx", ".FBX", ".fbx"}; //, ".3ds", ".stl", ".ply" };
+    static const std::vector<std::string> meshExtensions{".obj", ".fbx", ".FBX", ".fbx", ".stl", ".ply"};
     static const std::vector<std::string> imageExtensions{".jpg", ".jpeg", ".png", ".hdr", ".tga"};
 
     for (auto file : file::getDirectoryFilesRecursive(directory)) {

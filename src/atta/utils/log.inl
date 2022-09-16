@@ -5,19 +5,6 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 
-// std::vector overload
-template <typename T>
-std::stringstream& operator<<(std::stringstream& s, const std::vector<T>& v) {
-    s << "{";
-    for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii) {
-        s << *ii;
-        if (ii < v.end() - 1)
-            s << ", ";
-    }
-    s << "}";
-    return s;
-}
-
 namespace atta {
 
 template <class... Args>
@@ -54,6 +41,19 @@ template <class... Args>
 void Log::error(std::string tag, std::string text, Args&&... args) {
     if (logLevel <= LOG_LEVEL_ERROR)
         log(COLOR_BOLD_RED, tag, COLOR_RESET_RED, text, args...);
+}
+
+// std::vector overload
+template <typename Tstream, typename T>
+std::ostream& operator<<(Tstream& s, const std::vector<T>& v) {
+    s << "{";
+    for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii) {
+        s << *ii;
+        if (ii < v.end() - 1)
+            s << ", ";
+    }
+    s << "}";
+    return s;
 }
 
 template <typename T>

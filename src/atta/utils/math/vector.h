@@ -163,6 +163,7 @@ class vector3 {
     vector3(T _x, vector2<U> v) : x(_x), y(v.x), z(v.y) {}
 
     T operator[](unsigned i) const;
+    T& operator[](unsigned i);
 
     // Add vector
     template <typename U>

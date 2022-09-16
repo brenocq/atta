@@ -201,11 +201,7 @@ OpenGLRenderer::~OpenGLRenderer() {
         glDeleteTextures(1, &tex.second);
 }
 
-void OpenGLRenderer::beginFrame() {
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-}
+void OpenGLRenderer::beginFrame() {}
 
 void OpenGLRenderer::endFrame() {}
 

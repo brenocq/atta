@@ -17,6 +17,15 @@ T vector3<T>::operator[](unsigned i) const {
     return z;
 }
 
+template <typename T>
+T& vector3<T>::operator[](unsigned i) {
+    if (i == 0)
+        return x;
+    if (i == 1)
+        return y;
+    return z;
+}
+
 // Add vector
 template <typename T>
 template <typename U>

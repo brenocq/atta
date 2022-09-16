@@ -95,8 +95,11 @@ void OpenGLFramebuffer::bind(bool clear) {
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
     glViewport(0, 0, _width, _height);
     if (clear) {
-        // TODO Renderer choose clear color
-        if (_attachments[0].format == Image::Format::RGB)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+
+        // TODO Renderer should choose clear color
+        if (_attachments[0].format == Image::Format::RGB || _attachments[0].format == Image::Format::RGBA)
             glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
         if (_depthAttachmentIndex != -1 && _stencilAttachmentIndex != -1) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
