@@ -128,9 +128,9 @@ void ViewportWindows::render() {
                         vec3 pos, scale;
                         quat newOri;
                         transform.getPosOriScale(pos, newOri, scale);
-                        vec3 oriDelta = newOri.toEuler() - t->orientation.toEuler();
+                        vec3 oriDelta = newOri.getEuler() - t->orientation.getEuler();
                         quat ori;
-                        ori.fromEuler(t->orientation.toEuler() + oriDelta);
+                        ori.setEuler(t->orientation.getEuler() + oriDelta);
 
                         // Delta world to local
                         component::Relationship* r = component::getComponent<component::Relationship>(entity);
@@ -172,7 +172,7 @@ void ViewportWindows::render() {
                         if (rb2d) {
                             if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
                                 vec2 pos = vec2(t->position);
-                                float angle = -t->orientation.toEuler().z;
+                                float angle = -t->orientation.getEuler().z;
                                 rb2d->setTransform(pos, angle);
                             } else if (mouseOperation == ImGuizmo::OPERATION::SCALE) {
                                 // TODO Recreate box2d rigid body

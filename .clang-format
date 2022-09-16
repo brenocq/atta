@@ -5,4 +5,5 @@ PointerAlignment: Left
 AlwaysBreakTemplateDeclarations: true
 ColumnLimit: 150
 IndentWidth: 4
+IndentCaseLabels: true
 ...

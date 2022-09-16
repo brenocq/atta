@@ -125,7 +125,7 @@ void Box2DEngine::start() {
                 bodyDef.type = b2_staticBody;
 
             bodyDef.position.Set(position.x, position.y);
-            bodyDef.angle = -orientation.toEuler().z;
+            bodyDef.angle = orientation.get2DAngle();
             bodyDef.linearVelocity.Set(rb2d->linearVelocity.x, rb2d->linearVelocity.y);
             bodyDef.angularVelocity = rb2d->angularVelocity;
             bodyDef.linearDamping = rb2d->linearDamping;
@@ -201,7 +201,7 @@ void Box2DEngine::step(float dt) {
             // Get new transform (after physics step)
             b2Vec2 pos = p.second->GetPosition();
             position = {pos.x, pos.y, 0.0f};
-            orientation.fromEuler({0, 0, -p.second->GetAngle()});
+            orientation.set2DAngle(p.second->GetAngle());
             scale = t->scale;
 
             // Update pos/ori/scale to be local to parent

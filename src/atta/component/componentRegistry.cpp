@@ -265,7 +265,7 @@ void ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(AttributeDescript
     ImGui::Text(aDesc.name.c_str());
 
     quat* q = (quat*)d;
-    vec3 euler = degrees(q->toEuler());
+    vec3 euler = degrees(q->getEuler());
     bool oriChanged = false;
 
     float min = 0.0f;
@@ -287,7 +287,7 @@ void ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(AttributeDescript
     }
 
     if (oriChanged) {
-        vec3 deltaEuler = radians(euler) - q->toEuler();
+        vec3 deltaEuler = radians(euler) - q->getEuler();
         quat deltaRot = quat(deltaEuler);
         *q *= deltaRot;
         ;

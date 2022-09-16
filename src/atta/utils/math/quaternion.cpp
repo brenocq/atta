@@ -8,13 +8,13 @@
 #include <atta/utils/math/quaternion.h>
 
 namespace atta {
-vec3 toAxisAngle() {
-    LOG_WARN("quat", "[w]toAxisAngle()[] was not implemented yet");
+vec3 getAxisAngle() {
+    LOG_WARN("quat", "[w]getAxisAngle()[] was not implemented yet");
     return {};
 }
 
-mat3 toRotationMatrix() {
-    LOG_WARN("quat", "[w]toAxisAngle()[] was not implemented yet");
+mat3 getRotationMatrix() {
+    LOG_WARN("quat", "[w]getAxisAngle()[] was not implemented yet");
     return {};
 }
 } // namespace atta

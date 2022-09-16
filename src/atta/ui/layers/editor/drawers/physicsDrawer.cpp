@@ -42,7 +42,7 @@ void PhysicsDrawer::update() {
                 v *= scale;
 
             // Rotate
-            vec3 euler = orientation.toEuler();
+            vec3 euler = orientation.getEuler();
             for (auto& v : vertices) {
                 vec3 oldv = v;
                 v.x = oldv.x * cos(-euler.z) - oldv.y * sin(-euler.z);

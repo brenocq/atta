@@ -19,7 +19,7 @@ class quat {
     float k; // Third complex
 
     quat() : r(1), i(0), j(0), k(0) {}
-    quat(const vec3& v) { fromEuler(v); }
+    quat(const vec3& v) { setEuler(v); }
     quat(const float r, const float i, const float j, const float k) : r(r), i(i), j(j), k(k) {}
 
     void normalize() {
@@ -143,7 +143,7 @@ class quat {
         k = sinHalfAngle * rotAxis.z;
     }
 
-    void fromEuler(const vec3& e) {
+    void setEuler(const vec3& e) {
         // ZYX euler
         r = cos(e.x / 2.0) * cos(e.y / 2.0) * cos(e.z / 2.0) + sin(e.x / 2.0) * sin(e.y / 2.0) * sin(e.z / 2.0);
         i = sin(e.x / 2.0) * cos(e.y / 2.0) * cos(e.z / 2.0) - cos(e.x / 2.0) * sin(e.y / 2.0) * sin(e.z / 2.0);
@@ -152,7 +152,7 @@ class quat {
         normalize();
     }
 
-    vec3 toEuler() const {
+    vec3 getEuler() const {
         // ZYX euler
         vec3 e;
         e.x = atan2(2.0 * (r * i + j * k), 1 - 2.0 * (i * i + j * j));
@@ -161,7 +161,17 @@ class quat {
         return e;
     }
 
-    void fromAxisAngle(const vec3& v) {
+    void set2DAngle(float angle) { 
+        // ZYX euler
+        r = cos(-angle / 2.0);
+        i = 0;
+        j = 0;
+        k = sin(-angle / 2.0);
+    }
+
+    float get2DAngle() const { return -atan2(2.0 * (r * k + i * j), 1 - 2.0 * (j * j + k * k)); }
+
+    void setAxisAngle(const vec3& v) {
         // TODO validate
         float angle = v.length();
         vec3 axis = atta::normalize(v);
@@ -175,9 +185,9 @@ class quat {
     }
 
     // TODO
-    vec3 toAxisAngle() const;
+    vec3 getAxisAngle() const;
     // TODO
-    mat3 toRotationMatrix() const;
+    mat3 getRotationMatrix() const;
 
     std::string toString() const {
         return "quat{r=" + std::to_string(r) + ", i=" + std::to_string(i) + ", j=" + std::to_string(j) + ", k=" + std::to_string(k) + "}";
@@ -186,12 +196,12 @@ class quat {
 
 inline quat eulerToQuat(const vec3& e) {
     quat q;
-    q.fromEuler(e);
+    q.setEuler(e);
     return q;
 }
 
 inline vec3 quatToEuler(const quat& q) {
-    vec3 e = q.toEuler();
+    vec3 e = q.getEuler();
     return e;
 }
 
