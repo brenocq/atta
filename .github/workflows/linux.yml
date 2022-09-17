@@ -11,12 +11,12 @@ jobs:
         config:
         - {
           name: "Ubuntu Latest",
-          os: ubuntu-latest
+          os: ubuntu-latest,
           compiler: "g++"
         }
         - {
           name: "Ubuntu Latest",
-          os: ubuntu-latest
+          os: ubuntu-latest,
           compiler: "clang++"
         }
 
