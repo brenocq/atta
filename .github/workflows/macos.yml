@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies on macos
       if: startsWith(matrix.config.os, 'macos')
       run: |
-        brew install cmake bullet box2d assimp
+        brew install cmake
         cmake --version
 
     - name: Configure

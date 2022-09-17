@@ -1,25 +1,32 @@
-# Atta
+<div align="center">
+  <h1>Atta</h1>
+  <div>
+    [![Linux](https://github.com/Brenocq/Atta/actions/workflows/linux.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/linux.yml)
+    [![MacOS](https://github.com/Brenocq/Atta/actions/workflows/macos.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/macos.yml)
+    [![Windows](https://github.com/Brenocq/Atta/actions/workflows/windows.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/windows.yml)
+    [![Web](https://github.com/brenocq/atta/actions/workflows/web.yml/badge.svg)](https://github.com/brenocq/atta/actions/workflows/web.yml)
+    [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+  </div>
 
-[![Linux](https://github.com/Brenocq/Atta/actions/workflows/linux.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/linux.yml)
-[![MacOS](https://github.com/Brenocq/Atta/actions/workflows/macos.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/macos.yml)
-[![Windows](https://github.com/Brenocq/Atta/actions/workflows/windows.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/windows.yml)
-[![Web](https://github.com/brenocq/atta/actions/workflows/web.yml/badge.svg)](https://github.com/brenocq/atta/actions/workflows/web.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+  <div>
+    <a href="https://github.com/brenocq-atta/robotic-arm-ga"><img src="https://storage.googleapis.com/atta-images/docs/robotic-arm-ga/robotic-arm-ga.gif" height="200"></a>
+    <a href="https://github.com/brenocq-atta/boids"><img src="https://storage.googleapis.com/atta-images/docs/boids/boids-basic.gif" height="200"></a>
+    <a href="https://github.com/brenocq-atta/bee-hive-finding"><img src="https://storage.googleapis.com/atta-images/docs/bee-hive-finding/bee-hive-finding.gif" height="200"></a>
+  </div>
 
-<p align="center">
- <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-24.gif" height="200">
- <img src="https://storage.googleapis.com/atta-images/evolution/2021-09-08.gif" height="200">
-</p>
+  [Website](https://atta.brenocq.com) · [**Projects**](https://atta.brenocq.com/projects) · [Planning](https://github.com/users/brenocq/projects/14)
+</div>
+
 
 Atta is a robotics simulator, mainly focused on multi-robot systems with tons of similar robots. The objectives for this simulator are:
-  - Easy to get started
-  - Distribute processing across CPUs / GPUs / Clusters
-  - Fast development (with hot-reload)
-  - Interface between simulated and physical robots
-  - Easy to share simulation with others
-  - Cross-platform (linux/macos/windows/web/android(?))
+  - :books: Easy to get started
+  - :shipit: Distribute processing across CPUs / GPUs / Clusters
+  - :running: Fast development (with hot-reload)
+  - :electric_plug: Interface between simulated and physical robots
+  - :open_file_folder: Easy to share simulation with others ([published projects](https://atta.brenocq.com/projects))
+  - :computer: Cross-platform (linux/macos/windows/web)
 
-Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs). You can also test published projects online [here](https://atta.brenocq.com/build).
+Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs).
 
 ## Progress
 Check the atta progress by **clicking on the buttons below**. [Issues](https://github.com/brenocq/atta/issues) with bugs and [discussions](https://github.com/brenocq/atta/discussions) with new ideas are very welcome :)
@@ -40,7 +47,7 @@ Check the atta progress by **clicking on the buttons below**. [Issues](https://g
 _Obs: There is a github workflow to update the progress bar of each icon automatically heh_
 
 ## Architecture
-Atta is composed of decoupled system, the current systems are:
+Atta is composed of decoupled modules, the current modules are:
 
 - **Component Module**: Manage entities and components
 - **Event Module**: Publish and subscribe to atta internal events
@@ -54,9 +61,9 @@ Atta is composed of decoupled system, the current systems are:
 - **Sensor Module**: Update simulated/real sensors at each step
 - **UI Module**: User interface graphics layer and UI rendering helpers
 
-Arrows show dependencies between systems. Green boxes show which systems/features are implemented.
+Arrows show dependencies between modules. Green boxes show which features are implemented.
 <p align="center">
- <img src="https://storage.googleapis.com/atta-images/main/github_arch-2021-11-28.png" height="600">
+ <img src="https://storage.googleapis.com/atta-images/main/arch-2022-09-17.png" height="600">
 </p>
 
 ## Why Atta?
@@ -84,17 +91,17 @@ sudo apt-get install cmake xorg-dev curl
 ```
 
 #### Clone
-This step is operating system indepentent. Be sure to have your **github ssh key properly configured**. Atta should build without errors when the **compiller supports C++17** (g++ >= 9.0).
+Atta should build without errors when the **compiller supports C++17** (g++ >= 9.0).
 
-If you found any errors, please do not hesitate to [create an issue](https://github.com/brenocq/atta/issues/new?assignees=brenocq&labels=fix&template=bug_report.md&title=).
+If you found any errors, please do not hesitate to [create an issue](https://github.com/brenocq/atta/issues/new?assignees=brenocq&labels=fix&template=bug_report.md&title=) :wink:.
 
 ```bash
 git clone git@github.com:brenocq/atta.git
 cd atta
 ./scripts/build.sh --help
 ./scripts/build.sh
-./bin/atta_test
-./bin/atta
+./build/release/bin/atta_test
+./build/release/bin/atta
 ```
 
 _Obs: The build script should help the user with dependencies. If you found ploblems please let me know_

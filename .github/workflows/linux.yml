@@ -23,8 +23,7 @@ jobs:
       if: startsWith(matrix.config.os, 'ubuntu')
       run: |
         sudo apt-get update
-        sudo apt-get install cmake xorg-dev \
-          assimp-utils libbullet-dev curl 
+        sudo apt-get install cmake xorg-dev curl 
         cmake --version
         gcc --version
 
