@@ -1,11 +1,13 @@
 <div align="center">
   <h1>Atta</h1>
   <div>
-    [![Linux](https://github.com/Brenocq/Atta/actions/workflows/linux.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/linux.yml)
-    [![MacOS](https://github.com/Brenocq/Atta/actions/workflows/macos.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/macos.yml)
-    [![Windows](https://github.com/Brenocq/Atta/actions/workflows/windows.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/windows.yml)
-    [![Web](https://github.com/brenocq/atta/actions/workflows/web.yml/badge.svg)](https://github.com/brenocq/atta/actions/workflows/web.yml)
-    [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+[![Linux](https://github.com/Brenocq/Atta/actions/workflows/linux.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/linux.yml)
+[![MacOS](https://github.com/Brenocq/Atta/actions/workflows/macos.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/macos.yml)
+[![Windows](https://github.com/Brenocq/Atta/actions/workflows/windows.yml/badge.svg)](https://github.com/Brenocq/Atta/actions/workflows/windows.yml)
+[![Web](https://github.com/brenocq/atta/actions/workflows/web.yml/badge.svg)](https://github.com/brenocq/atta/actions/workflows/web.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
   </div>
 
   <div>
@@ -29,7 +31,9 @@ Atta is a robotics simulator, mainly focused on multi-robot systems with tons of
 Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs).
 
 ## Progress
-Check the atta progress by **clicking on the buttons below**. [Issues](https://github.com/brenocq/atta/issues) with bugs and [discussions](https://github.com/brenocq/atta/discussions) with new ideas are very welcome :)
+Check the atta progress by **clicking on the buttons below**. [Issues](https://github.com/brenocq/atta/issues) with bugs and [discussions](https://github.com/brenocq/atta/discussions) with new ideas are very welcome :bowtie:.
+
+<div align="center">
 
 [![ComponentModule](https://storage.googleapis.com/atta-images/main/component_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/8)
 [![EventModule](https://storage.googleapis.com/atta-images/main/event_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/13)
@@ -43,6 +47,8 @@ Check the atta progress by **clicking on the buttons below**. [Issues](https://g
 [![SensorModule](https://storage.googleapis.com/atta-images/main/sensor_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/10)
 [![UIModule](https://storage.googleapis.com/atta-images/main/ui_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/9)
 [![Docs](https://storage.googleapis.com/atta-images/main/docs_button_github_progress.png?)](https://github.com/brenocq/atta/projects/18)
+
+</div>
 
 _Obs: There is a github workflow to update the progress bar of each icon automatically heh_
 
