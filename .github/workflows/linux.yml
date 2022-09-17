@@ -11,8 +11,13 @@ jobs:
         config:
         - {
           name: "Ubuntu Latest",
-          os: ubuntu-latest,
-          build_type: "Release"
+          os: ubuntu-latest
+          compiler: "g++"
+        }
+        - {
+          name: "Ubuntu Latest",
+          os: ubuntu-latest
+          compiler: "clang++"
         }
 
     steps:
@@ -27,14 +32,8 @@ jobs:
         cmake --version
         gcc --version
 
-    - name: Configure
-      run: |
-        mkdir build
-        cd build
-        cmake ..
-
     - name: Build
-      run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
+      run: ./build.sh --jobs 2 --compiler ${{ matrix.config.compiler }}
 
     - name: Test
       run: ctest
