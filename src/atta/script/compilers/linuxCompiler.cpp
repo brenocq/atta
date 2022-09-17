@@ -50,7 +50,7 @@ void LinuxCompiler::compileAll() {
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-    LOG_INFO("script::LinuxCompiler", "Time to compile all: $0 ms", micro.count() / 1000.0f);
+    LOG_INFO("script::LinuxCompiler", "Time to compile all: [w]$0[] ms", micro.count() / 1000.0f);
 }
 
 void LinuxCompiler::compileTarget(StringId target) {
@@ -88,7 +88,7 @@ void LinuxCompiler::compileTarget(StringId target) {
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-    LOG_INFO("script::LinuxCompiler", "Time to compile target $1: $0 ms", micro.count() / 1000.0f, target);
+    LOG_INFO("script::LinuxCompiler", "Time to compile target [*w]$1[]: [w]$0[] ms", micro.count() / 1000.0f, target);
 }
 
 void LinuxCompiler::updateTargets() {

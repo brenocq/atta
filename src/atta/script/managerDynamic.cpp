@@ -79,11 +79,6 @@ void Manager::onProjectClose(event::Event& event) {
     // Release all targets
     for (auto target : _compiler->getTargets())
         releaseTarget(target);
-
-    // Publish event
-    event::ScriptTarget evt;
-    evt.scriptSids = getScriptSidsImpl();
-    event::publish(evt);
 }
 
 void Manager::updateAllTargets() {
@@ -98,7 +93,6 @@ void Manager::updateAllTargets() {
     // Link each target in the project
     for (auto target : _compiler->getTargets())
         linkTarget(target);
-    // LOG_DEBUG("Manager", "Targets updated: $0", _compiler->getTargets());
 }
 
 void Manager::updateTarget(StringId target) {
@@ -117,9 +111,12 @@ void Manager::linkTarget(StringId target) {
     ProjectScript* projectScript = nullptr;
     std::string name;
     _linker->linkTarget(target, &script, &projectScript, name);
+
+    // If target is script
     if (script != nullptr)
         _scripts[StringId(name)] = script;
 
+    // If target is project script
     if (projectScript != nullptr) {
         if (_projectScript.second != nullptr)
             LOG_WARN("script::Manager",
