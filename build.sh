@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-SOURCE_PATH="$SCRIPT_PATH/.."
+SOURCE_PATH="$SCRIPT_PATH"
 BUILD_PATH="$SOURCE_PATH/build"
 CMAKE_BUILD_TYPE="-DCMAKE_BUILD_TYPE=Release"
 CMAKE_COMPILER=""
