@@ -77,40 +77,60 @@ Arrows show dependencies between modules. Green boxes show which features are im
 This project aims to simulate complex systems like this, mainly composed of robots.
 
 ## Build & test
-#### Dependencies
+
+<!------------ Windows ------------>
+<details><summary> Windows </summary>
+<h4>Dependencies</h4>
 To build atta properly, you need to have cmake installed.
-Dependencies for some operating systems:
+<pre><code>choco install cmake</code></pre>
+Also, be sure that your **compiller supports C++17** (g++ >= 9.0).
 
-**Windows:**
-```bash
-choco install cmake
-```
+<h4>Run</h4>
+<pre><code>git clone git@github.com:brenocq/atta.git
+cd atta
+mkdir build
+cd build
+cmake ..
+</code></pre>
 
-**MacOS:**
-```bash
-brew install cmake
-```
+You can now use Visual Studio to open the <code>atta.sln</code> file.
+</details>
+<!------------ MacOS ------------>
+<details><summary> MacOS </summary>
+<h4>Dependencies</h4>
+To build atta properly, you need to have cmake installed.
+<pre><code>brew install cmake</code></pre>
+Also, be sure that your **compiller supports C++17** (g++ >= 9.0).
 
-**Linux:**
-```bash
-sudo apt-get install cmake xorg-dev curl
-```
-
-#### Clone
-Atta should build without errors when the **compiller supports C++17** (g++ >= 9.0).
-
-If you found any errors, please do not hesitate to [create an issue](https://github.com/brenocq/atta/issues/new?assignees=brenocq&labels=fix&template=bug_report.md&title=) :wink:.
-
-```bash
-git clone git@github.com:brenocq/atta.git
+<h4>Run</h4>
+<pre><code>git clone git@github.com:brenocq/atta.git
 cd atta
 ./scripts/build.sh --help
 ./scripts/build.sh
 ./build/release/bin/atta_test
 ./build/release/bin/atta
-```
+</code></pre>
+</details>
+<!------------ Linux ------------>
+<details><summary> Linux </summary>
+<h4>Dependencies</h4>
+To build atta properly, you need to have cmake installed.
+<pre><code>sudo apt-get install cmake xorg-dev curl</code></pre>
 
-_Obs: The build script should help the user with dependencies. If you found ploblems please let me know_
+Also, be sure that your **compiller supports C++17** (g++ >= 9.0).
+
+<h4>Run</h4>
+<pre><code>git clone git@github.com:brenocq/atta.git
+cd atta
+./scripts/build.sh --help
+./scripts/build.sh
+./build/release/bin/atta_test
+./build/release/bin/atta
+</code></pre>
+</details>
+
+If you found any errors, please do not hesitate to [create an issue](https://github.com/brenocq/atta/issues/new?assignees=brenocq&labels=fix&template=bug_report.md&title=) :wink:.
+
 
 ## Discussions
 If you want to contribute, have ideas, or have questions about atta, feel free to [start a discussion](https://github.com/brenocq/atta/discussions).
