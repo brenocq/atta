@@ -20,9 +20,9 @@ printHelp()
 {
    echo "Atta build script"
    echo
-   echo "Usage: ./build.sh [args ...]"
+   echo "Usage: ./build.sh [option(s)]"
    echo
-   echo "options:"
+   echo "Options:"
    echo
    echo "-h or --help"
    echo "        This help menu"
