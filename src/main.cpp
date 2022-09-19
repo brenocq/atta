@@ -1,19 +1,13 @@
 #include <atta/atta.h>
 #include <atta/cmakeConfig.h>
 
-int main(int argc, char *argv[])
-{
-    atta::Atta::CreateInfo info {};
-    if(argc == 2)
-    {
-        if(std::string(argv[1]) == "--version" || std::string(argv[1]) == "-v")
-        {
-            std::cout << "Atta Simulator " << ATTA_VERSION <<
-                "\nThis project is licensed under the MIT License\n";
+int main(int argc, char* argv[]) {
+    atta::Atta::CreateInfo info{};
+    if (argc == 2) {
+        if (std::string(argv[1]) == "--version" || std::string(argv[1]) == "-v") {
+            std::cout << "Atta Simulator " << ATTA_VERSION << "\nThis project is licensed under the MIT License\n";
             return EXIT_SUCCESS;
-        }
-        else
-        {
+        } else {
             fs::path attaFile(argv[1]);
             info.projectFile = fs::absolute(attaFile);
         }

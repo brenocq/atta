@@ -23,7 +23,6 @@ LinuxCompiler::~LinuxCompiler() {}
 
 void LinuxCompiler::compileAll() {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-    // LOG_DEBUG("script::LinuxCompiler", "Compile all targets");
 
     fs::path projectDir = file::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
@@ -47,6 +46,9 @@ void LinuxCompiler::compileAll() {
     runCommand(makeCommand, true, true);
     fs::current_path(prevPath);
 
+    // Update files related to all targets
+    updateTargets();
+
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
@@ -56,7 +58,6 @@ void LinuxCompiler::compileAll() {
 void LinuxCompiler::compileTarget(StringId target) {
     std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 
-    // LOG_DEBUG("script::LinuxCompiler", "Compile target $0", target);
     //  Check target
     if (_targetFiles.find(target) == _targetFiles.end()) {
         LOG_WARN("script::LinuxCompiler", "Could not find target $0", target);
@@ -84,6 +85,9 @@ void LinuxCompiler::compileTarget(StringId target) {
         compileAll();
         return;
     }
+
+    // Update files related to this target
+    findTargetFiles(target);
 
     // Show time
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
@@ -120,6 +124,7 @@ void LinuxCompiler::updateTargets() {
         }
 
         size_t space = line.find(' ');
+        // Find files related to this target
         if (isTarget) {
             StringId target = StringId(line.substr(space + 1));
             findTargetFiles(target);
@@ -129,16 +134,14 @@ void LinuxCompiler::updateTargets() {
 }
 
 void LinuxCompiler::findTargetFiles(StringId target) {
-    // TODO Find a better way to track header files
-    _targetFiles[target] = std::vector<fs::path>();
-
     fs::path projectDir = file::getProject()->getDirectory();
     fs::path buildDir = projectDir / "build";
     fs::path dependFile = buildDir / "CMakeFiles" / (target.getString() + ".dir").c_str() / "DependInfo.cmake";
+    std::vector<fs::path> cmakeTargetFiles;
 
+    // Get list of files from cmake
     std::ifstream dependIn(dependFile);
     std::string line;
-
     while (std::getline(dependIn, line)) {
         if (line.find("CMAKE_DEPENDS_DEPENDENCY_FILES") != std::string::npos) {
             std::getline(dependIn, line);
@@ -151,8 +154,7 @@ void LinuxCompiler::findTargetFiles(StringId target) {
                     std::getline(dependIn, line);
                     if (line.find(")") != std::string::npos) {
                         // Finish if reached end of list
-                        // LOG_DEBUG("script::LinuxCompiler", "Updated target files $0:\n $1", target, _targetFiles[target]);
-                        return;
+                        break;
                     }
                     // Next line is still the list, continue checking dependencies
                     end = -1;
@@ -161,23 +163,29 @@ void LinuxCompiler::findTargetFiles(StringId target) {
                 end = line.find("\"", start + 1);
 
                 std::string possibleFile = line.substr(start + 1, end - start - 1);
-                // LOG_DEBUG("script::LinuxCompiler", "Possible file $0", possibleFile);
                 if (possibleFile.find(".o") == std::string::npos && possibleFile.find("cmake_pch") == std::string::npos &&
                     possibleFile.find(projectDir.filename()) != std::string::npos) {
-                    _targetFiles[target].push_back(possibleFile);
-
-                    // If .cpp, add .h too
-                    size_t pos;
-                    if ((pos = possibleFile.find(".cpp")) != std::string::npos) {
-                        possibleFile.replace(pos, 4, ".h");
-                        _targetFiles[target].push_back(possibleFile);
-                    }
+                    cmakeTargetFiles.push_back(possibleFile);
                 }
             }
             std::cout << std::flush;
+            break;
         }
     }
     dependIn.close();
+
+    // Get all files that where included
+    std::set<fs::path> targetFiles(cmakeTargetFiles.begin(), cmakeTargetFiles.end());
+    for(fs::path file : cmakeTargetFiles)
+    {
+        std::vector<fs::path> includedFiles = getIncludedFiles(file);
+        targetFiles.insert(includedFiles.begin(), includedFiles.end());
+    }
+
+    // Update files related to this target
+    _targetFiles[target] = {};
+    for(fs::path file : targetFiles)
+        _targetFiles[target].push_back(file);
 }
 
 std::string LinuxCompiler::runCommand(std::string cmd, bool print, bool keepColors) {

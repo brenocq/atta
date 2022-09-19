@@ -82,8 +82,6 @@ void LinuxLinker::releaseTarget(StringId target) {
             LOG_ERROR("script::LinuxLinker", "Could not release target [w]$0[]: [w]$1", target, errStr);
             return;
         }
-
-        LOG_INFO("script::LinuxLinker", "Target [*w]$0[] released", target);
         _targetHandles.erase(target);
     } else
         LOG_WARN("script::LinuxLinker", "Could not release target [w]$0[]: [w]Target not found", target);

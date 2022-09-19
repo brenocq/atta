@@ -83,7 +83,7 @@ This project aims to simulate complex systems like this, mainly composed of robo
 <h4>Dependencies</h4>
 To build atta properly, you need to have cmake installed.
 <pre><code>choco install cmake</code></pre>
-Also, be sure that your **compiller supports C++17** (g++ >= 9.0).
+Also, be sure that your <strong>compiller supports C++17</strong> (g++ >= 9.0).
 
 <h4>Run</h4>
 <pre><code>git clone git@github.com:brenocq/atta.git
@@ -100,7 +100,7 @@ You can now use Visual Studio to open the <code>atta.sln</code> file.
 <h4>Dependencies</h4>
 To build atta properly, you need to have cmake installed.
 <pre><code>brew install cmake</code></pre>
-Also, be sure that your **compiller supports C++17** (g++ >= 9.0).
+Also, be sure that your <strong>compiller supports C++17</strong> (g++ >= 9.0).
 
 <h4>Run</h4>
 <pre><code>git clone git@github.com:brenocq/atta.git
@@ -117,7 +117,7 @@ cd atta
 To build atta properly, you need to have cmake installed.
 <pre><code>sudo apt-get install cmake xorg-dev curl</code></pre>
 
-Also, be sure that your **compiller supports C++17** (g++ >= 9.0).
+Also, be sure that your <strong>compiller supports C++17</strong> (g++ >= 9.0).
 
 <h4>Run</h4>
 <pre><code>git clone git@github.com:brenocq/atta.git

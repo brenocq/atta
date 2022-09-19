@@ -88,7 +88,6 @@ void Manager::updateAllTargets() {
 
     // Recompile all targets
     _compiler->compileAll();
-    _compiler->updateTargets();
 
     // Link each target in the project
     for (auto target : _compiler->getTargets())
