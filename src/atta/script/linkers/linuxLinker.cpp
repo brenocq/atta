@@ -25,8 +25,21 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
 
     // Copy lib to temporary file (should not reload same .so file)
     fs::path libCpyDir = projectDir / "build" / "atta" / "script" / target.getString();
+
+    // Make sure to only save the new the old files
     if (fs::exists(libCpyDir))
-        fs::remove_all(libCpyDir);
+    {
+        // Get files
+        std::vector<std::string> files;
+        for(auto entry : fs::directory_iterator(libCpyDir))
+            files.push_back(entry.path().string());
+
+        std::sort(files.begin(), files.end());
+        // Remove all old files (should be only one)
+        if(files.size())
+            for(unsigned i = 0; i < files.size()-1; i++)
+                fs::remove(files[i]);
+    }
     fs::create_directories(libCpyDir);
     unsigned long uniqueNum = std::chrono::duration_cast<std::chrono::milliseconds>(begin.time_since_epoch()).count();
     fs::path libCpy = libCpyDir / ("lib" + target.getString() + "." + std::to_string(uniqueNum) + ".so").c_str();

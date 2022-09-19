@@ -15,7 +15,7 @@ namespace atta::script {
 
 LinuxCompiler::LinuxCompiler() : _compiler("g++") {
     // Prefer to use clang++ because it is faster
-    if (std::system("clang++ 2> /dev/null"))
+    if (std::system("clang++ 2> /dev/null") == 0)
         _compiler = "clang++";
 }
 
@@ -191,6 +191,12 @@ void LinuxCompiler::findTargetFiles(StringId target) {
 std::string LinuxCompiler::runCommand(std::string cmd, bool print, bool keepColors) {
     std::array<char, 512> buffer;
     std::string result;
+
+    // Force to not use colors if unbuffer is not installed
+    if (std::system("unbuffer 2> /dev/null") != 0) {
+        keepColors = false;
+    }
+
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(((keepColors ? "unbuffer " : "") + cmd + " 2>&1").c_str(), "r"), pclose);
     if (!pipe) {
         LOG_WARN("script::LinuxCompiler", "Could not open pipe");

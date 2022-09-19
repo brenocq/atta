@@ -23,7 +23,7 @@ std::vector<fs::path> Compiler::getIncludedFiles(fs::path file) {
     fs::path projectDirSrc0 = projectDir / "src";
     fs::path projectDirSrc1 = projectDir / "source";
     std::vector<fs::path> possibleBases = {file.parent_path(), projectDirSrc0, projectDirSrc1, projectDir};
-    std::unordered_set<fs::path> allFiles;
+    std::unordered_set<std::string> allFiles;
     std::stack<fs::path> s;
     s.push(file);
 
@@ -45,8 +45,8 @@ std::vector<fs::path> Compiler::getIncludedFiles(fs::path file) {
                             fs::path possiblePath = base / possibleFile;
                             // Check if file exists
                             if (fs::exists(possiblePath)) {
-                                if (allFiles.find(possiblePath) == allFiles.end()) {
-                                    allFiles.insert(possiblePath);
+                                if (allFiles.find(possiblePath.string()) == allFiles.end()) {
+                                    allFiles.insert(possiblePath.string());
                                     s.push(possiblePath);
                                 }
                                 break;
