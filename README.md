@@ -125,7 +125,10 @@ To build atta, you need:
 <i>Note: If your ubuntu is old, you may need to install the latest cmake/g++ manually.</i>
 
 <strong>Fedora:</strong>
-<pre><code>sudo yum install g++ cmake glfw-devel</code></pre>
+<pre><code>sudo yum install g++ cmake git glfw-devel curl</code></pre>
+
+<strong>Arch:</strong>
+<pre><code>sudo pacman -Sy g++ cmake git glfw-x11 curl</code></pre>
 
 <h3>Run</h3>
 <pre><code>git clone git@github.com:brenocq/atta.git
