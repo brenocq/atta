@@ -3,10 +3,7 @@ set(ATTA_IMGUI_TARGETS "")
 
 FetchContent_Declare(
     imgui
-    GIT_REPOSITORY "https://github.com/ocornut/imgui"
-    GIT_TAG "docking"
-    GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
+    URL "https://storage.googleapis.com/atta-deps/imgui-ff1567e2406797cbd1a3ef3d716888d6c3a66bd7.zip"
 )
 
 atta_log(Info Extern "Fetching ImGui...")

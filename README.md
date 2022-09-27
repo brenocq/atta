@@ -114,23 +114,27 @@ cd atta
 <!------------ Linux ------------>
 <details><summary> Linux </summary>
 <h4>Dependencies</h4>
-To build atta properly, you need to have cmake installed.
-<pre><code>sudo apt-get install cmake xorg-dev curl</code></pre>
+To build atta, you need:
+<ul>
+  <li>g++ >= 9.0</li>
+  <li>cmake >= 3.14</li>
+</ul>
 
-Also, be sure that your <strong>compiller supports C++17</strong> (g++ >= 9.0).
+<strong>Ubuntu:</strong>
+<pre><code>sudo apt-get install g++ cmake git xorg-dev curl</code></pre>
+<i>Note: If your ubuntu is old, you may need to install the latest cmake/g++ manually.</i>
 
 <h4>Run</h4>
 <pre><code>git clone git@github.com:brenocq/atta.git
 cd atta
-./scripts/build.sh --help
-./scripts/build.sh
+./build.sh --help
+./build.sh
 ./build/release/bin/atta_test
 ./build/release/bin/atta
 </code></pre>
 </details>
 
 If you found any errors, please do not hesitate to [create an issue](https://github.com/brenocq/atta/issues/new?assignees=brenocq&labels=fix&template=bug_report.md&title=) :wink:.
-
 
 ## Discussions
 If you want to contribute, have ideas, or have questions about atta, feel free to [start a discussion](https://github.com/brenocq/atta/discussions).
