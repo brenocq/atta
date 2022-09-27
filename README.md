@@ -113,7 +113,7 @@ cd atta
 </details>
 <!------------ Linux ------------>
 <details><summary> Linux </summary>
-<h4>Dependencies</h4>
+<h3>Dependencies</h3>
 To build atta, you need:
 <ul>
   <li>g++ >= 9.0</li>
@@ -124,7 +124,10 @@ To build atta, you need:
 <pre><code>sudo apt-get install g++ cmake git xorg-dev curl</code></pre>
 <i>Note: If your ubuntu is old, you may need to install the latest cmake/g++ manually.</i>
 
-<h4>Run</h4>
+<strong>Fedora:</strong>
+<pre><code>sudo yum install g++ cmake glfw-devel</code></pre>
+
+<h3>Run</h3>
 <pre><code>git clone git@github.com:brenocq/atta.git
 cd atta
 ./build.sh --help
