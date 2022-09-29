@@ -19,10 +19,10 @@ class Manager final {
     friend void startUp();
     friend void shutDown();
     friend void update(float dt);
-    friend PhysicsEngine::Type getSelectedEngine();
+    friend Engine::Type getSelectedEngine();
     friend Plane2D getPlane2D();
-    friend void setSelectedEngine(PhysicsEngine::Type type);
-    friend std::shared_ptr<PhysicsEngine> getPhysicsEngine();
+    friend void setSelectedEngine(Engine::Type type);
+    friend std::shared_ptr<Engine> getEngine();
     friend std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);
     friend std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst);
     friend bool areColliding(component::EntityId eid0, component::EntityId eid1);
@@ -31,12 +31,12 @@ class Manager final {
     void startUpImpl();
     void shutDownImpl();
     void updateImpl(float dt);
-    void setSelectedEngineImpl(PhysicsEngine::Type type);
+    void setSelectedEngineImpl(Engine::Type type);
 
     void onSimulationStateChange(event::Event& event);
 
-    std::shared_ptr<PhysicsEngine> _engine; ///< Current physics engine
-    Plane2D _plane2D;                       ///< Plane that is used when performing 2D simulations
+    std::shared_ptr<Engine> _engine; ///< Current physics engine
+    Plane2D _plane2D;                ///< Plane that is used when performing 2D simulations
 };
 
 } // namespace atta::physics

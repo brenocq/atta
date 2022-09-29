@@ -13,10 +13,10 @@ void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 void update(float dt) { Manager::getInstance().updateImpl(dt); }
 
-PhysicsEngine::Type getSelectedEngine() { return Manager::getInstance()._engine->getType(); }
+Engine::Type getSelectedEngine() { return Manager::getInstance()._engine->getType(); }
 Plane2D getPlane2D() { return Manager::getInstance()._plane2D; }
-void setSelectedEngine(PhysicsEngine::Type type) { return Manager::getInstance().setSelectedEngineImpl(type); }
-std::shared_ptr<PhysicsEngine> getPhysicsEngine() { return Manager::getInstance()._engine; }
+void setSelectedEngine(Engine::Type type) { return Manager::getInstance().setSelectedEngineImpl(type); }
+std::shared_ptr<Engine> getEngine() { return Manager::getInstance()._engine; }
 
 //---------- Queries ----------//
 std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) { return Manager::getInstance()._engine->getEntityCollisions(eid); }

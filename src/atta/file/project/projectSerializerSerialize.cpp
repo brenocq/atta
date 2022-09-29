@@ -32,8 +32,7 @@ void ProjectSerializer::serializeComponentModule(Section& section) {
                 components.push_back(comp);
             }
         }
-        if(eids.size())
-        {
+        if (eids.size()) {
             section["components"][name]["entityIds"] = eids;
 
             // Serialize components
@@ -67,12 +66,26 @@ void ProjectSerializer::serializeGraphicsModule(Section& section) {
 void ProjectSerializer::serializeResourceModule(Section& section) {
     std::vector<StringId> materialSids = resource::getResources<resource::Material>();
     std::vector<resource::Material> materials;
-    for (StringId sid : materialSids)
-    {
+    for (StringId sid : materialSids) {
         resource::Material* m = resource::get<resource::Material>(sid.getString());
-        if(m) materials.push_back(*m);
+        if (m)
+            materials.push_back(*m);
     }
     section["materials"] = materials;
+}
+
+void ProjectSerializer::serializePhysicsModule(Section& section) {
+    switch (physics::getSelectedEngine()) {
+        case physics::Engine::NONE:
+            section["engine"] = "NONE";
+            break;
+        case physics::Engine::BOX2D:
+            section["engine"] = "BOX2D";
+            break;
+        case physics::Engine::BULLET:
+            section["engine"] = "BULLET";
+            break;
+    }
 }
 
 } // namespace atta::file

@@ -1,24 +1,24 @@
 //--------------------------------------------------
 // Atta Physics Module
-// physicsEngine.h
+// engine.h
 // Date: 2021-11-29
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_PHYSICS_PHYSICS_ENGINES_PHYSICS_ENGINE_H
-#define ATTA_PHYSICS_PHYSICS_ENGINES_PHYSICS_ENGINE_H
+#ifndef ATTA_PHYSICS_ENGINES_ENGINE_H
+#define ATTA_PHYSICS_ENGINES_ENGINE_H
 
 #include <atta/component/interface.h>
 #include <atta/utils/math/math.h>
 
 namespace atta::physics {
 
-class PhysicsEngine {
+class Engine {
   public:
     ///< Available physics engines
-    enum Type { NULL_ENGINE = 0, BOX2D_ENGINE, BULLET_ENGINE };
+    enum Type { NONE = 0, BOX2D, BULLET };
 
-    PhysicsEngine(Type type);
-    virtual ~PhysicsEngine() = default;
+    Engine(Type type);
+    virtual ~Engine() = default;
     virtual void start() = 0;
     virtual void step(float dt) = 0;
     virtual void stop() = 0;
@@ -37,4 +37,4 @@ class PhysicsEngine {
 
 } // namespace atta::physics
 
-#endif // ATTA_PHYSICS_PHYSICS_ENGINES_PHYSICS_ENGINE_H
+#endif // ATTA_PHYSICS_ENGINES_ENGINE_H

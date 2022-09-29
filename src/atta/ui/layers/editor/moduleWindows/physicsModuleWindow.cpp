@@ -13,13 +13,13 @@ PhysicsModuleWindow::PhysicsModuleWindow() { setName("Physics Module"); }
 
 void PhysicsModuleWindow::renderImpl() {
     ImGui::Text("Physics Engine");
-    std::vector<std::string> physicsEngines = {"Null", "Box2D", "Bullet"};
+    std::vector<std::string> physicsEngines = {"None", "Box2D", "Bullet"};
 
-    physics::PhysicsEngine::Type selected = physics::getSelectedEngine();
+    physics::Engine::Type selected = physics::getSelectedEngine();
     if (ImGui::BeginCombo(("##" + _name + "SelectEngine").c_str(), physicsEngines[selected].c_str())) {
         for (unsigned i = 0; i < physicsEngines.size(); i++) {
             if (ImGui::Selectable(physicsEngines[i].c_str(), i == selected))
-                physics::setSelectedEngine((physics::PhysicsEngine::Type)i);
+                physics::setSelectedEngine((physics::Engine::Type)i);
             if (i == selected)
                 ImGui::SetItemDefaultFocus();
         }

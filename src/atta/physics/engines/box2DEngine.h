@@ -12,11 +12,11 @@
 #include <atta/component/components/revoluteJoint.h>
 #include <atta/component/components/rigidBody2D.h>
 #include <atta/component/components/rigidJoint.h>
-#include <atta/physics/physicsEngines/physicsEngine.h>
+#include <atta/physics/engines/engine.h>
 
 namespace atta::physics {
 
-class Box2DEngine : public PhysicsEngine {
+class Box2DEngine : public Engine {
   public:
     Box2DEngine();
     ~Box2DEngine();

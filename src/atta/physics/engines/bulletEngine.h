@@ -4,18 +4,18 @@
 // Date: 2021-12-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_PHYSICS_PHYSICS_ENGINES_BULLET_ENGINE_H
-#define ATTA_PHYSICS_PHYSICS_ENGINES_BULLET_ENGINE_H
+#ifndef ATTA_PHYSICS_ENGINES_BULLET_ENGINE_H
+#define ATTA_PHYSICS_ENGINES_BULLET_ENGINE_H
 
 #include "btBulletDynamicsCommon.h"
 #include <atta/component/components/prismaticJoint.h>
 #include <atta/component/components/revoluteJoint.h>
 #include <atta/component/components/rigidJoint.h>
-#include <atta/physics/physicsEngines/physicsEngine.h>
+#include <atta/physics/engines/engine.h>
 
 namespace atta::physics {
 
-class BulletEngine : public PhysicsEngine {
+class BulletEngine : public Engine {
   public:
     BulletEngine();
     ~BulletEngine();
@@ -44,4 +44,4 @@ class BulletEngine : public PhysicsEngine {
 
 } // namespace atta::physics
 
-#endif // ATTA_PHYSICS_PHYSICS_ENGINES_BULLET_ENGINE_H
+#endif // ATTA_PHYSICS_ENGINES_BULLET_ENGINE_H

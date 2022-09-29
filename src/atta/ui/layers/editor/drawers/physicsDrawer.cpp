@@ -9,6 +9,7 @@
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
 #include <atta/graphics/drawer.h>
+#include <atta/physics/interface.h>
 #include <atta/ui/layers/editor/drawers/physicsDrawer.h>
 
 namespace atta::ui {
@@ -33,32 +34,52 @@ void PhysicsDrawer::update() {
         // Draw box collider
         auto box = component::getComponent<component::BoxCollider>(entity);
         if (box) {
-            std::vector<vec3> vertices = {{0.5, 0.5, 0}, {-0.5, 0.5, 0}, {-0.5, -0.5, 0}, {0.5, -0.5, 0}};
-
-            // Scale
-            for (auto& v : vertices)
-                v *= box->size;
-            for (auto& v : vertices)
-                v *= scale;
-
-            // Rotate
-            vec3 euler = orientation.getEuler();
-            for (auto& v : vertices) {
-                vec3 oldv = v;
-                v.x = oldv.x * cos(-euler.z) - oldv.y * sin(-euler.z);
-                v.y = oldv.x * sin(-euler.z) + oldv.y * cos(-euler.z);
+            // Get vertices
+            std::vector<vec3> vertices;
+            switch (physics::getSelectedEngine()) {
+                case physics::Engine::BOX2D: {
+                    vertices = {{0.5, 0.5, 0}, {-0.5, 0.5, 0}, {-0.5, -0.5, 0}, {0.5, -0.5, 0}};
+                    break;
+                }
+                case physics::Engine::BULLET: {
+                    vertices = {{0.5, 0.5, 0.5},  {-0.5, 0.5, 0.5},  {-0.5, -0.5, 0.5},  {0.5, -0.5, 0.5},
+                                {0.5, 0.5, -0.5}, {-0.5, 0.5, -0.5}, {-0.5, -0.5, -0.5}, {0.5, -0.5, -0.5}};
+                    break;
+                }
             }
 
-            // Translate
-            for (auto& v : vertices)
-                v += box->offset;
-            for (auto& v : vertices)
-                v += position;
+            mat3 rotmat = orientation.getRotationMatrix();
+            for (auto& v : vertices) {
+                // Scale
+                v *= box->size * scale;
+                // Rotate
+                v = rotmat * v;
+                // Translate
+                v += box->offset + position;
+            }
 
-            graphics::Drawer::add(graphics::Drawer::Line(vertices[0], vertices[1], color, color), "atta::ui::PhysicsDrawer");
-            graphics::Drawer::add(graphics::Drawer::Line(vertices[1], vertices[2], color, color), "atta::ui::PhysicsDrawer");
-            graphics::Drawer::add(graphics::Drawer::Line(vertices[2], vertices[3], color, color), "atta::ui::PhysicsDrawer");
-            graphics::Drawer::add(graphics::Drawer::Line(vertices[3], vertices[0], color, color), "atta::ui::PhysicsDrawer");
+            if (vertices.size() == 4) {
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[0], vertices[1], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[1], vertices[2], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[2], vertices[3], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[3], vertices[0], color, color), "atta::ui::PhysicsDrawer");
+            } else if (vertices.size() == 8) {
+                // Top
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[0], vertices[1], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[1], vertices[2], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[2], vertices[3], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[3], vertices[0], color, color), "atta::ui::PhysicsDrawer");
+                // Down
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[4], vertices[5], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[5], vertices[6], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[6], vertices[7], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[7], vertices[4], color, color), "atta::ui::PhysicsDrawer");
+                // Connection
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[0], vertices[4], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[1], vertices[5], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[2], vertices[6], color, color), "atta::ui::PhysicsDrawer");
+                graphics::Drawer::add(graphics::Drawer::Line(vertices[3], vertices[7], color, color), "atta::ui::PhysicsDrawer");
+            }
         }
 
         // Draw circle collider
@@ -71,17 +92,15 @@ void PhysicsDrawer::update() {
                 vertices.push_back(vec3(cos(angle), sin(angle), 0.0f));
             }
 
-            // Scale
             for (auto& v : vertices)
+            {
+                // Scale
                 v *= circle->radius;
-            for (auto& v : vertices)
                 v *= std::max(scale.x, scale.y);
-
-            // Translate
-            for (auto& v : vertices)
+                // Translate
                 v += circle->offset;
-            for (auto& v : vertices)
                 v += position;
+            }
 
             for (unsigned i = 0; i < numVertices; i++)
                 graphics::Drawer::add(graphics::Drawer::Line(vertices[i], vertices[(i - 1) % numVertices], color, color), "atta::ui::PhysicsDrawer");

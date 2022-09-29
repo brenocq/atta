@@ -35,6 +35,9 @@ class ProjectSerializer final {
     void serializeResourceModule(Section& section);
     void deserializeResourceModule(Section& section);
 
+    void serializePhysicsModule(Section& section);
+    void deserializePhysicsModule(Section& section);
+
     std::shared_ptr<Project> _project;
 };
 

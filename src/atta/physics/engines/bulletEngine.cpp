@@ -8,11 +8,11 @@
 #include <atta/component/components/rigidBody.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
-#include <atta/physics/physicsEngines/bulletEngine.h>
+#include <atta/physics/engines/bulletEngine.h>
 
 namespace atta::physics {
 
-BulletEngine::BulletEngine() : PhysicsEngine(PhysicsEngine::BULLET_ENGINE) {}
+BulletEngine::BulletEngine() : Engine(Engine::BULLET) {}
 
 BulletEngine::~BulletEngine() {
     if (_running)

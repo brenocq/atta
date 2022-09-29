@@ -55,7 +55,7 @@ void ProjectSerializer::deserializeResourceModule(Section& section) {
     std::vector<resource::Material> materials = std::vector<resource::Material>(section["materials"]);
     resource::destroyResources<resource::Material>();
     for (resource::Material material : materials) {
-        resource::Material::CreateInfo info {};
+        resource::Material::CreateInfo info{};
         info.color = material.color;
         info.metallic = material.metallic;
         info.roughness = material.roughness;
@@ -65,6 +65,18 @@ void ProjectSerializer::deserializeResourceModule(Section& section) {
         info.roughnessImage = material.roughnessImage;
         info.aoImage = material.aoImage;
         resource::create<resource::Material>(material.getId().getString(), info);
+    }
+}
+
+void ProjectSerializer::deserializePhysicsModule(Section& section) {
+    if (section.contains("engine")) {
+        std::string engine = std::string(section["engine"]);
+        if (engine == "NONE")
+            physics::setSelectedEngine(physics::Engine::NONE);
+        else if (engine == "BOX2D")
+            physics::setSelectedEngine(physics::Engine::BOX2D);
+        else if (engine == "BULLET")
+            physics::setSelectedEngine(physics::Engine::BULLET);
     }
 }
 

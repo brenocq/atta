@@ -64,9 +64,15 @@ void SectionData::operator=(T&& value) {
             }
         }
     }
+    //----- Store const char* -----//
+    else if constexpr (std::is_same_v<U, const char*>) {
+        std::string str(value);
+        _data.resize(str.size());
+        for (unsigned i = 0; i < str.size(); i++)
+            _data[i] = str[i];
+    }
     //----- Store std::string -----//
     else if constexpr (std::is_same_v<U, std::string>) {
-        // If it is std::string
         _data.resize(value.size());
         for (unsigned i = 0; i < value.size(); i++)
             _data[i] = value[i];

@@ -8,7 +8,7 @@
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
-#include <atta/physics/physicsEngines/box2DEngine.h>
+#include <atta/physics/engines/box2DEngine.h>
 
 namespace atta::physics {
 
@@ -65,7 +65,7 @@ class RayCastCallback : public b2RayCastCallback {
 };
 
 //---------- Box2DEngine ----------//
-Box2DEngine::Box2DEngine() : PhysicsEngine(PhysicsEngine::BOX2D_ENGINE) {}
+Box2DEngine::Box2DEngine() : Engine(Engine::BOX2D) {}
 
 Box2DEngine::~Box2DEngine() {
     if (_running)

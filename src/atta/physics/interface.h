@@ -7,7 +7,7 @@
 #ifndef ATTA_PHYSICS_INTERFACE_H
 #define ATTA_PHYSICS_INTERFACE_H
 
-#include <atta/physics/physicsEngines/physicsEngine.h>
+#include <atta/physics/engines/engine.h>
 
 namespace atta::physics {
 
@@ -17,10 +17,10 @@ void startUp();
 void shutDown();
 void update(float dt);
 
-PhysicsEngine::Type getSelectedEngine();
+Engine::Type getSelectedEngine();
 Plane2D getPlane2D();
-void setSelectedEngine(PhysicsEngine::Type type);
-std::shared_ptr<PhysicsEngine> getPhysicsEngine();
+void setSelectedEngine(Engine::Type type);
+std::shared_ptr<Engine> getEngine();
 
 //---------- Queries ----------//
 std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);
