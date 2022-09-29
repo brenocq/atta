@@ -10,32 +10,28 @@ jobs:
       matrix:
         config:
         - {
-          name: "Ubuntu Latest",
+          name: "Ubuntu g++",
           os: ubuntu-latest,
-          build_type: "Release"
+          compiler: "g++"
+        }
+        - {
+          name: "Ubuntu clang++",
+          os: ubuntu-latest,
+          compiler: "clang++"
         }
 
     steps:
     - name: Checkout atta
       uses: actions/checkout@v2
 
-    - name: Install dependencies on ubuntu
-      if: startsWith(matrix.config.os, 'ubuntu')
+    - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install cmake xorg-dev curl 
-        cmake --version
-        gcc --version
-
-    - name: Configure
-      run: |
-        mkdir build
-        cd build
-        cmake ..
 
     - name: Build
-      run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
+      run: ./build.sh --jobs 2 --compiler ${{ matrix.config.compiler }}
 
     - name: Test
       run: ctest
-      working-directory: build
+      working-directory: build/release

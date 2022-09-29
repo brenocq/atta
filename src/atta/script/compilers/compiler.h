@@ -18,12 +18,13 @@ class Compiler {
 
     virtual void compileAll() = 0;
     virtual void compileTarget(StringId target) = 0;
-    virtual void updateTargets() = 0;
 
     std::vector<StringId> getTargets() const;
     std::map<StringId, std::vector<fs::path>> getTargetFiles() const { return _targetFiles; };
 
   protected:
+    static std::vector<fs::path> getIncludedFiles(fs::path file);
+
     std::map<StringId, std::vector<fs::path>> _targetFiles;
 };
 

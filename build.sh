@@ -14,14 +14,15 @@ BUILD_TYPE="default"
 RUN_AFTER="false"
 PROJECT_TO_RUN=""
 INSTALL_AFTER="false"
+NUM_JOBS=""
 
 printHelp()
 {
    echo "Atta build script"
    echo
-   echo "Usage: ./build.sh [args ...]"
+   echo "Usage: ./build.sh [option(s)]"
    echo
-   echo "options:"
+   echo "Options:"
    echo
    echo "-h or --help"
    echo "        This help menu"
@@ -38,6 +39,9 @@ printHelp()
    echo
    echo "-c or --compiler <name>"
    echo "        Select the compiler."
+   echo
+   echo "-j or --jobs <num_jobs>"
+   echo "        Set number of jobs to use when building."
    echo
    echo "-s or --static <project_file>"
    echo "        Build statically linked to a project."
@@ -59,7 +63,7 @@ buildDefault()
     echo "---------- Building ----------"
     # Build
     cmake $CMAKE_BUILD_TYPE $CMAKE_COMPILER $CMAKE_ATTA_STATIC $SOURCE_PATH
-    make -j
+    make -j $NUM_JOBS
 
     # Install
     if [[ "$INSTALL_AFTER" == "true" ]]; then
@@ -97,7 +101,7 @@ buildWeb()
     # Build
     echo "---------- Building web ----------"
     emcmake cmake $CMAKE_MODULE $CMAKE_BUILD_TYPE $CMAKE_ATTA_STATIC $SOURCE_PATH
-    make -j
+    make -j $NUM_JOBS
 
     # Run
     if [[ "$RUN_AFTER" == "true" ]]; then
@@ -112,7 +116,7 @@ buildDocs()
 {
     echo "---------- Building docs ----------"
     cmake -ATTA_BUILD_DOCS=ON -DATTA_BUILD_TESTS=OFF $SOURCE_PATH
-    make -j
+    make -j $NUM_JOBS
     exit
 }
 
@@ -135,6 +139,11 @@ while [[ $# -gt 0 ]]; do
     -r|--run)
       RUN_AFTER="true"
       shift # past argument
+      ;;
+    -j|--jobs)
+      NUM_JOBS="$2"
+      shift # past argument
+      shift # past value
       ;;
     -p|--project)
       PROJECT_TO_RUN="$2"
