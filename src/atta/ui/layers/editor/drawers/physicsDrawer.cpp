@@ -30,8 +30,6 @@ void PhysicsDrawer::update() {
         // Draw box collider
         auto box = component::getComponent<component::BoxCollider>(entity);
         if (box) {
-            // Get vertices
-            std::vector<vec3> vertices;
             switch (physics::getSelectedEngine()) {
                 case physics::Engine::BOX2D:
                     drawPlane(t->position + box->offset, t->orientation, t->scale * box->size, color);
@@ -42,29 +40,18 @@ void PhysicsDrawer::update() {
             }
         }
 
-        // Draw circle collider
-        // auto circle = component::getComponent<component::SphereCollider>(entity);
-        // if (circle) {
-        //    const unsigned numVertices = 32;
-        //    std::vector<vec3> vertices;
-        //    for (unsigned i = 0; i < numVertices; i++) {
-        //        float angle = i / float(numVertices) * 2 * 3.1415926535f;
-        //        vertices.push_back(vec3(cos(angle), sin(angle), 0.0f));
-        //    }
-
-        //    for (auto& v : vertices) {
-        //        // Scale
-        //        v *= circle->radius;
-        //        v *= std::max(scale.x, scale.y);
-        //        // Translate
-        //        v += circle->offset;
-        //        v += position;
-        //    }
-
-        //    for (unsigned i = 0; i < numVertices; i++)
-        //        graphics::Drawer::add(graphics::Drawer::Line(vertices[i], vertices[(i - 1) % numVertices], color, color),
-        //        "atta::ui::PhysicsDrawer");
-        //}
+        // Draw sphere collider
+        auto sphere = component::getComponent<component::SphereCollider>(entity);
+        if (sphere) {
+            switch (physics::getSelectedEngine()) {
+                case physics::Engine::BOX2D:
+                    drawCircle(t->position + sphere->offset, t->orientation, t->scale * sphere->radius, color);
+                    break;
+                case physics::Engine::BULLET:
+                    drawSphere(t->position + sphere->offset, t->orientation, t->scale * sphere->radius, color);
+                    break;
+            }
+        }
     }
 }
 
@@ -73,9 +60,8 @@ void PhysicsDrawer::drawPlane(vec3 position, quat orientation, vec3 scale, vec4 
 
     mat4 mat;
     mat.setPosOriScale(position, orientation, scale);
-    for (auto& v : vertices) {
+    for (auto& v : vertices)
         v = vec3(mat * vec4(v, 1));
-    }
 
     graphics::Drawer::add(graphics::Drawer::Line(vertices[0], vertices[1], color, color), "atta::ui::PhysicsDrawer");
     graphics::Drawer::add(graphics::Drawer::Line(vertices[1], vertices[2], color, color), "atta::ui::PhysicsDrawer");
@@ -89,9 +75,8 @@ void PhysicsDrawer::drawBox(vec3 position, quat orientation, vec3 scale, vec4 co
 
     mat4 mat;
     mat.setPosOriScale(position, orientation, scale);
-    for (auto& v : vertices) {
+    for (auto& v : vertices)
         v = vec3(mat * vec4(v, 1));
-    }
 
     // Top
     graphics::Drawer::add(graphics::Drawer::Line(vertices[0], vertices[1], color, color), "atta::ui::PhysicsDrawer");
@@ -110,14 +95,44 @@ void PhysicsDrawer::drawBox(vec3 position, quat orientation, vec3 scale, vec4 co
     graphics::Drawer::add(graphics::Drawer::Line(vertices[3], vertices[7], color, color), "atta::ui::PhysicsDrawer");
 }
 
-void PhysicsDrawer::drawCircle(vec3 position, float radius, vec4 color) {}
+void PhysicsDrawer::drawCircle(vec3 position, quat orientation, vec3 scale, vec4 color) {
+    const unsigned numVertices = 32;
+    std::vector<vec3> vertices;
+    for (unsigned i = 0; i < numVertices; i++) {
+        float angle = i / float(numVertices) * 2 * M_PI;
+        vertices.push_back(vec3(cos(angle), sin(angle), 0.0f));
+    }
 
-void PhysicsDrawer::drawSphere(vec3 position, float radius, vec4 color) {
-    // mat4 mat;
-    // mat.setPosOriScale(pos, orientation, {radius, radius, radius});
-    // for (auto& v : vertices) {
-    //     v = mat3(mat) * v;
-    // }
+    mat4 mat;
+    mat.setPosOriScale(position, orientation, scale);
+    for (auto& v : vertices)
+        v = vec3(mat * vec4(v, 1));
+
+    for (unsigned i = 0; i < numVertices; i++)
+        graphics::Drawer::add(graphics::Drawer::Line(vertices[i], vertices[(i - 1) % numVertices], color, color), "atta::ui::PhysicsDrawer");
+}
+
+void PhysicsDrawer::drawSphere(vec3 position, quat orientation, vec3 scale, vec4 color) {
+    const unsigned numVertices = 32;
+    std::vector<vec3> vertices;
+    for (unsigned i = 0; i < numVertices; i++) {
+        float angle = i / float(numVertices) * 2 * M_PI;
+        vertices.push_back(vec3(0, cos(angle), sin(angle)));
+        vertices.push_back(vec3(cos(angle), 0, sin(angle)));
+        vertices.push_back(vec3(cos(angle), sin(angle), 0));
+    }
+
+    mat4 mat;
+    mat.setPosOriScale(position, orientation, scale);
+    for (auto& v : vertices)
+        v = vec3(mat * vec4(v, 1));
+
+    for (unsigned i = 0; i < (numVertices-1)*3; i+=3)
+    {
+        graphics::Drawer::add(graphics::Drawer::Line(vertices[i], vertices[(i+3)%(numVertices*3)], color, color), "atta::ui::PhysicsDrawer");
+        graphics::Drawer::add(graphics::Drawer::Line(vertices[i+1], vertices[(i+1+3)%(numVertices*3)], color, color), "atta::ui::PhysicsDrawer");
+        graphics::Drawer::add(graphics::Drawer::Line(vertices[i+2], vertices[(i+2+3)%(numVertices*3)], color, color), "atta::ui::PhysicsDrawer");
+    }
 }
 
 } // namespace atta::ui

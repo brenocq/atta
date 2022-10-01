@@ -158,8 +158,8 @@ void Atta::loop() {
     file::update();
 
     if (_simulationState == SimulationState::RUNNING) {
-        // Execute graphics update every X seconds
-        // TODO let the user control how much time is spent rendering
+        // Execute graphics with 30FPS
+        // TODO let the user control graphics FPS
         static clock_t lastTime = std::clock();
         const clock_t currTime = std::clock();
         float timeDiff = float(currTime - lastTime) / CLOCKS_PER_SEC;
