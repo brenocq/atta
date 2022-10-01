@@ -42,13 +42,21 @@ void ProjectSerializer::deserializeComponentModule(Section& section) {
 }
 
 void ProjectSerializer::deserializeGraphicsModule(Section& section) {
-    std::vector<graphics::Viewport> viewports = std::vector<graphics::Viewport>(section["viewports"]);
-    graphics::clearViewports();
-    for (auto& viewport : viewports) {
-        std::shared_ptr<graphics::Viewport> v = std::make_shared<graphics::Viewport>();
-        *v = viewport;
-        graphics::addViewport(v);
+    if (section.contains("viewports")) {
+        std::vector<graphics::Viewport> viewports = std::vector<graphics::Viewport>(section["viewports"]);
+        graphics::clearViewports();
+        for (auto& viewport : viewports) {
+            std::shared_ptr<graphics::Viewport> v = std::make_shared<graphics::Viewport>();
+            *v = viewport;
+            graphics::addViewport(v);
+        }
     }
+    if (section.contains("graphicsFPS"))
+        graphics::setGraphicsFPS(float(section["graphicsFPS"]));
+    if(section.contains("viewportFPS"))
+        graphics::setViewportFPS(float(section["viewportFPS"]));
+    if(section.contains("viewportRendering"))
+        graphics::setViewportRendering(bool(section["viewportRendering"]));
 }
 
 void ProjectSerializer::deserializeResourceModule(Section& section) {

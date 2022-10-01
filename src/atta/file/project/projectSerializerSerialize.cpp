@@ -61,6 +61,9 @@ void ProjectSerializer::serializeGraphicsModule(Section& section) {
     for (auto pv : pviewports)
         viewports.push_back(*pv);
     section["viewports"] = viewports;
+    section["graphicsFPS"] = graphics::getGraphicsFPS();
+    section["viewportFPS"] = graphics::getViewportFPS();
+    section["viewportRendering"] = graphics::getViewportRendering();
 }
 
 void ProjectSerializer::serializeResourceModule(Section& section) {

@@ -23,6 +23,7 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
+    friend void update(float dt);
     friend Script* getScript(StringId target);
     friend std::vector<StringId> getScriptSids();
     friend ProjectScript* getProjectScript();
@@ -35,6 +36,7 @@ class Manager final {
   private:
     void startUpImpl();
     void shutDownImpl();
+    void updateImpl(float dt);
 
     Script* getScriptImpl(StringId target) const;
     std::vector<StringId> getScriptSidsImpl() const;

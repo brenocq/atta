@@ -7,6 +7,7 @@
 #include <atta/event/events/simulationContinue.h>
 #include <atta/event/events/simulationPause.h>
 #include <atta/event/events/simulationStart.h>
+#include <atta/event/events/simulationStep.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/interface.h>
 #include <atta/graphics/interface.h>
@@ -16,11 +17,9 @@
 #include <imgui_internal.h>
 
 namespace atta::ui {
-ToolBar::ToolBar() : _editorState(EditorState::EDITOR) {
-    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
-    event::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
-    event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
-    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(ToolBar::onSimulationStateChange));
+
+bool renderButton(std::string name, float size) {
+    return ImGui::ImageButton(graphics::getImGuiImage("icons/" + name + ".png"), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0);
 }
 
 void ToolBar::render() {
@@ -29,7 +28,6 @@ void ToolBar::render() {
     auto& colors = ImGui::GetStyle().Colors;
     const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
-    // const auto& buttonActive = colors[ImGuiCol_ButtonActive];
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 1.0f));
 
     ImGuiWindowClass window_class;
@@ -40,154 +38,101 @@ void ToolBar::render() {
     {
         float buttonH = ImGui::GetWindowHeight() - 10.0f;
 
-        switch (_editorState) {
-        case EditorState::EDITOR: {
-            ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f));
-            if (ImGui::ImageButton(graphics::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-                event::SimulationStart e;
-                event::publish(e);
-                _editorState = EditorState::SIMULATION_RUNNING;
-            }
-            break;
-        }
-        case EditorState::SIMULATION_RUNNING:
-        case EditorState::SIMULATION_PAUSED: {
-            ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - buttonH / 2 - 2.0f);
-            if (_editorState == EditorState::SIMULATION_RUNNING)
-                if (ImGui::ImageButton(graphics::getImGuiImage("icons/pause.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+        // Buttons
+        ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f));
+        switch (Config::getState()) {
+            case Config::State::IDLE: {
+                if (renderButton("play", buttonH)) {
+                    event::SimulationStart e;
+                    event::publish(e);
+                }
+                ImGui::SameLine();
+                if (renderButton("step", buttonH)) {
+                    event::SimulationStep e;
+                    event::publish(e);
+                }
+            } break;
+            case Config::State::RUNNING:
+            case Config::State::PAUSED: {
+                if (Config::getState() == Config::State::RUNNING && renderButton("pause", buttonH)) {
                     event::SimulationPause e;
                     event::publish(e);
-                    _editorState = EditorState::SIMULATION_PAUSED;
                 }
-            if (_editorState == EditorState::SIMULATION_PAUSED)
-                if (ImGui::ImageButton(graphics::getImGuiImage("icons/play.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+                if (Config::getState() == Config::State::PAUSED && renderButton("play", buttonH)) {
                     event::SimulationContinue e;
                     event::publish(e);
-                    _editorState = EditorState::SIMULATION_RUNNING;
                 }
-
-            ImGui::SameLine();
-            ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) + buttonH / 2 + 2.0f);
-            if (ImGui::ImageButton(graphics::getImGuiImage("icons/stop.png"_ssid), ImVec2(buttonH, buttonH), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-                event::SimulationStop e;
-                event::publish(e);
-                _editorState = EditorState::EDITOR;
+                ImGui::SameLine();
+                if (renderButton("step", buttonH)) {
+                    event::SimulationStep e;
+                    event::publish(e);
+                }
+                ImGui::SameLine();
+                if (renderButton("stop", buttonH)) {
+                    event::SimulationStop e;
+                    event::publish(e);
+                }
+                break;
             }
-            break;
         }
-        default: {
-            LOG_WARN("ui::EditorLayer", "Invalid editor state: [w]$0[]", static_cast<int>(_editorState));
-        }
-        }
-        ImGui::SameLine();
 
-        float dt = Config::getDt();
-        float step = 1.0f;
-        if (dt > 0.0f)
-            while (step > dt)
-                step /= 10.0f;
-        step /= 10;
+        // Slider
+        if (Config::getState() != Config::State::IDLE) {
+            static float speed = 1.0f;
 
-        int width = 100;
-        int padding = 30;
-        ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x - width - padding);
-        ImGui::SetCursorPosY(7);
-        ImGui::PushItemWidth(width);
-        ImGui::DragFloat("dt", &dt, step, 0.000001f, 1.0f, "%.6f");
-        float dtClean = int(dt / step) * step; // Ex: 0.001234f -> 0.001200f
-        Config::setDt(dtClean > 0.0f ? dtClean : dt);
+            // Slider text
+            std::string text = "Real time";
+            if (speed < 1.0f && speed > 0.5f)
+                text = "Slow";
+            else if (speed <= 0.5f && speed > 0.0f)
+                text = "Very slow";
+            else if (speed == 0.0f)
+                text = "Stepping";
+            else if (speed > 1.0f && speed < 1.5f)
+                text = "Fast";
+            else if (speed >= 1.5f && speed < 2.0f)
+                text = "Very fast";
+            else if (speed == 2.0f)
+                text = "Maximum speed";
+
+            // Render slider
+            ImGui::PushItemWidth(150);
+            ImGui::SameLine();
+            ImGui::SliderFloat("##DesiredSpeedSlider", &speed, 0.0f, 2.0f, text.c_str());
+
+            // Real time interval
+            const float rtInt = 0.1f;
+            if (speed > 1.0 - rtInt && speed < 1.0 + rtInt)
+                speed = 1.0f;
+
+            // Time text
+            float time = Config::getTime();
+            int h = time / 3600;
+            int m = (time - h * 3600) / 60;
+            int s = (time - h * 3600 - m * 60);
+            int ms = (time - int(time)) * 1000;
+            ImGui::SameLine();
+            ImGui::Text("%02d:%02d:%02d.%03d - %.3fx", h, m, s, ms, Config::getRealStepSpeed());
+
+            // Convert to desired speed
+            if (speed == 0.0f)
+                Config::setDesiredStepSpeed(Config::getDt()); // One step per second
+            else if (speed == 1.0f)
+                Config::setDesiredStepSpeed(1.0f); // Real time
+            else if (speed == 2.0f)
+                Config::setDesiredStepSpeed(0.0f); // As fast as possible
+            else if (speed < 1.0f) {
+                float k = (pow(10.0f, speed + rtInt) - 1)/9.0f;
+                Config::setDesiredStepSpeed(1.0f * k + Config::getDt() * (1 - k)); // Slower than real time
+            } else {
+                float speedPow = pow(10.0f, (speed - rtInt - 1.0f) * 2); // [1,2] -> [1,100]
+                Config::setDesiredStepSpeed(speedPow);                   // Faster than real time
+            }
+        }
     }
     ImGui::PopStyleColor(3);
     ImGui::PopStyleVar(1);
     ImGui::End();
-
-    handleShortcuts();
 }
 
-void ToolBar::onSimulationStateChange(event::Event& event) {
-    switch (event.getType()) {
-    case event::SimulationStart::type: {
-        _editorState = EditorState::SIMULATION_RUNNING;
-        break;
-    }
-    case event::SimulationContinue::type: {
-        _editorState = EditorState::SIMULATION_RUNNING;
-        break;
-    }
-    case event::SimulationPause::type: {
-        _editorState = EditorState::SIMULATION_PAUSED;
-        break;
-    }
-    case event::SimulationStop::type: {
-        _editorState = EditorState::EDITOR;
-        break;
-    }
-    default: {
-        LOG_WARN("ui::EditorLayer", "Unknown simulation event");
-    }
-    }
-}
-
-void ToolBar::handleShortcuts() {
-    //bool notMoving = !ImGui::IsMouseDown(ImGuiMouseButton_Middle);
-
-    // Play/pause shortcut
-    //if (ImGui::IsKeyPressed('P') && notMoving) {
-    //    switch (_editorState) {
-    //    case EditorState::EDITOR:
-    //    case EditorState::SIMULATION_PAUSED:
-    //        changeState(EditorState::SIMULATION_RUNNING);
-    //        break;
-    //    case EditorState::SIMULATION_RUNNING:
-    //        changeState(EditorState::SIMULATION_PAUSED);
-    //        break;
-    //    }
-    //}
-
-    //// Stop shortcut
-    //if (ImGui::IsKeyPressed('S') && notMoving)
-    //    changeState(EditorState::EDITOR);
-}
-
-void ToolBar::changeState(ToolBar::EditorState newState) {
-    switch (newState) {
-    case EditorState::EDITOR: {
-        if (_editorState != EditorState::EDITOR) {
-            event::SimulationStop e;
-            event::publish(e);
-        }
-        _editorState = EditorState::EDITOR;
-        break;
-    }
-    case EditorState::SIMULATION_RUNNING: {
-        if (_editorState == EditorState::SIMULATION_PAUSED) {
-            event::SimulationContinue e;
-            event::publish(e);
-        } else if (_editorState == EditorState::EDITOR) {
-            event::SimulationStart e;
-            event::publish(e);
-        }
-        _editorState = EditorState::SIMULATION_RUNNING;
-        break;
-    }
-    case EditorState::SIMULATION_PAUSED: {
-        // If it is not running, need to start the simulation
-        if (_editorState == EditorState::EDITOR) {
-            event::SimulationStart e;
-            event::publish(e);
-            _editorState = EditorState::SIMULATION_RUNNING;
-        }
-
-        // After the simulation is started, it is possible to pause
-        if (_editorState == EditorState::SIMULATION_RUNNING) {
-            event::SimulationPause e;
-            event::publish(e);
-            _editorState = EditorState::SIMULATION_PAUSED;
-        }
-        break;
-    }
-    default:
-        LOG_WARN("ToolBar", "Try to change editor state to an invalid one");
-    }
-}
 } // namespace atta::ui

@@ -40,6 +40,11 @@ void Manager::startUpImpl() {
     memory::StackAllocator* graphics = new memory::StackAllocator(graphicsMemory, size);
     memory::registerAllocator(SSID("GraphicsAllocator"), static_cast<memory::Allocator*>(graphics));
 
+    //----- Config -----//
+    _graphicsFPS = 30.0f;
+    _viewportFPS = 30.0f;
+    _viewportRendering = true;
+
     //----- Window -----//
     Window::CreateInfo windowInfo{};
     _window = std::static_pointer_cast<Window>(std::make_shared<GlfwWindow>(windowInfo));
@@ -71,24 +76,41 @@ void Manager::shutDownImpl() {
 }
 
 void Manager::updateImpl() {
-    // Update viewport if it was changed
-    if (_swapViewports) {
-        _viewports = _viewportsNext;
-        _swapViewports = false;
+    // Graphics fps
+    static clock_t gfxLastTime = std::clock();
+    const clock_t gfxCurrTime = std::clock();
+    const float gfxTimeDiff = float(gfxCurrTime - gfxLastTime) / CLOCKS_PER_SEC;
+
+    // Viewports fps
+    static clock_t vpLastTime = std::clock();
+    const clock_t vpCurrTime = std::clock();
+    const float vpTimeDiff = float(vpCurrTime - vpLastTime) / CLOCKS_PER_SEC;
+
+    if (_graphicsFPS > 0 && (gfxTimeDiff > 1 / _graphicsFPS)) {
+        gfxLastTime = gfxCurrTime;
+        // Update viewports if it was changed
+        if (_swapViewports) {
+            _viewports = _viewportsNext;
+            _swapViewports = false;
+        }
+
+        // Update window events
+        _window->update();
+
+        // Render viewports
+        _rendererAPI->beginFrame();
+        {
+            if (_viewportRendering && (_viewportFPS > 0 && (vpTimeDiff > 1 / _viewportFPS))) {
+                vpLastTime = vpCurrTime;
+                for (auto& viewport : _viewports)
+                    viewport->render();
+            }
+            _layerStack->render();
+        }
+        _rendererAPI->endFrame();
+
+        _window->swapBuffers();
     }
-
-    // Render
-    _window->update();
-
-    _rendererAPI->beginFrame();
-    {
-        for (auto& viewport : _viewports)
-            viewport->render();
-        _layerStack->render();
-    }
-    _rendererAPI->endFrame();
-
-    _window->swapBuffers();
 }
 
 void Manager::pushLayerImpl(Layer* layer) { _layerStack->push(layer); }

@@ -8,6 +8,7 @@
 #define ATTA_ATTA_H
 #include <atta/event/event.h>
 #include <atta/memory/allocators/stackAllocator.h>
+#include <ctime>
 
 namespace atta {
 class Atta {
@@ -21,14 +22,9 @@ class Atta {
 
     void run();
     void loop();
+    void step();
 
   private:
-    enum class SimulationState {
-        NOT_RUNNING = 0,
-        RUNNING,
-        PAUSED,
-    };
-
     // Handle events
     void onWindowClose(event::Event& event);
     void onSimulationStateChange(event::Event& event);
@@ -38,7 +34,9 @@ class Atta {
 
     // State
     bool _shouldFinish;
-    SimulationState _simulationState;
+    bool _shouldStep;
+    clock_t _lastStep;
+    clock_t _currStep;
 };
 } // namespace atta
 
