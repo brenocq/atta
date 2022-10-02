@@ -175,6 +175,7 @@ void Atta::onSimulationStateChange(event::Event& event) {
         case event::SimulationStop::type: {
             Config::getInstance()._state = Config::State::IDLE;
             Config::getInstance()._time = 0.0f;
+            Config::getInstance()._realStepSpeed = 0.0f;
             if (project)
                 project->onStop();
             break;

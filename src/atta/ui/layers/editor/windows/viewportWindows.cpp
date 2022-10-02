@@ -37,7 +37,7 @@ void ViewportWindows::render() {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
         bool open = true;
         ImGui::Begin(nameBuf, &open);
-        {
+        if (graphics::getViewportRendering()) {
             //----- Move camera -----//
             // Check started camera movement
             if (ImGui::IsMouseClicked(2) && ImGui::IsWindowHovered())
@@ -240,7 +240,8 @@ void ViewportWindows::addBasicShapePopup() {
                 component::addComponent<component::Transform>(eid);
                 component::Mesh* m = component::addComponent<component::Mesh>(eid);
                 m->sid = basicShapesMesh[i];
-                resource::Material* matRes = resource::create<resource::Material>("defaultMaterial." + std::to_string(eid), resource::Material::CreateInfo{});
+                resource::Material* matRes =
+                    resource::create<resource::Material>("defaultMaterial." + std::to_string(eid), resource::Material::CreateInfo{});
                 matRes->color = vec3(0.5f, 0.5f, 0.5f);
                 component::Material* mat = component::addComponent<component::Material>(eid);
                 mat->sid = matRes->getId();

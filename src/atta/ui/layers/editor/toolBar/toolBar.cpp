@@ -37,47 +37,61 @@ void ToolBar::render() {
     ImGui::Begin("##Toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
         float buttonH = ImGui::GetWindowHeight() - 10.0f;
+        ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x * 0.5f -
+                             (4 * buttonH + 150 + ImGui::CalcTextSize("00:00:00.000 - 0.000x").x + 5 * 10 + 10) / 2);
 
-        // Buttons
-        ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f));
-        switch (Config::getState()) {
-            case Config::State::IDLE: {
+        // View button
+        {
+            if (renderButton(graphics::getViewportRendering() ? "view" : "no-view", buttonH))
+                graphics::setViewportRendering(!graphics::getViewportRendering());
+            ImGui::SameLine();
+            ImGui::Dummy(ImVec2(10.0f, 0.0f));
+        }
+
+        // Step buttons
+        {
+            ImGui::SameLine();
+            bool disabled = Config::getState() == Config::State::IDLE;
+            if (disabled) {
+                ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+            }
+            if (renderButton("stop", buttonH)) {
+                event::SimulationStop e;
+                event::publish(e);
+            }
+            if (disabled) {
+                ImGui::PopItemFlag();
+                ImGui::PopStyleVar();
+            }
+
+            ImGui::SameLine();
+            if (Config::getState() != Config::State::RUNNING) {
                 if (renderButton("play", buttonH)) {
-                    event::SimulationStart e;
-                    event::publish(e);
+                    if (Config::getState() == Config::State::PAUSED) {
+                        event::SimulationContinue e;
+                        event::publish(e);
+                    } else if (Config::getState() == Config::State::IDLE) {
+                        event::SimulationStart e;
+                        event::publish(e);
+                    }
                 }
-                ImGui::SameLine();
-                if (renderButton("step", buttonH)) {
-                    event::SimulationStep e;
-                    event::publish(e);
-                }
-            } break;
-            case Config::State::RUNNING:
-            case Config::State::PAUSED: {
-                if (Config::getState() == Config::State::RUNNING && renderButton("pause", buttonH)) {
+            } else {
+                if (renderButton("pause", buttonH)) {
                     event::SimulationPause e;
                     event::publish(e);
                 }
-                if (Config::getState() == Config::State::PAUSED && renderButton("play", buttonH)) {
-                    event::SimulationContinue e;
-                    event::publish(e);
-                }
-                ImGui::SameLine();
-                if (renderButton("step", buttonH)) {
-                    event::SimulationStep e;
-                    event::publish(e);
-                }
-                ImGui::SameLine();
-                if (renderButton("stop", buttonH)) {
-                    event::SimulationStop e;
-                    event::publish(e);
-                }
-                break;
+            }
+
+            ImGui::SameLine();
+            if (renderButton("step", buttonH)) {
+                event::SimulationStep e;
+                event::publish(e);
             }
         }
 
         // Slider
-        if (Config::getState() != Config::State::IDLE) {
+        {
             static float speed = 1.0f;
 
             // Slider text
@@ -122,7 +136,7 @@ void ToolBar::render() {
             else if (speed == 2.0f)
                 Config::setDesiredStepSpeed(0.0f); // As fast as possible
             else if (speed < 1.0f) {
-                float k = (pow(10.0f, speed + rtInt) - 1)/9.0f;
+                float k = (pow(10.0f, speed + rtInt) - 1) / 9.0f;
                 Config::setDesiredStepSpeed(1.0f * k + Config::getDt() * (1 - k)); // Slower than real time
             } else {
                 float speedPow = pow(10.0f, (speed - rtInt - 1.0f) * 2); // [1,2] -> [1,100]
