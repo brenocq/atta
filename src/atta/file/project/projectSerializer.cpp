@@ -20,6 +20,7 @@
 #include <atta/utils/config.h>
 
 #include <atta/physics/interface.h>
+#include <atta/physics/engines/bulletEngine.h>
 
 namespace atta::file {
 

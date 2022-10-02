@@ -5,51 +5,106 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/components/boxCollider.h>
+#include <atta/component/components/rigidBody.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
 #include <atta/graphics/drawer.h>
+#include <atta/physics/engines/bulletEngine.h>
 #include <atta/physics/interface.h>
 #include <atta/ui/layers/editor/drawers/physicsDrawer.h>
+#include <atta/utils/config.h>
 
 namespace atta::ui {
 
 void PhysicsDrawer::update() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::ui::PhysicsDrawer");
+    // Show colliders
+    if (physics::getShowColliders()) {
+        std::vector<component::EntityId> entities = component::getEntitiesView();
+        for (auto entity : entities) {
+            // Get transform
+            auto t = component::getComponent<component::Transform>(entity);
+            if (!t)
+                continue;
 
-    std::vector<component::EntityId> entities = component::getEntitiesView();
-    for (auto entity : entities) {
-        // Get transform
-        auto t = component::getComponent<component::Transform>(entity);
-        if (!t)
-            continue;
+            // Base color
+            vec4 color = {1, 1, 1, 1};
+            // Change color based on bullet rigid body state
+            if (physics::getEngineType() == physics::Engine::BULLET && Config::getState() != Config::State::IDLE) {
+                auto bullet = physics::getEngine<physics::BulletEngine>();
+                auto rb = bullet->getBulletRigidBody(entity);
+                if (rb)
+                    color = rb->isActive() ? vec4(0, 1, 0, 1) : vec4(1, 1, 0, 1);
+            }
 
-        // Choose color
-        vec4 color = {0, 1, 0, 1};
+            // Draw box collider
+            auto box = component::getComponent<component::BoxCollider>(entity);
+            if (box) {
+                switch (physics::getEngineType()) {
+                    case physics::Engine::BOX2D:
+                        drawPlane(t->position + box->offset, t->orientation, t->scale * box->size, color);
+                        break;
+                    case physics::Engine::BULLET:
+                        drawBox(t->position + box->offset, t->orientation, t->scale * box->size, color);
+                        break;
+                }
+            }
 
-        // Draw box collider
-        auto box = component::getComponent<component::BoxCollider>(entity);
-        if (box) {
-            switch (physics::getSelectedEngine()) {
-                case physics::Engine::BOX2D:
-                    drawPlane(t->position + box->offset, t->orientation, t->scale * box->size, color);
-                    break;
-                case physics::Engine::BULLET:
-                    drawBox(t->position + box->offset, t->orientation, t->scale * box->size, color);
-                    break;
+            // Draw sphere collider
+            auto sphere = component::getComponent<component::SphereCollider>(entity);
+            if (sphere) {
+                switch (physics::getEngineType()) {
+                    case physics::Engine::BOX2D:
+                        drawCircle(t->position + sphere->offset, t->orientation, t->scale * sphere->radius, color);
+                        break;
+                    case physics::Engine::BULLET:
+                        drawSphere(t->position + sphere->offset, t->orientation, t->scale * sphere->radius, color);
+                        break;
+                }
+            }
+        }
+    }
+
+    // Bullet
+    if (physics::getEngineType() == physics::Engine::BULLET && Config::getState() != Config::State::IDLE) {
+        std::shared_ptr<physics::BulletEngine> bullet = std::static_pointer_cast<physics::BulletEngine>(physics::getEngine());
+        // Draw AABBs
+        if (bullet->getShowAabb()) {
+            std::vector<component::EntityId> entities = component::getEntitiesView();
+            for (auto entity : entities) {
+                // Check if entity has bullet rigid body
+                if (bullet->getBulletRigidBody(entity)) {
+                    bnd3 aabb = bullet->getAabb(entity);
+                    vec3 center = (aabb.pMin + aabb.pMax) / 2.0f;
+                    vec3 size = aabb.pMax - aabb.pMin;
+                    drawBox(center, quat(), size, {0.3, 0.8, 1.0, 1.0});
+                }
             }
         }
 
-        // Draw sphere collider
-        auto sphere = component::getComponent<component::SphereCollider>(entity);
-        if (sphere) {
-            switch (physics::getSelectedEngine()) {
-                case physics::Engine::BOX2D:
-                    drawCircle(t->position + sphere->offset, t->orientation, t->scale * sphere->radius, color);
-                    break;
-                case physics::Engine::BULLET:
-                    drawSphere(t->position + sphere->offset, t->orientation, t->scale * sphere->radius, color);
-                    break;
+        // Draw contacts
+        if (physics::getShowContacts()) {
+            auto contacts = bullet->getCollisions();
+            for (auto [bodyA, bodiesB] : contacts) {
+                for (auto [bodyB, manifold] : bodiesB) {
+                    if (bodyA < bodyB) {
+                        int numContacts = manifold->getNumContacts();
+                        for (int i = 0; i < numContacts; i++) {
+                            const btManifoldPoint& contactPoint = manifold->getContactPoint(i);
+                            btVector3 btp0 = contactPoint.getPositionWorldOnA();
+                            btVector3 btp1 = contactPoint.getPositionWorldOnB();
+                            btVector3 n = contactPoint.m_normalWorldOnB;
+                            vec3 p0(btp0.x(), btp0.y(), btp0.z());
+                            vec3 p1(btp1.x(), btp1.y(), btp1.z());
+                            vec4 color(1, 1, 1, 1);
+                            vec3 normal(n.x(), n.y(), n.z());
+                            quat ori;
+                            ori.setRotationFromVectors(normal, vec3(0,0,1));
+                            drawCircle(p0, ori, vec3(0.1), color);
+                        }
+                    }
+                }
             }
         }
     }
@@ -127,11 +182,12 @@ void PhysicsDrawer::drawSphere(vec3 position, quat orientation, vec3 scale, vec4
     for (auto& v : vertices)
         v = vec3(mat * vec4(v, 1));
 
-    for (unsigned i = 0; i < (numVertices-1)*3; i+=3)
-    {
-        graphics::Drawer::add(graphics::Drawer::Line(vertices[i], vertices[(i+3)%(numVertices*3)], color, color), "atta::ui::PhysicsDrawer");
-        graphics::Drawer::add(graphics::Drawer::Line(vertices[i+1], vertices[(i+1+3)%(numVertices*3)], color, color), "atta::ui::PhysicsDrawer");
-        graphics::Drawer::add(graphics::Drawer::Line(vertices[i+2], vertices[(i+2+3)%(numVertices*3)], color, color), "atta::ui::PhysicsDrawer");
+    for (unsigned i = 0; i < (numVertices - 1) * 3; i += 3) {
+        graphics::Drawer::add(graphics::Drawer::Line(vertices[i], vertices[(i + 3) % (numVertices * 3)], color, color), "atta::ui::PhysicsDrawer");
+        graphics::Drawer::add(graphics::Drawer::Line(vertices[i + 1], vertices[(i + 1 + 3) % (numVertices * 3)], color, color),
+                              "atta::ui::PhysicsDrawer");
+        graphics::Drawer::add(graphics::Drawer::Line(vertices[i + 2], vertices[(i + 2 + 3) % (numVertices * 3)], color, color),
+                              "atta::ui::PhysicsDrawer");
     }
 }
 

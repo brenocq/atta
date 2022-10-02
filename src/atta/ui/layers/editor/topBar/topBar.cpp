@@ -119,9 +119,9 @@ void TopBar::render() {
         }
 
         if (ImGui::BeginMenu("Modules")) {
-            if (ImGui::MenuItem("IO Module"))
+            if (ImGui::MenuItem("IO"))
                 IOModuleWindow::setOpen(true);
-            if (ImGui::MenuItem("Physics Module"))
+            if (ImGui::MenuItem("Physics"))
                 PhysicsModuleWindow::setOpen(true);
             ImGui::EndMenu();
         }

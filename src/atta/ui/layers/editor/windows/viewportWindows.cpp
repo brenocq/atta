@@ -191,27 +191,27 @@ void ViewportWindows::render() {
             }
 
             //----- Overlay -----//
-            {
-                ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize |
-                                                ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav |
-                                                ImGuiWindowFlags_NoMove;
-                ImVec2 window = ImGui::GetWindowPos();
-                ImGui::SetNextWindowPos(ImVec2(window.x + 10, window.y + 30));
-                ImGui::SetNextWindowBgAlpha(0.35f);
-                bool open = true;
-                if (ImGui::Begin((viewport->getSID().getString() + "Overlay").c_str(), &open, window_flags)) {
-                    ImGui::Text("To move the camera");
-                    ImGui::BulletText("Holding mouse middle button");
-                    ImGui::BulletText("Rotate with mouse");
-                    ImGui::BulletText("Move with ASWD QE");
-                    ImGui::Text("To move objects");
-                    ImGui::BulletText("Select some object");
-                    ImGui::BulletText("Translate: SHIFT+t");
-                    ImGui::BulletText("Scale: SHIFT+s");
-                    ImGui::BulletText("Rotate: SHIFT+r");
-                }
-                ImGui::End();
-            }
+            //{
+            //    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize |
+            //                                    ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav |
+            //                                    ImGuiWindowFlags_NoMove;
+            //    ImVec2 window = ImGui::GetWindowPos();
+            //    ImGui::SetNextWindowPos(ImVec2(window.x + 10, window.y + 30));
+            //    ImGui::SetNextWindowBgAlpha(0.35f);
+            //    bool open = true;
+            //    if (ImGui::Begin((viewport->getSID().getString() + "Overlay").c_str(), &open, window_flags)) {
+            //        ImGui::Text("To move the camera");
+            //        ImGui::BulletText("Holding mouse middle button");
+            //        ImGui::BulletText("Rotate with mouse");
+            //        ImGui::BulletText("Move with ASWD QE");
+            //        ImGui::Text("To move objects");
+            //        ImGui::BulletText("Select some object");
+            //        ImGui::BulletText("Translate: SHIFT+t");
+            //        ImGui::BulletText("Scale: SHIFT+s");
+            //        ImGui::BulletText("Rotate: SHIFT+r");
+            //    }
+            //    ImGui::End();
+            //}
 
             //----- Resize -----//
             ImVec2 windowSize = ImGui::GetWindowSize();

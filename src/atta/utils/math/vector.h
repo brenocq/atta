@@ -137,6 +137,12 @@ inline auto dot(const vector4<T>& v1, const vector4<T>& v2);
 template <typename T>
 inline float length(const vector4<T>& v);
 
+// Max/Min
+template <typename T>
+inline vector4<T> max(const vector4<T>& v1, const vector4<T>& v2);
+template <typename T>
+inline vector4<T> min(const vector4<T>& v1, const vector4<T>& v2);
+
 // <<
 template <typename T>
 inline std::ostream& operator<<(std::ostream& os, const vector4<T>& v);
@@ -277,6 +283,12 @@ inline auto dot(const vector3<T>& v1, const vector3<T>& v2);
 template <typename T>
 inline float length(const vector3<T>& v);
 
+// Max/Min
+template <typename T>
+inline vector3<T> max(const vector3<T>& v1, const vector3<T>& v2);
+template <typename T>
+inline vector3<T> min(const vector3<T>& v1, const vector3<T>& v2);
+
 // <<
 template <typename T>
 inline std::ostream& operator<<(std::ostream& os, const vector3<T>& v);
@@ -408,6 +420,12 @@ inline auto dot(const vector2<T>& v1, const vector2<T>& v2);
 // Length
 template <typename T>
 inline float length(const vector2<T>& v);
+
+// Max/Min
+template <typename T>
+inline vector2<T> max(const vector2<T>& v1, const vector2<T>& v2);
+template <typename T>
+inline vector2<T> min(const vector2<T>& v1, const vector2<T>& v2);
 
 // <<
 template <typename T>

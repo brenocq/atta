@@ -4,22 +4,28 @@
 // Date: 2021-12-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/physics/interface.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
+
+#include <atta/physics/engines/bulletEngine.h>
+#include <atta/physics/interface.h>
 
 namespace atta::ui {
 
-PhysicsModuleWindow::PhysicsModuleWindow() { setName("Physics Module"); }
+PhysicsModuleWindow::PhysicsModuleWindow() {
+    setName("Physics Module");
+    _initialSize = vec2(250.0f, 300.0f);
+}
 
 void PhysicsModuleWindow::renderImpl() {
-    ImGui::Text("Physics Engine");
-    std::vector<std::string> physicsEngines = {"None", "Box2D", "Bullet"};
+    ImGui::Text("Engine");
 
-    physics::Engine::Type selected = physics::getSelectedEngine();
+    ImGui::SameLine();
+    std::vector<std::string> physicsEngines = {"None", "Box2D", "Bullet"};
+    physics::Engine::Type selected = physics::getEngineType();
     if (ImGui::BeginCombo(("##" + _name + "SelectEngine").c_str(), physicsEngines[selected].c_str())) {
         for (unsigned i = 0; i < physicsEngines.size(); i++) {
             if (ImGui::Selectable(physicsEngines[i].c_str(), i == selected))
-                physics::setSelectedEngine((physics::Engine::Type)i);
+                physics::setEngineType((physics::Engine::Type)i);
             if (i == selected)
                 ImGui::SetItemDefaultFocus();
         }
@@ -27,6 +33,58 @@ void PhysicsModuleWindow::renderImpl() {
     }
 
     ImGui::Separator();
+    switch (selected) {
+        case physics::Engine::NONE:
+            break;
+        case physics::Engine::BOX2D: {
+            bool showColliders = physics::getShowColliders();
+            bool showContacts = physics::getShowContacts();
+            if (ImGui::Checkbox("Show colliders", &showColliders))
+                physics::setShowColliders(showColliders);
+            if (ImGui::Checkbox("Show contacts", &showContacts))
+                physics::setShowContacts(showContacts);
+            break;
+        }
+        case physics::Engine::BULLET: {
+            std::shared_ptr<physics::BulletEngine> bullet = std::static_pointer_cast<physics::BulletEngine>(physics::getEngine());
+
+            bool showColliders = physics::getShowColliders();
+            bool showAabb = bullet->getShowAabb();
+            bool showContacts = physics::getShowContacts();
+            if (ImGui::Checkbox("Show colliders", &showColliders))
+                physics::setShowColliders(showColliders);
+            if (ImGui::Checkbox("Show aabb", &showAabb))
+                bullet->setShowAabb(showAabb);
+            if (ImGui::Checkbox("Show contacts", &showContacts))
+                physics::setShowContacts(showContacts);
+
+            // Gravity vector
+            {
+                ImGui::Text("Gravity");
+                vec3 g = physics::getGravity();
+                if (ImGui::DragFloat3("Gravity", (float*)(&g), 0.01f))
+                    physics::setGravity(g);
+            }
+            // Sub steps
+            {
+                int numSubSteps = bullet->getNumSubSteps();
+                if (ImGui::DragInt("Sub steps", &numSubSteps, 1, 1, 1000)) {
+                    if (numSubSteps < 1)
+                        numSubSteps = 1;
+                    bullet->setNumSubSteps(numSubSteps);
+                }
+            }
+            ImGui::Separator();
+
+            // Number of collisions
+            unsigned numCollisions2 = 0;
+            auto collisions = bullet->getCollisions();
+            for(auto [bodyA, bodiesB] : collisions)
+                numCollisions2 += bodiesB.size();
+            ImGui::Text("Num collisions: %u", numCollisions2/2);
+            break;
+        }
+    }
 }
 
 } // namespace atta::ui

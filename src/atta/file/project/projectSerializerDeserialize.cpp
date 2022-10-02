@@ -80,11 +80,25 @@ void ProjectSerializer::deserializePhysicsModule(Section& section) {
     if (section.contains("engine")) {
         std::string engine = std::string(section["engine"]);
         if (engine == "NONE")
-            physics::setSelectedEngine(physics::Engine::NONE);
+            physics::setEngineType(physics::Engine::NONE);
         else if (engine == "BOX2D")
-            physics::setSelectedEngine(physics::Engine::BOX2D);
+            physics::setEngineType(physics::Engine::BOX2D);
         else if (engine == "BULLET")
-            physics::setSelectedEngine(physics::Engine::BULLET);
+            physics::setEngineType(physics::Engine::BULLET);
+    }
+    if(section.contains("gravity"))
+       physics::setGravity(vec3(section["gravity"]));
+    if(section.contains("showColliders"))
+        physics::setShowColliders(bool(section["showColliders"]));
+    if(section.contains("showContacts"))
+        physics::setShowContacts(bool(section["showContacts"]));
+
+    if (section.contains("bullet")) {
+        auto bullet = physics::getEngine<physics::BulletEngine>();
+        if (section["bullet"].contains("showAabb"))
+            bullet->setShowAabb(bool(section["bullet"]["showAabb"]));
+        if (section["bullet"].contains("numSubSteps"))
+            bullet->setNumSubSteps(unsigned(section["bullet"]["numSubSteps"]));
     }
 }
 

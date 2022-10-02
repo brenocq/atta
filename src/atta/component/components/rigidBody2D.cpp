@@ -29,7 +29,7 @@ ComponentDescription& TypedComponentRegistry<RigidBody2D>::getDescription() {
 }
 
 void RigidBody2D::setTransform(vec2 position, float angle) {
-    if (physics::getSelectedEngine() == physics::Engine::BOX2D) {
+    if (physics::getEngineType() == physics::Engine::BOX2D) {
         std::shared_ptr<physics::Box2DEngine> b2Engine = std::static_pointer_cast<physics::Box2DEngine>(physics::getEngine());
         b2Engine->setTransform(this, position, angle);
     } else
@@ -37,7 +37,7 @@ void RigidBody2D::setTransform(vec2 position, float angle) {
 }
 
 void RigidBody2D::setLinearVelocity(vec2 vel) {
-    if (physics::getSelectedEngine() == physics::Engine::BOX2D) {
+    if (physics::getEngineType() == physics::Engine::BOX2D) {
         std::shared_ptr<physics::Box2DEngine> b2Engine = std::static_pointer_cast<physics::Box2DEngine>(physics::getEngine());
         b2Engine->setLinearVelocity(this, vel);
     } else
@@ -45,7 +45,7 @@ void RigidBody2D::setLinearVelocity(vec2 vel) {
 }
 
 void RigidBody2D::setAngularVelocity(float omega) {
-    if (physics::getSelectedEngine() == physics::Engine::BOX2D) {
+    if (physics::getEngineType() == physics::Engine::BOX2D) {
         std::shared_ptr<physics::Box2DEngine> b2Engine = std::static_pointer_cast<physics::Box2DEngine>(physics::getEngine());
         b2Engine->setAngularVelocity(this, omega);
     } else
@@ -53,7 +53,7 @@ void RigidBody2D::setAngularVelocity(float omega) {
 }
 
 void RigidBody2D::applyForce(vec2 force, vec2 point, bool wake) {
-    if (physics::getSelectedEngine() == physics::Engine::BOX2D) {
+    if (physics::getEngineType() == physics::Engine::BOX2D) {
         std::shared_ptr<physics::Box2DEngine> b2Engine = std::static_pointer_cast<physics::Box2DEngine>(physics::getEngine());
         b2Engine->applyForce(this, force, point, wake);
     } else
@@ -61,7 +61,7 @@ void RigidBody2D::applyForce(vec2 force, vec2 point, bool wake) {
 }
 
 void RigidBody2D::applyForceToCenter(vec2 force, bool wake) {
-    if (physics::getSelectedEngine() == physics::Engine::BOX2D) {
+    if (physics::getEngineType() == physics::Engine::BOX2D) {
         std::shared_ptr<physics::Box2DEngine> b2Engine = std::static_pointer_cast<physics::Box2DEngine>(physics::getEngine());
         b2Engine->applyForceToCenter(this, force, wake);
     } else
@@ -69,7 +69,7 @@ void RigidBody2D::applyForceToCenter(vec2 force, bool wake) {
 }
 
 void RigidBody2D::applyTorque(float torque, bool wake) {
-    if (physics::getSelectedEngine() == physics::Engine::BOX2D) {
+    if (physics::getEngineType() == physics::Engine::BOX2D) {
         std::shared_ptr<physics::Box2DEngine> b2Engine = std::static_pointer_cast<physics::Box2DEngine>(physics::getEngine());
         b2Engine->applyTorque(this, torque, wake);
     } else

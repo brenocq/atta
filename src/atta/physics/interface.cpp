@@ -5,7 +5,6 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/physics/interface.h>
-#include <atta/physics/manager.h>
 
 namespace atta::physics {
 
@@ -13,10 +12,17 @@ void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 void update(float dt) { Manager::getInstance().updateImpl(dt); }
 
-Engine::Type getSelectedEngine() { return Manager::getInstance()._engine->getType(); }
+Engine::Type getEngineType() { return Manager::getInstance()._engine->getType(); }
+void setEngineType(Engine::Type type) { Manager::getInstance().setEngineTypeImpl(type); }
+
 Plane2D getPlane2D() { return Manager::getInstance()._plane2D; }
-void setSelectedEngine(Engine::Type type) { return Manager::getInstance().setSelectedEngineImpl(type); }
-std::shared_ptr<Engine> getEngine() { return Manager::getInstance()._engine; }
+void setPlane2D(Plane2D plane2D) { Manager::getInstance().setPlane2DImpl(plane2D); }
+vec3 getGravity() { return Manager::getInstance()._gravity; }
+void setGravity(vec3 gravity) { Manager::getInstance().setGravityImpl(gravity); }
+bool getShowColliders() { return Manager::getInstance()._showColliders; }
+void setShowColliders(bool showColliders) { Manager::getInstance()._showColliders = showColliders; }
+bool getShowContacts() { return Manager::getInstance()._showContacts; }
+void setShowContacts(bool showContacts) { Manager::getInstance()._showContacts = showContacts; }
 
 //---------- Queries ----------//
 std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) { return Manager::getInstance()._engine->getEntityCollisions(eid); }

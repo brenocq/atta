@@ -9,6 +9,7 @@
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
 #include <atta/physics/engines/box2DEngine.h>
+#include <atta/physics/interface.h>
 
 namespace atta::physics {
 
@@ -74,7 +75,8 @@ Box2DEngine::~Box2DEngine() {
 
 void Box2DEngine::start() {
     _running = true;
-    _world = std::make_shared<b2World>(b2Vec2(0.0f, 0.0f));
+    vec2 g = vec2(physics::getGravity());
+    _world = std::make_shared<b2World>(b2Vec2(g.x, g.y));
 
     // Create contact listener
     // TODO need to free?
@@ -185,8 +187,8 @@ void Box2DEngine::start() {
 }
 
 void Box2DEngine::step(float dt) {
-    int velocityIterations = 6;
-    int positionIterations = 2;
+    int velocityIterations = 8;
+    int positionIterations = 3;
     _world->Step(dt, velocityIterations, positionIterations);
 
     // Update transform components

@@ -78,17 +78,25 @@ void ProjectSerializer::serializeResourceModule(Section& section) {
 }
 
 void ProjectSerializer::serializePhysicsModule(Section& section) {
-    switch (physics::getSelectedEngine()) {
+    switch (physics::getEngineType()) {
         case physics::Engine::NONE:
             section["engine"] = "NONE";
             break;
         case physics::Engine::BOX2D:
             section["engine"] = "BOX2D";
             break;
-        case physics::Engine::BULLET:
+        case physics::Engine::BULLET: {
             section["engine"] = "BULLET";
             break;
+        }
     }
+    section["gravity"] = physics::getGravity();
+    section["showColliders"] = physics::getShowColliders();
+    section["showContacts"] = physics::getShowContacts();
+
+    auto bullet = physics::getEngine<physics::BulletEngine>();
+    section["bullet"]["showAabb"] = bullet->getShowAabb();
+    section["bullet"]["numSubSteps"] = bullet->getNumSubSteps();
 }
 
 } // namespace atta::file

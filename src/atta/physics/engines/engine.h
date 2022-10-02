@@ -27,6 +27,9 @@ class Engine {
     virtual std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst = true) { return {}; };
     virtual bool areColliding(component::EntityId eid0, component::EntityId eid1) { return false; };
 
+    /// Physics engine should update the gravity with the new value in Manager::getGravity()
+    virtual void updateGravity() {};
+
     Type getType() const { return _type; }
     bool getRunning() const { return _running; }
 
