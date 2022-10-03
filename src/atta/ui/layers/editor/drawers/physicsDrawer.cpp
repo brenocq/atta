@@ -28,6 +28,11 @@ void PhysicsDrawer::update() {
             if (!t)
                 continue;
 
+            mat4 worldTrans = t->getWorldTransform(entity);
+            vec3 pos, scale;
+            quat ori;
+            worldTrans.getPosOriScale(pos, ori, scale);
+
             // Base color
             vec4 color = {1, 1, 1, 1};
             // Change color based on bullet rigid body state
@@ -43,10 +48,10 @@ void PhysicsDrawer::update() {
             if (box) {
                 switch (physics::getEngineType()) {
                     case physics::Engine::BOX2D:
-                        drawPlane(t->position + box->offset, t->orientation, t->scale * box->size, color);
+                        drawSquare(pos + box->offset, ori, scale * box->size, color);
                         break;
                     case physics::Engine::BULLET:
-                        drawBox(t->position + box->offset, t->orientation, t->scale * box->size, color);
+                        drawBox(pos + box->offset, ori, scale * box->size, color);
                         break;
                 }
             }
@@ -56,11 +61,53 @@ void PhysicsDrawer::update() {
             if (sphere) {
                 switch (physics::getEngineType()) {
                     case physics::Engine::BOX2D:
-                        drawCircle(t->position + sphere->offset, t->orientation, t->scale * sphere->radius, color);
+                        drawCircle(pos + sphere->offset, ori, scale * sphere->radius, color);
                         break;
                     case physics::Engine::BULLET:
-                        drawSphere(t->position + sphere->offset, t->orientation, t->scale * sphere->radius, color);
+                        drawSphere(pos + sphere->offset, ori, scale * sphere->radius, color);
                         break;
+                }
+            }
+        }
+    }
+
+    // Show joints
+    if (physics::getShowJoints()) {
+        std::vector<component::EntityId> entities = component::getEntitiesView();
+        for (auto entity : entities) {
+            auto p = component::getComponent<component::PrismaticJoint>(entity);
+
+            if (p) {
+                auto tA = component::getComponent<component::Transform>(p->bodyA);
+                auto tB = component::getComponent<component::Transform>(p->bodyB);
+                auto rbA = component::getComponent<component::RigidBody>(p->bodyA);
+                auto rbB = component::getComponent<component::RigidBody>(p->bodyB);
+
+                if (tA && tB && rbA && rbB) {
+                    mat4 wTransA = tA->getWorldTransform(p->bodyA);
+                    mat4 wTransB = tB->getWorldTransform(p->bodyB);
+
+                    vec3 wAnchorA = wTransA * vec4(p->anchorA, 1);
+                    vec3 wAnchorB = wTransB * vec4(p->anchorB, 1);
+                    vec3 wAxisA = wTransA * vec4(p->axisA, 0);
+                    vec3 wAxisB = wTransB * vec4(p->axisB, 0);
+                    wAxisA.normalize();
+                    wAxisB.normalize();
+
+                    vec4 color = {0, 0, 1, 1};
+                    graphics::Drawer::add(graphics::Drawer::Line(wAnchorA, wAnchorB, color, color), "atta::ui::PhysicsDrawer");
+                    quat oriA;
+                    oriA.setRotationFromVectors(wAxisA, vec3(0, 0, 1));
+                    quat oriB;
+                    oriB.setRotationFromVectors(wAxisB, vec3(0, 0, 1));
+
+                    drawSquare(wAnchorA, oriA, vec3(0.1), color);
+                    drawSquare(wAnchorB, oriB, vec3(0.1), color);
+
+                    if (p->enableLimits) {
+                        drawSquare(wAnchorA + wAxisA*p->lowerTranslation, oriA, vec3(0.05), color);
+                        drawSquare(wAnchorA + wAxisA*p->upperTranslation, oriA, vec3(0.05), color);
+                    }
                 }
             }
         }
@@ -100,8 +147,8 @@ void PhysicsDrawer::update() {
                             vec4 color(1, 1, 1, 1);
                             vec3 normal(n.x(), n.y(), n.z());
                             quat ori;
-                            ori.setRotationFromVectors(normal, vec3(0,0,1));
-                            drawCircle(p0, ori, vec3(0.1), color);
+                            ori.setRotationFromVectors(normal, vec3(0, 0, 1));
+                            drawCircle((p0 + p1) / 2, ori, vec3(0.1), color);
                         }
                     }
                 }
@@ -110,7 +157,7 @@ void PhysicsDrawer::update() {
     }
 }
 
-void PhysicsDrawer::drawPlane(vec3 position, quat orientation, vec3 scale, vec4 color) {
+void PhysicsDrawer::drawSquare(vec3 position, quat orientation, vec3 scale, vec4 color) {
     std::vector<vec3> vertices = {{0.5, 0.5, 0}, {-0.5, 0.5, 0}, {-0.5, -0.5, 0}, {0.5, -0.5, 0}};
 
     mat4 mat;

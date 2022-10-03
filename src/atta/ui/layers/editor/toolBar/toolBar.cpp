@@ -92,7 +92,7 @@ void ToolBar::render() {
 
         // Slider
         {
-            static float speed = 1.0f;
+            float speed = Config::getDesiredStepSpeed();
 
             // Slider text
             std::string text = "Real time";
@@ -112,12 +112,27 @@ void ToolBar::render() {
             // Render slider
             ImGui::PushItemWidth(150);
             ImGui::SameLine();
-            ImGui::SliderFloat("##DesiredSpeedSlider", &speed, 0.0f, 2.0f, text.c_str());
+            if (ImGui::SliderFloat("##DesiredSpeedSlider", &speed, 0.0f, 2.0f, text.c_str())) {
+                // Real time interval
+                const float rtInt = 0.1f;
+                if (speed > 1.0 - rtInt && speed < 1.0 + rtInt)
+                    speed = 1.0f;
 
-            // Real time interval
-            const float rtInt = 0.1f;
-            if (speed > 1.0 - rtInt && speed < 1.0 + rtInt)
-                speed = 1.0f;
+                // Convert to desired speed
+                if (speed == 0.0f)
+                    Config::setDesiredStepSpeed(Config::getDt()); // One step per second
+                else if (speed == 1.0f)
+                    Config::setDesiredStepSpeed(1.0f); // Real time
+                else if (speed == 2.0f)
+                    Config::setDesiredStepSpeed(0.0f); // As fast as possible
+                else if (speed < 1.0f) {
+                    float k = (pow(10.0f, speed + rtInt) - 1) / 9.0f;
+                    Config::setDesiredStepSpeed(1.0f * k + Config::getDt() * (1 - k)); // Slower than real time
+                } else {
+                    float speedPow = pow(10.0f, (speed - rtInt - 1.0f) * 2); // [1,2] -> [1,100]
+                    Config::setDesiredStepSpeed(speedPow);                   // Faster than real time
+                }
+            }
 
             // Time text
             float time = Config::getTime();
@@ -127,21 +142,6 @@ void ToolBar::render() {
             int ms = (time - int(time)) * 1000;
             ImGui::SameLine();
             ImGui::Text("%02d:%02d:%02d.%03d - %.3fx", h, m, s, ms, Config::getRealStepSpeed());
-
-            // Convert to desired speed
-            if (speed == 0.0f)
-                Config::setDesiredStepSpeed(Config::getDt()); // One step per second
-            else if (speed == 1.0f)
-                Config::setDesiredStepSpeed(1.0f); // Real time
-            else if (speed == 2.0f)
-                Config::setDesiredStepSpeed(0.0f); // As fast as possible
-            else if (speed < 1.0f) {
-                float k = (pow(10.0f, speed + rtInt) - 1) / 9.0f;
-                Config::setDesiredStepSpeed(1.0f * k + Config::getDt() * (1 - k)); // Slower than real time
-            } else {
-                float speedPow = pow(10.0f, (speed - rtInt - 1.0f) * 2); // [1,2] -> [1,100]
-                Config::setDesiredStepSpeed(speedPow);                   // Faster than real time
-            }
         }
     }
     ImGui::PopStyleColor(3);

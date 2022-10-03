@@ -31,6 +31,8 @@ bool getShowColliders();
 void setShowColliders(bool showColliders);
 bool getShowContacts();
 void setShowContacts(bool showContacts);
+bool getShowJoints();
+void setShowJoints(bool showJoints);
 
 //---------- Queries ----------//
 std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);

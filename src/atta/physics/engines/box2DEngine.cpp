@@ -269,7 +269,7 @@ void Box2DEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
     auto t = component::getComponent<component::Transform>(prismatic->bodyA);
 
     b2PrismaticJointDef pjd;
-    pjd.Initialize(bodyA, bodyB, b2Vec2(t->position.x, t->position.y), b2Vec2(prismatic->axis.x, prismatic->axis.y));
+    pjd.Initialize(bodyA, bodyB, b2Vec2(t->position.x, t->position.y), b2Vec2(prismatic->axisA.x, prismatic->axisA.y));
 
     pjd.localAnchorA = b2Vec2(prismatic->anchorA.x, prismatic->anchorA.y);
     pjd.localAnchorB = b2Vec2(prismatic->anchorB.x, prismatic->anchorB.y);

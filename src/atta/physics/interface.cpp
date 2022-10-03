@@ -23,6 +23,8 @@ bool getShowColliders() { return Manager::getInstance()._showColliders; }
 void setShowColliders(bool showColliders) { Manager::getInstance()._showColliders = showColliders; }
 bool getShowContacts() { return Manager::getInstance()._showContacts; }
 void setShowContacts(bool showContacts) { Manager::getInstance()._showContacts = showContacts; }
+bool getShowJoints() { return Manager::getInstance()._showJoints; }
+void setShowJoints(bool showJoints) { Manager::getInstance()._showJoints = showJoints; }
 
 //---------- Queries ----------//
 std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) { return Manager::getInstance()._engine->getEntityCollisions(eid); }

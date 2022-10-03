@@ -51,12 +51,15 @@ void PhysicsModuleWindow::renderImpl() {
             bool showColliders = physics::getShowColliders();
             bool showAabb = bullet->getShowAabb();
             bool showContacts = physics::getShowContacts();
+            bool showJoints = physics::getShowJoints();
             if (ImGui::Checkbox("Show colliders", &showColliders))
                 physics::setShowColliders(showColliders);
             if (ImGui::Checkbox("Show aabb", &showAabb))
                 bullet->setShowAabb(showAabb);
             if (ImGui::Checkbox("Show contacts", &showContacts))
                 physics::setShowContacts(showContacts);
+            if (ImGui::Checkbox("Show joints", &showJoints))
+                physics::setShowJoints(showJoints);
 
             // Gravity vector
             {

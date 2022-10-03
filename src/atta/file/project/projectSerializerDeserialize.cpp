@@ -11,7 +11,12 @@ void ProjectSerializer::deserializeHeader(Section& section) {
     std::string projectName = std::string(section["projectName"]);
 }
 
-void ProjectSerializer::deserializeConfig(Section& section) { Config::setDt(float(section["dt"])); }
+void ProjectSerializer::deserializeConfig(Section& section) { 
+    if(section.contains("dt"))
+        Config::setDt(float(section["dt"]));
+    if(section.contains("desiredStepSpeed"))
+        Config::setDesiredStepSpeed(float(section["desiredStepSpeed"]));
+}
 
 void ProjectSerializer::deserializeComponentModule(Section& section) {
     // Create entities
@@ -92,6 +97,8 @@ void ProjectSerializer::deserializePhysicsModule(Section& section) {
         physics::setShowColliders(bool(section["showColliders"]));
     if(section.contains("showContacts"))
         physics::setShowContacts(bool(section["showContacts"]));
+    if(section.contains("showJoints"))
+        physics::setShowJoints(bool(section["showJoints"]));
 
     if (section.contains("bullet")) {
         auto bullet = physics::getEngine<physics::BulletEngine>();

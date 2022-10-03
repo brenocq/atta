@@ -176,10 +176,7 @@ inline mat4 posOriScale(const vec3& pos, const quat& q, const vec3& scale) {
 }
 
 // <<
-// inline std::stringstream& operator<<(std::stringstream& os, const mat4& m)
-//{
-//	return os << m.toString();
-//}
+inline std::ostream& operator<<(std::ostream& os, const mat4& m) { return os << m.toString(); }
 
 //------------------------------------------------------------//
 //--------------------------- mat3 ---------------------------//
@@ -258,10 +255,7 @@ class mat3 {
 };
 
 // <<
-template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const mat3& m) {
-    return os << m.toString();
-}
+inline std::ostream& operator<<(std::ostream& os, const mat3& m) { return os << m.toString(); }
 
 //------------------------------------------------------------//
 //--------------------------- mat2 ---------------------------//
@@ -334,10 +328,7 @@ class mat2 {
 };
 
 // <<
-template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const mat2& m) {
-    return os << m.toString();
-}
+inline std::ostream& operator<<(std::ostream& os, const mat2& m) { return os << m.toString(); }
 
 //------------------------------------------------------------//
 //--------------------------- mat ---------------------------//

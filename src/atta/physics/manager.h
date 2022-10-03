@@ -35,6 +35,8 @@ class Manager final {
     friend void setShowColliders(bool showColliders);
     friend bool getShowContacts();
     friend void setShowContacts(bool showContacts);
+    friend bool getShowJoints();
+    friend void setShowJoints(bool showJoints);
 
     friend std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);
     friend std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst);
@@ -59,6 +61,7 @@ class Manager final {
     vec3 _gravity;                               ///< Gravity vector
     bool _showColliders;                         ///< UI collider rendering
     bool _showContacts;                          ///< UI contacts rendering
+    bool _showJoints;                            ///< UI joints rendering
 };
 
 } // namespace atta::physics

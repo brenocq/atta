@@ -11,7 +11,10 @@ void ProjectSerializer::serializeHeader(Section& section) {
     section["projectName"] = std::string(_project->getName());
 }
 
-void ProjectSerializer::serializeConfig(Section& section) { section["dt"] = float(Config::getDt()); }
+void ProjectSerializer::serializeConfig(Section& section) { 
+    section["dt"] = Config::getDt(); 
+    section["desiredStepSpeed"] = Config::getDesiredStepSpeed(); 
+}
 
 void ProjectSerializer::serializeComponentModule(Section& section) {
     // Serialize entity ids
@@ -93,6 +96,7 @@ void ProjectSerializer::serializePhysicsModule(Section& section) {
     section["gravity"] = physics::getGravity();
     section["showColliders"] = physics::getShowColliders();
     section["showContacts"] = physics::getShowContacts();
+    section["showJoints"] = physics::getShowJoints();
 
     auto bullet = physics::getEngine<physics::BulletEngine>();
     section["bullet"]["showAabb"] = bullet->getShowAabb();

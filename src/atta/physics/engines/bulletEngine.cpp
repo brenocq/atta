@@ -62,27 +62,25 @@ void BulletEngine::step(float dt) {
         btRigidBody* body = btRigidBody::upcast(obj);
         component::EntityId eid = BT_USRPTR_TO_EID(obj->getUserPointer());
 
-        btTransform trans;
-        //if (body && body->getMotionState())
-        //    body->getMotionState()->getWorldTransform(trans);
-        //else
-            trans = obj->getWorldTransform();
-
-        // Check if object was translated
+        // Get atta transform
         auto t = component::getComponent<component::Transform>(eid);
-
-        // Get atta world position and orientation
         vec3 position, scale;
         quat orientation;
         mat4 m = t->getWorldTransform(eid);
         m.getPosOriScale(position, orientation, scale);
 
-        btQuaternion q = trans.getRotation();
-        quat physicsOrientation(q.w(), -q.x(), -q.y(), -q.z());
+        // Get bullet transform
+        btTransform trans;
+        trans = obj->getWorldTransform();
+        quat physicsOrientation(trans.getRotation().w(), -trans.getRotation().x(), -trans.getRotation().y(), -trans.getRotation().z());
         vec3 physicsPosition(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
+
+        // Check if atta and bullet transforms match
         if (position != physicsPosition || orientation != physicsOrientation) {
-            trans = btTransform(btQuaternion(-orientation.i, -orientation.j, -orientation.k, orientation.r), btVector3(position.x, position.y, position.z));
+            trans = btTransform(btQuaternion(-orientation.i, -orientation.j, -orientation.k, orientation.r),
+                                btVector3(position.x, position.y, position.z));
             body->setWorldTransform(trans);
+            // TODO activate all rigid bodies conencted to this rigid body
             body->activate();
         }
     }
@@ -91,28 +89,32 @@ void BulletEngine::step(float dt) {
     _world->stepSimulation(dt, _numSubSteps, dt / _numSubSteps);
 
     // Update component::Transform with new position/orientation
+    // TODO Should go through collisionObjects from the root down the relationship hierarchy,
+    // strange simulation may happen otherwise because of wrong parent transform
     for (int j = _world->getNumCollisionObjects() - 1; j >= 0; j--) {
         btCollisionObject* obj = _world->getCollisionObjectArray()[j];
         btRigidBody* body = btRigidBody::upcast(obj);
         btTransform trans;
-        //if (body && body->getMotionState())
-        //    body->getMotionState()->getWorldTransform(trans);
-        //else
-            trans = obj->getWorldTransform();
+        trans = obj->getWorldTransform();
 
-        // Update transform
+        // Calculate world transform
         component::EntityId eid = BT_USRPTR_TO_EID(obj->getUserPointer());
         auto t = component::getComponent<component::Transform>(eid);
-        t->position = {trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()};
-        btQuaternion q = trans.getRotation();
-        t->orientation = quat(q.w(), -q.x(), -q.y(), -q.z());
+        vec3 pos = {trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()};
+        quat ori = quat(trans.getRotation().w(), -trans.getRotation().x(), -trans.getRotation().y(), -trans.getRotation().z());
+        mat4 worldTransform;
+        worldTransform.setPosOriScale(pos, ori, t->scale);
+
+        // Update world transform
+        t->setWorldTransform(eid, worldTransform);
+        mat4 m = t->getWorldTransform(eid);
 
         // Update rigid body
-        //auto rb = component::getComponent<component::RigidBody>(eid);
-        //btScalar linearDamping = body->getLinearDamping();
-        //btScalar angularDamping = body->getAngularDamping();
-        //btVector3 linearVelocity = body->getLinearVelocity();
-        //btVector3 angularVelocity = body->getAngularVelocity();
+        // auto rb = component::getComponent<component::RigidBody>(eid);
+        // btScalar linearDamping = body->getLinearDamping();
+        // btScalar angularDamping = body->getAngularDamping();
+        // btVector3 linearVelocity = body->getLinearVelocity();
+        // btVector3 angularVelocity = body->getAngularVelocity();
     }
 }
 
@@ -265,11 +267,40 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     _entityToBody[entity] = body;
 }
 
-void BulletEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {}
+void BulletEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
+    btRigidBody* rbA = getBulletRigidBody(prismatic->bodyA);
+    btRigidBody* rbB = getBulletRigidBody(prismatic->bodyB);
+    if (!rbA || !rbB) {
+        LOG_WARN("physics::BulletEngine", "Could not create prismatic joint between [w]$0[] and [w]$1[]", prismatic->bodyA, prismatic->bodyB);
+        return;
+    }
+
+    // Calculate orientation and axis
+    quat qA;
+    qA.setRotationFromVectors(prismatic->axisA, vec3(1, 0, 0));
+    quat qB;
+    qB.setRotationFromVectors(-prismatic->axisB, vec3(1, 0, 0));
+    vec3 aA = prismatic->anchorA;
+    vec3 aB = prismatic->anchorB;
+
+    // Calculate frames
+    btTransform frameInA(btQuaternion(-qA.i, -qA.j, -qA.k, qA.r), btVector3(aA.x, aA.y, aA.z));
+    btTransform frameInB(btQuaternion(-qB.i, -qB.j, -qB.k, qB.r), btVector3(aB.x, aB.y, aB.z));
+
+    // Create constraint
+    btSliderConstraint* slider = new btSliderConstraint(*rbA, *rbB, frameInA, frameInB, true);
+    if (prismatic->enableLimits) {
+        slider->setLowerLinLimit(prismatic->lowerTranslation);
+        slider->setUpperLinLimit(prismatic->upperTranslation);
+    }
+    _world->addConstraint(slider);
+}
 
 void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {}
 
-void BulletEngine::createRigidJoint(component::RigidJoint* rigid) {}
+void BulletEngine::createRigidJoint(component::RigidJoint* rigid) {
+    // Create CompoundShape from entities
+}
 
 void BulletEngine::collisionStarted(btPersistentManifold* const& manifold) {
     auto bullet = physics::getEngine<BulletEngine>();

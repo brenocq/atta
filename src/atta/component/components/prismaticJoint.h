@@ -19,9 +19,10 @@ struct PrismaticJoint : public Component {
     EntityId bodyA; ///< First attached body
     EntityId bodyB; ///< Second attached body
 
-    vec3 anchorA;              ///< BodyA's anchor on its local space
-    vec3 anchorB;              ///< BodyB's anchor on its local space
-    vec3 axis = vec3(0, 0, 1); ///< Slider direction on bodyA's local coordinate system
+    vec3 anchorA = vec3(0, 0, 0); ///< BodyA's anchor on its local space
+    vec3 anchorB = vec3(0, 0, 0); ///< BodyB's anchor on its local space
+    vec3 axisA = vec3(0, 0, 1);   ///< Slider direction on bodyA's local coordinate system
+    vec3 axisB = vec3(0, 0, 1);   ///< Slider direction on bodyA's local coordinate system
 
     bool enableLimits = false;     ///< Enable joint limits
     float lowerTranslation = 1.0f; ///< Joint translation lower limit
