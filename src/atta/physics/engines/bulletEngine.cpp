@@ -15,6 +15,9 @@
 
 namespace atta::physics {
 
+constexpr int USER_TYPE_PRISMATIC = 0;
+constexpr int USER_TYPE_REVOLUTE = 1;
+
 BulletEngine::BulletEngine() : Engine(Engine::BULLET), _numSubSteps(1), _showAabb(false) {}
 
 BulletEngine::~BulletEngine() {
@@ -22,6 +25,9 @@ BulletEngine::~BulletEngine() {
         stop();
 }
 
+//----------------------------------------------//
+//------------------- START --------------------//
+//----------------------------------------------//
 void BulletEngine::start() {
     _running = true;
     gContactStartedCallback = collisionStarted;
@@ -55,12 +61,20 @@ void BulletEngine::start() {
     }
 }
 
+//----------------------------------------------//
+//-------------------- STEP --------------------//
+//----------------------------------------------//
 void BulletEngine::step(float dt) {
-    // Check bullet position and orientation consistent with component::Transform
+    //----- Update bullet rigid bodies -----//
     for (int j = _world->getNumCollisionObjects() - 1; j >= 0; j--) {
         btCollisionObject* obj = _world->getCollisionObjectArray()[j];
         btRigidBody* body = btRigidBody::upcast(obj);
         component::EntityId eid = BT_USRPTR_TO_EID(obj->getUserPointer());
+
+        // Update mass
+        auto rb = component::getComponent<component::RigidBody>(eid);
+        if (rb->type == component::RigidBody::DYNAMIC)
+            body->setMassProps(rb->mass, body->getLocalInertia());
 
         // Get atta transform
         auto t = component::getComponent<component::Transform>(eid);
@@ -80,18 +94,38 @@ void BulletEngine::step(float dt) {
             trans = btTransform(btQuaternion(-orientation.i, -orientation.j, -orientation.k, orientation.r),
                                 btVector3(position.x, position.y, position.z));
             body->setWorldTransform(trans);
-            // TODO activate all rigid bodies conencted to this rigid body
+
+            // Activate this body
             body->activate();
+
+            // Activate bodies linked to this body
+            if (_connectedEntities.find(eid) != _connectedEntities.end())
+                for (auto other : _connectedEntities[eid])
+                    if (_entityToBody.find(other) != _entityToBody.end())
+                        _entityToBody[other]->activate();
         }
     }
 
-    // Step simulation
+    //----- Update bullet constraints -----//
+    for (int i = 0; i < _world->getNumConstraints(); i++) {
+        btTypedConstraint* c = _world->getConstraint(i);
+        switch (c->getUserConstraintType()) {
+            case USER_TYPE_PRISMATIC: {
+                component::PrismaticJoint* prismatic = (component::PrismaticJoint*)c->getUserConstraintPtr();
+                btSliderConstraint* btSlider = (btSliderConstraint*)(c);
+                btSlider->setMaxLinMotorForce(prismatic->maxMotorForce);
+                btSlider->setTargetLinMotorVelocity(prismatic->targetMotorVelocity);
+            }
+        }
+    }
+
+    //----- Step simulation -----//
     _world->stepSimulation(dt, _numSubSteps, dt / _numSubSteps);
 
-    // Update component::Transform with new position/orientation
-    // TODO Should go through collisionObjects from the root down the relationship hierarchy,
-    // strange simulation may happen otherwise because of wrong parent transform
+    //----- Update atta rigid body -----//
     for (int j = _world->getNumCollisionObjects() - 1; j >= 0; j--) {
+        // TODO Should go through collisionObjects from the root down the relationship hierarchy,
+        // strange simulations may happen otherwise because of wrong parent transform
         btCollisionObject* obj = _world->getCollisionObjectArray()[j];
         btRigidBody* body = btRigidBody::upcast(obj);
         btTransform trans;
@@ -116,8 +150,25 @@ void BulletEngine::step(float dt) {
         // btVector3 linearVelocity = body->getLinearVelocity();
         // btVector3 angularVelocity = body->getAngularVelocity();
     }
+
+    //----- Update atta joints -----//
+    for (int i = 0; i < _world->getNumConstraints(); i++) {
+        btTypedConstraint* c = _world->getConstraint(i);
+        switch (c->getUserConstraintType()) {
+            case USER_TYPE_PRISMATIC: {
+                component::PrismaticJoint* prismatic = (component::PrismaticJoint*)c->getUserConstraintPtr();
+                btSliderConstraint* btSlider = (btSliderConstraint*)(c);
+
+                // Update position
+                prismatic->motorPosition = btSlider->getLinearPos();
+            }
+        }
+    }
 }
 
+//----------------------------------------------//
+//-------------------- STOP --------------------//
+//----------------------------------------------//
 void BulletEngine::stop() {
     _running = false;
     _bodyToEntity.clear();
@@ -205,6 +256,9 @@ const std::unordered_map<component::EntityId, std::unordered_map<component::Enti
     return _collisions;
 }
 
+//----------------------------------------------//
+//----------------- RIGID BODY -----------------//
+//----------------------------------------------//
 void BulletEngine::createRigidBody(component::EntityId entity) {
     auto t = component::getComponent<component::Transform>(entity);
     auto rb = component::getComponent<component::RigidBody>(entity);
@@ -267,6 +321,9 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     _entityToBody[entity] = body;
 }
 
+//----------------------------------------------//
+//----------------- PRISMATIC ------------------//
+//----------------------------------------------//
 void BulletEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
     btRigidBody* rbA = getBulletRigidBody(prismatic->bodyA);
     btRigidBody* rbB = getBulletRigidBody(prismatic->bodyB);
@@ -289,19 +346,52 @@ void BulletEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
 
     // Create constraint
     btSliderConstraint* slider = new btSliderConstraint(*rbA, *rbB, frameInA, frameInB, true);
+    slider->setUserConstraintType(USER_TYPE_PRISMATIC);
+    slider->setUserConstraintPtr(prismatic);
+
+    // Enable limits
     if (prismatic->enableLimits) {
-        slider->setLowerLinLimit(prismatic->lowerTranslation);
-        slider->setUpperLinLimit(prismatic->upperTranslation);
+        slider->setLowerLinLimit(prismatic->lowerLimit);
+        slider->setUpperLinLimit(prismatic->upperLimit);
     }
+
+    // Enable motor
+    if (prismatic->enableMotor) {
+        // Setup motor
+        slider->setPoweredLinMotor(true);
+        slider->setMaxLinMotorForce(prismatic->maxMotorForce);
+        slider->setTargetLinMotorVelocity(prismatic->targetMotorVelocity);
+        // Disable sleeping
+        rbA->setSleepingThresholds(0.0f, 0.0f);
+        rbB->setSleepingThresholds(0.0f, 0.0f);
+    }
+
+    // Should collision
+    rbA->setIgnoreCollisionCheck(rbB, !prismatic->shouldCollide);
+
+    // Add constraint
     _world->addConstraint(slider);
+
+    // Keep track of connected entities
+    _connectedEntities[prismatic->bodyA].push_back(prismatic->bodyB);
+    _connectedEntities[prismatic->bodyB].push_back(prismatic->bodyA);
 }
 
+//----------------------------------------------//
+//------------------ REVOLUTE ------------------//
+//----------------------------------------------//
 void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {}
 
+//----------------------------------------------//
+//------------------- RIGID --------------------//
+//----------------------------------------------//
 void BulletEngine::createRigidJoint(component::RigidJoint* rigid) {
     // Create CompoundShape from entities
 }
 
+//----------------------------------------------//
+//----------------- COLLLISION -----------------//
+//----------------------------------------------//
 void BulletEngine::collisionStarted(btPersistentManifold* const& manifold) {
     auto bullet = physics::getEngine<BulletEngine>();
     const btCollisionObject* obA = manifold->getBody0();

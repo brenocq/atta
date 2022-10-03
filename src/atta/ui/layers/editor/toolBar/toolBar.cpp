@@ -92,7 +92,33 @@ void ToolBar::render() {
 
         // Slider
         {
-            float speed = Config::getDesiredStepSpeed();
+            static bool firstTime = true;
+            static float speed = 1.0f;
+            // Real time interval
+            const float rtInt = 0.1f;
+
+            if(firstTime)
+            {
+                firstTime = false;
+
+                // Initialize speed slider with correct value
+                // Inverse function from speed to desiredStepSpeed
+                float desiredStepSpeed = Config::getDesiredStepSpeed();
+                if (desiredStepSpeed == Config::getDt())
+                    speed = 0.0f;
+                else if (desiredStepSpeed == 1.0f)
+                    speed = 1.0f;
+                else if (desiredStepSpeed == 0.0f)
+                    speed = 2.0f;
+                else if (desiredStepSpeed < 1.0f) {
+                    if(Config::getDt() != 1)
+                    {
+                        float k = (desiredStepSpeed-Config::getDt())/(1-Config::getDt());
+                        speed = log10(9*k+1)-rtInt;
+                    }
+                } else
+                    speed = log10(desiredStepSpeed)/2+rtInt+1;
+            }
 
             // Slider text
             std::string text = "Real time";
@@ -100,21 +126,19 @@ void ToolBar::render() {
                 text = "Slow";
             else if (speed <= 0.5f && speed > 0.0f)
                 text = "Very slow";
-            else if (speed == 0.0f)
+            else if (speed <= 0.0f)
                 text = "Stepping";
             else if (speed > 1.0f && speed < 1.5f)
                 text = "Fast";
             else if (speed >= 1.5f && speed < 2.0f)
                 text = "Very fast";
-            else if (speed == 2.0f)
+            else if (speed >= 2.0f)
                 text = "Maximum speed";
 
             // Render slider
             ImGui::PushItemWidth(150);
             ImGui::SameLine();
             if (ImGui::SliderFloat("##DesiredSpeedSlider", &speed, 0.0f, 2.0f, text.c_str())) {
-                // Real time interval
-                const float rtInt = 0.1f;
                 if (speed > 1.0 - rtInt && speed < 1.0 + rtInt)
                     speed = 1.0f;
 

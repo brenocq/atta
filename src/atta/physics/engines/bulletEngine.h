@@ -61,6 +61,7 @@ class BulletEngine : public Engine {
     std::unordered_map<component::EntityId, btRigidBody*> _entityToBody;
     std::unordered_map<btRigidBody*, component::EntityId> _bodyToEntity;
     std::unordered_map<component::EntityId, std::unordered_map<component::EntityId, btPersistentManifold*>> _collisions;
+    std::unordered_map<component::EntityId, std::vector<component::EntityId>> _connectedEntities;///< Which entities are connect by joints 
 
     /// Show broad phase aabb
     bool _showAabb;

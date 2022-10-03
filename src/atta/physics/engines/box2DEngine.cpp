@@ -275,11 +275,11 @@ void Box2DEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
     pjd.localAnchorB = b2Vec2(prismatic->anchorB.x, prismatic->anchorB.y);
 
     pjd.enableLimit = prismatic->enableLimits;
-    pjd.lowerTranslation = prismatic->lowerTranslation;
-    pjd.upperTranslation = prismatic->upperTranslation;
+    pjd.lowerTranslation = prismatic->lowerLimit;
+    pjd.upperTranslation = prismatic->upperLimit;
 
     pjd.enableMotor = prismatic->enableMotor;
-    pjd.motorSpeed = prismatic->motorSpeed;
+    pjd.motorSpeed = prismatic->targetMotorVelocity;
     pjd.maxMotorForce = prismatic->maxMotorForce;
 
     _world->CreateJoint(&pjd);

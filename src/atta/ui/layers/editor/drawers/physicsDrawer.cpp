@@ -105,8 +105,8 @@ void PhysicsDrawer::update() {
                     drawSquare(wAnchorB, oriB, vec3(0.1), color);
 
                     if (p->enableLimits) {
-                        drawSquare(wAnchorA + wAxisA*p->lowerTranslation, oriA, vec3(0.05), color);
-                        drawSquare(wAnchorA + wAxisA*p->upperTranslation, oriA, vec3(0.05), color);
+                        drawSquare(wAnchorA + wAxisA*p->lowerLimit, oriA, vec3(0.05), color);
+                        drawSquare(wAnchorA + wAxisA*p->upperLimit, oriA, vec3(0.05), color);
                     }
                 }
             }
