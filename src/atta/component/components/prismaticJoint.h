@@ -21,8 +21,8 @@ struct PrismaticJoint : public Component {
 
     vec3 anchorA = vec3(0, 0, 0); ///< BodyA's anchor on its local space
     vec3 anchorB = vec3(0, 0, 0); ///< BodyB's anchor on its local space
-    vec3 axisA = vec3(0, 0, 1);   ///< Slider direction on bodyA's local coordinate system
-    vec3 axisB = vec3(0, 0, 1);   ///< Slider direction on bodyA's local coordinate system
+    vec3 axisA = vec3(0, 0, 1);   ///< Axis direction on bodyA's local coordinate system
+    vec3 axisB = vec3(0, 0, 1);   ///< Axis direction on bodyB's local coordinate system
 
     bool enableLimits = false; ///< Enable joint limits
     float lowerLimit = 1.0f;   ///< Joint lower limit
@@ -30,8 +30,8 @@ struct PrismaticJoint : public Component {
 
     bool enableMotor = false;         ///< Enable motor
     float targetMotorVelocity = 0.0f; ///< Target motor velocity
-    float motorPosition = 0.0f;       ///< Current motor position
     float maxMotorForce = 100.0f;     ///< Maximum motor force
+    float motorPosition = 0.0f;       ///< Current motor position
 
     bool shouldCollide = false; ///< If bodyA and bodyB should collide
 };

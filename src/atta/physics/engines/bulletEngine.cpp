@@ -10,6 +10,7 @@
 #include <atta/component/components/transform.h>
 #include <atta/physics/engines/bulletEngine.h>
 #include <atta/physics/interface.h>
+#include <atta/utils/config.h>
 
 #define BT_USRPTR_TO_EID(usrPtr) component::EntityId(static_cast<uint8_t*>(usrPtr) - static_cast<uint8_t*>(0))
 
@@ -115,6 +116,14 @@ void BulletEngine::step(float dt) {
                 btSliderConstraint* btSlider = (btSliderConstraint*)(c);
                 btSlider->setMaxLinMotorForce(prismatic->maxMotorForce);
                 btSlider->setTargetLinMotorVelocity(prismatic->targetMotorVelocity);
+                break;
+            }
+            case USER_TYPE_REVOLUTE: {
+                component::RevoluteJoint* revolute = (component::RevoluteJoint*)c->getUserConstraintPtr();
+                btHingeConstraint* btHinge = (btHingeConstraint*)(c);
+                btHinge->setMaxMotorImpulse(revolute->maxMotorForce*Config::getDt());
+                btHinge->setMotorTargetVelocity(revolute->targetMotorVelocity);
+                break;
             }
         }
     }
@@ -380,7 +389,49 @@ void BulletEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
 //----------------------------------------------//
 //------------------ REVOLUTE ------------------//
 //----------------------------------------------//
-void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {}
+void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
+    btRigidBody* rbA = getBulletRigidBody(revolute->bodyA);
+    btRigidBody* rbB = getBulletRigidBody(revolute->bodyB);
+    if (!rbA || !rbB) {
+        LOG_WARN("physics::BulletEngine", "Could not create revolute joint between [w]$0[] and [w]$1[]", revolute->bodyA, revolute->bodyB);
+        return;
+    }
+
+    // Create constraint
+    btVector3 pivotInA{revolute->anchorA.x, revolute->anchorA.y, revolute->anchorA.z};
+    btVector3 pivotInB{revolute->anchorB.x, revolute->anchorB.y, revolute->anchorB.z};
+    btVector3 axisInA{revolute->axisA.x, revolute->axisA.y, revolute->axisA.z};
+    btVector3 axisInB{revolute->axisB.x, revolute->axisB.y, revolute->axisB.z};
+
+    btHingeConstraint* hinge = new btHingeConstraint(*rbA, *rbB, pivotInA, pivotInB, axisInA, axisInB, true);
+    hinge->setUserConstraintType(USER_TYPE_REVOLUTE);
+    hinge->setUserConstraintPtr(revolute);
+
+    // Enable limits
+    if (revolute->enableLimits)
+        hinge->setLimit(revolute->lowerAngle, revolute->upperAngle);
+
+    // Enable motor
+    if (revolute->enableMotor) {
+        // Setup motor
+        hinge->enableMotor(true);
+        hinge->setMaxMotorImpulse(revolute->maxMotorForce*Config::getDt());
+        hinge->setMotorTargetVelocity(revolute->targetMotorVelocity);
+        // Disable sleeping
+        rbA->setSleepingThresholds(0.0f, 0.0f);
+        rbB->setSleepingThresholds(0.0f, 0.0f);
+    }
+
+    // Should collision
+    rbA->setIgnoreCollisionCheck(rbB, !revolute->shouldCollide);
+
+    // Add constraint
+    _world->addConstraint(hinge);
+
+    // Keep track of connected entities
+    _connectedEntities[revolute->bodyA].push_back(revolute->bodyB);
+    _connectedEntities[revolute->bodyB].push_back(revolute->bodyA);
+}
 
 //----------------------------------------------//
 //------------------- RIGID --------------------//

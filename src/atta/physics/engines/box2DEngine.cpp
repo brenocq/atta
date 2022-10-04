@@ -309,8 +309,8 @@ void Box2DEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
     rjd.upperAngle = revolute->upperAngle;
 
     rjd.enableMotor = revolute->enableMotor;
-    rjd.motorSpeed = revolute->motorSpeed;
-    rjd.maxMotorTorque = revolute->maxMotorTorque;
+    rjd.motorSpeed = revolute->targetMotorVelocity;
+    rjd.maxMotorTorque = revolute->maxMotorForce;
 
     _world->CreateJoint(&rjd);
 }

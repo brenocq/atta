@@ -17,21 +17,21 @@ struct RevoluteJoint : public Component {
     EntityId bodyA; ///< First attached body
     EntityId bodyB; ///< Second attached body
 
-    vec3 anchorA;      ///< BodyA's anchor on its local space
-    vec3 anchorB;      ///< BodyB's anchor on its local space
-    vec3 axisRotation; ///< Revolute joint axis of rotation on bodyA's local space
-    /** This axis must be perpendicular to the axisRotation to create the joint base */
-    vec3 axisZero; ///< Direction where the angle is zero
+    vec3 anchorA = vec3(0, 0, 0); ///< BodyA's anchor on its local space
+    vec3 anchorB = vec3(0, 0, 0); ///< BodyB's anchor on its local space
+    vec3 axisA = vec3(0, 0, 1);   ///< Axis direction on bodyA's local coordinate system
+    vec3 axisB = vec3(0, 0, 1);   ///< Axis direction on bodyB's local coordinate system
 
-    bool enableLimits; ///< Enable joint limits
-    float lowerAngle;  ///< Joint angle lower limit
-    float upperAngle;  ///< Joint angle upper limit
+    bool enableLimits = false; ///< Enable joint limits
+    float lowerAngle = 0.0f;   ///< Joint angle lower limit
+    float upperAngle = 0.0f;   ///< Joint angle upper limit
 
-    bool enableMotor;     ///< Enable motor
-    float motorSpeed;     ///< Motor speed
-    float maxMotorTorque; ///< Maximum motor torque
+    bool enableMotor = false;         ///< Enable motor
+    float targetMotorVelocity = 0.0f; ///< Motor velocity
+    float maxMotorForce = 100.0f;     ///< Maximum motor force
+    float motorAngle = 0.0f;          ///< Motor angle
 
-    bool collideConnected = false; ///< If bodyA and bodyB should collide
+    bool shouldCollide = false; ///< If bodyA and bodyB should collide
 };
 ATTA_REGISTER_COMPONENT(RevoluteJoint)
 template <>

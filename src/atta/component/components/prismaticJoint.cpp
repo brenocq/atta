@@ -24,8 +24,8 @@ ComponentDescription& TypedComponentRegistry<PrismaticJoint>::getDescription() {
             {AttributeType::FLOAT32, offsetof(PrismaticJoint, upperLimit), "upperLimit"},
             {AttributeType::BOOL, offsetof(PrismaticJoint, enableMotor), "enableMotor"},
             {AttributeType::FLOAT32, offsetof(PrismaticJoint, targetMotorVelocity), "targetMotorVelocity"},
-            {AttributeType::FLOAT32, offsetof(PrismaticJoint, motorPosition), "motorPosition"},
             {AttributeType::FLOAT32, offsetof(PrismaticJoint, maxMotorForce), "maxMotorForce"},
+            {AttributeType::FLOAT32, offsetof(PrismaticJoint, motorPosition), "motorPosition"},
             {AttributeType::BOOL, offsetof(PrismaticJoint, shouldCollide), "shouldCollide"},
         },
     };
