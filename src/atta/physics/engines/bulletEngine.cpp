@@ -121,8 +121,9 @@ void BulletEngine::step(float dt) {
             case USER_TYPE_REVOLUTE: {
                 component::RevoluteJoint* revolute = (component::RevoluteJoint*)c->getUserConstraintPtr();
                 btHingeConstraint* btHinge = (btHingeConstraint*)(c);
-                btHinge->setMaxMotorImpulse(revolute->maxMotorForce*Config::getDt());
+                btHinge->setMaxMotorImpulse(revolute->maxMotorForce * Config::getDt());
                 btHinge->setMotorTargetVelocity(revolute->targetMotorVelocity);
+                //btHinge->enableAngularMotor(true, revolute->targetMotorVelocity, revolute->maxMotorForce * Config::getDt());
                 break;
             }
         }
@@ -170,6 +171,15 @@ void BulletEngine::step(float dt) {
 
                 // Update position
                 prismatic->motorPosition = btSlider->getLinearPos();
+                break;
+            }
+            case USER_TYPE_REVOLUTE: {
+                component::RevoluteJoint* revolute = (component::RevoluteJoint*)c->getUserConstraintPtr();
+                btHingeConstraint* btHinge = (btHingeConstraint*)(c);
+
+                // Update position
+                revolute->motorAngle = btHinge->getHingeAngle();
+                break;
             }
         }
     }
@@ -414,9 +424,10 @@ void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
     // Enable motor
     if (revolute->enableMotor) {
         // Setup motor
-        hinge->enableMotor(true);
-        hinge->setMaxMotorImpulse(revolute->maxMotorForce*Config::getDt());
-        hinge->setMotorTargetVelocity(revolute->targetMotorVelocity);
+        //hinge->enableMotor(true);
+        //hinge->setMaxMotorImpulse(revolute->maxMotorForce*Config::getDt());
+        //hinge->setMotorTargetVelocity(revolute->targetMotorVelocity);
+        hinge->enableAngularMotor(true, revolute->targetMotorVelocity, revolute->maxMotorForce * Config::getDt());
         // Disable sleeping
         rbA->setSleepingThresholds(0.0f, 0.0f);
         rbB->setSleepingThresholds(0.0f, 0.0f);
@@ -426,7 +437,7 @@ void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
     rbA->setIgnoreCollisionCheck(rbB, !revolute->shouldCollide);
 
     // Add constraint
-    _world->addConstraint(hinge);
+    _world->addConstraint(hinge, true);
 
     // Keep track of connected entities
     _connectedEntities[revolute->bodyA].push_back(revolute->bodyB);
