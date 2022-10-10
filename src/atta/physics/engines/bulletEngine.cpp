@@ -120,10 +120,16 @@ void BulletEngine::step(float dt) {
             }
             case USER_TYPE_REVOLUTE: {
                 component::RevoluteJoint* revolute = (component::RevoluteJoint*)c->getUserConstraintPtr();
-                btHingeConstraint* btHinge = (btHingeConstraint*)(c);
-                btHinge->setMaxMotorImpulse(revolute->maxMotorForce * Config::getDt());
-                btHinge->setMotorTargetVelocity(revolute->targetMotorVelocity);
-                //btHinge->enableAngularMotor(true, revolute->targetMotorVelocity, revolute->maxMotorForce * Config::getDt());
+                btGeneric6DofSpring2Constraint* btGen = (btGeneric6DofSpring2Constraint*)(c);
+                if(revolute->enableMotor)
+                {
+                    btGen->enableMotor(3, true);
+                    btGen->setMaxMotorForce(3, revolute->maxMotorForce);
+                    btGen->setTargetVelocity(3, revolute->targetMotorVelocity);
+                }
+                else
+                    btGen->enableMotor(3, false);
+
                 break;
             }
         }
@@ -175,10 +181,10 @@ void BulletEngine::step(float dt) {
             }
             case USER_TYPE_REVOLUTE: {
                 component::RevoluteJoint* revolute = (component::RevoluteJoint*)c->getUserConstraintPtr();
-                btHingeConstraint* btHinge = (btHingeConstraint*)(c);
+                // btHingeAccumulatedAngleConstraint* btHinge = (btHingeAccumulatedAngleConstraint*)(c);
 
-                // Update position
-                revolute->motorAngle = btHinge->getHingeAngle();
+                //// Update position
+                // revolute->motorAngle = btHinge->getAccumulatedHingeAngle();
                 break;
             }
         }
@@ -407,37 +413,59 @@ void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
         return;
     }
 
-    // Create constraint
+    //----- Bodies should never sleep -----//
+    rbA->setActivationState(DISABLE_DEACTIVATION);
+    rbB->setActivationState(DISABLE_DEACTIVATION);
+
+    //----- Create constraint -----//
+    btTransform frameInA, frameInB;
+    frameInA = frameInB = btTransform::getIdentity();
+    // Set origin
     btVector3 pivotInA{revolute->anchorA.x, revolute->anchorA.y, revolute->anchorA.z};
     btVector3 pivotInB{revolute->anchorB.x, revolute->anchorB.y, revolute->anchorB.z};
-    btVector3 axisInA{revolute->axisA.x, revolute->axisA.y, revolute->axisA.z};
-    btVector3 axisInB{revolute->axisB.x, revolute->axisB.y, revolute->axisB.z};
+    frameInA.setOrigin(pivotInA);
+    frameInB.setOrigin(pivotInB);
 
-    btHingeConstraint* hinge = new btHingeConstraint(*rbA, *rbB, pivotInA, pivotInB, axisInA, axisInB, true);
-    hinge->setUserConstraintType(USER_TYPE_REVOLUTE);
-    hinge->setUserConstraintPtr(revolute);
+    // Set rotation
+    quat rotA, rotB;
+    rotA.setRotationFromVectors(normalize(revolute->axisA), vec3(1, 0, 0));
+    rotB.setRotationFromVectors(normalize(revolute->axisB), vec3(1, 0, 0));
+    btQuaternion btRotA{-rotA.i, -rotA.j, -rotA.k, rotA.r};
+    btQuaternion btRotB{-rotB.i, -rotB.j, -rotB.k, rotB.r};
+    frameInA.setRotation(btRotA);
+    frameInB.setRotation(btRotB);
 
+    btGeneric6DofSpring2Constraint* c = new btGeneric6DofSpring2Constraint(*rbA, *rbB, frameInA, frameInB);
+    c->setUserConstraintType(USER_TYPE_REVOLUTE);
+    c->setUserConstraintPtr(revolute);
+
+    //----- Set defuault limits -----//
+    c->setLinearLowerLimit(btVector3(0, 0, 0));
+    c->setLinearUpperLimit(btVector3(0, 0, 0));
+    c->setAngularLowerLimit(btVector3(1, 0, 0));
+    c->setAngularUpperLimit(btVector3(0, 0, 0));
+    c->setEquilibriumPoint();
+
+    //----- User config -----//
     // Enable limits
     if (revolute->enableLimits)
-        hinge->setLimit(revolute->lowerAngle, revolute->upperAngle);
+    {
+        c->setAngularLowerLimit(btVector3(revolute->lowerAngle, 0, 0));
+        c->setAngularUpperLimit(btVector3(revolute->upperAngle, 0, 0));
+    }
 
     // Enable motor
     if (revolute->enableMotor) {
-        // Setup motor
-        //hinge->enableMotor(true);
-        //hinge->setMaxMotorImpulse(revolute->maxMotorForce*Config::getDt());
-        //hinge->setMotorTargetVelocity(revolute->targetMotorVelocity);
-        hinge->enableAngularMotor(true, revolute->targetMotorVelocity, revolute->maxMotorForce * Config::getDt());
-        // Disable sleeping
-        rbA->setSleepingThresholds(0.0f, 0.0f);
-        rbB->setSleepingThresholds(0.0f, 0.0f);
+        c->enableMotor(3, true);
+        c->setMaxMotorForce(3, revolute->maxMotorForce);
+        c->setTargetVelocity(3, revolute->targetMotorVelocity);
     }
-
-    // Should collision
+    
+    // Should collide
     rbA->setIgnoreCollisionCheck(rbB, !revolute->shouldCollide);
 
-    // Add constraint
-    _world->addConstraint(hinge, true);
+    //----- Add constraint -----//
+    _world->addConstraint(c);
 
     // Keep track of connected entities
     _connectedEntities[revolute->bodyA].push_back(revolute->bodyB);
