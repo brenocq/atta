@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/components/boxCollider.h>
+#include <atta/component/components/cylinderCollider.h>
 #include <atta/component/components/rigidBody.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
@@ -121,13 +122,11 @@ void BulletEngine::step(float dt) {
             case USER_TYPE_REVOLUTE: {
                 component::RevoluteJoint* revolute = (component::RevoluteJoint*)c->getUserConstraintPtr();
                 btGeneric6DofSpring2Constraint* btGen = (btGeneric6DofSpring2Constraint*)(c);
-                if(revolute->enableMotor)
-                {
+                if (revolute->enableMotor) {
                     btGen->enableMotor(3, true);
                     btGen->setMaxMotorForce(3, revolute->maxMotorForce);
                     btGen->setTargetVelocity(3, revolute->targetMotorVelocity);
-                }
-                else
+                } else
                     btGen->enableMotor(3, false);
 
                 break;
@@ -231,7 +230,42 @@ std::vector<component::EntityId> BulletEngine::getEntityCollisions(component::En
     return result;
 }
 
-std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) { return {}; }
+std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
+    std::vector<component::EntityId> result;
+    btVector3 btBegin(begin.x, begin.y, begin.z);
+    btVector3 btEnd(end.x, end.y, end.z);
+
+    if (onlyFirst) {
+        // Create ray cast callback
+        btCollisionWorld::ClosestRayResultCallback rayCallback(btBegin, btEnd);
+
+        // Perform ray cast
+        _world->rayTest(btBegin, btEnd, rayCallback);
+
+        // Check hit
+        if (rayCallback.hasHit()) {
+            const btCollisionObject* col = rayCallback.m_collisionObject;
+            component::EntityId eid = BT_USRPTR_TO_EID(col->getUserPointer());
+            result.push_back(eid);
+        }
+    } else {
+        // Create ray cast callback
+        btCollisionWorld::AllHitsRayResultCallback rayCallback(btBegin, btEnd);
+
+        // Perform ray cast
+        _world->rayTest(btBegin, btEnd, rayCallback);
+
+        // Check hits
+        if (rayCallback.hasHit())
+            for (unsigned i = 0; i < rayCallback.m_collisionObjects.size(); i++) {
+                const btCollisionObject* col = rayCallback.m_collisionObjects[i];
+                component::EntityId eid = BT_USRPTR_TO_EID(col->getUserPointer());
+                result.push_back(eid);
+            }
+    }
+
+    return result;
+}
 
 bool BulletEngine::areColliding(component::EntityId eid0, component::EntityId eid1) {
     return _collisions.find(eid0) != _collisions.end() && _collisions[eid0].find(eid1) != _collisions[eid0].end();
@@ -289,6 +323,7 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     auto rb = component::getComponent<component::RigidBody>(entity);
     auto box = component::getComponent<component::BoxCollider>(entity);
     auto sphere = component::getComponent<component::SphereCollider>(entity);
+    auto cylinder = component::getComponent<component::CylinderCollider>(entity);
 
     if (!rb)
         return;
@@ -298,12 +333,12 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
         return;
     }
 
-    if (rb && !(box || sphere)) {
+    if (rb && !(box || sphere || cylinder)) {
         LOG_WARN("physics::BulletEngine", "Entity [w]$0[] is a rigid body but does not have any collider component", entity);
         return;
     }
 
-    if (box && sphere) {
+    if (int(box != nullptr) + int(sphere != nullptr) + int(cylinder != nullptr) > 1) {
         LOG_WARN("physics::BulletEngine", "Entity [w]$0[] must have only one collider", entity);
         return;
     }
@@ -323,6 +358,9 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
         colShape = new btBoxShape(btVector3(scale.x * box->size.x / 2.0f, scale.y * box->size.y / 2.0f, scale.z * box->size.z / 2.0f));
     else if (sphere)
         colShape = new btSphereShape(btScalar(std::max(std::max(scale.x, scale.y), scale.z) * sphere->radius));
+    else if (cylinder)
+        colShape = new btCylinderShape(btVector3(scale.x * cylinder->radius, scale.y * cylinder->radius, scale.z * cylinder->height * 0.5f));
+    colShape->setUserPointer(reinterpret_cast<uint8_t*>(entity));
 
     _collisionShapes.push_back(colShape);
 
@@ -339,6 +377,10 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, colShape, localInertia);
     btRigidBody* body = new btRigidBody(rbInfo);
     body->setUserPointer(reinterpret_cast<uint8_t*>(entity));
+
+    // Allow sleep control
+    if (!rb->allowSleep)
+        body->setActivationState(DISABLE_DEACTIVATION);
 
     // add the body to the dynamics world
     _world->addRigidBody(body);
@@ -448,8 +490,7 @@ void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
 
     //----- User config -----//
     // Enable limits
-    if (revolute->enableLimits)
-    {
+    if (revolute->enableLimits) {
         c->setAngularLowerLimit(btVector3(revolute->lowerAngle, 0, 0));
         c->setAngularUpperLimit(btVector3(revolute->upperAngle, 0, 0));
     }
@@ -460,7 +501,7 @@ void BulletEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
         c->setMaxMotorForce(3, revolute->maxMotorForce);
         c->setTargetVelocity(3, revolute->targetMotorVelocity);
     }
-    
+
     // Should collide
     rbA->setIgnoreCollisionCheck(rbB, !revolute->shouldCollide);
 

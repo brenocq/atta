@@ -24,7 +24,7 @@ class Engine {
     virtual void stop() = 0;
 
     virtual std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) { return {}; };
-    virtual std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst = true) { return {}; };
+    virtual std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst = false) { return {}; };
     virtual bool areColliding(component::EntityId eid0, component::EntityId eid1) { return false; };
 
     /// Physics engine should update the gravity with the new value in Manager::getGravity()

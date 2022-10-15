@@ -18,6 +18,7 @@ class PhysicsDrawer {
     void drawBox(vec3 position = {0, 0, 0}, quat orientation = {}, vec3 scale = {1, 1, 1}, vec4 color = {0, 1, 0, 1});
     void drawCircle(vec3 position = {0, 0, 0}, quat orientation = {}, vec3 scale = {1, 1, 1}, vec4 color = {0, 1, 0, 1});
     void drawSphere(vec3 position = {0, 0, 0}, quat orientation = {}, vec3 scale = {1, 1, 1}, vec4 color = {0, 1, 0, 1});
+    void drawCylinder(vec3 position = {0, 0, 0}, quat orientation = {}, vec3 scale = {1, 1, 1}, vec4 color = {0, 1, 0, 1});
 };
 
 } // namespace atta::ui

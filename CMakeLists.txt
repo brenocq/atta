@@ -253,6 +253,8 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
         FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY ${CMAKE_BINARY_DIR}/_deps/implot-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/implot
         FILES_MATCHING REGEX ".*\.(h|cpp)$")
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/_deps/bullet3-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/bullet3
+        FILES_MATCHING REGEX ".*\.(h|cpp)$")
     install(DIRECTORY src/extern/glad/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/glad
         FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY src/extern/stb_image/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/stb_image
@@ -262,6 +264,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE})
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/imgui)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/implot)
+    list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/bullet3/src)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/segvcatch/lib)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/glad/include)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/stb_image)

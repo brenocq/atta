@@ -36,7 +36,7 @@ void setShowJoints(bool showJoints);
 
 //---------- Queries ----------//
 std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);
-std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst = true);
+std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst = false);
 bool areColliding(component::EntityId eid0, component::EntityId eid1);
 
 } // namespace atta::physics

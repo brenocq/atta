@@ -38,6 +38,7 @@ class quat {
     void operator+=(const vec3& vec);
     bool operator!=(const quat& other);
 
+    void rotateVector(vec3& vec);
     void addScaledVector(const vec3& vec, float scale);
     void rotateAroundAxis(const vec3& axis, float angle);
 

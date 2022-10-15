@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/components/boxCollider.h>
+#include <atta/component/components/cylinderCollider.h>
 #include <atta/component/components/rigidBody.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
@@ -68,6 +69,11 @@ void PhysicsDrawer::update() {
                         break;
                 }
             }
+
+            // Draw cylinder collider
+            auto cylinder = component::getComponent<component::CylinderCollider>(entity);
+            if (cylinder && physics::getEngineType() == physics::Engine::BULLET)
+                drawCylinder(pos + cylinder->offset, ori, vec3(vec2(scale) * cylinder->radius * 2, scale.z * cylinder->height), color);
         }
     }
 
@@ -77,6 +83,7 @@ void PhysicsDrawer::update() {
         for (auto entity : entities) {
             auto p = component::getComponent<component::PrismaticJoint>(entity);
 
+            // Prismatic joint
             if (p) {
                 auto tA = component::getComponent<component::Transform>(p->bodyA);
                 auto tB = component::getComponent<component::Transform>(p->bodyB);
@@ -105,9 +112,41 @@ void PhysicsDrawer::update() {
                     drawSquare(wAnchorB, oriB, vec3(0.1), color);
 
                     if (p->enableLimits) {
-                        drawSquare(wAnchorA + wAxisA*p->lowerLimit, oriA, vec3(0.05), color);
-                        drawSquare(wAnchorA + wAxisA*p->upperLimit, oriA, vec3(0.05), color);
+                        drawSquare(wAnchorA + wAxisA * p->lowerLimit, oriA, vec3(0.05), color);
+                        drawSquare(wAnchorA + wAxisA * p->upperLimit, oriA, vec3(0.05), color);
                     }
+                }
+            }
+
+            // Revolute joint
+            auto r = component::getComponent<component::RevoluteJoint>(entity);
+            if (r) {
+                auto tA = component::getComponent<component::Transform>(r->bodyA);
+                auto tB = component::getComponent<component::Transform>(r->bodyB);
+                auto rbA = component::getComponent<component::RigidBody>(r->bodyA);
+                auto rbB = component::getComponent<component::RigidBody>(r->bodyB);
+
+                if (tA && tB && rbA && rbB) {
+                    mat4 wTransA = tA->getWorldTransform(r->bodyA);
+                    mat4 wTransB = tB->getWorldTransform(r->bodyB);
+
+                    // TODO anchor position does not match bullet engine position
+                    vec3 wAnchorA = wTransA * vec4(r->anchorA, 1);
+                    vec3 wAnchorB = wTransB * vec4(r->anchorB, 1);
+                    vec3 wAxisA = wTransA * vec4(r->axisA, 0);
+                    vec3 wAxisB = wTransB * vec4(r->axisB, 0);
+                    wAxisA.normalize();
+                    wAxisB.normalize();
+
+                    vec4 color = {0, 0, 1, 1};
+                    graphics::Drawer::add(graphics::Drawer::Line(wAnchorA, wAnchorB, color, color), "atta::ui::PhysicsDrawer");
+                    quat oriA;
+                    oriA.setRotationFromVectors(wAxisA, vec3(0, 0, 1));
+                    quat oriB;
+                    oriB.setRotationFromVectors(wAxisB, vec3(0, 0, 1));
+
+                    drawCircle(wAnchorA, oriA, vec3(0.1), color);
+                    drawCircle(wAnchorB, oriB, vec3(0.1), color);
                 }
             }
         }
@@ -236,6 +275,23 @@ void PhysicsDrawer::drawSphere(vec3 position, quat orientation, vec3 scale, vec4
         graphics::Drawer::add(graphics::Drawer::Line(vertices[i + 2], vertices[(i + 2 + 3) % (numVertices * 3)], color, color),
                               "atta::ui::PhysicsDrawer");
     }
+}
+
+void PhysicsDrawer::drawCylinder(vec3 position, quat orientation, vec3 scale, vec4 color) {
+    vec3 axisX = {1, 0, 0};
+    vec3 axisY = {0, 1, 0};
+    vec3 axisZ = {0, 0, 1};
+    orientation.rotateVector(axisX);
+    orientation.rotateVector(axisY);
+    orientation.rotateVector(axisZ);
+    vec3 top = position + axisZ * scale.z * 0.5;
+    vec3 bottom = position - axisZ * scale.z * 0.5;
+    drawCircle(top, orientation, scale * 0.5, color);
+    drawCircle(bottom, orientation, scale * 0.5, color);
+    for (vec3 axis : std::vector<vec3>{axisX, axisY})
+        for (int i : std::vector<int>{-1, 1})
+            graphics::Drawer::add(graphics::Drawer::Line(bottom + axis * scale.x * 0.5 * i, top + axis * scale.x * 0.5 * i, color, color),
+                                  "atta::ui::PhysicsDrawer");
 }
 
 } // namespace atta::ui

@@ -26,6 +26,8 @@ set(ATTA_ASSIMP_TARGETS "")
     set(ASSIMP_BUILD_ZLIB ON CACHE INTERNAL "" FORCE)
     set(ASSIMP_INSTALL_PDB OFF CACHE INTERNAL "" FORCE )
     set(ASSIMP_INSTALL OFF CACHE INTERNAL "" FORCE)
+    set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE INTERNAL "" FORCE)
+
     FetchContent_Declare(
         assimp
         URL "https://storage.googleapis.com/atta-deps/assimp-5.2.4-light.zip"
