@@ -203,6 +203,14 @@ void PhysicsDrawer::drawBox2D() {
 
         std::vector<component::EntityId> entities = component::getEntitiesView();
         for (auto entity : entities) {
+            // Change color based on box2d rigid body state
+            if (Config::getState() != Config::State::IDLE) {
+                auto box2d = physics::getEngine<physics::Box2DEngine>();
+                auto rb = box2d->getBox2DRigidBody(entity);
+                if (rb)
+                    color = rb->IsAwake() ? vec4(0, 1, 0, 1) : vec4(1, 1, 0, 1);
+            }
+
             // Get transform
             auto t = component::getComponent<component::Transform>(entity);
             if (!t)

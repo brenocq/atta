@@ -56,8 +56,10 @@ class RayCastCallback : public b2RayCastCallback {
     RayCastCallback(bool onlyFirst) : _onlyFirst(onlyFirst) {}
 
     float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override {
+        if (_onlyFirst)
+            entities.clear();
         entities.push_back(fixture->GetBody()->GetUserData().pointer);
-        return _onlyFirst ? 0 : 1;
+        return _onlyFirst ? fraction : 1;
     }
 
     std::vector<component::EntityId> entities;
@@ -190,11 +192,42 @@ void Box2DEngine::start() {
 void Box2DEngine::step(float dt) {
     int velocityIterations = 8;
     int positionIterations = 3;
+
+    //----- Update box2d bodies -----//
+    for (auto [eid, body] : _bodies) {
+        // Get atta pos/angle
+        auto t = component::getComponent<component::Transform>(eid);
+        vec3 position, scale;
+        quat orientation;
+        mat4 m = t->getWorldTransform(eid);
+        m.getPosOriScale(position, orientation, scale);
+
+        // Get box2d pos/angle
+        b2Vec2 pos = body->GetPosition();
+        vec3 physicsPosition = {pos.x, pos.y, position.z};
+        quat physicsOrientation;
+        physicsOrientation.set2DAngle(body->GetAngle());
+
+        // Calculate quaternion distance
+        quat po = physicsOrientation;
+        quat o = orientation;
+        float qDist = po.r * o.r + po.i * o.i + po.j * o.j + po.k * o.k;
+        qDist = 1 - qDist * qDist; // 0 if they are the same, 1 if they are opposite
+        bool isSameOri = qDist < 0.001 || qDist > 0.999;
+
+        // Check if need to update position
+        if (position != physicsPosition || !isSameOri) {
+            body->SetTransform(b2Vec2(position.x, position.y), orientation.get2DAngle());
+            body->SetAwake(true);
+        }
+    }
+
+    //----- Step simulation -----//
     _world->Step(dt, velocityIterations, positionIterations);
 
-    // Update transform components
-    for (auto p : _bodies) {
-        auto t = component::getComponent<component::Transform>(p.first);
+    //----- Update atta components -----//
+    for (auto [eid, body] : _bodies) {
+        auto t = component::getComponent<component::Transform>(eid);
         if (t) {
             // component::Transform data
             vec3 position;
@@ -202,13 +235,13 @@ void Box2DEngine::step(float dt) {
             vec3 scale;
 
             // Get new transform (after physics step)
-            b2Vec2 pos = p.second->GetPosition();
+            b2Vec2 pos = body->GetPosition();
             position = {pos.x, pos.y, 0.0f};
-            orientation.set2DAngle(p.second->GetAngle());
+            orientation.set2DAngle(body->GetAngle());
             scale = t->scale;
 
             // Update pos/ori/scale to be local to parent
-            component::Relationship* r = component::getComponent<component::Relationship>(p.first);
+            component::Relationship* r = component::getComponent<component::Relationship>(eid);
             if (r && r->getParent() != -1) {
                 // Get transform of the first entity that has transform when going up in the hierarchy
                 component::Transform* pt = nullptr;
@@ -241,18 +274,13 @@ void Box2DEngine::step(float dt) {
             t->scale = scale;
         }
     }
-
-    // Testing
-    // std::vector<component::EntityId> collisions = getEntityCollisions(p.first);
-    // std::vector<component::EntityId> collisions = getRayCastCollisions({-10,-10,0}, {10,10,0}, false);
-    // if(collisions.size())
-    //    LOG_DEBUG("Box2DEngine", "Ray cast collisions: $0", collisions);
 }
 
 void Box2DEngine::stop() {
     _running = false;
     _bodies.clear();
     _componentToEntity.clear();
+    _collisions.clear();
     _world.reset();
 }
 
@@ -365,12 +393,13 @@ bool Box2DEngine::areColliding(component::EntityId eid0, component::EntityId eid
 }
 
 void Box2DEngine::updateGravity() {
-    if (Config::getState() != Config::State::IDLE)
-    {
+    if (Config::getState() != Config::State::IDLE) {
         vec3 g = physics::getGravity();
         _world->SetGravity(b2Vec2(g.x, g.y));
     }
 }
+
+b2Body* Box2DEngine::getBox2DRigidBody(component::EntityId entity) { return _bodies.find(entity) != _bodies.end() ? _bodies[entity] : nullptr; }
 
 std::vector<component::EntityId> Box2DEngine::getAABBEntities(vec2 lower, vec2 upper) {
     EntityCollisionQueryCallback callback;

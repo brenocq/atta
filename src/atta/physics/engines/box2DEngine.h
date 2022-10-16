@@ -31,6 +31,8 @@ class Box2DEngine : public Engine {
 
     void updateGravity() override;
 
+    b2Body* getBox2DRigidBody(component::EntityId entity);
+
     // component::RigidBody2D interface
     void setTransform(component::RigidBody2D* rb2d, vec2 position, float angle);
     void setLinearVelocity(component::RigidBody2D* rb2d, vec2 vel);
