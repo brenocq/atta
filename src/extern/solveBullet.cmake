@@ -20,7 +20,7 @@ set(ATTA_BULLET_TARGETS "")
 
     FetchContent_Declare(
         bullet3
-        URL "https://storage.googleapis.com/atta-deps/bullet3-3.24-light.zip"
+        URL "http://storage.googleapis.com/atta-deps/bullet3-3.24-light.zip"
     )
     atta_log(Info Extern "Fetching Bullet...")
     FetchContent_MakeAvailable(bullet3)

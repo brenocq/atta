@@ -3,7 +3,7 @@ set(ATTA_IMGUI_TARGETS "")
 
 FetchContent_Declare(
     imgui
-    URL "https://storage.googleapis.com/atta-deps/imgui-ff1567e2406797cbd1a3ef3d716888d6c3a66bd7.zip"
+    URL "http://storage.googleapis.com/atta-deps/imgui-ff1567e2406797cbd1a3ef3d716888d6c3a66bd7.zip"
 )
 
 atta_log(Info Extern "Fetching ImGui...")

@@ -30,7 +30,7 @@ set(ATTA_ASSIMP_TARGETS "")
 
     FetchContent_Declare(
         assimp
-        URL "https://storage.googleapis.com/atta-deps/assimp-5.2.4-light.zip"
+        URL "http://storage.googleapis.com/atta-deps/assimp-5.2.4-light.zip"
     )
     atta_log(Info Extern "Fetching Assimp...")
     atta_FetchContent_MakeAvailable(assimp) 
