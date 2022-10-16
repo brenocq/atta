@@ -11,7 +11,12 @@ void ProjectSerializer::deserializeHeader(Section& section) {
     std::string projectName = std::string(section["projectName"]);
 }
 
-void ProjectSerializer::deserializeConfig(Section& section) { Config::setDt(float(section["dt"])); }
+void ProjectSerializer::deserializeConfig(Section& section) { 
+    if(section.contains("dt"))
+        Config::setDt(float(section["dt"]));
+    if(section.contains("desiredStepSpeed"))
+        Config::setDesiredStepSpeed(float(section["desiredStepSpeed"]));
+}
 
 void ProjectSerializer::deserializeComponentModule(Section& section) {
     // Create entities
@@ -42,20 +47,28 @@ void ProjectSerializer::deserializeComponentModule(Section& section) {
 }
 
 void ProjectSerializer::deserializeGraphicsModule(Section& section) {
-    std::vector<graphics::Viewport> viewports = std::vector<graphics::Viewport>(section["viewports"]);
-    graphics::clearViewports();
-    for (auto& viewport : viewports) {
-        std::shared_ptr<graphics::Viewport> v = std::make_shared<graphics::Viewport>();
-        *v = viewport;
-        graphics::addViewport(v);
+    if (section.contains("viewports")) {
+        std::vector<graphics::Viewport> viewports = std::vector<graphics::Viewport>(section["viewports"]);
+        graphics::clearViewports();
+        for (auto& viewport : viewports) {
+            std::shared_ptr<graphics::Viewport> v = std::make_shared<graphics::Viewport>();
+            *v = viewport;
+            graphics::addViewport(v);
+        }
     }
+    if (section.contains("graphicsFPS"))
+        graphics::setGraphicsFPS(float(section["graphicsFPS"]));
+    if(section.contains("viewportFPS"))
+        graphics::setViewportFPS(float(section["viewportFPS"]));
+    if(section.contains("viewportRendering"))
+        graphics::setViewportRendering(bool(section["viewportRendering"]));
 }
 
 void ProjectSerializer::deserializeResourceModule(Section& section) {
     std::vector<resource::Material> materials = std::vector<resource::Material>(section["materials"]);
     resource::destroyResources<resource::Material>();
     for (resource::Material material : materials) {
-        resource::Material::CreateInfo info {};
+        resource::Material::CreateInfo info{};
         info.color = material.color;
         info.metallic = material.metallic;
         info.roughness = material.roughness;
@@ -65,6 +78,34 @@ void ProjectSerializer::deserializeResourceModule(Section& section) {
         info.roughnessImage = material.roughnessImage;
         info.aoImage = material.aoImage;
         resource::create<resource::Material>(material.getId().getString(), info);
+    }
+}
+
+void ProjectSerializer::deserializePhysicsModule(Section& section) {
+    if (section.contains("engine")) {
+        std::string engine = std::string(section["engine"]);
+        if (engine == "NONE")
+            physics::setEngineType(physics::Engine::NONE);
+        else if (engine == "BOX2D")
+            physics::setEngineType(physics::Engine::BOX2D);
+        else if (engine == "BULLET")
+            physics::setEngineType(physics::Engine::BULLET);
+    }
+    if(section.contains("gravity"))
+       physics::setGravity(vec3(section["gravity"]));
+    if(section.contains("showColliders"))
+        physics::setShowColliders(bool(section["showColliders"]));
+    if(section.contains("showContacts"))
+        physics::setShowContacts(bool(section["showContacts"]));
+    if(section.contains("showJoints"))
+        physics::setShowJoints(bool(section["showJoints"]));
+
+    if (section.contains("bullet")) {
+        auto bullet = physics::getEngine<physics::BulletEngine>();
+        if (section["bullet"].contains("showAabb"))
+            bullet->setShowAabb(bool(section["bullet"]["showAabb"]));
+        if (section["bullet"].contains("numSubSteps"))
+            bullet->setNumSubSteps(unsigned(section["bullet"]["numSubSteps"]));
     }
 }
 

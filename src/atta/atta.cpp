@@ -10,6 +10,7 @@
 #include <atta/event/events/simulationContinue.h>
 #include <atta/event/events/simulationPause.h>
 #include <atta/event/events/simulationStart.h>
+#include <atta/event/events/simulationStep.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/windowClose.h>
 
@@ -32,11 +33,8 @@
 #include <atta/component/components/script.h>
 #include <atta/script/script.h>
 
-// TODO move to another class
-#include <ctime>
-
 namespace atta {
-Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(SimulationState::NOT_RUNNING) {
+Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     Config::init();
     file::startUp();
 
@@ -55,6 +53,7 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(Simu
     // Atta is the last one to reveice events
     event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
     event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::subscribe<event::SimulationStep>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
@@ -69,12 +68,13 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(Simu
         LOG_WARN("Atta", "Project [w]$0[] will not be open because atta was built statically linked to [w]$1[]", info.projectFile, projectFile);
 #else
     // If a project was defined as argument, open project
-    if (!info.projectFile.empty())
-    {
-        graphics::update();// Need to update to register the viewports
+    if (!info.projectFile.empty()) {
+        graphics::update(); // Need to update to register the viewports
         file::openProject(info.projectFile);
     }
 #endif
+
+    _currStep = _lastStep = std::clock();
 }
 
 Atta::~Atta() {
@@ -111,59 +111,42 @@ void Atta::run() {
 #endif
 
 void Atta::loop() {
-    if (_shouldFinish)
-        return;
-    float dt = Config::getDt();
+    _currStep = std::clock();
+    const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
+
+    if (Config::getState() == Config::State::RUNNING) {
+        if (Config::getDesiredStepSpeed() == 0.0f) {
+            // Step as fast as possible
+            step();
+        } else {
+            // Step with delay to be closer to desired step speed
+            if(timeDiff >= Config::getDt()/Config::getDesiredStepSpeed())
+                step();
+        }
+    } else if (Config::getState() == Config::State::PAUSED && _shouldStep) {
+        _shouldStep = false;
+        step();
+    }
 
     script::ProjectScript* project = script::getProjectScript();
-    if (_simulationState == SimulationState::RUNNING) {
-        physics::update(dt);
-        sensor::update(dt);
-
-        if (project)
-            project->onUpdateBefore(dt);
-
-        // Run entity scripts
-        // TODO keep list of entities that have script (and are not prototype entities)
-        std::vector<component::EntityId> entities = component::getScriptView();
-        for (component::EntityId entity : entities) {
-            component::Script* scriptComponent = component::getComponent<component::Script>(entity);
-            component::Prototype* prototypeComponent = component::getComponent<component::Prototype>(entity);
-            if (scriptComponent && !prototypeComponent) {
-                // std::vector<Component*> components = component::getComponents(entity);
-                script::Script* script = script::getScript(scriptComponent->sid);
-                if (script)
-                    script->update(component::Entity(entity), dt);
-            }
-        }
-
-        // Run clone scripts
-        for (auto& factory : component::getFactories())
-            factory.runScripts(dt);
-
-        if (project)
-            project->onUpdateAfter(dt);
-    }
     if (project)
         project->onAttaLoop();
 
     sensor::update();
     file::update();
+    graphics::update();
+}
 
-    if (_simulationState == SimulationState::RUNNING) {
-        // Execute graphics update every X seconds
-        // TODO let the user control how much time is spent rendering
-        static clock_t lastTime = std::clock();
-        const clock_t currTime = std::clock();
-        float timeDiff = float(currTime - lastTime) / CLOCKS_PER_SEC;
-        if (timeDiff > 0.03f) {
-            graphics::update();
-            lastTime = currTime;
-        }
-    } else {
-        // Update graphics every frame
-        graphics::update();
-    }
+void Atta::step() {
+    const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
+    Config::setRealStepSpeed(Config::getDt()/timeDiff);
+    _lastStep = _currStep;
+
+    float dt = Config::getDt(); // Saving dt because project script may change the dt
+    physics::update(dt);
+    sensor::update(dt);
+    script::update(dt);
+    Config::getInstance()._time += dt;
 }
 
 void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }
@@ -171,33 +154,49 @@ void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }
 void Atta::onSimulationStateChange(event::Event& event) {
     script::ProjectScript* project = script::getProjectScript();
     switch (event.getType()) {
-    case event::SimulationStart::type: {
-        if (project)
-            project->onStart();
-        _simulationState = SimulationState::RUNNING;
-        break;
-    }
-    case event::SimulationContinue::type: {
-        if (project)
-            project->onContinue();
-        _simulationState = SimulationState::RUNNING;
-        break;
-    }
-    case event::SimulationPause::type: {
-        if (project)
-            project->onPause();
-        _simulationState = SimulationState::PAUSED;
-        break;
-    }
-    case event::SimulationStop::type: {
-        if (project)
-            project->onStop();
-        _simulationState = SimulationState::NOT_RUNNING;
-        break;
-    }
-    default: {
-        LOG_WARN("Atta", "Unknown simulation event");
-    }
+        case event::SimulationStart::type: {
+            Config::getInstance()._state = Config::State::RUNNING;
+            if (project)
+                project->onStart();
+            break;
+        }
+        case event::SimulationContinue::type: {
+            Config::getInstance()._state = Config::State::RUNNING;
+            if (project)
+                project->onContinue();
+            break;
+        }
+        case event::SimulationPause::type: {
+            Config::getInstance()._state = Config::State::PAUSED;
+            if (project)
+                project->onPause();
+            break;
+        }
+        case event::SimulationStop::type: {
+            Config::getInstance()._state = Config::State::IDLE;
+            Config::getInstance()._time = 0.0f;
+            Config::getInstance()._realStepSpeed = 0.0f;
+            if (project)
+                project->onStop();
+            break;
+        }
+        case event::SimulationStep::type: {
+            if(Config::getState() == Config::State::IDLE)
+            {
+                event::SimulationStart e;
+                event::publish(e);
+            }
+            if(Config::getState() == Config::State::RUNNING)
+            {
+                event::SimulationPause e;
+                event::publish(e);
+            }
+            _shouldStep = true;
+            break;
+        }
+        default: {
+            LOG_WARN("Atta", "Unknown simulation event");
+        }
     }
 }
 } // namespace atta

@@ -11,6 +11,7 @@ set(ATTA_COMPONENT_MODULE_SOURCE
 
     components/boxCollider.cpp
     components/camera.cpp
+    components/cylinderCollider.cpp
     components/directionalLight.cpp
     components/environmentLight.cpp
     components/material.cpp

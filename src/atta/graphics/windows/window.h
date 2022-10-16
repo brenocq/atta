@@ -14,7 +14,7 @@ namespace atta::graphics {
 class Window {
   public:
     struct CreateInfo {
-        std::string title = "Atta - by Brenocq";
+        std::string title = "atta";
         size_t width = 1600;
         size_t height = 900;
     };

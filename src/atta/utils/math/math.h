@@ -10,7 +10,6 @@
 #include <atta/utils/math/bounds.h>
 #include <atta/utils/math/common.h>
 #include <atta/utils/math/matrix.h>
-#include <atta/utils/math/point.h>
 #include <atta/utils/math/quaternion.h>
 #include <atta/utils/math/ray.h>
 #include <atta/utils/math/vector.h>

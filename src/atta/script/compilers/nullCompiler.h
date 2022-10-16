@@ -17,7 +17,6 @@ class NullCompiler : public Compiler {
 
     void compileAll() override{};
     void compileTarget(StringId target) override{};
-    void updateTargets() override{};
 };
 
 } // namespace atta::script

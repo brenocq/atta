@@ -189,7 +189,7 @@ std::map<std::string, Json> Json::parseMap(const std::string& str, unsigned& pos
 
         while (str[pos] == ' ' || str[pos] == '\n' || str[pos] == '\r' || str[pos] == '\t') {
             if (pos == str.size()) {
-                LOG_WARN("io::Json", "Expecting map key [w]\"[] or map end [w]\}[], but reached end of string");
+                LOG_WARN("io::Json", "Expecting map key [w]\"[] or map end [w]}[], but reached end of string");
                 return {};
             }
             pos++;
@@ -227,7 +227,7 @@ std::map<std::string, Json> Json::parseMap(const std::string& str, unsigned& pos
             // Map end
             continue;
         } else {
-            LOG_WARN("io::Json", "Expecting map key [w]\"[] or map end [w]\}[], but found [w]$0[]", str[pos]);
+            LOG_WARN("io::Json", "Expecting map key [w]\"[] or map end [w]}[], but found [w]$0[]", str[pos]);
             return {};
         }
     }

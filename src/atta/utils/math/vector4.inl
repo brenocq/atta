@@ -4,7 +4,9 @@
 // Date: 2021-08-27
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+
 namespace atta {
+
 //----------------------------------------//
 //---------------- vector4 ---------------//
 //----------------------------------------//
@@ -262,9 +264,20 @@ inline float length(const vector4<T>& v) {
     return v.length();
 }
 
+template <typename T>
+inline vector4<T> max(const vector4<T>& v1, const vector4<T>& v2) {
+    return {std::max(v1.x, v2.x), std::max(v1.y, v2.y), std::max(v1.z, v2.z), std::max(v1.w, v2.w)};
+}
+
+template <typename T>
+inline vector4<T> min(const vector4<T>& v1, const vector4<T>& v2) {
+    return {std::min(v1.x, v2.x), std::min(v1.y, v2.y), std::min(v1.z, v2.z), std::min(v1.w, v2.w)};
+}
+
 // <<
 template <typename T>
 inline std::ostream& operator<<(std::ostream& os, const vector4<T>& v) {
     return os << v.toString();
 }
+
 } // namespace atta

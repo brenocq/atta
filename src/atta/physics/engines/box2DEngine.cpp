@@ -8,7 +8,8 @@
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
-#include <atta/physics/physicsEngines/box2DEngine.h>
+#include <atta/physics/engines/box2DEngine.h>
+#include <atta/physics/interface.h>
 
 namespace atta::physics {
 
@@ -65,7 +66,7 @@ class RayCastCallback : public b2RayCastCallback {
 };
 
 //---------- Box2DEngine ----------//
-Box2DEngine::Box2DEngine() : PhysicsEngine(PhysicsEngine::BOX2D_ENGINE) {}
+Box2DEngine::Box2DEngine() : Engine(Engine::BOX2D) {}
 
 Box2DEngine::~Box2DEngine() {
     if (_running)
@@ -74,7 +75,8 @@ Box2DEngine::~Box2DEngine() {
 
 void Box2DEngine::start() {
     _running = true;
-    _world = std::make_shared<b2World>(b2Vec2(0.0f, 0.0f));
+    vec2 g = vec2(physics::getGravity());
+    _world = std::make_shared<b2World>(b2Vec2(g.x, g.y));
 
     // Create contact listener
     // TODO need to free?
@@ -185,8 +187,8 @@ void Box2DEngine::start() {
 }
 
 void Box2DEngine::step(float dt) {
-    int velocityIterations = 6;
-    int positionIterations = 2;
+    int velocityIterations = 8;
+    int positionIterations = 3;
     _world->Step(dt, velocityIterations, positionIterations);
 
     // Update transform components
@@ -267,17 +269,17 @@ void Box2DEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
     auto t = component::getComponent<component::Transform>(prismatic->bodyA);
 
     b2PrismaticJointDef pjd;
-    pjd.Initialize(bodyA, bodyB, b2Vec2(t->position.x, t->position.y), b2Vec2(prismatic->axis.x, prismatic->axis.y));
+    pjd.Initialize(bodyA, bodyB, b2Vec2(t->position.x, t->position.y), b2Vec2(prismatic->axisA.x, prismatic->axisA.y));
 
     pjd.localAnchorA = b2Vec2(prismatic->anchorA.x, prismatic->anchorA.y);
     pjd.localAnchorB = b2Vec2(prismatic->anchorB.x, prismatic->anchorB.y);
 
     pjd.enableLimit = prismatic->enableLimits;
-    pjd.lowerTranslation = prismatic->lowerTranslation;
-    pjd.upperTranslation = prismatic->upperTranslation;
+    pjd.lowerTranslation = prismatic->lowerLimit;
+    pjd.upperTranslation = prismatic->upperLimit;
 
     pjd.enableMotor = prismatic->enableMotor;
-    pjd.motorSpeed = prismatic->motorSpeed;
+    pjd.motorSpeed = prismatic->targetMotorVelocity;
     pjd.maxMotorForce = prismatic->maxMotorForce;
 
     _world->CreateJoint(&pjd);
@@ -307,8 +309,8 @@ void Box2DEngine::createRevoluteJoint(component::RevoluteJoint* revolute) {
     rjd.upperAngle = revolute->upperAngle;
 
     rjd.enableMotor = revolute->enableMotor;
-    rjd.motorSpeed = revolute->motorSpeed;
-    rjd.maxMotorTorque = revolute->maxMotorTorque;
+    rjd.motorSpeed = revolute->targetMotorVelocity;
+    rjd.maxMotorTorque = revolute->maxMotorForce;
 
     _world->CreateJoint(&rjd);
 }
