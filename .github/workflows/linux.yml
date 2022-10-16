@@ -21,17 +21,17 @@ jobs:
         }
 
     steps:
-    - name: Checkout atta
-      uses: actions/checkout@v2
+      - name: Checkout atta
+        uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install cmake xorg-dev curl 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install cmake xorg-dev curl 
 
-    - name: Build
-      run: ./build.sh --jobs 2 --compiler ${{ matrix.config.compiler }}
+      - name: Build
+        run: ./build.sh --jobs 2 --compiler ${{ matrix.config.compiler }}
 
-    - name: Test
-      run: ctest
-      working-directory: build/release
+      - name: Test
+        run: ctest
+        working-directory: build/release
