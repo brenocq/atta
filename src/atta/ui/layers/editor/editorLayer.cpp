@@ -11,6 +11,7 @@
 #include <imgui_internal.h>
 #include <implot.h>
 
+#include <atta/ui/layers/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
 #include <atta/ui/layers/editor/topBar/localWindows/versionWindow.h>
@@ -52,6 +53,7 @@ void EditorLayer::onUIRender() {
     _viewportWindows.render();
 
     // Module windows
+    GraphicsModuleWindow::render();
     IOModuleWindow::render();
     PhysicsModuleWindow::render();
 

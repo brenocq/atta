@@ -19,6 +19,7 @@ set(ATTA_UI_MODULE_SOURCE
     layers/editor/windows/viewportWindows.cpp
     layers/editor/windows/utils/fileSelectionWindow.cpp
 
+    layers/editor/moduleWindows/graphicsModuleWindow.cpp
     layers/editor/moduleWindows/ioModuleWindow.cpp
     layers/editor/moduleWindows/physicsModuleWindow.cpp
 

@@ -4,7 +4,11 @@
 // Date: 2021-12-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/ui/layers/editor/drawers/physicsDrawer.h>
+
 #include <atta/component/components/boxCollider.h>
+#include <atta/component/components/boxCollider2D.h>
+#include <atta/component/components/circleCollider2D.h>
 #include <atta/component/components/cylinderCollider.h>
 #include <atta/component/components/rigidBody.h>
 #include <atta/component/components/sphereCollider.h>
@@ -13,14 +17,25 @@
 #include <atta/graphics/drawer.h>
 #include <atta/physics/engines/bulletEngine.h>
 #include <atta/physics/interface.h>
-#include <atta/ui/layers/editor/drawers/physicsDrawer.h>
 #include <atta/utils/config.h>
 
 namespace atta::ui {
 
 void PhysicsDrawer::update() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::ui::PhysicsDrawer");
-    // Show colliders
+
+    switch (physics::getEngineType()) {
+        case physics::Engine::BULLET:
+            drawBullet();
+            break;
+        case physics::Engine::BOX2D:
+            drawBox2D();
+            break;
+    }
+}
+
+void PhysicsDrawer::drawBullet() {
+    //---------- Show colliders ----------//
     if (physics::getShowColliders()) {
         std::vector<component::EntityId> entities = component::getEntitiesView();
         for (auto entity : entities) {
@@ -36,54 +51,39 @@ void PhysicsDrawer::update() {
 
             // Base color
             vec4 color = {1, 1, 1, 1};
+
             // Change color based on bullet rigid body state
-            if (physics::getEngineType() == physics::Engine::BULLET && Config::getState() != Config::State::IDLE) {
+            if (Config::getState() != Config::State::IDLE) {
                 auto bullet = physics::getEngine<physics::BulletEngine>();
                 auto rb = bullet->getBulletRigidBody(entity);
                 if (rb)
                     color = rb->isActive() ? vec4(0, 1, 0, 1) : vec4(1, 1, 0, 1);
             }
 
-            // Draw box collider
+            //----- Box collider -----//
             auto box = component::getComponent<component::BoxCollider>(entity);
-            if (box) {
-                switch (physics::getEngineType()) {
-                    case physics::Engine::BOX2D:
-                        drawSquare(pos + box->offset, ori, scale * box->size, color);
-                        break;
-                    case physics::Engine::BULLET:
-                        drawBox(pos + box->offset, ori, scale * box->size, color);
-                        break;
-                }
-            }
+            if (box)
+                drawBox(pos + box->offset, ori, scale * box->size, color);
 
-            // Draw sphere collider
+            //----- Sphere collider -----//
             auto sphere = component::getComponent<component::SphereCollider>(entity);
-            if (sphere) {
-                switch (physics::getEngineType()) {
-                    case physics::Engine::BOX2D:
-                        drawCircle(pos + sphere->offset, ori, scale * sphere->radius, color);
-                        break;
-                    case physics::Engine::BULLET:
-                        drawSphere(pos + sphere->offset, ori, scale * sphere->radius, color);
-                        break;
-                }
-            }
+            if (sphere)
+                drawSphere(pos + sphere->offset, ori, scale * sphere->radius, color);
 
-            // Draw cylinder collider
+            //----- Cylinder collider -----//
             auto cylinder = component::getComponent<component::CylinderCollider>(entity);
             if (cylinder && physics::getEngineType() == physics::Engine::BULLET)
                 drawCylinder(pos + cylinder->offset, ori, vec3(vec2(scale) * cylinder->radius * 2, scale.z * cylinder->height), color);
         }
     }
 
-    // Show joints
+    //---------- Show joints ----------//
     if (physics::getShowJoints()) {
         std::vector<component::EntityId> entities = component::getEntitiesView();
         for (auto entity : entities) {
             auto p = component::getComponent<component::PrismaticJoint>(entity);
 
-            // Prismatic joint
+            //----- Prismatic joint -----//
             if (p) {
                 auto tA = component::getComponent<component::Transform>(p->bodyA);
                 auto tB = component::getComponent<component::Transform>(p->bodyB);
@@ -118,7 +118,7 @@ void PhysicsDrawer::update() {
                 }
             }
 
-            // Revolute joint
+            //----- Revolute joint -----//
             auto r = component::getComponent<component::RevoluteJoint>(entity);
             if (r) {
                 auto tA = component::getComponent<component::Transform>(r->bodyA);
@@ -152,10 +152,9 @@ void PhysicsDrawer::update() {
         }
     }
 
-    // Bullet
-    if (physics::getEngineType() == physics::Engine::BULLET && Config::getState() != Config::State::IDLE) {
+    if (Config::getState() != Config::State::IDLE) {
         std::shared_ptr<physics::BulletEngine> bullet = std::static_pointer_cast<physics::BulletEngine>(physics::getEngine());
-        // Draw AABBs
+        //---------- Draw AABBs ----------//
         if (bullet->getShowAabb()) {
             std::vector<component::EntityId> entities = component::getEntitiesView();
             for (auto entity : entities) {
@@ -169,7 +168,7 @@ void PhysicsDrawer::update() {
             }
         }
 
-        // Draw contacts
+        //---------- Draw contacts ----------//
         if (physics::getShowContacts()) {
             auto contacts = bullet->getCollisions();
             for (auto [bodyA, bodiesB] : contacts) {
@@ -193,6 +192,44 @@ void PhysicsDrawer::update() {
                 }
             }
         }
+    }
+}
+
+void PhysicsDrawer::drawBox2D() {
+    //---------- Show colliders ----------//
+    if (physics::getShowColliders()) {
+        // Base color
+        vec4 color = {1, 1, 1, 1};
+
+        std::vector<component::EntityId> entities = component::getEntitiesView();
+        for (auto entity : entities) {
+            // Get transform
+            auto t = component::getComponent<component::Transform>(entity);
+            if (!t)
+                continue;
+            mat4 worldTrans = t->getWorldTransform(entity);
+            vec3 pos, scale;
+            quat ori;
+            worldTrans.getPosOriScale(pos, ori, scale);
+
+            //----- Box collider 2D -----//
+            auto box = component::getComponent<component::BoxCollider2D>(entity);
+            if (box)
+                drawSquare(pos + vec3(box->offset, 0.0f), ori, scale * vec3(box->size, 1), color);
+
+            //----- Circle collider 2D -----//
+            auto circle = component::getComponent<component::CircleCollider2D>(entity);
+            if (circle)
+                drawCircle(pos + vec3(circle->offset, 0.0f), ori, scale * vec3(vec2(circle->radius), 1), color);
+        }
+    }
+
+    //---------- Show joints ----------//
+    if (physics::getShowJoints()) {
+    }
+
+    //---------- Draw contacts ----------//
+    if (physics::getShowContacts()) {
     }
 }
 

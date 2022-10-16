@@ -19,6 +19,7 @@
 #include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/graphics/renderers/phongRenderer.h>
 
+#include <atta/ui/layers/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
@@ -119,6 +120,8 @@ void TopBar::render() {
         }
 
         if (ImGui::BeginMenu("Modules")) {
+            if (ImGui::MenuItem("Graphics"))
+                GraphicsModuleWindow::setOpen(true);
             if (ImGui::MenuItem("IO"))
                 IOModuleWindow::setOpen(true);
             if (ImGui::MenuItem("Physics"))

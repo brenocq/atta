@@ -79,7 +79,7 @@ class Manager final {
     std::vector<std::shared_ptr<Viewport>> _viewports;
     std::vector<std::shared_ptr<Viewport>> _viewportsNext; ///< Being used for now to update the viewports in the next frame without breaking imgui
     bool _swapViewports;                                   ///< If _viewports should be swapped
-    float _viewportFPS;                                    ///< Desired viewport FPS
+    float _viewportFPS;                                    ///< Desired viewport FPS (UI module handles the viewport rendering)
     bool _viewportRendering;                               ///< If should render the viewport
 
     // Compute

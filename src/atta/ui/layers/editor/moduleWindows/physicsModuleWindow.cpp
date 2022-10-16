@@ -24,8 +24,11 @@ void PhysicsModuleWindow::renderImpl() {
     physics::Engine::Type selected = physics::getEngineType();
     if (ImGui::BeginCombo(("##" + _name + "SelectEngine").c_str(), physicsEngines[selected].c_str())) {
         for (unsigned i = 0; i < physicsEngines.size(); i++) {
-            if (ImGui::Selectable(physicsEngines[i].c_str(), i == selected))
-                physics::setEngineType((physics::Engine::Type)i);
+            if (ImGui::Selectable(physicsEngines[i].c_str(), i == selected)) {
+                selected = (physics::Engine::Type)i;
+                physics::setEngineType(selected);
+
+            }
             if (i == selected)
                 ImGui::SetItemDefaultFocus();
         }
@@ -39,10 +42,21 @@ void PhysicsModuleWindow::renderImpl() {
         case physics::Engine::BOX2D: {
             bool showColliders = physics::getShowColliders();
             bool showContacts = physics::getShowContacts();
+            bool showJoints = physics::getShowJoints();
             if (ImGui::Checkbox("Show colliders", &showColliders))
                 physics::setShowColliders(showColliders);
             if (ImGui::Checkbox("Show contacts", &showContacts))
                 physics::setShowContacts(showContacts);
+            if (ImGui::Checkbox("Show joints", &showJoints))
+                physics::setShowJoints(showJoints);
+
+            // Gravity vector
+            {
+                ImGui::Text("Gravity");
+                vec3 g = physics::getGravity();
+                if (ImGui::DragFloat2("Gravity", (float*)(&g), 0.01f))
+                    physics::setGravity(g);
+            }
             break;
         }
         case physics::Engine::BULLET: {

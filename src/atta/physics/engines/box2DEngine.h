@@ -29,6 +29,8 @@ class Box2DEngine : public Engine {
     std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
     bool areColliding(component::EntityId eid0, component::EntityId eid1) override;
 
+    void updateGravity() override;
+
     // component::RigidBody2D interface
     void setTransform(component::RigidBody2D* rb2d, vec2 position, float angle);
     void setLinearVelocity(component::RigidBody2D* rb2d, vec2 vel);

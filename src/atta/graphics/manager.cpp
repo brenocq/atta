@@ -9,7 +9,6 @@
 
 #include <atta/graphics/cameras/orthographicCamera.h>
 #include <atta/graphics/cameras/perspectiveCamera.h>
-#include <atta/graphics/drawer.h>
 #include <atta/graphics/rendererAPIs/openGL/openGL.h>
 #include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphics/renderers/fastRenderer.h>
@@ -81,11 +80,6 @@ void Manager::updateImpl() {
     const clock_t gfxCurrTime = std::clock();
     const float gfxTimeDiff = float(gfxCurrTime - gfxLastTime) / CLOCKS_PER_SEC;
 
-    // Viewports fps
-    static clock_t vpLastTime = std::clock();
-    const clock_t vpCurrTime = std::clock();
-    const float vpTimeDiff = float(vpCurrTime - vpLastTime) / CLOCKS_PER_SEC;
-
     if (_graphicsFPS > 0 && (gfxTimeDiff > 1 / _graphicsFPS)) {
         gfxLastTime = gfxCurrTime;
         // Update viewports if it was changed
@@ -97,16 +91,9 @@ void Manager::updateImpl() {
         // Update window events
         _window->update();
 
-        // Render viewports
+        // Render layer stack
         _rendererAPI->beginFrame();
-        {
-            if (_viewportRendering && (_viewportFPS > 0 && (vpTimeDiff > 1 / _viewportFPS))) {
-                vpLastTime = vpCurrTime;
-                for (auto& viewport : _viewports)
-                    viewport->render();
-            }
-            _layerStack->render();
-        }
+        _layerStack->render();
         _rendererAPI->endFrame();
 
         _window->swapBuffers();

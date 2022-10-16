@@ -27,6 +27,16 @@ void ViewportWindows::render() {
     std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
     static int activeViewport = 0;
 
+    // Viewports fps
+    static clock_t vpLastTime = std::clock();
+    const clock_t vpCurrTime = std::clock();
+    const float vpTimeDiff = float(vpCurrTime - vpLastTime) / CLOCKS_PER_SEC;
+    bool shouldRenderViewports = false;
+    if (graphics::getViewportRendering() && (graphics::getViewportFPS() > 0 && (vpTimeDiff > 1 / graphics::getViewportFPS()))) {
+        vpLastTime = vpCurrTime;
+        shouldRenderViewports = true;
+    }
+
     int i = -1;
     for (auto viewport : viewports) {
         // ImGui::DockBuilderDockWindow((viewport->getName()+"###Viewport"+viewport->getSID().getString()).c_str(), _dockSpace.getViewportDockId());
@@ -93,6 +103,8 @@ void ViewportWindows::render() {
             }
 
             //----- Render to texture -----//
+            if(shouldRenderViewports)
+                viewport->render();
             ImVec2 size = ImVec2(viewport->getWidth(), viewport->getHeight());
             ImGui::Image(viewport->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));
 
@@ -168,16 +180,16 @@ void ViewportWindows::render() {
                         else if (mouseOperation == ImGuizmo::OPERATION::SCALE)
                             t->scale = scale;
 
-                        component::RigidBody2D* rb2d = component::getComponent<component::RigidBody2D>(entity);
-                        if (rb2d) {
-                            if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
-                                vec2 pos = vec2(t->position);
-                                float angle = -t->orientation.getEuler().z;
-                                rb2d->setTransform(pos, angle);
-                            } else if (mouseOperation == ImGuizmo::OPERATION::SCALE) {
-                                // TODO Recreate box2d rigid body
-                            }
-                        }
+                        // component::RigidBody2D* rb2d = component::getComponent<component::RigidBody2D>(entity);
+                        // if (rb2d) {
+                        //     if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
+                        //         vec2 pos = vec2(t->position);
+                        //         float angle = -t->orientation.getEuler().z;
+                        //         rb2d->setTransform(pos, angle);
+                        //     } else if (mouseOperation == ImGuizmo::OPERATION::SCALE) {
+                        //         // TODO Recreate box2d rigid body
+                        //     }
+                        // }
                     }
                 }
             }
