@@ -111,6 +111,7 @@ void Atta::run() {
 #endif
 
 void Atta::loop() {
+    PROFILE();
     _currStep = std::clock();
     const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
 
@@ -138,6 +139,7 @@ void Atta::loop() {
 }
 
 void Atta::step() {
+    PROFILE();
     const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
     Config::setRealStepSpeed(Config::getDt()/timeDiff);
     _lastStep = _currStep;
