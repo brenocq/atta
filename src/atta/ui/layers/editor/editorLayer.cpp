@@ -14,6 +14,7 @@
 #include <atta/ui/layers/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
+#include <atta/ui/layers/editor/tools/timeProfiler/timeProfilerWindow.h>
 #include <atta/ui/layers/editor/topBar/localWindows/versionWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
 
@@ -36,8 +37,8 @@ void EditorLayer::onUIRender() {
 
     // Demo
     bool demo = true;
-    // ImGui::ShowDemoWindow(&demo);
-    // ImPlot::ShowDemoWindow(&demo);
+    ImGui::ShowDemoWindow(&demo);
+    ImPlot::ShowDemoWindow(&demo);
 
     // Top interface
     _topBar.render();
@@ -56,6 +57,9 @@ void EditorLayer::onUIRender() {
     GraphicsModuleWindow::render();
     IOModuleWindow::render();
     PhysicsModuleWindow::render();
+
+    // Tools
+    TimeProfilerWindow::render();
 
     // Windows utils
     FileSelectionWindow::render();

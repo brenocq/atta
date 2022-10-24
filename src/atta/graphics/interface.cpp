@@ -10,7 +10,10 @@ namespace atta::graphics {
 
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
-void update() { Manager::getInstance().updateImpl(); }
+void update() {
+    PROFILE();
+    Manager::getInstance().updateImpl();
+}
 
 void pushLayer(Layer* layer) { Manager::getInstance().pushLayerImpl(layer); }
 

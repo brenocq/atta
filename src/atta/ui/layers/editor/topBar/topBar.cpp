@@ -24,6 +24,8 @@
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
 
+#include <atta/ui/layers/editor/tools/timeProfiler/timeProfilerWindow.h>
+
 namespace atta::ui {
 
 TopBar::TopBar() : _showPreferences(false) {}
@@ -76,6 +78,12 @@ void TopBar::render() {
             if (ImGui::MenuItem("Preferences"))
                 _showPreferences = true;
 
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Tools")) {
+            if (ImGui::MenuItem("Time Profiler"))
+                TimeProfilerWindow::setOpen(true);
             ImGui::EndMenu();
         }
 

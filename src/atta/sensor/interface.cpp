@@ -13,9 +13,9 @@ void startUp() { Manager::getInstance().startUpImpl(); }
 
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
-void update() { Manager::getInstance().updateImpl(); }
+void update() { PROFILE(); Manager::getInstance().updateImpl(); }
 
-void update(float dt) { Manager::getInstance().updateImpl(dt); }
+void update(float dt) { PROFILE(); Manager::getInstance().updateImpl(dt); }
 
 std::vector<CameraInfo>& getCameraInfos() { return Manager::getInstance()._cameras; }
 

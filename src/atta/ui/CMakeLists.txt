@@ -9,6 +9,8 @@ set(ATTA_UI_MODULE_SOURCE
     layers/editor/dockSpace.cpp
     layers/editor/window.cpp
 
+    layers/editor/components/button.cpp
+
     layers/editor/topBar/topBar.cpp
     layers/editor/toolBar/toolBar.cpp
     layers/editor/topBar/localWindows/repoWindow.cpp
@@ -22,6 +24,9 @@ set(ATTA_UI_MODULE_SOURCE
     layers/editor/moduleWindows/graphicsModuleWindow.cpp
     layers/editor/moduleWindows/ioModuleWindow.cpp
     layers/editor/moduleWindows/physicsModuleWindow.cpp
+
+    layers/editor/tools/timeProfiler/timeProfilerWindow.cpp
+    layers/editor/tools/timeProfiler/components/tearDown.cpp
 
 	layers/editor/drawers/physicsDrawer.cpp
 	layers/editor/drawers/sensorDrawer.cpp

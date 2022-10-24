@@ -11,7 +11,10 @@ namespace atta::script {
 
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
-void update(float dt) { Manager::getInstance().updateImpl(dt); }
+void update(float dt) {
+    PROFILE();
+    Manager::getInstance().updateImpl(dt);
+}
 
 Script* getScript(StringId target) { return Manager::getInstance().getScriptImpl(target); }
 std::vector<StringId> getScriptSids() { return Manager::getInstance().getScriptSidsImpl(); }

@@ -28,6 +28,9 @@ std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory) { return Ma
 
 fs::path getDefaultProjectFolder() { return Manager::getInstance()._defaultProjectFolder; }
 
-void update() { Manager::getInstance().updateImpl(); };
+void update() {
+    PROFILE();
+    Manager::getInstance().updateImpl();
+};
 
 } // namespace atta::file

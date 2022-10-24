@@ -12,15 +12,12 @@
 #include <atta/event/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/ui/layers/editor/toolBar/toolBar.h>
+#include <atta/ui/layers/editor/components/button.h>
 #include <atta/utils/config.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 
 namespace atta::ui {
-
-bool renderButton(std::string name, float size) {
-    return ImGui::ImageButton(graphics::getImGuiImage("icons/" + name + ".png"), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0);
-}
 
 void ToolBar::render() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 5));

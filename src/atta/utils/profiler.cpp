@@ -15,15 +15,19 @@ Profiler& Profiler::getInstance() {
     return instance;
 }
 
-void Profiler::startRecording() { getInstance()._recording = true; }
+void Profiler::startRecording() {
+    clearRecords();
+    getInstance()._recording = true;
+}
 void Profiler::stopRecording() { getInstance()._recording = false; }
+
+void Profiler::clearRecords() { getInstance()._records.clear(); }
 
 void Profiler::addRecord(Record record) {
     if (!isRecording())
         return;
-
     getInstance()._records.push_back(record);
-    LOG_DEBUG("Profiler", "Record [w]$2[] from [*y]$0[] to [*y]$1[]", record.begin, record.end, record.name);
+    //LOG_DEBUG("Profiler", "Record [w]$2[] from [*y]$0[] to [*y]$1[]", record.begin, record.end, record.name);
 }
 
 const std::vector<Profiler::Record>& Profiler::getRecords() { return getInstance()._records; }
@@ -38,8 +42,8 @@ ProfilerRecord::~ProfilerRecord() {
     std::chrono::time_point<std::chrono::high_resolution_clock> endTime = std::chrono::high_resolution_clock::now();
 
     uint32_t threadId = std::hash<std::thread::id>{}(std::this_thread::get_id());
-    uint64_t begin = std::chrono::time_point_cast<std::chrono::microseconds>(_startTime).time_since_epoch().count();
-    uint64_t end = std::chrono::time_point_cast<std::chrono::microseconds>(endTime).time_since_epoch().count();
+    uint64_t begin = std::chrono::time_point_cast<std::chrono::nanoseconds>(_startTime).time_since_epoch().count();
+    uint64_t end = std::chrono::time_point_cast<std::chrono::nanoseconds>(endTime).time_since_epoch().count();
 
     Profiler::addRecord({_name, threadId, begin, end});
 }

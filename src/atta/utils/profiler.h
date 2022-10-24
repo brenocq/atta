@@ -16,14 +16,15 @@ class Profiler {
     struct Record {
         const char* name;///< Function name
         uint32_t threadId;///< Thread Id
-        uint64_t begin;///< Start time in us
-        uint64_t end;///< End time in us
+        uint64_t begin;///< Start time in ns
+        uint64_t end;///< End time in ns
     };
 
     static Profiler& getInstance();
 
     static void startRecording();
     static void stopRecording();
+    static void clearRecords();
 
     static void addRecord(Record record);
     static const std::vector<Record>& getRecords();
