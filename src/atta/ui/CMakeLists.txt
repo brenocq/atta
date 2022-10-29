@@ -10,6 +10,7 @@ set(ATTA_UI_MODULE_SOURCE
     layers/editor/window.cpp
 
     layers/editor/components/button.cpp
+    layers/editor/components/help.cpp
 
     layers/editor/topBar/topBar.cpp
     layers/editor/toolBar/toolBar.cpp

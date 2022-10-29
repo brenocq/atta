@@ -74,12 +74,12 @@ void TopBar::render() {
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Edit")) {
-            if (ImGui::MenuItem("Preferences"))
-                _showPreferences = true;
+        //if (ImGui::BeginMenu("Edit")) {
+        //    if (ImGui::MenuItem("Preferences"))
+        //        _showPreferences = true;
 
-            ImGui::EndMenu();
-        }
+        //    ImGui::EndMenu();
+        //}
 
         if (ImGui::BeginMenu("Tools")) {
             if (ImGui::MenuItem("Time Profiler"))

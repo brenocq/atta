@@ -1,12 +1,12 @@
 //--------------------------------------------------
 // Atta UI Module
-// button.h
-// Date: 2022-10-24
+// help.h
+// Date: 2022-10-29
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 
 namespace atta::ui {
 
-bool ImageButton(std::string name, float size);
+void Help(std::string text);
 
 } // namespace atta::ui

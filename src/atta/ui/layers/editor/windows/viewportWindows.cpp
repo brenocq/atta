@@ -24,6 +24,7 @@
 namespace atta::ui {
 
 void ViewportWindows::render() {
+    PROFILE();
     std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
     static int activeViewport = 0;
 

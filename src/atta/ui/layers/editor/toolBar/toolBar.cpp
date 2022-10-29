@@ -39,7 +39,7 @@ void ToolBar::render() {
 
         // View button
         {
-            if (renderButton(graphics::getViewportRendering() ? "view" : "no-view", buttonH))
+            if (ui::ImageButton(graphics::getViewportRendering() ? "view" : "no-view", buttonH))
                 graphics::setViewportRendering(!graphics::getViewportRendering());
             ImGui::SameLine();
             ImGui::Dummy(ImVec2(10.0f, 0.0f));
@@ -53,7 +53,7 @@ void ToolBar::render() {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
             }
-            if (renderButton("stop", buttonH)) {
+            if (ui::ImageButton("stop", buttonH)) {
                 event::SimulationStop e;
                 event::publish(e);
             }
@@ -64,7 +64,7 @@ void ToolBar::render() {
 
             ImGui::SameLine();
             if (Config::getState() != Config::State::RUNNING) {
-                if (renderButton("play", buttonH)) {
+                if (ui::ImageButton("play", buttonH)) {
                     if (Config::getState() == Config::State::PAUSED) {
                         event::SimulationContinue e;
                         event::publish(e);
@@ -74,14 +74,14 @@ void ToolBar::render() {
                     }
                 }
             } else {
-                if (renderButton("pause", buttonH)) {
+                if (ui::ImageButton("pause", buttonH)) {
                     event::SimulationPause e;
                     event::publish(e);
                 }
             }
 
             ImGui::SameLine();
-            if (renderButton("step", buttonH)) {
+            if (ui::ImageButton("step", buttonH)) {
                 event::SimulationStep e;
                 event::publish(e);
             }

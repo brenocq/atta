@@ -33,12 +33,13 @@ void EditorLayer::onDetach() {}
 void EditorLayer::onRender() {}
 
 void EditorLayer::onUIRender() {
+    PROFILE();
     _dockSpace.render();
 
     // Demo
-    bool demo = true;
-    ImGui::ShowDemoWindow(&demo);
-    ImPlot::ShowDemoWindow(&demo);
+    //bool demo = true;
+    //ImGui::ShowDemoWindow(&demo);
+    //ImPlot::ShowDemoWindow(&demo);
 
     // Top interface
     _topBar.render();

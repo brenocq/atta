@@ -13,11 +13,13 @@ namespace atta {
 //---------- Profiler ----------//
 class Profiler {
   public:
+    using Time = uint64_t;///< Time point in ns
+    using ThreadId = uint32_t;///< Thread id
     struct Record {
         const char* name;///< Function name
-        uint32_t threadId;///< Thread Id
-        uint64_t begin;///< Start time in ns
-        uint64_t end;///< End time in ns
+        ThreadId threadId;///< Thread Id
+        Time begin;///< Start time in ns
+        Time end;///< End time in ns
     };
 
     static Profiler& getInstance();
@@ -29,6 +31,22 @@ class Profiler {
     static void addRecord(Record record);
     static const std::vector<Record>& getRecords();
     static bool isRecording();
+
+    /// Calculate unique names from _records
+    static std::vector<const char*> calcNames();
+    /// Calculate unique threadIds from _records
+    static std::vector<ThreadId> calcThreadIds();
+    /// Calculate records separated by name
+    static std::vector<std::pair<const char*, std::vector<Record>>> calcRecordsByName(size_t startIdx = 0);
+    /// Calculate records separated by threadId
+    static std::vector<std::pair<ThreadId, std::vector<Record>>> calcRecordsByThreadId(size_t startIdx = 0);
+
+    /// Get total recording time (end - begin)
+    static Time getTotalTime();
+    /// Get time string
+    static std::string getTimeString(Time time);
+    /// Get function name without return type and parameters
+    static std::string cropFuncName(std::string name);
 
   private:
     Profiler() = default;

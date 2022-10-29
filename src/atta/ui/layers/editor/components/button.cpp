@@ -11,7 +11,7 @@
 
 namespace atta::ui {
 
-bool renderButton(std::string name, float size) {
+bool ImageButton(std::string name, float size) {
     return ImGui::ImageButton(graphics::getImGuiImage("icons/" + name + ".png"), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0);
 }
 

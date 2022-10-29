@@ -17,12 +17,25 @@ TimeProfilerWindow::TimeProfilerWindow() {
 void TimeProfilerWindow::renderImpl() {
     const float buttonSize = ImGui::GetTextLineHeightWithSpacing();
 
+    size_t size = Profiler::getRecords().size();
+    if(size)
+    {
+        ImGui::Text("%u events", unsigned(size));
+        ImGui::SameLine();
+    }
+
     if (!Profiler::isRecording()) {
-        if (renderButton("play", buttonSize))
+        if (ui::ImageButton("play", buttonSize))
             Profiler::startRecording();
     } else {
-        if (renderButton("stop", buttonSize))
+        if (ui::ImageButton("stop", buttonSize))
             Profiler::stopRecording();
+    }
+
+    if(size)
+    {
+        ImGui::SameLine();
+        ImGui::Text("%s", Profiler::getTimeString(Profiler::getTotalTime()).c_str());
     }
 
     if (ImGui::CollapsingHeader("Flame Graph")) {
