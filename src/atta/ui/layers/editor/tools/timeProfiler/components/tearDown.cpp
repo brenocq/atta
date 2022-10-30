@@ -142,7 +142,7 @@ void TearDown::render() {
                     ImGui::TableNextColumn();
                     std::string name =  _funcTime[row].name.getString();
                     if(cropName)
-                        Profiler::cropFuncName(name);
+                        name = Profiler::cropFuncName(name);
                     ImGui::Text(name.c_str());
 
                     // Time

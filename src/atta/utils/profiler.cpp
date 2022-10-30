@@ -85,7 +85,13 @@ Profiler::Time Profiler::getStart() { return getInstance()._start; }
 
 Profiler::Time Profiler::getStop() { return getInstance()._stop; }
 
-Profiler::Time Profiler::getTotalTime() { return getStop() - getStart(); }
+Profiler::Time Profiler::getTotalTime() {
+    const auto& r = getRecords();
+    if (isRecording() && r.size())
+        return r.back().end - getStart();
+    else
+        return getStop() - getStart();
+}
 
 std::string Profiler::getTimeString(Time time) {
     constexpr uint64_t nsToMs = 1000 * 1000;
@@ -135,8 +141,8 @@ void Profiler::getFuncColor(StringId name, uint8_t& r, uint8_t& g, uint8_t& b) {
         r = c.r, g = c.g, b = c.b;
     } else {
         float h = float(name.getId() % 360);
-        float s = 1.0f;
-        float v = 1.0f;
+        float s = 0.8f;
+        float v = 0.8f;
         HSVtoRGB(h, s, v, r, g, b);
         savedColors[name] = {r, g, b};
     }

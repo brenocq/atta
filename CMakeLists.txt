@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.4.0.0 LANGUAGES CXX C)
+project(atta VERSION 0.5.0.0 LANGUAGES CXX C)
 
 OPTION(ATTA_BUILD_TESTS
     "Set to ON to build also the test executables"

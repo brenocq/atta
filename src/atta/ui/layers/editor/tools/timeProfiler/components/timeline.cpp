@@ -63,7 +63,7 @@ void Timeline::render() {
 
     //----- Render timeline -----//
     constexpr Profiler::Time toSec = Profiler::ticksPerSecond;
-    constexpr float recordingShowInterval = 2; // Interval in seconds to show last recordings while recording
+    constexpr float recordingShowInterval = 0.100f; // Interval in seconds to show last recordings while recording
     Profiler::Time start = Profiler::getStart();
 
     float plotStart = 0.0f;
@@ -111,12 +111,48 @@ void Timeline::render() {
                     endTime = std::max(beginTime + pixelTime * 0.5f, endTime);
                     lastDrawTimePerLevel[s.size()] = endTime;
 
+                    //----- Render rect -----//
                     ImVec2 min = ImPlot::PlotToPixels(ImPlotPoint(beginTime, float(s.size())));
                     ImVec2 max = ImPlot::PlotToPixels(ImPlotPoint(endTime, float(s.size() + 1)));
-
-                    uint8_t r,g,b;
+                    uint8_t r, g, b;
                     Profiler::getFuncColor(record.name, r, g, b);
                     ImPlot::GetPlotDrawList()->AddRectFilled(min, max, IM_COL32(r, g, b, 255));
+
+                    //----- Render name -----//
+                    std::string name = record.name.getString();
+                    name = Profiler::cropFuncName(name);
+                    // Calculate visible min/max
+                    min.x = std::max(beginTime, float(limits.X.Min));
+                    max.x = std::min(endTime, float(limits.X.Max));
+                    // Calculate text size
+                    ImPlotPoint textOrigin = ImPlot::PixelsToPlot(ImVec2(0,0));
+                    ImPlotPoint textSize = ImPlot::PixelsToPlot(ImGui::CalcTextSize(name.c_str()));
+                    textSize.x = textSize.x - textOrigin.x;
+                    // If text too big, try funcName...
+                    if (textSize.x >= max.x - min.x) {
+                        // If can't render full name, try partial name
+                        std::string fullName = name;
+                        for(int s = 5; s <= fullName.size()-3; s++)
+                        {
+                            std::string subStr = fullName.substr(0, s) + "...";
+                            ImPlotPoint subTextSize = ImPlot::PixelsToPlot(ImGui::CalcTextSize(subStr.c_str()));
+                            subTextSize.x = subTextSize.x - textOrigin.x;
+                            if (subTextSize.x < max.x - min.x)
+                            {
+                                name = subStr;
+                                textSize = subTextSize;
+                            }
+                            else
+                                break;
+                        }
+                    }
+
+                    // Render text if possible
+                    if (textSize.x < max.x - min.x) {
+                        float x = (min.x + max.x) * 0.5f;
+                        float y = s.size() + 0.5f;
+                        ImPlot::PlotText(name.c_str(), x, y);
+                    }
                 }
 
                 // Check stop rendering
@@ -125,7 +161,7 @@ void Timeline::render() {
 
                 // Add to stack
                 s.push(record);
-                if(isInside)
+                if (isInside)
                     maxStackSize = std::max(maxStackSize, s.size());
             }
             ImPlot::PopPlotClipRect();
