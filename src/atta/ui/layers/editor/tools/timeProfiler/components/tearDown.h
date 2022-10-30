@@ -20,7 +20,7 @@ class TearDown {
 
     /// Total execution time of each function
     struct FuncTime {
-        const char* name;
+        StringId name;
         Profiler::Time time;
     };
     std::vector<FuncTime> _funcTime; 

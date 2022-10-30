@@ -9,6 +9,8 @@
 
 #include <atta/ui/layers/editor/window.h>
 #include <atta/ui/layers/editor/tools/timeProfiler/components/tearDown.h>
+#include <atta/ui/layers/editor/tools/timeProfiler/components/flameGraph.h>
+#include <atta/ui/layers/editor/tools/timeProfiler/components/timeline.h>
 
 namespace atta::ui {
 
@@ -20,6 +22,8 @@ class TimeProfilerWindow : public Window<TimeProfilerWindow> {
     friend Window<TimeProfilerWindow>;
   private:
     TearDown _tearDown;
+    FlameGraph _flameGraph;
+    Timeline _timeline;
 };
 
 } // namespace atta::ui

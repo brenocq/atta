@@ -28,6 +28,8 @@ set(ATTA_UI_MODULE_SOURCE
 
     layers/editor/tools/timeProfiler/timeProfilerWindow.cpp
     layers/editor/tools/timeProfiler/components/tearDown.cpp
+    layers/editor/tools/timeProfiler/components/flameGraph.cpp
+    layers/editor/tools/timeProfiler/components/timeline.cpp
 
 	layers/editor/drawers/physicsDrawer.cpp
 	layers/editor/drawers/sensorDrawer.cpp

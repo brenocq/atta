@@ -7,6 +7,7 @@
 #ifndef ATTA_UTILS_PROFILER_H
 #define ATTA_UTILS_PROFILER_H
 #include <chrono>
+#include <atta/utils/stringId.h>
 
 namespace atta {
 
@@ -15,8 +16,9 @@ class Profiler {
   public:
     using Time = uint64_t;///< Time point in ns
     using ThreadId = uint32_t;///< Thread id
+    static constexpr Time ticksPerSecond = 1000*1000*1000;
     struct Record {
-        const char* name;///< Function name
+        StringId name;///< Function name
         ThreadId threadId;///< Thread Id
         Time begin;///< Start time in ns
         Time end;///< End time in ns
@@ -33,36 +35,46 @@ class Profiler {
     static bool isRecording();
 
     /// Calculate unique names from _records
-    static std::vector<const char*> calcNames();
+    static std::vector<StringId> calcNames();
     /// Calculate unique threadIds from _records
     static std::vector<ThreadId> calcThreadIds();
     /// Calculate records separated by name
-    static std::vector<std::pair<const char*, std::vector<Record>>> calcRecordsByName(size_t startIdx = 0);
+    static std::vector<std::pair<StringId, std::vector<Record>>> calcRecordsByName(size_t startIdx = 0);
     /// Calculate records separated by threadId
     static std::vector<std::pair<ThreadId, std::vector<Record>>> calcRecordsByThreadId(size_t startIdx = 0);
 
-    /// Get total recording time (end - begin)
+    /// Get recording start time
+    static Time getStart();
+    /// Get recording stop time
+    static Time getStop();
+    /// Get total recording time (stop - start)
     static Time getTotalTime();
     /// Get time string
     static std::string getTimeString(Time time);
+    /// Get function color
+    static void getFuncColor(StringId name, uint8_t& r, uint8_t& g, uint8_t& b);
     /// Get function name without return type and parameters
     static std::string cropFuncName(std::string name);
+
 
   private:
     Profiler() = default;
 
     std::vector<Record> _records;
     bool _recording;
+    Time _start;
+    Time _stop;
 };
 
 //---------- ProfilerRecord ----------//
 class ProfilerRecord {
 public:
-    ProfilerRecord(const char* name);
+    ProfilerRecord(StringId name);
     ~ProfilerRecord();
 
 private:
-    const char* _name;
+    StringId _name;
+    static bool _record;
     std::chrono::time_point<std::chrono::high_resolution_clock> _startTime;
 };
 

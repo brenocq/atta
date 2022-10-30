@@ -4,18 +4,18 @@
 // Date: 2022-10-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/layers/editor/components/help.h>
 #include <atta/ui/layers/editor/tools/timeProfiler/components/tearDown.h>
 
+#include <atta/ui/layers/editor/components/help.h>
+
 #include "imgui.h"
-#include "imgui_internal.h"
 
 namespace atta::ui {
 
 TearDown::TearDown() : _exclusive(true) {}
 
 void TearDown::compute() {
-    std::unordered_map<const char*, Profiler::Time> funcTimeDt;
+    std::unordered_map<StringId, Profiler::Time> funcTimeDt;
     if (!_exclusive) {
         // Compute exclusive time
         for (auto& [name, records] : Profiler::calcRecordsByName(_lastRecordsSize)) {
@@ -46,7 +46,7 @@ void TearDown::compute() {
                 }
 
                 // If it is a nested function, add to nestedTime list
-                if (strcmp(r.name, "void atta::Atta::loop()") != 0)
+                if (r.name != SID("void atta::Atta::loop()"))
                     nestedTime.push_back({r.begin, r.end});
 
                 // Add function time
@@ -140,9 +140,9 @@ void TearDown::render() {
 
                     // Name
                     ImGui::TableNextColumn();
-                    std::string name = _funcTime[row].name;
+                    std::string name =  _funcTime[row].name.getString();
                     if(cropName)
-                        name = Profiler::cropFuncName(name);
+                        Profiler::cropFuncName(name);
                     ImGui::Text(name.c_str());
 
                     // Time
@@ -170,8 +170,12 @@ void TearDown::render() {
                     float barPerc = _funcTime[row].time / float(_maxTime);
                     pMax.x = pMin.x + (pMax.x - pMin.x) * barPerc;
 
-                    if(pMax.x > pMin.x)
-                        drawList->AddRectFilled(pMin, pMax, IM_COL32(255, 255, 0, 255));
+                    if (pMax.x > pMin.x)
+                    {
+                        uint8_t r,g,b;
+                        Profiler::getFuncColor(_funcTime[row].name, r, g, b);
+                        drawList->AddRectFilled(pMin, pMax, IM_COL32(r, g, b, 255));
+                    }
                 }
             }
         }
