@@ -82,7 +82,7 @@ private:
 
 //---------- Macros ----------//
 #ifdef ATTA_PROFILE
-#define PROFILE_NAME(name) ProfilerRecord profilerRecord##__LINE__(name)
+#define PROFILE_NAME(name) ::atta::ProfilerRecord profilerRecord##__LINE__(name)
 #else
 #define PROFILE_NAME(name)
 #endif

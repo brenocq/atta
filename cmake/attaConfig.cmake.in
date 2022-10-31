@@ -8,6 +8,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(atta_LIBRARIES "@ATTA_INSTALL_LIBRARIES@")
 set(atta_INCLUDE_DIRS "@ATTA_INSTALL_INCLUDE_DIRS@")
+set(atta_DEFINITIONS "@ATTA_DEFINITIONS@")
 set(atta_PCH "@ATTA_INSTALL_PCH@")
 set(atta_FOUND TRUE)
 
@@ -20,6 +21,7 @@ macro(atta_add_target target sources)
 
     target_include_directories(${target} PRIVATE ${atta_INCLUDE_DIRS})
     target_precompile_headers(${target} PRIVATE ${atta_PCH})
+    target_compile_definitions(${target} PRIVATE ${atta_DEFINITIONS})
 
     # This variable is used to include headers when building statically (necessary to register scripts)
     set(headers "")
