@@ -11,9 +11,13 @@ namespace atta::component {
 
 template <>
 ComponentDescription& TypedComponentRegistry<SphereCollider>::getDescription() {
-    static ComponentDescription desc = {"Sphere Collider",
-                                        {{AttributeType::FLOAT32, offsetof(SphereCollider, radius), "radius", 0.0001f, 2000.0f, 0.01f},
-                                         {AttributeType::FLOAT32, offsetof(SphereCollider, offset), "offset", -2000.0f, 2000.0f, 0.01f}}};
+    static ComponentDescription desc = {
+        "Sphere Collider",
+        {
+            {AttributeType::FLOAT32, offsetof(SphereCollider, radius), "radius", 0.0001f, 2000.0f, 0.01f},
+            {AttributeType::FLOAT32, offsetof(SphereCollider, offset), "offset", -2000.0f, 2000.0f, 0.01f},
+        },
+    };
 
     return desc;
 }

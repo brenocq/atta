@@ -28,6 +28,14 @@ template <typename T, typename... Args>
 std::shared_ptr<T> create(Args... args);
 std::shared_ptr<RendererAPI> getRendererAPI();
 
+//----- Config -----//
+float getGraphicsFPS();
+void setGraphicsFPS(float graphicsFPS);
+float getViewportFPS();
+void setViewportFPS(float viewportFPS);
+bool getViewportRendering();
+void setViewportRendering(bool viewportRendering);
+
 //----- Viewport -----//
 std::vector<std::shared_ptr<Viewport>> getViewports();
 void clearViewports();

@@ -13,22 +13,9 @@ namespace atta::ui {
 
 class ToolBar {
   public:
-    ToolBar();
+    ToolBar() = default;
 
     void render();
-
-  private:
-    void handleShortcuts();
-    void onSimulationStateChange(event::Event& event);
-
-    enum class EditorState {
-        EDITOR = 0,
-        SIMULATION_RUNNING,
-        SIMULATION_PAUSED,
-    };
-    void changeState(EditorState newState);
-
-    EditorState _editorState;
 };
 
 } // namespace atta::ui

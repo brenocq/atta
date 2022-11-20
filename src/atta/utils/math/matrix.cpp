@@ -285,7 +285,7 @@ mat4 mat4::rotate(const vec3& w, float angle) const {
 
 // Invert this matrix
 void mat4::invert() {
-    mat3 ori = *this;
+    mat4 ori = *this;
     setInverse(ori);
 }
 

@@ -14,17 +14,16 @@
 namespace atta::component {
 
 /// %Component to create sphere collider
-/** This collider can be used both with 2D and 3D physics.
- * If using 2D physics, will be a circle instead of a sphere.
+/** This collider can be used both with 3D physics.
  *
- * Transform and RigidBody2DComponent are necessary for the
+ * Transform and RigidBody components are necessary for the
  * entity to participate in the physics iteration.
  *
  * The sphere will also be scaled by the transform scale. The final
  * radius will be:
  *
  * ```cpp
- * finalRadius = radius*max(transform.worldScale.x, transform.worldScale.y, transform.worldScale.z);
+ * finalRadius = radius * max(transform.worldScale.x, transform.worldScale.y, transform.worldScale.z);
  * ```
  */
 struct SphereCollider final : public Component {

@@ -27,6 +27,16 @@ void ViewportWindows::render() {
     std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
     static int activeViewport = 0;
 
+    // Viewports fps
+    static clock_t vpLastTime = std::clock();
+    const clock_t vpCurrTime = std::clock();
+    const float vpTimeDiff = float(vpCurrTime - vpLastTime) / CLOCKS_PER_SEC;
+    bool shouldRenderViewports = false;
+    if (graphics::getViewportRendering() && (graphics::getViewportFPS() > 0 && (vpTimeDiff > 1 / graphics::getViewportFPS()))) {
+        vpLastTime = vpCurrTime;
+        shouldRenderViewports = true;
+    }
+
     int i = -1;
     for (auto viewport : viewports) {
         // ImGui::DockBuilderDockWindow((viewport->getName()+"###Viewport"+viewport->getSID().getString()).c_str(), _dockSpace.getViewportDockId());
@@ -37,7 +47,7 @@ void ViewportWindows::render() {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
         bool open = true;
         ImGui::Begin(nameBuf, &open);
-        {
+        if (graphics::getViewportRendering()) {
             //----- Move camera -----//
             // Check started camera movement
             if (ImGui::IsMouseClicked(2) && ImGui::IsWindowHovered())
@@ -93,6 +103,8 @@ void ViewportWindows::render() {
             }
 
             //----- Render to texture -----//
+            if(shouldRenderViewports)
+                viewport->render();
             ImVec2 size = ImVec2(viewport->getWidth(), viewport->getHeight());
             ImGui::Image(viewport->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));
 
@@ -168,16 +180,16 @@ void ViewportWindows::render() {
                         else if (mouseOperation == ImGuizmo::OPERATION::SCALE)
                             t->scale = scale;
 
-                        component::RigidBody2D* rb2d = component::getComponent<component::RigidBody2D>(entity);
-                        if (rb2d) {
-                            if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
-                                vec2 pos = vec2(t->position);
-                                float angle = -t->orientation.getEuler().z;
-                                rb2d->setTransform(pos, angle);
-                            } else if (mouseOperation == ImGuizmo::OPERATION::SCALE) {
-                                // TODO Recreate box2d rigid body
-                            }
-                        }
+                        // component::RigidBody2D* rb2d = component::getComponent<component::RigidBody2D>(entity);
+                        // if (rb2d) {
+                        //     if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
+                        //         vec2 pos = vec2(t->position);
+                        //         float angle = -t->orientation.getEuler().z;
+                        //         rb2d->setTransform(pos, angle);
+                        //     } else if (mouseOperation == ImGuizmo::OPERATION::SCALE) {
+                        //         // TODO Recreate box2d rigid body
+                        //     }
+                        // }
                     }
                 }
             }
@@ -191,27 +203,27 @@ void ViewportWindows::render() {
             }
 
             //----- Overlay -----//
-            {
-                ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize |
-                                                ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav |
-                                                ImGuiWindowFlags_NoMove;
-                ImVec2 window = ImGui::GetWindowPos();
-                ImGui::SetNextWindowPos(ImVec2(window.x + 10, window.y + 30));
-                ImGui::SetNextWindowBgAlpha(0.35f);
-                bool open = true;
-                if (ImGui::Begin((viewport->getSID().getString() + "Overlay").c_str(), &open, window_flags)) {
-                    ImGui::Text("To move the camera");
-                    ImGui::BulletText("Holding mouse middle button");
-                    ImGui::BulletText("Rotate with mouse");
-                    ImGui::BulletText("Move with ASWD QE");
-                    ImGui::Text("To move objects");
-                    ImGui::BulletText("Select some object");
-                    ImGui::BulletText("Translate: SHIFT+t");
-                    ImGui::BulletText("Scale: SHIFT+s");
-                    ImGui::BulletText("Rotate: SHIFT+r");
-                }
-                ImGui::End();
-            }
+            //{
+            //    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize |
+            //                                    ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav |
+            //                                    ImGuiWindowFlags_NoMove;
+            //    ImVec2 window = ImGui::GetWindowPos();
+            //    ImGui::SetNextWindowPos(ImVec2(window.x + 10, window.y + 30));
+            //    ImGui::SetNextWindowBgAlpha(0.35f);
+            //    bool open = true;
+            //    if (ImGui::Begin((viewport->getSID().getString() + "Overlay").c_str(), &open, window_flags)) {
+            //        ImGui::Text("To move the camera");
+            //        ImGui::BulletText("Holding mouse middle button");
+            //        ImGui::BulletText("Rotate with mouse");
+            //        ImGui::BulletText("Move with ASWD QE");
+            //        ImGui::Text("To move objects");
+            //        ImGui::BulletText("Select some object");
+            //        ImGui::BulletText("Translate: SHIFT+t");
+            //        ImGui::BulletText("Scale: SHIFT+s");
+            //        ImGui::BulletText("Rotate: SHIFT+r");
+            //    }
+            //    ImGui::End();
+            //}
 
             //----- Resize -----//
             ImVec2 windowSize = ImGui::GetWindowSize();
@@ -240,7 +252,8 @@ void ViewportWindows::addBasicShapePopup() {
                 component::addComponent<component::Transform>(eid);
                 component::Mesh* m = component::addComponent<component::Mesh>(eid);
                 m->sid = basicShapesMesh[i];
-                resource::Material* matRes = resource::create<resource::Material>("defaultMaterial." + std::to_string(eid), resource::Material::CreateInfo{});
+                resource::Material* matRes =
+                    resource::create<resource::Material>("defaultMaterial." + std::to_string(eid), resource::Material::CreateInfo{});
                 matRes->color = vec3(0.5f, 0.5f, 0.5f);
                 component::Material* mat = component::addComponent<component::Material>(eid);
                 mat->sid = matRes->getId();

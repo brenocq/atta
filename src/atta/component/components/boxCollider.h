@@ -12,21 +12,12 @@
 namespace atta::component {
 
 /// %Component to create a box collider
-/** This collider can be used both with 2D and 3D physics.
- * If using 2D physics, will be a square instead of a box.
+/** This collider can be used with 3D physics.
  *
- * Transform and RigidBody2DComponent are necessary for the
- * entity to participate in the physics iteration.
+ * Transform and RigidBody components are necessary 
+ * for the entity to participate in the physics iteration.
  *
- * The box will also be scaled by the Transform world scale.
- *
- * When using 2D physics, the best
- * box face is chosen to create the square. If the 2D physics plane
- * is set to Z, the face aligned with the Z plane will be chosen.
- *
- * The box should be aligned with the world axis when using 2D
- * physics, you should only do rotations around the physics plane
- * normal.
+ * The box will also be scaled by the Transform scale.
  */
 struct BoxCollider final : public Component {
     vec3 size = {1.0f, 1.0f, 1.0f};   ///< Size

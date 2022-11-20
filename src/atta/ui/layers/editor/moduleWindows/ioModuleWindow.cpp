@@ -9,7 +9,10 @@
 
 namespace atta::ui {
 
-IOModuleWindow::IOModuleWindow() { setName("IO Module"); }
+IOModuleWindow::IOModuleWindow() {
+    setName("IO Module");
+    _initialSize = vec2(350.0f, 500.0f);
+}
 
 void IOModuleWindow::renderImpl() {
     if (ImGui::BeginTabBar("##IOModuleWindowTab", ImGuiTabBarFlags_None)) {

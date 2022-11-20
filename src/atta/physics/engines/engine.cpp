@@ -4,10 +4,10 @@
 // Date: 2021-11-29
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/physics/physicsEngines/physicsEngine.h>
+#include <atta/physics/engines/engine.h>
 
 namespace atta::physics {
 
-PhysicsEngine::PhysicsEngine(Type type) : _type(type) {}
+Engine::Engine(Type type) : _type(type), _running(false) {}
 
 } // namespace atta::physics

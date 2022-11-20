@@ -8,7 +8,10 @@
 #define ATTA_COMPONENT_COMPONENTS_COMPONENTS_H
 
 #include <atta/component/components/boxCollider.h>
+#include <atta/component/components/boxCollider2D.h>
 #include <atta/component/components/camera.h>
+#include <atta/component/components/circleCollider2D.h>
+#include <atta/component/components/cylinderCollider.h>
 #include <atta/component/components/directionalLight.h>
 #include <atta/component/components/environmentLight.h>
 #include <atta/component/components/material.h>

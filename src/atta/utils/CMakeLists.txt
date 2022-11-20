@@ -7,7 +7,6 @@ set(ATTA_UTILS_SOURCE
     math/bounds.cpp
     math/common.cpp
     math/matrix.cpp
-    math/point.cpp
     math/quaternion.cpp
     math/ray.cpp
 )

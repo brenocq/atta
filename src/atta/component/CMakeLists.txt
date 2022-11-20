@@ -10,7 +10,10 @@ set(ATTA_COMPONENT_MODULE_SOURCE
     typedComponentRegistry.cpp
 
     components/boxCollider.cpp
+    components/boxCollider2D.cpp
     components/camera.cpp
+    components/circleCollider2D.cpp
+    components/cylinderCollider.cpp
     components/directionalLight.cpp
     components/environmentLight.cpp
     components/material.cpp
@@ -21,8 +24,8 @@ set(ATTA_COMPONENT_MODULE_SOURCE
     components/prototype.cpp
     components/relationship.cpp
     components/revoluteJoint.cpp
-	components/rigidBody2D.cpp
 	components/rigidBody.cpp
+	components/rigidBody2D.cpp
 	components/rigidJoint.cpp
     components/script.cpp
     components/sphereCollider.cpp

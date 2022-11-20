@@ -14,6 +14,7 @@ namespace atta::script {
 
 void startUp();
 void shutDown();
+void update(float dt);
 
 Script* getScript(StringId target);
 std::vector<StringId> getScriptSids();

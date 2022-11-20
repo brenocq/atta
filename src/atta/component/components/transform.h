@@ -34,13 +34,19 @@ struct Transform final : public Component {
      * parent world transform.
      *
      * The world transform will only differ from the local
-     * transform when the entity also has a  Relationship.
+     * transform when the entity also has a Relationship.
      */
     mat4 getWorldTransform(EntityId entity);
 
     // Get transform matrix in the local coordinate system
     /** Transform matrix calculated directly from position/orientation/scale. */
     mat4 getLocalTransform();
+
+    // Set position/orientation/scale from the desired world transform
+    /** It will convert the world transform to a local space and
+     * update position/orientation/scale
+     **/
+    void setWorldTransform(EntityId entity, mat4 worldTransform);
 
     // Get transform of any entity in the world coordinate system
     /** Take into account that it is possible that the entity does have a transform component,

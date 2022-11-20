@@ -33,12 +33,14 @@ class Window {
         _sid = StringId(name);
         _name = name;
         _open = false;
+        _initialSize = vec2(0.0f);
     }
 
     virtual void renderImpl() = 0;
 
     StringId _sid;
     std::string _name;
+    vec2 _initialSize;
     bool _open;
 };
 
@@ -46,8 +48,9 @@ template <typename T>
 void Window<T>::render() {
     T& window = getInstance();
     if (window._open) {
+        ImGui::SetNextWindowSize(ImVec2(window._initialSize.x, window._initialSize.y), ImGuiCond_FirstUseEver);
         ImGui::Begin(window._name.c_str(), &(window._open));
-        { window.renderImpl(); }
+        window.renderImpl();
         ImGui::End();
     }
 }

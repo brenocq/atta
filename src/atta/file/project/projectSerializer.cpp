@@ -19,6 +19,9 @@
 #include <atta/graphics/interface.h>
 #include <atta/utils/config.h>
 
+#include <atta/physics/interface.h>
+#include <atta/physics/engines/bulletEngine.h>
+
 namespace atta::file {
 
 ProjectSerializer::ProjectSerializer(std::shared_ptr<Project> project) : _project(project) {}
@@ -37,6 +40,7 @@ void ProjectSerializer::serialize() {
     serializeComponentModule(section["componentModule"]);
     serializeGraphicsModule(section["graphicsModule"]);
     serializeResourceModule(section["resourceModule"]);
+    serializePhysicsModule(section["physicsModule"]);
     // LOG_DEBUG("file::ProjectSerializer", "Saving project: [w]$0", section);
 
     // Serialize version
@@ -71,6 +75,7 @@ void ProjectSerializer::deserialize() {
     deserializeComponentModule(section["componentModule"]);
     deserializeGraphicsModule(section["graphicsModule"]);
     deserializeResourceModule(section["resourceModule"]);
+    deserializePhysicsModule(section["physicsModule"]);
 }
 
 } // namespace atta::file

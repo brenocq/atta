@@ -42,6 +42,29 @@ mat4 Transform::getLocalTransform() {
     return t;
 }
 
+void Transform::setWorldTransform(EntityId entity, mat4 worldTransform) {
+    // If 2 is parent of 1, that is parent of 0
+    // LX is the local transform of X
+    // We have: W0 = L2*L1*L0
+    // We want: worldToLocal*W0 = L0
+    // Thus:    worldToLocal = (L2*L1)^(-1)
+
+    mat4 worldToLocal = mat4(1.0f);
+
+    // Go up the hierarchy until root to calculate world to local transform
+    Relationship* relationship = component::getComponent<Relationship>(entity);
+    while (relationship && relationship->getParent() >= 0) {
+        Transform* ptransform = component::getComponent<Transform>(relationship->getParent());
+        if (ptransform)
+            worldToLocal = ptransform->getLocalTransform() * worldToLocal;
+        relationship = component::getComponent<Relationship>(relationship->getParent());
+    }
+    worldToLocal.invert();
+
+    mat4 local = worldToLocal * worldTransform;
+    local.getPosOriScale(position, orientation, scale);
+}
+
 mat4 Transform::getEntityWorldTransform(EntityId entity) {
     EntityId curr = entity;
     auto t = component::getComponent<Transform>(curr);
