@@ -87,6 +87,11 @@ private:
 #define PROFILE_NAME(name)
 #endif
 
+#if !defined(__PRETTY_FUNCTION__) && !defined(__GNUC__)
+// Fixing __PRETTY_FUNCTION__ not defined when compiling to windows
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
 #define PROFILE() PROFILE_NAME(__PRETTY_FUNCTION__)
 
 #endif // ATTA_UTILS_PROFILER_H
