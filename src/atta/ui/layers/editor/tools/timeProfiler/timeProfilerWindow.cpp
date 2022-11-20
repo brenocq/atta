@@ -38,8 +38,8 @@ void TimeProfilerWindow::renderImpl() {
         ImGui::Text("%s", Profiler::getTimeString(Profiler::getTotalTime()).c_str());
     }
 
-    if (ImGui::CollapsingHeader("Flame Graph"))
-        _flameGraph.render();
+    //if (ImGui::CollapsingHeader("Flame Graph"))
+    //    _flameGraph.render();
 
     if (ImGui::CollapsingHeader("Tear Down"))
         _tearDown.render();
