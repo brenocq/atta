@@ -56,8 +56,7 @@ const std::vector<uint8_t>& Camera::getFrame() {
     for (auto& cameraInfo : cameraInfos)
         if (cameraInfo.component == this)
             return cameraInfo.data;
-    LOG_ERROR("component::Camera", "Could not get camera frame from sensor::Manager");
-    return {};
+    ASSERT(false, "(component::Camera) Could not get camera frame from sensor::Manager");
 }
 
 } // namespace atta::component

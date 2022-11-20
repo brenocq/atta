@@ -70,7 +70,6 @@ void Factory::destroyClones() {
 }
 
 void Factory::runScripts(float dt) {
-    // TODO faster
     unsigned cloneId = 0;
     for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++) {
         Script* scriptComponent = component::getComponent<Script>(entity);
@@ -81,27 +80,6 @@ void Factory::runScripts(float dt) {
         }
         cloneId++;
     }
-
-    // Example using componentMemories to set Entity component vector
-    // Script* scriptComponent = component::getComponent<script::Script>(_prototypeId);
-    // if(scriptComponent)
-    //{
-    //    Script* script = script::getScript(scriptComponent->sid);
-    //    if(script)
-    //    {
-    //        // Execute each clone script with the right component
-    //        for(unsigned cloneId = 0; cloneId < _maxClones; cloneId++)
-    //        {
-    //            // Populate component memories
-    //            for(unsigned i = 0; i < components.size(); i++)
-    //                components[i] = reinterpret_cast<Component*>(_componentMemories[i].second +
-    //                        cloneId * _componentRegistries[i]->getSizeof());
-
-    //             Run script
-    //            script->update(_prototypeId, cloneId, components, dt);
-    //        }
-    //    }
-    //}
 }
 
 EntityId Factory::getPrototypeId() const { return _prototypeId; }

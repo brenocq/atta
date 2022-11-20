@@ -77,40 +77,70 @@ Arrows show dependencies between modules. Green boxes show which features are im
 This project aims to simulate complex systems like this, mainly composed of robots.
 
 ## Build & test
-#### Dependencies
+
+<!------------ Windows ------------>
+<details><summary> Windows </summary>
+<h4>Dependencies</h4>
 To build atta properly, you need to have cmake installed.
-Dependencies for some operating systems:
+<pre><code>choco install cmake</code></pre>
+Also, be sure that your <strong>compiller supports C++17</strong> (g++ >= 9.0).
 
-**Windows:**
-```bash
-choco install cmake
-```
+<h4>Run</h4>
+<pre><code>git clone git@github.com:brenocq/atta.git
+cd atta
+mkdir build
+cd build
+cmake ..
+</code></pre>
 
-**MacOS:**
-```bash
-brew install cmake
-```
+You can now use Visual Studio to open the <code>atta.sln</code> file.
+</details>
+<!------------ MacOS ------------>
+<details><summary> MacOS </summary>
+<h4>Dependencies</h4>
+To build atta properly, you need to have cmake installed.
+<pre><code>brew install cmake</code></pre>
+Also, be sure that your <strong>compiller supports C++17</strong> (g++ >= 9.0).
 
-**Linux:**
-```bash
-sudo apt-get install cmake xorg-dev curl
-```
-
-#### Clone
-Atta should build without errors when the **compiller supports C++17** (g++ >= 9.0).
-
-If you found any errors, please do not hesitate to [create an issue](https://github.com/brenocq/atta/issues/new?assignees=brenocq&labels=fix&template=bug_report.md&title=) :wink:.
-
-```bash
-git clone git@github.com:brenocq/atta.git
+<h4>Run</h4>
+<pre><code>git clone git@github.com:brenocq/atta.git
 cd atta
 ./scripts/build.sh --help
 ./scripts/build.sh
 ./build/release/bin/atta_test
 ./build/release/bin/atta
-```
+</code></pre>
+</details>
+<!------------ Linux ------------>
+<details><summary> Linux </summary>
+<h3>Dependencies</h3>
+To build atta, you need:
+<ul>
+  <li>g++ >= 9.0</li>
+  <li>cmake >= 3.14</li>
+</ul>
 
-_Obs: The build script should help the user with dependencies. If you found ploblems please let me know_
+<strong>Ubuntu:</strong>
+<pre><code>sudo apt-get install g++ cmake git xorg-dev curl</code></pre>
+<i>Note: If your ubuntu is old, you may need to install the latest cmake/g++ manually.</i>
+
+<strong>Fedora:</strong>
+<pre><code>sudo yum install g++ cmake git glfw-devel curl</code></pre>
+
+<strong>Arch:</strong>
+<pre><code>sudo pacman -Sy g++ cmake git glfw-x11 curl</code></pre>
+
+<h3>Run</h3>
+<pre><code>git clone git@github.com:brenocq/atta.git
+cd atta
+./build.sh --help
+./build.sh
+./build/release/bin/atta_test
+./build/release/bin/atta
+</code></pre>
+</details>
+
+If you found any errors, please do not hesitate to [create an issue](https://github.com/brenocq/atta/issues/new?assignees=brenocq&labels=fix&template=bug_report.md&title=) :wink:.
 
 ## Discussions
 If you want to contribute, have ideas, or have questions about atta, feel free to [start a discussion](https://github.com/brenocq/atta/discussions).

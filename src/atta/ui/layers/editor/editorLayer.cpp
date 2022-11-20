@@ -66,7 +66,11 @@ void EditorLayer::onUIRender() {
     // Project UI
     script::ProjectScript* project = script::getProjectScript();
     if (project)
-        project->onUIRender();
+        try {
+            project->onUIRender();
+        } catch (std::exception& e) {
+            LOG_ERROR("ui::EditorLayer", "Error when executing [w]ProjectScript::onUIRender[]: $0", e.what());
+        }
 }
 
 void EditorLayer::renderCameraWindows() {

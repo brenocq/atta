@@ -69,9 +69,8 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false), _simulationState(Simu
         LOG_WARN("Atta", "Project [w]$0[] will not be open because atta was built statically linked to [w]$1[]", info.projectFile, projectFile);
 #else
     // If a project was defined as argument, open project
-    if (!info.projectFile.empty())
-    {
-        graphics::update();// Need to update to register the viewports
+    if (!info.projectFile.empty()) {
+        graphics::update(); // Need to update to register the viewports
         file::openProject(info.projectFile);
     }
 #endif
@@ -123,23 +122,31 @@ void Atta::loop() {
         if (project)
             project->onUpdateBefore(dt);
 
-        // Run entity scripts
-        // TODO keep list of entities that have script (and are not prototype entities)
+        // Run clone scripts
+        for (auto& factory : component::getFactories())
+            factory.runScripts(dt);
+
+        // Run scripts of other entities (not clones)
+        const auto& factories = component::getFactories();
+        std::vector<std::pair<component::EntityId, component::EntityId>> beginEndClones(factories.size());
+        for (const auto& factory : factories)
+            beginEndClones.push_back({factory.getFirstClone(), factory.getLastClone()});
         std::vector<component::EntityId> entities = component::getScriptView();
         for (component::EntityId entity : entities) {
+            // Check if it it not clone entity
+            for(auto [begin, end] : beginEndClones)
+                if(entity >= begin && entity <= end)
+                    continue;
+            
+            // Check if it is not prototype entity
             component::Script* scriptComponent = component::getComponent<component::Script>(entity);
             component::Prototype* prototypeComponent = component::getComponent<component::Prototype>(entity);
             if (scriptComponent && !prototypeComponent) {
-                // std::vector<Component*> components = component::getComponents(entity);
                 script::Script* script = script::getScript(scriptComponent->sid);
                 if (script)
                     script->update(component::Entity(entity), dt);
             }
         }
-
-        // Run clone scripts
-        for (auto& factory : component::getFactories())
-            factory.runScripts(dt);
 
         if (project)
             project->onUpdateAfter(dt);
@@ -171,33 +178,33 @@ void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }
 void Atta::onSimulationStateChange(event::Event& event) {
     script::ProjectScript* project = script::getProjectScript();
     switch (event.getType()) {
-    case event::SimulationStart::type: {
-        if (project)
-            project->onStart();
-        _simulationState = SimulationState::RUNNING;
-        break;
-    }
-    case event::SimulationContinue::type: {
-        if (project)
-            project->onContinue();
-        _simulationState = SimulationState::RUNNING;
-        break;
-    }
-    case event::SimulationPause::type: {
-        if (project)
-            project->onPause();
-        _simulationState = SimulationState::PAUSED;
-        break;
-    }
-    case event::SimulationStop::type: {
-        if (project)
-            project->onStop();
-        _simulationState = SimulationState::NOT_RUNNING;
-        break;
-    }
-    default: {
-        LOG_WARN("Atta", "Unknown simulation event");
-    }
+        case event::SimulationStart::type: {
+            if (project)
+                project->onStart();
+            _simulationState = SimulationState::RUNNING;
+            break;
+        }
+        case event::SimulationContinue::type: {
+            if (project)
+                project->onContinue();
+            _simulationState = SimulationState::RUNNING;
+            break;
+        }
+        case event::SimulationPause::type: {
+            if (project)
+                project->onPause();
+            _simulationState = SimulationState::PAUSED;
+            break;
+        }
+        case event::SimulationStop::type: {
+            if (project)
+                project->onStop();
+            _simulationState = SimulationState::NOT_RUNNING;
+            break;
+        }
+        default: {
+            LOG_WARN("Atta", "Unknown simulation event");
+        }
     }
 }
 } // namespace atta

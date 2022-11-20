@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.2.0.0 LANGUAGES CXX C)
+project(atta VERSION 0.3.0.0 LANGUAGES CXX C)
 
 OPTION(ATTA_BUILD_TESTS
     "Set to ON to build also the test executables"
@@ -22,8 +22,8 @@ set(ATTA_VERSION_SAFE atta-${CMAKE_PROJECT_VERSION})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
 
+# Set flags necessary for the script system to work correctly
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    # Set flags necessary for the script system to work correctly
     set(CMAKE_CXX_FLAGS "-Wl,--export-dynamic")
     set(CMAKE_EXE_LINKER_FLAGS "-Wl,--export-dynamic")
 endif()

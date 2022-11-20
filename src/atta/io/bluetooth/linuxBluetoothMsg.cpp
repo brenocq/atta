@@ -235,12 +235,12 @@ int LinuxBluetooth::bluezParseDevice1(sd_bus_message* m, const char* opath, Devi
         }
 
         if (strcmp(str, "Name") == 0) {
-            r = bluezReadVariant(m, "s", &str);
+            r = bluezReadVariant(m, (char*)"s", &str);
             if (r < 0)
                 return r;
             dev->name = str;
         } else if (strcmp(str, "Address") == 0) {
-            r = bluezReadVariant(m, "s", &str);
+            r = bluezReadVariant(m, (char*)"s", &str);
             if (r < 0)
                 return r;
 
@@ -264,18 +264,18 @@ int LinuxBluetooth::bluezParseDevice1(sd_bus_message* m, const char* opath, Devi
             // Will be populated with LinuxBluetooth::PopulateDeviceServices
         } else if (strcmp(str, "ServicesResolved") == 0) {
             int b;
-            r = bluezReadVariant(m, "b", &b);
+            r = bluezReadVariant(m, (char*)"b", &b);
             if (r < 0)
                 return r;
             lDev->servicesResolved = b;
         } else if (strcmp(str, "Connected") == 0) {
             int b;
-            r = bluezReadVariant(m, "b", &b);
+            r = bluezReadVariant(m, (char*)"b", &b);
             if (r < 0)
                 return r;
             dev->connected = b;
         } else if (strcmp(str, "RSSI") == 0) {
-            r = bluezReadVariant(m, "n", &dev->rssi);
+            r = bluezReadVariant(m, (char*)"n", &dev->rssi);
             if (r < 0)
                 return r;
         } else {
@@ -328,7 +328,7 @@ int LinuxBluetooth::bluezParseService1(sd_bus_message* m, const char* opath, Lin
         }
 
         if (strcmp(str, "UUID") == 0) {
-            r = bluezReadVariant(m, "s", &uuid);
+            r = bluezReadVariant(m, (char*)"s", &uuid);
             if (r < 0) {
                 LOG_ERROR(_debugName.getString(), "Failed to parse service1 (read UUID)");
                 return r;
@@ -392,7 +392,7 @@ int LinuxBluetooth::bluezParseCharacteristic1(sd_bus_message* m, const char* opa
         }
 
         if (strcmp(str, "UUID") == 0) {
-            r = bluezReadVariant(m, "s", &uuid);
+            r = bluezReadVariant(m, (char*)"s", &uuid);
             if (r < 0)
                 return r;
         } else if (strcmp(str, "Flags") == 0) {
@@ -486,7 +486,7 @@ int LinuxBluetooth::bluezParseNotify(sd_bus_message* m, Char* ch, LinuxChar* lch
     // Ignore all except Value
     if (strcmp(str, "Notifying") == 0) {
         int b;
-        r = bluezReadVariant(m, "b", &b);
+        r = bluezReadVariant(m, (char*)"b", &b);
         if (r < 0) {
             return -2;
         }
