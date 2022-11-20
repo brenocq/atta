@@ -12,15 +12,12 @@
 #include <atta/event/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/ui/layers/editor/toolBar/toolBar.h>
+#include <atta/ui/layers/editor/components/button.h>
 #include <atta/utils/config.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 
 namespace atta::ui {
-
-bool renderButton(std::string name, float size) {
-    return ImGui::ImageButton(graphics::getImGuiImage("icons/" + name + ".png"), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0);
-}
 
 void ToolBar::render() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 5));
@@ -42,7 +39,7 @@ void ToolBar::render() {
 
         // View button
         {
-            if (renderButton(graphics::getViewportRendering() ? "view" : "no-view", buttonH))
+            if (ui::ImageButton(graphics::getViewportRendering() ? "view" : "no-view", buttonH))
                 graphics::setViewportRendering(!graphics::getViewportRendering());
             ImGui::SameLine();
             ImGui::Dummy(ImVec2(10.0f, 0.0f));
@@ -56,7 +53,7 @@ void ToolBar::render() {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
             }
-            if (renderButton("stop", buttonH)) {
+            if (ui::ImageButton("stop", buttonH)) {
                 event::SimulationStop e;
                 event::publish(e);
             }
@@ -67,7 +64,7 @@ void ToolBar::render() {
 
             ImGui::SameLine();
             if (Config::getState() != Config::State::RUNNING) {
-                if (renderButton("play", buttonH)) {
+                if (ui::ImageButton("play", buttonH)) {
                     if (Config::getState() == Config::State::PAUSED) {
                         event::SimulationContinue e;
                         event::publish(e);
@@ -77,14 +74,14 @@ void ToolBar::render() {
                     }
                 }
             } else {
-                if (renderButton("pause", buttonH)) {
+                if (ui::ImageButton("pause", buttonH)) {
                     event::SimulationPause e;
                     event::publish(e);
                 }
             }
 
             ImGui::SameLine();
-            if (renderButton("step", buttonH)) {
+            if (ui::ImageButton("step", buttonH)) {
                 event::SimulationStep e;
                 event::publish(e);
             }

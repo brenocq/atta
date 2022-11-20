@@ -70,6 +70,7 @@ void LinuxFileWatcher::update() {
 }
 
 void LinuxFileWatcher::checkAndRead() {
+    PROFILE();
     struct timeval time;
     time.tv_sec = 0;
     time.tv_usec = 0;
@@ -96,6 +97,7 @@ void LinuxFileWatcher::checkAndRead() {
 }
 
 void LinuxFileWatcher::readEvents() {
+    PROFILE();
     int len = read(_inotifyFd, _buf, _bufLen);
     if (len < 0) {
         LOG_WARN("file::LinuxFileWatcher", "Error when trying to read inotify file descriptor. Error ($0): $1", len, std::strerror(errno));
@@ -114,6 +116,7 @@ void LinuxFileWatcher::readEvents() {
 }
 
 void LinuxFileWatcher::publishEvent(struct inotify_event* ievent) {
+    PROFILE();
     if (ievent->len) {
         // LOG_DEBUG("file::LinuxFileWatcher", "name=$0", ievent->name);
         // LOG_DEBUG("file::LinuxFileWatcher", "wd=$0 cookie=$2 len=$3",

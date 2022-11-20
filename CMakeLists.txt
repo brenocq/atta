@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.4.0.0 LANGUAGES CXX C)
+project(atta VERSION 0.3.0.0 LANGUAGES CXX C)
 
 OPTION(ATTA_BUILD_TESTS
     "Set to ON to build also the test executables"
@@ -14,6 +14,9 @@ OPTION(ATTA_BUILD_DOCS
 option(ATTA_STATIC_PROJECT_FILE 
     "Project to be linked statically to atta" 
     "")
+option(ATTA_PROFILE 
+    "Set to ON to enable code profiling" 
+    ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -47,6 +50,10 @@ if(ATTA_STATIC_PROJECT_FILE)
     atta_log(Info "Main" "Building atta statically linked to ${ATTA_STATIC_PROJECT_FILE}")
 else()
     set(ATTA_STATIC_PROJECT FALSE)
+endif()
+
+if(ATTA_PROFILE)
+    list(APPEND ATTA_DEFINITIONS "ATTA_PROFILE")
 endif()
 
 ########## OS Specific ##########
@@ -152,7 +159,6 @@ set(ATTA_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 
 ########## Precompiled Headers ##########
 list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
-
 
 ########## Atta/Extern directories ##########
 include(FetchContent)

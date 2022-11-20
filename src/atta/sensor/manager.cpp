@@ -6,9 +6,9 @@
 //--------------------------------------------------
 #include <atta/sensor/manager.h>
 
+#include <atta/component/components/camera.h>
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/components/camera.h>
 #include <atta/component/interface.h>
 
 #include <atta/event/events/createComponent.h>
@@ -63,37 +63,37 @@ void Manager::updateImpl(float dt) {
 
 void Manager::onSimulationStateChange(event::Event& event) {
     switch (event.getType()) {
-    case event::SimulationStart::type: {
-        _currTime = 0;
-        break;
-    }
-    case event::SimulationStop::type: {
-        _currTime = 0;
-        break;
-    }
-    default:
-        LOG_WARN("sensor::Manager", "Unknown simulation event");
+        case event::SimulationStart::type: {
+            _currTime = 0;
+            break;
+        }
+        case event::SimulationStop::type: {
+            _currTime = 0;
+            break;
+        }
+        default:
+            LOG_WARN("sensor::Manager", "Unknown simulation event");
     }
 }
 
 void Manager::onComponentChange(event::Event& event) {
     switch (event.getType()) {
-    case event::CreateComponent::type: {
-        event::CreateComponent& e = reinterpret_cast<event::CreateComponent&>(event);
-        if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId()) {
-            registerCamera(e.entityId, static_cast<component::Camera*>(e.component));
+        case event::CreateComponent::type: {
+            event::CreateComponent& e = reinterpret_cast<event::CreateComponent&>(event);
+            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId()) {
+                registerCamera(e.entityId, static_cast<component::Camera*>(e.component));
+            }
+            break;
         }
-        break;
-    }
-    case event::DeleteComponent::type: {
-        event::DeleteComponent& e = reinterpret_cast<event::DeleteComponent&>(event);
-        if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId()) {
-            unregisterCamera(e.entityId);
+        case event::DeleteComponent::type: {
+            event::DeleteComponent& e = reinterpret_cast<event::DeleteComponent&>(event);
+            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId()) {
+                unregisterCamera(e.entityId);
+            }
+            break;
         }
-        break;
-    }
-    default:
-        LOG_WARN("sensor::Manager", "Unknown component change event");
+        default:
+            LOG_WARN("sensor::Manager", "Unknown component change event");
     }
 }
 

@@ -34,6 +34,7 @@ void LinuxCompiler::compileAll() {
     // Create makefiles
     fs::path prevPath = fs::current_path();
     fs::current_path(buildDir);
+
 #ifdef ATTA_DEBUG_BUILD
     std::string buildCommand = "cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=" + _compiler + " ..";
 #else

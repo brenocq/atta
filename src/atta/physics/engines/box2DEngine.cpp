@@ -236,7 +236,7 @@ void Box2DEngine::step(float dt) {
 
             // Get new transform (after physics step)
             b2Vec2 pos = body->GetPosition();
-            position = {pos.x, pos.y, 0.0f};
+            position = {pos.x, pos.y, t->position.z};
             orientation.set2DAngle(body->GetAngle());
             scale = t->scale;
 

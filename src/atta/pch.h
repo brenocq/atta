@@ -33,6 +33,7 @@ namespace fs = std::filesystem;
 #include <atta/utils/assert.h>
 #include <atta/utils/common.h>
 #include <atta/utils/log.h>
+#include <atta/utils/profiler.h>
 #include <atta/utils/math/math.h>
 
 #endif // ATTA_PRE_COMPILED_HEADER_H
