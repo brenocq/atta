@@ -37,9 +37,9 @@ void EditorLayer::onUIRender() {
     _dockSpace.render();
 
     // Demo
-    //bool demo = true;
-    //ImGui::ShowDemoWindow(&demo);
-    //ImPlot::ShowDemoWindow(&demo);
+    // bool demo = true;
+    // ImGui::ShowDemoWindow(&demo);
+    // ImPlot::ShowDemoWindow(&demo);
 
     // Top interface
     _topBar.render();

@@ -29,7 +29,6 @@ void EntityWindow::render() {
         renderTree();
         ImGui::Separator();
         renderComponents();
-        renderCameraWindows();
     }
     ImGui::End();
 }
@@ -186,20 +185,6 @@ void EntityWindow::textureCombo(std::string comboId, StringId& sid) {
                 ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
-    }
-}
-
-void EntityWindow::renderCameraWindows() {
-    for (auto eid : _cameraWindows) {
-        component::Camera* camera = component::getComponent<component::Camera>(eid);
-        bool open = true;
-        ImGui::Begin(("Camera Entity " + std::to_string(eid)).c_str(), &open);
-        ImVec2 size = ImVec2(camera->width, camera->height);
-        ImGui::Image(sensor::getEntityCameraImGuiTexture(eid), size, ImVec2(0, 0), ImVec2(1, 1));
-        ImGui::End();
-
-        if (!open)
-            _cameraWindows.erase(eid);
     }
 }
 

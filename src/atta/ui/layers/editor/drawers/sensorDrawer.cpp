@@ -16,6 +16,8 @@ void SensorDrawer::updateCameras() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::sensor::Camera"_ssid);
     std::vector<sensor::CameraInfo>& cameras = sensor::getCameraInfos();
     for (uint32_t i = 0; i < cameras.size(); i++) {
+        if(!cameras[i].initialized)
+            continue;
         component::Camera* cameraComponent = cameras[i].component;
         std::shared_ptr<graphics::Camera> camera = cameras[i].camera;
         vec3 pos = camera->getPosition();

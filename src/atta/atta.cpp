@@ -121,7 +121,7 @@ void Atta::loop() {
             step();
         } else {
             // Step with delay to be closer to desired step speed
-            if(timeDiff >= Config::getDt()/Config::getDesiredStepSpeed())
+            if (timeDiff >= Config::getDt() / Config::getDesiredStepSpeed())
                 step();
         }
     } else if (Config::getState() == Config::State::PAUSED && _shouldStep) {
@@ -133,7 +133,6 @@ void Atta::loop() {
     if (project)
         project->onAttaLoop();
 
-    sensor::update();
     file::update();
     graphics::update();
 }
@@ -141,7 +140,7 @@ void Atta::loop() {
 void Atta::step() {
     PROFILE();
     const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
-    Config::setRealStepSpeed(Config::getDt()/timeDiff);
+    Config::setRealStepSpeed(Config::getDt() / timeDiff);
     _lastStep = _currStep;
 
     float dt = Config::getDt(); // Saving dt because project script may change the dt
@@ -183,13 +182,11 @@ void Atta::onSimulationStateChange(event::Event& event) {
             break;
         }
         case event::SimulationStep::type: {
-            if(Config::getState() == Config::State::IDLE)
-            {
+            if (Config::getState() == Config::State::IDLE) {
                 event::SimulationStart e;
                 event::publish(e);
             }
-            if(Config::getState() == Config::State::RUNNING)
-            {
+            if (Config::getState() == Config::State::RUNNING) {
                 event::SimulationPause e;
                 event::publish(e);
             }

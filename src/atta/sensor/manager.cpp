@@ -24,6 +24,8 @@
 #include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/graphics/renderers/phongRenderer.h>
 
+#include <atta/utils/config.h>
+
 namespace atta::sensor {
 
 Manager& Manager::getInstance() {
@@ -52,27 +54,18 @@ void Manager::shutDownImpl() {
     unregisterCameras();
 }
 
-void Manager::updateImpl() {
-    updateCamerasModel(); // Update camera pose and internal paramters
-}
-
 void Manager::updateImpl(float dt) {
-    _currTime += dt;
     updateCameras(dt); // Render images when necessary
 }
 
 void Manager::onSimulationStateChange(event::Event& event) {
     switch (event.getType()) {
         case event::SimulationStart::type: {
-            _currTime = 0;
             break;
         }
         case event::SimulationStop::type: {
-            _currTime = 0;
             break;
         }
-        default:
-            LOG_WARN("sensor::Manager", "Unknown simulation event");
     }
 }
 
@@ -80,16 +73,14 @@ void Manager::onComponentChange(event::Event& event) {
     switch (event.getType()) {
         case event::CreateComponent::type: {
             event::CreateComponent& e = reinterpret_cast<event::CreateComponent&>(event);
-            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId()) {
+            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId())
                 registerCamera(e.entityId, static_cast<component::Camera*>(e.component));
-            }
             break;
         }
         case event::DeleteComponent::type: {
             event::DeleteComponent& e = reinterpret_cast<event::DeleteComponent&>(event);
-            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId()) {
+            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId())
                 unregisterCamera(e.entityId);
-            }
             break;
         }
         default:

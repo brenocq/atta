@@ -20,7 +20,6 @@ Factory::Factory(Entity prototype) : _prototype(prototype), _numEntitiesCloned(0
 void Factory::createChildClones(Entity child, Entity parent) {
     // Create `_maxClones` clones of `child` and set all clones as child of `parent`
     // NOTE EntityId of custom entities/joints not working yet (only relationship being handled)
-    LOG_DEBUG("Factory", "Child [*y]$0[] parent [*g]$1[]", child, parent);
 
     Entity firstClone = EntityId(_firstClone) + _numEntitiesInitialized;
     // For every registered component

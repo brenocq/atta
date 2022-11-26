@@ -161,13 +161,8 @@ void Manager::deleteEntityImpl(Entity entity) {
 
     // Delete allocated components
     for (unsigned i = 0; i < _componentRegistries.size(); i++)
-        if (e->components[i] != nullptr) {
-            // Get component pool
-            memory::BitmapAllocator* cpool = memory::getAllocator<memory::BitmapAllocator>(_componentRegistries[i]->getId());
-
-            // Free component
-            cpool->free(e->components[i]);
-        }
+        if (e->components[i] != nullptr)
+            removeComponentByIdImpl(_componentRegistries[i]->getId(), entity);
 
     // Unselect
     if (_selectedEntity == eid)
@@ -327,8 +322,8 @@ void Manager::createComponentPool(ComponentRegistry* componentRegistry) {
 
     uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(size, sizeofT));
     DASSERT(componentMemory != nullptr, "Could not allocate component system memory for " + name);
-    //LOG_INFO("component::Manager", "Allocated memory for component $0 ($1). $2MB ($5 instances) -> memory space:($3 $4)", name, typeidTName,
-    //         maxCount * sizeofT / (1024 * 1024.0f), (void*)(componentMemory), (void*)(componentMemory + maxCount * sizeofT), maxCount);
+    // LOG_INFO("component::Manager", "Allocated memory for component $0 ($1). $2MB ($5 instances) -> memory space:($3 $4)", name, typeidTName,
+    //          maxCount * sizeofT / (1024 * 1024.0f), (void*)(componentMemory), (void*)(componentMemory + maxCount * sizeofT), maxCount);
 
     // Create pool allocator
     memory::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName),
@@ -601,48 +596,48 @@ void Manager::onSimulationStateChange(event::Event& event) {
 
 void Manager::onMeshEvent(event::Event& event) {
     switch (event.getType()) {
-    case event::MeshLoad::type: {
-        event::MeshLoad& e = reinterpret_cast<event::MeshLoad&>(event);
-        bool found = false;
-        for (auto op : TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options)
-            if (std::any_cast<StringId>(op) == e.sid) {
-                found = true;
-                break;
-            }
-
-        if (!found)
-            TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
-
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-void Manager::onImageEvent(event::Event& event) {
-    switch (event.getType()) {
-    case event::ImageLoad::type: {
-        event::ImageLoad& e = reinterpret_cast<event::ImageLoad&>(event);
-
-        // Update environment light options
-        {
+        case event::MeshLoad::type: {
+            event::MeshLoad& e = reinterpret_cast<event::MeshLoad&>(event);
             bool found = false;
-            for (auto op : TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options)
+            for (auto op : TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options)
                 if (std::any_cast<StringId>(op) == e.sid) {
                     found = true;
                     break;
                 }
 
-            if (!found) {
-                TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
-            }
-        }
+            if (!found)
+                TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
 
-        break;
+            break;
+        }
+        default:
+            break;
     }
-    default:
-        break;
+}
+
+void Manager::onImageEvent(event::Event& event) {
+    switch (event.getType()) {
+        case event::ImageLoad::type: {
+            event::ImageLoad& e = reinterpret_cast<event::ImageLoad&>(event);
+
+            // Update environment light options
+            {
+                bool found = false;
+                for (auto op : TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options)
+                    if (std::any_cast<StringId>(op) == e.sid) {
+                        found = true;
+                        break;
+                    }
+
+                if (!found) {
+                    TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
+                }
+            }
+
+            break;
+        }
+        default:
+            break;
     }
 }
 
