@@ -36,32 +36,33 @@ struct Relationship final : public Component {
      * Has the same effect of adding a child with
      * Relationship::addChild.
      * */
-    static void setParent(EntityId parent, EntityId child);
+    static void setParent(Entity parent, Entity child);
     /// Remove entity parent
     /** Has the same effect of removing a child with
      * Relationship::removeChild.
      */
-    static void removeParent(EntityId parent, EntityId child);
+    static void removeParent(Entity parent, Entity child);
 
     //----- Child operations -----//
     /// Add child entity
     /** Has the same effect of setting the child parent with
      * Relationship::setParent.
      * */
-    static void addChild(EntityId parent, EntityId child);
+    static void addChild(Entity parent, Entity child);
     /// Remove child entity
     /** Has the same effect of removing the child parent with
      * Relationship::removeParent.
      * */
-    static void removeChild(EntityId parent, EntityId child);
+    static void removeChild(Entity parent, Entity child);
 
     // Get data
-    EntityId getParent() { return _parent; }
-    std::vector<EntityId> getChildren() { return _children; }
+    Entity getParent() { return _parent; }
+    std::vector<Entity> getChildren() { return _children; }
+    Entity get(uint32_t i) { return _children[i]; }
 
     // Data
-    EntityId _parent = -1;
-    std::vector<EntityId> _children = {};
+    Entity _parent = -1;
+    std::vector<Entity> _children = {};
 };
 ATTA_REGISTER_COMPONENT(Relationship)
 template <>

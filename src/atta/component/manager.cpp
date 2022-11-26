@@ -580,7 +580,7 @@ void Manager::destroyFactories() {
 
 Factory* Manager::getFactoryImpl(Entity prototype) {
     for (Factory& factory : _factories)
-        if (factory.getPrototypeId() == prototype)
+        if (factory.getPrototype() == prototype)
             return &factory;
     LOG_WARN("component::Manager", "Trying to get factory from entity [w]$0[] that is not a prototype", prototype);
     return nullptr;

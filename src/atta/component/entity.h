@@ -14,7 +14,6 @@ class Entity {
   public:
     Entity();
     Entity(EntityId id);
-    Entity(EntityId id, int cloneId);
     operator EntityId() const { return _id; }
 
     template <typename T>
@@ -28,11 +27,9 @@ class Entity {
     }
 
     EntityId getId() const { return _id; }
-    int getCloneId() const { return _cloneId; }
 
   private:
     EntityId _id;
-    int _cloneId;
 };
 
 } // namespace atta::component

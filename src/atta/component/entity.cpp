@@ -10,8 +10,7 @@
 
 namespace atta::component {
 
-Entity::Entity() : Entity(-1, -1) {}
-Entity::Entity(EntityId id) : Entity(id, 0) {}
-Entity::Entity(EntityId id, int cloneId) : _id(id), _cloneId(cloneId) {}
+Entity::Entity() : Entity(-1) {}
+Entity::Entity(EntityId id) : _id(id) {}
 
 } // namespace atta::component
