@@ -20,9 +20,9 @@ class Factory {
 
     Entity getPrototype() const;
     Entity getFirstClone() const;
-    Entity getLastClone() const;
     uint64_t getMaxClones() const;
-    std::vector<Entity> getClones() const;
+    uint64_t getNumEntitiesCloned() const;
+    std::vector<Entity> getClones(bool includeChildren = false) const;
 
   private:
     void createChildClones(Entity child, Entity parent = -1);

@@ -22,6 +22,7 @@ Manager& Manager::getInstance() {
 void Manager::updateImpl(float dt) {
     script::ProjectScript* project = getProjectScriptImpl();
 
+    // Run project script
     if (project)
         project->onUpdateBefore(dt);
 
@@ -29,26 +30,42 @@ void Manager::updateImpl(float dt) {
     for (auto& factory : component::getFactories())
         factory.runScripts(dt);
 
-    // Run scripts of other entities (not clones)
+    // Get entityIds that are clones
     const auto& factories = component::getFactories();
     std::vector<std::pair<component::EntityId, component::EntityId>> beginEndClones(factories.size());
-    for (const auto& factory : factories)
-        beginEndClones.push_back({factory.getFirstClone(), factory.getLastClone()});
+    for (const auto& factory : factories) {
+        component::EntityId firstClone = factory.getFirstClone().getId();
+        uint64_t numClones = factory.getNumEntitiesCloned() * factory.getMaxClones();
+        beginEndClones.push_back({firstClone, firstClone + numClones});
+    }
+
+    // Run base entity scripts (not clones)
     std::vector<component::EntityId> entities = component::getScriptView();
     for (component::EntityId entity : entities) {
-        // Check if it it not clone entity
-        for (auto [begin, end] : beginEndClones)
-            if (entity >= begin && entity <= end)
-                continue;
+        // Check if it has script component
+        component::Script* scriptComponent = component::getComponent<component::Script>(entity);
+        if (!scriptComponent)
+            continue;
 
         // Check if it is not prototype entity
-        component::Script* scriptComponent = component::getComponent<component::Script>(entity);
         component::Prototype* prototypeComponent = component::getComponent<component::Prototype>(entity);
-        if (scriptComponent && !prototypeComponent) {
-            script::Script* script = getScriptImpl(scriptComponent->sid);
-            if (script)
-                script->update(component::Entity(entity), dt);
-        }
+        if (prototypeComponent)
+            continue;
+
+        // Check if it it not clone entity
+        bool isClone = false;
+        for (auto [begin, end] : beginEndClones)
+            if (entity >= begin && entity <= end) {
+                isClone = true;
+                break;
+            }
+        if (isClone)
+            continue;
+
+        // Run script
+        script::Script* script = getScriptImpl(scriptComponent->sid);
+        if (script)
+            script->update(component::Entity(entity), dt);
     }
 
     if (project)

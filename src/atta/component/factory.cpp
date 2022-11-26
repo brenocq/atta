@@ -28,7 +28,7 @@ void Factory::createChildClones(Entity child, Entity parent) {
         // Check if child entity has this component
         Component* component = component::getComponentById(compReg->getId(), child);
         if (component) {
-            // Ignore prototype component when clonnning 
+            // Ignore prototype component when clonning
             // TODO recursive prototypes not supported yet
             if (compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(Prototype).name()))
                 continue;
@@ -114,27 +114,27 @@ void Factory::destroyClones() {
 
 void Factory::runScripts(float dt) {
     unsigned cloneId = 0;
-    // for (Entity entity : getClones()) {
-    //     Script* scriptComponent = entity.get<Script>();
-    //     if (scriptComponent) {
-    //         script::Script* script = script::getScript(scriptComponent->sid);
-    //         if (script)
-    //             script->update(entity, dt);
-    //     }
-    // }
+    for (Entity entity : getClones()) {
+        Script* scriptComponent = entity.get<Script>();
+        if (scriptComponent) {
+            script::Script* script = script::getScript(scriptComponent->sid);
+            if (script)
+                script->update(entity, dt);
+        }
+    }
 }
 
 Entity Factory::getPrototype() const { return _prototype; }
 Entity Factory::getFirstClone() const { return _firstClone; }
-Entity Factory::getLastClone() const { return Entity{_firstClone.getId() + static_cast<EntityId>(_maxClones) - 1}; }
+uint64_t Factory::getNumEntitiesCloned() const { return _numEntitiesCloned; }
 uint64_t Factory::getMaxClones() const { return _maxClones; }
 
-std::vector<Entity> Factory::getClones() const {
+std::vector<Entity> Factory::getClones(bool includeChildren) const {
     std::vector<Entity> clones;
-    clones.resize(_maxClones);
-    int i = 0;
-    for (EntityId entity = _firstClone.getId(); entity < EntityId(_firstClone.getId() + _maxClones); entity++, i++)
-        clones[i] = Entity(entity);
+    unsigned size = includeChildren ? _maxClones * _numEntitiesCloned : _maxClones;
+    clones.resize(size);
+    for (unsigned i = 0; i < clones.size(); i++)
+        clones[i] = Entity(_firstClone.getId() + i);
     return clones;
 }
 
