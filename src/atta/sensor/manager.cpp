@@ -16,6 +16,7 @@
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/uiCameraComponent.h>
+#include <atta/event/events/projectOpen.h>
 
 #include <atta/graphics/cameras/orthographicCamera.h>
 #include <atta/graphics/cameras/perspectiveCamera.h>
@@ -45,6 +46,9 @@ void Manager::startUpImpl() {
     // Subscribe to component ui events
     event::subscribe<event::UiCameraComponent>(BIND_EVENT_FUNC(Manager::onComponentUi));
 
+    // Subscribe to project events
+    event::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
+
     // Initialize sensors (component events generated before startup were not received)
     registerCameras();
 }
@@ -56,6 +60,12 @@ void Manager::shutDownImpl() {
 
 void Manager::updateImpl(float dt) {
     updateCameras(dt); // Render images when necessary
+}
+
+void Manager::onProjectOpen(event::Event& event) {
+    // Make sure prototype sensors are not created
+    unregisterCameras();
+    registerCameras();
 }
 
 void Manager::onSimulationStateChange(event::Event& event) {

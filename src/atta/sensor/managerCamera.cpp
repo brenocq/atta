@@ -7,11 +7,6 @@
 namespace atta::sensor {
 
 void Manager::registerCameras() {
-    std::unordered_set<component::EntityId> camerasToDelete; // Start with all cameras and
-    for (auto ci : _cameras)
-        camerasToDelete.insert(ci.entity);
-
-    // Add new cameras
     for (component::EntityId entity : component::getEntitiesView()) {
         component::Camera* camera = component::getComponent<component::Camera>(entity);
 
@@ -21,7 +16,6 @@ void Manager::registerCameras() {
             for (auto ci : _cameras)
                 if (ci.entity == entity) {
                     found = true;
-                    camerasToDelete.erase(entity);
                     break;
                 }
 
@@ -30,18 +24,13 @@ void Manager::registerCameras() {
             }
         }
     }
-
-    // Remove deleted cameras
-    for (component::EntityId cameraEntity : camerasToDelete) {
-        for (unsigned i = 0; i < _cameras.size(); i++)
-            if (_cameras[i].entity == cameraEntity) {
-                _cameras.erase(_cameras.begin() + i);
-                break;
-            }
-    }
 }
 
 void Manager::registerCamera(component::EntityId entity, component::Camera* camera) {
+    // Do not register prototype cameras
+    if(component::Entity(entity).isPrototype())
+        return;
+
     CameraInfo cameraInfo{};
     cameraInfo.entity = entity;
     cameraInfo.component = camera;
@@ -89,7 +78,7 @@ void Manager::initializeCamera(CameraInfo& cameraInfo) {
     component::Camera* camera = component::getComponent<component::Camera>(cameraInfo.entity);
 
     // Start with random last time (used to distribute camera rendering across time)
-    cameraInfo.lastTime = (rand() % (int)(10000.0f / camera->fps)) / 10000.0f;
+    cameraInfo.lastTime = 0.0f;//(rand() % (int)(10000.0f / camera->fps)) / 10000.0f;
 
     // Create renderer
     switch (camera->rendererType) {

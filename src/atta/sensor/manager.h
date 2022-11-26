@@ -31,6 +31,7 @@ class Manager final {
 
     // Handle events
     void onSimulationStateChange(event::Event& event);
+    void onProjectOpen(event::Event& event);
     void onComponentChange(event::Event& event);
     void onComponentUi(event::Event& event);
 

@@ -4,6 +4,8 @@
 // Date: 2022-03-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/component/components/prototype.h>
+#include <atta/component/interface.h>
 #include <atta/graphics/drawer.h>
 #include <atta/sensor/interface.h>
 #include <atta/ui/layers/editor/drawers/sensorDrawer.h>
@@ -16,7 +18,9 @@ void SensorDrawer::updateCameras() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::sensor::Camera"_ssid);
     std::vector<sensor::CameraInfo>& cameras = sensor::getCameraInfos();
     for (uint32_t i = 0; i < cameras.size(); i++) {
-        if(!cameras[i].initialized)
+        if (!cameras[i].initialized)
+            continue;
+        if (component::Entity(cameras[i].entity).isPrototype())
             continue;
         component::Camera* cameraComponent = cameras[i].component;
         std::shared_ptr<graphics::Camera> camera = cameras[i].camera;
@@ -27,9 +31,9 @@ void SensorDrawer::updateCameras() {
         float fov = cameraComponent->fov;
         float ratio = cameraComponent->width / (float)cameraComponent->height;
 
-        vec3 plane = pos + front;
-        vec3 midLeft = left * tan(radians(fov / 2));
-        vec3 midUp = up * tan(radians(fov / (2 * ratio)));
+        vec3 plane = pos + front * 0.1;
+        vec3 midLeft = left * tan(radians(fov / 2)) * 0.1;
+        vec3 midUp = up * tan(radians(fov / (2 * ratio))) * 0.1;
         vec3 tl = midLeft + midUp;
         vec3 tr = -midLeft + midUp;
         vec3 bl = midLeft - midUp;

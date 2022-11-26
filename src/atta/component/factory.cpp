@@ -22,6 +22,20 @@ void Factory::createChildClones(Entity child, Entity parent) {
     // NOTE EntityId of custom entities/joints not working yet (only relationship being handled)
 
     Entity firstClone = EntityId(_firstClone) + _numEntitiesInitialized;
+
+    // If the prototype entity has parent, set the parent as parent of clones as well
+    if (parent != -1) {
+        // clang-format off
+        bool parentIsClone = 
+            parent.getId() >= _firstClone.getId() && 
+            parent.getId() < EntityId(_firstClone.getId() + _numEntitiesCloned * _maxClones);
+        // clang-format on
+
+        Relationship* r = parent.get<Relationship>();
+        for (unsigned i = 0; i < _maxClones; i++)
+            r->addChild(parentIsClone ? Entity(parent + i) : parent, firstClone + i);
+    }
+
     // For every registered component
     for (auto compReg : component::getComponentRegistries()) {
         // Check if child entity has this component
@@ -38,20 +52,7 @@ void Factory::createChildClones(Entity child, Entity parent) {
 
             // Copy default data from prototype entity component to clone components
             // TODO components with EntityId variables not handled properly yet
-            if (compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(Relationship).name())) {
-                // If the prototype entity has parent, set the parent as parent of clones as well
-                if (parent != -1) {
-                    // clang-format off
-                    bool parentIsClone = 
-                        parent.getId() >= _firstClone.getId() && 
-                        parent.getId() < EntityId(_firstClone.getId() + _numEntitiesCloned * _maxClones);
-                    // clang-format on
-
-                    Relationship* r = parent.get<Relationship>();
-                    for (unsigned i = 0; i < _maxClones; i++)
-                        r->addChild(parentIsClone ? Entity(parent + i) : parent, firstClone + i);
-                }
-            } else {
+            if (compReg->getId() != COMPONENT_POOL_SID_BY_NAME(typeid(Relationship).name())) {
                 // Allocate memory for each clone
                 uint8_t* mem = (uint8_t*)cpool->allocBytes(_maxClones * componentSize, componentSize);
 

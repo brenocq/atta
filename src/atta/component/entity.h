@@ -26,7 +26,19 @@ class Entity {
         return component::getComponent<T>(_id);
     }
 
-    EntityId getId() const { return _id; }
+    /// Check if entity exists
+    bool exists() const;
+
+    /// Get entity id
+    EntityId getId() const;
+
+    /// Check if entity is prototype
+    /** An entity is prototype if it has a prototype component or if its parent is a prototype **/
+    bool isPrototype() const;
+
+    // Relationship component interface
+    Entity getParent() const;
+    std::vector<Entity> getChildren() const;
 
   private:
     EntityId _id;

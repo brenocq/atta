@@ -47,8 +47,8 @@ class quat {
     vec3 getEuler() const;
     void set2DAngle(float angle);
     float get2DAngle() const;
-    void setAxisAngle(const vec3& v);
-    vec3 getAxisAngle() const;
+    void setAxisAngle(const vec3& v, float angle);
+    void getAxisAngle(vec3& v, float& angle) const;
     mat3 getRotationMatrix() const;
 
     std::string toString() const;
