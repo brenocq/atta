@@ -39,6 +39,7 @@ class Entity {
     // Relationship component interface
     Entity getParent() const;
     std::vector<Entity> getChildren() const;
+    Entity getChild(unsigned i) const;
 
   private:
     EntityId _id;

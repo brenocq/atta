@@ -28,7 +28,7 @@ void Manager::registerCameras() {
 
 void Manager::registerCamera(component::EntityId entity, component::Camera* camera) {
     // Do not register prototype cameras
-    if(component::Entity(entity).isPrototype())
+    if (component::Entity(entity).isPrototype())
         return;
 
     CameraInfo cameraInfo{};
@@ -69,6 +69,7 @@ void Manager::updateCameras(float dt) {
             _cameras[i].renderer->render(_cameras[i].camera);
             _cameras[i].data = _cameras[i].renderer->getFramebuffer()->readImage(0);
             _cameras[i].lastTime = Config::getTime();
+            _cameras[i].component->frameTime = Config::getTime();
         }
     }
 }
@@ -78,7 +79,7 @@ void Manager::initializeCamera(CameraInfo& cameraInfo) {
     component::Camera* camera = component::getComponent<component::Camera>(cameraInfo.entity);
 
     // Start with random last time (used to distribute camera rendering across time)
-    cameraInfo.lastTime = 0.0f;//(rand() % (int)(10000.0f / camera->fps)) / 10000.0f;
+    cameraInfo.lastTime = 0.0f; //(rand() % (int)(10000.0f / camera->fps)) / 10000.0f;
 
     // Create renderer
     switch (camera->rendererType) {

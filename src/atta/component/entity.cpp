@@ -43,4 +43,11 @@ std::vector<Entity> Entity::getChildren() const {
     return {};
 }
 
+Entity Entity::getChild(unsigned i) const {
+    std::vector<Entity> children = getChildren();
+    if (i < children.size())
+        return children[i];
+    return -1;
+}
+
 } // namespace atta::component

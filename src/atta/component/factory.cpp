@@ -26,8 +26,8 @@ void Factory::createChildClones(Entity child, Entity parent) {
     // If the prototype entity has parent, set the parent as parent of clones as well
     if (parent != -1) {
         // clang-format off
-        bool parentIsClone = 
-            parent.getId() >= _firstClone.getId() && 
+        bool parentIsClone =
+            parent.getId() >= _firstClone.getId() &&
             parent.getId() < EntityId(_firstClone.getId() + _numEntitiesCloned * _maxClones);
         // clang-format on
 
