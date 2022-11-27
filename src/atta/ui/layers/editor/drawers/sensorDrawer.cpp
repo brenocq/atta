@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/components/prototype.h>
+#include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
 #include <atta/graphics/drawer.h>
 #include <atta/sensor/interface.h>
@@ -31,9 +32,17 @@ void SensorDrawer::updateCameras() {
         float fov = cameraComponent->fov;
         float ratio = cameraComponent->width / (float)cameraComponent->height;
 
-        vec3 plane = pos + front * 0.1;
-        vec3 midLeft = left * tan(radians(fov / 2)) * 0.1;
-        vec3 midUp = up * tan(radians(fov / (2 * ratio))) * 0.1;
+        // Calculate line scale from entity scale
+        component::Entity entity = cameras[i].entity;
+        auto t = entity.get<component::Transform>();
+        mat4 worldModel = t->getWorldTransform(entity);
+        vec3 scaleVec = worldModel.getScale();
+        float scale = (scaleVec.x + scaleVec.y + scaleVec.z) / 3.0f;
+
+        // Calculate lines
+        vec3 plane = pos + front * scale;
+        vec3 midLeft = left * tan(radians(fov / 2)) * scale;
+        vec3 midUp = up * tan(radians(fov / (2 * ratio))) * scale;
         vec3 tl = midLeft + midUp;
         vec3 tr = -midLeft + midUp;
         vec3 bl = midLeft - midUp;

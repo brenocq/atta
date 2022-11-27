@@ -61,11 +61,13 @@ void Manager::updateCameras(float dt) {
         if (!_cameras[i].initialized)
             initializeCamera(_cameras[i]);
 
+        // Always update camera model (used to render UI sensor drawer)
+        updateCameraModel(_cameras[i]);
+
         // Render if necessary
         float change = Config::getTime() - _cameras[i].lastTime;
         float interval = 1.0f / _cameras[i].component->fps;
         if (change >= interval) {
-            updateCameraModel(_cameras[i]);
             _cameras[i].renderer->render(_cameras[i].camera);
             _cameras[i].data = _cameras[i].renderer->getFramebuffer()->readImage(0);
             _cameras[i].lastTime = Config::getTime();
@@ -127,46 +129,35 @@ void Manager::initializeCamera(CameraInfo& cameraInfo) {
 
 void Manager::updateCameraModel(CameraInfo& cameraInfo) {
     //----- Update camera pose and parameters -----//
-    component::EntityId entity = cameraInfo.entity;
-    component::Transform* transform = component::getComponent<component::Transform>(entity);
-    component::Relationship* relationship = component::getComponent<component::Relationship>(entity);
+    component::Entity entity = cameraInfo.entity;
+    component::Transform* transform = entity.get<component::Transform>();
     if (transform) {
         // Calculate position
-        vec3 position;
-        quat ori;
-        vec3 scale;
-        mat4 worldModel = transform->getWorldTransform(entity);
-        worldModel.getPosOriScale(position, ori, scale);
+        vec3 position = transform->getWorldTransform(entity).getPosition();
 
-        // Calculate rotation
-        mat4 rotation;
-        rotation.setPosOriScale(transform->position, transform->orientation, transform->scale);
-        rotation.mat[0][3] = 0.0f;
-        rotation.mat[1][3] = 0.0f;
-        rotation.mat[2][3] = 0.0f;
-        rotation.mat[0][0] /= transform->scale.x;
-        rotation.mat[1][1] /= transform->scale.y;
-        rotation.mat[2][2] /= transform->scale.z;
-        while (relationship && relationship->getParent() >= 0) {
-            component::Transform* ptransform = component::getComponent<component::Transform>(relationship->getParent());
-            if (ptransform) {
-                mat4 protation;
-                protation.setPosOriScale(ptransform->position, ptransform->orientation, ptransform->scale);
-                protation.mat[0][3] = 0.0f;
-                protation.mat[1][3] = 0.0f;
-                protation.mat[2][3] = 0.0f;
-                protation.mat[0][0] /= ptransform->scale.x;
-                protation.mat[1][1] /= ptransform->scale.y;
-                protation.mat[2][2] /= ptransform->scale.z;
-                rotation = protation * rotation;
+        // Calculate orientation
+        quat ori = transform->orientation;
+        component::Entity parent = entity.getParent();
+        while (parent.exists()) {
+            auto t = parent.get<component::Transform>();
+            if (t)
+            {
+                ori *= t->orientation;
+                ori.normalize();
             }
-            relationship = component::getComponent<component::Relationship>(relationship->getParent());
+            parent = parent.getParent();
         }
 
         // Update camera pose
+        vec3 front = vec3(0, 0, 1);
+        vec3 up = vec3(1, 0, 0);
+        ori.rotateVector(front);
+        ori.rotateVector(up);
+        front.normalize();
+        up.normalize();
         cameraInfo.camera->setPosition(position);
-        cameraInfo.camera->setFront(rotation * vec3(0, 0, 1));
-        cameraInfo.camera->setUp(rotation * vec3(1, 0, 0));
+        cameraInfo.camera->setFront(front);
+        cameraInfo.camera->setUp(up);
         cameraInfo.camera->update();
 
         // Update camera fov

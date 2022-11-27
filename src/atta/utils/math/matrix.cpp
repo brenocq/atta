@@ -394,24 +394,40 @@ vec3 mat4::getPosition() const {
     return pos;
 }
 
-void mat4::getPosOriScale(vec3& pos, quat& q, vec3& scale) const {
-    pos.x = mat[0][3];
-    pos.y = mat[1][3];
-    pos.z = mat[2][3];
-    scale = vec3(length(vec3(mat[0][0], mat[1][0], mat[2][0])), length(vec3(mat[0][1], mat[1][1], mat[2][1])),
-                 length(vec3(mat[0][2], mat[1][2], mat[2][2])));
+quat mat4::getOrientation() const {
+    quat q;
+    vec3 scale = getScale();
+
+    if (scale.x == 0 || scale.y == 0 || scale.z == 0) {
+        LOG_WARN("atta::quat", "Could not calculate orientation, scale component is zero");
+        return q;
+    }
 
     double b1_squared = 0.25 * (1.0 + mat[0][0] / scale.x + mat[1][1] / scale.y + mat[2][2] / scale.z);
-    if (b1_squared > 0.001) {
-        double b1 = sqrt(b1_squared);
+    double b1 = sqrt(b1_squared);
+    double over_b1_4 = 0.25 / b1;
+    double b2 = -(mat[2][1] / scale.y - mat[1][2] / scale.z) * over_b1_4;
+    double b3 = -(mat[0][2] / scale.z - mat[2][0] / scale.x) * over_b1_4;
+    double b4 = -(mat[1][0] / scale.x - mat[0][1] / scale.y) * over_b1_4;
+    q = quat(b1, b2, b3, b4);
 
-        double over_b1_4 = 0.25 / b1;
-        double b2 = -(mat[2][1] / scale.y - mat[1][2] / scale.z) * over_b1_4;
-        double b3 = -(mat[0][2] / scale.z - mat[2][0] / scale.x) * over_b1_4;
-        double b4 = -(mat[1][0] / scale.x - mat[0][1] / scale.y) * over_b1_4;
+    //if (b1_squared > 0.00001)
+    //    LOG_WARN("atta::mat4", "Scale is too big, [w]getOrientation[] may be wrong");
 
-        q = quat(b1, b2, b3, b4);
-    }
+    return q;
+}
+
+vec3 mat4::getScale() const {
+    vec3 scale;
+    scale = vec3(length(vec3(mat[0][0], mat[1][0], mat[2][0])), length(vec3(mat[0][1], mat[1][1], mat[2][1])),
+                 length(vec3(mat[0][2], mat[1][2], mat[2][2])));
+    return scale;
+}
+
+void mat4::getPosOriScale(vec3& pos, quat& q, vec3& scale) const {
+    pos = getPosition();
+    scale = getScale();
+    q = getOrientation();
 }
 
 float mat4::determinant() const {

@@ -16,6 +16,7 @@ void quat::normalize() {
     // quaternion in that case
     if (d < std::numeric_limits<float>::epsilon()) {
         r = 1;
+        i = j = k = 0;
         return;
     }
 
