@@ -138,4 +138,10 @@ std::vector<Entity> Factory::getClones(bool includeChildren) const {
     return clones;
 }
 
+bool Factory::isClone(Entity entity) {
+    return entity.getId() >= _firstClone.getId() && entity.getId() < _firstClone.getId() + _maxClones * _numEntitiesCloned;
+}
+
+bool Factory::isRootClone(Entity entity) { return entity.getId() >= _firstClone.getId() && entity.getId() < _firstClone.getId() + _maxClones; }
+
 } // namespace atta::component

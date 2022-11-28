@@ -395,7 +395,7 @@ vec3 mat4::getPosition() const {
 }
 
 quat mat4::getOrientation() const {
-    quat q;
+    quat q{};
     vec3 scale = getScale();
 
     if (scale.x == 0 || scale.y == 0 || scale.z == 0) {
@@ -404,15 +404,18 @@ quat mat4::getOrientation() const {
     }
 
     double b1_squared = 0.25 * (1.0 + mat[0][0] / scale.x + mat[1][1] / scale.y + mat[2][2] / scale.z);
-    double b1 = sqrt(b1_squared);
-    double over_b1_4 = 0.25 / b1;
-    double b2 = -(mat[2][1] / scale.y - mat[1][2] / scale.z) * over_b1_4;
-    double b3 = -(mat[0][2] / scale.z - mat[2][0] / scale.x) * over_b1_4;
-    double b4 = -(mat[1][0] / scale.x - mat[0][1] / scale.y) * over_b1_4;
-    q = quat(b1, b2, b3, b4);
-
-    //if (b1_squared > 0.00001)
-    //    LOG_WARN("atta::mat4", "Scale is too big, [w]getOrientation[] may be wrong");
+    if (b1_squared > 0.0000001) {
+        double b1 = sqrt(b1_squared);
+        double over_b1_4 = 0.25 / b1;
+        double b2 = -(mat[2][1] / scale.y - mat[1][2] / scale.z) * over_b1_4;
+        double b3 = -(mat[0][2] / scale.z - mat[2][0] / scale.x) * over_b1_4;
+        double b4 = -(mat[1][0] / scale.x - mat[0][1] / scale.y) * over_b1_4;
+        q = quat(b1, b2, b3, b4);
+        q.normalize();
+    } else {
+        // Supress warning because it happens sometimes when the entity scale is small
+        // LOG_WARN("atta::mat4", "[w](getOrientation)[] Could not calculate quaternion from $0, probably the scale is too small", *this);
+    }
 
     return q;
 }
