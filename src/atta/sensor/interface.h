@@ -18,6 +18,7 @@ namespace atta::sensor {
 struct CameraInfo {
     component::EntityId entity;
     component::Camera* component;
+    bool initialized;                             ///< If renderer/camera were initialized
     std::shared_ptr<graphics::Renderer> renderer; ///< Camera renderer (fast, phong, PBR, ...)
     std::shared_ptr<graphics::Camera> camera;     ///< Camera view and projection matrices
     float lastTime;                               ///< Used to render with the correct fps
@@ -31,12 +32,8 @@ void startUp();
 /// Sensor module shut down
 void shutDown();
 
-/// Update executed inside atta main loop
-/** Used to update the sensor internal model to keep it always updated (ex: the camera transform)**/
-void update();
-
 ///< Update executed at each simulation step
-/** Used to update the sensor data itself (ex: camera image rendering) **/
+/** Used to update the sensor data (ex: camera image rendering) **/
 void update(float dt);
 
 void* getEntityCameraImGuiTexture(component::EntityId eid);

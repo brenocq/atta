@@ -13,6 +13,7 @@
 #include <atta/component/components/rigidBody.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
+#include <atta/component/components/prototype.h>
 #include <atta/component/interface.h>
 #include <atta/graphics/drawer.h>
 #include <atta/physics/engines/bulletEngine.h>
@@ -42,6 +43,9 @@ void PhysicsDrawer::drawBullet() {
             // Get transform
             auto t = component::getComponent<component::Transform>(entity);
             if (!t)
+                continue;
+
+            if (component::Entity(entity).isPrototype())
                 continue;
 
             mat4 worldTrans = t->getWorldTransform(entity);
@@ -82,6 +86,9 @@ void PhysicsDrawer::drawBullet() {
         std::vector<component::EntityId> entities = component::getEntitiesView();
         for (auto entity : entities) {
             auto p = component::getComponent<component::PrismaticJoint>(entity);
+
+            if (component::Entity(entity).isPrototype())
+                continue;
 
             //----- Prismatic joint -----//
             if (p) {
@@ -158,6 +165,9 @@ void PhysicsDrawer::drawBullet() {
         if (bullet->getShowAabb()) {
             std::vector<component::EntityId> entities = component::getEntitiesView();
             for (auto entity : entities) {
+                if (component::Entity(entity).isPrototype())
+                    continue;
+
                 // Check if entity has bullet rigid body
                 if (bullet->getBulletRigidBody(entity)) {
                     bnd3 aabb = bullet->getAabb(entity);
@@ -203,6 +213,9 @@ void PhysicsDrawer::drawBox2D() {
 
         std::vector<component::EntityId> entities = component::getEntitiesView();
         for (auto entity : entities) {
+            if (component::Entity(entity).isPrototype())
+                continue;
+
             // Change color based on box2d rigid body state
             if (Config::getState() != Config::State::IDLE) {
                 auto box2d = physics::getEngine<physics::Box2DEngine>();

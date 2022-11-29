@@ -4,6 +4,9 @@
 // Date: 2022-03-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/component/components/prototype.h>
+#include <atta/component/components/transform.h>
+#include <atta/component/interface.h>
 #include <atta/graphics/drawer.h>
 #include <atta/sensor/interface.h>
 #include <atta/ui/layers/editor/drawers/sensorDrawer.h>
@@ -16,6 +19,10 @@ void SensorDrawer::updateCameras() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::sensor::Camera"_ssid);
     std::vector<sensor::CameraInfo>& cameras = sensor::getCameraInfos();
     for (uint32_t i = 0; i < cameras.size(); i++) {
+        if (!cameras[i].initialized)
+            continue;
+        if (component::Entity(cameras[i].entity).isPrototype())
+            continue;
         component::Camera* cameraComponent = cameras[i].component;
         std::shared_ptr<graphics::Camera> camera = cameras[i].camera;
         vec3 pos = camera->getPosition();
@@ -25,9 +32,17 @@ void SensorDrawer::updateCameras() {
         float fov = cameraComponent->fov;
         float ratio = cameraComponent->width / (float)cameraComponent->height;
 
-        vec3 plane = pos + front;
-        vec3 midLeft = left * tan(radians(fov / 2));
-        vec3 midUp = up * tan(radians(fov / (2 * ratio)));
+        // Calculate line scale from entity scale
+        component::Entity entity = cameras[i].entity;
+        auto t = entity.get<component::Transform>();
+        mat4 worldModel = t->getWorldTransform(entity);
+        vec3 scaleVec = worldModel.getScale();
+        float scale = (scaleVec.x + scaleVec.y + scaleVec.z) / 3.0f;
+
+        // Calculate lines
+        vec3 plane = pos + front * scale;
+        vec3 midLeft = left * tan(radians(fov / 2)) * scale;
+        vec3 midUp = up * tan(radians(fov / (2 * ratio))) * scale;
         vec3 tl = midLeft + midUp;
         vec3 tr = -midLeft + midUp;
         vec3 bl = midLeft - midUp;

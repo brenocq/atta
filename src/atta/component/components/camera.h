@@ -26,7 +26,6 @@ namespace atta::component {
  */
 struct Camera final : public Component {
     enum class CameraType : uint32_t { ORTHOGRAPHIC = 0, PERSPECTIVE };
-
     enum class RendererType : uint32_t { FAST = 0, PHONG, PBR };
 
     uint32_t width = 128;
@@ -40,7 +39,8 @@ struct Camera final : public Component {
     CameraType cameraType = CameraType::PERSPECTIVE;
     RendererType rendererType = RendererType::PHONG;
 
-    const std::vector<uint8_t>& getFrame();
+    float captureTime = -1.0f;//< Time when last frame was captured
+    const uint8_t* getFrame();
 };
 ATTA_REGISTER_COMPONENT(Camera);
 template <>

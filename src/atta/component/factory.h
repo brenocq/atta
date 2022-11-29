@@ -6,46 +6,36 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_FACTORY_H
 #define ATTA_COMPONENT_FACTORY_H
-#include <atta/component/base.h>
 
 namespace atta::component {
 class Entity;
-class ComponentRegistry;
 class Factory {
   public:
     // The entity must be a prototype entity (has prototype component)
-    Factory(EntityId prototypeId);
+    Factory(Entity prototype);
 
     void createClones();
     void destroyClones();
-
-    template <typename T>
-    T* getComponent(uint64_t cloneId = 0);
     void runScripts(float dt);
 
-    EntityId getPrototypeId() const;
-    EntityId getFirstCloneId() const;
-    std::vector<Entity> getClones() const;
-    std::vector<EntityId> getCloneIds() const;
+    Entity getPrototype() const;
     Entity getFirstClone() const;
-    Entity getLastClone() const;
     uint64_t getMaxClones() const;
-    uint64_t getNumClones() const;
-    std::vector<std::pair<ComponentId, uint8_t*>>& getComponentMemories();
-    std::vector<ComponentId> getComponentsIds() const;
-    std::vector<uint8_t*> getMemories() const;
+    uint64_t getNumEntitiesCloned() const;
+    std::vector<Entity> getClones(bool includeChildren = false) const;
+    bool isClone(Entity entity);///< Check if entity is clone from this factory
+    bool isRootClone(Entity entity);///< Check if entity is root clone from this factory
 
   private:
-    EntityId _prototypeId;
-    uint64_t _maxClones;
-    EntityId _firstCloneEid;
+    void createChildClones(Entity child, Entity parent = -1);
 
-    // Map the hash of each type to the memory start
-    // Using vector assuming just a few of components
-    std::vector<std::pair<ComponentId, uint8_t*>> _componentMemories;
-    std::vector<ComponentRegistry*> _componentRegistries;
+    Entity _prototype;   ///< Prototype entity that will be cloned
+    uint64_t _maxClones; ///< Number of clones of each entity to create
+    Entity _firstClone;  ///< First clone created
+
+    uint64_t _numEntitiesCloned;      ///< Number of entities cloned (prototype entity and its children)
+    uint64_t _numEntitiesInitialized; ///< Auxiliar variable to keep track of component creation
 };
 } // namespace atta::component
 
-#include <atta/component/factory.inl>
 #endif // ATTA_COMPONENT_ENTITY_H

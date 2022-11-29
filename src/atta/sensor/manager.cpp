@@ -16,6 +16,7 @@
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/uiCameraComponent.h>
+#include <atta/event/events/projectOpen.h>
 
 #include <atta/graphics/cameras/orthographicCamera.h>
 #include <atta/graphics/cameras/perspectiveCamera.h>
@@ -23,6 +24,8 @@
 #include <atta/graphics/renderers/fastRenderer.h>
 #include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/graphics/renderers/phongRenderer.h>
+
+#include <atta/utils/config.h>
 
 namespace atta::sensor {
 
@@ -43,6 +46,9 @@ void Manager::startUpImpl() {
     // Subscribe to component ui events
     event::subscribe<event::UiCameraComponent>(BIND_EVENT_FUNC(Manager::onComponentUi));
 
+    // Subscribe to project events
+    event::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
+
     // Initialize sensors (component events generated before startup were not received)
     registerCameras();
 }
@@ -52,27 +58,24 @@ void Manager::shutDownImpl() {
     unregisterCameras();
 }
 
-void Manager::updateImpl() {
-    updateCamerasModel(); // Update camera pose and internal paramters
+void Manager::updateImpl(float dt) {
+    updateCameras(dt); // Render images when necessary
 }
 
-void Manager::updateImpl(float dt) {
-    _currTime += dt;
-    updateCameras(dt); // Render images when necessary
+void Manager::onProjectOpen(event::Event& event) {
+    // Make sure prototype sensors are not created
+    unregisterCameras();
+    registerCameras();
 }
 
 void Manager::onSimulationStateChange(event::Event& event) {
     switch (event.getType()) {
         case event::SimulationStart::type: {
-            _currTime = 0;
             break;
         }
         case event::SimulationStop::type: {
-            _currTime = 0;
             break;
         }
-        default:
-            LOG_WARN("sensor::Manager", "Unknown simulation event");
     }
 }
 
@@ -80,16 +83,14 @@ void Manager::onComponentChange(event::Event& event) {
     switch (event.getType()) {
         case event::CreateComponent::type: {
             event::CreateComponent& e = reinterpret_cast<event::CreateComponent&>(event);
-            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId()) {
+            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId())
                 registerCamera(e.entityId, static_cast<component::Camera*>(e.component));
-            }
             break;
         }
         case event::DeleteComponent::type: {
             event::DeleteComponent& e = reinterpret_cast<event::DeleteComponent&>(event);
-            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId()) {
+            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId())
                 unregisterCamera(e.entityId);
-            }
             break;
         }
         default:

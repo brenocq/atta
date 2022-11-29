@@ -16,14 +16,17 @@ template <>
 ComponentDescription& TypedComponentRegistry<Camera>::getDescription() {
     static ComponentDescription desc = {
         "Camera",
-        {{AttributeType::UINT32, offsetof(Camera, width), "width"},
-         {AttributeType::UINT32, offsetof(Camera, height), "height"},
-         {AttributeType::FLOAT32, offsetof(Camera, fov), "fov", 0.0f, 120.0f},
-         {AttributeType::FLOAT32, offsetof(Camera, far), "far", 0.0f, 10000.0f, 0.5f},
-         {AttributeType::FLOAT32, offsetof(Camera, near), "near", 0.0f, 10000.0f, 0.5f},
-         {AttributeType::FLOAT32, offsetof(Camera, fps), "fps", 0.0f, 120.0f},
-         {AttributeType::UINT32, offsetof(Camera, cameraType), "cameraType", {}, {}, {}, {"Orthographic", "Perspective"}},
-         {AttributeType::UINT32, offsetof(Camera, rendererType), "rendererType", {}, {}, {}, {"Fast", "Phong", "Pbr"}}},
+        {
+            {AttributeType::UINT32, offsetof(Camera, width), "width"},
+            {AttributeType::UINT32, offsetof(Camera, height), "height"},
+            {AttributeType::FLOAT32, offsetof(Camera, fov), "fov", 0.0f, 120.0f},
+            {AttributeType::FLOAT32, offsetof(Camera, far), "far", 0.0f, 10000.0f, 0.5f},
+            {AttributeType::FLOAT32, offsetof(Camera, near), "near", 0.0f, 10000.0f, 0.5f},
+            {AttributeType::FLOAT32, offsetof(Camera, fps), "fps", 0.0f, 120.0f},
+            {AttributeType::UINT32, offsetof(Camera, cameraType), "cameraType", {}, {}, {}, {"Orthographic", "Perspective"}},
+            {AttributeType::UINT32, offsetof(Camera, rendererType), "rendererType", {}, {}, {}, {"Fast", "Phong", "Pbr"}},
+            {AttributeType::FLOAT32, offsetof(Camera, captureTime), "captureTime"},
+        },
         1024,                                      // Max instances
         {},                                        // Serialize
         {},                                        // Deserialize
@@ -51,12 +54,12 @@ ComponentDescription& TypedComponentRegistry<Camera>::getDescription() {
     return desc;
 }
 
-const std::vector<uint8_t>& Camera::getFrame() {
+const uint8_t* Camera::getFrame() {
     std::vector<sensor::CameraInfo>& cameraInfos = sensor::getCameraInfos();
     for (auto& cameraInfo : cameraInfos)
         if (cameraInfo.component == this)
-            return cameraInfo.data;
-    ASSERT(false, "(component::Camera) Could not get camera frame from sensor::Manager");
+            return cameraInfo.data.data();
+    ASSERT(false, "(component::Camera) Could not get camera frame from sensor::Manager.");
 }
 
 } // namespace atta::component

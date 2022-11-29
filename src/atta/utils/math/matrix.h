@@ -75,6 +75,8 @@ class mat4 {
     void setPosOriScale(const vec3& pos, const quat& q, const vec3& scale);
 
     vec3 getPosition() const;
+    quat getOrientation() const;
+    vec3 getScale() const;
     void getPosOriScale(vec3& pos, quat& q, vec3& scale) const;
 
     std::string toString() const;

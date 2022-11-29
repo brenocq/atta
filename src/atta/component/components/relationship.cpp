@@ -19,14 +19,14 @@ ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
         // Serialize
         {{"children",
           [](std::ostream& os, void* data) {
-              std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
-              for (EntityId child : *children)
-                  file::write(os, child);
+              std::vector<Entity>* children = static_cast<std::vector<Entity>*>(data);
+              for (Entity child : *children)
+                  file::write(os, EntityId(child));
               file::write(os, EntityId(-1));
           }}},
         // Deserialize
         {{"children", [](std::istream& is, void* data) {
-              std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
+              std::vector<Entity>* children = static_cast<std::vector<Entity>*>(data);
               EntityId eid;
 #ifdef ATTA_OS_WEB
               file::read(is, eid);// For some reason the first one is always zero when building for the web
@@ -42,7 +42,7 @@ ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
 }
 
 // Parent operations
-void Relationship::setParent(EntityId parent, EntityId child) {
+void Relationship::setParent(Entity parent, Entity child) {
     // Get relationships
     Relationship* parentRel = component::getComponent<Relationship>(parent);
     if (!parentRel)
@@ -98,7 +98,7 @@ void Relationship::setParent(EntityId parent, EntityId child) {
     }
 }
 
-void Relationship::removeParent(EntityId parent, EntityId child) {
+void Relationship::removeParent(Entity parent, Entity child) {
     // Get relationships
     Relationship* parentRel = component::getComponent<Relationship>(parent);
     if (!parentRel && parent != -1) // Check if parent has relationship component
@@ -142,8 +142,8 @@ void Relationship::removeParent(EntityId parent, EntityId child) {
 }
 
 // Child operations
-void Relationship::addChild(EntityId parent, EntityId child) { setParent(parent, child); }
+void Relationship::addChild(Entity parent, Entity child) { setParent(parent, child); }
 
-void Relationship::removeChild(EntityId parent, EntityId child) { removeParent(parent, child); }
+void Relationship::removeChild(Entity parent, Entity child) { removeParent(parent, child); }
 
 } // namespace atta::component

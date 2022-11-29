@@ -213,30 +213,30 @@ void renderCombo(AttributeDescription aDesc, void* d, unsigned size, std::string
 void ComponentRegistry::renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
     // XXX Remember to register each attribute with ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE or will get MSVC errors
     switch (aDesc.type) {
-    case AttributeType::BOOL:
-        ComponentRegistry::renderUIAttribute<AttributeType::BOOL>(aDesc, d, size, imguiId + aDesc.name);
-        break;
-    case AttributeType::CHAR:
-        ComponentRegistry::renderUIAttribute<AttributeType::CHAR>(aDesc, d, size, imguiId + aDesc.name);
-        break;
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT8)
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT16)
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT32)
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT64)
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT8)
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT16)
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT32)
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT64)
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(FLOAT32)
-        ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(FLOAT64)
-    case AttributeType::QUAT:
-        ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(aDesc, d, size, imguiId + aDesc.name);
-        break;
-    case AttributeType::STRINGID:
-        ComponentRegistry::renderUIAttribute<AttributeType::STRINGID>(aDesc, d, size, imguiId + aDesc.name);
-        break;
-    default:
-        break;
+        case AttributeType::BOOL:
+            ComponentRegistry::renderUIAttribute<AttributeType::BOOL>(aDesc, d, size, imguiId + aDesc.name);
+            break;
+        case AttributeType::CHAR:
+            ComponentRegistry::renderUIAttribute<AttributeType::CHAR>(aDesc, d, size, imguiId + aDesc.name);
+            break;
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT8)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT16)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT32)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT64)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT8)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT16)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT32)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(UINT64)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(FLOAT32)
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(FLOAT64)
+        case AttributeType::QUAT:
+            ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(aDesc, d, size, imguiId + aDesc.name);
+            break;
+        case AttributeType::STRINGID:
+            ComponentRegistry::renderUIAttribute<AttributeType::STRINGID>(aDesc, d, size, imguiId + aDesc.name);
+            break;
+        default:
+            break;
     }
 }
 
@@ -263,34 +263,60 @@ ATTA_RENDER_UI_ATTRIBUTE_NUMBER(FLOAT64, double);
 template <>
 void ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
     ImGui::Text(aDesc.name.c_str());
-
     quat* q = (quat*)d;
-    vec3 euler = degrees(q->getEuler());
-    bool oriChanged = false;
 
-    float min = 0.0f;
-    float max = 1.0f;
-    if (aDesc.min.has_value())
-        min = std::any_cast<float>(aDesc.min);
-    if (aDesc.max.has_value())
-        max = std::any_cast<float>(aDesc.max);
+    // Trying Euler
+    if (false) {
+        vec3 eulerBef = degrees(q->getEuler());
+        vec3 euler = eulerBef;
+        bool oriChanged = false;
 
-    if (aDesc.step > 0.0f) {
-        float step = aDesc.step;
-        oriChanged |= ImGui::DragFloat(("Roll" + imguiId).c_str(), &euler.x, step, min, max, "%.2f", ImGuiSliderFlags_None);
-        oriChanged |= ImGui::DragFloat(("Pitch" + imguiId).c_str(), &euler.y, step, min, max, "%.2f", ImGuiSliderFlags_None);
-        oriChanged |= ImGui::DragFloat(("Yaw" + imguiId).c_str(), &euler.z, step, min, max, "%.2f", ImGuiSliderFlags_None);
-    } else {
-        oriChanged |= ImGui::SliderScalar(("Roll" + imguiId).c_str(), ImGuiDataType_Float, &euler.x, &min, &max, "%.2f");
-        oriChanged |= ImGui::SliderScalar(("Pitch" + imguiId).c_str(), ImGuiDataType_Float, &euler.y, &min, &max, "%.2f");
-        oriChanged |= ImGui::SliderScalar(("Yaw" + imguiId).c_str(), ImGuiDataType_Float, &euler.z, &min, &max, "%.2f");
+        float min = 0.0f;
+        float max = 1.0f;
+        if (aDesc.min.has_value())
+            min = std::any_cast<float>(aDesc.min);
+        if (aDesc.max.has_value())
+            max = std::any_cast<float>(aDesc.max);
+
+        // Get rotation around axis
+        if (aDesc.step > 0.0f) {
+            float step = aDesc.step;
+            oriChanged |= ImGui::DragFloat(("Roll" + imguiId).c_str(), &euler.x, step, min, max, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+            oriChanged |= ImGui::DragFloat(("Pitch" + imguiId).c_str(), &euler.y, step, min, max, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+            oriChanged |= ImGui::DragFloat(("Yaw" + imguiId).c_str(), &euler.z, step, min, max, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+        } else {
+            oriChanged |= ImGui::SliderScalar(("Roll" + imguiId).c_str(), ImGuiDataType_Float, &euler.x, &min, &max, "%.2f");
+            oriChanged |= ImGui::SliderScalar(("Pitch" + imguiId).c_str(), ImGuiDataType_Float, &euler.y, &min, &max, "%.2f");
+            oriChanged |= ImGui::SliderScalar(("Yaw" + imguiId).c_str(), ImGuiDataType_Float, &euler.z, &min, &max, "%.2f");
+        }
+
+        // Rotate quaternian around axis
+        if (oriChanged) {
+            vec3 axis = vec3(1, 0, 0);
+            float angle = 0.0f;
+            if (euler.x != eulerBef.x) {
+                axis = vec3(1, 0, 0);
+                angle = radians(euler.x - eulerBef.x);
+            } else if (euler.y != eulerBef.y) {
+                axis = vec3(0, 1, 0);
+                angle = radians(euler.y - eulerBef.y);
+            } else if (euler.z != eulerBef.z) {
+                axis = vec3(0, 0, 1);
+                angle = radians(euler.z - eulerBef.z);
+            }
+            q->rotateVector(axis); // Rotate axis to local coordinates
+            q->rotateAroundAxis(axis, angle);
+        }
     }
-
-    if (oriChanged) {
-        vec3 deltaEuler = radians(euler) - q->getEuler();
-        quat deltaRot = quat(deltaEuler);
-        *q *= deltaRot;
-        ;
+    // Trying raw
+    else {
+        bool oriChanged = false;
+        float min = -1.0f;
+        float max = 1.0f;
+        ImGui::DragFloat(("r" + imguiId).c_str(), &q->r, 0.01f, min, max, "%.4f", ImGuiSliderFlags_NoRoundToFormat);
+        ImGui::DragFloat(("i" + imguiId).c_str(), &q->i, 0.01f, min, max, "%.4f", ImGuiSliderFlags_NoRoundToFormat);
+        ImGui::DragFloat(("j" + imguiId).c_str(), &q->j, 0.01f, min, max, "%.4f", ImGuiSliderFlags_NoRoundToFormat);
+        ImGui::DragFloat(("k" + imguiId).c_str(), &q->k, 0.01f, min, max, "%.4f", ImGuiSliderFlags_NoRoundToFormat);
     }
 }
 

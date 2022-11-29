@@ -16,6 +16,7 @@ void quat::normalize() {
     // quaternion in that case
     if (d < std::numeric_limits<float>::epsilon()) {
         r = 1;
+        i = j = k = 0;
         return;
     }
 
@@ -149,9 +150,13 @@ void quat::setEuler(const vec3& e) {
 vec3 quat::getEuler() const {
     // ZYX euler
     vec3 e;
-    e.x = atan2(2.0 * (r * i + j * k), 1 - 2.0 * (i * i + j * j));
-    e.y = asin(2.0 * (r * j - k * i));
-    e.z = atan2(2.0 * (r * k + i * j), 1 - 2.0 * (j * j + k * k));
+    e.x = std::atan2(2.0 * (r * i + j * k), 1 - 2.0 * (i * i + j * j));
+    double sinp = 2.0 * (r * j - k * i);
+    if (std::abs(sinp) >= 1)
+        e.y = std::copysign(M_PI / 2, sinp);
+    else
+        e.y = std::asin(sinp);
+    e.z = std::atan2(2.0 * (r * k + i * j), 1 - 2.0 * (j * j + k * k));
     return e;
 }
 
@@ -165,9 +170,7 @@ void quat::set2DAngle(float angle) {
 
 float quat::get2DAngle() const { return -atan2(2.0 * (r * k + i * j), 1 - 2.0 * (j * j + k * k)); }
 
-void quat::setAxisAngle(const vec3& v) {
-    // TODO validate
-    float angle = v.length();
+void quat::setAxisAngle(const vec3& v, float angle) {
     vec3 axis = atta::normalize(v);
     float halfAngle = angle / 2.0f;
     float c = cos(halfAngle);
@@ -178,11 +181,10 @@ void quat::setAxisAngle(const vec3& v) {
     k = s * axis.z;
 }
 
-vec3 quat::getAxisAngle() const {
+void quat::getAxisAngle(vec3& v, float& angle) const {
     vec3 result;
     quat q = *this;
     q.normalize();
-    float angle = 2 * acos(r);
     float s = sqrt(1 - r * r);
     if (s < 0.001) {
         result.x = q.i;
@@ -193,8 +195,8 @@ vec3 quat::getAxisAngle() const {
         result.y = q.j / s;
         result.z = q.k / s;
     }
-    result *= angle;
-    return result;
+    v = result;
+    angle = 2 * acos(r);
 }
 
 mat3 quat::getRotationMatrix() const {
