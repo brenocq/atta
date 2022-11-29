@@ -7,11 +7,11 @@
 #ifndef ATTA_PRE_COMPILED_HEADER_H
 #define ATTA_PRE_COMPILED_HEADER_H
 
+#define _USE_MATH_DEFINES // Windows M_PI fix
 #include <any>
 #include <array>
 #include <bitset>
 #include <climits>
-#define _USE_MATH_DEFINES// Windows M_PI fix
 #include <cmath>
 #include <cstring>
 #include <filesystem>
@@ -33,7 +33,7 @@ namespace fs = std::filesystem;
 #include <atta/utils/assert.h>
 #include <atta/utils/common.h>
 #include <atta/utils/log.h>
-#include <atta/utils/profiler.h>
 #include <atta/utils/math/math.h>
+#include <atta/utils/profiler.h>
 
 #endif // ATTA_PRE_COMPILED_HEADER_H
