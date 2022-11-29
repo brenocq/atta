@@ -25,7 +25,7 @@ ComponentDescription& TypedComponentRegistry<Camera>::getDescription() {
             {AttributeType::FLOAT32, offsetof(Camera, fps), "fps", 0.0f, 120.0f},
             {AttributeType::UINT32, offsetof(Camera, cameraType), "cameraType", {}, {}, {}, {"Orthographic", "Perspective"}},
             {AttributeType::UINT32, offsetof(Camera, rendererType), "rendererType", {}, {}, {}, {"Fast", "Phong", "Pbr"}},
-            {AttributeType::FLOAT32, offsetof(Camera, frameTime), "frameTime"},
+            {AttributeType::FLOAT32, offsetof(Camera, captureTime), "captureTime"},
         },
         1024,                                      // Max instances
         {},                                        // Serialize

@@ -39,7 +39,7 @@ struct Camera final : public Component {
     CameraType cameraType = CameraType::PERSPECTIVE;
     RendererType rendererType = RendererType::PHONG;
 
-    float frameTime = 0.0f;//< Time when frame was captured
+    float captureTime = -1.0f;//< Time when last frame was captured
     const uint8_t* getFrame();
 };
 ATTA_REGISTER_COMPONENT(Camera);

@@ -71,7 +71,7 @@ void Manager::updateCameras(float dt) {
             _cameras[i].renderer->render(_cameras[i].camera);
             _cameras[i].data = _cameras[i].renderer->getFramebuffer()->readImage(0);
             _cameras[i].lastTime = Config::getTime();
-            _cameras[i].component->frameTime = Config::getTime();
+            _cameras[i].component->captureTime = Config::getTime();
         }
     }
 }
