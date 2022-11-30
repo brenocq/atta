@@ -38,7 +38,7 @@ class Manager final {
     // Camera
     void unregisterCameras();
     void registerCameras();
-    void registerCamera(component::EntityId entity, component::Camera* camera);
+    void registerCamera(component::EntityId entity, component::CameraSensor* camera);
     void unregisterCamera(component::EntityId entity);
     void updateCameras(float dt);                   ///< Render cameras when necessary
     void initializeCamera(CameraInfo& cameraInfo);  ///< Initialize camera renderer and camera

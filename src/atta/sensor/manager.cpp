@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/sensor/manager.h>
 
-#include <atta/component/components/camera.h>
+#include <atta/component/components/cameraSensor.h>
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
@@ -83,13 +83,13 @@ void Manager::onComponentChange(event::Event& event) {
     switch (event.getType()) {
         case event::CreateComponent::type: {
             event::CreateComponent& e = reinterpret_cast<event::CreateComponent&>(event);
-            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId())
-                registerCamera(e.entityId, static_cast<component::Camera*>(e.component));
+            if (e.componentId == component::TypedComponentRegistry<component::CameraSensor>::getInstance().getId())
+                registerCamera(e.entityId, static_cast<component::CameraSensor*>(e.component));
             break;
         }
         case event::DeleteComponent::type: {
             event::DeleteComponent& e = reinterpret_cast<event::DeleteComponent&>(event);
-            if (e.componentId == component::TypedComponentRegistry<component::Camera>::getInstance().getId())
+            if (e.componentId == component::TypedComponentRegistry<component::CameraSensor>::getInstance().getId())
                 unregisterCamera(e.entityId);
             break;
         }

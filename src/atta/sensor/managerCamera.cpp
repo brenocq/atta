@@ -8,7 +8,7 @@ namespace atta::sensor {
 
 void Manager::registerCameras() {
     for (component::EntityId entity : component::getEntitiesView()) {
-        component::Camera* camera = component::getComponent<component::Camera>(entity);
+        component::CameraSensor* camera = component::getComponent<component::CameraSensor>(entity);
 
         if (camera) {
             // Check if camera was not registered yet
@@ -26,7 +26,7 @@ void Manager::registerCameras() {
     }
 }
 
-void Manager::registerCamera(component::EntityId entity, component::Camera* camera) {
+void Manager::registerCamera(component::EntityId entity, component::CameraSensor* camera) {
     // Do not register prototype cameras
     if (component::Entity(entity).isPrototype())
         return;
@@ -78,20 +78,20 @@ void Manager::updateCameras(float dt) {
 
 void Manager::initializeCamera(CameraInfo& cameraInfo) {
     // Need to make sure to initialize after the graphics module has started and it is not in the middle of UI rendering
-    component::Camera* camera = component::getComponent<component::Camera>(cameraInfo.entity);
+    component::CameraSensor* camera = component::getComponent<component::CameraSensor>(cameraInfo.entity);
 
     // Start with random last time (used to distribute camera rendering across time)
     cameraInfo.lastTime = 0.0f; //(rand() % (int)(10000.0f / camera->fps)) / 10000.0f;
 
     // Create renderer
     switch (camera->rendererType) {
-        case component::Camera::RendererType::FAST:
+        case component::CameraSensor::RendererType::FAST:
             cameraInfo.renderer = std::make_shared<graphics::FastRenderer>();
             break;
-        case component::Camera::RendererType::PHONG:
+        case component::CameraSensor::RendererType::PHONG:
             cameraInfo.renderer = std::make_shared<graphics::PhongRenderer>();
             break;
-        case component::Camera::RendererType::PBR:
+        case component::CameraSensor::RendererType::PBR:
             cameraInfo.renderer = std::make_shared<graphics::PbrRenderer>();
             break;
         default:
@@ -103,7 +103,7 @@ void Manager::initializeCamera(CameraInfo& cameraInfo) {
 
     // Create camera (view/projection matrices)
     switch (camera->cameraType) {
-        case component::Camera::CameraType::ORTHOGRAPHIC: {
+        case component::CameraSensor::CameraType::ORTHOGRAPHIC: {
             graphics::OrthographicCamera::CreateInfo info{};
             info.height = camera->fov; // TODO union
             info.far = camera->far;
@@ -112,7 +112,7 @@ void Manager::initializeCamera(CameraInfo& cameraInfo) {
             cameraInfo.camera = std::static_pointer_cast<graphics::Camera>(std::make_shared<graphics::OrthographicCamera>(info));
             break;
         }
-        case component::Camera::CameraType::PERSPECTIVE: {
+        case component::CameraSensor::CameraType::PERSPECTIVE: {
             graphics::PerspectiveCamera::CreateInfo info{};
             info.fov = camera->fov;
             info.far = camera->far;
@@ -161,29 +161,29 @@ void Manager::updateCameraModel(CameraInfo& cameraInfo) {
         cameraInfo.camera->update();
 
         // Update camera fov
-        if (cameraInfo.component->cameraType == component::Camera::CameraType::PERSPECTIVE) {
+        if (cameraInfo.component->cameraType == component::CameraSensor::CameraType::PERSPECTIVE) {
             std::shared_ptr<graphics::PerspectiveCamera> persCam = std::static_pointer_cast<graphics::PerspectiveCamera>(cameraInfo.camera);
             persCam->setFov(radians(cameraInfo.component->fov));
         }
 
         // Update renderer
-        component::Camera::RendererType currRendererType;
+        component::CameraSensor::RendererType currRendererType;
         if (cameraInfo.renderer->getName() == "FastRenderer")
-            currRendererType = component::Camera::RendererType::FAST;
+            currRendererType = component::CameraSensor::RendererType::FAST;
         else if (cameraInfo.renderer->getName() == "PhongRenderer")
-            currRendererType = component::Camera::RendererType::PHONG;
+            currRendererType = component::CameraSensor::RendererType::PHONG;
         else if (cameraInfo.renderer->getName() == "PbrRenderer")
-            currRendererType = component::Camera::RendererType::PBR;
+            currRendererType = component::CameraSensor::RendererType::PBR;
 
         if (cameraInfo.component->rendererType != currRendererType) {
             switch (cameraInfo.component->rendererType) {
-                case component::Camera::RendererType::FAST:
+                case component::CameraSensor::RendererType::FAST:
                     cameraInfo.renderer = std::make_shared<graphics::FastRenderer>();
                     break;
-                case component::Camera::RendererType::PHONG:
+                case component::CameraSensor::RendererType::PHONG:
                     cameraInfo.renderer = std::make_shared<graphics::PhongRenderer>();
                     break;
-                case component::Camera::RendererType::PBR:
+                case component::CameraSensor::RendererType::PBR:
                     cameraInfo.renderer = std::make_shared<graphics::PbrRenderer>();
                     break;
                 default:

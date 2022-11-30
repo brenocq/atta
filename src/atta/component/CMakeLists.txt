@@ -11,11 +11,12 @@ set(ATTA_COMPONENT_MODULE_SOURCE
 
     components/boxCollider.cpp
     components/boxCollider2D.cpp
-    components/camera.cpp
+    components/cameraSensor.cpp
     components/circleCollider2D.cpp
     components/cylinderCollider.cpp
     components/directionalLight.cpp
     components/environmentLight.cpp
+    components/infraredSensor.cpp
     components/material.cpp
     components/mesh.cpp
     components/name.cpp

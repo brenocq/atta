@@ -23,7 +23,7 @@ void SensorDrawer::updateCameras() {
             continue;
         if (component::Entity(cameras[i].entity).isPrototype())
             continue;
-        component::Camera* cameraComponent = cameras[i].component;
+        component::CameraSensor* cameraComponent = cameras[i].component;
         std::shared_ptr<graphics::Camera> camera = cameras[i].camera;
         vec3 pos = camera->getPosition();
         vec3 front = camera->getFront();

@@ -8,7 +8,7 @@
 #define ATTA_SENSOR_INTERFACE_H
 
 #include <atta/component/base.h>
-#include <atta/component/components/camera.h>
+#include <atta/component/components/cameraSensor.h>
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/renderers/renderer.h>
 
@@ -17,7 +17,7 @@ namespace atta::sensor {
 // Camera
 struct CameraInfo {
     component::EntityId entity;
-    component::Camera* component;
+    component::CameraSensor* component;
     bool initialized;                             ///< If renderer/camera were initialized
     std::shared_ptr<graphics::Renderer> renderer; ///< Camera renderer (fast, phong, PBR, ...)
     std::shared_ptr<graphics::Camera> camera;     ///< Camera view and projection matrices

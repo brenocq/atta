@@ -1,11 +1,11 @@
 //--------------------------------------------------
 // Atta Component Module
-// camera.h
+// cameraSensor.h
 // Date: 2021-09-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_CAMERA_H
-#define ATTA_COMPONENT_COMPONENTS_CAMERA_H
+#ifndef ATTA_COMPONENT_COMPONENTS_CAMERA_SENSOR_H
+#define ATTA_COMPONENT_COMPONENTS_CAMERA_SENSOR_H
 
 #include <atta/component/components/component.h>
 #include <atta/component/interface.h>
@@ -20,16 +20,17 @@ namespace atta::component {
  * far and near plane are rendered. The fps can be
  * used to reduce how many times the camera image is rendered.
  *
- * A Transform is necessary for the camera to be rendered.
  * The camera direction is the same as the entity Z axis, you can
  * change the camera pose by changing the Transform.
  */
-struct Camera final : public Component {
+struct CameraSensor final : public Component {
     enum class CameraType : uint32_t { ORTHOGRAPHIC = 0, PERSPECTIVE };
     enum class RendererType : uint32_t { FAST = 0, PHONG, PBR };
 
-    uint32_t width = 128;
-    uint32_t height = 128;
+    bool enabled = true;
+
+    uint32_t width = 128;///< Width
+    uint32_t height = 128;///< Height
 
     float fov = 45.0f;   ///< Field of view
     float far = 100.0f;  ///< Far plane
@@ -39,13 +40,13 @@ struct Camera final : public Component {
     CameraType cameraType = CameraType::PERSPECTIVE;
     RendererType rendererType = RendererType::PHONG;
 
-    float captureTime = -1.0f;//< Time when last frame was captured
-    const uint8_t* getFrame();
+    float captureTime = -1.0f;//< Time when last image was captured
+    const uint8_t* getImage();
 };
-ATTA_REGISTER_COMPONENT(Camera);
+ATTA_REGISTER_COMPONENT(CameraSensor);
 template <>
-ComponentDescription& TypedComponentRegistry<Camera>::getDescription();
+ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription();
 
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_CAMERA_H
+#endif // ATTA_COMPONENT_COMPONENTS_CAMERA_SENSOR_H
