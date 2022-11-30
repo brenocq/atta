@@ -9,7 +9,6 @@ namespace atta::sensor {
 void Manager::registerCameras() {
     for (cmp::Entity entity : cmp::getEntitiesView()) {
         cmp::CameraSensor* camera = cmp::getComponent<cmp::CameraSensor>(entity);
-
         if (camera) {
             // Check if camera was not registered yet
             bool found = false;
@@ -18,10 +17,9 @@ void Manager::registerCameras() {
                     found = true;
                     break;
                 }
-
-            if (!found) {
+            // Register new camera
+            if (!found)
                 registerCamera(entity, camera);
-            }
         }
     }
 }
@@ -56,27 +54,31 @@ void Manager::unregisterCamera(cmp::Entity entity) {
 }
 
 void Manager::updateCameras(float dt) {
-    for (size_t i = 0; i < _cameras.size(); i++) {
+    for (CameraInfo& cameraInfo : _cameras) {
         // Always update camera model (used to render UI sensor drawer)
-        updateCameraModel(_cameras[i]);
+        updateCameraModel(cameraInfo);
+
+        // Check if it is enabled
+        if(!cameraInfo.component->enabled)
+            continue;
 
         // Render if necessary
-        float change = Config::getTime() - _cameras[i].component->captureTime;
-        float interval = 1.0f / _cameras[i].component->fps;
+        float change = Config::getTime() - cameraInfo.component->captureTime;
+        float interval = 1.0f / cameraInfo.component->fps;
         if (change >= interval) {
-            _cameras[i].renderer->render(_cameras[i].camera);
-            _cameras[i].data = _cameras[i].renderer->getFramebuffer()->readImage(0);
-            _cameras[i].component->captureTime = Config::getTime();
+            cameraInfo.renderer->render(cameraInfo.camera);
+            cameraInfo.data = cameraInfo.renderer->getFramebuffer()->readImage(0);
+            cameraInfo.component->captureTime = Config::getTime();
         }
     }
 }
 
 void Manager::initializeCamera(CameraInfo& cameraInfo) {
     // Need to make sure to initialize after the graphics module has started and it is not in the middle of UI rendering
-    cmp::CameraSensor* camera = cmp::getComponent<cmp::CameraSensor>(cameraInfo.entity);
+    cmp::CameraSensor* camera = cameraInfo.component;
 
     // Start with random last time (used to distribute camera rendering across time)
-    camera->captureTime = -(rand()/float(RAND_MAX))/camera->fps;
+    camera->captureTime = -(rand() / float(RAND_MAX)) / camera->fps;
 
     if (!cameraInfo.initialized) {
         // If never initialized before, create gfx::Camera and gfx::Renderer

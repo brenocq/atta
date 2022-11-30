@@ -42,12 +42,12 @@ struct InfraredSensor final : public Component {
     /// Resolution
     /** The minimum possible difference between two measurements in meters **/
     float resolution = 0.01f;
-    /// Lower measurement range
-    /** If the distance is lower than the lower range, the measurement is clipped to the lower range **/
-    float lowerRange = 0.0f;
-    /// Upper measurement range
-    /** If the distance is higher than the upper range, the measurement is clipped to the upper range **/
-    float upperRange = 1000.0f; ///< Near plane
+    /// Lower measurement limit
+    /** If the distance is lower than the lower limit, the measurement is clipped to the lower limit **/
+    float lowerLimit = 0.0f;
+    /// Upper measurement limit
+    /** If the distance is higher than the upper limit, the measurement is clipped to the upper limit **/
+    float upperLimit = 1000.0f; ///< Near plane
     /// Output data rate
     /** Frequency in which the measurement is collected, in Hz **/
     float odr = 2000.0f;

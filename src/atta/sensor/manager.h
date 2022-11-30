@@ -51,6 +51,7 @@ class Manager final {
     void registerInfrared(cmp::Entity entity, cmp::InfraredSensor* infrared);
     void unregisterInfrareds();
     void unregisterInfrared(cmp::Entity entity);
+    void initializeInfrared(InfraredInfo& infraredInfo);
     void updateInfrareds(float dt); ///< Ray-cast sensors when necessary
 
     std::vector<CameraInfo> _cameras;

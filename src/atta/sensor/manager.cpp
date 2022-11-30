@@ -27,6 +27,8 @@
 
 #include <atta/utils/config.h>
 
+#include <random>
+
 namespace atta::sensor {
 
 Manager& Manager::getInstance() {
@@ -70,6 +72,8 @@ void Manager::onSimulationStateChange(event::Event& event) {
         case event::SimulationStart::type: {
             for (CameraInfo& cameraInfo : _cameras)
                 initializeCamera(cameraInfo);
+            for (InfraredInfo& infraredInfo : _infrareds)
+                initializeInfrared(infraredInfo);
             break;
         }
         case event::SimulationStop::type: {
