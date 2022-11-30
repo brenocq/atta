@@ -49,6 +49,11 @@ class TypedComponentRegistry : public ComponentRegistry {
     void deserializeImpl(std::istream& is, T* component);
 };
 
+template<typename T>
+inline ComponentId getId() {
+    return TypedComponentRegistry<T>::getInstance().getId();
+}
+
 //---------- Default component register description ----------//
 template <typename T>
 ComponentDescription& TypedComponentRegistry<T>::getDescription() {

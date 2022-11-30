@@ -83,13 +83,13 @@ void Manager::onComponentChange(event::Event& event) {
     switch (event.getType()) {
         case event::CreateComponent::type: {
             event::CreateComponent& e = reinterpret_cast<event::CreateComponent&>(event);
-            if (e.componentId == component::TypedComponentRegistry<component::CameraSensor>::getInstance().getId())
+            if (e.componentId == cmp::getId<cmp::CameraSensor>())
                 registerCamera(e.entityId, static_cast<component::CameraSensor*>(e.component));
             break;
         }
         case event::DeleteComponent::type: {
             event::DeleteComponent& e = reinterpret_cast<event::DeleteComponent&>(event);
-            if (e.componentId == component::TypedComponentRegistry<component::CameraSensor>::getInstance().getId())
+            if (e.componentId == cmp::getId<cmp::CameraSensor>())
                 unregisterCamera(e.entityId);
             break;
         }
@@ -103,3 +103,4 @@ void Manager::onComponentUi(event::Event& event) { cameraCheckUiEvents(event); }
 } // namespace atta::sensor
 
 #include <atta/sensor/managerCamera.cpp>
+#include <atta/sensor/managerInfrared.cpp>
