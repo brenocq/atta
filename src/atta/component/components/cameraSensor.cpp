@@ -56,6 +56,9 @@ ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription() {
 }
 
 const uint8_t* CameraSensor::getImage() {
+    if (captureTime < 0.0f)
+        return nullptr;
+
     std::vector<sensor::CameraInfo>& cameraInfos = sensor::getCameraInfos();
     for (auto& cameraInfo : cameraInfos)
         if (cameraInfo.component == this)

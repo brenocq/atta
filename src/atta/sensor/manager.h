@@ -20,7 +20,7 @@ class Manager final {
     friend void sensor::startUp();
     friend void sensor::shutDown();
     friend void sensor::update(float dt);
-    friend void* sensor::getEntityCameraImGuiTexture(component::EntityId eid);
+    friend void* sensor::getEntityCameraImGuiTexture(cmp::Entity eid);
     friend std::vector<CameraInfo>& sensor::getCameraInfos();
 
   private:
@@ -30,23 +30,31 @@ class Manager final {
     void updateImpl(float dt);
 
     // Handle events
-    void onSimulationStateChange(event::Event& event);
-    void onProjectOpen(event::Event& event);
-    void onComponentChange(event::Event& event);
-    void onComponentUi(event::Event& event);
+    void onSimulationStateChange(evt::Event& event);
+    void onProjectOpen(evt::Event& event);
+    void onComponentChange(evt::Event& event);
+    void onComponentUi(evt::Event& event);
 
     // Camera
-    void unregisterCameras();
     void registerCameras();
-    void registerCamera(component::EntityId entity, component::CameraSensor* camera);
-    void unregisterCamera(component::EntityId entity);
+    void registerCamera(cmp::Entity entity, cmp::CameraSensor* camera);
+    void unregisterCameras();
+    void unregisterCamera(cmp::Entity entity);
     void updateCameras(float dt);                   ///< Render cameras when necessary
     void initializeCamera(CameraInfo& cameraInfo);  ///< Initialize camera renderer and camera
     void updateCameraModel(CameraInfo& cameraInfo); ///< Update camera poses and parameters
-    void* getEntityCameraImGuiTextureImpl(component::EntityId eid);
-    void cameraCheckUiEvents(event::Event& event);
+    void* getEntityCameraImGuiTextureImpl(cmp::Entity eid);
+    void cameraCheckUiEvents(evt::Event& event);
+
+    // Infrared
+    void registerInfrareds();
+    void registerInfrared(cmp::Entity entity, cmp::InfraredSensor* infrared);
+    void unregisterInfrareds();
+    void unregisterInfrared(cmp::Entity entity);
+    void updateInfrareds(float dt); ///< Ray-cast sensors when necessary
 
     std::vector<CameraInfo> _cameras;
+    std::vector<InfraredInfo> _infrareds;
 };
 
 } // namespace atta::sensor

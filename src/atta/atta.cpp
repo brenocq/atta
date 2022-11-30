@@ -46,9 +46,9 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     component::startUp();
     graphics::startUp();
     ui::startUp();
-    script::startUp();
     physics::startUp();
     sensor::startUp();
+    script::startUp();
 
     // Atta is the last one to reveice events
     event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));

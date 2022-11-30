@@ -17,6 +17,6 @@ void update(float dt) { PROFILE(); Manager::getInstance().updateImpl(dt); }
 
 std::vector<CameraInfo>& getCameraInfos() { return Manager::getInstance()._cameras; }
 
-void* getEntityCameraImGuiTexture(component::EntityId eid) { return Manager::getInstance().getEntityCameraImGuiTextureImpl(eid); }
+void* getEntityCameraImGuiTexture(cmp::Entity eid) { return Manager::getInstance().getEntityCameraImGuiTextureImpl(eid); }
 
 } // namespace atta::sensor

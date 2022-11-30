@@ -29,8 +29,8 @@ struct CameraSensor final : public Component {
 
     bool enabled = true;
 
-    uint32_t width = 128;///< Width
-    uint32_t height = 128;///< Height
+    uint32_t width = 128;  ///< Width
+    uint32_t height = 128; ///< Height
 
     float fov = 45.0f;   ///< Field of view
     float far = 100.0f;  ///< Far plane
@@ -40,7 +40,14 @@ struct CameraSensor final : public Component {
     CameraType cameraType = CameraType::PERSPECTIVE;
     RendererType rendererType = RendererType::PHONG;
 
-    float captureTime = -1.0f;//< Time when last image was captured
+    /// Time when last image was captured
+    /** If negative, the first image was not captured yet **/
+    float captureTime = -1.0f;
+
+    /// Get image
+    /** If captureTime is negative, the first image was not captured
+     * yet and a nullptr will be returned
+     **/
     const uint8_t* getImage();
 };
 ATTA_REGISTER_COMPONENT(CameraSensor);

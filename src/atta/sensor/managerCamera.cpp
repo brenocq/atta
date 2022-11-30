@@ -7,8 +7,8 @@
 namespace atta::sensor {
 
 void Manager::registerCameras() {
-    for (component::EntityId entity : component::getEntitiesView()) {
-        component::CameraSensor* camera = component::getComponent<component::CameraSensor>(entity);
+    for (cmp::Entity entity : cmp::getEntitiesView()) {
+        cmp::CameraSensor* camera = cmp::getComponent<cmp::CameraSensor>(entity);
 
         if (camera) {
             // Check if camera was not registered yet
@@ -26,9 +26,9 @@ void Manager::registerCameras() {
     }
 }
 
-void Manager::registerCamera(component::EntityId entity, component::CameraSensor* camera) {
+void Manager::registerCamera(cmp::Entity entity, cmp::CameraSensor* camera) {
     // Do not register prototype cameras
-    if (component::Entity(entity).isPrototype())
+    if (cmp::Entity(entity).isPrototype())
         return;
 
     CameraInfo cameraInfo{};
@@ -41,7 +41,7 @@ void Manager::registerCamera(component::EntityId entity, component::CameraSensor
 
 void Manager::unregisterCameras() { _cameras.clear(); }
 
-void Manager::unregisterCamera(component::EntityId entity) {
+void Manager::unregisterCamera(cmp::Entity entity) {
     bool found = false;
     for (int i = _cameras.size() - 1; i >= 0; i--) {
         if (_cameras[i].entity == entity) {
@@ -57,20 +57,15 @@ void Manager::unregisterCamera(component::EntityId entity) {
 
 void Manager::updateCameras(float dt) {
     for (size_t i = 0; i < _cameras.size(); i++) {
-        // Initialize if first time
-        if (!_cameras[i].initialized)
-            initializeCamera(_cameras[i]);
-
         // Always update camera model (used to render UI sensor drawer)
         updateCameraModel(_cameras[i]);
 
         // Render if necessary
-        float change = Config::getTime() - _cameras[i].lastTime;
+        float change = Config::getTime() - _cameras[i].component->captureTime;
         float interval = 1.0f / _cameras[i].component->fps;
         if (change >= interval) {
             _cameras[i].renderer->render(_cameras[i].camera);
             _cameras[i].data = _cameras[i].renderer->getFramebuffer()->readImage(0);
-            _cameras[i].lastTime = Config::getTime();
             _cameras[i].component->captureTime = Config::getTime();
         }
     }
@@ -78,70 +73,74 @@ void Manager::updateCameras(float dt) {
 
 void Manager::initializeCamera(CameraInfo& cameraInfo) {
     // Need to make sure to initialize after the graphics module has started and it is not in the middle of UI rendering
-    component::CameraSensor* camera = component::getComponent<component::CameraSensor>(cameraInfo.entity);
+    cmp::CameraSensor* camera = cmp::getComponent<cmp::CameraSensor>(cameraInfo.entity);
 
     // Start with random last time (used to distribute camera rendering across time)
-    cameraInfo.lastTime = 0.0f; //(rand() % (int)(10000.0f / camera->fps)) / 10000.0f;
+    camera->captureTime = -(rand()/float(RAND_MAX))/camera->fps;
 
-    // Create renderer
-    switch (camera->rendererType) {
-        case component::CameraSensor::RendererType::FAST:
-            cameraInfo.renderer = std::make_shared<graphics::FastRenderer>();
-            break;
-        case component::CameraSensor::RendererType::PHONG:
-            cameraInfo.renderer = std::make_shared<graphics::PhongRenderer>();
-            break;
-        case component::CameraSensor::RendererType::PBR:
-            cameraInfo.renderer = std::make_shared<graphics::PbrRenderer>();
-            break;
-        default:
-            LOG_WARN("sensor::Manager", "Invalid camera renderer type $0 for entity $1", (int)camera->rendererType, cameraInfo.entity);
-    }
-    cameraInfo.renderer->setRenderDrawer(false);
-    cameraInfo.renderer->setRenderSelected(false);
-    cameraInfo.renderer->resize(camera->width, camera->height);
+    if (!cameraInfo.initialized) {
+        // If never initialized before, create gfx::Camera and gfx::Renderer
+        cameraInfo.initialized = true;
 
-    // Create camera (view/projection matrices)
-    switch (camera->cameraType) {
-        case component::CameraSensor::CameraType::ORTHOGRAPHIC: {
-            graphics::OrthographicCamera::CreateInfo info{};
-            info.height = camera->fov; // TODO union
-            info.far = camera->far;
-            info.ratio = camera->width / (float)camera->height;
-
-            cameraInfo.camera = std::static_pointer_cast<graphics::Camera>(std::make_shared<graphics::OrthographicCamera>(info));
-            break;
+        // Create renderer
+        switch (camera->rendererType) {
+            case cmp::CameraSensor::RendererType::FAST:
+                cameraInfo.renderer = std::make_shared<gfx::FastRenderer>();
+                break;
+            case cmp::CameraSensor::RendererType::PHONG:
+                cameraInfo.renderer = std::make_shared<gfx::PhongRenderer>();
+                break;
+            case cmp::CameraSensor::RendererType::PBR:
+                cameraInfo.renderer = std::make_shared<gfx::PbrRenderer>();
+                break;
+            default:
+                LOG_WARN("sensor::Manager", "Invalid camera renderer type $0 for entity $1", (int)camera->rendererType, cameraInfo.entity);
         }
-        case component::CameraSensor::CameraType::PERSPECTIVE: {
-            graphics::PerspectiveCamera::CreateInfo info{};
-            info.fov = camera->fov;
-            info.far = camera->far;
-            info.near = camera->near;
-            info.ratio = camera->width / (float)camera->height;
-            cameraInfo.camera = std::static_pointer_cast<graphics::Camera>(std::make_shared<graphics::PerspectiveCamera>(info));
-            break;
+        cameraInfo.renderer->setRenderDrawer(false);
+        cameraInfo.renderer->setRenderSelected(false);
+        cameraInfo.renderer->resize(camera->width, camera->height);
+
+        // Create camera (view/projection matrices)
+        switch (camera->cameraType) {
+            case cmp::CameraSensor::CameraType::ORTHOGRAPHIC: {
+                gfx::OrthographicCamera::CreateInfo info{};
+                info.height = camera->fov;
+                info.far = camera->far;
+                info.ratio = camera->width / (float)camera->height;
+
+                cameraInfo.camera = std::static_pointer_cast<gfx::Camera>(std::make_shared<gfx::OrthographicCamera>(info));
+                break;
+            }
+            case cmp::CameraSensor::CameraType::PERSPECTIVE: {
+                gfx::PerspectiveCamera::CreateInfo info{};
+                info.fov = camera->fov;
+                info.far = camera->far;
+                info.near = camera->near;
+                info.ratio = camera->width / (float)camera->height;
+                cameraInfo.camera = std::static_pointer_cast<gfx::Camera>(std::make_shared<gfx::PerspectiveCamera>(info));
+                break;
+            }
+            default:
+                LOG_WARN("sensor::Manager", "Invalid camera projection type $0 for entity $1", (int)camera->cameraType, cameraInfo.entity);
         }
-        default:
-            LOG_WARN("sensor::Manager", "Invalid camera projection type $0 for entity $1", (int)camera->cameraType, cameraInfo.entity);
     }
-    cameraInfo.initialized = true;
 }
 
 void Manager::updateCameraModel(CameraInfo& cameraInfo) {
+    PROFILE();
     //----- Update camera pose and parameters -----//
-    component::Entity entity = cameraInfo.entity;
-    component::Transform* transform = entity.get<component::Transform>();
+    cmp::Entity entity = cameraInfo.entity;
+    cmp::Transform* transform = entity.get<cmp::Transform>();
     if (transform) {
         // Calculate position
         vec3 position = transform->getWorldTransform(entity).getPosition();
 
         // Calculate orientation
         quat ori = transform->orientation;
-        component::Entity parent = entity.getParent();
+        cmp::Entity parent = entity.getParent();
         while (parent.exists()) {
-            auto t = parent.get<component::Transform>();
-            if (t)
-            {
+            auto t = parent.get<cmp::Transform>();
+            if (t) {
                 ori *= t->orientation;
                 ori.normalize();
             }
@@ -161,30 +160,30 @@ void Manager::updateCameraModel(CameraInfo& cameraInfo) {
         cameraInfo.camera->update();
 
         // Update camera fov
-        if (cameraInfo.component->cameraType == component::CameraSensor::CameraType::PERSPECTIVE) {
-            std::shared_ptr<graphics::PerspectiveCamera> persCam = std::static_pointer_cast<graphics::PerspectiveCamera>(cameraInfo.camera);
+        if (cameraInfo.component->cameraType == cmp::CameraSensor::CameraType::PERSPECTIVE) {
+            std::shared_ptr<gfx::PerspectiveCamera> persCam = std::static_pointer_cast<gfx::PerspectiveCamera>(cameraInfo.camera);
             persCam->setFov(radians(cameraInfo.component->fov));
         }
 
         // Update renderer
-        component::CameraSensor::RendererType currRendererType;
+        cmp::CameraSensor::RendererType currRendererType;
         if (cameraInfo.renderer->getName() == "FastRenderer")
-            currRendererType = component::CameraSensor::RendererType::FAST;
+            currRendererType = cmp::CameraSensor::RendererType::FAST;
         else if (cameraInfo.renderer->getName() == "PhongRenderer")
-            currRendererType = component::CameraSensor::RendererType::PHONG;
+            currRendererType = cmp::CameraSensor::RendererType::PHONG;
         else if (cameraInfo.renderer->getName() == "PbrRenderer")
-            currRendererType = component::CameraSensor::RendererType::PBR;
+            currRendererType = cmp::CameraSensor::RendererType::PBR;
 
         if (cameraInfo.component->rendererType != currRendererType) {
             switch (cameraInfo.component->rendererType) {
-                case component::CameraSensor::RendererType::FAST:
-                    cameraInfo.renderer = std::make_shared<graphics::FastRenderer>();
+                case cmp::CameraSensor::RendererType::FAST:
+                    cameraInfo.renderer = std::make_shared<gfx::FastRenderer>();
                     break;
-                case component::CameraSensor::RendererType::PHONG:
-                    cameraInfo.renderer = std::make_shared<graphics::PhongRenderer>();
+                case cmp::CameraSensor::RendererType::PHONG:
+                    cameraInfo.renderer = std::make_shared<gfx::PhongRenderer>();
                     break;
-                case component::CameraSensor::RendererType::PBR:
-                    cameraInfo.renderer = std::make_shared<graphics::PbrRenderer>();
+                case cmp::CameraSensor::RendererType::PBR:
+                    cameraInfo.renderer = std::make_shared<gfx::PbrRenderer>();
                     break;
                 default:
                     LOG_WARN("sensor::Manager", "Invalid camera renderer type $0 for entity $1", (int)cameraInfo.component->rendererType,
@@ -203,7 +202,7 @@ void Manager::updateCameraModel(CameraInfo& cameraInfo) {
     }
 }
 
-void* Manager::getEntityCameraImGuiTextureImpl(component::EntityId eid) {
+void* Manager::getEntityCameraImGuiTextureImpl(cmp::Entity eid) {
     for (size_t i = 0; i < _cameras.size(); i++)
         if (_cameras[i].entity == eid)
             return _cameras[i].renderer->getImGuiTexture();
