@@ -56,6 +56,9 @@ void Manager::startUpImpl() {
     // Initialize sensors (component events generated before startup were not received)
     registerCameras();
     registerInfrareds();
+
+    _showCameras = true;
+    _showInfrareds = true;
 }
 
 void Manager::shutDownImpl() {

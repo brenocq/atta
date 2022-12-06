@@ -47,6 +47,12 @@ void* getEntityCameraImGuiTexture(cmp::Entity eid);
 std::vector<CameraInfo>& getCameraInfos();
 std::vector<InfraredInfo>& getInfraredInfos();
 
+//----- UI rendering -----//
+bool getShowCameras();
+void setShowCameras(bool showCameras);
+bool getShowInfrareds();
+void setShowInfrareds(bool showInfrareds);
+
 } // namespace atta::sensor
 
 #endif // ATTA_SENSOR_INTERFACE_H

@@ -11,9 +11,9 @@ void ProjectSerializer::serializeHeader(Section& section) {
     section["projectName"] = std::string(_project->getName());
 }
 
-void ProjectSerializer::serializeConfig(Section& section) { 
-    section["dt"] = Config::getDt(); 
-    section["desiredStepSpeed"] = Config::getDesiredStepSpeed(); 
+void ProjectSerializer::serializeConfig(Section& section) {
+    section["dt"] = Config::getDt();
+    section["desiredStepSpeed"] = Config::getDesiredStepSpeed();
 }
 
 void ProjectSerializer::serializeComponentModule(Section& section) {
@@ -101,6 +101,11 @@ void ProjectSerializer::serializePhysicsModule(Section& section) {
     auto bullet = physics::getEngine<physics::BulletEngine>();
     section["bullet"]["showAabb"] = bullet->getShowAabb();
     section["bullet"]["numSubSteps"] = bullet->getNumSubSteps();
+}
+
+void ProjectSerializer::serializeSensorModule(Section& section) {
+    section["showCameras"] = sensor::getShowCameras();
+    section["showInfrareds"] = sensor::getShowInfrareds();
 }
 
 } // namespace atta::file

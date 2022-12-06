@@ -14,6 +14,7 @@
 #include <atta/ui/layers/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/sensorModuleWindow.h>
 #include <atta/ui/layers/editor/tools/timeProfiler/timeProfilerWindow.h>
 #include <atta/ui/layers/editor/topBar/localWindows/versionWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
@@ -58,6 +59,7 @@ void EditorLayer::onUIRender() {
     GraphicsModuleWindow::render();
     IOModuleWindow::render();
     PhysicsModuleWindow::render();
+    SensorModuleWindow::render();
 
     // Tools
     TimeProfilerWindow::render();

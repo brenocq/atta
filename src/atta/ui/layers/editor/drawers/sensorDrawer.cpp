@@ -20,6 +20,10 @@ void SensorDrawer::update() {
 
 void SensorDrawer::updateCameras() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::sensor::Camera"_ssid);
+
+    if (!sensor::getShowCameras())
+        return;
+
     std::vector<sensor::CameraInfo>& cameras = sensor::getCameraInfos();
     for (uint32_t i = 0; i < cameras.size(); i++) {
         if (!cameras[i].initialized)
@@ -65,6 +69,10 @@ void SensorDrawer::updateCameras() {
 
 void SensorDrawer::updateInfrareds() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::sensor::Infrared"_ssid);
+
+    if (!sensor::getShowInfrareds())
+        return;
+
     std::vector<sensor::InfraredInfo>& infrareds = sensor::getInfraredInfos();
     for (uint32_t i = 0; i < infrareds.size(); i++) {
         component::Entity entity = infrareds[i].entity;

@@ -109,4 +109,11 @@ void ProjectSerializer::deserializePhysicsModule(Section& section) {
     }
 }
 
+void ProjectSerializer::deserializeSensorModule(Section& section) {
+    if(section.contains("showCameras"))
+        sensor::setShowCameras(bool(section["showCameras"]));
+    if(section.contains("showInfrareds"))
+        sensor::setShowInfrareds(bool(section["showInfrareds"]));
+}
+
 } // namespace atta::file

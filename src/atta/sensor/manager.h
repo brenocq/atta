@@ -23,6 +23,10 @@ class Manager final {
     friend void* sensor::getEntityCameraImGuiTexture(cmp::Entity eid);
     friend std::vector<CameraInfo>& sensor::getCameraInfos();
     friend std::vector<InfraredInfo>& sensor::getInfraredInfos();
+    friend bool getShowCameras();
+    friend void setShowCameras(bool showCameras);
+    friend bool getShowInfrareds();
+    friend void setShowInfrareds(bool showInfrareds);
 
   private:
     // Interface
@@ -57,6 +61,8 @@ class Manager final {
 
     std::vector<CameraInfo> _cameras;
     std::vector<InfraredInfo> _infrareds;
+    bool _showCameras;   ///< UI camera lines rendering
+    bool _showInfrareds; ///< UI infrared lines rendering
 };
 
 } // namespace atta::sensor
