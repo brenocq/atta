@@ -31,7 +31,7 @@ void setShowJoints(bool showJoints) { Manager::getInstance()._showJoints = showJ
 
 //---------- Queries ----------//
 std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) { return Manager::getInstance()._engine->getEntityCollisions(eid); }
-std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst) {
+std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) {
     return Manager::getInstance()._engine->rayCast(begin, end, onlyFirst);
 }
 bool areColliding(component::EntityId eid0, component::EntityId eid1) { return Manager::getInstance()._engine->areColliding(eid0, eid1); }

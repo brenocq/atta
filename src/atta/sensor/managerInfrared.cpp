@@ -71,8 +71,29 @@ void Manager::updateInfrareds(float dt) {
         if (change >= interval) {
             float measurement = 0.0f;
 
-            // TODO Measurement from physics module
+            //----- Measurement from physics module -----//
+            cmp::Entity entity = iri.entity;
+            cmp::Transform* t = entity.get<cmp::Transform>();
+            if (t == nullptr) {
+                LOG_WARN("sensor::Manager", "Could not measure infrared sensor because entity does not have a transform component");
+                continue;
+            }
 
+            // Calculate ray direction
+            mat4 mat = cmp::Transform::getEntityWorldTransform(entity);
+            vec3 rayDir = vec3(1.0f, 0.0f, 0.0f);
+            mat.getOrientation().rotateVector(rayDir);
+
+            // Perform ray cast
+            vec3 begin = mat.getPosition();
+            vec3 end = begin + rayDir * ir->upperLimit;
+            std::vector<phy::RayCastHit> hits = phy::rayCast(begin, end, true);
+            if(hits.size())
+                measurement = hits[0].distance;
+            else
+                measurement = ir->upperLimit;
+
+            //----- Post-process measurement -----//
             // Apply gaussian noise
             if (ir->gaussianStd > 0.0f) {
                 std::default_random_engine generator(int(Config::getTime() / Config::getDt()));

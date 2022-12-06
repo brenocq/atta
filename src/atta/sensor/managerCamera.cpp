@@ -150,8 +150,8 @@ void Manager::updateCameraModel(CameraInfo& cameraInfo) {
         }
 
         // Update camera pose
-        vec3 front = vec3(0, 0, 1);
-        vec3 up = vec3(1, 0, 0);
+        vec3 front = vec3(1, 0, 0);
+        vec3 up = vec3(0, 0, 1);
         ori.rotateVector(front);
         ori.rotateVector(up);
         front.normalize();

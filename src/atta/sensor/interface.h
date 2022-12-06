@@ -45,6 +45,7 @@ void update(float dt);
 void* getEntityCameraImGuiTexture(cmp::Entity eid);
 
 std::vector<CameraInfo>& getCameraInfos();
+std::vector<InfraredInfo>& getInfraredInfos();
 
 } // namespace atta::sensor
 

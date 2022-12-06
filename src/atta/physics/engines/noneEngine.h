@@ -19,10 +19,6 @@ class NoneEngine : public Engine {
     void start() override;
     void step(float dt) override;
     void stop() override;
-
-    std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) override;
-    std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
-    bool areColliding(component::EntityId eid0, component::EntityId eid1) override;
 };
 
 } // namespace atta::physics

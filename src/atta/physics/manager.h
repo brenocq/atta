@@ -39,7 +39,7 @@ class Manager final {
     friend void setShowJoints(bool showJoints);
 
     friend std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);
-    friend std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst);
+    friend std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst);
     friend bool areColliding(component::EntityId eid0, component::EntityId eid1);
 
   private:

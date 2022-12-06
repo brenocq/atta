@@ -230,8 +230,8 @@ std::vector<component::EntityId> BulletEngine::getEntityCollisions(component::En
     return result;
 }
 
-std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
-    std::vector<component::EntityId> result;
+std::vector<RayCastHit> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
+    std::vector<RayCastHit> result;
     btVector3 btBegin(begin.x, begin.y, begin.z);
     btVector3 btEnd(end.x, end.y, end.z);
 
@@ -245,8 +245,9 @@ std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, boo
         // Check hit
         if (rayCallback.hasHit()) {
             const btCollisionObject* col = rayCallback.m_collisionObject;
-            component::EntityId eid = BT_USRPTR_TO_EID(col->getUserPointer());
-            result.push_back(eid);
+            RayCastHit h{};
+            h.entity = BT_USRPTR_TO_EID(col->getUserPointer());
+            result.push_back(h);
         }
     } else {
         // Create ray cast callback
@@ -259,8 +260,9 @@ std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, boo
         if (rayCallback.hasHit())
             for (unsigned i = 0; i < rayCallback.m_collisionObjects.size(); i++) {
                 const btCollisionObject* col = rayCallback.m_collisionObjects[i];
-                component::EntityId eid = BT_USRPTR_TO_EID(col->getUserPointer());
-                result.push_back(eid);
+                RayCastHit h{};
+                h.entity = BT_USRPTR_TO_EID(col->getUserPointer());
+                result.push_back(h);
             }
     }
 

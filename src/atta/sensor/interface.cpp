@@ -16,6 +16,7 @@ void shutDown() { Manager::getInstance().shutDownImpl(); }
 void update(float dt) { PROFILE(); Manager::getInstance().updateImpl(dt); }
 
 std::vector<CameraInfo>& getCameraInfos() { return Manager::getInstance()._cameras; }
+std::vector<InfraredInfo>& getInfraredInfos() { return Manager::getInstance()._infrareds; }
 
 void* getEntityCameraImGuiTexture(cmp::Entity eid) { return Manager::getInstance().getEntityCameraImGuiTextureImpl(eid); }
 

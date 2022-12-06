@@ -53,19 +53,24 @@ class EntityCollisionQueryCallback : public b2QueryCallback {
 
 class RayCastCallback : public b2RayCastCallback {
   public:
-    RayCastCallback(bool onlyFirst) : _onlyFirst(onlyFirst) {}
+    RayCastCallback(bool onlyFirst, vec2 start) : _onlyFirst(onlyFirst), _start(start) {}
 
     float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override {
         if (_onlyFirst)
-            entities.clear();
-        entities.push_back(fixture->GetBody()->GetUserData().pointer);
+            hits.clear();
+        RayCastHit hit{};
+        hit.entity = fixture->GetBody()->GetUserData().pointer;
+        hit.distance = length(vec2(point.x, point.y) - _start);
+        hit.normal = vec3(normal.x, normal.y, 0.0f);
+        hits.push_back(hit);
         return _onlyFirst ? fraction : 1;
     }
 
-    std::vector<component::EntityId> entities;
+    std::vector<RayCastHit> hits;
 
   private:
     bool _onlyFirst;
+    vec2 _start;
 };
 
 //---------- Box2DEngine ----------//
@@ -381,11 +386,11 @@ std::vector<component::EntityId> Box2DEngine::getEntityCollisions(component::Ent
         return {};
 }
 
-std::vector<component::EntityId> Box2DEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
-    RayCastCallback rc(onlyFirst);
+std::vector<RayCastHit> Box2DEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
+    RayCastCallback rc(onlyFirst, vec2(begin));
     _world->RayCast(&rc, b2Vec2(begin.x, begin.y), b2Vec2(end.x, end.y));
 
-    return rc.entities;
+    return rc.hits;
 }
 
 bool Box2DEngine::areColliding(component::EntityId eid0, component::EntityId eid1) {

@@ -22,6 +22,7 @@ class Manager final {
     friend void sensor::update(float dt);
     friend void* sensor::getEntityCameraImGuiTexture(cmp::Entity eid);
     friend std::vector<CameraInfo>& sensor::getCameraInfos();
+    friend std::vector<InfraredInfo>& sensor::getInfraredInfos();
 
   private:
     // Interface

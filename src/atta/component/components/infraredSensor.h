@@ -21,7 +21,7 @@ namespace atta::component {
  * must have a collider component to be detected. When 2D physics is
  * being used, the measurement will be in the 2D plane.
  *
- * The infra-red shooting direction is the same as the entity Z axis,
+ * The infra-red shooting direction is the same as the entity X axis,
  * you can change the direction by changing the Transform.
  */
 struct InfraredSensor final : public Component {

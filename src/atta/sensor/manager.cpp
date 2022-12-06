@@ -25,6 +25,8 @@
 #include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/graphics/renderers/phongRenderer.h>
 
+#include <atta/physics/interface.h>
+
 #include <atta/utils/config.h>
 
 #include <random>

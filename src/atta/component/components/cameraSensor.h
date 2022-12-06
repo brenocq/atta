@@ -20,7 +20,7 @@ namespace atta::component {
  * far and near plane are rendered. The fps can be
  * used to reduce how many times the camera image is rendered.
  *
- * The camera direction is the same as the entity Z axis, you can
+ * The camera direction is the same as the entity X axis, you can
  * change the camera pose by changing the Transform.
  */
 struct CameraSensor final : public Component {

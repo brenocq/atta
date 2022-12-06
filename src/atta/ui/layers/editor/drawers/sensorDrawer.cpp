@@ -13,7 +13,10 @@
 
 namespace atta::ui {
 
-void SensorDrawer::update() { updateCameras(); }
+void SensorDrawer::update() {
+    updateCameras();
+    updateInfrareds();
+}
 
 void SensorDrawer::updateCameras() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::sensor::Camera"_ssid);
@@ -57,6 +60,35 @@ void SensorDrawer::updateCameras() {
         graphics::Drawer::add(graphics::Drawer::Line(plane + tr, plane + br, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
         graphics::Drawer::add(graphics::Drawer::Line(plane + br, plane + bl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
         graphics::Drawer::add(graphics::Drawer::Line(plane + bl, plane + tl, {1, 1, 0, 1}, {1, 1, 0, 1}), "atta::sensor::Camera"_ssid);
+    }
+}
+
+void SensorDrawer::updateInfrareds() {
+    graphics::Drawer::clear<graphics::Drawer::Line>("atta::sensor::Infrared"_ssid);
+    std::vector<sensor::InfraredInfo>& infrareds = sensor::getInfraredInfos();
+    for (uint32_t i = 0; i < infrareds.size(); i++) {
+        component::Entity entity = infrareds[i].entity;
+        component::InfraredSensor* ir = infrareds[i].component;
+
+        // Ignore prototypes
+        if (component::Entity(entity).isPrototype())
+            continue;
+        // Ignore if does not have measurement yet
+        if (ir->measurementTime < 0.0f)
+            continue;
+
+        // Calculate ray
+        mat4 mat = cmp::Transform::getEntityWorldTransform(entity);
+        vec3 rayDir = vec3(1.0f, 0.0f, 0.0f);
+        mat.getOrientation().rotateVector(rayDir);
+        vec3 begin = mat.getPosition();
+
+        // Calculate color
+        bool hitted = ir->measurement + 0.000001f < ir->upperLimit;
+        vec4 color = hitted ? vec4(1, 0, 0, 1) : vec4(1, 1, 0, 1);
+
+        // Draw line
+        graphics::Drawer::add(graphics::Drawer::Line(begin, begin + rayDir * ir->measurement, color, color), "atta::sensor::Infrared"_ssid);
     }
 }
 
