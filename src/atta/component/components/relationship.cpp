@@ -29,7 +29,7 @@ ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
               std::vector<Entity>* children = static_cast<std::vector<Entity>*>(data);
               EntityId eid;
 #ifdef ATTA_OS_WEB
-              file::read(is, eid);// For some reason the first one is always zero when building for the web
+              file::read(is, eid); // For some reason the first one is always zero when building for the web
 #endif
               file::read(is, eid);
               while (eid != -1) {
@@ -78,8 +78,10 @@ void Relationship::setParent(Entity parent, Entity child) {
         // If has transform component, update to be relative to the parent
         Transform* t = component::getComponent<Transform>(child);
         if (t) {
-            mat4 transform = t->getWorldTransform(child);
-            mat4 pTransform = Transform::getEntityWorldTransform(parent);
+            mat4 transform = t->getWorldTransformMatrix(child);
+            Transform wt = Transform::getEntityWorldTransform(parent);
+            mat4 pTransform;
+            pTransform.setPosOriScale(wt.position, wt.orientation, wt.scale);
 
             transform = inverse(pTransform) * transform;
 
@@ -117,7 +119,7 @@ void Relationship::removeParent(Entity parent, Entity child) {
     // If has transform component, change to be relative to the world
     Transform* transform = component::getComponent<Transform>(child);
     if (transform) {
-        mat4 world = transform->getWorldTransform(child);
+        mat4 world = transform->getWorldTransformMatrix(child);
         vec3 pos, scale;
         quat ori;
         world.getPosOriScale(pos, ori, scale);

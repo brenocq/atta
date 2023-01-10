@@ -15,6 +15,9 @@
 /.vs
 /CMakeSettings.json
 
+# Vim
+tags
+
 # Local config
 /src/atta/cmakeConfig.h
 

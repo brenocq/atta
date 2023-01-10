@@ -104,7 +104,7 @@ void ViewportWindows::render() {
             }
 
             //----- Render to texture -----//
-            if(shouldRenderViewports)
+            if (shouldRenderViewports)
                 viewport->render();
             ImVec2 size = ImVec2(viewport->getWidth(), viewport->getHeight());
             ImGui::Image(viewport->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));
@@ -124,7 +124,7 @@ void ViewportWindows::render() {
                     proj.mat[1][1] *= -1;
                     proj.transpose();
 
-                    mat4 transform = transpose(t->getWorldTransform(entity));
+                    mat4 transform = transpose(t->getWorldTransformMatrix(entity));
 
                     float snapValue = 0.5f;
                     if (mouseOperation == ImGuizmo::OPERATION::ROTATE)
@@ -161,10 +161,10 @@ void ViewportWindows::render() {
 
                             // If found some entity with transform component, convert result to be relative to it
                             if (pt) {
-                                vec3 pPos, pScale;
-                                quat pOri;
-                                mat4 pTransform = pt->getWorldTransform(parentId);
-                                pTransform.getPosOriScale(pPos, pOri, pScale);
+                                component::Transform pTransform = pt->getWorldTransform(parentId);
+                                vec3 pPos = pTransform.position;
+                                vec3 pScale = pTransform.scale;
+                                quat pOri = pTransform.orientation;
 
                                 // Calculate pos ori scale relative to parent
                                 pos -= pPos;

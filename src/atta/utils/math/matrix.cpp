@@ -404,7 +404,7 @@ quat mat4::getOrientation() const {
     }
 
     double b1_squared = 0.25 * (1.0 + mat[0][0] / scale.x + mat[1][1] / scale.y + mat[2][2] / scale.z);
-    if (b1_squared > 0.0001) {
+    if (b1_squared > 0.0000001) {
         double b1 = sqrt(b1_squared);
         double over_b1_4 = 0.25 / b1;
         double b2 = -(mat[2][1] / scale.y - mat[1][2] / scale.z) * over_b1_4;
@@ -413,8 +413,8 @@ quat mat4::getOrientation() const {
         q = quat(b1, b2, b3, b4);
         q.normalize();
     } else {
-        // Supress warning because it happens sometimes when the entity scale is small
-        // LOG_WARN("atta::mat4", "[w](getOrientation)[] Could not calculate quaternion from $0, probably the scale is too small", *this);
+        // Supress warning because it happens often when the entity scale is small
+        // LOG_WARN("atta::mat4", "[w](getOrientation)[] Could not calculate quaternion from [w]$0[], operations with very small number [w]$1[]", *this, b1_squared);
     }
 
     return q;

@@ -42,8 +42,7 @@ void SensorDrawer::updateCameras() {
         // Calculate line scale from entity scale
         component::Entity entity = cameras[i].entity;
         auto t = entity.get<component::Transform>();
-        mat4 worldModel = t->getWorldTransform(entity);
-        vec3 scaleVec = worldModel.getScale();
+        vec3 scaleVec = t->getWorldTransform(entity).scale;
         float scale = (scaleVec.x + scaleVec.y + scaleVec.z) / 3.0f;
 
         // Calculate lines
@@ -86,10 +85,10 @@ void SensorDrawer::updateInfrareds() {
             continue;
 
         // Calculate ray
-        mat4 mat = cmp::Transform::getEntityWorldTransform(entity);
+        component::Transform worldTrans = cmp::Transform::getEntityWorldTransform(entity);
         vec3 rayDir = vec3(1.0f, 0.0f, 0.0f);
-        mat.getOrientation().rotateVector(rayDir);
-        vec3 begin = mat.getPosition();
+        worldTrans.orientation.rotateVector(rayDir);
+        vec3 begin = worldTrans.position;
 
         // Calculate color
         bool hitted = ir->measurement + 0.000001f < ir->upperLimit;

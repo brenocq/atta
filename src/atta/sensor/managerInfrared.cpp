@@ -80,12 +80,12 @@ void Manager::updateInfrareds(float dt) {
             }
 
             // Calculate ray direction
-            mat4 mat = cmp::Transform::getEntityWorldTransform(entity);
+            component::Transform worldTrans = cmp::Transform::getEntityWorldTransform(entity);
             vec3 rayDir = vec3(1.0f, 0.0f, 0.0f);
-            mat.getOrientation().rotateVector(rayDir);
+            worldTrans.orientation.rotateVector(rayDir);
 
             // Perform ray cast
-            vec3 begin = mat.getPosition();
+            vec3 begin = worldTrans.position;
             vec3 end = begin + rayDir * ir->upperLimit;
             std::vector<phy::RayCastHit> hits = phy::rayCast(begin, end, true);
             if(hits.size())

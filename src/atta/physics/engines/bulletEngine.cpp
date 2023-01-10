@@ -80,10 +80,10 @@ void BulletEngine::step(float dt) {
 
         // Get atta transform
         auto t = component::getComponent<component::Transform>(eid);
-        vec3 position, scale;
-        quat orientation;
-        mat4 m = t->getWorldTransform(eid);
-        m.getPosOriScale(position, orientation, scale);
+        component::Transform worldT = t->getWorldTransform(eid);
+        vec3 position = worldT.position;
+        vec3 scale = worldT.scale;
+        quat orientation = worldT.orientation;
 
         // Get bullet transform
         btTransform trans;
@@ -151,12 +151,13 @@ void BulletEngine::step(float dt) {
         auto t = component::getComponent<component::Transform>(eid);
         vec3 pos = {trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()};
         quat ori = quat(trans.getRotation().w(), -trans.getRotation().x(), -trans.getRotation().y(), -trans.getRotation().z());
-        mat4 worldTransform;
-        worldTransform.setPosOriScale(pos, ori, t->scale);
 
         // Update world transform
-        t->setWorldTransform(eid, worldTransform);
-        mat4 m = t->getWorldTransform(eid);
+        component::Transform worldTrans;
+        worldTrans.position = pos;
+        worldTrans.orientation = ori;
+        worldTrans.scale = t->scale;
+        t->setWorldTransform(eid, worldTrans);
 
         // Update rigid body
         // auto rb = component::getComponent<component::RigidBody>(eid);
@@ -345,10 +346,10 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
         return;
     }
 
-    vec3 position, scale;
-    quat orientation;
-    mat4 m = t->getWorldTransform(entity);
-    m.getPosOriScale(position, orientation, scale);
+    component::Transform worldT = t->getWorldTransform(entity);
+    vec3 position = worldT.position;
+    vec3 scale = worldT.scale;
+    quat orientation = worldT.orientation;
 
     // Calculate transform
     btTransform bodyTransform(btQuaternion(-orientation.i, -orientation.j, -orientation.k, orientation.r),

@@ -117,10 +117,10 @@ void Box2DEngine::start() {
             continue;
         }
 
-        vec3 position, scale;
-        quat orientation;
-        mat4 m = t->getWorldTransform(entity);
-        m.getPosOriScale(position, orientation, scale);
+        component::Transform worldT = t->getWorldTransform(entity);
+        vec3 position = worldT.position;
+        quat orientation = worldT.orientation;
+        vec3 scale = worldT.scale;
 
         if (t && rb2d && (box2d || circle2d)) {
             _componentToEntity[rb2d] = entity;
@@ -202,27 +202,24 @@ void Box2DEngine::step(float dt) {
     for (auto [eid, body] : _bodies) {
         // Get atta pos/angle
         auto t = component::getComponent<component::Transform>(eid);
-        vec3 position, scale;
-        quat orientation;
-        mat4 m = t->getWorldTransform(eid);
-        m.getPosOriScale(position, orientation, scale);
+        component::Transform trans = t->getWorldTransform(eid);
 
         // Get box2d pos/angle
         b2Vec2 pos = body->GetPosition();
-        vec3 physicsPosition = {pos.x, pos.y, position.z};
+        vec3 physicsPosition = {pos.x, pos.y, trans.position.z};
         quat physicsOrientation;
         physicsOrientation.set2DAngle(body->GetAngle());
 
         // Calculate quaternion distance
         quat po = physicsOrientation;
-        quat o = orientation;
+        quat o = trans.orientation;
         float qDist = po.r * o.r + po.i * o.i + po.j * o.j + po.k * o.k;
         qDist = 1 - qDist * qDist; // 0 if they are the same, 1 if they are opposite
         bool isSameOri = qDist < 0.001 || qDist > 0.999;
 
-        // Check if need to update position
-        if (position != physicsPosition || !isSameOri) {
-            body->SetTransform(b2Vec2(position.x, position.y), orientation.get2DAngle());
+        // Check if need to update physics transform
+        if (trans.position != physicsPosition || !isSameOri) {
+            body->SetTransform(b2Vec2(trans.position.x, trans.position.y), trans.orientation.get2DAngle());
             body->SetAwake(true);
         }
     }
@@ -233,50 +230,17 @@ void Box2DEngine::step(float dt) {
     //----- Update atta components -----//
     for (auto [eid, body] : _bodies) {
         auto t = component::getComponent<component::Transform>(eid);
-        if (t) {
-            // component::Transform data
-            vec3 position;
-            quat orientation;
-            vec3 scale;
+        if (body->IsAwake() && t) {
+            component::Transform worldTrans;
 
             // Get new transform (after physics step)
             b2Vec2 pos = body->GetPosition();
-            position = {pos.x, pos.y, t->position.z};
-            orientation.set2DAngle(body->GetAngle());
-            scale = t->scale;
-
-            // Update pos/ori/scale to be local to parent
-            component::Relationship* r = component::getComponent<component::Relationship>(eid);
-            if (r && r->getParent() != -1) {
-                // Get transform of the first entity that has transform when going up in the hierarchy
-                component::Transform* pt = nullptr;
-                component::EntityId parentId = -1;
-                while (pt == nullptr) {
-                    parentId = r->getParent();
-                    pt = component::getComponent<component::Transform>(parentId);
-                    r = component::getComponent<component::Relationship>(parentId);
-                    if (r->getParent() == -1)
-                        break;
-                }
-
-                // If found some entity with transform component, convert result to be relative to it
-                if (pt) {
-                    vec3 pPos, pScale;
-                    quat pOri;
-                    mat4 pTransform = pt->getWorldTransform(parentId);
-                    pTransform.getPosOriScale(pPos, pOri, pScale);
-
-                    // Calculate pos ori scale relative to parent
-                    position -= pPos;
-                    scale /= pScale;
-                    orientation = orientation * (-pOri); // Rotation from pOri to ori
-                }
-            }
+            worldTrans.position = {pos.x, pos.y, t->position.z};
+            worldTrans.orientation.set2DAngle(body->GetAngle());
+            worldTrans.scale = t->scale;
 
             // Update transform
-            t->position = position;
-            t->orientation = orientation;
-            t->scale = scale;
+            t->setWorldTransform(eid, worldTrans);
         }
     }
 }
@@ -363,7 +327,7 @@ void Box2DEngine::createRigidJoint(component::RigidJoint* rigid) {
     auto ta = component::getComponent<component::Transform>(rigid->bodyA);
     auto tb = component::getComponent<component::Transform>(rigid->bodyB);
     vec3 worldDir = tb->position - ta->position;
-    vec3 localDir = inverse(ta->getWorldTransform(rigid->bodyA)) * worldDir;
+    vec3 localDir = inverse(ta->getWorldTransformMatrix(rigid->bodyA)) * worldDir;
     vec3 localDirNorm = normalize(localDir);
     b2Vec2 axis = b2Vec2(localDirNorm.x, localDirNorm.y);
     b2Vec2 anchor = b2Vec2(localDir.x, localDir.y);

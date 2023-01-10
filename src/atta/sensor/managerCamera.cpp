@@ -135,7 +135,7 @@ void Manager::updateCameraModel(CameraInfo& cameraInfo) {
     cmp::Transform* transform = entity.get<cmp::Transform>();
     if (transform) {
         // Calculate position
-        vec3 position = transform->getWorldTransform(entity).getPosition();
+        vec3 position = transform->getWorldTransform(entity).position;
 
         // Calculate orientation
         quat ori = transform->orientation;

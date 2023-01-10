@@ -23,10 +23,10 @@ ComponentDescription& TypedComponentRegistry<SphereCollider>::getDescription() {
 }
 
 void SphereCollider::getWorldData(EntityId eid, float& worldRadius, vec3& worldPos) {
-    mat4 transform = Transform::getEntityWorldTransform(eid);
-    vec3 pos, scale;
-    quat ori;
-    transform.getPosOriScale(pos, ori, scale);
+    Transform wt = Transform::getEntityWorldTransform(eid);
+    vec3 pos = wt.position;
+    vec3 scale = wt.scale;
+    quat ori = wt.orientation;
 
     worldRadius = radius * std::max(std::max(scale.x, scale.y), scale.z);
     worldPos = offset + pos;
