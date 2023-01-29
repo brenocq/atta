@@ -23,11 +23,12 @@ class quat {
     quat(const float r, const float i, const float j, const float k) : r(r), i(i), j(j), k(k) {}
 
     void normalize();
+    void inverse();
 
     // quat multiplication
     void operator*=(const quat& multiplier);
-    quat operator*(const quat& multiplier);
-    quat operator-();
+    quat operator*(const quat& multiplier) const;
+    quat operator-() const;
 
     // Multiply scalar
     template <typename U>
@@ -38,7 +39,7 @@ class quat {
     void operator+=(const vec3& vec);
     bool operator!=(const quat& other);
 
-    void rotateVector(vec3& vec);
+    void rotateVector(vec3& vec) const;
     void addScaledVector(const vec3& vec, float scale);
     void rotateAroundAxis(const vec3& axis, float angle);
 
@@ -63,6 +64,11 @@ inline quat eulerToQuat(const vec3& e) {
 inline vec3 quatToEuler(const quat& q) {
     vec3 e = q.getEuler();
     return e;
+}
+
+inline quat inverse(quat q) {
+    q.inverse();
+    return q;
 }
 
 // <<

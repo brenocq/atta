@@ -10,10 +10,10 @@
 #include <atta/component/components/boxCollider2D.h>
 #include <atta/component/components/circleCollider2D.h>
 #include <atta/component/components/cylinderCollider.h>
+#include <atta/component/components/prototype.h>
 #include <atta/component/components/rigidBody.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/components/prototype.h>
 #include <atta/component/interface.h>
 #include <atta/graphics/drawer.h>
 #include <atta/physics/engines/bulletEngine.h>
@@ -48,10 +48,10 @@ void PhysicsDrawer::drawBullet() {
             if (component::Entity(entity).isPrototype())
                 continue;
 
-            mat4 worldTrans = t->getWorldTransform(entity);
-            vec3 pos, scale;
-            quat ori;
-            worldTrans.getPosOriScale(pos, ori, scale);
+            component::Transform worldTrans = t->getWorldTransform(entity);
+            vec3 pos = worldTrans.position;
+            vec3 scale = worldTrans.scale;
+            quat ori = worldTrans.orientation;
 
             // Base color
             vec4 color = {1, 1, 1, 1};
@@ -98,8 +98,8 @@ void PhysicsDrawer::drawBullet() {
                 auto rbB = component::getComponent<component::RigidBody>(p->bodyB);
 
                 if (tA && tB && rbA && rbB) {
-                    mat4 wTransA = tA->getWorldTransform(p->bodyA);
-                    mat4 wTransB = tB->getWorldTransform(p->bodyB);
+                    mat4 wTransA = tA->getWorldTransformMatrix(p->bodyA);
+                    mat4 wTransB = tB->getWorldTransformMatrix(p->bodyB);
 
                     vec3 wAnchorA = wTransA * vec4(p->anchorA, 1);
                     vec3 wAnchorB = wTransB * vec4(p->anchorB, 1);
@@ -134,8 +134,8 @@ void PhysicsDrawer::drawBullet() {
                 auto rbB = component::getComponent<component::RigidBody>(r->bodyB);
 
                 if (tA && tB && rbA && rbB) {
-                    mat4 wTransA = tA->getWorldTransform(r->bodyA);
-                    mat4 wTransB = tB->getWorldTransform(r->bodyB);
+                    mat4 wTransA = tA->getWorldTransformMatrix(r->bodyA);
+                    mat4 wTransB = tB->getWorldTransformMatrix(r->bodyB);
 
                     // TODO anchor position does not match bullet engine position
                     vec3 wAnchorA = wTransA * vec4(r->anchorA, 1);
@@ -228,10 +228,10 @@ void PhysicsDrawer::drawBox2D() {
             auto t = component::getComponent<component::Transform>(entity);
             if (!t)
                 continue;
-            mat4 worldTrans = t->getWorldTransform(entity);
-            vec3 pos, scale;
-            quat ori;
-            worldTrans.getPosOriScale(pos, ori, scale);
+            component::Transform worldTrans = t->getWorldTransform(entity);
+            vec3 pos = worldTrans.position;
+            vec3 scale = worldTrans.scale;
+            quat ori = worldTrans.orientation;
 
             //----- Box collider 2D -----//
             auto box = component::getComponent<component::BoxCollider2D>(entity);

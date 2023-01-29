@@ -36,8 +36,14 @@ void setShowJoints(bool showJoints);
 
 //---------- Queries ----------//
 std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);
-std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst = false);
 bool areColliding(component::EntityId eid0, component::EntityId eid1);
+
+struct RayCastHit {
+    cmp::Entity entity = -1;
+    float distance = -1.0f;
+    vec3 normal = vec3(0.0f);
+};
+std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst = false);
 
 } // namespace atta::physics
 
@@ -47,17 +53,17 @@ namespace atta::physics {
 
 template <typename T>
 std::shared_ptr<T> getEngine() {
-    if constexpr(std::is_same_v<T, Engine>)
+    if constexpr (std::is_same_v<T, Engine>)
         return Manager::getInstance()._engine;
-    else if constexpr(std::is_same_v<T, NoneEngine>)
+    else if constexpr (std::is_same_v<T, NoneEngine>)
         return Manager::getInstance()._noneEngine;
-    else if constexpr(std::is_same_v<T, BulletEngine>)
+    else if constexpr (std::is_same_v<T, BulletEngine>)
         return Manager::getInstance()._bulletEngine;
-    else if constexpr(std::is_same_v<T, Box2DEngine>)
+    else if constexpr (std::is_same_v<T, Box2DEngine>)
         return Manager::getInstance()._box2DEngine;
     return nullptr;
 }
 
-} // namespace atta::graphics
+} // namespace atta::physics
 
 #endif // ATTA_PHYSICS_INTERFACE_H

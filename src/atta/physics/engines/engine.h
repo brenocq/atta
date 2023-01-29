@@ -12,6 +12,7 @@
 
 namespace atta::physics {
 
+class RayCastHit;
 class Engine {
   public:
     ///< Available physics engines
@@ -23,12 +24,17 @@ class Engine {
     virtual void step(float dt) = 0;
     virtual void stop() = 0;
 
-    virtual std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) { return {}; };
-    virtual std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst = false) { return {}; };
-    virtual bool areColliding(component::EntityId eid0, component::EntityId eid1) { return false; };
+    virtual void createRigidBody(component::EntityId entity);
+    virtual void deleteRigidBody(component::EntityId entity);
+    virtual void createColliders(component::EntityId entity);
+    virtual void deleteColliders(component::EntityId entity);
+
+    virtual std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);
+    virtual std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst = false);
+    virtual bool areColliding(component::EntityId eid0, component::EntityId eid1);
 
     /// Physics engine should update the gravity with the new value in Manager::getGravity()
-    virtual void updateGravity() {};
+    virtual void updateGravity() {}
 
     Type getType() const { return _type; }
     bool getRunning() const { return _running; }

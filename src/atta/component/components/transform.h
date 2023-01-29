@@ -28,31 +28,45 @@ struct Transform final : public Component {
     quat orientation = quat();   ///< Orientation
     vec3f scale = vec3(1, 1, 1); ///< Scale
 
-    // Get transform matrix in the world coordinate system
+    /// Get transform in the world coordinate system
     /** If the entity is child of another entity the
-     * resulting transform matrix will depend on its
-     * parent world transform.
+     * resulting transform will depend on its parent 
+     * world transform.
      *
      * The world transform will only differ from the local
      * transform when the entity also has a Relationship.
      */
-    mat4 getWorldTransform(EntityId entity);
+    Transform getWorldTransform(EntityId entity);
 
-    // Get transform matrix in the local coordinate system
-    /** Transform matrix calculated directly from position/orientation/scale. */
-    mat4 getLocalTransform();
-
-    // Set position/orientation/scale from the desired world transform
+    /// Set position/orientation/scale from the desired world transform
     /** It will convert the world transform to a local space and
      * update position/orientation/scale
      **/
-    void setWorldTransform(EntityId entity, mat4 worldTransform);
+    void setWorldTransform(EntityId entity, Transform worldTransform);
 
-    // Get transform of any entity in the world coordinate system
+    /// Get transform matrix in the world coordinate system
+    mat4 getWorldTransformMatrix(EntityId entity);
+
+    /// Get transform matrix in the local coordinate system
+    mat4 getLocalTransformMatrix();
+
+    /// Get transform of any entity in the world coordinate system
     /** Take into account that it is possible that the entity does have a transform component,
      * but someone up in the hierarchy have
      * */
-    static mat4 getEntityWorldTransform(EntityId entity);
+    static Transform getEntityWorldTransform(EntityId entity);
+
+    /// Transform multiplication
+    /** Useful to get the world transformation from the parent and local transformations
+     * world = parent * local
+     **/
+    Transform operator*(const Transform& o) const;
+
+    /// Transformation division
+    /** Useful to get the local transformation from the parent and world transformations
+     * local = world / parent
+     **/
+    Transform operator/(const Transform& o) const;
 };
 
 ATTA_REGISTER_COMPONENT(Transform)

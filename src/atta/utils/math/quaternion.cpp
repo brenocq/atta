@@ -27,6 +27,22 @@ void quat::normalize() {
     k *= d;
 }
 
+void quat::inverse() {
+    float d = r * r + i * i + j * j + k * k;
+    // Check for zero length quaternion, and use the no-rotation
+    // quaternion in that case
+    if (d < std::numeric_limits<float>::epsilon()) {
+        r = 1;
+        i = j = k = 0;
+        return;
+    }
+
+    r = r / d;
+    i = -i / d;
+    j = -j / d;
+    k = -k / d;
+}
+
 // quat multiplication
 void quat::operator*=(const quat& multiplier) {
     quat q = *this;
@@ -36,13 +52,13 @@ void quat::operator*=(const quat& multiplier) {
     k = q.r * multiplier.k + q.k * multiplier.r + q.i * multiplier.j - q.j * multiplier.i;
 }
 
-quat quat::operator*(const quat& multiplier) {
+quat quat::operator*(const quat& multiplier) const {
     quat result = (*this);
     result *= multiplier;
     return result;
 }
 
-quat quat::operator-() {
+quat quat::operator-() const {
     quat q = (*this);
     q.r *= -1;
     return q;
@@ -91,7 +107,7 @@ void quat::addScaledVector(const vec3& vec, float scale) {
     k += q.k * 0.5f;
 }
 
-void quat::rotateVector(vec3& vec) {
+void quat::rotateVector(vec3& vec) const {
     vec3 v = vec;
     vec3 u = {-i, -j, -k};
     float s = r;

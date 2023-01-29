@@ -77,7 +77,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
             resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {
-                mat4 model = transpose(transform->getWorldTransform(entity));
+                mat4 model = transpose(transform->getWorldTransformMatrix(entity));
                 shader->setMat4("model", model);
 
                 if (material) {

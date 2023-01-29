@@ -20,52 +20,50 @@ ComponentDescription& TypedComponentRegistry<Transform>::getDescription() {
     return desc;
 }
 
-mat4 Transform::getWorldTransform(EntityId entity) {
+Transform Transform::getWorldTransform(EntityId entity) {
     // For know there is no fast way to the transform component to know to which entity it belongs to,
     // so we receive the EntityId by argument
-    mat4 t = getLocalTransform();
-    Relationship* relationship = component::getComponent<Relationship>(entity);
+    Transform world = *this;
 
+    Relationship* relationship = component::getComponent<Relationship>(entity);
     while (relationship && relationship->getParent() >= 0) {
         Transform* ptransform = component::getComponent<Transform>(relationship->getParent());
         if (ptransform)
-            t = ptransform->getLocalTransform() * t;
+            world = (*ptransform) * world;
         relationship = component::getComponent<Relationship>(relationship->getParent());
     }
 
-    return t;
+    return world;
 }
 
-mat4 Transform::getLocalTransform() {
-    mat4 t;
-    t.setPosOriScale(position, orientation, scale);
-    return t;
-}
-
-void Transform::setWorldTransform(EntityId entity, mat4 worldTransform) {
-    // If 2 is parent of 1, that is parent of 0
-    // LX is the local transform of X
-    // We have: W0 = L2*L1*L0
-    // We want: worldToLocal*W0 = L0
-    // Thus:    worldToLocal = (L2*L1)^(-1)
-
-    mat4 worldToLocal = mat4(1.0f);
+void Transform::setWorldTransform(EntityId entity, Transform worldTransform) {
+    (*this) = worldTransform;
 
     // Go up the hierarchy until root to calculate world to local transform
+    // TODO maybe need to go top down instead
     Relationship* relationship = component::getComponent<Relationship>(entity);
     while (relationship && relationship->getParent() >= 0) {
         Transform* ptransform = component::getComponent<Transform>(relationship->getParent());
         if (ptransform)
-            worldToLocal = ptransform->getLocalTransform() * worldToLocal;
+            (*this) = (*this) / *ptransform;
         relationship = component::getComponent<Relationship>(relationship->getParent());
     }
-    worldToLocal.invert();
-
-    mat4 local = worldToLocal * worldTransform;
-    local.getPosOriScale(position, orientation, scale);
 }
 
-mat4 Transform::getEntityWorldTransform(EntityId entity) {
+mat4 Transform::getWorldTransformMatrix(EntityId entity) {
+    Transform t = getWorldTransform(entity);
+    mat4 m;
+    m.setPosOriScale(t.position, t.orientation, t.scale);
+    return m;
+}
+
+mat4 Transform::getLocalTransformMatrix() {
+    mat4 m;
+    m.setPosOriScale(position, orientation, scale);
+    return m;
+}
+
+Transform Transform::getEntityWorldTransform(EntityId entity) {
     EntityId curr = entity;
     auto t = component::getComponent<Transform>(curr);
     auto r = component::getComponent<Relationship>(curr);
@@ -76,12 +74,53 @@ mat4 Transform::getEntityWorldTransform(EntityId entity) {
 
         curr = r->getParent();
         if (curr == -1)
-            return mat4(1.0f);
+            return Transform{};
         else {
             t = component::getComponent<Transform>(curr);
             r = component::getComponent<Relationship>(curr);
         }
     } while (true);
+}
+
+Transform Transform::operator*(const Transform& o) const {
+    // World = parent * local
+    Transform world;
+
+    // Calculate orientation
+    world.orientation = orientation * o.orientation;
+
+    // Calculate scale
+    vec3 finalScale = o.scale;
+    o.orientation.rotateVector(finalScale);
+    finalScale *= scale;
+    world.scale = finalScale;
+
+    // Calculate position
+    vec3 finalPos = scale * o.position;
+    orientation.rotateVector(finalPos);
+    world.position = position + finalPos;
+
+    return world;
+}
+
+Transform Transform::operator/(const Transform& o) const {
+    // Local = world / parent
+    Transform local;
+
+    quat oriConj = inverse(o.orientation);
+
+    // Calculate orientation
+    local.orientation = oriConj * orientation;
+
+    // Calculate scale
+    local.scale = scale / o.scale;
+    oriConj.rotateVector(local.scale);
+
+    // Calculate position
+    local.position = (position - o.position) / o.scale;
+    oriConj.rotateVector(local.position);
+
+    return local;
 }
 
 } // namespace atta::component

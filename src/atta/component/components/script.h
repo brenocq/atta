@@ -19,6 +19,7 @@ struct Script final : public Component {
     Script();
     /** The script name is the same as the cmake target name */
     StringId sid; ///< Script name
+    void set(std::string script);
 };
 ATTA_REGISTER_COMPONENT(Script)
 template <>

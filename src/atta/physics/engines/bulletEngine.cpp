@@ -80,10 +80,10 @@ void BulletEngine::step(float dt) {
 
         // Get atta transform
         auto t = component::getComponent<component::Transform>(eid);
-        vec3 position, scale;
-        quat orientation;
-        mat4 m = t->getWorldTransform(eid);
-        m.getPosOriScale(position, orientation, scale);
+        component::Transform worldT = t->getWorldTransform(eid);
+        vec3 position = worldT.position;
+        vec3 scale = worldT.scale;
+        quat orientation = worldT.orientation;
 
         // Get bullet transform
         btTransform trans;
@@ -151,12 +151,13 @@ void BulletEngine::step(float dt) {
         auto t = component::getComponent<component::Transform>(eid);
         vec3 pos = {trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()};
         quat ori = quat(trans.getRotation().w(), -trans.getRotation().x(), -trans.getRotation().y(), -trans.getRotation().z());
-        mat4 worldTransform;
-        worldTransform.setPosOriScale(pos, ori, t->scale);
 
         // Update world transform
-        t->setWorldTransform(eid, worldTransform);
-        mat4 m = t->getWorldTransform(eid);
+        component::Transform worldTrans;
+        worldTrans.position = pos;
+        worldTrans.orientation = ori;
+        worldTrans.scale = t->scale;
+        t->setWorldTransform(eid, worldTrans);
 
         // Update rigid body
         // auto rb = component::getComponent<component::RigidBody>(eid);
@@ -230,8 +231,8 @@ std::vector<component::EntityId> BulletEngine::getEntityCollisions(component::En
     return result;
 }
 
-std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
-    std::vector<component::EntityId> result;
+std::vector<RayCastHit> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
+    std::vector<RayCastHit> result;
     btVector3 btBegin(begin.x, begin.y, begin.z);
     btVector3 btEnd(end.x, end.y, end.z);
 
@@ -245,8 +246,9 @@ std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, boo
         // Check hit
         if (rayCallback.hasHit()) {
             const btCollisionObject* col = rayCallback.m_collisionObject;
-            component::EntityId eid = BT_USRPTR_TO_EID(col->getUserPointer());
-            result.push_back(eid);
+            RayCastHit h{};
+            h.entity = BT_USRPTR_TO_EID(col->getUserPointer());
+            result.push_back(h);
         }
     } else {
         // Create ray cast callback
@@ -259,8 +261,9 @@ std::vector<component::EntityId> BulletEngine::rayCast(vec3 begin, vec3 end, boo
         if (rayCallback.hasHit())
             for (unsigned i = 0; i < rayCallback.m_collisionObjects.size(); i++) {
                 const btCollisionObject* col = rayCallback.m_collisionObjects[i];
-                component::EntityId eid = BT_USRPTR_TO_EID(col->getUserPointer());
-                result.push_back(eid);
+                RayCastHit h{};
+                h.entity = BT_USRPTR_TO_EID(col->getUserPointer());
+                result.push_back(h);
             }
     }
 
@@ -343,10 +346,10 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
         return;
     }
 
-    vec3 position, scale;
-    quat orientation;
-    mat4 m = t->getWorldTransform(entity);
-    m.getPosOriScale(position, orientation, scale);
+    component::Transform worldT = t->getWorldTransform(entity);
+    vec3 position = worldT.position;
+    vec3 scale = worldT.scale;
+    quat orientation = worldT.orientation;
 
     // Calculate transform
     btTransform bodyTransform(btQuaternion(-orientation.i, -orientation.j, -orientation.k, orientation.r),
