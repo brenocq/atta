@@ -25,6 +25,11 @@ class Box2DEngine : public Engine {
     void step(float dt) override;
     void stop() override;
 
+    void createRigidBody(component::EntityId entity);
+    void deleteRigidBody(component::EntityId entity);
+    void createColliders(component::EntityId entity);
+    void deleteColliders(component::EntityId entity);
+
     std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) override;
     std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
     bool areColliding(component::EntityId eid0, component::EntityId eid1) override;

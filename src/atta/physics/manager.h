@@ -52,6 +52,7 @@ class Manager final {
     void setGravityImpl(vec3 gravity);
 
     void onSimulationStateChange(event::Event& event);
+    void onComponentChange(event::Event& event);
 
     std::shared_ptr<Engine> _engine;             ///< Current physics engine
     std::shared_ptr<NoneEngine> _noneEngine;     ///< None physics engine

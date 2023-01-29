@@ -24,6 +24,11 @@ class Engine {
     virtual void step(float dt) = 0;
     virtual void stop() = 0;
 
+    virtual void createRigidBody(component::EntityId entity);
+    virtual void deleteRigidBody(component::EntityId entity);
+    virtual void createColliders(component::EntityId entity);
+    virtual void deleteColliders(component::EntityId entity);
+
     virtual std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);
     virtual std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst = false);
     virtual bool areColliding(component::EntityId eid0, component::EntityId eid1);

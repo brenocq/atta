@@ -60,6 +60,11 @@ void clear();
 void registerComponent(ComponentRegistry* componentRegistry);
 void unregisterCustomComponents();
 
+template<typename T>
+inline ComponentId getId() {
+    return TypedComponentRegistry<T>::getInstance().getId();
+}
+
 } // namespace atta::component
 
 // Template definitions
