@@ -239,7 +239,7 @@ void PbrRenderer::shadowPass() {
                 component::Transform* transform = component::getComponent<component::Transform>(entity);
 
                 if (mesh && transform) {
-                    shader->setMat4("model", transpose(transform->getWorldTransform(entity)));
+                    shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
                     graphics::getRendererAPI()->renderMesh(mesh->sid);
                 }
             }
@@ -286,7 +286,7 @@ void PbrRenderer::shadowPass() {
             shader->setMat4("shadowMatrices[3]", transpose(shadowMatrices[3]));
             shader->setMat4("shadowMatrices[4]", transpose(shadowMatrices[4]));
             shader->setMat4("shadowMatrices[5]", transpose(shadowMatrices[5]));
-            shader->setMat4("model", transpose(t->getWorldTransform(pointLightEntity)));
+            shader->setMat4("model", transpose(t->getWorldTransformMatrix(pointLightEntity)));
             shader->setVec3("lightPos", t->position);
             shader->setFloat("far_plane", far);
 
@@ -296,7 +296,7 @@ void PbrRenderer::shadowPass() {
                 component::Transform* transform = component::getComponent<component::Transform>(entity);
 
                 if (mesh && transform) {
-                    shader->setMat4("model", transpose(transform->getWorldTransform(entity)));
+                    shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
                     graphics::getRendererAPI()->renderMesh(mesh->sid);
                 }
             }
@@ -346,7 +346,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
 
             if (transform && (pl || dl || el)) {
                 if (pl && numPointLights < 10) {
-                    vec3 position = transform->getWorldTransform(entity).getPosition();
+                    vec3 position = transform->getWorldTransformMatrix(entity).getPosition();
                     int i = numPointLights++;
                     shader->setVec3(("pointLights[" + std::to_string(i) + "].position").c_str(), position);
                     shader->setVec3(("pointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
@@ -381,7 +381,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
             resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {
-                mat4 model = transpose(transform->getWorldTransform(entity));
+                mat4 model = transpose(transform->getWorldTransformMatrix(entity));
                 mat4 invModel = inverse(model);
                 shader->setMat4("model", model);
                 shader->setMat4("invModel", invModel);

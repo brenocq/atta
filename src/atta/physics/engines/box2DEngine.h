@@ -12,11 +12,11 @@
 #include <atta/component/components/revoluteJoint.h>
 #include <atta/component/components/rigidBody2D.h>
 #include <atta/component/components/rigidJoint.h>
-#include <atta/physics/physicsEngines/physicsEngine.h>
+#include <atta/physics/engines/engine.h>
 
 namespace atta::physics {
 
-class Box2DEngine : public PhysicsEngine {
+class Box2DEngine : public Engine {
   public:
     Box2DEngine();
     ~Box2DEngine();
@@ -25,9 +25,18 @@ class Box2DEngine : public PhysicsEngine {
     void step(float dt) override;
     void stop() override;
 
+    void createRigidBody(component::EntityId entity);
+    void deleteRigidBody(component::EntityId entity);
+    void createColliders(component::EntityId entity);
+    void deleteColliders(component::EntityId entity);
+
     std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) override;
-    std::vector<component::EntityId> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
+    std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
     bool areColliding(component::EntityId eid0, component::EntityId eid1) override;
+
+    void updateGravity() override;
+
+    b2Body* getBox2DRigidBody(component::EntityId entity);
 
     // component::RigidBody2D interface
     void setTransform(component::RigidBody2D* rb2d, vec2 position, float angle);

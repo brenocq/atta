@@ -4,10 +4,10 @@ set(ATTA_PHYSICS_MODULE_SOURCE
     interface.cpp
     manager.cpp
 	
-	physicsEngines/physicsEngine.cpp
-	physicsEngines/nullEngine.cpp
-	physicsEngines/box2DEngine.cpp
-	physicsEngines/bulletEngine.cpp
+	engines/engine.cpp
+	engines/noneEngine.cpp
+	engines/box2DEngine.cpp
+	engines/bulletEngine.cpp
 )
 
 add_library(atta_physics_module STATIC

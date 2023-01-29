@@ -7,7 +7,6 @@
 #ifndef ATTA_UTILS_MATH_MATRIX_HH
 #define ATTA_UTILS_MATH_MATRIX_HH
 
-#include <atta/utils/math/point.h>
 #include <atta/utils/math/quaternion.h>
 #include <atta/utils/math/vector.h>
 
@@ -58,18 +57,6 @@ class mat4 {
 
     // Multiply by vec3
     vec3 operator*(const vec3& vector) const;
-    template <typename T>
-    point3<T> operator*(const point3<T>& p) const {
-        T x = p.x, y = p.y, z = p.z;
-        T xp = data[0] * x + data[1] * y + data[2] * z + data[3];
-        T yp = data[4] * x + data[5] * y + data[6] * z + data[7];
-        T zp = data[8] * x + data[9] * y + data[10] * z + data[11];
-        T wp = data[12] * x + data[13] * y + data[14] * z + data[15];
-        if (wp == 1)
-            return point3<T>(xp, yp, zp);
-        else
-            return point3<T>(xp, yp, zp) / wp;
-    }
 
     vec3 transform(const vec3& vector) const;
     mat4 translate(const vec3& vector) const;
@@ -88,6 +75,8 @@ class mat4 {
     void setPosOriScale(const vec3& pos, const quat& q, const vec3& scale);
 
     vec3 getPosition() const;
+    quat getOrientation() const;
+    vec3 getScale() const;
     void getPosOriScale(vec3& pos, quat& q, vec3& scale) const;
 
     std::string toString() const;
@@ -189,10 +178,7 @@ inline mat4 posOriScale(const vec3& pos, const quat& q, const vec3& scale) {
 }
 
 // <<
-// inline std::stringstream& operator<<(std::stringstream& os, const mat4& m)
-//{
-//	return os << m.toString();
-//}
+inline std::ostream& operator<<(std::ostream& os, const mat4& m) { return os << m.toString(); }
 
 //------------------------------------------------------------//
 //--------------------------- mat3 ---------------------------//
@@ -271,10 +257,7 @@ class mat3 {
 };
 
 // <<
-template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const mat3& m) {
-    return os << m.toString();
-}
+inline std::ostream& operator<<(std::ostream& os, const mat3& m) { return os << m.toString(); }
 
 //------------------------------------------------------------//
 //--------------------------- mat2 ---------------------------//
@@ -347,10 +330,7 @@ class mat2 {
 };
 
 // <<
-template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const mat2& m) {
-    return os << m.toString();
-}
+inline std::ostream& operator<<(std::ostream& os, const mat2& m) { return os << m.toString(); }
 
 //------------------------------------------------------------//
 //--------------------------- mat ---------------------------//

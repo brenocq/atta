@@ -19,9 +19,9 @@ class LinuxCompiler : public Compiler {
 
     void compileAll() override;
     void compileTarget(StringId target) override;
-    void updateTargets() override;
 
   private:
+    void updateTargets();
     void findTargetFiles(StringId target);
     std::string runCommand(std::string cmd, bool print = false, bool keepColors = false);
 

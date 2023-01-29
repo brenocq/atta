@@ -13,21 +13,36 @@
 #include <atta/script/interface.h>
 
 namespace atta::component {
-Factory::Factory(EntityId prototypeId) : _prototypeId(prototypeId) {
-    Prototype* prototype = component::getComponent<Prototype>(_prototypeId);
-    _maxClones = prototype->maxClones;
+Factory::Factory(Entity prototype) : _prototype(prototype), _numEntitiesCloned(0), _numEntitiesInitialized(0) {
+    _maxClones = _prototype.get<Prototype>()->maxClones;
 }
 
-void Factory::createClones() {
-    // Create entityId for each clone
-    _firstCloneEid = component::Manager::getInstance().createClonesImpl(_maxClones);
+void Factory::createChildClones(Entity child, Entity parent) {
+    // Create `_maxClones` clones of `child` and set all clones as child of `parent`
+    // NOTE EntityId of custom entities/joints not working yet (only relationship being handled)
 
-    // FIXME not working recursive prototypes yet
+    Entity firstClone = EntityId(_firstClone) + _numEntitiesInitialized;
+
+    // If the prototype entity has parent, set the parent as parent of clones as well
+    if (parent != -1) {
+        // clang-format off
+        bool parentIsClone =
+            parent.getId() >= _firstClone.getId() &&
+            parent.getId() < EntityId(_firstClone.getId() + _numEntitiesCloned * _maxClones);
+        // clang-format on
+
+        Relationship* r = parent.get<Relationship>();
+        for (unsigned i = 0; i < _maxClones; i++)
+            r->addChild(parentIsClone ? Entity(parent + i) : parent, firstClone + i);
+    }
+
+    // For every registered component
     for (auto compReg : component::getComponentRegistries()) {
-        // Check if prototype entity has this component
-        Component* prototypeComponent = component::getComponentById(compReg->getId(), _prototypeId);
-        if (prototypeComponent) {
-            // XXX For now, just ignore the prototype component when clonnning
+        // Check if child entity has this component
+        Component* component = component::getComponentById(compReg->getId(), child);
+        if (component) {
+            // Ignore prototype component when clonning
+            // TODO recursive prototypes not supported yet
             if (compReg->getId() == COMPONENT_POOL_SID_BY_NAME(typeid(Prototype).name()))
                 continue;
 
@@ -36,115 +51,97 @@ void Factory::createClones() {
             size_t componentSize = (size_t)compReg->getSizeof();
 
             // Copy default data from prototype entity component to clone components
+            // TODO components with EntityId variables not handled properly yet
             if (compReg->getId() != COMPONENT_POOL_SID_BY_NAME(typeid(Relationship).name())) {
                 // Allocate memory for each clone
                 uint8_t* mem = (uint8_t*)cpool->allocBytes(_maxClones * componentSize, componentSize);
-                _componentMemories.push_back(std::make_pair(compReg->getId(), mem));
-                _componentRegistries.push_back(compReg);
 
+                // Initialize component data
                 for (unsigned i = 0; i < _maxClones; i++)
-                    memcpy(mem + componentSize * i, prototypeComponent, componentSize);
+                    memcpy(mem + componentSize * i, component, componentSize);
 
                 // Add allocated component to clone entities
                 for (unsigned i = 0; i < _maxClones; i++)
-                    component::addComponentPtr(_firstCloneEid + i, compReg->getIndex(), mem + componentSize * i);
-            } else {
-                // XXX Not sure how will work with the Relationship because it has std::vector
-                // If the prototype entity has parent, set the parent as parent of clones as well
-                Relationship* r = component::getComponent<Relationship>(_prototypeId);
-                if (r->getParent() != -1) {
-                    EntityId parentId = r->getParent();
-                    r = component::getComponent<Relationship>(r->getParent());
-                    for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++)
-                        r->addChild(parentId, entity);
-                }
+                    component::addComponentPtr(firstClone.getId() + i, compReg->getIndex(), mem + componentSize * i);
             }
         }
     }
+    _numEntitiesInitialized += _maxClones;
+
+    // Recursive clone children
+    Relationship* r = child.get<Relationship>();
+    if (r)
+        for (Entity childToClone : r->getChildren()) // For each child of prototype
+            // Clone prototype child and set as clone child
+            createChildClones(childToClone, firstClone);
+}
+
+void Factory::createClones() {
+    // Count number of child entities
+    _numEntitiesCloned = 1;
+    Relationship* r = _prototype.get<Relationship>();
+    if (r) {
+        std::stack<std::vector<Entity>> s;
+        s.push(r->getChildren());
+        while (!s.empty()) {
+            std::vector<Entity> children = s.top();
+            s.pop();
+            _numEntitiesCloned += children.size();
+            for (Entity child : children) {
+                r = child.get<Relationship>();
+                if (r)
+                    s.push(r->getChildren());
+            }
+        }
+    }
+
+    // Allocate one entity of each clone
+    _firstClone = component::Manager::getInstance().createClonesImpl(_maxClones * _numEntitiesCloned);
+
+    // Create and initialize clone components (recursivelly)
+    _numEntitiesInitialized = 0;
+    r = _prototype.get<Relationship>();
+    createChildClones(_prototype, r ? r->getParent() : Entity(-1));
 }
 
 void Factory::destroyClones() {
-    for (EntityId i = _firstCloneEid; i < EntityId(_firstCloneEid + _maxClones); i++)
-        component::deleteEntity(i);
-    // TODO can be faster if deallocate each component and then deleteEntityOnly
+    // Destroy from back to front because need to destroy children first
+    for (int i = _maxClones * _numEntitiesCloned - 1; i >= 0; i--)
+        component::deleteEntity(_firstClone.getId() + i);
+    _numEntitiesCloned = 0;
+    _numEntitiesInitialized = 0;
 }
 
 void Factory::runScripts(float dt) {
-    // TODO faster
     unsigned cloneId = 0;
-    for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++) {
-        Script* scriptComponent = component::getComponent<Script>(entity);
+    for (Entity entity : getClones()) {
+        Script* scriptComponent = entity.get<Script>();
         if (scriptComponent) {
             script::Script* script = script::getScript(scriptComponent->sid);
             if (script)
-                script->update(Entity(entity, cloneId), dt);
+                script->update(entity, dt);
         }
-        cloneId++;
     }
-
-    // Example using componentMemories to set Entity component vector
-    // Script* scriptComponent = component::getComponent<script::Script>(_prototypeId);
-    // if(scriptComponent)
-    //{
-    //    Script* script = script::getScript(scriptComponent->sid);
-    //    if(script)
-    //    {
-    //        // Execute each clone script with the right component
-    //        for(unsigned cloneId = 0; cloneId < _maxClones; cloneId++)
-    //        {
-    //            // Populate component memories
-    //            for(unsigned i = 0; i < components.size(); i++)
-    //                components[i] = reinterpret_cast<Component*>(_componentMemories[i].second +
-    //                        cloneId * _componentRegistries[i]->getSizeof());
-
-    //             Run script
-    //            script->update(_prototypeId, cloneId, components, dt);
-    //        }
-    //    }
-    //}
 }
 
-EntityId Factory::getPrototypeId() const { return _prototypeId; }
-EntityId Factory::getFirstCloneId() const { return _firstCloneEid; }
-Entity Factory::getFirstClone() const { return Entity{_firstCloneEid}; }
-Entity Factory::getLastClone() const { return Entity{_firstCloneEid + static_cast<EntityId>(_maxClones) - 1}; }
+Entity Factory::getPrototype() const { return _prototype; }
+Entity Factory::getFirstClone() const { return _firstClone; }
+uint64_t Factory::getNumEntitiesCloned() const { return _numEntitiesCloned; }
 uint64_t Factory::getMaxClones() const { return _maxClones; }
-uint64_t Factory::getNumClones() const { return _maxClones; }
-std::vector<std::pair<ComponentId, uint8_t*>>& Factory::getComponentMemories() { return _componentMemories; }
 
-std::vector<ComponentId> Factory::getComponentsIds() const {
-    std::vector<ComponentId> components;
-
-    for (auto [componentId, memory] : _componentMemories)
-        components.push_back(componentId);
-
-    return components;
-}
-
-std::vector<uint8_t*> Factory::getMemories() const {
-    std::vector<uint8_t*> memories;
-
-    for (auto [componentId, memory] : _componentMemories)
-        memories.push_back(memory);
-
-    return memories;
-}
-
-std::vector<Entity> Factory::getClones() const {
+std::vector<Entity> Factory::getClones(bool includeChildren) const {
     std::vector<Entity> clones;
-    clones.resize(_maxClones);
-    int i = 0;
-    for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++, i++)
-        clones[i] = Entity(entity, i);
+    unsigned size = includeChildren ? _maxClones * _numEntitiesCloned : _maxClones;
+    clones.resize(size);
+    for (unsigned i = 0; i < clones.size(); i++)
+        clones[i] = Entity(_firstClone.getId() + i);
     return clones;
 }
 
-std::vector<EntityId> Factory::getCloneIds() const {
-    std::vector<EntityId> clones;
-    clones.resize(_maxClones);
-    int i = 0;
-    for (EntityId entity = _firstCloneEid; entity < EntityId(_firstCloneEid + _maxClones); entity++, i++)
-        clones[i] = entity;
-    return clones;
+bool Factory::isClone(Entity entity) {
+    return entity.getId() >= _firstClone.getId() && entity.getId() < _firstClone.getId() + _maxClones * _numEntitiesCloned;
 }
+
+bool Factory::isRootClone(Entity entity) { return entity.getId() >= _firstClone.getId() && entity.getId() < _firstClone.getId() + _maxClones; }
+
 } // namespace atta::component

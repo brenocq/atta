@@ -47,7 +47,7 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
 
             if (mesh && transform) {
                 // Draw mesh normal size
-                mat4 model = transform->getWorldTransform(entity);
+                mat4 model = transform->getWorldTransformMatrix(entity);
                 vec3 pos, scale;
                 quat ori;
                 model.getPosOriScale(pos, ori, scale);

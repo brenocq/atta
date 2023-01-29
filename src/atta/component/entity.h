@@ -14,7 +14,6 @@ class Entity {
   public:
     Entity();
     Entity(EntityId id);
-    Entity(EntityId id, int cloneId);
     operator EntityId() const { return _id; }
 
     template <typename T>
@@ -27,12 +26,23 @@ class Entity {
         return component::getComponent<T>(_id);
     }
 
-    EntityId getId() const { return _id; }
-    int getCloneId() const { return _cloneId; }
+    /// Check if entity exists
+    bool exists() const;
+
+    /// Get entity id
+    EntityId getId() const;
+
+    /// Check if entity is prototype
+    /** An entity is prototype if it has a prototype component or if its parent is a prototype **/
+    bool isPrototype() const;
+
+    // Relationship component interface
+    Entity getParent() const;
+    std::vector<Entity> getChildren() const;
+    Entity getChild(unsigned i) const;
 
   private:
     EntityId _id;
-    int _cloneId;
 };
 
 } // namespace atta::component

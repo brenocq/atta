@@ -7,12 +7,13 @@
 #ifndef ATTA_PRE_COMPILED_HEADER_H
 #define ATTA_PRE_COMPILED_HEADER_H
 
+#define _USE_MATH_DEFINES // Windows M_PI fix
 #include <any>
 #include <array>
 #include <bitset>
+#include <climits>
 #include <cmath>
 #include <cstring>
-#include <climits>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -22,6 +23,7 @@
 #include <memory>
 #include <set>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -32,5 +34,7 @@ namespace fs = std::filesystem;
 #include <atta/utils/common.h>
 #include <atta/utils/log.h>
 #include <atta/utils/math/math.h>
+#include <atta/utils/profiler.h>
+#include <atta/utils/namespaces.h>
 
 #endif // ATTA_PRE_COMPILED_HEADER_H

@@ -88,7 +88,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
             component::Transform* transform = component::getComponent<component::Transform>(entity);
 
             if (mesh && transform) {
-                mat4 model = transpose(transform->getWorldTransform(entity));
+                mat4 model = transpose(transform->getWorldTransformMatrix(entity));
                 shader->setMat4("model", model);
 
                 // component::EntityId

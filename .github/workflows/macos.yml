@@ -16,24 +16,24 @@ jobs:
         }
 
     steps:
-    - name: Checkout atta
-      uses: actions/checkout@v2
+      - name: Checkout atta
+        uses: actions/checkout@v2
 
-    - name: Install dependencies on macos
-      if: startsWith(matrix.config.os, 'macos')
-      run: |
-        brew install cmake
-        cmake --version
+      - name: Install dependencies on macos
+        if: startsWith(matrix.config.os, 'macos')
+        run: |
+          brew install cmake
+          cmake --version
 
-    - name: Configure
-      run: |
-        mkdir build
-        cd build
-        cmake ..
+      - name: Configure
+        run: |
+          mkdir build
+          cd build
+          cmake ..
 
-    - name: Build
-      run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
+      - name: Build
+        run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
 
-    - name: Test
-      run: ctest
-      working-directory: build
+      - name: Test
+        run: ctest
+        working-directory: build

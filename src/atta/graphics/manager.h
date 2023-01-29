@@ -30,6 +30,14 @@ class Manager final {
     friend void pushLayer(Layer* layer);
     template <typename T, typename... Args>
     friend std::shared_ptr<T> create(Args... args);
+
+    friend float getGraphicsFPS();
+    friend void setGraphicsFPS(float graphicsFPS);
+    friend float getViewportFPS();
+    friend void setViewportFPS(float viewportFPS);
+    friend bool getViewportRendering();
+    friend void setViewportRendering(bool viewportRendering);
+
     friend std::shared_ptr<RendererAPI> getRendererAPI();
     friend std::vector<std::shared_ptr<Viewport>> getViewports();
     friend void clearViewports();
@@ -62,14 +70,17 @@ class Manager final {
 
     std::shared_ptr<Window> _window;
     std::shared_ptr<RendererAPI> _rendererAPI;
+    float _graphicsFPS; ///< Desired graphics FPS
 
     // Layer stack
     std::unique_ptr<LayerStack> _layerStack;
 
     // Viewports
     std::vector<std::shared_ptr<Viewport>> _viewports;
-    std::vector<std::shared_ptr<Viewport>> _viewportsNext; // Being used for now to update the viewports in the next frame without breaking imgui
-    bool _swapViewports;
+    std::vector<std::shared_ptr<Viewport>> _viewportsNext; ///< Being used for now to update the viewports in the next frame without breaking imgui
+    bool _swapViewports;                                   ///< If _viewports should be swapped
+    float _viewportFPS;                                    ///< Desired viewport FPS (UI module handles the viewport rendering)
+    bool _viewportRendering;                               ///< If should render the viewport
 
     // Compute
     std::unique_ptr<EntityClick> _computeEntityClick;

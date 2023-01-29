@@ -7,7 +7,7 @@
 #ifndef ATTA_UTILS_MATH_BOUNDS_H
 #define ATTA_UTILS_MATH_BOUNDS_H
 
-#include <atta/utils/math/point.h>
+#include <atta/utils/math/vector.h>
 #include <atta/utils/math/ray.h>
 
 namespace atta {
@@ -15,19 +15,19 @@ namespace atta {
 template <typename T>
 class bounds3 {
   public:
-    point3<T> pMin, pMax;
+    vector3<T> pMin, pMax;
 
     bounds3() {
         T minNum = std::numeric_limits<T>::lowest();
         T maxNum = std::numeric_limits<T>::max();
 
-        pMin = point3<T>(minNum, minNum, minNum);
-        pMax = point3<T>(maxNum, maxNum, maxNum);
+        pMin = vector3<T>(minNum, minNum, minNum);
+        pMax = vector3<T>(maxNum, maxNum, maxNum);
     }
 
-    bounds3(const point3<T>& p) : pMin(p), pMax(p) {}
+    bounds3(const vector3<T>& p) : pMin(p), pMax(p) {}
 
-    bounds3(const point3<T>& p1, const point3<T>& p2) : pMin(min(p1, p2)), pMax(max(p1, p2)) {}
+    bounds3(const vector3<T>& p1, const vector3<T>& p2) : pMin(min(p1, p2)), pMax(max(p1, p2)) {}
 
     inline bool intersectP(const ray& r, float* hitt0, float* hitt1) const;
 };
@@ -36,28 +36,28 @@ class bounds3 {
 template <typename T>
 class bounds2 {
   public:
-    point2<T> pMin, pMax;
+    vector2<T> pMin, pMax;
 
     bounds2() {
         T minNum = std::numeric_limits<T>::lowest();
         T maxNum = std::numeric_limits<T>::max();
 
-        pMin = point2<T>(minNum, minNum);
-        pMax = point2<T>(maxNum, maxNum);
+        pMin = vector2<T>(minNum, minNum);
+        pMax = vector2<T>(maxNum, maxNum);
     }
 
-    bounds2(const point2<T>& p) : pMin(p), pMax(p) {}
-    bounds2(const point2<T>& p1, const point2<T>& p2) : pMin(min(p1, p2)), pMax(max(p1, p2)) {}
+    bounds2(const vector2<T>& p) : pMin(p), pMax(p) {}
+    bounds2(const vector2<T>& p1, const vector2<T>& p2) : pMin(min(p1, p2)), pMax(max(p1, p2)) {}
 };
 
 //---------- Inline functions ----------//
 // Union bounds
 template <typename T>
-inline bounds3<T> unionb(const bounds3<T>& b, const point3<T>& p) {
+inline bounds3<T> unionb(const bounds3<T>& b, const vector3<T>& p) {
     return bounds3<T>(min(b.pMin, p), max(b.pMax, p));
 }
 template <typename T>
-inline bounds2<T> unionb(const bounds2<T>& b, const point2<T>& p) {
+inline bounds2<T> unionb(const bounds2<T>& b, const vector2<T>& p) {
     return bounds2<T>(min(b.pMin, p), max(b.pMax, p));
 }
 
@@ -94,20 +94,20 @@ inline bool overlaps(const bounds2<T>& b1, const bounds2<T>& b2) {
 }
 // Inside bounds
 template <typename T>
-inline bool inside(const point3<T>& p, const bounds3<T>& b) {
+inline bool inside(const vector3<T>& p, const bounds3<T>& b) {
     return (p.x >= b.pMin.x && p.x <= b.pMax.x && p.y >= b.pMin.y && p.y <= b.pMax.y && p.z >= b.pMin.z && p.z <= b.pMax.z);
 }
 template <typename T>
-inline bool inside(const point2<T>& p, const bounds2<T>& b) {
+inline bool inside(const vector2<T>& p, const bounds2<T>& b) {
     return (p.x >= b.pMin.x && p.x <= b.pMax.x && p.y >= b.pMin.y && p.y <= b.pMax.y);
 }
 // Inside exclusive bounds
 template <typename T>
-inline bool insideExclusive(const point3<T>& p, const bounds3<T>& b) {
+inline bool insideExclusive(const vector3<T>& p, const bounds3<T>& b) {
     return (p.x >= b.pMin.x && p.x < b.pMax.x && p.y >= b.pMin.y && p.y < b.pMax.y && p.z >= b.pMin.z && p.z < b.pMax.z);
 }
 template <typename T>
-inline bool insideExclusive(const point2<T>& p, const bounds2<T>& b) {
+inline bool insideExclusive(const vector2<T>& p, const bounds2<T>& b) {
     return (p.x >= b.pMin.x && p.x < b.pMax.x && p.y >= b.pMin.y && p.y < b.pMax.y);
 }
 // Ray-bounds intersection

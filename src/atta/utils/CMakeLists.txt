@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_UTILS_SOURCE
+    log.cpp
     stringId.cpp
     config.cpp
+    profiler.cpp
 
     math/bounds.cpp
     math/common.cpp
     math/matrix.cpp
-    math/point.cpp
     math/quaternion.cpp
     math/ray.cpp
 )

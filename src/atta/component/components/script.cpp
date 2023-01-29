@@ -24,4 +24,6 @@ Script::Script() {
         sid = script::getScriptSids()[0];
 }
 
+void Script::set(std::string script) { sid = StringId(script); }
+
 } // namespace atta::component

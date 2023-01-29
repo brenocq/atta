@@ -19,17 +19,17 @@ ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
         // Serialize
         {{"children",
           [](std::ostream& os, void* data) {
-              std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
-              for (EntityId child : *children)
-                  file::write(os, child);
+              std::vector<Entity>* children = static_cast<std::vector<Entity>*>(data);
+              for (Entity child : *children)
+                  file::write(os, EntityId(child));
               file::write(os, EntityId(-1));
           }}},
         // Deserialize
         {{"children", [](std::istream& is, void* data) {
-              std::vector<EntityId>* children = static_cast<std::vector<EntityId>*>(data);
+              std::vector<Entity>* children = static_cast<std::vector<Entity>*>(data);
               EntityId eid;
 #ifdef ATTA_OS_WEB
-              file::read(is, eid);// For some reason the first one is always zero when building for the web
+              file::read(is, eid); // For some reason the first one is always zero when building for the web
 #endif
               file::read(is, eid);
               while (eid != -1) {
@@ -42,7 +42,7 @@ ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
 }
 
 // Parent operations
-void Relationship::setParent(EntityId parent, EntityId child) {
+void Relationship::setParent(Entity parent, Entity child) {
     // Get relationships
     Relationship* parentRel = component::getComponent<Relationship>(parent);
     if (!parentRel)
@@ -78,8 +78,10 @@ void Relationship::setParent(EntityId parent, EntityId child) {
         // If has transform component, update to be relative to the parent
         Transform* t = component::getComponent<Transform>(child);
         if (t) {
-            mat4 transform = t->getWorldTransform(child);
-            mat4 pTransform = Transform::getEntityWorldTransform(parent);
+            mat4 transform = t->getWorldTransformMatrix(child);
+            Transform wt = Transform::getEntityWorldTransform(parent);
+            mat4 pTransform;
+            pTransform.setPosOriScale(wt.position, wt.orientation, wt.scale);
 
             transform = inverse(pTransform) * transform;
 
@@ -98,7 +100,7 @@ void Relationship::setParent(EntityId parent, EntityId child) {
     }
 }
 
-void Relationship::removeParent(EntityId parent, EntityId child) {
+void Relationship::removeParent(Entity parent, Entity child) {
     // Get relationships
     Relationship* parentRel = component::getComponent<Relationship>(parent);
     if (!parentRel && parent != -1) // Check if parent has relationship component
@@ -117,7 +119,7 @@ void Relationship::removeParent(EntityId parent, EntityId child) {
     // If has transform component, change to be relative to the world
     Transform* transform = component::getComponent<Transform>(child);
     if (transform) {
-        mat4 world = transform->getWorldTransform(child);
+        mat4 world = transform->getWorldTransformMatrix(child);
         vec3 pos, scale;
         quat ori;
         world.getPosOriScale(pos, ori, scale);
@@ -142,8 +144,8 @@ void Relationship::removeParent(EntityId parent, EntityId child) {
 }
 
 // Child operations
-void Relationship::addChild(EntityId parent, EntityId child) { setParent(parent, child); }
+void Relationship::addChild(Entity parent, Entity child) { setParent(parent, child); }
 
-void Relationship::removeChild(EntityId parent, EntityId child) { removeParent(parent, child); }
+void Relationship::removeChild(Entity parent, Entity child) { removeParent(parent, child); }
 
 } // namespace atta::component

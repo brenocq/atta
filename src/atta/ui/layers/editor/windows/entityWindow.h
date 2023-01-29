@@ -22,10 +22,7 @@ class EntityWindow {
     void renderTreeNode(component::EntityId entity, int& i);
 
     void renderComponents();
-    void renderCameraWindows();
     void textureCombo(std::string comboId, StringId& sid);
-
-    std::unordered_set<component::EntityId> _cameraWindows;
 
     // TODO Move this to undo/redo code
     std::vector<component::EntityId> _entitiesToDelete;

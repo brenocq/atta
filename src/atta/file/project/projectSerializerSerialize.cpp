@@ -11,7 +11,10 @@ void ProjectSerializer::serializeHeader(Section& section) {
     section["projectName"] = std::string(_project->getName());
 }
 
-void ProjectSerializer::serializeConfig(Section& section) { section["dt"] = float(Config::getDt()); }
+void ProjectSerializer::serializeConfig(Section& section) {
+    section["dt"] = Config::getDt();
+    section["desiredStepSpeed"] = Config::getDesiredStepSpeed();
+}
 
 void ProjectSerializer::serializeComponentModule(Section& section) {
     // Serialize entity ids
@@ -32,8 +35,7 @@ void ProjectSerializer::serializeComponentModule(Section& section) {
                 components.push_back(comp);
             }
         }
-        if(eids.size())
-        {
+        if (eids.size()) {
             section["components"][name]["entityIds"] = eids;
 
             // Serialize components
@@ -62,17 +64,48 @@ void ProjectSerializer::serializeGraphicsModule(Section& section) {
     for (auto pv : pviewports)
         viewports.push_back(*pv);
     section["viewports"] = viewports;
+    section["graphicsFPS"] = graphics::getGraphicsFPS();
+    section["viewportFPS"] = graphics::getViewportFPS();
+    section["viewportRendering"] = graphics::getViewportRendering();
 }
 
 void ProjectSerializer::serializeResourceModule(Section& section) {
     std::vector<StringId> materialSids = resource::getResources<resource::Material>();
     std::vector<resource::Material> materials;
-    for (StringId sid : materialSids)
-    {
+    for (StringId sid : materialSids) {
         resource::Material* m = resource::get<resource::Material>(sid.getString());
-        if(m) materials.push_back(*m);
+        if (m)
+            materials.push_back(*m);
     }
     section["materials"] = materials;
+}
+
+void ProjectSerializer::serializePhysicsModule(Section& section) {
+    switch (physics::getEngineType()) {
+        case physics::Engine::NONE:
+            section["engine"] = "NONE";
+            break;
+        case physics::Engine::BOX2D:
+            section["engine"] = "BOX2D";
+            break;
+        case physics::Engine::BULLET: {
+            section["engine"] = "BULLET";
+            break;
+        }
+    }
+    section["gravity"] = physics::getGravity();
+    section["showColliders"] = physics::getShowColliders();
+    section["showContacts"] = physics::getShowContacts();
+    section["showJoints"] = physics::getShowJoints();
+
+    auto bullet = physics::getEngine<physics::BulletEngine>();
+    section["bullet"]["showAabb"] = bullet->getShowAabb();
+    section["bullet"]["numSubSteps"] = bullet->getNumSubSteps();
+}
+
+void ProjectSerializer::serializeSensorModule(Section& section) {
+    section["showCameras"] = sensor::getShowCameras();
+    section["showInfrareds"] = sensor::getShowInfrareds();
 }
 
 } // namespace atta::file

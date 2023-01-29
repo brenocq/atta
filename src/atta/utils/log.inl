@@ -79,37 +79,36 @@ void Log::log(const char* tagColor, std::string tag, const char* textColor, std:
             } else if (text[i] == ']') {
                 finalText << textColor; // Return color to default if found []
                 continue;
-            } else
-                finalText << COLOR_RESET;
+            }
 
             switch (text[i]) {
             case 'w':
-                finalText << COLOR_WHITE;
+                finalText << COLOR_RESET<< COLOR_WHITE;
                 break;
             case 'r':
-                finalText << COLOR_RED;
+                finalText << COLOR_RESET<< COLOR_RED;
                 break;
             case 'g':
-                finalText << COLOR_GREEN;
+                finalText << COLOR_RESET<< COLOR_GREEN;
                 break;
             case 'b':
-                finalText << COLOR_BLUE;
+                finalText << COLOR_RESET<< COLOR_BLUE;
                 break;
             case 'y':
-                finalText << COLOR_YELLOW;
+                finalText << COLOR_RESET<< COLOR_YELLOW;
                 break;
             case 'm':
-                finalText << COLOR_MAGENTA;
+                finalText << COLOR_RESET<< COLOR_MAGENTA;
                 break;
             case 'c':
                 finalText << COLOR_RESET << COLOR_CYAN;
                 break;
             case 'k':
-                finalText << COLOR_BLACK;
+                finalText << COLOR_RESET<< COLOR_BLACK;
                 break;
             default:
-                finalText << '[' << text[i];
-                i--;
+                finalText << '[';
+                i-=2;
             }
             i++; // Skip color and ]
         } else if (text[i] == '$') {

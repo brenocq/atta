@@ -8,7 +8,8 @@
 #define ATTA_SENSOR_INTERFACE_H
 
 #include <atta/component/base.h>
-#include <atta/component/components/camera.h>
+#include <atta/component/components/cameraSensor.h>
+#include <atta/component/components/infraredSensor.h>
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/renderers/renderer.h>
 
@@ -16,13 +17,19 @@ namespace atta::sensor {
 
 // Camera
 struct CameraInfo {
-    component::EntityId entity;
-    component::Camera* component;
-    std::shared_ptr<graphics::Renderer> renderer; ///< Camera renderer (fast, phong, PBR, ...)
-    std::shared_ptr<graphics::Camera> camera;     ///< Camera view and projection matrices
-    float lastTime;                               ///< Used to render with the correct fps
-    bool showWindow;                              ///< If the camera details window is open or not
-    std::vector<uint8_t> data;                    ///< Camera rendered image
+    cmp::Entity entity;
+    cmp::CameraSensor* component;
+    bool initialized;                        ///< If renderer/camera were initialized
+    std::shared_ptr<gfx::Renderer> renderer; ///< Camera renderer (fast, phong, PBR, ...)
+    std::shared_ptr<gfx::Camera> camera;     ///< Camera view and projection matrices
+    bool showWindow;                         ///< If the camera details window is open or not
+    std::vector<uint8_t> data;               ///< Camera rendered image
+};
+
+// Infrared
+struct InfraredInfo {
+    cmp::Entity entity;
+    cmp::InfraredSensor* component;
 };
 
 /// Sensor module start up
@@ -31,17 +38,20 @@ void startUp();
 /// Sensor module shut down
 void shutDown();
 
-/// Update executed inside atta main loop
-/** Used to update the sensor internal model to keep it always updated (ex: the camera transform)**/
-void update();
-
 ///< Update executed at each simulation step
-/** Used to update the sensor data itself (ex: camera image rendering) **/
+/** Used to update the sensor data (ex: camera image rendering) **/
 void update(float dt);
 
-void* getEntityCameraImGuiTexture(component::EntityId eid);
+void* getEntityCameraImGuiTexture(cmp::Entity eid);
 
 std::vector<CameraInfo>& getCameraInfos();
+std::vector<InfraredInfo>& getInfraredInfos();
+
+//----- UI rendering -----//
+bool getShowCameras();
+void setShowCameras(bool showCameras);
+bool getShowInfrareds();
+void setShowInfrareds(bool showInfrareds);
 
 } // namespace atta::sensor
 

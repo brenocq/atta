@@ -11,8 +11,11 @@
 #include <imgui_internal.h>
 #include <implot.h>
 
+#include <atta/ui/layers/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/sensorModuleWindow.h>
+#include <atta/ui/layers/editor/tools/timeProfiler/timeProfilerWindow.h>
 #include <atta/ui/layers/editor/topBar/localWindows/versionWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
 
@@ -31,10 +34,11 @@ void EditorLayer::onDetach() {}
 void EditorLayer::onRender() {}
 
 void EditorLayer::onUIRender() {
+    PROFILE();
     _dockSpace.render();
 
     // Demo
-    bool demo = true;
+    // bool demo = true;
     // ImGui::ShowDemoWindow(&demo);
     // ImPlot::ShowDemoWindow(&demo);
 
@@ -52,8 +56,13 @@ void EditorLayer::onUIRender() {
     _viewportWindows.render();
 
     // Module windows
+    GraphicsModuleWindow::render();
     IOModuleWindow::render();
     PhysicsModuleWindow::render();
+    SensorModuleWindow::render();
+
+    // Tools
+    TimeProfilerWindow::render();
 
     // Windows utils
     FileSelectionWindow::render();
@@ -66,7 +75,11 @@ void EditorLayer::onUIRender() {
     // Project UI
     script::ProjectScript* project = script::getProjectScript();
     if (project)
-        project->onUIRender();
+        try {
+            project->onUIRender();
+        } catch (std::exception& e) {
+            LOG_ERROR("ui::EditorLayer", "Error when executing [w]ProjectScript::onUIRender[]: $0", e.what());
+        }
 }
 
 void EditorLayer::renderCameraWindows() {

@@ -82,7 +82,7 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
 
             if (transform && (pl || dl)) {
                 if (pl && numPointLights < 10) {
-                    vec3 position = transform->getWorldTransform(entity).getPosition();
+                    vec3 position = transform->getWorldTransformMatrix(entity).getPosition();
                     int i = numPointLights++;
                     shader->setVec3(("pointLights[" + std::to_string(i) + "].position").c_str(), position);
                     shader->setVec3(("pointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
@@ -115,7 +115,7 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
             resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {
-                mat4 model = transpose(transform->getWorldTransform(entity));
+                mat4 model = transpose(transform->getWorldTransformMatrix(entity));
                 mat4 invModel = inverse(model);
                 shader->setMat4("model", model);
                 shader->setMat4("invModel", invModel);

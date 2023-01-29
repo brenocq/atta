@@ -15,6 +15,7 @@ class SensorDrawer {
     void update(); ///< Update sensor lines
   private:
     void updateCameras();
+    void updateInfrareds();
 };
 
 } // namespace atta::ui

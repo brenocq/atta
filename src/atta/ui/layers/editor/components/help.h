@@ -1,7 +1,12 @@
 //--------------------------------------------------
-// Atta Physics Module
-// nullEngine.cpp
-// Date: 2021-12-01
+// Atta UI Module
+// help.h
+// Date: 2022-10-29
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/physics/physicsEngines/nullEngine.h>
+
+namespace atta::ui {
+
+void Help(std::string text);
+
+} // namespace atta::ui

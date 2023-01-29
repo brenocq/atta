@@ -16,7 +16,7 @@ class UiCameraComponent : public EventTyped<SID("UiCameraComponent")> {
   public:
     enum class UiEvent { NONE = 0, VIEW_BUTTON_CLICKED };
 
-    component::Camera* component;
+    component::CameraSensor* component;
     UiEvent uiEvent;
 };
 

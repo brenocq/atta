@@ -19,9 +19,13 @@
 #include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/graphics/renderers/phongRenderer.h>
 
+#include <atta/ui/layers/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/sensorModuleWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
+
+#include <atta/ui/layers/editor/tools/timeProfiler/timeProfilerWindow.h>
 
 namespace atta::ui {
 
@@ -71,10 +75,16 @@ void TopBar::render() {
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Edit")) {
-            if (ImGui::MenuItem("Preferences"))
-                _showPreferences = true;
+        //if (ImGui::BeginMenu("Edit")) {
+        //    if (ImGui::MenuItem("Preferences"))
+        //        _showPreferences = true;
 
+        //    ImGui::EndMenu();
+        //}
+
+        if (ImGui::BeginMenu("Tools")) {
+            if (ImGui::MenuItem("Time Profiler"))
+                TimeProfilerWindow::setOpen(true);
             ImGui::EndMenu();
         }
 
@@ -119,10 +129,14 @@ void TopBar::render() {
         }
 
         if (ImGui::BeginMenu("Modules")) {
-            if (ImGui::MenuItem("IO Module"))
+            if (ImGui::MenuItem("Graphics"))
+                GraphicsModuleWindow::setOpen(true);
+            if (ImGui::MenuItem("IO"))
                 IOModuleWindow::setOpen(true);
-            if (ImGui::MenuItem("Physics Module"))
+            if (ImGui::MenuItem("Physics"))
                 PhysicsModuleWindow::setOpen(true);
+            if (ImGui::MenuItem("Sensor"))
+                SensorModuleWindow::setOpen(true);
             ImGui::EndMenu();
         }
 
