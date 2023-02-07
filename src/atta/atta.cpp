@@ -18,6 +18,7 @@
 #include <atta/file/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/memory/interface.h>
+#include <atta/parallel/interface.h>
 #include <atta/physics/interface.h>
 #include <atta/resource/interface.h>
 #include <atta/script/interface.h>
@@ -46,6 +47,7 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     component::startUp();
     graphics::startUp();
     ui::startUp();
+    parallel::startUp();
     physics::startUp();
     sensor::startUp();
     script::startUp();
@@ -81,9 +83,10 @@ Atta::~Atta() {
     // TODO ask user if should close or not
     // file::saveProject();
     file::closeProject();
+    script::shutDown();
     sensor::shutDown();
     physics::shutDown();
-    script::shutDown();
+    parallel::shutDown();
     ui::shutDown();
     graphics::shutDown();
     component::shutDown();

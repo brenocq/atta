@@ -17,6 +17,7 @@ namespace atta::resource {}
 namespace atta::script {}
 namespace atta::sensor {}
 namespace atta::ui {}
+namespace atta::parallel {}
 
 namespace cmp = ::atta::component;
 namespace evt = ::atta::event;
@@ -28,5 +29,6 @@ namespace rsc = ::atta::resource;
 namespace scr = ::atta::script;
 namespace sen = ::atta::sensor;
 namespace ui = ::atta::ui;
+namespace pll = ::atta::parallel;
 
 #endif // ATTA_UTILS_NAMESPACES_H

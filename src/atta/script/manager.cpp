@@ -5,12 +5,14 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/script/manager.h>
+#include <atta/script/interface.h>
 
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/script.h>
 #include <atta/component/interface.h>
 #include <atta/event/events/scriptTarget.h>
 #include <atta/event/interface.h>
+#include <atta/parallel/interface.h>
 
 namespace atta::script {
 
@@ -22,13 +24,22 @@ Manager& Manager::getInstance() {
 void Manager::updateImpl(float dt) {
     script::ProjectScript* project = getProjectScriptImpl();
 
-    // Run project script
+    // Run project script before
     if (project)
         project->onUpdateBefore(dt);
 
     // Run clone scripts
-    for (auto& factory : component::getFactories())
-        factory.runScripts(dt);
+    for (auto& factory : component::getFactories()) {
+        std::vector<cmp::Entity> clones = factory.getClones();
+        parallel::parallelFor(0, clones.size(), [=](uint32_t i) {
+            cmp::Script* scriptComponent = clones[i].get<cmp::Script>();
+            if (scriptComponent) {
+                script::Script* script = script::getScript(scriptComponent->sid);
+                if (script)
+                    script->update(clones[i], dt);
+            }
+        });
+    }
 
     // Get entityIds that are clones
     const auto& factories = component::getFactories();
@@ -41,6 +52,7 @@ void Manager::updateImpl(float dt) {
 
     // Run base entity scripts (not clones)
     std::vector<component::EntityId> entities = component::getScriptView();
+    std::vector<std::pair<script::Script*, cmp::EntityId>> scripts;
     for (component::EntityId entity : entities) {
         // Check if it has script component
         component::Script* scriptComponent = component::getComponent<component::Script>(entity);
@@ -62,12 +74,18 @@ void Manager::updateImpl(float dt) {
         if (isClone)
             continue;
 
-        // Run script
+        // Add to list to be executed
         script::Script* script = getScriptImpl(scriptComponent->sid);
         if (script)
-            script->update(component::Entity(entity), dt);
+            scripts.push_back({script, entity});
     }
 
+    // Run scripts
+    parallel::parallelFor(0, scripts.size(), [=](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
+    for (int i = 0; i < scripts.size(); i++)
+        scripts[i].first->update(component::Entity(scripts[i].second), dt);
+
+    // Run project script after
     if (project)
         project->onUpdateAfter(dt);
 }

@@ -112,18 +112,6 @@ void Factory::destroyClones() {
     _numEntitiesInitialized = 0;
 }
 
-void Factory::runScripts(float dt) {
-    unsigned cloneId = 0;
-    for (Entity entity : getClones()) {
-        Script* scriptComponent = entity.get<Script>();
-        if (scriptComponent) {
-            script::Script* script = script::getScript(scriptComponent->sid);
-            if (script)
-                script->update(entity, dt);
-        }
-    }
-}
-
 Entity Factory::getPrototype() const { return _prototype; }
 Entity Factory::getFirstClone() const { return _firstClone; }
 uint64_t Factory::getNumEntitiesCloned() const { return _numEntitiesCloned; }

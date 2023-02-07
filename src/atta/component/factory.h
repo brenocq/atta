@@ -16,7 +16,6 @@ class Factory {
 
     void createClones();
     void destroyClones();
-    void runScripts(float dt);
 
     Entity getPrototype() const;
     Entity getFirstClone() const;
