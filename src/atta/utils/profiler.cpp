@@ -151,14 +151,19 @@ void Profiler::getFuncColor(StringId name, uint8_t& r, uint8_t& g, uint8_t& b) {
 std::string Profiler::cropFuncName(std::string name) {
     int endPos = 0;
     int startPos = 0;
-    for (int i = name.size() - 1; i >= 0; i--) {
-        if (!endPos && name[i] == '(')
+
+    for (int i = 0; i < name.size(); i++)
+        if (name[i] == '(') {
             endPos = i;
-        if (endPos && name[i] == ' ') {
+            break;
+        }
+
+    for (int i = endPos; i >= 0; i--)
+        if (name[i] == ' ') {
             startPos = i + 1;
             break;
         }
-    }
+
     if (startPos && endPos)
         name = name.substr(startPos, endPos - startPos);
     return name;

@@ -7,8 +7,9 @@
 #ifndef ATTA_PARALLEL_MANAGER_H
 #define ATTA_PARALLEL_MANAGER_H
 
-#include <atta/parallel/devices/device.h>
 #include <atta/parallel/devices/cpuDevice.h>
+#include <atta/parallel/devices/device.h>
+#include <atta/parallel/devices/serialDevice.h>
 
 namespace atta::parallel {
 
@@ -18,20 +19,28 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
-    friend void parallelFor(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func);
-    friend void setDevice(Device::Type type);
-    friend Device::Type getDevice();
+    friend void compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func);
+    friend void setDeviceType(Device::Type type);
+    friend Device::Type getDeviceType();
+    friend std::shared_ptr<Device> getDevice();
+    friend std::shared_ptr<SerialDevice> getSerialDevice();
+    friend std::shared_ptr<CpuDevice> getCpuDevice();
 
   private:
     void startUpImpl();
     void shutDownImpl();
-    void parallelForImpl(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func);
+    void computeImpl(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func);
 
-    void setDeviceImpl(Device::Type type);
-    Device::Type getDeviceImpl();
+    void setDeviceTypeImpl(Device::Type type);
+    Device::Type getDeviceTypeImpl();
 
-    std::shared_ptr<Device> _device;///< Selected device
-    std::shared_ptr<CpuDevice> _cpuDevice;///< CPU device
+    std::shared_ptr<Device> getDeviceImpl();
+    std::shared_ptr<SerialDevice> getSerialDeviceImpl();
+    std::shared_ptr<CpuDevice> getCpuDeviceImpl();
+
+    std::shared_ptr<Device> _device;             ///< Selected device
+    std::shared_ptr<SerialDevice> _serialDevice; ///< Serial device
+    std::shared_ptr<CpuDevice> _cpuDevice;       ///< CPU device
 };
 
 } // namespace atta::parallel

@@ -11,9 +11,15 @@ namespace atta::parallel {
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
-void parallelFor(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) { Manager::getInstance().parallelForImpl(start, end, func); }
+void compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
+    PROFILE();
+    Manager::getInstance().computeImpl(start, end, func);
+}
 
-void setDevice(Device::Type type) { Manager::getInstance().setDeviceImpl(type); }
-Device::Type getDevice() { return Manager::getInstance().getDeviceImpl(); }
+void setDeviceType(Device::Type type) { Manager::getInstance().setDeviceTypeImpl(type); }
+Device::Type getDeviceType() { return Manager::getInstance().getDeviceTypeImpl(); }
+std::shared_ptr<Device> getDevice() { return Manager::getInstance().getDeviceImpl(); }
+std::shared_ptr<SerialDevice> getSerialDevice() { return Manager::getInstance().getSerialDeviceImpl(); }
+std::shared_ptr<CpuDevice> getCpuDevice() { return Manager::getInstance().getCpuDeviceImpl(); }
 
 } // namespace atta::parallel

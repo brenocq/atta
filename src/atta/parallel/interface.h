@@ -14,10 +14,14 @@ namespace atta::parallel {
 void startUp();
 void shutDown();
 
-void parallelFor(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func);
+void compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func);
 
-void setDevice(Device::Type type);
-Device::Type getDevice();
+void setDeviceType(Device::Type type);
+Device::Type getDeviceType();
+
+std::shared_ptr<Device> getDevice();
+std::shared_ptr<SerialDevice> getSerialDevice();
+std::shared_ptr<CpuDevice> getCpuDevice();
 
 } // namespace atta::parallel
 

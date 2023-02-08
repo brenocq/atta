@@ -4,8 +4,8 @@
 // Date: 2021-09-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/script/manager.h>
 #include <atta/script/interface.h>
+#include <atta/script/manager.h>
 
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/script.h>
@@ -25,13 +25,15 @@ void Manager::updateImpl(float dt) {
     script::ProjectScript* project = getProjectScriptImpl();
 
     // Run project script before
-    if (project)
+    if (project) {
+        PROFILE_NAME("ProjectScript::onUpdateBefore");
         project->onUpdateBefore(dt);
+    }
 
     // Run clone scripts
     for (auto& factory : component::getFactories()) {
         std::vector<cmp::Entity> clones = factory.getClones();
-        parallel::parallelFor(0, clones.size(), [=](uint32_t i) {
+        parallel::compute(0, clones.size(), [=](uint32_t i) {
             cmp::Script* scriptComponent = clones[i].get<cmp::Script>();
             if (scriptComponent) {
                 script::Script* script = script::getScript(scriptComponent->sid);
@@ -81,13 +83,13 @@ void Manager::updateImpl(float dt) {
     }
 
     // Run scripts
-    parallel::parallelFor(0, scripts.size(), [=](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
-    for (int i = 0; i < scripts.size(); i++)
-        scripts[i].first->update(component::Entity(scripts[i].second), dt);
+    parallel::compute(0, scripts.size(), [=](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
 
     // Run project script after
-    if (project)
+    if (project) {
+        PROFILE_NAME("ProjectScript::onUpdateAfter");
         project->onUpdateAfter(dt);
+    }
 }
 
 Script* Manager::getScriptImpl(StringId target) const {

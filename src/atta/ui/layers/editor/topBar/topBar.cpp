@@ -21,6 +21,7 @@
 
 #include <atta/ui/layers/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/parallelModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/sensorModuleWindow.h>
 #include <atta/ui/layers/editor/windows/utils/fileSelectionWindow.h>
@@ -75,9 +76,9 @@ void TopBar::render() {
             ImGui::EndMenu();
         }
 
-        //if (ImGui::BeginMenu("Edit")) {
-        //    if (ImGui::MenuItem("Preferences"))
-        //        _showPreferences = true;
+        // if (ImGui::BeginMenu("Edit")) {
+        //     if (ImGui::MenuItem("Preferences"))
+        //         _showPreferences = true;
 
         //    ImGui::EndMenu();
         //}
@@ -133,6 +134,8 @@ void TopBar::render() {
                 GraphicsModuleWindow::setOpen(true);
             if (ImGui::MenuItem("IO"))
                 IOModuleWindow::setOpen(true);
+            if (ImGui::MenuItem("Parallel"))
+                ParallelModuleWindow::setOpen(true);
             if (ImGui::MenuItem("Physics"))
                 PhysicsModuleWindow::setOpen(true);
             if (ImGui::MenuItem("Sensor"))

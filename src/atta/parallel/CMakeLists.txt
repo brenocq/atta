@@ -5,6 +5,7 @@ set(ATTA_PARALLEL_MODULE_SOURCE
     manager.cpp
 
     devices/device.cpp
+    devices/serialDevice.cpp
     devices/cpuDevice.cpp
 )
 

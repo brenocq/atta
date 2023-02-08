@@ -24,6 +24,7 @@ set(ATTA_UI_MODULE_SOURCE
 
     layers/editor/moduleWindows/graphicsModuleWindow.cpp
     layers/editor/moduleWindows/ioModuleWindow.cpp
+    layers/editor/moduleWindows/parallelModuleWindow.cpp
     layers/editor/moduleWindows/physicsModuleWindow.cpp
     layers/editor/moduleWindows/sensorModuleWindow.cpp
 

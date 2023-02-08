@@ -12,12 +12,12 @@ namespace atta::parallel {
 class Device {
   public:
     enum class Type {
-        NONE = 0, CPU, GPU, CLUSTER
+        SERIAL = 0, CPU, GPU, CLUSTER
     };
 
     Device(Type type);
 
-    virtual void parallelFor(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) = 0;
+    virtual void compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) = 0;
 
     Type getType() const;
 

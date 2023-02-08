@@ -11,6 +11,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <condition_variable>
 
 namespace atta::parallel {
 
@@ -19,18 +20,29 @@ class CpuDevice : public Device {
     CpuDevice();
     ~CpuDevice();
 
-    void parallelFor(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) override;
+    void compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) override;
+
+    void setNumWorkers(uint32_t numWorkers);
+    uint32_t getNumWorkers() const;
+    uint32_t getMaxNumWorkers() const;
 
   private:
     void worker();
+
     bool hasWork();
+    bool jobFinished();
+    void stopWorkers();
 
     // Thread pool
     std::vector<std::thread> _threads;
-    std::mutex _mutex;///< Mutex to modify job specification
-    bool _stopThreads;///< Notify threads to stop
+    bool _stopWorkers;///< Notify workers to stop
+
+    // Synchronize workers
+    std::mutex _jobMutex;///< Mutex to modify job specification
+    std::condition_variable _wakeUpWorkers;///< Wake up all workers
 
     // Job specification
+    std::mutex _workMutex;///< Mutex to modify job specification
     uint32_t _nextIdx;///< Next index to execute
     uint32_t _endIdx;///< Final index to execute
     uint32_t _batchSize;///< Worker batch size
