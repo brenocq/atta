@@ -8,7 +8,7 @@
 
 namespace atta::parallel {
 
-CpuDevice::CpuDevice() : Device(Type::CPU), _stopWorkers(false), _nextIdx(1), _endIdx(0), _batchSize(1), _busyWorkers(0) {
+CpuDevice::CpuDevice() : Device(Type::CPU), _stopWorkers(false), _nextIdx(1), _endIdx(0), _batchSize(16), _busyWorkers(0) {
     // Create workers
     for (int i = 0; i < getMaxNumWorkers(); i++)
         _threads.push_back(std::thread(&CpuDevice::worker, this));
@@ -25,7 +25,6 @@ void CpuDevice::compute(uint32_t start, uint32_t end, std::function<void(uint32_
         std::lock_guard<std::mutex> lock(_workMutex);
         _nextIdx = start;
         _endIdx = end - 1;
-        _batchSize = std::max((end - start) / (3 * getNumWorkers()), 1u);
         _func = std::move(func);
     }
     _wakeUpWorkers.notify_all();

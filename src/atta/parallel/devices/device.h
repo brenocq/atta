@@ -11,7 +11,7 @@ namespace atta::parallel {
 
 class Device {
   public:
-    enum class Type {
+    enum Type {
         SERIAL = 0, CPU, GPU, CLUSTER
     };
 

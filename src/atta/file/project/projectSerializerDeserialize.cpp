@@ -11,10 +11,10 @@ void ProjectSerializer::deserializeHeader(Section& section) {
     std::string projectName = std::string(section["projectName"]);
 }
 
-void ProjectSerializer::deserializeConfig(Section& section) { 
-    if(section.contains("dt"))
+void ProjectSerializer::deserializeConfig(Section& section) {
+    if (section.contains("dt"))
         Config::setDt(float(section["dt"]));
-    if(section.contains("desiredStepSpeed"))
+    if (section.contains("desiredStepSpeed"))
         Config::setDesiredStepSpeed(float(section["desiredStepSpeed"]));
 }
 
@@ -58,9 +58,9 @@ void ProjectSerializer::deserializeGraphicsModule(Section& section) {
     }
     if (section.contains("graphicsFPS"))
         graphics::setGraphicsFPS(float(section["graphicsFPS"]));
-    if(section.contains("viewportFPS"))
+    if (section.contains("viewportFPS"))
         graphics::setViewportFPS(float(section["viewportFPS"]));
-    if(section.contains("viewportRendering"))
+    if (section.contains("viewportRendering"))
         graphics::setViewportRendering(bool(section["viewportRendering"]));
 }
 
@@ -91,13 +91,13 @@ void ProjectSerializer::deserializePhysicsModule(Section& section) {
         else if (engine == "BULLET")
             physics::setEngineType(physics::Engine::BULLET);
     }
-    if(section.contains("gravity"))
-       physics::setGravity(vec3(section["gravity"]));
-    if(section.contains("showColliders"))
+    if (section.contains("gravity"))
+        physics::setGravity(vec3(section["gravity"]));
+    if (section.contains("showColliders"))
         physics::setShowColliders(bool(section["showColliders"]));
-    if(section.contains("showContacts"))
+    if (section.contains("showContacts"))
         physics::setShowContacts(bool(section["showContacts"]));
-    if(section.contains("showJoints"))
+    if (section.contains("showJoints"))
         physics::setShowJoints(bool(section["showJoints"]));
 
     if (section.contains("bullet")) {
@@ -110,10 +110,24 @@ void ProjectSerializer::deserializePhysicsModule(Section& section) {
 }
 
 void ProjectSerializer::deserializeSensorModule(Section& section) {
-    if(section.contains("showCameras"))
+    if (section.contains("showCameras"))
         sensor::setShowCameras(bool(section["showCameras"]));
-    if(section.contains("showInfrareds"))
+    if (section.contains("showInfrareds"))
         sensor::setShowInfrareds(bool(section["showInfrareds"]));
+}
+
+void ProjectSerializer::deserializeParallelModule(Section& section) {
+    if (section.contains("device")) {
+        std::string device = std::string(section["device"]);
+        if (device == "SERIAL")
+            parallel::setDeviceType(parallel::Device::SERIAL);
+        else if (device == "CPU")
+            parallel::setDeviceType(parallel::Device::CPU);
+        else if (device == "GPU")
+            parallel::setDeviceType(parallel::Device::GPU);
+        else if (device == "CLUSTER")
+            parallel::setDeviceType(parallel::Device::CLUSTER);
+    }
 }
 
 } // namespace atta::file

@@ -16,7 +16,7 @@ Manager& Manager::getInstance() {
 void Manager::startUpImpl() {
     _serialDevice = std::make_shared<SerialDevice>();
     _cpuDevice = std::make_shared<CpuDevice>();
-    _device = _cpuDevice;
+    _device = _serialDevice;
 }
 
 void Manager::shutDownImpl() {

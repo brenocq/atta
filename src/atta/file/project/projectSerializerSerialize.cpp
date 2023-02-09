@@ -88,10 +88,9 @@ void ProjectSerializer::serializePhysicsModule(Section& section) {
         case physics::Engine::BOX2D:
             section["engine"] = "BOX2D";
             break;
-        case physics::Engine::BULLET: {
+        case physics::Engine::BULLET:
             section["engine"] = "BULLET";
             break;
-        }
     }
     section["gravity"] = physics::getGravity();
     section["showColliders"] = physics::getShowColliders();
@@ -106,6 +105,23 @@ void ProjectSerializer::serializePhysicsModule(Section& section) {
 void ProjectSerializer::serializeSensorModule(Section& section) {
     section["showCameras"] = sensor::getShowCameras();
     section["showInfrareds"] = sensor::getShowInfrareds();
+}
+
+void ProjectSerializer::serializeParallelModule(Section& section) {
+    switch (parallel::getDeviceType()) {
+        case parallel::Device::SERIAL:
+            section["device"] = "SERIAL";
+            break;
+        case parallel::Device::CPU:
+            section["device"] = "CPU";
+            break;
+        case parallel::Device::GPU:
+            section["device"] = "GPU";
+            break;
+        case parallel::Device::CLUSTER:
+            section["device"] = "CLUSTER";
+            break;
+    }
 }
 
 } // namespace atta::file
