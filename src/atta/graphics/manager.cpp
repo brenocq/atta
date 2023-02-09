@@ -76,9 +76,9 @@ void Manager::shutDownImpl() {
 
 void Manager::updateImpl() {
     // Graphics fps
-    static clock_t gfxLastTime = std::clock();
-    const clock_t gfxCurrTime = std::clock();
-    const float gfxTimeDiff = float(gfxCurrTime - gfxLastTime) / CLOCKS_PER_SEC;
+    static auto gfxLastTime = std::chrono::high_resolution_clock::now();
+    const auto gfxCurrTime = std::chrono::high_resolution_clock::now();
+    const float gfxTimeDiff = std::chrono::duration<float, std::milli>(gfxCurrTime - gfxLastTime).count() / 1000.0;
 
     if (_graphicsFPS > 0 && (gfxTimeDiff > 1 / _graphicsFPS)) {
         gfxLastTime = gfxCurrTime;

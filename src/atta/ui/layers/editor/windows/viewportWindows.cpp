@@ -29,9 +29,9 @@ void ViewportWindows::render() {
     static int activeViewport = 0;
 
     // Viewports fps
-    static clock_t vpLastTime = std::clock();
-    const clock_t vpCurrTime = std::clock();
-    const float vpTimeDiff = float(vpCurrTime - vpLastTime) / CLOCKS_PER_SEC;
+    static auto vpLastTime = std::chrono::high_resolution_clock::now();
+    const auto vpCurrTime = std::chrono::high_resolution_clock::now();
+    const float vpTimeDiff = std::chrono::duration<float, std::milli>(vpCurrTime - vpLastTime).count() / 1000.0;
     bool shouldRenderViewports = false;
     if (graphics::getViewportRendering() && (graphics::getViewportFPS() > 0 && (vpTimeDiff > 1 / graphics::getViewportFPS()))) {
         vpLastTime = vpCurrTime;

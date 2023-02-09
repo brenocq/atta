@@ -8,7 +8,7 @@
 #define ATTA_ATTA_H
 #include <atta/event/event.h>
 #include <atta/memory/allocators/stackAllocator.h>
-#include <ctime>
+#include <chrono>
 
 namespace atta {
 class Atta {
@@ -35,8 +35,10 @@ class Atta {
     // State
     bool _shouldFinish;
     bool _shouldStep;
-    clock_t _lastStep;
-    clock_t _currStep;
+
+    // Track real time
+    std::chrono::time_point<std::chrono::high_resolution_clock> _lastStep;
+    std::chrono::time_point<std::chrono::high_resolution_clock> _currStep;
 };
 } // namespace atta
 

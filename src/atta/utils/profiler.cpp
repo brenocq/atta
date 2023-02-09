@@ -166,6 +166,20 @@ std::string Profiler::cropFuncName(std::string name) {
 
     if (startPos && endPos)
         name = name.substr(startPos, endPos - startPos);
+
+    static const std::vector<std::pair<std::string, std::string>> attaNamespaces = {
+        {"atta::component", "cmp"}, {"atta::event", "evt"},   {"atta::file", "fil"},     {"atta::graphics", "gfx"},
+        {"atta::memory", "mem"},    {"atta::physics", "phy"}, {"atta::resource", "res"}, {"atta::script", "scr"},
+        {"atta::sensor", "sen"},    {"atta::ui", "ui"},       {"atta::parallel", "pll"},
+    };
+    for (auto ns : attaNamespaces) {
+        size_t start = name.find(ns.first);
+        if (start != std::string::npos) {
+            name.replace(start, start + ns.first.size(), ns.second);
+            break;
+        }
+    }
+
     return name;
 }
 

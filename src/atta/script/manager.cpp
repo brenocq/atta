@@ -26,68 +26,75 @@ void Manager::updateImpl(float dt) {
 
     // Run project script before
     if (project) {
-        PROFILE_NAME("ProjectScript::onUpdateBefore");
+        PROFILE_NAME("atta::script::Manager::onUpdateBefore");
         project->onUpdateBefore(dt);
     }
 
     // Run clone scripts
-    for (auto& factory : component::getFactories()) {
-        std::vector<cmp::Entity> clones = factory.getClones();
-        parallel::compute(0, clones.size(), [=](uint32_t i) {
-            cmp::Script* scriptComponent = clones[i].get<cmp::Script>();
-            if (scriptComponent) {
-                script::Script* script = script::getScript(scriptComponent->sid);
-                if (script)
-                    script->update(clones[i], dt);
-            }
-        });
-    }
-
-    // Get entityIds that are clones
-    const auto& factories = component::getFactories();
-    std::vector<std::pair<component::EntityId, component::EntityId>> beginEndClones(factories.size());
-    for (const auto& factory : factories) {
-        component::EntityId firstClone = factory.getFirstClone().getId();
-        uint64_t numClones = factory.getNumEntitiesCloned() * factory.getMaxClones();
-        beginEndClones.push_back({firstClone, firstClone + numClones});
+    {
+        PROFILE_NAME("atta::script::Manager::runCloneScripts");
+        for (auto& factory : component::getFactories()) {
+            std::vector<cmp::Entity> clones = factory.getClones();
+            parallel::compute(0, clones.size(), [&](uint32_t i) {
+                cmp::Script* scriptComponent = clones[i].get<cmp::Script>();
+                if (scriptComponent) {
+                    script::Script* script = script::getScript(scriptComponent->sid);
+                    if (script)
+                        script->update(clones[i], dt);
+                }
+            });
+        }
     }
 
     // Run base entity scripts (not clones)
-    std::vector<component::EntityId> entities = component::getScriptView();
-    std::vector<std::pair<script::Script*, cmp::EntityId>> scripts;
-    for (component::EntityId entity : entities) {
-        // Check if it has script component
-        component::Script* scriptComponent = component::getComponent<component::Script>(entity);
-        if (!scriptComponent)
-            continue;
+    {
+        PROFILE_NAME("atta::script::Manager::runBaseScripts");
 
-        // Check if it is not prototype entity
-        component::Prototype* prototypeComponent = component::getComponent<component::Prototype>(entity);
-        if (prototypeComponent)
-            continue;
+        // Get entityIds that are clones
+        const auto& factories = component::getFactories();
+        std::vector<std::pair<component::EntityId, component::EntityId>> beginEndClones(factories.size());
+        for (const auto& factory : factories) {
+            component::EntityId firstClone = factory.getFirstClone().getId();
+            uint64_t numClones = factory.getNumEntitiesCloned() * factory.getMaxClones();
+            beginEndClones.push_back({firstClone, firstClone + numClones});
+        }
 
-        // Check if it it not clone entity
-        bool isClone = false;
-        for (auto [begin, end] : beginEndClones)
-            if (entity >= begin && entity <= end) {
-                isClone = true;
-                break;
-            }
-        if (isClone)
-            continue;
+        std::vector<component::EntityId> entities = component::getScriptView();
+        std::vector<std::pair<script::Script*, cmp::EntityId>> scripts;
+        for (component::EntityId entity : entities) {
+            // Check if it has script component
+            component::Script* scriptComponent = component::getComponent<component::Script>(entity);
+            if (!scriptComponent)
+                continue;
 
-        // Add to list to be executed
-        script::Script* script = getScriptImpl(scriptComponent->sid);
-        if (script)
-            scripts.push_back({script, entity});
+            // Check if it is not prototype entity
+            component::Prototype* prototypeComponent = component::getComponent<component::Prototype>(entity);
+            if (prototypeComponent)
+                continue;
+
+            // Check if it it not clone entity
+            bool isClone = false;
+            for (auto [begin, end] : beginEndClones)
+                if (entity >= begin && entity <= end) {
+                    isClone = true;
+                    break;
+                }
+            if (isClone)
+                continue;
+
+            // Add to list to be executed
+            script::Script* script = getScriptImpl(scriptComponent->sid);
+            if (script)
+                scripts.push_back({script, entity});
+        }
+
+        // Run scripts
+        parallel::compute(0, scripts.size(), [&](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
     }
-
-    // Run scripts
-    parallel::compute(0, scripts.size(), [=](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
 
     // Run project script after
     if (project) {
-        PROFILE_NAME("ProjectScript::onUpdateAfter");
+        PROFILE_NAME("atta::script::Manager::onUpdateAfter");
         project->onUpdateAfter(dt);
     }
 }

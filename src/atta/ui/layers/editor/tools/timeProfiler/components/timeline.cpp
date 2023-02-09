@@ -125,33 +125,31 @@ void Timeline::render() {
                     min.x = std::max(beginTime, float(limits.X.Min));
                     max.x = std::min(endTime, float(limits.X.Max));
                     // Calculate text size
-                    ImPlotPoint textOrigin = ImPlot::PixelsToPlot(ImVec2(0,0));
+                    ImPlotPoint textOrigin = ImPlot::PixelsToPlot(ImVec2(0, 0));
                     ImPlotPoint textSize = ImPlot::PixelsToPlot(ImGui::CalcTextSize(name.c_str()));
                     textSize.x = textSize.x - textOrigin.x;
                     // If text too big, try funcName...
                     if (textSize.x >= max.x - min.x) {
                         // If can't render full name, try partial name
                         std::string fullName = name;
-                        for(int s = 5; s <= fullName.size()-3; s++)
-                        {
+                        for (int s = 5; s <= fullName.size() - 3; s++) {
                             std::string subStr = fullName.substr(0, s) + "...";
                             ImPlotPoint subTextSize = ImPlot::PixelsToPlot(ImGui::CalcTextSize(subStr.c_str()));
                             subTextSize.x = subTextSize.x - textOrigin.x;
-                            if (subTextSize.x < max.x - min.x)
-                            {
+                            if (subTextSize.x < max.x - min.x) {
                                 name = subStr;
                                 textSize = subTextSize;
-                            }
-                            else
+                            } else
                                 break;
                         }
                     }
 
                     // Render text if possible
                     if (textSize.x < max.x - min.x) {
-                        float x = (min.x + max.x) * 0.5f;
-                        float y = s.size() + 0.5f;
+                        double x = min.x + (max.x - min.x) * 0.5;
+                        double y = s.size() + 0.4f;
                         ImPlot::PlotText(name.c_str(), x, y);
+                        ImPlot::PlotText(std::to_string(endTime - beginTime).c_str(), x, y + 0.25f);
                     }
                 }
 

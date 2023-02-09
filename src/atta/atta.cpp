@@ -76,7 +76,7 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     }
 #endif
 
-    _currStep = _lastStep = std::clock();
+    _currStep = _lastStep = std::chrono::high_resolution_clock::now();
 }
 
 Atta::~Atta() {
@@ -115,14 +115,14 @@ void Atta::run() {
 
 void Atta::loop() {
     PROFILE();
-    _currStep = std::clock();
-    const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
+    _currStep = std::chrono::high_resolution_clock::now();
 
     if (Config::getState() == Config::State::RUNNING) {
         if (Config::getDesiredStepSpeed() == 0.0f) {
             // Step as fast as possible
             step();
         } else {
+            const float timeDiff = std::chrono::duration<float, std::milli>(_currStep - _lastStep).count() / 1000.0;
             // Step with delay to be closer to desired step speed
             if (timeDiff >= Config::getDt() / Config::getDesiredStepSpeed())
                 step();
@@ -142,14 +142,16 @@ void Atta::loop() {
 
 void Atta::step() {
     PROFILE();
-    const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
-    Config::setRealStepSpeed(Config::getDt() / timeDiff);
-    _lastStep = _currStep;
 
     float dt = Config::getDt(); // Saving dt because project script may change the dt
     physics::update(dt);
     sensor::update(dt);
     script::update(dt);
+
+    // Update time
+    const float timeDiff = std::chrono::duration<float, std::milli>(_currStep - _lastStep).count() / 1000.0;
+    Config::setRealStepSpeed(Config::getRealStepSpeed() * 0.99 + (Config::getDt() / timeDiff) * 0.01);
+    _lastStep = _currStep;
     Config::getInstance()._time += dt;
 }
 
