@@ -16,6 +16,7 @@ Manager& Manager::getInstance() {
 void Manager::startUpImpl() {
     _serialDevice = std::make_shared<SerialDevice>();
     _cpuDevice = std::make_shared<CpuDevice>();
+    _gpuDevice = std::make_shared<GpuDevice>();
     _device = _serialDevice;
 }
 
@@ -46,5 +47,6 @@ Device::Type Manager::getDeviceTypeImpl() { return _device->getType(); }
 std::shared_ptr<Device> Manager::getDeviceImpl() { return _device; }
 std::shared_ptr<SerialDevice> Manager::getSerialDeviceImpl() { return _serialDevice; }
 std::shared_ptr<CpuDevice> Manager::getCpuDeviceImpl() { return _cpuDevice; }
+std::shared_ptr<GpuDevice> Manager::getGpuDeviceImpl() { return _gpuDevice; }
 
 } // namespace atta::parallel

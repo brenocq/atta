@@ -21,5 +21,6 @@ Device::Type getDeviceType() { return Manager::getInstance().getDeviceTypeImpl()
 std::shared_ptr<Device> getDevice() { return Manager::getInstance().getDeviceImpl(); }
 std::shared_ptr<SerialDevice> getSerialDevice() { return Manager::getInstance().getSerialDeviceImpl(); }
 std::shared_ptr<CpuDevice> getCpuDevice() { return Manager::getInstance().getCpuDeviceImpl(); }
+std::shared_ptr<GpuDevice> getGpuDevice() { return Manager::getInstance().getGpuDeviceImpl(); }
 
 } // namespace atta::parallel

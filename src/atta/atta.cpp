@@ -150,7 +150,7 @@ void Atta::step() {
 
     // Update time
     const float timeDiff = std::chrono::duration<float, std::milli>(_currStep - _lastStep).count() / 1000.0;
-    Config::setRealStepSpeed(Config::getRealStepSpeed() * 0.99 + (Config::getDt() / timeDiff) * 0.01);
+    Config::setRealStepSpeed(Config::getRealStepSpeed() * 0.5 + (Config::getDt() / timeDiff) * 0.5);
     _lastStep = _currStep;
     Config::getInstance()._time += dt;
 }

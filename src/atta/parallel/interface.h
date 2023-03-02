@@ -22,6 +22,7 @@ Device::Type getDeviceType();
 std::shared_ptr<Device> getDevice();
 std::shared_ptr<SerialDevice> getSerialDevice();
 std::shared_ptr<CpuDevice> getCpuDevice();
+std::shared_ptr<GpuDevice> getGpuDevice();
 
 } // namespace atta::parallel
 
