@@ -128,6 +128,7 @@ void Timeline::render() {
                     ImPlotPoint textOrigin = ImPlot::PixelsToPlot(ImVec2(0, 0));
                     ImPlotPoint textSize = ImPlot::PixelsToPlot(ImGui::CalcTextSize(name.c_str()));
                     textSize.x = textSize.x - textOrigin.x;
+                    textSize.y = textSize.y - textOrigin.y;
                     // If text too big, try funcName...
                     if (textSize.x >= max.x - min.x) {
                         // If can't render full name, try partial name
@@ -138,7 +139,7 @@ void Timeline::render() {
                             subTextSize.x = subTextSize.x - textOrigin.x;
                             if (subTextSize.x < max.x - min.x) {
                                 name = subStr;
-                                textSize = subTextSize;
+                                textSize.x = subTextSize.x;
                             } else
                                 break;
                         }
@@ -146,10 +147,12 @@ void Timeline::render() {
 
                     // Render text if possible
                     if (textSize.x < max.x - min.x) {
+                        double offset = (1.0 - (textSize.y * 2.0)) / 3.0;
                         double x = min.x + (max.x - min.x) * 0.5;
-                        double y = s.size() + 0.4f;
-                        ImPlot::PlotText(name.c_str(), x, y);
-                        ImPlot::PlotText(std::to_string(endTime - beginTime).c_str(), x, y + 0.25f);
+                        double yName = s.size() + offset + textSize.y / 2.0;
+                        double yTime = yName + textSize.y + offset;
+                        ImPlot::PlotText(name.c_str(), x, yName);
+                        ImPlot::PlotText(std::to_string(endTime - beginTime).c_str(), x, yTime);
                     }
                 }
 
