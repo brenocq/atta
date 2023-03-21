@@ -59,6 +59,7 @@ struct RigidBody2D final : public Component {
     bool allowSleep = true;     ///< If the rigid body can sleep
     bool awake = true;          ///< If the rigid body start awake or sleeping
     bool fixedRotation = false; ///< Disable rigid body rotation
+    bool groundFriction = false; ///< Enable ground friction
 
     /// Set the position of the body's origin and rotation.
     /// @param position position of the body's origin

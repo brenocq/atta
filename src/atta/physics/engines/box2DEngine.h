@@ -54,6 +54,7 @@ class Box2DEngine : public Engine {
     void createRigidJoint(component::RigidJoint* rigid);
 
     std::shared_ptr<b2World> _world;
+    b2Body* _groundBody; ///< Ground body used to apply top-down friction if necessary
     std::unordered_map<component::EntityId, b2Body*> _bodies;
     std::unordered_map<component::RigidBody2D*, component::EntityId> _componentToEntity;
     std::unordered_map<component::EntityId, std::unordered_set<component::EntityId>> _collisions;

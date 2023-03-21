@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/parallel/devices/add_vectors.h>
 #include <atta/parallel/devices/gpuDevice.h>
-#include <cuda_runtime_api.h>
+#include <cuda_runtime.h>
 
 namespace atta::parallel {
 
@@ -86,9 +86,10 @@ GpuDevice::GpuDevice() : Device(Type::GPU) {
         LOG_INFO("parallel::GpuDevice", " - Compute capability: [w]$0.$1", deviceProp.major, deviceProp.minor);
         LOG_INFO("parallel::GpuDevice", " - Total global memory: [w]$0B", formatSize(deviceProp.totalGlobalMem));
         LOG_INFO("parallel::GpuDevice", " - Total constant memory: [w]$0B", formatSize(deviceProp.totalConstMem));
-        LOG_INFO("parallel::GpuDevice", " - Number of multiprocessors: [w]$0", deviceProp.multiProcessorCount);
-        LOG_INFO("parallel::GpuDevice", " - Number of cores per multiprocessor: [w]$0", numCoresPerSM);
-        LOG_INFO("parallel::GpuDevice", " - Number of CUDA cores: [w]$0", deviceProp.multiProcessorCount * numCoresPerSM);
+        LOG_INFO("parallel::GpuDevice", " - Total number of cores: [w]$0", deviceProp.multiProcessorCount * numCoresPerSM);
+        LOG_INFO("parallel::GpuDevice", " - Total shared memory per SM: [w]$0B", formatSize(deviceProp.sharedMemPerMultiprocessor));
+        LOG_INFO("parallel::GpuDevice", " - Number of SM: [w]$0", deviceProp.multiProcessorCount);
+        LOG_INFO("parallel::GpuDevice", " - Number of cores per SM: [w]$0", numCoresPerSM);
         LOG_INFO("parallel::GpuDevice", " - Clock rate: [w]$0Hz", formatSize(deviceProp.clockRate * 1000, 1000));
     }
 
@@ -105,8 +106,7 @@ GpuDevice::GpuDevice() : Device(Type::GPU) {
     add_vectors(a, b, c, n);
 
     // Print the result vector c
-    for (int i = 0; i < n; ++i)
-        printf("%f\n", c[i]);
+    printf("%f\n", c[n - 1]);
 
     LOG_SUCCESS("parallel::GpuDevice", "Initialized!");
 }

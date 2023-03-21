@@ -83,6 +83,10 @@ inline b2BodyType attaToBox2D(component::RigidBody2D::Type type) {
         return b2_staticBody;
 }
 
+inline b2Vec2 attaToBox2D(vec2 v) { return {v.x, v.y}; }
+
+inline vec2 box2DToAtta(b2Vec2 v) { return {v.x, v.y}; }
+
 //---------- Box2DEngine ----------//
 Box2DEngine::Box2DEngine() : Engine(Engine::BOX2D) {}
 
@@ -94,7 +98,7 @@ Box2DEngine::~Box2DEngine() {
 void Box2DEngine::start() {
     _running = true;
     vec2 g = vec2(physics::getGravity());
-    _world = std::make_shared<b2World>(b2Vec2(g.x, g.y));
+    _world = std::make_shared<b2World>(attaToBox2D(g));
 
     // Create contact listener
     // TODO need to free?
@@ -102,6 +106,12 @@ void Box2DEngine::start() {
     _world->SetContactListener(contactlistener);
 
     std::vector<component::EntityId> entities = component::getNoPrototypeView();
+
+    //---------- Create ground body----------//
+    // This body is used to apply top-down friction if necessary
+    b2BodyDef groundBodyDef{};
+    _groundBody = _world->CreateBody(&groundBodyDef);
+
     //---------- Create rigid bodies ----------//
     for (component::EntityId entity : entities) {
         auto t = component::getComponent<component::Transform>(entity);
@@ -158,7 +168,7 @@ void Box2DEngine::step(float dt) {
         auto rb2d = component::getComponent<component::RigidBody2D>(eid);
 
         // Check type change
-        if(body->GetType() != attaToBox2D(rb2d->type))
+        if (body->GetType() != attaToBox2D(rb2d->type))
             body->SetType(attaToBox2D(rb2d->type));
 
         // Get atta pos/angle
@@ -190,6 +200,7 @@ void Box2DEngine::step(float dt) {
     //----- Update atta components -----//
     for (auto [eid, body] : _bodies) {
         auto t = component::getComponent<component::Transform>(eid);
+        auto rb = component::getComponent<component::RigidBody2D>(eid);
         if (body->IsAwake() && t) {
             component::Transform worldTrans;
 
@@ -198,6 +209,10 @@ void Box2DEngine::step(float dt) {
             worldTrans.position = {pos.x, pos.y, t->position.z};
             worldTrans.orientation.set2DAngle(body->GetAngle());
             worldTrans.scale = t->scale;
+
+            // Update physics parameters
+            rb->linearVelocity = box2DToAtta(body->GetLinearVelocity());
+            rb->angularVelocity = body->GetAngularVelocity();
 
             // Update transform
             t->setWorldTransform(eid, worldTrans);
@@ -243,6 +258,17 @@ void Box2DEngine::createRigidBody(component::EntityId entity) {
     // Create body
     b2Body* body = _world->CreateBody(&bodyDef);
     _bodies[entity] = body;
+
+    // Apply top-down friction
+    vec3 gravity = physics::getGravity();
+    if (gravity.x == 0.0f && gravity.x == 0.0f && rb2d->groundFriction) {
+        b2FrictionJointDef frictionJointDef;
+        frictionJointDef.bodyA = _groundBody;
+        frictionJointDef.bodyB = body;
+        frictionJointDef.maxForce = (-gravity.z * rb2d->mass) * rb2d->friction;               // Set the maximum friction force
+        frictionJointDef.maxTorque = frictionJointDef.maxForce * vec2(t->scale).length() / 2; // Set the maximum friction torque
+        _world->CreateJoint(&frictionJointDef);
+    }
 
     // Register component pointer to EntityId conversion
     _componentToEntity[rb2d] = entity;

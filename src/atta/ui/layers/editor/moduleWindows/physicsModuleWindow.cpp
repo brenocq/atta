@@ -54,7 +54,7 @@ void PhysicsModuleWindow::renderImpl() {
             {
                 ImGui::Text("Gravity");
                 vec3 g = physics::getGravity();
-                if (ImGui::DragFloat2("Gravity", (float*)(&g), 0.01f))
+                if (ImGui::DragFloat3("Gravity", (float*)(&g), 0.01f))
                     physics::setGravity(g);
             }
             break;

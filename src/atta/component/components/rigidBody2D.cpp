@@ -23,7 +23,8 @@ ComponentDescription& TypedComponentRegistry<RigidBody2D>::getDescription() {
                                          {AttributeType::FLOAT32, offsetof(RigidBody2D, angularDamping), "angularDamping", {}, {}, 0.001f},
                                          {AttributeType::BOOL, offsetof(RigidBody2D, allowSleep), "allowSleep"},
                                          {AttributeType::BOOL, offsetof(RigidBody2D, awake), "awake"},
-                                         {AttributeType::BOOL, offsetof(RigidBody2D, fixedRotation), "fixedRotation"}}};
+                                         {AttributeType::BOOL, offsetof(RigidBody2D, fixedRotation), "fixedRotation"},
+                                         {AttributeType::BOOL, offsetof(RigidBody2D, groundFriction), "groundFriction"}}};
 
     return desc;
 }
@@ -38,6 +39,7 @@ void RigidBody2D::setTransform(vec2 position, float angle) {
 
 void RigidBody2D::setLinearVelocity(vec2 vel) {
     if (physics::getEngineType() == physics::Engine::BOX2D) {
+        linearVelocity = vel;
         std::shared_ptr<physics::Box2DEngine> b2Engine = std::static_pointer_cast<physics::Box2DEngine>(physics::getEngine());
         b2Engine->setLinearVelocity(this, vel);
     } else
@@ -46,6 +48,7 @@ void RigidBody2D::setLinearVelocity(vec2 vel) {
 
 void RigidBody2D::setAngularVelocity(float omega) {
     if (physics::getEngineType() == physics::Engine::BOX2D) {
+        angularVelocity = omega;
         std::shared_ptr<physics::Box2DEngine> b2Engine = std::static_pointer_cast<physics::Box2DEngine>(physics::getEngine());
         b2Engine->setAngularVelocity(this, omega);
     } else
