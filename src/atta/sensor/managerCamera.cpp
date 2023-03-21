@@ -55,22 +55,41 @@ void Manager::unregisterCamera(cmp::Entity entity) {
 
 void Manager::updateCameras(float dt) {
     PROFILE();
-    for (CameraInfo& cameraInfo : _cameras) {
-        // Always update camera model (used to render UI sensor drawer)
-        updateCameraModel(cameraInfo);
 
-        // Check if it is enabled
-        if(!cameraInfo.component->enabled)
-            continue;
+    std::vector<CameraInfo*> toRead; // Save which images should read later
+    // Send images to be rendered
+    {
+        PROFILE_NAME("render");
+        for (CameraInfo& cameraInfo : _cameras) {
+            // Always update camera model (used to render UI sensor drawer)
+            updateCameraModel(cameraInfo);
 
-        // Render if necessary
-        float change = Config::getTime() - cameraInfo.component->captureTime;
-        float interval = 1.0f / cameraInfo.component->fps;
-        if (change >= interval) {
-            cameraInfo.renderer->render(cameraInfo.camera);
-            cameraInfo.data = cameraInfo.renderer->getFramebuffer()->readImage(0);
-            cameraInfo.component->captureTime = Config::getTime();
+            // Check if it is enabled
+            if (!cameraInfo.component->enabled)
+                continue;
+
+            // Render if necessary
+            float change = Config::getTime() - cameraInfo.component->captureTime;
+            float interval = 1.0f / cameraInfo.component->fps;
+            if (change >= interval) {
+                // Render
+                cameraInfo.renderer->render(cameraInfo.camera);
+                cameraInfo.component->captureTime = Config::getTime();
+
+                // Start transfer from GPU to CPU
+                toRead.push_back(&cameraInfo);
+            }
         }
+    }
+
+    // Read images transferred from GPU to CPU
+    {
+        PROFILE_NAME("transfer");
+        for (CameraInfo* cameraInfo : toRead)
+            cameraInfo->renderer->getFramebuffer()->readImageRequest(0);
+
+        for (CameraInfo* cameraInfo : toRead)
+            cameraInfo->data = cameraInfo->renderer->getFramebuffer()->readImage(0);
     }
 }
 

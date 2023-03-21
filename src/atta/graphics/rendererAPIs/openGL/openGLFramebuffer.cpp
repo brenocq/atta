@@ -10,7 +10,7 @@
 namespace atta::graphics {
 
 OpenGLFramebuffer::OpenGLFramebuffer(const Framebuffer::CreateInfo& info)
-    : Framebuffer(info), _id(0), _depthAttachmentIndex(-1), _stencilAttachmentIndex(-1) {
+    : Framebuffer(info), _id(0), _pboId(0), _pboRequested(false), _depthAttachmentIndex(-1), _stencilAttachmentIndex(-1) {
     // Check consistency and populate color and depth attachments
     int i = 0;
     for (auto attachment : _attachments) {
@@ -41,6 +41,8 @@ OpenGLFramebuffer::OpenGLFramebuffer(const Framebuffer::CreateInfo& info)
 OpenGLFramebuffer::~OpenGLFramebuffer() {
     if (_id)
         glDeleteFramebuffers(1, &_id);
+    if (_pboId)
+        glDeleteBuffers(1, &_pboId);
 }
 
 void OpenGLFramebuffer::createAttachments() {
@@ -152,17 +154,56 @@ int OpenGLFramebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned 
     return pixel;
 }
 
-std::vector<uint8_t> OpenGLFramebuffer::readImage(unsigned attachmentIndex) {
+void OpenGLFramebuffer::readImageRequest(unsigned attachmentIndex) {
     int numChannels = Image::getFormatSize(_attachments[attachmentIndex].format);
     GLenum formatOpenGL = OpenGLImage::convertFormat(_attachments[attachmentIndex].format);
     GLenum dataTypeOpenGL = OpenGLImage::convertDataType(_attachments[attachmentIndex].format);
 
+    if (!_pboId) {
+        glGenBuffers(1, &_pboId);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, _pboId);
+        glBufferData(GL_PIXEL_PACK_BUFFER, _width * _height * numChannels, nullptr, GL_STREAM_READ);
+    } else
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, _pboId);
+
+    // Transfer call
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
     glViewport(0, 0, _width, _height);
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-    std::vector<uint8_t> data(_width * _height * numChannels);
-    glReadPixels(0, 0, _width, _height, formatOpenGL, dataTypeOpenGL, &data[0]);
+    glReadPixels(0, 0, _width, _height, formatOpenGL, dataTypeOpenGL, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+    _pboRequested = true;
+}
+
+std::vector<uint8_t> OpenGLFramebuffer::readImage(unsigned attachmentIndex) {
+    int numChannels = Image::getFormatSize(_attachments[attachmentIndex].format);
+    std::vector<uint8_t> data(_width * _height * numChannels);
+
+    if (_pboRequested) {
+        // Get transferred image through PBO
+        _pboRequested = false;
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, _pboId);
+        GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
+
+        if (ptr) {
+            memcpy(data.data(), ptr, _width * _height * numChannels);
+            glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+        } else
+            LOG_WARN("OpenGLFramebuffer", "Could not get mapped buffer from PBO to read the image");
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+    } else {
+        // Block transfer image from GPU to CPU
+        GLenum formatOpenGL = OpenGLImage::convertFormat(_attachments[attachmentIndex].format);
+        GLenum dataTypeOpenGL = OpenGLImage::convertDataType(_attachments[attachmentIndex].format);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, _id);
+        glViewport(0, 0, _width, _height);
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+        glReadPixels(0, 0, _width, _height, formatOpenGL, dataTypeOpenGL, &data[0]);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
     return data;
 }
 
@@ -171,14 +212,14 @@ std::vector<uint8_t> OpenGLFramebuffer::readImage(unsigned attachmentIndex) {
 //------------------------------------------------//
 GLenum OpenGLFramebuffer::convertDepthAttachmentType(Image::Format format) {
     switch (format) {
-    case Image::Format::NONE:
-        break;
-    case Image::Format::DEPTH32F:
-        return GL_DEPTH_ATTACHMENT;
-    case Image::Format::DEPTH24_STENCIL8:
-        return GL_DEPTH_ATTACHMENT;
-    default:
-        break;
+        case Image::Format::NONE:
+            break;
+        case Image::Format::DEPTH32F:
+            return GL_DEPTH_ATTACHMENT;
+        case Image::Format::DEPTH24_STENCIL8:
+            return GL_DEPTH_ATTACHMENT;
+        default:
+            break;
     }
     ASSERT(false, "Could not convert format to openGL depth attachment");
 }

@@ -23,6 +23,17 @@ class OpenGLFramebuffer final : public Framebuffer {
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
     int readPixel(unsigned attachmentIndex, unsigned x, unsigned y) override;
+
+    /**
+     * @brief Request image to be transferred from GPU to CPU
+     *
+     * It can be used to be able to do other processing while transferring the data to the CPU. To read the transferred image use the readImage method.
+     *
+     * @warning After making a request for an attachment index, you must call readImage for that attachment index before making another request.
+     *
+     * @param attachmentIndex Attachment index
+     */
+    void readImageRequest(unsigned attachmentIndex) override;
     std::vector<uint8_t> readImage(unsigned attachmentIndex) override;
 
     static GLenum convertDepthAttachmentType(Image::Format format);
@@ -31,7 +42,21 @@ class OpenGLFramebuffer final : public Framebuffer {
     void createAttachments();
     void bindAttachments();
 
+    /// Framebuffer object
     OpenGLId _id;
+
+    // Pixel buffer object
+    /**
+     * @brief Pixel Buffer Object (PBO) id
+     * It is used to asynchronously read the image
+     */
+    OpenGLId _pboId;
+
+    /**
+     * @brief PBO requested
+     * If read image request was performed
+     */
+    bool _pboRequested;
 
     // Attachments
     int _depthAttachmentIndex;
