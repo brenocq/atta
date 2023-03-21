@@ -261,7 +261,7 @@ void Box2DEngine::createRigidBody(component::EntityId entity) {
 
     // Apply top-down friction
     vec3 gravity = physics::getGravity();
-    if (gravity.x == 0.0f && gravity.x == 0.0f && rb2d->groundFriction) {
+    if (gravity.z && rb2d->groundFriction) {
         b2FrictionJointDef frictionJointDef;
         frictionJointDef.bodyA = _groundBody;
         frictionJointDef.bodyB = body;

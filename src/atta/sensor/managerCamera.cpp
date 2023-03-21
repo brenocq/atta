@@ -54,6 +54,7 @@ void Manager::unregisterCamera(cmp::Entity entity) {
 }
 
 void Manager::updateCameras(float dt) {
+    PROFILE();
     for (CameraInfo& cameraInfo : _cameras) {
         // Always update camera model (used to render UI sensor drawer)
         updateCameraModel(cameraInfo);
@@ -129,7 +130,6 @@ void Manager::initializeCamera(CameraInfo& cameraInfo) {
 }
 
 void Manager::updateCameraModel(CameraInfo& cameraInfo) {
-    PROFILE();
     //----- Update camera pose and parameters -----//
     cmp::Entity entity = cameraInfo.entity;
     cmp::Transform* transform = entity.get<cmp::Transform>();

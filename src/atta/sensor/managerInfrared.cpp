@@ -58,6 +58,7 @@ void Manager::initializeInfrared(InfraredInfo& infraredInfo) {
 }
 
 void Manager::updateInfrareds(float dt) {
+    PROFILE();
     for (InfraredInfo& iri : _infrareds) {
         cmp::InfraredSensor* ir = iri.component;
 
