@@ -35,11 +35,11 @@ DebugMessenger::DebugMessenger(std::shared_ptr<vk::Instance> instance) : _instan
     createInfo.pfnUserCallback = DebugMessenger::callback;
     createInfo.pUserData = nullptr;
 
-    if (CreateDebugUtilsMessengerEXT(_instance->get(), &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
+    if (CreateDebugUtilsMessengerEXT(_instance->getHandle(), &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::DebugMessenger", "Failed to set up debug messenger!");
 }
 
-DebugMessenger::~DebugMessenger() { DestroyDebugUtilsMessengerEXT(_instance->get(), _debugMessenger, nullptr); }
+DebugMessenger::~DebugMessenger() { DestroyDebugUtilsMessengerEXT(_instance->getHandle(), _debugMessenger, nullptr); }
 
 VKAPI_ATTR VkBool32 VKAPI_CALL DebugMessenger::callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                                                         VkDebugUtilsMessageTypeFlagsEXT messageType,

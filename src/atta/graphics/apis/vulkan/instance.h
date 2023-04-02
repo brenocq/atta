@@ -15,7 +15,7 @@ class Instance {
     Instance();
     ~Instance();
 
-    VkInstance get() const;
+    VkInstance getHandle() const;
 
   private:
     void printAvailableExtensions();

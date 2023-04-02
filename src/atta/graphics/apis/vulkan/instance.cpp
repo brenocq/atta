@@ -41,8 +41,8 @@ Instance::Instance() {
     createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
-    printAvailableExtensions();
-    printAvailableLayers();
+    // printAvailableExtensions();
+    // printAvailableLayers();
 
     // Create instance
     VkResult result = vkCreateInstance(&createInfo, nullptr, &_instance);
@@ -52,7 +52,7 @@ Instance::Instance() {
 
 Instance::~Instance() { vkDestroyInstance(_instance, nullptr); }
 
-VkInstance Instance::get() const { return _instance; }
+VkInstance Instance::getHandle() const { return _instance; }
 
 void Instance::printAvailableExtensions() {
     LOG_INFO("gfx::vk::Instance", "Available instance extensions:");
