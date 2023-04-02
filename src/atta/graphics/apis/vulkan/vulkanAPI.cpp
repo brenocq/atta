@@ -6,14 +6,12 @@
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 
-#include "vulkan/vulkan.h"
+#include <atta/graphics/apis/vulkan/common.h>
 
 namespace atta::graphics {
 
 VulkanAPI::VulkanAPI() : GraphicsAPI(GraphicsAPI::VULKAN) {
-    uint32_t extensionCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-    std::cout << extensionCount << " extensions supported\n";
+    _instance = std::make_shared<vk::Instance>();
 }
 
 VulkanAPI::~VulkanAPI() {}
