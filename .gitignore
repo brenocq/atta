@@ -10,6 +10,7 @@
 /scripts/local_*.sh
 /projects/
 /resources/
+/src/extern/_deps/
 
 # Visual Studio
 /.vs

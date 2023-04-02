@@ -4,11 +4,11 @@
 // Date: 2021-09-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_MESH_H
-#define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_MESH_H
+#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_MESH_H
+#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_MESH_H
 
-#include <atta/graphics/rendererAPIs/openGL/openGLIndexBuffer.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLVertexBuffer.h>
+#include <atta/graphics/apis/openGL/openGLIndexBuffer.h>
+#include <atta/graphics/apis/openGL/openGLVertexBuffer.h>
 #include <atta/utils/stringId.h>
 
 namespace atta::graphics {
@@ -30,4 +30,4 @@ class OpenGLMesh final {
 
 } // namespace atta::graphics
 
-#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_MESH_H
+#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_MESH_H

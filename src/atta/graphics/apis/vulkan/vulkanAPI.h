@@ -1,37 +1,37 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// vulkanRenderer.h
+// vulkanAPI.h
 // Date: 2021-08-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDERER_APIS_VULKAN_VULKAN_RENDERER_H
-#define ATTA_GRAPHICS_RENDERER_APIS_VULKAN_VULKAN_RENDERER_H
-#include <atta/graphics/rendererAPI.h>
+#ifndef ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H
+#define ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H
+#include <atta/graphics/apis/graphicsAPI.h>
+#include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
 
-class VulkanRenderer final : public RendererAPI {
+class VulkanAPI final : public GraphicsAPI {
   public:
-    VulkanRenderer();
-    ~VulkanRenderer();
+    VulkanAPI();
+    ~VulkanAPI();
 
     void beginFrame() override;
     void endFrame() override;
 
-    void beginRenderPass() override;
-    void endRenderPass() override;
-
-    void renderMesh() override;
+    void renderMesh(StringId meshSid) override;
     void renderQuad() override;
     void renderQuad3() override;
     void renderCube() override;
     void renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) override;
 
     void generateCubemap(StringId textureSid, mat4 rotationMatrix = mat4(1.0f)) override;
-    void generatePorcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) override;
+    void generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) override;
     void generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) override;
+
+    void* getImGuiImage(StringId sid) const override;
 };
 
 } // namespace atta::graphics
 
-#endif // ATTA_GRAPHICS_RENDERER_APIS_VULKAN_VULKAN_RENDERER_H
+#endif // ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H

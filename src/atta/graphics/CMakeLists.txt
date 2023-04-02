@@ -1,11 +1,43 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_GRAPHICS_MODULE_SOURCE
+    apis/graphicsAPI.cpp
+    apis/openGL/openGLAPI.cpp
+    apis/openGL/openGLImage.cpp
+    apis/openGL/openGLFramebuffer.cpp
+    apis/openGL/openGLRenderPass.cpp
+    apis/openGL/openGLShader.cpp
+    apis/openGL/openGLShaderGroup.cpp
+    apis/openGL/openGLVertexBuffer.cpp
+    apis/openGL/openGLIndexBuffer.cpp
+    apis/openGL/openGLPipeline.cpp
+    apis/openGL/openGLMesh.cpp
+    apis/vulkan/vulkanAPI.cpp
+
+    cameras/camera.cpp
+    cameras/perspectiveCamera.cpp
+    cameras/orthographicCamera.cpp
+
+    compute/entityClick.cpp
+
+    layers/layer.cpp
+    layers/layerStack.cpp
+
+    renderers/renderer.cpp
+    renderers/fastRenderer.cpp
+    renderers/pbrRenderer.cpp
+    renderers/phongRenderer.cpp
+    renderers/common/selectedPipeline.cpp
+    renderers/common/drawerPipeline.cpp
+
+    windows/window.cpp
+    windows/nullWindow.cpp
+    windows/glfwWindow.cpp
+
     interface.cpp
     manager.cpp
     drawer.cpp
     viewport.cpp
-
     image.cpp
     framebuffer.cpp
     renderPass.cpp
@@ -15,44 +47,12 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     vertexBuffer.cpp
     indexBuffer.cpp
     pipeline.cpp
-
-    windows/window.cpp
-    windows/nullWindow.cpp
-    windows/glfwWindow.cpp
-
-    rendererAPI.cpp
-    rendererAPIs/openGL/openGLRenderer.cpp
-    rendererAPIs/openGL/openGLImage.cpp
-    rendererAPIs/openGL/openGLFramebuffer.cpp
-    rendererAPIs/openGL/openGLRenderPass.cpp
-    rendererAPIs/openGL/openGLShader.cpp
-    rendererAPIs/openGL/openGLShaderGroup.cpp
-    rendererAPIs/openGL/openGLVertexBuffer.cpp
-    rendererAPIs/openGL/openGLIndexBuffer.cpp
-    rendererAPIs/openGL/openGLPipeline.cpp
-    rendererAPIs/openGL/openGLMesh.cpp
-
-    renderers/renderer.cpp
-    renderers/fastRenderer.cpp
-    renderers/pbrRenderer.cpp
-    renderers/phongRenderer.cpp
-    renderers/common/selectedPipeline.cpp
-    renderers/common/drawerPipeline.cpp
-
-    compute/entityClick.cpp
-
-    cameras/camera.cpp
-    cameras/perspectiveCamera.cpp
-    cameras/orthographicCamera.cpp
-
-    layers/layer.cpp
-    layers/layerStack.cpp
 )
 
 add_library(atta_graphics_module STATIC
     ${ATTA_GRAPHICS_MODULE_SOURCE}
 )
-target_link_libraries(atta_graphics_module PUBLIC ${ATTA_GLFW_TARGETS} ${ATTA_GLAD_TARGETS} ${ATTA_IMGUI_TARGETS} 
+target_link_libraries(atta_graphics_module PUBLIC ${ATTA_GLFW_TARGETS} ${ATTA_GLAD_TARGETS} ${ATTA_VULKAN_TARGETS} ${ATTA_IMGUI_TARGETS}
     atta_component_module atta_file_module atta_resource_module atta_ui_module atta_utils)
 
 atta_target_common(atta_graphics_module)

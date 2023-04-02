@@ -4,8 +4,8 @@
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLPipeline.h>
+#include <atta/graphics/apis/openGL/openGLImage.h>
+#include <atta/graphics/apis/openGL/openGLPipeline.h>
 
 namespace atta::graphics {
 

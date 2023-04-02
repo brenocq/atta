@@ -4,21 +4,20 @@
 // Date: 2021-08-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H
-#define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H
-
-#include <atta/graphics/rendererAPI.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLMesh.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
+#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_RENDERER_H
+#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_RENDERER_H
+#include <atta/graphics/apis/graphicsAPI.h>
+#include <atta/graphics/apis/openGL/openGLImage.h>
+#include <atta/graphics/apis/openGL/openGLMesh.h>
+#include <atta/graphics/apis/openGL/openGLShaderGroup.h>
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
 
-class OpenGLRenderer final : public RendererAPI {
+class OpenGLAPI final : public GraphicsAPI {
   public:
-    OpenGLRenderer(std::shared_ptr<Window> window);
-    ~OpenGLRenderer();
+    OpenGLAPI();
+    ~OpenGLAPI();
 
     void beginFrame() override;
     void endFrame() override;
@@ -47,7 +46,6 @@ class OpenGLRenderer final : public RendererAPI {
     void initializeMesh(StringId sid);
     void initializeImage(StringId sid);
 
-    std::shared_ptr<Window> _window;
     std::unordered_map<StringHash, std::shared_ptr<OpenGLMesh>> _openGLMeshes;
     std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> _openGLImages;
     std::unordered_map<StringHash, OpenGLId> _openGLCubemaps;
@@ -64,4 +62,4 @@ class OpenGLRenderer final : public RendererAPI {
 
 } // namespace atta::graphics
 
-#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_RENDERER_H
+#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_RENDERER_H

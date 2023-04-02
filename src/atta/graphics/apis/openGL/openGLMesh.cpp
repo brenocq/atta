@@ -4,7 +4,7 @@
 // Date: 2021-09-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/rendererAPIs/openGL/openGLMesh.h>
+#include <atta/graphics/apis/openGL/openGLMesh.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>
 

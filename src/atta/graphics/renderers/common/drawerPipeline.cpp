@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #include <atta/graphics/drawer.h>
 #include <atta/graphics/interface.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
 
 namespace atta::graphics {

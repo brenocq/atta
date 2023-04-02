@@ -1,13 +1,13 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// rendererAPI.cpp
+// graphicsAPI.cpp
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/rendererAPI.h>
+#include <atta/graphics/apis/graphicsAPI.h>
 
 namespace atta::graphics {
 
-RendererAPI::RendererAPI(Type type) : _type(type) {}
+GraphicsAPI::GraphicsAPI(Type type) : _type(type) {}
 
 } // namespace atta::graphics

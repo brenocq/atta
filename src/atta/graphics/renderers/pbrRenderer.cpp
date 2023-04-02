@@ -177,7 +177,7 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
     // Recreate environment map if it is different from last one
     if (currEnvironmentMap != _lastEnvironmentMap) {
         _lastEnvironmentMap = currEnvironmentMap;
-        graphics::getRendererAPI()->generateCubemap(_lastEnvironmentMap);
+        graphics::getGraphicsAPI()->generateCubemap(_lastEnvironmentMap);
         irradianceCubemap();
         prefilterCubemap();
     }
@@ -240,7 +240,7 @@ void PbrRenderer::shadowPass() {
 
                 if (mesh && transform) {
                     shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
-                    graphics::getRendererAPI()->renderMesh(mesh->sid);
+                    graphics::getGraphicsAPI()->renderMesh(mesh->sid);
                 }
             }
         }
@@ -297,7 +297,7 @@ void PbrRenderer::shadowPass() {
 
                 if (mesh && transform) {
                     shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
-                    graphics::getRendererAPI()->renderMesh(mesh->sid);
+                    graphics::getGraphicsAPI()->renderMesh(mesh->sid);
                 }
             }
         }
@@ -425,7 +425,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                     shader->setInt("material.hasNormalTexture", 0);
                 }
 
-                graphics::getRendererAPI()->renderMesh(mesh->sid);
+                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
             }
         }
 
@@ -439,7 +439,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
             //_backgroundShader->setCubemap("environmentMap", "PbrRenderer::irradiance");
             _backgroundShader->setMat3("environmentMapOri", _environmentMapOri);
 
-            graphics::getRendererAPI()->renderCube();
+            graphics::getGraphicsAPI()->renderCube();
         }
     }
     _geometryPipeline->end();
@@ -453,7 +453,7 @@ void PbrRenderer::irradianceCubemap() {
     std::shared_ptr<ShaderGroup> shader = graphics::create<ShaderGroup>(shaderGroupInfo);
 
     // Generate irradiance cubemap
-    RendererAPI::GenerateProcessedCubemapInfo info;
+    GraphicsAPI::GenerateProcessedCubemapInfo info;
     info.cubemapSid = StringId("PbrRenderer::irradiance");
     info.shader = shader;
     info.width = 128;
@@ -466,7 +466,7 @@ void PbrRenderer::irradianceCubemap() {
         }
         shader->setMat4("view", transpose(view));
     };
-    graphics::getRendererAPI()->generateProcessedCubemap(info);
+    graphics::getGraphicsAPI()->generateProcessedCubemap(info);
 }
 
 void PbrRenderer::prefilterCubemap() {
@@ -477,7 +477,7 @@ void PbrRenderer::prefilterCubemap() {
     std::shared_ptr<ShaderGroup> shader = graphics::create<ShaderGroup>(shaderGroupInfo);
 
     // Generate prefilter cubemap
-    RendererAPI::GenerateProcessedCubemapInfo info;
+    GraphicsAPI::GenerateProcessedCubemapInfo info;
     info.cubemapSid = StringId("PbrRenderer::prefilter");
     info.shader = shader;
     info.width = 512;
@@ -494,7 +494,7 @@ void PbrRenderer::prefilterCubemap() {
         float roughness = (float)mipLevel / (float)(info.numMipLevels - 1);
         shader->setFloat("roughness", roughness);
     };
-    graphics::getRendererAPI()->generateProcessedCubemap(info);
+    graphics::getGraphicsAPI()->generateProcessedCubemap(info);
 }
 
 void PbrRenderer::brdfLUT() {
@@ -504,7 +504,7 @@ void PbrRenderer::brdfLUT() {
     std::shared_ptr<ShaderGroup> shader = graphics::create<ShaderGroup>(shaderGroupInfo);
 
     // Generate brdf LUT
-    RendererAPI::GenerateProcessedTextureInfo info;
+    GraphicsAPI::GenerateProcessedTextureInfo info;
     info.textureSid = StringId("PbrRenderer::brdfLUT");
     info.shader = shader;
     info.imageInfo.format = Image::Format::RG16F;
@@ -514,7 +514,7 @@ void PbrRenderer::brdfLUT() {
     info.imageInfo.mipLevels = 1;
     info.imageInfo.debugName = StringId("PbrRenderer brdfLUT image");
 
-    graphics::getRendererAPI()->generateProcessedTexture(info);
+    graphics::getGraphicsAPI()->generateProcessedTexture(info);
 }
 
 } // namespace atta::graphics

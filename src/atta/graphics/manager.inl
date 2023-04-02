@@ -32,14 +32,14 @@ std::shared_ptr<Pipeline> Manager::createImpl<Pipeline>(Pipeline::CreateInfo inf
 template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
 std::shared_ptr<T> Manager::createSpecific(Args... args) {
     // If implementation exists, compile to cast, if didn't, compile to error message
-    switch (_rendererAPI->getType()) {
-    case RendererAPI::OPENGL: {
+    switch (_graphicsAPI->getType()) {
+    case GraphicsAPI::OPENGL: {
         if constexpr (!std::is_same_v<T, TOpenGL>)
             return std::static_pointer_cast<T>(std::make_shared<TOpenGL>(args...));
         else
             ASSERT(false, "Trying to create $0, which does not have OpenGL implementation", typeid(T).name());
     }
-    case RendererAPI::VULKAN: {
+    case GraphicsAPI::VULKAN: {
         if constexpr (!std::is_same_v<T, TVulkan>)
             return std::static_pointer_cast<T>(std::make_shared<TVulkan>(args...));
         else

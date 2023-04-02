@@ -14,7 +14,7 @@
 namespace atta::graphics {
 
 /// Framebuffer interface
-/** This interface is implemented for each RendererAPI. The framebuffer have multiple attachments.
+/** This interface is implemented for each GraphicsAPI. The framebuffer have multiple attachments.
  * Usually one attachment is used for the output image, and the other to render the depth values.
  * But one framebuffer can have any number of attachments
  **/

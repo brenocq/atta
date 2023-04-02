@@ -9,7 +9,7 @@
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/interface.h>
 #include <atta/graphics/renderPass.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
+#include <atta/graphics/apis/openGL/openGLShaderGroup.h>
 
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>
@@ -92,7 +92,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                 }
 
                 // Draw mesh
-                graphics::getRendererAPI()->renderMesh(mesh->sid);
+                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
             }
         }
     }

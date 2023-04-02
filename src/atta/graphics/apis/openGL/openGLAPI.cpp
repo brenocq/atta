@@ -4,7 +4,7 @@
 // Date: 2021-08-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
+#include <atta/graphics/apis/openGL/openGLAPI.h>
 
 #include <GLFW/glfw3.h>
 
@@ -14,9 +14,9 @@
 #include <atta/event/interface.h>
 
 #include <atta/graphics/interface.h>
-#include <atta/graphics/rendererAPIs/openGL/base.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLFramebuffer.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
+#include <atta/graphics/apis/openGL/base.h>
+#include <atta/graphics/apis/openGL/openGLFramebuffer.h>
+#include <atta/graphics/apis/openGL/openGLImage.h>
 
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/image.h>
@@ -24,16 +24,16 @@
 
 namespace atta::graphics {
 
-OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window) : RendererAPI(RendererAPI::OPENGL), _window(window) {
+OpenGLAPI::OpenGLAPI() : GraphicsAPI(GraphicsAPI::OPENGL) {
     // Initialize GLAD
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     ASSERT(status, "Failed to initialize Glad!");
 
     // Print info
-    // LOG_INFO("graphics::OpenGLRenderer", "GPU Info:");
-    // LOG_INFO("graphics::OpenGLRenderer", "  - Vendor: $0", glGetString(GL_VENDOR));
-    // LOG_INFO("graphics::OpenGLRenderer", "  - Renderer: $0", glGetString(GL_RENDERER));
-    // LOG_INFO("graphics::OpenGLRenderer", "  - Version: $0", glGetString(GL_VERSION));
+    // LOG_INFO("graphics::OpenGLAPI", "GPU Info:");
+    // LOG_INFO("graphics::OpenGLAPI", "  - Vendor: $0", glGetString(GL_VENDOR));
+    // LOG_INFO("graphics::OpenGLAPI", "  - Renderer: $0", glGetString(GL_RENDERER));
+    // LOG_INFO("graphics::OpenGLAPI", "  - Version: $0", glGetString(GL_VERSION));
 
 #if defined(ATTA_DEBUG_BUILD) && !defined(ATTA_OS_WEB)
     // Enable Debug
@@ -70,14 +70,14 @@ OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window) : RendererAPI(Ren
     glEnable(GL_DEPTH_TEST);
 
     // Subscribe to events
-    event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(OpenGLRenderer::onMeshLoadEvent));
-    event::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(OpenGLRenderer::onImageLoadEvent));
-    event::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(OpenGLRenderer::onImageUpdateEvent));
+    event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(OpenGLAPI::onMeshLoadEvent));
+    event::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(OpenGLAPI::onImageLoadEvent));
+    event::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(OpenGLAPI::onImageUpdateEvent));
 
     // Quad shader
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/quad/shader.vert", "shaders/quad/shader.frag"};
-    shaderGroupInfo.debugName = StringId("OpenGLRenderer Quad Shader Group");
+    shaderGroupInfo.debugName = StringId("OpenGLAPI Quad Shader Group");
     _quadShader = std::make_shared<OpenGLShaderGroup>(shaderGroupInfo);
 
     //---------- Quad ----------//
@@ -193,7 +193,7 @@ OpenGLRenderer::OpenGLRenderer(std::shared_ptr<Window> window) : RendererAPI(Ren
         initializeImage(imgSid);
 }
 
-OpenGLRenderer::~OpenGLRenderer() {
+OpenGLAPI::~OpenGLAPI() {
     _openGLMeshes.clear();
 
     // Delete cubemaps
@@ -201,64 +201,64 @@ OpenGLRenderer::~OpenGLRenderer() {
         glDeleteTextures(1, &tex.second);
 }
 
-void OpenGLRenderer::beginFrame() {}
+void OpenGLAPI::beginFrame() {}
 
-void OpenGLRenderer::endFrame() {}
+void OpenGLAPI::endFrame() {}
 
-void OpenGLRenderer::renderMesh(StringId meshSid) {
+void OpenGLAPI::renderMesh(StringId meshSid) {
     if (_openGLMeshes.find(meshSid.getId()) == _openGLMeshes.end()) {
-        LOG_WARN("graphics::OpenGLRenderer", "Trying to render mesh that was never initialized '[w]$0[]'", meshSid);
+        LOG_WARN("graphics::OpenGLAPI", "Trying to render mesh that was never initialized '[w]$0[]'", meshSid);
         return;
     }
 
     _openGLMeshes.at(meshSid.getId())->draw();
 }
 
-void OpenGLRenderer::renderQuad() {
+void OpenGLAPI::renderQuad() {
     // Can be used to render quads only with position and texture
     glBindVertexArray(_quadVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void OpenGLRenderer::renderQuad3() {
+void OpenGLAPI::renderQuad3() {
     // Rendereres should use this function to render quads
     glBindVertexArray(_quad3VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void OpenGLRenderer::renderCube() {
+void OpenGLAPI::renderCube() {
     // Render 3D cube in NDC
     glBindVertexArray(_cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void* OpenGLRenderer::getImGuiImage(StringId sid) const {
+void* OpenGLAPI::getImGuiImage(StringId sid) const {
     if (_openGLImages.find(sid.getId()) == _openGLImages.end()) {
-        LOG_WARN("graphics::OpenGLRenderer", "Trying to get ImGui image that was never initialized '[w]$0[]'", sid);
+        LOG_WARN("graphics::OpenGLAPI", "Trying to get ImGui image that was never initialized '[w]$0[]'", sid);
         return nullptr;
     }
     return reinterpret_cast<void*>(_openGLImages.at(sid.getId())->getImGuiImage());
 }
 
-void OpenGLRenderer::onMeshLoadEvent(event::Event& event) {
+void OpenGLAPI::onMeshLoadEvent(event::Event& event) {
     event::MeshLoad& e = reinterpret_cast<event::MeshLoad&>(event);
     initializeMesh(e.sid);
 }
 
-void OpenGLRenderer::onImageLoadEvent(event::Event& event) {
+void OpenGLAPI::onImageLoadEvent(event::Event& event) {
     event::ImageLoad& e = reinterpret_cast<event::ImageLoad&>(event);
     initializeImage(e.sid);
 }
 
-void OpenGLRenderer::onImageUpdateEvent(event::Event& event) {
+void OpenGLAPI::onImageUpdateEvent(event::Event& event) {
     event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
     resource::Image* image = resource::get<resource::Image>(e.sid.getString());
     if (image == nullptr) {
-        LOG_WARN("graphics::OpenGLRenderer", "Could not initialize OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
+        LOG_WARN("graphics::OpenGLAPI", "Could not initialize OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
         return;
     }
     if (_openGLImages.find(e.sid.getId()) == _openGLImages.end()) {
-        LOG_WARN("graphics::OpenGLRenderer", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
+        LOG_WARN("graphics::OpenGLAPI", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
         return;
     }
 
@@ -269,10 +269,10 @@ void OpenGLRenderer::onImageUpdateEvent(event::Event& event) {
         openGLImage->write(image->getData());
 }
 
-void OpenGLRenderer::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) {
+void OpenGLAPI::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) {
     glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
 
-    LOG_DEBUG("graphics::OpenGLRenderer", "Framebuffer from framebufferToScreen");
+    LOG_DEBUG("graphics::OpenGLAPI", "Framebuffer from framebufferToScreen");
     std::shared_ptr<OpenGLFramebuffer> openGLFramebuffer = std::static_pointer_cast<OpenGLFramebuffer>(framebuffer);
     std::shared_ptr<OpenGLImage> openGLImage = std::static_pointer_cast<OpenGLImage>(openGLFramebuffer->getImage(0));
 
@@ -282,7 +282,7 @@ void OpenGLRenderer::renderFramebufferToQuad(std::shared_ptr<Framebuffer> frameb
     renderQuad();
 }
 
-void OpenGLRenderer::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
+void OpenGLAPI::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
     // Ensure that the texture was loaded
     resource::get<resource::Image>(fs::path(textureSid.getString()));
 
@@ -355,17 +355,17 @@ void OpenGLRenderer::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
     _openGLCubemaps[textureSid.getId()] = cubemap;
 }
 
-void OpenGLRenderer::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) {
+void OpenGLAPI::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) {
     unsigned int cubemap;
     ASSERT(gpcInfo.numMipLevels >= 1,
-           "[OpenGLRenderer] [w](generateProcessedCubemap)[] The number of mipmap levels must be greater than 0, but it is [w]$0[]",
+           "[OpenGLAPI] [w](generateProcessedCubemap)[] The number of mipmap levels must be greater than 0, but it is [w]$0[]",
            gpcInfo.numMipLevels);
-    ASSERT(gpcInfo.width > 0, "[OpenGLRenderer] [w](generateProcessedCubemap)[] The width should be grater than 0, but it is [w]$0[]", gpcInfo.width);
-    ASSERT(gpcInfo.height > 0, "[OpenGLRenderer] [w](generateProcessedCubemap)[] The height should be grater than 0, but it is [w]$0[]",
+    ASSERT(gpcInfo.width > 0, "[OpenGLAPI] [w](generateProcessedCubemap)[] The width should be grater than 0, but it is [w]$0[]", gpcInfo.width);
+    ASSERT(gpcInfo.height > 0, "[OpenGLAPI] [w](generateProcessedCubemap)[] The height should be grater than 0, but it is [w]$0[]",
            gpcInfo.height);
-    ASSERT(gpcInfo.cubemapSid != "Not defined"_sid, "[OpenGLRenderer] [w](generateProcessedCubemap)[] cubemapSid was not defined");
+    ASSERT(gpcInfo.cubemapSid != "Not defined"_sid, "[OpenGLAPI] [w](generateProcessedCubemap)[] cubemapSid was not defined");
     ASSERT(gpcInfo.func,
-           "[OpenGLRenderer] [w](generateProcessedCubemap)[] func must be defined. The shader probably needs the view and projection matrices");
+           "[OpenGLAPI] [w](generateProcessedCubemap)[] func must be defined. The shader probably needs the view and projection matrices");
 
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
@@ -417,7 +417,7 @@ void OpenGLRenderer::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcIn
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, mip);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            graphics::getRendererAPI()->renderCube();
+            graphics::getGraphicsAPI()->renderCube();
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -425,8 +425,8 @@ void OpenGLRenderer::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcIn
     _openGLCubemaps[gpcInfo.cubemapSid.getId()] = cubemap;
 }
 
-void OpenGLRenderer::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
-    ASSERT(gptInfo.textureSid != "Not defined"_sid, "[OpenGLRenderer] [w](generateProcessedTexture)[] textureSid was not defined");
+void OpenGLAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
+    ASSERT(gptInfo.textureSid != "Not defined"_sid, "[OpenGLAPI] [w](generateProcessedTexture)[] textureSid was not defined");
 
     std::shared_ptr<OpenGLImage> image;
     Image::CreateInfo info = gptInfo.imageInfo;
@@ -453,21 +453,21 @@ void OpenGLRenderer::generateProcessedTexture(GenerateProcessedTextureInfo gptIn
         gptInfo.func(gptInfo.shader);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    graphics::getRendererAPI()->renderQuad3();
+    graphics::getGraphicsAPI()->renderQuad3();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     _openGLImages[gptInfo.textureSid.getId()] = image;
 }
 
-void OpenGLRenderer::initializeMesh(StringId sid) {
+void OpenGLAPI::initializeMesh(StringId sid) {
     _openGLMeshes[sid.getId()] = std::make_shared<OpenGLMesh>(sid);
-    // LOG_DEBUG("graphics::OpenGLRenderer", "Mesh loaded! [w]$0[]", sid);
+    // LOG_DEBUG("graphics::OpenGLAPI", "Mesh loaded! [w]$0[]", sid);
 }
 
-void OpenGLRenderer::initializeImage(StringId sid) {
+void OpenGLAPI::initializeImage(StringId sid) {
     resource::Image* image = resource::get<resource::Image>(sid.getString());
     if (image == nullptr)
-        LOG_WARN("graphics::OpenGLRenderer", "Could not initialize OpenGL image from [w]$0[]", sid.getString());
+        LOG_WARN("graphics::OpenGLAPI", "Could not initialize OpenGL image from [w]$0[]", sid.getString());
 
     Image::CreateInfo info{};
     info.width = image->getWidth();
@@ -486,7 +486,7 @@ void OpenGLRenderer::initializeImage(StringId sid) {
     info.debugName = sid;
     _openGLImages[sid.getId()] = std::make_shared<OpenGLImage>(info);
 
-    // LOG_DEBUG("graphics::OpenGLRenderer", "Texture loaded! [w]$0[] -> $1", sid, _openGLImages[sid.getId()]->getId());
+    // LOG_DEBUG("graphics::OpenGLAPI", "Texture loaded! [w]$0[] -> $1", sid, _openGLImages[sid.getId()]->getId());
 }
 
 } // namespace atta::graphics

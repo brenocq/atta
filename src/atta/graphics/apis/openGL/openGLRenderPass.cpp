@@ -4,7 +4,7 @@
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/rendererAPIs/openGL/openGLRenderPass.h>
+#include <atta/graphics/apis/openGL/openGLRenderPass.h>
 
 namespace atta::graphics {
 

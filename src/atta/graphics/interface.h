@@ -9,7 +9,7 @@
 
 #include <atta/component/base.h>
 #include <atta/graphics/layers/layerStack.h>
-#include <atta/graphics/rendererAPI.h>
+#include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/viewport.h>
 #include <atta/graphics/windows/window.h>
 
@@ -26,7 +26,7 @@ void pushLayer(Layer* layer);
 // VulkanPipeline or ... depending on the current renderering API
 template <typename T, typename... Args>
 std::shared_ptr<T> create(Args... args);
-std::shared_ptr<RendererAPI> getRendererAPI();
+std::shared_ptr<GraphicsAPI> getGraphicsAPI();
 
 //----- Config -----//
 float getGraphicsFPS();

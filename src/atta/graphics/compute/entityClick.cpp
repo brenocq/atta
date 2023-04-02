@@ -9,11 +9,10 @@
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/interface.h>
 #include <atta/graphics/renderPass.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
-
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
+#include <atta/graphics/apis/openGL/openGL.h>
 
 namespace atta::graphics {
 
@@ -67,7 +66,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
 
     _geometryPipeline->begin();
     {
-        std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_geometryPipeline->getShaderGroup());
+        std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
 
         mat4 m(1.0f);
         glDisable(GL_DEPTH_TEST);
@@ -75,7 +74,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
         shader->setMat4("projection", m);
         shader->setMat4("view", m);
         shader->setInt("entityId", -1);
-        graphics::getRendererAPI()->renderQuad3();
+        graphics::getGraphicsAPI()->renderQuad3();
         glEnable(GL_DEPTH_TEST);
         glClear(GL_DEPTH_BUFFER_BIT); // XXX Not sure why but it only works in the browser if clear the depth buffer
 
@@ -96,7 +95,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
                 maxEid = std::max((int)maxEid, entity);
 
                 // Draw mesh
-                graphics::getRendererAPI()->renderMesh(mesh->sid);
+                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
             }
         }
 

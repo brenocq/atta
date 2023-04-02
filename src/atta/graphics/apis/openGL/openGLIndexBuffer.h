@@ -4,11 +4,11 @@
 // Date: 2021-09-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_INDEX_BUFFER_H
-#define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_INDEX_BUFFER_H
+#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_INDEX_BUFFER_H
+#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_INDEX_BUFFER_H
 
 #include <atta/graphics/indexBuffer.h>
-#include <atta/graphics/rendererAPIs/openGL/base.h>
+#include <atta/graphics/apis/openGL/base.h>
 
 namespace atta::graphics {
 
@@ -27,4 +27,4 @@ class OpenGLIndexBuffer final : public IndexBuffer {
 
 } // namespace atta::graphics
 
-#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_INDEX_BUFFER_H
+#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_INDEX_BUFFER_H

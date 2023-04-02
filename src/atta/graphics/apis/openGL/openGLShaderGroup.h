@@ -4,10 +4,10 @@
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_SHADER_GROUP_H
-#define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_SHADER_GROUP_H
+#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_SHADER_GROUP_H
+#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_SHADER_GROUP_H
 
-#include <atta/graphics/rendererAPIs/openGL/base.h>
+#include <atta/graphics/apis/openGL/base.h>
 #include <atta/graphics/shaderGroup.h>
 
 namespace atta::graphics {
@@ -45,4 +45,4 @@ class OpenGLShaderGroup final : public ShaderGroup {
 
 } // namespace atta::graphics
 
-#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_SHADER_GROUP_H
+#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_SHADER_GROUP_H

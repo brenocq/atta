@@ -11,7 +11,7 @@
 #include <atta/utils/stringId.h>
 
 // TODO Abstract renderer API
-#include <atta/graphics/rendererAPIs/openGL/base.h>
+#include <atta/graphics/apis/openGL/base.h>
 
 namespace atta::graphics {
 

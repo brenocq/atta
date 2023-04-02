@@ -10,6 +10,6 @@ if(ATTA_BUILD_TESTS)
         GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(googletest)
-    atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/googletest-src/googlemock/include/)
-    atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/googletest-src/googletest/include/)
+    atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/googletest-src/googlemock/include/)
+    atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/googletest-src/googletest/include/)
 endif()

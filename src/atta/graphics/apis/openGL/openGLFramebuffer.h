@@ -4,11 +4,11 @@
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
-#define ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
+#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
+#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
 
 #include <atta/graphics/framebuffer.h>
-#include <atta/graphics/rendererAPIs/openGL/base.h>
+#include <atta/graphics/apis/openGL/base.h>
 
 namespace atta::graphics {
 
@@ -40,4 +40,4 @@ class OpenGLFramebuffer final : public Framebuffer {
 
 } // namespace atta::graphics
 
-#endif // ATTA_GRAPHICS_RENDERER_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
+#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_FRAMEBUFFER_H

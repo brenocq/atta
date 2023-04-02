@@ -1,11 +1,11 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// rendererAPI.h
+// graphicsAPI.h
 // Date: 2021-08-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDERER_API_H
-#define ATTA_GRAPHICS_RENDERER_API_H
+#ifndef ATTA_GRAPHICS_APIS_GRAPHICS_API_H
+#define ATTA_GRAPHICS_APIS_GRAPHICS_API_H
 
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
@@ -14,12 +14,12 @@
 namespace atta::graphics {
 
 class ShaderGroup;
-class RendererAPI {
+class GraphicsAPI {
   public:
     enum Type { OPENGL = 0, VULKAN };
 
-    RendererAPI(Type type);
-    virtual ~RendererAPI() = default;
+    GraphicsAPI(Type type);
+    virtual ~GraphicsAPI() = default;
 
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
@@ -61,4 +61,4 @@ class RendererAPI {
 
 } // namespace atta::graphics
 
-#endif // ATTA_GRAPHICS_RENDERER_API_H
+#endif // ATTA_GRAPHICS_APIS_GRAPHICS_API_H

@@ -7,10 +7,10 @@
 #include <atta/graphics/interface.h>
 #include <atta/graphics/manager.h>
 
+#include <atta/graphics/apis/openGL/openGL.h>
+#include <atta/graphics/apis/vulkan/vulkan.h>
 #include <atta/graphics/cameras/orthographicCamera.h>
 #include <atta/graphics/cameras/perspectiveCamera.h>
-#include <atta/graphics/rendererAPIs/openGL/openGL.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
 #include <atta/graphics/renderers/fastRenderer.h>
 #include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/graphics/renderers/phongRenderer.h>
@@ -49,7 +49,8 @@ void Manager::startUpImpl() {
     _window = std::static_pointer_cast<Window>(std::make_shared<GlfwWindow>(windowInfo));
 
     //----- Renderer API -----//
-    _rendererAPI = std::static_pointer_cast<RendererAPI>(std::make_shared<OpenGLRenderer>(_window));
+    //_graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>());
+    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>());
     _computeEntityClick = std::make_unique<EntityClick>();
 
     //----- Create layer stack -----//
@@ -70,7 +71,7 @@ void Manager::shutDownImpl() {
 
     _layerStack.reset();
     _computeEntityClick.reset();
-    _rendererAPI.reset();
+    _graphicsAPI.reset();
     _window.reset();
 }
 
@@ -92,9 +93,9 @@ void Manager::updateImpl() {
         _window->update();
 
         // Render layer stack
-        _rendererAPI->beginFrame();
+        _graphicsAPI->beginFrame();
         _layerStack->render();
-        _rendererAPI->endFrame();
+        _graphicsAPI->endFrame();
 
         _window->swapBuffers();
     }
@@ -142,7 +143,7 @@ component::EntityId Manager::viewportEntityClickImpl(std::shared_ptr<Viewport> v
 }
 
 //---------- Register API specific implementations ----------//
-// For each type, will return the OpenGL, Vulkan, ... implementation based on the current active rendererAPI
+// For each type, will return the OpenGL, Vulkan, ... implementation based on the current active graphicsAPI
 // If the derived (e.g. VulkanImage) has the same type as the base (e.g. Image), it means that does not exists
 // an implementation of Image for vulkan
 

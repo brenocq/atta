@@ -4,7 +4,7 @@
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/rendererAPIs/openGL/openGLImage.h>
+#include <atta/graphics/apis/openGL/openGLImage.h>
 
 namespace atta::graphics {
 

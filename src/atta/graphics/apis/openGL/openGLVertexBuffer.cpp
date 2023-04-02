@@ -4,7 +4,7 @@
 // Date: 2021-09-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/rendererAPIs/openGL/openGLVertexBuffer.h>
+#include <atta/graphics/apis/openGL/openGLVertexBuffer.h>
 
 namespace atta::graphics {
 

@@ -38,7 +38,7 @@ class Manager final {
     friend bool getViewportRendering();
     friend void setViewportRendering(bool viewportRendering);
 
-    friend std::shared_ptr<RendererAPI> getRendererAPI();
+    friend std::shared_ptr<GraphicsAPI> getGraphicsAPI();
     friend std::vector<std::shared_ptr<Viewport>> getViewports();
     friend void clearViewports();
     friend void addViewport(std::shared_ptr<Viewport> viewport);
@@ -58,7 +58,7 @@ class Manager final {
     template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
     std::shared_ptr<T> createSpecific(Args... args);
 
-    std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
+    std::shared_ptr<GraphicsAPI> getGraphicsAPIImpl() const { return _graphicsAPI; };
     std::vector<std::shared_ptr<Viewport>>& getViewportsImpl() { return _viewports; };
     void clearViewportsImpl();
     void addViewportImpl(std::shared_ptr<Viewport> viewport);
@@ -66,10 +66,10 @@ class Manager final {
     void createDefaultViewportsImpl();
     component::EntityId viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos);
 
-    void* getImGuiImageImpl(StringId sid) const { return _rendererAPI->getImGuiImage(sid); }
+    void* getImGuiImageImpl(StringId sid) const { return _graphicsAPI->getImGuiImage(sid); }
 
     std::shared_ptr<Window> _window;
-    std::shared_ptr<RendererAPI> _rendererAPI;
+    std::shared_ptr<GraphicsAPI> _graphicsAPI;
     float _graphicsFPS; ///< Desired graphics FPS
 
     // Layer stack

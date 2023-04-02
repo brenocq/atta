@@ -4,11 +4,11 @@
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/rendererAPIs/openGL/openGLShader.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
+#include <atta/graphics/apis/openGL/openGLShader.h>
+#include <atta/graphics/apis/openGL/openGLShaderGroup.h>
 
 #include <atta/graphics/interface.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLRenderer.h>
+#include <atta/graphics/apis/openGL/openGLAPI.h>
 
 namespace atta::graphics {
 
@@ -96,7 +96,7 @@ void OpenGLShaderGroup::setMat3(const char* name, mat3 m) { glUniformMatrix3fv(g
 void OpenGLShaderGroup::setMat4(const char* name, mat4 m) { glUniformMatrix4fv(getLoc(name), 1, GL_FALSE, m.data); }
 
 void OpenGLShaderGroup::setImage(const char* name, StringId sid) {
-    std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(graphics::getRendererAPI());
+    std::shared_ptr<OpenGLAPI> renderer = std::static_pointer_cast<OpenGLAPI>(graphics::getGraphicsAPI());
     std::shared_ptr<OpenGLImage> image = renderer->getOpenGLImages()[sid.getId()];
     static std::map<StringId, bool> lastWarns; // Used to avoid spamming warn
 
@@ -159,7 +159,7 @@ void OpenGLShaderGroup::setImage(const char* name, std::shared_ptr<Image> inImag
 }
 
 void OpenGLShaderGroup::setCubemap(const char* name, StringId sid) {
-    std::shared_ptr<OpenGLRenderer> renderer = std::static_pointer_cast<OpenGLRenderer>(graphics::getRendererAPI());
+    std::shared_ptr<OpenGLAPI> renderer = std::static_pointer_cast<OpenGLAPI>(graphics::getGraphicsAPI());
     if (renderer->getOpenGLCubemaps().find(sid.getId()) == renderer->getOpenGLCubemaps().end()) {
         LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to use cubemap that was never generated: $0 = \"$1\"", name, sid);
         return;

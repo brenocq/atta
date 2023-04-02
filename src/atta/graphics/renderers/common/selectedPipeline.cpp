@@ -6,9 +6,7 @@
 //--------------------------------------------------
 #include <atta/graphics/interface.h>
 #include <atta/graphics/renderers/common/selectedPipeline.h>
-
-#include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
-
+#include <atta/graphics/apis/openGL/openGL.h>
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
@@ -36,7 +34,7 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
         glEnable(GL_BLEND);
         glClear(GL_STENCIL_BUFFER_BIT);
 
-        std::shared_ptr<OpenGLShaderGroup> shader = std::static_pointer_cast<OpenGLShaderGroup>(_pipeline->getShaderGroup());
+        std::shared_ptr<ShaderGroup> shader = _pipeline->getShaderGroup();
         shader->setMat4("projection", transpose(camera->getProj()));
         shader->setMat4("view", transpose(camera->getView()));
 
@@ -59,7 +57,7 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
                 glDisable(GL_DEPTH_TEST);
                 glStencilFunc(GL_ALWAYS, 1, 0xFF);
                 glStencilMask(0xFF); // Update stencil
-                graphics::getRendererAPI()->renderMesh(mesh->sid);
+                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
 
                 // Draw scaled mesh
                 float distance = (camera->getPosition() - pos).length();
@@ -70,7 +68,7 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
 
                 glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
                 glStencilMask(0x00); // Do not update stencil
-                graphics::getRendererAPI()->renderMesh(mesh->sid);
+                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
 
                 glEnable(GL_DEPTH_TEST);
                 glStencilMask(0xFF);
