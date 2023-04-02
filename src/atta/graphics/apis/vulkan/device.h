@@ -13,11 +13,11 @@ namespace atta::graphics::vk {
 
 class Device {
   public:
-    Device(std::shared_ptr<vk::PhysicalDevice> physicalDevice);
+    Device(std::shared_ptr<PhysicalDevice> physicalDevice);
     ~Device();
 
     VkDevice getHandle() const;
-    std::shared_ptr<vk::PhysicalDevice> getPhysicalDevice() const;
+    std::shared_ptr<PhysicalDevice> getPhysicalDevice() const;
     VkQueue getPresentQueue() const;
     VkQueue getGraphicsQueue() const;
     VkQueue getTransferQueue() const;
@@ -27,7 +27,7 @@ class Device {
     VkSampleCountFlagBits getMaxUsableSampleCount();
 
     VkDevice _device;
-    std::shared_ptr<vk::PhysicalDevice> _physicalDevice;
+    std::shared_ptr<PhysicalDevice> _physicalDevice;
     VkQueue _presentQueue;
     VkQueue _graphicsQueue;
     VkQueue _transferQueue;

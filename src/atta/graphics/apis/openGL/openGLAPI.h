@@ -16,7 +16,7 @@ namespace atta::graphics {
 
 class OpenGLAPI final : public GraphicsAPI {
   public:
-    OpenGLAPI();
+    OpenGLAPI(std::shared_ptr<Window> window);
     ~OpenGLAPI();
 
     void beginFrame() override;

@@ -25,7 +25,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 namespace atta::graphics::vk {
 
-DebugMessenger::DebugMessenger(std::shared_ptr<vk::Instance> instance) : _instance(instance) {
+DebugMessenger::DebugMessenger(std::shared_ptr<Instance> instance) : _instance(instance) {
     VkDebugUtilsMessengerCreateInfoEXT createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |

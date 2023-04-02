@@ -13,6 +13,8 @@ namespace atta::graphics::vk {
 
 class PhysicalDevice {
   public:
+    static const std::vector<const char*> deviceExtensions;
+
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
         std::optional<uint32_t> presentFamily;
@@ -20,20 +22,22 @@ class PhysicalDevice {
         bool isComplete() { return graphicsFamily.has_value() && presentFamily.has_value() && transferFamily.has_value(); }
     };
 
-    PhysicalDevice(std::shared_ptr<vk::Instance> instance);
+    PhysicalDevice(std::shared_ptr<Instance> instance);
     ~PhysicalDevice();
 
     VkPhysicalDevice getHandle() const;
-    std::shared_ptr<vk::Instance> getInstance() const;
+    std::shared_ptr<Instance> getInstance() const;
     QueueFamilyIndices getQueueFamilyIndices() const;
 
   private:
     bool isDeviceSuitable(VkPhysicalDevice device);
+    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     static void printPhysicalDevices(std::vector<VkPhysicalDevice> physicalDevices);
 
     VkPhysicalDevice _physicalDevice;
-    std::shared_ptr<vk::Instance> _instance;
+    std::shared_ptr<Instance> _instance;
     QueueFamilyIndices _queueFamilyIndices;
 };
 

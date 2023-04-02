@@ -13,7 +13,7 @@ namespace atta::graphics::vk {
 
 class DebugMessenger {
   public:
-    DebugMessenger(std::shared_ptr<vk::Instance> instance);
+    DebugMessenger(std::shared_ptr<Instance> instance);
     ~DebugMessenger();
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -22,7 +22,7 @@ class DebugMessenger {
 
   private:
     VkDebugUtilsMessengerEXT _debugMessenger;
-    std::shared_ptr<vk::Instance> _instance;
+    std::shared_ptr<Instance> _instance;
 };
 
 } // namespace atta::graphics::vk

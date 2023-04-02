@@ -12,13 +12,14 @@
 #include <atta/graphics/apis/vulkan/instance.h>
 #include <atta/graphics/apis/vulkan/physicalDevice.h>
 #include <atta/graphics/apis/vulkan/surface.h>
+#include <atta/graphics/apis/vulkan/swapChain.h>
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
 
 class VulkanAPI final : public GraphicsAPI {
   public:
-    VulkanAPI();
+    VulkanAPI(std::shared_ptr<Window> window);
     ~VulkanAPI();
 
     void beginFrame() override;
@@ -42,6 +43,7 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::PhysicalDevice> _physicalDevice;
     std::shared_ptr<vk::Device> _device;
     std::shared_ptr<vk::Surface> _surface;
+    std::shared_ptr<vk::SwapChain> _swapChain;
 };
 
 } // namespace atta::graphics

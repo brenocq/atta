@@ -24,7 +24,7 @@
 
 namespace atta::graphics {
 
-OpenGLAPI::OpenGLAPI() : GraphicsAPI(GraphicsAPI::OPENGL) {
+OpenGLAPI::OpenGLAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::OPENGL, window) {
     // Initialize GLAD
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     ASSERT(status, "Failed to initialize Glad!");

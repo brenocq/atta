@@ -9,6 +9,7 @@
 
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
+#include <atta/graphics/windows/window.h>
 #include <atta/utils/stringId.h>
 
 namespace atta::graphics {
@@ -18,7 +19,7 @@ class GraphicsAPI {
   public:
     enum Type { OPENGL = 0, VULKAN };
 
-    GraphicsAPI(Type type);
+    GraphicsAPI(Type type, std::shared_ptr<Window> window);
     virtual ~GraphicsAPI() = default;
 
     virtual void beginFrame() = 0;
@@ -57,6 +58,7 @@ class GraphicsAPI {
 
   protected:
     Type _type;
+    std::shared_ptr<Window> _window;
 };
 
 } // namespace atta::graphics

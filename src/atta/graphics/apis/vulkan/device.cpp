@@ -8,7 +8,7 @@
 
 namespace atta::graphics::vk {
 
-Device::Device(std::shared_ptr<vk::PhysicalDevice> physicalDevice) : _physicalDevice(physicalDevice) {
+Device::Device(std::shared_ptr<PhysicalDevice> physicalDevice) : _physicalDevice(physicalDevice) {
     _msaaSamples = getMaxUsableSampleCount();
 
     //----- Get queues -----//
@@ -44,6 +44,8 @@ Device::Device(std::shared_ptr<vk::PhysicalDevice> physicalDevice) : _physicalDe
 
     //----- Enable extensions -----//
     createInfo.enabledExtensionCount = 0;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(PhysicalDevice::deviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = PhysicalDevice::deviceExtensions.data();
 
     //----- Create -----//
     if (vkCreateDevice(_physicalDevice->getHandle(), &createInfo, nullptr, &_device) != VK_SUCCESS) {
@@ -63,7 +65,7 @@ Device::~Device() {
 
 VkDevice Device::getHandle() const { return _device; }
 
-std::shared_ptr<vk::PhysicalDevice> Device::getPhysicalDevice() const { return _physicalDevice; }
+std::shared_ptr<PhysicalDevice> Device::getPhysicalDevice() const { return _physicalDevice; }
 
 VkQueue Device::getPresentQueue() const { return _presentQueue; }
 

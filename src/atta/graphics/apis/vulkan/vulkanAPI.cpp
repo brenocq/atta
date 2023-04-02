@@ -10,17 +10,19 @@
 
 namespace atta::graphics {
 
-VulkanAPI::VulkanAPI() : GraphicsAPI(GraphicsAPI::VULKAN) {
+VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::VULKAN, window) {
     _instance = std::make_shared<vk::Instance>();
 #ifdef ATTA_DEBUG_BUILD
     _debugMessenger = std::make_shared<vk::DebugMessenger>(_instance);
 #endif
     _physicalDevice = std::make_shared<vk::PhysicalDevice>(_instance);
     _device = std::make_shared<vk::Device>(_physicalDevice);
-    _surface = std::make_shared<vk::Surface>(_instance);
+    _surface = std::make_shared<vk::Surface>(_instance, _window);
+    _swapChain = std::make_shared<vk::SwapChain>(_device, _surface);
 }
 
 VulkanAPI::~VulkanAPI() {
+    _swapChain.reset();
     _surface.reset();
     _device.reset();
     _physicalDevice.reset();

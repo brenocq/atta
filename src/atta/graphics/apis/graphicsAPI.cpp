@@ -8,6 +8,6 @@
 
 namespace atta::graphics {
 
-GraphicsAPI::GraphicsAPI(Type type) : _type(type) {}
+GraphicsAPI::GraphicsAPI(Type type, std::shared_ptr<Window> window) : _type(type), _window(window) {}
 
 } // namespace atta::graphics

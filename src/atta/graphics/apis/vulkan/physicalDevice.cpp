@@ -9,7 +9,9 @@
 
 namespace atta::graphics::vk {
 
-PhysicalDevice::PhysicalDevice(std::shared_ptr<vk::Instance> instance) : _instance(instance) {
+const std::vector<const char*> PhysicalDevice::deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+PhysicalDevice::PhysicalDevice(std::shared_ptr<Instance> instance) : _instance(instance) {
     // Get device count
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(_instance->getHandle(), &deviceCount, nullptr);
@@ -46,14 +48,29 @@ PhysicalDevice::~PhysicalDevice() {}
 
 VkPhysicalDevice PhysicalDevice::getHandle() const { return _physicalDevice; }
 
-std::shared_ptr<vk::Instance> PhysicalDevice::getInstance() const { return _instance; }
+std::shared_ptr<Instance> PhysicalDevice::getInstance() const { return _instance; }
 
 PhysicalDevice::QueueFamilyIndices PhysicalDevice::getQueueFamilyIndices() const { return _queueFamilyIndices; }
 
 bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device) {
-    // Check queues
     QueueFamilyIndices indices = findQueueFamilies(device);
-    return indices.isComplete();
+    bool extensionsSupported = checkDeviceExtensionSupport(device);
+    return indices.isComplete() && extensionsSupported;
+}
+
+bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+    // Get available extensions
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+    // Check required extensions
+    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+    for (const auto& extension : availableExtensions)
+        requiredExtensions.erase(extension.extensionName);
+
+    return requiredExtensions.empty();
 }
 
 PhysicalDevice::QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice device) {
