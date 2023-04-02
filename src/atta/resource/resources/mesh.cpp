@@ -22,7 +22,7 @@ void Mesh::load() {
     const aiScene* scene = importer.ReadFile(absolutePath.string().c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        LOG_ERROR("resource::Mesh", "Failed to load mesh [w]$0. Assimp Error: $1", fs::absolute(_filename).string(), importer.GetErrorString());
+        LOG_ERROR("resource::Mesh", "Failed to load mesh [w]$0[]. Assimp Error: $1", fs::absolute(_filename).string(), importer.GetErrorString());
         return;
     }
 
@@ -54,7 +54,7 @@ void Mesh::processMesh(aiMesh* mesh, const aiScene* scene) {
         vertex.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
 
         // Check if there are texture coords
-        if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+        if (mesh->mTextureCoords[0])
         {
             vertex.texCoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
         } else

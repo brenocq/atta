@@ -11,9 +11,8 @@ namespace atta::graphics {
 OpenGLImage::OpenGLImage(const Image::CreateInfo& info) : Image(info) { resize(_width, _height, true); }
 
 OpenGLImage::~OpenGLImage() {
-    if (_id) {
+    if (_id)
         glDeleteTextures(1, &_id);
-    }
 }
 
 void OpenGLImage::write(void* data) {
@@ -39,10 +38,7 @@ void OpenGLImage::resize(uint32_t width, uint32_t height, bool forceRecreate) {
 
     if (_id)
         glDeleteTextures(1, &_id);
-
-    unsigned test;
-    glGenTextures(1, &test);
-    _id = test;
+    glGenTextures(1, &_id);
 
     // Populate data and generate mipmap
     GLenum dataType = OpenGLImage::convertDataType(_format);
