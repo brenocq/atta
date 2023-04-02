@@ -17,9 +17,11 @@ VulkanAPI::VulkanAPI() : GraphicsAPI(GraphicsAPI::VULKAN) {
 #endif
     _physicalDevice = std::make_shared<vk::PhysicalDevice>(_instance);
     _device = std::make_shared<vk::Device>(_physicalDevice);
+    _surface = std::make_shared<vk::Surface>(_instance);
 }
 
 VulkanAPI::~VulkanAPI() {
+    _surface.reset();
     _device.reset();
     _physicalDevice.reset();
     _debugMessenger.reset();
@@ -27,6 +29,7 @@ VulkanAPI::~VulkanAPI() {
 }
 
 void VulkanAPI::beginFrame() {}
+
 void VulkanAPI::endFrame() {}
 
 void VulkanAPI::renderMesh(StringId meshSid) {}
@@ -40,7 +43,9 @@ void VulkanAPI::renderCube() {}
 void VulkanAPI::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) {}
 
 void VulkanAPI::generateCubemap(StringId textureSid, mat4 rotationMatrix) {}
+
 void VulkanAPI::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) {}
+
 void VulkanAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {}
 
 void* VulkanAPI::getImGuiImage(StringId sid) const { return nullptr; }

@@ -12,12 +12,13 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/openGL/openGLIndexBuffer.cpp
     apis/openGL/openGLPipeline.cpp
     apis/openGL/openGLMesh.cpp
-    apis/vulkan/vulkanAPI.cpp
+    apis/vulkan/common.cpp
     apis/vulkan/debugMessenger.cpp
     apis/vulkan/device.cpp
     apis/vulkan/instance.cpp
     apis/vulkan/physicalDevice.cpp
-    apis/vulkan/common.cpp
+    apis/vulkan/surface.cpp
+    apis/vulkan/vulkanAPI.cpp
 
     cameras/camera.cpp
     cameras/perspectiveCamera.cpp

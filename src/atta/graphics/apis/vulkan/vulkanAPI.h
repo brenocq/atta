@@ -7,10 +7,11 @@
 #ifndef ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H
 #define ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H
 #include <atta/graphics/apis/graphicsAPI.h>
+#include <atta/graphics/apis/vulkan/debugMessenger.h>
+#include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/instance.h>
 #include <atta/graphics/apis/vulkan/physicalDevice.h>
-#include <atta/graphics/apis/vulkan/device.h>
-#include <atta/graphics/apis/vulkan/debugMessenger.h>
+#include <atta/graphics/apis/vulkan/surface.h>
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
@@ -40,6 +41,7 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::DebugMessenger> _debugMessenger;
     std::shared_ptr<vk::PhysicalDevice> _physicalDevice;
     std::shared_ptr<vk::Device> _device;
+    std::shared_ptr<vk::Surface> _surface;
 };
 
 } // namespace atta::graphics
