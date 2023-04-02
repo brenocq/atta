@@ -15,13 +15,17 @@ class Instance {
     Instance();
     ~Instance();
 
+    VkInstance get() const;
+
   private:
     void printAvailableExtensions();
     void printAvailableLayers();
 
-    std::vector<const char*> getRequiredExtensions();
+    std::vector<const char*> getEnabledExtensions();
+    std::vector<const char*> getEnabledLayers();
 
     VkInstance _instance;
+    VkDebugUtilsMessengerEXT debugMessenger;
 };
 
 } // namespace atta::graphics::vk

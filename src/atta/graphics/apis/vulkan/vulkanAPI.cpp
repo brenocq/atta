@@ -12,9 +12,15 @@ namespace atta::graphics {
 
 VulkanAPI::VulkanAPI() : GraphicsAPI(GraphicsAPI::VULKAN) {
     _instance = std::make_shared<vk::Instance>();
+#ifdef ATTA_DEBUG_BUILD
+    _debugMessenger = std::make_shared<vk::DebugMessenger>(_instance);
+#endif
 }
 
-VulkanAPI::~VulkanAPI() {}
+VulkanAPI::~VulkanAPI() {
+    _debugMessenger.reset();
+    _instance.reset();
+}
 
 void VulkanAPI::beginFrame() {}
 void VulkanAPI::endFrame() {}

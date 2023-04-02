@@ -13,7 +13,8 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/openGL/openGLPipeline.cpp
     apis/openGL/openGLMesh.cpp
     apis/vulkan/vulkanAPI.cpp
-    apis/vulkan/vulkanInstance.cpp
+    apis/vulkan/debugMessenger.cpp
+    apis/vulkan/instance.cpp
     apis/vulkan/common.cpp
 
     cameras/camera.cpp

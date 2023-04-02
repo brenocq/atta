@@ -4,7 +4,7 @@
 // Date: 2023-04-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/apis/vulkan/vulkanInstance.h>
+#include <atta/graphics/apis/vulkan/instance.h>
 
 #include <atta/graphics/windows/glfwWindow.h>
 
@@ -26,34 +26,33 @@ Instance::Instance() {
     createInfo.pApplicationInfo = &appInfo;
 
     // Setup required extensions
-    std::vector<const char*> extensions = getRequiredExtensions();
+    std::vector<const char*> extensions = getEnabledExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
+
+    // Setup required layers
+    std::vector<const char*> layers = getEnabledLayers();
+    createInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
+    createInfo.ppEnabledLayerNames = layers.data();
+    createInfo.pNext = nullptr;
+
+    // MacOS portability
 #ifdef ATTA_OS_MACOS
     createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
-    // Setup validation layers
-    if (false) {
-        const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
-    } else {
-        createInfo.enabledLayerCount = 0;
-        createInfo.pNext = nullptr;
-    }
-
     printAvailableExtensions();
     printAvailableLayers();
 
+    // Create instance
     VkResult result = vkCreateInstance(&createInfo, nullptr, &_instance);
     if (result != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Instance", "Failed to create vulkan instance! Code:$0", toString(result));
-    else
-        LOG_SUCCESS("gfx::vk::Instance", "Created");
 }
 
-Instance::~Instance() {}
+Instance::~Instance() { vkDestroyInstance(_instance, nullptr); }
+
+VkInstance Instance::get() const { return _instance; }
 
 void Instance::printAvailableExtensions() {
     LOG_INFO("gfx::vk::Instance", "Available instance extensions:");
@@ -78,7 +77,7 @@ void Instance::printAvailableLayers() {
         LOG_INFO("gfx::vk::Instance", " - $0 ($1)", property.layerName, property.description);
 }
 
-std::vector<const char*> Instance::getRequiredExtensions() {
+std::vector<const char*> Instance::getEnabledExtensions() {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
@@ -86,10 +85,21 @@ std::vector<const char*> Instance::getRequiredExtensions() {
 #ifdef ATTA_OS_MACOS
     extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
 #endif
-    // extensions.push_back(VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME);
-    // extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#ifdef ATTA_DEBUG_BUILD
+    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
 
     return extensions;
+}
+
+std::vector<const char*> Instance::getEnabledLayers() {
+    std::vector<const char*> layers;
+
+#ifdef ATTA_DEBUG_BUILD
+    layers.push_back("VK_LAYER_KHRONOS_validation");
+#endif
+
+    return layers;
 }
 
 } // namespace atta::graphics::vk
