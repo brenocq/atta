@@ -9,6 +9,7 @@
 #include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/apis/vulkan/instance.h>
 #include <atta/graphics/apis/vulkan/physicalDevice.h>
+#include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/debugMessenger.h>
 #include <atta/graphics/windows/window.h>
 
@@ -38,6 +39,7 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::Instance> _instance;
     std::shared_ptr<vk::DebugMessenger> _debugMessenger;
     std::shared_ptr<vk::PhysicalDevice> _physicalDevice;
+    std::shared_ptr<vk::Device> _device;
 };
 
 } // namespace atta::graphics

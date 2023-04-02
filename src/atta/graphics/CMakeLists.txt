@@ -14,6 +14,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/openGL/openGLMesh.cpp
     apis/vulkan/vulkanAPI.cpp
     apis/vulkan/debugMessenger.cpp
+    apis/vulkan/device.cpp
     apis/vulkan/instance.cpp
     apis/vulkan/physicalDevice.cpp
     apis/vulkan/common.cpp

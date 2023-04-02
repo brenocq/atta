@@ -16,9 +16,11 @@ VulkanAPI::VulkanAPI() : GraphicsAPI(GraphicsAPI::VULKAN) {
     _debugMessenger = std::make_shared<vk::DebugMessenger>(_instance);
 #endif
     _physicalDevice = std::make_shared<vk::PhysicalDevice>(_instance);
+    _device = std::make_shared<vk::Device>(_physicalDevice);
 }
 
 VulkanAPI::~VulkanAPI() {
+    _device.reset();
     _physicalDevice.reset();
     _debugMessenger.reset();
     _instance.reset();
