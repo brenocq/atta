@@ -11,9 +11,8 @@
 namespace atta::graphics::vk {
 
 Surface::Surface(std::shared_ptr<Instance> instance, std::shared_ptr<Window> window) : _instance(instance), _window(window) {
-    GLFWwindow* w = glfwGetCurrentContext();
     int result = 0;
-    if ((result = glfwCreateWindowSurface(_instance->getHandle(), w, nullptr, &_surface)) != VK_SUCCESS) {
+    if ((result = glfwCreateWindowSurface(_instance->getHandle(), (GLFWwindow*)window->getHandle(), nullptr, &_surface)) != VK_SUCCESS) {
         const char* description;
         glfwGetError(&description);
         LOG_ERROR("gfx::vk::Surface", "Failed to create window surface! Code: $0, message: $1", result, description);

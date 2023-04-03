@@ -33,6 +33,8 @@ class Window {
     Window(const CreateInfo& info);
     virtual ~Window() = default;
 
+    virtual void* getHandle() const { return nullptr; };
+
     size_t getWidth() const { return _width; }
     size_t getHeight() const { return _height; }
 

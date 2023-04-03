@@ -79,15 +79,15 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
     glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
         event::WindowKeyboardButton::Action a;
         switch (action) {
-        case GLFW_PRESS:
-            a = event::WindowKeyboardButton::Action::PRESS;
-            break;
-        case GLFW_REPEAT:
-            a = event::WindowKeyboardButton::Action::REPEAT;
-            break;
-        case GLFW_RELEASE:
-            a = event::WindowKeyboardButton::Action::RELEASE;
-            break;
+            case GLFW_PRESS:
+                a = event::WindowKeyboardButton::Action::PRESS;
+                break;
+            case GLFW_REPEAT:
+                a = event::WindowKeyboardButton::Action::REPEAT;
+                break;
+            case GLFW_RELEASE:
+                a = event::WindowKeyboardButton::Action::RELEASE;
+                break;
         }
 
         event::WindowKeyboardButton e(key, a);
@@ -112,6 +112,8 @@ GlfwWindow::~GlfwWindow() {
     if (--_glfwWindowCounter == 0)
         glfwTerminate();
 }
+
+void* GlfwWindow::getHandle() const { return _window; }
 
 void GlfwWindow::update() {
 #ifdef ATTA_OS_WEB
