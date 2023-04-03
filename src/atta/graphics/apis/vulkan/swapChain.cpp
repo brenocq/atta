@@ -13,9 +13,8 @@ SwapChain::SwapChain(std::shared_ptr<Device> device, std::shared_ptr<Surface> su
 
     // Check swap chain support
     SupportDetails swapChainSupport = querySwapChainSupport();
-    if (swapChainSupport.formats.empty() || swapChainSupport.presentModes.empty()) {
-        LOG_ERROR("SwapChain", "Failed to create swapChain, physical device does not have swap chain support!");
-    }
+    if (swapChainSupport.formats.empty() || swapChainSupport.presentModes.empty())
+        LOG_ERROR("gfx::vk::SwapChain", "Failed to create swapChain, physical device does not have swap chain support!");
 
     // Choose swap chain properties
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -63,13 +62,14 @@ SwapChain::SwapChain(std::shared_ptr<Device> device, std::shared_ptr<Surface> su
     vkGetPhysicalDeviceSurfaceSupportKHR(_device->getPhysicalDevice()->getHandle(), indices.presentFamily.value(), _surface->getHandle(),
                                          &presentSupport);
     if (!presentSupport) {
-        LOG_ERROR("SwapChain", "Current logical device does not support present to this surface!");
+        LOG_ERROR("gfx::vk::SwapChain", "Current logical device does not support present to this surface!");
         return;
     }
 
-    if (vkCreateSwapchainKHR(_device->getHandle(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
-        LOG_ERROR("SwapChain", "Failed to create swap chain!");
-    return;
+    if (vkCreateSwapchainKHR(_device->getHandle(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS) {
+        LOG_ERROR("gfx::vk::SwapChain", "Failed to create swap chain!");
+        return;
+    }
 
     //---------- Create images ----------//
     vkGetSwapchainImagesKHR(_device->getHandle(), _swapChain, &imageCount, nullptr);
@@ -121,7 +121,7 @@ VkExtent2D SwapChain::getImageExtent() const { return _extent; }
 
 VkFormat SwapChain::getImageFormat() const { return _imageFormat; }
 
-// std::vector<std::shared_ptr<ImageView>> SwapChain::getImageViews() const { return _imageViews; }
+std::vector<std::shared_ptr<ImageView>> SwapChain::getImageViews() const { return _imageViews; }
 
 std::vector<VkImage> SwapChain::getImages() const { return _images; }
 
@@ -170,20 +170,16 @@ VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
         return capabilities.currentExtent;
     } else {
         VkExtent2D actualExtent;
-        actualExtent.width = _surface->getWindow()->getWidth();
-        actualExtent.width = std::min(actualExtent.width, capabilities.maxImageExtent.width);
-        actualExtent.width = std::max(actualExtent.width, capabilities.minImageExtent.width);
-        actualExtent.height = _surface->getWindow()->getHeight();
-        actualExtent.width = std::min(actualExtent.height, capabilities.maxImageExtent.height);
-        actualExtent.width = std::max(actualExtent.height, capabilities.minImageExtent.height);
+        actualExtent.width = std::clamp((uint32_t)_surface->getWindow()->getWidth(), capabilities.maxImageExtent.width, capabilities.minImageExtent.width);
+        actualExtent.height = std::clamp((uint32_t)_surface->getWindow()->getHeight(), capabilities.maxImageExtent.height, capabilities.minImageExtent.height);
         return actualExtent;
     }
 }
 
 void SwapChain::createImageViews() {
-    //_imageViews.resize(_images.size());
-    // for (size_t i = 0; i < _imageViews.size(); i++)
-    //     _imageViews[i] = std::make_shared<ImageView>(_device, _images[i], _imageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+    _imageViews.resize(_images.size());
+     for (size_t i = 0; i < _imageViews.size(); i++)
+         _imageViews[i] = std::make_shared<ImageView>(_device, _images[i], _imageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
 } // namespace atta::graphics::vk

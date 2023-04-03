@@ -15,6 +15,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/vulkan/common.cpp
     apis/vulkan/debugMessenger.cpp
     apis/vulkan/device.cpp
+    apis/vulkan/imageView.cpp
     apis/vulkan/instance.cpp
     apis/vulkan/physicalDevice.cpp
     apis/vulkan/surface.cpp
