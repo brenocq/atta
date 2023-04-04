@@ -19,6 +19,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/vulkan/instance.cpp
     apis/vulkan/physicalDevice.cpp
     apis/vulkan/pipelineLayout.cpp
+    apis/vulkan/renderPass.cpp
     apis/vulkan/pipeline.cpp
     apis/vulkan/shader.cpp
     apis/vulkan/shaderGroup.cpp
