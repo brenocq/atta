@@ -6,13 +6,15 @@
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/renderPass.h>
 
+#include <atta/graphics/apis/vulkan/image.h>
+
 namespace atta::graphics::vk {
 
 RenderPass::RenderPass(const graphics::RenderPass::CreateInfo& info, std::shared_ptr<Device> device) : graphics::RenderPass(info), _device(device) {
     // Color attachment
     VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = VK_FORMAT_B8G8R8A8_UNORM; // TODO _renderPass->getFramebuffer()->getFormat();
-    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;   // TODO _device->getMsaaSamples();
+    colorAttachment.format = vk::Image::convertFormat(_framebuffer->getImage(0)->getFormat());
+    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT; // TODO _device->getMsaaSamples();
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -47,6 +49,10 @@ RenderPass::~RenderPass() {
     if (_renderPass != VK_NULL_HANDLE)
         vkDestroyRenderPass(_device->getHandle(), _renderPass, nullptr);
 }
+
+void RenderPass::begin(bool clear) {}
+
+void RenderPass::end() {}
 
 VkRenderPass RenderPass::getHandle() const { return _renderPass; }
 

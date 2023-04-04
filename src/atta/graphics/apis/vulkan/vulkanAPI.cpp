@@ -20,6 +20,8 @@ VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
     _device = std::make_shared<vk::Device>(_physicalDevice);
     _surface = std::make_shared<vk::Surface>(_instance, _window);
     _swapChain = std::make_shared<vk::SwapChain>(_device, _surface);
+    _commandPool = std::make_shared<vk::CommandPool>(_device);
+    _commandBuffers = std::make_shared<vk::CommandBuffers>(_device, _commandPool, 1);
 
     graphics::ShaderGroup::CreateInfo info;
     info.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
@@ -29,6 +31,8 @@ VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
 }
 
 VulkanAPI::~VulkanAPI() {
+    _commandBuffers.reset();
+    _commandPool.reset();
     _swapChain.reset();
     _surface.reset();
     _device.reset();
@@ -58,5 +62,8 @@ void VulkanAPI::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) {
 void VulkanAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {}
 
 void* VulkanAPI::getImGuiImage(StringId sid) const { return nullptr; }
+
+std::shared_ptr<vk::Device> VulkanAPI::getDevice() const { return _device; }
+std::shared_ptr<vk::CommandPool> VulkanAPI::getCommandPool() const { return _commandPool; }
 
 } // namespace atta::graphics

@@ -8,6 +8,8 @@
 #define ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H
 
 #include <atta/graphics/apis/graphicsAPI.h>
+#include <atta/graphics/apis/vulkan/commandBuffers.h>
+#include <atta/graphics/apis/vulkan/commandPool.h>
 #include <atta/graphics/apis/vulkan/debugMessenger.h>
 #include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/instance.h>
@@ -38,6 +40,9 @@ class VulkanAPI final : public GraphicsAPI {
 
     void* getImGuiImage(StringId sid) const override;
 
+    std::shared_ptr<vk::Device> getDevice() const;
+    std::shared_ptr<vk::CommandPool> getCommandPool() const;
+
   private:
     std::shared_ptr<vk::Instance> _instance;
     std::shared_ptr<vk::DebugMessenger> _debugMessenger;
@@ -45,6 +50,8 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::Device> _device;
     std::shared_ptr<vk::Surface> _surface;
     std::shared_ptr<vk::SwapChain> _swapChain;
+    std::shared_ptr<vk::CommandPool> _commandPool;
+    std::shared_ptr<vk::CommandBuffers> _commandBuffers;
 };
 
 } // namespace atta::graphics

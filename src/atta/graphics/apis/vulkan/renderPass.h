@@ -18,6 +18,9 @@ class RenderPass final : public graphics::RenderPass {
     RenderPass(const graphics::RenderPass::CreateInfo& info, std::shared_ptr<Device> device);
     ~RenderPass();
 
+    void begin(bool clear = true) override;
+    void end() override;
+
     VkRenderPass getHandle() const;
 
   private:

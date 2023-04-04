@@ -39,7 +39,10 @@ DebugMessenger::DebugMessenger(std::shared_ptr<Instance> instance) : _instance(i
         LOG_ERROR("gfx::vk::DebugMessenger", "Failed to set up debug messenger!");
 }
 
-DebugMessenger::~DebugMessenger() { DestroyDebugUtilsMessengerEXT(_instance->getHandle(), _debugMessenger, nullptr); }
+DebugMessenger::~DebugMessenger() {
+    if (_debugMessenger != VK_NULL_HANDLE)
+        DestroyDebugUtilsMessengerEXT(_instance->getHandle(), _debugMessenger, nullptr);
+}
 
 VKAPI_ATTR VkBool32 VKAPI_CALL DebugMessenger::callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                                                         VkDebugUtilsMessageTypeFlagsEXT messageType,
