@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_APIS_VULKAN_DEBUG_MESSENGER_H
 #define ATTA_GRAPHICS_APIS_VULKAN_DEBUG_MESSENGER_H
+
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/instance.h>
 

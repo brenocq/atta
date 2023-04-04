@@ -21,7 +21,6 @@ class SwapChain {
 
     // void copyImage(VkCommandBuffer commandBuffer, int imageIndex, Image* src, VkExtent2D extent, VkExtent2D offset);
 
-    //---------- Getters and Setters ----------//
     VkSwapchainKHR getHandle() const;
     VkExtent2D getImageExtent() const;
     VkFormat getImageFormat() const;

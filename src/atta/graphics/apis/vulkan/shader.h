@@ -9,24 +9,26 @@
 
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/device.h>
+#include <atta/graphics/shader.h>
 
 namespace atta::graphics::vk {
 
-class Shader {
+class Shader final : public graphics::Shader {
   public:
-    Shader(std::shared_ptr<Device> device, const std::string& filename);
+    Shader(const std::string& filepath, std::shared_ptr<Device> device);
     ~Shader();
 
-    VkShaderModule getHandle() const;
+    void recompile() override;
 
-    VkPipelineShaderStageCreateInfo createShaderStage(VkShaderStageFlagBits stage) const;
+    VkShaderModule getHandle() const;
+    VkPipelineShaderStageCreateInfo getShaderStage() const;
 
   private:
-    std::vector<char> readFile(const std::string& filename);
+    static VkShaderStageFlagBits convertFileToShaderStage(const fs::path& filepath);
+    std::vector<char> readFile(const std::string& filepath);
 
     std::shared_ptr<Device> _device;
     VkShaderModule _shader;
-    std::vector<char> _code;
 };
 
 } // namespace atta::graphics::vk

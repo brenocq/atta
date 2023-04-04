@@ -7,7 +7,7 @@
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 
 #include <atta/graphics/apis/vulkan/common.h>
-#include <atta/graphics/apis/vulkan/shader.h>
+#include <atta/graphics/apis/vulkan/shaderGroup.h>
 
 namespace atta::graphics {
 
@@ -21,8 +21,11 @@ VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
     _surface = std::make_shared<vk::Surface>(_instance, _window);
     _swapChain = std::make_shared<vk::SwapChain>(_device, _surface);
 
-    std::shared_ptr<vk::Shader> vert = std::make_shared<vk::Shader>(_device, "shaders/triangle/vert.spv");
-    std::shared_ptr<vk::Shader> frag = std::make_shared<vk::Shader>(_device, "shaders/triangle/frag.spv");
+    graphics::ShaderGroup::CreateInfo info;
+    info.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
+    std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(info, _device);
+
+    LOG_SUCCESS("gfx::VulkanAPI", "Initialized");
 }
 
 VulkanAPI::~VulkanAPI() {

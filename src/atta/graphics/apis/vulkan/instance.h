@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_APIS_VULKAN_INSTANCE_H
 #define ATTA_GRAPHICS_APIS_VULKAN_INSTANCE_H
+
 #include <atta/graphics/apis/vulkan/common.h>
 
 namespace atta::graphics::vk {
