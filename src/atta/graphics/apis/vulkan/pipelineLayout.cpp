@@ -20,7 +20,10 @@ PipelineLayout::PipelineLayout(std::shared_ptr<Device> device) : _device(device)
         LOG_ERROR("gfx::vk::PipelineLayout", "Failed to create pipeline layout!");
 }
 
-PipelineLayout::~PipelineLayout() { vkDestroyPipelineLayout(_device->getHandle(), _pipelineLayout, nullptr); }
+PipelineLayout::~PipelineLayout() {
+    if (_pipelineLayout != VK_NULL_HANDLE)
+        vkDestroyPipelineLayout(_device->getHandle(), _pipelineLayout, nullptr);
+}
 
 VkPipelineLayout PipelineLayout::getHandle() const { return _pipelineLayout; }
 

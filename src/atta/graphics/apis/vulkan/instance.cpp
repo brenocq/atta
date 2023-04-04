@@ -50,7 +50,10 @@ Instance::Instance() {
         LOG_ERROR("gfx::vk::Instance", "Failed to create vulkan instance! Code:$0", toString(result));
 }
 
-Instance::~Instance() { vkDestroyInstance(_instance, nullptr); }
+Instance::~Instance() {
+    if (_instance != VK_NULL_HANDLE)
+        vkDestroyInstance(_instance, nullptr);
+}
 
 VkInstance Instance::getHandle() const { return _instance; }
 

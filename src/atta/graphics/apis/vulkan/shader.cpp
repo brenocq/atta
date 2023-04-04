@@ -10,10 +10,12 @@
 
 namespace atta::graphics::vk {
 
-Shader::Shader(const std::string& filepath, std::shared_ptr<Device> device) : graphics::Shader({filepath}), _device(device) {
-}
+Shader::Shader(const std::string& filepath, std::shared_ptr<Device> device) : graphics::Shader({filepath}), _device(device) {}
 
-Shader::~Shader() { vkDestroyShaderModule(_device->getHandle(), _shader, nullptr); }
+Shader::~Shader() {
+    if (_shader != VK_NULL_HANDLE)
+        vkDestroyShaderModule(_device->getHandle(), _shader, nullptr);
+}
 
 void Shader::recompile() {
     // TODO compile hlsl to .spv

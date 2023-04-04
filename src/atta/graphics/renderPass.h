@@ -30,6 +30,7 @@ class RenderPass {
     std::shared_ptr<Framebuffer> _framebuffer;
 
     const StringId _debugName;
+    friend Framebuffer;
 };
 
 } // namespace atta::graphics

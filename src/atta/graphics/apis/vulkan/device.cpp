@@ -59,8 +59,10 @@ Device::Device(std::shared_ptr<PhysicalDevice> physicalDevice) : _physicalDevice
 }
 
 Device::~Device() {
-    vkDeviceWaitIdle(_device);
-    vkDestroyDevice(_device, nullptr);
+    if (_device != VK_NULL_HANDLE) {
+        vkDeviceWaitIdle(_device);
+        vkDestroyDevice(_device, nullptr);
+    }
 }
 
 VkDevice Device::getHandle() const { return _device; }

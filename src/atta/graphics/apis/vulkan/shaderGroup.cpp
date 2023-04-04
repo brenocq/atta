@@ -38,9 +38,9 @@ void ShaderGroup::setVec4(const char* name, vec4 v) {}
 void ShaderGroup::setMat3(const char* name, mat3 m) {}
 void ShaderGroup::setMat4(const char* name, mat4 m) {}
 void ShaderGroup::setImage(const char* name, StringId sid) {}
-void ShaderGroup::setImage(const char* name, std::shared_ptr<Image> image) {}
+void ShaderGroup::setImage(const char* name, std::shared_ptr<gfx::Image> image) {}
 void ShaderGroup::setCubemap(const char* name, StringId sid) {}
-void ShaderGroup::setCubemap(const char* name, std::shared_ptr<Image> image) {}
+void ShaderGroup::setCubemap(const char* name, std::shared_ptr<gfx::Image> image) {}
 
 std::vector<VkPipelineShaderStageCreateInfo> ShaderGroup::getShaderStages() const {
     std::vector<VkPipelineShaderStageCreateInfo> result;

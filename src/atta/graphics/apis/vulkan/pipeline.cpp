@@ -11,6 +11,10 @@ namespace atta::graphics::vk {
 Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info, std::shared_ptr<Device> device) : graphics::Pipeline(info), _device(device) {
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages = std::dynamic_pointer_cast<vk::ShaderGroup>(_shaderGroup)->getShaderStages();
 
+    // Create framebuffer
+    _framebuffers.push_back(std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer()));
+    _framebuffers.front()->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
+
     // Vertex input
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -25,20 +29,12 @@ Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info, std::shared_ptr<D
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-    // Dynamic state
-    // TODO use dynamic viewport size
-    // std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
-    // VkPipelineDynamicStateCreateInfo dynamicState{};
-    // dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-    // dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-    // dynamicState.pDynamicStates = dynamicStates.data();
-
     // Viewport & scissors
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = (float)100.0f;  // TODO _renderPass->getFramebuffer()->getWidth();
-    viewport.height = (float)100.0f; // TODO _renderPass->getFramebuffer()->getHeight();
+    viewport.width = _renderPass->getFramebuffer()->getWidth();
+    viewport.height = _renderPass->getFramebuffer()->getHeight();
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
@@ -100,11 +96,45 @@ Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info, std::shared_ptr<D
     colorBlending.blendConstants[2] = 0.0f;
     colorBlending.blendConstants[3] = 0.0f;
 
+    // Dynamic state (TODO use when dynamically resizing)
+    // std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    // VkPipelineDynamicStateCreateInfo dynamicState{};
+    // dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    // dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+    // dynamicState.pDynamicStates = dynamicStates.data();
+
     // Pipeline layout
     _pipelineLayout = std::make_shared<PipelineLayout>(_device); //, _descriptorSetManager->getDescriptorSetLayout());
+
+    // Create Pipeline
+    VkGraphicsPipelineCreateInfo pipelineInfo{};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.stageCount = shaderStages.size();
+    pipelineInfo.pStages = shaderStages.data();
+
+    pipelineInfo.pVertexInputState = &vertexInputInfo;
+    pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pViewportState = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizer;
+    pipelineInfo.pMultisampleState = &multisampling;
+    pipelineInfo.pDepthStencilState = nullptr;
+    pipelineInfo.pColorBlendState = &colorBlending;
+    pipelineInfo.pDynamicState = nullptr;
+    pipelineInfo.layout = _pipelineLayout->getHandle();
+    pipelineInfo.renderPass = std::dynamic_pointer_cast<vk::RenderPass>(_renderPass)->getHandle();
+    pipelineInfo.subpass = 0;
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    pipelineInfo.basePipelineIndex = -1;
+
+    if (vkCreateGraphicsPipelines(_device->getHandle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
+        LOG_ERROR("gfx::vk::Pipeline", "Failed to create pipeline!");
 }
 
-Pipeline::~Pipeline() {}
+Pipeline::~Pipeline() {
+    if (_pipeline != VK_NULL_HANDLE)
+        vkDestroyPipeline(_device->getHandle(), _pipeline, nullptr);
+    _framebuffers.clear();
+}
 
 void Pipeline::begin(bool clear) {}
 void Pipeline::end() {}
@@ -114,7 +144,6 @@ VkPipeline Pipeline::getHandle() const { return _pipeline; }
 std::shared_ptr<PipelineLayout> Pipeline::getPipelineLayout() const { return _pipelineLayout; }
 // std::shared_ptr<DescriptorSetManager> Pipeline::getDescriptorSetManager() const { return _descriptorSetManager; }
 // std::shared_ptr<DescriptorSets> Pipeline::getDescriptorSets() const { return _descriptorSetManager->getDescriptorSets(); }
-std::vector<std::shared_ptr<ImageView>> Pipeline::getImageViews() const { return _imageViews; }
 // std::vector<std::shared_ptr<FrameBuffer>> Pipeline::getFrameBuffers() const { return _frameBuffers; }
 // std::shared_ptr<RenderPass> Pipeline::getRenderPass() const { return _renderPass; }
 

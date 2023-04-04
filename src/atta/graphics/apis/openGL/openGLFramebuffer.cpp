@@ -10,31 +10,9 @@
 namespace atta::graphics {
 
 OpenGLFramebuffer::OpenGLFramebuffer(const Framebuffer::CreateInfo& info)
-    : Framebuffer(info), _id(0), _depthAttachmentIndex(-1), _stencilAttachmentIndex(-1) {
-    // Check consistency and populate color and depth attachments
-    int i = 0;
-    for (auto attachment : _attachments) {
-        // Check attachment consistency
-        DASSERT(!(attachment.image != nullptr && attachment.format != Image::Format::NONE),
-                "Should not create an attachment with format and image defined. Plese check the attachments for [w]$0", _debugName);
-
-        // Check only one depth and stencil attachments
-        Image::Format format = attachment.image != nullptr ? attachment.image->getFormat() : attachment.format;
-        if (Image::isDepthFormat(format)) {
-            DASSERT(_depthAttachmentIndex == -1, "It is not possible to create framebuffer with more than one depth attachment");
-            _depthAttachmentIndex = i;
-        }
-
-        if (Image::isStencilFormat(format)) {
-            DASSERT(_stencilAttachmentIndex == -1, "It is not possible to create framebuffer with more than one stencil attachment");
-            _stencilAttachmentIndex = i;
-        }
-        i++;
-    }
-
+    : Framebuffer(info), _id(0) {
     // Create attachments
     createAttachments();
-
     resize(_width, _height, true);
 }
 

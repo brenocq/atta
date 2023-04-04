@@ -10,7 +10,7 @@
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/surface.h>
-#include <atta/graphics/apis/vulkan/imageView.h>
+#include <atta/graphics/apis/vulkan/image.h>
 
 namespace atta::graphics::vk {
 
@@ -24,8 +24,7 @@ class SwapChain {
     VkSwapchainKHR getHandle() const;
     VkExtent2D getImageExtent() const;
     VkFormat getImageFormat() const;
-    std::vector<std::shared_ptr<ImageView>> getImageViews() const;
-    std::vector<VkImage> getImages() const;
+    std::vector<std::shared_ptr<Image>> getImage() const;
 
   private:
     struct SupportDetails {
@@ -38,13 +37,11 @@ class SwapChain {
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-    void createImageViews();
 
     VkSwapchainKHR _swapChain;
     std::shared_ptr<Device> _device;
     std::shared_ptr<Surface> _surface;
-    std::vector<VkImage> _images;
-    std::vector<std::shared_ptr<ImageView>> _imageViews;
+    std::vector<std::shared_ptr<Image>> _images;
     VkFormat _imageFormat;
     VkExtent2D _extent;
 };

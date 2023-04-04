@@ -19,7 +19,10 @@ Surface::Surface(std::shared_ptr<Instance> instance, std::shared_ptr<Window> win
     }
 }
 
-Surface::~Surface() { vkDestroySurfaceKHR(_instance->getHandle(), _surface, nullptr); }
+Surface::~Surface() {
+    if (_surface != VK_NULL_HANDLE)
+        vkDestroySurfaceKHR(_instance->getHandle(), _surface, nullptr);
+}
 
 VkSurfaceKHR Surface::getHandle() const { return _surface; }
 

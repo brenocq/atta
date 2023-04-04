@@ -32,10 +32,6 @@ class OpenGLFramebuffer final : public Framebuffer {
     void bindAttachments();
 
     OpenGLId _id;
-
-    // Attachments
-    int _depthAttachmentIndex;
-    int _stencilAttachmentIndex;
 };
 
 } // namespace atta::graphics

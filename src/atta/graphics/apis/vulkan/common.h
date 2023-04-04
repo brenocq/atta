@@ -12,6 +12,7 @@
 namespace atta::graphics::vk {
 
 std::string toString(VkResult result);
+std::string toString(VkFormat format);
 
 } // namespace atta::graphics::vk
 

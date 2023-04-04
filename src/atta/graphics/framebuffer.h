@@ -60,6 +60,8 @@ class Framebuffer {
     vec4 _clearColor;
 
     std::vector<Attachment> _attachments;
+    int _depthAttachmentIndex;
+    int _stencilAttachmentIndex;
     std::map<uint32_t, std::shared_ptr<Image>> _images;
 
     const StringId _debugName;

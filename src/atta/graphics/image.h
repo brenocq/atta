@@ -17,11 +17,11 @@ class Image {
     enum class Format {
         NONE = 0,
         RED,    // 1 byte
+        RG16F,  // 4 bytes
         RGB,    // 3 bytes
         RGBA,   // 4 bytes
         RED32I, // 4 byte
 
-        RG16F,
         RGB16F,
         DEPTH32F,
         DEPTH24_STENCIL8,

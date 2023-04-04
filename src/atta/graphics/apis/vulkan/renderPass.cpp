@@ -43,7 +43,10 @@ RenderPass::RenderPass(const graphics::RenderPass::CreateInfo& info, std::shared
         LOG_ERROR("gfx::vk::RenderPass", "Failed to create render pass!");
 }
 
-RenderPass::~RenderPass() { vkDestroyRenderPass(_device->getHandle(), _renderPass, nullptr); }
+RenderPass::~RenderPass() {
+    if (_renderPass != VK_NULL_HANDLE)
+        vkDestroyRenderPass(_device->getHandle(), _renderPass, nullptr);
+}
 
 VkRenderPass RenderPass::getHandle() const { return _renderPass; }
 
