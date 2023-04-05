@@ -48,12 +48,12 @@ void Framebuffer::create(std::shared_ptr<RenderPass> renderPass) {
             info.height = _height;
             image = std::make_shared<vk::Image>(info, _device);
         }
-        _images.push_back(image);
+        _images[i] = std::dynamic_pointer_cast<gfx::Image>(image);
     }
 
     // Get image views
     std::vector<VkImageView> attachments;
-    for (graphics::Image image : _images)
+    for (auto [index, image] : _images)
         attachments.push_back(std::dynamic_pointer_cast<vk::Image>(image)->getImageViewHandle());
 
     // Create framebuffer
@@ -66,7 +66,7 @@ void Framebuffer::create(std::shared_ptr<RenderPass> renderPass) {
     framebufferInfo.height = _height;
     framebufferInfo.layers = 1;
 
-    if (vkCreateFramebuffer(_device->handle(), &framebufferInfo, nullptr, &_framebuffer) != VK_SUCCESS)
+    if (vkCreateFramebuffer(_device->getHandle(), &framebufferInfo, nullptr, &_framebuffer) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::FrameBuffer", "Failed to create frame buffer!");
 }
 

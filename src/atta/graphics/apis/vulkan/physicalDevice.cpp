@@ -41,7 +41,6 @@ PhysicalDevice::PhysicalDevice(std::shared_ptr<Instance> instance) : _instance(i
 
     // Query queues
     _queueFamilyIndices = findQueueFamilies(_physicalDevice);
-    LOG_DEBUG("PhysicalDevice", "Indices g:$0 t:$1", _queueFamilyIndices.graphicsFamily.value(), _queueFamilyIndices.transferFamily.value());
     LOG_SUCCESS("gfx::vk::PhysicalDevice", "Found suitable GPU!");
 }
 

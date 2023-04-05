@@ -17,11 +17,14 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/vulkan/common.cpp
     apis/vulkan/debugMessenger.cpp
     apis/vulkan/device.cpp
+    apis/vulkan/fence.cpp
+    apis/vulkan/framebuffer.cpp
     apis/vulkan/image.cpp
     apis/vulkan/instance.cpp
     apis/vulkan/physicalDevice.cpp
     apis/vulkan/pipelineLayout.cpp
     apis/vulkan/renderPass.cpp
+    apis/vulkan/semaphore.cpp
     apis/vulkan/pipeline.cpp
     apis/vulkan/shader.cpp
     apis/vulkan/shaderGroup.cpp
