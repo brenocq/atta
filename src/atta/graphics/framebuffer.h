@@ -51,8 +51,9 @@ class Framebuffer {
     virtual int readPixel(unsigned attachmentIndex, unsigned x, unsigned y) = 0;
     virtual std::vector<uint8_t> readImage(unsigned attachmentIndex) = 0;
     std::shared_ptr<Image> getImage(uint32_t attachment = 0);
-    uint32_t getWidth() const { return _width; };
-    uint32_t getHeight() const { return _height; };
+    uint32_t getWidth() const { return _width; }
+    uint32_t getHeight() const { return _height; }
+    vec4 getClearColor() const { return _clearColor; }
 
   protected:
     uint32_t _width;

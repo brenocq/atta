@@ -41,7 +41,7 @@ class VulkanAPI final : public GraphicsAPI {
     void* getImGuiImage(StringId sid) const override;
 
     std::shared_ptr<vk::Device> getDevice() const;
-    std::shared_ptr<vk::CommandPool> getCommandPool() const;
+    std::shared_ptr<vk::CommandBuffers> getCommandBuffers() const;
 
   private:
     std::shared_ptr<vk::Instance> _instance;

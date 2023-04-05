@@ -5,6 +5,8 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/pipeline.h>
+#include <atta/graphics/apis/vulkan/vulkanAPI.h>
+#include <atta/graphics/interface.h>
 
 namespace atta::graphics::vk {
 
@@ -136,7 +138,28 @@ Pipeline::~Pipeline() {
     _framebuffers.clear();
 }
 
-void Pipeline::begin(bool clear) {}
+void Pipeline::begin(bool clear) {
+    std::shared_ptr<VulkanAPI> api = std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI());
+    VkCommandBuffer commandBuffer = api->getCommandBuffers()->getHandles()[0];
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+
+    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+    // TODO Dynamic
+    // VkViewport viewport{};
+    // viewport.x = 0.0f;
+    // viewport.y = 0.0f;
+    // viewport.width = static_cast<float>(swapChainExtent.width);
+    // viewport.height = static_cast<float>(swapChainExtent.height);
+    // viewport.minDepth = 0.0f;
+    // viewport.maxDepth = 1.0f;
+    // vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+    // VkRect2D scissor{};
+    // scissor.offset = {0, 0};
+    // scissor.extent = swapChainExtent;
+    // vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+}
+
 void Pipeline::end() {}
 void* Pipeline::getImGuiTexture() const { return nullptr; }
 

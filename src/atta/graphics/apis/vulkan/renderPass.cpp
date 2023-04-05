@@ -6,7 +6,10 @@
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/renderPass.h>
 
+#include <atta/graphics/apis/vulkan/framebuffer.h>
 #include <atta/graphics/apis/vulkan/image.h>
+#include <atta/graphics/apis/vulkan/vulkanAPI.h>
+#include <atta/graphics/interface.h>
 
 namespace atta::graphics::vk {
 
@@ -50,9 +53,29 @@ RenderPass::~RenderPass() {
         vkDestroyRenderPass(_device->getHandle(), _renderPass, nullptr);
 }
 
-void RenderPass::begin(bool clear) {}
+void RenderPass::begin(bool clear) {
+    VkRenderPassBeginInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = _renderPass;
+    renderPassInfo.framebuffer = std::dynamic_pointer_cast<Framebuffer>(_framebuffer)->getHandle();
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = {_framebuffer->getWidth(), _framebuffer->getHeight()};// TODO Maybe need to get as argument
 
-void RenderPass::end() {}
+    vec4 color = _framebuffer->getClearColor();
+    VkClearValue clearColor = {{color.x, color.y, color.z, color.w}};
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearColor;
+
+    std::shared_ptr<VulkanAPI> api = std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI());
+    VkCommandBuffer commandBuffer = api->getCommandBuffers()->getHandles()[0];
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void RenderPass::end() {
+    std::shared_ptr<VulkanAPI> api = std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI());
+    VkCommandBuffer commandBuffer = api->getCommandBuffers()->getHandles()[0];
+    vkCmdEndRenderPass(commandBuffer);
+}
 
 VkRenderPass RenderPass::getHandle() const { return _renderPass; }
 

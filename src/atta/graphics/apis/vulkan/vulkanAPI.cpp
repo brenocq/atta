@@ -64,6 +64,6 @@ void VulkanAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
 void* VulkanAPI::getImGuiImage(StringId sid) const { return nullptr; }
 
 std::shared_ptr<vk::Device> VulkanAPI::getDevice() const { return _device; }
-std::shared_ptr<vk::CommandPool> VulkanAPI::getCommandPool() const { return _commandPool; }
+std::shared_ptr<vk::CommandBuffers> VulkanAPI::getCommandBuffers() const { return _commandBuffers; }
 
 } // namespace atta::graphics
