@@ -6,12 +6,14 @@
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 
+#include <atta/event/events/windowResize.h>
+#include <atta/event/interface.h>
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/shaderGroup.h>
 
 namespace atta::graphics {
 
-VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::VULKAN, window), _currFrame(0) {
+VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::VULKAN, window), _currFrame(0), _windowResized(false) {
     _instance = std::make_shared<vk::Instance>();
 #ifdef ATTA_DEBUG_BUILD
     _debugMessenger = std::make_shared<vk::DebugMessenger>(_instance);
@@ -20,7 +22,6 @@ VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
     _device = std::make_shared<vk::Device>(_physicalDevice);
     _commandPool = std::make_shared<vk::CommandPool>(_device);
     _commandBuffers = std::make_shared<vk::CommandBuffers>(_device, _commandPool, MAX_FRAMES_IN_FLIGHT);
-    _swapChainInitialized = false;
 
     _imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     _renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -31,39 +32,46 @@ VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
         _inFlightFences[i] = std::make_shared<vk::Fence>(_device);
     }
 
+    _swapChainInitialized = false;
+    _surface = std::make_shared<vk::Surface>(_instance, _window);
+    _swapChain = std::make_shared<vk::SwapChain>(_device, _surface);
+
+    // Subscribe to window resize event
+    evt::subscribe<evt::WindowResize>(BIND_EVENT_FUNC(VulkanAPI::onWindowResize));
+
     LOG_SUCCESS("gfx::VulkanAPI", "Initialized");
 }
 
 VulkanAPI::~VulkanAPI() {
     vkDeviceWaitIdle(_device->getHandle());
 
-    _inFlightFences.clear();
-    _renderFinishedSemaphores.clear();
-    _imageAvailableSemaphores.clear();
+    _framebuffers.clear();
+    _swapChain.reset();
 
     _pipeline.reset();
     _renderPass.reset();
-    _framebuffers.clear();
-    _swapChain.reset();
-    _surface.reset();
+
+    _inFlightFences.clear();
+    _renderFinishedSemaphores.clear();
+    _imageAvailableSemaphores.clear();
 
     _commandBuffers.reset();
     _commandPool.reset();
     _device.reset();
     _physicalDevice.reset();
     _debugMessenger.reset();
+
+    _surface.reset();
     _instance.reset();
 }
 
 void VulkanAPI::beginFrame() {
     if (!_swapChainInitialized) {
         _swapChainInitialized = true;
-        _surface = std::make_shared<vk::Surface>(_instance, _window);
-        _swapChain = std::make_shared<vk::SwapChain>(_device, _surface);
 
         gfx::Framebuffer::CreateInfo framebufferInfo{};
-        framebufferInfo.width = _window->getWidth();
-        framebufferInfo.height = _window->getHeight();
+        framebufferInfo.width = _swapChain->getImages()[0]->getWidth();
+        framebufferInfo.height = _swapChain->getImages()[0]->getHeight();
         for (std::shared_ptr<Image> image : _swapChain->getImages()) {
             gfx::Framebuffer::Attachment attachment{};
             attachment.image = std::dynamic_pointer_cast<gfx::Image>(image);
@@ -73,7 +81,6 @@ void VulkanAPI::beginFrame() {
         gfx::RenderPass::CreateInfo renderPassInfo{};
         renderPassInfo.framebuffer = _framebuffers[0];
         _renderPass = std::make_shared<vk::RenderPass>(renderPassInfo);
-
         for (std::shared_ptr<vk::Framebuffer> fb : _framebuffers)
             fb->create(_renderPass);
 
@@ -89,20 +96,21 @@ void VulkanAPI::beginFrame() {
 
     //---------- CPU-GPU synchronization ----------//
     _inFlightFences[_currFrame]->wait();
-    _inFlightFences[_currFrame]->reset();
 
     //---------- Get swap chain image ----------//
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_device->getHandle(), _swapChain->getHandle(), std::numeric_limits<uint64_t>::max(),
                                             _imageAvailableSemaphores[_currFrame]->getHandle(), VK_NULL_HANDLE, &imageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        // Recreate the swapchain (window resized)
-        LOG_WARN("gfx::VulkanAPI", "Swap chain out of date! Must reset the swapChain");
+        recreateSwapChain();
         return;
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         LOG_ERROR("gfx::VulkanAPI", "Failed to acquire swap chain image");
         return;
     }
+
+    // Only reset fence if work will be submitted
+    _inFlightFences[_currFrame]->reset();
 
     //---------- Record to command buffer ----------//
     VkCommandBuffer cmdBuf = _commandBuffers->begin(_currFrame);
@@ -130,7 +138,7 @@ void VulkanAPI::beginFrame() {
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
     if (vkQueueSubmit(_device->getGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currFrame]->getHandle()) != VK_SUCCESS)
-        LOG_ERROR("gfx::vulkanAPI", "Failed to submit draw command buffer!");
+        LOG_ERROR("gfx::VulkanAPI", "Failed to submit draw command buffer!");
 
     //---------- Submit do present queue ----------//
     VkSwapchainKHR swapChains[] = {_swapChain->getHandle()};
@@ -143,8 +151,9 @@ void VulkanAPI::beginFrame() {
     presentInfo.pImageIndices = &imageIndex;
 
     result = vkQueuePresentKHR(_device->getPresentQueue(), &presentInfo);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
-        LOG_WARN("gfx::VulkanAPI", "Framebuffer resized! Must reset the swapChain!");
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || _windowResized) {
+        _windowResized = false;
+        recreateSwapChain();
     } else if (result != VK_SUCCESS) {
         LOG_ERROR("gfx::VulkanAPI", "Failed to present swap chain image!");
         return;
@@ -176,5 +185,34 @@ void* VulkanAPI::getImGuiImage(StringId sid) const { return nullptr; }
 
 std::shared_ptr<vk::Device> VulkanAPI::getDevice() const { return _device; }
 std::shared_ptr<vk::CommandBuffers> VulkanAPI::getCommandBuffers() const { return _commandBuffers; }
+
+void VulkanAPI::recreateSwapChain() {
+    while (_window->getWidth() == 0 && _window->getHeight() == 0) {
+        // Wait until window is no longer minimized
+        _window->update();
+    }
+
+    vkDeviceWaitIdle(_device->getHandle());
+    _framebuffers.clear();
+    _swapChain.reset();
+
+    // Create swap chain
+    _swapChain = std::make_shared<vk::SwapChain>(_device, _surface);
+
+    // Create framebuffers
+    gfx::Framebuffer::CreateInfo framebufferInfo{};
+    framebufferInfo.width = _swapChain->getImages()[0]->getWidth();
+    framebufferInfo.height = _swapChain->getImages()[0]->getHeight();
+    for (std::shared_ptr<Image> image : _swapChain->getImages()) {
+        gfx::Framebuffer::Attachment attachment{};
+        attachment.image = std::dynamic_pointer_cast<gfx::Image>(image);
+        framebufferInfo.attachments = {attachment};
+        _framebuffers.push_back(std::make_shared<vk::Framebuffer>(framebufferInfo));
+    }
+    for (std::shared_ptr<vk::Framebuffer> fb : _framebuffers)
+        fb->create(_renderPass);
+}
+
+void VulkanAPI::onWindowResize(evt::Event e) { _windowResized = true; }
 
 } // namespace atta::graphics

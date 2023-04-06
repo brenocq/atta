@@ -30,26 +30,11 @@ Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info) : graphics::Pipel
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-    // Viewport & scissors
-    VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = _renderPass->getFramebuffer()->getWidth();
-    viewport.height = _renderPass->getFramebuffer()->getHeight();
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-
-    VkRect2D scissor{};
-    scissor.offset = {0, 0};
-    scissor.extent = {viewport.width, viewport.height};
-
     // Viewport state
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     viewportState.viewportCount = 1;
-    viewportState.pViewports = &viewport;
     viewportState.scissorCount = 1;
-    viewportState.pScissors = &scissor;
 
     // Rasterizer
     VkPipelineRasterizationStateCreateInfo rasterizer{};
@@ -97,12 +82,12 @@ Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info) : graphics::Pipel
     colorBlending.blendConstants[2] = 0.0f;
     colorBlending.blendConstants[3] = 0.0f;
 
-    // Dynamic state (TODO use when dynamically resizing)
-    // std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
-    // VkPipelineDynamicStateCreateInfo dynamicState{};
-    // dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-    // dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-    // dynamicState.pDynamicStates = dynamicStates.data();
+    // Dynamic state
+    std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkPipelineDynamicStateCreateInfo dynamicState{};
+    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+    dynamicState.pDynamicStates = dynamicStates.data();
 
     // Pipeline layout
     _pipelineLayout = std::make_shared<PipelineLayout>(_device); //, _descriptorSetManager->getDescriptorSetLayout());
@@ -120,7 +105,7 @@ Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info) : graphics::Pipel
     pipelineInfo.pMultisampleState = &multisampling;
     pipelineInfo.pDepthStencilState = nullptr;
     pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.pDynamicState = nullptr;
+    pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = _pipelineLayout->getHandle();
     pipelineInfo.renderPass = std::dynamic_pointer_cast<vk::RenderPass>(_renderPass)->getHandle();
     pipelineInfo.subpass = 0;
@@ -138,23 +123,26 @@ Pipeline::~Pipeline() {
 }
 
 void Pipeline::begin(bool clear) {
+    // Bind
     std::shared_ptr<VulkanAPI> api = std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI());
     VkCommandBuffer commandBuffer = api->getCommandBuffers()->get();
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 
-    // TODO Dynamic
-    // VkViewport viewport{};
-    // viewport.x = 0.0f;
-    // viewport.y = 0.0f;
-    // viewport.width = static_cast<float>(swapChainExtent.width);
-    // viewport.height = static_cast<float>(swapChainExtent.height);
-    // viewport.minDepth = 0.0f;
-    // viewport.maxDepth = 1.0f;
-    // vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-    // VkRect2D scissor{};
-    // scissor.offset = {0, 0};
-    // scissor.extent = swapChainExtent;
-    // vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+    // Viewport
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = _renderPass->getFramebuffer()->getWidth();
+    viewport.height = _renderPass->getFramebuffer()->getHeight();
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+    // Scissor
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = {(uint32_t)viewport.width, (uint32_t)viewport.height};
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 }
 
 void Pipeline::end() {}

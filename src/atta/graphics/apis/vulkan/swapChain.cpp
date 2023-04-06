@@ -79,6 +79,8 @@ SwapChain::SwapChain(std::shared_ptr<Device> device, std::shared_ptr<Surface> su
     vkGetSwapchainImagesKHR(_device->getHandle(), _swapChain, &imageCount, swapChainImages.data());
     for (VkImage img : swapChainImages) {
         gfx::Image::CreateInfo info{};
+        info.width = _extent.width;
+        info.height = _extent.height;
         info.format = vk::Image::convertFormat(_imageFormat);
         _images.push_back(std::make_shared<Image>(info, _device, img));
     }

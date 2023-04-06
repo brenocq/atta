@@ -22,6 +22,7 @@
 #include <atta/graphics/apis/vulkan/surface.h>
 #include <atta/graphics/apis/vulkan/swapChain.h>
 #include <atta/graphics/windows/window.h>
+#include <atta/event/event.h>
 
 namespace atta::graphics {
 
@@ -49,8 +50,12 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::CommandBuffers> getCommandBuffers() const;
 
   private:
+    void recreateSwapChain();
+    void onWindowResize(evt::Event e);
+
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
     uint32_t _currFrame;
+    bool _windowResized;
 
     std::shared_ptr<vk::Instance> _instance;
     std::shared_ptr<vk::DebugMessenger> _debugMessenger;
