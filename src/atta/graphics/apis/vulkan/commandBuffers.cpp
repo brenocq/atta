@@ -9,7 +9,7 @@
 namespace atta::graphics::vk {
 
 CommandBuffers::CommandBuffers(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, uint32_t size)
-    : _device(device), _commandPool(commandPool) {
+    : _device(device), _commandPool(commandPool), _current(-1) {
     _commandBuffers.resize(size);
 
     VkCommandBufferAllocateInfo allocInfo{};
@@ -42,12 +42,21 @@ VkCommandBuffer CommandBuffers::begin(size_t i) {
     if (vkBeginCommandBuffer(_commandBuffers[i], &beginInfo) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::CommandBuffers", "Failed to begin recording command buffer!");
 
+    _current = i;
     return _commandBuffers[i];
+}
+
+VkCommandBuffer CommandBuffers::get() {
+    if (_current >= 0)
+        return _commandBuffers[_current];
+    else
+        return VK_NULL_HANDLE;
 }
 
 void CommandBuffers::end(size_t i) {
     if (vkEndCommandBuffer(_commandBuffers[i]) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::CommandBuffers", "Failed to record command buffer!");
+    _current = -1;
 }
 
 } // namespace atta::graphics::vk

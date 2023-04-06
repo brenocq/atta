@@ -11,7 +11,7 @@
 
 namespace atta::graphics {
 
-VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::VULKAN, window) {
+VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::VULKAN, window), _currFrame(0) {
     _instance = std::make_shared<vk::Instance>();
 #ifdef ATTA_DEBUG_BUILD
     _debugMessenger = std::make_shared<vk::DebugMessenger>(_instance);
@@ -19,8 +19,17 @@ VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
     _physicalDevice = std::make_shared<vk::PhysicalDevice>(_instance);
     _device = std::make_shared<vk::Device>(_physicalDevice);
     _commandPool = std::make_shared<vk::CommandPool>(_device);
-    _commandBuffers = std::make_shared<vk::CommandBuffers>(_device, _commandPool, 1);
+    _commandBuffers = std::make_shared<vk::CommandBuffers>(_device, _commandPool, MAX_FRAMES_IN_FLIGHT);
     _swapChainInitialized = false;
+
+    _imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    _renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    _inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+    for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        _imageAvailableSemaphores[i] = std::make_shared<vk::Semaphore>(_device);
+        _renderFinishedSemaphores[i] = std::make_shared<vk::Semaphore>(_device);
+        _inFlightFences[i] = std::make_shared<vk::Fence>(_device);
+    }
 
     LOG_SUCCESS("gfx::VulkanAPI", "Initialized");
 }
@@ -28,9 +37,9 @@ VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
 VulkanAPI::~VulkanAPI() {
     vkDeviceWaitIdle(_device->getHandle());
 
-    _inFlightFence.reset();
-    _renderFinishedSemaphore.reset();
-    _imageAvailableSemaphore.reset();
+    _inFlightFences.clear();
+    _renderFinishedSemaphores.clear();
+    _imageAvailableSemaphores.clear();
 
     _pipeline.reset();
     _renderPass.reset();
@@ -76,20 +85,16 @@ void VulkanAPI::beginFrame() {
         pipelineInfo.shaderGroup = shaderGroup;
         pipelineInfo.renderPass = _renderPass;
         _pipeline = std::make_shared<vk::Pipeline>(pipelineInfo);
-
-        _imageAvailableSemaphore = std::make_shared<vk::Semaphore>(_device);
-        _renderFinishedSemaphore = std::make_shared<vk::Semaphore>(_device);
-        _inFlightFence = std::make_shared<vk::Fence>(_device);
     }
 
     //---------- CPU-GPU synchronization ----------//
-    _inFlightFence->wait();
-    _inFlightFence->reset();
+    _inFlightFences[_currFrame]->wait();
+    _inFlightFences[_currFrame]->reset();
 
     //---------- Get swap chain image ----------//
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_device->getHandle(), _swapChain->getHandle(), std::numeric_limits<uint64_t>::max(),
-                                            _imageAvailableSemaphore->getHandle(), VK_NULL_HANDLE, &imageIndex);
+                                            _imageAvailableSemaphores[_currFrame]->getHandle(), VK_NULL_HANDLE, &imageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         // Recreate the swapchain (window resized)
         LOG_WARN("gfx::VulkanAPI", "Swap chain out of date! Must reset the swapChain");
@@ -100,19 +105,19 @@ void VulkanAPI::beginFrame() {
     }
 
     //---------- Record to command buffer ----------//
-    VkCommandBuffer cmdBuf = _commandBuffers->begin(0);
+    VkCommandBuffer cmdBuf = _commandBuffers->begin(_currFrame);
     _renderPass->setFramebuffer(_framebuffers[imageIndex]);
     _renderPass->begin();
     _pipeline->begin();
     vkCmdDraw(cmdBuf, 3, 1, 0, 0);
     _pipeline->end();
     _renderPass->end();
-    _commandBuffers->end(0);
+    _commandBuffers->end(_currFrame);
 
     //---------- GPU-GPU synchronization ----------//
-    VkSemaphore waitSemaphores[] = {_imageAvailableSemaphore->getHandle()};
+    VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores[_currFrame]->getHandle()};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-    VkSemaphore signalSemaphores[] = {_renderFinishedSemaphore->getHandle()};
+    VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores[_currFrame]->getHandle()};
 
     //---------- Submit to graphics queue ----------//
     VkSubmitInfo submitInfo{};
@@ -124,7 +129,7 @@ void VulkanAPI::beginFrame() {
     submitInfo.pCommandBuffers = &cmdBuf;
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
-    if (vkQueueSubmit(_device->getGraphicsQueue(), 1, &submitInfo, _inFlightFence->getHandle()) != VK_SUCCESS)
+    if (vkQueueSubmit(_device->getGraphicsQueue(), 1, &submitInfo, _inFlightFences[_currFrame]->getHandle()) != VK_SUCCESS)
         LOG_ERROR("gfx::vulkanAPI", "Failed to submit draw command buffer!");
 
     //---------- Submit do present queue ----------//
@@ -146,7 +151,7 @@ void VulkanAPI::beginFrame() {
     }
 
     //---------- Next frame ----------//
-    // _currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+    _currFrame = (_currFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanAPI::endFrame() {}

@@ -49,6 +49,9 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::CommandBuffers> getCommandBuffers() const;
 
   private:
+    static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+    uint32_t _currFrame;
+
     std::shared_ptr<vk::Instance> _instance;
     std::shared_ptr<vk::DebugMessenger> _debugMessenger;
     std::shared_ptr<vk::PhysicalDevice> _physicalDevice;
@@ -63,9 +66,9 @@ class VulkanAPI final : public GraphicsAPI {
     std::vector<std::shared_ptr<vk::Framebuffer>> _framebuffers;
     std::shared_ptr<vk::RenderPass> _renderPass;
     std::shared_ptr<vk::Pipeline> _pipeline;
-    std::shared_ptr<vk::Semaphore> _imageAvailableSemaphore;
-    std::shared_ptr<vk::Semaphore> _renderFinishedSemaphore;
-    std::shared_ptr<vk::Fence> _inFlightFence;
+    std::vector<std::shared_ptr<vk::Semaphore>> _imageAvailableSemaphores;
+    std::vector<std::shared_ptr<vk::Semaphore>> _renderFinishedSemaphores;
+    std::vector<std::shared_ptr<vk::Fence>> _inFlightFences;
 };
 
 } // namespace atta::graphics

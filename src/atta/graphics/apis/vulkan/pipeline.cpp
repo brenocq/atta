@@ -139,7 +139,7 @@ Pipeline::~Pipeline() {
 
 void Pipeline::begin(bool clear) {
     std::shared_ptr<VulkanAPI> api = std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI());
-    VkCommandBuffer commandBuffer = api->getCommandBuffers()->getHandles()[0];
+    VkCommandBuffer commandBuffer = api->getCommandBuffers()->get();
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 
     // TODO Dynamic
