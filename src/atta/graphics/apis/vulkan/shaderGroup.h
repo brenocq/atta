@@ -15,7 +15,7 @@ namespace atta::graphics::vk {
 
 class ShaderGroup final : public graphics::ShaderGroup {
   public:
-    ShaderGroup(const graphics::ShaderGroup::CreateInfo& info, std::shared_ptr<Device> device);
+    ShaderGroup(const graphics::ShaderGroup::CreateInfo& info);
     ~ShaderGroup();
 
     void recompile() override;

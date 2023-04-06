@@ -18,7 +18,7 @@ namespace atta::graphics::vk {
 class Pipeline;
 class Framebuffer final : public graphics::Framebuffer {
   public:
-    Framebuffer(const graphics::Framebuffer::CreateInfo& info, std::shared_ptr<Device> device);
+    Framebuffer(const graphics::Framebuffer::CreateInfo& info);
     ~Framebuffer();
 
     void bind(bool clear = true) override;
@@ -33,14 +33,12 @@ class Framebuffer final : public graphics::Framebuffer {
     std::shared_ptr<Device> getDevice() const;
     std::shared_ptr<RenderPass> getRenderPass() const;
 
-  private:
     void create(std::shared_ptr<RenderPass> renderPass);
 
+  private:
     VkFramebuffer _framebuffer;
     std::shared_ptr<Device> _device;
     std::shared_ptr<RenderPass> _renderPass;
-
-    friend vk::Pipeline;
 };
 
 } // namespace atta::graphics::vk

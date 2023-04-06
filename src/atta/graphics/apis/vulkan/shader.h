@@ -15,7 +15,7 @@ namespace atta::graphics::vk {
 
 class Shader final : public graphics::Shader {
   public:
-    Shader(const std::string& filepath, std::shared_ptr<Device> device);
+    Shader(const graphics::Shader::CreateInfo& info);
     ~Shader();
 
     void recompile() override;

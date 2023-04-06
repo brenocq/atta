@@ -24,7 +24,7 @@ class SwapChain {
     VkSwapchainKHR getHandle() const;
     VkExtent2D getImageExtent() const;
     VkFormat getImageFormat() const;
-    std::vector<std::shared_ptr<Image>> getImage() const;
+    std::vector<std::shared_ptr<Image>> getImages() const;
 
   private:
     struct SupportDetails {

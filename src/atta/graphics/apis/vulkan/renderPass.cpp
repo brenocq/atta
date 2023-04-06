@@ -13,7 +13,7 @@
 
 namespace atta::graphics::vk {
 
-RenderPass::RenderPass(const graphics::RenderPass::CreateInfo& info, std::shared_ptr<Device> device) : graphics::RenderPass(info), _device(device) {
+RenderPass::RenderPass(const graphics::RenderPass::CreateInfo& info) : graphics::RenderPass(info), _device(common::getDevice()) {
     // Color attachment
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = vk::Image::convertFormat(_framebuffer->getImage(0)->getFormat());
@@ -35,14 +35,25 @@ RenderPass::RenderPass(const graphics::RenderPass::CreateInfo& info, std::shared
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &colorAttachmentRef;
 
+    // Subpass dependency
+    VkSubpassDependency dependency{};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
     // Create render pass
-    std::array<VkAttachmentDescription, 3> attachments = {colorAttachment};
+    std::vector<VkAttachmentDescription> attachments = {colorAttachment};
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
     renderPassInfo.pAttachments = attachments.data();
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
 
     if (vkCreateRenderPass(_device->getHandle(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::RenderPass", "Failed to create render pass!");
@@ -59,7 +70,7 @@ void RenderPass::begin(bool clear) {
     renderPassInfo.renderPass = _renderPass;
     renderPassInfo.framebuffer = std::dynamic_pointer_cast<Framebuffer>(_framebuffer)->getHandle();
     renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = {_framebuffer->getWidth(), _framebuffer->getHeight()};// TODO Maybe need to get as argument
+    renderPassInfo.renderArea.extent = {_framebuffer->getWidth(), _framebuffer->getHeight()};
 
     vec4 color = _framebuffer->getClearColor();
     VkClearValue clearColor = {{color.x, color.y, color.z, color.w}};
@@ -78,5 +89,7 @@ void RenderPass::end() {
 }
 
 VkRenderPass RenderPass::getHandle() const { return _renderPass; }
+
+void RenderPass::setFramebuffer(std::shared_ptr<Framebuffer> framebuffer) { _framebuffer = framebuffer; }
 
 } // namespace atta::graphics::vk

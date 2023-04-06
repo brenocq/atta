@@ -15,8 +15,8 @@ namespace atta::graphics::vk {
 
 class Image final : public graphics::Image {
   public:
-    Image(const Image::CreateInfo& info, std::shared_ptr<Device> device);
-    Image(const Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image);
+    Image(const graphics::Image::CreateInfo& info);
+    Image(const graphics::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image);
     ~Image();
 
     void write(void* data) override;

@@ -31,6 +31,10 @@ void CommandBuffers::setHandles(std::vector<VkCommandBuffer> newCommandBuffers) 
 std::shared_ptr<Device> CommandBuffers::getDevice() const { return _device; }
 
 VkCommandBuffer CommandBuffers::begin(size_t i) {
+    // Make sure it is able to record
+    vkResetCommandBuffer(_commandBuffers[i], 0);
+
+    // Start recording
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;

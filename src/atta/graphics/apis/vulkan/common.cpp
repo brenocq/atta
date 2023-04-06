@@ -6,7 +6,11 @@
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/common.h>
 
-namespace atta::graphics::vk {
+#include <atta/graphics/apis/vulkan/device.h>
+#include <atta/graphics/apis/vulkan/vulkanAPI.h>
+#include <atta/graphics/interface.h>
+
+namespace atta::graphics::vk::common {
 
 std::string toString(VkResult result) {
     switch (result) {
@@ -320,4 +324,6 @@ std::string toString(VkFormat format) {
     }
 }
 
-} // namespace atta::graphics::vk
+std::shared_ptr<vk::Device> getDevice() { return std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI())->getDevice(); }
+
+} // namespace atta::graphics::vk::common

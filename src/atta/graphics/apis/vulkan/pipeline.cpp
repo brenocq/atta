@@ -10,12 +10,11 @@
 
 namespace atta::graphics::vk {
 
-Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info, std::shared_ptr<Device> device) : graphics::Pipeline(info), _device(device) {
+Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info) : graphics::Pipeline(info), _device(common::getDevice()) {
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages = std::dynamic_pointer_cast<vk::ShaderGroup>(_shaderGroup)->getShaderStages();
 
     // Create framebuffer
     _framebuffers.push_back(std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer()));
-    _framebuffers.front()->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
 
     // Vertex input
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
@@ -142,8 +141,6 @@ void Pipeline::begin(bool clear) {
     std::shared_ptr<VulkanAPI> api = std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI());
     VkCommandBuffer commandBuffer = api->getCommandBuffers()->getHandles()[0];
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
-
-    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 
     // TODO Dynamic
     // VkViewport viewport{};

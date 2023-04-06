@@ -10,10 +10,15 @@
 #include "vulkan/vulkan.h"
 
 namespace atta::graphics::vk {
+class Device;
+}
+
+namespace atta::graphics::vk::common {
 
 std::string toString(VkResult result);
 std::string toString(VkFormat format);
+std::shared_ptr<vk::Device> getDevice();
 
-} // namespace atta::graphics::vk
+} // namespace atta::graphics::vk::common
 
 #endif // ATTA_GRAPHICS_APIS_VULKAN_COMMON_H

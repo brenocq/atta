@@ -21,7 +21,7 @@ class Fence {
     std::shared_ptr<Device> getDevice() const;
 
     void reset();
-    void wait(uint64_t timeout) const;
+    void wait(uint64_t timeout = std::numeric_limits<uint64_t>::max()) const;
 
   private:
     VkFence _fence;

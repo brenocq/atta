@@ -12,8 +12,13 @@
 #include <atta/graphics/apis/vulkan/commandPool.h>
 #include <atta/graphics/apis/vulkan/debugMessenger.h>
 #include <atta/graphics/apis/vulkan/device.h>
+#include <atta/graphics/apis/vulkan/fence.h>
+#include <atta/graphics/apis/vulkan/framebuffer.h>
 #include <atta/graphics/apis/vulkan/instance.h>
 #include <atta/graphics/apis/vulkan/physicalDevice.h>
+#include <atta/graphics/apis/vulkan/pipeline.h>
+#include <atta/graphics/apis/vulkan/renderPass.h>
+#include <atta/graphics/apis/vulkan/semaphore.h>
 #include <atta/graphics/apis/vulkan/surface.h>
 #include <atta/graphics/apis/vulkan/swapChain.h>
 #include <atta/graphics/windows/window.h>
@@ -48,10 +53,19 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::DebugMessenger> _debugMessenger;
     std::shared_ptr<vk::PhysicalDevice> _physicalDevice;
     std::shared_ptr<vk::Device> _device;
-    std::shared_ptr<vk::Surface> _surface;
-    std::shared_ptr<vk::SwapChain> _swapChain;
     std::shared_ptr<vk::CommandPool> _commandPool;
     std::shared_ptr<vk::CommandBuffers> _commandBuffers;
+
+    // Swap chain
+    bool _swapChainInitialized;
+    std::shared_ptr<vk::Surface> _surface;
+    std::shared_ptr<vk::SwapChain> _swapChain;
+    std::vector<std::shared_ptr<vk::Framebuffer>> _framebuffers;
+    std::shared_ptr<vk::RenderPass> _renderPass;
+    std::shared_ptr<vk::Pipeline> _pipeline;
+    std::shared_ptr<vk::Semaphore> _imageAvailableSemaphore;
+    std::shared_ptr<vk::Semaphore> _renderFinishedSemaphore;
+    std::shared_ptr<vk::Fence> _inFlightFence;
 };
 
 } // namespace atta::graphics

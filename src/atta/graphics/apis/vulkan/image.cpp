@@ -8,11 +8,11 @@
 
 namespace atta::graphics::vk {
 
-Image::Image(const Image::CreateInfo& info, std::shared_ptr<Device> device) : graphics::Image(info), _device(device), _destroyImage(true) {
+Image::Image(const graphics::Image::CreateInfo& info) : graphics::Image(info), _device(common::getDevice()), _destroyImage(true) {
     resize(_width, _height, true);
 }
 
-Image::Image(const Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image)
+Image::Image(const graphics::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image)
     : graphics::Image(info), _device(device), _destroyImage(false) {
 
     VkImageViewCreateInfo createInfo = {};
@@ -106,7 +106,7 @@ Image::Format Image::convertFormat(VkFormat format) {
         case VK_FORMAT_D24_UNORM_S8_UINT:
             return Format::DEPTH24_STENCIL8;
     }
-    ASSERT(false, "Could not convert vulkan format [w]$0[] to atta format. Unknown image format", toString(format));
+    ASSERT(false, "Could not convert vulkan format [w]$0[] to atta format. Unknown image format", common::toString(format));
 }
 
 VkImageAspectFlags Image::convertAspectFlags(Image::Format format) {

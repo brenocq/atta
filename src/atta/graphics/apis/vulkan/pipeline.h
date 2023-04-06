@@ -18,9 +18,9 @@
 
 namespace atta::graphics::vk {
 
-class Pipeline final : graphics::Pipeline {
+class Pipeline final : public graphics::Pipeline {
   public:
-    Pipeline(const graphics::Pipeline::CreateInfo& info, std::shared_ptr<Device> device);
+    Pipeline(const graphics::Pipeline::CreateInfo& info);
     ~Pipeline();
 
     void begin(bool clear = true) override;

@@ -8,9 +8,25 @@
 
 namespace atta::graphics::vk {
 
-Framebuffer::Framebuffer(const graphics::Framebuffer::CreateInfo& info, std::shared_ptr<Device> device)
-    : graphics::Framebuffer(info), _framebuffer(VK_NULL_HANDLE), _device(device) {
-    // The framebuffer vulkan object will be created when the pipeline is created
+Framebuffer::Framebuffer(const graphics::Framebuffer::CreateInfo& info)
+    : graphics::Framebuffer(info), _framebuffer(VK_NULL_HANDLE), _device(common::getDevice()) {
+    // Create attachment images
+    _images.clear();
+    for (unsigned i = 0; i < _attachments.size(); i++) {
+        std::shared_ptr<vk::Image> image;
+        if (_attachments[i].image) {
+            // If already created
+            image = std::dynamic_pointer_cast<vk::Image>(_attachments[i].image);
+        } else {
+            // If create from format
+            graphics::Image::CreateInfo info;
+            info.format = _attachments[i].format;
+            info.width = _width;
+            info.height = _height;
+            image = std::make_shared<vk::Image>(info);
+        }
+        _images[i] = std::dynamic_pointer_cast<gfx::Image>(image);
+    }
 }
 
 Framebuffer::~Framebuffer() {
@@ -32,24 +48,6 @@ std::shared_ptr<RenderPass> Framebuffer::getRenderPass() const { return _renderP
 
 void Framebuffer::create(std::shared_ptr<RenderPass> renderPass) {
     _renderPass = renderPass;
-
-    // Create attachment images
-    _images.clear();
-    for (unsigned i = 0; i < _attachments.size(); i++) {
-        std::shared_ptr<vk::Image> image;
-        if (_attachments[i].image) {
-            // If already created
-            image = std::dynamic_pointer_cast<vk::Image>(_attachments[i].image);
-        } else {
-            // If create from format
-            graphics::Image::CreateInfo info;
-            info.format = _attachments[i].format;
-            info.width = _width;
-            info.height = _height;
-            image = std::make_shared<vk::Image>(info, _device);
-        }
-        _images[i] = std::dynamic_pointer_cast<gfx::Image>(image);
-    }
 
     // Get image views
     std::vector<VkImageView> attachments;

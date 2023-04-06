@@ -128,7 +128,7 @@ VkExtent2D SwapChain::getImageExtent() const { return _extent; }
 
 VkFormat SwapChain::getImageFormat() const { return _imageFormat; }
 
-std::vector<std::shared_ptr<Image>> SwapChain::getImage() const { return _images; }
+std::vector<std::shared_ptr<Image>> SwapChain::getImages() const { return _images; }
 
 SwapChain::SupportDetails SwapChain::querySwapChainSupport() {
     SupportDetails details;

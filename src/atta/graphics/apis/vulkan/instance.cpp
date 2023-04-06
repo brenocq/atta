@@ -47,7 +47,7 @@ Instance::Instance() {
     // Create instance
     VkResult result = vkCreateInstance(&createInfo, nullptr, &_instance);
     if (result != VK_SUCCESS)
-        LOG_ERROR("gfx::vk::Instance", "Failed to create vulkan instance! Code:$0", toString(result));
+        LOG_ERROR("gfx::vk::Instance", "Failed to create vulkan instance! Code:$0", common::toString(result));
 }
 
 Instance::~Instance() {

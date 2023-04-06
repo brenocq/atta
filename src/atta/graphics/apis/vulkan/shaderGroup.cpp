@@ -10,12 +10,13 @@
 
 namespace atta::graphics::vk {
 
-ShaderGroup::ShaderGroup(const graphics::ShaderGroup::CreateInfo& info, std::shared_ptr<Device> device)
-    : graphics::ShaderGroup(info), _device(device) {
+ShaderGroup::ShaderGroup(const graphics::ShaderGroup::CreateInfo& info) : graphics::ShaderGroup(info), _device(common::getDevice()) {
     // Create shaders (they are compiled at creation)
     for (fs::path shaderPath : info.shaderPaths) {
         // Create shader
-        std::shared_ptr<vk::Shader> shader = std::make_shared<vk::Shader>(shaderPath, device);
+        gfx::Shader::CreateInfo info{};
+        info.filepath = shaderPath;
+        std::shared_ptr<vk::Shader> shader = std::make_shared<vk::Shader>(info);
         // Save shader
         _shaders.push_back(std::static_pointer_cast<graphics::Shader>(shader));
     }

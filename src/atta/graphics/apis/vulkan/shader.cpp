@@ -10,7 +10,7 @@
 
 namespace atta::graphics::vk {
 
-Shader::Shader(const std::string& filepath, std::shared_ptr<Device> device) : graphics::Shader({filepath}), _device(device) {}
+Shader::Shader(const graphics::Shader::CreateInfo& info) : graphics::Shader(info), _device(common::getDevice()) { recompile(); }
 
 Shader::~Shader() {
     if (_shader != VK_NULL_HANDLE)
