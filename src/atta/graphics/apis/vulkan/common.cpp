@@ -6,8 +6,9 @@
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/common.h>
 
-#include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/commandBuffers.h>
+#include <atta/graphics/apis/vulkan/commandPool.h>
+#include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 #include <atta/graphics/interface.h>
 
@@ -330,5 +331,7 @@ std::string toString(VkFormat format) {
 std::shared_ptr<vk::Device> getDevice() { return std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI())->getDevice(); }
 
 std::shared_ptr<vk::CommandBuffers> getCommandBuffers() { return std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI())->getCommandBuffers(); }
+
+std::shared_ptr<vk::CommandPool> getCommandPool() { return std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI())->getCommandPool(); }
 
 } // namespace atta::graphics::vk::common

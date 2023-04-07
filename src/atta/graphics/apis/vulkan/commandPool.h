@@ -25,6 +25,9 @@ class CommandPool {
     VkCommandPool getHandle() const;
     std::shared_ptr<Device> getDevice() const;
 
+    VkCommandBuffer beginSingleTimeCommands();
+    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+
   private:
     VkCommandPool _commandPool;
     std::shared_ptr<Device> _device;

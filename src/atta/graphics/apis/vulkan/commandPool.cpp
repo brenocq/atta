@@ -22,9 +22,11 @@ CommandPool::CommandPool(std::shared_ptr<Device> device, DeviceQueueFamily devic
     switch (_deviceQueueFamily) {
         case DEVICE_QUEUE_FAMILY_GRAPHICS:
             poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+            _submitQueue = _device->getGraphicsQueue();
             break;
         case DEVICE_QUEUE_FAMILY_TRANSFER:
             poolInfo.queueFamilyIndex = queueFamilyIndices.transferFamily.value();
+            _submitQueue = _device->getTransferQueue();
             break;
         default:
             break;
@@ -42,5 +44,39 @@ CommandPool::~CommandPool() {
 
 VkCommandPool CommandPool::getHandle() const { return _commandPool; }
 std::shared_ptr<Device> CommandPool::getDevice() const { return _device; }
+
+VkCommandBuffer CommandPool::beginSingleTimeCommands() {
+    // Allocation is slow... maybe use some command buffer already in the command pool
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = _commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(_device->getHandle(), &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    return commandBuffer;
+}
+
+void CommandPool::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(_submitQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(_submitQueue);
+
+    vkFreeCommandBuffers(_device->getHandle(), _commandPool, 1, &commandBuffer);
+}
 
 } // namespace atta::graphics::vk

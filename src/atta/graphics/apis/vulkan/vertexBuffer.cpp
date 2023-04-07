@@ -10,59 +10,20 @@
 
 namespace atta::graphics::vk {
 
-VertexBuffer::VertexBuffer(const graphics::VertexBuffer::CreateInfo& info) : graphics::VertexBuffer(info), _device(common::getDevice()) {
-    // Create vertex buffer
-    VkBufferCreateInfo bufferInfo{};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = _size;
-    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+VertexBuffer::VertexBuffer(const graphics::VertexBuffer::CreateInfo& info)
+    : Buffer({
+          info.size,
+          VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+      }),
+      graphics::VertexBuffer(info) {}
 
-    if (vkCreateBuffer(_device->getHandle(), &bufferInfo, nullptr, &_vertexBuffer) != VK_SUCCESS)
-        LOG_ERROR("gfx::vk::VertexBuffer", "Failed to create vertex buffer");
-
-    // Get memory requirements
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(_device->getHandle(), _vertexBuffer, &memRequirements);
-
-    // Find memory
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex =
-        findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-    // Allocate memory
-    if (vkAllocateMemory(_device->getHandle(), &allocInfo, nullptr, &_memory) != VK_SUCCESS)
-        LOG_ERROR("gfx::vk::VertexBuffer", "Failed to allocate vertex buffer memory");
-
-    // Bind memory to vertex buffer
-    vkBindBufferMemory(_device->getHandle(), _vertexBuffer, _memory, 0);
-
-    // Copy data from CPU to GPU
-    if (_data) {
-        void* gpuData;
-        vkMapMemory(_device->getHandle(), _memory, 0, _size, 0, &gpuData);
-        memcpy(gpuData, _data, (size_t)_size);
-        vkUnmapMemory(_device->getHandle(), _memory);
-    }
-}
-
-VertexBuffer::~VertexBuffer() {
-    if (_vertexBuffer != VK_NULL_HANDLE)
-        vkDestroyBuffer(_device->getHandle(), _vertexBuffer, nullptr);
-    if (_memory != VK_NULL_HANDLE)
-        vkFreeMemory(_device->getHandle(), _memory, nullptr);
-}
+VertexBuffer::~VertexBuffer() {}
 
 void VertexBuffer::bind() const {
     VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(common::getCommandBuffers()->getCurrent(), 0, 1, &_vertexBuffer, offsets);
+    vkCmdBindVertexBuffers(common::getCommandBuffers()->getCurrent(), 0, 1, &_buffer, offsets);
 }
-
-VkBuffer VertexBuffer::getHandle() const { return _vertexBuffer; }
-
-VkDeviceMemory VertexBuffer::getMemoryHandle() const { return _memory; }
 
 VkVertexInputBindingDescription VertexBuffer::getBindingDescription(const VertexBufferLayout& layout) {
     VkVertexInputBindingDescription bindingDescription{};
@@ -114,18 +75,6 @@ VkFormat VertexBuffer::convertType(VertexBufferElement::Type type) {
             LOG_ERROR("gfx::vk::VertexBuffer", "Unknown vertex buffer element type");
             return VK_FORMAT_UNDEFINED;
     }
-}
-
-uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(_device->getPhysicalDevice()->getHandle(), &memProperties);
-
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-            return i;
-
-    LOG_ERROR("gfx::vk::VertexBuffer", "Failed to find suitable memory type");
-    return 0;
 }
 
 } // namespace atta::graphics::vk

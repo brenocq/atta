@@ -105,8 +105,10 @@ Image::Format Image::convertFormat(VkFormat format) {
             return Format::DEPTH32F;
         case VK_FORMAT_D24_UNORM_S8_UINT:
             return Format::DEPTH24_STENCIL8;
+        default:
+            ASSERT(false, "Could not convert vulkan format [w]$0[] to atta format. Unknown image format", common::toString(format));
+            return Format::NONE;
     }
-    ASSERT(false, "Could not convert vulkan format [w]$0[] to atta format. Unknown image format", common::toString(format));
 }
 
 VkImageAspectFlags Image::convertAspectFlags(Image::Format format) {

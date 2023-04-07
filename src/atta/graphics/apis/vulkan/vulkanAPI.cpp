@@ -50,6 +50,7 @@ VulkanAPI::~VulkanAPI() {
 
     _pipeline.reset();
     _renderPass.reset();
+    _vertexBuffer.reset();
 
     _inFlightFences.clear();
     _renderFinishedSemaphores.clear();
@@ -68,14 +69,15 @@ VulkanAPI::~VulkanAPI() {
 void VulkanAPI::beginFrame() {
     // clang-format off
     static std::vector<float> vertices = {
-        0.0f, -0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+        0.0f, -0.5f, 1.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+        -0.5f, 0.5f, 1.0f, 0.0f, 1.0f,
     };
     // clang-format on
     if (!_swapChainInitialized) {
         _swapChainInitialized = true;
 
+        //----- Framebuffer -----//
         gfx::Framebuffer::CreateInfo framebufferInfo{};
         framebufferInfo.width = _swapChain->getImages()[0]->getWidth();
         framebufferInfo.height = _swapChain->getImages()[0]->getHeight();
@@ -85,24 +87,35 @@ void VulkanAPI::beginFrame() {
             framebufferInfo.attachments = {attachment};
             _framebuffers.push_back(std::make_shared<vk::Framebuffer>(framebufferInfo));
         }
+
+        //----- Render pass -----//
         gfx::RenderPass::CreateInfo renderPassInfo{};
         renderPassInfo.framebuffer = _framebuffers[0];
         _renderPass = std::make_shared<vk::RenderPass>(renderPassInfo);
         for (std::shared_ptr<vk::Framebuffer> fb : _framebuffers)
             fb->create(_renderPass);
 
-        gfx::ShaderGroup::CreateInfo shaderGroupInfo;
-        shaderGroupInfo.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
-        std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(shaderGroupInfo);
-
+        //----- Send vertices to GPU -----//
+        // Create staging buffer
+        size_t verticesSize = vertices.size() * sizeof(float);
+        uint8_t* verticesData = (uint8_t*)vertices.data();
+        _stagingBuffer = std::make_shared<vk::StagingBuffer>(verticesData, verticesSize);
+        // Create vertex buffer
         gfx::VertexBuffer::CreateInfo vertexBufferInfo{};
         vertexBufferInfo.layout = {
             {"inPosition", VertexBufferElement::Type::VEC2},
             {"inColor", VertexBufferElement::Type::VEC3},
         };
-        vertexBufferInfo.size = vertices.size() * sizeof(float);
-        vertexBufferInfo.data = (uint8_t*)vertices.data();
+        vertexBufferInfo.size = verticesSize;
+        vertexBufferInfo.data = verticesData;
         _vertexBuffer = std::make_shared<vk::VertexBuffer>(vertexBufferInfo);
+        // Copy from staging to vertex
+        vk::Buffer::copy(_stagingBuffer, _vertexBuffer);
+
+        //----- Pipeline -----//
+        gfx::ShaderGroup::CreateInfo shaderGroupInfo;
+        shaderGroupInfo.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
+        std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(shaderGroupInfo);
 
         gfx::Pipeline::CreateInfo pipelineInfo{};
         pipelineInfo.shaderGroup = shaderGroup;
@@ -203,6 +216,7 @@ void* VulkanAPI::getImGuiImage(StringId sid) const { return nullptr; }
 
 std::shared_ptr<vk::Device> VulkanAPI::getDevice() const { return _device; }
 std::shared_ptr<vk::CommandBuffers> VulkanAPI::getCommandBuffers() const { return _commandBuffers; }
+std::shared_ptr<vk::CommandPool> VulkanAPI::getCommandPool() const { return _commandPool; }
 
 void VulkanAPI::recreateSwapChain() {
     while (_window->getWidth() == 0 && _window->getHeight() == 0) {

@@ -7,6 +7,7 @@
 #ifndef ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H
 #define ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H
 
+#include <atta/event/event.h>
 #include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/apis/vulkan/commandBuffers.h>
 #include <atta/graphics/apis/vulkan/commandPool.h>
@@ -19,11 +20,11 @@
 #include <atta/graphics/apis/vulkan/pipeline.h>
 #include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/apis/vulkan/semaphore.h>
+#include <atta/graphics/apis/vulkan/stagingBuffer.h>
 #include <atta/graphics/apis/vulkan/surface.h>
 #include <atta/graphics/apis/vulkan/swapChain.h>
 #include <atta/graphics/apis/vulkan/vertexBuffer.h>
 #include <atta/graphics/windows/window.h>
-#include <atta/event/event.h>
 
 namespace atta::graphics {
 
@@ -49,6 +50,7 @@ class VulkanAPI final : public GraphicsAPI {
 
     std::shared_ptr<vk::Device> getDevice() const;
     std::shared_ptr<vk::CommandBuffers> getCommandBuffers() const;
+    std::shared_ptr<vk::CommandPool> getCommandPool() const;
 
   private:
     void recreateSwapChain();
@@ -73,6 +75,7 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::RenderPass> _renderPass;
     std::shared_ptr<vk::Pipeline> _pipeline;
     std::shared_ptr<vk::VertexBuffer> _vertexBuffer;
+    std::shared_ptr<vk::StagingBuffer> _stagingBuffer;
     std::vector<std::shared_ptr<vk::Semaphore>> _imageAvailableSemaphores;
     std::vector<std::shared_ptr<vk::Semaphore>> _renderFinishedSemaphores;
     std::vector<std::shared_ptr<vk::Fence>> _inFlightFences;

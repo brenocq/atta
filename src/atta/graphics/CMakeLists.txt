@@ -12,6 +12,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/openGL/openGLIndexBuffer.cpp
     apis/openGL/openGLPipeline.cpp
     apis/openGL/openGLMesh.cpp
+    apis/vulkan/buffer.cpp
     apis/vulkan/commandBuffers.cpp
     apis/vulkan/commandPool.cpp
     apis/vulkan/common.cpp
@@ -28,6 +29,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/vulkan/pipeline.cpp
     apis/vulkan/shader.cpp
     apis/vulkan/shaderGroup.cpp
+    apis/vulkan/stagingBuffer.cpp
     apis/vulkan/surface.cpp
     apis/vulkan/swapChain.cpp
     apis/vulkan/vertexBuffer.cpp
