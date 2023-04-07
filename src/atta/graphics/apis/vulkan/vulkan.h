@@ -14,6 +14,7 @@
 #include <atta/graphics/apis/vulkan/shader.h>
 #include <atta/graphics/apis/vulkan/shaderGroup.h>
 #include <atta/graphics/apis/vulkan/vertexBuffer.h>
+#include <atta/graphics/apis/vulkan/indexBuffer.h>
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 
 #endif // ATTA_GRAPHICS_APIS_VULKAN_VULKAN_H

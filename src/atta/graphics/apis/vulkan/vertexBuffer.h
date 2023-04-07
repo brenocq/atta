@@ -12,7 +12,7 @@
 
 namespace atta::graphics::vk {
 
-class VertexBuffer final : public Buffer, graphics::VertexBuffer {
+class VertexBuffer final : public Buffer, public graphics::VertexBuffer {
   public:
     VertexBuffer(const graphics::VertexBuffer::CreateInfo& info);
     ~VertexBuffer();

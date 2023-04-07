@@ -21,6 +21,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/vulkan/fence.cpp
     apis/vulkan/framebuffer.cpp
     apis/vulkan/image.cpp
+    apis/vulkan/indexBuffer.cpp
     apis/vulkan/instance.cpp
     apis/vulkan/physicalDevice.cpp
     apis/vulkan/pipelineLayout.cpp

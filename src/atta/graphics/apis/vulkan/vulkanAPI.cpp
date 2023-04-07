@@ -69,9 +69,13 @@ VulkanAPI::~VulkanAPI() {
 void VulkanAPI::beginFrame() {
     // clang-format off
     static std::vector<float> vertices = {
-        0.0f, -0.5f, 1.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-        -0.5f, 0.5f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+        -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+    };
+    static std::vector<uint32_t> indices = {
+        0, 1, 2, 2, 3, 0
     };
     // clang-format on
     if (!_swapChainInitialized) {
@@ -112,6 +116,20 @@ void VulkanAPI::beginFrame() {
         // Copy from staging to vertex
         vk::Buffer::copy(_stagingBuffer, _vertexBuffer);
 
+        //----- Send indices to GPU -----//
+        // Create new staging buffer
+        _stagingBuffer.reset();
+        size_t indicesSize = indices.size() * sizeof(uint32_t);
+        uint8_t* indicesData = (uint8_t*)indices.data();
+        _stagingBuffer = std::make_shared<vk::StagingBuffer>(indicesData, indicesSize);
+        // Create index buffer
+        gfx::IndexBuffer::CreateInfo indexBufferInfo{};
+        indexBufferInfo.size = indicesSize;
+        indexBufferInfo.data = indicesData;
+        _indexBuffer = std::make_shared<vk::IndexBuffer>(indexBufferInfo);
+        // Copy from staging to index
+        vk::Buffer::copy(_stagingBuffer, _indexBuffer);
+
         //----- Pipeline -----//
         gfx::ShaderGroup::CreateInfo shaderGroupInfo;
         shaderGroupInfo.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
@@ -148,7 +166,8 @@ void VulkanAPI::beginFrame() {
     _renderPass->begin();
     _pipeline->begin();
     _vertexBuffer->bind();
-    vkCmdDraw(cmdBuf, 3, 1, 0, 0);
+    _indexBuffer->bind();
+    vkCmdDrawIndexed(cmdBuf, _indexBuffer->getCount(), 1, 0, 0, 0);
     _pipeline->end();
     _renderPass->end();
     _commandBuffers->end(_currFrame);

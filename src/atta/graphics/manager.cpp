@@ -160,12 +160,12 @@ std::shared_ptr<Framebuffer> Manager::createImpl<Framebuffer>(Framebuffer::Creat
 
 template <>
 std::shared_ptr<VertexBuffer> Manager::createImpl<VertexBuffer>(VertexBuffer::CreateInfo info) {
-    return createSpecific<VertexBuffer, OpenGLVertexBuffer, VertexBuffer>(info);
+    return createSpecific<VertexBuffer, OpenGLVertexBuffer, vk::VertexBuffer>(info);
 }
 
 template <>
 std::shared_ptr<IndexBuffer> Manager::createImpl<IndexBuffer>(IndexBuffer::CreateInfo info) {
-    return createSpecific<IndexBuffer, OpenGLIndexBuffer, IndexBuffer>(info);
+    return createSpecific<IndexBuffer, OpenGLIndexBuffer, vk::IndexBuffer>(info);
 }
 
 template <>
