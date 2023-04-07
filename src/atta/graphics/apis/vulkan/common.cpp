@@ -7,6 +7,7 @@
 #include <atta/graphics/apis/vulkan/common.h>
 
 #include <atta/graphics/apis/vulkan/device.h>
+#include <atta/graphics/apis/vulkan/commandBuffers.h>
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 #include <atta/graphics/interface.h>
 
@@ -321,9 +322,13 @@ std::string toString(VkFormat format) {
             return "VK_FORMAT_D24_UNORM_S8_UINT";
         case VK_FORMAT_D32_SFLOAT_S8_UINT:
             return "VK_FORMAT_D32_SFLOAT_S8_UINT";
+        default:
+            return "Unknown";
     }
 }
 
 std::shared_ptr<vk::Device> getDevice() { return std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI())->getDevice(); }
+
+std::shared_ptr<vk::CommandBuffers> getCommandBuffers() { return std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI())->getCommandBuffers(); }
 
 } // namespace atta::graphics::vk::common

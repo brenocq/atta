@@ -14,6 +14,7 @@
 #include <atta/graphics/apis/vulkan/pipelineLayout.h>
 #include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/apis/vulkan/shaderGroup.h>
+#include <atta/graphics/apis/vulkan/vertexBuffer.h>
 #include <atta/graphics/pipeline.h>
 
 namespace atta::graphics::vk {

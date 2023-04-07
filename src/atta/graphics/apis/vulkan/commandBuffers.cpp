@@ -46,7 +46,7 @@ VkCommandBuffer CommandBuffers::begin(size_t i) {
     return _commandBuffers[i];
 }
 
-VkCommandBuffer CommandBuffers::get() {
+VkCommandBuffer CommandBuffers::getCurrent() {
     if (_current >= 0)
         return _commandBuffers[_current];
     else

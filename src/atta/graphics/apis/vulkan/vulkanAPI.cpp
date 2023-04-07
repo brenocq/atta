@@ -66,6 +66,13 @@ VulkanAPI::~VulkanAPI() {
 }
 
 void VulkanAPI::beginFrame() {
+    // clang-format off
+    static std::vector<float> vertices = {
+        0.0f, -0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    };
+    // clang-format on
     if (!_swapChainInitialized) {
         _swapChainInitialized = true;
 
@@ -84,13 +91,23 @@ void VulkanAPI::beginFrame() {
         for (std::shared_ptr<vk::Framebuffer> fb : _framebuffers)
             fb->create(_renderPass);
 
-        gfx::ShaderGroup::CreateInfo info;
-        info.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
-        std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(info);
+        gfx::ShaderGroup::CreateInfo shaderGroupInfo;
+        shaderGroupInfo.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
+        std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(shaderGroupInfo);
+
+        gfx::VertexBuffer::CreateInfo vertexBufferInfo{};
+        vertexBufferInfo.layout = {
+            {"inPosition", VertexBufferElement::Type::VEC2},
+            {"inColor", VertexBufferElement::Type::VEC3},
+        };
+        vertexBufferInfo.size = vertices.size() * sizeof(float);
+        vertexBufferInfo.data = (uint8_t*)vertices.data();
+        _vertexBuffer = std::make_shared<vk::VertexBuffer>(vertexBufferInfo);
 
         gfx::Pipeline::CreateInfo pipelineInfo{};
         pipelineInfo.shaderGroup = shaderGroup;
         pipelineInfo.renderPass = _renderPass;
+        pipelineInfo.layout = vertexBufferInfo.layout;
         _pipeline = std::make_shared<vk::Pipeline>(pipelineInfo);
     }
 
@@ -117,6 +134,7 @@ void VulkanAPI::beginFrame() {
     _renderPass->setFramebuffer(_framebuffers[imageIndex]);
     _renderPass->begin();
     _pipeline->begin();
+    _vertexBuffer->bind();
     vkCmdDraw(cmdBuf, 3, 1, 0, 0);
     _pipeline->end();
     _renderPass->end();

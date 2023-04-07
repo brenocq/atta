@@ -11,6 +11,7 @@
 
 namespace atta::graphics::vk {
 class Device;
+class CommandBuffers;
 }
 
 namespace atta::graphics::vk::common {
@@ -18,6 +19,7 @@ namespace atta::graphics::vk::common {
 std::string toString(VkResult result);
 std::string toString(VkFormat format);
 std::shared_ptr<vk::Device> getDevice();
+std::shared_ptr<vk::CommandBuffers> getCommandBuffers();
 
 } // namespace atta::graphics::vk::common
 

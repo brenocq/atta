@@ -30,6 +30,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/vulkan/shaderGroup.cpp
     apis/vulkan/surface.cpp
     apis/vulkan/swapChain.cpp
+    apis/vulkan/vertexBuffer.cpp
     apis/vulkan/vulkanAPI.cpp
 
     cameras/camera.cpp

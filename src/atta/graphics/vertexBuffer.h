@@ -57,10 +57,10 @@ class VertexBuffer {
     };
 
     struct CreateInfo {
-        VertexBufferLayout layout;
-        Usage usage = Usage::STATIC;
-        uint32_t size = 0;
-        const uint8_t* data = nullptr;
+        VertexBufferLayout layout;     ///< Vertex buffer layout
+        Usage usage = Usage::STATIC;   ///< Vertex buffer usage
+        uint32_t size = 0;             ///< Size in bytes
+        const uint8_t* data = nullptr; ///< Vertex buffer data
     };
 
     VertexBuffer(const CreateInfo& info);

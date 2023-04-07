@@ -21,6 +21,7 @@
 #include <atta/graphics/apis/vulkan/semaphore.h>
 #include <atta/graphics/apis/vulkan/surface.h>
 #include <atta/graphics/apis/vulkan/swapChain.h>
+#include <atta/graphics/apis/vulkan/vertexBuffer.h>
 #include <atta/graphics/windows/window.h>
 #include <atta/event/event.h>
 
@@ -71,6 +72,7 @@ class VulkanAPI final : public GraphicsAPI {
     std::vector<std::shared_ptr<vk::Framebuffer>> _framebuffers;
     std::shared_ptr<vk::RenderPass> _renderPass;
     std::shared_ptr<vk::Pipeline> _pipeline;
+    std::shared_ptr<vk::VertexBuffer> _vertexBuffer;
     std::vector<std::shared_ptr<vk::Semaphore>> _imageAvailableSemaphores;
     std::vector<std::shared_ptr<vk::Semaphore>> _renderFinishedSemaphores;
     std::vector<std::shared_ptr<vk::Fence>> _inFlightFences;

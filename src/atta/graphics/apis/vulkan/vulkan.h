@@ -8,10 +8,12 @@
 #define ATTA_GRAPHICS_APIS_VULKAN_VULKAN_H
 
 #include <atta/graphics/apis/vulkan/framebuffer.h>
+#include <atta/graphics/apis/vulkan/image.h>
 #include <atta/graphics/apis/vulkan/pipeline.h>
 #include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/apis/vulkan/shader.h>
 #include <atta/graphics/apis/vulkan/shaderGroup.h>
+#include <atta/graphics/apis/vulkan/vertexBuffer.h>
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 
 #endif // ATTA_GRAPHICS_APIS_VULKAN_VULKAN_H

@@ -36,7 +36,7 @@ class CommandBuffers {
      *
      * @return Current command buffer being recorded
      */
-    VkCommandBuffer get();
+    VkCommandBuffer getCurrent();
 
     /**
      * @brief End command buffer recording

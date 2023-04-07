@@ -42,35 +42,35 @@ void OpenGLVertexBuffer::bind() const { glBindBuffer(GL_ARRAY_BUFFER, _id); }
 
 GLenum OpenGLVertexBuffer::convertUsage(Usage usage) {
     switch (usage) {
-    case Usage::STATIC:
-        return GL_STATIC_DRAW;
-    case Usage::DYNAMIC:
-        return GL_DYNAMIC_DRAW;
-    default:
-        break;
+        case Usage::STATIC:
+            return GL_STATIC_DRAW;
+        case Usage::DYNAMIC:
+            return GL_DYNAMIC_DRAW;
+        default:
+            break;
     }
     ASSERT(false, "Unknown vertex buffer usage");
 }
 
 GLenum OpenGLVertexBuffer::convertBaseType(VertexBufferElement::Type type) {
     switch (type) {
-    case VertexBufferElement::Type::BOOL:
-        return GL_BOOL;
-    case VertexBufferElement::Type::INT:
-    case VertexBufferElement::Type::UINT:
-    case VertexBufferElement::Type::IVEC2:
-    case VertexBufferElement::Type::IVEC3:
-    case VertexBufferElement::Type::IVEC4:
-        return GL_INT;
-    case VertexBufferElement::Type::FLOAT:
-    case VertexBufferElement::Type::VEC2:
-    case VertexBufferElement::Type::VEC3:
-    case VertexBufferElement::Type::VEC4:
-    case VertexBufferElement::Type::MAT3:
-    case VertexBufferElement::Type::MAT4:
-        return GL_FLOAT;
-    default:
-        break;
+        case VertexBufferElement::Type::BOOL:
+            return GL_BOOL;
+        case VertexBufferElement::Type::INT:
+        case VertexBufferElement::Type::UINT:
+        case VertexBufferElement::Type::IVEC2:
+        case VertexBufferElement::Type::IVEC3:
+        case VertexBufferElement::Type::IVEC4:
+            return GL_INT;
+        case VertexBufferElement::Type::FLOAT:
+        case VertexBufferElement::Type::VEC2:
+        case VertexBufferElement::Type::VEC3:
+        case VertexBufferElement::Type::VEC4:
+        case VertexBufferElement::Type::MAT3:
+        case VertexBufferElement::Type::MAT4:
+            return GL_FLOAT;
+        default:
+            break;
     }
     ASSERT(false, "Unknown vertex buffer element type");
 }

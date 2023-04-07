@@ -77,14 +77,12 @@ void RenderPass::begin(bool clear) {
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearColor;
 
-    std::shared_ptr<VulkanAPI> api = std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI());
-    VkCommandBuffer commandBuffer = api->getCommandBuffers()->get();
+    VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 void RenderPass::end() {
-    std::shared_ptr<VulkanAPI> api = std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI());
-    VkCommandBuffer commandBuffer = api->getCommandBuffers()->get();
+    VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
     vkCmdEndRenderPass(commandBuffer);
 }
 

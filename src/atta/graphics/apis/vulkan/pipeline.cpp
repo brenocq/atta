@@ -17,12 +17,14 @@ Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info) : graphics::Pipel
     _framebuffers.push_back(std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer()));
 
     // Vertex input
+    auto bindingDescription = VertexBuffer::getBindingDescription(_layout);
+    auto attributeDescriptions = VertexBuffer::getAttributeDescriptions(_layout);
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+    vertexInputInfo.vertexBindingDescriptionCount = 1;
+    vertexInputInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
+    vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
     // Input assembly
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
@@ -124,8 +126,7 @@ Pipeline::~Pipeline() {
 
 void Pipeline::begin(bool clear) {
     // Bind
-    std::shared_ptr<VulkanAPI> api = std::dynamic_pointer_cast<VulkanAPI>(gfx::getGraphicsAPI());
-    VkCommandBuffer commandBuffer = api->getCommandBuffers()->get();
+    VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 
     // Viewport
