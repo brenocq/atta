@@ -131,7 +131,7 @@ int OpenGLFramebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned 
 }
 
 std::vector<uint8_t> OpenGLFramebuffer::readImage(unsigned attachmentIndex) {
-    int numChannels = Image::getFormatSize(_attachments[attachmentIndex].format);
+    int numChannels = Image::getNumChannels(_attachments[attachmentIndex].format);
     GLenum formatOpenGL = OpenGLImage::convertFormat(_attachments[attachmentIndex].format);
     GLenum dataTypeOpenGL = OpenGLImage::convertDataType(_attachments[attachmentIndex].format);
 

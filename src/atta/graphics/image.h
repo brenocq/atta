@@ -65,7 +65,8 @@ class Image {
     bool isCubemap() const { return _isCubemap; }
     virtual void* getImGuiImage() = 0;
 
-    static uint32_t getFormatSize(Format format);
+    static uint32_t getNumChannels(Format format);
+    static uint32_t getPixelSize(Format format);
     static bool isDepthFormat(Format format);
     static bool isStencilFormat(Format format);
 

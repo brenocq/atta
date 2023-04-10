@@ -55,7 +55,11 @@ PhysicalDevice::QueueFamilyIndices PhysicalDevice::getQueueFamilyIndices() const
 bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device) {
     QueueFamilyIndices indices = findQueueFamilies(device);
     bool extensionsSupported = checkDeviceExtensionSupport(device);
-    return indices.isComplete() && extensionsSupported;
+
+    VkPhysicalDeviceFeatures supportedFeatures;
+    vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
+    return indices.isComplete() && extensionsSupported && supportedFeatures.samplerAnisotropy;
 }
 
 bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {

@@ -30,6 +30,7 @@ Device::Device(std::shared_ptr<PhysicalDevice> physicalDevice) : _physicalDevice
 
     //----- Get features -----//
     VkPhysicalDeviceFeatures deviceFeatures{};
+    deviceFeatures.samplerAnisotropy = VK_TRUE;
 
     //---------- Create logical device ----------//
     VkDeviceCreateInfo createInfo{};
