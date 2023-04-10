@@ -46,7 +46,8 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     // Create new handles
     createImage();
     createImageView();
-    createSampler();
+    if (isColorFormat(_format))
+        createSampler();
     allocMemory();
 
     // Transfer data if specified
@@ -59,6 +60,8 @@ void* Image::getImGuiImage() { return nullptr; }
 VkImage Image::getImageHandle() const { return _image; }
 
 VkImageView Image::getImageViewHandle() const { return _imageView; }
+
+VkSampler Image::getSamplerHandle() const { return _sampler; }
 
 std::shared_ptr<Device> Image::getDevice() const { return _device; }
 
@@ -160,7 +163,10 @@ void Image::createImage() {
     imageInfo.format = convertFormat(_format);
     imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
     imageInfo.initialLayout = _layout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    if (isColorFormat(_format))
+        imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    else if (isDepthFormat(_format))
+        imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     imageInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
     imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
     imageInfo.flags = 0;

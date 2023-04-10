@@ -14,6 +14,7 @@ Framebuffer::Framebuffer(const CreateInfo& info)
 
     // Check consistency and populate color and depth attachments
     int i = 0;
+    _colorAttachmentIndex = -1;
     _depthAttachmentIndex = -1;
     _stencilAttachmentIndex = -1;
     for (auto attachment : _attachments) {
@@ -21,8 +22,14 @@ Framebuffer::Framebuffer(const CreateInfo& info)
         DASSERT(!(attachment.image != nullptr && attachment.format != Image::Format::NONE),
                 "Should not create an attachment with format and image defined. Plese check the attachments for [w]$0", _debugName);
 
-        // Check only one depth and stencil attachments
+        // Check only one color/depth/stencil attachments
         Image::Format format = attachment.image != nullptr ? attachment.image->getFormat() : attachment.format;
+
+        if (Image::isColorFormat(format)) {
+            DASSERT(_colorAttachmentIndex == -1, "It is not possible to create framebuffer with more than one color attachment");
+            _colorAttachmentIndex = i;
+        }
+
         if (Image::isDepthFormat(format)) {
             DASSERT(_depthAttachmentIndex == -1, "It is not possible to create framebuffer with more than one depth attachment");
             _depthAttachmentIndex = i;
@@ -38,9 +45,18 @@ Framebuffer::Framebuffer(const CreateInfo& info)
 
 Framebuffer::~Framebuffer() { _images.clear(); }
 
+std::vector<std::shared_ptr<Image>> Framebuffer::getImages() const { return _images; }
+
 std::shared_ptr<Image> Framebuffer::getImage(uint32_t attachment) {
-    DASSERT(_images.find(attachment) != _images.end(), "[$0] Trying to access invalid attachment $1", _debugName.getString(), attachment);
+    DASSERT(attachment < _images.size(), "[$0] Trying to access invalid attachment $1", _debugName.getString(), attachment);
     return _images[attachment];
 }
+
+bool Framebuffer::hasColorAttachment() const { return _colorAttachmentIndex >= 0; }
+bool Framebuffer::hasDepthAttachment() const { return _depthAttachmentIndex >= 0; }
+bool Framebuffer::hasStencilAttachment() const { return _stencilAttachmentIndex >= 0; }
+int Framebuffer::getColorAttachmentIndex() const { return _colorAttachmentIndex; }
+int Framebuffer::getDepthAttachmentIndex() const { return _depthAttachmentIndex; }
+int Framebuffer::getStencilAttachmentIndex() const { return _stencilAttachmentIndex; }
 
 } // namespace atta::graphics

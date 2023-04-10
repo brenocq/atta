@@ -13,6 +13,7 @@
 #include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/pipelineLayout.h>
 #include <atta/graphics/apis/vulkan/uniformBuffer.h>
+#include <atta/graphics/apis/vulkan/image.h>
 
 namespace atta::graphics::vk {
 
@@ -26,7 +27,8 @@ class DescriptorSets {
     std::vector<VkDescriptorSet> getHandle() const;
     std::shared_ptr<Device> getDevice() const;
 
-    VkWriteDescriptorSet update(uint32_t index, std::shared_ptr<UniformBuffer> uniformBuffer) const;
+    void update(uint32_t index, std::shared_ptr<UniformBuffer> uniformBuffer) const;
+    void update(uint32_t index, std::shared_ptr<Image> image) const;
     void bind(size_t index);
 
   private:

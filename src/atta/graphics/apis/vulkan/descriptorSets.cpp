@@ -33,7 +33,7 @@ std::vector<VkDescriptorSet> DescriptorSets::getHandle() const { return _descrip
 
 std::shared_ptr<Device> DescriptorSets::getDevice() const { return _device; }
 
-VkWriteDescriptorSet DescriptorSets::update(uint32_t index, std::shared_ptr<UniformBuffer> uniformBuffer) const {
+void DescriptorSets::update(uint32_t index, std::shared_ptr<UniformBuffer> uniformBuffer) const {
     DescriptorSetLayout::Binding binding = _descriptorSetLayout->getBindings()[index];
 
     VkDescriptorBufferInfo bufferInfo{};
@@ -49,6 +49,25 @@ VkWriteDescriptorSet DescriptorSets::update(uint32_t index, std::shared_ptr<Unif
     descriptorWrite.descriptorType = binding.type;
     descriptorWrite.descriptorCount = 1;
     descriptorWrite.pBufferInfo = &bufferInfo;
+    vkUpdateDescriptorSets(_device->getHandle(), 1, &descriptorWrite, 0, nullptr);
+}
+
+void DescriptorSets::update(uint32_t index, std::shared_ptr<Image> image) const {
+    DescriptorSetLayout::Binding binding = _descriptorSetLayout->getBindings()[index];
+
+    VkDescriptorImageInfo imageInfo{};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = image->getImageViewHandle();
+    imageInfo.sampler = image->getSamplerHandle();
+
+    VkWriteDescriptorSet descriptorWrite{};
+    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite.dstSet = _descriptorSets[index];
+    descriptorWrite.dstBinding = binding.binding;
+    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.descriptorType = binding.type;
+    descriptorWrite.descriptorCount = 1;
+    descriptorWrite.pImageInfo = &imageInfo;
     vkUpdateDescriptorSets(_device->getHandle(), 1, &descriptorWrite, 0, nullptr);
 }
 

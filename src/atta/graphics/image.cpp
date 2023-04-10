@@ -56,6 +56,8 @@ uint32_t Image::getPixelSize(Format format) {
     ASSERT(false, "Could not calculate pixel size. Unknown image format");
 }
 
+bool Image::isColorFormat(Format format) { return !isDepthFormat(format) && !isStencilFormat(format); }
+
 bool Image::isDepthFormat(Format format) { return format == Format::DEPTH32F || format == Format::DEPTH24_STENCIL8; }
 
 bool Image::isStencilFormat(Format format) { return format == Format::DEPTH24_STENCIL8; }

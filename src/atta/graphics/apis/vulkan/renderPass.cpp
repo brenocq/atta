@@ -14,26 +14,50 @@
 namespace atta::graphics::vk {
 
 RenderPass::RenderPass(const graphics::RenderPass::CreateInfo& info) : graphics::RenderPass(info), _device(common::getDevice()) {
-    // Color attachment
-    VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = vk::Image::convertFormat(_framebuffer->getImage(0)->getFormat());
-    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT; // TODO _device->getMsaaSamples();
-    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    std::vector<VkAttachmentDescription> attachments;
+    for (std::shared_ptr<gfx::Image> image : _framebuffer->getImages()) {
+        Image::Format format = image->getFormat();
+        if (Image::isColorFormat(format)) {
+            VkAttachmentDescription colorAttachment{};
+            colorAttachment.format = vk::Image::convertFormat(format);
+            colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT; // TODO _device->getMsaaSamples();
+            colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-    VkAttachmentReference colorAttachmentRef{};
-    colorAttachmentRef.attachment = 0;
-    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            attachments.push_back(colorAttachment);
+        } else if (Image::isDepthFormat(format) || Image::isStencilFormat(format)) {
+            VkAttachmentDescription depthAttachment{};
+            depthAttachment.format = vk::Image::convertFormat(format);
+            depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        }
+    }
 
     // Subpass
+    VkAttachmentReference colorAttachmentRef{};
+    VkAttachmentReference depthStencilAttachmentRef{};
     VkSubpassDescription subpass{};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass.colorAttachmentCount = 1;
-    subpass.pColorAttachments = &colorAttachmentRef;
+    if (_framebuffer->hasColorAttachment()) {
+        subpass.colorAttachmentCount = 1;
+        colorAttachmentRef.attachment = _framebuffer->getColorAttachmentIndex();
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        subpass.pColorAttachments = &colorAttachmentRef;
+    }
+    if (_framebuffer->hasDepthAttachment()) {
+        depthStencilAttachmentRef.attachment = _framebuffer->getDepthAttachmentIndex();
+        depthStencilAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        subpass.pDepthStencilAttachment = &depthStencilAttachmentRef;
+    }
 
     // Subpass dependency
     VkSubpassDependency dependency{};
@@ -43,9 +67,13 @@ RenderPass::RenderPass(const graphics::RenderPass::CreateInfo& info) : graphics:
     dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     dependency.srcAccessMask = 0;
     dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    if (_framebuffer->hasDepthAttachment()) {
+        dependency.srcStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        dependency.dstStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    }
 
     // Create render pass
-    std::vector<VkAttachmentDescription> attachments = {colorAttachment};
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -72,10 +100,20 @@ void RenderPass::begin() {
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = {_framebuffer->getWidth(), _framebuffer->getHeight()};
 
-    vec4 color = _framebuffer->getClearColor();
-    VkClearValue clearColor = {{color.x, color.y, color.z, color.w}};
-    renderPassInfo.clearValueCount = 1;
-    renderPassInfo.pClearValues = &clearColor;
+    std::vector<VkClearValue> clearValues{};
+    for (std::shared_ptr<gfx::Image> image : _framebuffer->getImages()) {
+        Image::Format format = image->getFormat();
+        if (Image::isColorFormat(format)) {
+            vec4 color = _framebuffer->getClearColor();
+            VkClearValue clearColor = {{color.x, color.y, color.z, color.w}};
+            clearValues.push_back(clearColor);
+        } else if (Image::isDepthFormat(format)) {
+            VkClearValue clearDepth = {1.0f, 0};
+            clearValues.push_back(clearDepth);
+        }
+    }
+    renderPassInfo.clearValueCount = clearValues.size();
+    renderPassInfo.pClearValues = clearValues.data();
 
     VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);

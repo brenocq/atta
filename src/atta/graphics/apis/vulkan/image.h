@@ -45,6 +45,7 @@ class Image final : public graphics::Image {
     void* getImGuiImage() override;
     VkImage getImageHandle() const;
     VkImageView getImageViewHandle() const;
+    VkSampler getSamplerHandle() const;
     std::shared_ptr<Device> getDevice() const;
 
     void copyFrom(std::shared_ptr<Buffer> buffer);

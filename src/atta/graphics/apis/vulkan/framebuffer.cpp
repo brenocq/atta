@@ -25,7 +25,7 @@ Framebuffer::Framebuffer(const graphics::Framebuffer::CreateInfo& info)
             info.height = _height;
             image = std::make_shared<vk::Image>(info);
         }
-        _images[i] = std::dynamic_pointer_cast<gfx::Image>(image);
+        _images.push_back(std::dynamic_pointer_cast<gfx::Image>(image));
     }
 }
 
@@ -51,7 +51,7 @@ void Framebuffer::create(std::shared_ptr<RenderPass> renderPass) {
 
     // Get image views
     std::vector<VkImageView> attachments;
-    for (auto [index, image] : _images)
+    for (std::shared_ptr<gfx::Image> image : _images)
         attachments.push_back(std::dynamic_pointer_cast<vk::Image>(image)->getImageViewHandle());
 
     // Create framebuffer

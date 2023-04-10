@@ -67,6 +67,7 @@ class Image {
 
     static uint32_t getNumChannels(Format format);
     static uint32_t getPixelSize(Format format);
+    static bool isColorFormat(Format format);
     static bool isDepthFormat(Format format);
     static bool isStencilFormat(Format format);
 

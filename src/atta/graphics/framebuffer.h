@@ -50,10 +50,19 @@ class Framebuffer {
     virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
     virtual int readPixel(unsigned attachmentIndex, unsigned x, unsigned y) = 0;
     virtual std::vector<uint8_t> readImage(unsigned attachmentIndex) = 0;
+
+    std::vector<std::shared_ptr<Image>> getImages() const;
     std::shared_ptr<Image> getImage(uint32_t attachment = 0);
     uint32_t getWidth() const { return _width; }
     uint32_t getHeight() const { return _height; }
     vec4 getClearColor() const { return _clearColor; }
+
+    bool hasColorAttachment() const;
+    bool hasDepthAttachment() const;
+    bool hasStencilAttachment() const;
+    int getColorAttachmentIndex() const;
+    int getDepthAttachmentIndex() const;
+    int getStencilAttachmentIndex() const;
 
   protected:
     uint32_t _width;
@@ -61,9 +70,10 @@ class Framebuffer {
     vec4 _clearColor;
 
     std::vector<Attachment> _attachments;
+    int _colorAttachmentIndex;
     int _depthAttachmentIndex;
     int _stencilAttachmentIndex;
-    std::map<uint32_t, std::shared_ptr<Image>> _images;
+    std::vector<std::shared_ptr<Image>> _images;
 
     const StringId _debugName;
 };
