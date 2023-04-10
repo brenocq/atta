@@ -1,6 +1,6 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// rendererOpenGL.h
+// openGLAPI.h
 // Date: 2021-08-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
@@ -13,10 +13,10 @@
 #include <atta/event/events/meshLoad.h>
 #include <atta/event/interface.h>
 
-#include <atta/graphics/interface.h>
 #include <atta/graphics/apis/openGL/base.h>
-#include <atta/graphics/apis/openGL/openGLFramebuffer.h>
-#include <atta/graphics/apis/openGL/openGLImage.h>
+#include <atta/graphics/apis/openGL/framebuffer.h>
+#include <atta/graphics/apis/openGL/image.h>
+#include <atta/graphics/interface.h>
 
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/image.h>
@@ -42,19 +42,19 @@ OpenGLAPI::OpenGLAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
     glDebugMessageCallback(
         [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
             switch (severity) {
-            case GL_DEBUG_SEVERITY_HIGH:
-                LOG_ERROR("OpenGL Debug", "$0", message);
-                ASSERT(false, "OpenGL error");
-                break;
-            case GL_DEBUG_SEVERITY_MEDIUM:
-                LOG_WARN("OpenGL Debug", "$0", message);
-                break;
-            case GL_DEBUG_SEVERITY_LOW:
-                LOG_INFO("OpenGL Debug", "$0", message);
-                break;
-            case GL_DEBUG_SEVERITY_NOTIFICATION:
-                // LOG_VERBOSE("OpenGL Debug", "$0", message);
-                break;
+                case GL_DEBUG_SEVERITY_HIGH:
+                    LOG_ERROR("OpenGL Debug", "$0", message);
+                    ASSERT(false, "OpenGL error");
+                    break;
+                case GL_DEBUG_SEVERITY_MEDIUM:
+                    LOG_WARN("OpenGL Debug", "$0", message);
+                    break;
+                case GL_DEBUG_SEVERITY_LOW:
+                    LOG_INFO("OpenGL Debug", "$0", message);
+                    break;
+                case GL_DEBUG_SEVERITY_NOTIFICATION:
+                    // LOG_VERBOSE("OpenGL Debug", "$0", message);
+                    break;
             }
         },
         nullptr);
@@ -78,7 +78,7 @@ OpenGLAPI::OpenGLAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
     ShaderGroup::CreateInfo shaderGroupInfo{};
     shaderGroupInfo.shaderPaths = {"shaders/quad/shader.vert", "shaders/quad/shader.frag"};
     shaderGroupInfo.debugName = StringId("OpenGLAPI Quad Shader Group");
-    _quadShader = std::make_shared<OpenGLShaderGroup>(shaderGroupInfo);
+    _quadShader = std::make_shared<gl::ShaderGroup>(shaderGroupInfo);
 
     //---------- Quad ----------//
     {
@@ -207,7 +207,7 @@ void OpenGLAPI::endFrame() {}
 
 void OpenGLAPI::renderMesh(StringId meshSid) {
     if (_openGLMeshes.find(meshSid.getId()) == _openGLMeshes.end()) {
-        LOG_WARN("graphics::OpenGLAPI", "Trying to render mesh that was never initialized '[w]$0[]'", meshSid);
+        LOG_WARN("gfx::OpenGLAPI", "Trying to render mesh that was never initialized '[w]$0[]'", meshSid);
         return;
     }
 
@@ -234,7 +234,7 @@ void OpenGLAPI::renderCube() {
 
 void* OpenGLAPI::getImGuiImage(StringId sid) const {
     if (_openGLImages.find(sid.getId()) == _openGLImages.end()) {
-        LOG_WARN("graphics::OpenGLAPI", "Trying to get ImGui image that was never initialized '[w]$0[]'", sid);
+        LOG_WARN("gfx::OpenGLAPI", "Trying to get ImGui image that was never initialized '[w]$0[]'", sid);
         return nullptr;
     }
     return reinterpret_cast<void*>(_openGLImages.at(sid.getId())->getImGuiImage());
@@ -254,15 +254,15 @@ void OpenGLAPI::onImageUpdateEvent(event::Event& event) {
     event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
     resource::Image* image = resource::get<resource::Image>(e.sid.getString());
     if (image == nullptr) {
-        LOG_WARN("graphics::OpenGLAPI", "Could not initialize OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
+        LOG_WARN("gfx::OpenGLAPI", "Could not initialize OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
         return;
     }
     if (_openGLImages.find(e.sid.getId()) == _openGLImages.end()) {
-        LOG_WARN("graphics::OpenGLAPI", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
+        LOG_WARN("gfx::OpenGLAPI", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
         return;
     }
 
-    std::shared_ptr<OpenGLImage> openGLImage = _openGLImages[e.sid.getId()];
+    std::shared_ptr<gl::Image> openGLImage = _openGLImages[e.sid.getId()];
     if (openGLImage->getWidth() != image->getWidth() || openGLImage->getHeight() != image->getHeight())
         openGLImage->resize(image->getWidth(), image->getHeight());
     else
@@ -272,9 +272,9 @@ void OpenGLAPI::onImageUpdateEvent(event::Event& event) {
 void OpenGLAPI::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) {
     glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
 
-    LOG_DEBUG("graphics::OpenGLAPI", "Framebuffer from framebufferToScreen");
-    std::shared_ptr<OpenGLFramebuffer> openGLFramebuffer = std::static_pointer_cast<OpenGLFramebuffer>(framebuffer);
-    std::shared_ptr<OpenGLImage> openGLImage = std::static_pointer_cast<OpenGLImage>(openGLFramebuffer->getImage(0));
+    LOG_DEBUG("gfx::OpenGLAPI", "Framebuffer from framebufferToScreen");
+    std::shared_ptr<gl::Framebuffer> openGLFramebuffer = std::static_pointer_cast<gl::Framebuffer>(framebuffer);
+    std::shared_ptr<gl::Image> openGLImage = std::static_pointer_cast<gl::Image>(openGLFramebuffer->getImage(0));
 
     _quadShader->bind();
     glDisable(GL_DEPTH_TEST);
@@ -358,11 +358,9 @@ void OpenGLAPI::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
 void OpenGLAPI::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) {
     unsigned int cubemap;
     ASSERT(gpcInfo.numMipLevels >= 1,
-           "[OpenGLAPI] [w](generateProcessedCubemap)[] The number of mipmap levels must be greater than 0, but it is [w]$0[]",
-           gpcInfo.numMipLevels);
+           "[OpenGLAPI] [w](generateProcessedCubemap)[] The number of mipmap levels must be greater than 0, but it is [w]$0[]", gpcInfo.numMipLevels);
     ASSERT(gpcInfo.width > 0, "[OpenGLAPI] [w](generateProcessedCubemap)[] The width should be grater than 0, but it is [w]$0[]", gpcInfo.width);
-    ASSERT(gpcInfo.height > 0, "[OpenGLAPI] [w](generateProcessedCubemap)[] The height should be grater than 0, but it is [w]$0[]",
-           gpcInfo.height);
+    ASSERT(gpcInfo.height > 0, "[OpenGLAPI] [w](generateProcessedCubemap)[] The height should be grater than 0, but it is [w]$0[]", gpcInfo.height);
     ASSERT(gpcInfo.cubemapSid != "Not defined"_sid, "[OpenGLAPI] [w](generateProcessedCubemap)[] cubemapSid was not defined");
     ASSERT(gpcInfo.func,
            "[OpenGLAPI] [w](generateProcessedCubemap)[] func must be defined. The shader probably needs the view and projection matrices");
@@ -428,9 +426,9 @@ void OpenGLAPI::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) {
 void OpenGLAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
     ASSERT(gptInfo.textureSid != "Not defined"_sid, "[OpenGLAPI] [w](generateProcessedTexture)[] textureSid was not defined");
 
-    std::shared_ptr<OpenGLImage> image;
+    std::shared_ptr<gl::Image> image;
     Image::CreateInfo info = gptInfo.imageInfo;
-    image = std::make_shared<OpenGLImage>(info);
+    image = std::make_shared<gl::Image>(info);
 
     unsigned int captureFBO;
     unsigned int captureRBO;
@@ -460,14 +458,14 @@ void OpenGLAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
 }
 
 void OpenGLAPI::initializeMesh(StringId sid) {
-    _openGLMeshes[sid.getId()] = std::make_shared<OpenGLMesh>(sid);
-    // LOG_DEBUG("graphics::OpenGLAPI", "Mesh loaded! [w]$0[]", sid);
+    _openGLMeshes[sid.getId()] = std::make_shared<gl::Mesh>(sid);
+    // LOG_DEBUG("gfx::OpenGLAPI", "Mesh loaded! [w]$0[]", sid);
 }
 
 void OpenGLAPI::initializeImage(StringId sid) {
     resource::Image* image = resource::get<resource::Image>(sid.getString());
     if (image == nullptr)
-        LOG_WARN("graphics::OpenGLAPI", "Could not initialize OpenGL image from [w]$0[]", sid.getString());
+        LOG_WARN("gfx::OpenGLAPI", "Could not initialize OpenGL image from [w]$0[]", sid.getString());
 
     Image::CreateInfo info{};
     info.width = image->getWidth();
@@ -484,9 +482,9 @@ void OpenGLAPI::initializeImage(StringId sid) {
         info.format = Image::Format::RED;
 
     info.debugName = sid;
-    _openGLImages[sid.getId()] = std::make_shared<OpenGLImage>(info);
+    _openGLImages[sid.getId()] = std::make_shared<gl::Image>(info);
 
-    // LOG_DEBUG("graphics::OpenGLAPI", "Texture loaded! [w]$0[] -> $1", sid, _openGLImages[sid.getId()]->getId());
+    // LOG_DEBUG("gfx::OpenGLAPI", "Texture loaded! [w]$0[] -> $1", sid, _openGLImages[sid.getId()]->getId());
 }
 
 } // namespace atta::graphics

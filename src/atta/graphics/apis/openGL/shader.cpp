@@ -1,22 +1,22 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLShader.cpp
+// shader.cpp
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/file/manager.h>
-#include <atta/graphics/apis/openGL/openGLShader.h>
+#include <atta/graphics/apis/openGL/shader.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
-OpenGLShader::OpenGLShader(const Shader::CreateInfo& info) : Shader(info), _id(0) { recompile(); }
+Shader::Shader(const Shader::CreateInfo& info) : gfx::Shader(info), _id(0) { recompile(); }
 
-OpenGLShader::~OpenGLShader() {
+Shader::~Shader() {
     if (!_id)
         deleteShader();
 }
 
-void OpenGLShader::recompile() {
+void Shader::recompile() {
     if (!_id)
         deleteShader();
 
@@ -50,12 +50,12 @@ void OpenGLShader::recompile() {
     }
 }
 
-void OpenGLShader::deleteShader() {
+void Shader::deleteShader() {
     glDeleteShader(_id);
     _id = 0;
 }
 
-void OpenGLShader::extractTextureUnits(const std::stringstream& sstream) {
+void Shader::extractTextureUnits(const std::stringstream& sstream) {
     // TODO ignore commented sampler2D
     std::string s = sstream.str();
 
@@ -74,7 +74,7 @@ void OpenGLShader::extractTextureUnits(const std::stringstream& sstream) {
                 continue;
             std::string name = s.substr(endMarker, endName - endMarker);
 
-            // LOG_DEBUG("graphics::OpenGLShader", "Found texture unit: [w]$0[] ($1)", name, currIdx);
+            // LOG_DEBUG("gfx::gl::Shader", "Found texture unit: [w]$0[] ($1)", name, currIdx);
             _textureUnits.push_back(name);
             currIdx = endName + 1;
         } else
@@ -85,7 +85,7 @@ void OpenGLShader::extractTextureUnits(const std::stringstream& sstream) {
 //------------------------------------------------//
 //---------- Atta to OpenGL conversions ----------//
 //------------------------------------------------//
-GLenum OpenGLShader::convertFileToShaderType(const fs::path& filepath) {
+GLenum Shader::convertFileToShaderType(const fs::path& filepath) {
     std::string extension = filepath.extension().string();
     if (extension == ".vert")
         return GL_VERTEX_SHADER;
@@ -98,4 +98,4 @@ GLenum OpenGLShader::convertFileToShaderType(const fs::path& filepath) {
     return 0;
 }
 
-} // namespace atta::graphics
+} // namespace atta::graphics::gl

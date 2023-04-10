@@ -8,14 +8,14 @@
 #define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_H
 
 #include <atta/graphics/apis/openGL/base.h>
+#include <atta/graphics/apis/openGL/framebuffer.h>
+#include <atta/graphics/apis/openGL/image.h>
+#include <atta/graphics/apis/openGL/indexBuffer.h>
 #include <atta/graphics/apis/openGL/openGLAPI.h>
-#include <atta/graphics/apis/openGL/openGLFramebuffer.h>
-#include <atta/graphics/apis/openGL/openGLImage.h>
-#include <atta/graphics/apis/openGL/openGLIndexBuffer.h>
-#include <atta/graphics/apis/openGL/openGLPipeline.h>
-#include <atta/graphics/apis/openGL/openGLRenderPass.h>
-#include <atta/graphics/apis/openGL/openGLShader.h>
-#include <atta/graphics/apis/openGL/openGLShaderGroup.h>
-#include <atta/graphics/apis/openGL/openGLVertexBuffer.h>
+#include <atta/graphics/apis/openGL/pipeline.h>
+#include <atta/graphics/apis/openGL/renderPass.h>
+#include <atta/graphics/apis/openGL/shader.h>
+#include <atta/graphics/apis/openGL/shaderGroup.h>
+#include <atta/graphics/apis/openGL/vertexBuffer.h>
 
 #endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_H

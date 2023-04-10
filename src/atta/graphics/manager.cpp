@@ -49,15 +49,15 @@ void Manager::startUpImpl() {
     _window = std::static_pointer_cast<Window>(std::make_shared<GlfwWindow>(windowInfo));
 
     //----- Renderer API -----//
-    //_graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
-    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
-    //_computeEntityClick = std::make_unique<EntityClick>();
+    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
+    //_graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
 
     //----- Create layer stack -----//
-    //_layerStack = std::make_unique<LayerStack>();
+    _computeEntityClick = std::make_unique<EntityClick>();
+    _layerStack = std::make_unique<LayerStack>();
 
     //----- Create viewports -----//
-    // createDefaultViewportsImpl();
+    createDefaultViewportsImpl();
 }
 
 void Manager::shutDownImpl() {
@@ -94,10 +94,10 @@ void Manager::updateImpl() {
 
         // Render layer stack
         _graphicsAPI->beginFrame();
-        //_layerStack->render();
+        _layerStack->render();
         _graphicsAPI->endFrame();
 
-        if(_graphicsAPI->getType() == GraphicsAPI::OPENGL)
+        if (_graphicsAPI->getType() == GraphicsAPI::OPENGL)
             _window->swapBuffers();
     }
 }
@@ -150,42 +150,42 @@ component::EntityId Manager::viewportEntityClickImpl(std::shared_ptr<Viewport> v
 
 template <>
 std::shared_ptr<Image> Manager::createImpl<Image>(Image::CreateInfo info) {
-    return createSpecific<Image, OpenGLImage, vk::Image>(info);
+    return createSpecific<Image, gl::Image, vk::Image>(info);
 }
 
 template <>
 std::shared_ptr<Framebuffer> Manager::createImpl<Framebuffer>(Framebuffer::CreateInfo info) {
-    return createSpecific<Framebuffer, OpenGLFramebuffer, vk::Framebuffer>(info);
+    return createSpecific<Framebuffer, gl::Framebuffer, vk::Framebuffer>(info);
 }
 
 template <>
 std::shared_ptr<VertexBuffer> Manager::createImpl<VertexBuffer>(VertexBuffer::CreateInfo info) {
-    return createSpecific<VertexBuffer, OpenGLVertexBuffer, vk::VertexBuffer>(info);
+    return createSpecific<VertexBuffer, gl::VertexBuffer, vk::VertexBuffer>(info);
 }
 
 template <>
 std::shared_ptr<IndexBuffer> Manager::createImpl<IndexBuffer>(IndexBuffer::CreateInfo info) {
-    return createSpecific<IndexBuffer, OpenGLIndexBuffer, vk::IndexBuffer>(info);
+    return createSpecific<IndexBuffer, gl::IndexBuffer, vk::IndexBuffer>(info);
 }
 
 template <>
 std::shared_ptr<RenderPass> Manager::createImpl<RenderPass>(RenderPass::CreateInfo info) {
-    return createSpecific<RenderPass, OpenGLRenderPass, vk::RenderPass>(info);
+    return createSpecific<RenderPass, gl::RenderPass, vk::RenderPass>(info);
 }
 
 template <>
 std::shared_ptr<Shader> Manager::createImpl<Shader>(Shader::CreateInfo info) {
-    return createSpecific<Shader, OpenGLShader, vk::Shader>(info);
+    return createSpecific<Shader, gl::Shader, vk::Shader>(info);
 }
 
 template <>
 std::shared_ptr<ShaderGroup> Manager::createImpl<ShaderGroup>(ShaderGroup::CreateInfo info) {
-    return createSpecific<ShaderGroup, OpenGLShaderGroup, vk::ShaderGroup>(info);
+    return createSpecific<ShaderGroup, gl::ShaderGroup, vk::ShaderGroup>(info);
 }
 
 template <>
 std::shared_ptr<Pipeline> Manager::createImpl<Pipeline>(Pipeline::CreateInfo info) {
-    return createSpecific<Pipeline, OpenGLPipeline, vk::Pipeline>(info);
+    return createSpecific<Pipeline, gl::Pipeline, vk::Pipeline>(info);
 }
 
 } // namespace atta::graphics

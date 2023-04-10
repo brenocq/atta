@@ -1,15 +1,16 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLRenderer.h
+// openGLAPI.h
 // Date: 2021-08-30
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_RENDERER_H
 #define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_RENDERER_H
+
 #include <atta/graphics/apis/graphicsAPI.h>
-#include <atta/graphics/apis/openGL/openGLImage.h>
-#include <atta/graphics/apis/openGL/openGLMesh.h>
-#include <atta/graphics/apis/openGL/openGLShaderGroup.h>
+#include <atta/graphics/apis/openGL/image.h>
+#include <atta/graphics/apis/openGL/mesh.h>
+#include <atta/graphics/apis/openGL/shaderGroup.h>
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
@@ -39,25 +40,25 @@ class OpenGLAPI final : public GraphicsAPI {
     void onImageLoadEvent(event::Event& event);
     void onImageUpdateEvent(event::Event& event);
 
-    std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> getOpenGLImages() const { return _openGLImages; };
-    std::unordered_map<StringHash, OpenGLId> getOpenGLCubemaps() const { return _openGLCubemaps; };
+    std::unordered_map<StringHash, std::shared_ptr<gl::Image>> getOpenGLImages() const { return _openGLImages; };
+    std::unordered_map<StringHash, gl::OpenGLId> getOpenGLCubemaps() const { return _openGLCubemaps; };
 
   private:
     void initializeMesh(StringId sid);
     void initializeImage(StringId sid);
 
-    std::unordered_map<StringHash, std::shared_ptr<OpenGLMesh>> _openGLMeshes;
-    std::unordered_map<StringHash, std::shared_ptr<OpenGLImage>> _openGLImages;
-    std::unordered_map<StringHash, OpenGLId> _openGLCubemaps;
+    std::unordered_map<StringHash, std::shared_ptr<gl::Mesh>> _openGLMeshes;
+    std::unordered_map<StringHash, std::shared_ptr<gl::Image>> _openGLImages;
+    std::unordered_map<StringHash, gl::OpenGLId> _openGLCubemaps;
 
-    std::shared_ptr<OpenGLShaderGroup> _quadShader;
+    std::shared_ptr<gl::ShaderGroup> _quadShader;
 
-    OpenGLId _quadVBO;
-    OpenGLId _quadVAO;
-    OpenGLId _quad3VBO;
-    OpenGLId _quad3VAO;
-    OpenGLId _cubeVBO;
-    OpenGLId _cubeVAO;
+    gl::OpenGLId _quadVBO;
+    gl::OpenGLId _quadVAO;
+    gl::OpenGLId _quad3VBO;
+    gl::OpenGLId _quad3VAO;
+    gl::OpenGLId _cubeVBO;
+    gl::OpenGLId _cubeVAO;
 };
 
 } // namespace atta::graphics

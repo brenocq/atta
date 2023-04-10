@@ -3,15 +3,15 @@ cmake_minimum_required(VERSION 3.14)
 set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/graphicsAPI.cpp
     apis/openGL/openGLAPI.cpp
-    apis/openGL/openGLImage.cpp
-    apis/openGL/openGLFramebuffer.cpp
-    apis/openGL/openGLRenderPass.cpp
-    apis/openGL/openGLShader.cpp
-    apis/openGL/openGLShaderGroup.cpp
-    apis/openGL/openGLVertexBuffer.cpp
-    apis/openGL/openGLIndexBuffer.cpp
-    apis/openGL/openGLPipeline.cpp
-    apis/openGL/openGLMesh.cpp
+    apis/openGL/image.cpp
+    apis/openGL/framebuffer.cpp
+    apis/openGL/renderPass.cpp
+    apis/openGL/shader.cpp
+    apis/openGL/shaderGroup.cpp
+    apis/openGL/vertexBuffer.cpp
+    apis/openGL/indexBuffer.cpp
+    apis/openGL/pipeline.cpp
+    apis/openGL/mesh.cpp
     apis/vulkan/buffer.cpp
     apis/vulkan/commandBuffers.cpp
     apis/vulkan/commandPool.cpp

@@ -9,7 +9,7 @@
 
 #include <glad/glad.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
 using OpenGLId = uint32_t;
 

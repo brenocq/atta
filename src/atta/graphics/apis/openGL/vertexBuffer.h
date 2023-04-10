@@ -1,21 +1,21 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLVertexBuffer.h
+// vertexBuffer.h
 // Date: 2021-09-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_VERTEX_BUFFER_H
-#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_VERTEX_BUFFER_H
+#ifndef ATTA_GRAPHICS_APIS_OPENGL_VERTEX_BUFFER_H
+#define ATTA_GRAPHICS_APIS_OPENGL_VERTEX_BUFFER_H
 
 #include <atta/graphics/apis/openGL/base.h>
 #include <atta/graphics/vertexBuffer.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
-class OpenGLVertexBuffer final : public VertexBuffer {
+class VertexBuffer final : public gfx::VertexBuffer {
   public:
-    OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info);
-    ~OpenGLVertexBuffer();
+    VertexBuffer(const VertexBuffer::CreateInfo& info);
+    ~VertexBuffer();
 
     void bind() const override;
 
@@ -28,6 +28,6 @@ class OpenGLVertexBuffer final : public VertexBuffer {
     OpenGLId _id;
 };
 
-} // namespace atta::graphics
+} // namespace atta::graphics::gl
 
-#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_VERTEX_BUFFER_H
+#endif // ATTA_GRAPHICS_APIS_OPENGL_VERTEX_BUFFER_H

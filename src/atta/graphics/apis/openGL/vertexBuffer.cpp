@@ -1,14 +1,14 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLVertexBuffer.cpp
+// vertexBuffer.cpp
 // Date: 2021-09-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/apis/openGL/openGLVertexBuffer.h>
+#include <atta/graphics/apis/openGL/vertexBuffer.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
-OpenGLVertexBuffer::OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info) : VertexBuffer(info), _id(0) {
+VertexBuffer::VertexBuffer(const VertexBuffer::CreateInfo& info) : gfx::VertexBuffer(info), _id(0) {
     glGenBuffers(1, &_id);
     glBindBuffer(GL_ARRAY_BUFFER, _id);
     glBufferData(GL_ARRAY_BUFFER, _size, _data, GL_STATIC_DRAW);
@@ -31,16 +31,16 @@ OpenGLVertexBuffer::OpenGLVertexBuffer(const VertexBuffer::CreateInfo& info) : V
     }
 }
 
-OpenGLVertexBuffer::~OpenGLVertexBuffer() {
+VertexBuffer::~VertexBuffer() {
     if (_id > 0) {
         glDeleteBuffers(1, &_id);
         _id = 0;
     }
 }
 
-void OpenGLVertexBuffer::bind() const { glBindBuffer(GL_ARRAY_BUFFER, _id); }
+void VertexBuffer::bind() const { glBindBuffer(GL_ARRAY_BUFFER, _id); }
 
-GLenum OpenGLVertexBuffer::convertUsage(Usage usage) {
+GLenum VertexBuffer::convertUsage(Usage usage) {
     switch (usage) {
         case Usage::STATIC:
             return GL_STATIC_DRAW;
@@ -52,7 +52,7 @@ GLenum OpenGLVertexBuffer::convertUsage(Usage usage) {
     ASSERT(false, "Unknown vertex buffer usage");
 }
 
-GLenum OpenGLVertexBuffer::convertBaseType(VertexBufferElement::Type type) {
+GLenum VertexBuffer::convertBaseType(VertexBufferElement::Type type) {
     switch (type) {
         case VertexBufferElement::Type::BOOL:
             return GL_BOOL;
@@ -75,4 +75,4 @@ GLenum OpenGLVertexBuffer::convertBaseType(VertexBufferElement::Type type) {
     ASSERT(false, "Unknown vertex buffer element type");
 }
 
-} // namespace atta::graphics
+} // namespace atta::graphics::gl

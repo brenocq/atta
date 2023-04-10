@@ -1,21 +1,21 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLFramebuffer.h
+// framebuffer.h
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
-#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
+#ifndef ATTA_GRAPHICS_APIS_OPENGL_FRAMEBUFFER_H
+#define ATTA_GRAPHICS_APIS_OPENGL_FRAMEBUFFER_H
 
-#include <atta/graphics/framebuffer.h>
 #include <atta/graphics/apis/openGL/base.h>
+#include <atta/graphics/framebuffer.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
-class OpenGLFramebuffer final : public Framebuffer {
+class Framebuffer final : public gfx::Framebuffer {
   public:
-    OpenGLFramebuffer(const Framebuffer::CreateInfo& info);
-    ~OpenGLFramebuffer();
+    Framebuffer(const Framebuffer::CreateInfo& info);
+    ~Framebuffer();
 
     void bind(bool clear = true) override;
     void unbind() override;
@@ -34,6 +34,6 @@ class OpenGLFramebuffer final : public Framebuffer {
     OpenGLId _id;
 };
 
-} // namespace atta::graphics
+} // namespace atta::graphics::gl
 
-#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_FRAMEBUFFER_H
+#endif // ATTA_GRAPHICS_APIS_OPENGL_FRAMEBUFFER_H

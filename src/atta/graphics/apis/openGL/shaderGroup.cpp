@@ -1,24 +1,24 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLShaderGroup.cpp
+// shaderGroup.cpp
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/apis/openGL/openGLShader.h>
-#include <atta/graphics/apis/openGL/openGLShaderGroup.h>
+#include <atta/graphics/apis/openGL/shaderGroup.h>
 
-#include <atta/graphics/interface.h>
 #include <atta/graphics/apis/openGL/openGLAPI.h>
+#include <atta/graphics/apis/openGL/shader.h>
+#include <atta/graphics/interface.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
-OpenGLShaderGroup::OpenGLShaderGroup(const ShaderGroup::CreateInfo& info) : ShaderGroup(info), _id(0) {
+ShaderGroup::ShaderGroup(const ShaderGroup::CreateInfo& info) : gfx::ShaderGroup(info), _id(0) {
     // Create shaders (they are compiled at creation)
     for (auto shaderPath : info.shaderPaths) {
         // Create shader
         Shader::CreateInfo info{};
         info.filepath = shaderPath;
-        std::shared_ptr<OpenGLShader> shader = std::make_shared<OpenGLShader>(info);
+        std::shared_ptr<Shader> shader = std::make_shared<Shader>(info);
 
         // Get shader texture units
         if (shader->getTextureUnits().size() > 0) {
@@ -33,14 +33,14 @@ OpenGLShaderGroup::OpenGLShaderGroup(const ShaderGroup::CreateInfo& info) : Shad
     recompile();
 }
 
-OpenGLShaderGroup::~OpenGLShaderGroup() {
+ShaderGroup::~ShaderGroup() {
     if (_id > 0) {
         glDeleteProgram(_id);
         _id = 0;
     }
 }
 
-void OpenGLShaderGroup::recompile() {
+void ShaderGroup::recompile() {
     if (_id > 0) {
         glDeleteProgram(_id);
         _id = 0;
@@ -54,7 +54,7 @@ void OpenGLShaderGroup::recompile() {
 
     // Attach shaders
     for (auto shader : _shaders)
-        glAttachShader(_id, std::static_pointer_cast<OpenGLShader>(shader)->getId());
+        glAttachShader(_id, std::static_pointer_cast<Shader>(shader)->getId());
 
     // Link shaders
     glLinkProgram(_id);
@@ -72,37 +72,37 @@ void OpenGLShaderGroup::recompile() {
 
     // Detach and delete shaders
     for (auto shader : _shaders) {
-        std::shared_ptr<OpenGLShader> s = std::static_pointer_cast<OpenGLShader>(shader);
+        std::shared_ptr<Shader> s = std::static_pointer_cast<Shader>(shader);
         glDetachShader(_id, s->getId());
     }
 }
 
-void OpenGLShaderGroup::bind() { glUseProgram(_id); }
+void ShaderGroup::bind() { glUseProgram(_id); }
 
-void OpenGLShaderGroup::setBool(const char* name, bool b) { glUniform1ui(getLoc(name), (unsigned int)b); }
+void ShaderGroup::setBool(const char* name, bool b) { glUniform1ui(getLoc(name), (unsigned int)b); }
 
-void OpenGLShaderGroup::setInt(const char* name, int i) { glUniform1i(getLoc(name), i); }
+void ShaderGroup::setInt(const char* name, int i) { glUniform1i(getLoc(name), i); }
 
-void OpenGLShaderGroup::setFloat(const char* name, float f) { glUniform1f(getLoc(name), f); }
+void ShaderGroup::setFloat(const char* name, float f) { glUniform1f(getLoc(name), f); }
 
-void OpenGLShaderGroup::setVec2(const char* name, vec2 v) { glUniform2fv(getLoc(name), 1, &v.x); }
+void ShaderGroup::setVec2(const char* name, vec2 v) { glUniform2fv(getLoc(name), 1, &v.x); }
 
-void OpenGLShaderGroup::setVec3(const char* name, vec3 v) { glUniform3fv(getLoc(name), 1, &v.x); }
+void ShaderGroup::setVec3(const char* name, vec3 v) { glUniform3fv(getLoc(name), 1, &v.x); }
 
-void OpenGLShaderGroup::setVec4(const char* name, vec4 v) { glUniform4fv(getLoc(name), 1, &v.x); }
+void ShaderGroup::setVec4(const char* name, vec4 v) { glUniform4fv(getLoc(name), 1, &v.x); }
 
-void OpenGLShaderGroup::setMat3(const char* name, mat3 m) { glUniformMatrix3fv(getLoc(name), 1, GL_FALSE, m.data); }
+void ShaderGroup::setMat3(const char* name, mat3 m) { glUniformMatrix3fv(getLoc(name), 1, GL_FALSE, m.data); }
 
-void OpenGLShaderGroup::setMat4(const char* name, mat4 m) { glUniformMatrix4fv(getLoc(name), 1, GL_FALSE, m.data); }
+void ShaderGroup::setMat4(const char* name, mat4 m) { glUniformMatrix4fv(getLoc(name), 1, GL_FALSE, m.data); }
 
-void OpenGLShaderGroup::setImage(const char* name, StringId sid) {
+void ShaderGroup::setImage(const char* name, StringId sid) {
     std::shared_ptr<OpenGLAPI> renderer = std::static_pointer_cast<OpenGLAPI>(graphics::getGraphicsAPI());
-    std::shared_ptr<OpenGLImage> image = renderer->getOpenGLImages()[sid.getId()];
+    std::shared_ptr<Image> image = renderer->getOpenGLImages()[sid.getId()];
     static std::map<StringId, bool> lastWarns; // Used to avoid spamming warn
 
     if (!image) {
         if (!lastWarns[sid])
-            LOG_WARN("graphics::OpenGLShaderGroup", "(setImage) Trying to use image that was never loaded: $0 = \"$1\"", name, sid);
+            LOG_WARN("gfx::gl::ShaderGroup", "(setImage) Trying to use image that was never loaded: $0 = \"$1\"", name, sid);
         lastWarns[sid] = true;
         return;
     }
@@ -116,7 +116,7 @@ void OpenGLShaderGroup::setImage(const char* name, StringId sid) {
         }
 
     if (imgUnit == -1) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setImage) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("gfx::gl::ShaderGroup", "(setImage) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 
@@ -129,11 +129,11 @@ void OpenGLShaderGroup::setImage(const char* name, StringId sid) {
     glBindTexture(GL_TEXTURE_2D, image->getId());
 }
 
-void OpenGLShaderGroup::setImage(const char* name, std::shared_ptr<Image> inImage) {
-    std::shared_ptr<OpenGLImage> image = std::static_pointer_cast<OpenGLImage>(inImage);
+void ShaderGroup::setImage(const char* name, std::shared_ptr<gfx::Image> inImage) {
+    std::shared_ptr<Image> image = std::static_pointer_cast<Image>(inImage);
 
     if (!image) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setImage) Trying to set [w]$0[] with image that was never created", name);
+        LOG_WARN("gfx::gl::ShaderGroup", "(setImage) Trying to set [w]$0[] with image that was never created", name);
         return;
     }
 
@@ -145,7 +145,7 @@ void OpenGLShaderGroup::setImage(const char* name, std::shared_ptr<Image> inImag
         }
 
     if (imgUnit == -1) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setImage) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("gfx::gl::ShaderGroup", "(setImage) Trying to set texture [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 
@@ -158,10 +158,10 @@ void OpenGLShaderGroup::setImage(const char* name, std::shared_ptr<Image> inImag
     glBindTexture(GL_TEXTURE_2D, image->getId());
 }
 
-void OpenGLShaderGroup::setCubemap(const char* name, StringId sid) {
+void ShaderGroup::setCubemap(const char* name, StringId sid) {
     std::shared_ptr<OpenGLAPI> renderer = std::static_pointer_cast<OpenGLAPI>(graphics::getGraphicsAPI());
     if (renderer->getOpenGLCubemaps().find(sid.getId()) == renderer->getOpenGLCubemaps().end()) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to use cubemap that was never generated: $0 = \"$1\"", name, sid);
+        LOG_WARN("gfx::gl::ShaderGroup", "(setCubemap) Trying to use cubemap that was never generated: $0 = \"$1\"", name, sid);
         return;
     }
     OpenGLId cubemap = renderer->getOpenGLCubemaps()[sid.getId()];
@@ -173,7 +173,7 @@ void OpenGLShaderGroup::setCubemap(const char* name, StringId sid) {
             break;
         }
     if (imgUnit == -1) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("gfx::gl::ShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 
@@ -184,19 +184,19 @@ void OpenGLShaderGroup::setCubemap(const char* name, StringId sid) {
     // Activate texture unit
     glActiveTexture(GL_TEXTURE0 + imgUnit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-    // LOG_DEBUG("graphics::OpenGLShaderGroup", "Bind $0 to texture unit $1, id $2 -> $3", name, imgUnit, cubemap, _textureUnits);
+    // LOG_DEBUG("gfx::gl::ShaderGroup", "Bind $0 to texture unit $1, id $2 -> $3", name, imgUnit, cubemap, _textureUnits);
 }
 
-void OpenGLShaderGroup::setCubemap(const char* name, std::shared_ptr<Image> inImage) {
-    std::shared_ptr<OpenGLImage> image = std::static_pointer_cast<OpenGLImage>(inImage);
+void ShaderGroup::setCubemap(const char* name, std::shared_ptr<gfx::Image> inImage) {
+    std::shared_ptr<Image> image = std::static_pointer_cast<Image>(inImage);
 
     if (!image) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that was never created", name);
+        LOG_WARN("gfx::gl::ShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that was never created", name);
         return;
     }
 
     if (!image->isCubemap()) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that is not a cubemap", name);
+        LOG_WARN("gfx::gl::ShaderGroup", "(setCubemap) Trying to set [w]$0[] with image that is not a cubemap", name);
         return;
     }
 
@@ -208,7 +208,7 @@ void OpenGLShaderGroup::setCubemap(const char* name, std::shared_ptr<Image> inIm
         }
 
     if (imgUnit == -1) {
-        LOG_WARN("graphics::OpenGLShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
+        LOG_WARN("gfx::gl::ShaderGroup", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
         return;
     }
 
@@ -221,6 +221,6 @@ void OpenGLShaderGroup::setCubemap(const char* name, std::shared_ptr<Image> inIm
     glBindTexture(GL_TEXTURE_CUBE_MAP, image->getId());
 }
 
-unsigned int OpenGLShaderGroup::getLoc(const char* name) { return glGetUniformLocation(_id, name); }
+unsigned int ShaderGroup::getLoc(const char* name) { return glGetUniformLocation(_id, name); }
 
-} // namespace atta::graphics
+} // namespace atta::graphics::gl

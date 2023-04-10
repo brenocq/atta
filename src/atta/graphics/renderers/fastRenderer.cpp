@@ -9,7 +9,6 @@
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/interface.h>
 #include <atta/graphics/renderPass.h>
-#include <atta/graphics/apis/openGL/openGLShaderGroup.h>
 
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>

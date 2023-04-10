@@ -1,36 +1,36 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLImage.cpp
+// image.cpp
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/apis/openGL/openGLImage.h>
+#include <atta/graphics/apis/openGL/image.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
-OpenGLImage::OpenGLImage(const Image::CreateInfo& info) : Image(info) { resize(_width, _height, true); }
+Image::Image(const Image::CreateInfo& info) : gfx::Image(info) { resize(_width, _height, true); }
 
-OpenGLImage::~OpenGLImage() {
+Image::~Image() {
     if (_id) {
         glDeleteTextures(1, &_id);
     }
 }
 
-void OpenGLImage::write(void* data) {
+void Image::write(void* data) {
     if (!_isCubemap) {
         // LOG_DEBUG("graphics::OpenGlImage", "Writing $0 -> $1 ($2)", data, (int)_id, _debugName);
-        GLenum dataType = OpenGLImage::convertDataType(_format);
-        GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
-        GLenum format = OpenGLImage::convertFormat(_format);
+        GLenum dataType = Image::convertDataType(_format);
+        GLenum internalFormat = Image::convertInternalFormat(_format);
+        GLenum format = Image::convertFormat(_format);
 
         glBindTexture(GL_TEXTURE_2D, _id);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _width, _height, format, dataType, data);
         glBindTexture(GL_TEXTURE_2D, 0);
     } else
-        LOG_WARN("graphics::OpenGLImage", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
+        LOG_WARN("gfx::gl::Image", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
 }
 
-void OpenGLImage::resize(uint32_t width, uint32_t height, bool forceRecreate) {
+void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     // Check if size was not changed
     if (!forceRecreate && (_width == width && _height == height))
         return;
@@ -45,9 +45,9 @@ void OpenGLImage::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     _id = test;
 
     // Populate data and generate mipmap
-    GLenum dataType = OpenGLImage::convertDataType(_format);
-    GLenum internalFormat = OpenGLImage::convertInternalFormat(_format);
-    GLenum format = OpenGLImage::convertFormat(_format);
+    GLenum dataType = Image::convertDataType(_format);
+    GLenum internalFormat = Image::convertInternalFormat(_format);
+    GLenum format = Image::convertFormat(_format);
     GLint wrapMode = convertSamplerWrap(_samplerWrap);
 
     if (!_isCubemap) {
@@ -95,7 +95,7 @@ void OpenGLImage::resize(uint32_t width, uint32_t height, bool forceRecreate) {
 //------------------------------------------------//
 //---------- Atta to OpenGL conversions ----------//
 //------------------------------------------------//
-GLenum OpenGLImage::convertSizedInternalFormat(Format format) {
+GLenum Image::convertSizedInternalFormat(Format format) {
     switch (format) {
         case Format::NONE:
             break;
@@ -119,7 +119,7 @@ GLenum OpenGLImage::convertSizedInternalFormat(Format format) {
     ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
 }
 
-GLenum OpenGLImage::convertFormat(Format format) {
+GLenum Image::convertFormat(Format format) {
     switch (format) {
         case Format::NONE:
             break;
@@ -142,7 +142,7 @@ GLenum OpenGLImage::convertFormat(Format format) {
     ASSERT(false, "Could not convert format to openGL format. Unknown image format");
 }
 
-GLenum OpenGLImage::convertInternalFormat(Format format) {
+GLenum Image::convertInternalFormat(Format format) {
     switch (format) {
         case Format::NONE:
             break;
@@ -166,7 +166,7 @@ GLenum OpenGLImage::convertInternalFormat(Format format) {
     ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
 }
 
-GLenum OpenGLImage::convertDataType(Format format) {
+GLenum Image::convertDataType(Format format) {
     switch (format) {
         case Format::NONE:
             break;
@@ -186,7 +186,7 @@ GLenum OpenGLImage::convertDataType(Format format) {
     ASSERT(false, "Could not convert format to openGL data type. Unknown image format");
 }
 
-GLenum OpenGLImage::convertSamplerWrap(Wrap samplerWrap) {
+GLenum Image::convertSamplerWrap(Wrap samplerWrap) {
     switch (samplerWrap) {
         case Wrap::NONE:
             break;
@@ -200,4 +200,4 @@ GLenum OpenGLImage::convertSamplerWrap(Wrap samplerWrap) {
     ASSERT(false, "Could not convert sampler wrap to openGL sampler wrap. Unknown sampler wrap");
 }
 
-} // namespace atta::graphics
+} // namespace atta::graphics::gl

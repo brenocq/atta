@@ -104,10 +104,10 @@ class Drawer {
     bool _pointsChanged;
     std::vector<Point> _points; // Updated only when get() is called
 
-    OpenGLId _lineVAO;
-    OpenGLId _lineVBO;
-    OpenGLId _pointVAO;
-    OpenGLId _pointVBO;
+    gl::OpenGLId _lineVAO;
+    gl::OpenGLId _lineVBO;
+    gl::OpenGLId _pointVAO;
+    gl::OpenGLId _pointVBO;
 };
 } // namespace atta::graphics
 

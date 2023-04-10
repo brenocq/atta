@@ -1,21 +1,21 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLShaderGroup.h
+// shaderGroup.h
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_SHADER_GROUP_H
-#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_SHADER_GROUP_H
+#ifndef ATTA_GRAPHICS_APIS_OPENGL_SHADER_GROUP_H
+#define ATTA_GRAPHICS_APIS_OPENGL_SHADER_GROUP_H
 
 #include <atta/graphics/apis/openGL/base.h>
 #include <atta/graphics/shaderGroup.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
-class OpenGLShaderGroup final : public ShaderGroup {
+class ShaderGroup final : public gfx::ShaderGroup {
   public:
-    OpenGLShaderGroup(const ShaderGroup::CreateInfo& info);
-    ~OpenGLShaderGroup();
+    ShaderGroup(const ShaderGroup::CreateInfo& info);
+    ~ShaderGroup();
 
     void recompile() override;
 
@@ -30,9 +30,9 @@ class OpenGLShaderGroup final : public ShaderGroup {
     void setMat3(const char* name, mat3 m) override;
     void setMat4(const char* name, mat4 m) override;
     void setImage(const char* name, StringId sid) override;
-    void setImage(const char* name, std::shared_ptr<Image> image) override;
+    void setImage(const char* name, std::shared_ptr<gfx::Image> image) override;
     void setCubemap(const char* name, StringId sid) override;
-    void setCubemap(const char* name, std::shared_ptr<Image> image) override;
+    void setCubemap(const char* name, std::shared_ptr<gfx::Image> image) override;
 
     inline unsigned int getLoc(const char* name);
 
@@ -43,6 +43,6 @@ class OpenGLShaderGroup final : public ShaderGroup {
     std::vector<std::string> _textureUnits;
 };
 
-} // namespace atta::graphics
+} // namespace atta::graphics::gl
 
-#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_SHADER_GROUP_H
+#endif // ATTA_GRAPHICS_APIS_OPENGL_SHADER_GROUP_H

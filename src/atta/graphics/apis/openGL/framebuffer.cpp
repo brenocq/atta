@@ -1,46 +1,45 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLFramebuffer.cpp
+// framebuffer.cpp
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/apis/openGL/openGLFramebuffer.h>
-#include <atta/graphics/apis/openGL/openGLImage.h>
+#include <atta/graphics/apis/openGL/framebuffer.h>
+#include <atta/graphics/apis/openGL/image.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
-OpenGLFramebuffer::OpenGLFramebuffer(const Framebuffer::CreateInfo& info)
-    : Framebuffer(info), _id(0) {
+Framebuffer::Framebuffer(const Framebuffer::CreateInfo& info) : gfx::Framebuffer(info), _id(0) {
     // Create attachments
     createAttachments();
     resize(_width, _height, true);
 }
 
-OpenGLFramebuffer::~OpenGLFramebuffer() {
+Framebuffer::~Framebuffer() {
     if (_id)
         glDeleteFramebuffers(1, &_id);
 }
 
-void OpenGLFramebuffer::createAttachments() {
+void Framebuffer::createAttachments() {
     // Create attachment images
     for (unsigned i = 0; i < _attachments.size(); i++) {
-        std::shared_ptr<OpenGLImage> image;
+        std::shared_ptr<Image> image;
         if (_attachments[i].image) {
             // If already created
-            image = std::dynamic_pointer_cast<OpenGLImage>(_attachments[i].image);
+            image = std::dynamic_pointer_cast<Image>(_attachments[i].image);
         } else {
             // If create from format
             Image::CreateInfo info;
             info.format = _attachments[i].format;
             info.width = _width;
             info.height = _height;
-            image = std::make_shared<OpenGLImage>(info);
+            image = std::make_shared<Image>(info);
         }
-        _images[i] = image;
+        _images.push_back(image);
     }
 }
 
-void OpenGLFramebuffer::bindAttachments() {
+void Framebuffer::bindAttachments() {
     // Bind attachment images
     unsigned colorIndex = 0;
 
@@ -69,7 +68,7 @@ void OpenGLFramebuffer::bindAttachments() {
     }
 }
 
-void OpenGLFramebuffer::bind(bool clear) {
+void Framebuffer::bind(bool clear) {
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
     glViewport(0, 0, _width, _height);
     if (clear) {
@@ -92,9 +91,9 @@ void OpenGLFramebuffer::bind(bool clear) {
     }
 }
 
-void OpenGLFramebuffer::unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+void Framebuffer::unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-void OpenGLFramebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
+void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     if (!forceRecreate && width == _width && height == _height)
         return;
 
@@ -123,17 +122,17 @@ void OpenGLFramebuffer::resize(uint32_t width, uint32_t height, bool forceRecrea
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-int OpenGLFramebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned y) {
+int Framebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned y) {
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
     int pixel;
     glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
     return pixel;
 }
 
-std::vector<uint8_t> OpenGLFramebuffer::readImage(unsigned attachmentIndex) {
+std::vector<uint8_t> Framebuffer::readImage(unsigned attachmentIndex) {
     int numChannels = Image::getNumChannels(_attachments[attachmentIndex].format);
-    GLenum formatOpenGL = OpenGLImage::convertFormat(_attachments[attachmentIndex].format);
-    GLenum dataTypeOpenGL = OpenGLImage::convertDataType(_attachments[attachmentIndex].format);
+    GLenum formatOpenGL = Image::convertFormat(_attachments[attachmentIndex].format);
+    GLenum dataTypeOpenGL = Image::convertDataType(_attachments[attachmentIndex].format);
 
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
     glViewport(0, 0, _width, _height);
@@ -147,18 +146,18 @@ std::vector<uint8_t> OpenGLFramebuffer::readImage(unsigned attachmentIndex) {
 //------------------------------------------------//
 //---------- Atta to OpenGL conversions ----------//
 //------------------------------------------------//
-GLenum OpenGLFramebuffer::convertDepthAttachmentType(Image::Format format) {
+GLenum Framebuffer::convertDepthAttachmentType(Image::Format format) {
     switch (format) {
-    case Image::Format::NONE:
-        break;
-    case Image::Format::DEPTH32F:
-        return GL_DEPTH_ATTACHMENT;
-    case Image::Format::DEPTH24_STENCIL8:
-        return GL_DEPTH_ATTACHMENT;
-    default:
-        break;
+        case Image::Format::NONE:
+            break;
+        case Image::Format::DEPTH32F:
+            return GL_DEPTH_ATTACHMENT;
+        case Image::Format::DEPTH24_STENCIL8:
+            return GL_DEPTH_ATTACHMENT;
+        default:
+            break;
     }
     ASSERT(false, "Could not convert format to openGL depth attachment");
 }
 
-} // namespace atta::graphics
+} // namespace atta::graphics::gl

@@ -1,21 +1,21 @@
 //--------------------------------------------------
 // Atta Graphics Module
-// openGLImage.h
+// image.h
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_IMAGE_H
-#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_IMAGE_H
+#ifndef ATTA_GRAPHICS_APIS_OPENGL_IMAGE_H
+#define ATTA_GRAPHICS_APIS_OPENGL_IMAGE_H
 
-#include <atta/graphics/image.h>
 #include <atta/graphics/apis/openGL/base.h>
+#include <atta/graphics/image.h>
 
-namespace atta::graphics {
+namespace atta::graphics::gl {
 
-class OpenGLImage final : public Image {
+class Image final : public gfx::Image {
   public:
-    OpenGLImage(const Image::CreateInfo& info);
-    ~OpenGLImage();
+    Image(const Image::CreateInfo& info);
+    ~Image();
 
     static GLenum convertSizedInternalFormat(Format format);
     static GLenum convertFormat(Format format);
@@ -29,6 +29,6 @@ class OpenGLImage final : public Image {
     void* getImGuiImage() override { return reinterpret_cast<void*>(OpenGLId(_id)); }
 };
 
-} // namespace atta::graphics
+} // namespace atta::graphics::gl
 
-#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_IMAGE_H
+#endif // ATTA_GRAPHICS_APIS_OPENGL_IMAGE_H
