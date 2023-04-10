@@ -33,7 +33,7 @@ class Pipeline {
     Pipeline(const CreateInfo& info);
     virtual ~Pipeline() = default;
 
-    virtual void begin(bool clear = true) = 0;
+    virtual void begin() = 0;
     virtual void end() = 0;
 
     virtual void* getImGuiTexture() const = 0;

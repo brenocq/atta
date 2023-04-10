@@ -19,7 +19,7 @@ class RenderPass final : public graphics::RenderPass {
     RenderPass(const graphics::RenderPass::CreateInfo& info);
     ~RenderPass();
 
-    void begin(bool clear = true) override;
+    void begin() override;
     void end() override;
 
     VkRenderPass getHandle() const;

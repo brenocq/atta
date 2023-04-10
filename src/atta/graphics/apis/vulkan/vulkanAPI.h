@@ -57,7 +57,7 @@ class VulkanAPI final : public GraphicsAPI {
     void recreateSwapChain();
     void onWindowResize(evt::Event e);
 
-    static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+    static constexpr int MAX_FRAMES_IN_FLIGHT = 1;
     uint32_t _currFrame;
     bool _windowResized;
 

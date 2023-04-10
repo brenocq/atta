@@ -9,13 +9,13 @@
 
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/device.h>
-// #include <atta/graphics/vulkan/descriptorSetLayout.h>
+#include <atta/graphics/apis/vulkan/descriptorSetLayout.h>
 
 namespace atta::graphics::vk {
 
 class PipelineLayout {
   public:
-    PipelineLayout(std::shared_ptr<Device> device); //, std::shared_ptr<DescriptorSetLayout> descriptorSetLayout);
+    PipelineLayout(std::shared_ptr<DescriptorSetLayout> descriptorSetLayout);
     ~PipelineLayout();
 
     VkPipelineLayout getHandle() const;
@@ -23,7 +23,7 @@ class PipelineLayout {
   private:
     VkPipelineLayout _pipelineLayout;
     std::shared_ptr<Device> _device;
-    // std::shared_ptr<DescriptorSetLayout> _descriptorSetLayout;
+    std::shared_ptr<DescriptorSetLayout> _descriptorSetLayout;
 };
 
 } // namespace atta::graphics::vk

@@ -8,11 +8,14 @@
 
 namespace atta::graphics::vk {
 
-PipelineLayout::PipelineLayout(std::shared_ptr<Device> device) : _device(device) {
+PipelineLayout::PipelineLayout(std::shared_ptr<DescriptorSetLayout> descriptorSetLayout)
+    : _device(common::getDevice()), _descriptorSetLayout(descriptorSetLayout) {
+    VkDescriptorSetLayout descriptorSetLayouts[] = {_descriptorSetLayout->getHandle()};
+
     VkPipelineLayoutCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    info.setLayoutCount = 0;
-    info.pSetLayouts = nullptr;
+    info.setLayoutCount = 1;
+    info.pSetLayouts = descriptorSetLayouts;
     info.pushConstantRangeCount = 0;
     info.pPushConstantRanges = nullptr;
 

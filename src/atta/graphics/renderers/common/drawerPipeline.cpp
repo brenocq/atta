@@ -45,7 +45,7 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
 }
 
 void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
-    _linePipeline->begin(false);
+    _linePipeline->begin();
     {
         std::shared_ptr<ShaderGroup> shader = _linePipeline->getShaderGroup();
         shader->bind();
@@ -55,7 +55,7 @@ void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
     }
     _linePipeline->end();
 
-    _pointPipeline->begin(false);
+    _pointPipeline->begin();
     {
         std::shared_ptr<ShaderGroup> shader = _pointPipeline->getShaderGroup();
         shader->bind();

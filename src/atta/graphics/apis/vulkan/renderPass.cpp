@@ -64,7 +64,7 @@ RenderPass::~RenderPass() {
         vkDestroyRenderPass(_device->getHandle(), _renderPass, nullptr);
 }
 
-void RenderPass::begin(bool clear) {
+void RenderPass::begin() {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = _renderPass;

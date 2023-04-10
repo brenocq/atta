@@ -12,7 +12,7 @@ OpenGLRenderPass::OpenGLRenderPass(const RenderPass::CreateInfo& info) : RenderP
 
 OpenGLRenderPass::~OpenGLRenderPass() {}
 
-void OpenGLRenderPass::begin(bool clear) { _framebuffer->bind(clear); }
+void OpenGLRenderPass::begin() { _framebuffer->bind(true); }
 
 void OpenGLRenderPass::end() { _framebuffer->unbind(); }
 

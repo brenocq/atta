@@ -17,7 +17,7 @@ class OpenGLPipeline final : public Pipeline {
     OpenGLPipeline(const Pipeline::CreateInfo& info);
     ~OpenGLPipeline();
 
-    void begin(bool clear = true) override;
+    void begin() override;
     void end() override;
 
     void* getImGuiTexture() const override;

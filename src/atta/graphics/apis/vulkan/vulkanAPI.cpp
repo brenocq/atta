@@ -157,6 +157,7 @@ void VulkanAPI::beginFrame() {
         return;
     }
 
+    //---------- Reset fence ----------//
     // Only reset fence if work will be submitted
     _inFlightFences[_currFrame]->reset();
 

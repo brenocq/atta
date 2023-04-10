@@ -8,6 +8,9 @@
 #define ATTA_GRAPHICS_APIS_VULKAN_PIPELINE_H
 
 #include <atta/graphics/apis/vulkan/common.h>
+#include <atta/graphics/apis/vulkan/descriptorPool.h>
+#include <atta/graphics/apis/vulkan/descriptorSetLayout.h>
+#include <atta/graphics/apis/vulkan/descriptorSets.h>
 #include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/framebuffer.h>
 #include <atta/graphics/apis/vulkan/image.h>
@@ -15,6 +18,7 @@
 #include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/apis/vulkan/shaderGroup.h>
 #include <atta/graphics/apis/vulkan/vertexBuffer.h>
+#include <atta/graphics/apis/vulkan/uniformBuffer.h>
 #include <atta/graphics/pipeline.h>
 
 namespace atta::graphics::vk {
@@ -24,17 +28,12 @@ class Pipeline final : public graphics::Pipeline {
     Pipeline(const graphics::Pipeline::CreateInfo& info);
     ~Pipeline();
 
-    void begin(bool clear = true) override;
+    void begin() override;
     void end() override;
     void* getImGuiTexture() const override;
 
     VkPipeline getHandle() const;
     std::shared_ptr<PipelineLayout> getPipelineLayout() const;
-    // std::shared_ptr<DescriptorSetManager> getDescriptorSetManager() const;
-    // std::shared_ptr<DescriptorSets> getDescriptorSets() const;
-    // std::vector<std::shared_ptr<ImageView>> getImageViews() const;
-    // std::vector<std::shared_ptr<FrameBuffer>> getFrameBuffers() const;
-    // std::shared_ptr<RenderPass> getRenderPass() const;
 
   private:
     VkPipeline _pipeline;
@@ -42,7 +41,10 @@ class Pipeline final : public graphics::Pipeline {
     std::vector<std::shared_ptr<Framebuffer>> _framebuffers;
 
     std::shared_ptr<PipelineLayout> _pipelineLayout;
-    // std::shared_ptr<DescriptorSetManager> _descriptorSetManager;
+    std::shared_ptr<DescriptorPool> _descriptorPool;
+    std::shared_ptr<DescriptorSetLayout> _descriptorSetLayout;
+    std::shared_ptr<DescriptorSets> _descriptorSets;
+    std::shared_ptr<UniformBuffer> _uniformBuffer;
 
     // Output image info
     VkExtent2D _imageExtent;

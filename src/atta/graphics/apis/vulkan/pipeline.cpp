@@ -10,11 +10,20 @@
 
 namespace atta::graphics::vk {
 
+struct UniformBufferObject {
+    mat4 model;
+    mat4 view;
+    mat4 proj;
+};
+
 Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info) : graphics::Pipeline(info), _device(common::getDevice()) {
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages = std::dynamic_pointer_cast<vk::ShaderGroup>(_shaderGroup)->getShaderStages();
 
     // Create framebuffer
     _framebuffers.push_back(std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer()));
+
+    // Uniform buffers
+    _uniformBuffer = std::make_shared<UniformBuffer>(sizeof(UniformBufferObject));
 
     // Vertex input
     auto bindingDescription = VertexBuffer::getBindingDescription(_layout);
@@ -91,8 +100,18 @@ Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info) : graphics::Pipel
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates = dynamicStates.data();
 
+    // Descriptor set layout
+    std::vector<DescriptorSetLayout::Binding> bindings;
+    bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT});
+    _descriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
+
     // Pipeline layout
-    _pipelineLayout = std::make_shared<PipelineLayout>(_device); //, _descriptorSetManager->getDescriptorSetLayout());
+    _pipelineLayout = std::make_shared<PipelineLayout>(_descriptorSetLayout);
+
+    // Descriptor set
+    _descriptorPool = std::make_shared<DescriptorPool>(bindings, 1);
+    _descriptorSets = std::make_shared<DescriptorSets>(_descriptorPool, _descriptorSetLayout, _pipelineLayout, 1);
+    _descriptorSets->update(0, _uniformBuffer);
 
     // Create Pipeline
     VkGraphicsPipelineCreateInfo pipelineInfo{};
@@ -124,7 +143,7 @@ Pipeline::~Pipeline() {
     _framebuffers.clear();
 }
 
-void Pipeline::begin(bool clear) {
+void Pipeline::begin() {
     // Bind
     VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
@@ -144,16 +163,25 @@ void Pipeline::begin(bool clear) {
     scissor.offset = {0, 0};
     scissor.extent = {(uint32_t)viewport.width, (uint32_t)viewport.height};
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+    _descriptorSets->bind(0);
 }
 
-void Pipeline::end() {}
+void Pipeline::end() {
+    //---------- Update uniform buffers ----------//
+    static auto startTime = std::chrono::high_resolution_clock::now();
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+    UniformBufferObject ubo{};
+    ubo.model = mat4(1.0f);
+    ubo.model.mat[3][0] = time * 0.1f;
+    ubo.view = mat4(1.0f);
+    ubo.proj = mat4(1.0f);
+    memcpy(_uniformBuffer->getMappedData(), &ubo, sizeof(ubo));
+}
 void* Pipeline::getImGuiTexture() const { return nullptr; }
 
 VkPipeline Pipeline::getHandle() const { return _pipeline; }
 std::shared_ptr<PipelineLayout> Pipeline::getPipelineLayout() const { return _pipelineLayout; }
-// std::shared_ptr<DescriptorSetManager> Pipeline::getDescriptorSetManager() const { return _descriptorSetManager; }
-// std::shared_ptr<DescriptorSets> Pipeline::getDescriptorSets() const { return _descriptorSetManager->getDescriptorSets(); }
-// std::vector<std::shared_ptr<FrameBuffer>> Pipeline::getFrameBuffers() const { return _frameBuffers; }
-// std::shared_ptr<RenderPass> Pipeline::getRenderPass() const { return _renderPass; }
 
 } // namespace atta::graphics::vk

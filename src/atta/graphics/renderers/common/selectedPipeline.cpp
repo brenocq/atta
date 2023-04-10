@@ -27,7 +27,7 @@ SelectedPipeline::SelectedPipeline(std::shared_ptr<RenderPass> renderPass, Verte
 }
 
 void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
-    _pipeline->begin(false);
+    _pipeline->begin();
     {
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

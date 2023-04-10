@@ -16,9 +16,9 @@ OpenGLPipeline::OpenGLPipeline(const Pipeline::CreateInfo& info) : Pipeline(info
 
 OpenGLPipeline::~OpenGLPipeline() {}
 
-void OpenGLPipeline::begin(bool clear) {
+void OpenGLPipeline::begin() {
     _shaderGroup->bind();
-    _renderPass->begin(clear);
+    _renderPass->begin();
 }
 
 void OpenGLPipeline::end() {

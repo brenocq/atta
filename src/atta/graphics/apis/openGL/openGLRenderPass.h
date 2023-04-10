@@ -15,7 +15,7 @@ class OpenGLRenderPass final : public RenderPass {
     OpenGLRenderPass(const RenderPass::CreateInfo& info);
     ~OpenGLRenderPass();
 
-    void begin(bool clear = true) override;
+    void begin() override;
     void end() override;
 };
 
