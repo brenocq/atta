@@ -36,7 +36,7 @@ class ShaderGroup final : public gfx::ShaderGroup {
 
     inline unsigned int getLoc(const char* name);
 
-    OpenGLId getId() const { return _id; }
+    OpenGLId getHandle() const { return _id; }
 
   private:
     OpenGLId _id;

@@ -44,25 +44,26 @@ void Framebuffer::bindAttachments() {
     unsigned colorIndex = 0;
 
     for (unsigned i = 0; i < _images.size(); i++) {
+        std::shared_ptr<Image> image = std::dynamic_pointer_cast<Image>(_images[i]);
         bool isColor = (i != _depthAttachmentIndex) && (i != _stencilAttachmentIndex);
         if (i == _depthAttachmentIndex) {
-            if (!_images[i]->isCubemap())
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _images[i]->getId(), 0);
+            if (!image->isCubemap())
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, image->getHandle(), 0);
             else
-                glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _images[i]->getId(), 0);
+                glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, image->getHandle(), 0);
         }
         if (i == _stencilAttachmentIndex) {
-            if (!_images[i]->isCubemap())
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, _images[i]->getId(), 0);
+            if (!image->isCubemap())
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, image->getHandle(), 0);
             else
-                glFramebufferTexture(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, _images[i]->getId(), 0);
+                glFramebufferTexture(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, image->getHandle(), 0);
         }
 
         if (isColor) {
-            if (!_images[i]->isCubemap())
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorIndex, GL_TEXTURE_2D, _images[i]->getId(), 0);
+            if (!image->isCubemap())
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorIndex, GL_TEXTURE_2D, image->getHandle(), 0);
             else
-                glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorIndex, _images[i]->getId(), 0);
+                glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorIndex, image->getHandle(), 0);
             colorIndex++;
         }
     }

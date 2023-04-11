@@ -83,8 +83,8 @@ class Manager final {
     float _graphicsFPS; ///< Desired graphics FPS
 
     // Resource binding
-    std::unordered_map<StringHash, std::shared_ptr<Mesh>> _meshes;
-    std::unordered_map<StringHash, std::shared_ptr<Image>> _images;
+    std::unordered_map<StringId, std::shared_ptr<Mesh>> _meshes;
+    std::unordered_map<StringId, std::shared_ptr<Image>> _images;
 
     // Layer stack
     std::unique_ptr<LayerStack> _layerStack;

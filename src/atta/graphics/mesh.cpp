@@ -8,6 +8,6 @@
 
 namespace atta::graphics {
 
-Mesh::Mesh(StringId sid) : _sid(sid) {}
+Mesh::Mesh(CreateInfo info) : _vertexBuffer(info.vertexBuffer), _indexBuffer(info.indexBuffer) {}
 
 } // namespace atta::graphics

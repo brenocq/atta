@@ -15,7 +15,12 @@ namespace atta::graphics {
 
 class Mesh {
   public:
-    Mesh(StringId sid);
+    struct CreateInfo {
+        std::shared_ptr<VertexBuffer> vertexBuffer;
+        std::shared_ptr<IndexBuffer> indexBuffer;
+    };
+
+    Mesh(CreateInfo info);
     virtual ~Mesh() = default;
 
     virtual void draw() = 0;
@@ -23,7 +28,6 @@ class Mesh {
   protected:
     std::shared_ptr<VertexBuffer> _vertexBuffer;
     std::shared_ptr<IndexBuffer> _indexBuffer;
-    StringId _sid;
 };
 
 } // namespace atta::graphics

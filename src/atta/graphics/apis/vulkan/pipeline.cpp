@@ -16,7 +16,7 @@ struct UniformBufferObject {
     mat4 proj;
 };
 
-Pipeline::Pipeline(const graphics::Pipeline::CreateInfo& info) : graphics::Pipeline(info), _device(common::getDevice()) {
+Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info), _device(common::getDevice()) {
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages = std::dynamic_pointer_cast<vk::ShaderGroup>(_shaderGroup)->getShaderStages();
 
     // Create framebuffer

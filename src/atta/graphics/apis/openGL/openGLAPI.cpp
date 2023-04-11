@@ -278,7 +278,7 @@ void OpenGLAPI::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer
 
     _quadShader->bind();
     glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_2D, openGLImage->getId());
+    glBindTexture(GL_TEXTURE_2D, openGLImage->getHandle());
     renderQuad();
 }
 
@@ -443,7 +443,7 @@ void OpenGLAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
     glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, image->getWidth(), image->getHeight());
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, image->getId(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, image->getHandle(), 0);
 
     glViewport(0, 0, image->getWidth(), image->getHeight());
     gptInfo.shader->bind();
@@ -458,7 +458,7 @@ void OpenGLAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
 }
 
 void OpenGLAPI::initializeMesh(StringId sid) {
-    _openGLMeshes[sid.getId()] = std::make_shared<gl::Mesh>(sid);
+    // _openGLMeshes[sid.getId()] = std::make_shared<gl::Mesh>(sid);
     // LOG_DEBUG("gfx::OpenGLAPI", "Mesh loaded! [w]$0[]", sid);
 }
 

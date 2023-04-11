@@ -58,7 +58,6 @@ class Image {
     virtual void write(uint8_t* data) = 0;
     virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
 
-    GfxId getId() const { return _id; }
     Format getFormat() const { return _format; }
     Wrap getSamplerWrap() const { return _samplerWrap; }
     uint32_t getWidth() const { return _width; }
@@ -74,7 +73,6 @@ class Image {
     static bool isStencilFormat(Format format);
 
   protected:
-    GfxId _id;
     Format _format;
     Wrap _samplerWrap;
     vec4 _borderColor;

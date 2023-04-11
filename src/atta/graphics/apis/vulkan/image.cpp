@@ -11,15 +11,15 @@
 
 namespace atta::graphics::vk {
 
-Image::Image(const graphics::Image::CreateInfo& info)
-    : graphics::Image(info), _image(VK_NULL_HANDLE), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
+Image::Image(const gfx::Image::CreateInfo& info)
+    : gfx::Image(info), _image(VK_NULL_HANDLE), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
       _device(common::getDevice()), _destroyImage(true) {
     _supportedFormat = supportedFormat(_format);
     resize(_width, _height, true);
 }
 
-Image::Image(const graphics::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image)
-    : graphics::Image(info), _image(image), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE), _device(device),
+Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image)
+    : gfx::Image(info), _image(image), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE), _device(device),
       _destroyImage(false) {
     _supportedFormat = supportedFormat(_format);
     createImageView();

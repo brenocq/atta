@@ -8,8 +8,8 @@
 
 namespace atta::graphics::vk {
 
-Framebuffer::Framebuffer(const graphics::Framebuffer::CreateInfo& info)
-    : graphics::Framebuffer(info), _framebuffer(VK_NULL_HANDLE), _device(common::getDevice()) {
+Framebuffer::Framebuffer(const gfx::Framebuffer::CreateInfo& info)
+    : gfx::Framebuffer(info), _framebuffer(VK_NULL_HANDLE), _device(common::getDevice()) {
     // Create attachment images
     _images.clear();
     for (unsigned i = 0; i < _attachments.size(); i++) {
@@ -19,7 +19,7 @@ Framebuffer::Framebuffer(const graphics::Framebuffer::CreateInfo& info)
             image = std::dynamic_pointer_cast<vk::Image>(_attachments[i].image);
         } else {
             // If create from format
-            graphics::Image::CreateInfo info;
+            gfx::Image::CreateInfo info;
             info.format = _attachments[i].format;
             info.width = _width;
             info.height = _height;

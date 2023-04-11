@@ -10,7 +10,7 @@
 
 namespace atta::graphics::vk {
 
-Shader::Shader(const graphics::Shader::CreateInfo& info) : graphics::Shader(info), _device(common::getDevice()) { recompile(); }
+Shader::Shader(const gfx::Shader::CreateInfo& info) : gfx::Shader(info), _device(common::getDevice()) { recompile(); }
 
 Shader::~Shader() {
     if (_shader != VK_NULL_HANDLE)

@@ -26,7 +26,12 @@ class Image final : public gfx::Image {
     void write(uint8_t* data) override;
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
+    OpenGLId getHandle() const { return _id; }
+
     void* getImGuiImage() override { return reinterpret_cast<void*>(OpenGLId(_id)); }
+
+  private:
+    OpenGLId _id;
 };
 
 } // namespace atta::graphics::gl

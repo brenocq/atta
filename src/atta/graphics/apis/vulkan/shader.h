@@ -13,9 +13,9 @@
 
 namespace atta::graphics::vk {
 
-class Shader final : public graphics::Shader {
+class Shader final : public gfx::Shader {
   public:
-    Shader(const graphics::Shader::CreateInfo& info);
+    Shader(const gfx::Shader::CreateInfo& info);
     ~Shader();
 
     void recompile() override;

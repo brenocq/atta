@@ -15,10 +15,12 @@ namespace atta::graphics::gl {
 
 class Mesh final : public gfx::Mesh {
   public:
-    Mesh(StringId sid);
+    Mesh(CreateInfo info);
     ~Mesh();
 
     void draw() override;
+
+    OpenGLId getHandle() const { return _id; }
 
   private:
     OpenGLId _id;

@@ -209,14 +209,32 @@ void Manager::onImageUpdateEvent(event::Event& event) {
 
 void Manager::createMesh(StringId sid) {
     LOG_DEBUG("gfx::Manager", "Create mesh [w]$0[]", sid);
-    //_meshes[sid.getId()] = create<Mesh>(sid);
+    resource::Mesh* mesh = resource::get<resource::Mesh>(sid.getString());
+
+    VertexBuffer::CreateInfo vertexInfo{};
+    vertexInfo.data = (uint8_t*)mesh->getVertices().data();
+    vertexInfo.size = mesh->getVertices().size() * sizeof(res::Mesh::Vertex);
+    vertexInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
+                         {"inNormal", VertexBufferElement::Type::VEC3},
+                         {"inTexCoord", VertexBufferElement::Type::VEC2}};
+    std::shared_ptr<VertexBuffer> vertexBuffer = create<VertexBuffer>(vertexInfo);
+
+    IndexBuffer::CreateInfo indexInfo{};
+    indexInfo.data = (uint8_t*)mesh->getIndices().data();
+    indexInfo.size = mesh->getIndices().size() * sizeof(res::Mesh::Index);
+    std::shared_ptr<IndexBuffer> indexBuffer = create<IndexBuffer>(indexInfo);
+
+    Mesh::CreateInfo info{};
+    info.vertexBuffer = vertexBuffer;
+    info.indexBuffer = indexBuffer;
+    _meshes[sid] = create<Mesh>(info);
 }
 
 void Manager::createImage(StringId sid) {
     LOG_DEBUG("gfx::Manager", "Create image [w]$0[]", sid);
-    resource::Image* image = resource::get<resource::Image>(sid.getString());
+    resource::Image* image = resource::get<resource::Image>(sid);
     if (image == nullptr)
-        LOG_WARN("gfx::Manager", "Could not initialize gfx::Image from [w]$0[]", sid.getString());
+        LOG_WARN("gfx::Manager", "Could not initialize gfx::Image from [w]$0[]", sid);
 
     Image::CreateInfo info{};
     info.width = image->getWidth();
@@ -224,7 +242,7 @@ void Manager::createImage(StringId sid) {
     info.data = image->getData();
     info.format = convertFormat(image->getFormat());
     info.debugName = sid;
-    _images[sid.getId()] = create<Image>(info);
+    _images[sid] = create<Image>(info);
 }
 
 //---------- Register API specific implementations ----------//
@@ -235,6 +253,11 @@ void Manager::createImage(StringId sid) {
 template <>
 std::shared_ptr<Image> Manager::createImpl<Image>(Image::CreateInfo info) {
     return createSpecific<Image, gl::Image, vk::Image>(info);
+}
+
+template <>
+std::shared_ptr<Mesh> Manager::createImpl<Mesh>(Mesh::CreateInfo info) {
+    return createSpecific<Mesh, gl::Mesh, vk::Mesh>(info);
 }
 
 template <>

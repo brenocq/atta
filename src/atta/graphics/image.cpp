@@ -9,7 +9,7 @@
 namespace atta::graphics {
 
 Image::Image(const CreateInfo& info)
-    : _id(0), _format(info.format), _samplerWrap(info.samplerWrap), _borderColor(info.borderColor), _width(info.width), _height(info.height),
+    : _format(info.format), _samplerWrap(info.samplerWrap), _borderColor(info.borderColor), _width(info.width), _height(info.height),
       _mipLevels(info.mipLevels), _isCubemap(info.isCubemap), _debugName(info.debugName), _data(info.data) {}
 
 uint32_t Image::getNumChannels(Format format) {

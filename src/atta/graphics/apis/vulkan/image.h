@@ -14,14 +14,14 @@
 
 namespace atta::graphics::vk {
 
-class Image final : public graphics::Image {
+class Image final : public gfx::Image {
   public:
     /**
      * @brief Create image
      *
      * @param info Image create info
      */
-    Image(const graphics::Image::CreateInfo& info);
+    Image(const gfx::Image::CreateInfo& info);
 
     /**
      * @brief Create from vulkan image
@@ -32,7 +32,7 @@ class Image final : public graphics::Image {
      * @param device Vulkan device
      * @param image Vulkan image
      */
-    Image(const graphics::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image);
+    Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image);
 
     /**
      * @brief Destructor

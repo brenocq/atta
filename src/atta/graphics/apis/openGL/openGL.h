@@ -11,6 +11,7 @@
 #include <atta/graphics/apis/openGL/framebuffer.h>
 #include <atta/graphics/apis/openGL/image.h>
 #include <atta/graphics/apis/openGL/indexBuffer.h>
+#include <atta/graphics/apis/openGL/mesh.h>
 #include <atta/graphics/apis/openGL/openGLAPI.h>
 #include <atta/graphics/apis/openGL/pipeline.h>
 #include <atta/graphics/apis/openGL/renderPass.h>

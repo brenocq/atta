@@ -16,9 +16,9 @@
 namespace atta::graphics::vk {
 
 class Pipeline;
-class Framebuffer final : public graphics::Framebuffer {
+class Framebuffer final : public gfx::Framebuffer {
   public:
-    Framebuffer(const graphics::Framebuffer::CreateInfo& info);
+    Framebuffer(const gfx::Framebuffer::CreateInfo& info);
     ~Framebuffer();
 
     void bind(bool clear = true) override;

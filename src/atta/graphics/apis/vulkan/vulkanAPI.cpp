@@ -114,7 +114,7 @@ void VulkanAPI::beginFrame() {
         vertexBufferInfo.data = verticesData;
         _vertexBuffer = std::make_shared<vk::VertexBuffer>(vertexBufferInfo);
         // Copy from staging to vertex
-        vk::Buffer::copy(_stagingBuffer, _vertexBuffer);
+        //vk::Buffer::copy(_stagingBuffer, _vertexBuffer);
 
         //----- Send indices to GPU -----//
         // Create new staging buffer
@@ -128,7 +128,7 @@ void VulkanAPI::beginFrame() {
         indexBufferInfo.data = indicesData;
         _indexBuffer = std::make_shared<vk::IndexBuffer>(indexBufferInfo);
         // Copy from staging to index
-        vk::Buffer::copy(_stagingBuffer, _indexBuffer);
+        //vk::Buffer::copy(_stagingBuffer, _indexBuffer);
 
         //----- Pipeline -----//
         gfx::ShaderGroup::CreateInfo shaderGroupInfo;

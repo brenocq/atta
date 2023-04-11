@@ -10,13 +10,16 @@
 
 namespace atta::graphics::vk {
 
-VertexBuffer::VertexBuffer(const graphics::VertexBuffer::CreateInfo& info)
+VertexBuffer::VertexBuffer(const gfx::VertexBuffer::CreateInfo& info)
     : Buffer({
           info.size,
           VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
       }),
-      graphics::VertexBuffer(info) {}
+      gfx::VertexBuffer(info) {
+    if (info.data)
+        Buffer::setData(info.data);
+}
 
 VertexBuffer::~VertexBuffer() {}
 

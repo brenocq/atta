@@ -15,6 +15,8 @@ std::shared_ptr<T> Manager::createImpl(Args... args) {
 template <>
 std::shared_ptr<Image> Manager::createImpl<Image>(Image::CreateInfo info);
 template <>
+std::shared_ptr<Mesh> Manager::createImpl<Mesh>(Mesh::CreateInfo info);
+template <>
 std::shared_ptr<Framebuffer> Manager::createImpl<Framebuffer>(Framebuffer::CreateInfo info);
 template <>
 std::shared_ptr<IndexBuffer> Manager::createImpl<IndexBuffer>(IndexBuffer::CreateInfo info);

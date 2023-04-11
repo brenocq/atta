@@ -19,7 +19,7 @@ class VertexBuffer final : public gfx::VertexBuffer {
 
     void bind() const override;
 
-    OpenGLId getId() const { return _id; }
+    OpenGLId getHandle() const { return _id; }
 
   private:
     static GLenum convertUsage(Usage usage);

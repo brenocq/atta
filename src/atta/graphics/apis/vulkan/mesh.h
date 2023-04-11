@@ -16,7 +16,7 @@ namespace atta::graphics::vk {
 
 class Mesh final : public gfx::Mesh {
   public:
-    Mesh(StringId sid);
+    Mesh(CreateInfo info);
     ~Mesh();
 
     void draw() override;

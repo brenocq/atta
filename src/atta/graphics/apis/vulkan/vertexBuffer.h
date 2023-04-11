@@ -12,9 +12,9 @@
 
 namespace atta::graphics::vk {
 
-class VertexBuffer final : public Buffer, public graphics::VertexBuffer {
+class VertexBuffer final : public Buffer, public gfx::VertexBuffer {
   public:
-    VertexBuffer(const graphics::VertexBuffer::CreateInfo& info);
+    VertexBuffer(const gfx::VertexBuffer::CreateInfo& info);
     ~VertexBuffer();
 
     void bind() const override;

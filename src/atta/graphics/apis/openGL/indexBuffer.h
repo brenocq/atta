@@ -19,7 +19,7 @@ class IndexBuffer final : public gfx::IndexBuffer {
 
     void bind() const override;
 
-    OpenGLId getId() const { return _id; }
+    OpenGLId getHandle() const { return _id; }
 
   private:
     OpenGLId _id;

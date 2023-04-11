@@ -13,9 +13,9 @@
 
 namespace atta::graphics::vk {
 
-class ShaderGroup final : public graphics::ShaderGroup {
+class ShaderGroup final : public gfx::ShaderGroup {
   public:
-    ShaderGroup(const graphics::ShaderGroup::CreateInfo& info);
+    ShaderGroup(const gfx::ShaderGroup::CreateInfo& info);
     ~ShaderGroup();
 
     void recompile() override;

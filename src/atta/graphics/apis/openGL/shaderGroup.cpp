@@ -54,7 +54,7 @@ void ShaderGroup::recompile() {
 
     // Attach shaders
     for (auto shader : _shaders)
-        glAttachShader(_id, std::static_pointer_cast<Shader>(shader)->getId());
+        glAttachShader(_id, std::static_pointer_cast<Shader>(shader)->getHandle());
 
     // Link shaders
     glLinkProgram(_id);
@@ -73,7 +73,7 @@ void ShaderGroup::recompile() {
     // Detach and delete shaders
     for (auto shader : _shaders) {
         std::shared_ptr<Shader> s = std::static_pointer_cast<Shader>(shader);
-        glDetachShader(_id, s->getId());
+        glDetachShader(_id, s->getHandle());
     }
 }
 
@@ -126,7 +126,7 @@ void ShaderGroup::setImage(const char* name, StringId sid) {
 
     // Activate texture unit
     glActiveTexture(GL_TEXTURE0 + imgUnit);
-    glBindTexture(GL_TEXTURE_2D, image->getId());
+    glBindTexture(GL_TEXTURE_2D, image->getHandle());
 }
 
 void ShaderGroup::setImage(const char* name, std::shared_ptr<gfx::Image> inImage) {
@@ -155,7 +155,7 @@ void ShaderGroup::setImage(const char* name, std::shared_ptr<gfx::Image> inImage
 
     // Activate texture unit
     glActiveTexture(GL_TEXTURE0 + imgUnit);
-    glBindTexture(GL_TEXTURE_2D, image->getId());
+    glBindTexture(GL_TEXTURE_2D, image->getHandle());
 }
 
 void ShaderGroup::setCubemap(const char* name, StringId sid) {
@@ -218,7 +218,7 @@ void ShaderGroup::setCubemap(const char* name, std::shared_ptr<gfx::Image> inIma
 
     // Activate texture unit
     glActiveTexture(GL_TEXTURE0 + imgUnit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, image->getId());
+    glBindTexture(GL_TEXTURE_CUBE_MAP, image->getHandle());
 }
 
 unsigned int ShaderGroup::getLoc(const char* name) { return glGetUniformLocation(_id, name); }

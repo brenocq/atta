@@ -19,7 +19,7 @@ class Shader final : public gfx::Shader {
 
     void recompile() override;
 
-    OpenGLId getId() const { return _id; }
+    OpenGLId getHandle() const { return _id; }
     std::vector<std::string> getTextureUnits() { return _textureUnits; }
     void deleteShader();
 

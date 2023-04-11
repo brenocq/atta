@@ -7,6 +7,7 @@
 #include <atta/graphics/apis/vulkan/buffer.h>
 
 #include <atta/graphics/apis/vulkan/commandPool.h>
+#include <atta/graphics/apis/vulkan/stagingBuffer.h>
 
 namespace atta::graphics::vk {
 
@@ -74,6 +75,20 @@ void Buffer::copy(std::shared_ptr<Buffer> src, std::shared_ptr<Buffer> dst) {
         copyRegion.dstOffset = 0;
         copyRegion.size = src->_bufferSize;
         vkCmdCopyBuffer(commandBuffer, src->getHandle(), dst->getHandle(), 1, &copyRegion);
+    }
+    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
+}
+
+void Buffer::setData(uint8_t* data) {
+    StagingBuffer stagingBuffer{data, _bufferSize};
+
+    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
+    {
+        VkBufferCopy copyRegion{};
+        copyRegion.srcOffset = 0;
+        copyRegion.dstOffset = 0;
+        copyRegion.size = _bufferSize;
+        vkCmdCopyBuffer(commandBuffer, stagingBuffer.getHandle(), _buffer, 1, &copyRegion);
     }
     common::getCommandPool()->endSingleTimeCommands(commandBuffer);
 }

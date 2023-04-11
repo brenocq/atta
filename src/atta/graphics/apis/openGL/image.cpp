@@ -8,7 +8,7 @@
 
 namespace atta::graphics::gl {
 
-Image::Image(const Image::CreateInfo& info) : gfx::Image(info) { resize(_width, _height, true); }
+Image::Image(const Image::CreateInfo& info) : gfx::Image(info), _id(0) { resize(_width, _height, true); }
 
 Image::~Image() {
     if (_id) {

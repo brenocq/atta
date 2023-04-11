@@ -14,9 +14,9 @@
 namespace atta::graphics::vk {
 
 class Framebuffer;
-class RenderPass final : public graphics::RenderPass {
+class RenderPass final : public gfx::RenderPass {
   public:
-    RenderPass(const graphics::RenderPass::CreateInfo& info);
+    RenderPass(const gfx::RenderPass::CreateInfo& info);
     ~RenderPass();
 
     void begin() override;

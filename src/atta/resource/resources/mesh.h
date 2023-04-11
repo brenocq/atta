@@ -19,6 +19,8 @@ namespace atta::resource {
 
 class Mesh : public Resource, public memory::AllocatedObject<Mesh, SID("ResourceAllocator")> {
   public:
+    using Index = uint32_t;
+
     struct Vertex {
         vec3 position;
         vec3 normal;
@@ -28,7 +30,7 @@ class Mesh : public Resource, public memory::AllocatedObject<Mesh, SID("Resource
     Mesh(const fs::path& filename);
 
     const std::vector<Vertex>& getVertices() const { return _vertices; };
-    const std::vector<uint32_t>& getIndices() const { return _indices; };
+    const std::vector<Index>& getIndices() const { return _indices; };
 
   private:
     void load();
@@ -38,7 +40,7 @@ class Mesh : public Resource, public memory::AllocatedObject<Mesh, SID("Resource
     void processMesh(aiMesh* mesh, const aiScene* scene);
 
     std::vector<Vertex> _vertices;
-    std::vector<uint32_t> _indices;
+    std::vector<Index> _indices;
 };
 
 } // namespace atta::resource

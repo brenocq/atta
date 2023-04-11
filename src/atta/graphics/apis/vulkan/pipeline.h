@@ -23,9 +23,9 @@
 
 namespace atta::graphics::vk {
 
-class Pipeline final : public graphics::Pipeline {
+class Pipeline final : public gfx::Pipeline {
   public:
-    Pipeline(const graphics::Pipeline::CreateInfo& info);
+    Pipeline(const gfx::Pipeline::CreateInfo& info);
     ~Pipeline();
 
     void begin() override;

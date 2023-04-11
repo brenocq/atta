@@ -12,9 +12,9 @@
 
 namespace atta::graphics::vk {
 
-class IndexBuffer final : public Buffer, public graphics::IndexBuffer {
+class IndexBuffer final : public Buffer, public gfx::IndexBuffer {
   public:
-    IndexBuffer(const graphics::IndexBuffer::CreateInfo& info);
+    IndexBuffer(const gfx::IndexBuffer::CreateInfo& info);
     ~IndexBuffer();
 
     void bind() const override;
