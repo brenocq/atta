@@ -9,22 +9,18 @@
 
 #include <atta/graphics/apis/openGL/indexBuffer.h>
 #include <atta/graphics/apis/openGL/vertexBuffer.h>
-#include <atta/utils/stringId.h>
+#include <atta/graphics/mesh.h>
 
 namespace atta::graphics::gl {
 
-class Mesh final {
+class Mesh final : public gfx::Mesh {
   public:
     Mesh(StringId sid);
     ~Mesh();
 
-    void draw();
+    void draw() override;
 
   private:
-    std::shared_ptr<VertexBuffer> _vertexBuffer;
-    std::shared_ptr<IndexBuffer> _indexBuffer;
-    StringId _sid;
-
     OpenGLId _id;
 };
 

@@ -45,7 +45,7 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     resource::startUp();
     component::startUp();
     graphics::startUp();
-    ui::startUp();
+    // ui::startUp();
     physics::startUp();
     sensor::startUp();
     script::startUp();
@@ -84,7 +84,7 @@ Atta::~Atta() {
     sensor::shutDown();
     physics::shutDown();
     script::shutDown();
-    ui::shutDown();
+    // ui::shutDown();
     graphics::shutDown();
     component::shutDown();
     resource::shutDown();

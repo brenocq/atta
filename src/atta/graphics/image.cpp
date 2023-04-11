@@ -21,8 +21,10 @@ uint32_t Image::getNumChannels(Format format) {
         case Format::RG16F:
             return 2;
         case Format::RGB:
+        case Format::BGR:
             return 3;
         case Format::RGBA:
+        case Format::BGRA:
             return 4;
         case Format::RED32I:
             return 1;
@@ -43,8 +45,10 @@ uint32_t Image::getPixelSize(Format format) {
         case Format::RG16F:
             return 4;
         case Format::RGB:
+        case Format::BGR:
             return 3;
         case Format::RGBA:
+        case Format::BGRA:
             return 4;
         case Format::RED32I:
             return 4;

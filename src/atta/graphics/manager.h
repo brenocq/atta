@@ -7,16 +7,17 @@
 #ifndef ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 
+#include <atta/graphics/compute/entityClick.h>
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/indexBuffer.h>
+#include <atta/graphics/mesh.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderPass.h>
 #include <atta/graphics/shader.h>
 #include <atta/graphics/shaderGroup.h>
 #include <atta/graphics/vertexBuffer.h>
-
-#include <atta/graphics/compute/entityClick.h>
+#include <atta/resource/resources/image.h>
 
 namespace atta::graphics {
 
@@ -58,19 +59,32 @@ class Manager final {
     template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
     std::shared_ptr<T> createSpecific(Args... args);
 
-    std::shared_ptr<GraphicsAPI> getGraphicsAPIImpl() const { return _graphicsAPI; };
-    std::vector<std::shared_ptr<Viewport>>& getViewportsImpl() { return _viewports; };
+    std::shared_ptr<GraphicsAPI> getGraphicsAPIImpl() const;
+    std::vector<std::shared_ptr<Viewport>>& getViewportsImpl();
     void clearViewportsImpl();
     void addViewportImpl(std::shared_ptr<Viewport> viewport);
     void removeViewportImpl(std::shared_ptr<Viewport> viewport);
     void createDefaultViewportsImpl();
     component::EntityId viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos);
+    void* getImGuiImageImpl(StringId sid) const;
 
-    void* getImGuiImageImpl(StringId sid) const { return _graphicsAPI->getImGuiImage(sid); }
+    gfx::Image::Format convertFormat(res::Image::Format format) const;
+
+    // Handle resources
+    void syncResources();
+    void onMeshLoadEvent(event::Event& event);
+    void onImageLoadEvent(event::Event& event);
+    void onImageUpdateEvent(event::Event& event);
+    void createMesh(StringId sid);
+    void createImage(StringId sid);
 
     std::shared_ptr<Window> _window;
     std::shared_ptr<GraphicsAPI> _graphicsAPI;
     float _graphicsFPS; ///< Desired graphics FPS
+
+    // Resource binding
+    std::unordered_map<StringHash, std::shared_ptr<Mesh>> _meshes;
+    std::unordered_map<StringHash, std::shared_ptr<Image>> _images;
 
     // Layer stack
     std::unique_ptr<LayerStack> _layerStack;

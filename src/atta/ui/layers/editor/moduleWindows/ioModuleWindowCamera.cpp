@@ -58,7 +58,7 @@ void IOModuleWindow::cameraTabItem() {
                     if (data.size() > 0) {
                         int w, h, n;
                         char* img = (char*)stbi_load_from_memory(data.data(), data.size(), &w, &h, &n, 4);
-                        _cameraImages[name]->write((void*)img);
+                        _cameraImages[name]->write((uint8_t*)img);
                         stbi_image_free(img);
                         float ratio = _cameras[name]->getResolution().width / (float)_cameras[name]->getResolution().height;
 

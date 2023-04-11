@@ -26,6 +26,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/vulkan/image.cpp
     apis/vulkan/indexBuffer.cpp
     apis/vulkan/instance.cpp
+    apis/vulkan/mesh.cpp
     apis/vulkan/physicalDevice.cpp
     apis/vulkan/pipelineLayout.cpp
     apis/vulkan/renderPass.cpp
@@ -60,19 +61,20 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     windows/nullWindow.cpp
     windows/glfwWindow.cpp
 
+    drawer.cpp
+    framebuffer.cpp
+    image.cpp
+    indexBuffer.cpp
     interface.cpp
     manager.cpp
-    drawer.cpp
-    viewport.cpp
-    image.cpp
-    framebuffer.cpp
+    mesh.cpp
+    pipeline.cpp
     renderPass.cpp
-    shaderUniform.cpp
     shader.cpp
     shaderGroup.cpp
+    shaderUniform.cpp
     vertexBuffer.cpp
-    indexBuffer.cpp
-    pipeline.cpp
+    viewport.cpp
 )
 
 add_library(atta_graphics_module STATIC

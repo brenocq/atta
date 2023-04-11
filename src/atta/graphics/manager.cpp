@@ -17,9 +17,16 @@
 #include <atta/graphics/windows/glfwWindow.h>
 #include <atta/graphics/windows/nullWindow.h>
 
+#include <atta/event/events/imageLoad.h>
+#include <atta/event/events/imageUpdate.h>
+#include <atta/event/events/meshLoad.h>
+#include <atta/event/interface.h>
+
 #include <atta/event/interface.h>
 #include <atta/memory/allocators/stackAllocator.h>
 #include <atta/memory/interface.h>
+
+#include <atta/resource/interface.h>
 
 namespace atta::graphics {
 
@@ -49,15 +56,23 @@ void Manager::startUpImpl() {
     _window = std::static_pointer_cast<Window>(std::make_shared<GlfwWindow>(windowInfo));
 
     //----- Renderer API -----//
-    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
-    //_graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
+    // _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
+    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
+
+    //----- Compute Shaders -----//
+    // _computeEntityClick = std::make_unique<EntityClick>();
 
     //----- Create layer stack -----//
-    _computeEntityClick = std::make_unique<EntityClick>();
-    _layerStack = std::make_unique<LayerStack>();
+    // _layerStack = std::make_unique<LayerStack>();
 
     //----- Create viewports -----//
-    createDefaultViewportsImpl();
+    // createDefaultViewportsImpl();
+
+    //----- Resource sync -----//
+    event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));
+    event::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(Manager::onImageLoadEvent));
+    event::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(Manager::onImageUpdateEvent));
+    syncResources();
 }
 
 void Manager::shutDownImpl() {
@@ -94,7 +109,7 @@ void Manager::updateImpl() {
 
         // Render layer stack
         _graphicsAPI->beginFrame();
-        _layerStack->render();
+        // _layerStack->render();
         _graphicsAPI->endFrame();
 
         if (_graphicsAPI->getType() == GraphicsAPI::OPENGL)
@@ -103,6 +118,10 @@ void Manager::updateImpl() {
 }
 
 void Manager::pushLayerImpl(Layer* layer) { _layerStack->push(layer); }
+
+std::shared_ptr<GraphicsAPI> Manager::getGraphicsAPIImpl() const { return _graphicsAPI; }
+
+std::vector<std::shared_ptr<Viewport>>& Manager::getViewportsImpl() { return _viewports; }
 
 void Manager::clearViewportsImpl() {
     _viewportsNext.clear();
@@ -141,6 +160,71 @@ void Manager::createDefaultViewportsImpl() {
 
 component::EntityId Manager::viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos) {
     return _computeEntityClick->click(viewport, pos);
+}
+
+void* Manager::getImGuiImageImpl(StringId sid) const { return _graphicsAPI->getImGuiImage(sid); }
+
+gfx::Image::Format Manager::convertFormat(res::Image::Format format) const {
+    switch (format) {
+        case res::Image::Format::NONE:
+            return gfx::Image::Format::NONE;
+        case res::Image::Format::RED8:
+            return gfx::Image::Format::RED;
+        case res::Image::Format::RGB8:
+            return gfx::Image::Format::RGB;
+        case res::Image::Format::RGBA8:
+            return gfx::Image::Format::RGBA;
+        case res::Image::Format::RGB16F:
+            return gfx::Image::Format::RGB16F;
+        default:
+            break;
+    }
+    LOG_WARN("gfx::Manager", "Could not convert res::Image format to gfx::Image format");
+    return gfx::Image::Format::NONE;
+}
+
+void Manager::syncResources() {
+    // Initialize meshes already loaded
+    for (auto meshSid : resource::getResources<resource::Mesh>())
+        createMesh(meshSid);
+    // Initialize textures already loaded
+    for (auto imgSid : resource::getResources<resource::Image>())
+        createImage(imgSid);
+}
+
+void Manager::onMeshLoadEvent(event::Event& event) {
+    event::MeshLoad& e = reinterpret_cast<event::MeshLoad&>(event);
+    createMesh(e.sid);
+}
+
+void Manager::onImageLoadEvent(event::Event& event) {
+    event::ImageLoad& e = reinterpret_cast<event::ImageLoad&>(event);
+    createImage(e.sid);
+}
+
+void Manager::onImageUpdateEvent(event::Event& event) {
+    event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
+    // TODO update image
+}
+
+void Manager::createMesh(StringId sid) {
+    LOG_DEBUG("gfx::Manager", "Create mesh [w]$0[]", sid);
+    //_meshes[sid.getId()] = create<Mesh>(sid);
+}
+
+void Manager::createImage(StringId sid) {
+    LOG_DEBUG("gfx::Manager", "Create image [w]$0[]", sid);
+    resource::Image* image = resource::get<resource::Image>(sid.getString());
+    if (image == nullptr)
+        LOG_WARN("gfx::Manager", "Could not initialize gfx::Image from [w]$0[]", sid.getString());
+
+    Image::CreateInfo info{};
+    info.width = image->getWidth();
+    info.height = image->getHeight();
+    info.data = image->getData();
+    info.format = convertFormat(image->getFormat());
+    info.debugName = sid;
+    _images[sid.getId()] = create<Image>(info);
 }
 
 //---------- Register API specific implementations ----------//

@@ -91,39 +91,6 @@ SwapChain::~SwapChain() {
         vkDestroySwapchainKHR(_device->getHandle(), _swapChain, nullptr);
 }
 
-// void SwapChain::copyImage(VkCommandBuffer commandBuffer, int imageIndex, Image* src, VkExtent2D extent, VkExtent2D offset) {
-//     VkImageSubresourceRange subresourceRange;
-//     subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-//     subresourceRange.baseMipLevel = 0;
-//     subresourceRange.levelCount = 1;
-//     subresourceRange.baseArrayLayer = 0;
-//     subresourceRange.layerCount = 1;
-//
-//     ImageMemoryBarrier::insert(commandBuffer, src->getHandle(), subresourceRange, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT,
-//                                VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-//
-//     ImageMemoryBarrier::insert(commandBuffer, _images[imageIndex], subresourceRange, 0, VK_ACCESS_TRANSFER_WRITE_BIT,
-//                                VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-//
-//     // Copy all image or only half (splits the screen in half)
-//     VkImageCopy copyRegion;
-//     copyRegion.srcSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
-//     copyRegion.srcOffset = {0, 0, 0};
-//     copyRegion.dstSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
-//     copyRegion.dstOffset = {(int)offset.width, (int)offset.height, 0};
-//     copyRegion.extent = {extent.width, extent.height, 1};
-//
-//     vkCmdCopyImage(commandBuffer, src->handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, _images[imageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-//     1,
-//                    &copyRegion);
-//
-//     ImageMemoryBarrier::insert(commandBuffer, src->handle(), subresourceRange, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT,
-//                                VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
-//     // Changed VK_IMAGE_LAYOUT_PRESENT_SRC_KHR to VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL (imgui)
-//     ImageMemoryBarrier::insert(commandBuffer, _images[imageIndex], subresourceRange, VK_ACCESS_TRANSFER_WRITE_BIT, 0,
-//                                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-// }
-
 VkSwapchainKHR SwapChain::getHandle() const { return _swapChain; }
 
 VkExtent2D SwapChain::getImageExtent() const { return _extent; }

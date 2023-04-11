@@ -19,7 +19,9 @@ class Image {
         RED,    // 1 byte
         RG16F,  // 4 bytes
         RGB,    // 3 bytes
+        BGR,    // 3 bytes
         RGBA,   // 4 bytes
+        BGRA,   // 4 bytes
         RED32I, // 4 byte
 
         RGB16F,
@@ -53,7 +55,7 @@ class Image {
     Image(const CreateInfo& info);
     virtual ~Image() = default;
 
-    virtual void write(void* data) = 0;
+    virtual void write(uint8_t* data) = 0;
     virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
 
     GfxId getId() const { return _id; }

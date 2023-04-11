@@ -14,23 +14,45 @@ namespace atta::graphics::vk {
 Image::Image(const graphics::Image::CreateInfo& info)
     : graphics::Image(info), _image(VK_NULL_HANDLE), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
       _device(common::getDevice()), _destroyImage(true) {
+    _supportedFormat = supportedFormat(_format);
     resize(_width, _height, true);
 }
 
 Image::Image(const graphics::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image)
     : graphics::Image(info), _image(image), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE), _device(device),
       _destroyImage(false) {
+    _supportedFormat = supportedFormat(_format);
     createImageView();
 }
 
 Image::~Image() { destroy(); }
 
-void Image::write(void* data) {
-    size_t size = _width * _height * Image::getPixelSize(_format);
-    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(_data, size);
+void Image::write(uint8_t* data) {
+    size_t size = _width * _height * Image::getPixelSize(_supportedFormat);
+
+    // Format conversion
+    uint8_t* convertedData = data;
+    if (_format != _supportedFormat) {
+        // Perform format conversion
+        convertedData = new uint8_t[size];
+        if (_format == Format::RGB && _format == Format::RGBA)
+            for (int i = 0; i < _width * _height; i++) {
+                convertedData[i * 4 + 0] = data[i * 3 + 0];
+                convertedData[i * 4 + 1] = data[i * 3 + 1];
+                convertedData[i * 4 + 2] = data[i * 3 + 2];
+                convertedData[i * 4 + 3] = 255;
+            }
+    }
+
+    // Copy data to GPU
+    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(convertedData, size);
     transitionLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     copyFrom(stagingBuffer);
     transitionLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    // Delete convertedData if it was allocated to perform format conversion
+    if (data != convertedData)
+        delete[] convertedData;
 }
 
 void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
@@ -45,10 +67,10 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
 
     // Create new handles
     createImage();
+    allocMemory();
     createImageView();
     if (isColorFormat(_format))
         createSampler();
-    allocMemory();
 
     // Transfer data if specified
     if (_data)
@@ -84,6 +106,13 @@ void Image::copyFrom(std::shared_ptr<Buffer> buffer) {
     common::getCommandPool()->endSingleTimeCommands(commandBuffer);
 }
 
+Image::Format Image::supportedFormat(Image::Format format) {
+    // TODO check physical device supported formats
+    if (format == Format::RGB)
+        return Format::RGBA;
+    return format;
+}
+
 VkFormat Image::convertFormat(Image::Format format) {
     switch (format) {
         case Format::NONE:
@@ -95,10 +124,14 @@ VkFormat Image::convertFormat(Image::Format format) {
         case Format::RG16F:
             return VK_FORMAT_R16G16_SFLOAT;
         case Format::RGB:
+            return VK_FORMAT_R8G8B8_UNORM;
+        case Format::BGR:
             return VK_FORMAT_B8G8R8_UNORM;
         case Format::RGB16F:
             return VK_FORMAT_R16G16B16_SFLOAT;
         case Format::RGBA:
+            return VK_FORMAT_R8G8B8A8_UNORM;
+        case Format::BGRA:
             return VK_FORMAT_B8G8R8A8_UNORM;
         case Format::DEPTH32F:
             return VK_FORMAT_D32_SFLOAT;
@@ -116,12 +149,16 @@ Image::Format Image::convertFormat(VkFormat format) {
             return Format::RED32I;
         case VK_FORMAT_R16G16_SFLOAT:
             return Format::RG16F;
-        case VK_FORMAT_B8G8R8_UNORM:
+        case VK_FORMAT_R8G8B8_UNORM:
             return Format::RGB;
+        case VK_FORMAT_B8G8R8_UNORM:
+            return Format::BGR;
         case VK_FORMAT_R16G16B16_SFLOAT:
             return Format::RGB16F;
-        case VK_FORMAT_B8G8R8A8_UNORM:
+        case VK_FORMAT_R8G8B8A8_UNORM:
             return Format::RGBA;
+        case VK_FORMAT_B8G8R8A8_UNORM:
+            return Format::BGRA;
         case VK_FORMAT_D32_SFLOAT:
             return Format::DEPTH32F;
         case VK_FORMAT_D24_UNORM_S8_UINT:
@@ -140,8 +177,10 @@ VkImageAspectFlags Image::convertAspectFlags(Image::Format format) {
         case Format::RG16F:
         case Format::RED32I:
         case Format::RGB:
+        case Format::BGR:
         case Format::RGB16F:
         case Format::RGBA:
+        case Format::BGRA:
             return VK_IMAGE_ASPECT_COLOR_BIT;
         case Format::DEPTH32F:
             return VK_IMAGE_ASPECT_DEPTH_BIT;
@@ -152,78 +191,78 @@ VkImageAspectFlags Image::convertAspectFlags(Image::Format format) {
 }
 
 void Image::createImage() {
-    VkImageCreateInfo imageInfo{};
-    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = _width;
-    imageInfo.extent.height = _height;
-    imageInfo.extent.depth = 1;
-    imageInfo.mipLevels = 1;
-    imageInfo.arrayLayers = 1;
-    imageInfo.format = convertFormat(_format);
-    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-    imageInfo.initialLayout = _layout = VK_IMAGE_LAYOUT_UNDEFINED;
-    if (isColorFormat(_format))
-        imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-    else if (isDepthFormat(_format))
-        imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-    imageInfo.sharingMode = VK_SHARING_MODE_CONCURRENT;
-    imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-    imageInfo.flags = 0;
-    if (vkCreateImage(_device->getHandle(), &imageInfo, nullptr, &_image) != VK_SUCCESS)
+    VkImageCreateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    info.imageType = VK_IMAGE_TYPE_2D;
+    info.extent = {_width, _height, 1};
+    info.mipLevels = 1;
+    info.arrayLayers = 1;
+    info.format = convertFormat(_supportedFormat);
+    info.tiling = VK_IMAGE_TILING_OPTIMAL;
+    info.initialLayout = _layout = VK_IMAGE_LAYOUT_UNDEFINED;
+    if (isColorFormat(_supportedFormat))
+        info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    else if (isDepthFormat(_supportedFormat))
+        info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+    info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    info.samples = VK_SAMPLE_COUNT_1_BIT;
+    info.flags = 0;
+    if (vkCreateImage(_device->getHandle(), &info, nullptr, &_image) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Image", "Failed to create image");
 }
 
 void Image::createImageView() {
-    VkImageViewCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    createInfo.image = _image;
-    createInfo.format = convertFormat(_format);
+    VkImageViewCreateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    info.image = _image;
+    info.format = convertFormat(_supportedFormat);
+    if (info.format == VK_FORMAT_R8G8B8_UNORM)
+        info.format = VK_FORMAT_R8G8B8A8_UNORM;
 
     if (_isCubemap) {
-        createInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
-        createInfo.subresourceRange.layerCount = 6;
+        info.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
+        info.subresourceRange.layerCount = 6;
     } else {
-        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        createInfo.subresourceRange.aspectMask = convertAspectFlags(_format);
-        createInfo.subresourceRange.baseMipLevel = 0;
-        createInfo.subresourceRange.levelCount = _mipLevels;
-        createInfo.subresourceRange.baseArrayLayer = 0;
-        createInfo.subresourceRange.layerCount = 1;
+        info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
+        info.subresourceRange.baseMipLevel = 0;
+        info.subresourceRange.levelCount = _mipLevels;
+        info.subresourceRange.baseArrayLayer = 0;
+        info.subresourceRange.layerCount = 1;
     }
 
-    if (vkCreateImageView(_device->getHandle(), &createInfo, nullptr, &_imageView) != VK_SUCCESS)
+    if (vkCreateImageView(_device->getHandle(), &info, nullptr, &_imageView) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Image", "Failed to create image view");
 }
 
 void Image::createSampler() {
-    VkSamplerCreateInfo samplerInfo{};
-    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    VkSamplerCreateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     // Mag/min filters
-    samplerInfo.magFilter = VK_FILTER_LINEAR;
-    samplerInfo.minFilter = VK_FILTER_LINEAR;
+    info.magFilter = VK_FILTER_LINEAR;
+    info.minFilter = VK_FILTER_LINEAR;
     // Address mode
-    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
     // Anisotropy
-    samplerInfo.anisotropyEnable = VK_TRUE;
+    info.anisotropyEnable = VK_TRUE;
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(_device->getPhysicalDevice()->getHandle(), &properties);
-    samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+    info.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
     // Coordinates
-    samplerInfo.unnormalizedCoordinates = VK_FALSE;
+    info.unnormalizedCoordinates = VK_FALSE;
     // Compare
-    samplerInfo.compareEnable = VK_FALSE;
-    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+    info.compareEnable = VK_FALSE;
+    info.compareOp = VK_COMPARE_OP_ALWAYS;
     // Mipmapping
-    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-    samplerInfo.mipLodBias = 0.0f;
-    samplerInfo.minLod = 0.0f;
-    samplerInfo.maxLod = 0.0f;
+    info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    info.mipLodBias = 0.0f;
+    info.minLod = 0.0f;
+    info.maxLod = 0.0f;
 
-    if (vkCreateSampler(_device->getHandle(), &samplerInfo, nullptr, &_sampler) != VK_SUCCESS)
+    if (vkCreateSampler(_device->getHandle(), &info, nullptr, &_sampler) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Image", "Failed to create texture sampler");
 }
 

@@ -39,7 +39,7 @@ class Image final : public graphics::Image {
      */
     ~Image();
 
-    void write(void* data) override;
+    void write(uint8_t* data) override;
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
     void* getImGuiImage() override;
@@ -50,6 +50,7 @@ class Image final : public graphics::Image {
 
     void copyFrom(std::shared_ptr<Buffer> buffer);
 
+    static Image::Format supportedFormat(Image::Format format);
     static VkFormat convertFormat(Image::Format format);
     static Image::Format convertFormat(VkFormat format);
     static VkImageAspectFlags convertAspectFlags(Image::Format format);
@@ -70,6 +71,16 @@ class Image final : public graphics::Image {
     VkImageLayout _layout;
     std::shared_ptr<Device> _device;
 
+    /**
+     * @brief Supported vulkan format
+     *
+     * The GPU may not support _format, in that case _supportedFormat will differ from _format. The interface to the outside world will work as
+     * _format, but under the hood _supportedFormat will be used and the necessary conversions will be done.
+     *
+     * For example, some GPUs may not support RGB, only RGBA, so the _supportedFormat will be RGBA, and the conversion from RGBA to RGB will be done
+     * when reading the raw image
+     */
+    Format _supportedFormat;
     bool _destroyImage;
 };
 

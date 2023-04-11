@@ -23,7 +23,7 @@ class Image final : public gfx::Image {
     static GLenum convertDataType(Format format);
     static GLenum convertSamplerWrap(Wrap samplerWrap);
 
-    void write(void* data) override;
+    void write(uint8_t* data) override;
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
     void* getImGuiImage() override { return reinterpret_cast<void*>(OpenGLId(_id)); }
