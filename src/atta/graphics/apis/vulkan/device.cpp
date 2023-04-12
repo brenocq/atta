@@ -16,6 +16,9 @@ Device::Device(std::shared_ptr<PhysicalDevice> physicalDevice) : _physicalDevice
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value(), indices.transferFamily.value()};
+    _presentQueueFamily = indices.presentFamily.value();
+    _graphicsQueueFamily = indices.graphicsFamily.value();
+    _transferQueueFamily = indices.transferFamily.value();
 
     float queuePriority = 1.0f;
     for (uint32_t queueFamily : uniqueQueueFamilies) {
@@ -60,14 +63,19 @@ Device::Device(std::shared_ptr<PhysicalDevice> physicalDevice) : _physicalDevice
 }
 
 Device::~Device() {
-    if (_device != VK_NULL_HANDLE) {
+    if (_device != VK_NULL_HANDLE)
         vkDestroyDevice(_device, nullptr);
-    }
 }
 
 VkDevice Device::getHandle() const { return _device; }
 
 std::shared_ptr<PhysicalDevice> Device::getPhysicalDevice() const { return _physicalDevice; }
+
+uint32_t Device::getPresentQueueFamily() const { return _presentQueueFamily; }
+
+uint32_t Device::getGraphicsQueueFamily() const { return _graphicsQueueFamily; }
+
+uint32_t Device::getTransferQueueFamily() const { return _transferQueueFamily; }
 
 VkQueue Device::getPresentQueue() const { return _presentQueue; }
 

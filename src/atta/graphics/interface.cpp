@@ -18,6 +18,7 @@ void update() {
 void pushLayer(Layer* layer) { Manager::getInstance().pushLayerImpl(layer); }
 
 std::shared_ptr<GraphicsAPI> getGraphicsAPI() { return Manager::getInstance().getGraphicsAPIImpl(); };
+std::shared_ptr<Window> getWindow() { return Manager::getInstance().getWindowImpl(); };
 
 //----- Config -----//
 float getGraphicsFPS() { return Manager::getInstance()._graphicsFPS; }

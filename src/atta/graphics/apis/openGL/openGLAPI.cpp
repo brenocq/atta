@@ -24,7 +24,11 @@
 
 namespace atta::graphics {
 
-OpenGLAPI::OpenGLAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::OPENGL, window) {
+OpenGLAPI::OpenGLAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::OPENGL, window) {}
+
+OpenGLAPI::~OpenGLAPI() {}
+
+void OpenGLAPI::startUp() {
     // Initialize GLAD
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     ASSERT(status, "Failed to initialize Glad!");
@@ -193,12 +197,16 @@ OpenGLAPI::OpenGLAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
         initializeImage(imgSid);
 }
 
-OpenGLAPI::~OpenGLAPI() {
+void OpenGLAPI::shutDown() {
     _openGLMeshes.clear();
-
     // Delete cubemaps
     for (auto tex : _openGLCubemaps)
         glDeleteTextures(1, &tex.second);
+}
+
+void OpenGLAPI::waitDevice() {
+    glFlush();
+    glFinish();
 }
 
 void OpenGLAPI::beginFrame() {}

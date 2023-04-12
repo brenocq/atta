@@ -35,51 +35,51 @@ void EditorLayer::onRender() {}
 
 void EditorLayer::onUIRender() {
     PROFILE();
-    _dockSpace.render();
+    //_dockSpace.render();
 
     // Demo
-    // bool demo = true;
-    // ImGui::ShowDemoWindow(&demo);
-    // ImPlot::ShowDemoWindow(&demo);
+    bool demo = true;
+    ImGui::ShowDemoWindow(&demo);
+    ImPlot::ShowDemoWindow(&demo);
 
-    // Top interface
-    _topBar.render();
-    _toolBar.render();
+    //// Top interface
+    //_topBar.render();
+    //_toolBar.render();
 
-    // Drawers
-    _physicsDrawer.update();
-    _sensorDrawer.update();
+    //// Drawers
+    //_physicsDrawer.update();
+    //_sensorDrawer.update();
 
-    // Windows
-    _entityWindow.render();
-    _logWindow.render();
-    _viewportWindows.render();
+    //// Windows
+    //_entityWindow.render();
+    //_logWindow.render();
+    //_viewportWindows.render();
 
-    // Module windows
-    GraphicsModuleWindow::render();
-    IOModuleWindow::render();
-    PhysicsModuleWindow::render();
-    SensorModuleWindow::render();
+    //// Module windows
+    // GraphicsModuleWindow::render();
+    // IOModuleWindow::render();
+    // PhysicsModuleWindow::render();
+    // SensorModuleWindow::render();
 
-    // Tools
-    TimeProfilerWindow::render();
+    //// Tools
+    // TimeProfilerWindow::render();
 
-    // Windows utils
-    FileSelectionWindow::render();
+    //// Windows utils
+    // FileSelectionWindow::render();
 
-    // Topbar windows
-    VersionWindow::render();
+    //// Topbar windows
+    // VersionWindow::render();
 
-    renderCameraWindows();
+    // renderCameraWindows();
 
-    // Project UI
-    script::ProjectScript* project = script::getProjectScript();
-    if (project)
-        try {
-            project->onUIRender();
-        } catch (std::exception& e) {
-            LOG_ERROR("ui::EditorLayer", "Error when executing [w]ProjectScript::onUIRender[]: $0", e.what());
-        }
+    //// Project UI
+    // script::ProjectScript* project = script::getProjectScript();
+    // if (project)
+    //     try {
+    //         project->onUIRender();
+    //     } catch (std::exception& e) {
+    //         LOG_ERROR("ui::EditorLayer", "Error when executing [w]ProjectScript::onUIRender[]: $0", e.what());
+    //     }
 }
 
 void EditorLayer::renderCameraWindows() {

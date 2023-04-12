@@ -27,6 +27,7 @@ void pushLayer(Layer* layer);
 template <typename T, typename... Args>
 std::shared_ptr<T> create(Args... args);
 std::shared_ptr<GraphicsAPI> getGraphicsAPI();
+std::shared_ptr<Window> getWindow();
 
 //----- Config -----//
 float getGraphicsFPS();

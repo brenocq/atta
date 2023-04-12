@@ -10,7 +10,8 @@
 
 namespace atta::graphics::vk {
 
-CommandPool::CommandPool(std::shared_ptr<Device> device, DeviceQueueFamily deviceQueueFamily) : _device(device) {
+CommandPool::CommandPool(std::shared_ptr<Device> device, DeviceQueueFamily deviceQueueFamily)
+    : _device(device), _deviceQueueFamily(deviceQueueFamily) {
     std::shared_ptr<PhysicalDevice> physicalDevice = _device->getPhysicalDevice();
     PhysicalDevice::QueueFamilyIndices queueFamilyIndices = physicalDevice->getQueueFamilyIndices();
 

@@ -34,6 +34,10 @@ class VulkanAPI final : public GraphicsAPI {
     VulkanAPI(std::shared_ptr<Window> window);
     ~VulkanAPI();
 
+    void startUp() override;
+    void shutDown() override;
+    void waitDevice() override;
+
     void beginFrame() override;
     void endFrame() override;
 
@@ -49,9 +53,13 @@ class VulkanAPI final : public GraphicsAPI {
 
     void* getImGuiImage(StringId sid) const override;
 
+    std::shared_ptr<vk::Instance> getInstance() const;
+    std::shared_ptr<vk::PhysicalDevice> getPhysicalDevice() const;
     std::shared_ptr<vk::Device> getDevice() const;
     std::shared_ptr<vk::CommandBuffers> getCommandBuffers() const;
     std::shared_ptr<vk::CommandPool> getCommandPool() const;
+    std::shared_ptr<vk::RenderPass> getRenderPass() const;
+    std::shared_ptr<vk::DescriptorPool> getUiDescriptorPool() const;
 
   private:
     void recreateSwapChain();
@@ -59,6 +67,7 @@ class VulkanAPI final : public GraphicsAPI {
 
     static constexpr int MAX_FRAMES_IN_FLIGHT = 1;
     uint32_t _currFrame;
+    uint32_t _imageIndex;
     bool _windowResized;
 
     std::shared_ptr<vk::Instance> _instance;
@@ -67,6 +76,9 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::Device> _device;
     std::shared_ptr<vk::CommandPool> _commandPool;
     std::shared_ptr<vk::CommandBuffers> _commandBuffers;
+
+    // UI
+    std::shared_ptr<vk::DescriptorPool> _uiDescriptorPool;
 
     // Swap chain
     bool _swapChainInitialized;

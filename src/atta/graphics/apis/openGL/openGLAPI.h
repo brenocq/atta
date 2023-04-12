@@ -20,6 +20,10 @@ class OpenGLAPI final : public GraphicsAPI {
     OpenGLAPI(std::shared_ptr<Window> window);
     ~OpenGLAPI();
 
+    void startUp() override;
+    void shutDown() override;
+    void waitDevice() override;
+
     void beginFrame() override;
     void endFrame() override;
 

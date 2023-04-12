@@ -22,6 +22,10 @@ class GraphicsAPI {
     GraphicsAPI(Type type, std::shared_ptr<Window> window);
     virtual ~GraphicsAPI() = default;
 
+    virtual void startUp() = 0;
+    virtual void shutDown() = 0;
+    virtual void waitDevice() = 0;
+
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 

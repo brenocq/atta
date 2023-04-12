@@ -25,6 +25,9 @@ class UILayer final : public graphics::Layer, public memory::AllocatedObject<UIL
     void end();
 
   private:
+    void initOpenGL();
+    void initVulkan();
+
     void setTheme();
 };
 

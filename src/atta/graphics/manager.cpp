@@ -58,12 +58,13 @@ void Manager::startUpImpl() {
     //----- Renderer API -----//
     // _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
     _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
+    _graphicsAPI->startUp();
 
     //----- Compute Shaders -----//
     // _computeEntityClick = std::make_unique<EntityClick>();
 
     //----- Create layer stack -----//
-    // _layerStack = std::make_unique<LayerStack>();
+    _layerStack = std::make_unique<LayerStack>();
 
     //----- Create viewports -----//
     // createDefaultViewportsImpl();
@@ -76,6 +77,8 @@ void Manager::startUpImpl() {
 }
 
 void Manager::shutDownImpl() {
+    _graphicsAPI->waitDevice();
+
     // Every reference to the framebuffers must be deleted before window deletion
     for (auto& viewport : _viewports)
         viewport.reset();
@@ -86,6 +89,7 @@ void Manager::shutDownImpl() {
 
     _layerStack.reset();
     _computeEntityClick.reset();
+    _graphicsAPI->shutDown();
     _graphicsAPI.reset();
     _window.reset();
 }
@@ -109,7 +113,7 @@ void Manager::updateImpl() {
 
         // Render layer stack
         _graphicsAPI->beginFrame();
-        // _layerStack->render();
+        _layerStack->render();
         _graphicsAPI->endFrame();
 
         if (_graphicsAPI->getType() == GraphicsAPI::OPENGL)
@@ -120,6 +124,8 @@ void Manager::updateImpl() {
 void Manager::pushLayerImpl(Layer* layer) { _layerStack->push(layer); }
 
 std::shared_ptr<GraphicsAPI> Manager::getGraphicsAPIImpl() const { return _graphicsAPI; }
+
+std::shared_ptr<Window> Manager::getWindowImpl() const { return _window; }
 
 std::vector<std::shared_ptr<Viewport>>& Manager::getViewportsImpl() { return _viewports; }
 

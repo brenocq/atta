@@ -13,7 +13,14 @@
 
 namespace atta::graphics {
 
-VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::VULKAN, window), _currFrame(0), _windowResized(false) {
+VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::VULKAN, window), _currFrame(0), _windowResized(false) {}
+
+VulkanAPI::~VulkanAPI() {
+    if (_instance)
+        LOG_WARN("gfx::vk::VulkanAPI", "VulkanAPI should be [w]shutDown[] before being destroyed");
+}
+
+void VulkanAPI::startUp() {
     _instance = std::make_shared<vk::Instance>();
 #ifdef ATTA_DEBUG_BUILD
     _debugMessenger = std::make_shared<vk::DebugMessenger>(_instance);
@@ -39,12 +46,92 @@ VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::
     // Subscribe to window resize event
     evt::subscribe<evt::WindowResize>(BIND_EVENT_FUNC(VulkanAPI::onWindowResize));
 
+    //----- Create vulkan objects -----//
+    // clang-format off
+    static std::vector<float> vertices = {
+        -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+        -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+    };
+    static std::vector<uint32_t> indices = {
+        0, 1, 2, 2, 3, 0
+    };
+    // clang-format on
+
+    //----- Framebuffer -----//
+    gfx::Framebuffer::CreateInfo framebufferInfo{};
+    framebufferInfo.width = _swapChain->getImages()[0]->getWidth();
+    framebufferInfo.height = _swapChain->getImages()[0]->getHeight();
+    for (std::shared_ptr<Image> image : _swapChain->getImages()) {
+        gfx::Framebuffer::Attachment attachment{};
+        attachment.image = std::dynamic_pointer_cast<gfx::Image>(image);
+        framebufferInfo.attachments = {attachment};
+        _framebuffers.push_back(std::make_shared<vk::Framebuffer>(framebufferInfo));
+    }
+
+    //----- Render pass -----//
+    gfx::RenderPass::CreateInfo renderPassInfo{};
+    renderPassInfo.framebuffer = _framebuffers[0];
+    _renderPass = std::make_shared<vk::RenderPass>(renderPassInfo);
+    for (std::shared_ptr<vk::Framebuffer> fb : _framebuffers)
+        fb->create(_renderPass);
+
+    //----- Send vertices to GPU -----//
+    gfx::VertexBuffer::CreateInfo vertexBufferInfo{};
+    vertexBufferInfo.layout = {
+        {"inPosition", VertexBufferElement::Type::VEC2},
+        {"inColor", VertexBufferElement::Type::VEC3},
+    };
+    vertexBufferInfo.size = vertices.size() * sizeof(float);
+    vertexBufferInfo.data = (uint8_t*)vertices.data();
+    _vertexBuffer = std::make_shared<vk::VertexBuffer>(vertexBufferInfo);
+
+    //----- Send indices to GPU -----//
+    gfx::IndexBuffer::CreateInfo indexBufferInfo{};
+    indexBufferInfo.size = indices.size() * sizeof(uint32_t);
+    indexBufferInfo.data = (uint8_t*)indices.data();
+    _indexBuffer = std::make_shared<vk::IndexBuffer>(indexBufferInfo);
+
+    //----- Pipeline -----//
+    gfx::ShaderGroup::CreateInfo shaderGroupInfo;
+    shaderGroupInfo.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
+    std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(shaderGroupInfo);
+
+    gfx::Pipeline::CreateInfo pipelineInfo{};
+    pipelineInfo.shaderGroup = shaderGroup;
+    pipelineInfo.renderPass = _renderPass;
+    pipelineInfo.layout = vertexBufferInfo.layout;
+    _pipeline = std::make_shared<vk::Pipeline>(pipelineInfo);
+
+    //----- UI Descriptor Pool -----//
+    std::vector<VkDescriptorType> descriptorTypes = {
+        VK_DESCRIPTOR_TYPE_SAMPLER,
+        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+        VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+        VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+        VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER,
+        VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
+        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
+        VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
+    };
+    std::vector<vk::DescriptorSetLayout::Binding> uiDescriptorBindings;
+    for (VkDescriptorType type : descriptorTypes) {
+        vk::DescriptorSetLayout::Binding b{};
+        b.descriptorCount = 1;
+        b.type = type;
+        uiDescriptorBindings.push_back(b);
+    }
+    _uiDescriptorPool = std::make_shared<vk::DescriptorPool>(uiDescriptorBindings, 1000);
+
     LOG_SUCCESS("gfx::VulkanAPI", "Initialized");
 }
 
-VulkanAPI::~VulkanAPI() {
-    vkDeviceWaitIdle(_device->getHandle());
-
+void VulkanAPI::shutDown() {
+    waitDevice();
     _framebuffers.clear();
     _swapChain.reset();
 
@@ -66,89 +153,19 @@ VulkanAPI::~VulkanAPI() {
     _instance.reset();
 }
 
+void VulkanAPI::waitDevice() { vkDeviceWaitIdle(_device->getHandle()); }
+
 void VulkanAPI::beginFrame() {
-    // clang-format off
-    static std::vector<float> vertices = {
-        -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-        -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
-    };
-    static std::vector<uint32_t> indices = {
-        0, 1, 2, 2, 3, 0
-    };
-    // clang-format on
     if (!_swapChainInitialized) {
         _swapChainInitialized = true;
-
-        //----- Framebuffer -----//
-        gfx::Framebuffer::CreateInfo framebufferInfo{};
-        framebufferInfo.width = _swapChain->getImages()[0]->getWidth();
-        framebufferInfo.height = _swapChain->getImages()[0]->getHeight();
-        for (std::shared_ptr<Image> image : _swapChain->getImages()) {
-            gfx::Framebuffer::Attachment attachment{};
-            attachment.image = std::dynamic_pointer_cast<gfx::Image>(image);
-            framebufferInfo.attachments = {attachment};
-            _framebuffers.push_back(std::make_shared<vk::Framebuffer>(framebufferInfo));
-        }
-
-        //----- Render pass -----//
-        gfx::RenderPass::CreateInfo renderPassInfo{};
-        renderPassInfo.framebuffer = _framebuffers[0];
-        _renderPass = std::make_shared<vk::RenderPass>(renderPassInfo);
-        for (std::shared_ptr<vk::Framebuffer> fb : _framebuffers)
-            fb->create(_renderPass);
-
-        //----- Send vertices to GPU -----//
-        // Create staging buffer
-        size_t verticesSize = vertices.size() * sizeof(float);
-        uint8_t* verticesData = (uint8_t*)vertices.data();
-        _stagingBuffer = std::make_shared<vk::StagingBuffer>(verticesData, verticesSize);
-        // Create vertex buffer
-        gfx::VertexBuffer::CreateInfo vertexBufferInfo{};
-        vertexBufferInfo.layout = {
-            {"inPosition", VertexBufferElement::Type::VEC2},
-            {"inColor", VertexBufferElement::Type::VEC3},
-        };
-        vertexBufferInfo.size = verticesSize;
-        vertexBufferInfo.data = verticesData;
-        _vertexBuffer = std::make_shared<vk::VertexBuffer>(vertexBufferInfo);
-        // Copy from staging to vertex
-        //vk::Buffer::copy(_stagingBuffer, _vertexBuffer);
-
-        //----- Send indices to GPU -----//
-        // Create new staging buffer
-        _stagingBuffer.reset();
-        size_t indicesSize = indices.size() * sizeof(uint32_t);
-        uint8_t* indicesData = (uint8_t*)indices.data();
-        _stagingBuffer = std::make_shared<vk::StagingBuffer>(indicesData, indicesSize);
-        // Create index buffer
-        gfx::IndexBuffer::CreateInfo indexBufferInfo{};
-        indexBufferInfo.size = indicesSize;
-        indexBufferInfo.data = indicesData;
-        _indexBuffer = std::make_shared<vk::IndexBuffer>(indexBufferInfo);
-        // Copy from staging to index
-        //vk::Buffer::copy(_stagingBuffer, _indexBuffer);
-
-        //----- Pipeline -----//
-        gfx::ShaderGroup::CreateInfo shaderGroupInfo;
-        shaderGroupInfo.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
-        std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(shaderGroupInfo);
-
-        gfx::Pipeline::CreateInfo pipelineInfo{};
-        pipelineInfo.shaderGroup = shaderGroup;
-        pipelineInfo.renderPass = _renderPass;
-        pipelineInfo.layout = vertexBufferInfo.layout;
-        _pipeline = std::make_shared<vk::Pipeline>(pipelineInfo);
     }
 
     //---------- CPU-GPU synchronization ----------//
     _inFlightFences[_currFrame]->wait();
 
     //---------- Get swap chain image ----------//
-    uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(_device->getHandle(), _swapChain->getHandle(), std::numeric_limits<uint64_t>::max(),
-                                            _imageAvailableSemaphores[_currFrame]->getHandle(), VK_NULL_HANDLE, &imageIndex);
+                                            _imageAvailableSemaphores[_currFrame]->getHandle(), VK_NULL_HANDLE, &_imageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         recreateSwapChain();
         return;
@@ -163,15 +180,19 @@ void VulkanAPI::beginFrame() {
 
     //---------- Record to command buffer ----------//
     VkCommandBuffer cmdBuf = _commandBuffers->begin(_currFrame);
-    _renderPass->setFramebuffer(_framebuffers[imageIndex]);
+    _renderPass->setFramebuffer(_framebuffers[_imageIndex]);
     _renderPass->begin();
     _pipeline->begin();
     _vertexBuffer->bind();
     _indexBuffer->bind();
     vkCmdDrawIndexed(cmdBuf, _indexBuffer->getCount(), 1, 0, 0, 0);
     _pipeline->end();
+}
+
+void VulkanAPI::endFrame() {
     _renderPass->end();
     _commandBuffers->end(_currFrame);
+    VkCommandBuffer cmdBuf = _commandBuffers->getHandles()[_currFrame];
 
     //---------- GPU-GPU synchronization ----------//
     VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores[_currFrame]->getHandle()};
@@ -199,9 +220,9 @@ void VulkanAPI::beginFrame() {
     presentInfo.pWaitSemaphores = signalSemaphores;
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
-    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pImageIndices = &_imageIndex;
 
-    result = vkQueuePresentKHR(_device->getPresentQueue(), &presentInfo);
+    VkResult result = vkQueuePresentKHR(_device->getPresentQueue(), &presentInfo);
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || _windowResized) {
         _windowResized = false;
         recreateSwapChain();
@@ -213,8 +234,6 @@ void VulkanAPI::beginFrame() {
     //---------- Next frame ----------//
     _currFrame = (_currFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
-
-void VulkanAPI::endFrame() {}
 
 void VulkanAPI::renderMesh(StringId meshSid) {}
 
@@ -234,9 +253,19 @@ void VulkanAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
 
 void* VulkanAPI::getImGuiImage(StringId sid) const { return nullptr; }
 
+std::shared_ptr<vk::Instance> VulkanAPI::getInstance() const { return _instance; }
+
+std::shared_ptr<vk::PhysicalDevice> VulkanAPI::getPhysicalDevice() const { return _physicalDevice; }
+
 std::shared_ptr<vk::Device> VulkanAPI::getDevice() const { return _device; }
+
 std::shared_ptr<vk::CommandBuffers> VulkanAPI::getCommandBuffers() const { return _commandBuffers; }
+
 std::shared_ptr<vk::CommandPool> VulkanAPI::getCommandPool() const { return _commandPool; }
+
+std::shared_ptr<vk::RenderPass> VulkanAPI::getRenderPass() const { return _renderPass; }
+
+std::shared_ptr<vk::DescriptorPool> VulkanAPI::getUiDescriptorPool() const { return _uiDescriptorPool; }
 
 void VulkanAPI::recreateSwapChain() {
     while (_window->getWidth() == 0 && _window->getHeight() == 0) {

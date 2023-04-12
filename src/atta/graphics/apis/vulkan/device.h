@@ -19,6 +19,9 @@ class Device {
 
     VkDevice getHandle() const;
     std::shared_ptr<PhysicalDevice> getPhysicalDevice() const;
+    uint32_t getPresentQueueFamily() const;
+    uint32_t getGraphicsQueueFamily() const;
+    uint32_t getTransferQueueFamily() const;
     VkQueue getPresentQueue() const;
     VkQueue getGraphicsQueue() const;
     VkQueue getTransferQueue() const;
@@ -29,6 +32,9 @@ class Device {
 
     VkDevice _device;
     std::shared_ptr<PhysicalDevice> _physicalDevice;
+    uint32_t _presentQueueFamily;
+    uint32_t _graphicsQueueFamily;
+    uint32_t _transferQueueFamily;
     VkQueue _presentQueue;
     VkQueue _graphicsQueue;
     VkQueue _transferQueue;

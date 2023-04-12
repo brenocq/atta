@@ -17,6 +17,7 @@ set(IMGUI_SOURCE
 	${FETCHCONTENT_BASE_DIR}/imgui-src/imgui_widgets.cpp
 	${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_glfw.cpp
 	${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_opengl3.cpp
+	${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_vulkan.cpp
 )
 add_library(imgui STATIC
 	${IMGUI_SOURCE}

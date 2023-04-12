@@ -40,6 +40,7 @@ class Manager final {
     friend void setViewportRendering(bool viewportRendering);
 
     friend std::shared_ptr<GraphicsAPI> getGraphicsAPI();
+    friend std::shared_ptr<Window> getWindow();
     friend std::vector<std::shared_ptr<Viewport>> getViewports();
     friend void clearViewports();
     friend void addViewport(std::shared_ptr<Viewport> viewport);
@@ -60,6 +61,7 @@ class Manager final {
     std::shared_ptr<T> createSpecific(Args... args);
 
     std::shared_ptr<GraphicsAPI> getGraphicsAPIImpl() const;
+    std::shared_ptr<Window> getWindowImpl() const;
     std::vector<std::shared_ptr<Viewport>>& getViewportsImpl();
     void clearViewportsImpl();
     void addViewportImpl(std::shared_ptr<Viewport> viewport);

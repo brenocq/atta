@@ -10,6 +10,9 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
 #include <ImGuizmo.h>
+#include <atta/graphics/apis/vulkan/vulkanAPI.h>
+#include <atta/graphics/interface.h>
+#include <backends/imgui_impl_vulkan.h>
 #include <implot.h>
 
 namespace atta::ui {
@@ -36,14 +39,14 @@ void UILayer::onAttach() {
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport
 #endif
 
-    GLFWwindow* window = glfwGetCurrentContext();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 100");
+    // initOpenGL();
+    initVulkan();
     setTheme();
 }
 
 void UILayer::onDetach() {
-    ImGui_ImplOpenGL3_Shutdown();
+    // ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
@@ -53,7 +56,8 @@ void UILayer::onRender() {}
 void UILayer::onUIRender() {}
 
 void UILayer::begin() {
-    ImGui_ImplOpenGL3_NewFrame();
+    // ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
@@ -61,15 +65,51 @@ void UILayer::begin() {
 
 void UILayer::end() {
     ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
+                                    std::dynamic_pointer_cast<gfx::VulkanAPI>(gfx::getGraphicsAPI())->getCommandBuffers()->getCurrent());
 
     ImGuiIO& io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-        GLFWwindow* backup_current_context = glfwGetCurrentContext();
+        GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backup_current_context);
+        glfwMakeContextCurrent(backupCurrentContext);
     }
+}
+
+void UILayer::initOpenGL() {
+    GLFWwindow* window = (GLFWwindow*)gfx::getWindow()->getHandle();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 100");
+}
+
+void UILayer::initVulkan() {
+    GLFWwindow* window = (GLFWwindow*)gfx::getWindow()->getHandle();
+    ImGui_ImplGlfw_InitForVulkan(window, true);
+    std::shared_ptr<gfx::VulkanAPI> vulkanAPI = std::dynamic_pointer_cast<gfx::VulkanAPI>(gfx::getGraphicsAPI());
+    ImGui_ImplVulkan_InitInfo info{};
+    info.Instance = vulkanAPI->getInstance()->getHandle();
+    info.PhysicalDevice = vulkanAPI->getPhysicalDevice()->getHandle();
+    info.Device = vulkanAPI->getDevice()->getHandle();
+    info.QueueFamily = vulkanAPI->getDevice()->getGraphicsQueueFamily();
+    info.Queue = vulkanAPI->getDevice()->getGraphicsQueue();
+    info.PipelineCache = nullptr;
+    info.DescriptorPool = vulkanAPI->getUiDescriptorPool()->getHandle();
+    info.Allocator = nullptr;
+    info.MinImageCount = 2;
+    info.ImageCount = 2;
+    info.CheckVkResultFn = nullptr;
+    ImGui_ImplVulkan_Init(&info, vulkanAPI->getRenderPass()->getHandle());
+
+    // Upload Fonts
+    {
+        std::shared_ptr<gfx::vk::CommandPool> commandPool = vulkanAPI->getCommandPool();
+        VkCommandBuffer commandBuffer = commandPool->beginSingleTimeCommands();
+        ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
+        commandPool->endSingleTimeCommands(commandBuffer);
+    }
+    ImGui_ImplVulkan_DestroyFontUploadObjects();
 }
 
 void UILayer::setTheme() {
