@@ -95,7 +95,7 @@ void VulkanAPI::startUp() {
 
     //----- Pipeline -----//
     gfx::ShaderGroup::CreateInfo shaderGroupInfo;
-    shaderGroupInfo.shaderPaths = {"shaders/triangle/shader-spv.vert", "shaders/triangle/shader-spv.frag"};
+    shaderGroupInfo.shaderPaths = {"shaders/triangle/shader.vert", "shaders/triangle/shader.frag"};
     std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(shaderGroupInfo);
 
     gfx::Pipeline::CreateInfo pipelineInfo{};
