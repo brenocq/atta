@@ -24,6 +24,7 @@ void Manager::shutDownImpl() {
     _device.reset();
     _serialDevice.reset();
     _cpuDevice.reset();
+    _gpuDevice.reset();
 }
 
 void Manager::computeImpl(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) { _device->compute(start, end, std::move(func)); }
