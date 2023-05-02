@@ -14,12 +14,11 @@ void shutDown() { Manager::getInstance().shutDownImpl(); }
 // Create/destroy entity
 Entity createEntity(EntityId entity) { return Manager::getInstance().createEntityImpl(entity); }
 void deleteEntity(Entity entity) { return Manager::getInstance().deleteEntityImpl(entity); }
-void deleteEntityOnly(Entity entity) { return Manager::getInstance().deleteEntityOnlyImpl(entity); }
 Entity copyEntity(Entity entity) { return Manager::getInstance().copyEntityImpl(entity); }
 
 // Add entity component
 Component* addComponentById(ComponentId id, Entity entity) { return Manager::getInstance().addComponentByIdImpl(id, entity); }
-Component* addComponentPtr(Entity entity, unsigned index, uint8_t* component) {
+Component* addComponentPtr(Entity entity, unsigned index, Component* component) {
     return Manager::getInstance().addComponentPtrImpl(entity, index, component);
 }
 // Get entity component

@@ -62,7 +62,7 @@ void Factory::createChildClones(Entity child, Entity parent) {
 
                 // Add allocated component to clone entities
                 for (unsigned i = 0; i < _maxClones; i++)
-                    component::addComponentPtr(firstClone.getId() + i, compReg->getIndex(), mem + componentSize * i);
+                    component::addComponentPtr(firstClone.getId() + i, compReg->getIndex(), (Component*)(mem + componentSize * i));
             }
         }
     }

@@ -22,23 +22,22 @@ void shutDown();
 // Create/destroy entity
 Entity createEntity(EntityId entity = -1); // Can *try* to create entity with specific EntityId
 void deleteEntity(Entity entity);          // Delete entity and deallocate components
-void deleteEntityOnly(Entity entity);      // Delete entity without deallocating components
 Entity copyEntity(Entity entity);
 
 // Add component
 template <typename T>
 T* addComponent(Entity entity);
 Component* addComponentById(ComponentId id, Entity entity);
-Component* addComponentPtr(Entity entity, unsigned index, uint8_t* component);
+Component* addComponentPtr(Entity entity, unsigned index, Component* component);
+
+// Remove component
+void removeComponentById(ComponentId id, Entity entity);
 
 // Get component
 template <typename T>
 T* getComponent(Entity entity);
 Component* getComponentById(ComponentId id, Entity entity);
 std::vector<Component*> getComponents(Entity entity);
-
-// Remove component
-void removeComponentById(ComponentId id, Entity entity);
 
 // Getters
 std::vector<ComponentRegistry*> getComponentRegistries();
@@ -60,11 +59,6 @@ void clear();
 void registerComponent(ComponentRegistry* componentRegistry);
 void unregisterCustomComponents();
 
-template<typename T>
-inline ComponentId getId() {
-    return TypedComponentRegistry<T>::getInstance().getId();
-}
-
 } // namespace atta::component
 
 // Template definitions
@@ -72,6 +66,11 @@ inline ComponentId getId() {
 #include <atta/component/manager.h>
 
 namespace atta::component {
+
+template <typename T>
+ComponentId getId() {
+    return COMPONENT_POOL_SID_BY_NAME(typeid(T).name());
+}
 
 template <typename T>
 T* addComponent(Entity entity) {

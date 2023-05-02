@@ -31,12 +31,11 @@ class Manager final {
     friend void shutDown();
     friend Entity createEntity(EntityId entity);
     friend void deleteEntity(Entity entity);
-    friend void deleteEntityOnly(Entity entity);
     friend Entity copyEntity(Entity entity);
     template <typename T>
     friend T* addComponent(Entity entity);
     friend Component* addComponentById(ComponentId id, Entity entity);
-    friend Component* addComponentPtr(Entity entity, unsigned index, uint8_t* component);
+    friend Component* addComponentPtr(Entity entity, unsigned index, Component* component);
     template <typename T>
     friend T* getComponent(Entity entity);
     friend Component* getComponentById(ComponentId id, Entity entity);
@@ -68,15 +67,17 @@ class Manager final {
     //----- Entity -----//
     Entity createEntityImpl(EntityId entity = -1, size_t quantity = 1);
     void deleteEntityImpl(Entity entity);
-    void deleteEntityOnlyImpl(Entity entity);
     Entity copyEntityImpl(Entity entity);
 
     //----- Component -----//
     template <typename T>
     T* addComponentImpl(Entity entity);
     Component* addComponentByIdImpl(ComponentId id, Entity entity);
-    Component* addComponentPtrImpl(Entity entity, unsigned index, uint8_t* component);
+    Component* addComponentPtrImpl(Entity entity, unsigned index, Component* component);
+    void notifyComponentAdded(Entity entity, ComponentId id, Component* ptr);
     void removeComponentByIdImpl(ComponentId id, Entity entity);
+    void notifyComponentRemoved(Entity entity, ComponentId id);
+
     template <typename T>
     T* getComponentImpl(Entity entity);
     Component* getComponentByIdImpl(ComponentId id, Entity entity);
@@ -96,8 +97,9 @@ class Manager final {
     void unregisterCustomComponentsImpl();                            // Unregister to free memory that was allocated for all custom components
     void createComponentPoolsFromRegistered();
     void createComponentPool(ComponentRegistry* componentRegistry);
-    std::vector<ComponentRegistry*> getComponentRegistriesImpl() { return _componentRegistries; }
     memory::BitmapAllocator* getComponentAllocator(ComponentRegistry* compReg);
+    ComponentRegistry* getComponentRegistry(ComponentId id);
+    std::vector<ComponentRegistry*> getComponentRegistriesImpl();
 
     //----- Event handling -----//
     void onMeshEvent(event::Event& event);   // Used the update the Mesh attribute options
@@ -106,7 +108,7 @@ class Manager final {
 
     //----- Memory management -----//
     struct EntityBlock {
-        void* components[maxRegisteredComponents];
+        Component* components[maxRegisteredComponents];
     };
     EntityBlock* getEntityBlock(EntityId eid);
 
@@ -123,7 +125,7 @@ class Manager final {
     };
     std::vector<ComponentRegistryBackupInfo> _componentRegistriesBackupInfo;
 
-    // Entity views(TODO create views from template?)
+    // Entity views (TODO create views from template?)
     size_t _maxEntities;                 // Maximum number of entities
     std::set<EntityId> _entities;        // View of entities
     std::set<EntityId> _noPrototypeView; // View of entities and clone (no prototype entity)
