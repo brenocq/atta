@@ -32,9 +32,19 @@ Allocator** Manager::getAllocatorPtrImpl(StringHash hash) {
         return &allocator->second;
 }
 
-void Manager::registerAllocatorImpl(StringHash hash, Allocator* alloc) {
+void Manager::registerAllocatorImpl(StringId sid, Allocator* alloc) {
     // Just replaces the pointer, does not delete the allocator
-    _allocators[hash] = alloc;
+    _allocators[sid.getId()] = alloc;
 }
+
+std::string Manager::getAllocatorNameImpl(Allocator* alloc) {
+    for (auto [hash, allocator] : _allocators) {
+        if (allocator == alloc)
+            return StringId(hash).getString();
+    }
+    return "";
+}
+
+const std::unordered_map<StringHash, Allocator*>& Manager::getAllocatorsImpl() const { return _allocators; }
 
 } // namespace atta::memory

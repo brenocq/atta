@@ -33,9 +33,9 @@ struct TestCpp {
 class Memory_Speed : public ::testing::Test {
   public:
     void SetUp() {
-        memory::registerAllocator(SID("Stack"), static_cast<Allocator*>(new StackAllocator(sizeof(TestStack) * NUM_OBJ)));
+        memory::registerAllocator("Stack", static_cast<Allocator*>(new StackAllocator(sizeof(TestStack) * NUM_OBJ)));
 
-        memory::registerAllocator(SID("Malloc"), static_cast<Allocator*>(new MallocAllocator()));
+        memory::registerAllocator("Malloc", static_cast<Allocator*>(new MallocAllocator()));
     }
 };
 

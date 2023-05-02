@@ -41,7 +41,7 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
 
     uint64_t size = 1.0 * 1024UL * 1024UL * 1024UL;
     _mainAllocator = new memory::StackAllocator(size); // Allocate 1.0GB for the whole system
-    memory::registerAllocator(SSID("MainAllocator"), static_cast<memory::Allocator*>(_mainAllocator));
+    memory::registerAllocator("MainAllocator", static_cast<memory::Allocator*>(_mainAllocator));
 
     resource::startUp();
     component::startUp();

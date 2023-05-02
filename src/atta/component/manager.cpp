@@ -41,7 +41,7 @@ void Manager::startUpImpl() {
 
     // Create new allocator from component memory
     _allocator = new memory::StackAllocator(componentMemory, size);
-    memory::registerAllocator(SSID("ComponentAllocator"), static_cast<memory::Allocator*>(_allocator));
+    memory::registerAllocator("ComponentAllocator", static_cast<memory::Allocator*>(_allocator));
 
     createEntityPool();
     createComponentPoolsFromRegistered();
@@ -92,7 +92,7 @@ void Manager::createEntityPool() {
     ASSERT(entityMemory != nullptr, "Could not allocate component system entity memory");
 
     // Create entity bitmap pool allocator
-    memory::registerAllocator(SSID("Component_EntityAllocator"),
+    memory::registerAllocator("Component_EntityAllocator",
                               static_cast<memory::Allocator*>(new memory::BitmapAllocator(entityMemory, entityMemorySize, sizeof(EntityBlock))));
 }
 
@@ -326,7 +326,7 @@ void Manager::createComponentPool(ComponentRegistry* componentRegistry) {
     //          maxCount * sizeofT / (1024 * 1024.0f), (void*)(componentMemory), (void*)(componentMemory + maxCount * sizeofT), maxCount);
 
     // Create pool allocator
-    memory::registerAllocator(COMPONENT_POOL_SSID_BY_NAME(typeidTName),
+    memory::registerAllocator(COMPONENT_POOL_NAME(typeidTName),
                               static_cast<memory::Allocator*>(new memory::BitmapAllocator(componentMemory, size, sizeofT)));
 }
 

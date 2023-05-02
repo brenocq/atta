@@ -29,7 +29,7 @@ void Manager::startUpImpl() {
     // Alloc memory inside main memory
     uint8_t* resourceMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
     _allocator = new memory::BitmapAllocator(resourceMemory, size);
-    memory::registerAllocator(SSID("ResourceAllocator"), static_cast<memory::Allocator*>(_allocator));
+    memory::registerAllocator("ResourceAllocator", static_cast<memory::Allocator*>(_allocator));
 
     // Subscribe to project open (load project events when opened)
     event::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));

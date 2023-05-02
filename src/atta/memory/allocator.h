@@ -31,7 +31,7 @@ class Allocator {
     const uint8_t* getMemory() { return _memory; }
     uint64_t getSize() { return _size; }
 
-    bool owns(void* ptr); // Check if pointer is inside this allocator memory
+    bool owns(const void* ptr); // Check if pointer is inside this allocator memory
 
   protected:
     uint8_t* _memory;

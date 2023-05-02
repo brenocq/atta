@@ -34,7 +34,8 @@ namespace fs = std::filesystem;
 #include <atta/utils/common.h>
 #include <atta/utils/log.h>
 #include <atta/utils/math/math.h>
-#include <atta/utils/profiler.h>
 #include <atta/utils/namespaces.h>
+#include <atta/utils/profiler.h>
+#include <atta/utils/stringId.h>
 
 #endif // ATTA_PRE_COMPILED_HEADER_H

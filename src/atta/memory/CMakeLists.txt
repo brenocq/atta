@@ -31,5 +31,5 @@ atta_add_tests(${ATTA_MEMORY_MODULE_TEST_SOURCES})
 atta_create_local_test(
     atta_memory_module_test
     "${ATTA_MEMORY_MODULE_TEST_SOURCES}"
-    "atta_memory_module"
+    "atta_memory_module;atta_utils"
 )

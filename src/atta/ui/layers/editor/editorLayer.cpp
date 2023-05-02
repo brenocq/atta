@@ -13,6 +13,7 @@
 
 #include <atta/ui/layers/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/memoryModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/parallelModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/sensorModuleWindow.h>
@@ -59,6 +60,7 @@ void EditorLayer::onUIRender() {
     // Module windows
     GraphicsModuleWindow::render();
     IOModuleWindow::render();
+    MemoryModuleWindow::render();
     ParallelModuleWindow::render();
     PhysicsModuleWindow::render();
     SensorModuleWindow::render();

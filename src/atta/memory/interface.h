@@ -14,7 +14,7 @@ namespace atta::memory {
 
 // It is necessary to register the allocators to define its
 // type (stack, pool, malloc,  ...) and parameters (size, ...)
-void registerAllocator(StringHash hash, Allocator* alloc);
+void registerAllocator(StringId sid, Allocator* alloc);
 
 // After registered, it is possible to get a pointer to the allocator
 template <typename T = Allocator>
@@ -24,6 +24,10 @@ T* getAllocator(StringHash hash);
 // reduce number of unordered_map accesses
 template <typename T = Allocator>
 T** getAllocatorPtr(StringHash hash);
+
+std::string getAllocatorName(Allocator* alloc);
+
+const std::unordered_map<StringHash, Allocator*>& getAllocators();
 
 } // namespace atta::memory
 

@@ -17,9 +17,9 @@ namespace {
 class Memory_AllocatedObject : public ::testing::Test {
   public:
     void SetUp() {
-        memory::registerAllocator(SID("Stack_TestA"), static_cast<Allocator*>(new StackAllocator(sizeof(int) * 3)));
+        memory::registerAllocator("Stack_TestA", static_cast<Allocator*>(new StackAllocator(sizeof(int) * 3)));
 
-        memory::registerAllocator(SID("Stack_TestB"), static_cast<Allocator*>(new StackAllocator(sizeof(int) * 2)));
+        memory::registerAllocator("Stack_TestB", static_cast<Allocator*>(new StackAllocator(sizeof(int) * 2)));
     }
 };
 

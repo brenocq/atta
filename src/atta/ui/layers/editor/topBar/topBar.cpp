@@ -21,6 +21,7 @@
 
 #include <atta/ui/layers/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/ioModuleWindow.h>
+#include <atta/ui/layers/editor/moduleWindows/memoryModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/parallelModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/physicsModuleWindow.h>
 #include <atta/ui/layers/editor/moduleWindows/sensorModuleWindow.h>
@@ -134,6 +135,8 @@ void TopBar::render() {
                 GraphicsModuleWindow::setOpen(true);
             if (ImGui::MenuItem("IO"))
                 IOModuleWindow::setOpen(true);
+            if (ImGui::MenuItem("Memory"))
+                MemoryModuleWindow::setOpen(true);
             if (ImGui::MenuItem("Parallel"))
                 ParallelModuleWindow::setOpen(true);
             if (ImGui::MenuItem("Physics"))

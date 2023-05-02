@@ -8,6 +8,10 @@
 
 namespace atta::memory {
 
-void registerAllocator(StringHash hash, Allocator* alloc) { Manager::getInstance().registerAllocatorImpl(hash, alloc); }
+void registerAllocator(StringId sid, Allocator* alloc) { Manager::getInstance().registerAllocatorImpl(sid, alloc); }
+
+std::string getAllocatorName(Allocator* alloc) { return Manager::getInstance().getAllocatorNameImpl(alloc); }
+
+const std::unordered_map<StringHash, Allocator*>& getAllocators() { return Manager::getInstance().getAllocatorsImpl(); }
 
 } // namespace atta::memory

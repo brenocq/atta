@@ -31,13 +31,13 @@ Manager& Manager::getInstance() {
 void Manager::startUpImpl() {
     //----- Module Memory -----//
     // Get main memory
-    memory::Allocator* mainAllocator = memory::getAllocator(SSID("MainAllocator"));
+    memory::Allocator* mainAllocator = memory::getAllocator(SID("MainAllocator"));
     size_t size = 32 * 1024 * 1024; // 32MB
     // Alloc memory inside main memory
     uint8_t* graphicsMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
     // Create new allocator with graphics memory
     memory::StackAllocator* graphics = new memory::StackAllocator(graphicsMemory, size);
-    memory::registerAllocator(SSID("GraphicsAllocator"), static_cast<memory::Allocator*>(graphics));
+    memory::registerAllocator("GraphicsAllocator", static_cast<memory::Allocator*>(graphics));
 
     //----- Config -----//
     _graphicsFPS = 30.0f;

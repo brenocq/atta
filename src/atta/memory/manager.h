@@ -13,16 +13,20 @@ class Manager final {
   public:
     static Manager& getInstance();
 
-    friend void registerAllocator(StringHash hash, Allocator* alloc);
+    friend void registerAllocator(StringId sid, Allocator* alloc);
     template <typename T>
     friend T* getAllocator(StringHash hash);
     template <typename T>
     friend T** getAllocatorPtr(StringHash hash);
+    friend std::string getAllocatorName(Allocator* alloc);
+    friend const std::unordered_map<StringHash, Allocator*>& getAllocators();
 
   private:
+    void registerAllocatorImpl(StringId sid, Allocator* alloc);
     Allocator* getAllocatorImpl(StringHash hash);
     Allocator** getAllocatorPtrImpl(StringHash hash);
-    void registerAllocatorImpl(StringHash hash, Allocator* alloc);
+    std::string getAllocatorNameImpl(Allocator* alloc);
+    const std::unordered_map<StringHash, Allocator*>& getAllocatorsImpl() const;
 
     std::unordered_map<StringHash, Allocator*> _allocators;
 };
