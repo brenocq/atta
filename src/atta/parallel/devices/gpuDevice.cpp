@@ -72,15 +72,7 @@ std::string formatSize(unsigned long long number, int factor = 1024) {
     return std::string(buf);
 }
 
-// clang-format off
-#define CUDA_CHECK(ans) { gpuAssert((ans), __FILE__, __LINE__); }
-// clang-format on
-inline void gpuAssert(cudaError_t code, const char* file, int line) {
-    if (code != cudaSuccess)
-        LOG_ERROR("pll::GpuDevice", "CUDA error: [w]$0[] ($1:$2)", cudaGetErrorString(code), file, line);
-}
-
-GpuDevice::GpuDevice() : Device(Type::GPU), _globalMem(nullptr) {
+GpuDevice::GpuDevice() : Device(Type::GPU) {
     int deviceCount;
     cudaGetDeviceCount(&deviceCount);
     LOG_DEBUG("pll::GpuDevice", "Found [w]$0[] GPUs with cuda support", deviceCount);
@@ -102,10 +94,6 @@ GpuDevice::GpuDevice() : Device(Type::GPU), _globalMem(nullptr) {
         LOG_INFO("pll::GpuDevice", " - Clock rate: [w]$0Hz", formatSize(deviceProp.clockRate * 1000, 1000));
     }
 
-    // Allocate memory
-    size_t size = 128 * 1024 * 1024; // 128MB
-    CUDA_CHECK(cudaMalloc(&_globalMem, size));
-
     // Test execution
     const int n = 1024;
     float a[n], b[n], c[n];
@@ -125,17 +113,8 @@ GpuDevice::GpuDevice() : Device(Type::GPU), _globalMem(nullptr) {
     LOG_SUCCESS("pll::GpuDevice", "Initialized!");
 }
 
-GpuDevice::~GpuDevice() {
-    if (_globalMem)
-        CUDA_CHECK(cudaFree(_globalMem));
-}
+GpuDevice::~GpuDevice() {}
 
 void GpuDevice::compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {}
-
-void GpuDevice::copyCpuToGpu() {
-
-}
-
-void GpuDevice::copyGpuToCpu() {}
 
 } // namespace atta::parallel

@@ -28,9 +28,8 @@ class Allocator {
     // align: byte alignment
     virtual void freeBytes(void* ptr, size_t size, size_t align = 0) = 0;
 
-    const uint8_t* getMemory() { return _memory; }
-    uint64_t getSize() { return _size; }
-
+    uint8_t* getMemory();
+    uint64_t getSize();
     bool owns(const void* ptr); // Check if pointer is inside this allocator memory
 
   protected:

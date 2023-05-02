@@ -11,11 +11,11 @@
 
 #include <atta/event/interface.h>
 
+#include <atta/component/factory.h>
 #include <atta/memory/allocators/bitmapAllocator.h>
 #include <atta/memory/allocators/poolAllocatorT.h>
 #include <atta/memory/allocators/stackAllocator.h>
 #include <atta/memory/interface.h>
-#include <atta/component/factory.h>
 
 namespace atta::component {
 
@@ -85,12 +85,27 @@ class Manager final {
     std::vector<Component*> getComponentsImpl(Entity entity);
 
     //----- Views -----//
-    // TODO Hardcoded, think some way using templates
+    // TODO Use template to allow multiple views to be registered
     std::vector<EntityId> getEntitiesViewImpl();
     std::vector<EntityId> getNoPrototypeViewImpl();
     std::vector<EntityId> getCloneViewImpl();
     std::vector<EntityId> getNoCloneViewImpl();
     std::vector<EntityId> getScriptViewImpl();
+    std::set<EntityId> _entities;        // All entities
+    std::set<EntityId> _noPrototypeView; // View of entities and clone (no prototype entity)
+    std::set<EntityId> _cloneView;       // View of only clones
+    std::set<EntityId> _scriptView;      // View of entities that are neither prototype or clone and have script component
+
+    //----- Factory Management -----//
+    void onSimulationStateChange(event::Event& event);
+    void createFactories();
+    void destroyFactories();
+    EntityId createClonesImpl(size_t quantity);
+    std::vector<Factory>& getFactoriesImpl() { return _factories; }
+    Factory* getFactoryImpl(Entity prototype);
+
+    std::vector<Factory> _factories;
+    friend Factory;
 
     //----- Component management -----//
     void registerComponentImpl(ComponentRegistry* componentRegistry); // Used to register internal components and custom components
@@ -112,10 +127,13 @@ class Manager final {
     };
     EntityBlock* getEntityBlock(EntityId eid);
 
-    memory::StackAllocator* _allocator;                     // Used to allocate more memory to component pools
-    memory::StackAllocator::Marker _customComponentsMarker; // Marker to free custom components
-    size_t _numAttaComponents;                              // Used to remove custom components form componentRegistries
-    std::vector<ComponentRegistry*> _componentRegistries;   // All registered components
+    // Stack allocators to manage component pools
+    memory::StackAllocator* _cpuAllocator;
+    memory::StackAllocator* _gpuAllocator;
+    uint8_t* _gpuGlobalMemory; // GPU global memory (used by _gpuAllocator)
+
+    void copyGpuToCpu();
+    void copyCpuToGpu();
 
     // Need to store this because old componentRegistry data is lost when component shared library is reloaded
     struct ComponentRegistryBackupInfo {
@@ -125,24 +143,14 @@ class Manager final {
     };
     std::vector<ComponentRegistryBackupInfo> _componentRegistriesBackupInfo;
 
-    // Entity views (TODO create views from template?)
-    size_t _maxEntities;                 // Maximum number of entities
-    std::set<EntityId> _entities;        // View of entities
-    std::set<EntityId> _noPrototypeView; // View of entities and clone (no prototype entity)
-    std::set<EntityId> _cloneView;       // View of only clones
-    std::set<EntityId> _scriptView;      // View of entities that are neither prototype or clone and have script component
-    EntityId _selectedEntity = -1;       // TODO Use views and selectedComponent to allow multi selection?
+    // Bookkeeping component/entity pools
+    memory::StackAllocator::Marker _customComponentsMarker; // Marker to free custom components
+    std::vector<ComponentRegistry*> _componentRegistries;   // All registered components
+    size_t _numAttaComponents;                              // Used to remove custom components from componentRegistries
+    size_t _maxEntities;                                    // Maximum number of entities
 
-    //----- Factory Management -----//
-    void onSimulationStateChange(event::Event& event);
-    void createFactories();
-    void destroyFactories();
-    EntityId createClonesImpl(size_t quantity);
-    std::vector<Factory>& getFactoriesImpl() { return _factories; }
-    Factory* getFactoryImpl(Entity prototype);
-
-    std::vector<Factory> _factories;
-    friend Factory;
+    //----- Custom -----//
+    EntityId _selectedEntity = -1;
 };
 
 } // namespace atta::component

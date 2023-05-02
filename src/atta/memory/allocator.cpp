@@ -28,6 +28,10 @@ Allocator::~Allocator() {
         delete _memory;
 }
 
+uint8_t* Allocator::getMemory() { return _memory; }
+
+uint64_t Allocator::getSize() { return _size; }
+
 bool Allocator::owns(const void* ptr) {
     const uint8_t* uptr = reinterpret_cast<const uint8_t*>(ptr);
     return uptr >= _memory && uptr < _memory + _size;

@@ -19,6 +19,7 @@
 #include <atta/event/events/simulationStop.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/material.h>
+#include <atta/utils/cuda.h>
 #include <cstring>
 
 namespace atta::component {
@@ -40,14 +41,17 @@ void Manager::startUpImpl() {
     ASSERT(componentMemory != nullptr, "Could not allocate component system memory");
 
     // Create new allocator from component memory
-    _allocator = new memory::StackAllocator(componentMemory, size);
-    memory::registerAllocator("ComponentAllocator", static_cast<memory::Allocator*>(_allocator));
+    _cpuAllocator = new memory::StackAllocator(componentMemory, size);
+
+    _gpuGlobalMemory = cuda::alloc(size);
+    _gpuAllocator = new memory::StackAllocator(_gpuGlobalMemory, size);
+    memory::registerAllocator("ComponentAllocator", static_cast<memory::Allocator*>(_cpuAllocator));
 
     createEntityPool();
     createComponentPoolsFromRegistered();
     // Can be used to free all custom component allocators (useful when reloading a project)
     // Because the Manager::startUp method is called before any project is loaded, only atta components were created at this point
-    _customComponentsMarker = _allocator->getMarker();
+    _customComponentsMarker = _cpuAllocator->getMarker();
     _numAttaComponents = _componentRegistries.size();
 
     event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
@@ -58,9 +62,12 @@ void Manager::startUpImpl() {
 
     // Default entity
     createDefaultImpl();
+
+    // Initial copy from CPU to GPU
+    copyCpuToGpu();
 }
 
-void Manager::shutDownImpl() {}
+void Manager::shutDownImpl() { cuda::free(_gpuGlobalMemory); }
 
 void Manager::createDefaultImpl() {
     // Cube entity
@@ -87,8 +94,8 @@ void Manager::createEntityPool() {
     const size_t entityMemorySize = ceil(_maxEntities / 8.0f) + sizeof(EntityBlock) * _maxEntities; // Memory for bitmap + pool blocks
 
     // Allocate from component system memory
-    uint8_t* entityMemory =
-        reinterpret_cast<uint8_t*>(_allocator->allocBytes(entityMemorySize, sizeof(EntityBlock))); // TODO Probably not aligned because of the bitmap
+    // TODO Probably not aligned because of the bitmap
+    uint8_t* entityMemory = reinterpret_cast<uint8_t*>(_cpuAllocator->allocBytes(entityMemorySize, sizeof(EntityBlock)));
     ASSERT(entityMemory != nullptr, "Could not allocate component system entity memory");
 
     // Create entity bitmap pool allocator
@@ -311,7 +318,7 @@ void Manager::createComponentPool(ComponentRegistry* componentRegistry) {
     // Should not need to calculate this size
     size_t size = ceil(maxCount / 8.0f) + sizeofT * maxCount;
 
-    uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_allocator->allocBytes(size, sizeofT));
+    uint8_t* componentMemory = reinterpret_cast<uint8_t*>(_cpuAllocator->allocBytes(size, sizeofT));
     DASSERT(componentMemory != nullptr, "Could not allocate component system memory for " + name);
     // LOG_INFO("component::Manager", "Allocated memory for component $0 ($1). $2MB ($5 instances) -> memory space:($3 $4)", name, typeidTName,
     //          maxCount * sizeofT / (1024 * 1024.0f), (void*)(componentMemory), (void*)(componentMemory + maxCount * sizeofT), maxCount);
@@ -324,7 +331,7 @@ void Manager::createComponentPool(ComponentRegistry* componentRegistry) {
 void Manager::unregisterCustomComponentsImpl() {
     // Return stack pointer to the point before custom components (free custom component allocators)
     _componentRegistries.resize(_numAttaComponents);
-    _allocator->rollback(_customComponentsMarker);
+    _cpuAllocator->rollback(_customComponentsMarker);
 }
 
 //----------------------------------------//
@@ -521,14 +528,6 @@ std::vector<EntityId> Manager::getNoCloneViewImpl() {
 std::vector<EntityId> Manager::getScriptViewImpl() { return std::vector<EntityId>(_scriptView.begin(), _scriptView.end()); }
 
 //----------------------------------------//
-//----------- Memory Management ----------//
-//----------------------------------------//
-Manager::EntityBlock* Manager::getEntityBlock(EntityId eid) {
-    memory::BitmapAllocator* epool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
-    return epool->getBlock<EntityBlock>(eid);
-}
-
-//----------------------------------------//
 //---------------- Factory ---------------//
 //----------------------------------------//
 void Manager::createFactories() {
@@ -636,6 +635,26 @@ void Manager::onScriptEvent(event::Event& event) {
         crbi.poolCreated = true;
         _componentRegistriesBackupInfo.push_back(crbi);
     }
+}
+
+//----------------------------------------//
+//----------- Memory Management ----------//
+//----------------------------------------//
+Manager::EntityBlock* Manager::getEntityBlock(EntityId eid) {
+    memory::BitmapAllocator* epool = memory::getAllocator<memory::BitmapAllocator>(SID("Component_EntityAllocator"));
+    return epool->getBlock<EntityBlock>(eid);
+}
+
+void Manager::copyGpuToCpu() {
+    // Copy component pools
+    cuda::copyGpuToCpu(_cpuAllocator->getMemory(), _gpuAllocator->getMemory(), _gpuAllocator->getUsedMemory());
+    // TODO Shift entity pool addresses
+}
+
+void Manager::copyCpuToGpu() {
+    // Copy component pools
+    cuda::copyCpuToGpu(_gpuAllocator->getMemory(), _cpuAllocator->getMemory(), _cpuAllocator->getUsedMemory());
+    // TODO Shift entity pool addresses
 }
 
 } // namespace atta::component

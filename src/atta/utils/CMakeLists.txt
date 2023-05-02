@@ -4,6 +4,7 @@ set(ATTA_UTILS_SOURCE
     log.cpp
     stringId.cpp
     config.cpp
+    cuda.cpp
     profiler.cpp
 
     math/bounds.cpp
