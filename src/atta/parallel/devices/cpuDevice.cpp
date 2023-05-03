@@ -16,7 +16,7 @@ CpuDevice::CpuDevice() : Device(Type::CPU), _stopWorkers(false), _nextIdx(1), _e
 
 CpuDevice::~CpuDevice() { stopWorkers(); }
 
-void CpuDevice::compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
+void CpuDevice::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
     // If no work to be done, return
     if (start == end)
         return;
@@ -32,6 +32,12 @@ void CpuDevice::compute(uint32_t start, uint32_t end, std::function<void(uint32_
     // Wait for job to finish
     while (!jobFinished()) {
     }
+}
+
+void CpuDevice::run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) {
+    cmp::EntityId start = entity.getId();
+    cmp::EntityId end = entity.getId() + num - 1;
+    run(start, end, [&](uint32_t i) { script->update(cmp::Entity(i), dt); });
 }
 
 void CpuDevice::setNumWorkers(uint32_t numWorkers) {

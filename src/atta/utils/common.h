@@ -9,8 +9,12 @@
 
 namespace atta {
 
-#define BIT(i) (1 << i);
+#ifdef __NVCC__
+#define ATTA_CPU_GPU __host__ __device__
+#else
+#define ATTA_CPU_GPU
+#endif
 
 } // namespace atta
 
-#endif ATTA_UTILS_COMMON_H
+#endif// ATTA_UTILS_COMMON_H

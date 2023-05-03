@@ -4,14 +4,14 @@
 // Date: 2023-03-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/parallel/devices/add_vectors.h>
 #include <atta/parallel/devices/gpuDevice.h>
+#include <atta/utils/cuda.h>
 #include <cuda_runtime.h>
 
 namespace atta::parallel {
 
 int versionToCores(int major, int minor) {
-    // Returns the number of CUDA cores per multiprocessor for a given compute capability
+    // Returns the number of CUDA cores per multiprocessor for a given run capability
     // Based on table in NVIDIA CUDA Programming Guide
     switch (((major << 4) + minor)) {
         case 0x10:
@@ -51,7 +51,7 @@ int versionToCores(int major, int minor) {
         case 0x80:
             return 64;
         default:
-            LOG_ERROR("pll::GpuDevice", "Unknown compute capability version");
+            LOG_ERROR("pll::GpuDevice", "Unknown run capability version");
             return -1;
     }
 }
@@ -94,27 +94,42 @@ GpuDevice::GpuDevice() : Device(Type::GPU) {
         LOG_INFO("pll::GpuDevice", " - Clock rate: [w]$0Hz", formatSize(deviceProp.clockRate * 1000, 1000));
     }
 
-    // Test execution
+    // Create data
     const int n = 1024;
-    float a[n], b[n], c[n];
+    float* d_a = nullptr;
+    float a[n];
+    cudaMalloc(&d_a, n * sizeof(float));
+    for (int i = 0; i < n; i++)
+        a[i] = i;
+    cudaMemcpy(d_a, a, n * sizeof(float), cudaMemcpyHostToDevice);
 
-    // Initialize the input vectors a and b
-    for (int i = 0; i < n; ++i) {
-        a[i] = static_cast<float>(i);
-        b[i] = static_cast<float>(2 * i);
-    }
+    // Compute
 
-    // Add the vectors a and b and store the result in c
-    add_vectors(a, b, c, n);
-
-    // Print the result vector c
-    printf("%f\n", c[n - 1]);
+    // Show result
+    cudaMemcpy(a, d_a, n * sizeof(float), cudaMemcpyDeviceToHost);
+    //for (int i = 0; i < n; i++)
+    //    LOG_DEBUG("GpuDevice", "[*y] $0", a[i]);
 
     LOG_SUCCESS("pll::GpuDevice", "Initialized!");
 }
 
 GpuDevice::~GpuDevice() {}
 
-void GpuDevice::compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {}
+void GpuDevice::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) { 
+    LOG_WARN("pll::GpuDevice", "std::function<void(uint32_t idx) run was not implemented for GPU yet");
+}
+
+__global__ void kernel(scr::Script* script, cmp::EntityId firstClone, cmp::EntityId lastClone, float dt) {
+    cmp::EntityId clone = firstClone + (blockIdx.x * blockDim.x + threadIdx.x);
+    if (clone > lastClone)
+        return;
+    script->update(cmp::Entity(clone), dt);
+}
+
+void GpuDevice::run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) {
+    cmp::EntityId firstClone = entity.getId();
+    cmp::EntityId lastClone = firstClone + num;
+    kernel<<<(num + 255) / 256, 256>>>(script, firstClone, lastClone, dt);
+}
 
 } // namespace atta::parallel

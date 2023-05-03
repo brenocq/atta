@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(atta VERSION 0.4.0.0 LANGUAGES CXX C CUDA)
-enable_language(CUDA)
 
 OPTION(ATTA_BUILD_TESTS
     "Set to ON to build also the test executables"

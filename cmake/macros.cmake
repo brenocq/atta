@@ -66,6 +66,19 @@ macro(atta_target_common target)
     target_compile_definitions(${target} PRIVATE ${ATTA_DEFINITIONS})
 endmacro()
 
+macro(atta_cuda_target target)
+    # Set language for all sources as CUDA
+    get_target_property(target_sources ${target} SOURCES)
+    set_source_files_properties(${target_sources} PROPERTIES LANGUAGE CUDA)
+    # Fix PCH when compiling with NVCC
+    target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--pre-include ${ATTA_PCH}>)
+endmacro()
+
+macro(atta_cuda_source source)
+    # Set language to use when compiling this source
+    set_source_files_properties(${source} PROPERTIES LANGUAGE CUDA)
+endmacro()
+
 macro(atta_create_local_test target sources libs)
 if(ATTA_BUILD_TESTS)
     add_executable(${target} ${sources})

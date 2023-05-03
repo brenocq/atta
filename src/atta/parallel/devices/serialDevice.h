@@ -16,7 +16,8 @@ class SerialDevice : public Device {
     SerialDevice();
     ~SerialDevice();
 
-    void compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) override;
+    void run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) override;
+    void run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) override;
 };
 
 } // namespace atta::parallel

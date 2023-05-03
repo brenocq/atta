@@ -11,9 +11,14 @@ namespace atta::parallel {
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
-void compute(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
+void run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
     PROFILE();
-    Manager::getInstance().computeImpl(start, end, func);
+    Manager::getInstance().runImpl(start, end, func);
+}
+
+void run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) {
+    PROFILE();
+    Manager::getInstance().runImpl(script, entity, dt, num);
 }
 
 void setDeviceType(Device::Type type) { Manager::getInstance().setDeviceTypeImpl(type); }

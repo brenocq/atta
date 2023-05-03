@@ -27,7 +27,9 @@ void Manager::shutDownImpl() {
     _gpuDevice.reset();
 }
 
-void Manager::computeImpl(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) { _device->compute(start, end, std::move(func)); }
+void Manager::runImpl(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) { _device->run(start, end, std::move(func)); }
+
+void Manager::runImpl(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) { _device->run(script, entity, dt, num); }
 
 void Manager::setDeviceTypeImpl(Device::Type type) {
     switch (type) {
@@ -38,6 +40,10 @@ void Manager::setDeviceTypeImpl(Device::Type type) {
         case Device::Type::CPU:
             _device = _cpuDevice;
             LOG_SUCCESS("parallel::Manager", "Device [w]CPU[] selected");
+            break;
+        case Device::Type::GPU:
+            _device = _gpuDevice;
+            LOG_SUCCESS("parallel::Manager", "Device [w]GPU[] selected");
             break;
         default:
             LOG_WARN("parallel::Manager", "This device is not supported yet");

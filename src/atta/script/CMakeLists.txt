@@ -21,3 +21,8 @@ endif()
 add_library(atta_script_module STATIC ${ATTA_SCRIPT_MODULE_SOURCE})
 atta_target_common(atta_script_module)
 atta_add_libs(atta_script_module)
+
+# Compile module with CUDA if supported
+if(ATTA_CUDA_SUPPORT)
+    atta_cuda_target(atta_script_module)
+endif()

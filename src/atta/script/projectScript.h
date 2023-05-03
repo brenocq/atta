@@ -34,9 +34,11 @@ class ProjectScript {
     //---------- While ----------//
     virtual void onAttaLoop(){};
 };
+
 } // namespace atta::script
 
 #ifdef ATTA_STATIC_PROJECT
+
 #include <atta/script/interface.h>
 namespace atta::script {
 template <typename T>
@@ -44,19 +46,24 @@ class ProjectScriptRegistration {
     static ProjectScript* reg;
 };
 } // namespace atta::script
-#define ATTA_REGISTER_PROJECT_SCRIPT(TYPE)                                                                                                           \
-    template <>                                                                                                                                      \
-    inline ::atta::script::ProjectScript* ::atta::script::ProjectScriptRegistration<TYPE>::reg =                                                     \
+// clang-format off
+#define ATTA_REGISTER_PROJECT_SCRIPT(TYPE) \
+    template <> \
+    inline ::atta::script::ProjectScript* ::atta::script::ProjectScriptRegistration<TYPE>::reg = \
         ::atta::script::registerProjectScript(#TYPE, new TYPE());
+// clang-format on
 
 #else
 
-#define ATTA_REGISTER_PROJECT_SCRIPT(TYPE)                                                                                                           \
-    extern "C" {                                                                                                                                     \
-    std::pair<const char*, atta::script::ProjectScript*> createProjectScript() {                                                                     \
-        return {#TYPE, static_cast<atta::script::ProjectScript*>(new TYPE())};                                                                       \
-    }                                                                                                                                                \
+
+// clang-format off
+#define ATTA_REGISTER_PROJECT_SCRIPT(TYPE) \
+    extern "C" { \
+        std::pair<const char*, atta::script::ProjectScript*> createProjectScript() { \
+            return {#TYPE, static_cast<atta::script::ProjectScript*>(new TYPE())}; \
+        } \
     }
 #endif
+// clang-format on
 
 #endif // ATTA_SCRIPT_PROJECT_SCRIPT_H

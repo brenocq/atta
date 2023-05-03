@@ -12,6 +12,9 @@ set(atta_DEFINITIONS "@ATTA_DEFINITIONS@")
 set(atta_PCH "@ATTA_INSTALL_PCH@")
 set(atta_FOUND TRUE)
 
+set(CUDA_NVCC_FLAGS "@CUDA_NVCC_FLAGS@")
+set(CUDA_ARCHITECTURES "@CUDA_ARCHITECTURES@")
+
 macro(atta_add_target target sources)
     if(ATTA_STATIC_PROJECT)
         add_library(${target} STATIC ${sources})
@@ -22,6 +25,14 @@ macro(atta_add_target target sources)
     target_include_directories(${target} PRIVATE ${atta_INCLUDE_DIRS})
     target_precompile_headers(${target} PRIVATE ${atta_PCH})
     target_compile_definitions(${target} PRIVATE ${atta_DEFINITIONS})
+
+    # CUDA specific
+    if(ATTA_CUDA_SUPPORT)
+        # Set file to be compiled with CUDA
+        set_source_files_properties(${sources} PROPERTIES LANGUAGE CUDA)
+        # Fix PCH
+        target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--pre-include ${atta_PCH}>)
+    endif()
 
     # This variable is used to include headers when building statically (necessary to register scripts)
     set(headers "")
