@@ -24,128 +24,128 @@ class vector4 {
     T x, y, z, w;
 
   public:
-    vector4() : x(0), y(0), z(0), w(0) {}
-    vector4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
-    vector4(T _x) : x(_x), y(_x), z(_x), w(_x) {}
-    vector4(vector3<T> vector, T _w) : x(vector.x), y(vector.y), z(vector.z), w(_w) {}
-    vector4(T _x, vector3<T> vector) : x(_x), y(vector.x), z(vector.y), w(vector.z) {}
-    vector4(vector2<T> vector, T _z, T _w) : x(vector.x), y(vector.y), z(_z), w(_w) {}
-    vector4(T _x, vector2<T> vector, T _w) : x(_x), y(vector.x), z(vector.y), w(_w) {}
-    vector4(vector2<T> v0, vector2<T> v1) : x(v0.x), y(v0.y), z(v1.x), w(v1.y) {}
-    vector4(T _x, T _y, vector2<T> vector) : x(_x), y(_y), z(vector.x), w(vector.y) {}
+    ATTA_CPU_GPU vector4() : x(0), y(0), z(0), w(0) {}
+    ATTA_CPU_GPU vector4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
+    ATTA_CPU_GPU vector4(T _x) : x(_x), y(_x), z(_x), w(_x) {}
+    ATTA_CPU_GPU vector4(vector3<T> vector, T _w) : x(vector.x), y(vector.y), z(vector.z), w(_w) {}
+    ATTA_CPU_GPU vector4(T _x, vector3<T> vector) : x(_x), y(vector.x), z(vector.y), w(vector.z) {}
+    ATTA_CPU_GPU vector4(vector2<T> vector, T _z, T _w) : x(vector.x), y(vector.y), z(_z), w(_w) {}
+    ATTA_CPU_GPU vector4(T _x, vector2<T> vector, T _w) : x(_x), y(vector.x), z(vector.y), w(_w) {}
+    ATTA_CPU_GPU vector4(vector2<T> v0, vector2<T> v1) : x(v0.x), y(v0.y), z(v1.x), w(v1.y) {}
+    ATTA_CPU_GPU vector4(T _x, T _y, vector2<T> vector) : x(_x), y(_y), z(vector.x), w(vector.y) {}
 
-    T operator[](unsigned i) const;
+    ATTA_CPU_GPU T operator[](unsigned i) const;
 
     // Add vector
     template <typename U>
-    void operator+=(const vector4<U>& v);
+    ATTA_CPU_GPU void operator+=(const vector4<U>& v);
     template <typename U>
-    vector4<T> operator+(const vector4<U>& v) const;
+    ATTA_CPU_GPU vector4<T> operator+(const vector4<U>& v) const;
 
     // Add scalar
     template <typename U>
-    void operator+=(const U value);
+    ATTA_CPU_GPU void operator+=(const U value);
     template <typename U>
-    vector4<T> operator+(const U value) const;
+    ATTA_CPU_GPU vector4<T> operator+(const U value) const;
 
     // Subtract vector
     template <typename U>
-    void operator-=(const vector4<U>& v);
+    ATTA_CPU_GPU void operator-=(const vector4<U>& v);
     template <typename U>
-    vector4<T> operator-(const vector4<U>& v) const;
+    ATTA_CPU_GPU vector4<T> operator-(const vector4<U>& v) const;
 
     // Subtract scalar
     template <typename U>
-    void operator-=(const U value);
+    ATTA_CPU_GPU void operator-=(const U value);
     template <typename U>
-    vector4<T> operator-(const U value) const;
-    vector4<T> operator-() const;
+    ATTA_CPU_GPU vector4<T> operator-(const U value) const;
+    ATTA_CPU_GPU vector4<T> operator-() const;
 
     // Multiply scalar
     template <typename U>
-    void operator*=(const U value);
+    ATTA_CPU_GPU void operator*=(const U value);
     template <typename U>
-    vector4<T> operator*(const U value) const;
+    ATTA_CPU_GPU vector4<T> operator*(const U value) const;
 
     // Divide scalar
     template <typename U>
-    void operator/=(const U value);
+    ATTA_CPU_GPU void operator/=(const U value);
     template <typename U>
-    vector4<T> operator/(const U value) const;
+    ATTA_CPU_GPU vector4<T> operator/(const U value) const;
 
     // Divide vector
     template <typename U>
-    void operator/=(const vector4<U>& v);
+    ATTA_CPU_GPU void operator/=(const vector4<U>& v);
     template <typename U>
-    vector4<T> operator/(const vector4<U>& v) const;
+    ATTA_CPU_GPU vector4<T> operator/(const vector4<U>& v) const;
 
     // Multiply vector
     template <typename U>
-    void operator*=(const vector4<U> vector);
+    ATTA_CPU_GPU void operator*=(const vector4<U> vector);
     template <typename U>
-    vector4<T> operator*(const vector4<U> vector) const;
+    ATTA_CPU_GPU vector4<T> operator*(const vector4<U> vector) const;
 
     // Dot
     template <typename U>
-    auto dot(const vector4<U>& vec) const;
+    ATTA_CPU_GPU auto dot(const vector4<U>& vec) const;
 
     // Length
-    float length() const;
-    float squareLength() const;
+    ATTA_CPU_GPU float length() const;
+    ATTA_CPU_GPU float squareLength() const;
 
     // Normalize
-    void normalize();
+    ATTA_CPU_GPU void normalize();
 
     // Unit
-    vector4<T> unit() const;
+    ATTA_CPU_GPU vector4<T> unit() const;
 
     // Logical operators
     template <typename U>
-    bool operator==(const vector4<U>& other) const;
+    ATTA_CPU_GPU bool operator==(const vector4<U>& other) const;
     template <typename U>
-    bool operator!=(const vector4<U>& other) const;
+    ATTA_CPU_GPU bool operator!=(const vector4<U>& other) const;
     template <typename U>
-    bool operator<(const vector4<U>& other) const;
+    ATTA_CPU_GPU bool operator<(const vector4<U>& other) const;
     template <typename U>
-    bool operator>(const vector4<U>& other) const;
+    ATTA_CPU_GPU bool operator>(const vector4<U>& other) const;
     template <typename U>
-    bool operator<=(const vector4<U>& other) const;
+    ATTA_CPU_GPU bool operator<=(const vector4<U>& other) const;
     template <typename U>
-    bool operator>=(const vector4<U>& other) const;
+    ATTA_CPU_GPU bool operator>=(const vector4<U>& other) const;
 
     // Helpers
-    void clear();
-    void invert();
-    T maxComponent();
-    T minComponent();
-    std::string toString() const;
+    ATTA_CPU_GPU void clear();
+    ATTA_CPU_GPU void invert();
+    ATTA_CPU_GPU T maxComponent();
+    ATTA_CPU_GPU T minComponent();
+    ATTA_CPU_GPU std::string toString() const;
 };
 
 // Right multiply scalar
 template <typename T>
-vector4<T> operator*(T value, vector4<T> const& vec);
+ATTA_CPU_GPU vector4<T> operator*(T value, vector4<T> const& vec);
 
 // Normalize
 template <typename T>
-inline vector4<T> normalize(const vector4<T>& v);
+ATTA_CPU_GPU inline vector4<T> normalize(const vector4<T>& v);
 
 // Dot
 template <typename T>
-inline auto dot(const vector4<T>& v1, const vector4<T>& v2);
+ATTA_CPU_GPU inline auto dot(const vector4<T>& v1, const vector4<T>& v2);
 
 // Length
 template <typename T>
-inline float length(const vector4<T>& v);
+ATTA_CPU_GPU inline float length(const vector4<T>& v);
 
 // Max/Min
 template <typename T>
-inline vector4<T> max(const vector4<T>& v1, const vector4<T>& v2);
+ATTA_CPU_GPU inline vector4<T> max(const vector4<T>& v1, const vector4<T>& v2);
 template <typename T>
-inline vector4<T> min(const vector4<T>& v1, const vector4<T>& v2);
+ATTA_CPU_GPU inline vector4<T> min(const vector4<T>& v1, const vector4<T>& v2);
 
 // <<
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const vector4<T>& v);
+ATTA_CPU_GPU inline std::ostream& operator<<(std::ostream& os, const vector4<T>& v);
 
 //----------------------------------------//
 //--------------- Vector 3 ---------------//
@@ -158,140 +158,140 @@ class vector3 {
     //	T pad;// 4 word alignment
 
   public:
-    vector3() : x(0), y(0), z(0) {}
-    vector3(T _x) : x(_x), y(_x), z(_x) {}
-    vector3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
+    ATTA_CPU_GPU vector3() : x(0), y(0), z(0) {}
+    ATTA_CPU_GPU vector3(T _x) : x(_x), y(_x), z(_x) {}
+    ATTA_CPU_GPU vector3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
     template <typename U>
-    vector3(vector4<U> v) : x(v.x), y(v.y), z(v.z) {}
+    ATTA_CPU_GPU vector3(vector4<U> v) : x(v.x), y(v.y), z(v.z) {}
     template <typename U>
-    vector3(vector2<U> v, T _z = 0.0f) : x(v.x), y(v.y), z(_z) {}
+    ATTA_CPU_GPU vector3(vector2<U> v, T _z = 0.0f) : x(v.x), y(v.y), z(_z) {}
     template <typename U>
-    vector3(T _x, vector2<U> v) : x(_x), y(v.x), z(v.y) {}
+    ATTA_CPU_GPU vector3(T _x, vector2<U> v) : x(_x), y(v.x), z(v.y) {}
 
-    T operator[](unsigned i) const;
-    T& operator[](unsigned i);
+    ATTA_CPU_GPU T operator[](unsigned i) const;
+    ATTA_CPU_GPU T& operator[](unsigned i);
 
     // Add vector
     template <typename U>
-    void operator+=(const vector3<U>& v);
+    ATTA_CPU_GPU void operator+=(const vector3<U>& v);
     template <typename U>
-    vector3<T> operator+(const vector3<U>& v) const;
+    ATTA_CPU_GPU vector3<T> operator+(const vector3<U>& v) const;
 
     // Add scalar
     template <typename U>
-    void operator+=(const U value);
+    ATTA_CPU_GPU void operator+=(const U value);
     template <typename U>
-    vector3<T> operator+(const U value) const;
+    ATTA_CPU_GPU vector3<T> operator+(const U value) const;
 
     // Subtract vector
     template <typename U>
-    void operator-=(const vector3<U>& v);
+    ATTA_CPU_GPU void operator-=(const vector3<U>& v);
     template <typename U>
-    vector3<T> operator-(const vector3<U>& v) const;
+    ATTA_CPU_GPU vector3<T> operator-(const vector3<U>& v) const;
 
     // Subtract scalar
     template <typename U>
-    void operator-=(const U value);
+    ATTA_CPU_GPU void operator-=(const U value);
     template <typename U>
-    vector3<T> operator-(const U value) const;
-    vector3<T> operator-() const;
+    ATTA_CPU_GPU vector3<T> operator-(const U value) const;
+    ATTA_CPU_GPU vector3<T> operator-() const;
 
     // Multiply vector
     template <typename U>
-    void operator*=(const vector3<U> vector);
+    ATTA_CPU_GPU void operator*=(const vector3<U> vector);
     template <typename U>
-    vector3<T> operator*(const vector3<U> vector) const;
+    ATTA_CPU_GPU vector3<T> operator*(const vector3<U> vector) const;
 
     // Multiply scalar
     template <typename U>
-    void operator*=(const U value);
+    ATTA_CPU_GPU void operator*=(const U value);
     template <typename U>
-    vector3<T> operator*(const U value) const;
+    ATTA_CPU_GPU vector3<T> operator*(const U value) const;
 
     // Divide vector
     template <typename U>
-    void operator/=(const vector3<U>& v);
+    ATTA_CPU_GPU void operator/=(const vector3<U>& v);
     template <typename U>
-    vector3<T> operator/(const vector3<U>& v) const;
+    ATTA_CPU_GPU vector3<T> operator/(const vector3<U>& v) const;
 
     // Divide scalar
     template <typename U>
-    void operator/=(const U value);
+    ATTA_CPU_GPU void operator/=(const U value);
     template <typename U>
-    vector3<T> operator/(const U value) const;
+    ATTA_CPU_GPU vector3<T> operator/(const U value) const;
 
     // Vector products
     template <typename U>
-    vector3<T> cross(const vector3<U>& vector) const;
+    ATTA_CPU_GPU vector3<T> cross(const vector3<U>& vector) const;
 
     // Dot
     template <typename U>
-    auto dot(const vector3<U>& vector) const;
+    ATTA_CPU_GPU auto dot(const vector3<U>& vector) const;
 
     // Length
-    float length() const;
-    float squareLength() const;
+    ATTA_CPU_GPU float length() const;
+    ATTA_CPU_GPU float squareLength() const;
 
     // Normalize
-    void normalize();
+    ATTA_CPU_GPU void normalize();
 
     // Unit
-    vector3<T> unit() const;
+    ATTA_CPU_GPU vector3<T> unit() const;
 
     // Logical operators
     template <typename U>
-    bool operator==(const vector3<U>& other) const;
+    ATTA_CPU_GPU bool operator==(const vector3<U>& other) const;
     template <typename U>
-    bool operator!=(const vector3<U>& other) const;
+    ATTA_CPU_GPU bool operator!=(const vector3<U>& other) const;
     template <typename U>
-    bool operator<(const vector3<U>& other) const;
+    ATTA_CPU_GPU bool operator<(const vector3<U>& other) const;
     template <typename U>
-    bool operator>(const vector3<U>& other) const;
+    ATTA_CPU_GPU bool operator>(const vector3<U>& other) const;
     template <typename U>
-    bool operator<=(const vector3<U>& other) const;
+    ATTA_CPU_GPU bool operator<=(const vector3<U>& other) const;
     template <typename U>
-    bool operator>=(const vector3<U>& other) const;
+    ATTA_CPU_GPU bool operator>=(const vector3<U>& other) const;
 
     // Helpers
-    void clear();
-    void invert();
+    ATTA_CPU_GPU void clear();
+    ATTA_CPU_GPU void invert();
 
     // Min max
-    T minComponent();
-    T maxComponent();
+    ATTA_CPU_GPU T minComponent();
+    ATTA_CPU_GPU T maxComponent();
 
-    std::string toString() const;
+    ATTA_CPU_GPU std::string toString() const;
 };
 
 // Right multiply scalar
 template <typename T>
-vector3<T> operator*(T value, vector3<T> const& vec);
+ATTA_CPU_GPU vector3<T> operator*(T value, vector3<T> const& vec);
 
 // Cross
 template <typename T>
-inline vector3<T> cross(const vector3<T>& v1, const vector3<T>& v2);
+ATTA_CPU_GPU inline vector3<T> cross(const vector3<T>& v1, const vector3<T>& v2);
 
 // Normalize
 template <typename T>
-inline vector3<T> normalize(const vector3<T>& v);
+ATTA_CPU_GPU inline vector3<T> normalize(const vector3<T>& v);
 
 // Dot
 template <typename T>
-inline auto dot(const vector3<T>& v1, const vector3<T>& v2);
+ATTA_CPU_GPU inline auto dot(const vector3<T>& v1, const vector3<T>& v2);
 
 // Length
 template <typename T>
-inline float length(const vector3<T>& v);
+ATTA_CPU_GPU inline float length(const vector3<T>& v);
 
 // Max/Min
 template <typename T>
-inline vector3<T> max(const vector3<T>& v1, const vector3<T>& v2);
+ATTA_CPU_GPU inline vector3<T> max(const vector3<T>& v1, const vector3<T>& v2);
 template <typename T>
-inline vector3<T> min(const vector3<T>& v1, const vector3<T>& v2);
+ATTA_CPU_GPU inline vector3<T> min(const vector3<T>& v1, const vector3<T>& v2);
 
 // <<
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const vector3<T>& v);
+ATTA_CPU_GPU inline std::ostream& operator<<(std::ostream& os, const vector3<T>& v);
 
 //----------------------------------------//
 //--------------- Vector 2 ---------------//
@@ -301,135 +301,135 @@ class vector2 {
   public:
     T x, y;
 
-    vector2() : x(0), y(0) {}
-    vector2(T _x, T _y) : x(_x), y(_y) {}
-    vector2(T _x) : x(_x), y(_x) {}
+    ATTA_CPU_GPU vector2() : x(0), y(0) {}
+    ATTA_CPU_GPU vector2(T _x, T _y) : x(_x), y(_y) {}
+    ATTA_CPU_GPU vector2(T _x) : x(_x), y(_x) {}
     template <typename U>
-    vector2(vector3<U> v) : x(v.x), y(v.y) {}
+    ATTA_CPU_GPU vector2(vector3<U> v) : x(v.x), y(v.y) {}
     template <typename U>
-    vector2(vector4<U> v) : x(v.x), y(v.y) {}
+    ATTA_CPU_GPU vector2(vector4<U> v) : x(v.x), y(v.y) {}
 
     template <typename U>
-    void operator=(vector2<U> v);
+    ATTA_CPU_GPU void operator=(vector2<U> v);
 
     // vector2 casting
     template <typename U>
-    operator vector2<U>();
+    ATTA_CPU_GPU operator vector2<U>();
 
-    T operator[](unsigned i) const;
+    ATTA_CPU_GPU T operator[](unsigned i) const;
 
     // Add vector
     template <typename U>
-    void operator+=(const vector2<U>& v);
+    ATTA_CPU_GPU void operator+=(const vector2<U>& v);
     template <typename U>
-    vector2<T> operator+(const vector2<U>& v) const;
+    ATTA_CPU_GPU vector2<T> operator+(const vector2<U>& v) const;
 
     // Add scalar
     template <typename U>
-    void operator+=(const U v);
+    ATTA_CPU_GPU void operator+=(const U v);
     template <typename U>
-    vector2<T> operator+(const U v) const;
+    ATTA_CPU_GPU vector2<T> operator+(const U v) const;
 
     // Subtract vector
     template <typename U>
-    void operator-=(const vector2<U>& v);
+    ATTA_CPU_GPU void operator-=(const vector2<U>& v);
     template <typename U>
-    vector2<T> operator-(const vector2<U>& v) const;
+    ATTA_CPU_GPU vector2<T> operator-(const vector2<U>& v) const;
 
     // Subtract scalar
     template <typename U>
-    void operator-=(const U value);
+    ATTA_CPU_GPU void operator-=(const U value);
     template <typename U>
-    vector2<T> operator-(const U value) const;
-    vector2<T> operator-() const;
+    ATTA_CPU_GPU vector2<T> operator-(const U value) const;
+    ATTA_CPU_GPU vector2<T> operator-() const;
 
     // Multiply scalar
     template <typename U>
-    void operator*=(const U value);
+    ATTA_CPU_GPU void operator*=(const U value);
     template <typename U>
-    vector2<T> operator*(const U value) const;
+    ATTA_CPU_GPU vector2<T> operator*(const U value) const;
 
     // Divide scalar
     template <typename U>
-    void operator/=(const U value);
+    ATTA_CPU_GPU void operator/=(const U value);
     template <typename U>
-    vector2<T> operator/(const U value) const;
+    ATTA_CPU_GPU vector2<T> operator/(const U value) const;
 
     // Divide vector
     template <typename U>
-    void operator/=(const vector2<U>& v);
+    ATTA_CPU_GPU void operator/=(const vector2<U>& v);
     template <typename U>
-    vector2<T> operator/(const vector2<U>& v) const;
+    ATTA_CPU_GPU vector2<T> operator/(const vector2<U>& v) const;
 
     // Multiply vector
     template <typename U>
-    void operator*=(const vector2<U> vector);
+    ATTA_CPU_GPU void operator*=(const vector2<U> vector);
     template <typename U>
-    vector2<T> operator*(const vector2<U> vector) const;
+    ATTA_CPU_GPU vector2<T> operator*(const vector2<U> vector) const;
 
     template <typename U>
-    auto dot(const vector2<U>& vector) const;
+    ATTA_CPU_GPU auto dot(const vector2<U>& vector) const;
 
     // Length
-    float length() const;
-    float squareLength() const;
+    ATTA_CPU_GPU float length() const;
+    ATTA_CPU_GPU float squareLength() const;
 
     // Normalize
-    void normalize();
+    ATTA_CPU_GPU void normalize();
 
     // Unit
-    vector2<T> unit() const;
+    ATTA_CPU_GPU vector2<T> unit() const;
 
     // Logical compare
     template <typename U>
-    bool operator==(const vector2<U>& other) const;
+    ATTA_CPU_GPU bool operator==(const vector2<U>& other) const;
     template <typename U>
-    bool operator!=(const vector2<U>& other) const;
+    ATTA_CPU_GPU bool operator!=(const vector2<U>& other) const;
     template <typename U>
-    bool operator<(const vector2<U>& other) const;
+    ATTA_CPU_GPU bool operator<(const vector2<U>& other) const;
     template <typename U>
-    bool operator>(const vector2<U>& other) const;
+    ATTA_CPU_GPU bool operator>(const vector2<U>& other) const;
     template <typename U>
-    bool operator<=(const vector2<U>& other) const;
+    ATTA_CPU_GPU bool operator<=(const vector2<U>& other) const;
     template <typename U>
-    bool operator>=(const vector2<U>& other) const;
+    ATTA_CPU_GPU bool operator>=(const vector2<U>& other) const;
 
     // Helpers
-    void clear();
-    void invert();
+    ATTA_CPU_GPU void clear();
+    ATTA_CPU_GPU void invert();
 
     // Min max
-    T minComponent();
-    T maxComponent();
+    ATTA_CPU_GPU T minComponent();
+    ATTA_CPU_GPU T maxComponent();
 
-    std::string toString() const;
+    ATTA_CPU_GPU std::string toString() const;
 };
 
 // Right multiply scalar
 template <typename T>
-vector2<T> operator*(T value, const vector2<T>& vec);
+ATTA_CPU_GPU vector2<T> operator*(T value, const vector2<T>& vec);
 
 // Normalize
 template <typename T>
-inline vector2<T> normalize(const vector2<T>& v);
+ATTA_CPU_GPU inline vector2<T> normalize(const vector2<T>& v);
 
 // Dot
 template <typename T>
-inline auto dot(const vector2<T>& v1, const vector2<T>& v2);
+ATTA_CPU_GPU inline auto dot(const vector2<T>& v1, const vector2<T>& v2);
 
 // Length
 template <typename T>
-inline float length(const vector2<T>& v);
+ATTA_CPU_GPU inline float length(const vector2<T>& v);
 
 // Max/Min
 template <typename T>
-inline vector2<T> max(const vector2<T>& v1, const vector2<T>& v2);
+ATTA_CPU_GPU inline vector2<T> max(const vector2<T>& v1, const vector2<T>& v2);
 template <typename T>
-inline vector2<T> min(const vector2<T>& v1, const vector2<T>& v2);
+ATTA_CPU_GPU inline vector2<T> min(const vector2<T>& v1, const vector2<T>& v2);
 
 // <<
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const vector2<T>& v);
+ATTA_CPU_GPU inline std::ostream& operator<<(std::ostream& os, const vector2<T>& v);
 
 //----------------------------------------//
 //---------------- Vector ----------------//

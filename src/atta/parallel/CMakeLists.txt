@@ -11,6 +11,7 @@ set(ATTA_PARALLEL_MODULE_SOURCE
 )
 
 add_library(atta_parallel_module STATIC ${ATTA_PARALLEL_MODULE_SOURCE})
+target_link_libraries(atta_parallel_module PUBLIC atta_component_module atta_script_module)
 
 atta_target_common(atta_parallel_module)
 atta_add_libs(atta_parallel_module)

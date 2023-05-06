@@ -12,13 +12,12 @@
 
 namespace atta::component {
 
-Entity::Entity() : Entity(-1) {}
-Entity::Entity(EntityId id) : _id(id) {}
+ATTA_CPU_GPU Entity::operator EntityId() const { return _id; }
 
-bool Entity::exists() const { return _id >= 0; }
-EntityId Entity::getId() const { return _id; }
+ATTA_CPU_GPU bool Entity::exists() const { return _id >= 0; }
+ATTA_CPU_GPU EntityId Entity::getId() const { return _id; }
 
-bool Entity::isPrototype() const {
+ATTA_CPU_GPU bool Entity::isPrototype() const {
     if(get<component::Prototype>())
         return true;
 
@@ -29,21 +28,21 @@ bool Entity::isPrototype() const {
     return false;
 }
 
-Entity Entity::getParent() const {
+ATTA_CPU_GPU Entity Entity::getParent() const {
     auto r = get<component::Relationship>();
     if (r)
         return r->getParent();
     return -1;
 }
 
-std::vector<Entity> Entity::getChildren() const {
+ATTA_CPU_GPU std::vector<Entity> Entity::getChildren() const {
     auto r = get<component::Relationship>();
     if (r)
         return r->getChildren();
     return {};
 }
 
-Entity Entity::getChild(unsigned i) const {
+ATTA_CPU_GPU Entity Entity::getChild(unsigned i) const {
     std::vector<Entity> children = getChildren();
     if (i < children.size())
         return children[i];

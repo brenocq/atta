@@ -20,7 +20,7 @@ ComponentDescription& TypedComponentRegistry<Transform>::getDescription() {
     return desc;
 }
 
-Transform Transform::getWorldTransform(EntityId entity) {
+ATTA_CPU_GPU Transform Transform::getWorldTransform(EntityId entity) {
     // For know there is no fast way to the transform component to know to which entity it belongs to,
     // so we receive the EntityId by argument
     Transform world = *this;
@@ -36,7 +36,7 @@ Transform Transform::getWorldTransform(EntityId entity) {
     return world;
 }
 
-void Transform::setWorldTransform(EntityId entity, Transform worldTransform) {
+ATTA_CPU_GPU void Transform::setWorldTransform(EntityId entity, Transform worldTransform) {
     (*this) = worldTransform;
 
     // Go up the hierarchy until root to calculate world to local transform
@@ -50,20 +50,20 @@ void Transform::setWorldTransform(EntityId entity, Transform worldTransform) {
     }
 }
 
-mat4 Transform::getWorldTransformMatrix(EntityId entity) {
+ATTA_CPU_GPU mat4 Transform::getWorldTransformMatrix(EntityId entity) {
     Transform t = getWorldTransform(entity);
     mat4 m;
     m.setPosOriScale(t.position, t.orientation, t.scale);
     return m;
 }
 
-mat4 Transform::getLocalTransformMatrix() {
+ATTA_CPU_GPU mat4 Transform::getLocalTransformMatrix() {
     mat4 m;
     m.setPosOriScale(position, orientation, scale);
     return m;
 }
 
-Transform Transform::getEntityWorldTransform(EntityId entity) {
+ATTA_CPU_GPU Transform Transform::getEntityWorldTransform(EntityId entity) {
     EntityId curr = entity;
     auto t = component::getComponent<Transform>(curr);
     auto r = component::getComponent<Relationship>(curr);
@@ -82,7 +82,7 @@ Transform Transform::getEntityWorldTransform(EntityId entity) {
     } while (true);
 }
 
-Transform Transform::operator*(const Transform& o) const {
+ATTA_CPU_GPU Transform Transform::operator*(const Transform& o) const {
     // World = parent * local
     Transform world;
 
@@ -103,7 +103,7 @@ Transform Transform::operator*(const Transform& o) const {
     return world;
 }
 
-Transform Transform::operator/(const Transform& o) const {
+ATTA_CPU_GPU Transform Transform::operator/(const Transform& o) const {
     // Local = world / parent
     Transform local;
 

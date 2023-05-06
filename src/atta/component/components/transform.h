@@ -30,43 +30,43 @@ struct Transform final : public Component {
 
     /// Get transform in the world coordinate system
     /** If the entity is child of another entity the
-     * resulting transform will depend on its parent 
+     * resulting transform will depend on its parent
      * world transform.
      *
      * The world transform will only differ from the local
      * transform when the entity also has a Relationship.
      */
-    Transform getWorldTransform(EntityId entity);
+    ATTA_CPU_GPU Transform getWorldTransform(EntityId entity);
 
     /// Set position/orientation/scale from the desired world transform
     /** It will convert the world transform to a local space and
      * update position/orientation/scale
      **/
-    void setWorldTransform(EntityId entity, Transform worldTransform);
+    ATTA_CPU_GPU void setWorldTransform(EntityId entity, Transform worldTransform);
 
     /// Get transform matrix in the world coordinate system
-    mat4 getWorldTransformMatrix(EntityId entity);
+    ATTA_CPU_GPU mat4 getWorldTransformMatrix(EntityId entity);
 
     /// Get transform matrix in the local coordinate system
-    mat4 getLocalTransformMatrix();
+    ATTA_CPU_GPU mat4 getLocalTransformMatrix();
 
     /// Get transform of any entity in the world coordinate system
     /** Take into account that it is possible that the entity does have a transform component,
      * but someone up in the hierarchy have
      * */
-    static Transform getEntityWorldTransform(EntityId entity);
+    ATTA_CPU_GPU static Transform getEntityWorldTransform(EntityId entity);
 
     /// Transform multiplication
     /** Useful to get the world transformation from the parent and local transformations
      * world = parent * local
      **/
-    Transform operator*(const Transform& o) const;
+    ATTA_CPU_GPU Transform operator*(const Transform& o) const;
 
     /// Transformation division
     /** Useful to get the local transformation from the parent and world transformations
      * local = world / parent
      **/
-    Transform operator/(const Transform& o) const;
+    ATTA_CPU_GPU Transform operator/(const Transform& o) const;
 };
 
 ATTA_REGISTER_COMPONENT(Transform)

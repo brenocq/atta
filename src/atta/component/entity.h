@@ -12,34 +12,35 @@ namespace atta::component {
 
 class Entity {
   public:
-    Entity();
-    Entity(EntityId id);
-    operator EntityId() const { return _id; }
+    ATTA_CPU_GPU constexpr Entity() : _id(-1) {}
+    ATTA_CPU_GPU constexpr Entity(EntityId id) : _id(id) {}
+
+    ATTA_CPU_GPU operator EntityId() const;
 
     template <typename T>
-    T* add() const {
+    ATTA_CPU_GPU T* add() const {
         return component::addComponent<T>(_id);
     }
 
     template <typename T>
-    T* get() const {
+    ATTA_CPU_GPU T* get() const {
         return component::getComponent<T>(_id);
     }
 
     /// Check if entity exists
-    bool exists() const;
+    ATTA_CPU_GPU bool exists() const;
 
     /// Get entity id
-    EntityId getId() const;
+    ATTA_CPU_GPU EntityId getId() const;
 
     /// Check if entity is prototype
     /** An entity is prototype if it has a prototype component or if its parent is a prototype **/
-    bool isPrototype() const;
+    ATTA_CPU_GPU bool isPrototype() const;
 
     // Relationship component interface
-    Entity getParent() const;
-    std::vector<Entity> getChildren() const;
-    Entity getChild(unsigned i) const;
+    ATTA_CPU_GPU Entity getParent() const;
+    ATTA_CPU_GPU std::vector<Entity> getChildren() const;
+    ATTA_CPU_GPU Entity getChild(unsigned i) const;
 
   private:
     EntityId _id;
