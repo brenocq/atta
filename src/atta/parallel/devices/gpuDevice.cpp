@@ -94,22 +94,6 @@ GpuDevice::GpuDevice() : Device(Type::GPU) {
         LOG_INFO("pll::GpuDevice", " - Clock rate: [w]$0Hz", formatSize(deviceProp.clockRate * 1000, 1000));
     }
 
-    // Create data
-    const int n = 1024;
-    float* d_a = nullptr;
-    float a[n];
-    cudaMalloc(&d_a, n * sizeof(float));
-    for (int i = 0; i < n; i++)
-        a[i] = i;
-    cudaMemcpy(d_a, a, n * sizeof(float), cudaMemcpyHostToDevice);
-
-    // Compute
-
-    // Show result
-    cudaMemcpy(a, d_a, n * sizeof(float), cudaMemcpyDeviceToHost);
-    //for (int i = 0; i < n; i++)
-    //    LOG_DEBUG("GpuDevice", "[*y] $0", a[i]);
-
     LOG_SUCCESS("pll::GpuDevice", "Initialized!");
 }
 
