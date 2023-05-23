@@ -11,15 +11,15 @@ namespace atta::graphics {
 
 void Renderer::serialize(std::ostream& os) {
     file::write(os, _name);
-    file::write(os, _width);
-    file::write(os, _height);
+    file::write<uint32_t>(os, getWidth());
+    file::write<uint32_t>(os, getHeight());
 }
 
 void Renderer::deserialize(std::istream& is) {
     // Name should be file::read before to know which renderer to deserialize
-    decltype(_width) width, height;
-    file::read(is, width);
-    file::read(is, height);
+    uint32_t width, height;
+    file::read<uint32_t>(is, width);
+    file::read<uint32_t>(is, height);
     resize(width, height);
 }
 
