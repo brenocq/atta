@@ -10,6 +10,11 @@
 #include <atta/script/projectScript.h>
 #include <atta/script/script.h>
 
+#include <atta/script/registry/controllerRegistry.h>
+#include <atta/script/registry/worldRegistry.h>
+#include <atta/script/scripts/controller.h>
+#include <atta/script/scripts/world.h>
+
 namespace atta::script {
 
 void startUp();

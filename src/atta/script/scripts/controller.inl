@@ -1,7 +1,15 @@
 //--------------------------------------------------
 // Atta Script Module
-// typedRegistry.cpp
+// controller.inl
 // Date: 2023-05-25
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/script/registry/typedRegistry.h>
+
+namespace atta::script {
+
+template <typename T>
+ATTA_CPU_GPU T* Controller::get() const {
+    return _entity.get<T>();
+}
+
+} // namespace atta::script

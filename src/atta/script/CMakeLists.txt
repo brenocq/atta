@@ -7,7 +7,11 @@ set(ATTA_SCRIPT_MODULE_SOURCE
     projectScript.cpp
 
     registry/registry.cpp
-    registry/typedRegistry.cpp
+    registry/controllerRegistry.cpp
+    registry/worldRegistry.cpp
+
+    scripts/controller.cpp
+    scripts/world.cpp
 )
 
 if(NOT ATTA_STATIC_PROJECT)
