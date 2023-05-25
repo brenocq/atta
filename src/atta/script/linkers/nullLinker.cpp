@@ -8,10 +8,8 @@
 
 namespace atta::script {
 
-void NullLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) {
-    *script = nullptr;
-    *projectScript = nullptr;
-    name = "";
-}
+void NullLinker::linkTarget(StringId target) {}
+
+void NullLinker::releaseTarget(StringId target) {}
 
 } // namespace atta::script

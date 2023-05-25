@@ -11,6 +11,7 @@
 #include <chrono>
 
 namespace atta {
+
 class Atta {
   public:
     struct CreateInfo {
@@ -40,6 +41,7 @@ class Atta {
     std::chrono::time_point<std::chrono::high_resolution_clock> _lastStep;
     std::chrono::time_point<std::chrono::high_resolution_clock> _currStep;
 };
+
 } // namespace atta
 
 #endif // ATTA_ATTA_H

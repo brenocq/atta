@@ -5,34 +5,31 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/script/scripts.h>
-#include <atta/event/events/projectOpen.h>
 
 namespace atta::script {
 
 void Manager::startUpImpl() {
     // Publish registered scripts. Need to do here because scripts are
     // registered before ComponentSystem::startUp())
-    // This event will make the UI script combo boxes be updated
+    // This event will tell the UI to update the script combo boxes
     event::ScriptTarget evt;
     evt.scriptSids = getScriptSids();
     event::publish(evt);
 
     event::subscribe<event::ProjectOpen>(BIND_EVENT_FUNC(Manager::onProjectOpen));
+    event::subscribe<event::ProjectClose>(BIND_EVENT_FUNC(Manager::onProjectClose));
 }
 
-void Manager::shutDownImpl() {
-    if (_projectScript.second != nullptr)
-        delete _projectScript.second;
-
-    for (auto& [key, s] : _scripts)
-        delete s;
-    _scripts.clear();
-}
+void Manager::shutDownImpl() {}
 
 void Manager::onProjectOpen(event::Event& event) {
     // Make sure to call onLoad only after the project is deserialized
-    if (_projectScript.second)
-        _projectScript.second->onLoad();
+    WorldRegistry::onLoad();
+}
+
+void Manager::onProjectClose(event::Event& event) {
+    // Unload world script when project is closed
+    WorldRegistry::onUnload();
 }
 
 } // namespace atta::script

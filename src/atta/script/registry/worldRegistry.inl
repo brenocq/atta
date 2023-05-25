@@ -7,7 +7,7 @@
 namespace atta::script {
 
 template <typename T>
-TypedWorldRegistry<T>::TypedWorldRegistry() : WorldRegistry(typeid(T).name(), typeid(T).hash_code()), _worldScript({}) {
+TypedWorldRegistry<T>::TypedWorldRegistry(std::string name) : WorldRegistry(name, typeid(T).name(), typeid(T).hash_code()), _worldScript({}) {
     addRegistry(this);
 }
 

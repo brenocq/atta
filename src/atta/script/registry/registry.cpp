@@ -8,7 +8,7 @@
 
 namespace atta::script {
 
-Registry::Registry(std::string typeidName, size_t typeidHash) : _typeidName(typeidName), _typeidHash(typeidHash) { _name = _typeidName; }
+Registry::Registry(std::string name, std::string typeidName, size_t typeidHash) : _name(name), _typeidName(typeidName), _typeidHash(typeidHash) {}
 
 std::string Registry::getName() const { return _name; }
 

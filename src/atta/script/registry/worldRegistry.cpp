@@ -10,7 +10,7 @@ namespace atta::script {
 
 std::vector<WorldRegistry*> WorldRegistry::_registries = {};
 
-WorldRegistry::WorldRegistry(std::string typeidName, size_t typeidHash) : Registry(typeidName, typeidHash) {}
+WorldRegistry::WorldRegistry(std::string name, std::string typeidName, size_t typeidHash) : Registry(name, typeidName, typeidHash) {}
 
 const std::vector<WorldRegistry*>& WorldRegistry::getRegistries() { return _registries; }
 

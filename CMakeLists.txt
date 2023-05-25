@@ -49,6 +49,7 @@ if(ATTA_STATIC_PROJECT_FILE)
     list(APPEND ATTA_DEFINITIONS "ATTA_STATIC_PROJECT")
     atta_log(Info "Main" "Building atta statically linked to ${ATTA_STATIC_PROJECT_FILE}")
 else()
+    list(APPEND ATTA_DEFINITIONS "ATTA_DYNAMIC_PROJECT")
     set(ATTA_STATIC_PROJECT FALSE)
 endif()
 

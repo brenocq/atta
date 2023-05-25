@@ -11,7 +11,7 @@
 #include <atta/script/registry/registry.h>
 
 // clang-format off
-#define ATTA_REGISTER_CONTROLLER(TYPE) inline ::atta::script::TypedControllerRegistry<TYPE> controllerRegistry##TYPE {};
+#define ATTA_REGISTER_CONTROLLER(TYPE) inline ::atta::script::TypedControllerRegistry<TYPE> controllerRegistry##TYPE(#TYPE);
 // clang-format on
 
 namespace atta::script {
@@ -19,11 +19,12 @@ namespace atta::script {
 class ControllerRegistry : public Registry {
   public:
     static const std::vector<ControllerRegistry*>& getRegistries();
+    static ControllerRegistry* getRegistry(StringId sid);
 
     virtual void run(cmp::Entity entity, float dt, uint32_t num = 1) = 0;
 
   protected:
-    ControllerRegistry(std::string typeidName, size_t typeidHash);
+    ControllerRegistry(std::string name, std::string typeidName, size_t typeidHash);
 
     void addRegistry(ControllerRegistry* registry);
     void removeRegistry(ControllerRegistry* registry);
@@ -40,7 +41,7 @@ class ControllerRegistry : public Registry {
 template <typename T>
 class TypedControllerRegistry : public ControllerRegistry {
   public:
-    TypedControllerRegistry();
+    TypedControllerRegistry(std::string name);
     ~TypedControllerRegistry();
 
     void run(cmp::Entity entity, float dt, uint32_t num) override;

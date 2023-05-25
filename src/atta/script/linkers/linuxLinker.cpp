@@ -14,12 +14,7 @@
 
 namespace atta::script {
 
-void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) {
-    *script = nullptr;
-    *projectScript = nullptr;
-
-    std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-
+void LinuxLinker::linkTarget(StringId target) {
     fs::path projectDir = file::getProject()->getDirectory();
     fs::path lib = projectDir / "build" / ("lib" + target.getString() + ".so").c_str();
 
@@ -27,17 +22,16 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
     fs::path libCpyDir = projectDir / "build" / "atta" / "script" / target.getString();
 
     // Keep some of the last library versions (segfault if library still in use)
-    if (fs::exists(libCpyDir))
-    {
+    if (fs::exists(libCpyDir)) {
         // Get files
         std::vector<std::string> files;
-        for(auto entry : fs::directory_iterator(libCpyDir))
+        for (auto entry : fs::directory_iterator(libCpyDir))
             files.push_back(entry.path().string());
 
         std::sort(files.begin(), files.end());
         // Keep up to 10 old files (should be only one)
-        if(files.size())
-            for(int i = 0; i < int(files.size())-10; i++)
+        if (files.size())
+            for (int i = 0; i < int(files.size()) - 10; i++)
                 fs::remove(files[i]);
     }
     fs::create_directories(libCpyDir);
@@ -46,44 +40,14 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
     fs::copy(lib, libCpy);
 
     // Open shared library
+    std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
     void* fLib = dlopen(fs::absolute(libCpy).c_str(), RTLD_LAZY);
-    if (fLib) {
-        ////---------- Script ----------//
-        //using ScriptCreator = std::pair<const char*, Script*> (*)();
-        //ScriptCreator fn = reinterpret_cast<ScriptCreator>(dlsym(fLib, "createScript"));
+    std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+    auto linkTime = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
 
-        //const char* dlsymError = dlerror();
-        //if (!dlsymError) {
-        //    *script = fn().second;
-        //    name = std::string(fn().first);
-        //}
-
-        ////---------- Project Script ----------//
-        //using ProjectScriptCreator = std::pair<const char*, ProjectScript*> (*)();
-        //ProjectScriptCreator pfn = reinterpret_cast<ProjectScriptCreator>(dlsym(fLib, "createProjectScript"));
-
-        //dlsymError = dlerror();
-        //if (!dlsymError) {
-        //    *projectScript = pfn().second;
-        //    name = std::string(pfn().first);
-        //}
-
-        //// Save library pointer to delete later
-        //_targetHandles[target] = fLib;
-
-        //std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-        //auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-
-        //std::string type;
-        //if (*projectScript)
-        //    type = "ProjectScript " + name;
-        //else if (*script)
-        //    type = "Script " + name;
-        //else
-        //    type = "Other";
-        //LOG_INFO("script::LinuxLinker", "Time to link [*w]$0[]: [w]$1[] ms ([w]$2[])", target, micro.count() / 1000.0f, type);
-        //LOG_INFO("script::LinuxLinker", "Time to link [*w]$0[]: [w]$1ms", target, micro.count() / 1000.0f);
-    } else
+    if (fLib)
+        LOG_INFO("script::LinuxLinker", "Time to link [*w]$0[]: [w]$1ms", target, linkTime.count() / 1000.0f);
+    else
         LOG_ERROR("script::LinuxLinker", "Cannot open library [w]$0[]. Error: $1", libCpy.filename(), dlerror());
 }
 

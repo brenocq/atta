@@ -14,10 +14,7 @@ namespace atta::script {
 
 class LinuxLinker : public Linker {
   public:
-    LinuxLinker() = default;
-    ~LinuxLinker() = default;
-
-    void linkTarget(StringId target, Script** script, ProjectScript** projectScript, std::string& name) override;
+    void linkTarget(StringId target) override;
     void releaseTarget(StringId target) override;
 
   private:

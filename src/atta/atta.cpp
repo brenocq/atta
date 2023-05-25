@@ -32,7 +32,6 @@
 // Include execute code
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/script.h>
-#include <atta/script/script.h>
 
 namespace atta {
 Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {

@@ -10,9 +10,17 @@ namespace atta::script {
 
 std::vector<ControllerRegistry*> ControllerRegistry::_registries = {};
 
-ControllerRegistry::ControllerRegistry(std::string typeidName, size_t typeidHash) : Registry(typeidName, typeidHash) {}
+ControllerRegistry::ControllerRegistry(std::string name, std::string typeidName, size_t typeidHash) : Registry(name, typeidName, typeidHash) {}
 
 const std::vector<ControllerRegistry*>& ControllerRegistry::getRegistries() { return _registries; }
+
+ControllerRegistry* ControllerRegistry::getRegistry(StringId sid) {
+    std::string scriptName = sid.getString();
+    for(ControllerRegistry* r : _registries)
+        if(r->getName() == scriptName)
+            return r;
+        return nullptr;
+}
 
 void ControllerRegistry::addRegistry(ControllerRegistry* registry) {
     LOG_DEBUG("scr::Registry", "Add controller registry [w]$0", *registry);

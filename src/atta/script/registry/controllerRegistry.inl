@@ -9,7 +9,7 @@
 namespace atta::script {
 
 template <typename T>
-TypedControllerRegistry<T>::TypedControllerRegistry() : ControllerRegistry(typeid(T).name(), typeid(T).hash_code()) {
+TypedControllerRegistry<T>::TypedControllerRegistry(std::string name) : ControllerRegistry(name, typeid(T).name(), typeid(T).hash_code()) {
     addRegistry(this);
 }
 

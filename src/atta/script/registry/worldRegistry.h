@@ -10,7 +10,7 @@
 #include <atta/script/registry/registry.h>
 
 // clang-format off
-#define ATTA_REGISTER_WORLD(TYPE) inline ::atta::script::TypedWorldRegistry<TYPE> worldRegistry##TYPE {};
+#define ATTA_REGISTER_WORLD(TYPE) inline ::atta::script::TypedWorldRegistry<TYPE> worldRegistry##TYPE(#TYPE);
 // clang-format on
 
 namespace atta::script {
@@ -31,7 +31,7 @@ class WorldRegistry : public Registry {
     static void onAttaLoop();
 
   protected:
-    WorldRegistry(std::string typeidName, size_t typeidHash);
+    WorldRegistry(std::string name, std::string typeidName, size_t typeidHash);
 
     void addRegistry(WorldRegistry* registry);
     void removeRegistry(WorldRegistry* registry);
@@ -59,7 +59,7 @@ class WorldRegistry : public Registry {
 template <typename T>
 class TypedWorldRegistry : public WorldRegistry {
   public:
-    TypedWorldRegistry();
+    TypedWorldRegistry(std::string name);
     ~TypedWorldRegistry();
 
     void runOnLoad() override;

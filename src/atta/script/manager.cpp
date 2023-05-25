@@ -4,13 +4,15 @@
 // Date: 2021-09-06
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/script/dummy.h>
 #include <atta/script/interface.h>
 #include <atta/script/manager.h>
-#include <atta/script/dummy.h>
 
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/script.h>
 #include <atta/component/interface.h>
+#include <atta/event/events/projectClose.h>
+#include <atta/event/events/projectOpen.h>
 #include <atta/event/events/scriptTarget.h>
 #include <atta/event/interface.h>
 #include <atta/parallel/interface.h>
@@ -23,8 +25,6 @@ Manager& Manager::getInstance() {
 }
 
 void Manager::updateImpl(float dt) {
-    script::ProjectScript* project = getProjectScriptImpl();
-
     // Run world script before
     {
         PROFILE_NAME("atta::script::Manager::onUpdateBefore");
@@ -35,7 +35,7 @@ void Manager::updateImpl(float dt) {
     {
         PROFILE_NAME("atta::script::Manager::runCloneScripts");
         for (auto& factory : component::getFactories()) {
-            script::Script* script = getScriptImpl(factory.getPrototype().get<cmp::Script>()->sid);
+            // script::Script* script = getScriptImpl(factory.getPrototype().get<cmp::Script>()->sid);
             // TODO Use script registry
             // parallel::run(script, factory.getFirstClone(), dt, factory.getMaxClones());
         }
@@ -55,39 +55,39 @@ void Manager::updateImpl(float dt) {
         }
 
         std::vector<component::EntityId> entities = component::getScriptView();
-        std::vector<std::pair<script::Script*, cmp::EntityId>> scripts;
-        for (component::EntityId entity : entities) {
-            // Check if it has script component
-            component::Script* scriptComponent = component::getComponent<component::Script>(entity);
-            if (!scriptComponent)
-                continue;
+        // std::vector<std::pair<script::Script*, cmp::EntityId>> scripts;
+        // for (component::EntityId entity : entities) {
+        //     // Check if it has script component
+        //     component::Script* scriptComponent = component::getComponent<component::Script>(entity);
+        //     if (!scriptComponent)
+        //         continue;
 
-            // Check if it is not prototype entity
-            component::Prototype* prototypeComponent = component::getComponent<component::Prototype>(entity);
-            if (prototypeComponent)
-                continue;
+        //    // Check if it is not prototype entity
+        //    component::Prototype* prototypeComponent = component::getComponent<component::Prototype>(entity);
+        //    if (prototypeComponent)
+        //        continue;
 
-            // Check if it it not clone entity
-            bool isClone = false;
-            for (auto [begin, end] : beginEndClones)
-                if (entity >= begin && entity <= end) {
-                    isClone = true;
-                    break;
-                }
-            if (isClone)
-                continue;
+        //    // Check if it it not clone entity
+        //    bool isClone = false;
+        //    for (auto [begin, end] : beginEndClones)
+        //        if (entity >= begin && entity <= end) {
+        //            isClone = true;
+        //            break;
+        //        }
+        //    if (isClone)
+        //        continue;
 
-            // Add to list to be executed
-            script::Script* script = getScriptImpl(scriptComponent->sid);
-            if (script)
-                scripts.push_back({script, entity});
-        }
+        //    // Add to list to be executed
+        //    // script::Script* script = getScriptImpl(scriptComponent->sid);
+        //    // if (script)
+        //    //    scripts.push_back({script, entity});
+        //}
 
-        // Run scripts
-        if (scripts.size())
-            parallel::run(0, scripts.size() - 1, [&](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
+        //// Run scripts
+        // if (scripts.size())
+        //     parallel::run(0, scripts.size() - 1, [&](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
 
-        ControllerRegistry::getRegistries().front()->run(-1, 0.0f);
+        ControllerRegistry::getRegistries()[0]->run(-1, 0.0f);
     }
 
     // Run project script after
@@ -97,26 +97,13 @@ void Manager::updateImpl(float dt) {
     }
 }
 
-Script* Manager::getScriptImpl(StringId target) const {
-    if (_scripts.find(target) != _scripts.end())
-        return _scripts.at(target);
-    else {
-        LOG_WARN("script::Manager", "Trying to get script from target that does not exist: [w]$0[]", target);
-        return nullptr;
-    }
-}
-
 std::vector<StringId> Manager::getScriptSidsImpl() const {
+    std::vector<ControllerRegistry*> registries = ControllerRegistry::getRegistries();
     std::vector<StringId> scripts;
-    for (auto [script, value] : _scripts)
-        if (script != _projectScript.first)
-            scripts.push_back(script);
+    for (ControllerRegistry* r : registries)
+        scripts.push_back(r->getName());
     return scripts;
 }
-
-ProjectScript* Manager::getProjectScriptImpl() const { return _projectScript.second; }
-
-StringId Manager::getProjectScriptSidImpl() const { return _projectScript.first; }
 
 } // namespace atta::script
 

@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.14)
 set(ATTA_SCRIPT_MODULE_SOURCE
     interface.cpp
     manager.cpp
-    script.cpp
-    projectScript.cpp
     dummy.cpp
 
     registry/registry.cpp

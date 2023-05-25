@@ -16,7 +16,7 @@ class Registry {
     size_t getTypeidHash() const;
 
   protected:
-    Registry(std::string typeidName, size_t typeidHash);
+    Registry(std::string name, std::string typeidName, size_t typeidHash);
 
     std::string _name;       ///< Script class name
     std::string _typeidName; ///< typeid(T).name()
