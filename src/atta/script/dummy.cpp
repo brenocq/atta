@@ -1,14 +1,9 @@
 //--------------------------------------------------
 // Atta Script Module
-// controller.inl
+// dummy.cpp
 // Date: 2023-05-25
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-namespace atta::script {
+#include <atta/script/dummy.h>
 
-template <typename T>
-ATTA_CPU_GPU T* Controller::get() const {
-    return entity.get<T>();
-}
-
-} // namespace atta::script
+ATTA_CPU_GPU void DummyController::update() {}

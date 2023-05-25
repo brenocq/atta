@@ -132,9 +132,7 @@ void Atta::loop() {
         step();
     }
 
-    script::ProjectScript* project = script::getProjectScript();
-    if (project)
-        project->onAttaLoop();
+    script::WorldRegistry::onAttaLoop();
 
     file::update();
     graphics::update();
@@ -158,32 +156,27 @@ void Atta::step() {
 void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }
 
 void Atta::onSimulationStateChange(event::Event& event) {
-    script::ProjectScript* project = script::getProjectScript();
     switch (event.getType()) {
         case event::SimulationStart::type: {
             Config::getInstance()._state = Config::State::RUNNING;
-            if (project)
-                project->onStart();
+            script::WorldRegistry::onStart();
             break;
         }
         case event::SimulationContinue::type: {
             Config::getInstance()._state = Config::State::RUNNING;
-            if (project)
-                project->onContinue();
+            script::WorldRegistry::onContinue();
             break;
         }
         case event::SimulationPause::type: {
             Config::getInstance()._state = Config::State::PAUSED;
-            if (project)
-                project->onPause();
+            script::WorldRegistry::onPause();
             break;
         }
         case event::SimulationStop::type: {
             Config::getInstance()._state = Config::State::IDLE;
             Config::getInstance()._time = 0.0f;
             Config::getInstance()._realStepSpeed = 0.0f;
-            if (project)
-                project->onStop();
+            script::WorldRegistry::onStop();
             break;
         }
         case event::SimulationStep::type: {

@@ -13,7 +13,9 @@ void CpuDevice::run(cmp::Entity entity, float dt, uint32_t num) {
     cmp::EntityId end = entity.getId() + num - 1;
     run(start, end, [&](uint32_t i) {
         Script script;
-        script.update(cmp::Entity(i), dt);
+        script.entity = cmp::Entity(i);
+        script.dt = dt;
+        script.update();
     });
 }
 

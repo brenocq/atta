@@ -9,11 +9,14 @@ namespace atta::parallel {
 
 template <typename Script>
 void SerialDevice::run(cmp::Entity entity, float dt, uint32_t num) {
-    Script script;
     cmp::EntityId start = entity.getId();
     cmp::EntityId end = entity.getId() + num;
-    for (cmp::EntityId i = start; i < end; i++)
-        script.update(cmp::Entity(i), dt);
+    for (cmp::EntityId i = start; i < end; i++) {
+        Script script;
+        script.entity = cmp::Entity(i);
+        script.dt = dt;
+        script.update();
+    }
 }
 
 } // namespace atta::parallel

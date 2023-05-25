@@ -48,40 +48,41 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
     // Open shared library
     void* fLib = dlopen(fs::absolute(libCpy).c_str(), RTLD_LAZY);
     if (fLib) {
-        //---------- Script ----------//
-        using ScriptCreator = std::pair<const char*, Script*> (*)();
-        ScriptCreator fn = reinterpret_cast<ScriptCreator>(dlsym(fLib, "createScript"));
+        ////---------- Script ----------//
+        //using ScriptCreator = std::pair<const char*, Script*> (*)();
+        //ScriptCreator fn = reinterpret_cast<ScriptCreator>(dlsym(fLib, "createScript"));
 
-        const char* dlsymError = dlerror();
-        if (!dlsymError) {
-            *script = fn().second;
-            name = std::string(fn().first);
-        }
+        //const char* dlsymError = dlerror();
+        //if (!dlsymError) {
+        //    *script = fn().second;
+        //    name = std::string(fn().first);
+        //}
 
-        //---------- Project Script ----------//
-        using ProjectScriptCreator = std::pair<const char*, ProjectScript*> (*)();
-        ProjectScriptCreator pfn = reinterpret_cast<ProjectScriptCreator>(dlsym(fLib, "createProjectScript"));
+        ////---------- Project Script ----------//
+        //using ProjectScriptCreator = std::pair<const char*, ProjectScript*> (*)();
+        //ProjectScriptCreator pfn = reinterpret_cast<ProjectScriptCreator>(dlsym(fLib, "createProjectScript"));
 
-        dlsymError = dlerror();
-        if (!dlsymError) {
-            *projectScript = pfn().second;
-            name = std::string(pfn().first);
-        }
+        //dlsymError = dlerror();
+        //if (!dlsymError) {
+        //    *projectScript = pfn().second;
+        //    name = std::string(pfn().first);
+        //}
 
-        // Save library pointer to delete later
-        _targetHandles[target] = fLib;
+        //// Save library pointer to delete later
+        //_targetHandles[target] = fLib;
 
-        std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-        auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+        //std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+        //auto micro = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
 
-        std::string type;
-        if (*projectScript)
-            type = "ProjectScript " + name;
-        else if (*script)
-            type = "Script " + name;
-        else
-            type = "Other";
-        LOG_INFO("script::LinuxLinker", "Time to link [*w]$0[]: [w]$1[] ms ([w]$2[])", target, micro.count() / 1000.0f, type);
+        //std::string type;
+        //if (*projectScript)
+        //    type = "ProjectScript " + name;
+        //else if (*script)
+        //    type = "Script " + name;
+        //else
+        //    type = "Other";
+        //LOG_INFO("script::LinuxLinker", "Time to link [*w]$0[]: [w]$1[] ms ([w]$2[])", target, micro.count() / 1000.0f, type);
+        //LOG_INFO("script::LinuxLinker", "Time to link [*w]$0[]: [w]$1ms", target, micro.count() / 1000.0f);
     } else
         LOG_ERROR("script::LinuxLinker", "Cannot open library [w]$0[]. Error: $1", libCpy.filename(), dlerror());
 }

@@ -7,8 +7,8 @@
 #ifndef ATTA_SCRIPT_REGISTRY_CONTROLLER_REGISTRY_H
 #define ATTA_SCRIPT_REGISTRY_CONTROLLER_REGISTRY_H
 
-#include <atta/script/registry/registry.h>
 #include <atta/component/interface.h>
+#include <atta/script/registry/registry.h>
 
 // clang-format off
 #define ATTA_REGISTER_CONTROLLER(TYPE) inline ::atta::script::TypedControllerRegistry<TYPE> controllerRegistry##TYPE {};
@@ -20,7 +20,7 @@ class ControllerRegistry : public Registry {
   public:
     static const std::vector<ControllerRegistry*>& getRegistries();
 
-    // virtual void runController(cmp::Entity entity, float dt, uint32_t num = 1);
+    virtual void run(cmp::Entity entity, float dt, uint32_t num = 1) = 0;
 
   protected:
     ControllerRegistry(std::string typeidName, size_t typeidHash);
@@ -42,6 +42,8 @@ class TypedControllerRegistry : public ControllerRegistry {
   public:
     TypedControllerRegistry();
     ~TypedControllerRegistry();
+
+    void run(cmp::Entity entity, float dt, uint32_t num) override;
 };
 
 } // namespace atta::script

@@ -13,17 +13,13 @@ namespace atta::script {
 
 class Controller {
   public:
-    Controller();
-    Controller(cmp::Entity entity, float dt);
-
     ATTA_CPU_GPU virtual void update() = 0;
 
     template <typename T>
     ATTA_CPU_GPU T* get() const;
 
-  protected:
-    cmp::Entity _entity;
-    float _dt;
+    cmp::Entity entity;
+    float dt;
 };
 
 } // namespace atta::script

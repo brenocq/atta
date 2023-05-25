@@ -9,10 +9,14 @@ namespace atta::parallel {
 
 template <typename Script>
 void GpuDevice::run(cmp::Entity entity, float dt, uint32_t num) {
-    Script script;
-    cmp::EntityId eidFirst = entity.getId();
-    for (cmp::EntityId eid = eidFirst; eid < eidFirst + num; eid++)
-        script.update(cmp::Entity(eid), dt);
+    cmp::EntityId start = entity.getId();
+    cmp::EntityId end = entity.getId() + num;
+    for (cmp::EntityId i = start; i < end; i++) {
+        Script script;
+        script.entity = cmp::Entity(i);
+        script.dt = dt;
+        script.update();
+    }
 }
 
 } // namespace atta::parallel

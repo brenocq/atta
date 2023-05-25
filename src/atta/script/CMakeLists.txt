@@ -5,6 +5,7 @@ set(ATTA_SCRIPT_MODULE_SOURCE
     manager.cpp
     script.cpp
     projectScript.cpp
+    dummy.cpp
 
     registry/registry.cpp
     registry/controllerRegistry.cpp

@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/script/interface.h>
 #include <atta/script/manager.h>
+#include <atta/script/dummy.h>
 
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/script.h>
@@ -24,10 +25,10 @@ Manager& Manager::getInstance() {
 void Manager::updateImpl(float dt) {
     script::ProjectScript* project = getProjectScriptImpl();
 
-    // Run project script before
-    if (project) {
+    // Run world script before
+    {
         PROFILE_NAME("atta::script::Manager::onUpdateBefore");
-        project->onUpdateBefore(dt);
+        WorldRegistry::onUpdateBefore(dt);
     }
 
     // Run clone scripts
@@ -85,12 +86,14 @@ void Manager::updateImpl(float dt) {
         // Run scripts
         if (scripts.size())
             parallel::run(0, scripts.size() - 1, [&](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
+
+        ControllerRegistry::getRegistries().front()->run(-1, 0.0f);
     }
 
     // Run project script after
-    if (project) {
+    {
         PROFILE_NAME("atta::script::Manager::onUpdateAfter");
-        project->onUpdateAfter(dt);
+        WorldRegistry::onUpdateAfter(dt);
     }
 }
 

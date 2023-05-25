@@ -4,7 +4,6 @@
 // Date: 2023-02-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::parallel {
 
 template <typename Script>

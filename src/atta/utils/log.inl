@@ -82,33 +82,33 @@ void Log::log(const char* tagColor, std::string tag, const char* textColor, std:
             }
 
             switch (text[i]) {
-            case 'w':
-                finalText << COLOR_RESET<< COLOR_WHITE;
-                break;
-            case 'r':
-                finalText << COLOR_RESET<< COLOR_RED;
-                break;
-            case 'g':
-                finalText << COLOR_RESET<< COLOR_GREEN;
-                break;
-            case 'b':
-                finalText << COLOR_RESET<< COLOR_BLUE;
-                break;
-            case 'y':
-                finalText << COLOR_RESET<< COLOR_YELLOW;
-                break;
-            case 'm':
-                finalText << COLOR_RESET<< COLOR_MAGENTA;
-                break;
-            case 'c':
-                finalText << COLOR_RESET << COLOR_CYAN;
-                break;
-            case 'k':
-                finalText << COLOR_RESET<< COLOR_BLACK;
-                break;
-            default:
-                finalText << '[';
-                i-=2;
+                case 'w':
+                    finalText << COLOR_RESET << COLOR_WHITE;
+                    break;
+                case 'r':
+                    finalText << COLOR_RESET << COLOR_RED;
+                    break;
+                case 'g':
+                    finalText << COLOR_RESET << COLOR_GREEN;
+                    break;
+                case 'b':
+                    finalText << COLOR_RESET << COLOR_BLUE;
+                    break;
+                case 'y':
+                    finalText << COLOR_RESET << COLOR_YELLOW;
+                    break;
+                case 'm':
+                    finalText << COLOR_RESET << COLOR_MAGENTA;
+                    break;
+                case 'c':
+                    finalText << COLOR_RESET << COLOR_CYAN;
+                    break;
+                case 'k':
+                    finalText << COLOR_RESET << COLOR_BLACK;
+                    break;
+                default:
+                    finalText << '[';
+                    i -= 2;
             }
             i++; // Skip color and ]
         } else if (text[i] == '$') {

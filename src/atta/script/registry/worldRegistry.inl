@@ -4,17 +4,16 @@
 // Date: 2023-05-25
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::script {
 
 template <typename T>
 TypedWorldRegistry<T>::TypedWorldRegistry() : WorldRegistry(typeid(T).name(), typeid(T).hash_code()), _worldScript({}) {
-    addRegistry((WorldRegistry*)this);
+    addRegistry(this);
 }
 
 template <typename T>
 TypedWorldRegistry<T>::~TypedWorldRegistry() {
-    removeRegistry((WorldRegistry*)this);
+    removeRegistry(this);
 }
 
 template <typename T>
