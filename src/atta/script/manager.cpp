@@ -35,7 +35,8 @@ void Manager::updateImpl(float dt) {
         PROFILE_NAME("atta::script::Manager::runCloneScripts");
         for (auto& factory : component::getFactories()) {
             script::Script* script = getScriptImpl(factory.getPrototype().get<cmp::Script>()->sid);
-            parallel::run(script, factory.getFirstClone(), dt, factory.getMaxClones());
+            // TODO Use script registry
+            // parallel::run(script, factory.getFirstClone(), dt, factory.getMaxClones());
         }
     }
 
@@ -82,7 +83,8 @@ void Manager::updateImpl(float dt) {
         }
 
         // Run scripts
-        parallel::run(0, scripts.size(), [&](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
+        if (scripts.size())
+            parallel::run(0, scripts.size() - 1, [&](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
     }
 
     // Run project script after

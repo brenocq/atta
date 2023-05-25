@@ -21,7 +21,8 @@ class Manager final {
     friend void startUp();
     friend void shutDown();
     friend void run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func);
-    friend void run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num);
+    template <typename Script>
+    friend void run(cmp::Entity entity, float dt, uint32_t num);
     friend void setDeviceType(Device::Type type);
     friend Device::Type getDeviceType();
     friend std::shared_ptr<Device> getDevice();
@@ -33,7 +34,8 @@ class Manager final {
     void startUpImpl();
     void shutDownImpl();
     void runImpl(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func);
-    void runImpl(scr::Script* script, cmp::Entity entity, float dt, uint32_t num);
+    template <typename Script>
+    void runImpl(cmp::Entity entity, float dt, uint32_t num);
 
     void setDeviceTypeImpl(Device::Type type);
     Device::Type getDeviceTypeImpl();
@@ -50,5 +52,7 @@ class Manager final {
 };
 
 } // namespace atta::parallel
+
+#include <atta/parallel/manager.inl>
 
 #endif // ATTA_PARALLEL_MANAGER_H

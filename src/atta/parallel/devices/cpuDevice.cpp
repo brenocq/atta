@@ -34,12 +34,6 @@ void CpuDevice::run(uint32_t start, uint32_t end, std::function<void(uint32_t id
     }
 }
 
-void CpuDevice::run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) {
-    cmp::EntityId start = entity.getId();
-    cmp::EntityId end = entity.getId() + num - 1;
-    run(start, end, [&](uint32_t i) { script->update(cmp::Entity(i), dt); });
-}
-
 void CpuDevice::setNumWorkers(uint32_t numWorkers) {
     if (!jobFinished()) {
         LOG_WARN("parallel::CpuDevice", "Can't change number of workers while they are working");

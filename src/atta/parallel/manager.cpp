@@ -29,8 +29,6 @@ void Manager::shutDownImpl() {
 
 void Manager::runImpl(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) { _device->run(start, end, std::move(func)); }
 
-void Manager::runImpl(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) { _device->run(script, entity, dt, num); }
-
 void Manager::setDeviceTypeImpl(Device::Type type) {
     switch (type) {
         case Device::Type::SERIAL:

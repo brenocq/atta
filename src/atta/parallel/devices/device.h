@@ -18,7 +18,6 @@ class Device {
     Device(Type type);
 
     virtual void run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) = 0;
-    virtual void run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) = 0;
 
     Type getType() const;
 

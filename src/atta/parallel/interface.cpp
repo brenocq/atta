@@ -16,11 +16,6 @@ void run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
     Manager::getInstance().runImpl(start, end, func);
 }
 
-void run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) {
-    PROFILE();
-    Manager::getInstance().runImpl(script, entity, dt, num);
-}
-
 void setDeviceType(Device::Type type) { Manager::getInstance().setDeviceTypeImpl(type); }
 Device::Type getDeviceType() { return Manager::getInstance().getDeviceTypeImpl(); }
 std::shared_ptr<Device> getDevice() { return Manager::getInstance().getDeviceImpl(); }

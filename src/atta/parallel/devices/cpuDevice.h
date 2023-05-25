@@ -21,7 +21,17 @@ class CpuDevice : public Device {
     ~CpuDevice();
 
     void run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) override;
-    void run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) override;
+
+    /**
+     * @brief Run scripts in multiple threads
+     *
+     * @tparam Script Derived script class
+     * @param entity First clone
+     * @param dt Simulation dt
+     * @param num Number of entities with sequential id to run
+     */
+    template <typename Script>
+    void run(cmp::Entity entity, float dt, uint32_t num);
 
     void setNumWorkers(uint32_t numWorkers);
     uint32_t getNumWorkers() const;
@@ -52,5 +62,7 @@ class CpuDevice : public Device {
 };
 
 } // namespace atta::parallel
+
+#include <atta/parallel/devices/cpuDevice.inl>
 
 #endif // ATTA_PARALLEL_DEVICES_CPU_DEVICE_H

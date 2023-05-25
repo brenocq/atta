@@ -26,14 +26,17 @@ class GpuDevice : public Device {
      *
      * @warn It is necessary to copy the components from the GPU to the CPU to see the changes in the UI.
      *
-     * @param script Pointer to script (must have been allocated in the GPU)
+     * @tparam Script Derived script class
      * @param entity First clone
      * @param dt Simulation dt
      * @param num Number of entities with sequential id to run
      */
-    void run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) override;
+    template <typename Script>
+    void run(cmp::Entity entity, float dt, uint32_t num);
 };
 
 } // namespace atta::parallel
+
+#include <atta/parallel/devices/gpuDevice.inl>
 
 #endif // ATTA_PARALLEL_DEVICES_GPU_DEVICE_H
