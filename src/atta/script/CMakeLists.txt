@@ -5,7 +5,11 @@ set(ATTA_SCRIPT_MODULE_SOURCE
     manager.cpp
     script.cpp
     projectScript.cpp
+
+    registry/registry.cpp
+    registry/typedRegistry.cpp
 )
+
 if(NOT ATTA_STATIC_PROJECT)
     set(ATTA_SCRIPT_MODULE_DYNAMIC_SOURCE
         compilers/compiler.cpp
