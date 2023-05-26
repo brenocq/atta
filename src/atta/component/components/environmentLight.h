@@ -17,7 +17,7 @@ struct EnvironmentLight final : public Component {
 };
 ATTA_REGISTER_COMPONENT(EnvironmentLight)
 template <>
-ComponentDescription& TypedComponentRegistry<EnvironmentLight>::getDescription();
+ComponentDescription& TypedRegistry<EnvironmentLight>::getDescription();
 
 } // namespace atta::component
 

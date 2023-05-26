@@ -10,7 +10,7 @@
 
 namespace atta::component {
 template <>
-ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
+ComponentDescription& TypedRegistry<Relationship>::getDescription() {
     static ComponentDescription desc = {
         "Relationship",
         {{AttributeType::UINT32, offsetof(Relationship, _parent), "parent"}, {AttributeType::CUSTOM, offsetof(Relationship, _children), "children"}},

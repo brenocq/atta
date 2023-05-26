@@ -22,7 +22,7 @@ struct PointLight final : public Component {
 };
 ATTA_REGISTER_COMPONENT(PointLight)
 template <>
-ComponentDescription& TypedComponentRegistry<PointLight>::getDescription();
+ComponentDescription& TypedRegistry<PointLight>::getDescription();
 
 } // namespace atta::component
 

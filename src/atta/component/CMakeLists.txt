@@ -6,8 +6,9 @@ set(ATTA_COMPONENT_MODULE_SOURCE
 
     entity.cpp
     factory.cpp
-    componentRegistry.cpp
-    typedComponentRegistry.cpp
+
+    registry/registry.cpp
+    registry/typedRegistry.cpp
 
     components/boxCollider.cpp
     components/boxCollider2D.cpp

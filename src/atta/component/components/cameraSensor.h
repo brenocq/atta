@@ -52,7 +52,7 @@ struct CameraSensor final : public Component {
 };
 ATTA_REGISTER_COMPONENT(CameraSensor);
 template <>
-ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription();
+ComponentDescription& TypedRegistry<CameraSensor>::getDescription();
 
 } // namespace atta::component
 

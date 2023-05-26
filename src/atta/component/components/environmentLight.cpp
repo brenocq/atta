@@ -9,7 +9,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<EnvironmentLight>::getDescription() {
+ComponentDescription& TypedRegistry<EnvironmentLight>::getDescription() {
     static ComponentDescription desc = {"Environment Light",
                                         {
                                             {AttributeType::STRINGID, offsetof(EnvironmentLight, sid), "sid", {}, {}, {}, {}},
@@ -20,8 +20,8 @@ ComponentDescription& TypedComponentRegistry<EnvironmentLight>::getDescription()
 }
 
 EnvironmentLight::EnvironmentLight() {
-    if (TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.size())
-        sid = std::any_cast<StringId>(*(TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.begin()));
+    if (TypedRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.size())
+        sid = std::any_cast<StringId>(*(TypedRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.begin()));
 }
 
 } // namespace atta::component

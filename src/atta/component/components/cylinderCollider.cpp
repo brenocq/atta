@@ -9,7 +9,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<CylinderCollider>::getDescription() {
+ComponentDescription& TypedRegistry<CylinderCollider>::getDescription() {
     static ComponentDescription desc = {
         "Cylinder Collider",
         {

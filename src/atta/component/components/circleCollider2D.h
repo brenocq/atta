@@ -32,7 +32,7 @@ struct CircleCollider2D final : public Component {
 };
 ATTA_REGISTER_COMPONENT(CircleCollider2D)
 template <>
-ComponentDescription& TypedComponentRegistry<CircleCollider2D>::getDescription();
+ComponentDescription& TypedRegistry<CircleCollider2D>::getDescription();
 
 } // namespace atta::component
 

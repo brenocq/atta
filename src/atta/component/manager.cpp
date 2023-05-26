@@ -205,7 +205,7 @@ Entity Manager::copyEntityImpl(Entity entity) {
             Component* component = addComponentById(compReg->getId(), newEntity);
 
             // TODO implement component copy operator
-            if (compReg->getId() != TypedComponentRegistry<Relationship>::getInstance().getId())
+            if (compReg->getId() != TypedRegistry<Relationship>::getInstance().getId())
                 memcpy(component, baseComponent, compReg->getSizeof());
             else {
                 Relationship* baseR = static_cast<Relationship*>(baseComponent);
@@ -238,12 +238,12 @@ void Manager::clearImpl() {
 //----------------------------------------//
 //------------ Component Pool ------------//
 //----------------------------------------//
-memory::BitmapAllocator* Manager::getComponentAllocator(ComponentRegistry* compReg) {
+memory::BitmapAllocator* Manager::getComponentAllocator(Registry* compReg) {
     return memory::getAllocator<memory::BitmapAllocator>(compReg->getId());
 }
 
-ComponentRegistry* Manager::getComponentRegistry(ComponentId id) {
-    ComponentRegistry* compReg = nullptr;
+Registry* Manager::getRegistry(ComponentId id) {
+    Registry* compReg = nullptr;
     for (auto cg : _componentRegistries)
         if (cg->getId() == id) {
             compReg = cg;
@@ -253,9 +253,9 @@ ComponentRegistry* Manager::getComponentRegistry(ComponentId id) {
     return compReg;
 }
 
-std::vector<ComponentRegistry*> Manager::getComponentRegistriesImpl() { return _componentRegistries; }
+std::vector<Registry*> Manager::getComponentRegistriesImpl() { return _componentRegistries; }
 
-void Manager::registerComponentImpl(ComponentRegistry* componentRegistry) {
+void Manager::registerComponentImpl(Registry* componentRegistry) {
     ASSERT(_componentRegistries.size() < maxRegisteredComponents,
            "More components than it is possible to store inside the entityBlock, maximum is $0", maxRegisteredComponents);
 
@@ -307,7 +307,7 @@ void Manager::createComponentPoolsFromRegistered() {
     }
 }
 
-void Manager::createComponentPool(ComponentRegistry* componentRegistry) {
+void Manager::createComponentPool(Registry* componentRegistry) {
     ComponentDescription& desc = componentRegistry->getDescription();
     std::string name = desc.name;
     unsigned sizeofT = componentRegistry->getSizeof();
@@ -342,7 +342,7 @@ Component* Manager::addComponentByIdImpl(ComponentId id, Entity entity) {
     ASSERT(eid < (int)_maxEntities, "Trying to access entity outside of range");
 
     // Get component registry
-    ComponentRegistry* compReg = getComponentRegistry(id);
+    Registry* compReg = getRegistry(id);
 
     // Get entity
     EntityBlock* e = getEntityBlock(eid);
@@ -435,7 +435,7 @@ void Manager::removeComponentByIdImpl(ComponentId id, Entity entity) {
     ASSERT(e != nullptr, "Trying to remove component from entity [w]$0[] that was not created", eid);
 
     // Get component registry
-    ComponentRegistry* compReg = nullptr;
+    Registry* compReg = nullptr;
     for (auto cg : _componentRegistries)
         if (cg->getId() == id) {
             compReg = cg;
@@ -476,7 +476,7 @@ void Manager::notifyComponentRemoved(Entity entity, ComponentId id) {
 //----------------------------------------//
 Component* Manager::getComponentByIdImpl(ComponentId id, Entity entity) {
     EntityId eid = entity.getId();
-    ComponentRegistry* compReg = getComponentRegistry(id);
+    Registry* compReg = getRegistry(id);
     return getComponentByIndex(compReg->getIndex(), eid);
 }
 
@@ -573,14 +573,14 @@ void Manager::onMeshEvent(event::Event& event) {
         case event::MeshLoad::type: {
             event::MeshLoad& e = reinterpret_cast<event::MeshLoad&>(event);
             bool found = false;
-            for (auto op : TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options)
+            for (auto op : TypedRegistry<Mesh>::description->attributeDescriptions[0].options)
                 if (std::any_cast<StringId>(op) == e.sid) {
                     found = true;
                     break;
                 }
 
             if (!found)
-                TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
+                TypedRegistry<Mesh>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
 
             break;
         }
@@ -597,14 +597,14 @@ void Manager::onImageEvent(event::Event& event) {
             // Update environment light options
             {
                 bool found = false;
-                for (auto op : TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options)
+                for (auto op : TypedRegistry<EnvironmentLight>::description->attributeDescriptions[0].options)
                     if (std::any_cast<StringId>(op) == e.sid) {
                         found = true;
                         break;
                     }
 
                 if (!found) {
-                    TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
+                    TypedRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
                 }
             }
 
@@ -618,9 +618,9 @@ void Manager::onImageEvent(event::Event& event) {
 void Manager::onScriptEvent(event::Event& event) {
     event::ScriptTarget& e = reinterpret_cast<event::ScriptTarget&>(event);
 
-    TypedComponentRegistry<Script>::description->attributeDescriptions[0].options.clear();
+    TypedRegistry<Script>::description->attributeDescriptions[0].options.clear();
     for (StringId script : e.scriptSids)
-        TypedComponentRegistry<Script>::description->attributeDescriptions[0].options.push_back(std::any(script));
+        TypedRegistry<Script>::description->attributeDescriptions[0].options.push_back(std::any(script));
 
     // Created pool to new components if necessary
     createComponentPoolsFromRegistered();
@@ -628,7 +628,7 @@ void Manager::onScriptEvent(event::Event& event) {
     // Update backup info (only now we can guarantee that the description data is available)
     _componentRegistriesBackupInfo.clear();
     for (auto reg : _componentRegistries) {
-        ComponentRegistryBackupInfo crbi;
+        RegistryBackupInfo crbi;
         crbi.typeidHash = reg->getTypeidHash();
         crbi.description.name = reg->getDescription().name;
         crbi.description.attributeDescriptions = reg->getDescription().attributeDescriptions;

@@ -9,7 +9,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<PrismaticJoint>::getDescription() {
+ComponentDescription& TypedRegistry<PrismaticJoint>::getDescription() {
     static ComponentDescription desc = {
         "Prismatic Joint",
         {

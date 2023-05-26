@@ -4,7 +4,6 @@
 // Date: 2021-11-23
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/componentRegistry.h>
 #include <atta/component/components/material.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/image.h>
@@ -158,7 +157,7 @@ void materialRenderImGui(void* data, std::string imguiId) {
 }
 
 template <>
-ComponentDescription& TypedComponentRegistry<Material>::getDescription() {
+ComponentDescription& TypedRegistry<Material>::getDescription() {
     static ComponentDescription desc = {"Material",
                                         {{AttributeType::STRINGID, offsetof(Material, sid), "sid", {}, {}, {}, {}}},
                                         1024, // Max instances

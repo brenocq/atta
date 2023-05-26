@@ -30,7 +30,7 @@ struct Material final : public Component {
 };
 ATTA_REGISTER_COMPONENT(Material)
 template <>
-ComponentDescription& TypedComponentRegistry<Material>::getDescription();
+ComponentDescription& TypedRegistry<Material>::getDescription();
 
 } // namespace atta::component
 

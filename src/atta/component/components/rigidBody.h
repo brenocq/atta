@@ -68,7 +68,7 @@ struct RigidBody final : public Component {
 };
 ATTA_REGISTER_COMPONENT(RigidBody)
 template <>
-ComponentDescription& TypedComponentRegistry<RigidBody>::getDescription();
+ComponentDescription& TypedRegistry<RigidBody>::getDescription();
 
 } // namespace atta::component
 

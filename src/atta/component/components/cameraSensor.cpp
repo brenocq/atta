@@ -13,7 +13,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription() {
+ComponentDescription& TypedRegistry<CameraSensor>::getDescription() {
     static ComponentDescription desc = {
         "Camera Sensor",
         {
@@ -34,7 +34,7 @@ ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription() {
         {                                          // renderUI
          {"", [=](void* data, std::string imguiId) // Define how the component will be rendered
           {
-              const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<CameraSensor>::getDescription().attributeDescriptions;
+              const std::vector<AttributeDescription> aDescs = TypedRegistry<CameraSensor>::getDescription().attributeDescriptions;
 
               if (ImGui::Button(("View image" + imguiId + "image").c_str())) {
                   event::UiCameraComponent event;
@@ -48,7 +48,7 @@ ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription() {
                   float size = (i != aDescs.size() - 1) ? aDescs[i + 1].offset - aDescs[i].offset : sizeof(CameraSensor) - aDescs[i].offset;
                   void* attribData = (void*)((uint8_t*)data + aDescs[i].offset);
 
-                  ComponentRegistry::renderUIAttribute(aDescs[i], attribData, size, imguiId + aDescs[i].name);
+                  Registry::renderUIAttribute(aDescs[i], attribData, size, imguiId + aDescs[i].name);
               }
           }}}};
 

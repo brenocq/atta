@@ -18,7 +18,7 @@ struct Name final : public Component {
 };
 ATTA_REGISTER_COMPONENT(Name)
 template <>
-ComponentDescription& TypedComponentRegistry<Name>::getDescription();
+ComponentDescription& TypedRegistry<Name>::getDescription();
 
 } // namespace atta::component
 

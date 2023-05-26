@@ -10,7 +10,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<Script>::getDescription() {
+ComponentDescription& TypedRegistry<Script>::getDescription() {
     static ComponentDescription desc = {"Script",
                                         {
                                             {AttributeType::STRINGID, offsetof(Script, sid), "sid", {}, {}, {}, {}},

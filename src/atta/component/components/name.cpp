@@ -9,7 +9,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<Name>::getDescription() {
+ComponentDescription& TypedRegistry<Name>::getDescription() {
     static ComponentDescription desc = {"Name", {{AttributeType::CHAR, offsetof(Name, name), "name"}}};
 
     return desc;

@@ -71,7 +71,7 @@ struct Transform final : public Component {
 
 ATTA_REGISTER_COMPONENT(Transform)
 template <>
-ComponentDescription& TypedComponentRegistry<Transform>::getDescription();
+ComponentDescription& TypedRegistry<Transform>::getDescription();
 
 } // namespace atta::component
 

@@ -25,7 +25,7 @@ struct BoxCollider2D final : public Component {
 };
 ATTA_REGISTER_COMPONENT(BoxCollider2D)
 template <>
-ComponentDescription& TypedComponentRegistry<BoxCollider2D>::getDescription();
+ComponentDescription& TypedRegistry<BoxCollider2D>::getDescription();
 
 } // namespace atta::component
 

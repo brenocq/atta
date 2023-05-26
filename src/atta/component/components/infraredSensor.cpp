@@ -9,7 +9,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<InfraredSensor>::getDescription() {
+ComponentDescription& TypedRegistry<InfraredSensor>::getDescription() {
     static ComponentDescription desc = {
         "Infrared Sensor",
         {

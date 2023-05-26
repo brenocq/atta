@@ -8,7 +8,7 @@
 
 namespace atta::component {
 template <>
-ComponentDescription& TypedComponentRegistry<RevoluteJoint>::getDescription() {
+ComponentDescription& TypedRegistry<RevoluteJoint>::getDescription() {
     static ComponentDescription desc = {
         "Revolute Joint",
         {

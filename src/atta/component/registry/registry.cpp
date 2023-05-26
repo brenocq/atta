@@ -1,17 +1,18 @@
 //--------------------------------------------------
 // Atta Component Module
-// componentRegistry.cpp
+// registry.cpp
 // Date: 2021-11-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/componentRegistry.h>
 #include <atta/component/interface.h>
+#include <atta/component/registry/registry.h>
 #include <imgui.h>
 
 namespace atta::component {
-void ComponentRegistry::registerToManager() { component::registerComponent(this); }
 
-unsigned ComponentRegistry::getSerializedSize(Component* component) {
+void Registry::registerToManager() { component::registerComponent(this); }
+
+unsigned Registry::getSerializedSize(Component* component) {
     std::ostringstream of;
     std::basic_ostream<char>::pos_type posBefore = of.tellp();
     serialize(of, component);
@@ -135,7 +136,7 @@ void renderCombo(AttributeDescription aDesc, void* d, unsigned size, std::string
     unsigned qty = size / sizeof(T);
 #ifdef ATTA_DEBUG_BUILD
     if (qty != 1) {
-        LOG_WARN("component::ComponentRegistry",
+        LOG_WARN("component::Registry",
                  "The component attribute [w]$0[] cannot be rendered with options because it is composed of multiple [w]$1[] values", aDesc.name,
                  typeid(T).name());
         return;
@@ -152,9 +153,9 @@ void renderCombo(AttributeDescription aDesc, void* d, unsigned size, std::string
     // Check if they are value entries
     for (auto it = aDesc.options.begin(); it != aDesc.options.end(); it++)
         if (it->type() != typeid(const char*) && it->type() != typeid(T)) {
-            LOG_WARN("component::ComponentRegistry",
+            LOG_WARN("component::Registry",
                      "The component attribute [w]$0[] cannot be rendered because the values inside its "
-                     "atta::ComponentRegistry::AttributeDescriptoin::options should be all of type [w]const char*[] or [w]$1[]",
+                     "atta::Registry::AttributeDescriptoin::options should be all of type [w]const char*[] or [w]$1[]",
                      aDesc.name, typeid(T).name());
             return;
         }
@@ -207,17 +208,17 @@ void renderCombo(AttributeDescription aDesc, void* d, unsigned size, std::string
 #define ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(ComponentType)                                                                                        \
     case AttributeType::ComponentType:                                                                                                               \
     case AttributeType::VECTOR_##ComponentType:                                                                                                      \
-        ComponentRegistry::renderUIAttribute<AttributeType::ComponentType>(aDesc, d, size, imguiId + aDesc.name);                                    \
+        Registry::renderUIAttribute<AttributeType::ComponentType>(aDesc, d, size, imguiId + aDesc.name);                                             \
         break;
 
-void ComponentRegistry::renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
+void Registry::renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
     // XXX Remember to register each attribute with ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE or will get MSVC errors
     switch (aDesc.type) {
         case AttributeType::BOOL:
-            ComponentRegistry::renderUIAttribute<AttributeType::BOOL>(aDesc, d, size, imguiId + aDesc.name);
+            Registry::renderUIAttribute<AttributeType::BOOL>(aDesc, d, size, imguiId + aDesc.name);
             break;
         case AttributeType::CHAR:
-            ComponentRegistry::renderUIAttribute<AttributeType::CHAR>(aDesc, d, size, imguiId + aDesc.name);
+            Registry::renderUIAttribute<AttributeType::CHAR>(aDesc, d, size, imguiId + aDesc.name);
             break;
             ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT8)
             ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT16)
@@ -230,10 +231,10 @@ void ComponentRegistry::renderUIAttribute(AttributeDescription aDesc, void* d, u
             ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(FLOAT32)
             ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(FLOAT64)
         case AttributeType::QUAT:
-            ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(aDesc, d, size, imguiId + aDesc.name);
+            Registry::renderUIAttribute<AttributeType::QUAT>(aDesc, d, size, imguiId + aDesc.name);
             break;
         case AttributeType::STRINGID:
-            ComponentRegistry::renderUIAttribute<AttributeType::STRINGID>(aDesc, d, size, imguiId + aDesc.name);
+            Registry::renderUIAttribute<AttributeType::STRINGID>(aDesc, d, size, imguiId + aDesc.name);
             break;
         default:
             break;
@@ -242,7 +243,7 @@ void ComponentRegistry::renderUIAttribute(AttributeDescription aDesc, void* d, u
 
 #define ATTA_RENDER_UI_ATTRIBUTE_NUMBER(AttaType, CppType)                                                                                           \
     template <>                                                                                                                                      \
-    void ComponentRegistry::renderUIAttribute<AttributeType::AttaType>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {    \
+    void Registry::renderUIAttribute<AttributeType::AttaType>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {             \
         if (aDesc.options.size() == 0)                                                                                                               \
             renderSliders<CppType>(aDesc, d, size, imguiId);                                                                                         \
         else                                                                                                                                         \
@@ -261,7 +262,7 @@ ATTA_RENDER_UI_ATTRIBUTE_NUMBER(FLOAT32, float);
 ATTA_RENDER_UI_ATTRIBUTE_NUMBER(FLOAT64, double);
 
 template <>
-void ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
+void Registry::renderUIAttribute<AttributeType::QUAT>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
     ImGui::Text(aDesc.name.c_str());
     quat* q = (quat*)d;
 
@@ -321,7 +322,7 @@ void ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(AttributeDescript
 }
 
 template <>
-void ComponentRegistry::renderUIAttribute<AttributeType::STRINGID>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
+void Registry::renderUIAttribute<AttributeType::STRINGID>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
     StringHash* data = (StringHash*)d;
 
     if (aDesc.options.size() > 0) {
@@ -354,14 +355,15 @@ void ComponentRegistry::renderUIAttribute<AttributeType::STRINGID>(AttributeDesc
 }
 
 template <>
-void ComponentRegistry::renderUIAttribute<AttributeType::BOOL>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
+void Registry::renderUIAttribute<AttributeType::BOOL>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
     bool* data = (bool*)d;
     ImGui::Checkbox((aDesc.name + "##" + imguiId).c_str(), data);
 }
 
 template <>
-void ComponentRegistry::renderUIAttribute<AttributeType::CHAR>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
+void Registry::renderUIAttribute<AttributeType::CHAR>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
     char* data = (char*)d;
     ImGui::InputText((aDesc.name + "##" + imguiId).c_str(), data, size);
 }
+
 } // namespace atta::component

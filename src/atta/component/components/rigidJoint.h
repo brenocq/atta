@@ -19,7 +19,7 @@ struct RigidJoint : public Component {
 };
 ATTA_REGISTER_COMPONENT(RigidJoint)
 template <>
-ComponentDescription& TypedComponentRegistry<RigidJoint>::getDescription();
+ComponentDescription& TypedRegistry<RigidJoint>::getDescription();
 
 } // namespace atta::component
 

@@ -10,7 +10,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<CircleCollider2D>::getDescription() {
+ComponentDescription& TypedRegistry<CircleCollider2D>::getDescription() {
     static ComponentDescription desc = {
         "Circle Collider 2D",
         {

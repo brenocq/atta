@@ -11,7 +11,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<Transform>::getDescription() {
+ComponentDescription& TypedRegistry<Transform>::getDescription() {
     static ComponentDescription desc = {"Transform",
                                         {{AttributeType::VECTOR_FLOAT32, offsetof(Transform, position), "position", -1000.0f, 1000.0f, 0.05f},
                                          {AttributeType::QUAT, offsetof(Transform, orientation), "orientation", -360.0f, 360.0f, 0.5f},

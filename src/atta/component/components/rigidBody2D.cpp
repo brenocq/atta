@@ -11,7 +11,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<RigidBody2D>::getDescription() {
+ComponentDescription& TypedRegistry<RigidBody2D>::getDescription() {
     static ComponentDescription desc = {"Rigid Body 2D",
                                         {{AttributeType::UINT32, offsetof(RigidBody2D, type), "type", {}, {}, {}, {"Dynamic", "Kinematic", "Static"}},
                                          {AttributeType::FLOAT32, offsetof(RigidBody2D, linearVelocity), "linearVelocity", {}, {}, 0.001f},

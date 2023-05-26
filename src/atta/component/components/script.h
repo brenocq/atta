@@ -23,7 +23,7 @@ struct Script final : public Component {
 };
 ATTA_REGISTER_COMPONENT(Script)
 template <>
-ComponentDescription& TypedComponentRegistry<Script>::getDescription();
+ComponentDescription& TypedRegistry<Script>::getDescription();
 
 } // namespace atta::component
 

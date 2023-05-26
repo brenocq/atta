@@ -9,7 +9,7 @@
 
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
-#include <atta/component/typedComponentRegistry.h>
+#include <atta/component/registry/typedRegistry.h>
 
 namespace atta::component {
 
@@ -40,7 +40,7 @@ Component* getComponentById(ComponentId id, Entity entity);
 std::vector<Component*> getComponents(Entity entity);
 
 // Getters
-std::vector<ComponentRegistry*> getComponentRegistries();
+std::vector<Registry*> getComponentRegistries();
 std::vector<Factory>& getFactories();
 Factory* getFactory(Entity prototype);
 
@@ -56,7 +56,7 @@ void setSelectedEntity(Entity entity);
 // Memory management
 void createDefault();
 void clear();
-void registerComponent(ComponentRegistry* componentRegistry);
+void registerComponent(Registry* componentRegistry);
 void unregisterCustomComponents();
 
 } // namespace atta::component

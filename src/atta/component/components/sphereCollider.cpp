@@ -10,7 +10,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<SphereCollider>::getDescription() {
+ComponentDescription& TypedRegistry<SphereCollider>::getDescription() {
     static ComponentDescription desc = {
         "Sphere Collider",
         {

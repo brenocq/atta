@@ -56,7 +56,7 @@ struct InfraredSensor final : public Component {
 };
 ATTA_REGISTER_COMPONENT(InfraredSensor);
 template <>
-ComponentDescription& TypedComponentRegistry<InfraredSensor>::getDescription();
+ComponentDescription& TypedRegistry<InfraredSensor>::getDescription();
 
 } // namespace atta::component
 

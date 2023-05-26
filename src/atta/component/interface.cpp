@@ -28,7 +28,7 @@ std::vector<Component*> getComponents(Entity entity) { return Manager::getInstan
 void removeComponentById(ComponentId id, Entity entity) { Manager::getInstance().removeComponentByIdImpl(id, entity); }
 
 // Getters
-std::vector<ComponentRegistry*> getComponentRegistries() { return Manager::getInstance().getComponentRegistriesImpl(); }
+std::vector<Registry*> getComponentRegistries() { return Manager::getInstance().getComponentRegistriesImpl(); }
 std::vector<Factory>& getFactories() { return Manager::getInstance().getFactoriesImpl(); }
 Factory* getFactory(Entity prototype) { return Manager::getInstance().getFactoryImpl(prototype); }
 
@@ -44,7 +44,7 @@ void setSelectedEntity(Entity eid) { Manager::getInstance()._selectedEntity = ei
 // Memory management
 void createDefault() { Manager::getInstance().createDefaultImpl(); }
 void clear() { Manager::getInstance().clearImpl(); }
-void registerComponent(ComponentRegistry* componentRegistry) { return Manager::getInstance().registerComponentImpl(componentRegistry); }
+void registerComponent(Registry* componentRegistry) { return Manager::getInstance().registerComponentImpl(componentRegistry); }
 void unregisterCustomComponents() { Manager::getInstance().unregisterCustomComponentsImpl(); }
 
 } // namespace atta::component

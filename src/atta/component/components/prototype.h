@@ -24,7 +24,7 @@ struct Prototype final : public Component {
 };
 ATTA_REGISTER_COMPONENT(Prototype)
 template <>
-ComponentDescription& TypedComponentRegistry<Prototype>::getDescription();
+ComponentDescription& TypedRegistry<Prototype>::getDescription();
 
 } // namespace atta::component
 

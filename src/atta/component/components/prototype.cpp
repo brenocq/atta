@@ -9,7 +9,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<Prototype>::getDescription() {
+ComponentDescription& TypedRegistry<Prototype>::getDescription() {
     static ComponentDescription desc = {"Prototype",
                                         {{AttributeType::UINT64, offsetof(Prototype, maxClones), "maxClones", uint64_t(0), uint64_t(1000), 1}}};
 

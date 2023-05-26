@@ -1,14 +1,14 @@
 //--------------------------------------------------
 // Atta Component Module
-// componentRegistry.inl
+// registry.inl
 // Date: 2021-11-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-
 namespace atta::component {
+
 #define ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE(atribType)                                                                                       \
     template <>                                                                                                                                      \
-    void ComponentRegistry::renderUIAttribute<AttributeType::atribType>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
+    void Registry::renderUIAttribute<AttributeType::atribType>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId)
 
 ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE(BOOL);
 ATTA_COMPONENT_REGISTER_RENDER_UI_ATTRIBUTE(CHAR);

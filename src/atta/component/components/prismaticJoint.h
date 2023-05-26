@@ -37,7 +37,7 @@ struct PrismaticJoint : public Component {
 };
 ATTA_REGISTER_COMPONENT(PrismaticJoint)
 template <>
-ComponentDescription& TypedComponentRegistry<PrismaticJoint>::getDescription();
+ComponentDescription& TypedRegistry<PrismaticJoint>::getDescription();
 
 } // namespace atta::component
 

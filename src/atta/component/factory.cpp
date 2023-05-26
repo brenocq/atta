@@ -4,7 +4,7 @@
 // Date: 2021-09-17
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/componentRegistry.h>
+#include <atta/component/registry/registry.h>
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/script.h>

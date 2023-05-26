@@ -4,7 +4,7 @@
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/componentRegistry.h>
+#include <atta/component/registry/registry.h>
 #include <atta/component/components/components.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>
@@ -136,7 +136,7 @@ void EntityWindow::renderComponents() {
         void* component = component::getComponentById(compReg->getId(), selected);
         if (component != nullptr) {
             std::string name = compReg->getDescription().name;
-            if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
+            if (compReg->getId() != component::TypedRegistry<component::Relationship>::getInstance().getId()) {
                 bool open = true;
                 if (ImGui::CollapsingHeader((name + "##Components" + name + "Header").c_str(), &open))
                     compReg->renderUI((component::Component*)component);
@@ -158,7 +158,7 @@ void EntityWindow::renderComponents() {
         for (auto compReg : component::getComponentRegistries()) {
             void* component = component::getComponentById(compReg->getId(), selected);
             if (component == nullptr) {
-                if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
+                if (compReg->getId() != component::TypedRegistry<component::Relationship>::getInstance().getId()) {
                     std::string name = compReg->getDescription().name;
                     if (ImGui::Selectable((name + "##ComponentAdd" + name).c_str()))
                         component::addComponentById(compReg->getId(), selected);

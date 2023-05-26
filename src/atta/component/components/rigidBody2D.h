@@ -92,7 +92,7 @@ struct RigidBody2D final : public Component {
 };
 ATTA_REGISTER_COMPONENT(RigidBody2D)
 template <>
-ComponentDescription& TypedComponentRegistry<RigidBody2D>::getDescription();
+ComponentDescription& TypedRegistry<RigidBody2D>::getDescription();
 
 } // namespace atta::component
 

@@ -37,7 +37,7 @@ void meshRenderImGui(void* data, std::string imguiId) {
 }
 
 template <>
-ComponentDescription& TypedComponentRegistry<Mesh>::getDescription() {
+ComponentDescription& TypedRegistry<Mesh>::getDescription() {
     static ComponentDescription desc = {"Mesh",
                                         {
                                             {AttributeType::STRINGID, offsetof(Mesh, sid), "sid", {}, {}, {}, {}},

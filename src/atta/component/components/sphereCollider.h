@@ -35,7 +35,7 @@ struct SphereCollider final : public Component {
 };
 ATTA_REGISTER_COMPONENT(SphereCollider)
 template <>
-ComponentDescription& TypedComponentRegistry<SphereCollider>::getDescription();
+ComponentDescription& TypedRegistry<SphereCollider>::getDescription();
 
 } // namespace atta::component
 

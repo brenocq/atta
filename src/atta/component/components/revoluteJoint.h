@@ -35,7 +35,7 @@ struct RevoluteJoint : public Component {
 };
 ATTA_REGISTER_COMPONENT(RevoluteJoint)
 template <>
-ComponentDescription& TypedComponentRegistry<RevoluteJoint>::getDescription();
+ComponentDescription& TypedRegistry<RevoluteJoint>::getDescription();
 
 } // namespace atta::component
 

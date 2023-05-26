@@ -1,32 +1,32 @@
 //--------------------------------------------------
 // Atta Component Module
-// typedComponentRegistry.h
+// typedRegistry.h
 // Date: 2021-01-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_TYPED_COMPONENT_REGISTRY_H
-#define ATTA_COMPONENT_TYPED_COMPONENT_REGISTRY_H
+#ifndef ATTA_COMPONENT_TYPED_REGISTRY_H
+#define ATTA_COMPONENT_TYPED_REGISTRY_H
 
 #include <atta/component/base.h>
-#include <atta/component/componentRegistry.h>
 #include <atta/component/components/component.h>
+#include <atta/component/registry/registry.h>
 
 namespace atta::component {
 
 // clang-format off
 #define ATTA_REGISTER_COMPONENT(TYPE) \
     template <> \
-    inline ::atta::component::TypedComponentRegistry<TYPE>& ::atta::component::ComponentRegistration<TYPE>::reg = \
-        ::atta::component::TypedComponentRegistry<TYPE>::getInstance();
+    inline ::atta::component::TypedRegistry<TYPE>& ::atta::component::ComponentRegistration<TYPE>::reg = \
+        ::atta::component::TypedRegistry<TYPE>::getInstance();
 // clang-format on
 
 template <typename T>
-class TypedComponentRegistry : public ComponentRegistry {
+class TypedRegistry : public Registry {
   public:
     struct Description;
 
-    static TypedComponentRegistry<T>& getInstance() {
-        static TypedComponentRegistry<T> instance;
+    static TypedRegistry<T>& getInstance() {
+        static TypedRegistry<T> instance;
         return instance;
     }
 
@@ -44,7 +44,7 @@ class TypedComponentRegistry : public ComponentRegistry {
     static ComponentDescription* description;
 
   private:
-    TypedComponentRegistry<T>();
+    TypedRegistry<T>();
 
     void renderUIImpl(T* component);
     void serializeImpl(std::ostream& os, T* component);
@@ -53,7 +53,7 @@ class TypedComponentRegistry : public ComponentRegistry {
 
 //---------- Default component register description ----------//
 template <typename T>
-ComponentDescription& TypedComponentRegistry<T>::getDescription() {
+ComponentDescription& TypedRegistry<T>::getDescription() {
     static ComponentDescription desc = {typeid(T).name(),
                                         {
                                             {AttributeType::CUSTOM, 0, "custom"},
@@ -63,15 +63,15 @@ ComponentDescription& TypedComponentRegistry<T>::getDescription() {
 }
 
 template <typename T>
-ComponentDescription* TypedComponentRegistry<T>::description = nullptr;
+ComponentDescription* TypedRegistry<T>::description = nullptr;
 
 template <typename T>
 class ComponentRegistration {
-    static ::atta::component::TypedComponentRegistry<T>& reg;
+    static ::atta::component::TypedRegistry<T>& reg;
 };
 
 } // namespace atta::component
 
-#include <atta/component/typedComponentRegistry.inl>
+#include <atta/component/registry/typedRegistry.inl>
 
-#endif // ATTA_COMPONENT_TYPED_COMPONENT_REGISTRY_H
+#endif // ATTA_COMPONENT_TYPED_REGISTRY_H

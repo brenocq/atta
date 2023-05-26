@@ -21,7 +21,7 @@ struct DirectionalLight final : public Component {
 };
 ATTA_REGISTER_COMPONENT(DirectionalLight)
 template <>
-ComponentDescription& TypedComponentRegistry<DirectionalLight>::getDescription();
+ComponentDescription& TypedRegistry<DirectionalLight>::getDescription();
 
 } // namespace atta::component
 

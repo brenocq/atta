@@ -66,7 +66,7 @@ struct Relationship final : public Component {
 };
 ATTA_REGISTER_COMPONENT(Relationship)
 template <>
-ComponentDescription& TypedComponentRegistry<Relationship>::getDescription();
+ComponentDescription& TypedRegistry<Relationship>::getDescription();
 
 } // namespace atta::component
 

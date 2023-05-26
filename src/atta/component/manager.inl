@@ -10,7 +10,7 @@ template <typename T>
 T* Manager::getComponentImpl(Entity entity) {
     static int index = -1;
     if (index == -1)
-        index = TypedComponentRegistry<T>::getInstance().getIndex();
+        index = TypedRegistry<T>::getInstance().getIndex();
 
     return reinterpret_cast<T*>(getComponentByIndex(index, entity));
 }

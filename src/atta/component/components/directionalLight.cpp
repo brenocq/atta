@@ -9,7 +9,7 @@
 namespace atta::component {
 
 template <>
-ComponentDescription& TypedComponentRegistry<DirectionalLight>::getDescription() {
+ComponentDescription& TypedRegistry<DirectionalLight>::getDescription() {
     static ComponentDescription desc = {"Directional Light",
                                         {{AttributeType::VECTOR_FLOAT32, offsetof(DirectionalLight, intensity), "intensity", 0.0f, 10.0f}}};
     return desc;

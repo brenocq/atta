@@ -28,7 +28,7 @@ struct Mesh final : public Component {
 };
 ATTA_REGISTER_COMPONENT(Mesh)
 template <>
-ComponentDescription& TypedComponentRegistry<Mesh>::getDescription();
+ComponentDescription& TypedRegistry<Mesh>::getDescription();
 
 } // namespace atta::component
 

@@ -1,21 +1,21 @@
 //--------------------------------------------------
 // Atta Component Module
-// componentRegistry.h
+// registry.h
 // Date: 2021-11-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENT_REGISTRY_H
-#define ATTA_COMPONENT_COMPONENT_REGISTRY_H
+#ifndef ATTA_COMPONENT_REGISTRY_H
+#define ATTA_COMPONENT_REGISTRY_H
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
 #include <atta/utils/stringId.h>
 
 namespace atta::component {
 class Manager;
-class ComponentRegistry {
+class Registry {
   public:
     using Type = StringId;
-    ComponentRegistry(unsigned sizeofT, std::string typeidName, size_t typeidHash)
+    Registry(unsigned sizeofT, std::string typeidName, size_t typeidHash)
         : _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _index(0), _poolCreated(false) {}
 
     virtual void renderUI(Component* component) = 0;
@@ -55,9 +55,10 @@ class ComponentRegistry {
     friend Manager;
 };
 
-//---------- Attribute helpers ----------//
-inline std::ostream& operator<<(std::ostream& os, ComponentRegistry& c) { return os << c.getDescription().name; }
+inline std::ostream& operator<<(std::ostream& os, Registry& c) { return os << c.getDescription().name; }
+
 } // namespace atta::component
 
-#include <atta/component/componentRegistry.inl>
-#endif // ATTA_COMPONENT_COMPONENT_REGISTRY_H
+#include <atta/component/registry/registry.inl>
+
+#endif // ATTA_COMPONENT_REGISTRY_H

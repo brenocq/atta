@@ -26,7 +26,7 @@ struct CylinderCollider final : public Component {
 };
 ATTA_REGISTER_COMPONENT(CylinderCollider)
 template <>
-ComponentDescription& TypedComponentRegistry<CylinderCollider>::getDescription();
+ComponentDescription& TypedRegistry<CylinderCollider>::getDescription();
 
 } // namespace atta::component
 
