@@ -10,16 +10,16 @@ namespace atta::script {
 
 template <typename T>
 TypedControllerRegistry<T>::TypedControllerRegistry(std::string name) : ControllerRegistry(name, typeid(T).name(), typeid(T).hash_code()) {
-    addRegistry(this);
+    ControllerRegistry::addRegistry(this);
 }
 
 template <typename T>
 TypedControllerRegistry<T>::~TypedControllerRegistry() {
-    removeRegistry(this);
+    ControllerRegistry::removeRegistry(this);
 }
 
 template <typename T>
-void TypedControllerRegistry<T>::run(cmp::Entity entity, float dt, uint32_t num) {
+void TypedControllerRegistry<T>::run(cmp::Entity entity, float dt, uint32_t num) const {
     parallel::run<T>(entity, dt, num);
 }
 

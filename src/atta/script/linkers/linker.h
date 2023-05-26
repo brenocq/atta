@@ -7,10 +7,6 @@
 #ifndef ATTA_SCRIPT_LINKERS_LINKER_H
 #define ATTA_SCRIPT_LINKERS_LINKER_H
 
-#include <atta/script/projectScript.h>
-#include <atta/script/script.h>
-#include <atta/utils/stringId.h>
-
 namespace atta::script {
 
 class Linker {

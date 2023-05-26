@@ -47,13 +47,19 @@ class WorldRegistry : public Registry {
     virtual void runOnUIRender() = 0;
     virtual void runOnAttaLoop() = 0;
 
+
   private:
     /**
      * @brief World script registries
      *
+     * We need to ensure that this vector is initialized in the first time addRegistry is called. Because the order of initialized of static objects
+     * in the translation unit is not known, we need to have this vector as an static in a function.
+     *
      * There will be one registry for each registered world script
+     *
+     * @return Vector of world script registries
      */
-    static std::vector<WorldRegistry*> _registries;
+    static std::vector<WorldRegistry*>& getRegs();
 };
 
 template <typename T>

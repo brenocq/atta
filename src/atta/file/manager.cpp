@@ -89,7 +89,7 @@ bool Manager::openProjectImpl(fs::path projectFile) {
 }
 
 bool Manager::createProjectImpl(fs::path projectFile) {
-#ifndef ATTA_STATIC_PROJECT
+#ifdef ATTA_DYNAMIC_PROJECT
     if (projectFile.extension() != ".atta") {
         LOG_WARN("file::Manager", "Project file must have .atta extension [w]$0[]", fs::absolute(projectFile));
         return false;
@@ -129,7 +129,7 @@ void Manager::saveProjectImpl() {
 }
 
 void Manager::closeProjectImpl() {
-#ifndef ATTA_STATIC_PROJECT
+#ifdef ATTA_DYNAMIC_PROJECT
     if (_project == nullptr)
         return;
 
@@ -137,10 +137,10 @@ void Manager::closeProjectImpl() {
 
     _project.reset();
     _projectSerializer.reset();
+#endif
 
     event::ProjectClose e;
     event::publish(e);
-#endif
 }
 
 bool Manager::isProjectOpenImpl() const { return _project != nullptr; }

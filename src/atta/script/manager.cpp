@@ -87,7 +87,7 @@ void Manager::updateImpl(float dt) {
         // if (scripts.size())
         //     parallel::run(0, scripts.size() - 1, [&](uint32_t i) { scripts[i].first->update(component::Entity(scripts[i].second), dt); });
 
-        ControllerRegistry::getRegistries()[0]->run(-1, 0.0f);
+        ControllerRegistry::getRegistries().at(0)->run(-1, 0.0f);
     }
 
     // Run project script after
@@ -98,9 +98,9 @@ void Manager::updateImpl(float dt) {
 }
 
 std::vector<StringId> Manager::getScriptSidsImpl() const {
-    std::vector<ControllerRegistry*> registries = ControllerRegistry::getRegistries();
+    std::vector<const ControllerRegistry*> registries = ControllerRegistry::getRegistries();
     std::vector<StringId> scripts;
-    for (ControllerRegistry* r : registries)
+    for (const ControllerRegistry* r : registries)
         scripts.push_back(r->getName());
     return scripts;
 }

@@ -7,7 +7,6 @@
 #include <atta/script/linkers/linuxLinker.h>
 #ifdef ATTA_OS_LINUX
 #include <atta/file/manager.h>
-#include <atta/script/script.h>
 #include <dlfcn.h>
 
 #include <chrono>
@@ -15,6 +14,8 @@
 namespace atta::script {
 
 void LinuxLinker::linkTarget(StringId target) {
+    std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
+
     fs::path projectDir = file::getProject()->getDirectory();
     fs::path lib = projectDir / "build" / ("lib" + target.getString() + ".so").c_str();
 
@@ -40,7 +41,6 @@ void LinuxLinker::linkTarget(StringId target) {
     fs::copy(lib, libCpy);
 
     // Open shared library
-    std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
     void* fLib = dlopen(fs::absolute(libCpy).c_str(), RTLD_LAZY);
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto linkTime = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);

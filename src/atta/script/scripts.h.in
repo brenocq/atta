@@ -7,7 +7,7 @@
 #ifndef ATTA_SCRIPT_SCRIPTS_H
 #define ATTA_SCRIPT_SCRIPTS_H
 
-// Include scripts from the project (they need to be included to not be compiled away)
+// Include scripts from the project (need to include the header file to register the script)
 // CMake will populate this file with includes when the project is linked statically 
 @ATTA_STATIC_PROJECT_SCRIPTS@
 

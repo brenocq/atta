@@ -8,32 +8,43 @@
 
 namespace atta::script {
 
-std::vector<ControllerRegistry*> ControllerRegistry::_registries = {};
-
 ControllerRegistry::ControllerRegistry(std::string name, std::string typeidName, size_t typeidHash) : Registry(name, typeidName, typeidHash) {}
 
-const std::vector<ControllerRegistry*>& ControllerRegistry::getRegistries() { return _registries; }
+const std::vector<const ControllerRegistry*>& ControllerRegistry::getRegistries() {
+    auto& regs = getRegs();
+    return regs;
+}
 
-ControllerRegistry* ControllerRegistry::getRegistry(StringId sid) {
+const ControllerRegistry* ControllerRegistry::getRegistry(StringId sid) {
     std::string scriptName = sid.getString();
-    for(ControllerRegistry* r : _registries)
-        if(r->getName() == scriptName)
+    auto& regs = getRegs();
+    for (const ControllerRegistry* r : regs)
+        if (r->getName() == scriptName)
             return r;
-        return nullptr;
+    return nullptr;
 }
 
-void ControllerRegistry::addRegistry(ControllerRegistry* registry) {
+void ControllerRegistry::addRegistry(const ControllerRegistry* registry) {
+    auto& regs = getRegs();
     LOG_DEBUG("scr::Registry", "Add controller registry [w]$0", *registry);
-    _registries.push_back(registry);
+    regs.push_back(registry);
+    regs = getRegs();
 }
 
-void ControllerRegistry::removeRegistry(ControllerRegistry* registry) {
+void ControllerRegistry::removeRegistry(const ControllerRegistry* registry) {
+    auto& regs = getRegs();
     LOG_DEBUG("scr::Registry", "Remove controller registry [w]$0", *registry);
-    for (size_t i = 0; i < _registries.size(); i++)
-        if (_registries[i] == registry) {
-            _registries.erase(_registries.begin() + 1);
+    for (size_t i = 0; i < regs.size(); i++)
+        if (regs[i] == registry) {
+            regs.erase(regs.begin() + i);
             break;
         }
+    getRegs();
+}
+
+std::vector<const ControllerRegistry*>& ControllerRegistry::getRegs() {
+    static std::vector<const ControllerRegistry*> registries = {};
+    return registries;
 }
 
 } // namespace atta::script
