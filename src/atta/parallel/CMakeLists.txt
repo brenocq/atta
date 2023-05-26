@@ -17,5 +17,5 @@ atta_target_common(atta_parallel_module)
 atta_add_libs(atta_parallel_module)
 
 if(${ATTA_CUDA_SUPPORT})
-    atta_cuda_target(atta_parallel_module)
+    atta_cuda_sources(atta_parallel_module "devices/gpuDevice.cpp")
 endif()

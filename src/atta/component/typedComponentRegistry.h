@@ -13,10 +13,12 @@
 
 namespace atta::component {
 
-#define ATTA_REGISTER_COMPONENT(TYPE)                                                                                                                \
-    template <>                                                                                                                                      \
-    inline ::atta::component::TypedComponentRegistry<TYPE>& ::atta::component::ComponentRegistration<TYPE>::reg =                                    \
+// clang-format off
+#define ATTA_REGISTER_COMPONENT(TYPE) \
+    template <> \
+    inline ::atta::component::TypedComponentRegistry<TYPE>& ::atta::component::ComponentRegistration<TYPE>::reg = \
         ::atta::component::TypedComponentRegistry<TYPE>::getInstance();
+// clang-format on
 
 template <typename T>
 class TypedComponentRegistry : public ComponentRegistry {

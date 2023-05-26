@@ -11,10 +11,14 @@
 
 namespace atta::script {
 
+/**
+ * @brief Controller script
+ *
+ * When deriving this class, the update function must be implemented:
+ *   - ATTA_CPU_GPU void update();
+ */
 class Controller {
   public:
-    ATTA_CPU_GPU virtual void update() = 0;
-
     template <typename T>
     ATTA_CPU_GPU T* get() const;
 

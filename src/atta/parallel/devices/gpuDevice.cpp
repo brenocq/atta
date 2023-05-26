@@ -99,21 +99,8 @@ GpuDevice::GpuDevice() : Device(Type::GPU) {
 
 GpuDevice::~GpuDevice() {}
 
-void GpuDevice::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) { 
+void GpuDevice::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
     LOG_WARN("pll::GpuDevice", "std::function<void(uint32_t idx) run was not implemented for GPU yet");
 }
-
-// __global__ void kernel(scr::Script* script, cmp::EntityId firstClone, cmp::EntityId lastClone, float dt) {
-//     cmp::EntityId clone = firstClone + (blockIdx.x * blockDim.x + threadIdx.x);
-//     if (clone > lastClone)
-//         return;
-//     script->update(cmp::Entity(clone), dt);
-// }
-
-// void GpuDevice::run(scr::Script* script, cmp::Entity entity, float dt, uint32_t num) {
-//     cmp::EntityId firstClone = entity.getId();
-//     cmp::EntityId lastClone = firstClone + num;
-//     kernel<<<(num + 255) / 256, 256>>>(script, firstClone, lastClone, dt);
-// }
 
 } // namespace atta::parallel

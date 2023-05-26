@@ -15,7 +15,7 @@
  */
 class DummyController : public atta::script::Controller {
   public:
-    ATTA_CPU_GPU void update() override;
+    ATTA_CPU_GPU void update();
 };
 ATTA_REGISTER_CONTROLLER(DummyController)
 
