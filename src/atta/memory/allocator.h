@@ -15,6 +15,7 @@ class Allocator {
     Allocator(uint64_t size);
     // Use existing allocated memory
     Allocator(uint8_t* memory, uint64_t size);
+
     virtual ~Allocator();
 
     // How many bytes to allocate

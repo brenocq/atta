@@ -4,8 +4,8 @@
 // Date: 2021-11-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_REGISTRY_H
-#define ATTA_COMPONENT_REGISTRY_H
+#ifndef ATTA_COMPONENT_REGISTRY_REGISTRY_H
+#define ATTA_COMPONENT_REGISTRY_REGISTRY_H
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
 #include <atta/utils/stringId.h>
@@ -61,4 +61,4 @@ inline std::ostream& operator<<(std::ostream& os, Registry& c) { return os << c.
 
 #include <atta/component/registry/registry.inl>
 
-#endif // ATTA_COMPONENT_REGISTRY_H
+#endif // ATTA_COMPONENT_REGISTRY_REGISTRY_H

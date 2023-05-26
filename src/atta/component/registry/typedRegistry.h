@@ -4,8 +4,8 @@
 // Date: 2021-01-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_TYPED_REGISTRY_H
-#define ATTA_COMPONENT_TYPED_REGISTRY_H
+#ifndef ATTA_COMPONENT_REGISTRY_TYPED_REGISTRY_H
+#define ATTA_COMPONENT_REGISTRY_TYPED_REGISTRY_H
 
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
@@ -74,4 +74,4 @@ class ComponentRegistration {
 
 #include <atta/component/registry/typedRegistry.inl>
 
-#endif // ATTA_COMPONENT_TYPED_REGISTRY_H
+#endif // ATTA_COMPONENT_REGISTRY_TYPED_REGISTRY_H
