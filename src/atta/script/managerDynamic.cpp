@@ -32,7 +32,7 @@ void Manager::startUpImpl() {
 void Manager::shutDownImpl() {
     // Link each target in the project
     for (auto target : _compiler->getTargets())
-        _linker->linkTarget(target);
+        _linker->releaseTarget(target);
 }
 
 void Manager::onFileChange(event::Event& event) {

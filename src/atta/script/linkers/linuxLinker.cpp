@@ -45,14 +45,16 @@ void LinuxLinker::linkTarget(StringId target) {
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     auto linkTime = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
 
-    if (fLib)
-        LOG_INFO("script::LinuxLinker", "Time to link [*w]$0[]: [w]$1ms", target, linkTime.count() / 1000.0f);
-    else
+    if (fLib) {
+        _targetHandles[target] = fLib;
+        LOG_INFO("script::LinuxLinker", "Target [*w]$0[] linked. Time to link: [w]$1ms", target, linkTime.count() / 1000.0f);
+    } else
         LOG_ERROR("script::LinuxLinker", "Cannot open library [w]$0[]. Error: $1", libCpy.filename(), dlerror());
 }
 
 void LinuxLinker::releaseTarget(StringId target) {
     if (_targetHandles.find(target) != _targetHandles.end()) {
+        // TODO check why destructors from inline variables are not being called (script deregistration)
         dlclose(_targetHandles[target]);
 
         const char* errStr = dlerror();
@@ -60,6 +62,7 @@ void LinuxLinker::releaseTarget(StringId target) {
             LOG_ERROR("script::LinuxLinker", "Could not release target [w]$0[]: [w]$1", target, errStr);
             return;
         }
+        LOG_INFO("script::LinuxLinker", "Target [w]$0[] released", target);
         _targetHandles.erase(target);
     } else
         LOG_WARN("script::LinuxLinker", "Could not release target [w]$0[]: [w]Target not found", target);
