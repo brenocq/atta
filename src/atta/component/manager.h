@@ -53,7 +53,6 @@ class Manager final {
     friend void setSelectedEntity(Entity entity);
     friend void createDefault();
     friend void clear();
-    friend void registerComponent(Registry* componentRegistry);
     friend void unregisterCustomComponents();
 
   private:
@@ -108,7 +107,6 @@ class Manager final {
     friend Factory;
 
     //----- Component management -----//
-    void registerComponentImpl(Registry* componentRegistry); // Used to register internal components and custom components
     void unregisterCustomComponentsImpl();                            // Unregister to free memory that was allocated for all custom components
     void createComponentPoolsFromRegistered();
     void createComponentPool(Registry* componentRegistry);
@@ -136,16 +134,16 @@ class Manager final {
     void copyCpuToGpu();
 
     // Need to store this because old componentRegistry data is lost when component shared library is reloaded
-    struct RegistryBackupInfo {
-        size_t typeidHash;
-        ComponentDescription description;
-        bool poolCreated;
-    };
-    std::vector<RegistryBackupInfo> _componentRegistriesBackupInfo;
+    //struct RegistryBackupInfo {
+    //    size_t typeidHash;
+    //    ComponentDescription description;
+    //    bool poolCreated;
+    //};
+    //std::vector<RegistryBackupInfo> _componentRegistriesBackupInfo;
 
-    // Bookkeeping component/entity pools
-    memory::StackAllocator::Marker _customComponentsMarker; // Marker to free custom components
-    std::vector<Registry*> _componentRegistries;   // All registered components
+    //// Bookkeeping component/entity pools
+    //memory::StackAllocator::Marker _customComponentsMarker; // Marker to free custom components
+    //std::vector<Registry*> _componentRegistries;   // All registered components
     size_t _numAttaComponents;                              // Used to remove custom components from componentRegistries
     size_t _maxEntities;                                    // Maximum number of entities
 

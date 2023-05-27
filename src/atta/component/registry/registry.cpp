@@ -10,7 +10,28 @@
 
 namespace atta::component {
 
-void Registry::registerToManager() { component::registerComponent(this); }
+const std::vector<Registry*>& Registry::get() { return getRegistries(); }
+
+const Registry* Registry::get(ComponentId cid) { return get()[cid]; }
+
+unsigned Registry::getSizeof() const { return _sizeof; }
+
+std::string Registry::getTypeidName() const { return _typeidName; }
+
+size_t Registry::getTypeidHash() const { return _typeidHash; }
+
+ComponentId Registry::getId() const { return COMPONENT_POOL_SSID_BY_NAME(_typeidName); }
+
+unsigned Registry::getIndex() const { return _index; }
+
+bool Registry::getPoolCreated() const { return _poolCreated; }
+
+void Registry::setPoolCreated(bool poolCreated) { _poolCreated = poolCreated; }
+
+std::vector<Registry*>& Registry::getRegistries() {
+    static std::vector<Registry*> registries = {};
+    return registries;
+}
 
 unsigned Registry::getSerializedSize(Component* component) {
     std::ostringstream of;

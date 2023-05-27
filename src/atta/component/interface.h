@@ -56,7 +56,6 @@ void setSelectedEntity(Entity entity);
 // Memory management
 void createDefault();
 void clear();
-void registerComponent(Registry* componentRegistry);
 void unregisterCustomComponents();
 
 } // namespace atta::component

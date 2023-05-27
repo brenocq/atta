@@ -10,6 +10,10 @@ set(ATTA_COMPONENT_MODULE_SOURCE
     registry/registry.cpp
     registry/typedRegistry.cpp
 
+    dataManager/cpuDataManager.cpp
+    dataManager/dataManager.cpp
+    dataManager/gpuDataManager.cpp
+
     components/boxCollider.cpp
     components/boxCollider2D.cpp
     components/cameraSensor.cpp

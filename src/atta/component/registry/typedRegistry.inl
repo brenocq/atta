@@ -9,7 +9,8 @@ namespace atta::component {
 template <typename T>
 TypedRegistry<T>::TypedRegistry() : Registry(sizeof(T), typeid(T).name(), typeid(T).hash_code()) {
     description = &getDescription(); // Initialize description static variable
-    Registry::registerToManager();
+    std::vector<Registry*>& regs = getRegs();
+    regs.push_back(this);
 }
 
 template <typename T>

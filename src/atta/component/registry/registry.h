@@ -18,6 +18,9 @@ class Registry {
     Registry(unsigned sizeofT, std::string typeidName, size_t typeidHash)
         : _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _index(0), _poolCreated(false) {}
 
+    static const std::vector<Registry*>& get();
+    static const Registry* get(ComponentId cid);
+
     virtual void renderUI(Component* component) = 0;
 
     virtual void serialize(std::ostream& os, Component* component) = 0;
@@ -26,29 +29,27 @@ class Registry {
 
     virtual ComponentDescription& getDescription() = 0;
     virtual std::vector<uint8_t> getDefault() = 0;
-    unsigned getSizeof() const { return _sizeof; }
-    std::string getTypeidName() const { return _typeidName; }
-    size_t getTypeidHash() const { return _typeidHash; }
-    ComponentId getId() const { return COMPONENT_POOL_SSID_BY_NAME(_typeidName); }
-    unsigned getIndex() const { return _index; }
-    bool getPoolCreated() const { return _poolCreated; }
-    void setPoolCreated(bool poolCreated) { _poolCreated = poolCreated; }
+    unsigned getSizeof() const;
+    std::string getTypeidName() const;
+    size_t getTypeidHash() const;
+    ComponentId getId() const;
+    unsigned getIndex() const;
+    bool getPoolCreated() const;
+    void setPoolCreated(bool poolCreated);
 
   protected:
-    void registerToManager();
-
     template <AttributeType attributeType>
     void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {}
     void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId);
 
-    unsigned _sizeof;        // sizeof(T)
-    std::string _typeidName; // typeid(T).name()
-    size_t _typeidHash;      // typeid(T).hash_code()
+    unsigned _sizeof;        ///< sizeof(T)
+    std::string _typeidName; ///< typeid(T).name()
+    size_t _typeidHash;      ///< typeid(T).hash_code()
 
-    // Component index starting from 0
-    // This index is useful to access the entity component without iterating over the entity block
-    unsigned _index;
+    unsigned _index; ///< Each component receives an unique index
     bool _poolCreated;
+
+    static std::vector<Registry*>& getRegistries();
 
   private:
     void setIndex(unsigned index) { _index = index; }

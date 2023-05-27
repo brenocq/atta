@@ -52,7 +52,7 @@ void Manager::startUpImpl() {
     // Can be used to free all custom component allocators (useful when reloading a project)
     // Because the Manager::startUp method is called before any project is loaded, only atta components were created at this point
     _customComponentsMarker = _cpuAllocator->getMarker();
-    _numAttaComponents = _componentRegistries.size();
+    _numAttaComponents = Registry::getRegistries().size();
 
     event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
     event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
@@ -167,9 +167,9 @@ void Manager::deleteEntityImpl(Entity entity) {
     }
 
     // Delete allocated components
-    for (unsigned i = 0; i < _componentRegistries.size(); i++)
+    for (unsigned i = 0; i < Registry::getRegistries().size(); i++)
         if (e->components[i] != nullptr)
-            removeComponentByIdImpl(_componentRegistries[i]->getId(), entity);
+            removeComponentByIdImpl(Registry::getRegistries()[i]->getId(), entity);
 
     // Unselect
     if (_selectedEntity == eid)
@@ -198,7 +198,7 @@ Entity Manager::copyEntityImpl(Entity entity) {
     Entity newEntity = createEntity();
 
     // Delete allocated components
-    for (auto compReg : _componentRegistries) {
+    for (auto compReg : Registry::getRegistries()) {
         // If base entity has this component
         Component* baseComponent = getComponentById(compReg->getId(), entity);
         if (baseComponent) {
@@ -231,7 +231,7 @@ void Manager::clearImpl() {
     _scriptView.clear();
 
     // Clear components
-    for (auto reg : _componentRegistries)
+    for (auto reg : Registry::getRegistries())
         getComponentAllocator(reg)->clear();
 }
 
@@ -244,7 +244,7 @@ memory::BitmapAllocator* Manager::getComponentAllocator(Registry* compReg) {
 
 Registry* Manager::getRegistry(ComponentId id) {
     Registry* compReg = nullptr;
-    for (auto cg : _componentRegistries)
+    for (auto cg : Registry::getRegistries())
         if (cg->getId() == id) {
             compReg = cg;
             break;
@@ -253,52 +253,52 @@ Registry* Manager::getRegistry(ComponentId id) {
     return compReg;
 }
 
-std::vector<Registry*> Manager::getComponentRegistriesImpl() { return _componentRegistries; }
+std::vector<Registry*> Manager::getComponentRegistriesImpl() { return Registry::getRegistries(); }
 
-void Manager::registerComponentImpl(Registry* componentRegistry) {
-    ASSERT(_componentRegistries.size() < maxRegisteredComponents,
-           "More components than it is possible to store inside the entityBlock, maximum is $0", maxRegisteredComponents);
-
-    // Check if not already registered
-    int oldIndex = -1;
-    for (unsigned i = 0; i < _componentRegistries.size() && i < _componentRegistriesBackupInfo.size(); i++)
-        if (componentRegistry->getTypeidHash() == _componentRegistriesBackupInfo[i].typeidHash) {
-            oldIndex = i;
-            break;
-        }
-
-    if (oldIndex == -1) {
-        componentRegistry->setIndex(_componentRegistries.size());
-        _componentRegistries.push_back(componentRegistry);
-
-        // Push new to registered backup (will be updated later because the Description data may not be available while the components are being
-        // registered) Need to keep track of this because registerComponentImpl can be called multiple times for the same component (one time for each
-        // translation unit). We need to be sure that will not push the same componentRegistry twice
-        _componentRegistriesBackupInfo.push_back(
-            {componentRegistry->getTypeidHash(), ComponentDescription{componentRegistry->getTypeidName()}, false});
-    } else {
-        // XXX Not removing old components
-        // LOG_DEBUG("component::Manager", "Reloading component [w]$0[]", componentRegistry->getTypeidName());
-        // If the layout changed: (TODO)
-        //   1. Save entities with old data
-        //   2. Deallocate old memory
-        //   3. Allocate new memory
-        //   4. Change entity component pointer and copy+format component data
-        // If the layout was not changed:
-        //   No nothing
-        if (_componentRegistries[oldIndex] != componentRegistry) {
-            // LOG_WARN("component::Manager", "Component registry pointer changed from $0 to $1\n new: $0", _componentRegistries[oldIndex],
-            // componentRegistry);
-            _componentRegistries[oldIndex] = componentRegistry;
-        }
-
-        componentRegistry->setPoolCreated(_componentRegistriesBackupInfo[oldIndex].poolCreated);
-        componentRegistry->setIndex(oldIndex);
-    }
-}
+//void Manager::registerComponentImpl(Registry* componentRegistry) {
+//    ASSERT(Registry::getRegistries().size() < maxRegisteredComponents,
+//           "More components than it is possible to store inside the entityBlock, maximum is $0", maxRegisteredComponents);
+//
+//    // Check if not already registered
+//    int oldIndex = -1;
+//    for (unsigned i = 0; i < Registry::getRegistries().size() && i < Registry::getRegistries()BackupInfo.size(); i++)
+//        if (componentRegistry->getTypeidHash() == Registry::getRegistries()BackupInfo[i].typeidHash) {
+//            oldIndex = i;
+//            break;
+//        }
+//
+//    if (oldIndex == -1) {
+//        componentRegistry->setIndex(Registry::getRegistries().size());
+//        Registry::getRegistries().push_back(componentRegistry);
+//
+//        // Push new to registered backup (will be updated later because the Description data may not be available while the components are being
+//        // registered) Need to keep track of this because registerComponentImpl can be called multiple times for the same component (one time for each
+//        // translation unit). We need to be sure that will not push the same componentRegistry twice
+//        Registry::getRegistries()BackupInfo.push_back(
+//            {componentRegistry->getTypeidHash(), ComponentDescription{componentRegistry->getTypeidName()}, false});
+//    } else {
+//        // XXX Not removing old components
+//        // LOG_DEBUG("component::Manager", "Reloading component [w]$0[]", componentRegistry->getTypeidName());
+//        // If the layout changed: (TODO)
+//        //   1. Save entities with old data
+//        //   2. Deallocate old memory
+//        //   3. Allocate new memory
+//        //   4. Change entity component pointer and copy+format component data
+//        // If the layout was not changed:
+//        //   No nothing
+//        if (Registry::getRegistries()[oldIndex] != componentRegistry) {
+//            // LOG_WARN("component::Manager", "Component registry pointer changed from $0 to $1\n new: $0", Registry::getRegistries()[oldIndex],
+//            // componentRegistry);
+//            Registry::getRegistries()[oldIndex] = componentRegistry;
+//        }
+//
+//        componentRegistry->setPoolCreated(Registry::getRegistries()BackupInfo[oldIndex].poolCreated);
+//        componentRegistry->setIndex(oldIndex);
+//    }
+//}
 
 void Manager::createComponentPoolsFromRegistered() {
-    for (auto reg : _componentRegistries) {
+    for (auto reg : Registry::getRegistries()) {
         // TODO Remove custom component registry when it is not loaded (pointer to random data)
         if (!reg->getPoolCreated()) {
             createComponentPool(reg);
@@ -330,7 +330,7 @@ void Manager::createComponentPool(Registry* componentRegistry) {
 
 void Manager::unregisterCustomComponentsImpl() {
     // Return stack pointer to the point before custom components (free custom component allocators)
-    _componentRegistries.resize(_numAttaComponents);
+    Registry::getRegistries().resize(_numAttaComponents);
     _cpuAllocator->rollback(_customComponentsMarker);
 }
 
@@ -392,7 +392,7 @@ Component* Manager::addComponentPtrImpl(Entity entity, unsigned index, Component
         LOG_WARN("component::Manager", "Trying to override entity [w]$0[] component pointer. Returning already allocated one", eid);
 
     // Notify component added
-    ComponentId id = _componentRegistries[index]->getId();
+    ComponentId id = Registry::getRegistries()[index]->getId();
     Component* componentPtr = e->components[index];
     notifyComponentAdded(entity, id, componentPtr);
 
@@ -436,7 +436,7 @@ void Manager::removeComponentByIdImpl(ComponentId id, Entity entity) {
 
     // Get component registry
     Registry* compReg = nullptr;
-    for (auto cg : _componentRegistries)
+    for (auto cg : Registry::getRegistries())
         if (cg->getId() == id) {
             compReg = cg;
             break;
@@ -488,7 +488,7 @@ Component* Manager::getComponentByIndex(unsigned index, Entity entity) {
     // Get entity
     EntityBlock* e = getEntityBlock(eid);
     ASSERT(e != nullptr, "Trying to get component [w]$1[] from entity [w]$0[], but this entity was not created", entity,
-           _componentRegistries[index]->getDescription().name);
+           Registry::getRegistries()[index]->getDescription().name);
 
     // Return component
     return e->components[index];
@@ -626,14 +626,14 @@ void Manager::onScriptEvent(event::Event& event) {
     createComponentPoolsFromRegistered();
 
     // Update backup info (only now we can guarantee that the description data is available)
-    _componentRegistriesBackupInfo.clear();
-    for (auto reg : _componentRegistries) {
+    Registry::getRegistries()BackupInfo.clear();
+    for (auto reg : Registry::getRegistries()) {
         RegistryBackupInfo crbi;
         crbi.typeidHash = reg->getTypeidHash();
         crbi.description.name = reg->getDescription().name;
         crbi.description.attributeDescriptions = reg->getDescription().attributeDescriptions;
         crbi.poolCreated = true;
-        _componentRegistriesBackupInfo.push_back(crbi);
+        Registry::getRegistries()BackupInfo.push_back(crbi);
     }
 }
 
