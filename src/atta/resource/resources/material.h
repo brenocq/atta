@@ -23,11 +23,11 @@ class Material : public Resource, public memory::AllocatedObject<Material, SID("
         float roughness = 0.5f;
         float ao = 1.0f;
 
-        StringId colorImage = emptyImage;
-        StringId metallicImage = emptyImage;
-        StringId roughnessImage = emptyImage;
-        StringId aoImage = emptyImage;
-        StringId normalImage = emptyImage;
+        StringId colorImage;
+        StringId metallicImage;
+        StringId roughnessImage;
+        StringId aoImage;
+        StringId normalImage;
     };
 
     Material();

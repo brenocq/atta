@@ -109,8 +109,12 @@ void Factory::createClones() {
     for (uint64_t i = 1; i < _maxClones; i++)
         component::createEntity(_firstClone.getId() + i);
 
-    for (Registry* r : Registry::get()) {
-        ComponentId cid = r->getId();
+    for (ComponentId cid : cpuDataManager->getComponents(_prototype.getId())) {
+        if (cid == TypedRegistry<Prototype>::getInstance().getId())
+            continue;
+        if (cid == TypedRegistry<Relationship>::getInstance().getId())
+            continue;
+
         Component* compProt = cpuDataManager->getComponent(_prototype.getId(), cid);
         uint32_t componentSize = Registry::get(cid)->getSizeof();
 

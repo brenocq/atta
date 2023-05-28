@@ -10,6 +10,7 @@ template <typename T>
 TypedRegistry<T>::TypedRegistry() : Registry(sizeof(T), typeid(T).name(), typeid(T).hash_code()) {
     description = &getDescription(); // Initialize description static variable
     std::vector<Registry*>& regs = getRegistries();
+    _id = regs.size();
     regs.push_back(this);
 }
 

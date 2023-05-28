@@ -9,7 +9,7 @@
 
 namespace atta {
 
-#if __NVCC__
+#if defined(__CUDA_ARCH__)
 #define ATTA_GPU_CODE 1
 #define ATTA_CPU_CODE 0
 #else

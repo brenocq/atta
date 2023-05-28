@@ -17,7 +17,6 @@ namespace atta::component {
 #define CHECK_COMPONENT(cid, x) \
     if (!validComponent(cid)) { \
         LOG_WARN("cmp::DataManager", "Trying to call [w]$0[] with component [w]$1[] that is not valid", __func__, cid); \
-        if constexpr (std::is_void_v<decltype(__func__)>) \
         return x; \
     }
 // clang-format on
@@ -76,11 +75,7 @@ ATTA_CPU_GPU void DataManager::destroyEntity(EntityId eid) {
     }
 }
 
-ATTA_CPU_GPU bool DataManager::entityExists(EntityId eid) {
-    CHECK_ENTITY(eid, false);
-
-    return _entityPool[eid].exist;
-}
+ATTA_CPU_GPU bool DataManager::entityExists(EntityId eid) { return validEntity(eid) && _entityPool[eid].exist; }
 
 ATTA_CPU_GPU bool DataManager::validEntity(EntityId eid) { return eid >= 0 && eid < _entityPool.size(); }
 
@@ -120,6 +115,7 @@ ATTA_CPU_GPU Component* DataManager::getComponent(EntityId eid, ComponentId cid)
 
     if (entityExists(eid))
         return _entityPool[eid][cid];
+    return nullptr;
 }
 
 ATTA_CPU std::vector<ComponentId> DataManager::getComponents(EntityId eid) {

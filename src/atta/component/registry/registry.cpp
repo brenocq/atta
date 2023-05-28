@@ -20,13 +20,7 @@ std::string Registry::getTypeidName() const { return _typeidName; }
 
 size_t Registry::getTypeidHash() const { return _typeidHash; }
 
-ComponentId Registry::getId() const { return COMPONENT_POOL_SSID_BY_NAME(_typeidName); }
-
-unsigned Registry::getIndex() const { return _index; }
-
-bool Registry::getPoolCreated() const { return _poolCreated; }
-
-void Registry::setPoolCreated(bool poolCreated) { _poolCreated = poolCreated; }
+ComponentId Registry::getId() const { return _id; }
 
 std::vector<Registry*>& Registry::getRegistries() {
     static std::vector<Registry*> registries = {};

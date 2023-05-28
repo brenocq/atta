@@ -43,9 +43,12 @@ void Manager::startUpImpl() {
     memory::registerAllocator("ComponentAllocator", static_cast<memory::Allocator*>(_allocator));
 
     //----- DataManager -----//
-    LOG_DEBUG("cmp::Manager", "Initialize data managers");
     CpuDataManager::init();
     GpuDataManager::init();
+
+    // Create pools
+    for (Registry* r : Registry::get())
+        cpuDataManager->allocPool(r->getId(), r->getDescription().maxInstances);
 
     //----- Events -----//
     event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));

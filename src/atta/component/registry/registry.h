@@ -15,8 +15,6 @@ class Manager;
 class Registry {
   public:
     using Type = StringId;
-    Registry(unsigned sizeofT, std::string typeidName, size_t typeidHash)
-        : _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _index(0), _poolCreated(false) {}
 
     static const std::vector<Registry*>& get();
     static const Registry* get(ComponentId cid);
@@ -33,11 +31,11 @@ class Registry {
     std::string getTypeidName() const;
     size_t getTypeidHash() const;
     ComponentId getId() const;
-    unsigned getIndex() const;
-    bool getPoolCreated() const;
-    void setPoolCreated(bool poolCreated);
 
   protected:
+    Registry(unsigned sizeofT, std::string typeidName, size_t typeidHash)
+        : _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _id(0) {}
+
     template <AttributeType attributeType>
     void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {}
     void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId);
@@ -46,13 +44,16 @@ class Registry {
     std::string _typeidName; ///< typeid(T).name()
     size_t _typeidHash;      ///< typeid(T).hash_code()
 
-    unsigned _index; ///< Each component receives an unique index
-    bool _poolCreated;
+    /**
+     * @brief Each component receives an unique id
+     *
+     * The id is the index in the vector of components
+     */
+    ComponentId _id;
 
     static std::vector<Registry*>& getRegistries();
 
   private:
-    void setIndex(unsigned index) { _index = index; }
     friend Manager;
 };
 
