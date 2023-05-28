@@ -5,11 +5,12 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/dataManager/gpuDataManager.h>
+#include <atta/component/registry/registry.h>
 #include <atta/utils/cuda.h>
 
 namespace atta::component {
 
-ATTA_CPU void GpuDataManager::createPools() {
+ATTA_CPU void GpuDataManager::init() {
     // Create gpu instance
     _gpuInstance = (GpuDataManager*)cuda::alloc(sizeof(GpuDataManager));
 
@@ -28,7 +29,7 @@ ATTA_CPU void GpuDataManager::allocPool(ComponentId cid, uint32_t numComponents)
     // Allocate pool
     uint32_t componentSize = Registry::get(cid)->getSizeof();
     uint32_t poolSize = ComponentPool::calcPoolSize(numComponents, componentSize);
-    uint8_t* memory = cuda::alloc(poolSize);
+    uint8_t* memory = (uint8_t*)cuda::alloc(poolSize);
 
     // Add pool
     _componentPools[cid] = ComponentPool(memory, poolSize, componentSize, numComponents);
@@ -48,11 +49,11 @@ ATTA_CPU void GpuDataManager::deallocPool(ComponentId cid) {
 }
 
 ATTA_CPU void GpuDataManager::copyCpuToGpu() {
-    // TODO 
+    // TODO
 }
 
 ATTA_CPU void GpuDataManager::copyGpuToCpu() {
-    // TODO 
+    // TODO
 }
 
 } // namespace atta::component

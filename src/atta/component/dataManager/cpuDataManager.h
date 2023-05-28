@@ -7,6 +7,7 @@
 #ifndef ATTA_COMPONENT_DATA_MANAGER_CPU_DATA_MANAGER_H
 #define ATTA_COMPONENT_DATA_MANAGER_CPU_DATA_MANAGER_H
 #include <atta/component/dataManager/dataManager.h>
+#include <atta/memory/interface.h>
 
 namespace atta::component {
 

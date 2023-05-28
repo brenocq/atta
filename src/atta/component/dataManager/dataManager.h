@@ -18,14 +18,14 @@ class DataManager {
      *
      * If more components than this are registered, it is not possible to track if that component was allocated by using the EntityTable
      */
-    constexpr unsigned maxComponents = 32;
+    static constexpr unsigned maxComponents = 32;
 
     /**
      * @brief Maximum number of entities that can be created
      *
      * TODO make it dynamic
      */
-    constexpr unsigned maxEntities = 1024;
+    static constexpr unsigned maxEntities = 1024;
 
     /**
      * @brief Entity block
@@ -33,8 +33,11 @@ class DataManager {
      * The component table has one pointer for each registered component. The pointer is nullptr if the component was not allocated for this entity
      */
     struct EntityBlock {
-        bool exist;                                                ///< Flag to define is entity exists
-        std::array<Component*, maxRegisteredComponents> components ///< Component table
+        bool exist;                                       ///< Flag to define if entity exists
+        std::array<Component*, maxComponents> components; ///< Component table
+
+        Component*& operator[](size_t index);
+        const Component* operator[](size_t index) const;
     };
 
     /**
@@ -44,7 +47,7 @@ class DataManager {
      */
     struct ComponentPool {
         ComponentPool() = default;
-        ComponentPool(uint8_t memory_, uint8_t size_, uint32_t componentSize_, uint32_t numComponents_);
+        ComponentPool(uint8_t* memory_, uint8_t size_, uint32_t componentSize_, uint32_t numComponents_);
 
         uint8_t* memory;        ///< Pointer to first allocated component
         uint32_t size;          ///< Size in bytes of the whole pool
@@ -94,68 +97,96 @@ class DataManager {
          *
          * @note nullptr is returned if allocation is not possible
          */
-        ATTA_CPU_GPU uint8_t* alloc();
+        ATTA_CPU_GPU Component* alloc();
 
         /**
          * @brief Free component
          *
          * @param ptr Pointer to component to free
          */
-        ATTA_CPU_GPU void free(uint8_t* ptr);
+        ATTA_CPU_GPU void free(Component* ptr);
     };
-
-    /**
-     * @brief Add component to entity
-     *
-     * @param entity Entity to add the component to
-     * @param cid Component id
-     *
-     * @return Component pointer
-     */
-    ATTA_CPU_GPU uint8_t* addComponent(Entity entity, ComponentId cid);
-
-    /**
-     * @brief Remove component from entity
-     *
-     * @param entity Entity to remove the component from
-     * @param cid Component id
-     */
-    ATTA_CPU_GPU void removeComponent(Entity entity, ComponentId cid);
-
-    /**
-     * @brief Get entity component
-     *
-     * @param entity Entity to get component from
-     * @param cid Component id
-     *
-     * @return Component pointer
-     */
-    ATTA_CPU_GPU uint8_t* getComponent(Entity entity, ComponentId cid);
 
     /**
      * @brief Create entity
      *
-     * @param entity Entity id
+     * @param eid Entity id
      *
      * @return Entity
      *
      * Can try to create entity with specific EntityId. If none is provided, or if it is not possible to allocate with a certain id, the bitmap pool
      * will choose the id.
      */
-    ATTA_CPU_GPU Entity createEntity(EntityId entity = -1);
+    ATTA_CPU_GPU EntityId createEntity(EntityId eid = -1);
 
     /**
      * @brief Destroy entity and deallocate components
      *
-     * @param entity Entity to delete
+     * @param eid Entity to delete
      */
-    ATTA_CPU_GPU void destroyEntity(Entity entity);
+    ATTA_CPU_GPU void destroyEntity(EntityId eid);
+
+    /**
+     * @brief Check if entity exists
+     *
+     * @param eid Entity to check
+     * @return True if entity exists
+     */
+    ATTA_CPU_GPU bool entityExists(EntityId eid);
+
+    /**
+     * @brief Add component to entity
+     *
+     * @param eid Entity to add the component to
+     * @param cid Component id
+     *
+     * @return Component pointer
+     */
+    ATTA_CPU_GPU Component* addComponent(EntityId eid, ComponentId cid);
+
+    /**
+     * @brief Remove component from entity
+     *
+     * @param eid Entity to remove the component from
+     * @param cid Component id
+     */
+    ATTA_CPU_GPU void removeComponent(EntityId eid, ComponentId cid);
+
+    /**
+     * @brief Get entity component
+     *
+     * @param eid Entity to get component from
+     * @param cid Component id
+     *
+     * @return Component pointer
+     */
+    ATTA_CPU_GPU Component* getComponent(EntityId eid, ComponentId cid);
 
   protected:
     void initEntityPool();
 
-    std::array<EntityBlock, maxEntities> _entityPool;
-    std::array<ComponentPool, maxComponents> _componentPools;
+    EntityId _currentEntity;                                  ///< Current position to create entity
+    std::array<EntityBlock, maxEntities> _entityPool;         ///< Entity pool
+    std::array<ComponentPool, maxComponents> _componentPools; ///< Components pools
+
+  private:
+    /**
+     * @brief Check if entity id is valid
+     *
+     * @param entity Entity id
+     *
+     * @return True if entity id is valid
+     */
+    ATTA_CPU_GPU bool validEntity(EntityId entity);
+
+    /**
+     * @brief Check if component id is valid
+     *
+     * @param component Component id
+     *
+     * @return True if component id is valid
+     */
+    ATTA_CPU_GPU bool validComponent(ComponentId component);
 };
 
 } // namespace atta::component

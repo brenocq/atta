@@ -44,7 +44,6 @@ void setSelectedEntity(Entity eid) { Manager::getInstance()._selectedEntity = ei
 // Memory management
 void createDefault() { Manager::getInstance().createDefaultImpl(); }
 void clear() { Manager::getInstance().clearImpl(); }
-void registerComponent(Registry* componentRegistry) { return Manager::getInstance().registerComponentImpl(componentRegistry); }
 void unregisterCustomComponents() { Manager::getInstance().unregisterCustomComponentsImpl(); }
 
 } // namespace atta::component
