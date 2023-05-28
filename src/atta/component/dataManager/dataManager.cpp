@@ -22,6 +22,15 @@ namespace atta::component {
     }
 // clang-format on
 
+ATTA_CPU void DataManager::initEntityPool() {
+    _currentEntity = 0;
+    for (EntityBlock& eb : _entityPool) {
+        eb.exist = false;
+        for (size_t i = 0; i < eb.components.size(); i++)
+            eb.components[i] = nullptr;
+    }
+}
+
 //-----------------------------------//
 //--------- Entity Interface --------//
 //-----------------------------------//
@@ -33,20 +42,15 @@ ATTA_CPU_GPU EntityId DataManager::createEntity(EntityId eid) {
     } else {
         // Create entity with unspecified id
         EntityId start = _currentEntity;
-        if (!_entityPool[_currentEntity].exist) {
-            // If can create at the current position
-            createdId = _currentEntity;
-        } else {
-            // Circular iteration to check where can create entity
-            _currentEntity = (_currentEntity + 1) % _entityPool.size();
-            while (_currentEntity != start) {
-                if (!_entityPool[_currentEntity].exist) {
-                    createdId = _currentEntity;
-                    break;
-                }
-                _currentEntity = (_currentEntity + 1) % _entityPool.size();
+
+        // Find first free entity
+        do {
+            if (!_entityPool[_currentEntity].exist) {
+                createdId = _currentEntity;
+                break;
             }
-        }
+            _currentEntity = (_currentEntity + 1) % _entityPool.size();
+        } while (_currentEntity != start);
     }
 
     // Create entity
@@ -80,6 +84,14 @@ ATTA_CPU_GPU bool DataManager::entityExists(EntityId eid) {
 
 ATTA_CPU_GPU bool DataManager::validEntity(EntityId eid) { return eid >= 0 && eid < _entityPool.size(); }
 
+ATTA_CPU std::vector<EntityId> DataManager::getEntities() const {
+    std::vector<EntityId> entities;
+    for (size_t i = 0; i < maxEntities; i++)
+        if (_entityPool[i].exist)
+            entities.push_back(EntityId{i});
+    return entities;
+}
+
 //-----------------------------------//
 //------- Component Interface -------//
 //-----------------------------------//
@@ -110,6 +122,16 @@ ATTA_CPU_GPU Component* DataManager::getComponent(EntityId eid, ComponentId cid)
         return _entityPool[eid][cid];
 }
 
+ATTA_CPU std::vector<ComponentId> DataManager::getComponents(EntityId eid) {
+    std::vector<ComponentId> components;
+
+    for (ComponentId cid = 0; cid < maxComponents; cid++)
+        if (_entityPool[eid][cid] != nullptr)
+            components.push_back(cid);
+
+    return components;
+}
+
 ATTA_CPU_GPU bool DataManager::validComponent(ComponentId component) {
     return component >= 0 && component < _componentPools.size() && _componentPools[component].isAllocated();
 }
@@ -118,45 +140,5 @@ ATTA_CPU_GPU bool DataManager::validComponent(ComponentId component) {
 //----------- EntityBlock -----------//
 //-----------------------------------//
 Component*& DataManager::EntityBlock::operator[](size_t index) { return components[index]; }
-
-const Component* DataManager::EntityBlock::operator[](size_t index) const { return components[index]; }
-
-//-----------------------------------//
-//---------- ComponentPool ----------//
-//-----------------------------------//
-DataManager::ComponentPool::ComponentPool(uint8_t* memory_, uint8_t size_, uint32_t componentSize_, uint32_t numComponents_)
-    : memory(memory_), size(size_), bitmapSize(calcBitmapSize(numComponents_, componentSize_)), componentSize(componentSize_), current(0) {}
-
-ATTA_CPU bool DataManager::ComponentPool::isAllocated() const { return memory != nullptr; }
-
-ATTA_CPU uint32_t DataManager::ComponentPool::calcPoolSize(uint32_t numComponents, uint32_t componentSize) {
-    return calcBitmapSize(numComponents, componentSize) + componentSize * numComponents;
-}
-
-ATTA_CPU uint32_t DataManager::ComponentPool::calcBitmapSize(uint32_t numComponents, uint32_t componentSize) {
-    // TODO take alignment into consideration
-    return ceil(numComponents / 8.0f);
-}
-
-ATTA_CPU void DataManager::ComponentPool::reset() {
-    memory = nullptr;
-    size = 0;
-    bitmapSize = 0;
-    componentSize = 0;
-    current = 0;
-}
-
-ATTA_CPU_GPU Component* DataManager::ComponentPool::alloc() { return nullptr; }
-
-ATTA_CPU_GPU void DataManager::ComponentPool::free(Component* ptr) {}
-
-ATTA_CPU void DataManager::initEntityPool() {
-    _currentEntity = 0;
-    for (EntityBlock& eb : _entityPool) {
-        eb.exist = false;
-        for (size_t i = 0; i < eb.components.size(); i++)
-            eb.components[i] = nullptr;
-    }
-}
 
 } // namespace atta::component

@@ -19,14 +19,14 @@ class EntityWindow {
 
   private:
     void renderTree();
-    void renderTreeNode(component::EntityId entity, int& i);
+    void renderTreeNode(component::Entity entity, int& i);
 
     void renderComponents();
     void textureCombo(std::string comboId, StringId& sid);
 
     // TODO Move this to undo/redo code
-    std::vector<component::EntityId> _entitiesToDelete;
-    std::vector<component::EntityId> _entitiesToCopy;
+    std::vector<component::Entity> _entitiesToDelete;
+    std::vector<component::Entity> _entitiesToCopy;
 };
 
 } // namespace atta::ui

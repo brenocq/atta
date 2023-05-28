@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/component/registry/registry.h>
 #include <atta/component/components/components.h>
+#include <atta/component/dataManager/cpuDataManager.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>
 #include <atta/script/manager.h>
@@ -34,14 +35,14 @@ void EntityWindow::render() {
 }
 
 void EntityWindow::renderTree() {
-    std::vector<component::EntityId> entities = component::getEntitiesView();
+    std::vector<component::Entity> entities = component::getEntitiesView();
     int i = 0;
 
     ImGui::Text("Scene");
 
     // Render root entities
-    for (component::EntityId entity : entities) {
-        component::Relationship* r = component::getComponent<component::Relationship>(entity);
+    for (component::Entity entity : entities) {
+        component::Relationship* r = entity.get<component::Relationship>();
         if (!r || (r && r->getParent() == -1))
             renderTreeNode(entity, i);
     }
@@ -55,21 +56,21 @@ void EntityWindow::renderTree() {
 
     //----- Operations -----//
     for (auto entity : _entitiesToDelete)
-        component::deleteEntity(entity);
+        component::destroyEntity(entity);
     _entitiesToDelete.clear();
 
     for (auto entity : _entitiesToCopy) {
-        component::EntityId copied = component::copyEntity(entity);
+        component::Entity copied = component::copyEntity(entity);
         component::setSelectedEntity(copied);
     }
     _entitiesToCopy.clear();
 }
 
-void EntityWindow::renderTreeNode(component::EntityId entity, int& i) {
+void EntityWindow::renderTreeNode(component::Entity entity, int& i) {
     //----- Name -----//
     std::string name = "<Entity " + std::to_string(entity) + ">";
-    component::Name* n = component::getComponent<component::Name>(entity);
-    component::Relationship* r = component::getComponent<component::Relationship>(entity);
+    component::Name* n = entity.get<component::Name>();
+    component::Relationship* r = entity.get<component::Relationship>();
     if (n)
         name = n->name;
 
@@ -125,7 +126,7 @@ void EntityWindow::renderTreeNode(component::EntityId entity, int& i) {
 }
 
 void EntityWindow::renderComponents() {
-    component::EntityId selected = component::getSelectedEntity();
+    component::Entity selected = component::getSelectedEntity();
     if (selected == -1)
         return;
 
@@ -133,7 +134,7 @@ void EntityWindow::renderComponents() {
 
     // Render options to edit each component
     for (auto compReg : component::getComponentRegistries()) {
-        void* component = component::getComponentById(compReg->getId(), selected);
+        void* component = component::cpuDataManager->getComponent(selected.getId(), compReg->getId());
         if (component != nullptr) {
             std::string name = compReg->getDescription().name;
             if (compReg->getId() != component::TypedRegistry<component::Relationship>::getInstance().getId()) {
@@ -141,7 +142,7 @@ void EntityWindow::renderComponents() {
                 if (ImGui::CollapsingHeader((name + "##Components" + name + "Header").c_str(), &open))
                     compReg->renderUI((component::Component*)component);
                 if (!open)
-                    component::removeComponentById(compReg->getId(), selected);
+                    component::cpuDataManager->removeComponent(selected.getId(), compReg->getId());
             }
         }
     }
@@ -156,12 +157,12 @@ void EntityWindow::renderComponents() {
 
     if (ImGui::BeginPopup("Scene_ComponentAdd")) {
         for (auto compReg : component::getComponentRegistries()) {
-            void* component = component::getComponentById(compReg->getId(), selected);
+            void* component = component::cpuDataManager->getComponent(selected.getId(), compReg->getId());
             if (component == nullptr) {
                 if (compReg->getId() != component::TypedRegistry<component::Relationship>::getInstance().getId()) {
                     std::string name = compReg->getDescription().name;
                     if (ImGui::Selectable((name + "##ComponentAdd" + name).c_str()))
-                        component::addComponentById(compReg->getId(), selected);
+                        component::cpuDataManager->addComponent(selected.getId(), compReg->getId());
                 }
             }
         }

@@ -44,12 +44,12 @@ ComponentDescription& TypedRegistry<Relationship>::getDescription() {
 // Parent operations
 void Relationship::setParent(Entity parent, Entity child) {
     // Get relationships
-    Relationship* parentRel = component::getComponent<Relationship>(parent);
+    Relationship* parentRel = parent.get<Relationship>();
     if (!parentRel)
-        parentRel = component::addComponent<Relationship>(parent);
-    Relationship* childRel = component::getComponent<Relationship>(child);
+        parentRel = parent.add<Relationship>();
+    Relationship* childRel = child.get<Relationship>();
     if (!childRel)
-        childRel = component::addComponent<Relationship>(child);
+        childRel = child.add<Relationship>();
 
     // Check if entity can be children (avoid recursive)
     bool canBeParent = true;
@@ -65,7 +65,7 @@ void Relationship::setParent(Entity parent, Entity child) {
             if (r->_parent == -1)
                 r = nullptr;
             else
-                r = component::getComponent<Relationship>(r->_parent);
+                r = r->_parent.get<Relationship>();
         }
     }
 
@@ -76,7 +76,7 @@ void Relationship::setParent(Entity parent, Entity child) {
             removeParent(childRel->_parent, child);
 
         // If has transform component, update to be relative to the parent
-        Transform* t = component::getComponent<Transform>(child);
+        Transform* t = child.get<Transform>();
         if (t) {
             mat4 transform = t->getWorldTransformMatrix(child);
             Transform wt = Transform::getEntityWorldTransform(parent);
@@ -102,14 +102,14 @@ void Relationship::setParent(Entity parent, Entity child) {
 
 void Relationship::removeParent(Entity parent, Entity child) {
     // Get relationships
-    Relationship* parentRel = component::getComponent<Relationship>(parent);
+    Relationship* parentRel = parent.get<Relationship>();
     if (!parentRel && parent != -1) // Check if parent has relationship component
     {
         LOG_WARN("component::Relationship", "Trying to remove wrong parent [w]$0[] from child [w]$1[]", parent, child);
         return;
     }
 
-    Relationship* childRel = component::getComponent<Relationship>(child);
+    Relationship* childRel = child.get<Relationship>();
     if (!childRel) // Check if child has relationship component
     {
         LOG_WARN("component::Relationship", "Trying to remove parent [w]$0[] from child [w]$1[] that does not have a parent", parent, child);
@@ -117,7 +117,7 @@ void Relationship::removeParent(Entity parent, Entity child) {
     }
 
     // If has transform component, change to be relative to the world
-    Transform* transform = component::getComponent<Transform>(child);
+    Transform* transform = child.get<Transform>();
     if (transform) {
         mat4 world = transform->getWorldTransformMatrix(child);
         vec3 pos, scale;

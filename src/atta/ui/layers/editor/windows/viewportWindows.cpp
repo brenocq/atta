@@ -111,9 +111,9 @@ void ViewportWindows::render() {
 
             //----- ImGuizmo -----//
             bool imGuizmoUsingMouse = false;
-            component::EntityId entity = component::getSelectedEntity();
+            component::Entity entity = component::getSelectedEntity();
             if (entity >= 0) {
-                component::Transform* t = component::getComponent<component::Transform>(entity);
+                component::Transform* t = entity.get<component::Transform>();
 
                 if (t) {
                     ImGuizmo::SetOrthographic(viewport->getCamera()->getName() == "OrthographicCamera");
@@ -146,22 +146,22 @@ void ViewportWindows::render() {
                         ori.setEuler(t->orientation.getEuler() + oriDelta);
 
                         // Delta world to local
-                        component::Relationship* r = component::getComponent<component::Relationship>(entity);
+                        component::Relationship* r = entity.get<component::Relationship>();
                         if (r && r->getParent() != -1) {
                             // Get transform of the first entity that has transform when going up in the hierarchy
                             component::Transform* pt = nullptr;
-                            component::EntityId parentId = -1;
+                            component::Entity parent = -1;
                             while (pt == nullptr) {
-                                parentId = r->getParent();
-                                pt = component::getComponent<component::Transform>(parentId);
-                                r = component::getComponent<component::Relationship>(parentId);
+                                parent = r->getParent();
+                                pt = parent.get<component::Transform>();
+                                r = parent.get<component::Relationship>();
                                 if (r->getParent() == -1)
                                     break;
                             }
 
                             // If found some entity with transform component, convert result to be relative to it
                             if (pt) {
-                                component::Transform pTransform = pt->getWorldTransform(parentId);
+                                component::Transform pTransform = pt->getWorldTransform(parent);
                                 vec3 pPos = pTransform.position;
                                 vec3 pScale = pTransform.scale;
                                 quat pOri = pTransform.orientation;
@@ -247,18 +247,18 @@ void ViewportWindows::addBasicShapePopup() {
         unsigned i = 0;
         for (auto shape : basicShapes) {
             if (ImGui::Selectable((shape + "##AddBasicShape" + shape).c_str())) {
-                component::EntityId eid = component::createEntity();
-                component::Name* n = component::addComponent<component::Name>(eid);
+                component::Entity entity = component::createEntity();
+                component::Name* n = entity.add<component::Name>();
                 strcpy(n->name, shape.c_str());
-                component::addComponent<component::Transform>(eid);
-                component::Mesh* m = component::addComponent<component::Mesh>(eid);
+                entity.add<component::Transform>();
+                component::Mesh* m = entity.add<component::Mesh>();
                 m->sid = basicShapesMesh[i];
                 resource::Material* matRes =
-                    resource::create<resource::Material>("defaultMaterial." + std::to_string(eid), resource::Material::CreateInfo{});
+                    resource::create<resource::Material>("defaultMaterial." + std::to_string(entity.getId()), resource::Material::CreateInfo{});
                 matRes->color = vec3(0.5f, 0.5f, 0.5f);
-                component::Material* mat = component::addComponent<component::Material>(eid);
+                component::Material* mat = entity.add<component::Material>();
                 mat->sid = matRes->getId();
-                component::setSelectedEntity(eid);
+                component::setSelectedEntity(entity);
             }
             i++;
         }

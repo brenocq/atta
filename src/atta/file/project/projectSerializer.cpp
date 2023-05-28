@@ -10,6 +10,7 @@
 #include <atta/file/serializer/serializer.h>
 
 #include <atta/component/components/components.h>
+#include <atta/component/dataManager/cpuDataManager.h>
 #include <atta/component/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/parallel/interface.h>

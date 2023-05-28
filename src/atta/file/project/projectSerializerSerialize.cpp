@@ -18,7 +18,7 @@ void ProjectSerializer::serializeConfig(Section& section) {
 
 void ProjectSerializer::serializeComponentModule(Section& section) {
     // Serialize entity ids
-    std::vector<component::EntityId> entities = component::getNoCloneView();
+    std::vector<component::Entity> entities = component::getEntitiesView();
     section["entityIds"] = entities;
 
     // Serialize components
@@ -29,7 +29,7 @@ void ProjectSerializer::serializeComponentModule(Section& section) {
         std::vector<component::EntityId> eids;
         std::vector<component::Component*> components;
         for (auto entity : entities) {
-            component::Component* comp = component::getComponentById(compReg->getId(), entity);
+            component::Component* comp = component::cpuDataManager->addComponent(entity, compReg->getId());
             if (comp != nullptr) {
                 eids.push_back(entity);
                 components.push_back(comp);

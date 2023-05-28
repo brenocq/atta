@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #ifndef ATTA_PARALLEL_DEVICES_CPU_DEVICE_H
 #define ATTA_PARALLEL_DEVICES_CPU_DEVICE_H
-
 #include <atta/parallel/devices/device.h>
 #include <thread>
 #include <atomic>

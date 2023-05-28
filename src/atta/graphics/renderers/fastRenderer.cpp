@@ -62,7 +62,7 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
 FastRenderer::~FastRenderer() {}
 
 void FastRenderer::render(std::shared_ptr<Camera> camera) {
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    std::vector<component::Entity> entities = component::getNoPrototypeView();
     _geometryPipeline->begin();
     {
         std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
@@ -71,9 +71,9 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
         shader->setMat4("view", transpose(camera->getView()));
 
         for (auto entity : entities) {
-            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getComponent<component::Transform>(entity);
-            component::Material* compMat = component::getComponent<component::Material>(entity);
+            component::Mesh* mesh = entity.get<component::Mesh>();
+            component::Transform* transform = entity.get<component::Transform>();
+            component::Material* compMat = entity.get<component::Material>();
             resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
             if (mesh && transform) {

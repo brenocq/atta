@@ -24,9 +24,9 @@ class BulletEngine : public Engine {
     void step(float dt) override;
     void stop() override;
 
-    std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) override;
+    std::vector<component::Entity> getEntityCollisions(component::Entity entity) override;
     std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
-    bool areColliding(component::EntityId eid0, component::EntityId eid1) override;
+    bool areColliding(component::Entity entity0, component::Entity entity1) override;
 
     void updateGravity() override;
 
@@ -34,12 +34,12 @@ class BulletEngine : public Engine {
     void setNumSubSteps(unsigned numSubSteps);
     bool getShowAabb() const;
     void setShowAabb(bool showAabb);
-    btRigidBody* getBulletRigidBody(component::EntityId entity);
-    bnd3 getAabb(component::EntityId entity);
-    const std::unordered_map<component::EntityId, std::unordered_map<component::EntityId, btPersistentManifold*>>& getCollisions();
+    btRigidBody* getBulletRigidBody(component::Entity entity);
+    bnd3 getAabb(component::Entity entity);
+    const std::unordered_map<component::Entity, std::unordered_map<component::Entity, btPersistentManifold*>>& getCollisions();
 
   private:
-    void createRigidBody(component::EntityId entity);
+    void createRigidBody(component::Entity entity);
     void createPrismaticJoint(component::PrismaticJoint* prismatic);
     void createRevoluteJoint(component::RevoluteJoint* revolute);
     void createRigidJoint(component::RigidJoint* rigid);
@@ -58,10 +58,10 @@ class BulletEngine : public Engine {
     btAlignedObjectArray<btCollisionShape*> _collisionShapes;
 
     // World data
-    std::unordered_map<component::EntityId, btRigidBody*> _entityToBody;
-    std::unordered_map<btRigidBody*, component::EntityId> _bodyToEntity;
-    std::unordered_map<component::EntityId, std::unordered_map<component::EntityId, btPersistentManifold*>> _collisions;
-    std::unordered_map<component::EntityId, std::vector<component::EntityId>> _connectedEntities; ///< Which entities are connect by joints
+    std::unordered_map<component::Entity, btRigidBody*> _entityToBody;
+    std::unordered_map<btRigidBody*, component::Entity> _bodyToEntity;
+    std::unordered_map<component::Entity, std::unordered_map<component::Entity, btPersistentManifold*>> _collisions;
+    std::unordered_map<component::Entity, std::vector<component::Entity>> _connectedEntities; ///< Which entities are connect by joints
 
     /// Show broad phase aabb
     bool _showAabb;

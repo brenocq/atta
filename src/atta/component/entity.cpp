@@ -10,15 +10,28 @@
 #include <atta/component/components/relationship.h>
 #include <atta/component/entity.h>
 
+#if ATTA_GPU_CODE
+#include <atta/component/dataManager/gpuDataManager.h>
+#else
+#include <atta/component/dataManager/cpuDataManager.h>
+#endif
+
 namespace atta::component {
 
 ATTA_CPU_GPU Entity::operator EntityId() const { return _id; }
 
-ATTA_CPU_GPU bool Entity::exists() const { return _id >= 0; }
+ATTA_CPU_GPU bool Entity::exists() const {
+#if ATTA_GPU_CODE
+    return gpuDataManager->entityExists(_id);
+#else
+    return cpuDataManager->entityExists(_id);
+#endif
+}
+
 ATTA_CPU_GPU EntityId Entity::getId() const { return _id; }
 
 ATTA_CPU_GPU bool Entity::isPrototype() const {
-    if(get<component::Prototype>())
+    if (get<Prototype>())
         return true;
 
     Entity p = getParent();
@@ -29,14 +42,14 @@ ATTA_CPU_GPU bool Entity::isPrototype() const {
 }
 
 ATTA_CPU_GPU Entity Entity::getParent() const {
-    auto r = get<component::Relationship>();
+    auto r = get<Relationship>();
     if (r)
         return r->getParent();
     return -1;
 }
 
-ATTA_CPU_GPU std::vector<Entity> Entity::getChildren() const {
-    auto r = get<component::Relationship>();
+ATTA_CPU std::vector<Entity> Entity::getChildren() const {
+    auto r = get<Relationship>();
     if (r)
         return r->getChildren();
     return {};

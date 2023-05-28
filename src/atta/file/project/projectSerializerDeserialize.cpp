@@ -39,7 +39,7 @@ void ProjectSerializer::deserializeComponentModule(Section& section) {
             write(ss, componentsData.data(), componentsData.size());
 
             for (auto eid : eids) {
-                component::Component* component = component::addComponentById(compReg->getId(), eid);
+                component::Component* component = component::cpuDataManager->addComponent(eid, compReg->getId());
                 compReg->deserialize(ss, component);
             }
         }

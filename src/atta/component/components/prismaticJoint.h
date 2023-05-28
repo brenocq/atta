@@ -16,8 +16,8 @@ namespace atta::component {
 /** A prismatic joint has only one degree of freedom, that is translation
  * along an axis. The bodies don't rotate relative to each other*/
 struct PrismaticJoint : public Component {
-    EntityId bodyA; ///< First attached body
-    EntityId bodyB; ///< Second attached body
+    Entity bodyA; ///< First attached body
+    Entity bodyB; ///< Second attached body
 
     vec3 anchorA = vec3(0, 0, 0); ///< BodyA's anchor on its local space
     vec3 anchorB = vec3(0, 0, 0); ///< BodyB's anchor on its local space

@@ -13,7 +13,7 @@
 #include <atta/physics/interface.h>
 #include <atta/utils/config.h>
 
-#define BT_USRPTR_TO_EID(usrPtr) component::EntityId(static_cast<uint8_t*>(usrPtr) - static_cast<uint8_t*>(0))
+#define BT_USRPTR_TO_EID(usrPtr) component::Entity(static_cast<uint8_t*>(usrPtr) - static_cast<uint8_t*>(0))
 
 namespace atta::physics {
 
@@ -43,16 +43,16 @@ void BulletEngine::start() {
     _world = std::make_shared<btDiscreteDynamicsWorld>(_dispatcher.get(), _broadPhase.get(), _solver.get(), _collisionConfiguration.get());
     updateGravity();
 
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    std::vector<cmp::Entity> entities = component::getNoPrototypeView();
     //---------- Create rigid bodies ----------//
-    for (component::EntityId entity : entities)
+    for (cmp::Entity entity : entities)
         createRigidBody(entity);
 
     //---------- Create joints ----------//
-    for (component::EntityId entity : entities) {
-        auto prismatic = component::getComponent<component::PrismaticJoint>(entity);
-        auto revolute = component::getComponent<component::RevoluteJoint>(entity);
-        auto rigid = component::getComponent<component::RigidJoint>(entity);
+    for (cmp::Entity entity : entities) {
+        auto prismatic = entity.get<cmp::PrismaticJoint>();
+        auto revolute = entity.get<cmp::RevoluteJoint>();
+        auto rigid = entity.get<cmp::RigidJoint>();
 
         if (prismatic)
             createPrismaticJoint(prismatic);
@@ -71,16 +71,16 @@ void BulletEngine::step(float dt) {
     for (int j = _world->getNumCollisionObjects() - 1; j >= 0; j--) {
         btCollisionObject* obj = _world->getCollisionObjectArray()[j];
         btRigidBody* body = btRigidBody::upcast(obj);
-        component::EntityId eid = BT_USRPTR_TO_EID(obj->getUserPointer());
+        component::Entity entity = BT_USRPTR_TO_EID(obj->getUserPointer());
 
         // Update mass
-        auto rb = component::getComponent<component::RigidBody>(eid);
+        auto rb = entity.get<cmp::RigidBody>();
         if (rb->type == component::RigidBody::DYNAMIC)
             body->setMassProps(rb->mass, body->getLocalInertia());
 
         // Get atta transform
-        auto t = component::getComponent<component::Transform>(eid);
-        component::Transform worldT = t->getWorldTransform(eid);
+        auto t = entity.get<cmp::Transform>();
+        component::Transform worldT = t->getWorldTransform(entity);
         vec3 position = worldT.position;
         vec3 scale = worldT.scale;
         quat orientation = worldT.orientation;
@@ -101,8 +101,8 @@ void BulletEngine::step(float dt) {
             body->activate();
 
             // Activate bodies linked to this body
-            if (_connectedEntities.find(eid) != _connectedEntities.end())
-                for (auto other : _connectedEntities[eid])
+            if (_connectedEntities.find(entity) != _connectedEntities.end())
+                for (auto other : _connectedEntities[entity.getId()])
                     if (_entityToBody.find(other) != _entityToBody.end())
                         _entityToBody[other]->activate();
         }
@@ -147,8 +147,8 @@ void BulletEngine::step(float dt) {
         trans = obj->getWorldTransform();
 
         // Calculate world transform
-        component::EntityId eid = BT_USRPTR_TO_EID(obj->getUserPointer());
-        auto t = component::getComponent<component::Transform>(eid);
+        component::Entity entity = BT_USRPTR_TO_EID(obj->getUserPointer());
+        auto t = entity.get<cmp::Transform>();
         vec3 pos = {trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()};
         quat ori = quat(trans.getRotation().w(), -trans.getRotation().x(), -trans.getRotation().y(), -trans.getRotation().z());
 
@@ -157,7 +157,7 @@ void BulletEngine::step(float dt) {
         worldTrans.position = pos;
         worldTrans.orientation = ori;
         worldTrans.scale = t->scale;
-        t->setWorldTransform(eid, worldTrans);
+        t->setWorldTransform(entity, worldTrans);
 
         // Update rigid body
         // auto rb = component::getComponent<component::RigidBody>(eid);
@@ -223,10 +223,10 @@ void BulletEngine::stop() {
     _world.reset();
 }
 
-std::vector<component::EntityId> BulletEngine::getEntityCollisions(component::EntityId eid) {
-    std::vector<component::EntityId> result;
-    if (_collisions.find(eid) != _collisions.end())
-        for (auto [other, data] : _collisions[eid])
+std::vector<component::Entity> BulletEngine::getEntityCollisions(component::Entity entity) {
+    std::vector<component::Entity> result;
+    if (_collisions.find(entity) != _collisions.end())
+        for (auto [other, data] : _collisions[entity])
             result.push_back(other);
     return result;
 }
@@ -270,8 +270,8 @@ std::vector<RayCastHit> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFir
     return result;
 }
 
-bool BulletEngine::areColliding(component::EntityId eid0, component::EntityId eid1) {
-    return _collisions.find(eid0) != _collisions.end() && _collisions[eid0].find(eid1) != _collisions[eid0].end();
+bool BulletEngine::areColliding(component::Entity entity0, component::Entity entity1) {
+    return _collisions.find(entity0) != _collisions.end() && _collisions[entity0].find(entity1) != _collisions[entity0].end();
 }
 
 void BulletEngine::updateGravity() {
@@ -294,7 +294,7 @@ void BulletEngine::setNumSubSteps(unsigned numSubSteps) { _numSubSteps = numSubS
 bool BulletEngine::getShowAabb() const { return _showAabb; }
 void BulletEngine::setShowAabb(bool showAabb) { _showAabb = showAabb; }
 
-btRigidBody* BulletEngine::getBulletRigidBody(component::EntityId entity) {
+btRigidBody* BulletEngine::getBulletRigidBody(component::Entity entity) {
     if (!_running)
         return {};
     if (_entityToBody.find(entity) != _entityToBody.end())
@@ -302,7 +302,7 @@ btRigidBody* BulletEngine::getBulletRigidBody(component::EntityId entity) {
     return {};
 }
 
-bnd3 BulletEngine::getAabb(component::EntityId entity) {
+bnd3 BulletEngine::getAabb(component::Entity entity) {
     btRigidBody* rb = getBulletRigidBody(entity);
     if (rb) {
         btVector3 aabbMin, aabbMax;
@@ -314,19 +314,19 @@ bnd3 BulletEngine::getAabb(component::EntityId entity) {
     return {};
 }
 
-const std::unordered_map<component::EntityId, std::unordered_map<component::EntityId, btPersistentManifold*>>& BulletEngine::getCollisions() {
+const std::unordered_map<component::Entity, std::unordered_map<component::Entity, btPersistentManifold*>>& BulletEngine::getCollisions() {
     return _collisions;
 }
 
 //----------------------------------------------//
 //----------------- RIGID BODY -----------------//
 //----------------------------------------------//
-void BulletEngine::createRigidBody(component::EntityId entity) {
-    auto t = component::getComponent<component::Transform>(entity);
-    auto rb = component::getComponent<component::RigidBody>(entity);
-    auto box = component::getComponent<component::BoxCollider>(entity);
-    auto sphere = component::getComponent<component::SphereCollider>(entity);
-    auto cylinder = component::getComponent<component::CylinderCollider>(entity);
+void BulletEngine::createRigidBody(component::Entity entity) {
+    auto t = entity.get<cmp::Transform>();
+    auto rb = entity.get<cmp::RigidBody>();
+    auto box = entity.get<cmp::BoxCollider>();
+    auto sphere = entity.get<cmp::SphereCollider>();
+    auto cylinder = entity.get<cmp::CylinderCollider>();
 
     if (!rb)
         return;
@@ -363,7 +363,7 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
         colShape = new btSphereShape(btScalar(std::max(std::max(scale.x, scale.y), scale.z) * sphere->radius));
     else if (cylinder)
         colShape = new btCylinderShape(btVector3(scale.x * cylinder->radius, scale.y * cylinder->radius, scale.z * cylinder->height * 0.5f));
-    colShape->setUserPointer(reinterpret_cast<uint8_t*>(entity));
+    colShape->setUserPointer(reinterpret_cast<uint8_t*>(entity.getId()));
 
     _collisionShapes.push_back(colShape);
 
@@ -379,7 +379,7 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     btDefaultMotionState* motionState = new btDefaultMotionState(bodyTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, colShape, localInertia);
     btRigidBody* body = new btRigidBody(rbInfo);
-    body->setUserPointer(reinterpret_cast<uint8_t*>(entity));
+    body->setUserPointer(reinterpret_cast<uint8_t*>(entity.getId()));
 
     // Allow sleep control
     if (!rb->allowSleep)
@@ -530,20 +530,20 @@ void BulletEngine::collisionStarted(btPersistentManifold* const& manifold) {
     auto bullet = physics::getEngine<BulletEngine>();
     const btCollisionObject* obA = manifold->getBody0();
     const btCollisionObject* obB = manifold->getBody1();
-    component::EntityId eidA = BT_USRPTR_TO_EID(obA->getUserPointer());
-    component::EntityId eidB = BT_USRPTR_TO_EID(obB->getUserPointer());
-    bullet->_collisions[eidA][eidB] = manifold;
-    bullet->_collisions[eidB][eidA] = manifold;
+    component::Entity entityA = BT_USRPTR_TO_EID(obA->getUserPointer());
+    component::Entity entityB = BT_USRPTR_TO_EID(obB->getUserPointer());
+    bullet->_collisions[entityA][entityB] = manifold;
+    bullet->_collisions[entityB][entityA] = manifold;
 }
 
 void BulletEngine::collisionEnded(btPersistentManifold* const& manifold) {
     auto bullet = physics::getEngine<BulletEngine>();
     const btCollisionObject* obA = manifold->getBody0();
     const btCollisionObject* obB = manifold->getBody1();
-    component::EntityId eidA = BT_USRPTR_TO_EID(obA->getUserPointer());
-    component::EntityId eidB = BT_USRPTR_TO_EID(obB->getUserPointer());
-    bullet->_collisions[eidA].erase(eidB);
-    bullet->_collisions[eidB].erase(eidA);
+    component::Entity entityA = BT_USRPTR_TO_EID(obA->getUserPointer());
+    component::Entity entityB = BT_USRPTR_TO_EID(obB->getUserPointer());
+    bullet->_collisions[entityA].erase(entityB);
+    bullet->_collisions[entityB].erase(entityA);
 }
 
 } // namespace atta::physics

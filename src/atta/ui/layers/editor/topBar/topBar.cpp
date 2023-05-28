@@ -457,7 +457,6 @@ void TopBar::saveProjectModal() {
             // Close project data
             file::closeProject();
             // Replace components with default
-            component::clear();
             component::createDefault();
             // Replace viewports with default
             graphics::createDefaultViewports();

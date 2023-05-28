@@ -35,8 +35,8 @@ bool getShowJoints();
 void setShowJoints(bool showJoints);
 
 //---------- Queries ----------//
-std::vector<component::EntityId> getEntityCollisions(component::EntityId eid);
-bool areColliding(component::EntityId eid0, component::EntityId eid1);
+std::vector<component::Entity> getEntityCollisions(component::Entity entity);
+bool areColliding(component::Entity entity0, component::Entity entity1);
 
 struct RayCastHit {
     cmp::Entity entity = -1;

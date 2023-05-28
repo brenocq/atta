@@ -38,10 +38,10 @@ void PhysicsDrawer::update() {
 void PhysicsDrawer::drawBullet() {
     //---------- Show colliders ----------//
     if (physics::getShowColliders()) {
-        std::vector<component::EntityId> entities = component::getEntitiesView();
+        std::vector<component::Entity> entities = component::getEntitiesView();
         for (auto entity : entities) {
             // Get transform
-            auto t = component::getComponent<component::Transform>(entity);
+            auto t = entity.get<component::Transform>();
             if (!t)
                 continue;
 
@@ -65,17 +65,17 @@ void PhysicsDrawer::drawBullet() {
             }
 
             //----- Box collider -----//
-            auto box = component::getComponent<component::BoxCollider>(entity);
+            auto box = entity.get<component::BoxCollider>();
             if (box)
                 drawBox(pos + box->offset, ori, scale * box->size, color);
 
             //----- Sphere collider -----//
-            auto sphere = component::getComponent<component::SphereCollider>(entity);
+            auto sphere = entity.get<component::SphereCollider>();
             if (sphere)
                 drawSphere(pos + sphere->offset, ori, scale * sphere->radius, color);
 
             //----- Cylinder collider -----//
-            auto cylinder = component::getComponent<component::CylinderCollider>(entity);
+            auto cylinder = entity.get<component::CylinderCollider>();
             if (cylinder && physics::getEngineType() == physics::Engine::BULLET)
                 drawCylinder(pos + cylinder->offset, ori, vec3(vec2(scale) * cylinder->radius * 2, scale.z * cylinder->height), color);
         }
@@ -83,19 +83,19 @@ void PhysicsDrawer::drawBullet() {
 
     //---------- Show joints ----------//
     if (physics::getShowJoints()) {
-        std::vector<component::EntityId> entities = component::getEntitiesView();
+        std::vector<component::Entity> entities = component::getEntitiesView();
         for (auto entity : entities) {
-            auto p = component::getComponent<component::PrismaticJoint>(entity);
+            auto p = entity.get<component::PrismaticJoint>();
 
             if (component::Entity(entity).isPrototype())
                 continue;
 
             //----- Prismatic joint -----//
             if (p) {
-                auto tA = component::getComponent<component::Transform>(p->bodyA);
-                auto tB = component::getComponent<component::Transform>(p->bodyB);
-                auto rbA = component::getComponent<component::RigidBody>(p->bodyA);
-                auto rbB = component::getComponent<component::RigidBody>(p->bodyB);
+                auto tA = p->bodyA.get<component::Transform>();
+                auto tB = p->bodyB.get<component::Transform>();
+                auto rbA = p->bodyA.get<component::RigidBody>();
+                auto rbB = p->bodyB.get<component::RigidBody>();
 
                 if (tA && tB && rbA && rbB) {
                     mat4 wTransA = tA->getWorldTransformMatrix(p->bodyA);
@@ -126,12 +126,12 @@ void PhysicsDrawer::drawBullet() {
             }
 
             //----- Revolute joint -----//
-            auto r = component::getComponent<component::RevoluteJoint>(entity);
+            auto r = entity.get<component::RevoluteJoint>();
             if (r) {
-                auto tA = component::getComponent<component::Transform>(r->bodyA);
-                auto tB = component::getComponent<component::Transform>(r->bodyB);
-                auto rbA = component::getComponent<component::RigidBody>(r->bodyA);
-                auto rbB = component::getComponent<component::RigidBody>(r->bodyB);
+                auto tA = r->bodyA.get<component::Transform>();
+                auto tB = r->bodyB.get<component::Transform>();
+                auto rbA = r->bodyA.get<component::RigidBody>();
+                auto rbB = r->bodyB.get<component::RigidBody>();
 
                 if (tA && tB && rbA && rbB) {
                     mat4 wTransA = tA->getWorldTransformMatrix(r->bodyA);
@@ -163,7 +163,7 @@ void PhysicsDrawer::drawBullet() {
         std::shared_ptr<physics::BulletEngine> bullet = std::static_pointer_cast<physics::BulletEngine>(physics::getEngine());
         //---------- Draw AABBs ----------//
         if (bullet->getShowAabb()) {
-            std::vector<component::EntityId> entities = component::getEntitiesView();
+            std::vector<component::Entity> entities = component::getEntitiesView();
             for (auto entity : entities) {
                 if (component::Entity(entity).isPrototype())
                     continue;
@@ -211,7 +211,7 @@ void PhysicsDrawer::drawBox2D() {
         // Base color
         vec4 color = {1, 1, 1, 1};
 
-        std::vector<component::EntityId> entities = component::getEntitiesView();
+        std::vector<component::Entity> entities = component::getEntitiesView();
         for (auto entity : entities) {
             if (component::Entity(entity).isPrototype())
                 continue;
@@ -225,7 +225,7 @@ void PhysicsDrawer::drawBox2D() {
             }
 
             // Get transform
-            auto t = component::getComponent<component::Transform>(entity);
+            auto t = entity.get<component::Transform>();
             if (!t)
                 continue;
             component::Transform worldTrans = t->getWorldTransform(entity);
@@ -234,12 +234,12 @@ void PhysicsDrawer::drawBox2D() {
             quat ori = worldTrans.orientation;
 
             //----- Box collider 2D -----//
-            auto box = component::getComponent<component::BoxCollider2D>(entity);
+            auto box = entity.get<component::BoxCollider2D>();
             if (box)
                 drawSquare(pos + vec3(box->offset, 0.0f), ori, scale * vec3(box->size, 1), color);
 
             //----- Circle collider 2D -----//
-            auto circle = component::getComponent<component::CircleCollider2D>(entity);
+            auto circle = entity.get<component::CircleCollider2D>();
             if (circle)
                 drawCircle(pos + vec3(circle->offset, 0.0f), ori, scale * vec3(vec2(circle->radius), 1), color);
         }

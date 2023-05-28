@@ -9,16 +9,18 @@
 
 namespace atta::component {
 
-ATTA_CPU void CpuDataManager::init() {
-    _allocator = memory::getAllocator(SSID("ComponentAllocator"));
-    if (_allocator == nullptr)
-        LOG_ERROR("cmp::CpuDataManager", "Could not find ComponentAllocator");
+CpuDataManager* cpuDataManager;
 
-    // Initialize entity blocks
-    initEntityPool();
+void CpuDataManager::init() {
+    cpuDataManager = (CpuDataManager*)memory::getAllocator(SSID("ComponentAllocator"))->allocBytes(sizeof(CpuDataManager), sizeof(CpuDataManager));
+    cpuDataManager->initMemory();
 }
 
-ATTA_CPU void CpuDataManager::allocPool(ComponentId cid, uint32_t numComponents) {
+void CpuDataManager::deinit() {
+    memory::getAllocator(SSID("ComponentAllocator"))->freeBytes(cpuDataManager, sizeof(CpuDataManager), sizeof(CpuDataManager));
+}
+
+void CpuDataManager::allocPool(ComponentId cid, uint32_t numComponents) {
     if (_componentPools[cid].isAllocated()) {
         LOG_ERROR("cmp::CpuDataManager", "Trying to add pool that is already allocated");
         return;
@@ -33,17 +35,32 @@ ATTA_CPU void CpuDataManager::allocPool(ComponentId cid, uint32_t numComponents)
     _componentPools[cid] = ComponentPool(memory, poolSize, componentSize, numComponents);
 }
 
-ATTA_CPU void CpuDataManager::deallocPool(ComponentId cid) {
+void CpuDataManager::deallocPool(ComponentId cid) {
     if (!_componentPools[cid].isAllocated()) {
         LOG_ERROR("cmp::CpuDataManager", "Trying to removed pool that is not allocated");
         return;
     }
 
     // Deallocate pool
-    _allocator->freeBytes(_componentPools[cid].memory, _componentPools[cid].size, _componentPools[cid].componentSize);
+    _allocator->freeBytes(_componentPools[cid].getMemory(), _componentPools[cid].getSize(), _componentPools[cid].getComponentSize());
 
     // Remove pool
     _componentPools[cid].reset();
+}
+
+void CpuDataManager::copyCpuToGpu() {
+    // uint8_t* memory = (uint8_t*)cuda::alloc(poolSize);
+    // cuda::free(_componentPools[cid].getMemory());
+}
+
+void CpuDataManager::copyGpuToCpu() {}
+
+void CpuDataManager::initMemory() {
+    // Get allocator to allocate pools from
+    _allocator = memory::getAllocator(SSID("ComponentAllocator"));
+
+    // Initialize entity blocks
+    initEntityPool();
 }
 
 } // namespace atta::component

@@ -24,7 +24,7 @@ void Manager::unregisterInfrared(cmp::Entity entity) {
 
 void Manager::registerInfrareds() {
     for (cmp::Entity entity : cmp::getEntitiesView()) {
-        cmp::InfraredSensor* infrared = cmp::getComponent<cmp::InfraredSensor>(entity);
+        cmp::InfraredSensor* infrared = entity.get<cmp::InfraredSensor>();
         if (infrared) {
             // Check if infrared was not registered yet
             bool found = false;

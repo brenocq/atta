@@ -56,7 +56,7 @@ void Manager::updateImpl(float dt) {
             beginEndClones.push_back({firstClone, firstClone + numClones});
         }
 
-        std::vector<component::EntityId> entities = component::getScriptView();
+        std::vector<component::Entity> entities = component::getScriptView();
         // std::vector<std::pair<script::Script*, cmp::EntityId>> scripts;
         // for (component::EntityId entity : entities) {
         //     // Check if it has script component

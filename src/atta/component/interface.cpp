@@ -8,42 +8,37 @@
 
 namespace atta::component {
 
+static EntityId _selectedEntity = -1; // TODO move to another place
+
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
 // Create/destroy entity
 Entity createEntity(EntityId entity) { return Manager::getInstance().createEntityImpl(entity); }
-void deleteEntity(Entity entity) { return Manager::getInstance().deleteEntityImpl(entity); }
+void destroyEntity(Entity entity) { return Manager::getInstance().destroyEntityImpl(entity); }
 Entity copyEntity(Entity entity) { return Manager::getInstance().copyEntityImpl(entity); }
 
-// Add entity component
-Component* addComponentById(ComponentId id, Entity entity) { return Manager::getInstance().addComponentByIdImpl(id, entity); }
-Component* addComponentPtr(Entity entity, unsigned index, Component* component) {
-    return Manager::getInstance().addComponentPtrImpl(entity, index, component);
-}
-// Get entity component
-Component* getComponentById(ComponentId id, Entity entity) { return Manager::getInstance().getComponentByIdImpl(id, entity); }
-std::vector<Component*> getComponents(Entity entity) { return Manager::getInstance().getComponentsImpl(entity); }
-// Remove entity component
-void removeComponentById(ComponentId id, Entity entity) { Manager::getInstance().removeComponentByIdImpl(id, entity); }
-
 // Getters
-std::vector<Registry*> getComponentRegistries() { return Manager::getInstance().getComponentRegistriesImpl(); }
+std::vector<Registry*> getComponentRegistries() { return Registry::get(); }
 std::vector<Factory>& getFactories() { return Manager::getInstance().getFactoriesImpl(); }
 Factory* getFactory(Entity prototype) { return Manager::getInstance().getFactoryImpl(prototype); }
 
 // Views
-std::vector<EntityId> getEntitiesView() { return Manager::getInstance().getEntitiesViewImpl(); }
-std::vector<EntityId> getNoPrototypeView() { return Manager::getInstance().getNoPrototypeViewImpl(); }
-std::vector<EntityId> getCloneView() { return Manager::getInstance().getCloneViewImpl(); }
-std::vector<EntityId> getNoCloneView() { return Manager::getInstance().getNoCloneViewImpl(); }
-std::vector<EntityId> getScriptView() { return Manager::getInstance().getScriptViewImpl(); }
-Entity getSelectedEntity() { return Manager::getInstance()._selectedEntity; }
-void setSelectedEntity(Entity eid) { Manager::getInstance()._selectedEntity = eid; }
+std::vector<Entity> getEntitiesView() { return Manager::getInstance().getEntitiesViewImpl(); }
+std::vector<Entity> getNoPrototypeView() { return Manager::getInstance().getNoPrototypeViewImpl(); }
+std::vector<Entity> getScriptView() { return Manager::getInstance().getScriptViewImpl(); }
+
+Entity getSelectedEntity() {
+    if (Entity(_selectedEntity).exists())
+        return _selectedEntity;
+    else
+        return -1;
+}
+void setSelectedEntity(Entity eid) { _selectedEntity = eid; }
 
 // Memory management
 void createDefault() { Manager::getInstance().createDefaultImpl(); }
+
 void clear() { Manager::getInstance().clearImpl(); }
-void unregisterCustomComponents() { Manager::getInstance().unregisterCustomComponentsImpl(); }
 
 } // namespace atta::component

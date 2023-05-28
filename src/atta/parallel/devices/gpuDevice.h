@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #ifndef ATTA_PARALLEL_DEVICES_GPU_DEVICE_H
 #define ATTA_PARALLEL_DEVICES_GPU_DEVICE_H
-
 #include <atta/parallel/devices/device.h>
 
 namespace atta::parallel {

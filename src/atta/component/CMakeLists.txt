@@ -10,6 +10,7 @@ set(ATTA_COMPONENT_MODULE_SOURCE
     registry/registry.cpp
     registry/typedRegistry.cpp
 
+    dataManager/componentPool.cpp
     dataManager/cpuDataManager.cpp
     dataManager/dataManager.cpp
     dataManager/gpuDataManager.cpp

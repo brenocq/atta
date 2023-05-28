@@ -10,6 +10,9 @@
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
 #include <atta/component/registry/typedRegistry.h>
+#include <atta/component/entity.h>
+#include <atta/component/factory.h>
+#include <atta/component/manager.h>
 
 namespace atta::component {
 
@@ -19,67 +22,36 @@ class Entity;
 void startUp();
 void shutDown();
 
-// Create/destroy entity
+// Entity
 Entity createEntity(EntityId entity = -1); // Can *try* to create entity with specific EntityId
-void deleteEntity(Entity entity);          // Delete entity and deallocate components
+void destroyEntity(Entity entity);
 Entity copyEntity(Entity entity);
 
-// Add component
+// Component
 template <typename T>
-T* addComponent(Entity entity);
-Component* addComponentById(ComponentId id, Entity entity);
-Component* addComponentPtr(Entity entity, unsigned index, Component* component);
-
-// Remove component
-void removeComponentById(ComponentId id, Entity entity);
-
-// Get component
-template <typename T>
-T* getComponent(Entity entity);
-Component* getComponentById(ComponentId id, Entity entity);
-std::vector<Component*> getComponents(Entity entity);
-
-// Getters
+inline ComponentId getId() {
+    return TypedRegistry<T>::getInstance().getId();
+}
 std::vector<Registry*> getComponentRegistries();
+
+// Factory
 std::vector<Factory>& getFactories();
 Factory* getFactory(Entity prototype);
 
 // Views
-std::vector<EntityId> getEntitiesView();
-std::vector<EntityId> getNoPrototypeView();
-std::vector<EntityId> getCloneView();
-std::vector<EntityId> getNoCloneView();
-std::vector<EntityId> getScriptView();
+std::vector<Entity> getEntitiesView();
+std::vector<Entity> getNoPrototypeView();
+std::vector<Entity> getScriptView();
 Entity getSelectedEntity();
 void setSelectedEntity(Entity entity);
 
 // Memory management
 void createDefault();
+
+/**
+ * @brief Clear all entities and components
+ */
 void clear();
-void unregisterCustomComponents();
-
-} // namespace atta::component
-
-// Template definitions
-#include <atta/component/entity.h>
-#include <atta/component/manager.h>
-
-namespace atta::component {
-
-template <typename T>
-ComponentId getId() {
-    return COMPONENT_POOL_SID_BY_NAME(typeid(T).name());
-}
-
-template <typename T>
-T* addComponent(Entity entity) {
-    return Manager::getInstance().addComponentImpl<T>(entity);
-}
-
-template <typename T>
-T* getComponent(Entity entity) {
-    return Manager::getInstance().getComponentImpl<T>(entity);
-}
 
 } // namespace atta::component
 

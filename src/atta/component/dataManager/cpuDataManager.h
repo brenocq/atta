@@ -14,9 +14,14 @@ namespace atta::component {
 class CpuDataManager : public DataManager {
   public:
     /**
-     * @brief Initialize internal data
+     * @brief Allocate resources used by CPU data manager
      */
-    ATTA_CPU void init();
+    static void init();
+
+    /**
+     * @brief Release resources used by CPU data manager
+     */
+    static void deinit();
 
     /**
      * @brief Allocae pool
@@ -24,18 +29,35 @@ class CpuDataManager : public DataManager {
      * @param cid Component id
      * @param numComponents Number of components in the pool
      */
-    ATTA_CPU void allocPool(ComponentId cid, uint32_t numComponents);
+    void allocPool(ComponentId cid, uint32_t numComponents);
 
     /**
      * @brief Deallocate pool
      *
      * @param cid Component id
      */
-    ATTA_CPU void deallocPool(ComponentId cid);
+    void deallocPool(ComponentId cid);
+
+    /**
+     * @brief Copy pools from CPU to GPU
+     */
+    void copyCpuToGpu();
+
+    /**
+     * @brief Copy pools from GPU to CPU
+     */
+    void copyGpuToCpu();
 
   private:
+    /**
+     * @brief Initialize CPU memory
+     */
+    void initMemory();
+
     memory::Allocator* _allocator;
 };
+
+extern CpuDataManager* cpuDataManager;
 
 } // namespace atta::component
 

@@ -14,8 +14,8 @@ namespace atta::component {
 /// Revolute joint between entities
 /** Each body have a anchor point on its local space. This joint can be used as a motor. */
 struct RevoluteJoint : public Component {
-    EntityId bodyA; ///< First attached body
-    EntityId bodyB; ///< Second attached body
+    Entity bodyA; ///< First attached body
+    Entity bodyB; ///< Second attached body
 
     vec3 anchorA = vec3(0, 0, 0); ///< BodyA's anchor on its local space
     vec3 anchorB = vec3(0, 0, 0); ///< BodyB's anchor on its local space

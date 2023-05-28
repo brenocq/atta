@@ -11,8 +11,10 @@ namespace atta {
 
 #if __NVCC__
 #define ATTA_GPU_CODE 1
+#define ATTA_CPU_CODE 0
 #else
 #define ATTA_GPU_CODE 0
+#define ATTA_CPU_CODE 1
 #endif
 
 #if ATTA_IS_GPU_CODE

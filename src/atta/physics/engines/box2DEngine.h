@@ -25,18 +25,18 @@ class Box2DEngine : public Engine {
     void step(float dt) override;
     void stop() override;
 
-    void createRigidBody(component::EntityId entity);
-    void deleteRigidBody(component::EntityId entity);
-    void createColliders(component::EntityId entity);
-    void deleteColliders(component::EntityId entity);
+    void createRigidBody(component::Entity entity);
+    void deleteRigidBody(component::Entity entity);
+    void createColliders(component::Entity entity);
+    void deleteColliders(component::Entity entity);
 
-    std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) override;
+    std::vector<component::Entity> getEntityCollisions(component::Entity entity) override;
     std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
-    bool areColliding(component::EntityId eid0, component::EntityId eid1) override;
+    bool areColliding(component::Entity entity0, component::Entity entity1) override;
 
     void updateGravity() override;
 
-    b2Body* getBox2DRigidBody(component::EntityId entity);
+    b2Body* getBox2DRigidBody(component::Entity entity);
 
     // component::RigidBody2D interface
     void setTransform(component::RigidBody2D* rb2d, vec2 position, float angle);
@@ -47,7 +47,7 @@ class Box2DEngine : public Engine {
     void applyTorque(component::RigidBody2D* rb2d, float torque, bool wake);
 
   private:
-    std::vector<component::EntityId> getAABBEntities(vec2 lower, vec2 upper);
+    std::vector<component::Entity> getAABBEntities(vec2 lower, vec2 upper);
 
     void createPrismaticJoint(component::PrismaticJoint* prismatic);
     void createRevoluteJoint(component::RevoluteJoint* revolute);
@@ -55,9 +55,9 @@ class Box2DEngine : public Engine {
 
     std::shared_ptr<b2World> _world;
     b2Body* _groundBody; ///< Ground body used to apply top-down friction if necessary
-    std::unordered_map<component::EntityId, b2Body*> _bodies;
-    std::unordered_map<component::RigidBody2D*, component::EntityId> _componentToEntity;
-    std::unordered_map<component::EntityId, std::unordered_set<component::EntityId>> _collisions;
+    std::unordered_map<component::Entity, b2Body*> _bodies;
+    std::unordered_map<component::RigidBody2D*, component::Entity> _componentToEntity;
+    std::unordered_map<component::Entity, std::unordered_set<component::Entity>> _collisions;
 };
 
 } // namespace atta::physics

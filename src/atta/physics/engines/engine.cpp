@@ -11,13 +11,13 @@ namespace atta::physics {
 
 Engine::Engine(Type type) : _type(type), _running(false) {}
 
-void Engine::createRigidBody(component::EntityId entity) {}
-void Engine::deleteRigidBody(component::EntityId entity) {}
-void Engine::createColliders(component::EntityId entity) {}
-void Engine::deleteColliders(component::EntityId entity) {}
+void Engine::createRigidBody(component::Entity entity) {}
+void Engine::deleteRigidBody(component::Entity entity) {}
+void Engine::createColliders(component::Entity entity) {}
+void Engine::deleteColliders(component::Entity entity) {}
 
-std::vector<component::EntityId> Engine::getEntityCollisions(component::EntityId eid) { return {}; }
+std::vector<component::Entity> Engine::getEntityCollisions(component::Entity entity) { return {}; }
 std::vector<RayCastHit> Engine::rayCast(vec3 begin, vec3 end, bool onlyFirst) { return {}; }
-bool Engine::areColliding(component::EntityId eid0, component::EntityId eid1) { return false; }
+bool Engine::areColliding(component::Entity entity0, component::Entity entity1) { return false; }
 
 } // namespace atta::physics

@@ -18,14 +18,13 @@ class Entity {
     ATTA_CPU_GPU operator EntityId() const;
 
     template <typename T>
-    ATTA_CPU_GPU T* add() const {
-        return component::addComponent<T>(_id);
-    }
+    ATTA_CPU_GPU T* add() const;
 
     template <typename T>
-    ATTA_CPU_GPU T* get() const {
-        return component::getComponent<T>(_id);
-    }
+    ATTA_CPU_GPU void remove() const;
+
+    template <typename T>
+    ATTA_CPU_GPU T* get() const;
 
     /// Check if entity exists
     ATTA_CPU_GPU bool exists() const;
@@ -39,7 +38,7 @@ class Entity {
 
     // Relationship component interface
     ATTA_CPU_GPU Entity getParent() const;
-    ATTA_CPU_GPU std::vector<Entity> getChildren() const;
+    ATTA_CPU std::vector<Entity> getChildren() const;
     ATTA_CPU_GPU Entity getChild(unsigned i) const;
 
   private:
@@ -47,5 +46,14 @@ class Entity {
 };
 
 } // namespace atta::component
+
+namespace std {
+template <>
+struct hash<atta::component::Entity> {
+    size_t operator()(atta::component::Entity const& entity) const { return static_cast<size_t>(entity.getId()); }
+};
+} // namespace std
+
+#include <atta/component/entity.inl>
 
 #endif // ATTA_COMPONENT_ENTITY_H

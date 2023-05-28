@@ -50,9 +50,9 @@ EntityClick::EntityClick() : _width(500), _height(500) {
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 }
 
-component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i pos) {
-    component::EntityId eid;
-    component::EntityId maxEid = -1;
+component::Entity EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i pos) {
+    component::Entity eid;
+    component::Entity maxEid = -1;
     unsigned width = viewport->getWidth();
     unsigned height = viewport->getHeight();
     // Resize
@@ -63,7 +63,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
     }
 
     // Render entity ids
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    std::vector<component::Entity> entities = component::getNoPrototypeView();
 
     _geometryPipeline->begin();
     {
@@ -84,16 +84,16 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
         shader->setMat4("view", transpose(viewport->getCamera()->getView()));
 
         for (auto entity : entities) {
-            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getComponent<component::Transform>(entity);
+            component::Mesh* mesh = entity.get<component::Mesh>();
+            component::Transform* transform = entity.get<component::Transform>();
 
             if (mesh && transform) {
                 mat4 model = transpose(transform->getWorldTransformMatrix(entity));
                 shader->setMat4("model", model);
 
-                // component::EntityId
+                // component::Entity
                 shader->setInt("entityId", entity);
-                maxEid = std::max((int)maxEid, entity);
+                maxEid = std::max(maxEid.getId(), entity.getId());
 
                 // Draw mesh
                 graphics::getRendererAPI()->renderMesh(mesh->sid);
@@ -105,7 +105,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
     }
     _geometryPipeline->end();
 
-    return eid > maxEid ? -1 : eid;
+    return eid.getId() > maxEid.getId() ? -1 : eid.getId();
 }
 
 } // namespace atta::graphics

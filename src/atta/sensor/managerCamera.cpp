@@ -8,7 +8,7 @@ namespace atta::sensor {
 
 void Manager::registerCameras() {
     for (cmp::Entity entity : cmp::getEntitiesView()) {
-        cmp::CameraSensor* camera = cmp::getComponent<cmp::CameraSensor>(entity);
+        cmp::CameraSensor* camera = entity.get<cmp::CameraSensor>();
         if (camera) {
             // Check if camera was not registered yet
             bool found = false;

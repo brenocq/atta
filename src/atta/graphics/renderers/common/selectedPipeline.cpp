@@ -40,10 +40,10 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
         shader->setMat4("projection", transpose(camera->getProj()));
         shader->setMat4("view", transpose(camera->getView()));
 
-        component::EntityId entity = component::getSelectedEntity();
+        component::Entity entity = component::getSelectedEntity();
         if (entity != -1) {
-            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getComponent<component::Transform>(entity);
+            component::Mesh* mesh = entity.get<component::Mesh>();
+            component::Transform* transform = entity.get<component::Transform>();
 
             if (mesh && transform) {
                 // Draw mesh normal size

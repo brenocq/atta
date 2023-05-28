@@ -7,7 +7,7 @@
 #ifndef ATTA_GRAPHICS_COMPUTE_ENTITY_CLICK_H
 #define ATTA_GRAPHICS_COMPUTE_ENTITY_CLICK_H
 
-#include <atta/component/base.h>
+#include <atta/component/entity.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/viewport.h>
 #include <atta/utils/math/math.h>
@@ -18,7 +18,7 @@ class EntityClick {
   public:
     EntityClick();
 
-    component::EntityId click(std::shared_ptr<Viewport> viewport, vec2i pos);
+    component::Entity click(std::shared_ptr<Viewport> viewport, vec2i pos);
 
   private:
     uint32_t _width;

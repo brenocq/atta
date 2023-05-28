@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #ifndef ATTA_PARALLEL_DEVICES_DEVICE_H
 #define ATTA_PARALLEL_DEVICES_DEVICE_H
-#include <atta/component/interface.h>
+#include <atta/component/entity.h>
 
 namespace atta::parallel {
 

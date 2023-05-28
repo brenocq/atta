@@ -36,16 +36,16 @@ struct Transform final : public Component {
      * The world transform will only differ from the local
      * transform when the entity also has a Relationship.
      */
-    ATTA_CPU_GPU Transform getWorldTransform(EntityId entity);
+    ATTA_CPU_GPU Transform getWorldTransform(Entity entity);
 
     /// Set position/orientation/scale from the desired world transform
     /** It will convert the world transform to a local space and
      * update position/orientation/scale
      **/
-    ATTA_CPU_GPU void setWorldTransform(EntityId entity, Transform worldTransform);
+    ATTA_CPU_GPU void setWorldTransform(Entity entity, Transform worldTransform);
 
     /// Get transform matrix in the world coordinate system
-    ATTA_CPU_GPU mat4 getWorldTransformMatrix(EntityId entity);
+    ATTA_CPU_GPU mat4 getWorldTransformMatrix(Entity entity);
 
     /// Get transform matrix in the local coordinate system
     ATTA_CPU_GPU mat4 getLocalTransformMatrix();
@@ -54,7 +54,7 @@ struct Transform final : public Component {
     /** Take into account that it is possible that the entity does have a transform component,
      * but someone up in the hierarchy have
      * */
-    ATTA_CPU_GPU static Transform getEntityWorldTransform(EntityId entity);
+    ATTA_CPU_GPU static Transform getEntityWorldTransform(Entity entity);
 
     /// Transform multiplication
     /** Useful to get the world transformation from the parent and local transformations

@@ -30,10 +30,10 @@ bool getShowJoints() { return Manager::getInstance()._showJoints; }
 void setShowJoints(bool showJoints) { Manager::getInstance()._showJoints = showJoints; }
 
 //---------- Queries ----------//
-std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) { return Manager::getInstance()._engine->getEntityCollisions(eid); }
+std::vector<component::Entity> getEntityCollisions(component::Entity entity) { return Manager::getInstance()._engine->getEntityCollisions(entity); }
 std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) {
     return Manager::getInstance()._engine->rayCast(begin, end, onlyFirst);
 }
-bool areColliding(component::EntityId eid0, component::EntityId eid1) { return Manager::getInstance()._engine->areColliding(eid0, eid1); }
+bool areColliding(component::Entity entity0, component::Entity entity1) { return Manager::getInstance()._engine->areColliding(entity0, entity1); }
 
 } // namespace atta::physics
