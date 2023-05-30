@@ -70,7 +70,7 @@ macro(atta_cuda_sources target sources)
     # Set language for defined sources as CUDA
     set_source_files_properties(${sources} PROPERTIES LANGUAGE CUDA)
     # Fix PCH when compiling with NVCC
-    target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--pre-include ${ATTA_PCH}>)
+    target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--pre-include ${ATTA_PCH} --expt-relaxed-constexpr>)
 endmacro()
 
 macro(atta_cuda_source source)

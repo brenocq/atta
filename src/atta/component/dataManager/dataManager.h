@@ -53,7 +53,7 @@ class DataManager {
     /**
      * @brief Destroy entity and deallocate components
      *
-     * @param eid Entity to delete
+     * @param eid Entity to destroy
      */
     ATTA_CPU_GPU void destroyEntity(EntityId eid);
 

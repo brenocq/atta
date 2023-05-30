@@ -17,7 +17,7 @@ namespace atta {
 #define ATTA_CPU_CODE 1
 #endif
 
-#if ATTA_IS_GPU_CODE
+#if __NVCC__
 #define ATTA_CPU __host__
 #define ATTA_GPU __device__
 #define ATTA_CPU_GPU __host__ __device__

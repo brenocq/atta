@@ -23,13 +23,13 @@ void ProjectSerializer::serializeComponentModule(Section& section) {
 
     // Serialize components
     for (auto compReg : component::getComponentRegistries()) {
-        std::string name = compReg->getDescription().name;
+        std::string name = compReg->getName();
 
         // Get all entities that have this component
         std::vector<component::EntityId> eids;
         std::vector<component::Component*> components;
         for (auto entity : entities) {
-            component::Component* comp = component::cpuDataManager->addComponent(entity, compReg->getId());
+            component::Component* comp = component::cpuDataManager->getComponent(entity, compReg->getId());
             if (comp != nullptr) {
                 eids.push_back(entity);
                 components.push_back(comp);

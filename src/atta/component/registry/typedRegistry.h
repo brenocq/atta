@@ -14,41 +14,25 @@
 namespace atta::component {
 
 // clang-format off
-#define ATTA_REGISTER_COMPONENT(TYPE) \
-    template <> \
-    inline ::atta::component::TypedRegistry<TYPE>& ::atta::component::ComponentRegistration<TYPE>::reg = \
-        ::atta::component::TypedRegistry<TYPE>::getInstance();
+#define ATTA_REGISTER_COMPONENT(TYPE) inline ::atta::component::TypedRegistry<TYPE> typedRegistry##TYPE(#TYPE);
 // clang-format on
 
 template <typename T>
 class TypedRegistry : public Registry {
   public:
+    TypedRegistry<T>(std::string name);
     struct Description;
 
-    static TypedRegistry<T>& getInstance() {
-        static TypedRegistry<T> instance;
-        return instance;
-    }
+    void renderUI(Component* component) override;
 
-    void renderUI(Component* component) override { renderUIImpl((T*)component); }
-    static void renderUI(T* component) { getInstance().renderUIImpl(component); }
-
-    void serialize(std::ostream& os, Component* component) override { serializeImpl(os, (T*)component); }
-    void deserialize(std::istream& is, Component* component) override { deserializeImpl(is, (T*)component); }
-    static void serialize(std::ostream& os, T* component) { getInstance().serializeImpl(os, component); }
-    static void deserialize(std::istream& is, T* component) { getInstance().deserializeImpl(is, component); }
+    void serialize(std::ostream& os, Component* component) override;
+    void deserialize(std::istream& is, Component* component) override;
 
     std::vector<uint8_t> getDefault() override;
 
     ComponentDescription& getDescription() override;
     static ComponentDescription* description;
-
-  private:
-    TypedRegistry<T>();
-
-    void renderUIImpl(T* component);
-    void serializeImpl(std::ostream& os, T* component);
-    void deserializeImpl(std::istream& is, T* component);
+    static ComponentId id;
 };
 
 //---------- Default component register description ----------//
@@ -66,9 +50,7 @@ template <typename T>
 ComponentDescription* TypedRegistry<T>::description = nullptr;
 
 template <typename T>
-class ComponentRegistration {
-    static ::atta::component::TypedRegistry<T>& reg;
-};
+ComponentId TypedRegistry<T>::id = 0;
 
 } // namespace atta::component
 

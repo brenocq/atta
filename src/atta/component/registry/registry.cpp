@@ -14,6 +14,8 @@ const std::vector<Registry*>& Registry::get() { return getRegistries(); }
 
 const Registry* Registry::get(ComponentId cid) { return get()[cid]; }
 
+std::string Registry::getName() const { return _name; }
+
 unsigned Registry::getSizeof() const { return _sizeof; }
 
 std::string Registry::getTypeidName() const { return _typeidName; }

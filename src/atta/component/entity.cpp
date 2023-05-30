@@ -4,17 +4,10 @@
 // Date: 2021-09-04
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/interface.h>
-
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/relationship.h>
 #include <atta/component/entity.h>
-
-#if ATTA_GPU_CODE
-#include <atta/component/dataManager/gpuDataManager.h>
-#else
-#include <atta/component/dataManager/cpuDataManager.h>
-#endif
+#include <atta/component/interface.h>
 
 namespace atta::component {
 
@@ -22,7 +15,8 @@ ATTA_CPU_GPU Entity::operator EntityId() const { return _id; }
 
 ATTA_CPU_GPU bool Entity::exists() const {
 #if ATTA_GPU_CODE
-    return gpuDataManager->entityExists(_id);
+    // return gpuDataManager->entityExists(_id);
+    return false;
 #else
     return cpuDataManager->entityExists(_id);
 #endif
@@ -55,7 +49,7 @@ ATTA_CPU std::vector<Entity> Entity::getChildren() const {
     return {};
 }
 
-ATTA_CPU_GPU Entity Entity::getChild(unsigned i) const {
+ATTA_CPU Entity Entity::getChild(unsigned i) const {
     std::vector<Entity> children = getChildren();
     if (i < children.size())
         return children[i];

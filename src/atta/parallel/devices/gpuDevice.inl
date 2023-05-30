@@ -4,15 +4,16 @@
 // Date: 2023-05-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#if ATTA_IS_GPU_CODE
-//#include <atta/script/scripts.h>
-// #include <atta/script/scripts/controller.h>
+#if ATTA_GPU_CODE
 // #include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
+// #include <atta/script/scripts.h>
+// #include <atta/script/scripts/controller.h>
 #endif
+#include <atta/component/dataManager/gpuDataManager.h>
 
 namespace atta::parallel {
 
-#if ATTA_IS_GPU_CODE
+#if defined(__NVCC__)
 template <typename Script>
 __global__ void kernel(cmp::EntityId firstClone, cmp::EntityId lastClone, float dt) {
     cmp::EntityId clone = firstClone + (blockIdx.x * blockDim.x + threadIdx.x);
@@ -28,7 +29,7 @@ __global__ void kernel(cmp::EntityId firstClone, cmp::EntityId lastClone, float 
 
 template <typename Script>
 void GpuDevice::run(cmp::Entity entity, float dt, uint32_t num) {
-#if ATTA_IS_GPU_CODE
+#if defined(__NVCC__)
     constexpr uint32_t t = 256; // Number of threads in each block
     cmp::EntityId firstClone = entity.getId();
     cmp::EntityId lastClone = firstClone + num;

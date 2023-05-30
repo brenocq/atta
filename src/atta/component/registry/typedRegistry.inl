@@ -7,15 +7,20 @@
 namespace atta::component {
 
 template <typename T>
-TypedRegistry<T>::TypedRegistry() : Registry(sizeof(T), typeid(T).name(), typeid(T).hash_code()) {
-    description = &getDescription(); // Initialize description static variable
+TypedRegistry<T>::TypedRegistry(std::string name) : Registry(name, sizeof(T), typeid(T).name(), typeid(T).hash_code()) {
+    // Initialize description static variable
+    description = &getDescription();
+
+    // Register
     std::vector<Registry*>& regs = getRegistries();
-    _id = regs.size();
     regs.push_back(this);
+
+    // Save id
+    id = _id = regs.size() - 1;
 }
 
 template <typename T>
-void TypedRegistry<T>::renderUIImpl(T* component) {
+void TypedRegistry<T>::renderUI(Component* component) {
     DASSERT(this != nullptr, "Trying to call TypedRegistry<$0>::renderUI() on nullptr component", std::string(typeid(T).name()));
 
     // Check if full component renderUI was defined
@@ -43,7 +48,7 @@ void TypedRegistry<T>::renderUIImpl(T* component) {
 }
 
 template <typename T>
-void TypedRegistry<T>::serializeImpl(std::ostream& os, T* component) {
+void TypedRegistry<T>::serialize(std::ostream& os, Component* component) {
     uint8_t* curr = reinterpret_cast<uint8_t*>(component);
     for (unsigned i = 0; i < description->attributeDescriptions.size(); i++) {
         auto aDesc = description->attributeDescriptions[i];
@@ -71,7 +76,7 @@ void TypedRegistry<T>::serializeImpl(std::ostream& os, T* component) {
 }
 
 template <typename T>
-void TypedRegistry<T>::deserializeImpl(std::istream& is, T* component) {
+void TypedRegistry<T>::deserialize(std::istream& is, Component* component) {
     char* curr = reinterpret_cast<char*>(component);
     for (unsigned i = 0; i < description->attributeDescriptions.size(); i++) {
         auto aDesc = description->attributeDescriptions[i];

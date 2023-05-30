@@ -136,8 +136,8 @@ void EntityWindow::renderComponents() {
     for (auto compReg : component::getComponentRegistries()) {
         void* component = component::cpuDataManager->getComponent(selected.getId(), compReg->getId());
         if (component != nullptr) {
-            std::string name = compReg->getDescription().name;
-            if (compReg->getId() != component::TypedRegistry<component::Relationship>::getInstance().getId()) {
+            std::string name = compReg->getName();
+            if (compReg->getId() != component::getId<component::Relationship>()) {
                 bool open = true;
                 if (ImGui::CollapsingHeader((name + "##Components" + name + "Header").c_str(), &open))
                     compReg->renderUI((component::Component*)component);
@@ -159,8 +159,8 @@ void EntityWindow::renderComponents() {
         for (auto compReg : component::getComponentRegistries()) {
             void* component = component::cpuDataManager->getComponent(selected.getId(), compReg->getId());
             if (component == nullptr) {
-                if (compReg->getId() != component::TypedRegistry<component::Relationship>::getInstance().getId()) {
-                    std::string name = compReg->getDescription().name;
+                if (compReg->getId() != component::getId<component::Relationship>()) {
+                    std::string name = compReg->getName();
                     if (ImGui::Selectable((name + "##ComponentAdd" + name).c_str()))
                         component::cpuDataManager->addComponent(selected.getId(), compReg->getId());
                 }

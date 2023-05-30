@@ -110,9 +110,9 @@ void Factory::createClones() {
         component::createEntity(_firstClone.getId() + i);
 
     for (ComponentId cid : cpuDataManager->getComponents(_prototype.getId())) {
-        if (cid == TypedRegistry<Prototype>::getInstance().getId())
+        if (cid == getId<Prototype>())
             continue;
-        if (cid == TypedRegistry<Relationship>::getInstance().getId())
+        if (cid == getId<Relationship>())
             continue;
 
         Component* compProt = cpuDataManager->getComponent(_prototype.getId(), cid);

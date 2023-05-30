@@ -27,19 +27,22 @@ class Registry {
 
     virtual ComponentDescription& getDescription() = 0;
     virtual std::vector<uint8_t> getDefault() = 0;
+
+    std::string getName() const;
     unsigned getSizeof() const;
     std::string getTypeidName() const;
     size_t getTypeidHash() const;
     ComponentId getId() const;
 
   protected:
-    Registry(unsigned sizeofT, std::string typeidName, size_t typeidHash)
-        : _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _id(0) {}
+    Registry(std::string name, unsigned sizeofT, std::string typeidName, size_t typeidHash)
+        : _name(name), _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _id(0) {}
 
     template <AttributeType attributeType>
     void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {}
     void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId);
 
+    std::string _name;       ///< Component class name
     unsigned _sizeof;        ///< sizeof(T)
     std::string _typeidName; ///< typeid(T).name()
     size_t _typeidHash;      ///< typeid(T).hash_code()

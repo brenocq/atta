@@ -9,10 +9,10 @@
 
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
-#include <atta/component/registry/typedRegistry.h>
 #include <atta/component/entity.h>
 #include <atta/component/factory.h>
 #include <atta/component/manager.h>
+#include <atta/component/registry/typedRegistry.h>
 
 namespace atta::component {
 
@@ -30,7 +30,7 @@ Entity copyEntity(Entity entity);
 // Component
 template <typename T>
 inline ComponentId getId() {
-    return TypedRegistry<T>::getInstance().getId();
+    return TypedRegistry<T>::id;
 }
 std::vector<Registry*> getComponentRegistries();
 

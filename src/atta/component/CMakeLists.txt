@@ -45,3 +45,7 @@ target_link_libraries(atta_component_module PUBLIC ${ATTA_IMGUI_TARGETS}
 
 atta_target_common(atta_component_module)
 atta_add_libs(atta_component_module)
+
+if(${ATTA_CUDA_SUPPORT})
+    atta_cuda_sources(atta_component_module "entity.cpp;gpuDataManager.cpp")
+endif()

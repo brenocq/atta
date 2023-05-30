@@ -88,9 +88,12 @@ void Manager::createDefaultImpl() {
 }
 
 void Manager::clearImpl() {
+    LOG_DEBUG("cmp::Manager", "Destroy entities");
     std::vector<Entity> entities = getEntitiesViewImpl();
-    for (Entity entity : entities)
+    for (Entity entity : entities) {
+        LOG_DEBUG("cmp::Manager", "Destroy $0", entity);
         cpuDataManager->destroyEntity(entity);
+    }
 }
 
 Entity Manager::createEntityImpl(EntityId entity) {

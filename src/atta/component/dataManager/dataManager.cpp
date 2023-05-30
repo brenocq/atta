@@ -65,13 +65,13 @@ ATTA_CPU_GPU void DataManager::destroyEntity(EntityId eid) {
     CHECK_ENTITY(eid, );
 
     if (entityExists(eid)) {
-        // Destroy entity
-        _entityPool[eid].exist = false;
-
         // Remove components
         for (ComponentId cid = 0; cid < maxComponents; cid++)
             if (_entityPool[eid][cid] != nullptr)
                 removeComponent(eid, cid);
+
+        // Destroy entity
+        _entityPool[eid].exist = false;
     }
 }
 

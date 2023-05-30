@@ -29,7 +29,7 @@ void ProjectSerializer::deserializeComponentModule(Section& section) {
 
     // Create and assign components
     for (auto compReg : component::getComponentRegistries()) {
-        std::string name = compReg->getDescription().name;
+        std::string name = compReg->getName();
 
         // Get all entities that have this component
         if (section["components"].contains(name)) {
