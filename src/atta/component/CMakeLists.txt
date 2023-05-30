@@ -49,3 +49,18 @@ atta_add_libs(atta_component_module)
 if(${ATTA_CUDA_SUPPORT})
     atta_cuda_sources(atta_component_module "entity.cpp;gpuDataManager.cpp")
 endif()
+
+########## Testing ##########
+set(ATTA_COMPONENT_MODULE_TEST_SOURCES
+    tests/cpuDataManager.cpp
+    tests/componentPool.cpp
+)
+# Add to global test
+atta_add_tests(${ATTA_COMPONENT_MODULE_TEST_SOURCES})
+
+# Create local test
+atta_create_local_test(
+    atta_component_module_test
+    "${ATTA_COMPONENT_MODULE_TEST_SOURCES}"
+    "atta_component_module"
+)

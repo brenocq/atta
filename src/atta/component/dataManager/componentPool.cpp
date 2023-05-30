@@ -10,18 +10,18 @@ namespace atta::component {
 
 ComponentPool::ComponentPool(uint8_t* memory, uint8_t size, uint32_t componentSize, uint32_t numComponents)
     : _memory(memory), _size(size), _componentSize(componentSize), _numComponents(numComponents), _current(0) {
-    _dataStart = _memory + calcBitmapSize(_numComponents, _componentSize);
+    _dataStart = _memory + calcBitmapSize(_numComponents);
 }
 
 ATTA_CPU uint32_t ComponentPool::calcPoolSize(uint32_t numComponents, uint32_t componentSize) {
-    return calcBitmapSize(numComponents, componentSize) + componentSize * numComponents;
+    return calcBitmapSize(numComponents) + componentSize * numComponents;
 }
 
-ATTA_CPU uint32_t ComponentPool::calcBitmapSize(uint32_t numComponents, uint32_t componentSize) {
+ATTA_CPU uint32_t ComponentPool::calcBitmapSize(uint32_t numComponents) {
     uint32_t size = ceil(numComponents / 8.0f);
 
     // Align size with 8 bytes
-    constexpr uint32_t align = 8 - 1;
+    constexpr uint32_t align = 8;
     return (size + (align - 1)) & ~(align - 1);
 }
 
@@ -39,7 +39,9 @@ ATTA_CPU_GPU Component* ComponentPool::alloc() {
     do {
         if (!getBit(_current)) {
             setBit(_current, true);
-            return (Component*)getBlock(_current);
+            Component* c = (Component*)getBlock(_current);
+            _current = (_current + 1) % _numComponents;
+            return c;
         }
         _current = (_current + 1) % _numComponents;
     } while (_current != start);
@@ -52,9 +54,7 @@ ATTA_CPU_GPU void ComponentPool::free(Component* ptr) {
     // Move allocation pointer
     _current = std::min(_current, index);
 
-    // XXX Can be faster if set byte to zero
-    for (uint64_t i = index; i < index + _numComponents; i++)
-        setBit(i, false);
+    setBit(index, false);
 }
 
 ATTA_CPU bool ComponentPool::isAllocated() const { return _memory != nullptr; }

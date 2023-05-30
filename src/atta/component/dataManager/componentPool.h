@@ -38,11 +38,10 @@ class ComponentPool {
      * @brief Calculate number of bytes in the bitmap section
      *
      * @param numComponents Number of components
-     * @param componentSize Component size in bytes
      *
      * @return Bitmap section size in bytes
      */
-    ATTA_CPU static uint32_t calcBitmapSize(uint32_t numComponents, uint32_t componentSize);
+    ATTA_CPU static uint32_t calcBitmapSize(uint32_t numComponents);
 
     /**
      * @brief Reset pool data to default

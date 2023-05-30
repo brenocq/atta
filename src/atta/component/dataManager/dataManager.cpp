@@ -73,6 +73,8 @@ ATTA_CPU_GPU void DataManager::destroyEntity(EntityId eid) {
         // Destroy entity
         _entityPool[eid].exist = false;
     }
+
+    _currentEntity = eid;
 }
 
 ATTA_CPU_GPU bool DataManager::entityExists(EntityId eid) { return validEntity(eid) && _entityPool[eid].exist; }

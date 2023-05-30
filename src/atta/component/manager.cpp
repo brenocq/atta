@@ -88,12 +88,9 @@ void Manager::createDefaultImpl() {
 }
 
 void Manager::clearImpl() {
-    LOG_DEBUG("cmp::Manager", "Destroy entities");
     std::vector<Entity> entities = getEntitiesViewImpl();
-    for (Entity entity : entities) {
-        LOG_DEBUG("cmp::Manager", "Destroy $0", entity);
+    for (Entity entity : entities)
         cpuDataManager->destroyEntity(entity);
-    }
 }
 
 Entity Manager::createEntityImpl(EntityId entity) {
@@ -252,10 +249,6 @@ void Manager::onScriptEvent(event::Event& event) {
     TypedRegistry<Script>::description->attributeDescriptions[0].options.clear();
     for (StringId script : e.scriptSids)
         TypedRegistry<Script>::description->attributeDescriptions[0].options.push_back(std::any(script));
-
-    // Created pool to new components if necessary
-    // TODO
-    // createComponentPoolsFromRegistered();
 }
 
 } // namespace atta::component
