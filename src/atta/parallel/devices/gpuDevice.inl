@@ -4,11 +4,6 @@
 // Date: 2023-05-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#if ATTA_GPU_CODE
-// #include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
-// #include <atta/script/scripts.h>
-// #include <atta/script/scripts/controller.h>
-#endif
 #include <atta/component/dataManager/gpuDataManager.h>
 
 namespace atta::parallel {

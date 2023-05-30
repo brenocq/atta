@@ -28,10 +28,7 @@ macro(atta_add_target target sources)
 
     # CUDA specific
     if(ATTA_CUDA_SUPPORT)
-        # Set file to be compiled with CUDA
-        set_source_files_properties(${sources} PROPERTIES LANGUAGE CUDA)
-        # Fix PCH
-        target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--pre-include ${atta_PCH}>)
+        atta_cuda_sources(${target} ${sources})
     endif()
 
     # This variable is used to include headers when building statically (necessary to register scripts)

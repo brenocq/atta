@@ -7,7 +7,7 @@
 #ifndef ATTA_SCRIPT_REGISTRY_CONTROLLER_REGISTRY_H
 #define ATTA_SCRIPT_REGISTRY_CONTROLLER_REGISTRY_H
 
-#include <atta/component/interface.h>
+#include <atta/component/entity.h>
 #include <atta/script/registry/registry.h>
 
 // clang-format off

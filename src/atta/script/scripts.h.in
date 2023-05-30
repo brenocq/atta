@@ -11,4 +11,10 @@
 // CMake will populate this file with includes when the project is linked statically 
 @ATTA_STATIC_PROJECT_SCRIPTS@
 
+// #include <atta/script/registry/worldRegistry.h>
+// #include <atta/script/registry/controllerRegistry.h>
+// #include <atta/script/dummy.h>
+// ATTA_REGISTER_WORLD(DummyWorld);
+// ATTA_REGISTER_CONTROLLER(DummyController);
+
 #endif // ATTA_SCRIPT_SCRIPTS_H
