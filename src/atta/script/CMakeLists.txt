@@ -26,7 +26,6 @@ if(NOT ATTA_STATIC_PROJECT)
 endif()
 
 add_library(atta_script_module STATIC ${ATTA_SCRIPT_MODULE_SOURCE})
-target_link_libraries(atta_script_module PRIVATE atta_parallel_module)
 atta_target_common(atta_script_module)
 atta_add_libs(atta_script_module)
 

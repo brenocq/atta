@@ -41,8 +41,8 @@ class ProjectSerializer final {
     void serializeSensorModule(Section& section);
     void deserializeSensorModule(Section& section);
 
-    void serializeParallelModule(Section& section);
-    void deserializeParallelModule(Section& section);
+    void serializeProcessorModule(Section& section);
+    void deserializeProcessorModule(Section& section);
 
     std::shared_ptr<Project> _project;
 };

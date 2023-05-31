@@ -23,19 +23,16 @@ class Atta {
 
     void run();
     void loop();
-    void step();
 
   private:
     // Handle events
     void onWindowClose(event::Event& event);
-    void onSimulationStateChange(event::Event& event);
 
     // Memory
     memory::StackAllocator* _mainAllocator;
 
     // State
     bool _shouldFinish;
-    bool _shouldStep;
 
     // Track real time
     std::chrono::time_point<std::chrono::high_resolution_clock> _lastStep;

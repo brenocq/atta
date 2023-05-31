@@ -13,9 +13,9 @@
 #include <atta/component/dataManager/cpuDataManager.h>
 #include <atta/component/interface.h>
 #include <atta/graphics/interface.h>
-#include <atta/parallel/interface.h>
 #include <atta/physics/engines/bulletEngine.h>
 #include <atta/physics/interface.h>
+#include <atta/processor/interface.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/image.h>
 #include <atta/resource/resources/mesh.h>
@@ -42,7 +42,7 @@ void ProjectSerializer::serialize() {
     serializeResourceModule(section["resourceModule"]);
     serializePhysicsModule(section["physicsModule"]);
     serializeSensorModule(section["sensorModule"]);
-    serializeParallelModule(section["parallelModule"]);
+    serializeProcessorModule(section["processorModule"]);
     // LOG_DEBUG("file::ProjectSerializer", "Saving project: [w]$0", section);
 
     // Serialize version
@@ -79,7 +79,7 @@ void ProjectSerializer::deserialize() {
     deserializeResourceModule(section["resourceModule"]);
     deserializePhysicsModule(section["physicsModule"]);
     deserializeSensorModule(section["sensorModule"]);
-    deserializeParallelModule(section["parallelModule"]);
+    deserializeProcessorModule(section["processorModule"]);
 }
 
 } // namespace atta::file

@@ -26,6 +26,7 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
+    friend bool shouldUpdate();
     friend void update();
     friend void pushLayer(Layer* layer);
     template <typename T, typename... Args>
@@ -50,6 +51,7 @@ class Manager final {
   private:
     void startUpImpl();
     void shutDownImpl();
+    bool shouldUpdateImpl();
     void updateImpl();
     void pushLayerImpl(Layer* layer);
     template <typename T, typename... Args>

@@ -116,17 +116,17 @@ void ProjectSerializer::deserializeSensorModule(Section& section) {
         sensor::setShowInfrareds(bool(section["showInfrareds"]));
 }
 
-void ProjectSerializer::deserializeParallelModule(Section& section) {
-    if (section.contains("device")) {
-        std::string device = std::string(section["device"]);
+void ProjectSerializer::deserializeProcessorModule(Section& section) {
+    if (section.contains("type")) {
+        std::string device = std::string(section["type"]);
         if (device == "SERIAL")
-            parallel::setDeviceType(parallel::Device::SERIAL);
+            processor::setType(processor::Type::SERIAL);
         else if (device == "CPU")
-            parallel::setDeviceType(parallel::Device::CPU);
+            processor::setType(processor::Type::CPU);
         else if (device == "GPU")
-            parallel::setDeviceType(parallel::Device::GPU);
+            processor::setType(processor::Type::GPU);
         else if (device == "CLUSTER")
-            parallel::setDeviceType(parallel::Device::CLUSTER);
+            processor::setType(processor::Type::CLUSTER);
     }
 }
 

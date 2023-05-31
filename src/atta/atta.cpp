@@ -6,32 +6,22 @@
 //--------------------------------------------------
 #include <atta/atta.h>
 
-#include <atta/event/event.h>
-#include <atta/event/events/simulationContinue.h>
-#include <atta/event/events/simulationPause.h>
-#include <atta/event/events/simulationStart.h>
-#include <atta/event/events/simulationStep.h>
-#include <atta/event/events/simulationStop.h>
-#include <atta/event/events/windowClose.h>
-
 #include <atta/component/interface.h>
 #include <atta/file/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/memory/interface.h>
-#include <atta/parallel/interface.h>
 #include <atta/physics/interface.h>
+#include <atta/processor/interface.h>
 #include <atta/resource/interface.h>
 #include <atta/script/interface.h>
 #include <atta/sensor/interface.h>
 #include <atta/ui/interface.h>
 
-#include <atta/cmakeConfig.h>
-#include <atta/graphics/pipeline.h>
-#include <atta/utils/config.h>
+#include <atta/event/event.h>
+#include <atta/event/events/windowClose.h>
 
-// Include execute code
-#include <atta/component/components/prototype.h>
-#include <atta/component/components/script.h>
+#include <atta/cmakeConfig.h>
+#include <atta/utils/config.h>
 
 namespace atta {
 Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
@@ -46,18 +36,13 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     component::startUp();
     graphics::startUp();
     ui::startUp();
-    parallel::startUp();
+    processor::startUp();
     physics::startUp();
     sensor::startUp();
     script::startUp();
 
     // Atta is the last one to reveice events
     event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
-    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::subscribe<event::SimulationStep>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 
     LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
@@ -85,7 +70,7 @@ Atta::~Atta() {
     script::shutDown();
     sensor::shutDown();
     physics::shutDown();
-    parallel::shutDown();
+    processor::shutDown();
     ui::shutDown();
     graphics::shutDown();
     component::shutDown();
@@ -114,85 +99,50 @@ void Atta::run() {
 
 void Atta::loop() {
     PROFILE();
-    _currStep = std::chrono::high_resolution_clock::now();
+    // _currStep = std::chrono::high_resolution_clock::now();
+    // if (Config::getState() == Config::State::RUNNING) {
+    //     if (Config::getDesiredStepSpeed() == 0.0f) {
+    //         // Step as fast as possible
+    //         step();
+    //     } else {
+    //         const float timeDiff = std::chrono::duration<float, std::milli>(_currStep - _lastStep).count() / 1000.0;
+    //         // Step with delay to be closer to desired step speed
+    //         if (timeDiff >= Config::getDt() / Config::getDesiredStepSpeed())
+    //             step();
+    //     }
+    // } else if (Config::getState() == Config::State::PAUSED && _shouldStep) {
+    //     _shouldStep = false;
+    //     step();
+    // }
+    // script::WorldRegistry::onAttaLoop();
 
-    if (Config::getState() == Config::State::RUNNING) {
-        if (Config::getDesiredStepSpeed() == 0.0f) {
-            // Step as fast as possible
-            step();
-        } else {
-            const float timeDiff = std::chrono::duration<float, std::milli>(_currStep - _lastStep).count() / 1000.0;
-            // Step with delay to be closer to desired step speed
-            if (timeDiff >= Config::getDt() / Config::getDesiredStepSpeed())
-                step();
-        }
-    } else if (Config::getState() == Config::State::PAUSED && _shouldStep) {
-        _shouldStep = false;
-        step();
-    }
-
-    script::WorldRegistry::onAttaLoop();
+    // XXX simulation running in another thread
 
     file::update();
-    graphics::update();
+    if (graphics::shouldUpdate()) {
+        processor::pause();
+        processor::readData();
+        graphics::update();
+        processor::writeData();
+        processor::resume();
+    }
 }
 
-void Atta::step() {
-    PROFILE();
-
-    float dt = Config::getDt(); // Saving dt because project script may change the dt
-    physics::update(dt);
-    sensor::update(dt);
-    script::update(dt);
-
-    // Update time
-    const float timeDiff = std::chrono::duration<float, std::milli>(_currStep - _lastStep).count() / 1000.0;
-    Config::setRealStepSpeed(Config::getRealStepSpeed() * 0.5 + (Config::getDt() / timeDiff) * 0.5);
-    _lastStep = _currStep;
-    Config::getInstance()._time += dt;
-}
+// void Atta::step() {
+//     // PROFILE();
+//
+//     // float dt = Config::getDt(); // Saving dt because project script may change the dt
+//     // physics::update(dt);
+//     // sensor::update(dt);
+//     // script::update(dt);
+//
+//     // Update time
+//     // const float timeDiff = std::chrono::duration<float, std::milli>(_currStep - _lastStep).count() / 1000.0;
+//     // Config::setRealStepSpeed(Config::getRealStepSpeed() * 0.5 + (Config::getDt() / timeDiff) * 0.5);
+//     // _lastStep = _currStep;
+//     // Config::getInstance()._time += dt;
+// }
 
 void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }
 
-void Atta::onSimulationStateChange(event::Event& event) {
-    switch (event.getType()) {
-        case event::SimulationStart::type: {
-            Config::getInstance()._state = Config::State::RUNNING;
-            script::WorldRegistry::onStart();
-            break;
-        }
-        case event::SimulationContinue::type: {
-            Config::getInstance()._state = Config::State::RUNNING;
-            script::WorldRegistry::onContinue();
-            break;
-        }
-        case event::SimulationPause::type: {
-            Config::getInstance()._state = Config::State::PAUSED;
-            script::WorldRegistry::onPause();
-            break;
-        }
-        case event::SimulationStop::type: {
-            Config::getInstance()._state = Config::State::IDLE;
-            Config::getInstance()._time = 0.0f;
-            Config::getInstance()._realStepSpeed = 0.0f;
-            script::WorldRegistry::onStop();
-            break;
-        }
-        case event::SimulationStep::type: {
-            if (Config::getState() == Config::State::IDLE) {
-                event::SimulationStart e;
-                event::publish(e);
-            }
-            if (Config::getState() == Config::State::RUNNING) {
-                event::SimulationPause e;
-                event::publish(e);
-            }
-            _shouldStep = true;
-            break;
-        }
-        default: {
-            LOG_WARN("Atta", "Unknown simulation event");
-        }
-    }
-}
 } // namespace atta

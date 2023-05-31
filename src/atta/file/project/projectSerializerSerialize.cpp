@@ -107,19 +107,19 @@ void ProjectSerializer::serializeSensorModule(Section& section) {
     section["showInfrareds"] = sensor::getShowInfrareds();
 }
 
-void ProjectSerializer::serializeParallelModule(Section& section) {
-    switch (parallel::getDeviceType()) {
-        case parallel::Device::SERIAL:
-            section["device"] = "SERIAL";
+void ProjectSerializer::serializeProcessorModule(Section& section) {
+    switch (processor::getType()) {
+        case processor::Type::SERIAL:
+            section["type"] = "SERIAL";
             break;
-        case parallel::Device::CPU:
-            section["device"] = "CPU";
+        case processor::Type::CPU:
+            section["type"] = "CPU";
             break;
-        case parallel::Device::GPU:
-            section["device"] = "GPU";
+        case processor::Type::GPU:
+            section["type"] = "GPU";
             break;
-        case parallel::Device::CLUSTER:
-            section["device"] = "CLUSTER";
+        case processor::Type::CLUSTER:
+            section["type"] = "CLUSTER";
             break;
     }
 }

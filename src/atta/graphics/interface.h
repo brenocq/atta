@@ -17,6 +17,7 @@ namespace atta::graphics {
 
 void startUp();
 void shutDown();
+bool shouldUpdate();
 void update();
 
 void pushLayer(Layer* layer);

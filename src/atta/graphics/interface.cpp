@@ -10,6 +10,7 @@ namespace atta::graphics {
 
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
+bool shouldUpdate() { return Manager::getInstance().shouldUpdateImpl(); }
 void update() {
     PROFILE();
     Manager::getInstance().updateImpl();

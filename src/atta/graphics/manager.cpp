@@ -74,30 +74,35 @@ void Manager::shutDownImpl() {
     _window.reset();
 }
 
-void Manager::updateImpl() {
+bool Manager::shouldUpdateImpl() {
     // Graphics fps
     static auto gfxLastTime = std::chrono::high_resolution_clock::now();
     const auto gfxCurrTime = std::chrono::high_resolution_clock::now();
     const float gfxTimeDiff = std::chrono::duration<float, std::milli>(gfxCurrTime - gfxLastTime).count() / 1000.0;
 
-    if (_graphicsFPS > 0 && (gfxTimeDiff > 1 / _graphicsFPS)) {
+    bool timeToRender = _graphicsFPS > 0 && (gfxTimeDiff > 1 / _graphicsFPS);
+    if (timeToRender)
         gfxLastTime = gfxCurrTime;
-        // Update viewports if it was changed
-        if (_swapViewports) {
-            _viewports = _viewportsNext;
-            _swapViewports = false;
-        }
 
-        // Update window events
-        _window->update();
+    return timeToRender;
+}
 
-        // Render layer stack
-        _rendererAPI->beginFrame();
-        _layerStack->render();
-        _rendererAPI->endFrame();
-
-        _window->swapBuffers();
+void Manager::updateImpl() {
+    // Update viewports if it was changed
+    if (_swapViewports) {
+        _viewports = _viewportsNext;
+        _swapViewports = false;
     }
+
+    // Update window events
+    _window->update();
+
+    // Render layer stack
+    _rendererAPI->beginFrame();
+    _layerStack->render();
+    _rendererAPI->endFrame();
+
+    _window->swapBuffers();
 }
 
 void Manager::pushLayerImpl(Layer* layer) { _layerStack->push(layer); }
