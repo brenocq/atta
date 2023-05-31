@@ -73,26 +73,26 @@ std::string formatSize(unsigned long long number, int factor = 1024) {
 }
 
 GpuDevice::GpuDevice() : Device(Type::GPU) {
-    int deviceCount;
-    cudaGetDeviceCount(&deviceCount);
-    LOG_DEBUG("pll::GpuDevice", "Found [w]$0[] GPUs with cuda support", deviceCount);
+    //int deviceCount;
+    //cudaGetDeviceCount(&deviceCount);
+    //LOG_DEBUG("pll::GpuDevice", "Found [w]$0[] GPUs with cuda support", deviceCount);
 
-    // Select device
-    for (int i = 0; i < deviceCount; i++) {
-        cudaDeviceProp deviceProp;
-        cudaGetDeviceProperties(&deviceProp, i);
+    //// Select device
+    //for (int i = 0; i < deviceCount; i++) {
+    //    cudaDeviceProp deviceProp;
+    //    cudaGetDeviceProperties(&deviceProp, i);
 
-        int numCoresPerSM = versionToCores(deviceProp.major, deviceProp.minor);
-        LOG_INFO("pll::GpuDevice", "Device $0: [w]$1", i, deviceProp.name);
-        LOG_INFO("pll::GpuDevice", " - Compute capability: [w]$0.$1", deviceProp.major, deviceProp.minor);
-        LOG_INFO("pll::GpuDevice", " - Total global memory: [w]$0B", formatSize(deviceProp.totalGlobalMem));
-        LOG_INFO("pll::GpuDevice", " - Total constant memory: [w]$0B", formatSize(deviceProp.totalConstMem));
-        LOG_INFO("pll::GpuDevice", " - Total number of cores: [w]$0", deviceProp.multiProcessorCount * numCoresPerSM);
-        LOG_INFO("pll::GpuDevice", " - Total shared memory per SM: [w]$0B", formatSize(deviceProp.sharedMemPerMultiprocessor));
-        LOG_INFO("pll::GpuDevice", " - Number of SM: [w]$0", deviceProp.multiProcessorCount);
-        LOG_INFO("pll::GpuDevice", " - Number of cores per SM: [w]$0", numCoresPerSM);
-        LOG_INFO("pll::GpuDevice", " - Clock rate: [w]$0Hz", formatSize(deviceProp.clockRate * 1000, 1000));
-    }
+    //    int numCoresPerSM = versionToCores(deviceProp.major, deviceProp.minor);
+    //    LOG_INFO("pll::GpuDevice", "Device $0: [w]$1", i, deviceProp.name);
+    //    LOG_INFO("pll::GpuDevice", " - Compute capability: [w]$0.$1", deviceProp.major, deviceProp.minor);
+    //    LOG_INFO("pll::GpuDevice", " - Total global memory: [w]$0B", formatSize(deviceProp.totalGlobalMem));
+    //    LOG_INFO("pll::GpuDevice", " - Total constant memory: [w]$0B", formatSize(deviceProp.totalConstMem));
+    //    LOG_INFO("pll::GpuDevice", " - Total number of cores: [w]$0", deviceProp.multiProcessorCount * numCoresPerSM);
+    //    LOG_INFO("pll::GpuDevice", " - Total shared memory per SM: [w]$0B", formatSize(deviceProp.sharedMemPerMultiprocessor));
+    //    LOG_INFO("pll::GpuDevice", " - Number of SM: [w]$0", deviceProp.multiProcessorCount);
+    //    LOG_INFO("pll::GpuDevice", " - Number of cores per SM: [w]$0", numCoresPerSM);
+    //    LOG_INFO("pll::GpuDevice", " - Clock rate: [w]$0Hz", formatSize(deviceProp.clockRate * 1000, 1000));
+    //}
 
     LOG_SUCCESS("pll::GpuDevice", "Initialized!");
 }

@@ -9,6 +9,8 @@
 
 namespace atta::cuda {
 
+#if __NVCC__
+
 #define CUDA_CHECK(ans) check((ans), __FILE__, __LINE__)
 void check(cudaError_t code, const char* file, int line);
 
@@ -28,5 +30,17 @@ void check(cudaError_t code, const char* file, int line) {
     if (code != cudaSuccess)
         LOG_ERROR("atta::cuda", "CUDA error: [w]$0[] ($1:$2)", cudaGetErrorString(code), file, line);
 }
+
+#else
+
+void* alloc(size_t size) { return nullptr; }
+
+void free(void* ptr) {}
+
+void copyCpuToGpu(uint8_t* dst, uint8_t* src, size_t size) {}
+
+void copyGpuToCpu(uint8_t* dst, uint8_t* src, size_t size) {}
+
+#endif
 
 } // namespace atta::cuda

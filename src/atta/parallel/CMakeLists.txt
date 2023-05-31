@@ -15,3 +15,7 @@ target_link_libraries(atta_parallel_module PUBLIC atta_component_module atta_scr
 
 atta_target_common(atta_parallel_module)
 atta_add_libs(atta_parallel_module)
+
+#if(ATTA_CUDA_SUPPORT)
+#    atta_cuda_sources(atta_parallel_module "devices/gpuDevice.cpp")
+#endif()
