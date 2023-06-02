@@ -21,14 +21,11 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
-    friend void update(float dt);
     friend std::vector<StringId> getScriptSids();
 
   private:
     void startUpImpl();
     void shutDownImpl();
-
-    void updateImpl(float dt);
 
     std::vector<StringId> getScriptSidsImpl() const;
 

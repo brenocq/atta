@@ -16,16 +16,16 @@ Cpu::Cpu() : Processor(Type::CPU), _stopWorkers(false), _nextIdx(1), _endIdx(0),
 
 Cpu::~Cpu() { stopWorkers(); }
 
-void Cpu::start() { _state = State::RUNNING; }
-void Cpu::pause() { _state = State::PAUSED; }
-void Cpu::resume() { _state = State::RUNNING; }
-void Cpu::stop() { _state = State::IDLE; }
+void Cpu::start() {}
+void Cpu::pause() {}
+void Cpu::resume() {}
+void Cpu::stop() {}
 
 // void Cpu::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
 //     // If no work to be done, return
 //     if (start == end)
 //         return;
-// 
+//
 //     {
 //         std::lock_guard<std::mutex> lock(_workMutex);
 //         _nextIdx = start;
@@ -33,7 +33,7 @@ void Cpu::stop() { _state = State::IDLE; }
 //         _func = std::move(func);
 //     }
 //     _wakeUpWorkers.notify_all();
-// 
+//
 //     // Wait for job to finish
 //     while (!jobFinished()) {
 //     }

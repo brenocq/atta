@@ -13,11 +13,6 @@ void startUp() { Manager::getInstance().startUpImpl(); }
 
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
-void update(float dt) {
-    PROFILE();
-    Manager::getInstance().updateImpl(dt);
-}
-
 std::vector<StringId> getScriptSids() { return Manager::getInstance().getScriptSidsImpl(); }
 
 } // namespace atta::script

@@ -18,6 +18,11 @@
 #include <atta/ui/interface.h>
 
 #include <atta/event/event.h>
+#include <atta/event/events/simulationContinue.h>
+#include <atta/event/events/simulationPause.h>
+#include <atta/event/events/simulationStart.h>
+#include <atta/event/events/simulationStep.h>
+#include <atta/event/events/simulationStop.h>
 #include <atta/event/events/windowClose.h>
 
 #include <atta/cmakeConfig.h>
@@ -43,6 +48,11 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
 
     // Atta is the last one to reveice events
     event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
+    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::subscribe<event::SimulationStep>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
+    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
 
     LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
@@ -133,21 +143,36 @@ void Atta::loop() {
     }
 }
 
-// void Atta::step() {
-//     // PROFILE();
-//
-//     // float dt = Config::getDt(); // Saving dt because project script may change the dt
-//     // physics::update(dt);
-//     // sensor::update(dt);
-//     // script::update(dt);
-//
-//     // Update time
-//     // const float timeDiff = std::chrono::duration<float, std::milli>(_currStep - _lastStep).count() / 1000.0;
-//     // Config::setRealStepSpeed(Config::getRealStepSpeed() * 0.5 + (Config::getDt() / timeDiff) * 0.5);
-//     // _lastStep = _currStep;
-//     // Config::getInstance()._time += dt;
-// }
-
 void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }
+
+void Atta::onSimulationStateChange(event::Event& event) {
+    switch (event.getType()) {
+        case event::SimulationStart::type: {
+            component::createFactories();
+            processor::start();
+            break;
+        }
+        case event::SimulationContinue::type: {
+            processor::resume();
+            break;
+        }
+        case event::SimulationPause::type: {
+            processor::pause();
+            break;
+        }
+        case event::SimulationStop::type: {
+            processor::stop();
+            component::destroyFactories();
+            break;
+        }
+        case event::SimulationStep::type: {
+            LOG_WARN("Atta", "Stepping not supported yet");
+            break;
+        }
+        default: {
+            LOG_WARN("Atta", "Unknown simulation event");
+        }
+    }
+}
 
 } // namespace atta

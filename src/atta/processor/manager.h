@@ -32,6 +32,11 @@ class Manager final {
     friend void setType(Type type);
     friend Type getType();
 
+    friend State getState();
+
+    friend void setDt(float dt);
+    friend float getDt();
+
     friend std::shared_ptr<Processor> getProcessor();
     friend std::shared_ptr<Serial> getSerialProcessor();
     friend std::shared_ptr<Cpu> getCpuProcessor();
@@ -41,15 +46,24 @@ class Manager final {
     void startUpImpl();
     void shutDownImpl();
 
+    void start();
+    void pause();
+    void resume();
+    void stop();
+
     void setTypeImpl(Type type);
     Type getTypeImpl();
+
+    State getStateImpl();
 
     std::shared_ptr<Processor> getProcessorImpl();
     std::shared_ptr<Serial> getSerialProcessorImpl();
     std::shared_ptr<Cpu> getCpuProcessorImpl();
     std::shared_ptr<Gpu> getGpuProcessorImpl();
 
-    void onSimulationStateChange(event::Event& event);
+    State _state;
+    float _dt;
+    float _time;
 
     std::shared_ptr<Processor> _processor; ///< Selected processor
     std::shared_ptr<Serial> _serial;       ///< Serial processor

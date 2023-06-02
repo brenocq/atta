@@ -37,6 +37,8 @@ std::vector<Registry*> getComponentRegistries();
 // Factory
 std::vector<Factory>& getFactories();
 Factory* getFactory(Entity prototype);
+void createFactories();
+void destroyFactories();
 
 // Views
 std::vector<Entity> getEntitiesView();

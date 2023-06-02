@@ -22,6 +22,8 @@ Entity copyEntity(Entity entity) { return Manager::getInstance().copyEntityImpl(
 std::vector<Registry*> getComponentRegistries() { return Registry::get(); }
 std::vector<Factory>& getFactories() { return Manager::getInstance().getFactoriesImpl(); }
 Factory* getFactory(Entity prototype) { return Manager::getInstance().getFactoryImpl(prototype); }
+void createFactories() { Manager::getInstance().createFactories(); }
+void destroyFactories() { Manager::getInstance().destroyFactories(); }
 
 // Views
 std::vector<Entity> getEntitiesView() { return Manager::getInstance().getEntitiesViewImpl(); }

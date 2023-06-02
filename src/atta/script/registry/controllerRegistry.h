@@ -21,7 +21,7 @@ class ControllerRegistry : public Registry {
     static const std::vector<const ControllerRegistry*>& getRegistries();
     static const ControllerRegistry* getRegistry(StringId sid);
 
-    virtual void run(cmp::Entity entity, float dt, uint32_t num = 1) const = 0;
+    virtual void update(cmp::Entity entity) const = 0;
 
   protected:
     ControllerRegistry(std::string name, std::string typeidName, size_t typeidHash);
@@ -48,7 +48,7 @@ class TypedControllerRegistry : public ControllerRegistry {
     TypedControllerRegistry(std::string name);
     ~TypedControllerRegistry();
 
-    void run(cmp::Entity entity, float dt, uint32_t num) const override;
+    void update(cmp::Entity entity) const override;
 };
 
 } // namespace atta::script

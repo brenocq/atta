@@ -39,6 +39,8 @@ class Manager final {
     friend std::vector<Entity> getScriptView();
     friend void createDefault();
     friend void clear();
+    friend void createFactories();
+    friend void destroyFactories();
 
   private:
     //----- Startup/ShutDown -----//
@@ -59,7 +61,6 @@ class Manager final {
     std::vector<Entity> getScriptViewImpl();
 
     //----- Factory -----//
-    void onSimulationStateChange(event::Event& event);
     void createFactories();
     void destroyFactories();
     std::vector<Factory>& getFactoriesImpl();

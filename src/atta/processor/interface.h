@@ -28,6 +28,9 @@ Type getType();
 
 State getState();
 
+void setDt(float dt);
+float getDt();
+
 std::shared_ptr<Processor> getProcessor();
 std::shared_ptr<Serial> getSerialProcessor();
 std::shared_ptr<Cpu> getCpuProcessor();

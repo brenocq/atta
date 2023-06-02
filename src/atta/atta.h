@@ -27,6 +27,7 @@ class Atta {
   private:
     // Handle events
     void onWindowClose(event::Event& event);
+    void onSimulationStateChange(event::Event& event);
 
     // Memory
     memory::StackAllocator* _mainAllocator;

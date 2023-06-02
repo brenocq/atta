@@ -15,8 +15,6 @@
 #include <atta/event/events/imageLoad.h>
 #include <atta/event/events/meshLoad.h>
 #include <atta/event/events/scriptTarget.h>
-#include <atta/event/events/simulationStart.h>
-#include <atta/event/events/simulationStop.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/material.h>
 #include <atta/utils/cuda.h>
@@ -51,8 +49,6 @@ void Manager::startUpImpl() {
         cpuDataManager->allocPool(r->getId(), r->getDescription().maxInstances);
 
     //----- Events -----//
-    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
-    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
     event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshEvent));
     event::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(Manager::onImageEvent));
     event::subscribe<event::ScriptTarget>(BIND_EVENT_FUNC(Manager::onScriptEvent));
@@ -186,16 +182,6 @@ Factory* Manager::getFactoryImpl(Entity prototype) {
 //----------------------------------------//
 //--------------- Events -----------------//
 //----------------------------------------//
-void Manager::onSimulationStateChange(event::Event& event) {
-    if (event.getType() == event::SimulationStart::type) {
-        createFactories();
-    } else if (event.getType() == event::SimulationStop::type) {
-        destroyFactories();
-    } else {
-        LOG_WARN("component::Manager", "Received simulation event that was not be handled (type=[w]$0[])", event.getType());
-    }
-}
-
 void Manager::onMeshEvent(event::Event& event) {
     switch (event.getType()) {
         case event::MeshLoad::type: {

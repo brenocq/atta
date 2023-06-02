@@ -11,10 +11,10 @@ namespace atta::processor {
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
-void start() { getProcessor()->start(); }
-void pause() { getProcessor()->pause(); }
-void resume() { getProcessor()->resume(); }
-void stop() { getProcessor()->stop(); }
+void start() { Manager::getInstance().start(); }
+void pause() { Manager::getInstance().pause(); }
+void resume() { Manager::getInstance().resume(); }
+void stop() { Manager::getInstance().stop(); }
 
 void readData() { getProcessor()->readData(); }
 void writeData() { getProcessor()->writeData(); }
@@ -22,7 +22,10 @@ void writeData() { getProcessor()->writeData(); }
 void setType(Type type) { Manager::getInstance().setTypeImpl(type); }
 Type getType() { return Manager::getInstance().getTypeImpl(); }
 
-State getState() { return getProcessor()->getState(); }
+State getState() { return Manager::getInstance().getStateImpl(); }
+
+void setDt(float dt) { Manager::getInstance()._dt = dt; }
+float getDt() { return Manager::getInstance()._dt; }
 
 std::shared_ptr<Processor> getProcessor() { return Manager::getInstance().getProcessorImpl(); }
 std::shared_ptr<Serial> getSerialProcessor() { return Manager::getInstance().getSerialProcessorImpl(); }

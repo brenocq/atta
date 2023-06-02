@@ -4,7 +4,7 @@
 // Date: 2023-05-25
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-//#include <atta/parallel/interface.h>
+// #include <atta/parallel/interface.h>
 
 namespace atta::script {
 
@@ -19,8 +19,11 @@ TypedControllerRegistry<T>::~TypedControllerRegistry() {
 }
 
 template <typename T>
-void TypedControllerRegistry<T>::run(cmp::Entity entity, float dt, uint32_t num) const {
-    //parallel::run<T>(entity, dt, num);
+void TypedControllerRegistry<T>::update(cmp::Entity entity) const {
+    T script;
+    script.entity = entity;
+    script.dt = 0.015;
+    script.update();
 }
 
 } // namespace atta::script
