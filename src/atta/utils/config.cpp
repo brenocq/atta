@@ -17,12 +17,10 @@ void Config::init() { getInstance().initImpl(); }
 void Config::initImpl() {
     _dt = 0.015f; /// 15ms as default
     _time = 0.0f;
-    _state = State::IDLE;
     _desiredStepSpeed = 1.0f;
     _realStepSpeed = 0.0f;
 }
 
-Config::State Config::getState() { return getInstance()._state; }
 float Config::getDt() { return getInstance()._dt; }
 void Config::setDt(float dt) { getInstance()._dt = dt; }
 float Config::getTime() { return getInstance()._time; }

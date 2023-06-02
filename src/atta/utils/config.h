@@ -12,12 +12,9 @@ namespace atta {
 class Atta;
 class Config final {
   public:
-    enum class State { IDLE = 0, RUNNING, PAUSED };
-
     static Config& getInstance();
     static void init();
 
-    static State getState();
     static float getDt();
     static void setDt(float dt);
     static float getTime();
@@ -28,9 +25,6 @@ class Config final {
 
   private:
     void initImpl();
-
-    /// Simulation state
-    State _state;
 
     //----- Stepping -----//
     float _dt;    ///< Simulation step in seconds

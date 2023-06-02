@@ -14,10 +14,10 @@ Gpu::Gpu() : Processor(Type::GPU) {}
 
 Gpu::~Gpu() {}
 
-void Gpu::start() {}
-void Gpu::pause() {}
-void Gpu::resume() {}
-void Gpu::stop() {}
+void Gpu::start() { _state = State::RUNNING; }
+void Gpu::pause() { _state = State::PAUSED; }
+void Gpu::resume() { _state = State::RUNNING; }
+void Gpu::stop() { _state = State::IDLE; }
 
 void Gpu::readData() {}
 void Gpu::writeData() {}

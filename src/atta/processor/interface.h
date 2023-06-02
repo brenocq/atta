@@ -26,6 +26,8 @@ void writeData();
 void setType(Type type);
 Type getType();
 
+State getState();
+
 std::shared_ptr<Processor> getProcessor();
 std::shared_ptr<Serial> getSerialProcessor();
 std::shared_ptr<Cpu> getCpuProcessor();

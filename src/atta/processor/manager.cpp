@@ -70,19 +70,23 @@ void Manager::onSimulationStateChange(event::Event& event) {
     switch (event.getType()) {
         case event::SimulationStart::type: {
             _processor->start();
+            LOG_DEBUG("processor::Manager", "Start");
             break;
         }
         case event::SimulationContinue::type: {
             _processor->resume();
+            LOG_DEBUG("processor::Manager", "Resume");
             break;
         }
         case event::SimulationPause::type: {
             _processor->pause();
+            LOG_DEBUG("processor::Manager", "Pause");
             break;
         }
         case event::SimulationStop::type: {
             // Config::getInstance()._time = 0.0f;
             // Config::getInstance()._realStepSpeed = 0.0f;
+            LOG_DEBUG("processor::Manager", "Stop");
             _processor->stop();
             break;
         }

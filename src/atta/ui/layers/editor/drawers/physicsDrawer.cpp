@@ -18,7 +18,7 @@
 #include <atta/graphics/drawer.h>
 #include <atta/physics/engines/bulletEngine.h>
 #include <atta/physics/interface.h>
-#include <atta/utils/config.h>
+#include <atta/processor/interface.h>
 
 namespace atta::ui {
 
@@ -57,7 +57,7 @@ void PhysicsDrawer::drawBullet() {
             vec4 color = {1, 1, 1, 1};
 
             // Change color based on bullet rigid body state
-            if (Config::getState() != Config::State::IDLE) {
+            if (processor::getState() != processor::State::IDLE) {
                 auto bullet = physics::getEngine<physics::BulletEngine>();
                 auto rb = bullet->getBulletRigidBody(entity);
                 if (rb)
@@ -159,7 +159,7 @@ void PhysicsDrawer::drawBullet() {
         }
     }
 
-    if (Config::getState() != Config::State::IDLE) {
+    if (processor::getState() != processor::State::IDLE) {
         std::shared_ptr<physics::BulletEngine> bullet = std::static_pointer_cast<physics::BulletEngine>(physics::getEngine());
         //---------- Draw AABBs ----------//
         if (bullet->getShowAabb()) {
@@ -217,7 +217,7 @@ void PhysicsDrawer::drawBox2D() {
                 continue;
 
             // Change color based on box2d rigid body state
-            if (Config::getState() != Config::State::IDLE) {
+            if (processor::getState() != processor::State::IDLE) {
                 auto box2d = physics::getEngine<physics::Box2DEngine>();
                 auto rb = box2d->getBox2DRigidBody(entity);
                 if (rb)

@@ -8,7 +8,7 @@
 
 namespace atta::processor {
 
-Serial::Serial() : Processor(Type::SERIAL) {}
+Serial::Serial() : Processor(Type::SERIAL) { LOG_DEBUG("Serial", "Porcessor -> $0", (int)_state); }
 
 Serial::~Serial() {}
 
@@ -24,9 +24,9 @@ Serial::~Serial() {}
 //     }
 // }
 
-void Serial::start() {}
-void Serial::pause() {}
-void Serial::resume() {}
-void Serial::stop() {}
+void Serial::start() { _state = State::RUNNING; }
+void Serial::pause() { _state = State::PAUSED; }
+void Serial::resume() { _state = State::RUNNING; }
+void Serial::stop() { _state = State::IDLE; }
 
 } // namespace atta::processor

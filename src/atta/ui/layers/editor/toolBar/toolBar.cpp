@@ -11,8 +11,9 @@
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/interface.h>
 #include <atta/graphics/interface.h>
-#include <atta/ui/layers/editor/toolBar/toolBar.h>
+#include <atta/processor/interface.h>
 #include <atta/ui/layers/editor/components/button.h>
+#include <atta/ui/layers/editor/toolBar/toolBar.h>
 #include <atta/utils/config.h>
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -48,7 +49,7 @@ void ToolBar::render() {
         // Step buttons
         {
             ImGui::SameLine();
-            bool disabled = Config::getState() == Config::State::IDLE;
+            bool disabled = processor::getState() == processor::State::IDLE;
             if (disabled) {
                 ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
                 ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
@@ -63,12 +64,12 @@ void ToolBar::render() {
             }
 
             ImGui::SameLine();
-            if (Config::getState() != Config::State::RUNNING) {
+            if (processor::getState() != processor::State::RUNNING) {
                 if (ui::ImageButton("play", buttonH)) {
-                    if (Config::getState() == Config::State::PAUSED) {
+                    if (processor::getState() == processor::State::PAUSED) {
                         event::SimulationContinue e;
                         event::publish(e);
-                    } else if (Config::getState() == Config::State::IDLE) {
+                    } else if (processor::getState() == processor::State::IDLE) {
                         event::SimulationStart e;
                         event::publish(e);
                     }
@@ -94,8 +95,7 @@ void ToolBar::render() {
             // Real time interval
             const float rtInt = 0.1f;
 
-            if(firstTime)
-            {
+            if (firstTime) {
                 firstTime = false;
 
                 // Initialize speed slider with correct value
@@ -108,13 +108,12 @@ void ToolBar::render() {
                 else if (desiredStepSpeed == 0.0f)
                     speed = 2.0f;
                 else if (desiredStepSpeed < 1.0f) {
-                    if(Config::getDt() != 1)
-                    {
-                        float k = (desiredStepSpeed-Config::getDt())/(1-Config::getDt());
-                        speed = log10(9*k+1)-rtInt;
+                    if (Config::getDt() != 1) {
+                        float k = (desiredStepSpeed - Config::getDt()) / (1 - Config::getDt());
+                        speed = log10(9 * k + 1) - rtInt;
                     }
                 } else
-                    speed = log10(desiredStepSpeed)/2+rtInt+1;
+                    speed = log10(desiredStepSpeed) / 2 + rtInt + 1;
             }
 
             // Slider text

@@ -8,8 +8,10 @@
 
 namespace atta::processor {
 
-Processor::Processor(Type type) : _type(type) {}
+Processor::Processor(Type type) : _type(type), _state(State::IDLE) {}
 
 Type Processor::getType() const { return _type; }
+
+State Processor::getState() const { return _state; }
 
 } // namespace atta::processor

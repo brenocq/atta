@@ -16,10 +16,10 @@ Cpu::Cpu() : Processor(Type::CPU), _stopWorkers(false), _nextIdx(1), _endIdx(0),
 
 Cpu::~Cpu() { stopWorkers(); }
 
-void Cpu::start() {}
-void Cpu::pause() {}
-void Cpu::resume() {}
-void Cpu::stop() {}
+void Cpu::start() { _state = State::RUNNING; }
+void Cpu::pause() { _state = State::PAUSED; }
+void Cpu::resume() { _state = State::RUNNING; }
+void Cpu::stop() { _state = State::IDLE; }
 
 // void Cpu::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
 //     // If no work to be done, return

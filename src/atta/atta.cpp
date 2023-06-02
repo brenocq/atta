@@ -36,10 +36,10 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     component::startUp();
     graphics::startUp();
     ui::startUp();
-    processor::startUp();
     physics::startUp();
     sensor::startUp();
     script::startUp();
+    processor::startUp();
 
     // Atta is the last one to reveice events
     event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
@@ -67,10 +67,11 @@ Atta::~Atta() {
     // TODO ask user if should close or not
     // file::saveProject();
     file::closeProject();
+
+    processor::shutDown();
     script::shutDown();
     sensor::shutDown();
     physics::shutDown();
-    processor::shutDown();
     ui::shutDown();
     graphics::shutDown();
     component::shutDown();
@@ -120,11 +121,15 @@ void Atta::loop() {
 
     file::update();
     if (graphics::shouldUpdate()) {
-        processor::pause();
-        processor::readData();
-        graphics::update();
-        processor::writeData();
-        processor::resume();
+        if (processor::getState() == processor::State::RUNNING) {
+            // processor::pause();
+            // processor::readData();
+            graphics::update();
+            // processor::writeData();
+            // processor::resume();
+        } else {
+            graphics::update();
+        }
     }
 }
 

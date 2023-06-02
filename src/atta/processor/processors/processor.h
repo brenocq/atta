@@ -16,6 +16,7 @@ class Processor {
     Processor(Type type);
 
     Type getType() const;
+    State getState() const;
 
     virtual void start() = 0;
     virtual void pause() = 0;
@@ -27,6 +28,7 @@ class Processor {
 
   protected:
     const Type _type;
+    State _state;
 };
 
 } // namespace atta::processor

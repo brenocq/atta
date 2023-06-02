@@ -22,6 +22,8 @@ void writeData() { getProcessor()->writeData(); }
 void setType(Type type) { Manager::getInstance().setTypeImpl(type); }
 Type getType() { return Manager::getInstance().getTypeImpl(); }
 
+State getState() { return getProcessor()->getState(); }
+
 std::shared_ptr<Processor> getProcessor() { return Manager::getInstance().getProcessorImpl(); }
 std::shared_ptr<Serial> getSerialProcessor() { return Manager::getInstance().getSerialProcessorImpl(); }
 std::shared_ptr<Cpu> getCpuProcessor() { return Manager::getInstance().getCpuProcessorImpl(); }
