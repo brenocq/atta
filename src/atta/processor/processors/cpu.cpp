@@ -16,10 +16,14 @@ Cpu::Cpu() : Processor(Type::CPU), _stopWorkers(false), _nextIdx(1), _endIdx(0),
 
 Cpu::~Cpu() { stopWorkers(); }
 
-void Cpu::start() {}
-void Cpu::pause() {}
-void Cpu::resume() {}
-void Cpu::stop() {}
+void Cpu::startThread() { _thread = std::thread(&Cpu::loop, this); }
+
+void Cpu::loop() {
+    LOG_DEBUG("CPU", "Start");
+    while (shouldRun()) {
+        LOG_DEBUG("CPU", "Step");
+    }
+}
 
 // void Cpu::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
 //     // If no work to be done, return

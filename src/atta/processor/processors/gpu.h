@@ -15,13 +15,10 @@ class Gpu : public Processor {
     Gpu();
     ~Gpu();
 
-    void start() override;
-    void pause() override;
-    void resume() override;
-    void stop() override;
+  private:
+    void startThread() override;
 
-    void readData() override;
-    void writeData() override;
+    void loop();
 };
 
 } // namespace atta::processor

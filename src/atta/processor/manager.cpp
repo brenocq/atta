@@ -23,6 +23,9 @@ void Manager::startUpImpl() {
 }
 
 void Manager::shutDownImpl() {
+    if (_state != State::IDLE)
+        stop();
+
     _processor.reset();
     _serial.reset();
     _cpu.reset();

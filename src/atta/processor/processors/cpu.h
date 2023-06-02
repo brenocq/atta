@@ -19,16 +19,15 @@ class Cpu : public Processor {
     Cpu();
     ~Cpu();
 
-    void start() override;
-    void pause() override;
-    void resume() override;
-    void stop() override;
-
     void setNumWorkers(uint32_t numWorkers);
     uint32_t getNumWorkers() const;
     uint32_t getMaxNumWorkers() const;
 
   private:
+    void startThread() override;
+
+    void loop();
+
     void worker();
 
     bool hasWork();
