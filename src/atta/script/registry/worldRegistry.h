@@ -21,8 +21,6 @@ class WorldRegistry : public Registry {
 
     static void onStart();
     static void onStop();
-    static void onContinue();
-    static void onPause();
     static void onUpdateBefore();
     static void onUpdateAfter();
 
@@ -34,8 +32,6 @@ class WorldRegistry : public Registry {
 
     virtual void runOnStart() = 0;
     virtual void runOnStop() = 0;
-    virtual void runOnContinue() = 0;
-    virtual void runOnPause() = 0;
     virtual void runOnUpdateBefore() = 0;
     virtual void runOnUpdateAfter() = 0;
 
@@ -61,8 +57,6 @@ class TypedWorldRegistry : public WorldRegistry {
 
     void runOnStart() override;
     void runOnStop() override;
-    void runOnContinue() override;
-    void runOnPause() override;
     void runOnUpdateBefore() override;
     void runOnUpdateAfter() override;
 

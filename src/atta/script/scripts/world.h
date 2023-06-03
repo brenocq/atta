@@ -11,14 +11,11 @@ namespace atta::script {
 
 class World {
   public:
-    virtual void onStart();
-    virtual void onStop();
+    ATTA_CPU_GPU virtual void onStart() = 0;
+    ATTA_CPU_GPU virtual void onStop() = 0;
 
-    virtual void onContinue();
-    virtual void onPause();
-
-    virtual void onUpdateBefore();
-    virtual void onUpdateAfter();
+    ATTA_CPU_GPU virtual void onUpdateBefore() = 0;
+    ATTA_CPU_GPU virtual void onUpdateAfter() = 0;
 };
 
 } // namespace atta::script

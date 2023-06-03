@@ -46,16 +46,6 @@ void WorldRegistry::onStop() {
         r->runOnStop();
 }
 
-void WorldRegistry::onContinue() {
-    for (WorldRegistry* r : getRegs())
-        r->runOnContinue();
-}
-
-void WorldRegistry::onPause() {
-    for (WorldRegistry* r : getRegs())
-        r->runOnPause();
-}
-
 void WorldRegistry::onUpdateBefore() {
     for (WorldRegistry* r : getRegs())
         r->runOnUpdateBefore();

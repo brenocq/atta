@@ -11,7 +11,7 @@ set(ATTA_PROCESSOR_MODULE_SOURCE
 )
 
 add_library(atta_processor_module STATIC ${ATTA_PROCESSOR_MODULE_SOURCE})
-target_link_libraries(atta_processor_module PUBLIC atta_component_module atta_script_module ant)
+target_link_libraries(atta_processor_module PUBLIC atta_component_module atta_script_module ant world)
 
 atta_target_common(atta_processor_module)
 atta_add_libs(atta_processor_module)

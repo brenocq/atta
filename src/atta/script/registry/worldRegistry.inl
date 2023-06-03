@@ -27,16 +27,6 @@ void TypedWorldRegistry<T>::runOnStop() {
 }
 
 template <typename T>
-void TypedWorldRegistry<T>::runOnContinue() {
-    _worldScript.onContinue();
-}
-
-template <typename T>
-void TypedWorldRegistry<T>::runOnPause() {
-    _worldScript.onPause();
-}
-
-template <typename T>
 void TypedWorldRegistry<T>::runOnUpdateBefore() {
     _worldScript.onUpdateBefore();
 }
