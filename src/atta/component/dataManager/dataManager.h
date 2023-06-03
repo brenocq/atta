@@ -32,7 +32,7 @@ class DataManager {
      * The component table has one pointer for each registered component. The pointer is nullptr if the component was not allocated for this entity
      */
     struct EntityBlock {
-        bool exist;                                       ///< Flag to define if entity exists
+        bool exist;                           ///< Flag to define if entity exists
         Component* components[maxComponents]; ///< Component table
 
         ATTA_CPU_GPU Component*& operator[](size_t index);
@@ -112,7 +112,7 @@ class DataManager {
   protected:
     void initEntityPool();
 
-    EntityId _currentEntity;                                  ///< Current position to create entity
+    EntityId _currentEntity;                      ///< Current position to create entity
     EntityBlock _entityPool[maxEntities];         ///< Entity pool
     ComponentPool _componentPools[maxComponents]; ///< Components pools
 

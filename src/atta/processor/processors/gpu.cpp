@@ -114,8 +114,7 @@ void Gpu::readData() { component::GpuDataManager::copyGpuToCpu(); }
 void Gpu::writeData() { component::GpuDataManager::copyCpuToGpu(); }
 
 //---------- GPU CODE ----------//
-ATTA_GPU float d_count = 0;
-ATTA_GPU_CONST int d_numSteps = 1; // 100000;
+ATTA_GPU_CONST int d_numSteps = 1;
 
 __global__ void onStart() {
     World world;
@@ -141,7 +140,6 @@ __global__ void step() {
     for (int i = 0; i < d_numSteps; i++) {
         world.onUpdateBefore();
 
-        d_count = cmp::Entity(2).get<AntComponent>()->position.x;
         // Run ant scripts
         cmp::Entity antPrototype = cmp::Entity(1);
         uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
@@ -158,21 +156,12 @@ __global__ void onStop() {
     world.onStop();
 }
 
-void printCount(std::string str = "") {
-    float count;
-    cudaMemcpyFromSymbol(&count, d_count, sizeof(float));
-
-    LOG_DEBUG("GPU", "($1) Count $0", count, str);
-}
-
 void Gpu::startThread() { _thread = std::thread(&Gpu::loop, this); }
 
 void Gpu::loop() {
-    LOG_DEBUG("GPU", "Start kernel");
     onStart<<<1, 1>>>();
     while (shouldRun()) {
         step<<<1, 1>>>();
-        printCount("Step");
     }
     onStop<<<1, 1>>>();
 }
