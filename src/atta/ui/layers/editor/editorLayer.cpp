@@ -78,9 +78,9 @@ void EditorLayer::onUIRender() {
 
     // Project UI
     try {
-        script::WorldRegistry::onUIRender();
+        script::SystemRegistry::onUIRender();
     } catch (std::exception& e) {
-        LOG_ERROR("ui::EditorLayer", "Error when executing [w]script::World::onUIRender[]: $0", e.what());
+        LOG_ERROR("ui::EditorLayer", "Error when executing [w]script::System::onUIRender[]: $0", e.what());
     }
 }
 

@@ -24,12 +24,12 @@ void Manager::shutDownImpl() {}
 
 void Manager::onProjectOpen(event::Event& event) {
     // Make sure to call onLoad only after the project is deserialized
-    WorldRegistry::onLoad();
+    SystemRegistry::onLoad();
 }
 
 void Manager::onProjectClose(event::Event& event) {
     // Unload world script when project is closed
-    WorldRegistry::onUnload();
+    SystemRegistry::onUnload();
 }
 
 } // namespace atta::script

@@ -7,9 +7,11 @@ set(ATTA_SCRIPT_MODULE_SOURCE
 
     registry/registry.cpp
     registry/controllerRegistry.cpp
+    registry/systemRegistry.cpp
     registry/worldRegistry.cpp
 
     scripts/controller.cpp
+    scripts/system.cpp
     scripts/world.cpp
 )
 

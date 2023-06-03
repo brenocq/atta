@@ -8,10 +8,6 @@
 
 namespace atta::script {
 
-void World::onLoad() {}
-
-void World::onUnload() {}
-
 void World::onStart() {}
 
 void World::onStop() {}
@@ -20,12 +16,8 @@ void World::onContinue() {}
 
 void World::onPause() {}
 
-void World::onUpdateBefore(float dt) {}
+void World::onUpdateBefore() {}
 
-void World::onUpdateAfter(float dt) {}
-
-void World::onUIRender() {}
-
-void World::onAttaLoop() {}
+void World::onUpdateAfter() {}
 
 } // namespace atta::script

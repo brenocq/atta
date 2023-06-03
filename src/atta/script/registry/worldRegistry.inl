@@ -17,16 +17,6 @@ TypedWorldRegistry<T>::~TypedWorldRegistry() {
 }
 
 template <typename T>
-void TypedWorldRegistry<T>::runOnLoad() {
-    _worldScript.onLoad();
-}
-
-template <typename T>
-void TypedWorldRegistry<T>::runOnUnload() {
-    _worldScript.onUnload();
-}
-
-template <typename T>
 void TypedWorldRegistry<T>::runOnStart() {
     _worldScript.onStart();
 }
@@ -47,23 +37,13 @@ void TypedWorldRegistry<T>::runOnPause() {
 }
 
 template <typename T>
-void TypedWorldRegistry<T>::runOnUpdateBefore(float dt) {
-    _worldScript.onUpdateBefore(dt);
+void TypedWorldRegistry<T>::runOnUpdateBefore() {
+    _worldScript.onUpdateBefore();
 }
 
 template <typename T>
-void TypedWorldRegistry<T>::runOnUpdateAfter(float dt) {
-    _worldScript.onUpdateAfter(dt);
-}
-
-template <typename T>
-void TypedWorldRegistry<T>::runOnUIRender() {
-    _worldScript.onUIRender();
-}
-
-template <typename T>
-void TypedWorldRegistry<T>::runOnAttaLoop() {
-    _worldScript.onAttaLoop();
+void TypedWorldRegistry<T>::runOnUpdateAfter() {
+    _worldScript.onUpdateAfter();
 }
 
 } // namespace atta::script

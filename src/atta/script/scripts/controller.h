@@ -23,7 +23,6 @@ class Controller {
     ATTA_CPU_GPU T* get() const;
 
     cmp::Entity entity;
-    float dt;
 };
 
 } // namespace atta::script

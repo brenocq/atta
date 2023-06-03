@@ -22,7 +22,6 @@ template <typename T>
 void TypedControllerRegistry<T>::update(cmp::Entity entity) const {
     T script;
     script.entity = entity;
-    script.dt = 0.015;
     script.update();
 }
 

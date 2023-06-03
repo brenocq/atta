@@ -24,11 +24,11 @@ void Serial::startThread() { _thread = std::thread(&Serial::loop, this); }
 
 void Serial::loop() {
     script::WorldRegistry::onStart();
+    float dt = processor::getDt();
     while (shouldRun()) {
-        float dt = processor::getDt();
         physics::update(dt);
         sensor::update(dt);
-        script::WorldRegistry::onUpdateBefore(dt);
+        script::WorldRegistry::onUpdateBefore();
 
         for (auto& factory : component::getFactories()) {
             component::Script* script = factory.getPrototype().get<component::Script>();
@@ -41,7 +41,7 @@ void Serial::loop() {
             }
         }
 
-        script::WorldRegistry::onUpdateAfter(dt);
+        script::WorldRegistry::onUpdateAfter();
     }
     script::WorldRegistry::onStop();
 }

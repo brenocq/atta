@@ -66,12 +66,12 @@ void Manager::onProjectBeforeDeserialize(event::Event& event) {
 
 void Manager::onProjectOpen(event::Event& event) {
     // Call onLoad on all world scripts
-    WorldRegistry::onLoad();
+    SystemRegistry::onLoad();
 }
 
 void Manager::onProjectClose(event::Event& event) {
     // Call onUnload on all world scripts
-    WorldRegistry::onUnload();
+    SystemRegistry::onUnload();
 
     // Release all targets
     for (auto target : _compiler->getTargets())

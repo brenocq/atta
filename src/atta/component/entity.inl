@@ -25,6 +25,8 @@ ATTA_CPU_GPU T* Entity::add() const {
 #else
     ComponentId cid = TypedRegistry<T>::id;
     T* component = (T*)cpuDataManager->addComponent(_id, cid);
+    *component = T{};
+
     event::CreateComponent event;
     event.componentId = cid;
     event.entityId = _id;

@@ -19,16 +19,12 @@ class WorldRegistry : public Registry {
   public:
     static const std::vector<WorldRegistry*>& getRegistries();
 
-    static void onLoad();
-    static void onUnload();
     static void onStart();
     static void onStop();
     static void onContinue();
     static void onPause();
-    static void onUpdateBefore(float dt);
-    static void onUpdateAfter(float dt);
-    static void onUIRender();
-    static void onAttaLoop();
+    static void onUpdateBefore();
+    static void onUpdateAfter();
 
   protected:
     WorldRegistry(std::string name, std::string typeidName, size_t typeidHash);
@@ -36,17 +32,12 @@ class WorldRegistry : public Registry {
     void addRegistry(WorldRegistry* registry);
     void removeRegistry(WorldRegistry* registry);
 
-    virtual void runOnLoad() = 0;
-    virtual void runOnUnload() = 0;
     virtual void runOnStart() = 0;
     virtual void runOnStop() = 0;
     virtual void runOnContinue() = 0;
     virtual void runOnPause() = 0;
-    virtual void runOnUpdateBefore(float dt) = 0;
-    virtual void runOnUpdateAfter(float dt) = 0;
-    virtual void runOnUIRender() = 0;
-    virtual void runOnAttaLoop() = 0;
-
+    virtual void runOnUpdateBefore() = 0;
+    virtual void runOnUpdateAfter() = 0;
 
   private:
     /**
@@ -68,16 +59,12 @@ class TypedWorldRegistry : public WorldRegistry {
     TypedWorldRegistry(std::string name);
     ~TypedWorldRegistry();
 
-    void runOnLoad() override;
-    void runOnUnload() override;
     void runOnStart() override;
     void runOnStop() override;
     void runOnContinue() override;
     void runOnPause() override;
-    void runOnUpdateBefore(float dt) override;
-    void runOnUpdateAfter(float dt) override;
-    void runOnUIRender() override;
-    void runOnAttaLoop() override;
+    void runOnUpdateBefore() override;
+    void runOnUpdateAfter() override;
 
   private:
     T _worldScript;

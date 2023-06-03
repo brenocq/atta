@@ -36,16 +36,6 @@ std::vector<WorldRegistry*>& WorldRegistry::getRegs() {
     return registries;
 }
 
-void WorldRegistry::onLoad() {
-    for (WorldRegistry* r : getRegs())
-        r->runOnLoad();
-}
-
-void WorldRegistry::onUnload() {
-    for (WorldRegistry* r : getRegs())
-        r->runOnUnload();
-}
-
 void WorldRegistry::onStart() {
     for (WorldRegistry* r : getRegs())
         r->runOnStart();
@@ -66,24 +56,14 @@ void WorldRegistry::onPause() {
         r->runOnPause();
 }
 
-void WorldRegistry::onUpdateBefore(float dt) {
+void WorldRegistry::onUpdateBefore() {
     for (WorldRegistry* r : getRegs())
-        r->runOnUpdateBefore(dt);
+        r->runOnUpdateBefore();
 }
 
-void WorldRegistry::onUpdateAfter(float dt) {
+void WorldRegistry::onUpdateAfter() {
     for (WorldRegistry* r : getRegs())
-        r->runOnUpdateAfter(dt);
-}
-
-void WorldRegistry::onUIRender() {
-    for (WorldRegistry* r : getRegs())
-        r->runOnUIRender();
-}
-
-void WorldRegistry::onAttaLoop() {
-    for (WorldRegistry* r : getRegs())
-        r->runOnAttaLoop();
+        r->runOnUpdateAfter();
 }
 
 } // namespace atta::script

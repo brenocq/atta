@@ -8,8 +8,10 @@
 #define ATTA_SCRIPT_INTERFACE_H
 
 #include <atta/script/registry/controllerRegistry.h>
+#include <atta/script/registry/systemRegistry.h>
 #include <atta/script/registry/worldRegistry.h>
 #include <atta/script/scripts/controller.h>
+#include <atta/script/scripts/system.h>
 #include <atta/script/scripts/world.h>
 
 namespace atta::script {

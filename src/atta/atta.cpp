@@ -125,9 +125,6 @@ void Atta::loop() {
     //     _shouldStep = false;
     //     step();
     // }
-    // script::WorldRegistry::onAttaLoop();
-
-    // XXX simulation running in another thread
 
     file::update();
     if (graphics::shouldUpdate()) {
@@ -141,6 +138,8 @@ void Atta::loop() {
             graphics::update();
         }
     }
+
+    script::SystemRegistry::onAttaLoop();
 }
 
 void Atta::onWindowClose(event::Event& event) { _shouldFinish = true; }

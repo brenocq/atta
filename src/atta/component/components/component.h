@@ -4,8 +4,8 @@
 // Date: 2021-11-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_H
-#define ATTA_COMPONENT_COMPONENTS_H
+#ifndef ATTA_COMPONENT_COMPONENTS_COMPONENT_H
+#define ATTA_COMPONENT_COMPONENTS_COMPONENT_H
 
 namespace atta::component {
 
@@ -17,4 +17,4 @@ struct Component {
 
 } // namespace atta::component
 
-#endif // ATTA_COMPONENT_COMPONENTS_H
+#endif // ATTA_COMPONENT_COMPONENTS_COMPONENT_H
