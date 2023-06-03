@@ -4,16 +4,20 @@
 // Date: 2023-05-26
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/component/dataManager/cpuDataManager.h>
 #include <atta/component/dataManager/gpuDataManager.h>
 #include <atta/component/registry/registry.h>
 #include <atta/utils/cuda.h>
+#include <cuda_runtime.h>
 
 namespace atta::component {
 
-GpuDataManager cpuCopy;
+GpuDataManager cpuCopy; ///< CPU copy of gpuDataManager
 ATTA_GPU GpuDataManager gpuDataManager;
 
-ATTA_CPU void updateGPU() { cudaMemcpyToSymbol(gpuDataManager, &cpuCopy, sizeof(GpuDataManager), 0, cudaMemcpyHostToDevice); }
+ATTA_CPU void updateGPU() { cudaMemcpyToSymbol(gpuDataManager, &cpuCopy, sizeof(GpuDataManager)); }
+
+ATTA_CPU void updateCPU() { cudaMemcpyFromSymbol(&cpuCopy, gpuDataManager, sizeof(GpuDataManager)); }
 
 ATTA_CPU void GpuDataManager::init() {
     cpuCopy = GpuDataManager();
@@ -54,6 +58,36 @@ ATTA_CPU void GpuDataManager::deallocPool(ComponentId cid) {
     // Remove pool
     cpuCopy._componentPools[cid].reset();
     updateGPU();
+}
+
+ATTA_CPU void GpuDataManager::copyCpuToGpu() {
+    //---------- Copy component pools ----------//
+    // XXX Assuming both will have the same pools with the same size
+    auto& pools = cpuDataManager->_componentPools;
+    for (size_t i = 0; i < maxComponents; i++)
+        if (pools[i].isAllocated())
+            cuda::copyCpuToGpu(cpuCopy._componentPools[i].getMemory(), pools[i].getMemory(), pools[i].getSize());
+
+    //---------- Copy entity pool ----------//
+    for (size_t i = 0; i < maxEntities; i++)
+        cpuCopy._entityPool[i] = cpuDataManager->_entityPool[i];
+
+    // Shift entity pool pointer addresses
+    for (size_t i = 0; i < maxComponents; i++) {
+        int64_t shift = (int64_t)cpuCopy._componentPools[i].getMemory() - (int64_t)pools[i].getMemory();
+        for (size_t e = 0; e < maxEntities; e++)
+            if (cpuCopy._entityPool[e].exist && cpuCopy._entityPool[e].components[i]) {
+                cpuCopy._entityPool[e].components[i] = (Component*)((uint8_t*)cpuCopy._entityPool[e].components[i] + shift);
+            }
+    }
+
+    updateGPU();
+}
+
+ATTA_CPU void GpuDataManager::copyGpuToCpu() {
+    // Copy component pools
+
+    // Copy entity pool
 }
 
 } // namespace atta::component

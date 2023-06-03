@@ -8,7 +8,7 @@
 
 namespace atta::component {
 
-ComponentPool::ComponentPool(uint8_t* memory, uint8_t size, uint32_t componentSize, uint32_t numComponents)
+ComponentPool::ComponentPool(uint8_t* memory, uint32_t size, uint32_t componentSize, uint32_t numComponents)
     : _memory(memory), _size(size), _componentSize(componentSize), _numComponents(numComponents), _current(0) {
     _dataStart = _memory + calcBitmapSize(_numComponents);
 }

@@ -8,6 +8,7 @@
 
 namespace atta::component {
 
+#ifndef __NVCC__
 template <>
 ComponentDescription& TypedRegistry<Prototype>::getDescription() {
     static ComponentDescription desc = {"Prototype",
@@ -15,5 +16,6 @@ ComponentDescription& TypedRegistry<Prototype>::getDescription() {
 
     return desc;
 }
+#endif
 
 } // namespace atta::component

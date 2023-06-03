@@ -47,7 +47,17 @@ atta_target_common(atta_component_module)
 atta_add_libs(atta_component_module)
 
 if(ATTA_CUDA_SUPPORT)
-    atta_cuda_sources(atta_component_module "dataManager/dataManager.cpp;dataManager/gpuDataManager.cpp;registry/typedRegistry.cpp;entity.cpp")
+    set(ATTA_COMPONENT_MODULE_CUDA_SOURCE
+        entity.cpp
+
+        registry/typedRegistry.cpp
+
+        dataManager/componentPool.cpp
+        dataManager/dataManager.cpp
+        dataManager/gpuDataManager.cpp
+    )
+
+    atta_cuda_sources(atta_component_module "${ATTA_COMPONENT_MODULE_CUDA_SOURCE}")
 endif()
 
 ########## Testing ##########

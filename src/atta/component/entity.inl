@@ -5,10 +5,10 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/dataManager/cpuDataManager.h>
+#include <atta/component/registry/typedRegistry.h>
 #include <atta/event/events/createComponent.h>
 #include <atta/event/events/deleteComponent.h>
 #include <atta/event/interface.h>
-#include <atta/component/registry/typedRegistry.h>
 
 #include <atta/component/dataManager/gpuDataManager.h>
 
@@ -54,7 +54,6 @@ ATTA_CPU_GPU T* Entity::get() const {
 #if ATTA_GPU_CODE
     ComponentId cid = idGpu<T>;
     return (T*)gpuDataManager.getComponent(_id, cid);
-    return nullptr;
 #else
     ComponentId cid = TypedRegistry<T>::id;
     return (T*)cpuDataManager->getComponent(_id, cid);

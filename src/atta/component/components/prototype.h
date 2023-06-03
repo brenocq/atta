@@ -22,9 +22,12 @@ namespace atta::component {
 struct Prototype final : public Component {
     uint64_t maxClones; ///< Number of clones to be created
 };
+
+#ifndef __NVCC__
 ATTA_REGISTER_COMPONENT(Prototype)
 template <>
 ComponentDescription& TypedRegistry<Prototype>::getDescription();
+#endif
 
 } // namespace atta::component
 

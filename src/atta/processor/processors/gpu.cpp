@@ -12,7 +12,9 @@
 #include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
 #include "/home/breno/Github/brenocq-atta/ants/src/world.h"
 #include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
+#include <atta/component/components/prototype.h>
 #include <atta/component/dataManager/cpuDataManager.h>
+#include <atta/component/dataManager/gpuDataManager.h>
 #include <atta/component/entity.h>
 #include <atta/component/registry/typedRegistry.h>
 
@@ -107,22 +109,39 @@ Gpu::Gpu() : Processor(Type::GPU) {
 
 Gpu::~Gpu() {}
 
-void Gpu::readData() { component::cpuDataManager->copyGpuToCpu(); }
+void Gpu::readData() { component::GpuDataManager::copyGpuToCpu(); }
 
-void Gpu::writeData() { component::cpuDataManager->copyCpuToGpu(); }
+void Gpu::writeData() { component::GpuDataManager::copyCpuToGpu(); }
 
 //---------- GPU CODE ----------//
 ATTA_GPU int d_count = 0;
-ATTA_GPU_CONST int d_numSteps = 1000000000;
+ATTA_GPU_CONST int d_numSteps = 1; // 100000;
 
 __global__ void onStart() { d_count = 0; }
 
+template <typename T>
+ATTA_GPU int getId() {
+    return component::idGpu<T>;
+}
+
+__global__ void runAnts(cmp::EntityId first, cmp::EntityId last) {
+    cmp::EntityId clone = first + (blockIdx.x * blockDim.x + threadIdx.x);
+    if (clone > last)
+        return;
+    Ant ant;
+    ant.entity = clone;
+    ant.update();
+}
+
 __global__ void step() {
     for (int i = 0; i < d_numSteps; i++) {
-        cmp::Entity entity(10);
-        // AntComponent* ant = entity.get<AntComponent>();
-        //  d_count = ant->position.x * 100;
-        d_count = -1;
+
+        // Run ant scripts
+        cmp::Entity antPrototype = cmp::Entity(1);
+        uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
+        cmp::EntityId first = 2;
+        cmp::EntityId last = first + num;
+        runAnts<<<(num + 256) / 256, 256>>>(first, last);
     }
 }
 

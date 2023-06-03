@@ -8,7 +8,7 @@
 
 #include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
 #include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
-// #include <atta/component/components/components.h>
+#include <atta/component/components/prototype.h>
 
 namespace atta::component {
 
@@ -47,8 +47,8 @@ namespace atta::component {
 // ATTA_GPU_CONST ComponentId idGpu<Name> = 14;
 // template <>
 // ATTA_GPU_CONST ComponentId idGpu<PointLight> = 15;
-// template <>
-// ATTA_GPU_CONST ComponentId idGpu<Prototype> = 16;
+template <>
+ATTA_GPU_CONST ComponentId idGpu<Prototype> = 16;
 // template <>
 // ATTA_GPU_CONST ComponentId idGpu<Relationship> = 17;
 // template <>

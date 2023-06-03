@@ -29,10 +29,13 @@ TEST(Component_ComponentPool, PoolSize) {
 
 TEST(Component_ComponentPool, AllocFree) {
     size_t size = 8;
-    uint8_t data[sizeof(Name) * size] = {};
+    uint8_t data[8 + sizeof(Name) * size] = {};
     ComponentPool p = ComponentPool(data, sizeof(data), sizeof(Name), size);
     Name* n0 = (Name*)p.alloc();
     Name* n1 = (Name*)p.alloc();
+
+    EXPECT_EQ((uint8_t*)n0, (uint8_t*)p.getMemory() + 8);
+
     n0->set("Name0");
     n1->set("Name1");
     EXPECT_EQ(n0 + 1, n1);

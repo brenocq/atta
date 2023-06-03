@@ -23,10 +23,10 @@ namespace atta::component {
 
 ATTA_CPU void DataManager::initEntityPool() {
     _currentEntity = 0;
-    for (EntityBlock& eb : _entityPool) {
-        eb.exist = false;
-        for (size_t i = 0; i < eb.components.size(); i++)
-            eb.components[i] = nullptr;
+    for (size_t e = 0; e < maxEntities; e++) {
+        _entityPool[e].exist = false;
+        for (size_t i = 0; i < maxComponents; i++)
+            _entityPool[e].components[i] = nullptr;
     }
 }
 
@@ -48,14 +48,14 @@ ATTA_CPU_GPU EntityId DataManager::createEntity(EntityId eid) {
                 createdId = _currentEntity;
                 break;
             }
-            _currentEntity = (_currentEntity + 1) % _entityPool.size();
+            _currentEntity = (_currentEntity + 1) % maxEntities;
         } while (_currentEntity != start);
     }
 
     // Create entity
     if (createdId >= 0) {
         _entityPool[createdId].exist = true;
-        _currentEntity = (createdId + 1) % _entityPool.size();
+        _currentEntity = (createdId + 1) % maxEntities;
     }
 
     return createdId;
@@ -79,7 +79,7 @@ ATTA_CPU_GPU void DataManager::destroyEntity(EntityId eid) {
 
 ATTA_CPU_GPU bool DataManager::entityExists(EntityId eid) { return validEntity(eid) && _entityPool[eid].exist; }
 
-ATTA_CPU_GPU bool DataManager::validEntity(EntityId eid) { return eid >= 0 && eid < _entityPool.size(); }
+ATTA_CPU_GPU bool DataManager::validEntity(EntityId eid) { return eid >= 0 && eid < maxEntities; }
 
 ATTA_CPU std::vector<EntityId> DataManager::getEntities() const {
     std::vector<EntityId> entities;
@@ -131,12 +131,12 @@ ATTA_CPU std::vector<ComponentId> DataManager::getComponents(EntityId eid) {
 }
 
 ATTA_CPU_GPU bool DataManager::validComponent(ComponentId component) {
-    return component >= 0 && component < _componentPools.size() && _componentPools[component].isAllocated();
+    return component >= 0 && component < maxComponents && _componentPools[component].isAllocated();
 }
 
 //-----------------------------------//
 //----------- EntityBlock -----------//
 //-----------------------------------//
-Component*& DataManager::EntityBlock::operator[](size_t index) { return components[index]; }
+ATTA_CPU_GPU Component*& DataManager::EntityBlock::operator[](size_t index) { return components[index]; }
 
 } // namespace atta::component

@@ -19,7 +19,7 @@ namespace atta::component {
 class ComponentPool {
   public:
     ComponentPool() = default;
-    ComponentPool(uint8_t* memory_, uint8_t size_, uint32_t componentSize_, uint32_t numComponents_);
+    ComponentPool(uint8_t* memory, uint32_t size, uint32_t componentSize, uint32_t numComponents);
 
     /**
      * @brief Calculate number of bytes in the pool given the number of components and size of each component

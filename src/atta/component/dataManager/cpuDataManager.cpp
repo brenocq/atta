@@ -48,13 +48,6 @@ void CpuDataManager::deallocPool(ComponentId cid) {
     _componentPools[cid].reset();
 }
 
-void CpuDataManager::copyCpuToGpu() {
-    // uint8_t* memory = (uint8_t*)cuda::alloc(poolSize);
-    // cuda::free(_componentPools[cid].getMemory());
-}
-
-void CpuDataManager::copyGpuToCpu() {}
-
 void CpuDataManager::initMemory() {
     // Get allocator to allocate pools from
     _allocator = memory::getAllocator(SSID("ComponentAllocator"));

@@ -37,6 +37,16 @@ class GpuDataManager : public DataManager {
      * @param cid Component id
      */
     static ATTA_CPU void deallocPool(ComponentId cid);
+
+    /**
+     * @brief Copy pools from CPU to GPU
+     */
+    static ATTA_CPU void copyCpuToGpu();
+
+    /**
+     * @brief Copy pools from GPU to CPU
+     */
+    static ATTA_CPU void copyGpuToCpu();
 };
 
 extern ATTA_GPU GpuDataManager gpuDataManager;

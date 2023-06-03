@@ -29,7 +29,7 @@ if(ATTA_CUDA_SUPPORT)
         math/ray.cpp
     )
 
-    atta_cuda_sources(atta_utils ${ATTA_UTILS_CUDA_SOURCE})
+    atta_cuda_sources(atta_utils "${ATTA_UTILS_CUDA_SOURCE}")
 endif()
 
 ########## Testing ##########

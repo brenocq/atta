@@ -33,9 +33,9 @@ class DataManager {
      */
     struct EntityBlock {
         bool exist;                                       ///< Flag to define if entity exists
-        std::array<Component*, maxComponents> components; ///< Component table
+        Component* components[maxComponents]; ///< Component table
 
-        Component*& operator[](size_t index);
+        ATTA_CPU_GPU Component*& operator[](size_t index);
     };
 
     /**
@@ -113,8 +113,8 @@ class DataManager {
     void initEntityPool();
 
     EntityId _currentEntity;                                  ///< Current position to create entity
-    std::array<EntityBlock, maxEntities> _entityPool;         ///< Entity pool
-    std::array<ComponentPool, maxComponents> _componentPools; ///< Components pools
+    EntityBlock _entityPool[maxEntities];         ///< Entity pool
+    ComponentPool _componentPools[maxComponents]; ///< Components pools
 
   private:
     /**

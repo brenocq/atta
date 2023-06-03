@@ -70,10 +70,8 @@ void Manager::stop() {
 }
 
 void Manager::setTypeImpl(Type type) {
-    if (_state != State::IDLE) {
+    if (_state != State::IDLE)
         _processor->stop();
-        _processor->readData();
-    }
 
     switch (type) {
         case Type::SERIAL:

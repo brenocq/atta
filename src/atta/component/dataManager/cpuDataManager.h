@@ -11,6 +11,7 @@
 
 namespace atta::component {
 
+class GpuDataManager;
 class CpuDataManager : public DataManager {
   public:
     /**
@@ -38,16 +39,6 @@ class CpuDataManager : public DataManager {
      */
     void deallocPool(ComponentId cid);
 
-    /**
-     * @brief Copy pools from CPU to GPU
-     */
-    void copyCpuToGpu();
-
-    /**
-     * @brief Copy pools from GPU to CPU
-     */
-    void copyGpuToCpu();
-
   private:
     /**
      * @brief Initialize CPU memory
@@ -55,6 +46,7 @@ class CpuDataManager : public DataManager {
     void initMemory();
 
     memory::Allocator* _allocator;
+    friend GpuDataManager;
 };
 
 extern CpuDataManager* cpuDataManager;
