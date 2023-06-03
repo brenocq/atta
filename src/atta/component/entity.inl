@@ -4,24 +4,21 @@
 // Date: 2023-05-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#if ATTA_CPU_CODE
 #include <atta/component/dataManager/cpuDataManager.h>
 #include <atta/event/events/createComponent.h>
 #include <atta/event/events/deleteComponent.h>
 #include <atta/event/interface.h>
-#else
-// #include <atta/component/dataManager/gpuDataManager.h>
-#endif
 #include <atta/component/registry/typedRegistry.h>
+
+#include <atta/component/dataManager/gpuDataManager.h>
 
 namespace atta::component {
 
 template <typename T>
 ATTA_CPU_GPU T* Entity::add() const {
-
 #if ATTA_GPU_CODE
-    // return gpuDataManager->addComponent(_id, cid);
-    return nullptr;
+    ComponentId cid = idGpu<T>;
+    return gpuDataManager.addComponent(_id, cid);
 #else
     ComponentId cid = TypedRegistry<T>::id;
     T* component = (T*)cpuDataManager->addComponent(_id, cid);
@@ -40,7 +37,8 @@ template <typename T>
 ATTA_CPU_GPU void Entity::remove() const {
 
 #if ATTA_GPU_CODE
-    // gpuDataManager->removeComponent(_id, cid);
+    ComponentId cid = idGpu<T>;
+    gpuDataManager.removeComponent(_id, cid);
 #else
     ComponentId cid = TypedRegistry<T>::id;
     cpuDataManager->removeComponent(_id, cid);
@@ -54,7 +52,8 @@ ATTA_CPU_GPU void Entity::remove() const {
 template <typename T>
 ATTA_CPU_GPU T* Entity::get() const {
 #if ATTA_GPU_CODE
-    // return (T*)gpuDataManager->getComponent(_id, cid);
+    ComponentId cid = idGpu<T>;
+    return (T*)gpuDataManager.getComponent(_id, cid);
     return nullptr;
 #else
     ComponentId cid = TypedRegistry<T>::id;

@@ -13,6 +13,7 @@ Processor::Processor(Type type) : _type(type), _pause(true) {}
 Type Processor::getType() const { return _type; }
 
 void Processor::start() {
+    writeData();
     _stop = false;
     _pause = true;
     startThread();
@@ -24,9 +25,11 @@ void Processor::pause() {
     _pause = true;
     // Wait until paused
     _cvWasPaused.wait(lock, [] { return true; });
+    readData();
 }
 
 void Processor::resume() {
+    writeData();
     // Ask to resume
     std::lock_guard<std::mutex> lock(_mtx);
     _pause = false;
@@ -38,6 +41,7 @@ void Processor::stop() {
     if (_pause)
         resume();
     _thread.join();
+    readData();
 }
 
 void Processor::readData() {}

@@ -6,8 +6,8 @@
 //--------------------------------------------------
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/relationship.h>
-#include <atta/component/entity.h>
 #include <atta/component/interface.h>
+#include <atta/component/entity.h>
 
 namespace atta::component {
 
@@ -15,8 +15,7 @@ ATTA_CPU_GPU Entity::operator EntityId() const { return _id; }
 
 ATTA_CPU_GPU bool Entity::exists() const {
 #if ATTA_GPU_CODE
-    // return gpuDataManager->entityExists(_id);
-    return false;
+    return gpuDataManager.entityExists(_id);
 #else
     return cpuDataManager->entityExists(_id);
 #endif
@@ -24,7 +23,7 @@ ATTA_CPU_GPU bool Entity::exists() const {
 
 ATTA_CPU_GPU EntityId Entity::getId() const { return _id; }
 
-ATTA_CPU_GPU bool Entity::isPrototype() const {
+ATTA_CPU bool Entity::isPrototype() const {
     if (get<Prototype>())
         return true;
 
@@ -35,7 +34,7 @@ ATTA_CPU_GPU bool Entity::isPrototype() const {
     return false;
 }
 
-ATTA_CPU_GPU Entity Entity::getParent() const {
+ATTA_CPU Entity Entity::getParent() const {
     auto r = get<Relationship>();
     if (r)
         return r->getParent();

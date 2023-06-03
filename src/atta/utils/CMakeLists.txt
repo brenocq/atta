@@ -18,6 +18,20 @@ add_library(atta_utils STATIC ${ATTA_UTILS_SOURCE})
 atta_target_common(atta_utils)
 atta_add_libs(atta_utils)
 
+if(ATTA_CUDA_SUPPORT)
+    set(ATTA_UTILS_CUDA_SOURCE
+        cuda.cpp
+
+        math/bounds.cpp
+        math/common.cpp
+        math/matrix.cpp
+        math/quaternion.cpp
+        math/ray.cpp
+    )
+
+    atta_cuda_sources(atta_utils ${ATTA_UTILS_CUDA_SOURCE})
+endif()
+
 ########## Testing ##########
 set(ATTA_UTILS_TEST_SOURCES
     tests/stringId.cpp

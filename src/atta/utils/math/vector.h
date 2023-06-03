@@ -24,7 +24,7 @@ class vector4 {
     T x, y, z, w;
 
   public:
-    ATTA_CPU_GPU vector4() : x(0), y(0), z(0), w(0) {}
+    ATTA_CPU_GPU vector4() = default;
     ATTA_CPU_GPU vector4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
     ATTA_CPU_GPU vector4(T _x) : x(_x), y(_x), z(_x), w(_x) {}
     ATTA_CPU_GPU vector4(vector3<T> vector, T _w) : x(vector.x), y(vector.y), z(vector.z), w(_w) {}
@@ -158,7 +158,7 @@ class vector3 {
     //	T pad;// 4 word alignment
 
   public:
-    ATTA_CPU_GPU vector3() : x(0), y(0), z(0) {}
+    ATTA_CPU_GPU vector3() = default;
     ATTA_CPU_GPU vector3(T _x) : x(_x), y(_x), z(_x) {}
     ATTA_CPU_GPU vector3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
     template <typename U>
@@ -301,7 +301,7 @@ class vector2 {
   public:
     T x, y;
 
-    ATTA_CPU_GPU vector2() : x(0), y(0) {}
+    ATTA_CPU_GPU vector2() = default;
     ATTA_CPU_GPU vector2(T _x, T _y) : x(_x), y(_y) {}
     ATTA_CPU_GPU vector2(T _x) : x(_x), y(_x) {}
     template <typename U>

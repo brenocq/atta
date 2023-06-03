@@ -12,8 +12,8 @@ namespace atta::cuda {
 void* alloc(size_t size);
 void free(void* ptr);
 
-void copyCpuToGpu(uint8_t* dst, uint8_t* src, size_t size);
-void copyGpuToCpu(uint8_t* dst, uint8_t* src, size_t size);
+void copyCpuToGpu(void* dst, void* src, size_t size);
+void copyGpuToCpu(void* dst, void* src, size_t size);
 
 } // namespace atta::cuda
 

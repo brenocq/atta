@@ -17,6 +17,7 @@ TypedRegistry<T>::TypedRegistry(std::string name) : Registry(name, sizeof(T), ty
 
     // Save id
     id = _id = regs.size() - 1;
+    LOG_DEBUG("component::TypedRegistry", "New component [w]$0", name);
 }
 
 template <typename T>

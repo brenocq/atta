@@ -15,6 +15,9 @@ class Gpu : public Processor {
     Gpu();
     ~Gpu();
 
+    void readData() override;
+    void writeData() override;
+
   private:
     void startThread() override;
 

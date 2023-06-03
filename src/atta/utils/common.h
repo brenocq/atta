@@ -21,12 +21,12 @@ namespace atta {
 #define ATTA_CPU __host__
 #define ATTA_GPU __device__
 #define ATTA_CPU_GPU __host__ __device__
-#define ATTA_CONST __constant__
+#define ATTA_GPU_CONST __constant__
 #else
 #define ATTA_CPU
 #define ATTA_GPU
 #define ATTA_CPU_GPU
-#define ATTA_CONST const
+#define ATTA_GPU_CONST
 #endif
 
 } // namespace atta

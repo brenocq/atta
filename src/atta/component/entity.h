@@ -38,10 +38,10 @@ class Entity {
 
     /// Check if entity is prototype
     /** An entity is prototype if it has a prototype component or if its parent is a prototype **/
-    ATTA_CPU_GPU bool isPrototype() const;
+    ATTA_CPU bool isPrototype() const;
 
     // Relationship component interface
-    ATTA_CPU_GPU Entity getParent() const;
+    ATTA_CPU Entity getParent() const;
     ATTA_CPU std::vector<Entity> getChildren() const;
     ATTA_CPU Entity getChild(unsigned i) const;
 

@@ -15,15 +15,31 @@ class GpuDataManager : public DataManager {
     /**
      * @brief Allocate resources used by GPU data manager
      */
-    static ATTA_GPU void init();
+    static ATTA_CPU void init();
 
     /**
      * @brief Release resources used by GPU data manager
      */
-    static ATTA_GPU void deinit();
+    static ATTA_CPU void deinit();
+
+
+    /**
+     * @brief Allocate GPU pool
+     *
+     * @param cid Component id
+     * @param numComponents Number of components in the pool
+     */
+    static ATTA_CPU void allocPool(ComponentId cid, uint32_t numComponents);
+
+    /**
+     * @brief Deallocate GPU pool
+     *
+     * @param cid Component id
+     */
+    static ATTA_CPU void deallocPool(ComponentId cid);
 };
 
-extern ATTA_GPU GpuDataManager* gpuDataManager;
+extern ATTA_GPU GpuDataManager gpuDataManager;
 
 } // namespace atta::component
 

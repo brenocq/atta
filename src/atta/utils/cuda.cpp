@@ -9,7 +9,7 @@
 
 namespace atta::cuda {
 
-#if __NVCC__
+#ifdef __NVCC__
 
 #define CUDA_CHECK(ans) check((ans), __FILE__, __LINE__)
 void check(cudaError_t code, const char* file, int line);
@@ -17,14 +17,15 @@ void check(cudaError_t code, const char* file, int line);
 void* alloc(size_t size) {
     void* ptr = nullptr;
     CUDA_CHECK(cudaMalloc(&ptr, size));
+    LOG_DEBUG("Cuda", "Cuda allocated $0", size);
     return ptr;
 }
 
 void free(void* ptr) { CUDA_CHECK(cudaFree(ptr)); }
 
-void copyCpuToGpu(uint8_t* dst, uint8_t* src, size_t size) { CUDA_CHECK(cudaMemcpy(dst, src, size, cudaMemcpyHostToDevice)); }
+void copyCpuToGpu(void* dst, void* src, size_t size) { CUDA_CHECK(cudaMemcpy(dst, src, size, cudaMemcpyHostToDevice)); }
 
-void copyGpuToCpu(uint8_t* dst, uint8_t* src, size_t size) { CUDA_CHECK(cudaMemcpy(dst, src, size, cudaMemcpyDeviceToHost)); }
+void copyGpuToCpu(void* dst, void* src, size_t size) { CUDA_CHECK(cudaMemcpy(dst, src, size, cudaMemcpyDeviceToHost)); }
 
 void check(cudaError_t code, const char* file, int line) {
     if (code != cudaSuccess)
@@ -37,9 +38,9 @@ void* alloc(size_t size) { return nullptr; }
 
 void free(void* ptr) {}
 
-void copyCpuToGpu(uint8_t* dst, uint8_t* src, size_t size) {}
+void copyCpuToGpu(void* dst, void* src, size_t size) {}
 
-void copyGpuToCpu(uint8_t* dst, uint8_t* src, size_t size) {}
+void copyGpuToCpu(void* dst, void* src, size_t size) {}
 
 #endif
 

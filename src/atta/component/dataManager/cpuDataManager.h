@@ -24,7 +24,7 @@ class CpuDataManager : public DataManager {
     static void deinit();
 
     /**
-     * @brief Allocae pool
+     * @brief Allocate pool
      *
      * @param cid Component id
      * @param numComponents Number of components in the pool

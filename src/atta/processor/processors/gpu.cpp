@@ -8,6 +8,14 @@
 #include <atta/utils/cuda.h>
 #include <cuda_runtime.h>
 
+#include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/world.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
+#include <atta/component/dataManager/cpuDataManager.h>
+#include <atta/component/entity.h>
+#include <atta/component/registry/typedRegistry.h>
+
 namespace atta::processor {
 
 int versionToCores(int major, int minor) {
@@ -99,14 +107,22 @@ Gpu::Gpu() : Processor(Type::GPU) {
 
 Gpu::~Gpu() {}
 
+void Gpu::readData() { component::cpuDataManager->copyGpuToCpu(); }
+
+void Gpu::writeData() { component::cpuDataManager->copyCpuToGpu(); }
+
+//---------- GPU CODE ----------//
 ATTA_GPU int d_count = 0;
-ATTA_CONST int d_numSteps = 100000000;
+ATTA_GPU_CONST int d_numSteps = 1000000000;
 
 __global__ void onStart() { d_count = 0; }
 
 __global__ void step() {
     for (int i = 0; i < d_numSteps; i++) {
-        d_count += 1;
+        cmp::Entity entity(10);
+        // AntComponent* ant = entity.get<AntComponent>();
+        //  d_count = ant->position.x * 100;
+        d_count = -1;
     }
 }
 
@@ -115,6 +131,7 @@ __global__ void onStop() { d_count = 1000; }
 void printCount(std::string str = "") {
     int count;
     cudaMemcpyFromSymbol(&count, d_count, sizeof(int));
+
     LOG_DEBUG("GPU", "($1) Count $0", count, str);
 }
 
@@ -124,13 +141,13 @@ void Gpu::loop() {
     LOG_DEBUG("GPU", "Start kernel");
     printCount("Start");
     onStart<<<1, 1>>>();
-    printCount("Step");
+    printCount("Start");
     while (shouldRun()) {
         step<<<1, 1>>>();
         printCount("Step");
     }
     onStop<<<1, 1>>>();
-    printCount("Step");
+    printCount("Stop");
 }
 
 } // namespace atta::processor

@@ -31,6 +31,7 @@ class TypedRegistry : public Registry {
     std::vector<uint8_t> getDefault() override;
 
     ComponentDescription& getDescription() override;
+
     static ComponentDescription* description;
     static ComponentId id;
 };
@@ -51,6 +52,9 @@ ComponentDescription* TypedRegistry<T>::description = nullptr;
 
 template <typename T>
 ComponentId TypedRegistry<T>::id = 0;
+
+template <typename T>
+extern ATTA_GPU_CONST ComponentId idGpu; /// GPU Id in constant memory
 
 } // namespace atta::component
 

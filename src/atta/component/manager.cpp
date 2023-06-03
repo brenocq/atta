@@ -45,8 +45,10 @@ void Manager::startUpImpl() {
     GpuDataManager::init();
 
     // Create pools
-    for (Registry* r : Registry::get())
+    for (Registry* r : Registry::get()) {
         cpuDataManager->allocPool(r->getId(), r->getDescription().maxInstances);
+        GpuDataManager::allocPool(r->getId(), r->getDescription().maxInstances);
+    }
 
     //----- Events -----//
     event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshEvent));
