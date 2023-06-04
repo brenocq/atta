@@ -90,7 +90,7 @@ ATTA_CPU void GpuDataManager::copyGpuToCpu() {
     auto& pools = cpuDataManager->_componentPools;
     for (size_t i = 0; i < maxComponents; i++)
         if (pools[i].isAllocated()) {
-            LOG_DEBUG("GpuDataManager", "Copy $0 -> $1 bytes", i, pools[i].getSize());
+            // LOG_DEBUG("GpuDataManager", "Copy $0 -> $1 bytes", i, pools[i].getSize());
             cuda::copyGpuToCpu(pools[i].getMemory(), cpuCopy._componentPools[i].getMemory(), pools[i].getSize());
         }
 

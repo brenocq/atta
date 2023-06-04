@@ -17,6 +17,7 @@
 #include <atta/component/dataManager/gpuDataManager.h>
 #include <atta/component/entity.h>
 #include <atta/component/registry/typedRegistry.h>
+#include <chrono>
 
 namespace atta::processor {
 
@@ -160,8 +161,17 @@ void Gpu::startThread() { _thread = std::thread(&Gpu::loop, this); }
 
 void Gpu::loop() {
     onStart<<<1, 1>>>();
+    _stepCount = 0;
+    auto start = std::chrono::high_resolution_clock::now();
     while (shouldRun()) {
         step<<<1, 1>>>();
+
+        _stepCount++;
+        if (_stepCount == 5000) {
+            auto end = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+            LOG_DEBUG("GPU", "$0 steps in [r]$1ms", _stepCount, duration.count());
+        }
     }
     onStop<<<1, 1>>>();
 }

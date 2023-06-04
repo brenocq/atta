@@ -33,6 +33,7 @@ class Processor {
     bool shouldRun();
 
     const Type _type;
+    size_t _stepCount; ///< Current step count when executing
 
     std::thread _thread;
 

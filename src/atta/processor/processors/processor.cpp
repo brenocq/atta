@@ -8,7 +8,7 @@
 
 namespace atta::processor {
 
-Processor::Processor(Type type) : _type(type), _pause(true) {}
+Processor::Processor(Type type) : _type(type), _pause(true), _stepCount(0) {}
 
 Type Processor::getType() const { return _type; }
 

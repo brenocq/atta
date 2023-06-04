@@ -31,7 +31,7 @@ void Manager::startUpImpl() {
     //----- Memory -----//
     // Get main memory
     memory::Allocator* mainAllocator = memory::getAllocator(SSID("MainAllocator"));
-    size_t size = 128 * 1024 * 1024; // 128MB
+    size_t size = 2UL * 1024UL * 1024UL * 1024UL; // 1GB
     // Alloc memory inside main memory
     uint8_t* componentMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
     ASSERT(componentMemory != nullptr, "Could not allocate component system memory");
@@ -46,8 +46,12 @@ void Manager::startUpImpl() {
 
     // Create pools
     for (Registry* r : Registry::get()) {
-        cpuDataManager->allocPool(r->getId(), r->getDescription().maxInstances);
-        GpuDataManager::allocPool(r->getId(), r->getDescription().maxInstances);
+        // TODO hardcoded decision between 1 and many instances
+        uint32_t numInstances = DataManager::maxEntities; // r->getDescription().maxInstances;
+        if (r->getSizeof() >= 10 * 1024)
+            numInstances = 1;
+        cpuDataManager->allocPool(r->getId(), numInstances);
+        GpuDataManager::allocPool(r->getId(), numInstances);
     }
 
     //----- Events -----//

@@ -17,7 +17,6 @@ void check(cudaError_t code, const char* file, int line);
 void* alloc(size_t size) {
     void* ptr = nullptr;
     CUDA_CHECK(cudaMalloc(&ptr, size));
-    LOG_DEBUG("Cuda", "Cuda allocated $0", size);
     return ptr;
 }
 
