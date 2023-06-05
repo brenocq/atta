@@ -22,7 +22,9 @@ void Cpu::loop() {
     LOG_DEBUG("CPU", "Start");
     while (shouldRun()) {
         LOG_DEBUG("CPU", "Step");
+        _stepCount++;
     }
+    _stepCount = 0;
 }
 
 // void Cpu::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {

@@ -33,7 +33,7 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     Config::init();
     file::startUp();
 
-    uint64_t size = 5UL * 1024UL * 1024UL * 1024UL;
+    uint64_t size = 2UL * 1024UL * 1024UL * 1024UL;
     _mainAllocator = new memory::StackAllocator(size); // Allocate 2.0GB for the whole system
     memory::registerAllocator("MainAllocator", static_cast<memory::Allocator*>(_mainAllocator));
 
@@ -148,6 +148,8 @@ void Atta::onSimulationStateChange(event::Event& event) {
     switch (event.getType()) {
         case event::SimulationStart::type: {
             component::createFactories();
+            physics::start();
+            sensor::start();
             processor::start();
             break;
         }
@@ -161,6 +163,8 @@ void Atta::onSimulationStateChange(event::Event& event) {
         }
         case event::SimulationStop::type: {
             processor::stop();
+            sensor::stop();
+            physics::stop();
             component::destroyFactories();
             break;
         }

@@ -22,6 +22,8 @@ class Controller {
     template <typename T>
     ATTA_CPU_GPU T* get() const;
 
+    ATTA_CPU_GPU virtual void update() = 0;
+
     cmp::Entity entity;
 };
 

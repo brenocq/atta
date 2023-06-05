@@ -26,21 +26,19 @@ void Serial::startThread() { _thread = std::thread(&Serial::loop, this); }
 void Serial::loop() {
     script::WorldRegistry::onStart();
     float dt = processor::getDt();
-    _stepCount = 0;
     auto start = std::chrono::high_resolution_clock::now();
     while (shouldRun()) {
-        // physics::update(dt);
-        // sensor::update(dt);
+        physics::update(dt);
+        sensor::update(dt);
+
         script::WorldRegistry::onUpdateBefore();
 
-        for (auto& factory : component::getFactories()) {
-            component::Script* script = factory.getPrototype().get<component::Script>();
+        std::vector<component::Entity> entities = component::getScriptView();
+        for (component::Entity entity : entities) {
+            component::Script* script = entity.get<component::Script>();
             if (script) {
                 const script::ControllerRegistry* controller = script::ControllerRegistry::getRegistry(script->sid);
-                component::EntityId start = factory.getFirstClone();
-                component::EntityId end = start + factory.getMaxClones();
-                for (component::EntityId i = start; i < end; i++)
-                    controller->update(component::Entity(i));
+                controller->update(entity);
             }
         }
 
@@ -54,6 +52,7 @@ void Serial::loop() {
         }
     }
     script::WorldRegistry::onStop();
+    _stepCount = 0;
 }
 
 } // namespace atta::processor

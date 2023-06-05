@@ -10,10 +10,13 @@ namespace atta::physics {
 
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
+
+void start() { Manager::getInstance()._engine->start(); }
 void update(float dt) {
     PROFILE();
     Manager::getInstance().updateImpl(dt);
 }
+void stop() { Manager::getInstance()._engine->stop(); }
 
 Engine::Type getEngineType() { return Manager::getInstance()._engine->getType(); }
 void setEngineType(Engine::Type type) { Manager::getInstance().setEngineTypeImpl(type); }
@@ -31,9 +34,7 @@ void setShowJoints(bool showJoints) { Manager::getInstance()._showJoints = showJ
 
 //---------- Queries ----------//
 std::vector<component::Entity> getEntityCollisions(component::Entity entity) { return Manager::getInstance()._engine->getEntityCollisions(entity); }
-std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) {
-    return Manager::getInstance()._engine->rayCast(begin, end, onlyFirst);
-}
+std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) { return Manager::getInstance()._engine->rayCast(begin, end, onlyFirst); }
 bool areColliding(component::Entity entity0, component::Entity entity1) { return Manager::getInstance()._engine->areColliding(entity0, entity1); }
 
 } // namespace atta::physics

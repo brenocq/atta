@@ -38,9 +38,13 @@ void startUp();
 /// Sensor module shut down
 void shutDown();
 
+void start();
+
 ///< Update executed at each simulation step
 /** Used to update the sensor data (ex: camera image rendering) **/
 void update(float dt);
+
+void stop();
 
 void* getEntityCameraImGuiTexture(cmp::Entity eid);
 

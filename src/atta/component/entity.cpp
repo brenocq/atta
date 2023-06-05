@@ -6,8 +6,8 @@
 //--------------------------------------------------
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/relationship.h>
-#include <atta/component/interface.h>
 #include <atta/component/entity.h>
+#include <atta/component/interface.h>
 
 namespace atta::component {
 

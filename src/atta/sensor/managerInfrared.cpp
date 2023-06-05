@@ -67,7 +67,7 @@ void Manager::updateInfrareds(float dt) {
             continue;
 
         // Check if should take new measurement
-        float change = Config::getTime() - ir->measurementTime;
+        float change = processor::getTime() - ir->measurementTime;
         float interval = 1.0f / ir->odr;
         if (change >= interval) {
             float measurement = 0.0f;
@@ -97,7 +97,7 @@ void Manager::updateInfrareds(float dt) {
             //----- Post-process measurement -----//
             // Apply gaussian noise
             if (ir->gaussianStd > 0.0f) {
-                std::default_random_engine generator(int(Config::getTime() / Config::getDt()));
+                std::default_random_engine generator(int(processor::getTime() / processor::getDt()));
                 std::normal_distribution<float> dist(measurement, ir->gaussianStd);
                 measurement = dist(generator);
             }
@@ -110,7 +110,7 @@ void Manager::updateInfrareds(float dt) {
             measurement = std::min(std::max(measurement, ir->lowerLimit), ir->upperLimit);
 
             ir->measurement = measurement;
-            ir->measurementTime = Config::getTime();
+            ir->measurementTime = processor::getTime();
         }
     }
 }

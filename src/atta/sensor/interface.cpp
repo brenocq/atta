@@ -13,10 +13,14 @@ void startUp() { Manager::getInstance().startUpImpl(); }
 
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
+void start() { Manager::getInstance().start(); }
+
 void update(float dt) {
     PROFILE();
     Manager::getInstance().updateImpl(dt);
 }
+
+void stop() { Manager::getInstance().stop(); }
 
 std::vector<CameraInfo>& getCameraInfos() { return Manager::getInstance()._cameras; }
 std::vector<InfraredInfo>& getInfraredInfos() { return Manager::getInstance()._infrareds; }

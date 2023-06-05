@@ -21,7 +21,11 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
+
+    friend void start();
     friend void update(float dt);
+    friend void stop();
+
     friend Engine::Type getEngineType();
     friend void setEngineType(Engine::Type type);
     template <typename T>

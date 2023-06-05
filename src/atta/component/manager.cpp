@@ -31,7 +31,7 @@ void Manager::startUpImpl() {
     //----- Memory -----//
     // Get main memory
     memory::Allocator* mainAllocator = memory::getAllocator(SSID("MainAllocator"));
-    size_t size = 2UL * 1024UL * 1024UL * 1024UL; // 2GB
+    size_t size = 128UL * 1024UL * 1024UL; // 128MB
     // Alloc memory inside main memory
     uint8_t* componentMemory = static_cast<uint8_t*>(mainAllocator->allocBytes(size, sizeof(uint8_t)));
     ASSERT(componentMemory != nullptr, "Could not allocate component system memory");

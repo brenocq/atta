@@ -19,7 +19,9 @@ class Manager final {
 
     friend void sensor::startUp();
     friend void sensor::shutDown();
+    friend void sensor::start();
     friend void sensor::update(float dt);
+    friend void sensor::stop();
     friend void* sensor::getEntityCameraImGuiTexture(cmp::Entity eid);
     friend std::vector<CameraInfo>& sensor::getCameraInfos();
     friend std::vector<InfraredInfo>& sensor::getInfraredInfos();
@@ -32,7 +34,10 @@ class Manager final {
     // Interface
     void startUpImpl();
     void shutDownImpl();
+
+    void start();
     void updateImpl(float dt);
+    void stop();
 
     // Handle events
     void onSimulationStateChange(evt::Event& event);

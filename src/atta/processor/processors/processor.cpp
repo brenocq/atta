@@ -12,6 +12,8 @@ Processor::Processor(Type type) : _type(type), _pause(true), _stepCount(0) {}
 
 Type Processor::getType() const { return _type; }
 
+size_t Processor::getStepCount() const { return _stepCount; }
+
 void Processor::start() {
     writeData();
     _stop = false;

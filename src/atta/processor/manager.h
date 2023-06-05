@@ -36,6 +36,7 @@ class Manager final {
 
     friend void setDt(float dt);
     friend float getDt();
+    friend float getTime();
 
     friend std::shared_ptr<Processor> getProcessor();
     friend std::shared_ptr<Serial> getSerialProcessor();
@@ -63,7 +64,6 @@ class Manager final {
 
     State _state;
     float _dt;
-    float _time;
 
     std::shared_ptr<Processor> _processor; ///< Selected processor
     std::shared_ptr<Serial> _serial;       ///< Serial processor

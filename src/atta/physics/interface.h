@@ -15,7 +15,10 @@ enum class Plane2D { X = 0, Y, Z };
 
 void startUp();
 void shutDown();
+
+void start();
 void update(float dt);
+void stop();
 
 Engine::Type getEngineType();
 void setEngineType(Engine::Type type);

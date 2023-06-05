@@ -18,7 +18,9 @@ template <typename T>
 ATTA_CPU_GPU T* Entity::add() const {
 #if ATTA_GPU_CODE
     ComponentId cid = idGpu<T>;
-    return gpuDataManager.addComponent(_id, cid);
+    T* component = (T*)gpuDataManager.addComponent(_id, cid);
+    *component = T{};
+    return component;
 #else
     ComponentId cid = TypedRegistry<T>::id;
     T* component = (T*)cpuDataManager->addComponent(_id, cid);
@@ -35,7 +37,6 @@ ATTA_CPU_GPU T* Entity::add() const {
 
 template <typename T>
 ATTA_CPU_GPU void Entity::remove() const {
-
 #if ATTA_GPU_CODE
     ComponentId cid = idGpu<T>;
     gpuDataManager.removeComponent(_id, cid);

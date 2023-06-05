@@ -31,6 +31,8 @@ State getState();
 void setDt(float dt);
 float getDt();
 
+float getTime();
+
 std::shared_ptr<Processor> getProcessor();
 std::shared_ptr<Serial> getSerialProcessor();
 std::shared_ptr<Cpu> getCpuProcessor();

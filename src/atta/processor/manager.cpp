@@ -20,6 +20,7 @@ void Manager::startUpImpl() {
     _cpu = std::make_shared<Cpu>();
     _gpu = std::make_shared<Gpu>();
     _processor = _serial;
+    _dt = 0.015;
 }
 
 void Manager::shutDownImpl() {

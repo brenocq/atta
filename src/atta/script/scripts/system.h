@@ -12,14 +12,14 @@ namespace atta::script {
 class System {
   public:
     //---------- Load/Unload ----------//
-    virtual void onLoad();
-    virtual void onUnload();
+    virtual void onLoad() = 0;
+    virtual void onUnload() = 0;
 
     //---------- Editor ----------//
-    virtual void onUIRender();
+    virtual void onUIRender() = 0;
 
     //---------- Loop ----------//
-    virtual void onAttaLoop();
+    virtual void onAttaLoop() = 0;
 };
 
 } // namespace atta::script

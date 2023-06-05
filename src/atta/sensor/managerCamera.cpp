@@ -64,12 +64,12 @@ void Manager::updateCameras(float dt) {
             continue;
 
         // Render if necessary
-        float change = Config::getTime() - cameraInfo.component->captureTime;
+        float change = processor::getTime() - cameraInfo.component->captureTime;
         float interval = 1.0f / cameraInfo.component->fps;
         if (change >= interval) {
             cameraInfo.renderer->render(cameraInfo.camera);
             cameraInfo.data = cameraInfo.renderer->getFramebuffer()->readImage(0);
-            cameraInfo.component->captureTime = Config::getTime();
+            cameraInfo.component->captureTime = processor::getTime();
         }
     }
 }

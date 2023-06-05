@@ -24,7 +24,7 @@ class DataManager {
      *
      * TODO make it dynamic
      */
-    static constexpr unsigned maxEntities = 1024 * 1024;
+    static constexpr unsigned maxEntities = 1024;
 
     /**
      * @brief Entity block

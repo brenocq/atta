@@ -27,6 +27,8 @@ State getState() { return Manager::getInstance().getStateImpl(); }
 void setDt(float dt) { Manager::getInstance()._dt = dt; }
 float getDt() { return Manager::getInstance()._dt; }
 
+float getTime() { return Manager::getInstance()._processor->getStepCount() * getDt(); }
+
 std::shared_ptr<Processor> getProcessor() { return Manager::getInstance().getProcessorImpl(); }
 std::shared_ptr<Serial> getSerialProcessor() { return Manager::getInstance().getSerialProcessorImpl(); }
 std::shared_ptr<Cpu> getCpuProcessor() { return Manager::getInstance().getCpuProcessorImpl(); }

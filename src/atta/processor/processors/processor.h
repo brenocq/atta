@@ -19,6 +19,7 @@ class Processor {
     Processor(Type type);
 
     Type getType() const;
+    size_t getStepCount() const;
 
     virtual void start();
     virtual void pause();

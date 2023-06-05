@@ -12,8 +12,6 @@
 
 #include <atta/event/events/createComponent.h>
 #include <atta/event/events/deleteComponent.h>
-#include <atta/event/events/simulationStart.h>
-#include <atta/event/events/simulationStop.h>
 #include <atta/event/interface.h>
 
 #include <atta/component/components/boxCollider.h>
@@ -32,8 +30,6 @@ Manager& Manager::getInstance() {
 }
 
 void Manager::startUpImpl() {
-    event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
-    event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
     event::subscribe<event::CreateComponent>(BIND_EVENT_FUNC(Manager::onComponentChange));
     event::subscribe<event::DeleteComponent>(BIND_EVENT_FUNC(Manager::onComponentChange));
 
@@ -91,19 +87,6 @@ void Manager::setPlane2DImpl(Plane2D plane2D) {
 void Manager::setGravityImpl(vec3 gravity) {
     _gravity = gravity;
     _engine->updateGravity();
-}
-
-void Manager::onSimulationStateChange(event::Event& event) {
-    switch (event.getType()) {
-        case event::SimulationStart::type:
-            _engine->start();
-            break;
-        case event::SimulationStop::type:
-            _engine->stop();
-            break;
-        default:
-            LOG_WARN("physics::Manager", "Unknown simulation event");
-    }
 }
 
 bool is2DPhysicsColliderComponent(cmp::ComponentId cmpId) {
