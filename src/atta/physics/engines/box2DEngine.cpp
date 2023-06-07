@@ -10,6 +10,7 @@
 #include <atta/component/components/transform.h>
 #include <atta/physics/engines/box2DEngine.h>
 #include <atta/physics/interface.h>
+#include <atta/processor/interface.h>
 
 namespace atta::physics {
 
@@ -439,10 +440,10 @@ bool Box2DEngine::areColliding(component::Entity entity0, component::Entity enti
 }
 
 void Box2DEngine::updateGravity() {
-    //if (Config::getState() != Config::State::IDLE) {
-    //  vec3 g = physics::getGravity();
-    //  _world->SetGravity(b2Vec2(g.x, g.y));
-    //}
+    if (processor::getState() != processor::State::IDLE) {
+      vec3 g = physics::getGravity();
+      _world->SetGravity(b2Vec2(g.x, g.y));
+    }
 }
 
 b2Body* Box2DEngine::getBox2DRigidBody(component::Entity entity) { return _bodies.find(entity) != _bodies.end() ? _bodies[entity] : nullptr; }
@@ -460,33 +461,33 @@ std::vector<component::Entity> Box2DEngine::getAABBEntities(vec2 lower, vec2 upp
 
 // component::RigidBody2D interface
 void Box2DEngine::setTransform(component::RigidBody2D* rb2d, vec2 position, float angle) {
-    //if (Config::getState() != Config::State::IDLE)
-    //    _bodies[_componentToEntity[rb2d]]->SetTransform(b2Vec2(position.x, position.y), angle);
+    if (processor::getState() != processor::State::IDLE)
+        _bodies[_componentToEntity[rb2d]]->SetTransform(b2Vec2(position.x, position.y), angle);
 }
 
 void Box2DEngine::setLinearVelocity(component::RigidBody2D* rb2d, vec2 vel) {
-    //if (Config::getState() != Config::State::IDLE)
-    //    _bodies[_componentToEntity[rb2d]]->SetLinearVelocity(b2Vec2(vel.x, vel.y));
+    if (processor::getState() != processor::State::IDLE)
+        _bodies[_componentToEntity[rb2d]]->SetLinearVelocity(b2Vec2(vel.x, vel.y));
 }
 
 void Box2DEngine::setAngularVelocity(component::RigidBody2D* rb2d, float omega) {
-    //if (Config::getState() != Config::State::IDLE)
-    //    _bodies[_componentToEntity[rb2d]]->SetAngularVelocity(omega);
+    if (processor::getState() != processor::State::IDLE)
+        _bodies[_componentToEntity[rb2d]]->SetAngularVelocity(omega);
 }
 
 void Box2DEngine::applyForce(component::RigidBody2D* rb2d, vec2 force, vec2 point, bool wake) {
-    //if (Config::getState() != Config::State::IDLE)
-    //    _bodies[_componentToEntity[rb2d]]->ApplyForce(b2Vec2(force.x, force.y), b2Vec2(point.x, point.y), wake);
+    if (processor::getState() != processor::State::IDLE)
+        _bodies[_componentToEntity[rb2d]]->ApplyForce(b2Vec2(force.x, force.y), b2Vec2(point.x, point.y), wake);
 }
 
 void Box2DEngine::applyForceToCenter(component::RigidBody2D* rb2d, vec2 force, bool wake) {
-    //if (Config::getState() != Config::State::IDLE)
-    //    _bodies[_componentToEntity[rb2d]]->ApplyForceToCenter(b2Vec2(force.x, force.y), wake);
+    if (processor::getState() != processor::State::IDLE)
+        _bodies[_componentToEntity[rb2d]]->ApplyForceToCenter(b2Vec2(force.x, force.y), wake);
 }
 
 void Box2DEngine::applyTorque(component::RigidBody2D* rb2d, float torque, bool wake) {
-    //if (Config::getState() != Config::State::IDLE)
-    //    _bodies[_componentToEntity[rb2d]]->ApplyTorque(torque, wake);
+    if (processor::getState() != processor::State::IDLE)
+        _bodies[_componentToEntity[rb2d]]->ApplyTorque(torque, wake);
 }
 
 } // namespace atta::physics
