@@ -34,8 +34,8 @@ float getDt();
 float getTime();
 
 std::shared_ptr<Processor> getProcessor();
-std::shared_ptr<Serial> getSerialProcessor();
-std::shared_ptr<Cpu> getCpuProcessor();
+std::shared_ptr<CpuSerial> getCpuSerialProcessor();
+std::shared_ptr<CpuParallel> getCpuParallelProcessor();
 std::shared_ptr<Gpu> getGpuProcessor();
 
 } // namespace atta::processor

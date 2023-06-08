@@ -19,7 +19,7 @@ void ProcessorModuleWindow::renderImpl() {
     // Processor selection
     ImGui::Text("Processor");
     ImGui::SameLine();
-    std::vector<const char*> devices = {"Serial", "CPU", "GPU", "Cluster"};
+    std::vector<const char*> devices = {"CPU Serial", "CPU Parallel", "GPU", "Cluster"};
     int selected = int(processor::getType());
     if (ImGui::Combo("##ProcessorProcessor", &selected, devices.data(), devices.size()))
         if (selected != int(processor::getType()))
@@ -29,14 +29,15 @@ void ProcessorModuleWindow::renderImpl() {
 
     // Processor specific options
     switch (processor::Type(selected)) {
-        case processor::Type::SERIAL:
+        case processor::Type::CPU_SERIAL:
             break;
-        case processor::Type::CPU: {
-            int numThreads = processor::getCpuProcessor()->getNumWorkers();
-            int maxThreads = processor::getCpuProcessor()->getMaxNumWorkers();
+        case processor::Type::CPU_PARALLEL: {
+            auto p = processor::getCpuParallelProcessor();
+            int numThreads = p->getNumWorkers();
+            int maxThreads = p->getMaxNumWorkers();
             ImGui::SetNextItemWidth(100.0f);
             if (ImGui::SliderInt("Number of threads", &numThreads, 1, maxThreads))
-                processor::getCpuProcessor()->setNumWorkers(numThreads);
+                p->setNumWorkers(numThreads);
             break;
         }
         case processor::Type::GPU:

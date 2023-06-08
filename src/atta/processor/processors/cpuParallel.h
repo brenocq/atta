@@ -1,11 +1,11 @@
 //--------------------------------------------------
 // Atta Processor Module
-// cpu.h
+// cpuParallel.h
 // Date: 2023-02-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_PROCESSOR_PROCESSORS_CPU_H
-#define ATTA_PROCESSOR_PROCESSORS_CPU_H
+#ifndef ATTA_PROCESSOR_PROCESSORS_CPU_PARALLEL_H
+#define ATTA_PROCESSOR_PROCESSORS_CPU_PARALLEL_H
 #include <atomic>
 #include <atta/processor/processors/processor.h>
 #include <condition_variable>
@@ -14,10 +14,10 @@
 
 namespace atta::processor {
 
-class Cpu : public Processor {
+class CpuParallel : public Processor {
   public:
-    Cpu();
-    ~Cpu();
+    CpuParallel();
+    ~CpuParallel();
 
     void setNumWorkers(uint32_t numWorkers);
     uint32_t getNumWorkers() const;
@@ -53,4 +53,4 @@ class Cpu : public Processor {
 
 } // namespace atta::processor
 
-#endif // ATTA_PROCESSOR_PROCESSORS_CPU_H
+#endif // ATTA_PROCESSOR_PROCESSORS_CPU_PARALLEL_H

@@ -10,7 +10,7 @@
 namespace atta::processor {
 
 enum class State { IDLE = 0, RUNNING, PAUSED };
-enum class Type { SERIAL = 0, CPU, GPU, CLUSTER };
+enum class Type { CPU_SERIAL = 0, CPU_PARALLEL, GPU, CLUSTER };
 
 }
 

@@ -1,33 +1,31 @@
 //--------------------------------------------------
 // Atta Processor Module
-// cpu.cpp
+// cpuParallel.cpp
 // Date: 2023-02-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/processor/processors/cpu.h>
+#include <atta/processor/processors/cpuParallel.h>
 
 namespace atta::processor {
 
-Cpu::Cpu() : Processor(Type::CPU), _stopWorkers(false), _nextIdx(1), _endIdx(0), _batchSize(16), _busyWorkers(0) {
+CpuParallel::CpuParallel() : Processor(Type::CPU_PARALLEL), _stopWorkers(false), _nextIdx(1), _endIdx(0), _batchSize(16), _busyWorkers(0) {
     // Create workers
     for (int i = 0; i < getMaxNumWorkers(); i++)
-        _threads.push_back(std::thread(&Cpu::worker, this));
+        _threads.push_back(std::thread(&CpuParallel::worker, this));
 }
 
-Cpu::~Cpu() { stopWorkers(); }
+CpuParallel::~CpuParallel() { stopWorkers(); }
 
-void Cpu::startThread() { _thread = std::thread(&Cpu::loop, this); }
+void CpuParallel::startThread() { _thread = std::thread(&CpuParallel::loop, this); }
 
-void Cpu::loop() {
-    LOG_DEBUG("CPU", "Start");
+void CpuParallel::loop() {
     while (shouldRun()) {
-        LOG_DEBUG("CPU", "Step");
         _stepCount++;
     }
     _stepCount = 0;
 }
 
-// void Cpu::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
+// void CpuParallel::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
 //     // If no work to be done, return
 //     if (start == end)
 //         return;
@@ -45,13 +43,13 @@ void Cpu::loop() {
 //     }
 // }
 
-void Cpu::setNumWorkers(uint32_t numWorkers) {
+void CpuParallel::setNumWorkers(uint32_t numWorkers) {
     if (!jobFinished()) {
-        LOG_WARN("processor::Cpu", "Can't change number of workers while they are working");
+        LOG_WARN("processor::CpuParallel", "Can't change number of workers while they are working");
         return;
     }
     if (numWorkers > getMaxNumWorkers()) {
-        LOG_WARN("processor::Cpu", "Can't change number of workers to [w]$0[], maximum is [w]$1[]", numWorkers, getMaxNumWorkers());
+        LOG_WARN("processor::CpuParallel", "Can't change number of workers to [w]$0[], maximum is [w]$1[]", numWorkers, getMaxNumWorkers());
         return;
     }
 
@@ -60,14 +58,14 @@ void Cpu::setNumWorkers(uint32_t numWorkers) {
 
     // Launch new workers
     for (uint32_t i = 0; i < numWorkers; i++)
-        _threads.push_back(std::thread(&Cpu::worker, this));
+        _threads.push_back(std::thread(&CpuParallel::worker, this));
 }
 
-uint32_t Cpu::getNumWorkers() const { return _threads.size(); }
+uint32_t CpuParallel::getNumWorkers() const { return _threads.size(); }
 
-uint32_t Cpu::getMaxNumWorkers() const { return std::thread::hardware_concurrency() - 1; }
+uint32_t CpuParallel::getMaxNumWorkers() const { return std::thread::hardware_concurrency() - 1; }
 
-void Cpu::worker() {
+void CpuParallel::worker() {
     while (!_stopWorkers) {
         // Work
         if (hasWork()) {
@@ -101,11 +99,11 @@ void Cpu::worker() {
     }
 }
 
-bool Cpu::hasWork() { return _nextIdx <= _endIdx; }
+bool CpuParallel::hasWork() { return _nextIdx <= _endIdx; }
 
-bool Cpu::jobFinished() { return !hasWork() && _busyWorkers == 0; }
+bool CpuParallel::jobFinished() { return !hasWork() && _busyWorkers == 0; }
 
-void Cpu::stopWorkers() {
+void CpuParallel::stopWorkers() {
     _stopWorkers = true;
     _wakeUpWorkers.notify_all();
     for (auto& t : _threads)

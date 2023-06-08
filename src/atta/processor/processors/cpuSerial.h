@@ -1,19 +1,19 @@
 //--------------------------------------------------
 // Atta Processor Module
-// serial.h
+// cpuSerial.h
 // Date: 2023-02-08
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_PARALLEL_PROCESSORS_SERIAL_H
-#define ATTA_PARALLEL_PROCESSORS_SERIAL_H
+#ifndef ATTA_PARALLEL_PROCESSORS_CPU_SERIAL_H
+#define ATTA_PARALLEL_PROCESSORS_CPU_SERIAL_H
 #include <atta/processor/processors/processor.h>
 
 namespace atta::processor {
 
-class Serial : public Processor {
+class CpuSerial : public Processor {
   public:
-    Serial();
-    ~Serial();
+    CpuSerial();
+    ~CpuSerial();
 
   private:
     void startThread() override;
@@ -23,4 +23,4 @@ class Serial : public Processor {
 
 } // namespace atta::processor
 
-#endif // ATTA_PARALLEL_PROCESSORS_SERIAL_H
+#endif // ATTA_PARALLEL_PROCESSORS_CPU_SERIAL_H

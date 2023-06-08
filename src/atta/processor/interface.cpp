@@ -30,8 +30,8 @@ float getDt() { return Manager::getInstance()._dt; }
 float getTime() { return Manager::getInstance()._processor->getStepCount() * getDt(); }
 
 std::shared_ptr<Processor> getProcessor() { return Manager::getInstance().getProcessorImpl(); }
-std::shared_ptr<Serial> getSerialProcessor() { return Manager::getInstance().getSerialProcessorImpl(); }
-std::shared_ptr<Cpu> getCpuProcessor() { return Manager::getInstance().getCpuProcessorImpl(); }
+std::shared_ptr<CpuSerial> getCpuSerialProcessor() { return Manager::getInstance().getCpuSerialProcessorImpl(); }
+std::shared_ptr<CpuParallel> getCpuParallelProcessor() { return Manager::getInstance().getCpuParallelProcessorImpl(); }
 std::shared_ptr<Gpu> getGpuProcessor() { return Manager::getInstance().getGpuProcessorImpl(); }
 
 } // namespace atta::processor

@@ -1,6 +1,6 @@
 //--------------------------------------------------
 // Atta Processor Module
-// serial.cpp
+// cpuSerial.cpp
 // Date: 2023-02-08
 // By Breno Cunha Queiroz
 //--------------------------------------------------
@@ -9,7 +9,7 @@
 #include <atta/component/interface.h>
 #include <atta/physics/interface.h>
 #include <atta/processor/interface.h>
-#include <atta/processor/processors/serial.h>
+#include <atta/processor/processors/cpuSerial.h>
 #include <atta/script/registry/controllerRegistry.h>
 #include <atta/script/registry/worldRegistry.h>
 #include <atta/sensor/interface.h>
@@ -17,13 +17,13 @@
 
 namespace atta::processor {
 
-Serial::Serial() : Processor(Type::SERIAL) {}
+CpuSerial::CpuSerial() : Processor(Type::CPU_SERIAL) {}
 
-Serial::~Serial() {}
+CpuSerial::~CpuSerial() {}
 
-void Serial::startThread() { _thread = std::thread(&Serial::loop, this); }
+void CpuSerial::startThread() { _thread = std::thread(&CpuSerial::loop, this); }
 
-void Serial::loop() {
+void CpuSerial::loop() {
     script::WorldRegistry::onStart();
     float dt = processor::getDt();
     auto start = std::chrono::high_resolution_clock::now();
@@ -48,7 +48,7 @@ void Serial::loop() {
         if (_stepCount == 5000) {
             auto end = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-            LOG_DEBUG("Serial", "$0 steps in [y]$1ms", _stepCount, duration.count());
+            LOG_DEBUG("CpuSerial", "$0 steps in [y]$1ms", _stepCount, duration.count());
         }
     }
     script::WorldRegistry::onStop();

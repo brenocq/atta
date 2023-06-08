@@ -5,8 +5,8 @@ set(ATTA_PROCESSOR_MODULE_SOURCE
     manager.cpp
 
     processors/processor.cpp
-    processors/serial.cpp
-    processors/cpu.cpp
+    processors/cpuSerial.cpp
+    processors/cpuParallel.cpp
     processors/gpu.cpp
 )
 

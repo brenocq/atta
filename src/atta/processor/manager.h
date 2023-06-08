@@ -8,9 +8,9 @@
 #define ATTA_PROCESSOR_MANAGER_H
 
 #include <atta/event/event.h>
-#include <atta/processor/processors/cpu.h>
+#include <atta/processor/processors/cpuParallel.h>
+#include <atta/processor/processors/cpuSerial.h>
 #include <atta/processor/processors/gpu.h>
-#include <atta/processor/processors/serial.h>
 
 namespace atta::processor {
 
@@ -39,8 +39,8 @@ class Manager final {
     friend float getTime();
 
     friend std::shared_ptr<Processor> getProcessor();
-    friend std::shared_ptr<Serial> getSerialProcessor();
-    friend std::shared_ptr<Cpu> getCpuProcessor();
+    friend std::shared_ptr<CpuSerial> getCpuSerialProcessor();
+    friend std::shared_ptr<CpuParallel> getCpuParallelProcessor();
     friend std::shared_ptr<Gpu> getGpuProcessor();
 
   private:
@@ -58,17 +58,17 @@ class Manager final {
     State getStateImpl();
 
     std::shared_ptr<Processor> getProcessorImpl();
-    std::shared_ptr<Serial> getSerialProcessorImpl();
-    std::shared_ptr<Cpu> getCpuProcessorImpl();
+    std::shared_ptr<CpuSerial> getCpuSerialProcessorImpl();
+    std::shared_ptr<CpuParallel> getCpuParallelProcessorImpl();
     std::shared_ptr<Gpu> getGpuProcessorImpl();
 
     State _state;
     float _dt;
 
-    std::shared_ptr<Processor> _processor; ///< Selected processor
-    std::shared_ptr<Serial> _serial;       ///< Serial processor
-    std::shared_ptr<Cpu> _cpu;             ///< CPU processor
-    std::shared_ptr<Gpu> _gpu;             ///< GPU processor
+    std::shared_ptr<Processor> _processor;     ///< Selected processor
+    std::shared_ptr<CpuSerial> _cpuSerial;     ///< CPU serial processor
+    std::shared_ptr<CpuParallel> _cpuParallel; ///< CPU parallel processor
+    std::shared_ptr<Gpu> _gpu;                 ///< GPU processor
 };
 
 } // namespace atta::processor

@@ -16,10 +16,10 @@ Manager& Manager::getInstance() {
 }
 
 void Manager::startUpImpl() {
-    _serial = std::make_shared<Serial>();
-    _cpu = std::make_shared<Cpu>();
+    _cpuSerial = std::make_shared<CpuSerial>();
+    _cpuParallel = std::make_shared<CpuParallel>();
     _gpu = std::make_shared<Gpu>();
-    _processor = _serial;
+    _processor = _cpuSerial;
     _dt = 0.015;
 }
 
@@ -28,8 +28,8 @@ void Manager::shutDownImpl() {
         stop();
 
     _processor.reset();
-    _serial.reset();
-    _cpu.reset();
+    _cpuSerial.reset();
+    _cpuParallel.reset();
     _gpu.reset();
 }
 
@@ -75,13 +75,13 @@ void Manager::setTypeImpl(Type type) {
         _processor->stop();
 
     switch (type) {
-        case Type::SERIAL:
-            _processor = _serial;
-            LOG_SUCCESS("processor::Manager", "Processor [w]SERIAL[] selected");
+        case Type::CPU_SERIAL:
+            _processor = _cpuSerial;
+            LOG_SUCCESS("processor::Manager", "Processor [w]CPU_SERIAL[] selected");
             break;
-        case Type::CPU:
-            _processor = _cpu;
-            LOG_SUCCESS("processor::Manager", "Processor [w]CPU[] selected");
+        case Type::CPU_PARALLEL:
+            _processor = _cpuParallel;
+            LOG_SUCCESS("processor::Manager", "Processor [w]CPU_PARALLEL[] selected");
             break;
         case Type::GPU:
             _processor = _gpu;
@@ -102,8 +102,8 @@ Type Manager::getTypeImpl() { return _processor->getType(); }
 State Manager::getStateImpl() { return _state; }
 
 std::shared_ptr<Processor> Manager::getProcessorImpl() { return _processor; }
-std::shared_ptr<Serial> Manager::getSerialProcessorImpl() { return _serial; }
-std::shared_ptr<Cpu> Manager::getCpuProcessorImpl() { return _cpu; }
+std::shared_ptr<CpuSerial> Manager::getCpuSerialProcessorImpl() { return _cpuSerial; }
+std::shared_ptr<CpuParallel> Manager::getCpuParallelProcessorImpl() { return _cpuParallel; }
 std::shared_ptr<Gpu> Manager::getGpuProcessorImpl() { return _gpu; }
 
 } // namespace atta::processor

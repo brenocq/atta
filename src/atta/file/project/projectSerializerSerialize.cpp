@@ -109,11 +109,11 @@ void ProjectSerializer::serializeSensorModule(Section& section) {
 
 void ProjectSerializer::serializeProcessorModule(Section& section) {
     switch (processor::getType()) {
-        case processor::Type::SERIAL:
-            section["type"] = "SERIAL";
+        case processor::Type::CPU_SERIAL:
+            section["type"] = "CPU_SERIAL";
             break;
-        case processor::Type::CPU:
-            section["type"] = "CPU";
+        case processor::Type::CPU_PARALLEL:
+            section["type"] = "CPU_PARALLEL";
             break;
         case processor::Type::GPU:
             section["type"] = "GPU";

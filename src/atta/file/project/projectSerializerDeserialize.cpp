@@ -119,10 +119,10 @@ void ProjectSerializer::deserializeSensorModule(Section& section) {
 void ProjectSerializer::deserializeProcessorModule(Section& section) {
     if (section.contains("type")) {
         std::string device = std::string(section["type"]);
-        if (device == "SERIAL")
-            processor::setType(processor::Type::SERIAL);
-        else if (device == "CPU")
-            processor::setType(processor::Type::CPU);
+        if (device == "CPU_SERIAL")
+            processor::setType(processor::Type::CPU_SERIAL);
+        else if (device == "CPU_PARALLEL")
+            processor::setType(processor::Type::CPU_PARALLEL);
         else if (device == "GPU")
             processor::setType(processor::Type::GPU);
         else if (device == "CLUSTER")
