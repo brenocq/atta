@@ -4,7 +4,15 @@
 // Date: 2023-02-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/component/components/prototype.h>
+#include <atta/component/components/script.h>
+#include <atta/component/interface.h>
+#include <atta/physics/interface.h>
+#include <atta/processor/interface.h>
 #include <atta/processor/processors/cpuParallel.h>
+#include <atta/script/registry/controllerRegistry.h>
+#include <atta/script/registry/worldRegistry.h>
+#include <atta/sensor/interface.h>
 
 namespace atta::processor {
 
@@ -19,29 +27,56 @@ CpuParallel::~CpuParallel() { stopWorkers(); }
 void CpuParallel::startThread() { _thread = std::thread(&CpuParallel::loop, this); }
 
 void CpuParallel::loop() {
+    script::WorldRegistry::onStart();
+    float dt = processor::getDt();
+    auto start = std::chrono::high_resolution_clock::now();
     while (shouldRun()) {
+        physics::update(dt);
+        sensor::update(dt);
+
+        script::WorldRegistry::onUpdateBefore();
+
+        std::vector<component::Entity> entities = component::getScriptView();
+        for (component::Factory factory : component::getFactories()) {
+            component::Script* script = factory.getPrototype().get<component::Script>();
+            if (script) {
+                component::EntityId first = factory.getFirstClone().getId();
+                component::EntityId last = first + factory.getMaxClones();
+                const script::ControllerRegistry* controller = script::ControllerRegistry::getRegistry(script->sid);
+                run(first, last, [=](uint32_t idx) { controller->update(idx); });
+            }
+        }
+
+        script::WorldRegistry::onUpdateAfter();
+
         _stepCount++;
+        if (_stepCount == 5000) {
+            auto end = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+            LOG_DEBUG("CpuParallel", "$0 steps in [y]$1ms", _stepCount, duration.count());
+        }
     }
+    script::WorldRegistry::onStop();
     _stepCount = 0;
 }
 
-// void CpuParallel::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
-//     // If no work to be done, return
-//     if (start == end)
-//         return;
-//
-//     {
-//         std::lock_guard<std::mutex> lock(_workMutex);
-//         _nextIdx = start;
-//         _endIdx = end - 1;
-//         _func = std::move(func);
-//     }
-//     _wakeUpWorkers.notify_all();
-//
-//     // Wait for job to finish
-//     while (!jobFinished()) {
-//     }
-// }
+void CpuParallel::run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func) {
+    // If no work to be done, return
+    if (start == end)
+        return;
+
+    {
+        std::lock_guard<std::mutex> lock(_workMutex);
+        _nextIdx = start;
+        _endIdx = end - 1;
+        _func = std::move(func);
+    }
+    _wakeUpWorkers.notify_all();
+
+    // Wait for job to finish
+    while (!jobFinished()) {
+    }
+}
 
 void CpuParallel::setNumWorkers(uint32_t numWorkers) {
     if (!jobFinished()) {

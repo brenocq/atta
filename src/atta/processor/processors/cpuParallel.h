@@ -28,8 +28,9 @@ class CpuParallel : public Processor {
 
     void loop();
 
-    void worker();
 
+    void run(uint32_t start, uint32_t end, std::function<void(uint32_t idx)> func);
+    void worker();
     bool hasWork();
     bool jobFinished();
     void stopWorkers();
