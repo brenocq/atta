@@ -27,9 +27,9 @@ macro(atta_add_target target sources)
     target_compile_definitions(${target} PRIVATE ${atta_DEFINITIONS})
 
     # CUDA specific
-    #if(ATTA_CUDA_SUPPORT)
-    #    atta_cuda_sources(${target} ${sources})
-    #endif()
+    if(ATTA_CUDA_SUPPORT)
+        atta_cuda_sources(${target} ${sources})
+    endif()
 
     # This variable is used to include headers when building statically (necessary to register scripts)
     set(headers "")

@@ -1,7 +1,7 @@
 //--------------------------------------------------
 // Atta Utils Module
 // cuda.h
-// Date: 2023-05-102
+// Date: 2023-05-10
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #ifndef ATTA_UTILS_CUDA_H
@@ -17,4 +17,4 @@ void copyGpuToCpu(void* dst, void* src, size_t size);
 
 } // namespace atta::cuda
 
-#endif // ATTA_UTIL_CUDA_H
+#endif // ATTA_UTILS_CUDA_H

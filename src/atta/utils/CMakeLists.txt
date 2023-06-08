@@ -6,6 +6,7 @@ set(ATTA_UTILS_SOURCE
     config.cpp
     cuda.cpp
     profiler.cpp
+    random.cpp
 
     math/bounds.cpp
     math/common.cpp
@@ -21,6 +22,7 @@ atta_add_libs(atta_utils)
 if(ATTA_CUDA_SUPPORT)
     set(ATTA_UTILS_CUDA_SOURCE
         cuda.cpp
+        random.cpp
 
         math/bounds.cpp
         math/common.cpp

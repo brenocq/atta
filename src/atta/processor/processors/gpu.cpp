@@ -8,10 +8,10 @@
 #include <atta/utils/cuda.h>
 #include <cuda_runtime.h>
 
-// #include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
-// #include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
-// #include "/home/breno/Github/brenocq-atta/ants/src/world.h"
-// #include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/world.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
 #include <atta/component/components/prototype.h>
 #include <atta/component/dataManager/cpuDataManager.h>
 #include <atta/component/dataManager/gpuDataManager.h>
@@ -118,8 +118,8 @@ void Gpu::writeData() { component::GpuDataManager::copyCpuToGpu(); }
 ATTA_GPU_CONST int d_numSteps = 1;
 
 __global__ void onStart() {
-    // World world;
-    // world.onStart();
+    World world;
+    world.onStart();
 }
 
 template <typename T>
@@ -131,30 +131,30 @@ __global__ void runAnts(cmp::EntityId first, cmp::EntityId last) {
     cmp::EntityId clone = first + (blockIdx.x * blockDim.x + threadIdx.x);
     if (clone > last)
         return;
-    // Ant ant;
-    // ant.entity = clone;
-    // ant.update();
+    Ant ant;
+    ant.entity = clone;
+    ant.update();
 }
 
 __global__ void step() {
-    // World world;
-    // for (int i = 0; i < d_numSteps; i++) {
-    //     world.onUpdateBefore();
+    World world;
+    for (int i = 0; i < d_numSteps; i++) {
+        world.onUpdateBefore();
 
-    //    // Run ant scripts
-    //    cmp::Entity antPrototype = cmp::Entity(1);
-    //    uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
-    //    cmp::EntityId first = 2;
-    //    cmp::EntityId last = first + num - 1;
-    //    runAnts<<<(num + 256) / 256, 256>>>(first, last);
+        // Run ant scripts
+        cmp::Entity antPrototype = cmp::Entity(1);
+        uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
+        cmp::EntityId first = 2;
+        cmp::EntityId last = first + num - 1;
+        runAnts<<<(num + 256) / 256, 256>>>(first, last);
 
-    //    world.onUpdateAfter();
-    //}
+        world.onUpdateAfter();
+    }
 }
 
 __global__ void onStop() {
-    // World world;
-    // world.onStop();
+    World world;
+    world.onStop();
 }
 
 void Gpu::startThread() { _thread = std::thread(&Gpu::loop, this); }

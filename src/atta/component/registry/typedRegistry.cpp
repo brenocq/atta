@@ -8,8 +8,8 @@
 
 #include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
 #include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
-#include "/home/breno/Github/monte-carlo-slam/src/robotComponent.h"
-#include "/home/breno/Github/monte-carlo-slam/src/mapComponent.h"
+// #include "/home/breno/Github/monte-carlo-slam/src/robotComponent.h"
+// #include "/home/breno/Github/monte-carlo-slam/src/mapComponent.h"
 #include <atta/component/components/prototype.h>
 
 namespace atta::component {
@@ -63,10 +63,10 @@ ATTA_GPU_CONST ComponentId idGpu<Prototype> = 16;
 //template <>
 //ATTA_GPU_CONST ComponentId idGpu<Transform> = 21;
 
-template <>
-ATTA_GPU_CONST ComponentId idGpu<RobotComponent> = 22;
-template <>
-ATTA_GPU_CONST ComponentId idGpu<MapComponent> = 23;
+// template <>
+// ATTA_GPU_CONST ComponentId idGpu<RobotComponent> = 22;
+// template <>
+// ATTA_GPU_CONST ComponentId idGpu<MapComponent> = 23;
 
 template <>
 ATTA_GPU_CONST ComponentId idGpu<AntComponent> = 22;
