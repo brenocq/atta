@@ -8,16 +8,17 @@
 #include <atta/utils/cuda.h>
 #include <cuda_runtime.h>
 
-#include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
-#include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
-#include "/home/breno/Github/brenocq-atta/ants/src/world.h"
-#include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
 #include <atta/component/components/prototype.h>
 #include <atta/component/dataManager/cpuDataManager.h>
 #include <atta/component/dataManager/gpuDataManager.h>
 #include <atta/component/entity.h>
 #include <atta/component/registry/typedRegistry.h>
 #include <chrono>
+
+#include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/world.h"
+#include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
 
 namespace atta::processor {
 
@@ -115,8 +116,6 @@ void Gpu::readData() { component::GpuDataManager::copyGpuToCpu(); }
 void Gpu::writeData() { component::GpuDataManager::copyCpuToGpu(); }
 
 //---------- GPU CODE ----------//
-ATTA_GPU_CONST int d_numSteps = 1;
-
 __global__ void onStart() {
     World world;
     world.onStart();
@@ -138,18 +137,16 @@ __global__ void runAnts(cmp::EntityId first, cmp::EntityId last) {
 
 __global__ void step() {
     World world;
-    for (int i = 0; i < d_numSteps; i++) {
-        world.onUpdateBefore();
+    world.onUpdateBefore();
 
-        // Run ant scripts
-        cmp::Entity antPrototype = cmp::Entity(1);
-        uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
-        cmp::EntityId first = 2;
-        cmp::EntityId last = first + num - 1;
-        runAnts<<<(num + 256) / 256, 256>>>(first, last);
+    // Run ant scripts
+    cmp::Entity antPrototype = cmp::Entity(1);
+    uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
+    cmp::EntityId first = 2;
+    cmp::EntityId last = first + num - 1;
+    runAnts<<<(num + 256) / 256, 256>>>(first, last);
 
-        world.onUpdateAfter();
-    }
+    world.onUpdateAfter();
 }
 
 __global__ void onStop() {
@@ -161,13 +158,16 @@ void Gpu::startThread() { _thread = std::thread(&Gpu::loop, this); }
 
 void Gpu::loop() {
     onStart<<<1, 1>>>();
+
     _stepCount = 0;
     auto start = std::chrono::high_resolution_clock::now();
+
     while (shouldRun()) {
         step<<<1, 1>>>();
+        cudaDeviceSynchronize();
 
         _stepCount++;
-        if (_stepCount == 5000) {
+        if (_stepCount == 1000) {
             auto end = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
             LOG_DEBUG("GPU", "$0 steps in [r]$1ms", _stepCount, duration.count());
