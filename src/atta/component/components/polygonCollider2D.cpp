@@ -56,13 +56,33 @@ ComponentDescription& TypedComponentRegistry<PolygonCollider2D>::getDescription(
               ImGui::Text("Points");
               std::vector<vec2>* points = (std::vector<vec2>*)((uint8_t*)data + aDescs[1].offset);
               for (int i = 0; i < points->size(); i++) {
-                  ImGui::DragFloat2(("##PolygonCollider2DPoint" + std::to_string(i)).c_str(), (float*)&((*points)[i]));
-                  ImGui::SameLine();
-                  if (ImGui::Button(("-##PolygonCollider2DDeletePoint" + std::to_string(i)).c_str())) {
-                      points->erase(points->begin() + i);
-                      i--;
+                  ImGui::PushID(i);
+                  {
+                      // Edit point
+                      ImGui::DragFloat2("##PolygonCollider2DPoint", (float*)&((*points)[i]));
+
+                      // Delete point
+                      ImGui::SameLine();
+                      if (ImGui::Button("-##PolygonCollider2DDeletePoint"))
+                          points->erase(points->begin() + i);
+
+                      // Rearrange point
+                      if (i > 0) {
+                          ImGui::SameLine();
+                          if (ImGui::Button("^")) {
+                              std::swap((*points)[i], (*points)[i - 1]);
+                          }
+                      }
+                      if (i < points->size() - 1) {
+                          ImGui::SameLine();
+                          if (ImGui::Button("v")) {
+                              std::swap((*points)[i], (*points)[i + 1]);
+                          }
+                      }
                   }
+                  ImGui::PopID();
               }
+              // Add point
               if (ImGui::Button("+##PolygonCollider2DAddPoint"))
                   points->push_back({});
           }}},
