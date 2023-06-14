@@ -48,7 +48,7 @@ void CpuParallel::loop() {
         // physics::update(dt);
         // sensor::update(dt);
 
-        world.onUpdateBefore(); // script::WorldRegistry::onUpdateBefore();
+        // world.onUpdateBefore(); // script::WorldRegistry::onUpdateBefore();
 
         run(first, last, [=](uint32_t idx) {
             Ant ant;
@@ -56,7 +56,7 @@ void CpuParallel::loop() {
             ant.update();
         });
 
-        world.onUpdateAfter(); // script::WorldRegistry::onUpdateAfter();
+        // world.onUpdateAfter(); // script::WorldRegistry::onUpdateAfter();
 
         // std::vector<component::Entity> entities = component::getScriptView();
         // for (component::Factory factory : component::getFactories()) {

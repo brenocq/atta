@@ -136,8 +136,8 @@ __global__ void runAnts(cmp::EntityId first, cmp::EntityId last) {
 }
 
 __global__ void step() {
-    World world;
-    world.onUpdateBefore();
+    // World world;
+    // world.onUpdateBefore();
 
     // Run ant scripts
     cmp::Entity antPrototype = cmp::Entity(1);
@@ -146,7 +146,7 @@ __global__ void step() {
     cmp::EntityId last = first + num - 1;
     runAnts<<<(num + 256) / 256, 256>>>(first, last);
 
-    world.onUpdateAfter();
+    // world.onUpdateAfter();
 }
 
 __global__ void onStop() {

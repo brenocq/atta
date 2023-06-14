@@ -46,7 +46,7 @@ void CpuSerial::loop() {
         // sensor::update(dt);
 
         // script::WorldRegistry::onUpdateBefore();
-        world.onUpdateBefore();
+        // world.onUpdateBefore();
 
         for (cmp::EntityId e = first; e <= last; e++) {
             Ant ant;
@@ -64,13 +64,13 @@ void CpuSerial::loop() {
         // }
 
         // script::WorldRegistry::onUpdateAfter();
-        world.onUpdateAfter();
+        // world.onUpdateAfter();
 
         _stepCount++;
         if (_stepCount == 1000) {
             auto end = std::chrono::high_resolution_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-            LOG_DEBUG("CpuSerial", "$0 steps in [y]$1ms", _stepCount, duration.count());
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+            LOG_DEBUG("CpuSerial", "$0 steps in [y]$1s", _stepCount, duration.count() / (1000.0f * 1000.0f));
         }
     }
     // script::WorldRegistry::onStop();
