@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/component/components/boxCollider2D.h>
 #include <atta/component/components/circleCollider2D.h>
+#include <atta/component/components/polygonCollider2D.h>
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>
 #include <atta/physics/engines/box2DEngine.h>
@@ -101,13 +102,19 @@ void Box2DEngine::start() {
     ContactListener* contactlistener = new ContactListener(_collisions);
     _world->SetContactListener(contactlistener);
 
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    //---------- Create ground body----------//
+    // This body is used to apply top-down friction if necessary
+    b2BodyDef groundBodyDef{};
+    _groundBody = _world->CreateBody(&groundBodyDef);
+
     //---------- Create rigid bodies ----------//
+    std::vector<component::EntityId> entities = component::getNoPrototypeView();
     for (component::EntityId entity : entities) {
         auto t = component::getComponent<component::Transform>(entity);
         auto rb2d = component::getComponent<component::RigidBody2D>(entity);
         auto box2d = component::getComponent<component::BoxCollider2D>(entity);
         auto circle2d = component::getComponent<component::CircleCollider2D>(entity);
+        auto polygon2d = component::getComponent<component::PolygonCollider2D>(entity);
 
         if (!rb2d)
             continue;
@@ -117,20 +124,20 @@ void Box2DEngine::start() {
             continue;
         }
 
-        if (rb2d && !(box2d || circle2d)) {
+        int numColliders = ((box2d != nullptr) + (circle2d != nullptr) + (polygon2d != nullptr));
+
+        if (numColliders == 0) {
             LOG_WARN("physics::box2DEngine", "Entity [w]$0[] is a rigid body but does not have any collider component", entity);
             continue;
         }
 
-        if (box2d && circle2d) {
+        if (numColliders > 1) {
             LOG_WARN("physics::box2DEngine", "Entity [w]$0[] must have only one collider", entity);
             continue;
         }
 
-        if (t && rb2d && (box2d || circle2d)) {
-            createRigidBody(entity);
-            createColliders(entity);
-        }
+        createRigidBody(entity);
+        createColliders(entity);
     }
 
     //---------- Create joints ----------//
@@ -158,7 +165,7 @@ void Box2DEngine::step(float dt) {
         auto rb2d = component::getComponent<component::RigidBody2D>(eid);
 
         // Check type change
-        if(body->GetType() != attaToBox2D(rb2d->type))
+        if (body->GetType() != attaToBox2D(rb2d->type))
             body->SetType(attaToBox2D(rb2d->type));
 
         // Get atta pos/angle
@@ -244,6 +251,17 @@ void Box2DEngine::createRigidBody(component::EntityId entity) {
     b2Body* body = _world->CreateBody(&bodyDef);
     _bodies[entity] = body;
 
+    // Apply top-down friction
+    vec3 gravity = physics::getGravity();
+    if (gravity.z && rb2d->groundFriction) {
+        b2FrictionJointDef frictionJointDef;
+        frictionJointDef.bodyA = _groundBody;
+        frictionJointDef.bodyB = body;
+        frictionJointDef.maxForce = (-gravity.z * rb2d->mass) * rb2d->friction;               // Set the maximum friction force
+        frictionJointDef.maxTorque = frictionJointDef.maxForce * vec2(t->scale).length() / 2; // Set the maximum friction torque
+        _world->CreateJoint(&frictionJointDef);
+    }
+
     // Register component pointer to EntityId conversion
     _componentToEntity[rb2d] = entity;
 }
@@ -258,6 +276,7 @@ void Box2DEngine::createColliders(component::EntityId entity) {
     auto rb2d = component::getComponent<component::RigidBody2D>(entity);
     auto box2d = component::getComponent<component::BoxCollider2D>(entity);
     auto circle2d = component::getComponent<component::CircleCollider2D>(entity);
+    auto polygon2d = component::getComponent<component::PolygonCollider2D>(entity);
 
     // Get world transform
     component::Transform worldT = t->getWorldTransform(entity);
@@ -273,13 +292,26 @@ void Box2DEngine::createColliders(component::EntityId entity) {
     // Create shape
     float area = 1.0f;
     if (box2d) {
-        area = scale.x * box2d->size.x * scale.y * box2d->size.y;
         polygonShape.SetAsBox(scale.x * box2d->size.x / 2.0f, scale.y * box2d->size.y / 2.0f);
         fixtureDef.shape = &polygonShape;
+        // Compute area
+        area = scale.x * box2d->size.x * scale.y * box2d->size.y;
     } else if (circle2d) {
         circle.m_radius = std::max(scale.x, scale.y) * circle2d->radius;
-        area = circle.m_radius * circle.m_radius * 3.14159265f;
         fixtureDef.shape = &circle;
+        // Compute area
+        area = circle.m_radius * circle.m_radius * 3.14159265f;
+    } else if (polygon2d) {
+        // Set polygon points
+        std::vector<b2Vec2> b2Points;
+        for (const auto& point : polygon2d->points)
+            b2Points.emplace_back(scale.x * point.x, scale.y * point.y);
+        polygonShape.Set(b2Points.data(), static_cast<int32>(b2Points.size()));
+        // Compute area
+        b2MassData massData;
+        polygonShape.ComputeMass(&massData, 1.0f);
+        area = massData.mass;
+        fixtureDef.shape = &polygonShape;
     }
 
     if (area == 0.0f) {

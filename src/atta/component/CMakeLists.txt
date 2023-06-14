@@ -21,6 +21,7 @@ set(ATTA_COMPONENT_MODULE_SOURCE
     components/mesh.cpp
     components/name.cpp
     components/pointLight.cpp
+    components/polygonCollider2D.cpp
     components/prismaticJoint.cpp
     components/prototype.cpp
     components/relationship.cpp

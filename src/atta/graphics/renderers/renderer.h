@@ -38,8 +38,6 @@ class Renderer : public file::Serializable {
     unsigned getSerializedSize() { return Serializable::getSerializedSize(this); }
 
   protected:
-    uint32_t _width;
-    uint32_t _height;
     StringId _name;
     bool _renderDrawer;
     bool _renderSelected;

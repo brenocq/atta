@@ -19,6 +19,7 @@
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/name.h>
 #include <atta/component/components/pointLight.h>
+#include <atta/component/components/polygonCollider2D.h>
 #include <atta/component/components/prismaticJoint.h>
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/relationship.h>

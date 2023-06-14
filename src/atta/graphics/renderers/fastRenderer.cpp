@@ -87,7 +87,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                     } else
                         shader->setVec3("albedo", material->color);
                 } else {
-                    resource::Material::CreateInfo defaultMaterial {};
+                    resource::Material::CreateInfo defaultMaterial{};
                     shader->setVec3("albedo", defaultMaterial.color);
                 }
 
@@ -105,11 +105,8 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
 }
 
 void FastRenderer::resize(uint32_t width, uint32_t height) {
-    if (width != _width || height != _height) {
+    if (width != getWidth() || height != getHeight())
         _geometryPipeline->getRenderPass()->getFramebuffer()->resize(width, height);
-        _width = width;
-        _height = height;
-    }
 }
 
 } // namespace atta::graphics
