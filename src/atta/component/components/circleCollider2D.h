@@ -14,7 +14,7 @@
 namespace atta::component {
 
 /// %Component to create sphere collider
-/** This collider can be used with 2D 3D physics.
+/** This collider can be used with 2D physics.
  *
  * Transform and RigidBody2D components are necessary for the
  * entity to participate in the physics iteration.
