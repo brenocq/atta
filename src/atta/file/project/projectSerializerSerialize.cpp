@@ -7,7 +7,7 @@
 namespace atta::file {
 
 void ProjectSerializer::serializeHeader(Section& section) {
-    section["version"] = std::vector<uint16_t>{ATTA_VERSION_MAJOR, ATTA_VERSION_MINOR, ATTA_VERSION_PATCH, ATTA_VERSION_TWEAK};
+    section["version"] = std::vector<uint16_t>{ATTA_VERSION_MAJOR, ATTA_VERSION_MINOR, ATTA_VERSION_PATCH};
     section["projectName"] = std::string(_project->getName());
 }
 
