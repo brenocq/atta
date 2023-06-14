@@ -5,25 +5,29 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/components/rigidBody2D.h>
-#include <atta/physics/interface.h>
 #include <atta/physics/engines/box2DEngine.h>
+#include <atta/physics/interface.h>
 
 namespace atta::component {
 
 template <>
 ComponentDescription& TypedComponentRegistry<RigidBody2D>::getDescription() {
-    static ComponentDescription desc = {"Rigid Body 2D",
-                                        {{AttributeType::UINT32, offsetof(RigidBody2D, type), "type", {}, {}, {}, {"Dynamic", "Kinematic", "Static"}},
-                                         {AttributeType::FLOAT32, offsetof(RigidBody2D, linearVelocity), "linearVelocity", {}, {}, 0.001f},
-                                         {AttributeType::FLOAT32, offsetof(RigidBody2D, angularVelocity), "angularVelocity", {}, {}, 0.001f},
-                                         {AttributeType::FLOAT32, offsetof(RigidBody2D, mass), "mass", 0.0f, 100.0f, 0.001f},
-                                         {AttributeType::FLOAT32, offsetof(RigidBody2D, friction), "friction", 0.0f, 1.0f, 0.001f},
-                                         {AttributeType::FLOAT32, offsetof(RigidBody2D, restitution), "restitution", 0.0f, 1.0f, 0.001f},
-                                         {AttributeType::FLOAT32, offsetof(RigidBody2D, linearDamping), "linearDamping", {}, {}, 0.001f},
-                                         {AttributeType::FLOAT32, offsetof(RigidBody2D, angularDamping), "angularDamping", {}, {}, 0.001f},
-                                         {AttributeType::BOOL, offsetof(RigidBody2D, allowSleep), "allowSleep"},
-                                         {AttributeType::BOOL, offsetof(RigidBody2D, awake), "awake"},
-                                         {AttributeType::BOOL, offsetof(RigidBody2D, fixedRotation), "fixedRotation"}}};
+    static ComponentDescription desc = {
+        "Rigid Body 2D",
+        {
+            {AttributeType::UINT32, offsetof(RigidBody2D, type), "type", {}, {}, {}, {"Dynamic", "Kinematic", "Static"}},
+            {AttributeType::FLOAT32, offsetof(RigidBody2D, linearVelocity), "linearVelocity", {}, {}, 0.001f},
+            {AttributeType::FLOAT32, offsetof(RigidBody2D, angularVelocity), "angularVelocity", {}, {}, 0.001f},
+            {AttributeType::FLOAT32, offsetof(RigidBody2D, mass), "mass", 0.0f, 100.0f, 0.001f},
+            {AttributeType::FLOAT32, offsetof(RigidBody2D, friction), "friction", 0.0f, 1.0f, 0.001f},
+            {AttributeType::FLOAT32, offsetof(RigidBody2D, restitution), "restitution", 0.0f, 1.0f, 0.001f},
+            {AttributeType::FLOAT32, offsetof(RigidBody2D, linearDamping), "linearDamping", {}, {}, 0.001f},
+            {AttributeType::FLOAT32, offsetof(RigidBody2D, angularDamping), "angularDamping", {}, {}, 0.001f},
+            {AttributeType::BOOL, offsetof(RigidBody2D, allowSleep), "allowSleep"},
+            {AttributeType::BOOL, offsetof(RigidBody2D, awake), "awake"},
+            {AttributeType::BOOL, offsetof(RigidBody2D, fixedRotation), "fixedRotation"},
+            {AttributeType::BOOL, offsetof(RigidBody2D, groundFriction), "groundFriction"},
+        }};
 
     return desc;
 }

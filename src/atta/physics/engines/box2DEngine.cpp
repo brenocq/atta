@@ -101,8 +101,13 @@ void Box2DEngine::start() {
     ContactListener* contactlistener = new ContactListener(_collisions);
     _world->SetContactListener(contactlistener);
 
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    //---------- Create ground body----------//
+    // This body is used to apply top-down friction if necessary
+    b2BodyDef groundBodyDef{};
+    _groundBody = _world->CreateBody(&groundBodyDef);
+
     //---------- Create rigid bodies ----------//
+    std::vector<component::EntityId> entities = component::getNoPrototypeView();
     for (component::EntityId entity : entities) {
         auto t = component::getComponent<component::Transform>(entity);
         auto rb2d = component::getComponent<component::RigidBody2D>(entity);
@@ -158,7 +163,7 @@ void Box2DEngine::step(float dt) {
         auto rb2d = component::getComponent<component::RigidBody2D>(eid);
 
         // Check type change
-        if(body->GetType() != attaToBox2D(rb2d->type))
+        if (body->GetType() != attaToBox2D(rb2d->type))
             body->SetType(attaToBox2D(rb2d->type));
 
         // Get atta pos/angle
@@ -243,6 +248,17 @@ void Box2DEngine::createRigidBody(component::EntityId entity) {
     // Create body
     b2Body* body = _world->CreateBody(&bodyDef);
     _bodies[entity] = body;
+
+    // Apply top-down friction
+    vec3 gravity = physics::getGravity();
+    if (gravity.z && rb2d->groundFriction) {
+        b2FrictionJointDef frictionJointDef;
+        frictionJointDef.bodyA = _groundBody;
+        frictionJointDef.bodyB = body;
+        frictionJointDef.maxForce = (-gravity.z * rb2d->mass) * rb2d->friction;               // Set the maximum friction force
+        frictionJointDef.maxTorque = frictionJointDef.maxForce * vec2(t->scale).length() / 2; // Set the maximum friction torque
+        _world->CreateJoint(&frictionJointDef);
+    }
 
     // Register component pointer to EntityId conversion
     _componentToEntity[rb2d] = entity;
