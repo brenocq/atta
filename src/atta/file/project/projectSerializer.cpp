@@ -47,8 +47,8 @@ void ProjectSerializer::serialize() {
 
     // Serialize version
     std::ofstream os(attaTemp, std::ofstream::trunc | std::ofstream::binary);
-    std::string version = "ATTA" + std::to_string(ATTA_VERSION_MAJOR) + "." + std::to_string(ATTA_VERSION_MINOR) + "." +
-                          std::to_string(ATTA_VERSION_PATCH) + "." + std::to_string(ATTA_VERSION_TWEAK);
+    std::string version =
+        "ATTA" + std::to_string(ATTA_VERSION_MAJOR) + "." + std::to_string(ATTA_VERSION_MINOR) + "." + std::to_string(ATTA_VERSION_PATCH);
     write(os, version);
 
     // Serialize data

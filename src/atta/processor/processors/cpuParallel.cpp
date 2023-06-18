@@ -14,10 +14,10 @@
 #include <atta/script/registry/worldRegistry.h>
 #include <atta/sensor/interface.h>
 
-#include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
-#include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
-#include "/home/breno/Github/brenocq-atta/ants/src/world.h"
-#include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
+//#include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
+//#include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
+//#include "/home/breno/Github/brenocq-atta/ants/src/world.h"
+//#include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
 
 namespace atta::processor {
 
@@ -32,51 +32,55 @@ CpuParallel::~CpuParallel() { stopWorkers(); }
 void CpuParallel::startThread() { _thread = std::thread(&CpuParallel::loop, this); }
 
 void CpuParallel::loop() {
-    World world;
+    // World world;
 
-    cmp::Entity antPrototype = cmp::Entity(1);
-    uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
-    cmp::EntityId first = 2;
-    cmp::EntityId last = first + num - 1;
+    //cmp::Entity antPrototype = cmp::Entity(1);
+    //uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
+    //cmp::EntityId first = 2;
+    //cmp::EntityId last = first + num - 1;
 
     float dt = processor::getDt();
 
-    world.onStart(); // script::WorldRegistry::onStart();
+    // world.onStart();
+    script::WorldRegistry::onStart();
 
     auto start = std::chrono::high_resolution_clock::now();
     while (shouldRun()) {
-        // physics::update(dt);
-        // sensor::update(dt);
+        physics::update(dt);
+        sensor::update(dt);
 
-        // world.onUpdateBefore(); // script::WorldRegistry::onUpdateBefore();
+        // world.onUpdateBefore();
+        script::WorldRegistry::onUpdateBefore();
 
-        run(first, last, [=](uint32_t idx) {
-            Ant ant;
-            ant.entity = idx;
-            ant.update();
-        });
+        // run(first, last, [=](uint32_t idx) {
+        //     Ant ant;
+        //     ant.entity = idx;
+        //     ant.update();
+        // });
 
-        // world.onUpdateAfter(); // script::WorldRegistry::onUpdateAfter();
+        std::vector<component::Entity> entities = component::getScriptView();
+        for (component::Factory factory : component::getFactories()) {
+            component::Script* script = factory.getPrototype().get<component::Script>();
+            if (script) {
+                component::EntityId first = factory.getFirstClone().getId();
+                component::EntityId last = first + factory.getMaxClones();
+                const script::ControllerRegistry* controller = script::ControllerRegistry::getRegistry(script->sid);
+                run(first, last, [=](uint32_t idx) { controller->update(idx); });
+            }
+        }
 
-        // std::vector<component::Entity> entities = component::getScriptView();
-        // for (component::Factory factory : component::getFactories()) {
-        //     component::Script* script = factory.getPrototype().get<component::Script>();
-        //     if (script) {
-        //         component::EntityId first = factory.getFirstClone().getId();
-        //         component::EntityId last = first + factory.getMaxClones();
-        //         const script::ControllerRegistry* controller = script::ControllerRegistry::getRegistry(script->sid);
-        //         run(first, last, [=](uint32_t idx) { controller->update(idx); });
-        //     }
-        // }
+        // world.onUpdateAfter();
+        script::WorldRegistry::onUpdateAfter();
 
         _stepCount++;
-        if (_stepCount == 1000) {
-            auto end = std::chrono::high_resolution_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-            LOG_DEBUG("CpuParallel", "$0 steps in [y]$1ms", _stepCount, duration.count());
-        }
+        // if (_stepCount == 1000) {
+        //    auto end = std::chrono::high_resolution_clock::now();
+        //    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        //    LOG_DEBUG("CpuParallel", "$0 steps in [y]$1ms", _stepCount, duration.count());
+        //}
     }
-    world.onStop(); // script::WorldRegistry::onStop();
+    // world.onStop();
+    script::WorldRegistry::onStop();
     _stepCount = 0;
 }
 

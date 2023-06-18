@@ -15,10 +15,10 @@
 #include <atta/component/registry/typedRegistry.h>
 #include <chrono>
 
-#include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
-#include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
-#include "/home/breno/Github/brenocq-atta/ants/src/world.h"
-#include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
+// #include "/home/breno/Github/brenocq-atta/ants/src/ant.h"
+// #include "/home/breno/Github/brenocq-atta/ants/src/antComponent.h"
+// #include "/home/breno/Github/brenocq-atta/ants/src/world.h"
+// #include "/home/breno/Github/brenocq-atta/ants/src/worldComponent.h"
 
 namespace atta::processor {
 
@@ -117,8 +117,8 @@ void Gpu::writeData() { component::GpuDataManager::copyCpuToGpu(); }
 
 //---------- GPU CODE ----------//
 __global__ void onStart() {
-    World world;
-    world.onStart();
+    // World world;
+    // world.onStart();
 }
 
 template <typename T>
@@ -127,12 +127,12 @@ ATTA_GPU int getId() {
 }
 
 __global__ void runAnts(cmp::EntityId first, cmp::EntityId last) {
-    cmp::EntityId clone = first + (blockIdx.x * blockDim.x + threadIdx.x);
-    if (clone > last)
-        return;
-    Ant ant;
-    ant.entity = clone;
-    ant.update();
+    // cmp::EntityId clone = first + (blockIdx.x * blockDim.x + threadIdx.x);
+    // if (clone > last)
+    //     return;
+    // Ant ant;
+    // ant.entity = clone;
+    // ant.update();
 }
 
 __global__ void step() {
@@ -140,18 +140,18 @@ __global__ void step() {
     // world.onUpdateBefore();
 
     // Run ant scripts
-    cmp::Entity antPrototype = cmp::Entity(1);
-    uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
-    cmp::EntityId first = 2;
-    cmp::EntityId last = first + num - 1;
-    runAnts<<<(num + 256) / 256, 256>>>(first, last);
+    // cmp::Entity antPrototype = cmp::Entity(1);
+    // uint32_t num = antPrototype.get<cmp::Prototype>()->maxClones;
+    // cmp::EntityId first = 2;
+    // cmp::EntityId last = first + num - 1;
+    // runAnts<<<(num + 256) / 256, 256>>>(first, last);
 
     // world.onUpdateAfter();
 }
 
 __global__ void onStop() {
-    World world;
-    world.onStop();
+    // World world;
+    // world.onStop();
 }
 
 void Gpu::startThread() { _thread = std::thread(&Gpu::loop, this); }
@@ -167,11 +167,11 @@ void Gpu::loop() {
         cudaDeviceSynchronize();
 
         _stepCount++;
-        if (_stepCount == 1000) {
-            auto end = std::chrono::high_resolution_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-            LOG_DEBUG("GPU", "$0 steps in [r]$1ms", _stepCount, duration.count());
-        }
+        // if (_stepCount == 1000) {
+        //     auto end = std::chrono::high_resolution_clock::now();
+        //     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+        //     LOG_DEBUG("GPU", "$0 steps in [r]$1ms", _stepCount, duration.count());
+        // }
     }
     onStop<<<1, 1>>>();
     _stepCount = 0;
