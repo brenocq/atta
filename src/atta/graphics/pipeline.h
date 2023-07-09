@@ -8,7 +8,7 @@
 #define ATTA_GRAPHICS_PIPELINE_H
 
 #include <atta/graphics/renderPass.h>
-#include <atta/graphics/shaderGroup.h>
+#include <atta/graphics/shader.h>
 #include <atta/graphics/vertexBuffer.h>
 #include <atta/utils/stringId.h>
 
@@ -19,9 +19,8 @@ class Pipeline {
     enum PrimitiveTopology { NONE, POINT, LINE, TRIANGLE, LINE_STRIP, TRIANGLE_STRIP, TRIANGLE_FAN };
 
     struct CreateInfo {
-        std::shared_ptr<ShaderGroup> shaderGroup;
+        std::shared_ptr<Shader> shader;
         std::shared_ptr<RenderPass> renderPass;
-        VertexBufferLayout layout;
         PrimitiveTopology primitiveTopology = PrimitiveTopology::TRIANGLE;
         bool backfaceCulling = true;
         bool wireframe = false;
@@ -38,14 +37,9 @@ class Pipeline {
 
     virtual void* getImGuiTexture() const = 0;
 
-    std::shared_ptr<ShaderGroup> getShaderGroup() const { return _shaderGroup; };
-    std::shared_ptr<RenderPass> getRenderPass() const { return _renderPass; };
-    StringId getDebugName() const { return _debugName; }
-
   protected:
-    std::shared_ptr<ShaderGroup> _shaderGroup;
+    std::shared_ptr<Shader> _shader;
     std::shared_ptr<RenderPass> _renderPass;
-    VertexBufferLayout _layout;
     PrimitiveTopology _primitiveTopology;
 
     const bool _backfaceCulling;

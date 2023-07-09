@@ -32,11 +32,8 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
     std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
-    // Shader Group
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/fastRenderer/shader.vert", "shaders/fastRenderer/shader.frag"};
-    shaderGroupInfo.debugName = StringId("FastRenderer Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
+    // Shader
+    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/fastRenderer/fastRenderer.asl");
 
     // Render Pass
     RenderPass::CreateInfo renderPassInfo{};
@@ -44,12 +41,9 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     renderPassInfo.debugName = StringId("FastRenderer Render Pass");
     std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
 
+    // Pipeline
     Pipeline::CreateInfo pipelineInfo{};
-    // Vertex input layout
-    pipelineInfo.shaderGroup = shaderGroup;
-    pipelineInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
-                           {"inNormal", VertexBufferElement::Type::VEC3},
-                           {"inTexCoord", VertexBufferElement::Type::VEC2}};
+    pipelineInfo.shader = shader;
     pipelineInfo.renderPass = renderPass;
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 
@@ -64,7 +58,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
     std::vector<component::EntityId> entities = component::getNoPrototypeView();
     _geometryPipeline->begin();
     {
-        std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
+        std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
 
         shader->setMat4("projection", transpose(camera->getProj()));
         shader->setMat4("view", transpose(camera->getView()));

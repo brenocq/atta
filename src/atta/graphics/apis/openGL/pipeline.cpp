@@ -11,13 +11,13 @@ namespace atta::graphics::gl {
 
 Pipeline::Pipeline(const Pipeline::CreateInfo& info) : gfx::Pipeline(info) {
     DASSERT(_renderPass, "Can not create pipeline without render pass");
-    DASSERT(_shaderGroup, "Can not create pipeline without shader group");
+    DASSERT(_shader, "Can not create pipeline without shader group");
 }
 
 Pipeline::~Pipeline() {}
 
 void Pipeline::begin() {
-    _shaderGroup->bind();
+    _shader->bind();
     _renderPass->begin();
 }
 

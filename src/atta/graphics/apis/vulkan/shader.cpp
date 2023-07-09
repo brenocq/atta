@@ -17,12 +17,32 @@ Shader::~Shader() {
         vkDestroyShaderModule(_device->getHandle(), _shader, nullptr);
 }
 
+void ShaderGroup::setBool(const char* name, bool b) {}
+void ShaderGroup::setInt(const char* name, int i) {}
+void ShaderGroup::setFloat(const char* name, float f) {}
+void ShaderGroup::setVec2(const char* name, vec2 v) {}
+void ShaderGroup::setVec3(const char* name, vec3 v) {}
+void ShaderGroup::setVec4(const char* name, vec4 v) {}
+void ShaderGroup::setMat3(const char* name, mat3 m) {}
+void ShaderGroup::setMat4(const char* name, mat4 m) {}
+void ShaderGroup::setImage(const char* name, StringId sid) {}
+void ShaderGroup::setImage(const char* name, std::shared_ptr<gfx::Image> image) {}
+void ShaderGroup::setCubemap(const char* name, StringId sid) {}
+void ShaderGroup::setCubemap(const char* name, std::shared_ptr<gfx::Image> image) {}
+
+std::vector<VkPipelineShaderStageCreateInfo> ShaderGroup::getShaderStages() const {
+    std::vector<VkPipelineShaderStageCreateInfo> result;
+    for (std::shared_ptr<graphics::Shader> s : _shaders)
+        result.push_back(std::dynamic_pointer_cast<vk::Shader>(s)->getShaderStage());
+    return result;
+}
+
 void Shader::recompile() {
     fs::path filepath = file::solveResourcePath(_filepath);
     std::string in = fs::absolute(filepath).string();
     std::string out = in + ".spv";
     LOG_DEBUG("sf", "$0 $1", in, out);
-    if(!runCommand("glslc " + in + " -o " + out))
+    if (!runCommand("glslc " + in + " -o " + out))
         return;
 
     // Parse GLSL
@@ -106,8 +126,6 @@ std::string Shader::readFile(const fs::path& file) {
     return std::string(buffer.begin(), buffer.end());
 }
 
-void Shader::parseGlsl(std::string code) {
-
-}
+void Shader::parseGlsl(std::string code) {}
 
 } // namespace atta::graphics::vk

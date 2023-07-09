@@ -17,7 +17,7 @@ struct UniformBufferObject {
 };
 
 Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info), _device(common::getDevice()) {
-    std::vector<VkPipelineShaderStageCreateInfo> shaderStages = std::dynamic_pointer_cast<vk::ShaderGroup>(_shaderGroup)->getShaderStages();
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStages = std::dynamic_pointer_cast<vk::Shader>(_shader)->getShaderStages();
 
     // Create framebuffer
     _framebuffers.push_back(std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer()));
@@ -26,8 +26,9 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     _uniformBuffer = std::make_shared<UniformBuffer>(sizeof(UniformBufferObject));
 
     // Vertex input
-    auto bindingDescription = VertexBuffer::getBindingDescription(_layout);
-    auto attributeDescriptions = VertexBuffer::getAttributeDescriptions(_layout);
+    VertexBufferLayout layout = _shader->getVertexBufferLayout();
+    auto bindingDescription = VertexBuffer::getBindingDescription(layout);
+    auto attributeDescriptions = VertexBuffer::getAttributeDescriptions(layout);
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.vertexBindingDescriptionCount = 1;

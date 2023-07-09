@@ -67,7 +67,7 @@ void Manager::startUpImpl() {
     _layerStack = std::make_unique<LayerStack>();
 
     //----- Create viewports -----//
-    // createDefaultViewportsImpl();
+    createDefaultViewportsImpl();
 
     //----- Resource sync -----//
     event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));
@@ -157,7 +157,7 @@ void Manager::createDefaultViewportsImpl() {
     _viewportsNext.clear();
 
     Viewport::CreateInfo viewportInfo;
-    viewportInfo.renderer = std::make_shared<PhongRenderer>();
+    viewportInfo.renderer = std::make_shared<FastRenderer>();
     viewportInfo.camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
     viewportInfo.sid = StringId("Main Viewport");
     _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));
