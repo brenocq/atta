@@ -37,6 +37,10 @@ class Pipeline {
 
     virtual void* getImGuiTexture() const = 0;
 
+    std::shared_ptr<Shader> getShader() const;
+    std::shared_ptr<RenderPass> getRenderPass() const;
+    StringId getDebugName() const;
+
   protected:
     std::shared_ptr<Shader> _shader;
     std::shared_ptr<RenderPass> _renderPass;

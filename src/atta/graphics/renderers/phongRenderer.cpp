@@ -34,11 +34,8 @@ PhongRenderer::PhongRenderer() : Renderer("PhongRenderer") {
     framebufferInfo.debugName = StringId("PhongRenderer Framebuffer");
     std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
-    // Shader Group
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/phongRenderer/shader.vert", "shaders/phongRenderer/shader.frag"};
-    shaderGroupInfo.debugName = StringId("PhongRenderer Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
+    // Shader
+    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/phongRenderer/phongRenderer.asl");
 
     // Render Pass
     RenderPass::CreateInfo renderPassInfo{};
@@ -48,15 +45,12 @@ PhongRenderer::PhongRenderer() : Renderer("PhongRenderer") {
 
     Pipeline::CreateInfo pipelineInfo{};
     // Vertex input layout
-    pipelineInfo.shaderGroup = shaderGroup;
-    pipelineInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
-                           {"inNormal", VertexBufferElement::Type::VEC3},
-                           {"inTexCoord", VertexBufferElement::Type::VEC2}};
+    pipelineInfo.shader = shader;
     pipelineInfo.renderPass = renderPass;
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 
     //---------- Common pipelines ----------//
-    _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
+    _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(renderPass);
 }
 
@@ -66,7 +60,7 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
     std::vector<component::EntityId> entities = component::getNoPrototypeView();
     _geometryPipeline->begin();
     {
-        std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
+        std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
 
         shader->setMat4("projection", transpose(camera->getProj()));
         shader->setMat4("view", transpose(camera->getView()));

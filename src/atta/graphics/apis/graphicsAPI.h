@@ -14,7 +14,7 @@
 
 namespace atta::graphics {
 
-class ShaderGroup;
+class Shader;
 class GraphicsAPI {
   public:
     enum Type { OPENGL = 0, VULKAN };
@@ -39,20 +39,20 @@ class GraphicsAPI {
 
     struct GenerateProcessedCubemapInfo {
         StringId cubemapSid = StringId("Not defined");
-        std::shared_ptr<ShaderGroup> shader;
+        std::shared_ptr<Shader> shader;
         unsigned width = 128;  // New cubemap face width
         unsigned height = 128; // New cubemap face height
         int numMipLevels = 1;
-        std::function<void(std::shared_ptr<ShaderGroup> shader, mat4 proj, mat4 view, int face, int mipLevel)>
+        std::function<void(std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel)>
             func; // Function called for each mip level, each face
     };
     virtual void generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) = 0;
 
     struct GenerateProcessedTextureInfo {
         StringId textureSid = StringId("Not defined");
-        std::shared_ptr<ShaderGroup> shader;
+        std::shared_ptr<Shader> shader;
         Image::CreateInfo imageInfo;
-        std::function<void(std::shared_ptr<ShaderGroup> shader)> func;
+        std::function<void(std::shared_ptr<Shader> shader)> func;
     };
     virtual void generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) = 0;
 

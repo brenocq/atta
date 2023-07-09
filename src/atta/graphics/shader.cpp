@@ -22,19 +22,19 @@ Shader::Shader(const fs::path& file) : _file(file) {
     }
 
     // Read file
-    std::stringstream fileSS;
-    fs::path absolutePath = file::solveResourcePath(_filepath);
-    std::ifstream file(absolutePath);
-    fileSS << file.rdbuf();
-    file.close();
-    _aslCode = fileSS.str();
+    std::stringstream ss;
+    fs::path absolutePath = file::solveResourcePath(_file);
+    std::ifstream f(absolutePath);
+    ss << f.rdbuf();
+    f.close();
+    _aslCode = ss.str();
 
     preprocessASL();
 }
 
 fs::path Shader::getFile() const { return _file; }
 
-VertexBufferLayout getVertexBufferLayout() const { return _vertexBufferLayout; }
+VertexBufferLayout Shader::getVertexBufferLayout() const { return _vertexBufferLayout; }
 
 void Shader::preprocessASL() { LOG_DEBUG("gfx::Shader", "Preprocess ASL: [w]$0", _file.string()); }
 

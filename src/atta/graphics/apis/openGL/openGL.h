@@ -16,7 +16,6 @@
 #include <atta/graphics/apis/openGL/pipeline.h>
 #include <atta/graphics/apis/openGL/renderPass.h>
 #include <atta/graphics/apis/openGL/shader.h>
-#include <atta/graphics/apis/openGL/shaderGroup.h>
 #include <atta/graphics/apis/openGL/vertexBuffer.h>
 
 #endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_H

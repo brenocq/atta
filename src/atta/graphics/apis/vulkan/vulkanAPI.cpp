@@ -9,7 +9,7 @@
 #include <atta/event/events/windowResize.h>
 #include <atta/event/interface.h>
 #include <atta/graphics/apis/vulkan/common.h>
-#include <atta/graphics/apis/vulkan/shaderGroup.h>
+#include <atta/graphics/apis/vulkan/shader.h>
 
 namespace atta::graphics {
 

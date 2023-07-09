@@ -13,32 +13,24 @@ namespace atta::graphics {
 DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
     //---------- Create line pipeline ----------//
     {
-        // Shader Group
-        ShaderGroup::CreateInfo shaderGroupInfo{};
-        shaderGroupInfo.shaderPaths = {"shaders/line/shader.vert", "shaders/line/shader.frag"};
-        shaderGroupInfo.debugName = StringId("DrawerPipeline Line Shader Group");
-        std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
+        // Shader
+        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/line/line.asl");
 
         Pipeline::CreateInfo pipelineInfo{};
         // Vertex input layout
-        pipelineInfo.shaderGroup = shaderGroup;
-        pipelineInfo.layout = {{"inPos", VertexBufferElement::Type::VEC3}, {"inColor", VertexBufferElement::Type::VEC4}};
+        pipelineInfo.shader = shader;
         pipelineInfo.renderPass = renderPass;
         _linePipeline = graphics::create<Pipeline>(pipelineInfo);
     }
 
     //---------- Create point pipeline ----------//
     {
-        // Shader Group
-        ShaderGroup::CreateInfo shaderGroupInfo{};
-        shaderGroupInfo.shaderPaths = {"shaders/point/shader.vert", "shaders/point/shader.frag"};
-        shaderGroupInfo.debugName = StringId("DrawerPipeline Point Shader Group");
-        std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
+        // Shader
+        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/point/point.asl");
 
         Pipeline::CreateInfo pipelineInfo{};
         // Vertex input layout
-        pipelineInfo.shaderGroup = shaderGroup;
-        pipelineInfo.layout = {{"inPos", VertexBufferElement::Type::VEC3}, {"inColor", VertexBufferElement::Type::VEC4}};
+        pipelineInfo.shader= shader;
         pipelineInfo.renderPass = renderPass;
         _pointPipeline = graphics::create<Pipeline>(pipelineInfo);
     }
@@ -47,7 +39,7 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
 void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
     _linePipeline->begin();
     {
-        std::shared_ptr<ShaderGroup> shader = _linePipeline->getShaderGroup();
+        std::shared_ptr<Shader> shader = _linePipeline->getShader();
         shader->bind();
         shader->setMat4("projection", transpose(camera->getProj()));
         shader->setMat4("view", transpose(camera->getView()));
@@ -57,7 +49,7 @@ void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
 
     _pointPipeline->begin();
     {
-        std::shared_ptr<ShaderGroup> shader = _pointPipeline->getShaderGroup();
+        std::shared_ptr<Shader> shader = _pointPipeline->getShader();
         shader->bind();
         shader->setMat4("projection", transpose(camera->getProj()));
         shader->setMat4("view", transpose(camera->getView()));

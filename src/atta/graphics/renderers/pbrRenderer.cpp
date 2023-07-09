@@ -35,14 +35,10 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
     std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
     //---------- Create geometry pipeline ----------//
-    Pipeline::CreateInfo geometryPipelineInfo{};
     std::shared_ptr<RenderPass> geometryRenderPass;
     {
-        // Shader Group
-        ShaderGroup::CreateInfo shaderGroupInfo{};
-        shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/shader.vert", "shaders/pbrRenderer/shader.frag"};
-        shaderGroupInfo.debugName = StringId("PbrRenderer Shader Group");
-        std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
+        // Shader
+        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/pbrRenderer.asl");
 
         // Render Pass
         RenderPass::CreateInfo renderPassInfo{};
@@ -50,26 +46,19 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         renderPassInfo.debugName = StringId("PbrRenderer Render Pass");
         geometryRenderPass = graphics::create<RenderPass>(renderPassInfo);
 
-        // Vertex input layout
-        geometryPipelineInfo.shaderGroup = shaderGroup;
-        geometryPipelineInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
-                                       {"inNormal", VertexBufferElement::Type::VEC3},
-                                       {"inTexCoord", VertexBufferElement::Type::VEC2}};
+        // Pipeline
+        Pipeline::CreateInfo geometryPipelineInfo{};
+        geometryPipelineInfo.shader = shader;
         geometryPipelineInfo.renderPass = geometryRenderPass;
         _geometryPipeline = graphics::create<Pipeline>(geometryPipelineInfo);
     }
 
     //---------- Common pipelines ----------//
-    _selectedPipeline = std::make_unique<SelectedPipeline>(geometryRenderPass, geometryPipelineInfo.layout);
+    _selectedPipeline = std::make_unique<SelectedPipeline>(geometryRenderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(geometryRenderPass);
 
     //---------- Create background shader ----------//
-    {
-        ShaderGroup::CreateInfo bgShaderGroupInfo{};
-        bgShaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/background.vert", "shaders/pbrRenderer/background.frag"};
-        bgShaderGroupInfo.debugName = StringId("PBR background Shader Group");
-        _backgroundShader = graphics::create<ShaderGroup>(bgShaderGroupInfo);
-    }
+    { _backgroundShader = graphics::create<Shader>("shaders/pbrRenderer/background.asl"); }
 
     //---------- Directional shadow mapping ----------//
     {
@@ -90,11 +79,8 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         framebufferInfo.debugName = StringId("PbrRenderer::shadowMap::framebuffer");
         std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
-        // Shader Group
-        ShaderGroup::CreateInfo shaderGroupInfo{};
-        shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/shadow.vert", "shaders/pbrRenderer/shadow.frag"};
-        shaderGroupInfo.debugName = StringId("PbrRenderer::shadowMap::shaderGroup");
-        std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
+        // Shader
+        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/shadow.asl");
 
         // Render Pass
         RenderPass::CreateInfo renderPassInfo{};
@@ -102,13 +88,10 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         renderPassInfo.debugName = StringId("PbrRenderer::shadowMap::renderPass");
         std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
 
-        // Vertex input layout
+        // Pipeline
         Pipeline::CreateInfo pipelineInfo{};
-        pipelineInfo.shaderGroup = shaderGroup;
+        pipelineInfo.shader = shader;
         pipelineInfo.renderPass = renderPass;
-        pipelineInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
-                               {"inNormal", VertexBufferElement::Type::VEC3},
-                               {"inTexCoord", VertexBufferElement::Type::VEC2}};
         _shadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
     }
 
@@ -130,12 +113,8 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         framebufferInfo.debugName = StringId("PbrRenderer::omniShadowMap::framebuffer");
         std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
-        // Shader Group
-        ShaderGroup::CreateInfo shaderGroupInfo{};
-        shaderGroupInfo.shaderPaths = {"shaders/pbrRenderer/omniShadow.vert", "shaders/pbrRenderer/omniShadow.geom",
-                                       "shaders/pbrRenderer/omniShadow.frag"};
-        shaderGroupInfo.debugName = StringId("PbrRenderer::omniShadowMap::shaderGroup");
-        std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
+        // Shader
+        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/omniShadow.asl");
 
         // Render Pass
         RenderPass::CreateInfo renderPassInfo{};
@@ -143,13 +122,10 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastE
         renderPassInfo.debugName = StringId("PbrRenderer::omniShadowMap::renderPass");
         std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
 
-        // Vertex input layout
+        // Pipeline
         Pipeline::CreateInfo pipelineInfo{};
-        pipelineInfo.shaderGroup = shaderGroup;
+        pipelineInfo.shader = shader;
         pipelineInfo.renderPass = renderPass;
-        pipelineInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
-                               {"inNormal", VertexBufferElement::Type::VEC3},
-                               {"inTexCoord", VertexBufferElement::Type::VEC2}};
         _omniShadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
     }
 }
@@ -218,7 +194,7 @@ void PbrRenderer::shadowPass() {
     if (directionalLightEntity != -1) {
         _shadowMapPipeline->begin();
         {
-            std::shared_ptr<ShaderGroup> shader = _shadowMapPipeline->getShaderGroup();
+            std::shared_ptr<Shader> shader = _shadowMapPipeline->getShader();
             shader->bind();
 
             // Create light matrix
@@ -261,7 +237,7 @@ void PbrRenderer::shadowPass() {
     if (pointLightEntity != -1) {
         _omniShadowMapPipeline->begin();
         {
-            std::shared_ptr<ShaderGroup> shader = _omniShadowMapPipeline->getShaderGroup();
+            std::shared_ptr<Shader> shader = _omniShadowMapPipeline->getShader();
             shader->bind();
 
             // Create light matrix
@@ -310,7 +286,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
     _geometryPipeline->begin();
     {
         //---------- PBR shader ----------//
-        std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
+        std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
         shader->bind();
 
         shader->setMat4("projection", transpose(camera->getProj()));
@@ -447,10 +423,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
 
 void PbrRenderer::irradianceCubemap() {
     // Create shader
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/compute/irradiance.vert", "shaders/compute/irradiance.frag"};
-    shaderGroupInfo.debugName = StringId("Irradiance Shader Group");
-    std::shared_ptr<ShaderGroup> shader = graphics::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/irradiance.asl");
 
     // Generate irradiance cubemap
     GraphicsAPI::GenerateProcessedCubemapInfo info;
@@ -459,7 +432,7 @@ void PbrRenderer::irradianceCubemap() {
     info.width = 128;
     info.height = 128;
     info.numMipLevels = 1;
-    info.func = [&](std::shared_ptr<ShaderGroup> shader, mat4 proj, mat4 view, int face, int mipLevel) {
+    info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
         if (mipLevel == 0 && face == 0) {
             shader->setCubemap("environmentMap", _lastEnvironmentMap);
             shader->setMat4("projection", transpose(proj));
@@ -471,10 +444,7 @@ void PbrRenderer::irradianceCubemap() {
 
 void PbrRenderer::prefilterCubemap() {
     // Create shader
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/compute/prefilter.vert", "shaders/compute/prefilter.frag"};
-    shaderGroupInfo.debugName = StringId("Prefilter Shader Group");
-    std::shared_ptr<ShaderGroup> shader = graphics::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/asl.vert");
 
     // Generate prefilter cubemap
     GraphicsAPI::GenerateProcessedCubemapInfo info;
@@ -483,7 +453,7 @@ void PbrRenderer::prefilterCubemap() {
     info.width = 512;
     info.height = 512;
     info.numMipLevels = 5;
-    info.func = [&](std::shared_ptr<ShaderGroup> shader, mat4 proj, mat4 view, int face, int mipLevel) {
+    info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
         if (mipLevel == 0 && face == 0) {
             shader->setCubemap("environmentMap", _lastEnvironmentMap);
             shader->setMat4("projection", transpose(proj));
@@ -498,10 +468,7 @@ void PbrRenderer::prefilterCubemap() {
 }
 
 void PbrRenderer::brdfLUT() {
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/compute/brdf.vert", "shaders/compute/brdf.frag"};
-    shaderGroupInfo.debugName = StringId("BRDF LUT Shader Group");
-    std::shared_ptr<ShaderGroup> shader = graphics::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/brdf.asl");
 
     // Generate brdf LUT
     GraphicsAPI::GenerateProcessedTextureInfo info;

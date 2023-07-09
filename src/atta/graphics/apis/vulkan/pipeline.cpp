@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/pipeline.h>
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
+#include <atta/graphics/apis/vulkan/shader.h>
 #include <atta/graphics/interface.h>
 
 namespace atta::graphics::vk {

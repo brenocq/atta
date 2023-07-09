@@ -48,7 +48,7 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 
     //---------- Common pipelines ----------//
-    _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
+    _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(renderPass);
 }
 

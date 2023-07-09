@@ -15,7 +15,6 @@
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderPass.h>
 #include <atta/graphics/shader.h>
-#include <atta/graphics/shaderGroup.h>
 #include <atta/graphics/vertexBuffer.h>
 #include <atta/resource/resources/image.h>
 

@@ -33,6 +33,7 @@ class VertexBufferElement final {
 //---------- VertexBufferLayout ----------//
 class VertexBufferLayout final {
   public:
+    VertexBufferLayout() = default;
     VertexBufferLayout(const std::initializer_list<VertexBufferElement>& elements);
     ~VertexBufferLayout() = default;
 

@@ -79,10 +79,7 @@ void OpenGLAPI::startUp() {
     event::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(OpenGLAPI::onImageUpdateEvent));
 
     // Quad shader
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/quad/shader.vert", "shaders/quad/shader.frag"};
-    shaderGroupInfo.debugName = StringId("OpenGLAPI Quad Shader Group");
-    _quadShader = std::make_shared<gl::ShaderGroup>(shaderGroupInfo);
+    _quadShader = std::make_shared<gl::Shader>("shaders/quad/shader.asl");
 
     //---------- Quad ----------//
     {
@@ -211,7 +208,7 @@ void OpenGLAPI::waitDevice() {
 
 void OpenGLAPI::beginFrame() {}
 
-void OpenGLAPI::endFrame() {}
+void OpenGLAPI::endFrame() { _window->swapBuffers(); }
 
 void OpenGLAPI::renderMesh(StringId meshSid) {
     if (_openGLMeshes.find(meshSid.getId()) == _openGLMeshes.end()) {
@@ -311,10 +308,7 @@ void OpenGLAPI::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
     //---------- Equirectangular to cubemap ----------//
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/compute/equiToCubemap.vert", "shaders/compute/equiToCubemap.frag"};
-    shaderGroupInfo.debugName = StringId("EquiToCubemap Shader Group");
-    std::shared_ptr<ShaderGroup> shader = graphics::create<ShaderGroup>(shaderGroupInfo);
+    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/equiToCubemap.asl");
 
     // Create cubemap texture
     glGenTextures(1, &cubemap);

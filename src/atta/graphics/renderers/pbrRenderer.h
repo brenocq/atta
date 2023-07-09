@@ -40,7 +40,7 @@ class PbrRenderer final : public Renderer {
     std::unique_ptr<SelectedPipeline> _selectedPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
 
-    std::shared_ptr<ShaderGroup> _backgroundShader;
+    std::shared_ptr<Shader> _backgroundShader;
     bool _firstRender;
 
     //----- Lighting -----//

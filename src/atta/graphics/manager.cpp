@@ -115,9 +115,6 @@ void Manager::updateImpl() {
         _graphicsAPI->beginFrame();
         _layerStack->render();
         _graphicsAPI->endFrame();
-
-        if (_graphicsAPI->getType() == GraphicsAPI::OPENGL)
-            _window->swapBuffers();
     }
 }
 
@@ -287,13 +284,13 @@ std::shared_ptr<RenderPass> Manager::createImpl<RenderPass>(RenderPass::CreateIn
 }
 
 template <>
-std::shared_ptr<Shader> Manager::createImpl<Shader>(Shader::CreateInfo info) {
-    return createSpecific<Shader, gl::Shader, vk::Shader>(info);
+std::shared_ptr<Shader> Manager::createImpl<Shader>(const char* file) {
+    return createImpl<Shader>(fs::path(file));
 }
 
 template <>
-std::shared_ptr<ShaderGroup> Manager::createImpl<ShaderGroup>(ShaderGroup::CreateInfo info) {
-    return createSpecific<ShaderGroup, gl::ShaderGroup, vk::ShaderGroup>(info);
+std::shared_ptr<Shader> Manager::createImpl<Shader>(fs::path file) {
+    return createSpecific<Shader, gl::Shader, vk::Shader>(file);
 }
 
 template <>

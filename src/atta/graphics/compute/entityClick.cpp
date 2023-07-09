@@ -33,18 +33,12 @@ EntityClick::EntityClick() : _width(500), _height(500) {
     std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
 
     //---------- Graphics pipeline ----------//
-    // Shader Group
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/compute/entityClick.vert", "shaders/compute/entityClick.frag"};
-    shaderGroupInfo.debugName = StringId("EntityClick Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
+    // Shader
+    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/entityClick.asl");
 
     Pipeline::CreateInfo pipelineInfo{};
     // Vertex input layout
-    pipelineInfo.shaderGroup = shaderGroup;
-    pipelineInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
-                           {"inNormal", VertexBufferElement::Type::VEC3},
-                           {"inTexCoord", VertexBufferElement::Type::VEC2}};
+    pipelineInfo.shader = shader;
     pipelineInfo.renderPass = renderPass;
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 }
@@ -66,7 +60,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
 
     _geometryPipeline->begin();
     {
-        std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
+        std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
 
         mat4 m(1.0f);
         glDisable(GL_DEPTH_TEST);

@@ -10,7 +10,7 @@
 #include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/apis/openGL/image.h>
 #include <atta/graphics/apis/openGL/mesh.h>
-#include <atta/graphics/apis/openGL/shaderGroup.h>
+#include <atta/graphics/apis/openGL/shader.h>
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
@@ -55,7 +55,7 @@ class OpenGLAPI final : public GraphicsAPI {
     std::unordered_map<StringHash, std::shared_ptr<gl::Image>> _openGLImages;
     std::unordered_map<StringHash, gl::OpenGLId> _openGLCubemaps;
 
-    std::shared_ptr<gl::ShaderGroup> _quadShader;
+    std::shared_ptr<gl::Shader> _quadShader;
 
     gl::OpenGLId _quadVBO;
     gl::OpenGLId _quadVAO;

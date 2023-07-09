@@ -14,7 +14,6 @@
 #include <atta/graphics/apis/vulkan/pipeline.h>
 #include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/apis/vulkan/shader.h>
-#include <atta/graphics/apis/vulkan/shaderGroup.h>
 #include <atta/graphics/apis/vulkan/vertexBuffer.h>
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 

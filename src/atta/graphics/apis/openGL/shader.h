@@ -8,15 +8,17 @@
 #define ATTA_GRAPHICS_APIS_OPENGL_SHADER_H
 
 #include <atta/graphics/apis/openGL/base.h>
+#include <atta/graphics/image.h>
 #include <atta/graphics/shader.h>
 
 namespace atta::graphics::gl {
 
 class Shader final : public gfx::Shader {
   public:
-    Shader(const Shader::CreateInfo& info);
+    Shader(const fs::path& file);
     ~Shader();
 
+    void preprocessICode() override;
     void compile() override;
     void bind() override;
 
@@ -38,11 +40,7 @@ class Shader final : public gfx::Shader {
     OpenGLId getHandle() const;
     void deleteShader();
 
-    static GLenum convertFileToShaderType(const fs::path& filepath);
-
   private:
-    void extractTextureUnits(const std::stringstream& sstream);
-
     OpenGLId _id;
     std::vector<std::string> _textureUnits;
 };

@@ -13,15 +13,11 @@
 
 namespace atta::graphics {
 
-SelectedPipeline::SelectedPipeline(std::shared_ptr<RenderPass> renderPass, VertexBufferLayout layout) {
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/common/selected.vert", "shaders/common/selected.frag"};
-    shaderGroupInfo.debugName = StringId("SelectedPipeline Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
+SelectedPipeline::SelectedPipeline(std::shared_ptr<RenderPass> renderPass) {
+    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/common/selected.asl");
 
     Pipeline::CreateInfo pipelineInfo{};
-    pipelineInfo.shaderGroup = shaderGroup;
-    pipelineInfo.layout = layout;
+    pipelineInfo.shader = shader;
     pipelineInfo.renderPass = renderPass;
     _pipeline = graphics::create<Pipeline>(pipelineInfo);
 }
@@ -34,7 +30,7 @@ void SelectedPipeline::render(std::shared_ptr<Camera> camera) {
         glEnable(GL_BLEND);
         glClear(GL_STENCIL_BUFFER_BIT);
 
-        std::shared_ptr<ShaderGroup> shader = _pipeline->getShaderGroup();
+        std::shared_ptr<Shader> shader = _pipeline->getShader();
         shader->setMat4("projection", transpose(camera->getProj()));
         shader->setMat4("view", transpose(camera->getView()));
 

@@ -6,7 +6,9 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SHADER_H
 #define ATTA_GRAPHICS_SHADER_H
+#include <atta/graphics/image.h>
 #include <atta/graphics/shaderUniform.h>
+#include <atta/graphics/vertexBuffer.h>
 #include <atta/utils/stringId.h>
 
 namespace atta::graphics {
@@ -16,7 +18,6 @@ class Shader {
     Shader(const fs::path& file);
     virtual ~Shader() = default;
 
-    virtual void compile() = 0;
     virtual void bind() = 0;
 
     virtual void setBool(const char* name, bool b) = 0;
