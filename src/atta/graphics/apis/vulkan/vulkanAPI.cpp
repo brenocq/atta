@@ -48,15 +48,15 @@ void VulkanAPI::startUp() {
 
     //----- Create vulkan objects -----//
     // clang-format off
-    static std::vector<float> vertices = {
-        -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-        -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
-    };
-    static std::vector<uint32_t> indices = {
-        0, 1, 2, 2, 3, 0
-    };
+    //static std::vector<float> vertices = {
+    //    -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    //    0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    //    0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    //    -0.5f, 0.5f, 1.0f, 1.0f, 1.0f,
+    //};
+    //static std::vector<uint32_t> indices = {
+    //    0, 1, 2, 2, 3, 0
+    //};
     // clang-format on
 
     //----- Framebuffer -----//
@@ -78,31 +78,31 @@ void VulkanAPI::startUp() {
         fb->create(_renderPass);
 
     //----- Send vertices to GPU -----//
-    gfx::VertexBuffer::CreateInfo vertexBufferInfo{};
-    vertexBufferInfo.layout = {
-        {"inPosition", VertexBufferElement::Type::VEC2},
-        {"inColor", VertexBufferElement::Type::VEC3},
-    };
-    vertexBufferInfo.size = vertices.size() * sizeof(float);
-    vertexBufferInfo.data = (uint8_t*)vertices.data();
-    _vertexBuffer = std::make_shared<vk::VertexBuffer>(vertexBufferInfo);
+    // gfx::VertexBuffer::CreateInfo vertexBufferInfo{};
+    // vertexBufferInfo.layout = {
+    //    {"inPosition", VertexBufferElement::Type::VEC2},
+    //    {"inColor", VertexBufferElement::Type::VEC3},
+    //};
+    // vertexBufferInfo.size = vertices.size() * sizeof(float);
+    // vertexBufferInfo.data = (uint8_t*)vertices.data();
+    //_vertexBuffer = std::make_shared<vk::VertexBuffer>(vertexBufferInfo);
 
-    //----- Send indices to GPU -----//
-    gfx::IndexBuffer::CreateInfo indexBufferInfo{};
-    indexBufferInfo.size = indices.size() * sizeof(uint32_t);
-    indexBufferInfo.data = (uint8_t*)indices.data();
-    _indexBuffer = std::make_shared<vk::IndexBuffer>(indexBufferInfo);
+    ////----- Send indices to GPU -----//
+    // gfx::IndexBuffer::CreateInfo indexBufferInfo{};
+    // indexBufferInfo.size = indices.size() * sizeof(uint32_t);
+    // indexBufferInfo.data = (uint8_t*)indices.data();
+    //_indexBuffer = std::make_shared<vk::IndexBuffer>(indexBufferInfo);
 
     //----- Pipeline -----//
-    gfx::ShaderGroup::CreateInfo shaderGroupInfo;
-    shaderGroupInfo.shaderPaths = {"shaders/triangle/shader.vert", "shaders/triangle/shader.frag"};
-    std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(shaderGroupInfo);
+    // gfx::ShaderGroup::CreateInfo shaderGroupInfo;
+    // shaderGroupInfo.shaderPaths = {"shaders/fastRenderer/shader.vert", "shaders/fastRenderer/shader.frag"};
+    // std::shared_ptr<vk::ShaderGroup> shaderGroup = std::make_shared<vk::ShaderGroup>(shaderGroupInfo);
 
-    gfx::Pipeline::CreateInfo pipelineInfo{};
-    pipelineInfo.shaderGroup = shaderGroup;
-    pipelineInfo.renderPass = _renderPass;
-    pipelineInfo.layout = vertexBufferInfo.layout;
-    _pipeline = std::make_shared<vk::Pipeline>(pipelineInfo);
+    // gfx::Pipeline::CreateInfo pipelineInfo{};
+    // pipelineInfo.shaderGroup = shaderGroup;
+    // pipelineInfo.renderPass = _renderPass;
+    // pipelineInfo.layout = vertexBufferInfo.layout;
+    //_pipeline = std::make_shared<vk::Pipeline>(pipelineInfo);
 
     //----- UI Descriptor Pool -----//
     std::vector<VkDescriptorType> descriptorTypes = {
@@ -135,7 +135,7 @@ void VulkanAPI::shutDown() {
     _framebuffers.clear();
     _swapChain.reset();
 
-    _pipeline.reset();
+    //_pipeline.reset();
     _renderPass.reset();
     _vertexBuffer.reset();
 
@@ -182,11 +182,11 @@ void VulkanAPI::beginFrame() {
     VkCommandBuffer cmdBuf = _commandBuffers->begin(_currFrame);
     _renderPass->setFramebuffer(_framebuffers[_imageIndex]);
     _renderPass->begin();
-    _pipeline->begin();
-    _vertexBuffer->bind();
-    _indexBuffer->bind();
-    vkCmdDrawIndexed(cmdBuf, _indexBuffer->getCount(), 1, 0, 0, 0);
-    _pipeline->end();
+    //_pipeline->begin();
+    //_vertexBuffer->bind();
+    //_indexBuffer->bind();
+    // vkCmdDrawIndexed(cmdBuf, _indexBuffer->getCount(), 1, 0, 0, 0);
+    //_pipeline->end();
 }
 
 void VulkanAPI::endFrame() {
