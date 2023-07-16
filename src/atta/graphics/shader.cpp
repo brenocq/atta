@@ -10,9 +10,11 @@
 namespace atta::graphics {
 
 Shader::Shader(const fs::path& file) : _file(file) {
+    fs::path absolutePath = file::solveResourcePath(_file);
+
     // Check file
-    if (!fs::exists(file)) {
-        LOG_ERROR("gfx::Shader", "Shader file [w]$0[] was not found", fs::absolute(file).string());
+    if (!fs::exists(absolutePath)) {
+        LOG_ERROR("gfx::Shader", "Shader file [w]$0[] was not found", file.string());
         return;
     }
 
@@ -23,7 +25,6 @@ Shader::Shader(const fs::path& file) : _file(file) {
 
     // Read file
     std::stringstream ss;
-    fs::path absolutePath = file::solveResourcePath(_file);
     std::ifstream f(absolutePath);
     ss << f.rdbuf();
     f.close();
@@ -36,6 +37,15 @@ fs::path Shader::getFile() const { return _file; }
 
 VertexBufferLayout Shader::getVertexBufferLayout() const { return _vertexBufferLayout; }
 
-void Shader::preprocessASL() { LOG_DEBUG("gfx::Shader", "Preprocess ASL: [w]$0", _file.string()); }
+void Shader::preprocessASL() {
+    LOG_DEBUG("gfx::Shader", "Preprocess ASL: [w]$0", _file.string());
+    // TODO Detect entrypoints
+
+    // TODO Add default entrypoints
+
+    // TODO Substitute variables
+
+    // TODO Add graphics API specific placeholders
+}
 
 } // namespace atta::graphics
