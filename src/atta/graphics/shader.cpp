@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/file/manager.h>
 #include <atta/graphics/shader.h>
+#include <regex>
 
 namespace atta::graphics {
 
@@ -39,7 +40,17 @@ VertexBufferLayout Shader::getVertexBufferLayout() const { return _vertexBufferL
 
 void Shader::preprocessASL() {
     LOG_DEBUG("gfx::Shader", "Preprocess ASL: [w]$0", _file.string());
-    // TODO Detect entrypoints
+
+    //---------- Remove comments ----------//
+    LOG_DEBUG("Shader", "Before\n[y]$0[]", _aslCode);
+    // Remove single-line comments
+    _aslCode = std::regex_replace(_aslCode, std::regex("//[^\n]*"), "");
+    // Remove multi-line comments
+    _aslCode = std::regex_replace(_aslCode, std::regex("/\\*([\\s\\S]*?)\\*/"), "");
+
+    LOG_DEBUG("Shader", "After\n[y]$0[]", _aslCode);
+    //----------  TODO Detect entrypoints ---------- //
+    std::vector<Type> shaderTypes;
 
     // TODO Add default entrypoints
 
