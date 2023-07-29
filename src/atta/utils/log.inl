@@ -45,12 +45,38 @@ void Log::error(std::string tag, std::string text, Args&&... args) {
 
 // std::vector overload
 template <typename Tstream, typename T>
-std::ostream& operator<<(Tstream& s, const std::vector<T>& v) {
+std::ostream& operator<<(Tstream& s, const std::vector<T>& vec) {
     s << "{";
-    for (typename std::vector<T>::const_iterator ii = v.begin(); ii != v.end(); ++ii) {
-        s << *ii;
-        if (ii < v.end() - 1)
+    for (typename std::vector<T>::const_iterator it = vec.begin(); it != vec.end(); it++) {
+        if (it != vec.begin())
             s << ", ";
+        s << *it;
+    }
+    s << "}";
+    return s;
+}
+
+// std::set overload
+template <typename Tstream, typename T>
+std::ostream& operator<<(Tstream& s, const std::set<T>& set) {
+    s << "{";
+    for (typename std::set<T>::const_iterator it = set.begin(); it != set.end(); it++) {
+        if (it != set.begin())
+            s << ", ";
+        s << *it;
+    }
+    s << "}";
+    return s;
+}
+
+// std::map overload
+template <typename Tstream, typename K, typename V>
+std::ostream& operator<<(Tstream& s, const std::map<K, V>& map) {
+    s << "{";
+    for (typename std::map<K, V>::const_iterator it = map.begin(); it != map.end(); it++) {
+        if (it != map.begin())
+            s << ", ";
+        s << "{" << it->first << ", " << it->second << "}";
     }
     s << "}";
     return s;
@@ -82,33 +108,33 @@ void Log::log(const char* tagColor, std::string tag, const char* textColor, std:
             }
 
             switch (text[i]) {
-            case 'w':
-                finalText << COLOR_RESET<< COLOR_WHITE;
-                break;
-            case 'r':
-                finalText << COLOR_RESET<< COLOR_RED;
-                break;
-            case 'g':
-                finalText << COLOR_RESET<< COLOR_GREEN;
-                break;
-            case 'b':
-                finalText << COLOR_RESET<< COLOR_BLUE;
-                break;
-            case 'y':
-                finalText << COLOR_RESET<< COLOR_YELLOW;
-                break;
-            case 'm':
-                finalText << COLOR_RESET<< COLOR_MAGENTA;
-                break;
-            case 'c':
-                finalText << COLOR_RESET << COLOR_CYAN;
-                break;
-            case 'k':
-                finalText << COLOR_RESET<< COLOR_BLACK;
-                break;
-            default:
-                finalText << '[';
-                i-=2;
+                case 'w':
+                    finalText << COLOR_RESET << COLOR_WHITE;
+                    break;
+                case 'r':
+                    finalText << COLOR_RESET << COLOR_RED;
+                    break;
+                case 'g':
+                    finalText << COLOR_RESET << COLOR_GREEN;
+                    break;
+                case 'b':
+                    finalText << COLOR_RESET << COLOR_BLUE;
+                    break;
+                case 'y':
+                    finalText << COLOR_RESET << COLOR_YELLOW;
+                    break;
+                case 'm':
+                    finalText << COLOR_RESET << COLOR_MAGENTA;
+                    break;
+                case 'c':
+                    finalText << COLOR_RESET << COLOR_CYAN;
+                    break;
+                case 'k':
+                    finalText << COLOR_RESET << COLOR_BLACK;
+                    break;
+                default:
+                    finalText << '[';
+                    i -= 2;
             }
             i++; // Skip color and ]
         } else if (text[i] == '$') {
