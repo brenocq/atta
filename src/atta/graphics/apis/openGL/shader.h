@@ -18,7 +18,7 @@ class Shader final : public gfx::Shader {
     Shader(const fs::path& file);
     ~Shader();
 
-    void preprocessICode() override;
+    std::string generateApiCode(ShaderType type, std::string iCode) override;
     void compile() override;
     void bind() override;
 

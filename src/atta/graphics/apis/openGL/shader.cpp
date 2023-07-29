@@ -39,7 +39,7 @@ Shader::~Shader() {
     }
 }
 
-void Shader::preprocessICode() {}
+std::string Shader::generateApiCode(ShaderType type, std::string iCode) { return iCode; }
 
 void Shader::compile() {
     if (_id > 0) {

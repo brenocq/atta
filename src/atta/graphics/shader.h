@@ -36,28 +36,87 @@ class Shader {
     fs::path getFile() const;
     VertexBufferLayout getVertexBufferLayout() const;
 
-  protected:
     /**
-     * @brief Preprocess .asl file
+     * @brief Shader type
+     */
+    enum ShaderType { VERTEX = 0, GEOMETRY, FRAGMENT };
+
+  protected:
+    struct ShaderCode {
+        std::string iCode;   ///< Graphics API independent code (intermediate code)
+        std::string apiCode; ///< Graphics API specific code
+    };
+
+    /**
+     * @brief Process .asl file to generate ICode
      *
      * The preprocessing phase consists of a number of operations:
      *  - Entrypoints are detected (vertex, geometry, fragment)
      *  - Default vertex and fragment are added to the shader if not specified by user.
-     *  - Some uppercase variables are substituted by glsl variables (VERTEX, COLOR, DEPTH, ...).
-     *  - Some uppercase variables are substituted by uniform variables (PROJECTION, VIEW, MODEL, ...).
      *  - Placeholders for graphics API specific code are added.
      *
      * The preprocessed ASL is called ASL ICode (ASL Intermediate Code). After the ASL ICode is generated, ASL ICode is further divided in
-     * typed-specific ICode (VERTEX, GEOMETRY, FRAGMENT).
+     * api-specific ICode (VERTEX, GEOMETRY, FRAGMENT).
      */
-    void preprocessASL();
+    void processASL();
 
     /**
-     * @brief Preprocess intermediate code (graphics API independent)
+     * @brief Remove comments from code
      *
-     * Substitute placeholders with Graphics API specific code.
+     * @param code ASL Code
+     *
+     * @return Code without comments
      */
-    virtual void preprocessICode() = 0;
+    std::string removeComments(std::string code);
+
+    /**
+     * @brief Check which entrypoints were defined
+     *
+     * Entrypoints can be VERTEX, GEOMETRY, FRAGMENT
+     *
+     * @param code ASL Code
+     *
+     * @return Set with defined entrypoints
+     */
+    std::set<ShaderType> detectEntrypoints(std::string code);
+
+    /**
+     * @brief Generate type-specific ICode (Intermediate Code) from ASL code
+     *
+     * @param type ICode shader type to be generated
+     * @param aslCode ASL code
+     *
+     * @return type specific ICode
+     */
+    std::string generateICode(ShaderType type, std::string aslCode);
+
+    /**
+     * @brief Go through all shader codes to extract uniforms and populate _uniforms
+     *
+     * @param iCode ICode
+     */
+    void populateUniforms();
+
+    /**
+     * @brief Convert ASL type to ShaderUniform type
+     *
+     * @param type ASL type
+     *
+     * @return ShaderUniform type
+     */
+    ShaderUniform::Type convertType(std::string type);
+
+    /**
+     * @brief Process intermediate code to generate API specific code.
+     *
+     * It will mainly substitute placeholders with Graphics API specific code.
+     *
+     * @param type Shader type
+     * @param iCode Intermediate code
+     *
+     * @return API specific code
+     */
+    virtual std::string generateApiCode(ShaderType type, std::string iCode) = 0;
 
     /**
      * @brief Compile graphics API specific code
@@ -66,20 +125,17 @@ class Shader {
 
     fs::path _file;
     std::string _aslCode;
-    std::string _iCode;
 
     VertexBufferLayout _vertexBufferLayout;
-    std::unordered_map<std::string, ShaderUniform> _uniforms;
-
-    enum Type { VERTEX, GEOMETRY, FRAGMENT };
-    struct ShaderCode {
-        Type type;
-        std::string iCode; ///< Graphics API independent code (intermediate code)
-        std::string code;  ///< Graphics API specific code
-    };
-
-    std::vector<ShaderCode> _shaderCodes;
+    std::map<std::string, ShaderUniform> _uniforms;
+    std::map<ShaderType, ShaderCode> _shaderCodes;
 };
+
+inline std::ostream& operator<<(std::ostream& os, Shader::ShaderType shaderType) {
+    static std::array<const char*, 3> names = {"VERTEX", "GEOMETRY", "FRAGMENT"};
+    os << names[(int)shaderType];
+    return os;
+}
 
 } // namespace atta::graphics
 

@@ -37,7 +37,7 @@ std::vector<VkPipelineShaderStageCreateInfo> Shader::getShaderStages() const {
     // return result;
 }
 
-void Shader::preprocessICode() {}
+std::string Shader::generateApiCode(ShaderType type, std::string iCode) { return iCode; }
 
 void Shader::compile() {
     // fs::path filepath = file::solveResourcePath(_filepath);
