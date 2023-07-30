@@ -28,7 +28,7 @@ void VertexBuffer::bind() const {
     vkCmdBindVertexBuffers(common::getCommandBuffers()->getCurrent(), 0, 1, &_buffer, offsets);
 }
 
-VkVertexInputBindingDescription VertexBuffer::getBindingDescription(const VertexBufferLayout& layout) {
+VkVertexInputBindingDescription VertexBuffer::getBindingDescription(const BufferLayout& layout) {
     VkVertexInputBindingDescription bindingDescription{};
     bindingDescription.binding = 0;
     bindingDescription.stride = layout.getStride();
@@ -36,7 +36,7 @@ VkVertexInputBindingDescription VertexBuffer::getBindingDescription(const Vertex
     return bindingDescription;
 }
 
-std::vector<VkVertexInputAttributeDescription> VertexBuffer::getAttributeDescriptions(const VertexBufferLayout& layout) {
+std::vector<VkVertexInputAttributeDescription> VertexBuffer::getAttributeDescriptions(const BufferLayout& layout) {
     std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
     for (const auto& element : layout.getElements()) {
         VkVertexInputAttributeDescription attributeDescription{};
@@ -49,30 +49,30 @@ std::vector<VkVertexInputAttributeDescription> VertexBuffer::getAttributeDescrip
     return attributeDescriptions;
 }
 
-VkFormat VertexBuffer::convertType(VertexBufferElement::Type type) {
+VkFormat VertexBuffer::convertType(BufferLayout::Element::Type type) {
     switch (type) {
-        case VertexBufferElement::Type::BOOL:
-        case VertexBufferElement::Type::INT:
+        case BufferLayout::Element::Type::BOOL:
+        case BufferLayout::Element::Type::INT:
             return VK_FORMAT_R32_SINT;
-        case VertexBufferElement::Type::UINT:
+        case BufferLayout::Element::Type::UINT:
             return VK_FORMAT_R32_UINT;
-        case VertexBufferElement::Type::IVEC2:
+        case BufferLayout::Element::Type::IVEC2:
             return VK_FORMAT_R32G32_SINT;
-        case VertexBufferElement::Type::IVEC3:
+        case BufferLayout::Element::Type::IVEC3:
             return VK_FORMAT_R32G32B32_SINT;
-        case VertexBufferElement::Type::IVEC4:
+        case BufferLayout::Element::Type::IVEC4:
             return VK_FORMAT_R32G32B32A32_SINT;
-        case VertexBufferElement::Type::FLOAT:
+        case BufferLayout::Element::Type::FLOAT:
             return VK_FORMAT_R32_SFLOAT;
-        case VertexBufferElement::Type::VEC2:
+        case BufferLayout::Element::Type::VEC2:
             return VK_FORMAT_R32G32_SFLOAT;
-        case VertexBufferElement::Type::VEC3:
+        case BufferLayout::Element::Type::VEC3:
             return VK_FORMAT_R32G32B32_SFLOAT;
-        case VertexBufferElement::Type::VEC4:
+        case BufferLayout::Element::Type::VEC4:
             return VK_FORMAT_R32G32B32A32_SFLOAT;
-        case VertexBufferElement::Type::MAT3:
+        case BufferLayout::Element::Type::MAT3:
             return VK_FORMAT_R32G32B32_SFLOAT;
-        case VertexBufferElement::Type::MAT4:
+        case BufferLayout::Element::Type::MAT4:
             return VK_FORMAT_R32G32B32A32_SFLOAT;
         default:
             LOG_ERROR("gfx::vk::VertexBuffer", "Unknown vertex buffer element type");

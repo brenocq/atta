@@ -36,7 +36,7 @@ Shader::Shader(const fs::path& file) : _file(file) {
 
 fs::path Shader::getFile() const { return _file; }
 
-VertexBufferLayout Shader::getVertexBufferLayout() const { return _vertexBufferLayout; }
+BufferLayout Shader::getVertexBufferLayout() const { return _vertexLayout; }
 
 void Shader::processASL() {
     LOG_DEBUG("gfx::Shader", "Preprocess ASL: [w]$0", _file.string());
@@ -44,29 +44,22 @@ void Shader::processASL() {
     // Remove comments
     _aslCode = removeComments(_aslCode);
 
-    // Add default entrypoints
-    std::set<ShaderType> shaderEntrypoints = detectEntrypoints(_aslCode);
-    if (shaderEntrypoints.find(VERTEX) == shaderEntrypoints.end()) {
-        _aslCode += "\nvoid vertex(){ VERTEX = PROJECTION * VIEW * MODEL * vec4(VERTEX, 1.0f); }";
-        shaderEntrypoints.insert(VERTEX);
-    }
-    if (shaderEntrypoints.find(FRAGMENT) == shaderEntrypoints.end()) {
-        _aslCode += "\nvoid fragment(){ COLOR = vec4(1.0f, 0.0f, 1.0f, 1.0f); }";
-        shaderEntrypoints.insert(FRAGMENT);
-    }
+    // Populate vertex layout
+    populateVertexLayout();
+
+    // Populate uniform layout
+    populateUniformLayout();
 
     // Process ASL code to generate ICode and APICode
     _shaderCodes.clear();
+    std::set<ShaderType> shaderEntrypoints = detectEntrypoints(_aslCode);
     for (ShaderType type : shaderEntrypoints) {
         ShaderCode shaderCode;
         shaderCode.iCode = removeUnusedFunctions(generateICode(type, _aslCode));
         shaderCode.apiCode = "";
-        // LOG_DEBUG("Shader", "ICode\n[y]$0[]\nAPI Code\n[m]$1", shaderCode.iCode, shaderCode.apiCode);
+        LOG_DEBUG("Shader", "[y]$0\n[w]$1", type, shaderCode.iCode);
         _shaderCodes[type] = shaderCode;
     }
-
-    // Populate shader uniforms
-    populateUniforms();
 }
 
 std::string Shader::removeComments(std::string code) {
@@ -81,8 +74,8 @@ std::set<Shader::ShaderType> Shader::detectEntrypoints(std::string code) {
     std::map<ShaderType, int> shaderOccurrences;
 
     // Regular expressions to match function signatures
-    std::regex fragmentRegex(R"(void\s+fragment\s*\(\s*\))");
-    std::regex vertexRegex(R"(void\s+vertex\s*\(\s*\))");
+    std::regex fragmentRegex(R"(vec4\s+fragment\s*\(\s*\))");
+    std::regex vertexRegex(R"(vec4\s+vertex\s*\(\s*\))");
 
     // Search for the function signatures in the code and count occurrences
     for (std::sregex_iterator it(code.begin(), code.end(), fragmentRegex), end; it != end; ++it) {
@@ -147,39 +140,29 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
     std::string iCode = aslCode;
     switch (type) {
         case VERTEX: {
-            iCode = "in vec3 VERTEX;\n"
-                    "in vec3 NORMAL;\n"
-                    "in vec2 UV;\n"
-                    "\n"
-                    "out vec3 OUT_NORMAL;\n"
-                    "out vec2 OUT_UV;\n"
-                    "\n"
-                    "uniform mat4 PROJECTION;\n"
-                    "uniform mat4 VIEW;\n"
-                    "uniform mat4 MODEL;\n\n" +
-                    iCode;
+            std::string input;
+            std::string params;
+            for (auto element : _vertexLayout.getElements()) {
+                std::string typeStr = BufferLayout::Element::typeToString(element.type);
+                input += "in " + typeStr + " " + element.name + ";\n";
+                params += typeStr + " " + element.name + ", ";
+            }
+            params.resize(params.size() - 2); // Remove last ", "
+            iCode = input + iCode + "void main() { POSITION = vertex(" + params + ");}";
+
+            // Replace
             iCode = std::regex_replace(iCode, std::regex(R"(\bvarying)"), "out");
-            iCode = std::regex_replace(iCode, std::regex(R"(\bvertex\b)"), "main");
-            iCode = addToFuncEnd(iCode, "main",
-                                 "OUT_VERTEX = VERTEX;\n"
-                                 "OUT_NORMAL = NORMAL;\n"
-                                 "OUT_UV = UV;\n");
+            iCode = std::regex_replace(iCode, std::regex(R"(\bPOSITION)"), "gl_Position");
+            iCode = std::regex_replace(iCode, std::regex(R"(\bPOINT_SIZE)"), "gl_PointSize");
+
             break;
         }
         case FRAGMENT: {
-            iCode = "in vec3 NORMAL;\n"
-                    "in vec2 UV;\n"
-                    "\n"
-                    "out vec4 OUT_COLOR;\n"
-                    "vec4 COLOR;\n"
-                    "\n"
-                    "uniform vec3 ALBEDO;\n"
-                    "uniform sampler2d ALBEDO_TEX;\n" +
-                    iCode;
+            iCode = aslCode + "out vec4 COLOR;\nvoid main() { COLOR = fragment();}";
+
+            // Replace
             iCode = std::regex_replace(iCode, std::regex(R"(\bvarying)"), "in");
-            iCode = std::regex_replace(iCode, std::regex(R"(\bfragment\b)"), "main");
-            iCode = addToFuncBegin(iCode, "main", "if(ALBEDO.x == -1.0f) ALBEDO = texture(ALBEDO_TEX, UV);\n");
-            iCode = addToFuncEnd(iCode, "main", "OUT_COLOR = COLOR;\n");
+            iCode = std::regex_replace(iCode, std::regex(R"(\bDEPTH)"), "gl_FragDepth");
             break;
         }
         default:
@@ -271,61 +254,51 @@ std::string Shader::removeUnusedFunctions(std::string code) {
     return code;
 }
 
-ShaderUniform::Type Shader::convertType(std::string type) {
-    if (type == "bool")
-        return ShaderUniform::Type::BOOL;
-    else if (type == "int")
-        return ShaderUniform::Type::INT;
-    else if (type == "uint")
-        return ShaderUniform::Type::UINT;
-    else if (type == "float")
-        return ShaderUniform::Type::FLOAT;
-    else if (type == "vec2")
-        return ShaderUniform::Type::VEC2;
-    else if (type == "vec3")
-        return ShaderUniform::Type::VEC3;
-    else if (type == "vec4")
-        return ShaderUniform::Type::VEC4;
-    else if (type == "ivec2")
-        return ShaderUniform::Type::IVEC2;
-    else if (type == "ivec3")
-        return ShaderUniform::Type::IVEC3;
-    else if (type == "ivec4")
-        return ShaderUniform::Type::IVEC4;
-    else if (type == "mat3")
-        return ShaderUniform::Type::MAT3;
-    else if (type == "mat4")
-        return ShaderUniform::Type::MAT4;
-    LOG_WARN("gfx::Shader", "Unknown uniform type [w]$0[] in shader [w]$1[]", type, _file.string());
-    return ShaderUniform::Type::NONE;
-}
-
-void Shader::populateUniforms() {
-    std::regex regex(R"(\buniform\s+(\w+)\s+(\w+)\s*;\s*)");
+void Shader::populateVertexLayout() {
+    std::regex regexVertex(R"(\bvertex\s*\()");
     std::smatch match;
+    auto start = _aslCode.cbegin();
+    auto end = _aslCode.cend();
+    if (std::regex_search(start, end, match, regexVertex)) {
+        // Calculate start and end
+        uint32_t paramStart = match.position() + match.length() - 1;
+        uint32_t paramEnd = paramStart;
+        while (paramEnd < _aslCode.size() - 1 && _aslCode[paramEnd] != ')')
+            paramEnd++;
 
-    size_t offset = 0;
-    _uniforms.clear();
-    for (auto [type, code] : _shaderCodes) {
-        auto it = code.iCode.cbegin();
-        auto end = code.iCode.cend();
+        start = _aslCode.cbegin() + paramStart;
+        end = _aslCode.cbegin() + paramEnd;
 
-        while (std::regex_search(it, end, match, regex)) {
-            std::string type = match[1];
-            std::string name = match[2];
+        std::regex regexParam(R"(\s*(\w+)\s+(\w+))");
+        while (std::regex_search(start, end, match, regexParam)) {
+            std::string type = match[1].str();
+            std::string name = match[2].str();
 
-            if (_uniforms.find(name) == _uniforms.end()) {
-                ShaderUniform::Type t = convertType(type);
-                if (t != ShaderUniform::Type::NONE) {
-                    ShaderUniform uniform = ShaderUniform(t, offset);
-                    _uniforms[name] = uniform;
-                    offset += uniform.getSize();
-                }
-            }
+            // LOG_DEBUG("Shader", "Found vertex input: $0 $1", type, name);
+            BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
+            _vertexLayout.push(t, name);
 
             // Move to the next match
-            it = match.suffix().first;
+            start = match.suffix().first;
         }
+    }
+}
+
+void Shader::populateUniformLayout() {
+    std::regex regex(R"(\buniform\s+(\w+)\s+(\w+)\s*;)");
+    std::smatch match;
+
+    auto start = _aslCode.cbegin();
+    auto end = _aslCode.cend();
+    while (std::regex_search(start, end, match, regex)) {
+        std::string type = match[1];
+        std::string name = match[2];
+        // LOG_DEBUG("Shader", "Found uniform: $0 $1", type, name);
+        BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
+        _uniformLayout.push(t, name);
+
+        // Move to the next match
+        start = match.suffix().first;
     }
 }
 

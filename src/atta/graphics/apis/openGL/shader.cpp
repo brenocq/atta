@@ -33,8 +33,8 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
 
     switch (type) {
         case ShaderType::VERTEX: {
-            // Solve OUT_VERTEX
-            iCode = std::regex_replace(iCode, std::regex("OUT_VERTEX"), "gl_Position");
+            // Solve OUT_POSITION
+            iCode = std::regex_replace(iCode, std::regex("OUT_POSITION"), "gl_Position");
             // Solve POINT_SIZE
             iCode = std::regex_replace(iCode, std::regex("POINT_SIZE"), "gl_PointSize");
             break;
@@ -50,7 +50,6 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
             break;
         }
     }
-    // LOG_DEBUG("gfx::gl::Shader", "Final code is\n$0", iCode);
     return iCode;
 }
 
@@ -62,7 +61,7 @@ void Shader::compile() {
 
     std::vector<OpenGLId> shaderIds;
     for (auto [type, shaderCode] : _shaderCodes) {
-        // LOG_DEBUG("Shader", "Compile $0", type);
+        LOG_DEBUG("Shader", "Compile $0", type);
         // Create shader
         OpenGLId id = glCreateShader(convertToShaderType(type));
         shaderIds.push_back(id);
@@ -71,7 +70,7 @@ void Shader::compile() {
 
         // Compile
         const char* code = shaderCode.apiCode.c_str();
-        // LOG_DEBUG("gfx::gl::Shader", "Code is -------------->\n$0", code);
+        LOG_DEBUG("gfx::gl::Shader", "Code is -------------->\n$0", code);
         glShaderSource(id, 1, &code, NULL);
         glCompileShader(id);
 

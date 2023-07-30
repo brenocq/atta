@@ -59,6 +59,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     windows/nullWindow.cpp
     windows/glfwWindow.cpp
 
+    bufferLayout.cpp
     drawer.cpp
     framebuffer.cpp
     image.cpp
@@ -69,7 +70,6 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     pipeline.cpp
     renderPass.cpp
     shader.cpp
-    shaderUniform.cpp
     vertexBuffer.cpp
     viewport.cpp
 )

@@ -5,8 +5,8 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/pipeline.h>
-#include <atta/graphics/apis/vulkan/vulkanAPI.h>
 #include <atta/graphics/apis/vulkan/shader.h>
+#include <atta/graphics/apis/vulkan/vulkanAPI.h>
 #include <atta/graphics/interface.h>
 
 namespace atta::graphics::vk {
@@ -27,7 +27,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     _uniformBuffer = std::make_shared<UniformBuffer>(sizeof(UniformBufferObject));
 
     // Vertex input
-    VertexBufferLayout layout = _shader->getVertexBufferLayout();
+    BufferLayout layout = _shader->getVertexBufferLayout();
     auto bindingDescription = VertexBuffer::getBindingDescription(layout);
     auto attributeDescriptions = VertexBuffer::getAttributeDescriptions(layout);
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};

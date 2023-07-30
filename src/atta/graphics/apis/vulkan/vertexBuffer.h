@@ -19,11 +19,11 @@ class VertexBuffer final : public Buffer, public gfx::VertexBuffer {
 
     void bind() const override;
 
-    static VkVertexInputBindingDescription getBindingDescription(const VertexBufferLayout& layout);
-    static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions(const VertexBufferLayout& layout);
+    static VkVertexInputBindingDescription getBindingDescription(const BufferLayout& layout);
+    static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions(const BufferLayout& layout);
 
   private:
-    static VkFormat convertType(VertexBufferElement::Type type);
+    static VkFormat convertType(BufferLayout::Element::Type type);
 };
 
 } // namespace atta::graphics::vk

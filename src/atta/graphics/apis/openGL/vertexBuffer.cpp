@@ -17,12 +17,13 @@ VertexBuffer::VertexBuffer(const VertexBuffer::CreateInfo& info) : gfx::VertexBu
     for (const auto& element : _layout.getElements()) {
         GLenum openGLType = convertBaseType(element.type);
 
+        uint32_t componentCount = BufferLayout::Element::componentCountFromType(element.type);
+
         // Define attribute format
         if (openGLType == GL_INT) {
-            glVertexAttribIPointer(i, element.getComponentCount(), openGLType, _layout.getStride(), reinterpret_cast<void*>(element.offset));
+            glVertexAttribIPointer(i, componentCount, openGLType, _layout.getStride(), reinterpret_cast<void*>(element.offset));
         } else {
-            glVertexAttribPointer(i, element.getComponentCount(), openGLType, element.normalized ? GL_TRUE : GL_FALSE, _layout.getStride(),
-                                  reinterpret_cast<void*>(element.offset));
+            glVertexAttribPointer(i, componentCount, openGLType, GL_FALSE, _layout.getStride(), reinterpret_cast<void*>(element.offset));
         }
 
         // Enable attribute
@@ -52,22 +53,22 @@ GLenum VertexBuffer::convertUsage(Usage usage) {
     ASSERT(false, "Unknown vertex buffer usage");
 }
 
-GLenum VertexBuffer::convertBaseType(VertexBufferElement::Type type) {
+GLenum VertexBuffer::convertBaseType(BufferLayout::Element::Type type) {
     switch (type) {
-        case VertexBufferElement::Type::BOOL:
+        case BufferLayout::Element::Type::BOOL:
             return GL_BOOL;
-        case VertexBufferElement::Type::INT:
-        case VertexBufferElement::Type::UINT:
-        case VertexBufferElement::Type::IVEC2:
-        case VertexBufferElement::Type::IVEC3:
-        case VertexBufferElement::Type::IVEC4:
+        case BufferLayout::Element::Type::INT:
+        case BufferLayout::Element::Type::UINT:
+        case BufferLayout::Element::Type::IVEC2:
+        case BufferLayout::Element::Type::IVEC3:
+        case BufferLayout::Element::Type::IVEC4:
             return GL_INT;
-        case VertexBufferElement::Type::FLOAT:
-        case VertexBufferElement::Type::VEC2:
-        case VertexBufferElement::Type::VEC3:
-        case VertexBufferElement::Type::VEC4:
-        case VertexBufferElement::Type::MAT3:
-        case VertexBufferElement::Type::MAT4:
+        case BufferLayout::Element::Type::FLOAT:
+        case BufferLayout::Element::Type::VEC2:
+        case BufferLayout::Element::Type::VEC3:
+        case BufferLayout::Element::Type::VEC4:
+        case BufferLayout::Element::Type::MAT3:
+        case BufferLayout::Element::Type::MAT4:
             return GL_FLOAT;
         default:
             break;

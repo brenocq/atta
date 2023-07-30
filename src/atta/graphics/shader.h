@@ -6,9 +6,8 @@
 //--------------------------------------------------
 #ifndef ATTA_GRAPHICS_SHADER_H
 #define ATTA_GRAPHICS_SHADER_H
+#include <atta/graphics/bufferLayout.h>
 #include <atta/graphics/image.h>
-#include <atta/graphics/shaderUniform.h>
-#include <atta/graphics/vertexBuffer.h>
 #include <atta/utils/stringId.h>
 
 namespace atta::graphics {
@@ -34,7 +33,7 @@ class Shader {
     virtual void setCubemap(const char* name, std::shared_ptr<Image> image) = 0;
 
     fs::path getFile() const;
-    VertexBufferLayout getVertexBufferLayout() const;
+    BufferLayout getVertexBufferLayout() const;
 
     /**
      * @brief Shader type
@@ -103,20 +102,14 @@ class Shader {
     std::string removeUnusedFunctions(std::string code);
 
     /**
-     * @brief Convert ASL type to ShaderUniform type
-     *
-     * @param type ASL type
-     *
-     * @return ShaderUniform type
+     * @brief Process vertex input from _aslCode and populate _vertexLayout
      */
-    ShaderUniform::Type convertType(std::string type);
+    void populateVertexLayout();
 
     /**
-     * @brief Go through all shader codes to extract uniforms and populate _uniforms
-     *
-     * @param iCode ICode
+     * @brief Go through all shader codes to extract uniforms and populate _uniformLayout
      */
-    void populateUniforms();
+    void populateUniformLayout();
 
     /**
      * @brief Process intermediate code to generate API specific code.
@@ -138,8 +131,8 @@ class Shader {
     fs::path _file;
     std::string _aslCode;
 
-    VertexBufferLayout _vertexBufferLayout;
-    std::map<std::string, ShaderUniform> _uniforms;
+    BufferLayout _vertexLayout;
+    BufferLayout _uniformLayout;
     std::map<ShaderType, ShaderCode> _shaderCodes;
 };
 

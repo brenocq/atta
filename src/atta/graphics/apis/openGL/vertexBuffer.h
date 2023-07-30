@@ -23,7 +23,7 @@ class VertexBuffer final : public gfx::VertexBuffer {
 
   private:
     static GLenum convertUsage(Usage usage);
-    static GLenum convertBaseType(VertexBufferElement::Type type);
+    static GLenum convertBaseType(BufferLayout::Element::Type type);
 
     OpenGLId _id;
 };
