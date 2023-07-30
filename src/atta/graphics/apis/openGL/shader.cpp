@@ -8,28 +8,14 @@
 #include <atta/graphics/apis/openGL/openGLAPI.h>
 #include <atta/graphics/apis/openGL/shader.h>
 #include <atta/graphics/interface.h>
+#include <regex>
 
 namespace atta::graphics::gl {
 
 Shader::Shader(const fs::path& file) : gfx::Shader(file), _id(0) {
-    // Create shaders (they are compiled at creation)
-    // for (auto shaderPath : info.shaderPaths) {
-    //    // Create shader
-    //    Shader::CreateInfo info{};
-    //    info.filepath = shaderPath;
-    //    std::shared_ptr<Shader> shader = std::make_shared<Shader>(info);
-
-    //    // Get shader texture units
-    //    if (shader->getTextureUnits().size() > 0) {
-    //        const std::vector<std::string>& textureUnits = shader->getTextureUnits();
-    //        _textureUnits.insert(_textureUnits.end(), textureUnits.begin(), textureUnits.end());
-    //    }
-
-    //    // Save shader
-    //    _shaders.push_back(std::static_pointer_cast<Shader>(shader));
-    //}
-
-    // compile();
+    for (auto& [type, shaderCode] : _shaderCodes)
+        shaderCode.apiCode = generateApiCode(type, shaderCode.iCode);
+    compile();
 }
 
 Shader::~Shader() {
@@ -39,7 +25,34 @@ Shader::~Shader() {
     }
 }
 
-std::string Shader::generateApiCode(ShaderType type, std::string iCode) { return iCode; }
+std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
+    // LOG_DEBUG("gfx::gl::Shader", "Generating OpenGL code [y]$1[]...\n$0", iCode, type);
+    iCode = "#version 300 es\n"
+            "precision mediump float;\n" +
+            iCode;
+
+    switch (type) {
+        case ShaderType::VERTEX: {
+            // Solve OUT_VERTEX
+            iCode = std::regex_replace(iCode, std::regex("OUT_VERTEX"), "gl_Position");
+            // Solve POINT_SIZE
+            iCode = std::regex_replace(iCode, std::regex("POINT_SIZE"), "gl_PointSize");
+            break;
+        }
+        case ShaderType::GEOMETRY: {
+            // Solve LAYER
+            iCode = std::regex_replace(iCode, std::regex("LAYER"), "gl_Layer");
+            break;
+        }
+        case ShaderType::FRAGMENT: {
+            // Solve DEPTH
+            iCode = std::regex_replace(iCode, std::regex("DEPTH"), "gl_FragDepth");
+            break;
+        }
+    }
+    // LOG_DEBUG("gfx::gl::Shader", "Final code is\n$0", iCode);
+    return iCode;
+}
 
 void Shader::compile() {
     if (_id > 0) {
@@ -47,35 +60,62 @@ void Shader::compile() {
         _id = 0;
     }
 
-    // Recompile shaders
-    // for (auto& shader : _shaders)
-    //    shader->compile();
+    std::vector<OpenGLId> shaderIds;
+    for (auto [type, shaderCode] : _shaderCodes) {
+        // LOG_DEBUG("Shader", "Compile $0", type);
+        // Create shader
+        OpenGLId id = glCreateShader(convertToShaderType(type));
+        shaderIds.push_back(id);
 
-    //_id = glCreateProgram();
+        // TODO Extract texture units from fragment shader
 
-    //// Attach shaders
-    // for (auto shader : _shaders)
-    //     glAttachShader(_id, std::static_pointer_cast<Shader>(shader)->getHandle());
+        // Compile
+        const char* code = shaderCode.apiCode.c_str();
+        // LOG_DEBUG("gfx::gl::Shader", "Code is -------------->\n$0", code);
+        glShaderSource(id, 1, &code, NULL);
+        glCompileShader(id);
 
-    //// Link shaders
-    // glLinkProgram(_id);
+        // Check errors
+        int success;
+        char infoLog[512];
+        glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(id, 512, NULL, infoLog);
+            LOG_ERROR("gfx::gl::Shader", "Failed to compile shader [w]$0[] type [w]$1[]. Error: [w]$2", _file.string(), type, infoLog);
+        }
 
-    // int success;
-    // char infoLog[512];
-    // glGetProgramiv(_id, GL_LINK_STATUS, &success);
-    // if (!success) {
-    //     glGetProgramInfoLog(_id, 512, NULL, infoLog);
-    //     std::vector<std::string> shaderPaths;
-    //     for (auto shader : _shaders)
-    //         shaderPaths.push_back(fs::absolute(shader->getFilepath()).string());
-    //     ASSERT(false, "Failed to link shader group [w]$0[]:\n[*w]Shaders:[w]$1\n[*w]Error:[w]\n$2", _debugName, shaderPaths, infoLog);
-    // }
+        // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        // glEnableVertexAttribArray(0);
+        //// color attribute
+        // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        // glEnableVertexAttribArray(1);
+        //// texture coord attribute
+        // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        // glEnableVertexAttribArray(2);
+    }
 
-    //// Detach and delete shaders
-    // for (auto shader : _shaders) {
-    //     std::shared_ptr<Shader> s = std::static_pointer_cast<Shader>(shader);
-    //     glDetachShader(_id, s->getHandle());
-    // }
+    _id = glCreateProgram();
+
+    // Attach shaders
+    for (OpenGLId shaderId : shaderIds)
+        glAttachShader(_id, shaderId);
+
+    // Link shaders
+    glLinkProgram(_id);
+
+    int success;
+    char infoLog[512];
+    glGetProgramiv(_id, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(_id, 512, NULL, infoLog);
+        LOG_ERROR("gfx::gl::Shader", "Failed to link shader [w]$0[]. Error: [w]$1", _file.string(), infoLog);
+    }
+
+    // Detach and delete shaders
+    for (OpenGLId id : shaderIds) {
+        glDetachShader(_id, id);
+        glDeleteShader(id);
+    }
 }
 
 void Shader::bind() { glUseProgram(_id); }
@@ -272,20 +312,19 @@ void Shader::deleteShader() {
     _id = 0;
 }
 
-//------------------------------------------------//
-//---------- Atta to OpenGL conversions ----------//
-//------------------------------------------------//
-// GLenum Shader::convertFileToShaderType(const fs::path& filepath) {
-//    std::string extension = filepath.extension().string();
-//    if (extension == ".vert")
-//        return GL_VERTEX_SHADER;
-//    if (extension == ".frag")
-//        return GL_FRAGMENT_SHADER;
-//    if (extension == ".geom")
-//        return GL_GEOMETRY_SHADER;
-//    ASSERT(false, "Unknown shader file format [w]$0[]. Instead of [*w]$1[], it should be [w].vert[], [w].frag[], or [w].geom[]", filepath.string(),
-//           extension);
-//    return 0;
-//}
+unsigned int Shader::convertToShaderType(ShaderType type) {
+    switch (type) {
+        case ShaderType::VERTEX:
+            return GL_VERTEX_SHADER;
+        case ShaderType::GEOMETRY:
+            return GL_GEOMETRY_SHADER;
+        case ShaderType::FRAGMENT:
+            return GL_FRAGMENT_SHADER;
+        default:
+            LOG_WARN("gfx::gl::Shader", "Failed to convert shader type");
+            return 0;
+    }
+    return 0;
+}
 
 } // namespace atta::graphics::gl

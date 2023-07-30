@@ -4,16 +4,19 @@
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/layers/uiLayer.h>
-// ImGui backends
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
-#include <GLFW/glfw3.h>
-#include <ImGuizmo.h>
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 #include <atta/graphics/interface.h>
+#include <atta/ui/layers/uiLayer.h>
+
+// clang-format off
+#include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_vulkan.h>
+#include <ImGuizmo.h>
 #include <implot.h>
+// clang-format on
 
 namespace atta::ui {
 
@@ -39,14 +42,26 @@ void UILayer::onAttach() {
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport
 #endif
 
-    // initOpenGL();
-    initVulkan();
+    switch (gfx::getGraphicsAPI()->getType()) {
+        case gfx::GraphicsAPI::OPENGL:
+            initOpenGL();
+            break;
+        case gfx::GraphicsAPI::VULKAN:
+            initVulkan();
+            break;
+    }
     setTheme();
 }
 
 void UILayer::onDetach() {
-    // ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplVulkan_Shutdown();
+    switch (gfx::getGraphicsAPI()->getType()) {
+        case gfx::GraphicsAPI::OPENGL:
+            ImGui_ImplOpenGL3_Shutdown();
+            break;
+        case gfx::GraphicsAPI::VULKAN:
+            ImGui_ImplVulkan_Shutdown();
+            break;
+    }
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
@@ -56,8 +71,14 @@ void UILayer::onRender() {}
 void UILayer::onUIRender() {}
 
 void UILayer::begin() {
-    // ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplVulkan_NewFrame();
+    switch (gfx::getGraphicsAPI()->getType()) {
+        case gfx::GraphicsAPI::OPENGL:
+            ImGui_ImplOpenGL3_NewFrame();
+            break;
+        case gfx::GraphicsAPI::VULKAN:
+            ImGui_ImplVulkan_NewFrame();
+            break;
+    }
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
@@ -65,9 +86,15 @@ void UILayer::begin() {
 
 void UILayer::end() {
     ImGui::Render();
-    // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
-                                    std::dynamic_pointer_cast<gfx::VulkanAPI>(gfx::getGraphicsAPI())->getCommandBuffers()->getCurrent());
+    switch (gfx::getGraphicsAPI()->getType()) {
+        case gfx::GraphicsAPI::OPENGL:
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            break;
+        case gfx::GraphicsAPI::VULKAN:
+            ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
+                                            std::dynamic_pointer_cast<gfx::VulkanAPI>(gfx::getGraphicsAPI())->getCommandBuffers()->getCurrent());
+            break;
+    }
 
     ImGuiIO& io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {

@@ -28,16 +28,17 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
     if (_glfwWindowCounter++ == 0) // XXX
         glfwInit();
 
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    // glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);// Needed for apple?
 
+    // glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    // glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+
     _window = glfwCreateWindow(_width, _height, _title.c_str(), nullptr, nullptr);
-    glfwSetWindowUserPointer(_window, this);
+    glfwSetWindowUserPointer(_window, (void*)this);
 
     glfwSetWindowCloseCallback(_window, [](GLFWwindow* window) {
         event::WindowClose e;
@@ -97,7 +98,7 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
 
     glfwSetErrorCallback([](int error, const char* description) { LOG_ERROR("gfx::Window", "GLFW error($0): $1", error, std::string(description)); });
 
-    // glfwMakeContextCurrent(_window);
+    glfwMakeContextCurrent(_window);
 
 #ifdef ATTA_OS_WEB
     int w = canvas_get_width();

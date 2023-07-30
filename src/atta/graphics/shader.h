@@ -91,11 +91,16 @@ class Shader {
     std::string generateICode(ShaderType type, std::string aslCode);
 
     /**
-     * @brief Go through all shader codes to extract uniforms and populate _uniforms
+     * @brief Remove unused functions from code
      *
-     * @param iCode ICode
+     * Initially, all functions functions are detected and marked as unused. After that, the used in main() and used by used functions are marked as
+     * used.
+     *
+     * @param code Code
+     *
+     * @return Code without unused functions
      */
-    void populateUniforms();
+    std::string removeUnusedFunctions(std::string code);
 
     /**
      * @brief Convert ASL type to ShaderUniform type
@@ -105,6 +110,13 @@ class Shader {
      * @return ShaderUniform type
      */
     ShaderUniform::Type convertType(std::string type);
+
+    /**
+     * @brief Go through all shader codes to extract uniforms and populate _uniforms
+     *
+     * @param iCode ICode
+     */
+    void populateUniforms();
 
     /**
      * @brief Process intermediate code to generate API specific code.

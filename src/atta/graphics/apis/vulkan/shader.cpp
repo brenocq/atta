@@ -10,7 +10,11 @@
 
 namespace atta::graphics::vk {
 
-Shader::Shader(const fs::path& file) : gfx::Shader(file), _device(common::getDevice()) { compile(); }
+Shader::Shader(const fs::path& file) : gfx::Shader(file), _device(common::getDevice()) {
+    for (auto& [type, shaderCode] : _shaderCodes)
+        shaderCode.apiCode = generateApiCode(type, shaderCode.iCode);
+    compile();
+}
 
 Shader::~Shader() {
     if (_shader != VK_NULL_HANDLE)

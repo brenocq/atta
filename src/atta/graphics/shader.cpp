@@ -59,7 +59,7 @@ void Shader::processASL() {
     _shaderCodes.clear();
     for (ShaderType type : shaderEntrypoints) {
         ShaderCode shaderCode;
-        shaderCode.iCode = generateICode(type, _aslCode);
+        shaderCode.iCode = removeUnusedFunctions(generateICode(type, _aslCode));
         shaderCode.apiCode = "";
         // LOG_DEBUG("Shader", "ICode\n[y]$0[]\nAPI Code\n[m]$1", shaderCode.iCode, shaderCode.apiCode);
         _shaderCodes[type] = shaderCode;
@@ -106,11 +106,22 @@ std::set<Shader::ShaderType> Shader::detectEntrypoints(std::string code) {
     return result;
 }
 
+std::string addToFuncBegin(std::string code, std::string funcName, std::string toAdd) {
+    std::regex openBracketRegex("void\\s+" + funcName + "\\s*\\(\\s*\\)\\s*\\{");
+    std::smatch match;
+    if (std::regex_search(code, match, openBracketRegex)) {
+        // Get the position of the opening curly brace
+        size_t openBracket = match.position() + match.length();
+        code.insert(openBracket + 1, "\n" + toAdd);
+    }
+    return code;
+}
+
 std::string addToFuncEnd(std::string code, std::string funcName, std::string toAdd) {
     std::regex openBracketRegex("void\\s+" + funcName + "\\s*\\(\\s*\\)\\s*\\{");
     std::smatch match;
     if (std::regex_search(code, match, openBracketRegex)) {
-        // Get the position of the opening curly brace of the vertex function
+        // Get the position of the opening curly brace
         size_t openBracket = match.position() + match.length();
 
         int nested = 1; // Counter to keep track of nested {}
@@ -140,37 +151,124 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
                     "in vec3 NORMAL;\n"
                     "in vec2 UV;\n"
                     "\n"
-                    "out vec3 OUT_VERTEX;\n"
                     "out vec3 OUT_NORMAL;\n"
-                    "out vec3 OUT_UV;\n"
+                    "out vec2 OUT_UV;\n"
                     "\n"
                     "uniform mat4 PROJECTION;\n"
                     "uniform mat4 VIEW;\n"
                     "uniform mat4 MODEL;\n\n" +
                     iCode;
             iCode = std::regex_replace(iCode, std::regex(R"(\bvarying)"), "out");
-            iCode = addToFuncEnd(iCode, "vertex",
+            iCode = std::regex_replace(iCode, std::regex(R"(\bvertex\b)"), "main");
+            iCode = addToFuncEnd(iCode, "main",
                                  "OUT_VERTEX = VERTEX;\n"
                                  "OUT_NORMAL = NORMAL;\n"
                                  "OUT_UV = UV;\n");
             break;
         }
         case FRAGMENT: {
-            iCode = "in vec3 VERTEX;\n"
-                    "in vec3 NORMAL;\n"
+            iCode = "in vec3 NORMAL;\n"
                     "in vec2 UV;\n"
                     "\n"
                     "out vec4 OUT_COLOR;\n"
-                    "vec4 COLOR;\n\n" +
+                    "vec4 COLOR;\n"
+                    "\n"
+                    "uniform vec3 ALBEDO;\n"
+                    "uniform sampler2d ALBEDO_TEX;\n" +
                     iCode;
             iCode = std::regex_replace(iCode, std::regex(R"(\bvarying)"), "in");
-            iCode = addToFuncEnd(iCode, "fragment", "OUT_COLOR = COLOR;\n");
+            iCode = std::regex_replace(iCode, std::regex(R"(\bfragment\b)"), "main");
+            iCode = addToFuncBegin(iCode, "main", "if(ALBEDO.x == -1.0f) ALBEDO = texture(ALBEDO_TEX, UV);\n");
+            iCode = addToFuncEnd(iCode, "main", "OUT_COLOR = COLOR;\n");
             break;
         }
         default:
             LOG_WARN("gfx::Shader", "Unknown type $0 when generating ICode", type);
     }
     return iCode;
+}
+
+std::string Shader::removeUnusedFunctions(std::string code) {
+    struct Func {
+        bool used = false;
+        size_t start = 0;
+        size_t end = 0;
+    };
+    // Detect all functions and mark them as unused
+    std::map<std::string, Func> usedFunctions;
+
+    std::regex functionDefRegex(R"((\w+)\s+(\w+)\s*\(\s*([^)]*)\s*\)\s*\{)");
+    std::smatch match;
+    auto it = code.cbegin();
+    auto end = code.cend();
+    size_t offset = 0;
+    while (std::regex_search(it, end, match, functionDefRegex)) {
+        std::string name = match[2].str();
+        Func f = {};
+
+        // Set as unused
+        f.used = false;
+
+        // Get start
+        f.start = offset + match.position();
+
+        // Get end
+        int nested = 0; // Counter to keep track of nested {}
+        for (size_t i = f.start; i < code.size(); i++) {
+            if (code[i] == '{') {
+                nested++;
+            } else if (code[i] == '}') {
+                nested--;
+                if (nested == 0) {
+                    f.end = i;
+                    break;
+                }
+            }
+        }
+
+        usedFunctions[name] = f;
+
+        // Advance
+        offset = f.end;
+        it = code.cbegin() + offset;
+    }
+
+    // Starting from main, detect used functions
+    std::regex functionCallRegex(R"((\w+)\s*\(\s*([^)]*)\s*\))");
+    std::stack<std::string> stackCall;
+    stackCall.push("main");
+    while (!stackCall.empty()) {
+        // Get first function from stack
+        std::string currFunc = stackCall.top();
+        stackCall.pop();
+        Func& func = usedFunctions[currFunc];
+
+        // Mark as used
+        func.used = true;
+
+        // Detect called functions inside the function
+        auto start = code.cbegin() + func.start;
+        auto end = code.cbegin() + func.end;
+        while (std::regex_search(start, end, match, functionCallRegex)) {
+            std::string calledFunc = match[1].str();
+
+            // Add to stack call if it is valid and not used before
+            if (usedFunctions.find(calledFunc) != usedFunctions.end() && usedFunctions[calledFunc].used == false)
+                stackCall.push(calledFunc);
+
+            // Advance
+            start = match.suffix().first;
+        }
+    }
+
+    for (auto [name, func] : usedFunctions) {
+        if (!func.used)
+            for (int i = func.start; i <= func.end; i++)
+                code[i] = ' ';
+    }
+
+    // Create final code without unused functions
+    return code;
 }
 
 ShaderUniform::Type Shader::convertType(std::string type) {

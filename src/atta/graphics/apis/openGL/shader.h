@@ -41,6 +41,8 @@ class Shader final : public gfx::Shader {
     void deleteShader();
 
   private:
+    static unsigned int convertToShaderType(ShaderType type);
+
     OpenGLId _id;
     std::vector<std::string> _textureUnits;
 };
