@@ -15,6 +15,7 @@ Mesh::Mesh(CreateInfo info) : gfx::Mesh(info), _id(0) {
     glBindVertexArray(_id);
     glBindBuffer(GL_ARRAY_BUFFER, std::static_pointer_cast<gl::VertexBuffer>(_vertexBuffer)->getHandle());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, std::static_pointer_cast<gl::IndexBuffer>(_indexBuffer)->getHandle());
+    LOG_DEBUG("Mesh", "gfx:: MESH CREATED $0", _id);
 }
 
 Mesh::~Mesh() {

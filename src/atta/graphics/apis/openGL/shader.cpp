@@ -30,26 +30,6 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
     iCode = "#version 300 es\n"
             "precision mediump float;\n" +
             iCode;
-
-    switch (type) {
-        case ShaderType::VERTEX: {
-            // Solve OUT_POSITION
-            iCode = std::regex_replace(iCode, std::regex("OUT_POSITION"), "gl_Position");
-            // Solve POINT_SIZE
-            iCode = std::regex_replace(iCode, std::regex("POINT_SIZE"), "gl_PointSize");
-            break;
-        }
-        case ShaderType::GEOMETRY: {
-            // Solve LAYER
-            iCode = std::regex_replace(iCode, std::regex("LAYER"), "gl_Layer");
-            break;
-        }
-        case ShaderType::FRAGMENT: {
-            // Solve DEPTH
-            iCode = std::regex_replace(iCode, std::regex("DEPTH"), "gl_FragDepth");
-            break;
-        }
-    }
     return iCode;
 }
 
@@ -66,11 +46,8 @@ void Shader::compile() {
         OpenGLId id = glCreateShader(convertToShaderType(type));
         shaderIds.push_back(id);
 
-        // TODO Extract texture units from fragment shader
-
         // Compile
         const char* code = shaderCode.apiCode.c_str();
-        LOG_DEBUG("gfx::gl::Shader", "Code is -------------->\n$0", code);
         glShaderSource(id, 1, &code, NULL);
         glCompileShader(id);
 
@@ -82,15 +59,6 @@ void Shader::compile() {
             glGetShaderInfoLog(id, 512, NULL, infoLog);
             LOG_ERROR("gfx::gl::Shader", "Failed to compile shader [w]$0[] type [w]$1[]. Error: [w]$2", _file.string(), type, infoLog);
         }
-
-        // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        // glEnableVertexAttribArray(0);
-        //// color attribute
-        // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-        // glEnableVertexAttribArray(1);
-        //// texture coord attribute
-        // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-        // glEnableVertexAttribArray(2);
     }
 
     _id = glCreateProgram();
@@ -199,32 +167,32 @@ void Shader::setImage(const char* name, std::shared_ptr<gfx::Image> inImage) {
 }
 
 void Shader::setCubemap(const char* name, StringId sid) {
-    std::shared_ptr<OpenGLAPI> renderer = std::static_pointer_cast<OpenGLAPI>(graphics::getGraphicsAPI());
-    if (renderer->getOpenGLCubemaps().find(sid.getId()) == renderer->getOpenGLCubemaps().end()) {
-        LOG_WARN("gfx::gl::Shader", "(setCubemap) Trying to use cubemap that was never generated: $0 = \"$1\"", name, sid);
-        return;
-    }
-    OpenGLId cubemap = renderer->getOpenGLCubemaps()[sid.getId()];
+    // std::shared_ptr<OpenGLAPI> renderer = std::static_pointer_cast<OpenGLAPI>(graphics::getGraphicsAPI());
+    // if (renderer->getOpenGLCubemaps().find(sid.getId()) == renderer->getOpenGLCubemaps().end()) {
+    //     LOG_WARN("gfx::gl::Shader", "(setCubemap) Trying to use cubemap that was never generated: $0 = \"$1\"", name, sid);
+    //     return;
+    // }
+    // OpenGLId cubemap = renderer->getOpenGLCubemaps()[sid.getId()];
 
-    int imgUnit = -1;
-    for (unsigned i = 0; i < _textureUnits.size(); i++)
-        if (_textureUnits[i] == name) {
-            imgUnit = int(i) + 1;
-            break;
-        }
-    if (imgUnit == -1) {
-        LOG_WARN("gfx::gl::Shader", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
-        return;
-    }
+    // int imgUnit = -1;
+    // for (unsigned i = 0; i < _textureUnits.size(); i++)
+    //     if (_textureUnits[i] == name) {
+    //         imgUnit = int(i) + 1;
+    //         break;
+    //     }
+    // if (imgUnit == -1) {
+    //     LOG_WARN("gfx::gl::Shader", "(setCubemap) Trying to set cubemap [w]$0[], that was not found in the fragment shader code", name);
+    //     return;
+    // }
 
-    // Ensure image is set to write texture unit
-    GLint imageLocation = glGetUniformLocation(_id, name);
-    glUniform1i(imageLocation, imgUnit);
+    //// Ensure image is set to write texture unit
+    // GLint imageLocation = glGetUniformLocation(_id, name);
+    // glUniform1i(imageLocation, imgUnit);
 
-    // Activate texture unit
-    glActiveTexture(GL_TEXTURE0 + imgUnit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-    // LOG_DEBUG("gfx::gl::Shader", "Bind $0 to texture unit $1, id $2 -> $3", name, imgUnit, cubemap, _textureUnits);
+    //// Activate texture unit
+    // glActiveTexture(GL_TEXTURE0 + imgUnit);
+    // glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+    //  LOG_DEBUG("gfx::gl::Shader", "Bind $0 to texture unit $1, id $2 -> $3", name, imgUnit, cubemap, _textureUnits);
 }
 
 void Shader::setCubemap(const char* name, std::shared_ptr<gfx::Image> inImage) {
@@ -262,47 +230,6 @@ void Shader::setCubemap(const char* name, std::shared_ptr<gfx::Image> inImage) {
 }
 
 unsigned int Shader::getLoc(const char* name) { return glGetUniformLocation(_id, name); }
-
-// Shader::Shader(const Shader::CreateInfo& info) : gfx::Shader(info), _id(0) { recompile(); }
-
-// Shader::~Shader() {
-//     if (!_id)
-//         deleteShader();
-// }
-
-// void Shader::recompile() {
-// if (!_id)
-//     deleteShader();
-
-//// Create shader
-//_id = glCreateShader(convertFileToShaderType(_filepath));
-
-//// Read file
-// std::stringstream fileSS;
-// fs::path absolutePath = file::solveResourcePath(_filepath);
-// std::ifstream file(absolutePath);
-// fileSS << file.rdbuf();
-// file.close();
-
-//// Extract texture units from fragment shader
-////if (convertFileToShaderType(_filepath) == GL_FRAGMENT_SHADER)
-////    extractTextureUnits(fileSS);
-
-//// Compile
-// std::string codeStr = fileSS.str();
-// const char* code = codeStr.c_str();
-// glShaderSource(_id, 1, &code, NULL);
-// glCompileShader(_id);
-
-//// Check errors
-// int success;
-// char infoLog[512];
-// glGetShaderiv(_id, GL_COMPILE_STATUS, &success);
-// if (!success) {
-//     glGetShaderInfoLog(_id, 512, NULL, infoLog);
-//     ASSERT(false, "Failed to compile shader [*w]$0[]:[w]\n$1\ncode->$2", fs::absolute(_filepath).string(), infoLog, code);
-// }
-//}
 
 OpenGLId Shader::getHandle() const { return _id; }
 

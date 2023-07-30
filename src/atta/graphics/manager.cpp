@@ -187,6 +187,8 @@ gfx::Image::Format Manager::convertFormat(res::Image::Format format) const {
 }
 
 void Manager::syncResources() {
+    _meshes.clear();
+    _images.clear();
     // Initialize meshes already loaded
     for (auto meshSid : resource::getResources<resource::Mesh>())
         createMesh(meshSid);
@@ -206,8 +208,23 @@ void Manager::onImageLoadEvent(event::Event& event) {
 }
 
 void Manager::onImageUpdateEvent(event::Event& event) {
-    event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
     // TODO update image
+    // event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
+    // resource::Image* image = resource::get<resource::Image>(e.sid.getString());
+    // if (image == nullptr) {
+    //    LOG_WARN("gfx::OpenGLAPI", "Could not create OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
+    //    return;
+    //}
+    // if (_openGLImages.find(e.sid.getId()) == _openGLImages.end()) {
+    //    LOG_WARN("gfx::OpenGLAPI", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
+    //    return;
+    //}
+
+    // std::shared_ptr<gl::Image> openGLImage = _openGLImages[e.sid.getId()];
+    // if (openGLImage->getWidth() != image->getWidth() || openGLImage->getHeight() != image->getHeight())
+    //     openGLImage->resize(image->getWidth(), image->getHeight());
+    // else
+    //     openGLImage->write(image->getData());
 }
 
 void Manager::createMesh(StringId sid) {
@@ -248,6 +265,9 @@ void Manager::createImage(StringId sid) {
     info.debugName = sid;
     _images[sid] = create<Image>(info);
 }
+
+const std::unordered_map<StringId, std::shared_ptr<Mesh>>& Manager::getMeshes() const { return _meshes; }
+const std::unordered_map<StringId, std::shared_ptr<Image>>& Manager::getImages() const { return _images; }
 
 //---------- Register API specific implementations ----------//
 // For each type, will return the OpenGL, Vulkan, ... implementation based on the current active graphicsAPI

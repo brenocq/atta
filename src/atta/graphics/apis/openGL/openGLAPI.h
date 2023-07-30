@@ -39,20 +39,7 @@ class OpenGLAPI final : public GraphicsAPI {
 
     void* getImGuiImage(StringId sid) const override;
 
-    // Handle events
-    void onMeshLoadEvent(event::Event& event);
-    void onImageLoadEvent(event::Event& event);
-    void onImageUpdateEvent(event::Event& event);
-
-    std::unordered_map<StringHash, std::shared_ptr<gl::Image>> getOpenGLImages() const { return _openGLImages; };
-    std::unordered_map<StringHash, gl::OpenGLId> getOpenGLCubemaps() const { return _openGLCubemaps; };
-
   private:
-    void initializeMesh(StringId sid);
-    void initializeImage(StringId sid);
-
-    std::unordered_map<StringHash, std::shared_ptr<gl::Mesh>> _openGLMeshes;
-    std::unordered_map<StringHash, std::shared_ptr<gl::Image>> _openGLImages;
     std::unordered_map<StringHash, gl::OpenGLId> _openGLCubemaps;
 
     std::shared_ptr<gl::Shader> _quadShader;

@@ -8,11 +8,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include <atta/event/events/imageLoad.h>
-#include <atta/event/events/imageUpdate.h>
-#include <atta/event/events/meshLoad.h>
-#include <atta/event/interface.h>
-
 #include <atta/graphics/apis/openGL/base.h>
 #include <atta/graphics/apis/openGL/framebuffer.h>
 #include <atta/graphics/apis/openGL/image.h>
@@ -72,11 +67,6 @@ void OpenGLAPI::startUp() {
     ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 0), "Atta requires OpenGL >= 3.0");
 
     glEnable(GL_DEPTH_TEST);
-
-    // Subscribe to events
-    event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(OpenGLAPI::onMeshLoadEvent));
-    event::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(OpenGLAPI::onImageLoadEvent));
-    event::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(OpenGLAPI::onImageUpdateEvent));
 
     // Quad shader
     _quadShader = std::make_shared<gl::Shader>("shaders/quad/shader.asl");
@@ -185,21 +175,9 @@ void OpenGLAPI::startUp() {
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-
-    // Initialize meshes already loaded (create vertex/indices)
-    for (auto meshSid : resource::getResources<resource::Mesh>())
-        initializeMesh(meshSid);
-    // Initialize textures already loaded
-    for (auto imgSid : resource::getResources<resource::Image>())
-        initializeImage(imgSid);
 }
 
-void OpenGLAPI::shutDown() {
-    _openGLMeshes.clear();
-    // Delete cubemaps
-    for (auto tex : _openGLCubemaps)
-        glDeleteTextures(1, &tex.second);
-}
+void OpenGLAPI::shutDown() {}
 
 void OpenGLAPI::waitDevice() {
     glFlush();
@@ -211,12 +189,13 @@ void OpenGLAPI::beginFrame() {}
 void OpenGLAPI::endFrame() { _window->swapBuffers(); }
 
 void OpenGLAPI::renderMesh(StringId meshSid) {
-    if (_openGLMeshes.find(meshSid.getId()) == _openGLMeshes.end()) {
+    const auto& meshes = gfx::Manager::getInstance().getMeshes();
+    if (meshes.find(meshSid.getId()) == meshes.end()) {
         LOG_WARN("gfx::OpenGLAPI", "Trying to render mesh that was never initialized '[w]$0[]'", meshSid);
         return;
     }
 
-    _openGLMeshes.at(meshSid.getId())->draw();
+    meshes.at(meshSid.getId())->draw();
 }
 
 void OpenGLAPI::renderQuad() {
@@ -238,40 +217,12 @@ void OpenGLAPI::renderCube() {
 }
 
 void* OpenGLAPI::getImGuiImage(StringId sid) const {
-    if (_openGLImages.find(sid.getId()) == _openGLImages.end()) {
+    const auto& images = gfx::Manager::getInstance().getImages();
+    if (images.find(sid.getId()) == images.end()) {
         LOG_WARN("gfx::OpenGLAPI", "Trying to get ImGui image that was never initialized '[w]$0[]'", sid);
         return nullptr;
     }
-    return reinterpret_cast<void*>(_openGLImages.at(sid.getId())->getImGuiImage());
-}
-
-void OpenGLAPI::onMeshLoadEvent(event::Event& event) {
-    event::MeshLoad& e = reinterpret_cast<event::MeshLoad&>(event);
-    initializeMesh(e.sid);
-}
-
-void OpenGLAPI::onImageLoadEvent(event::Event& event) {
-    event::ImageLoad& e = reinterpret_cast<event::ImageLoad&>(event);
-    initializeImage(e.sid);
-}
-
-void OpenGLAPI::onImageUpdateEvent(event::Event& event) {
-    event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
-    resource::Image* image = resource::get<resource::Image>(e.sid.getString());
-    if (image == nullptr) {
-        LOG_WARN("gfx::OpenGLAPI", "Could not initialize OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
-        return;
-    }
-    if (_openGLImages.find(e.sid.getId()) == _openGLImages.end()) {
-        LOG_WARN("gfx::OpenGLAPI", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
-        return;
-    }
-
-    std::shared_ptr<gl::Image> openGLImage = _openGLImages[e.sid.getId()];
-    if (openGLImage->getWidth() != image->getWidth() || openGLImage->getHeight() != image->getHeight())
-        openGLImage->resize(image->getWidth(), image->getHeight());
-    else
-        openGLImage->write(image->getData());
+    return reinterpret_cast<void*>(images.at(sid.getId())->getImGuiImage());
 }
 
 void OpenGLAPI::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) {
@@ -288,205 +239,176 @@ void OpenGLAPI::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer
 }
 
 void OpenGLAPI::generateCubemap(StringId textureSid, mat4 rotationMatrix) {
-    // Ensure that the texture was loaded
-    resource::get<resource::Image>(fs::path(textureSid.getString()));
+    //// Ensure that the texture was loaded
+    // resource::get<resource::Image>(fs::path(textureSid.getString()));
 
-    // Output texture id
-    unsigned int cubemap;
+    //// Output texture id
+    // unsigned int cubemap;
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    // glEnable(GL_DEPTH_TEST);
+    // glDepthFunc(GL_LEQUAL);
 
-    unsigned int captureFBO;
-    unsigned int captureRBO;
-    glGenFramebuffers(1, &captureFBO);
-    glGenRenderbuffers(1, &captureRBO);
+    // unsigned int captureFBO;
+    // unsigned int captureRBO;
+    // glGenFramebuffers(1, &captureFBO);
+    // glGenRenderbuffers(1, &captureRBO);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+    // glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    // glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+    // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+    // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
-    //---------- Equirectangular to cubemap ----------//
-    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/equiToCubemap.asl");
+    ////---------- Equirectangular to cubemap ----------//
+    // std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/equiToCubemap.asl");
 
-    // Create cubemap texture
-    glGenTextures(1, &cubemap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-    for (unsigned int i = 0; i < 6; ++i) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //// Create cubemap texture
+    // glGenTextures(1, &cubemap);
+    // glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+    // for (unsigned int i = 0; i < 6; ++i) {
+    //     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+    // }
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // Projection and view matrices
-    mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
+    //// Projection and view matrices
+    // mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
 
-    mat3 rot{rotationMatrix};
-    mat4 captureViews[] = {
-        // Converting from equirectangular to atta coordinate system
-        lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(0.0f, 0.0f, 1.0f), rot * vec3(-1.0f, 0.0f, 0.0f)),  // X+
-        lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(0.0f, 0.0f, -1.0f), rot * vec3(-1.0f, 0.0f, 0.0f)), // X-
-        lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(1.0f, 0.0f, 0.0f), rot * vec3(0.0f, 1.0f, 0.0f)),   // Y+
-        lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(-1.0f, 0.0f, 0.0f), rot * vec3(0.0f, -1.0f, 0.0f)), // Y-
-        lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(0.0f, 1.0f, 0.0f), rot * vec3(-1.0f, 0.0f, 0.0f)),  // Z+
-        lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(0.0f, -1.0f, 0.0f), rot * vec3(-1.0f, 0.0f, 0.0f))  // Z-
-    };
+    // mat3 rot{rotationMatrix};
+    // mat4 captureViews[] = {
+    //     // Converting from equirectangular to atta coordinate system
+    //     lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(0.0f, 0.0f, 1.0f), rot * vec3(-1.0f, 0.0f, 0.0f)),  // X+
+    //     lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(0.0f, 0.0f, -1.0f), rot * vec3(-1.0f, 0.0f, 0.0f)), // X-
+    //     lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(1.0f, 0.0f, 0.0f), rot * vec3(0.0f, 1.0f, 0.0f)),   // Y+
+    //     lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(-1.0f, 0.0f, 0.0f), rot * vec3(0.0f, -1.0f, 0.0f)), // Y-
+    //     lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(0.0f, 1.0f, 0.0f), rot * vec3(-1.0f, 0.0f, 0.0f)),  // Z+
+    //     lookAt(vec3(0.0f, 0.0f, 0.0f), rot * vec3(0.0f, -1.0f, 0.0f), rot * vec3(-1.0f, 0.0f, 0.0f))  // Z-
+    // };
 
-    // Convert texture to cubemap
-    shader->bind();
-    shader->setMat4("projection", transpose(captureProjection));
-    shader->setImage("equirectangularMap", textureSid);
-    glViewport(0, 0, 512, 512);
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    for (unsigned int i = 0; i < 6; i++) {
-        shader->setMat4("view", transpose(captureViews[i]));
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderCube();
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //// Convert texture to cubemap
+    // shader->bind();
+    // shader->setMat4("projection", transpose(captureProjection));
+    // shader->setImage("equirectangularMap", textureSid);
+    // glViewport(0, 0, 512, 512);
+    // glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    // for (unsigned int i = 0; i < 6; i++) {
+    //     shader->setMat4("view", transpose(captureViews[i]));
+    //     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, 0);
+    //     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //     renderCube();
+    // }
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // Delete old cubemap if necessary
-    if (_openGLCubemaps.find(textureSid.getId()) != _openGLCubemaps.end())
-        glDeleteTextures(1, &_openGLCubemaps[textureSid.getId()]);
+    //// Delete old cubemap if necessary
+    // if (_openGLCubemaps.find(textureSid.getId()) != _openGLCubemaps.end())
+    //     glDeleteTextures(1, &_openGLCubemaps[textureSid.getId()]);
 
-    _openGLCubemaps[textureSid.getId()] = cubemap;
+    //_openGLCubemaps[textureSid.getId()] = cubemap;
 }
 
 void OpenGLAPI::generateProcessedCubemap(GenerateProcessedCubemapInfo gpcInfo) {
-    unsigned int cubemap;
-    ASSERT(gpcInfo.numMipLevels >= 1,
-           "[OpenGLAPI] [w](generateProcessedCubemap)[] The number of mipmap levels must be greater than 0, but it is [w]$0[]", gpcInfo.numMipLevels);
-    ASSERT(gpcInfo.width > 0, "[OpenGLAPI] [w](generateProcessedCubemap)[] The width should be grater than 0, but it is [w]$0[]", gpcInfo.width);
-    ASSERT(gpcInfo.height > 0, "[OpenGLAPI] [w](generateProcessedCubemap)[] The height should be grater than 0, but it is [w]$0[]", gpcInfo.height);
-    ASSERT(gpcInfo.cubemapSid != "Not defined"_sid, "[OpenGLAPI] [w](generateProcessedCubemap)[] cubemapSid was not defined");
-    ASSERT(gpcInfo.func,
-           "[OpenGLAPI] [w](generateProcessedCubemap)[] func must be defined. The shader probably needs the view and projection matrices");
+    // unsigned int cubemap;
+    // ASSERT(gpcInfo.numMipLevels >= 1,
+    //        "[OpenGLAPI] [w](generateProcessedCubemap)[] The number of mipmap levels must be greater than 0, but it is [w]$0[]",
+    //        gpcInfo.numMipLevels);
+    // ASSERT(gpcInfo.width > 0, "[OpenGLAPI] [w](generateProcessedCubemap)[] The width should be grater than 0, but it is [w]$0[]", gpcInfo.width);
+    // ASSERT(gpcInfo.height > 0, "[OpenGLAPI] [w](generateProcessedCubemap)[] The height should be grater than 0, but it is [w]$0[]",
+    // gpcInfo.height); ASSERT(gpcInfo.cubemapSid != "Not defined"_sid, "[OpenGLAPI] [w](generateProcessedCubemap)[] cubemapSid was not defined");
+    // ASSERT(gpcInfo.func,
+    //        "[OpenGLAPI] [w](generateProcessedCubemap)[] func must be defined. The shader probably needs the view and projection matrices");
 
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-    unsigned int captureFBO;
-    unsigned int captureRBO;
-    glGenFramebuffers(1, &captureFBO);
-    glGenRenderbuffers(1, &captureRBO);
+    // unsigned int captureFBO;
+    // unsigned int captureRBO;
+    // glGenFramebuffers(1, &captureFBO);
+    // glGenRenderbuffers(1, &captureRBO);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+    // glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    // glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+    // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
-    // Projection and view matrices
-    mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
-    mat4 captureViews[] = {lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
-                           lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
-                           lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
-                           lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f)),
-                           lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, -1.0f, 0.0f)),
-                           lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, -1.0f, 0.0f))};
+    //// Projection and view matrices
+    // mat4 captureProjection = perspective(radians(90.0f), 1.0f, 0.1f, 10.0f);
+    // mat4 captureViews[] = {lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
+    //                        lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
+    //                        lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
+    //                        lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f)),
+    //                        lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, -1.0f, 0.0f)),
+    //                        lookAt(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, -1.0f, 0.0f))};
 
-    glGenTextures(1, &cubemap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
-    for (unsigned int i = 0; i < 6; i++)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, gpcInfo.width, gpcInfo.height, 0, GL_RGB, GL_FLOAT, nullptr);
+    // glGenTextures(1, &cubemap);
+    // glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+    // for (unsigned int i = 0; i < 6; i++)
+    //     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, gpcInfo.width, gpcInfo.height, 0, GL_RGB, GL_FLOAT, nullptr);
 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, gpcInfo.numMipLevels == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, gpcInfo.numMipLevels == 1 ? GL_LINEAR : GL_LINEAR_MIPMAP_LINEAR);
+    // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    if (gpcInfo.numMipLevels > 1)
-        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    // if (gpcInfo.numMipLevels > 1)
+    //     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-    gpcInfo.shader->bind();
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    for (unsigned int mip = 0; mip < gpcInfo.numMipLevels; mip++) {
-        // reisze framebuffer according to mip-level size.
-        unsigned int mipWidth = gpcInfo.width * std::pow(0.5, mip);
-        unsigned int mipHeight = gpcInfo.height * std::pow(0.5, mip);
-        glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
-        glViewport(0, 0, mipWidth, mipHeight);
+    // gpcInfo.shader->bind();
+    // glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    // for (unsigned int mip = 0; mip < gpcInfo.numMipLevels; mip++) {
+    //     // reisze framebuffer according to mip-level size.
+    //     unsigned int mipWidth = gpcInfo.width * std::pow(0.5, mip);
+    //     unsigned int mipHeight = gpcInfo.height * std::pow(0.5, mip);
+    //     glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+    //     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+    //     glViewport(0, 0, mipWidth, mipHeight);
 
-        for (unsigned int i = 0; i < 6; i++) {
-            if (gpcInfo.func)
-                gpcInfo.func(gpcInfo.shader, captureProjection, captureViews[i], i, mip);
+    //    for (unsigned int i = 0; i < 6; i++) {
+    //        if (gpcInfo.func)
+    //            gpcInfo.func(gpcInfo.shader, captureProjection, captureViews[i], i, mip);
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, mip);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            graphics::getGraphicsAPI()->renderCube();
-        }
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemap, mip);
+    //        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //        graphics::getGraphicsAPI()->renderCube();
+    //    }
+    //}
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    _openGLCubemaps[gpcInfo.cubemapSid.getId()] = cubemap;
+    //_openGLCubemaps[gpcInfo.cubemapSid.getId()] = cubemap;
 }
 
 void OpenGLAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
-    ASSERT(gptInfo.textureSid != "Not defined"_sid, "[OpenGLAPI] [w](generateProcessedTexture)[] textureSid was not defined");
+    // ASSERT(gptInfo.textureSid != "Not defined"_sid, "[OpenGLAPI] [w](generateProcessedTexture)[] textureSid was not defined");
 
-    std::shared_ptr<gl::Image> image;
-    Image::CreateInfo info = gptInfo.imageInfo;
-    image = std::make_shared<gl::Image>(info);
+    // std::shared_ptr<gl::Image> image;
+    // Image::CreateInfo info = gptInfo.imageInfo;
+    // image = std::make_shared<gl::Image>(info);
 
-    unsigned int captureFBO;
-    unsigned int captureRBO;
-    glGenFramebuffers(1, &captureFBO);
-    glGenRenderbuffers(1, &captureRBO);
+    // unsigned int captureFBO;
+    // unsigned int captureRBO;
+    // glGenFramebuffers(1, &captureFBO);
+    // glGenRenderbuffers(1, &captureRBO);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+    // glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    // glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+    // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
-    // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
-    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, image->getWidth(), image->getHeight());
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, image->getHandle(), 0);
+    //// then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
+    // glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    // glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+    // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, image->getWidth(), image->getHeight());
+    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, image->getHandle(), 0);
 
-    glViewport(0, 0, image->getWidth(), image->getHeight());
-    gptInfo.shader->bind();
-    if (gptInfo.func)
-        gptInfo.func(gptInfo.shader);
+    // glViewport(0, 0, image->getWidth(), image->getHeight());
+    // gptInfo.shader->bind();
+    // if (gptInfo.func)
+    //     gptInfo.func(gptInfo.shader);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    graphics::getGraphicsAPI()->renderQuad3();
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // graphics::getGraphicsAPI()->renderQuad3();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    _openGLImages[gptInfo.textureSid.getId()] = image;
-}
-
-void OpenGLAPI::initializeMesh(StringId sid) {
-    // _openGLMeshes[sid.getId()] = std::make_shared<gl::Mesh>(sid);
-    // LOG_DEBUG("gfx::OpenGLAPI", "Mesh loaded! [w]$0[]", sid);
-}
-
-void OpenGLAPI::initializeImage(StringId sid) {
-    resource::Image* image = resource::get<resource::Image>(sid.getString());
-    if (image == nullptr)
-        LOG_WARN("gfx::OpenGLAPI", "Could not initialize OpenGL image from [w]$0[]", sid.getString());
-
-    Image::CreateInfo info{};
-    info.width = image->getWidth();
-    info.height = image->getHeight();
-    info.data = image->getData();
-    if (image->getChannels() == 4)
-        info.format = Image::Format::RGBA;
-    else if (image->getChannels() == 3)
-        if (image->getFormat() == resource::Image::Format::RGB8)
-            info.format = Image::Format::RGB;
-        else
-            info.format = Image::Format::RGB16F;
-    else if (image->getChannels() == 1)
-        info.format = Image::Format::RED;
-
-    info.debugName = sid;
-    _openGLImages[sid.getId()] = std::make_shared<gl::Image>(info);
-
-    // LOG_DEBUG("gfx::OpenGLAPI", "Texture loaded! [w]$0[] -> $1", sid, _openGLImages[sid.getId()]->getId());
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //_openGLImages[gptInfo.textureSid.getId()] = image;
 }
 
 } // namespace atta::graphics

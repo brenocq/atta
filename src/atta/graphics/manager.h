@@ -48,6 +48,9 @@ class Manager final {
     friend component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
     friend void* getImGuiImage(StringId sid);
 
+    const std::unordered_map<StringId, std::shared_ptr<Mesh>>& getMeshes() const;
+    const std::unordered_map<StringId, std::shared_ptr<Image>>& getImages() const;
+
   private:
     void startUpImpl();
     void shutDownImpl();
