@@ -4,12 +4,14 @@
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/file/interface.h>
 #include <atta/ui/layers/uiLayer.h>
 // ImGui backends
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
+#include "imgui.h"
 #include <GLFW/glfw3.h>
 #include <ImGuizmo.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 #include <implot.h>
 
 namespace atta::ui {
@@ -22,7 +24,6 @@ void UILayer::onAttach() {
     ImPlot::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO();
-    (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
 
@@ -35,6 +36,7 @@ void UILayer::onAttach() {
     // Multiple viewports not supported for the web
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport
 #endif
+    io.FontDefault = io.Fonts->AddFontFromFileTTF(file::solveResourcePath("fonts/roboto/Roboto-Regular.ttf").string().c_str(), 14.5f);
 
     GLFWwindow* window = glfwGetCurrentContext();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
