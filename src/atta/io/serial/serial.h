@@ -19,7 +19,7 @@ class Serial {
         bool parityBit = false;
         bool twoStopBits = false;
         bool rtsCts = false;
-        float timeout = 1.0f; // 1 second
+        float timeout = 0.0f; // Timeout in seconds
         StringId debugName = StringId("Unnamed io::Serial");
     };
 
