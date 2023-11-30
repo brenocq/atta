@@ -47,7 +47,7 @@ Instance::Instance() {
     // Create instance
     VkResult result = vkCreateInstance(&createInfo, nullptr, &_instance);
     if (result != VK_SUCCESS)
-        LOG_ERROR("gfx::vk::Instance", "Failed to create vulkan instance! Code:$0", common::toString(result));
+        LOG_ERROR("gfx::vk::Instance", "Failed to create vulkan instance! Code: $0", common::toString(result));
 }
 
 Instance::~Instance() {
@@ -59,25 +59,30 @@ VkInstance Instance::getHandle() const { return _instance; }
 
 void Instance::printAvailableExtensions() {
     LOG_INFO("gfx::vk::Instance", "Available instance extensions:");
-
-    uint32_t extensionCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-    std::vector<VkExtensionProperties> extensions(extensionCount);
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-
-    for (const auto& extension : extensions)
+    for (const auto& extension : getAvailableExtensions())
         LOG_INFO("gfx::vk::Instance", " - $0", extension.extensionName);
 }
 
 void Instance::printAvailableLayers() {
+    LOG_INFO("gfx::vk::Instance", "Available instance layers:");
+    for (const auto& property : getAvailableLayers())
+        LOG_INFO("gfx::vk::Instance", " - $0 ($1)", property.layerName, property.description);
+}
+
+std::vector<VkExtensionProperties> Instance::getAvailableExtensions() const {
+    uint32_t extensionCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+    std::vector<VkExtensionProperties> extensions(extensionCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+    return extensions;
+}
+
+std::vector<VkLayerProperties> Instance::getAvailableLayers() const {
     uint32_t propertyCount = 0;
     vkEnumerateInstanceLayerProperties(&propertyCount, nullptr);
     std::vector<VkLayerProperties> properties(propertyCount);
     vkEnumerateInstanceLayerProperties(&propertyCount, properties.data());
-
-    LOG_INFO("gfx::vk::Instance", "Available instance layers:");
-    for (const auto& property : properties)
-        LOG_INFO("gfx::vk::Instance", " - $0 ($1)", property.layerName, property.description);
+    return properties;
 }
 
 std::vector<const char*> Instance::getEnabledExtensions() {
@@ -98,9 +103,12 @@ std::vector<const char*> Instance::getEnabledExtensions() {
 std::vector<const char*> Instance::getEnabledLayers() {
     std::vector<const char*> layers;
 
+    for (const auto& layer : getAvailableLayers()) {
 #ifdef ATTA_DEBUG_BUILD
-    layers.push_back("VK_LAYER_KHRONOS_validation");
+        if (layer.layerName == std::string("VK_LAYER_KHRONOS_validation"))
+            layers.push_back(layer.layerName);
 #endif
+    }
 
     return layers;
 }

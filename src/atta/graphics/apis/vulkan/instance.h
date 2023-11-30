@@ -22,6 +22,9 @@ class Instance {
     void printAvailableExtensions();
     void printAvailableLayers();
 
+    std::vector<VkExtensionProperties> getAvailableExtensions() const;
+    std::vector<VkLayerProperties> getAvailableLayers() const;
+
     std::vector<const char*> getEnabledExtensions();
     std::vector<const char*> getEnabledLayers();
 

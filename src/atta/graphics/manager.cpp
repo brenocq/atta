@@ -56,8 +56,8 @@ void Manager::startUpImpl() {
     _window = std::static_pointer_cast<Window>(std::make_shared<GlfwWindow>(windowInfo));
 
     //----- Renderer API -----//
-    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
-    //_graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
+    //_graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
+    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
     _graphicsAPI->startUp();
 
     //----- Compute Shaders -----//
