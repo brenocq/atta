@@ -57,7 +57,7 @@ void Shader::processASL() {
         ShaderCode shaderCode;
         shaderCode.iCode = removeUnusedFunctions(generateICode(type, _aslCode));
         shaderCode.apiCode = "";
-        LOG_DEBUG("Shader", "[y]$0\n[w]$1", type, shaderCode.iCode);
+        // LOG_DEBUG("gfx::Shader", "[y]$0\n[w]$1", type, shaderCode.iCode);
         _shaderCodes[type] = shaderCode;
     }
 }

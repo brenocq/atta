@@ -69,7 +69,7 @@ bool Manager::openProjectImpl(fs::path projectFile) {
     _projectSerializer = std::make_shared<ProjectSerializer>(_project);
 
     // Create .atta file if it does not exists yet
-    if(!fs::exists(projectFile))
+    if (!fs::exists(projectFile))
         _projectSerializer->serialize();
 
     // Clear components and read project file
@@ -167,6 +167,8 @@ std::vector<fs::path> Manager::getResourcePathsImpl() const {
         return {fs::path(ATTA_DIR) / "resources"};
 }
 
+fs::path Manager::getBuildPathImpl() const { return fs::path(ATTA_BUILD_DIR); }
+
 std::vector<fs::path> Manager::getDirectoryFilesRecursiveImpl(fs::path directory) {
     std::vector<fs::path> files;
 #ifndef ATTA_OS_WEB
@@ -203,14 +205,14 @@ std::vector<fs::path> Manager::getDirectoryFilesRecursiveImpl(fs::path directory
 
 void Manager::onSimulationStateChange(event::Event& event) {
     switch (event.getType()) {
-    case event::SimulationStart::type:
-        _simulationRunning = true;
-        break;
-    case event::SimulationStop::type:
-        _simulationRunning = false;
-        break;
-    default:
-        LOG_WARN("file::Manager", "Unknown simulation event");
+        case event::SimulationStart::type:
+            _simulationRunning = true;
+            break;
+        case event::SimulationStop::type:
+            _simulationRunning = false;
+            break;
+        default:
+            LOG_WARN("file::Manager", "Unknown simulation event");
     }
 }
 

@@ -7,6 +7,7 @@
 #include <atta/graphics/apis/vulkan/shader.h>
 
 #include <atta/file/manager.h>
+#include <regex>
 
 namespace atta::graphics::vk {
 
@@ -17,8 +18,9 @@ Shader::Shader(const fs::path& file) : gfx::Shader(file), _device(common::getDev
 }
 
 Shader::~Shader() {
-    if (_shader != VK_NULL_HANDLE)
-        vkDestroyShaderModule(_device->getHandle(), _shader, nullptr);
+    for (auto& [type, shader] : _shaders)
+        if (shader != VK_NULL_HANDLE)
+            vkDestroyShaderModule(_device->getHandle(), shader, nullptr);
 }
 
 void Shader::setBool(const char* name, bool b) {}
@@ -41,33 +43,105 @@ std::vector<VkPipelineShaderStageCreateInfo> Shader::getShaderStages() const {
     // return result;
 }
 
-std::string Shader::generateApiCode(ShaderType type, std::string iCode) { return iCode; }
+std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
+    std::string apiCode;
+
+    // GLSL version
+    apiCode += "#version 450\n";
+
+    // Uniform buffer
+    if (!_uniformLayout.getElements().empty()) {
+        apiCode += "layout(set = 0, binding = 0) uniform UniformBufferObject {\n";
+        for (const BufferLayout::Element& element : _uniformLayout.getElements())
+            if (element.type != BufferLayout::Element::Type::SAMPLER_2D && element.type != BufferLayout::Element::Type::SAMPLER_CUBE)
+                apiCode += std::string("    ") + BufferLayout::Element::typeToString(element.type) + " " + element.name + ";\n";
+        apiCode += "} ubo;\n";
+    }
+
+    // TODO Uniform image sampler
+
+    // Remove uniform declarations from iCode
+    std::regex pattern(R"(^uniform .*\n?)", std::regex_constants::multiline);
+    std::string iCodeFix = std::regex_replace(iCode, pattern, "");
+
+    // Append "ubo." when using uniform in iCode
+    for (const BufferLayout::Element& element : _uniformLayout.getElements()) {
+        if (element.type != BufferLayout::Element::Type::SAMPLER_2D && element.type != BufferLayout::Element::Type::SAMPLER_CUBE) {
+            std::string patternStr = "\\b" + element.name + "\\b";
+            std::regex pattern(patternStr);
+            iCodeFix = std::regex_replace(iCodeFix, pattern, "ubo." + element.name);
+        }
+    }
+
+    // Add corrected iCode to apiCode
+    apiCode += iCodeFix;
+
+    // Add location to in/out
+    std::istringstream iss(apiCode);
+    std::ostringstream oss;
+    std::string line;
+    int inNum = 0, outNum = 0;
+    while (std::getline(iss, line)) {
+        if (std::regex_search(line, std::regex(R"(^in\s)"))) {
+            oss << "layout(location = " << inNum++ << ") " << line << "\n";
+        } else if (std::regex_search(line, std::regex(R"(^out\s)"))) {
+            oss << "layout(location = " << outNum++ << ") " << line << "\n";
+        } else {
+            oss << line << "\n";
+        }
+    }
+    apiCode = oss.str();
+
+    // Add location to out
+
+    // LOG_DEBUG("gfx::vk::Shader", "[y]$0\n[r]iCode:\n[w]$1\n[r]apiCode:\n[w]$2", type, iCode, apiCode);
+
+    return apiCode;
+}
 
 void Shader::compile() {
-    // fs::path filepath = file::solveResourcePath(_filepath);
-    // std::string in = fs::absolute(filepath).string();
-    // std::string out = in + ".spv";
-    // LOG_DEBUG("sf", "$0 $1", in, out);
-    // if (!runCommand("glslc " + in + " -o " + out))
-    //     return;
+    for (const auto& [type, shaderCode] : _shaderCodes) {
+        // Save shader
+        std::array<std::string, 3> ext = {".vert", ".geom", ".frag"};
+        fs::path in = file::getBuildPath() / "shaders" / (_file.stem().string() + ext[int(type)]);
+        fs::create_directories(in.parent_path());
+        std::ofstream file(in);
+        if (file.is_open()) {
+            file << shaderCode.apiCode;
+            file.close();
+            LOG_DEBUG("shader", "Saved $0 code", in);
+        } else {
+            LOG_ERROR("gfx::vk::Shader", "Failed to save shader code to [w]$0[] when compiling [w]$1[]", in, _file.string());
+            continue;
+        }
 
-    //// Parse GLSL
-    // parseGlsl(readFile(fs::path(in)));
+        // Compile shader
+        fs::path out = in.string() + ".spv";
+        LOG_DEBUG("Shader", "in $0 out $1", in, out);
+        if (!runCommand("glslc " + in.string() + " -o " + out.string()))
+            return;
 
-    //// Create vulkan
-    // std::string spirvCode = readFile(fs::path(out));
-    // VkShaderModuleCreateInfo createInfo{};
-    // createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    // createInfo.codeSize = spirvCode.size();
-    // createInfo.pCode = (const uint32_t*)spirvCode.data();
+        // Load shader and create shader module
+        std::string spirvCode = readFile(fs::path(out));
+        VkShaderModuleCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = spirvCode.size();
+        createInfo.pCode = (const uint32_t*)spirvCode.data();
 
-    // if (vkCreateShaderModule(_device->getHandle(), &createInfo, nullptr, &_shader) != VK_SUCCESS)
-    //     LOG_ERROR("gfx::vk::Shader", "Failed to create shader!");
+        VkShaderModule shader;
+        if (vkCreateShaderModule(_device->getHandle(), &createInfo, nullptr, &shader) != VK_SUCCESS)
+            LOG_ERROR("gfx::vk::Shader", "Failed to create shader!");
+        else
+            _shaders[type] = shader;
+    }
 }
 
 void Shader::bind() {}
 
-VkShaderModule Shader::getHandle() const { return _shader; }
+VkShaderModule Shader::getHandle() const {
+    // TODO
+    return {};
+}
 
 VkPipelineShaderStageCreateInfo Shader::getShaderStage() const {
     // VkShaderStageFlagBits stage = convertFileToShaderStage(_filepath);
@@ -109,27 +183,27 @@ bool Shader::runCommand(std::string cmd) {
         output += buffer.data();
 
     if (output != "") {
-        // LOG_ERROR("gfx::vk::Shader", "Failed to compile shader [w]$0[]: $1", _filepath.string(), output);
+        LOG_ERROR("gfx::vk::Shader", "Failed to compile shader [w]$0[]:\n$1", _file.string(), output);
         return false;
     }
     return true;
 }
 
-// std::string Shader::readFile(const fs::path& file) {
-//     std::ifstream f(file, std::ios::ate | std::ios::binary);
-//
-//     if (!f.is_open()) {
-//         LOG_ERROR("gfx::vk::Shader", "Failed to open file: [w]$0[]!", file.string());
-//         return {};
-//     }
-//
-//     size_t fileSize = (size_t)f.tellg();
-//     std::vector<char> buffer(fileSize);
-//     f.seekg(0);
-//     f.read(buffer.data(), fileSize);
-//     f.close();
-//
-//     return std::string(buffer.begin(), buffer.end());
-// }
+std::string Shader::readFile(const fs::path& file) {
+    std::ifstream f(file, std::ios::ate | std::ios::binary);
+
+    if (!f.is_open()) {
+        LOG_ERROR("gfx::vk::Shader", "Failed to open file: [w]$0[]!", file.string());
+        return {};
+    }
+
+    size_t fileSize = (size_t)f.tellg();
+    std::vector<char> buffer(fileSize);
+    f.seekg(0);
+    f.read(buffer.data(), fileSize);
+    f.close();
+
+    return std::string(buffer.begin(), buffer.end());
+}
 
 } // namespace atta::graphics::vk

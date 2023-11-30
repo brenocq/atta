@@ -47,6 +47,24 @@ class Shader {
     };
 
     /**
+     * @brief Process intermediate code to generate API specific code.
+     *
+     * It will mainly substitute placeholders with Graphics API specific code.
+     *
+     * @param type Shader type
+     * @param iCode Intermediate code
+     *
+     * @return API specific code
+     */
+    virtual std::string generateApiCode(ShaderType type, std::string iCode) = 0;
+
+    /**
+     * @brief Compile graphics API specific code
+     */
+    virtual void compile() = 0;
+
+  private:
+    /**
      * @brief Process .asl file to generate ICode
      *
      * The preprocessing phase consists of a number of operations:
@@ -111,23 +129,7 @@ class Shader {
      */
     void populateUniformLayout();
 
-    /**
-     * @brief Process intermediate code to generate API specific code.
-     *
-     * It will mainly substitute placeholders with Graphics API specific code.
-     *
-     * @param type Shader type
-     * @param iCode Intermediate code
-     *
-     * @return API specific code
-     */
-    virtual std::string generateApiCode(ShaderType type, std::string iCode) = 0;
-
-    /**
-     * @brief Compile graphics API specific code
-     */
-    virtual void compile() = 0;
-
+  protected:
     fs::path _file;
     std::string _aslCode;
 

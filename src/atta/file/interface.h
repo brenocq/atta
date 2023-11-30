@@ -27,6 +27,7 @@ std::shared_ptr<Project> getProject();
 // The return is the absolute resource path
 fs::path solveResourcePath(fs::path relativePath, bool mustExist = true);
 std::vector<fs::path> getResourcePaths();
+fs::path getBuildPath();
 std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
 fs::path getDefaultProjectFolder();
 

@@ -44,10 +44,10 @@ class Shader final : public gfx::Shader {
     static VkShaderStageFlagBits convertFileToShaderStage(const fs::path& filepath);
 
     bool runCommand(std::string cmd);
-    // std::string readFile(const fs::path& file);
+    std::string readFile(const fs::path& file);
 
     std::shared_ptr<Device> _device;
-    VkShaderModule _shader;
+    std::map<ShaderType, VkShaderModule> _shaders;
 };
 
 } // namespace atta::graphics::vk
