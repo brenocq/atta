@@ -50,7 +50,15 @@ class Image final : public gfx::Image {
 
     void copyFrom(std::shared_ptr<Buffer> buffer);
 
+    /**
+     * @brief Supported vulkan format
+     *
+     * The GPU may not support all formats. For example, some GPUs may not support RGB, only RGBA. When creating an image, ensure that the format is
+     * supported. If the format is not supported, a close format will be used instead. It is always possible to do getFormat to check which format is
+     * actually being used.
+     */
     static Image::Format supportedFormat(Image::Format format);
+
     static VkFormat convertFormat(Image::Format format);
     static Image::Format convertFormat(VkFormat format);
     static VkImageAspectFlags convertAspectFlags(Image::Format format);
@@ -71,16 +79,6 @@ class Image final : public gfx::Image {
     VkImageLayout _layout;
     std::shared_ptr<Device> _device;
 
-    /**
-     * @brief Supported vulkan format
-     *
-     * The GPU may not support _format, in that case _supportedFormat will differ from _format. The interface to the outside world will work as
-     * _format, but under the hood _supportedFormat will be used and the necessary conversions will be done.
-     *
-     * For example, some GPUs may not support RGB, only RGBA, so the _supportedFormat will be RGBA, and the conversion from RGBA to RGB will be done
-     * when reading the raw image
-     */
-    Format _supportedFormat;
     bool _destroyImage;
 };
 

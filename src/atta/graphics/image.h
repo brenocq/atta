@@ -58,7 +58,13 @@ class Image {
     virtual void write(uint8_t* data) = 0;
     virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
 
+    /* Get format
+     *
+     * @note If the GPU does not support the chosen format in CreateInfo, another format will be chosen instead. In that case the Format
+     * returned by this function will differ from the one that was chosen when creating the image.
+     */
     Format getFormat() const { return _format; }
+
     Wrap getSamplerWrap() const { return _samplerWrap; }
     uint32_t getWidth() const { return _width; }
     uint32_t getHeight() const { return _height; }

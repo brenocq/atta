@@ -14,45 +14,27 @@ namespace atta::graphics::vk {
 Image::Image(const gfx::Image::CreateInfo& info)
     : gfx::Image(info), _image(VK_NULL_HANDLE), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
       _device(common::getDevice()), _destroyImage(true) {
-    _supportedFormat = supportedFormat(_format);
+    _format = supportedFormat(_format);
     resize(_width, _height, true);
 }
 
 Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image)
     : gfx::Image(info), _image(image), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE), _device(device),
       _destroyImage(false) {
-    _supportedFormat = supportedFormat(_format);
+    _format = supportedFormat(_format);
     createImageView();
 }
 
 Image::~Image() { destroy(); }
 
 void Image::write(uint8_t* data) {
-    size_t size = _width * _height * Image::getPixelSize(_supportedFormat);
-
-    // Format conversion
-    uint8_t* convertedData = data;
-    if (_format != _supportedFormat) {
-        // Perform format conversion
-        convertedData = new uint8_t[size];
-        if (_format == Format::RGB && _format == Format::RGBA)
-            for (int i = 0; i < _width * _height; i++) {
-                convertedData[i * 4 + 0] = data[i * 3 + 0];
-                convertedData[i * 4 + 1] = data[i * 3 + 1];
-                convertedData[i * 4 + 2] = data[i * 3 + 2];
-                convertedData[i * 4 + 3] = 255;
-            }
-    }
+    size_t size = _width * _height * Image::getPixelSize(_format);
 
     // Copy data to GPU
-    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(convertedData, size);
+    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(data, size);
     transitionLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     copyFrom(stagingBuffer);
     transitionLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    // Delete convertedData if it was allocated to perform format conversion
-    if (data != convertedData)
-        delete[] convertedData;
 }
 
 void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
@@ -107,9 +89,15 @@ void Image::copyFrom(std::shared_ptr<Buffer> buffer) {
 }
 
 Image::Format Image::supportedFormat(Image::Format format) {
-    // TODO check physical device supported formats
-    if (format == Format::RGB)
-        return Format::RGBA;
+    VkFormatProperties formatProperties;
+    vkGetPhysicalDeviceFormatProperties(common::getDevice()->getPhysicalDevice()->getHandle(), convertFormat(format), &formatProperties);
+
+    if (format == Format::RGB && !(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)) {
+        Image::Format alternative = Format::RGBA;
+        LOG_VERBOSE("gfx::vk::Image", "Format RGB not supported as color attachment, using RGBA instead");
+        return alternative;
+    }
+
     return format;
 }
 
@@ -197,12 +185,12 @@ void Image::createImage() {
     info.extent = {_width, _height, 1};
     info.mipLevels = 1;
     info.arrayLayers = 1;
-    info.format = convertFormat(_supportedFormat);
+    info.format = convertFormat(_format);
     info.tiling = VK_IMAGE_TILING_OPTIMAL;
     info.initialLayout = _layout = VK_IMAGE_LAYOUT_UNDEFINED;
-    if (isColorFormat(_supportedFormat))
+    if (isColorFormat(_format))
         info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-    else if (isDepthFormat(_supportedFormat))
+    else if (isDepthFormat(_format))
         info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     info.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -215,16 +203,13 @@ void Image::createImageView() {
     VkImageViewCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     info.image = _image;
-    info.format = convertFormat(_supportedFormat);
-    if (info.format == VK_FORMAT_R8G8B8_UNORM)
-        info.format = VK_FORMAT_R8G8B8A8_UNORM;
-
+    info.format = convertFormat(_format);
     if (_isCubemap) {
         info.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
         info.subresourceRange.layerCount = 6;
     } else {
         info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
+        info.subresourceRange.aspectMask = convertAspectFlags(_format);
         info.subresourceRange.baseMipLevel = 0;
         info.subresourceRange.levelCount = _mipLevels;
         info.subresourceRange.baseArrayLayer = 0;

@@ -41,8 +41,8 @@ Instance::Instance() {
     createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
-    printAvailableExtensions();
-    printAvailableLayers();
+    // printAvailableExtensions();
+    // printAvailableLayers();
 
     // Create instance
     VkResult result = vkCreateInstance(&createInfo, nullptr, &_instance);

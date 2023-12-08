@@ -43,6 +43,19 @@ void Log::error(std::string tag, std::string text, Args&&... args) {
         log(COLOR_BOLD_RED, tag, COLOR_RESET_RED, text, args...);
 }
 
+// std::array overload
+template <typename Tstream, typename T, size_t N>
+std::ostream& operator<<(Tstream& s, const std::array<T, N>& arr) {
+    s << "{";
+    for (typename std::array<T, N>::const_iterator it = arr.begin(); it != arr.end(); it++) {
+        if (it != arr.begin())
+            s << ", ";
+        s << *it;
+    }
+    s << "}";
+    return s;
+}
+
 // std::vector overload
 template <typename Tstream, typename T>
 std::ostream& operator<<(Tstream& s, const std::vector<T>& vec) {
