@@ -25,7 +25,7 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     //---------- Create geometry pipeline ----------//
     // Framebuffer
     Framebuffer::CreateInfo framebufferInfo{};
-    framebufferInfo.attachments.push_back({Image::Format::RGB});
+    framebufferInfo.attachments.push_back({Image::Format::RGBA});
     framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
     framebufferInfo.width = 500;
     framebufferInfo.height = 500;

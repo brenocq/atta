@@ -56,6 +56,7 @@ std::vector<VkPipelineShaderStageCreateInfo> Shader::getShaderStages() const {
         }
         shaderStages.push_back(shaderStageInfo);
     }
+
     return shaderStages;
 }
 

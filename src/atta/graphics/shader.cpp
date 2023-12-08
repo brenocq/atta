@@ -75,7 +75,7 @@ std::set<Shader::ShaderType> Shader::detectEntrypoints(std::string code) {
 
     // Regular expressions to match function signatures
     std::regex fragmentRegex(R"(vec4\s+fragment\s*\(\s*\))");
-    std::regex vertexRegex(R"(vec4\s+vertex\s*\(\s*\))");
+    std::regex vertexRegex(R"(vec4\s+vertex\s*\((\s*\w+\s+\w+\s*,?)*\s*\))");
 
     // Search for the function signatures in the code and count occurrences
     for (std::sregex_iterator it(code.begin(), code.end(), fragmentRegex), end; it != end; ++it) {
@@ -142,12 +142,14 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
         case VERTEX: {
             std::string input;
             std::string params;
-            for (auto element : _vertexLayout.getElements()) {
+            for (size_t i = 0; i < _vertexLayout.getElements().size(); i++) {
+                BufferLayout::Element element = _vertexLayout.getElements()[i];
                 std::string typeStr = BufferLayout::Element::typeToString(element.type);
                 input += "in " + typeStr + " " + element.name + ";\n";
-                params += typeStr + " " + element.name + ", ";
+                params += element.name;
+                if (i != _vertexLayout.getElements().size() - 1)
+                    params += ", ";
             }
-            params.resize(params.size() - 2); // Remove last ", "
             iCode = input + iCode + "void main() { POSITION = vertex(" + params + ");}";
 
             // Replace
@@ -246,7 +248,7 @@ std::string Shader::removeUnusedFunctions(std::string code) {
 
     for (auto [name, func] : usedFunctions) {
         if (!func.used)
-            for (int i = func.start; i <= func.end; i++)
+            for (size_t i = func.start; i <= func.end; i++)
                 code[i] = ' ';
     }
 

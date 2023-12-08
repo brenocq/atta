@@ -94,7 +94,7 @@ Image::Format Image::supportedFormat(Image::Format format) {
 
     if (format == Format::RGB && !(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)) {
         Image::Format alternative = Format::RGBA;
-        LOG_VERBOSE("gfx::vk::Image", "Format RGB not supported as color attachment, using RGBA instead");
+        LOG_WARN("gfx::vk::Image", "Format RGB not supported as color attachment, using RGBA instead");
         return alternative;
     }
 
