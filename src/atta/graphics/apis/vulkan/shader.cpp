@@ -37,10 +37,26 @@ void Shader::setCubemap(const char* name, StringId sid) {}
 void Shader::setCubemap(const char* name, std::shared_ptr<gfx::Image> image) {}
 
 std::vector<VkPipelineShaderStageCreateInfo> Shader::getShaderStages() const {
-    std::vector<VkPipelineShaderStageCreateInfo> result;
-    // for (std::shared_ptr<graphics::Shader> s : _shaders)
-    //     result.push_back(std::dynamic_pointer_cast<vk::Shader>(s)->getShaderStage());
-    // return result;
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+    for (auto& [type, shader] : _shaders) {
+        VkPipelineShaderStageCreateInfo shaderStageInfo;
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.module = shader;
+        shaderStageInfo.pName = "main";
+        switch (type) {
+            case VERTEX:
+                shaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+                break;
+            case GEOMETRY:
+                shaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+                break;
+            case FRAGMENT:
+                shaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+                break;
+        }
+        shaderStages.push_back(shaderStageInfo);
+    }
+    return shaderStages;
 }
 
 std::string Shader::generateApiCode(ShaderType type, std::string iCode) {

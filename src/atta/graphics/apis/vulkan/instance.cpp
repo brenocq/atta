@@ -41,8 +41,8 @@ Instance::Instance() {
     createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 
-    // printAvailableExtensions();
-    // printAvailableLayers();
+    printAvailableExtensions();
+    printAvailableLayers();
 
     // Create instance
     VkResult result = vkCreateInstance(&createInfo, nullptr, &_instance);
@@ -105,8 +105,10 @@ std::vector<const char*> Instance::getEnabledLayers() {
 
     for (const auto& layer : getAvailableLayers()) {
 #ifdef ATTA_DEBUG_BUILD
-        if (layer.layerName == std::string("VK_LAYER_KHRONOS_validation"))
-            layers.push_back(layer.layerName);
+        if (layer.layerName == std::string("VK_LAYER_KHRONOS_validation")) {
+            layers.push_back("VK_LAYER_KHRONOS_validation");
+            LOG_INFO("gfx::vk::Instance", "Vulkan validation layer enabled");
+        }
 #endif
     }
 
