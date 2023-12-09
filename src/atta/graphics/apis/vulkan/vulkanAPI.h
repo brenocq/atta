@@ -12,13 +12,13 @@
 #include <atta/graphics/apis/vulkan/commandBuffers.h>
 #include <atta/graphics/apis/vulkan/commandPool.h>
 #include <atta/graphics/apis/vulkan/debugMessenger.h>
+#include <atta/graphics/apis/vulkan/descriptorPool.h>
 #include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/fence.h>
 #include <atta/graphics/apis/vulkan/framebuffer.h>
 #include <atta/graphics/apis/vulkan/indexBuffer.h>
 #include <atta/graphics/apis/vulkan/instance.h>
 #include <atta/graphics/apis/vulkan/physicalDevice.h>
-#include <atta/graphics/apis/vulkan/pipeline.h>
 #include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/apis/vulkan/semaphore.h>
 #include <atta/graphics/apis/vulkan/stagingBuffer.h>
@@ -86,7 +86,6 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::SwapChain> _swapChain;
     std::vector<std::shared_ptr<vk::Framebuffer>> _framebuffers;
     std::shared_ptr<vk::RenderPass> _renderPass;
-    std::shared_ptr<vk::Pipeline> _pipeline;
     std::shared_ptr<vk::VertexBuffer> _vertexBuffer;
     std::shared_ptr<vk::IndexBuffer> _indexBuffer;
     std::shared_ptr<vk::StagingBuffer> _stagingBuffer;

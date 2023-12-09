@@ -58,6 +58,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
     std::vector<component::EntityId> entities = component::getNoPrototypeView();
     _geometryPipeline->begin();
     {
+        LOG_DEBUG("FastRenderer", "Begin");
         std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
 
         shader->setMat4("uProjection", transpose(camera->getProj()));
@@ -85,9 +86,11 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                 }
 
                 // Draw mesh
+                LOG_DEBUG("FastRenderer", "Draw mesh");
                 graphics::getGraphicsAPI()->renderMesh(mesh->sid);
             }
         }
+        LOG_DEBUG("FastRenderer", "End");
     }
     _geometryPipeline->end();
 

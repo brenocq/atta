@@ -200,7 +200,7 @@ void Image::createImage() {
     info.tiling = VK_IMAGE_TILING_OPTIMAL;
     info.initialLayout = _layout = VK_IMAGE_LAYOUT_UNDEFINED;
     if (isColorFormat(_format))
-        info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+        info.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
     else if (isDepthFormat(_format))
         info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;

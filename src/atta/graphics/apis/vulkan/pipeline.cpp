@@ -14,6 +14,7 @@ namespace atta::graphics::vk {
 Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info), _device(common::getDevice()) {
     // Create framebuffer
     _framebuffers.push_back(std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer()));
+    _framebuffers[0]->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
 
     // Vertex input
     BufferLayout layout = _shader->getVertexBufferLayout();
@@ -155,13 +156,20 @@ Pipeline::~Pipeline() {
 }
 
 void Pipeline::begin() {
+    // Bind shader
     _shader->bind();
 
-    // Bind
+    // Bind framebuffer
+    _framebuffers[0]->bind();
+
+    // Bind render pass
+    _renderPass->begin();
+
+    // Bind pipeline
     VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 
-    // Viewport
+    // Configure viewport
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
@@ -171,16 +179,20 @@ void Pipeline::begin() {
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
-    // Scissor
+    // Configure scissor
     VkRect2D scissor{};
     scissor.offset = {0, 0};
     scissor.extent = {(uint32_t)viewport.width, (uint32_t)viewport.height};
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
+    // Bind descriptor sets
     _descriptorSets->bind(0);
 }
 
-void Pipeline::end() { _shader->unbind(); }
+void Pipeline::end() {
+    _renderPass->end();
+    _shader->unbind();
+}
 
 void* Pipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_renderPass->getFramebuffer()->getImage(0))->getImGuiImage());

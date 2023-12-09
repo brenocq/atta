@@ -56,6 +56,7 @@ class Framebuffer {
     uint32_t getWidth() const { return _width; }
     uint32_t getHeight() const { return _height; }
     vec4 getClearColor() const { return _clearColor; }
+    StringId getDebugName() const { return _debugName; }
 
     bool hasColorAttachment() const;
     bool hasDepthAttachment() const;

@@ -34,7 +34,11 @@ Framebuffer::~Framebuffer() {
         vkDestroyFramebuffer(_device->getHandle(), _framebuffer, nullptr);
 }
 
-void Framebuffer::bind(bool clear) {}
+void Framebuffer::bind(bool clear) {
+    if (_framebuffer == VK_NULL_HANDLE) {
+        LOG_WARN("gfx::vk::Framebuffer", "Trying to bind framebuffer [w]$0[] that was never created", _debugName);
+    }
+}
 void Framebuffer::unbind() {}
 
 void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {}
@@ -55,7 +59,7 @@ void Framebuffer::create(std::shared_ptr<RenderPass> renderPass) {
         attachments.push_back(std::dynamic_pointer_cast<vk::Image>(image)->getImageViewHandle());
 
     // Create framebuffer
-    VkFramebufferCreateInfo framebufferInfo = {};
+    VkFramebufferCreateInfo framebufferInfo{};
     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     framebufferInfo.renderPass = _renderPass->getHandle();
     framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
