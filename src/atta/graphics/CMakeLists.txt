@@ -6,6 +6,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/openGL/image.cpp
     apis/openGL/framebuffer.cpp
     apis/openGL/renderPass.cpp
+    apis/openGL/renderQueue.cpp
     apis/openGL/shader.cpp
     apis/openGL/vertexBuffer.cpp
     apis/openGL/indexBuffer.cpp
@@ -29,6 +30,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/vulkan/physicalDevice.cpp
     apis/vulkan/pipelineLayout.cpp
     apis/vulkan/renderPass.cpp
+    apis/vulkan/renderQueue.cpp
     apis/vulkan/semaphore.cpp
     apis/vulkan/pipeline.cpp
     apis/vulkan/shader.cpp
@@ -66,6 +68,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     mesh.cpp
     pipeline.cpp
     renderPass.cpp
+    renderQueue.cpp
     shader.cpp
     vertexBuffer.cpp
     viewport.cpp

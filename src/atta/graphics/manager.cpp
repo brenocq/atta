@@ -318,4 +318,9 @@ std::shared_ptr<Pipeline> Manager::createImpl<Pipeline>(Pipeline::CreateInfo inf
     return createSpecific<Pipeline, gl::Pipeline, vk::Pipeline>(info);
 }
 
+template <>
+std::shared_ptr<RenderQueue> Manager::createImpl<RenderQueue>() {
+    return createSpecific<RenderQueue, gl::RenderQueue, vk::RenderQueue>();
+}
+
 } // namespace atta::graphics

@@ -30,6 +30,8 @@ template <>
 std::shared_ptr<Shader> Manager::createImpl<Shader>(fs::path file);
 template <>
 std::shared_ptr<Pipeline> Manager::createImpl<Pipeline>(Pipeline::CreateInfo info);
+template <>
+std::shared_ptr<RenderQueue> Manager::createImpl<RenderQueue>();
 
 template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
 std::shared_ptr<T> Manager::createSpecific(Args... args) {
