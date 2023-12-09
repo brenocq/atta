@@ -45,9 +45,6 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
 
     compute/entityClick.cpp
 
-    layers/layer.cpp
-    layers/layerStack.cpp
-
     renderers/renderer.cpp
     renderers/fastRenderer.cpp
     renderers/pbrRenderer.cpp

@@ -39,65 +39,68 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     RenderPass::CreateInfo renderPassInfo{};
     renderPassInfo.framebuffer = framebuffer;
     renderPassInfo.debugName = StringId("FastRenderer Render Pass");
-    std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
+    _renderPass = graphics::create<RenderPass>(renderPassInfo);
 
     // Pipeline
     Pipeline::CreateInfo pipelineInfo{};
     pipelineInfo.shader = shader;
-    pipelineInfo.renderPass = renderPass;
+    pipelineInfo.renderPass = _renderPass;
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 
     //---------- Common pipelines ----------//
-    _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass);
-    _drawerPipeline = std::make_unique<DrawerPipeline>(renderPass);
+    _selectedPipeline = std::make_unique<SelectedPipeline>(_renderPass);
+    _drawerPipeline = std::make_unique<DrawerPipeline>(_renderPass);
 }
 
 FastRenderer::~FastRenderer() {}
 
 void FastRenderer::render(std::shared_ptr<Camera> camera) {
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
-    _geometryPipeline->begin();
-    {
-        LOG_DEBUG("FastRenderer", "Begin");
-        std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
+    //_renderPass->begin();
 
-        shader->setMat4("uProjection", transpose(camera->getProj()));
-        shader->setMat4("uView", transpose(camera->getView()));
+    //std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    //_geometryPipeline->begin();
+    //{
+    //    LOG_DEBUG("FastRenderer", "Begin");
+    //    std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
 
-        for (auto entity : entities) {
-            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getComponent<component::Transform>(entity);
-            component::Material* compMat = component::getComponent<component::Material>(entity);
-            resource::Material* material = compMat ? compMat->getResource() : nullptr;
+    //    shader->setMat4("uProjection", transpose(camera->getProj()));
+    //    shader->setMat4("uView", transpose(camera->getView()));
 
-            if (mesh && transform) {
-                mat4 model = transpose(transform->getWorldTransformMatrix(entity));
-                shader->setMat4("uModel", model);
+    //    for (auto entity : entities) {
+    //        component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+    //        component::Transform* transform = component::getComponent<component::Transform>(entity);
+    //        component::Material* compMat = component::getComponent<component::Material>(entity);
+    //        resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
-                if (material) {
-                    if (material->colorIsImage()) {
-                        shader->setImage("uAlbedoTexture", material->colorImage);
-                        shader->setVec3("uAlbedo", {-1, -1, -1});
-                    } else
-                        shader->setVec3("uAlbedo", material->color);
-                } else {
-                    resource::Material::CreateInfo defaultMaterial{};
-                    shader->setVec3("uAlbedo", defaultMaterial.color);
-                }
+    //        if (mesh && transform) {
+    //            mat4 model = transpose(transform->getWorldTransformMatrix(entity));
+    //            shader->setMat4("uModel", model);
 
-                // Draw mesh
-                LOG_DEBUG("FastRenderer", "Draw mesh");
-                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
-            }
-        }
-        LOG_DEBUG("FastRenderer", "End");
-    }
-    _geometryPipeline->end();
+    //            if (material) {
+    //                if (material->colorIsImage()) {
+    //                    shader->setImage("uAlbedoTexture", material->colorImage);
+    //                    shader->setVec3("uAlbedo", {-1, -1, -1});
+    //                } else
+    //                    shader->setVec3("uAlbedo", material->color);
+    //            } else {
+    //                resource::Material::CreateInfo defaultMaterial{};
+    //                shader->setVec3("uAlbedo", defaultMaterial.color);
+    //            }
 
-    // if (_renderSelected)
-    //     _selectedPipeline->render(camera);
-    // if (_renderDrawer)
-    //     _drawerPipeline->render(camera);
+    //            // Draw mesh
+    //            LOG_DEBUG("FastRenderer", "Draw mesh");
+    //            graphics::getGraphicsAPI()->renderMesh(mesh->sid);
+    //        }
+    //    }
+    //    LOG_DEBUG("FastRenderer", "End");
+    //}
+    //_geometryPipeline->end();
+
+    //// if (_renderSelected)
+    ////     _selectedPipeline->render(camera);
+    //// if (_renderDrawer)
+    ////     _drawerPipeline->render(camera);
+    //_renderPass->end();
 }
 
 void FastRenderer::resize(uint32_t width, uint32_t height) {

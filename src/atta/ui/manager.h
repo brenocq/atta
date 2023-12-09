@@ -8,6 +8,7 @@
 #define ATTA_UI_MANAGER_H
 
 #include <atta/ui/interface.h>
+#include <atta/ui/editor/editor.h>
 
 namespace atta::ui {
 
@@ -21,6 +22,13 @@ class Manager final {
   private:
     void startUpImpl();
     void shutDownImpl();
+
+    void setTheme();
+    void initOpenGL();
+    void initVulkan();
+
+    void render();
+    Editor _editor;
 };
 
 } // namespace atta::ui

@@ -8,7 +8,6 @@
 #define ATTA_GRAPHICS_INTERFACE_H
 
 #include <atta/component/base.h>
-#include <atta/graphics/layers/layerStack.h>
 #include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/viewport.h>
 #include <atta/graphics/windows/window.h>
@@ -18,8 +17,6 @@ namespace atta::graphics {
 void startUp();
 void shutDown();
 void update();
-
-void pushLayer(Layer* layer);
 
 // Used to create the object (image/pipeline/renderPass/...) based on the current rendererAPI
 // e.g.: Manager::create<Pipeline>(pipelineInfo) will create OpenGLPipeline or
@@ -36,6 +33,9 @@ float getViewportFPS();
 void setViewportFPS(float viewportFPS);
 bool getViewportRendering();
 void setViewportRendering(bool viewportRendering);
+
+//----- UI -----//
+void setUiRenderFunc(std::function<void()> uiRenderFunc);
 
 //----- Viewport -----//
 std::vector<std::shared_ptr<Viewport>> getViewports();

@@ -63,9 +63,6 @@ void Manager::startUpImpl() {
     //----- Compute Shaders -----//
     // _computeEntityClick = std::make_unique<EntityClick>();
 
-    //----- Create layer stack -----//
-    _layerStack = std::make_unique<LayerStack>();
-
     //----- Create viewports -----//
     createDefaultViewportsImpl();
 
@@ -87,7 +84,6 @@ void Manager::shutDownImpl() {
         viewport.reset();
     _viewportsNext.clear();
 
-    _layerStack.reset();
     _computeEntityClick.reset();
     _graphicsAPI->shutDown();
     _graphicsAPI.reset();
@@ -111,14 +107,17 @@ void Manager::updateImpl() {
         // Update window events
         _window->update();
 
-        // Render layer stack
+        // Render viewports
+        for (const auto& viewport : _viewports)
+            viewport->render();
+
+        // Render UI
         _graphicsAPI->beginFrame();
-        _layerStack->render();
+        if (_uiRenderFunc)
+            _uiRenderFunc();
         _graphicsAPI->endFrame();
     }
 }
-
-void Manager::pushLayerImpl(Layer* layer) { _layerStack->push(layer); }
 
 std::shared_ptr<GraphicsAPI> Manager::getGraphicsAPIImpl() const { return _graphicsAPI; }
 

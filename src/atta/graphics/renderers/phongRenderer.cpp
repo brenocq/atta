@@ -57,6 +57,8 @@ PhongRenderer::PhongRenderer() : Renderer("PhongRenderer") {
 PhongRenderer::~PhongRenderer() {}
 
 void PhongRenderer::render(std::shared_ptr<Camera> camera) {
+    // graphics::beginRender();
+
     std::vector<component::EntityId> entities = component::getNoPrototypeView();
     _geometryPipeline->begin();
     {

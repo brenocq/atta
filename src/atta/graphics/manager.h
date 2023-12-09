@@ -27,7 +27,6 @@ class Manager final {
     friend void startUp();
     friend void shutDown();
     friend void update();
-    friend void pushLayer(Layer* layer);
     template <typename T, typename... Args>
     friend std::shared_ptr<T> create(Args... args);
 
@@ -37,6 +36,8 @@ class Manager final {
     friend void setViewportFPS(float viewportFPS);
     friend bool getViewportRendering();
     friend void setViewportRendering(bool viewportRendering);
+
+    friend void setUiRenderFunc(std::function<void()> uiRenderFunc);
 
     friend std::shared_ptr<GraphicsAPI> getGraphicsAPI();
     friend std::shared_ptr<Window> getWindow();
@@ -55,7 +56,6 @@ class Manager final {
     void startUpImpl();
     void shutDownImpl();
     void updateImpl();
-    void pushLayerImpl(Layer* layer);
     template <typename T, typename... Args>
     std::shared_ptr<T> createImpl(Args... args);
 
@@ -90,8 +90,8 @@ class Manager final {
     std::unordered_map<StringId, std::shared_ptr<Mesh>> _meshes;
     std::unordered_map<StringId, std::shared_ptr<Image>> _images;
 
-    // Layer stack
-    std::unique_ptr<LayerStack> _layerStack;
+    // UI
+    std::function<void()> _uiRenderFunc;
 
     // Viewports
     std::vector<std::shared_ptr<Viewport>> _viewports;
