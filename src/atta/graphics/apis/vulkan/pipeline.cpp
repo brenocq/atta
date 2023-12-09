@@ -11,18 +11,12 @@
 
 namespace atta::graphics::vk {
 
-struct UniformBufferObject {
-    mat4 model;
-    mat4 view;
-    mat4 proj;
-};
-
 Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info), _device(common::getDevice()) {
     // Create framebuffer
     _framebuffers.push_back(std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer()));
 
     // Uniform buffers
-    _uniformBuffer = std::make_shared<UniformBuffer>(sizeof(UniformBufferObject));
+    _uniformBuffer = std::make_shared<UniformBuffer>(_shader->getUniformBufferLayout().getStride());
 
     // Vertex input
     BufferLayout layout = _shader->getVertexBufferLayout();
@@ -122,7 +116,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 
     // Descriptor set layout
     std::vector<DescriptorSetLayout::Binding> bindings;
-    bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT});
+    bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
     _descriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
 
     // Pipeline layout
@@ -165,39 +159,39 @@ Pipeline::~Pipeline() {
 
 void Pipeline::begin() {
     // Bind
-    VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+    // VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
+    // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 
-    // Viewport
-    VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = _renderPass->getFramebuffer()->getWidth();
-    viewport.height = _renderPass->getFramebuffer()->getHeight();
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+    //// Viewport
+    // VkViewport viewport{};
+    // viewport.x = 0.0f;
+    // viewport.y = 0.0f;
+    // viewport.width = _renderPass->getFramebuffer()->getWidth();
+    // viewport.height = _renderPass->getFramebuffer()->getHeight();
+    // viewport.minDepth = 0.0f;
+    // viewport.maxDepth = 1.0f;
+    // vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
-    // Scissor
-    VkRect2D scissor{};
-    scissor.offset = {0, 0};
-    scissor.extent = {(uint32_t)viewport.width, (uint32_t)viewport.height};
-    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+    //// Scissor
+    // VkRect2D scissor{};
+    // scissor.offset = {0, 0};
+    // scissor.extent = {(uint32_t)viewport.width, (uint32_t)viewport.height};
+    // vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    _descriptorSets->bind(0);
+    //_descriptorSets->bind(0);
 }
 
 void Pipeline::end() {
-    //---------- Update uniform buffers ----------//
+    //---------- TODO Update uniform buffers ----------//
     static auto startTime = std::chrono::high_resolution_clock::now();
     auto currentTime = std::chrono::high_resolution_clock::now();
     float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-    UniformBufferObject ubo{};
-    ubo.model = mat4(1.0f);
-    ubo.model.mat[3][0] = time * 0.1f;
-    ubo.view = mat4(1.0f);
-    ubo.proj = mat4(1.0f);
-    memcpy(_uniformBuffer->getMappedData(), &ubo, sizeof(ubo));
+    // UniformBufferObject ubo{};
+    // ubo.model = mat4(1.0f);
+    // ubo.model.mat[3][0] = time * 0.1f;
+    // ubo.view = mat4(1.0f);
+    // ubo.proj = mat4(1.0f);
+    // memcpy(_uniformBuffer->getMappedData(), &ubo, sizeof(ubo));
 }
 void* Pipeline::getImGuiTexture() const { return nullptr; }
 

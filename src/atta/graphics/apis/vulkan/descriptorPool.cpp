@@ -13,7 +13,7 @@ DescriptorPool::DescriptorPool(std::vector<DescriptorSetLayout::Binding> descrip
     for (auto binding : descriptorBindings)
         poolSizes.push_back(VkDescriptorPoolSize{binding.type, static_cast<uint32_t>(binding.descriptorCount * maxSets)});
 
-    VkDescriptorPoolCreateInfo poolInfo = {};
+    VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();

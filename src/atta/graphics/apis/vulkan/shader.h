@@ -18,9 +18,6 @@ class Shader final : public gfx::Shader {
     Shader(const fs::path& file);
     ~Shader();
 
-    VkShaderModule getHandle() const;
-    VkPipelineShaderStageCreateInfo getShaderStage() const;
-
     std::string generateApiCode(ShaderType type, std::string iCode) override;
     void compile() override;
     void bind() override;

@@ -33,7 +33,8 @@ class Shader {
     virtual void setCubemap(const char* name, std::shared_ptr<Image> image) = 0;
 
     fs::path getFile() const;
-    BufferLayout getVertexBufferLayout() const;
+    const BufferLayout& getVertexBufferLayout() const;
+    const BufferLayout& getUniformBufferLayout() const;
 
     /**
      * @brief Shader type

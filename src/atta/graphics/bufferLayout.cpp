@@ -25,9 +25,6 @@ std::string BufferLayout::Element::typeToString(Type type) { return toStr[(int)t
 
 uint32_t BufferLayout::Element::sizeFromType(Type type) {
     switch (type) {
-        case Type::NONE:
-            LOG_WARN("gfx::BufferLayout::Element", "Trying to get size of unknown type");
-            return 0;
         case Type::BOOL:
             return 4;
         case Type::INT:
@@ -56,8 +53,35 @@ uint32_t BufferLayout::Element::sizeFromType(Type type) {
             return 4;
         case Type::SAMPLER_CUBE:
             return 4;
+        default:
+            LOG_WARN("gfx::BufferLayout::Element", "Trying to get size of unknown type");
+            return 0;
     }
-    LOG_WARN("gfx::BufferLayout::Element", "Trying to get size of unknown type");
+    return 0;
+}
+
+uint32_t BufferLayout::Element::alignmentFromType(Type type) {
+    switch (type) {
+        case Type::BOOL:
+        case Type::SAMPLER_2D:
+        case Type::SAMPLER_CUBE:
+            return 1;
+        case Type::INT:
+        case Type::UINT:
+        case Type::FLOAT:
+        case Type::VEC2:
+        case Type::VEC3:
+        case Type::VEC4:
+        case Type::IVEC2:
+        case Type::IVEC3:
+        case Type::IVEC4:
+        case Type::MAT3:
+        case Type::MAT4:
+            return 4;
+        default:
+            LOG_WARN("gfx::BufferLayout::Element", "Trying to get alignment of unknown type");
+            return 0;
+    }
     return 0;
 }
 
@@ -93,12 +117,9 @@ uint32_t BufferLayout::Element::componentCountFromType(Type type) {
 //----------------------------------//
 //---------- BufferLayout ----------//
 //----------------------------------//
-BufferLayout::BufferLayout(const std::initializer_list<Element>& elements) : _elements(elements) {
-    uint32_t offset = 0;
-    for (auto& element : _elements) {
-        element.offset = offset;
-        offset += element.size;
-    }
+BufferLayout::BufferLayout(const std::initializer_list<Element>& elements) {
+    for (const auto& element : elements)
+        push(element.type, element.name);
 }
 
 void BufferLayout::push(Element::Type type, std::string name) {
@@ -108,7 +129,16 @@ void BufferLayout::push(Element::Type type, std::string name) {
     e.name = name;
     e.type = type;
     e.size = Element::sizeFromType(type);
-    e.offset = getStride();
+
+    // Calculate offset in buffer
+    if (_elements.empty())
+        e.offset = 0;
+    else {
+        uint32_t align = Element::alignmentFromType(type);
+        uint32_t offset = _elements.back().offset;
+        e.offset = (offset + align - 1) & ~(align - 1);
+    }
+
     _elements.push_back(e);
 }
 
@@ -124,9 +154,18 @@ bool BufferLayout::exists(std::string name) const {
 uint32_t BufferLayout::getElementCount() const { return static_cast<uint32_t>(_elements.size()); }
 
 uint32_t BufferLayout::getStride() const {
-    uint32_t stride = 0;
+    if (_elements.empty())
+        return 0;
+
+    // Get buffer alignment (largest type alignment)
+    uint32_t bufferAlignment = 0;
     for (auto& element : _elements)
-        stride += element.size;
+        bufferAlignment = std::max(bufferAlignment, Element::alignmentFromType(element.type));
+
+    // Align buffer
+    uint32_t stride = _elements.back().offset + _elements.back().size;
+    stride = (stride + bufferAlignment - 1) & ~(bufferAlignment - 1);
+
     return stride;
 }
 

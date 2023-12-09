@@ -39,7 +39,7 @@ void Shader::setCubemap(const char* name, std::shared_ptr<gfx::Image> image) {}
 std::vector<VkPipelineShaderStageCreateInfo> Shader::getShaderStages() const {
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
     for (auto& [type, shader] : _shaders) {
-        VkPipelineShaderStageCreateInfo shaderStageInfo;
+        VkPipelineShaderStageCreateInfo shaderStageInfo{};
         shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStageInfo.module = shader;
         shaderStageInfo.pName = "main";
@@ -126,7 +126,6 @@ void Shader::compile() {
         if (file.is_open()) {
             file << shaderCode.apiCode;
             file.close();
-            LOG_DEBUG("shader", "Saved $0 code", in);
         } else {
             LOG_ERROR("gfx::vk::Shader", "Failed to save shader code to [w]$0[] when compiling [w]$1[]", in, _file.string());
             continue;
@@ -134,7 +133,6 @@ void Shader::compile() {
 
         // Compile shader
         fs::path out = in.string() + ".spv";
-        LOG_DEBUG("Shader", "in $0 out $1", in, out);
         if (!runCommand("glslc " + in.string() + " -o " + out.string()))
             return;
 
@@ -154,36 +152,6 @@ void Shader::compile() {
 }
 
 void Shader::bind() {}
-
-VkShaderModule Shader::getHandle() const {
-    // TODO
-    return {};
-}
-
-VkPipelineShaderStageCreateInfo Shader::getShaderStage() const {
-    // VkShaderStageFlagBits stage = convertFileToShaderStage(_filepath);
-
-    VkPipelineShaderStageCreateInfo createInfo = {};
-    createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    // createInfo.stage = stage;
-    // createInfo.module = _shader;
-    createInfo.pName = "main";
-
-    return createInfo;
-}
-
-VkShaderStageFlagBits Shader::convertFileToShaderStage(const fs::path& filepath) {
-    // std::string extension = filepath.extension().string();
-    // if (extension == ".vert")
-    //     return VK_SHADER_STAGE_VERTEX_BIT;
-    // if (extension == ".frag")
-    //     return VK_SHADER_STAGE_FRAGMENT_BIT;
-    // if (extension == ".geom")
-    //     return VK_SHADER_STAGE_GEOMETRY_BIT;
-    // ASSERT(false, "Unknown shader file format [w]$0[]. Instead of [*w]$1[], it should be [w].vert[], [w].frag[], or [w].geom[]", filepath.string(),
-    //        extension);
-    return {};
-}
 
 bool Shader::runCommand(std::string cmd) {
     std::array<char, 512> buffer;

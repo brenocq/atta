@@ -25,6 +25,8 @@ class BufferLayout final {
         static std::string typeToString(Type type);
         /// Type size in bytes
         static uint32_t sizeFromType(Type type);
+        /// Type alignment in bytes
+        static uint32_t alignmentFromType(Type type);
         /// Number of component in the type (FLOAT -> 1, VEC2 -> 2, MAT4 -> 16, ...)
         static uint32_t componentCountFromType(Type type);
     };
@@ -48,7 +50,7 @@ class BufferLayout final {
     bool exists(std::string name) const;
     /// Get number of elements
     uint32_t getElementCount() const;
-    /// Get buffer stride in bytes (sum of the size of all elements)
+    /// Get buffer stride in bytes (aligned sum of the size of all elements)
     uint32_t getStride() const;
 
   private:

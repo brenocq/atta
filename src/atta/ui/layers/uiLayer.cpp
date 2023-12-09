@@ -86,15 +86,15 @@ void UILayer::begin() {
 
 void UILayer::end() {
     ImGui::Render();
-    switch (gfx::getGraphicsAPI()->getType()) {
-        case gfx::GraphicsAPI::OPENGL:
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-            break;
-        case gfx::GraphicsAPI::VULKAN:
-            ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
-                                            std::dynamic_pointer_cast<gfx::VulkanAPI>(gfx::getGraphicsAPI())->getCommandBuffers()->getCurrent());
-            break;
-    }
+    // switch (gfx::getGraphicsAPI()->getType()) {
+    //     case gfx::GraphicsAPI::OPENGL:
+    //         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    //         break;
+    //     case gfx::GraphicsAPI::VULKAN:
+    //         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
+    //                                         std::dynamic_pointer_cast<gfx::VulkanAPI>(gfx::getGraphicsAPI())->getCommandBuffers()->getCurrent());
+    //         break;
+    // }
 
     ImGuiIO& io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {

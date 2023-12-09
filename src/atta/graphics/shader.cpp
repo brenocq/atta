@@ -36,7 +36,8 @@ Shader::Shader(const fs::path& file) : _file(file) {
 
 fs::path Shader::getFile() const { return _file; }
 
-BufferLayout Shader::getVertexBufferLayout() const { return _vertexLayout; }
+const BufferLayout& Shader::getVertexBufferLayout() const { return _vertexLayout; }
+const BufferLayout& Shader::getUniformBufferLayout() const { return _uniformLayout; }
 
 void Shader::processASL() {
     LOG_DEBUG("gfx::Shader", "Preprocess ASL: [w]$0", _file.string());
