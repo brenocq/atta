@@ -15,9 +15,6 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     // Create framebuffer
     _framebuffers.push_back(std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer()));
 
-    // Uniform buffers
-    _uniformBuffer = std::make_shared<UniformBuffer>(_shader->getUniformBufferLayout().getStride());
-
     // Vertex input
     BufferLayout layout = _shader->getVertexBufferLayout();
     auto bindingDescription = VertexBuffer::getBindingDescription(layout);
@@ -125,7 +122,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     // Descriptor set
     _descriptorPool = std::make_shared<DescriptorPool>(bindings, 1);
     _descriptorSets = std::make_shared<DescriptorSets>(_descriptorPool, _descriptorSetLayout, _pipelineLayout, 1);
-    _descriptorSets->update(0, _uniformBuffer);
+    _descriptorSets->update(0, std::dynamic_pointer_cast<vk::Shader>(_shader)->getUniformBuffer());
 
     // Create Pipeline
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages = std::dynamic_pointer_cast<vk::Shader>(_shader)->getShaderStages();
@@ -158,42 +155,36 @@ Pipeline::~Pipeline() {
 }
 
 void Pipeline::begin() {
+    _shader->bind();
+
     // Bind
-    // VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
-    // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
+    VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 
-    //// Viewport
-    // VkViewport viewport{};
-    // viewport.x = 0.0f;
-    // viewport.y = 0.0f;
-    // viewport.width = _renderPass->getFramebuffer()->getWidth();
-    // viewport.height = _renderPass->getFramebuffer()->getHeight();
-    // viewport.minDepth = 0.0f;
-    // viewport.maxDepth = 1.0f;
-    // vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+    // Viewport
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = _renderPass->getFramebuffer()->getWidth();
+    viewport.height = _renderPass->getFramebuffer()->getHeight();
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
-    //// Scissor
-    // VkRect2D scissor{};
-    // scissor.offset = {0, 0};
-    // scissor.extent = {(uint32_t)viewport.width, (uint32_t)viewport.height};
-    // vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+    // Scissor
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = {(uint32_t)viewport.width, (uint32_t)viewport.height};
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    //_descriptorSets->bind(0);
+    _descriptorSets->bind(0);
 }
 
-void Pipeline::end() {
-    //---------- TODO Update uniform buffers ----------//
-    static auto startTime = std::chrono::high_resolution_clock::now();
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-    // UniformBufferObject ubo{};
-    // ubo.model = mat4(1.0f);
-    // ubo.model.mat[3][0] = time * 0.1f;
-    // ubo.view = mat4(1.0f);
-    // ubo.proj = mat4(1.0f);
-    // memcpy(_uniformBuffer->getMappedData(), &ubo, sizeof(ubo));
+void Pipeline::end() { _shader->unbind(); }
+
+void* Pipeline::getImGuiTexture() const {
+    return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_renderPass->getFramebuffer()->getImage(0))->getImGuiImage());
 }
-void* Pipeline::getImGuiTexture() const { return nullptr; }
 
 VkPipeline Pipeline::getHandle() const { return _pipeline; }
 std::shared_ptr<PipelineLayout> Pipeline::getPipelineLayout() const { return _pipelineLayout; }

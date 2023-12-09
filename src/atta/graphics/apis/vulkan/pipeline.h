@@ -17,7 +17,6 @@
 #include <atta/graphics/apis/vulkan/pipelineLayout.h>
 #include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/apis/vulkan/vertexBuffer.h>
-#include <atta/graphics/apis/vulkan/uniformBuffer.h>
 #include <atta/graphics/pipeline.h>
 
 namespace atta::graphics::vk {
@@ -43,7 +42,6 @@ class Pipeline final : public gfx::Pipeline {
     std::shared_ptr<DescriptorPool> _descriptorPool;
     std::shared_ptr<DescriptorSetLayout> _descriptorSetLayout;
     std::shared_ptr<DescriptorSets> _descriptorSets;
-    std::shared_ptr<UniformBuffer> _uniformBuffer;
 
     // Output image info
     VkExtent2D _imageExtent;

@@ -18,6 +18,7 @@ class Shader {
     virtual ~Shader() = default;
 
     virtual void bind() = 0;
+    virtual void unbind() = 0;
 
     virtual void setBool(const char* name, bool b) = 0;
     virtual void setInt(const char* name, int i) = 0;

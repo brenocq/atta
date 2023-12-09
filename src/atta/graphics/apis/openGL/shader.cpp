@@ -87,6 +87,8 @@ void Shader::compile() {
 
 void Shader::bind() { glUseProgram(_id); }
 
+void Shader::unbind() {}
+
 void Shader::setBool(const char* name, bool b) { glUniform1ui(getLoc(name), (unsigned int)b); }
 
 void Shader::setInt(const char* name, int i) { glUniform1i(getLoc(name), i); }

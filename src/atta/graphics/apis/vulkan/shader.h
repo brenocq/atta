@@ -9,6 +9,7 @@
 
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/device.h>
+#include <atta/graphics/apis/vulkan/uniformBuffer.h>
 #include <atta/graphics/shader.h>
 
 namespace atta::graphics::vk {
@@ -21,6 +22,7 @@ class Shader final : public gfx::Shader {
     std::string generateApiCode(ShaderType type, std::string iCode) override;
     void compile() override;
     void bind() override;
+    void unbind() override;
 
     void setBool(const char* name, bool b) override;
     void setInt(const char* name, int i) override;
@@ -36,15 +38,19 @@ class Shader final : public gfx::Shader {
     void setCubemap(const char* name, std::shared_ptr<gfx::Image> image) override;
 
     std::vector<VkPipelineShaderStageCreateInfo> getShaderStages() const;
+    std::shared_ptr<UniformBuffer> getUniformBuffer() const;
 
   private:
     static VkShaderStageFlagBits convertFileToShaderStage(const fs::path& filepath);
+    void updateUniformBuffer(const char* name, uint8_t* data, size_t size);
 
     bool runCommand(std::string cmd);
     std::string readFile(const fs::path& file);
 
     std::shared_ptr<Device> _device;
     std::map<ShaderType, VkShaderModule> _shaders;
+    std::vector<uint8_t> _uniformBufferData;
+    std::shared_ptr<UniformBuffer> _uniformBuffer;
 };
 
 } // namespace atta::graphics::vk

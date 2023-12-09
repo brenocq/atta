@@ -23,7 +23,7 @@ void Pipeline::begin() {
 
 void Pipeline::end() {
     _renderPass->end();
-    //_shaderGroup->unbind();
+    _shader->unbind();
 }
 
 void* Pipeline::getImGuiTexture() const {

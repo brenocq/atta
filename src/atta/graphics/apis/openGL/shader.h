@@ -21,6 +21,7 @@ class Shader final : public gfx::Shader {
     std::string generateApiCode(ShaderType type, std::string iCode) override;
     void compile() override;
     void bind() override;
+    void unbind() override;
 
     void setBool(const char* name, bool b) override;
     void setInt(const char* name, int i) override;

@@ -75,6 +75,7 @@ class Image final : public gfx::Image {
     VkImage _image;
     VkImageView _imageView;
     VkSampler _sampler;
+    VkDescriptorSet _imGuiDescriptorSet; // Used to display images in ImGui;
     VkDeviceMemory _memory;
     VkImageLayout _layout;
     std::shared_ptr<Device> _device;

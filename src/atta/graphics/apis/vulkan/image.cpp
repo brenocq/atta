@@ -9,6 +9,10 @@
 #include <atta/graphics/apis/vulkan/commandPool.h>
 #include <atta/graphics/apis/vulkan/stagingBuffer.h>
 
+// TODO should not have UI code here
+#include "imgui.h"
+#include <backends/imgui_impl_vulkan.h>
+
 namespace atta::graphics::vk {
 
 Image::Image(const gfx::Image::CreateInfo& info)
@@ -59,7 +63,14 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
         write(_data);
 }
 
-void* Image::getImGuiImage() { return nullptr; }
+void* Image::getImGuiImage() {
+    // TODO Ideally this should be stored in the UI
+    if (_imGuiDescriptorSet == VK_NULL_HANDLE)
+        _imGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(_sampler, _imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    LOG_ERROR("gfx::vk::Image", "Can't render images to ImGui yet");
+    return nullptr; // static_cast<void*>(_imGuiDescriptorSet);
+}
 
 VkImage Image::getImageHandle() const { return _image; }
 

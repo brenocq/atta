@@ -107,7 +107,7 @@ void ViewportWindows::render() {
             if (shouldRenderViewports)
                 viewport->render();
             ImVec2 size = ImVec2(viewport->getWidth(), viewport->getHeight());
-            ImGui::Image(viewport->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));
+            // ImGui::Image(viewport->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));
 
             //----- ImGuizmo -----//
             bool imGuizmoUsingMouse = false;
