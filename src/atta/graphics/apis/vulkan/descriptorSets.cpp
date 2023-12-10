@@ -71,9 +71,8 @@ void DescriptorSets::update(uint32_t index, std::shared_ptr<Image> image) const 
     vkUpdateDescriptorSets(_device->getHandle(), 1, &descriptorWrite, 0, nullptr);
 }
 
-void DescriptorSets::bind(size_t index) {
-    vkCmdBindDescriptorSets(common::getCommandBuffers()->getCurrent(), VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->getHandle(), 0, 1,
-                            &_descriptorSets[index], 0, nullptr);
+void DescriptorSets::bind(VkCommandBuffer commandBuffer, size_t index) {
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->getHandle(), 0, 1, &_descriptorSets[index], 0, nullptr);
 }
 
 } // namespace atta::graphics::vk

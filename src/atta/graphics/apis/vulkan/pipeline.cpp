@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/pipeline.h>
+#include <atta/graphics/apis/vulkan/renderQueue.h>
 #include <atta/graphics/apis/vulkan/shader.h>
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 #include <atta/graphics/interface.h>
@@ -155,18 +156,17 @@ Pipeline::~Pipeline() {
     _framebuffers.clear();
 }
 
-void Pipeline::begin() {
+void Pipeline::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
+    _renderQueue = renderQueue;
+
     // Bind shader
     _shader->bind();
 
     // Bind framebuffer
     _framebuffers[0]->bind();
 
-    // Bind render pass
-    _renderPass->begin();
-
     // Bind pipeline
-    VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
+    VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 
     // Configure viewport
@@ -186,11 +186,11 @@ void Pipeline::begin() {
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
     // Bind descriptor sets
-    _descriptorSets->bind(0);
+    _descriptorSets->bind(commandBuffer, 0);
 }
 
 void Pipeline::end() {
-    _renderPass->end();
+    _renderQueue.reset();
     _shader->unbind();
 }
 

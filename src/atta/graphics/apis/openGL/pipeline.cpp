@@ -16,15 +16,9 @@ Pipeline::Pipeline(const Pipeline::CreateInfo& info) : gfx::Pipeline(info) {
 
 Pipeline::~Pipeline() {}
 
-void Pipeline::begin() {
-    _shader->bind();
-    _renderPass->begin();
-}
+void Pipeline::begin(std::shared_ptr<RenderQueue> renderQueue) { _shader->bind(); }
 
-void Pipeline::end() {
-    _renderPass->end();
-    _shader->unbind();
-}
+void Pipeline::end() { _shader->unbind(); }
 
 void* Pipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_renderPass->getFramebuffer()->getImage(0))->getImGuiImage());

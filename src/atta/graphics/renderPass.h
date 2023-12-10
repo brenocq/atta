@@ -7,6 +7,7 @@
 #ifndef ATTA_GRAPHICS_RENDER_PASS_H
 #define ATTA_GRAPHICS_RENDER_PASS_H
 #include <atta/graphics/framebuffer.h>
+#include <atta/graphics/renderQueue.h>
 #include <atta/utils/stringId.h>
 
 namespace atta::graphics {
@@ -21,13 +22,14 @@ class RenderPass {
     RenderPass(const CreateInfo& info);
     virtual ~RenderPass() = default;
 
-    virtual void begin() = 0;
+    virtual void begin(std::shared_ptr<RenderQueue> renderQueue) = 0;
     virtual void end() = 0;
 
     std::shared_ptr<Framebuffer> getFramebuffer() const { return _framebuffer; }
 
   protected:
     std::shared_ptr<Framebuffer> _framebuffer;
+    std::shared_ptr<RenderQueue> _renderQueue;
 
     const StringId _debugName;
     friend Framebuffer;

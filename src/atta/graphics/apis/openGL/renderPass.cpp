@@ -12,7 +12,7 @@ RenderPass::RenderPass(const RenderPass::CreateInfo& info) : gfx::RenderPass(inf
 
 RenderPass::~RenderPass() {}
 
-void RenderPass::begin() { _framebuffer->bind(true); }
+void RenderPass::begin(std::shared_ptr<RenderQueue> renderQueue) { _framebuffer->bind(true); }
 
 void RenderPass::end() { _framebuffer->unbind(); }
 

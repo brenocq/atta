@@ -16,7 +16,7 @@ class RenderPass final : public gfx::RenderPass {
     RenderPass(const RenderPass::CreateInfo& info);
     ~RenderPass();
 
-    void begin() override;
+    void begin(std::shared_ptr<RenderQueue> renderQueue) override;
     void end() override;
 };
 

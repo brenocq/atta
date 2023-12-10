@@ -59,104 +59,104 @@ PhongRenderer::~PhongRenderer() {}
 void PhongRenderer::render(std::shared_ptr<Camera> camera) {
     // graphics::beginRender();
 
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
-    _geometryPipeline->begin();
-    {
-        std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
+    // std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    //_geometryPipeline->begin();
+    //{
+    //     std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
 
-        shader->setMat4("projection", transpose(camera->getProj()));
-        shader->setMat4("view", transpose(camera->getView()));
-        shader->setVec3("viewPos", camera->getPosition());
+    //    shader->setMat4("projection", transpose(camera->getProj()));
+    //    shader->setMat4("view", transpose(camera->getView()));
+    //    shader->setVec3("viewPos", camera->getPosition());
 
-        //----- Lighting -----//
-        int numPointLights = 0;
-        for (auto entity : entities) {
-            component::Transform* transform = component::getComponent<component::Transform>(entity);
-            component::PointLight* pl = component::getComponent<component::PointLight>(entity);
-            component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
+    //    //----- Lighting -----//
+    //    int numPointLights = 0;
+    //    for (auto entity : entities) {
+    //        component::Transform* transform = component::getComponent<component::Transform>(entity);
+    //        component::PointLight* pl = component::getComponent<component::PointLight>(entity);
+    //        component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
 
-            if (transform && (pl || dl)) {
-                if (pl && numPointLights < 10) {
-                    vec3 position = transform->getWorldTransformMatrix(entity).getPosition();
-                    int i = numPointLights++;
-                    shader->setVec3(("pointLights[" + std::to_string(i) + "].position").c_str(), position);
-                    shader->setVec3(("pointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
-                }
-                if (dl) {
-                    vec3 before = {0.0f, -1.0f, 0.0f};
-                    // vec3 direction;
-                    // transform->orientation.transformVector(before, direction);
-                    shader->setVec3("directionalLight.direction", before);
-                    shader->setVec3("directionalLight.intensity", dl->intensity);
-                }
-                if (numPointLights++ == 10)
-                    LOG_WARN("graphics::PhongRenderer", "Maximum number of point lights reached, 10 lights");
-            }
-        }
-        shader->setInt("numPointLights", numPointLights);
+    //        if (transform && (pl || dl)) {
+    //            if (pl && numPointLights < 10) {
+    //                vec3 position = transform->getWorldTransformMatrix(entity).getPosition();
+    //                int i = numPointLights++;
+    //                shader->setVec3(("pointLights[" + std::to_string(i) + "].position").c_str(), position);
+    //                shader->setVec3(("pointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
+    //            }
+    //            if (dl) {
+    //                vec3 before = {0.0f, -1.0f, 0.0f};
+    //                // vec3 direction;
+    //                // transform->orientation.transformVector(before, direction);
+    //                shader->setVec3("directionalLight.direction", before);
+    //                shader->setVec3("directionalLight.intensity", dl->intensity);
+    //            }
+    //            if (numPointLights++ == 10)
+    //                LOG_WARN("graphics::PhongRenderer", "Maximum number of point lights reached, 10 lights");
+    //        }
+    //    }
+    //    shader->setInt("numPointLights", numPointLights);
 
-        // Ambient
-        shader->setVec3("ambientColor", {0.3f, 0.3f, 0.3f});
-        shader->setFloat("ambientStrength", 1.0f);
-        // Diffuse
-        shader->setFloat("diffuseStrength", 1.0f);
-        // Specular
-        shader->setFloat("specularStrength", 0.5f);
+    //    // Ambient
+    //    shader->setVec3("ambientColor", {0.3f, 0.3f, 0.3f});
+    //    shader->setFloat("ambientStrength", 1.0f);
+    //    // Diffuse
+    //    shader->setFloat("diffuseStrength", 1.0f);
+    //    // Specular
+    //    shader->setFloat("specularStrength", 0.5f);
 
-        for (auto entity : entities) {
-            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getComponent<component::Transform>(entity);
-            component::Material* compMat = component::getComponent<component::Material>(entity);
-            resource::Material* material = compMat ? compMat->getResource() : nullptr;
+    //    for (auto entity : entities) {
+    //        component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+    //        component::Transform* transform = component::getComponent<component::Transform>(entity);
+    //        component::Material* compMat = component::getComponent<component::Material>(entity);
+    //        resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
-            if (mesh && transform) {
-                mat4 model = transpose(transform->getWorldTransformMatrix(entity));
-                mat4 invModel = inverse(model);
-                shader->setMat4("model", model);
-                shader->setMat4("invModel", invModel);
+    //        if (mesh && transform) {
+    //            mat4 model = transpose(transform->getWorldTransformMatrix(entity));
+    //            mat4 invModel = inverse(model);
+    //            shader->setMat4("model", model);
+    //            shader->setMat4("invModel", invModel);
 
-                if (material) {
-                    if (material->colorIsImage()) {
-                        shader->setImage("albedoTexture", material->colorImage);
-                        shader->setVec3("material.albedo", {-1, -1, -1});
-                    } else
-                        shader->setVec3("material.albedo", material->color);
+    //            if (material) {
+    //                if (material->colorIsImage()) {
+    //                    shader->setImage("albedoTexture", material->colorImage);
+    //                    shader->setVec3("material.albedo", {-1, -1, -1});
+    //                } else
+    //                    shader->setVec3("material.albedo", material->color);
 
-                    if (material->metallicIsImage()) {
-                        shader->setImage("metallicTexture", material->metallicImage);
-                        shader->setFloat("material.metallic", -1);
-                    } else
-                        shader->setFloat("material.metallic", material->metallic);
+    //                if (material->metallicIsImage()) {
+    //                    shader->setImage("metallicTexture", material->metallicImage);
+    //                    shader->setFloat("material.metallic", -1);
+    //                } else
+    //                    shader->setFloat("material.metallic", material->metallic);
 
-                    if (material->roughnessIsImage()) {
-                        shader->setImage("roughnessTexture", material->roughnessImage);
-                        shader->setFloat("material.roughness", -1);
-                    } else
-                        shader->setFloat("material.roughness", material->roughness);
+    //                if (material->roughnessIsImage()) {
+    //                    shader->setImage("roughnessTexture", material->roughnessImage);
+    //                    shader->setFloat("material.roughness", -1);
+    //                } else
+    //                    shader->setFloat("material.roughness", material->roughness);
 
-                    if (material->aoIsImage()) {
-                        shader->setImage("aoTexture", material->aoImage);
-                        shader->setFloat("material.ao", -1);
-                    } else
-                        shader->setFloat("material.ao", material->ao);
-                } else {
-                    resource::Material::CreateInfo material{};
-                    shader->setVec3("material.albedo", material.color);
-                    shader->setFloat("material.metallic", material.metallic);
-                    shader->setFloat("material.roughness", material.roughness);
-                    shader->setFloat("material.ao", material.ao);
-                }
+    //                if (material->aoIsImage()) {
+    //                    shader->setImage("aoTexture", material->aoImage);
+    //                    shader->setFloat("material.ao", -1);
+    //                } else
+    //                    shader->setFloat("material.ao", material->ao);
+    //            } else {
+    //                resource::Material::CreateInfo material{};
+    //                shader->setVec3("material.albedo", material.color);
+    //                shader->setFloat("material.metallic", material.metallic);
+    //                shader->setFloat("material.roughness", material.roughness);
+    //                shader->setFloat("material.ao", material.ao);
+    //            }
 
-                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
-            }
-        }
-    }
-    _geometryPipeline->end();
+    //            graphics::getGraphicsAPI()->renderMesh(mesh->sid);
+    //        }
+    //    }
+    //}
+    //_geometryPipeline->end();
 
-    if (_renderSelected)
-        _selectedPipeline->render(camera);
-    if (_renderDrawer)
-        _drawerPipeline->render(camera);
+    // if (_renderSelected)
+    //     _selectedPipeline->render(camera);
+    // if (_renderDrawer)
+    //     _drawerPipeline->render(camera);
 }
 
 void PhongRenderer::resize(uint32_t width, uint32_t height) {

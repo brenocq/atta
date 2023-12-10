@@ -168,15 +168,15 @@ void VulkanAPI::beginFrame() {
     //---------- Record to command buffer ----------//
     VkCommandBuffer cmdBuf = _commandBuffers->begin(_currFrame);
     _renderPass->setFramebuffer(_framebuffers[_imageIndex]);
-    _renderPass->begin();
-    _vertexBuffer->bind();
-    _indexBuffer->bind();
+    _renderPass->begin(cmdBuf);
+    //_vertexBuffer->bind();
+    //_indexBuffer->bind();
 }
 
 void VulkanAPI::endFrame() {
-    _renderPass->end();
-    _commandBuffers->end(_currFrame);
     VkCommandBuffer cmdBuf = _commandBuffers->getHandles()[_currFrame];
+    _renderPass->end(cmdBuf);
+    _commandBuffers->end(_currFrame);
 
     //---------- GPU-GPU synchronization ----------//
     VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores[_currFrame]->getHandle()};

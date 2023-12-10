@@ -32,10 +32,28 @@ class Pipeline {
     Pipeline(const CreateInfo& info);
     virtual ~Pipeline() = default;
 
-    virtual void begin() = 0;
+    virtual void begin(std::shared_ptr<RenderQueue> renderQueue) = 0;
     virtual void end() = 0;
 
     virtual void* getImGuiTexture() const = 0;
+
+    void setBool(const char* name, bool b);
+    void setInt(const char* name, int i);
+    void setFloat(const char* name, float f);
+    void setVec2(const char* name, vec2 v);
+    void setVec3(const char* name, vec3 v);
+    void setVec4(const char* name, vec4 v);
+    void setMat3(const char* name, mat3 m);
+    void setMat4(const char* name, mat4 m);
+    void setImage(const char* name, StringId sid);
+    void setImage(const char* name, std::shared_ptr<Image> image);
+    void setCubemap(const char* name, StringId sid);
+    void setCubemap(const char* name, std::shared_ptr<Image> image);
+
+    void renderMesh(StringId meshSid);
+    void renderQuad();
+    void renderQuad3();
+    void renderCube();
 
     std::shared_ptr<Shader> getShader() const;
     std::shared_ptr<RenderPass> getRenderPass() const;
@@ -44,6 +62,8 @@ class Pipeline {
   protected:
     std::shared_ptr<Shader> _shader;
     std::shared_ptr<RenderPass> _renderPass;
+    std::shared_ptr<RenderQueue> _renderQueue;
+
     PrimitiveTopology _primitiveTopology;
 
     const bool _backfaceCulling;

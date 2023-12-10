@@ -8,6 +8,7 @@
 
 #include <atta/graphics/apis/vulkan/framebuffer.h>
 #include <atta/graphics/apis/vulkan/image.h>
+#include <atta/graphics/apis/vulkan/renderQueue.h>
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 #include <atta/graphics/interface.h>
 
@@ -92,7 +93,19 @@ RenderPass::~RenderPass() {
         vkDestroyRenderPass(_device->getHandle(), _renderPass, nullptr);
 }
 
-void RenderPass::begin() {
+void RenderPass::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
+    _renderQueue = renderQueue;
+    begin(std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer());
+    LOG_DEBUG("RenderPass", "Begin");
+}
+
+void RenderPass::end() {
+    LOG_DEBUG("RenderPass", "End");
+    end(std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer());
+    _renderQueue.reset();
+}
+
+void RenderPass::begin(VkCommandBuffer commandBuffer) {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = _renderPass;
@@ -116,16 +129,10 @@ void RenderPass::begin() {
     renderPassInfo.clearValueCount = clearValues.size();
     renderPassInfo.pClearValues = clearValues.data();
 
-    VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    LOG_DEBUG("RenderPass", "Begin");
 }
 
-void RenderPass::end() {
-    LOG_DEBUG("RenderPass", "End");
-    VkCommandBuffer commandBuffer = common::getCommandBuffers()->getCurrent();
-    vkCmdEndRenderPass(commandBuffer);
-}
+void RenderPass::end(VkCommandBuffer commandBuffer) { vkCmdEndRenderPass(commandBuffer); }
 
 VkRenderPass RenderPass::getHandle() const { return _renderPass; }
 

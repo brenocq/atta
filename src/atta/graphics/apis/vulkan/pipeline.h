@@ -26,7 +26,7 @@ class Pipeline final : public gfx::Pipeline {
     Pipeline(const gfx::Pipeline::CreateInfo& info);
     ~Pipeline();
 
-    void begin() override;
+    void begin(std::shared_ptr<RenderQueue> renderQueue) override;
     void end() override;
     void* getImGuiTexture() const override;
 

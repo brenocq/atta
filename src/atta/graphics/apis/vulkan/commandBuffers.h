@@ -18,7 +18,7 @@ class CommandBuffers {
     CommandBuffers(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, uint32_t size);
     ~CommandBuffers();
 
-    std::vector<VkCommandBuffer> getHandles() const;
+    const std::vector<VkCommandBuffer>& getHandles() const;
     void setHandles(std::vector<VkCommandBuffer> newCommandBuffers);
     std::shared_ptr<Device> getDevice() const;
 

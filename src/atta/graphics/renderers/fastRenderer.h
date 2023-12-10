@@ -29,6 +29,7 @@ class FastRenderer final : public Renderer {
     std::shared_ptr<Framebuffer> getFramebuffer() { return _geometryPipeline->getRenderPass()->getFramebuffer(); }
 
   private:
+    std::shared_ptr<RenderQueue> _renderQueue;
     std::shared_ptr<RenderPass> _renderPass;
     std::shared_ptr<Pipeline> _geometryPipeline;
     std::unique_ptr<SelectedPipeline> _selectedPipeline;

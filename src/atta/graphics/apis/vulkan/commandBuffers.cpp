@@ -26,13 +26,14 @@ CommandBuffers::~CommandBuffers() {
     vkFreeCommandBuffers(_device->getHandle(), _commandPool->getHandle(), static_cast<uint32_t>(_commandBuffers.size()), _commandBuffers.data());
 }
 
-std::vector<VkCommandBuffer> CommandBuffers::getHandles() const { return _commandBuffers; }
+const std::vector<VkCommandBuffer>& CommandBuffers::getHandles() const { return _commandBuffers; }
 void CommandBuffers::setHandles(std::vector<VkCommandBuffer> newCommandBuffers) { _commandBuffers = newCommandBuffers; }
 std::shared_ptr<Device> CommandBuffers::getDevice() const { return _device; }
 
 VkCommandBuffer CommandBuffers::begin(size_t i) {
     // Make sure it is able to record
-    vkResetCommandBuffer(_commandBuffers[i], 0);
+    if (vkResetCommandBuffer(_commandBuffers[i], 0) != VK_SUCCESS)
+        LOG_ERROR("gfx::vk::CommandBuffers", "Failed to reset command buffer!");
 
     // Start recording
     VkCommandBufferBeginInfo beginInfo{};

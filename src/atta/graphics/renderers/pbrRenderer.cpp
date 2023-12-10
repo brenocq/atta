@@ -178,247 +178,247 @@ void PbrRenderer::resize(uint32_t width, uint32_t height) {
 }
 
 void PbrRenderer::shadowPass() {
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    // std::vector<component::EntityId> entities = component::getNoPrototypeView();
 
-    //----- Directional shadow mapping -----//
-    component::EntityId directionalLightEntity = -1;
-    for (auto entity : entities) {
-        component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
-        component::Transform* t = component::getComponent<component::Transform>(entity);
-        if (dl && t) {
-            directionalLightEntity = entity;
-            break;
-        }
-    }
+    ////----- Directional shadow mapping -----//
+    // component::EntityId directionalLightEntity = -1;
+    // for (auto entity : entities) {
+    //     component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
+    //     component::Transform* t = component::getComponent<component::Transform>(entity);
+    //     if (dl && t) {
+    //         directionalLightEntity = entity;
+    //         break;
+    //     }
+    // }
 
-    if (directionalLightEntity != -1) {
-        _shadowMapPipeline->begin();
-        {
-            std::shared_ptr<Shader> shader = _shadowMapPipeline->getShader();
-            shader->bind();
+    // if (directionalLightEntity != -1) {
+    //     _shadowMapPipeline->begin();
+    //     {
+    //         std::shared_ptr<Shader> shader = _shadowMapPipeline->getShader();
+    //         shader->bind();
 
-            // Create light matrix
-            component::Transform* t = component::getComponent<component::Transform>(directionalLightEntity);
+    //        // Create light matrix
+    //        component::Transform* t = component::getComponent<component::Transform>(directionalLightEntity);
 
-            float height = 10.0f;
-            float ratio = 1.0f;
-            float far = 25.0f;
-            mat4 proj = orthographic(height, ratio, far);
-            mat4 view;
-            view.setPosOri(vec3(), t->orientation);
-            _directionalLightMatrix = proj * view;
-            shader->setMat4("lightSpaceMatrix", transpose(_directionalLightMatrix));
+    //        float height = 10.0f;
+    //        float ratio = 1.0f;
+    //        float far = 25.0f;
+    //        mat4 proj = orthographic(height, ratio, far);
+    //        mat4 view;
+    //        view.setPosOri(vec3(), t->orientation);
+    //        _directionalLightMatrix = proj * view;
+    //        shader->setMat4("lightSpaceMatrix", transpose(_directionalLightMatrix));
 
-            // Fill shadow map rendering the scene
-            for (auto entity : entities) {
-                component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-                component::Transform* transform = component::getComponent<component::Transform>(entity);
+    //        // Fill shadow map rendering the scene
+    //        for (auto entity : entities) {
+    //            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+    //            component::Transform* transform = component::getComponent<component::Transform>(entity);
 
-                if (mesh && transform) {
-                    shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
-                    graphics::getGraphicsAPI()->renderMesh(mesh->sid);
-                }
-            }
-        }
-        _shadowMapPipeline->end();
-    }
+    //            if (mesh && transform) {
+    //                shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
+    //                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
+    //            }
+    //        }
+    //    }
+    //    _shadowMapPipeline->end();
+    //}
 
-    //----- Omnidirectional shadow mapping -----//
-    component::EntityId pointLightEntity = -1;
-    for (auto entity : entities) {
-        component::PointLight* pl = component::getComponent<component::PointLight>(entity);
-        component::Transform* t = component::getComponent<component::Transform>(entity);
-        if (pl && t) {
-            pointLightEntity = entity;
-            break;
-        }
-    }
+    ////----- Omnidirectional shadow mapping -----//
+    // component::EntityId pointLightEntity = -1;
+    // for (auto entity : entities) {
+    //     component::PointLight* pl = component::getComponent<component::PointLight>(entity);
+    //     component::Transform* t = component::getComponent<component::Transform>(entity);
+    //     if (pl && t) {
+    //         pointLightEntity = entity;
+    //         break;
+    //     }
+    // }
 
-    if (pointLightEntity != -1) {
-        _omniShadowMapPipeline->begin();
-        {
-            std::shared_ptr<Shader> shader = _omniShadowMapPipeline->getShader();
-            shader->bind();
+    // if (pointLightEntity != -1) {
+    //     _omniShadowMapPipeline->begin();
+    //     {
+    //         std::shared_ptr<Shader> shader = _omniShadowMapPipeline->getShader();
+    //         shader->bind();
 
-            // Create light matrix
-            component::Transform* t = component::getComponent<component::Transform>(pointLightEntity);
+    //        // Create light matrix
+    //        component::Transform* t = component::getComponent<component::Transform>(pointLightEntity);
 
-            // TODO world position
-            float fov = radians(90.0f);
-            float ratio = 1.0f;
-            float near = 0.01f;
-            float far = 25.0f;
-            mat4 proj = perspective(fov, ratio, near, far);
-            std::vector<mat4> shadowMatrices = {proj * lookAt(t->position, t->position + vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
-                                                proj * lookAt(t->position, t->position + vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
-                                                proj * lookAt(t->position, t->position + vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
-                                                proj * lookAt(t->position, t->position + vec3(0.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f)),
-                                                proj * lookAt(t->position, t->position + vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, -1.0f, 0.0f)),
-                                                proj * lookAt(t->position, t->position + vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, -1.0f, 0.0f))};
+    //        // TODO world position
+    //        float fov = radians(90.0f);
+    //        float ratio = 1.0f;
+    //        float near = 0.01f;
+    //        float far = 25.0f;
+    //        mat4 proj = perspective(fov, ratio, near, far);
+    //        std::vector<mat4> shadowMatrices = {proj * lookAt(t->position, t->position + vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
+    //                                            proj * lookAt(t->position, t->position + vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
+    //                                            proj * lookAt(t->position, t->position + vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
+    //                                            proj * lookAt(t->position, t->position + vec3(0.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f)),
+    //                                            proj * lookAt(t->position, t->position + vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, -1.0f, 0.0f)),
+    //                                            proj * lookAt(t->position, t->position + vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, -1.0f, 0.0f))};
 
-            shader->setMat4("shadowMatrices[0]", transpose(shadowMatrices[0]));
-            shader->setMat4("shadowMatrices[1]", transpose(shadowMatrices[1]));
-            shader->setMat4("shadowMatrices[2]", transpose(shadowMatrices[2]));
-            shader->setMat4("shadowMatrices[3]", transpose(shadowMatrices[3]));
-            shader->setMat4("shadowMatrices[4]", transpose(shadowMatrices[4]));
-            shader->setMat4("shadowMatrices[5]", transpose(shadowMatrices[5]));
-            shader->setMat4("model", transpose(t->getWorldTransformMatrix(pointLightEntity)));
-            shader->setVec3("lightPos", t->position);
-            shader->setFloat("far_plane", far);
+    //        shader->setMat4("shadowMatrices[0]", transpose(shadowMatrices[0]));
+    //        shader->setMat4("shadowMatrices[1]", transpose(shadowMatrices[1]));
+    //        shader->setMat4("shadowMatrices[2]", transpose(shadowMatrices[2]));
+    //        shader->setMat4("shadowMatrices[3]", transpose(shadowMatrices[3]));
+    //        shader->setMat4("shadowMatrices[4]", transpose(shadowMatrices[4]));
+    //        shader->setMat4("shadowMatrices[5]", transpose(shadowMatrices[5]));
+    //        shader->setMat4("model", transpose(t->getWorldTransformMatrix(pointLightEntity)));
+    //        shader->setVec3("lightPos", t->position);
+    //        shader->setFloat("far_plane", far);
 
-            // Fill shadow map rendering the scene
-            for (auto entity : entities) {
-                component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-                component::Transform* transform = component::getComponent<component::Transform>(entity);
+    //        // Fill shadow map rendering the scene
+    //        for (auto entity : entities) {
+    //            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+    //            component::Transform* transform = component::getComponent<component::Transform>(entity);
 
-                if (mesh && transform) {
-                    shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
-                    graphics::getGraphicsAPI()->renderMesh(mesh->sid);
-                }
-            }
-        }
-        _omniShadowMapPipeline->end();
-    }
+    //            if (mesh && transform) {
+    //                shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
+    //                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
+    //            }
+    //        }
+    //    }
+    //    _omniShadowMapPipeline->end();
+    //}
 }
 
 void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
-    _geometryPipeline->begin();
-    {
-        //---------- PBR shader ----------//
-        std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
-        shader->bind();
+    // std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    //_geometryPipeline->begin();
+    //{
+    //     //---------- PBR shader ----------//
+    //     std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
+    //     shader->bind();
 
-        shader->setMat4("projection", transpose(camera->getProj()));
-        shader->setMat4("view", transpose(camera->getView()));
-        shader->setVec3("camPos", camera->getPosition());
-        shader->setMat4("directionalLightMatrix", transpose(_directionalLightMatrix));
-        shader->setImage("directionalShadowMap", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
-        shader->setCubemap("omniShadowMap", _omnidirectionalShadowMap);
-        shader->setFloat("omniFarPlane", 25.0f);
+    //    shader->setMat4("projection", transpose(camera->getProj()));
+    //    shader->setMat4("view", transpose(camera->getView()));
+    //    shader->setVec3("camPos", camera->getPosition());
+    //    shader->setMat4("directionalLightMatrix", transpose(_directionalLightMatrix));
+    //    shader->setImage("directionalShadowMap", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
+    //    shader->setCubemap("omniShadowMap", _omnidirectionalShadowMap);
+    //    shader->setFloat("omniFarPlane", 25.0f);
 
-        // Always set environment textures (if there is no environment map, use white texture)
-        shader->setCubemap("irradianceMap", "PbrRenderer::irradiance");
-        shader->setCubemap("prefilterMap", "PbrRenderer::prefilter");
-        shader->setImage("brdfLUT", "PbrRenderer::brdfLUT");
+    //    // Always set environment textures (if there is no environment map, use white texture)
+    //    shader->setCubemap("irradianceMap", "PbrRenderer::irradiance");
+    //    shader->setCubemap("prefilterMap", "PbrRenderer::prefilter");
+    //    shader->setImage("brdfLUT", "PbrRenderer::brdfLUT");
 
-        if (_lastEnvironmentMap != "Not defined"_sid)
-            shader->setInt("numEnvironmentLights", 1);
-        else {
-            LOG_WARN("graphics::PbrRenderer", "Number of environment light should always be 1 (white texture if not defined)");
-            shader->setInt("numEnvironmentLights", 0);
-        }
-        shader->setMat3("environmentLightOri", mat3(1.0f));
+    //    if (_lastEnvironmentMap != "Not defined"_sid)
+    //        shader->setInt("numEnvironmentLights", 1);
+    //    else {
+    //        LOG_WARN("graphics::PbrRenderer", "Number of environment light should always be 1 (white texture if not defined)");
+    //        shader->setInt("numEnvironmentLights", 0);
+    //    }
+    //    shader->setMat3("environmentLightOri", mat3(1.0f));
 
-        //----- Lighting -----//
-        _environmentMapOri = mat3(1.0f);
-        int numPointLights = 0;
-        int numDirectionalLights = 0;
-        for (auto entity : entities) {
-            component::Transform* transform = component::getComponent<component::Transform>(entity);
-            component::PointLight* pl = component::getComponent<component::PointLight>(entity);
-            component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
-            component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
+    //    //----- Lighting -----//
+    //    _environmentMapOri = mat3(1.0f);
+    //    int numPointLights = 0;
+    //    int numDirectionalLights = 0;
+    //    for (auto entity : entities) {
+    //        component::Transform* transform = component::getComponent<component::Transform>(entity);
+    //        component::PointLight* pl = component::getComponent<component::PointLight>(entity);
+    //        component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
+    //        component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
 
-            if (transform && (pl || dl || el)) {
-                if (pl && numPointLights < 10) {
-                    vec3 position = transform->getWorldTransformMatrix(entity).getPosition();
-                    int i = numPointLights++;
-                    shader->setVec3(("pointLights[" + std::to_string(i) + "].position").c_str(), position);
-                    shader->setVec3(("pointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
-                }
-                if (dl) {
-                    vec3 base = {0.0f, 0.0f, -1.0f};
-                    mat4 rotation;
-                    rotation.setPosOri({0, 0, 0}, transform->orientation);
-                    base = transpose(mat3(rotation)) * base;
-                    shader->setVec3("directionalLight.direction", base);
-                    shader->setVec3("directionalLight.intensity", dl->intensity);
-                    numDirectionalLights++;
-                }
-                if (el) {
-                    mat4 ori;
-                    ori.setPosOri(vec3(0.0f), transform->orientation);
-                    _environmentMapOri = mat3(ori);
-                    shader->setMat3("environmentLightOri", transpose(_environmentMapOri));
-                }
-                if (numPointLights++ == 10)
-                    LOG_WARN("graphics::PbrRenderer", "Maximum number of point lights reached, 10 lights");
-            }
-        }
-        shader->setInt("numPointLights", numPointLights);
-        shader->setInt("numDirectionalLights", numDirectionalLights ? 1 : 0);
+    //        if (transform && (pl || dl || el)) {
+    //            if (pl && numPointLights < 10) {
+    //                vec3 position = transform->getWorldTransformMatrix(entity).getPosition();
+    //                int i = numPointLights++;
+    //                shader->setVec3(("pointLights[" + std::to_string(i) + "].position").c_str(), position);
+    //                shader->setVec3(("pointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
+    //            }
+    //            if (dl) {
+    //                vec3 base = {0.0f, 0.0f, -1.0f};
+    //                mat4 rotation;
+    //                rotation.setPosOri({0, 0, 0}, transform->orientation);
+    //                base = transpose(mat3(rotation)) * base;
+    //                shader->setVec3("directionalLight.direction", base);
+    //                shader->setVec3("directionalLight.intensity", dl->intensity);
+    //                numDirectionalLights++;
+    //            }
+    //            if (el) {
+    //                mat4 ori;
+    //                ori.setPosOri(vec3(0.0f), transform->orientation);
+    //                _environmentMapOri = mat3(ori);
+    //                shader->setMat3("environmentLightOri", transpose(_environmentMapOri));
+    //            }
+    //            if (numPointLights++ == 10)
+    //                LOG_WARN("graphics::PbrRenderer", "Maximum number of point lights reached, 10 lights");
+    //        }
+    //    }
+    //    shader->setInt("numPointLights", numPointLights);
+    //    shader->setInt("numDirectionalLights", numDirectionalLights ? 1 : 0);
 
-        //----- Entities -----//
-        for (auto entity : entities) {
-            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getComponent<component::Transform>(entity);
-            component::Material* compMat = component::getComponent<component::Material>(entity);
-            resource::Material* material = compMat ? compMat->getResource() : nullptr;
+    //    //----- Entities -----//
+    //    for (auto entity : entities) {
+    //        component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+    //        component::Transform* transform = component::getComponent<component::Transform>(entity);
+    //        component::Material* compMat = component::getComponent<component::Material>(entity);
+    //        resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
-            if (mesh && transform) {
-                mat4 model = transpose(transform->getWorldTransformMatrix(entity));
-                mat4 invModel = inverse(model);
-                shader->setMat4("model", model);
-                shader->setMat4("invModel", invModel);
+    //        if (mesh && transform) {
+    //            mat4 model = transpose(transform->getWorldTransformMatrix(entity));
+    //            mat4 invModel = inverse(model);
+    //            shader->setMat4("model", model);
+    //            shader->setMat4("invModel", invModel);
 
-                if (material) {
-                    if (material->colorIsImage()) {
-                        shader->setImage("albedoTexture", material->colorImage);
-                        shader->setVec3("material.albedo", {-1, -1, -1});
-                    } else
-                        shader->setVec3("material.albedo", material->color);
+    //            if (material) {
+    //                if (material->colorIsImage()) {
+    //                    shader->setImage("albedoTexture", material->colorImage);
+    //                    shader->setVec3("material.albedo", {-1, -1, -1});
+    //                } else
+    //                    shader->setVec3("material.albedo", material->color);
 
-                    if (material->metallicIsImage()) {
-                        shader->setImage("metallicTexture", material->metallicImage);
-                        shader->setFloat("material.metallic", -1);
-                    } else
-                        shader->setFloat("material.metallic", material->metallic);
+    //                if (material->metallicIsImage()) {
+    //                    shader->setImage("metallicTexture", material->metallicImage);
+    //                    shader->setFloat("material.metallic", -1);
+    //                } else
+    //                    shader->setFloat("material.metallic", material->metallic);
 
-                    if (material->roughnessIsImage()) {
-                        shader->setImage("roughnessTexture", material->roughnessImage);
-                        shader->setFloat("material.roughness", -1);
-                    } else
-                        shader->setFloat("material.roughness", material->roughness);
+    //                if (material->roughnessIsImage()) {
+    //                    shader->setImage("roughnessTexture", material->roughnessImage);
+    //                    shader->setFloat("material.roughness", -1);
+    //                } else
+    //                    shader->setFloat("material.roughness", material->roughness);
 
-                    if (material->aoIsImage()) {
-                        shader->setImage("aoTexture", material->aoImage);
-                        shader->setFloat("material.ao", -1);
-                    } else
-                        shader->setFloat("material.ao", material->ao);
+    //                if (material->aoIsImage()) {
+    //                    shader->setImage("aoTexture", material->aoImage);
+    //                    shader->setFloat("material.ao", -1);
+    //                } else
+    //                    shader->setFloat("material.ao", material->ao);
 
-                    if (material->hasNormalImage()) {
-                        shader->setImage("normalTexture", material->normalImage);
-                        shader->setInt("material.hasNormalTexture", 1);
-                    } else
-                        shader->setInt("material.hasNormalTexture", 0);
-                } else {
-                    resource::Material::CreateInfo defaultMaterial{};
-                    shader->setVec3("material.albedo", defaultMaterial.color);
-                    shader->setFloat("material.metallic", defaultMaterial.metallic);
-                    shader->setFloat("material.roughness", defaultMaterial.roughness);
-                    shader->setFloat("material.ao", defaultMaterial.ao);
-                    shader->setInt("material.hasNormalTexture", 0);
-                }
+    //                if (material->hasNormalImage()) {
+    //                    shader->setImage("normalTexture", material->normalImage);
+    //                    shader->setInt("material.hasNormalTexture", 1);
+    //                } else
+    //                    shader->setInt("material.hasNormalTexture", 0);
+    //            } else {
+    //                resource::Material::CreateInfo defaultMaterial{};
+    //                shader->setVec3("material.albedo", defaultMaterial.color);
+    //                shader->setFloat("material.metallic", defaultMaterial.metallic);
+    //                shader->setFloat("material.roughness", defaultMaterial.roughness);
+    //                shader->setFloat("material.ao", defaultMaterial.ao);
+    //                shader->setInt("material.hasNormalTexture", 0);
+    //            }
 
-                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
-            }
-        }
+    //            graphics::getGraphicsAPI()->renderMesh(mesh->sid);
+    //        }
+    //    }
 
-        //---------- Background shader ----------//
-        if (_lastEnvironmentMap != "Not defined"_sid) {
-            _backgroundShader->bind();
-            _backgroundShader->setMat4("projection", transpose(camera->getProj()));
-            _backgroundShader->setMat4("view", transpose(camera->getView()));
-            _backgroundShader->setCubemap("environmentMap", _lastEnvironmentMap);
-            //_backgroundShader->setCubemap("environmentMap", _omnidirectionalShadowMap);
-            //_backgroundShader->setCubemap("environmentMap", "PbrRenderer::irradiance");
-            _backgroundShader->setMat3("environmentMapOri", _environmentMapOri);
+    //    //---------- Background shader ----------//
+    //    if (_lastEnvironmentMap != "Not defined"_sid) {
+    //        _backgroundShader->bind();
+    //        _backgroundShader->setMat4("projection", transpose(camera->getProj()));
+    //        _backgroundShader->setMat4("view", transpose(camera->getView()));
+    //        _backgroundShader->setCubemap("environmentMap", _lastEnvironmentMap);
+    //        //_backgroundShader->setCubemap("environmentMap", _omnidirectionalShadowMap);
+    //        //_backgroundShader->setCubemap("environmentMap", "PbrRenderer::irradiance");
+    //        _backgroundShader->setMat3("environmentMapOri", _environmentMapOri);
 
-            graphics::getGraphicsAPI()->renderCube();
-        }
-    }
-    _geometryPipeline->end();
+    //        graphics::getGraphicsAPI()->renderCube();
+    //    }
+    //}
+    //_geometryPipeline->end();
 }
 
 void PbrRenderer::irradianceCubemap() {

@@ -35,6 +35,9 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     // Shader
     std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/fastRenderer/fastRenderer.asl");
 
+    // Render Queue
+    _renderQueue = graphics::create<RenderQueue>();
+
     // Render Pass
     RenderPass::CreateInfo renderPassInfo{};
     renderPassInfo.framebuffer = framebuffer;
@@ -55,46 +58,50 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
 FastRenderer::~FastRenderer() {}
 
 void FastRenderer::render(std::shared_ptr<Camera> camera) {
-    //_renderPass->begin();
+    LOG_DEBUG("FastRenderer", "Begin");
+    _renderQueue->begin();
+    {
+        _renderPass->begin(_renderQueue);
+        {
+            _geometryPipeline->begin(_renderQueue);
+            {
+                std::vector<component::EntityId> entities = component::getNoPrototypeView();
+                _geometryPipeline->setMat4("uProjection", transpose(camera->getProj()));
+                _geometryPipeline->setMat4("uView", transpose(camera->getView()));
 
-    //std::vector<component::EntityId> entities = component::getNoPrototypeView();
-    //_geometryPipeline->begin();
-    //{
-    //    LOG_DEBUG("FastRenderer", "Begin");
-    //    std::shared_ptr<Shader> shader = _geometryPipeline->getShader();
+                for (auto entity : entities) {
+                    component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+                    component::Transform* transform = component::getComponent<component::Transform>(entity);
+                    component::Material* compMat = component::getComponent<component::Material>(entity);
+                    resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
-    //    shader->setMat4("uProjection", transpose(camera->getProj()));
-    //    shader->setMat4("uView", transpose(camera->getView()));
+                    if (mesh && transform) {
+                        mat4 model = transpose(transform->getWorldTransformMatrix(entity));
+                        _geometryPipeline->setMat4("uModel", model);
 
-    //    for (auto entity : entities) {
-    //        component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-    //        component::Transform* transform = component::getComponent<component::Transform>(entity);
-    //        component::Material* compMat = component::getComponent<component::Material>(entity);
-    //        resource::Material* material = compMat ? compMat->getResource() : nullptr;
+                        if (material) {
+                            if (material->colorIsImage()) {
+                                _geometryPipeline->setImage("uAlbedoTexture", material->colorImage);
+                                _geometryPipeline->setVec3("uAlbedo", {-1, -1, -1});
+                            } else
+                                _geometryPipeline->setVec3("uAlbedo", material->color);
+                        } else {
+                            resource::Material::CreateInfo defaultMaterial{};
+                            _geometryPipeline->setVec3("uAlbedo", defaultMaterial.color);
+                        }
 
-    //        if (mesh && transform) {
-    //            mat4 model = transpose(transform->getWorldTransformMatrix(entity));
-    //            shader->setMat4("uModel", model);
-
-    //            if (material) {
-    //                if (material->colorIsImage()) {
-    //                    shader->setImage("uAlbedoTexture", material->colorImage);
-    //                    shader->setVec3("uAlbedo", {-1, -1, -1});
-    //                } else
-    //                    shader->setVec3("uAlbedo", material->color);
-    //            } else {
-    //                resource::Material::CreateInfo defaultMaterial{};
-    //                shader->setVec3("uAlbedo", defaultMaterial.color);
-    //            }
-
-    //            // Draw mesh
-    //            LOG_DEBUG("FastRenderer", "Draw mesh");
-    //            graphics::getGraphicsAPI()->renderMesh(mesh->sid);
-    //        }
-    //    }
-    //    LOG_DEBUG("FastRenderer", "End");
-    //}
-    //_geometryPipeline->end();
+                        // Draw mesh
+                        LOG_DEBUG("FastRenderer", "Draw mesh");
+                        _geometryPipeline->renderMesh(mesh->sid);
+                    }
+                }
+            }
+            _geometryPipeline->end();
+        }
+        _renderPass->end();
+    }
+    _renderQueue->end();
+    LOG_DEBUG("FastRenderer", "End");
 
     //// if (_renderSelected)
     ////     _selectedPipeline->render(camera);
