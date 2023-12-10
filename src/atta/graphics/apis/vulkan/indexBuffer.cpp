@@ -17,12 +17,15 @@ IndexBuffer::IndexBuffer(const graphics::IndexBuffer::CreateInfo& info)
           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
       }),
       graphics::IndexBuffer(info) {
+    LOG_DEBUG("gfx::vk::IndexBuffer", "Create index buffer $0", info.size);
     if (info.data)
         Buffer::setData(info.data);
 }
 
 IndexBuffer::~IndexBuffer() {}
 
-void IndexBuffer::bind() const { vkCmdBindIndexBuffer(common::getCommandBuffers()->getCurrent(), _buffer, 0, VK_INDEX_TYPE_UINT32); }
+void IndexBuffer::bind() const {}
+
+void IndexBuffer::bind(VkCommandBuffer commandBuffer) const { vkCmdBindIndexBuffer(commandBuffer, _buffer, 0, VK_INDEX_TYPE_UINT32); }
 
 } // namespace atta::graphics::vk

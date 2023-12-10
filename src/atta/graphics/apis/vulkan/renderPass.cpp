@@ -95,8 +95,8 @@ RenderPass::~RenderPass() {
 
 void RenderPass::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
     _renderQueue = renderQueue;
-    begin(std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer());
     LOG_DEBUG("RenderPass", "Begin");
+    begin(std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer());
 }
 
 void RenderPass::end() {

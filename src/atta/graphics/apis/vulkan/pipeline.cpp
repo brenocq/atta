@@ -4,6 +4,7 @@
 // Date: 2023-04-04
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/graphics/apis/vulkan/mesh.h>
 #include <atta/graphics/apis/vulkan/pipeline.h>
 #include <atta/graphics/apis/vulkan/renderQueue.h>
 #include <atta/graphics/apis/vulkan/shader.h>
@@ -192,6 +193,16 @@ void Pipeline::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
 void Pipeline::end() {
     _renderQueue.reset();
     _shader->unbind();
+}
+
+void Pipeline::renderMesh(StringId meshSid) {
+    LOG_DEBUG("gfx::vk::Pipeline", "Call [w]renderMesh");
+    std::shared_ptr<vk::Mesh> mesh = std::dynamic_pointer_cast<vk::Mesh>(Manager::getInstance().getMeshes().at(meshSid));
+    if (mesh) {
+        VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
+        mesh->draw(commandBuffer);
+    } else
+        LOG_WARN("gfx::vk::Pipeline", "Could not render mesh [w]$0[], mesh not found", meshSid);
 }
 
 void* Pipeline::getImGuiTexture() const {

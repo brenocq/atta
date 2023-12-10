@@ -18,6 +18,7 @@ class VertexBuffer final : public Buffer, public gfx::VertexBuffer {
     ~VertexBuffer();
 
     void bind() const override;
+    void bind(VkCommandBuffer commandBuffer) const;
 
     static VkVertexInputBindingDescription getBindingDescription(const BufferLayout& layout);
     static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions(const BufferLayout& layout);

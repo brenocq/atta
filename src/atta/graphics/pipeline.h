@@ -50,10 +50,10 @@ class Pipeline {
     void setCubemap(const char* name, StringId sid);
     void setCubemap(const char* name, std::shared_ptr<Image> image);
 
-    void renderMesh(StringId meshSid);
-    void renderQuad();
-    void renderQuad3();
-    void renderCube();
+    virtual void renderMesh(StringId meshSid);
+    virtual void renderQuad();
+    virtual void renderQuad3();
+    virtual void renderCube();
 
     std::shared_ptr<Shader> getShader() const;
     std::shared_ptr<RenderPass> getRenderPass() const;

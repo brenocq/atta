@@ -20,6 +20,7 @@ class Mesh final : public gfx::Mesh {
     ~Mesh();
 
     void draw() override;
+    void draw(VkCommandBuffer commandBuffer);
 };
 
 } // namespace atta::graphics::vk

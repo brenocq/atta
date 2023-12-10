@@ -58,7 +58,6 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
 FastRenderer::~FastRenderer() {}
 
 void FastRenderer::render(std::shared_ptr<Camera> camera) {
-    LOG_DEBUG("FastRenderer", "Begin");
     _renderQueue->begin();
     {
         _renderPass->begin(_renderQueue);
@@ -91,7 +90,6 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                         }
 
                         // Draw mesh
-                        LOG_DEBUG("FastRenderer", "Draw mesh");
                         _geometryPipeline->renderMesh(mesh->sid);
                     }
                 }
@@ -101,7 +99,6 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
         _renderPass->end();
     }
     _renderQueue->end();
-    LOG_DEBUG("FastRenderer", "End");
 
     //// if (_renderSelected)
     ////     _selectedPipeline->render(camera);

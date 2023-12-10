@@ -4,6 +4,7 @@
 // Date: 2021-09-09
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/graphics/interface.h>
 #include <atta/graphics/pipeline.h>
 
 namespace atta::graphics {

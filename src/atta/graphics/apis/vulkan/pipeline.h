@@ -28,6 +28,9 @@ class Pipeline final : public gfx::Pipeline {
 
     void begin(std::shared_ptr<RenderQueue> renderQueue) override;
     void end() override;
+
+    void renderMesh(StringId meshSid) override;
+
     void* getImGuiTexture() const override;
 
     VkPipeline getHandle() const;

@@ -18,6 +18,7 @@ class IndexBuffer final : public Buffer, public gfx::IndexBuffer {
     ~IndexBuffer();
 
     void bind() const override;
+    void bind(VkCommandBuffer commandBuffer) const;
 };
 
 } // namespace atta::graphics::vk

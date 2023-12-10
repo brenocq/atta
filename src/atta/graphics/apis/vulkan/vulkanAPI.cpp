@@ -169,8 +169,8 @@ void VulkanAPI::beginFrame() {
     VkCommandBuffer cmdBuf = _commandBuffers->begin(_currFrame);
     _renderPass->setFramebuffer(_framebuffers[_imageIndex]);
     _renderPass->begin(cmdBuf);
-    //_vertexBuffer->bind();
-    //_indexBuffer->bind();
+    _vertexBuffer->bind();
+    _indexBuffer->bind();
 }
 
 void VulkanAPI::endFrame() {
@@ -219,11 +219,7 @@ void VulkanAPI::endFrame() {
     _currFrame = (_currFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void VulkanAPI::renderMesh(StringId meshSid) {
-    // XXX
-    LOG_DEBUG("VulkanAPI", "Call [w]renderMesh");
-    vkCmdDrawIndexed(_commandBuffers->getHandles()[_currFrame], _indexBuffer->getCount(), 1, 0, 0, 0);
-}
+void VulkanAPI::renderMesh(StringId meshSid) {}
 
 void VulkanAPI::renderQuad() {}
 

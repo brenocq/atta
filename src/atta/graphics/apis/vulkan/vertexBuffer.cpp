@@ -17,15 +17,18 @@ VertexBuffer::VertexBuffer(const gfx::VertexBuffer::CreateInfo& info)
           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
       }),
       gfx::VertexBuffer(info) {
+    LOG_DEBUG("gfx::vk::VertexBuffer", "Create vertex buffer $0", info.size);
     if (info.data)
         Buffer::setData(info.data);
 }
 
 VertexBuffer::~VertexBuffer() {}
 
-void VertexBuffer::bind() const {
+void VertexBuffer::bind() const {}
+
+void VertexBuffer::bind(VkCommandBuffer commandBuffer) const {
     VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(common::getCommandBuffers()->getCurrent(), 0, 1, &_buffer, offsets);
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &_buffer, offsets);
 }
 
 VkVertexInputBindingDescription VertexBuffer::getBindingDescription(const BufferLayout& layout) {
