@@ -17,7 +17,6 @@ VertexBuffer::VertexBuffer(const gfx::VertexBuffer::CreateInfo& info)
           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
       }),
       gfx::VertexBuffer(info) {
-    LOG_DEBUG("gfx::vk::VertexBuffer", "Create vertex buffer $0", info.size);
     if (info.data)
         Buffer::setData(info.data);
 }

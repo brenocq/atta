@@ -17,7 +17,6 @@ IndexBuffer::IndexBuffer(const graphics::IndexBuffer::CreateInfo& info)
           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
       }),
       graphics::IndexBuffer(info) {
-    LOG_DEBUG("gfx::vk::IndexBuffer", "Create index buffer $0", info.size);
     if (info.data)
         Buffer::setData(info.data);
 }

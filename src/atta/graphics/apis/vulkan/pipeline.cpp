@@ -196,7 +196,6 @@ void Pipeline::end() {
 }
 
 void Pipeline::renderMesh(StringId meshSid) {
-    LOG_DEBUG("gfx::vk::Pipeline", "Call [w]renderMesh");
     std::shared_ptr<vk::Mesh> mesh = std::dynamic_pointer_cast<vk::Mesh>(Manager::getInstance().getMeshes().at(meshSid));
     if (mesh) {
         VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();

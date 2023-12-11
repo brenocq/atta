@@ -95,12 +95,10 @@ RenderPass::~RenderPass() {
 
 void RenderPass::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
     _renderQueue = renderQueue;
-    LOG_DEBUG("RenderPass", "Begin");
     begin(std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer());
 }
 
 void RenderPass::end() {
-    LOG_DEBUG("RenderPass", "End");
     end(std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer());
     _renderQueue.reset();
 }
@@ -112,7 +110,7 @@ void RenderPass::begin(VkCommandBuffer commandBuffer) {
     renderPassInfo.framebuffer = std::dynamic_pointer_cast<Framebuffer>(_framebuffer)->getHandle();
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = {_framebuffer->getWidth(), _framebuffer->getHeight()};
-    LOG_DEBUG("RenderPass", "Frame buf is $2 -> $0 $1", _framebuffer->getWidth(), _framebuffer->getHeight(), _framebuffer->getDebugName());
+    // LOG_DEBUG("RenderPass", "Frame buf is $2 -> $0 $1", _framebuffer->getWidth(), _framebuffer->getHeight(), _framebuffer->getDebugName());
 
     std::vector<VkClearValue> clearValues{};
     for (std::shared_ptr<gfx::Image> image : _framebuffer->getImages()) {

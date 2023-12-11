@@ -60,8 +60,6 @@ void Shader::updateUniformBuffer(const char* name, uint8_t* data, size_t size) {
             // Update uniform buffer
             for (size_t i = 0; i < size; i++)
                 _uniformBufferData[element.offset + i] = data[i];
-
-            LOG_INFO("gfx::vk::Shader", "Updated [w]$0[]", name);
             return;
         }
     }

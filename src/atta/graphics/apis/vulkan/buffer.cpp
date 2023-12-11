@@ -64,9 +64,11 @@ uint32_t Buffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags prope
 }
 
 void Buffer::copy(std::shared_ptr<Buffer> src, std::shared_ptr<Buffer> dst) {
-    if (src->_bufferSize != dst->_bufferSize)
-        LOG_WARN("gfx::vk::Buffer", "Trying to copy from buffer of size [w]$0[] to buffer of size [w]$1[], but buffers should have the same size",
-                 src->_bufferSize, dst->_bufferSize);
+    if (src->_bufferSize != dst->_bufferSize) {
+        LOG_ERROR("gfx::vk::Buffer", "Trying to copy from buffer of size [w]$0[] to buffer of size [w]$1[], but buffers should have the same size",
+                  src->_bufferSize, dst->_bufferSize);
+        return;
+    }
 
     VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
     {

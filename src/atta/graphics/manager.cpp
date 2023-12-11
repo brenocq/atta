@@ -234,9 +234,9 @@ void Manager::createMesh(StringId sid) {
     vertexInfo.data = (uint8_t*)mesh->getVertices().data();
     vertexInfo.size = mesh->getVertices().size() * sizeof(res::Mesh::Vertex);
     vertexInfo.layout = {};
-    vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "inPosition");
-    vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "inNormal");
-    vertexInfo.layout.push(BufferLayout::Element::Type::VEC2, "inTexCoord");
+    vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iVertex");
+    vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iNormal");
+    vertexInfo.layout.push(BufferLayout::Element::Type::VEC2, "iUV");
     std::shared_ptr<VertexBuffer> vertexBuffer = create<VertexBuffer>(vertexInfo);
 
     IndexBuffer::CreateInfo indexInfo{};
