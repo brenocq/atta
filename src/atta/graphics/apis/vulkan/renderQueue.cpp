@@ -35,7 +35,6 @@ void RenderQueue::end() {
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.commandBufferCount = 1;
-    // submitInfo.pCommandBuffers = &_commandBuffers->getHandles()[0];
     VkCommandBuffer cmdBuf = _commandBuffers->getHandles()[0];
     submitInfo.pCommandBuffers = &cmdBuf;
     if (vkQueueSubmit(_device->getGraphicsQueue(), 1, &submitInfo, _fence->getHandle()) != VK_SUCCESS)

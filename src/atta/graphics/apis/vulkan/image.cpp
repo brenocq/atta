@@ -64,12 +64,13 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
 }
 
 void* Image::getImGuiImage() {
-    // TODO Ideally this should be stored in the UI
+    transitionLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     if (_imGuiDescriptorSet == VK_NULL_HANDLE)
-        _imGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(_sampler, _imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        _imGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(_sampler, _imageView, _layout);
 
-    LOG_ERROR("gfx::vk::Image", "Can't render images to ImGui yet");
-    return nullptr; // static_cast<void*>(_imGuiDescriptorSet);
+    // ImGui will transition image layout
+    _layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    return static_cast<void*>(_imGuiDescriptorSet);
 }
 
 VkImage Image::getImageHandle() const { return _image; }
@@ -299,6 +300,8 @@ uint32_t Image::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags proper
 }
 
 void Image::transitionLayout(VkImageLayout newLayout) {
+    if (newLayout == _layout)
+        return;
 
     VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
     {
@@ -317,18 +320,30 @@ void Image::transitionLayout(VkImageLayout newLayout) {
 
         VkPipelineStageFlags sourceStage;
         VkPipelineStageFlags destinationStage;
-        if (_layout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+
+        if (_layout == VK_IMAGE_LAYOUT_UNDEFINED) {
             barrier.srcAccessMask = 0;
-            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-            destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        } else if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+        } else if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
             barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
             sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        } else if (_layout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+            barrier.srcAccessMask = 0;
+            sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        } else
+            LOG_WARN("gfx::vk::Image", "Unsupported source layout transition");
+
+        if (newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        } else if (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        } else if (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
             destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
         } else
-            LOG_WARN("gfx::vk::Image", "Unsupported layout transition");
+            LOG_WARN("gfx::vk::Image", "Unsupported destination layout transition");
 
         vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }

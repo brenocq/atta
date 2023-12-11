@@ -29,6 +29,7 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
     framebufferInfo.width = 500;
     framebufferInfo.height = 500;
+    framebufferInfo.clearColor = {0.0f, 1.0f, 0.0f, 1.0f};
     framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
     std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
