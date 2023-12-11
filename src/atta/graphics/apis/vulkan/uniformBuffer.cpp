@@ -10,20 +10,28 @@
 
 namespace atta::graphics::vk {
 
-UniformBuffer::UniformBuffer(size_t size)
+UniformBuffer::UniformBuffer(size_t uniformBufferSize, size_t numInstances)
     : Buffer({
-          size,
+          align(uniformBufferSize) * numInstances,
           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
       }),
-      _size(size) {
-    vkMapMemory(_device->getHandle(), _memory, 0, size, 0, &_mappedData);
+      _uniformBufferSize(align(uniformBufferSize)), _numInstances(numInstances) {
+    vkMapMemory(_device->getHandle(), _memory, 0, _uniformBufferSize * _numInstances, 0, &_mappedData);
 }
 
 UniformBuffer::~UniformBuffer() { vkUnmapMemory(_device->getHandle(), _memory); }
 
-void* UniformBuffer::getMappedData() const { return _mappedData; }
+void UniformBuffer::writeInstance(size_t instanceIdx, const std::vector<uint8_t>& data) {
+    memcpy(_mappedData + getInstanceOffset(instanceIdx), data.data(), data.size());
+}
 
-size_t UniformBuffer::getSize() const { return _size; }
+uint32_t UniformBuffer::getInstanceOffset(size_t instanceIdx) { return _uniformBufferSize * instanceIdx; }
+
+size_t UniformBuffer::getNumInstances() const { return _numInstances; }
+
+size_t UniformBuffer::getSize() const { return _uniformBufferSize; }
+
+size_t UniformBuffer::align(size_t uniformBufferSize) { return (uniformBufferSize + 64 - 1) & ~(64 - 1); }
 
 } // namespace atta::graphics::vk

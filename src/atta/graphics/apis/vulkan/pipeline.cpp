@@ -116,7 +116,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 
     // Descriptor set layout
     std::vector<DescriptorSetLayout::Binding> bindings;
-    bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+    bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
     _descriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
 
     // Pipeline layout
@@ -185,9 +185,6 @@ void Pipeline::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
     scissor.offset = {0, 0};
     scissor.extent = {(uint32_t)viewport.width, (uint32_t)viewport.height};
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-    // Bind descriptor sets
-    _descriptorSets->bind(commandBuffer, 0);
 }
 
 void Pipeline::end() {
@@ -199,6 +196,12 @@ void Pipeline::renderMesh(StringId meshSid) {
     std::shared_ptr<vk::Mesh> mesh = std::dynamic_pointer_cast<vk::Mesh>(Manager::getInstance().getMeshes().at(meshSid));
     if (mesh) {
         VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
+
+        // Update uniform buffer
+        uint32_t uniformBufferOffset = std::dynamic_pointer_cast<vk::Shader>(_shader)->pushUniformBuffer();
+        _descriptorSets->bind(commandBuffer, 0, &uniformBufferOffset);
+
+        // Draw mesh
         mesh->draw(commandBuffer);
     } else
         LOG_WARN("gfx::vk::Pipeline", "Could not render mesh [w]$0[], mesh not found", meshSid);

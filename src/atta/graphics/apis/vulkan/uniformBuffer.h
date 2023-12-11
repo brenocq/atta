@@ -13,15 +13,22 @@ namespace atta::graphics::vk {
 
 class UniformBuffer final : public Buffer {
   public:
-    UniformBuffer(size_t size);
+    UniformBuffer(size_t uniformBufferSize, size_t numInstances);
     ~UniformBuffer();
 
-    void* getMappedData() const;
+    void writeInstance(size_t instanceIdx, const std::vector<uint8_t>& data);
+    uint32_t getInstanceOffset(size_t instanceIdx);
+
+    size_t getNumInstances() const;
     size_t getSize() const;
 
   private:
-    void* _mappedData; ///< Mapped data in the GPU
-    size_t _size;
+    ///< Align uniform buffer to be used as dynamic
+    size_t align(size_t uniformBufferSize);
+
+    void* _mappedData;         ///< Mapped data in the GPU
+    size_t _uniformBufferSize; ///< Size of a single uniform buffer in bytes
+    size_t _numInstances;      ///< Number of uniform buffer instances
 };
 
 } // namespace atta::graphics::vk

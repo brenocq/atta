@@ -16,8 +16,8 @@ Shader::Shader(const fs::path& file) : gfx::Shader(file), _device(common::getDev
         shaderCode.apiCode = generateApiCode(type, shaderCode.iCode);
     compile();
 
-    // Create Uniform buffer
-    _uniformBuffer = std::make_shared<UniformBuffer>(_uniformLayout.getStride());
+    // Create Uniform buffer (TODO only supports 1000 uniform buffers)
+    _uniformBuffer = std::make_shared<UniformBuffer>(_uniformLayout.getStride(), 1000);
 }
 
 Shader::~Shader() {
@@ -182,11 +182,22 @@ void Shader::compile() {
     }
 }
 
-void Shader::bind() { _uniformBufferData.resize(_uniformLayout.getStride()); }
+void Shader::bind() {
+    _uniformBufferIdx = 0;
+    _uniformBufferData.resize(_uniformLayout.getStride());
+}
 
-void Shader::unbind() {
-    memcpy(_uniformBuffer->getMappedData(), _uniformBufferData.data(), _uniformBufferData.size());
-    _uniformBufferData.clear();
+void Shader::unbind() { _uniformBufferData.clear(); }
+
+uint32_t Shader::pushUniformBuffer() {
+    if (_uniformBufferIdx < _uniformBuffer->getNumInstances()) {
+        size_t idx = _uniformBufferIdx;
+        _uniformBufferIdx++;
+        _uniformBuffer->writeInstance(idx, _uniformBufferData);
+        return _uniformBuffer->getInstanceOffset(idx);
+    } else
+        LOG_WARN("gfx::vk::Shader", "It was not possible to write uniform buffer object, maximum number of instances was reached");
+    return _uniformBufferIdx;
 }
 
 bool Shader::runCommand(std::string cmd) {
