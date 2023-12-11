@@ -34,6 +34,7 @@ class FastRenderer final : public Renderer {
     std::shared_ptr<Pipeline> _geometryPipeline;
     std::unique_ptr<SelectedPipeline> _selectedPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
+    bool _wasResized;
 };
 
 } // namespace atta::graphics

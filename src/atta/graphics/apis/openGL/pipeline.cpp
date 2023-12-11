@@ -20,6 +20,8 @@ void Pipeline::begin(std::shared_ptr<RenderQueue> renderQueue) { _shader->bind()
 
 void Pipeline::end() { _shader->unbind(); }
 
+void Pipeline::resize(uint32_t width, uint32_t height) { _renderPass->getFramebuffer()->resize(width, height); }
+
 void* Pipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_renderPass->getFramebuffer()->getImage(0))->getImGuiImage());
 }

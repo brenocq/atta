@@ -4,7 +4,7 @@ set(ATTA_IMGUIZMO_TARGETS "")
 FetchContent_Declare(
     imguizmo
     GIT_REPOSITORY "https://github.com/CedricGuillemet/ImGuizmo.git"
-    GIT_TAG "1.83"
+    GIT_TAG "ba662b1"
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )

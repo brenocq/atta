@@ -104,12 +104,12 @@ void RenderPass::end() {
 }
 
 void RenderPass::begin(VkCommandBuffer commandBuffer) {
-    VkRenderPassBeginInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = _renderPass;
-    renderPassInfo.framebuffer = std::dynamic_pointer_cast<Framebuffer>(_framebuffer)->getHandle();
-    renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = {_framebuffer->getWidth(), _framebuffer->getHeight()};
+    VkRenderPassBeginInfo renderPassBeginInfo{};
+    renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassBeginInfo.renderPass = _renderPass;
+    renderPassBeginInfo.framebuffer = std::dynamic_pointer_cast<vk::Framebuffer>(_framebuffer)->getHandle();
+    renderPassBeginInfo.renderArea.offset = {0, 0};
+    renderPassBeginInfo.renderArea.extent = {_framebuffer->getWidth(), _framebuffer->getHeight()};
     // LOG_DEBUG("RenderPass", "Frame buf is $2 -> $0 $1", _framebuffer->getWidth(), _framebuffer->getHeight(), _framebuffer->getDebugName());
 
     std::vector<VkClearValue> clearValues{};
@@ -124,10 +124,10 @@ void RenderPass::begin(VkCommandBuffer commandBuffer) {
             clearValues.push_back(clearDepth);
         }
     }
-    renderPassInfo.clearValueCount = clearValues.size();
-    renderPassInfo.pClearValues = clearValues.data();
+    renderPassBeginInfo.clearValueCount = clearValues.size();
+    renderPassBeginInfo.pClearValues = clearValues.data();
 
-    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 void RenderPass::end(VkCommandBuffer commandBuffer) { vkCmdEndRenderPass(commandBuffer); }

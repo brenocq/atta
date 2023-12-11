@@ -23,11 +23,7 @@ RenderQueue::~RenderQueue() {
     _commandPool.reset();
 }
 
-void RenderQueue::begin() {
-    _fence->wait();
-    _fence->reset();
-    _commandBuffers->begin(0);
-}
+void RenderQueue::begin() { _commandBuffers->begin(0); }
 
 void RenderQueue::end() {
     _commandBuffers->end(0);
@@ -39,6 +35,10 @@ void RenderQueue::end() {
     submitInfo.pCommandBuffers = &cmdBuf;
     if (vkQueueSubmit(_device->getGraphicsQueue(), 1, &submitInfo, _fence->getHandle()) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::RenderQueue", "Failed to submit render queue!");
+
+    // Wait commands to complete
+    _fence->wait();
+    _fence->reset();
 }
 
 VkCommandBuffer RenderQueue::getCommandBuffer() { return _commandBuffers->getHandles()[0]; }

@@ -129,13 +129,8 @@ void Manager::initVulkan() {
     ImGui_ImplVulkan_Init(&info, vulkanAPI->getRenderPass()->getHandle());
 
     // Upload Fonts
-    {
-        std::shared_ptr<gfx::vk::CommandPool> commandPool = vulkanAPI->getCommandPool();
-        VkCommandBuffer commandBuffer = commandPool->beginSingleTimeCommands();
-        ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-        commandPool->endSingleTimeCommands(commandBuffer);
-    }
-    ImGui_ImplVulkan_DestroyFontUploadObjects();
+    if (!ImGui_ImplVulkan_CreateFontsTexture())
+        LOG_WARN("ui::Manager", "Failed to created ImGui font texture");
 }
 
 void Manager::render() {

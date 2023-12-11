@@ -10,6 +10,25 @@ namespace atta::graphics::vk {
 
 Framebuffer::Framebuffer(const gfx::Framebuffer::CreateInfo& info)
     : gfx::Framebuffer(info), _framebuffer(VK_NULL_HANDLE), _device(common::getDevice()) {
+    resize(_width, _height);
+}
+
+Framebuffer::~Framebuffer() {
+    if (_framebuffer != VK_NULL_HANDLE)
+        vkDestroyFramebuffer(_device->getHandle(), _framebuffer, nullptr);
+}
+
+void Framebuffer::bind(bool clear) {
+    if (_framebuffer == VK_NULL_HANDLE) {
+        LOG_WARN("gfx::vk::Framebuffer", "Trying to bind framebuffer [w]$0[] that was never created", _debugName);
+    }
+}
+void Framebuffer::unbind() {}
+
+void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
+    _width = width;
+    _height = height;
+
     // Create attachment images
     _images.clear();
     for (unsigned i = 0; i < _attachments.size(); i++) {
@@ -29,20 +48,6 @@ Framebuffer::Framebuffer(const gfx::Framebuffer::CreateInfo& info)
     }
 }
 
-Framebuffer::~Framebuffer() {
-    if (_framebuffer != VK_NULL_HANDLE)
-        vkDestroyFramebuffer(_device->getHandle(), _framebuffer, nullptr);
-}
-
-void Framebuffer::bind(bool clear) {
-    if (_framebuffer == VK_NULL_HANDLE) {
-        LOG_WARN("gfx::vk::Framebuffer", "Trying to bind framebuffer [w]$0[] that was never created", _debugName);
-    }
-}
-void Framebuffer::unbind() {}
-
-void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {}
-
 int Framebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned y) {}
 std::vector<uint8_t> Framebuffer::readImage(unsigned attachmentIndex) {}
 
@@ -52,6 +57,10 @@ std::shared_ptr<RenderPass> Framebuffer::getRenderPass() const { return _renderP
 
 void Framebuffer::create(std::shared_ptr<RenderPass> renderPass) {
     _renderPass = renderPass;
+
+    // Destroy framebuffer is necessary
+    if (_framebuffer != VK_NULL_HANDLE)
+        vkDestroyFramebuffer(_device->getHandle(), _framebuffer, nullptr);
 
     // Get image views
     std::vector<VkImageView> attachments;
@@ -69,7 +78,7 @@ void Framebuffer::create(std::shared_ptr<RenderPass> renderPass) {
     framebufferInfo.layers = 1;
 
     if (vkCreateFramebuffer(_device->getHandle(), &framebufferInfo, nullptr, &_framebuffer) != VK_SUCCESS)
-        LOG_ERROR("gfx::vk::FrameBuffer", "Failed to create frame buffer!");
+        LOG_ERROR("gfx::vk::Framebuffer", "Failed to create frame buffer!");
 }
 
 } // namespace atta::graphics::vk

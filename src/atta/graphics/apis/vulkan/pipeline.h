@@ -29,6 +29,8 @@ class Pipeline final : public gfx::Pipeline {
     void begin(std::shared_ptr<RenderQueue> renderQueue) override;
     void end() override;
 
+    void resize(uint32_t width, uint32_t height) override;
+
     void renderMesh(StringId meshSid) override;
 
     void* getImGuiTexture() const override;

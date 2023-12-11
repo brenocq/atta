@@ -161,7 +161,7 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
 
 void PhongRenderer::resize(uint32_t width, uint32_t height) {
     if (width != _width || height != _height) {
-        _geometryPipeline->getRenderPass()->getFramebuffer()->resize(width, height);
+        _geometryPipeline->resize(width, height);
         _width = width;
         _height = height;
     }

@@ -81,22 +81,22 @@ void ViewportWindows::render() {
             if (ImGui::IsWindowHovered()) {
                 snap = false;
                 ImGuiIO& io = ImGui::GetIO();
-                if (ImGui::IsKeyPressed('T') && io.KeyCtrl) {
+                if (ImGui::IsKeyPressed(ImGuiKey_T) && io.KeyCtrl) {
                     mouseOperation = ImGuizmo::OPERATION::TRANSLATE;
                     mouseMode = ImGuizmo::MODE::LOCAL;
-                } else if (ImGui::IsKeyPressed('T') && io.KeyShift) {
+                } else if (ImGui::IsKeyPressed(ImGuiKey_T) && io.KeyShift) {
                     mouseOperation = ImGuizmo::OPERATION::TRANSLATE;
                     mouseMode = ImGuizmo::MODE::WORLD;
-                } else if (ImGui::IsKeyPressed('S') && io.KeyCtrl) {
+                } else if (ImGui::IsKeyPressed(ImGuiKey_S) && io.KeyCtrl) {
                     mouseOperation = ImGuizmo::OPERATION::SCALE;
                     mouseMode = ImGuizmo::MODE::LOCAL;
-                } else if (ImGui::IsKeyPressed('S') && io.KeyShift) {
+                } else if (ImGui::IsKeyPressed(ImGuiKey_S) && io.KeyShift) {
                     mouseOperation = ImGuizmo::OPERATION::SCALE;
                     mouseMode = ImGuizmo::MODE::WORLD;
-                } else if (ImGui::IsKeyPressed('R') && io.KeyCtrl) {
+                } else if (ImGui::IsKeyPressed(ImGuiKey_R) && io.KeyCtrl) {
                     mouseOperation = ImGuizmo::OPERATION::ROTATE;
                     mouseMode = ImGuizmo::MODE::LOCAL;
-                } else if (ImGui::IsKeyPressed('R') && io.KeyShift) {
+                } else if (ImGui::IsKeyPressed(ImGuiKey_R) && io.KeyShift) {
                     mouseOperation = ImGuizmo::OPERATION::ROTATE;
                     mouseMode = ImGuizmo::MODE::WORLD;
                 } else if (io.KeyCtrl)

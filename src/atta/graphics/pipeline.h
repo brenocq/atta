@@ -35,6 +35,8 @@ class Pipeline {
     virtual void begin(std::shared_ptr<RenderQueue> renderQueue) = 0;
     virtual void end() = 0;
 
+    virtual void resize(uint32_t width, uint32_t height) = 0;
+
     virtual void* getImGuiTexture() const = 0;
 
     void setBool(const char* name, bool b);

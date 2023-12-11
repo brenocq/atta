@@ -4,7 +4,7 @@ set(ATTA_IMPLOT_TARGETS "")
 FetchContent_Declare(
     implot
     GIT_REPOSITORY "https://github.com/epezent/implot"
-    GIT_TAG "v0.13"
+    GIT_TAG "v0.16"
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )

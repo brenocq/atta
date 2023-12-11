@@ -21,8 +21,10 @@
 
 namespace atta::graphics {
 
-FastRenderer::FastRenderer() : Renderer("FastRenderer") {
-    //---------- Create geometry pipeline ----------//
+FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
+    // Render Queue
+    _renderQueue = graphics::create<RenderQueue>();
+
     // Framebuffer
     Framebuffer::CreateInfo framebufferInfo{};
     framebufferInfo.attachments.push_back({Image::Format::RGBA});
@@ -33,22 +35,17 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
     framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
     std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
-    // Shader
-    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/fastRenderer/fastRenderer.asl");
-
-    // Render Queue
-    _renderQueue = graphics::create<RenderQueue>();
-
     // Render Pass
     RenderPass::CreateInfo renderPassInfo{};
     renderPassInfo.framebuffer = framebuffer;
-    renderPassInfo.debugName = StringId("FastRenderer Render Pass");
+    renderPassInfo.debugName = StringId("FastRenderer RenderPass");
     _renderPass = graphics::create<RenderPass>(renderPassInfo);
 
-    // Pipeline
+    //---------- Create geometry pipeline ----------//
     Pipeline::CreateInfo pipelineInfo{};
-    pipelineInfo.shader = shader;
+    pipelineInfo.shader = graphics::create<Shader>("shaders/fastRenderer/fastRenderer.asl");
     pipelineInfo.renderPass = _renderPass;
+    pipelineInfo.debugName = StringId("FastRenderer Pipeline");
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 
     //---------- Common pipelines ----------//
@@ -59,6 +56,13 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer") {
 FastRenderer::~FastRenderer() {}
 
 void FastRenderer::render(std::shared_ptr<Camera> camera) {
+    // Handle resize (ensure that last framebuffer command finished)
+    if (_wasResized) {
+        _geometryPipeline->resize(_width, _height);
+        _wasResized = false;
+    }
+
+    // Render
     _renderQueue->begin();
     {
         _renderPass->begin(_renderQueue);
@@ -110,7 +114,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
 
 void FastRenderer::resize(uint32_t width, uint32_t height) {
     if (width != _width || height != _height) {
-        _geometryPipeline->getRenderPass()->getFramebuffer()->resize(width, height);
+        _wasResized = true;
         _width = width;
         _height = height;
     }

@@ -149,6 +149,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 
     if (vkCreateGraphicsPipelines(_device->getHandle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Pipeline", "Failed to create pipeline!");
+    LOG_DEBUG("Pipeline", "Pipeline created!");
 }
 
 Pipeline::~Pipeline() {
@@ -174,8 +175,8 @@ void Pipeline::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = _renderPass->getFramebuffer()->getWidth();
-    viewport.height = _renderPass->getFramebuffer()->getHeight();
+    viewport.width = _framebuffers[0]->getWidth();
+    viewport.height = _framebuffers[0]->getHeight();
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
@@ -190,6 +191,11 @@ void Pipeline::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
 void Pipeline::end() {
     _renderQueue.reset();
     _shader->unbind();
+}
+
+void Pipeline::resize(uint32_t width, uint32_t height) {
+    _framebuffers[0]->resize(width, height);
+    _framebuffers[0]->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
 }
 
 void Pipeline::renderMesh(StringId meshSid) {
@@ -208,7 +214,7 @@ void Pipeline::renderMesh(StringId meshSid) {
 }
 
 void* Pipeline::getImGuiTexture() const {
-    return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_renderPass->getFramebuffer()->getImage(0))->getImGuiImage());
+    return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_framebuffers[0]->getImage(0))->getImGuiImage());
 }
 
 VkPipeline Pipeline::getHandle() const { return _pipeline; }

@@ -17,14 +17,14 @@ namespace atta::graphics::vk {
 
 Image::Image(const gfx::Image::CreateInfo& info)
     : gfx::Image(info), _image(VK_NULL_HANDLE), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
-      _device(common::getDevice()), _destroyImage(true) {
+      _imGuiDescriptorSet(VK_NULL_HANDLE), _device(common::getDevice()), _destroyImage(true) {
     _format = supportedFormat(_format);
     resize(_width, _height, true);
 }
 
 Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image)
-    : gfx::Image(info), _image(image), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE), _device(device),
-      _destroyImage(false) {
+    : gfx::Image(info), _image(image), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
+      _imGuiDescriptorSet(VK_NULL_HANDLE), _device(device), _destroyImage(false) {
     _format = supportedFormat(_format);
     createImageView();
 }
@@ -277,6 +277,8 @@ void Image::allocMemory() {
 }
 
 void Image::destroy() {
+    if (_imGuiDescriptorSet != VK_NULL_HANDLE)
+        ImGui_ImplVulkan_RemoveTexture(_imGuiDescriptorSet);
     if (_imageView != VK_NULL_HANDLE)
         vkDestroyImageView(_device->getHandle(), _imageView, nullptr);
     if (_sampler != VK_NULL_HANDLE)
