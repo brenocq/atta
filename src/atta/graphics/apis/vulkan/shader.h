@@ -39,11 +39,14 @@ class Shader final : public gfx::Shader {
 
     std::vector<VkPipelineShaderStageCreateInfo> getShaderStages() const;
     std::shared_ptr<UniformBuffer> getUniformBuffer() const;
+    std::vector<std::shared_ptr<gfx::Image>> getUniformImages() const;
     uint32_t pushUniformBuffer();
 
   private:
     static VkShaderStageFlagBits convertFileToShaderStage(const fs::path& filepath);
+
     void updateUniformBuffer(const char* name, uint8_t* data, size_t size);
+    void updateImage(const char* name, std::shared_ptr<gfx::Image> image);
 
     bool runCommand(std::string cmd);
     std::string readFile(const fs::path& file);
@@ -52,6 +55,7 @@ class Shader final : public gfx::Shader {
     std::map<ShaderType, VkShaderModule> _shaders;
     std::vector<uint8_t> _uniformBufferData;
     std::shared_ptr<UniformBuffer> _uniformBuffer;
+    std::vector<std::shared_ptr<gfx::Image>> _uniformImages;
     size_t _uniformBufferIdx;
 };
 

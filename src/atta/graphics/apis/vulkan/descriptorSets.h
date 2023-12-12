@@ -30,6 +30,7 @@ class DescriptorSets {
     void update(uint32_t index, std::shared_ptr<UniformBuffer> uniformBuffer) const;
     void update(uint32_t index, std::shared_ptr<Image> image) const;
     void bind(VkCommandBuffer commandBuffer, size_t index, const uint32_t* dynamicOffset = nullptr);
+    void bind(VkCommandBuffer commandBuffer, size_t index, std::shared_ptr<Image> image);
 
   private:
     std::shared_ptr<Device> _device;

@@ -117,6 +117,14 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     // Descriptor set layout
     std::vector<DescriptorSetLayout::Binding> bindings;
     bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+    for (const auto& element : _shader->getImageBufferLayout().getElements()) {
+        uint32_t bindingIdx = bindings.size();
+        if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
+            bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+        else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
+            bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+    }
+
     _descriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
 
     // Pipeline layout
@@ -204,8 +212,13 @@ void Pipeline::renderMesh(StringId meshSid) {
         VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
 
         // Update uniform buffer
+        size_t bindingIdx = 0;
         uint32_t uniformBufferOffset = std::dynamic_pointer_cast<vk::Shader>(_shader)->pushUniformBuffer();
-        _descriptorSets->bind(commandBuffer, 0, &uniformBufferOffset);
+        _descriptorSets->bind(commandBuffer, bindingIdx++, &uniformBufferOffset);
+
+        // Update images
+        for (std::shared_ptr<gfx::Image> image : std::dynamic_pointer_cast<vk::Shader>(_shader)->pushUniformImages())
+            _descriptorSets->update(bindingIdx++, image);/// XXX not sure, maybe needs to be bind during initialization
 
         // Draw mesh
         mesh->draw(commandBuffer);

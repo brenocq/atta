@@ -34,14 +34,23 @@ void Shader::setVec3(const char* name, vec3 v) { updateUniformBuffer(name, reint
 void Shader::setVec4(const char* name, vec4 v) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec4)); }
 void Shader::setMat3(const char* name, mat3 m) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat3)); }
 void Shader::setMat4(const char* name, mat4 m) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat4)); }
-void Shader::setImage(const char* name, StringId sid) { LOG_WARN("Shader", "[w]vk::Shader::setImage[] was not implemented yet"); }
-void Shader::setImage(const char* name, std::shared_ptr<gfx::Image> image) {
-    LOG_WARN("Shader", "[w]vk::Shader::setImage[] was not implemented yet");
+void Shader::setImage(const char* name, StringId sid) {
+    if (Manager::getInstance().getImages().find(sid) == Manager::getInstance().getImages().end()) {
+        LOG_WARN("gfx::vk::Shader", "Could not set image [w]$0[] to uniform image [w]$1[], image not found", sid, name);
+        return;
+    }
+    updateImage(name, Manager::getInstance().getImages().at(sid));
 }
-void Shader::setCubemap(const char* name, StringId sid) { LOG_WARN("Shader", "[w]vk::Shader::setCubemap[] was not implemented yet"); }
-void Shader::setCubemap(const char* name, std::shared_ptr<gfx::Image> image) {
-    LOG_WARN("Shader", "[w]vk::Shader::setCubemap[] was not implemented yet");
+void Shader::setImage(const char* name, std::shared_ptr<gfx::Image> image) { updateImage(name, image); }
+void Shader::setCubemap(const char* name, StringId sid) {
+    if (Manager::getInstance().getImages().find(sid) == Manager::getInstance().getImages().end()) {
+        LOG_WARN("gfx::vk::Shader", "Could not set cubemap [w]$0[] to uniform image [w]$1[], image not found", sid, name);
+        return;
+    }
+    updateImage(name, Manager::getInstance().getImages().at(sid));
 }
+
+void Shader::setCubemap(const char* name, std::shared_ptr<gfx::Image> image) { updateImage(name, image); }
 
 void Shader::updateUniformBuffer(const char* name, uint8_t* data, size_t size) {
     if (_uniformBufferData.empty()) {
@@ -62,6 +71,23 @@ void Shader::updateUniformBuffer(const char* name, uint8_t* data, size_t size) {
                 _uniformBufferData[element.offset + i] = data[i];
             return;
         }
+    }
+}
+
+void Shader::updateImage(const char* name, std::shared_ptr<gfx::Image> image) {
+    if (!_imageLayout.exists(name)) {
+        LOG_WARN("gfx::vk::Shader", "Trying to update [w]$0[], but this uniform image was not declared in the shader", name);
+        return;
+    }
+
+    // Find element to update
+    size_t idx = 0;
+    for (const BufferLayout::Element& element : _imageLayout.getElements()) {
+        if (element.name == name) {
+            _uniformImages[idx] = image;
+            return;
+        }
+        idx++;
     }
 }
 
@@ -91,6 +117,8 @@ std::vector<VkPipelineShaderStageCreateInfo> Shader::getShaderStages() const {
 
 std::shared_ptr<UniformBuffer> Shader::getUniformBuffer() const { return _uniformBuffer; }
 
+std::vector<std::shared_ptr<gfx::Image>> Shader::getUniformImages() const { return _uniformImages; }
+
 std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
     std::string apiCode;
 
@@ -106,7 +134,13 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
         apiCode += "} ubo;\n";
     }
 
-    // TODO Uniform image sampler
+    // Uniform image sampler
+    size_t bindingIdx = 1;
+    for (const BufferLayout::Element& element : _imageLayout.getElements()) {
+        apiCode += "layout(binding = " + std::to_string(bindingIdx) + ") uniform " + BufferLayout::Element::typeToString(element.type) + " " +
+                   element.name + ";\n";
+        bindingIdx++;
+    }
 
     // Remove uniform declarations from iCode
     std::regex pattern(R"(^uniform .*\n?)", std::regex_constants::multiline);
@@ -185,9 +219,14 @@ void Shader::compile() {
 void Shader::bind() {
     _uniformBufferIdx = 0;
     _uniformBufferData.resize(_uniformLayout.getStride());
+    _uniformImages.resize(_uniformLayout.getElementCount());
+    // TODO point uniformImages to purple image by default
 }
 
-void Shader::unbind() { _uniformBufferData.clear(); }
+void Shader::unbind() {
+    _uniformBufferData.clear();
+    _uniformImages.clear();
+}
 
 uint32_t Shader::pushUniformBuffer() {
     if (_uniformBufferIdx < _uniformBuffer->getNumInstances()) {

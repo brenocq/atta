@@ -38,6 +38,7 @@ fs::path Shader::getFile() const { return _file; }
 
 const BufferLayout& Shader::getVertexBufferLayout() const { return _vertexLayout; }
 const BufferLayout& Shader::getUniformBufferLayout() const { return _uniformLayout; }
+const BufferLayout& Shader::getImageBufferLayout() const { return _imageLayout; }
 
 void Shader::processASL() {
     LOG_DEBUG("gfx::Shader", "Preprocess ASL: [w]$0", _file.string());
@@ -50,6 +51,9 @@ void Shader::processASL() {
 
     // Populate uniform layout
     populateUniformLayout();
+
+    // Populate uniform layout
+    populateImageLayout();
 
     // Process ASL code to generate ICode and APICode
     _shaderCodes.clear();
@@ -296,9 +300,29 @@ void Shader::populateUniformLayout() {
     while (std::regex_search(start, end, match, regex)) {
         std::string type = match[1];
         std::string name = match[2];
-        // LOG_DEBUG("Shader", "Found uniform: $0 $1", type, name);
+        if (type != "sampler2D" && type != "samplerCube") {
+            // LOG_DEBUG("Shader", "Found uniform: $0 $1", type, name);
+            BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
+            _uniformLayout.push(t, name);
+        }
+
+        // Move to the next match
+        start = match.suffix().first;
+    }
+}
+
+void Shader::populateImageLayout() {
+    std::regex regex(R"(\buniform\s+(sampler2D|samplerCube)\s+(\w+)\s*;)");
+    std::smatch match;
+
+    auto start = _aslCode.cbegin();
+    auto end = _aslCode.cend();
+    while (std::regex_search(start, end, match, regex)) {
+        std::string type = match[1];
+        std::string name = match[2];
+        // LOG_DEBUG("Shader", "Found image uniform: $0 $1", type, name);
         BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
-        _uniformLayout.push(t, name);
+        _imageLayout.push(t, name);
 
         // Move to the next match
         start = match.suffix().first;

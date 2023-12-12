@@ -36,6 +36,7 @@ class Shader {
     fs::path getFile() const;
     const BufferLayout& getVertexBufferLayout() const;
     const BufferLayout& getUniformBufferLayout() const;
+    const BufferLayout& getImageBufferLayout() const;
 
     /**
      * @brief Shader type
@@ -131,12 +132,18 @@ class Shader {
      */
     void populateUniformLayout();
 
+    /**
+     * @brief Go through all shader codes to extract images and populate _imageLayout
+     */
+    void populateImageLayout();
+
   protected:
     fs::path _file;
     std::string _aslCode;
 
     BufferLayout _vertexLayout;
     BufferLayout _uniformLayout;
+    BufferLayout _imageLayout;
     std::map<ShaderType, ShaderCode> _shaderCodes;
 };
 
