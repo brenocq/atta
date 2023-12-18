@@ -37,7 +37,8 @@ Shader::Shader(const fs::path& file) : _file(file) {
 fs::path Shader::getFile() const { return _file; }
 
 const BufferLayout& Shader::getVertexBufferLayout() const { return _vertexLayout; }
-const BufferLayout& Shader::getUniformBufferLayout() const { return _uniformLayout; }
+const BufferLayout& Shader::getPerFrameBufferLayout() const { return _perFrameLayout; }
+const BufferLayout& Shader::getPerDrawBufferLayout() const { return _perDrawLayout; }
 const BufferLayout& Shader::getImageBufferLayout() const { return _imageLayout; }
 
 void Shader::processASL() {
@@ -49,8 +50,11 @@ void Shader::processASL() {
     // Populate vertex layout
     populateVertexLayout();
 
-    // Populate uniform layout
-    populateUniformLayout();
+    // Populate perFrame layout
+    populatePerFrameLayout();
+
+    // Populate perDraw layout
+    populatePerDrawLayout();
 
     // Populate uniform layout
     populateImageLayout();
@@ -158,7 +162,6 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
             iCode = input + iCode + "void main() { POSITION = vertex(" + params + ");}";
 
             // Replace
-            iCode = std::regex_replace(iCode, std::regex(R"(\bvarying)"), "out");
             iCode = std::regex_replace(iCode, std::regex(R"(\bPOSITION)"), "gl_Position");
             iCode = std::regex_replace(iCode, std::regex(R"(\bPOINT_SIZE)"), "gl_PointSize");
 
@@ -168,7 +171,6 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
             iCode = aslCode + "out vec4 COLOR;\nvoid main() { COLOR = fragment();}";
 
             // Replace
-            iCode = std::regex_replace(iCode, std::regex(R"(\bvarying)"), "in");
             iCode = std::regex_replace(iCode, std::regex(R"(\bDEPTH)"), "gl_FragDepth");
             break;
         }
@@ -291,8 +293,8 @@ void Shader::populateVertexLayout() {
     }
 }
 
-void Shader::populateUniformLayout() {
-    std::regex regex(R"(\buniform\s+(\w+)\s+(\w+)\s*;)");
+void Shader::populatePerFrameLayout() {
+    std::regex regex(R"(\bperFrame\s+(\w+)\s+(\w+)\s*;)");
     std::smatch match;
 
     auto start = _aslCode.cbegin();
@@ -301,9 +303,29 @@ void Shader::populateUniformLayout() {
         std::string type = match[1];
         std::string name = match[2];
         if (type != "sampler2D" && type != "samplerCube") {
-            // LOG_DEBUG("Shader", "Found uniform: $0 $1", type, name);
+            LOG_DEBUG("Shader", "Found perFrame: $0 $1", type, name);
             BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
-            _uniformLayout.push(t, name);
+            _perFrameLayout.push(t, name);
+        }
+
+        // Move to the next match
+        start = match.suffix().first;
+    }
+}
+
+void Shader::populatePerDrawLayout() {
+    std::regex regex(R"(\bperDraw\s+(\w+)\s+(\w+)\s*;)");
+    std::smatch match;
+
+    auto start = _aslCode.cbegin();
+    auto end = _aslCode.cend();
+    while (std::regex_search(start, end, match, regex)) {
+        std::string type = match[1];
+        std::string name = match[2];
+        if (type != "sampler2D" && type != "samplerCube") {
+            LOG_DEBUG("Shader", "Found perDraw: $0 $1", type, name);
+            BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
+            _perDrawLayout.push(t, name);
         }
 
         // Move to the next match

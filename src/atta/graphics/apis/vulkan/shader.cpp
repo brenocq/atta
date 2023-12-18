@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/apis/vulkan/shader.h>
+#include <atta/graphics/interface.h>
 
 #include <atta/file/manager.h>
 #include <regex>
@@ -16,8 +17,8 @@ Shader::Shader(const fs::path& file) : gfx::Shader(file), _device(common::getDev
         shaderCode.apiCode = generateApiCode(type, shaderCode.iCode);
     compile();
 
-    // Create Uniform buffer (TODO only supports 1000 uniform buffers)
-    _uniformBuffer = std::make_shared<UniformBuffer>(_uniformLayout.getStride(), 1000);
+    // Create Uniform buffer
+    _uniformBuffer = std::make_shared<UniformBuffer>(_perFrameLayout.getStride());
 }
 
 Shader::~Shader() {
@@ -58,13 +59,13 @@ void Shader::updateUniformBuffer(const char* name, uint8_t* data, size_t size) {
                   "Shader uniform [w]$0[] should only be set while rendering. Make sure it was called while rendering the pipeline.", name);
         return;
     }
-    if (!_uniformLayout.exists(name)) {
+    if (!_perFrameLayout.exists(name)) {
         LOG_WARN("gfx::vk::Shader", "Trying to update [w]$0[], but this uniform was not declared in the shader", name);
         return;
     }
 
     // Find element to update
-    for (const BufferLayout::Element& element : _uniformLayout.getElements()) {
+    for (const BufferLayout::Element& element : _perFrameLayout.getElements()) {
         if (element.name == name) {
             // Update uniform buffer
             for (size_t i = 0; i < size; i++)
@@ -126,33 +127,48 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
     apiCode += "#version 450\n";
 
     // Uniform buffer
-    if (!_uniformLayout.getElements().empty()) {
+    if (!_perFrameLayout.getElements().empty()) {
         apiCode += "layout(set = 0, binding = 0) uniform UniformBufferObject {\n";
-        for (const BufferLayout::Element& element : _uniformLayout.getElements())
-            if (element.type != BufferLayout::Element::Type::SAMPLER_2D && element.type != BufferLayout::Element::Type::SAMPLER_CUBE)
-                apiCode += std::string("    ") + BufferLayout::Element::typeToString(element.type) + " " + element.name + ";\n";
-        apiCode += "} ubo;\n";
+        for (const BufferLayout::Element& element : _perFrameLayout.getElements())
+            apiCode += std::string("    ") + BufferLayout::Element::typeToString(element.type) + " " + element.name + ";\n";
+        apiCode += "} ubo;\n\n";
     }
 
-    // Uniform image sampler
+    // Push constants
+    if (!_perDrawLayout.getElements().empty()) {
+        apiCode += "layout(push_constant) uniform PushConstants {\n";
+        for (const BufferLayout::Element& element : _perDrawLayout.getElements())
+            apiCode += std::string("    ") + BufferLayout::Element::typeToString(element.type) + " " + element.name + ";\n";
+        apiCode += "} push;\n\n";
+    }
+
+    // TODO Uniform image sampler
     size_t bindingIdx = 1;
     for (const BufferLayout::Element& element : _imageLayout.getElements()) {
         apiCode += "layout(binding = " + std::to_string(bindingIdx) + ") uniform " + BufferLayout::Element::typeToString(element.type) + " " +
-                   element.name + ";\n";
+                   element.name + ";\n\n";
         bindingIdx++;
     }
 
-    // Remove uniform declarations from iCode
-    std::regex pattern(R"(^uniform .*\n?)", std::regex_constants::multiline);
-    std::string iCodeFix = std::regex_replace(iCode, pattern, "");
+    // Remove perFrame/perDraw declarations from iCode
+    std::string iCodeFix = std::regex_replace(iCode, std::regex(R"(^(perFrame|perDraw) .*\n?)", std::regex_constants::multiline), "");
+
+    // Replace perVertex declaration from iCode
+    if (type == VERTEX)
+        iCodeFix = std::regex_replace(iCodeFix, std::regex(R"(\bperVertex)"), "out");
+    else if (type == FRAGMENT)
+        iCodeFix = std::regex_replace(iCodeFix, std::regex(R"(\bperVertex)"), "in");
 
     // Append "ubo." when using uniform in iCode
-    for (const BufferLayout::Element& element : _uniformLayout.getElements()) {
-        if (element.type != BufferLayout::Element::Type::SAMPLER_2D && element.type != BufferLayout::Element::Type::SAMPLER_CUBE) {
-            std::string patternStr = "\\b" + element.name + "\\b";
-            std::regex pattern(patternStr);
-            iCodeFix = std::regex_replace(iCodeFix, pattern, "ubo." + element.name);
-        }
+    for (const BufferLayout::Element& element : _perFrameLayout.getElements()) {
+        std::string patternStr = "\\b" + element.name + "\\b";
+        iCodeFix = std::regex_replace(iCodeFix, std::regex(patternStr), "ubo." + element.name);
+    }
+
+    // Append "push." when uniform push constant in iCode
+    for (const BufferLayout::Element& element : _perDrawLayout.getElements()) {
+        std::string patternStr = "\\b" + element.name + "\\b";
+        iCodeFix = std::regex_replace(iCodeFix, std::regex(patternStr), "push." + element.name);
     }
 
     // Add corrected iCode to apiCode
@@ -217,9 +233,8 @@ void Shader::compile() {
 }
 
 void Shader::bind() {
-    _uniformBufferIdx = 0;
-    _uniformBufferData.resize(_uniformLayout.getStride());
-    _uniformImages.resize(_uniformLayout.getElementCount());
+    _uniformBufferData.resize(_perFrameLayout.getStride());
+    _uniformImages.resize(_perFrameLayout.getElementCount());
     // TODO point uniformImages to purple image by default
 }
 
@@ -228,16 +243,7 @@ void Shader::unbind() {
     _uniformImages.clear();
 }
 
-uint32_t Shader::pushUniformBuffer() {
-    if (_uniformBufferIdx < _uniformBuffer->getNumInstances()) {
-        size_t idx = _uniformBufferIdx;
-        _uniformBufferIdx++;
-        _uniformBuffer->writeInstance(idx, _uniformBufferData);
-        return _uniformBuffer->getInstanceOffset(idx);
-    } else
-        LOG_WARN("gfx::vk::Shader", "It was not possible to write uniform buffer object, maximum number of instances was reached");
-    return _uniformBufferIdx;
-}
+void Shader::pushUniformBuffer() { _uniformBuffer->writeInstance(_uniformBufferData); }
 
 bool Shader::runCommand(std::string cmd) {
     std::array<char, 512> buffer;

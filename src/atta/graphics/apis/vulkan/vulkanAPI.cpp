@@ -66,31 +66,6 @@ void VulkanAPI::startUp() {
     for (std::shared_ptr<vk::Framebuffer> fb : _framebuffers)
         fb->create(_renderPass);
 
-    //----- XXX Send vertices to GPU -----//
-    // clang-format off
-    static std::vector<float> vertices = {
-        // vertex             normal               UV
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,    0.0f, 0.0f,
-        -0.5f, 0.5f, 0.0f,    0.0f, 0.0f, 1.0f,    1.0f, 0.0f,
-        0.5f, 0.5f, 0.0f,     0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
-        0.5f, -0.5f, 0.0f,    0.0f, 0.0f, 1.0f,    0.0f, 1.0f,
-    };
-    // clang-format on
-    gfx::VertexBuffer::CreateInfo vertexBufferInfo{};
-    vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC3, "inPosition");
-    vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC3, "inNormal");
-    vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC2, "inTex");
-    vertexBufferInfo.size = vertices.size() * sizeof(float);
-    vertexBufferInfo.data = (uint8_t*)vertices.data();
-    _vertexBuffer = std::make_shared<vk::VertexBuffer>(vertexBufferInfo);
-
-    //----- XXX Send indices to GPU -----//
-    static std::vector<uint32_t> indices = {0, 1, 2, 2, 3, 0};
-    gfx::IndexBuffer::CreateInfo indexBufferInfo{};
-    indexBufferInfo.size = indices.size() * sizeof(uint32_t);
-    indexBufferInfo.data = (uint8_t*)indices.data();
-    _indexBuffer = std::make_shared<vk::IndexBuffer>(indexBufferInfo);
-
     //----- UI Descriptor Pool -----//
     std::vector<VkDescriptorType> descriptorTypes = {
         VK_DESCRIPTOR_TYPE_SAMPLER,
@@ -123,8 +98,6 @@ void VulkanAPI::shutDown() {
     _swapChain.reset();
 
     _renderPass.reset();
-    _indexBuffer.reset();
-    _vertexBuffer.reset();
 
     _inFlightFences.clear();
     _renderFinishedSemaphores.clear();
@@ -169,8 +142,6 @@ void VulkanAPI::beginFrame() {
     VkCommandBuffer cmdBuf = _commandBuffers->begin(_currFrame);
     _renderPass->setFramebuffer(_framebuffers[_imageIndex]);
     _renderPass->begin(cmdBuf);
-    _vertexBuffer->bind();
-    _indexBuffer->bind();
 }
 
 void VulkanAPI::endFrame() {

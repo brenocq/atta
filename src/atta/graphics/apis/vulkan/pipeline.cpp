@@ -116,7 +116,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 
     // Descriptor set layout
     std::vector<DescriptorSetLayout::Binding> bindings;
-    bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+    bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
     for (const auto& element : _shader->getImageBufferLayout().getElements()) {
         uint32_t bindingIdx = bindings.size();
         if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
@@ -194,11 +194,20 @@ void Pipeline::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
     scissor.offset = {0, 0};
     scissor.extent = {(uint32_t)viewport.width, (uint32_t)viewport.height};
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+    // Bind uniform buffer
+    _descriptorSets->bind(commandBuffer, 0);
 }
 
 void Pipeline::end() {
-    _renderQueue.reset();
+    // Write data to uniform buffer
+    std::dynamic_pointer_cast<vk::Shader>(_shader)->pushUniformBuffer();
+
+    // Unbind shader
     _shader->unbind();
+
+    // Release render queue
+    _renderQueue.reset();
 }
 
 void Pipeline::resize(uint32_t width, uint32_t height) {
@@ -209,16 +218,10 @@ void Pipeline::resize(uint32_t width, uint32_t height) {
 void Pipeline::renderMesh(StringId meshSid) {
     std::shared_ptr<vk::Mesh> mesh = std::dynamic_pointer_cast<vk::Mesh>(Manager::getInstance().getMeshes().at(meshSid));
     if (mesh) {
+        // Get command buffer
         VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
 
-        // Update uniform buffer
-        size_t bindingIdx = 0;
-        uint32_t uniformBufferOffset = std::dynamic_pointer_cast<vk::Shader>(_shader)->pushUniformBuffer();
-        _descriptorSets->bind(commandBuffer, bindingIdx++, &uniformBufferOffset);
-
-        // Update images
-        for (std::shared_ptr<gfx::Image> image : std::dynamic_pointer_cast<vk::Shader>(_shader)->pushUniformImages())
-            _descriptorSets->update(bindingIdx++, image);/// XXX not sure, maybe needs to be bind during initialization
+        // TODO Write push constant
 
         // Draw mesh
         mesh->draw(commandBuffer);

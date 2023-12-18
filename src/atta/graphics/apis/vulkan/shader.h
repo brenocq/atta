@@ -40,7 +40,7 @@ class Shader final : public gfx::Shader {
     std::vector<VkPipelineShaderStageCreateInfo> getShaderStages() const;
     std::shared_ptr<UniformBuffer> getUniformBuffer() const;
     std::vector<std::shared_ptr<gfx::Image>> getUniformImages() const;
-    uint32_t pushUniformBuffer();
+    void pushUniformBuffer();
 
   private:
     static VkShaderStageFlagBits convertFileToShaderStage(const fs::path& filepath);
@@ -56,7 +56,6 @@ class Shader final : public gfx::Shader {
     std::vector<uint8_t> _uniformBufferData;
     std::shared_ptr<UniformBuffer> _uniformBuffer;
     std::vector<std::shared_ptr<gfx::Image>> _uniformImages;
-    size_t _uniformBufferIdx;
 };
 
 } // namespace atta::graphics::vk

@@ -13,10 +13,19 @@ namespace atta::graphics::vk {
 
 class UniformBuffer final : public Buffer {
   public:
-    UniformBuffer(size_t uniformBufferSize, size_t numInstances);
+    /**
+     * Uniform buffer constructor
+     *
+     * This class can handle uniform buffer and dynamic uniform buffer. When dynamic uniform buffers are being used, the number of instances need to
+     * be specified.
+     *
+     * @param uniformBufferSize Size of one instance of the uniform buffer in bytes (struct size)
+     * @param numInstances Number of uniform buffer instances, maximum number of dynamic uniform buffers
+     */
+    UniformBuffer(size_t uniformBufferSize, size_t numInstances = 1);
     ~UniformBuffer();
 
-    void writeInstance(size_t instanceIdx, const std::vector<uint8_t>& data);
+    void writeInstance(const std::vector<uint8_t>& data, size_t instanceIdx = 0);
     uint32_t getInstanceOffset(size_t instanceIdx);
 
     size_t getNumInstances() const;

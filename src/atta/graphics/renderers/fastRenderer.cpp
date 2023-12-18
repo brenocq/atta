@@ -31,7 +31,7 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
     framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
     framebufferInfo.width = 500;
     framebufferInfo.height = 500;
-    framebufferInfo.clearColor = {0.2f, 0.4f, 0.3f, 1.0f};
+    framebufferInfo.clearColor = {0.3f, 0.3f, 0.3f, 1.0f};
     framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
     std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
@@ -62,6 +62,19 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
         _wasResized = false;
     }
 
+    // Handle image group update (TODO do only once, update with events)
+    //{
+    //    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    //    for (auto entity : entities) {
+    //        component::Material* compMat = component::getComponent<component::Material>(entity);
+    //        resource::Material* material = compMat ? compMat->getResource() : nullptr;
+
+    //        if (material)
+    //            _geometryPipeline->createImageGroup("myMaterial", {"uAlbedoTexture", material->colorImage});
+    //            // _geometryPipeline->removeImageGroup("myMaterial");
+    //    }
+    //}
+
     // Render
     _renderQueue->begin();
     {
@@ -85,6 +98,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
 
                         if (material) {
                             if (material->colorIsImage()) {
+                                // _geometryPipeline->bindImageGroup("myMaterial");
                                 _geometryPipeline->setImage("uAlbedoTexture", material->colorImage);
                                 _geometryPipeline->setVec3("uAlbedo", {-1, -1, -1});
                             } else

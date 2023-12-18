@@ -35,7 +35,8 @@ class Shader {
 
     fs::path getFile() const;
     const BufferLayout& getVertexBufferLayout() const;
-    const BufferLayout& getUniformBufferLayout() const;
+    const BufferLayout& getPerFrameBufferLayout() const;
+    const BufferLayout& getPerDrawBufferLayout() const;
     const BufferLayout& getImageBufferLayout() const;
 
     /**
@@ -128,9 +129,14 @@ class Shader {
     void populateVertexLayout();
 
     /**
-     * @brief Go through all shader codes to extract uniforms and populate _uniformLayout
+     * @brief Go through all shader codes to extract uniforms and populate _perFrameLayout
      */
-    void populateUniformLayout();
+    void populatePerFrameLayout();
+
+    /**
+     * @brief Go through all shader codes to extract uniforms and populate _perDrawLayout
+     */
+    void populatePerDrawLayout();
 
     /**
      * @brief Go through all shader codes to extract images and populate _imageLayout
@@ -141,9 +147,10 @@ class Shader {
     fs::path _file;
     std::string _aslCode;
 
-    BufferLayout _vertexLayout;
-    BufferLayout _uniformLayout;
-    BufferLayout _imageLayout;
+    BufferLayout _vertexLayout;   ///< Vertex layout from vertex shader input
+    BufferLayout _perFrameLayout; ///< Buffer layout from perFrame variables
+    BufferLayout _perDrawLayout;  ///< Buffer layout from perDraw variables
+    BufferLayout _imageLayout;    ///< Image layout from perDraw textures
     std::map<ShaderType, ShaderCode> _shaderCodes;
 };
 

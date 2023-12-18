@@ -16,15 +16,12 @@
 #include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/fence.h>
 #include <atta/graphics/apis/vulkan/framebuffer.h>
-#include <atta/graphics/apis/vulkan/indexBuffer.h>
 #include <atta/graphics/apis/vulkan/instance.h>
 #include <atta/graphics/apis/vulkan/physicalDevice.h>
-#include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/apis/vulkan/semaphore.h>
 #include <atta/graphics/apis/vulkan/stagingBuffer.h>
 #include <atta/graphics/apis/vulkan/surface.h>
 #include <atta/graphics/apis/vulkan/swapChain.h>
-#include <atta/graphics/apis/vulkan/vertexBuffer.h>
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
@@ -84,11 +81,8 @@ class VulkanAPI final : public GraphicsAPI {
     bool _swapChainInitialized;
     std::shared_ptr<vk::Surface> _surface;
     std::shared_ptr<vk::SwapChain> _swapChain;
-    std::vector<std::shared_ptr<vk::Framebuffer>> _framebuffers;
     std::shared_ptr<vk::RenderPass> _renderPass;
-    std::shared_ptr<vk::VertexBuffer> _vertexBuffer;
-    std::shared_ptr<vk::IndexBuffer> _indexBuffer;
-    std::shared_ptr<vk::StagingBuffer> _stagingBuffer;
+    std::vector<std::shared_ptr<vk::Framebuffer>> _framebuffers;
     std::vector<std::shared_ptr<vk::Semaphore>> _imageAvailableSemaphores;
     std::vector<std::shared_ptr<vk::Semaphore>> _renderFinishedSemaphores;
     std::vector<std::shared_ptr<vk::Fence>> _inFlightFences;
