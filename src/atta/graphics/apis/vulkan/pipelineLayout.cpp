@@ -8,7 +8,7 @@
 
 namespace atta::graphics::vk {
 
-PipelineLayout::PipelineLayout(std::shared_ptr<DescriptorSetLayout> descriptorSetLayout)
+PipelineLayout::PipelineLayout(std::shared_ptr<DescriptorSetLayout> descriptorSetLayout, std::shared_ptr<PushConstant> pushConstant)
     : _device(common::getDevice()), _descriptorSetLayout(descriptorSetLayout) {
     VkDescriptorSetLayout descriptorSetLayouts[] = {_descriptorSetLayout->getHandle()};
 
@@ -16,8 +16,10 @@ PipelineLayout::PipelineLayout(std::shared_ptr<DescriptorSetLayout> descriptorSe
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     info.setLayoutCount = 1;
     info.pSetLayouts = descriptorSetLayouts;
-    info.pushConstantRangeCount = 0;
-    info.pPushConstantRanges = nullptr;
+    if (pushConstant) {
+        info.pushConstantRangeCount = 1;
+        info.pPushConstantRanges = &pushConstant->getRange();
+    }
 
     if (vkCreatePipelineLayout(_device->getHandle(), &info, nullptr, &_pipelineLayout) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::PipelineLayout", "Failed to create pipeline layout!");

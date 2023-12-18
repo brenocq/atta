@@ -17,8 +17,14 @@ Shader::Shader(const fs::path& file) : gfx::Shader(file), _device(common::getDev
         shaderCode.apiCode = generateApiCode(type, shaderCode.iCode);
     compile();
 
-    // Create Uniform buffer
+    // Create uniform buffer
     _uniformBuffer = std::make_shared<UniformBuffer>(_perFrameLayout.getStride());
+
+    // Create push constant
+    if (_perDrawLayout.getStride() > 0)
+        _pushConstant = std::make_shared<PushConstant>(_perDrawLayout.getStride());
+    else
+        _pushConstant = nullptr;
 }
 
 Shader::~Shader() {
@@ -27,14 +33,14 @@ Shader::~Shader() {
             vkDestroyShaderModule(_device->getHandle(), shader, nullptr);
 }
 
-void Shader::setBool(const char* name, bool b) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&b), sizeof(bool)); }
-void Shader::setInt(const char* name, int i) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&i), sizeof(int)); }
-void Shader::setFloat(const char* name, float f) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&f), sizeof(float)); }
-void Shader::setVec2(const char* name, vec2 v) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec2)); }
-void Shader::setVec3(const char* name, vec3 v) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec3)); }
-void Shader::setVec4(const char* name, vec4 v) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec4)); }
-void Shader::setMat3(const char* name, mat3 m) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat3)); }
-void Shader::setMat4(const char* name, mat4 m) { updateUniformBuffer(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat4)); }
+void Shader::setBool(const char* name, bool b) { updateVariable(name, reinterpret_cast<uint8_t*>(&b), sizeof(bool)); }
+void Shader::setInt(const char* name, int i) { updateVariable(name, reinterpret_cast<uint8_t*>(&i), sizeof(int)); }
+void Shader::setFloat(const char* name, float f) { updateVariable(name, reinterpret_cast<uint8_t*>(&f), sizeof(float)); }
+void Shader::setVec2(const char* name, vec2 v) { updateVariable(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec2)); }
+void Shader::setVec3(const char* name, vec3 v) { updateVariable(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec3)); }
+void Shader::setVec4(const char* name, vec4 v) { updateVariable(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec4)); }
+void Shader::setMat3(const char* name, mat3 m) { updateVariable(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat3)); }
+void Shader::setMat4(const char* name, mat4 m) { updateVariable(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat4)); }
 void Shader::setImage(const char* name, StringId sid) {
     if (Manager::getInstance().getImages().find(sid) == Manager::getInstance().getImages().end()) {
         LOG_WARN("gfx::vk::Shader", "Could not set image [w]$0[] to uniform image [w]$1[], image not found", sid, name);
@@ -53,26 +59,33 @@ void Shader::setCubemap(const char* name, StringId sid) {
 
 void Shader::setCubemap(const char* name, std::shared_ptr<gfx::Image> image) { updateImage(name, image); }
 
-void Shader::updateUniformBuffer(const char* name, uint8_t* data, size_t size) {
-    if (_uniformBufferData.empty()) {
+void Shader::updateVariable(const char* name, uint8_t* data, size_t size) {
+    if (_uniformBufferData.empty() && _pushConstantData.empty()) {
         LOG_ERROR("gfx::vk::Shader",
-                  "Shader uniform [w]$0[] should only be set while rendering. Make sure it was called while rendering the pipeline.", name);
-        return;
-    }
-    if (!_perFrameLayout.exists(name)) {
-        LOG_WARN("gfx::vk::Shader", "Trying to update [w]$0[], but this uniform was not declared in the shader", name);
+                  "Shader variables [w]$0[] should only be set while rendering. Make sure it was called while rendering the pipeline.", name);
         return;
     }
 
-    // Find element to update
-    for (const BufferLayout::Element& element : _perFrameLayout.getElements()) {
-        if (element.name == name) {
-            // Update uniform buffer
-            for (size_t i = 0; i < size; i++)
-                _uniformBufferData[element.offset + i] = data[i];
-            return;
+    if (_perFrameLayout.exists(name)) {
+        // Update uniform buffer
+        for (const BufferLayout::Element& element : _perFrameLayout.getElements()) {
+            if (element.name == name) {
+                for (size_t i = 0; i < size; i++)
+                    _uniformBufferData[element.offset + i] = data[i];
+                return;
+            }
         }
-    }
+    } else if (_perDrawLayout.exists(name)) {
+        // Update push constant
+        for (const BufferLayout::Element& element : _perDrawLayout.getElements()) {
+            if (element.name == name) {
+                for (size_t i = 0; i < size; i++)
+                    _pushConstantData[element.offset + i] = data[i];
+                return;
+            }
+        }
+    } else
+        LOG_WARN("gfx::vk::Shader", "Trying to update [w]$0[], but this variable was not declared in the shader", name);
 }
 
 void Shader::updateImage(const char* name, std::shared_ptr<gfx::Image> image) {
@@ -117,6 +130,8 @@ std::vector<VkPipelineShaderStageCreateInfo> Shader::getShaderStages() const {
 }
 
 std::shared_ptr<UniformBuffer> Shader::getUniformBuffer() const { return _uniformBuffer; }
+
+std::shared_ptr<PushConstant> Shader::getPushConstant() const { return _pushConstant; }
 
 std::vector<std::shared_ptr<gfx::Image>> Shader::getUniformImages() const { return _uniformImages; }
 
@@ -234,16 +249,22 @@ void Shader::compile() {
 
 void Shader::bind() {
     _uniformBufferData.resize(_perFrameLayout.getStride());
+    _pushConstantData.resize(_perDrawLayout.getStride());
     _uniformImages.resize(_perFrameLayout.getElementCount());
-    // TODO point uniformImages to purple image by default
 }
 
 void Shader::unbind() {
+    _pushConstantData.clear();
     _uniformBufferData.clear();
     _uniformImages.clear();
 }
 
 void Shader::pushUniformBuffer() { _uniformBuffer->writeInstance(_uniformBufferData); }
+
+void Shader::pushConstants(VkCommandBuffer commandBuffer, std::shared_ptr<PipelineLayout> pipelineLayout) {
+    if (!_pushConstantData.empty())
+        _pushConstant->write(commandBuffer, pipelineLayout->getHandle(), _pushConstantData);
+}
 
 bool Shader::runCommand(std::string cmd) {
     std::array<char, 512> buffer;

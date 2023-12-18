@@ -127,8 +127,11 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 
     _descriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
 
+    // Push constant
+    std::shared_ptr<PushConstant> pushConstant = std::dynamic_pointer_cast<vk::Shader>(_shader)->getPushConstant();
+
     // Pipeline layout
-    _pipelineLayout = std::make_shared<PipelineLayout>(_descriptorSetLayout);
+    _pipelineLayout = std::make_shared<PipelineLayout>(_descriptorSetLayout, pushConstant);
 
     // Descriptor set
     _descriptorPool = std::make_shared<DescriptorPool>(bindings, 1);
@@ -221,7 +224,8 @@ void Pipeline::renderMesh(StringId meshSid) {
         // Get command buffer
         VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
 
-        // TODO Write push constant
+        // Write push constants
+        std::dynamic_pointer_cast<vk::Shader>(_shader)->pushConstants(commandBuffer, _pipelineLayout);
 
         // Draw mesh
         mesh->draw(commandBuffer);

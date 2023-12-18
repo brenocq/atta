@@ -8,14 +8,15 @@
 #define ATTA_GRAPHICS_APIS_VULKAN_PIPELINE_LAYOUT_H
 
 #include <atta/graphics/apis/vulkan/common.h>
-#include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/apis/vulkan/descriptorSetLayout.h>
+#include <atta/graphics/apis/vulkan/device.h>
+#include <atta/graphics/apis/vulkan/pushConstant.h>
 
 namespace atta::graphics::vk {
 
 class PipelineLayout {
   public:
-    PipelineLayout(std::shared_ptr<DescriptorSetLayout> descriptorSetLayout);
+    PipelineLayout(std::shared_ptr<DescriptorSetLayout> descriptorSetLayout, std::shared_ptr<PushConstant> pushConstant);
     ~PipelineLayout();
 
     VkPipelineLayout getHandle() const;
