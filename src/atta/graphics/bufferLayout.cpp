@@ -169,4 +169,6 @@ uint32_t BufferLayout::getStride() const {
     return stride;
 }
 
+bool BufferLayout::empty() const { return _elements.empty(); }
+
 } // namespace atta::graphics

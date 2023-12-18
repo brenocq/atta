@@ -39,6 +39,11 @@ class Pipeline {
 
     virtual void* getImGuiTexture() const = 0;
 
+    using ImageGroup = std::vector<std::pair<std::string, std::shared_ptr<Image>>>;
+    /// Image groups should be created to update images, they are grouped by perFrame and perDraw
+    virtual void createImageGroup(std::string name, ImageGroup imageGroup) = 0;
+    virtual void destroyImageGroup(std::string name) = 0;
+
     void setBool(const char* name, bool b);
     void setInt(const char* name, int i);
     void setFloat(const char* name, float f);
@@ -47,10 +52,7 @@ class Pipeline {
     void setVec4(const char* name, vec4 v);
     void setMat3(const char* name, mat3 m);
     void setMat4(const char* name, mat4 m);
-    void setImage(const char* name, StringId sid);
-    void setImage(const char* name, std::shared_ptr<Image> image);
-    void setCubemap(const char* name, StringId sid);
-    void setCubemap(const char* name, std::shared_ptr<Image> image);
+    virtual void setImageGroup(const char* name) = 0;
 
     virtual void renderMesh(StringId meshSid);
     virtual void renderQuad();

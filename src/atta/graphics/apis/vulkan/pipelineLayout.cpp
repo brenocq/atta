@@ -8,14 +8,16 @@
 
 namespace atta::graphics::vk {
 
-PipelineLayout::PipelineLayout(std::shared_ptr<DescriptorSetLayout> descriptorSetLayout, std::shared_ptr<PushConstant> pushConstant)
-    : _device(common::getDevice()), _descriptorSetLayout(descriptorSetLayout) {
-    VkDescriptorSetLayout descriptorSetLayouts[] = {_descriptorSetLayout->getHandle()};
+PipelineLayout::PipelineLayout(std::vector<std::shared_ptr<DescriptorSetLayout>> descriptorSetLayouts, std::shared_ptr<PushConstant> pushConstant)
+    : _device(common::getDevice()), _descriptorSetLayouts(descriptorSetLayouts) {
+    std::vector<VkDescriptorSetLayout> descriptorSetLayoutHandles;
+    for (const auto& descSet : descriptorSetLayouts)
+        descriptorSetLayoutHandles.push_back(descSet->getHandle());
 
     VkPipelineLayoutCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    info.setLayoutCount = 1;
-    info.pSetLayouts = descriptorSetLayouts;
+    info.setLayoutCount = descriptorSetLayoutHandles.size();
+    info.pSetLayouts = descriptorSetLayoutHandles.data();
     if (pushConstant) {
         info.pushConstantRangeCount = 1;
         info.pPushConstantRanges = &pushConstant->getRange();

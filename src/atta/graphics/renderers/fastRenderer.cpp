@@ -99,7 +99,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                         if (material) {
                             if (material->colorIsImage()) {
                                 // _geometryPipeline->bindImageGroup("myMaterial");
-                                _geometryPipeline->setImage("uAlbedoTexture", material->colorImage);
+                                // _geometryPipeline->setImage("uAlbedoTexture", material->colorImage);
                                 _geometryPipeline->setVec3("uAlbedo", {-1, -1, -1});
                             } else
                                 _geometryPipeline->setVec3("uAlbedo", material->color);

@@ -41,23 +41,6 @@ void Shader::setVec3(const char* name, vec3 v) { updateVariable(name, reinterpre
 void Shader::setVec4(const char* name, vec4 v) { updateVariable(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec4)); }
 void Shader::setMat3(const char* name, mat3 m) { updateVariable(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat3)); }
 void Shader::setMat4(const char* name, mat4 m) { updateVariable(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat4)); }
-void Shader::setImage(const char* name, StringId sid) {
-    if (Manager::getInstance().getImages().find(sid) == Manager::getInstance().getImages().end()) {
-        LOG_WARN("gfx::vk::Shader", "Could not set image [w]$0[] to uniform image [w]$1[], image not found", sid, name);
-        return;
-    }
-    updateImage(name, Manager::getInstance().getImages().at(sid));
-}
-void Shader::setImage(const char* name, std::shared_ptr<gfx::Image> image) { updateImage(name, image); }
-void Shader::setCubemap(const char* name, StringId sid) {
-    if (Manager::getInstance().getImages().find(sid) == Manager::getInstance().getImages().end()) {
-        LOG_WARN("gfx::vk::Shader", "Could not set cubemap [w]$0[] to uniform image [w]$1[], image not found", sid, name);
-        return;
-    }
-    updateImage(name, Manager::getInstance().getImages().at(sid));
-}
-
-void Shader::setCubemap(const char* name, std::shared_ptr<gfx::Image> image) { updateImage(name, image); }
 
 void Shader::updateVariable(const char* name, uint8_t* data, size_t size) {
     if (_uniformBufferData.empty() && _pushConstantData.empty()) {
@@ -86,23 +69,6 @@ void Shader::updateVariable(const char* name, uint8_t* data, size_t size) {
         }
     } else
         LOG_WARN("gfx::vk::Shader", "Trying to update [w]$0[], but this variable was not declared in the shader", name);
-}
-
-void Shader::updateImage(const char* name, std::shared_ptr<gfx::Image> image) {
-    if (!_imageLayout.exists(name)) {
-        LOG_WARN("gfx::vk::Shader", "Trying to update [w]$0[], but this uniform image was not declared in the shader", name);
-        return;
-    }
-
-    // Find element to update
-    size_t idx = 0;
-    for (const BufferLayout::Element& element : _imageLayout.getElements()) {
-        if (element.name == name) {
-            _uniformImages[idx] = image;
-            return;
-        }
-        idx++;
-    }
 }
 
 std::vector<VkPipelineShaderStageCreateInfo> Shader::getShaderStages() const {
@@ -157,11 +123,21 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
         apiCode += "} push;\n\n";
     }
 
-    // TODO Uniform image sampler
-    size_t bindingIdx = 1;
-    for (const BufferLayout::Element& element : _imageLayout.getElements()) {
-        apiCode += "layout(binding = " + std::to_string(bindingIdx) + ") uniform " + BufferLayout::Element::typeToString(element.type) + " " +
-                   element.name + ";\n\n";
+    // Uniform image samplers
+    size_t setIdx = 1; /// Assume first descriptor set will exist for the uniform buffer
+    size_t bindingIdx = 0;
+    for (const BufferLayout::Element& element : _perFrameImageLayout.getElements()) {
+        apiCode += "layout(set = " + std::to_string(setIdx) + ", binding = " + std::to_string(bindingIdx) + ") uniform " +
+                   BufferLayout::Element::typeToString(element.type) + " " + element.name + ";\n";
+        bindingIdx++;
+    }
+    if (!_perFrameImageLayout.empty()) {
+        setIdx++;
+        bindingIdx = 0;
+    }
+    for (const BufferLayout::Element& element : _perDrawImageLayout.getElements()) {
+        apiCode += "layout(set = " + std::to_string(setIdx) + ", binding = " + std::to_string(bindingIdx) + ") uniform " +
+                   BufferLayout::Element::typeToString(element.type) + " " + element.name + ";\n";
         bindingIdx++;
     }
 

@@ -37,9 +37,10 @@ Shader::Shader(const fs::path& file) : _file(file) {
 fs::path Shader::getFile() const { return _file; }
 
 const BufferLayout& Shader::getVertexBufferLayout() const { return _vertexLayout; }
-const BufferLayout& Shader::getPerFrameBufferLayout() const { return _perFrameLayout; }
-const BufferLayout& Shader::getPerDrawBufferLayout() const { return _perDrawLayout; }
-const BufferLayout& Shader::getImageBufferLayout() const { return _imageLayout; }
+const BufferLayout& Shader::getPerFrameLayout() const { return _perFrameLayout; }
+const BufferLayout& Shader::getPerDrawLayout() const { return _perDrawLayout; }
+const BufferLayout& Shader::getPerFrameImageLayout() const { return _perFrameImageLayout; }
+const BufferLayout& Shader::getPerDrawImageLayout() const { return _perDrawImageLayout; }
 
 void Shader::processASL() {
     LOG_DEBUG("gfx::Shader", "Preprocess ASL: [w]$0", _file.string());
@@ -50,14 +51,8 @@ void Shader::processASL() {
     // Populate vertex layout
     populateVertexLayout();
 
-    // Populate perFrame layout
-    populatePerFrameLayout();
-
-    // Populate perDraw layout
-    populatePerDrawLayout();
-
-    // Populate uniform layout
-    populateImageLayout();
+    // Populate descriptor layouts
+    populateDescriptorLayouts();
 
     // Process ASL code to generate ICode and APICode
     _shaderCodes.clear();
@@ -293,58 +288,30 @@ void Shader::populateVertexLayout() {
     }
 }
 
-void Shader::populatePerFrameLayout() {
-    std::regex regex(R"(\bperFrame\s+(\w+)\s+(\w+)\s*;)");
+void Shader::populateDescriptorLayouts() {
+    std::regex regex(R"(\b(perFrame|perDraw)\s+(\w+)\s+(\w+)\s*;)");
     std::smatch match;
 
     auto start = _aslCode.cbegin();
     auto end = _aslCode.cend();
     while (std::regex_search(start, end, match, regex)) {
-        std::string type = match[1];
-        std::string name = match[2];
-        if (type != "sampler2D" && type != "samplerCube") {
-            LOG_DEBUG("Shader", "Found perFrame: $0 $1", type, name);
-            BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
-            _perFrameLayout.push(t, name);
-        }
-
-        // Move to the next match
-        start = match.suffix().first;
-    }
-}
-
-void Shader::populatePerDrawLayout() {
-    std::regex regex(R"(\bperDraw\s+(\w+)\s+(\w+)\s*;)");
-    std::smatch match;
-
-    auto start = _aslCode.cbegin();
-    auto end = _aslCode.cend();
-    while (std::regex_search(start, end, match, regex)) {
-        std::string type = match[1];
-        std::string name = match[2];
-        if (type != "sampler2D" && type != "samplerCube") {
-            LOG_DEBUG("Shader", "Found perDraw: $0 $1", type, name);
-            BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
-            _perDrawLayout.push(t, name);
-        }
-
-        // Move to the next match
-        start = match.suffix().first;
-    }
-}
-
-void Shader::populateImageLayout() {
-    std::regex regex(R"(\buniform\s+(sampler2D|samplerCube)\s+(\w+)\s*;)");
-    std::smatch match;
-
-    auto start = _aslCode.cbegin();
-    auto end = _aslCode.cend();
-    while (std::regex_search(start, end, match, regex)) {
-        std::string type = match[1];
-        std::string name = match[2];
-        // LOG_DEBUG("Shader", "Found image uniform: $0 $1", type, name);
+        std::string freq = match[1];
+        std::string type = match[2];
+        std::string name = match[3];
         BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
-        _imageLayout.push(t, name);
+
+        if (type == "sampler2D" || type == "samplerCube") {
+            if (freq == "perFrame")
+                _perFrameImageLayout.push(t, name);
+            else if (freq == "perDraw")
+                _perDrawImageLayout.push(t, name);
+
+        } else {
+            if (freq == "perFrame")
+                _perFrameLayout.push(t, name);
+            else if (freq == "perDraw")
+                _perDrawLayout.push(t, name);
+        }
 
         // Move to the next match
         start = match.suffix().first;

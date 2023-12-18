@@ -67,27 +67,21 @@ void VulkanAPI::startUp() {
         fb->create(_renderPass);
 
     //----- UI Descriptor Pool -----//
-    std::vector<VkDescriptorType> descriptorTypes = {
-        VK_DESCRIPTOR_TYPE_SAMPLER,
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-        VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-        VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER,
-        VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
-        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
-        VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
+    uint32_t maxSize = 1000;
+    std::vector<VkDescriptorPoolSize> poolSizes = {
+        {VK_DESCRIPTOR_TYPE_SAMPLER, maxSize},
+        {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, maxSize},
+        {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, maxSize},
+        {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, maxSize},
+        {VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, maxSize},
+        {VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, maxSize},
+        {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, maxSize},
+        {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, maxSize},
+        {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, maxSize},
+        {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, maxSize},
+        {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, maxSize},
     };
-    std::vector<vk::DescriptorSetLayout::Binding> uiDescriptorBindings;
-    for (VkDescriptorType type : descriptorTypes) {
-        vk::DescriptorSetLayout::Binding b{};
-        b.descriptorCount = 1;
-        b.type = type;
-        uiDescriptorBindings.push_back(b);
-    }
-    _uiDescriptorPool = std::make_shared<vk::DescriptorPool>(uiDescriptorBindings, 1000);
+    _uiDescriptorPool = std::make_shared<vk::DescriptorPool>(poolSizes, maxSize);
 
     LOG_SUCCESS("gfx::VulkanAPI", "Initialized");
 }

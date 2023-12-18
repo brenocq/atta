@@ -434,7 +434,7 @@ void PbrRenderer::irradianceCubemap() {
     info.numMipLevels = 1;
     info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
         if (mipLevel == 0 && face == 0) {
-            shader->setCubemap("environmentMap", _lastEnvironmentMap);
+            // TODO shader->setCubemap("environmentMap", _lastEnvironmentMap);
             shader->setMat4("projection", transpose(proj));
         }
         shader->setMat4("view", transpose(view));
@@ -455,7 +455,7 @@ void PbrRenderer::prefilterCubemap() {
     info.numMipLevels = 5;
     info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
         if (mipLevel == 0 && face == 0) {
-            shader->setCubemap("environmentMap", _lastEnvironmentMap);
+            // TODO shader->setCubemap("environmentMap", _lastEnvironmentMap);
             shader->setMat4("projection", transpose(proj));
         }
 

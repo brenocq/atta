@@ -28,16 +28,13 @@ class Shader {
     virtual void setVec4(const char* name, vec4 v) = 0;
     virtual void setMat3(const char* name, mat3 m) = 0;
     virtual void setMat4(const char* name, mat4 m) = 0;
-    virtual void setImage(const char* name, StringId sid) = 0;
-    virtual void setImage(const char* name, std::shared_ptr<Image> image) = 0;
-    virtual void setCubemap(const char* name, StringId sid) = 0;
-    virtual void setCubemap(const char* name, std::shared_ptr<Image> image) = 0;
 
     fs::path getFile() const;
     const BufferLayout& getVertexBufferLayout() const;
-    const BufferLayout& getPerFrameBufferLayout() const;
-    const BufferLayout& getPerDrawBufferLayout() const;
-    const BufferLayout& getImageBufferLayout() const;
+    const BufferLayout& getPerFrameLayout() const;
+    const BufferLayout& getPerDrawLayout() const;
+    const BufferLayout& getPerFrameImageLayout() const;
+    const BufferLayout& getPerDrawImageLayout() const;
 
     /**
      * @brief Shader type
@@ -123,34 +120,21 @@ class Shader {
      */
     std::string removeUnusedFunctions(std::string code);
 
-    /**
-     * @brief Process vertex input from _aslCode and populate _vertexLayout
-     */
+    /// Process vertex input from _aslCode and populate _vertexLayout
     void populateVertexLayout();
 
-    /**
-     * @brief Go through all shader codes to extract uniforms and populate _perFrameLayout
-     */
-    void populatePerFrameLayout();
-
-    /**
-     * @brief Go through all shader codes to extract uniforms and populate _perDrawLayout
-     */
-    void populatePerDrawLayout();
-
-    /**
-     * @brief Go through all shader codes to extract images and populate _imageLayout
-     */
-    void populateImageLayout();
+    /// Go through all shader codes to extract variables and images to populate perDraw and perFrame layouts
+    void populateDescriptorLayouts();
 
   protected:
     fs::path _file;
     std::string _aslCode;
 
-    BufferLayout _vertexLayout;   ///< Vertex layout from vertex shader input
-    BufferLayout _perFrameLayout; ///< Buffer layout from perFrame variables
-    BufferLayout _perDrawLayout;  ///< Buffer layout from perDraw variables
-    BufferLayout _imageLayout;    ///< Image layout from perDraw textures
+    BufferLayout _vertexLayout;        ///< Vertex layout from vertex shader input
+    BufferLayout _perFrameLayout;      ///< Buffer layout from perFrame variables
+    BufferLayout _perDrawLayout;       ///< Buffer layout from perDraw variables
+    BufferLayout _perFrameImageLayout; ///< Image layout from perFrame textures
+    BufferLayout _perDrawImageLayout;  ///< Image layout from perDraw textures
     std::map<ShaderType, ShaderCode> _shaderCodes;
 };
 

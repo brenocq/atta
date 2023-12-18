@@ -52,6 +52,8 @@ class BufferLayout final {
     uint32_t getElementCount() const;
     /// Get buffer stride in bytes (aligned sum of the size of all elements)
     uint32_t getStride() const;
+    /// Check if buffer layout is empty (no elements)
+    bool empty() const;
 
   private:
     std::vector<Element> _elements; ///< Elements in the buffer

@@ -26,4 +26,10 @@ void* Pipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_renderPass->getFramebuffer()->getImage(0))->getImGuiImage());
 }
 
+void Pipeline::createImageGroup(std::string name, ImageGroup imageGroup) { LOG_WARN("gfx::gl::Pipeline", "createImageGroup not implemented yet"); }
+
+void Pipeline::destroyImageGroup(std::string name) { LOG_WARN("gfx::gl::Pipeline", "destroyImageGroup not implemented yet"); }
+
+void Pipeline::setImageGroup(const char* name) { LOG_WARN("gfx::gl::Pipeline", "setImageGroup not implemented yet"); }
+
 } // namespace atta::graphics::gl

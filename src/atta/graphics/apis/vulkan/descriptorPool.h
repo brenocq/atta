@@ -15,7 +15,7 @@ namespace atta::graphics::vk {
 
 class DescriptorPool {
   public:
-    DescriptorPool(std::vector<DescriptorSetLayout::Binding> descriptorBindings, size_t maxSets);
+    DescriptorPool(std::vector<VkDescriptorPoolSize> poolSizes, size_t maxSets);
     ~DescriptorPool();
 
     VkDescriptorPool getHandle() const;

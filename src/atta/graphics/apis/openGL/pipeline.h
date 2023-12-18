@@ -23,6 +23,11 @@ class Pipeline final : public gfx::Pipeline {
     void resize(uint32_t width, uint32_t height) override;
 
     void* getImGuiTexture() const override;
+
+    void createImageGroup(std::string name, ImageGroup imageGroup) override;
+    void destroyImageGroup(std::string name) override;
+
+    void setImageGroup(const char* name) override;
 };
 
 } // namespace atta::graphics::gl

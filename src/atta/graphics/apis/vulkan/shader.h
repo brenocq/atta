@@ -34,10 +34,6 @@ class Shader final : public gfx::Shader {
     void setVec4(const char* name, vec4 v) override;
     void setMat3(const char* name, mat3 m) override;
     void setMat4(const char* name, mat4 m) override;
-    void setImage(const char* name, StringId sid) override;
-    void setImage(const char* name, std::shared_ptr<gfx::Image> image) override;
-    void setCubemap(const char* name, StringId sid) override;
-    void setCubemap(const char* name, std::shared_ptr<gfx::Image> image) override;
 
     std::vector<VkPipelineShaderStageCreateInfo> getShaderStages() const;
     std::shared_ptr<UniformBuffer> getUniformBuffer() const;

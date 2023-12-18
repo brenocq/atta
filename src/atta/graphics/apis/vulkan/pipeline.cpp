@@ -114,27 +114,62 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates = dynamicStates.data();
 
-    // Descriptor set layout
-    std::vector<DescriptorSetLayout::Binding> bindings;
-    bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
-    for (const auto& element : _shader->getImageBufferLayout().getElements()) {
-        uint32_t bindingIdx = bindings.size();
-        if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
-            bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
-        else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
-            bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+    // Descriptor set layouts
+    std::vector<std::shared_ptr<DescriptorSetLayout>> descriptorSetLayouts;
+    {
+        // Uniform
+        std::vector<DescriptorSetLayout::Binding> bindings;
+        bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+        _descriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
+        descriptorSetLayouts.push_back(_descriptorSetLayout);
     }
-
-    _descriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
+    {
+        // Per frame images
+        std::vector<DescriptorSetLayout::Binding> bindings;
+        for (const auto& element : _shader->getPerFrameImageLayout().getElements()) {
+            uint32_t bindingIdx = bindings.size();
+            if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
+                bindings.push_back(
+                    {bindingIdx, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+            else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
+                bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+        }
+        if (bindings.size()) {
+            _perFrameImageDescriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
+            descriptorSetLayouts.push_back(_perFrameImageDescriptorSetLayout);
+        }
+    }
+    {
+        // Per draw images
+        std::vector<DescriptorSetLayout::Binding> bindings;
+        for (const auto& element : _shader->getPerDrawImageLayout().getElements()) {
+            uint32_t bindingIdx = bindings.size();
+            if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
+                bindings.push_back(
+                    {bindingIdx, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+            else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
+                bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
+        }
+        if (bindings.size()) {
+            _perDrawImageDescriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
+            descriptorSetLayouts.push_back(_perDrawImageDescriptorSetLayout);
+        }
+    }
 
     // Push constant
     std::shared_ptr<PushConstant> pushConstant = std::dynamic_pointer_cast<vk::Shader>(_shader)->getPushConstant();
 
     // Pipeline layout
-    _pipelineLayout = std::make_shared<PipelineLayout>(_descriptorSetLayout, pushConstant);
+    _pipelineLayout = std::make_shared<PipelineLayout>(descriptorSetLayouts, pushConstant);
 
     // Descriptor set
-    _descriptorPool = std::make_shared<DescriptorPool>(bindings, 1);
+    const uint32_t maxSets = 254; // Maximum number of image groups
+    std::vector<VkDescriptorPoolSize> poolSizes = {
+        {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},                   // Up to 1 uniform buffer
+        {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8 * maxSets}, // Up to 8 sampler2D perDraw/perFrame
+        {VK_DESCRIPTOR_TYPE_SAMPLER, 8 * maxSets},                // Up to 8 samplerCube perDraw/perFrame
+    };
+    _descriptorPool = std::make_shared<DescriptorPool>(poolSizes, maxSets);
     _descriptorSets = std::make_shared<DescriptorSets>(_descriptorPool, _descriptorSetLayout, _pipelineLayout, 1);
     _descriptorSets->update(0, std::dynamic_pointer_cast<vk::Shader>(_shader)->getUniformBuffer());
 
@@ -235,6 +270,24 @@ void Pipeline::renderMesh(StringId meshSid) {
 
 void* Pipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_framebuffers[0]->getImage(0))->getImGuiImage());
+}
+
+void Pipeline::createImageGroup(std::string name, ImageGroup imageGroup) {
+    // TODO Detect descriptor set
+
+    // TODO Allocate descriptor set
+
+    // TODO Update image groups
+}
+
+void Pipeline::destroyImageGroup(std::string name) {
+    // TODO Free descriptor set
+
+    // TODO Update image groups
+}
+
+void Pipeline::setImageGroup(const char* name) {
+    // TODO Bind descriptor set
 }
 
 VkPipeline Pipeline::getHandle() const { return _pipeline; }

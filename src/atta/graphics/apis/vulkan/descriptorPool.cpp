@@ -8,11 +8,7 @@
 
 namespace atta::graphics::vk {
 
-DescriptorPool::DescriptorPool(std::vector<DescriptorSetLayout::Binding> descriptorBindings, size_t maxSets) : _device(common::getDevice()) {
-    std::vector<VkDescriptorPoolSize> poolSizes;
-    for (auto binding : descriptorBindings)
-        poolSizes.push_back(VkDescriptorPoolSize{binding.type, static_cast<uint32_t>(binding.descriptorCount * maxSets)});
-
+DescriptorPool::DescriptorPool(std::vector<VkDescriptorPoolSize> poolSizes, size_t maxSets) : _device(common::getDevice()) {
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());

@@ -16,7 +16,7 @@ namespace atta::graphics::vk {
 
 class PipelineLayout {
   public:
-    PipelineLayout(std::shared_ptr<DescriptorSetLayout> descriptorSetLayout, std::shared_ptr<PushConstant> pushConstant);
+    PipelineLayout(std::vector<std::shared_ptr<DescriptorSetLayout>> descriptorSetLayouts, std::shared_ptr<PushConstant> pushConstant);
     ~PipelineLayout();
 
     VkPipelineLayout getHandle() const;
@@ -24,7 +24,7 @@ class PipelineLayout {
   private:
     VkPipelineLayout _pipelineLayout;
     std::shared_ptr<Device> _device;
-    std::shared_ptr<DescriptorSetLayout> _descriptorSetLayout;
+    std::vector<std::shared_ptr<DescriptorSetLayout>> _descriptorSetLayouts;
 };
 
 } // namespace atta::graphics::vk
