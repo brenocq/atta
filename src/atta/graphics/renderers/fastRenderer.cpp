@@ -32,11 +32,10 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
     framebufferInfo.height = 500;
     framebufferInfo.clearColor = {0.3f, 0.3f, 0.3f, 1.0f};
     framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
-    std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
     // Render Pass
     RenderPass::CreateInfo renderPassInfo{};
-    renderPassInfo.framebuffer = framebuffer;
+    renderPassInfo.framebuffer = graphics::create<Framebuffer>(framebufferInfo);
     renderPassInfo.debugName = StringId("FastRenderer RenderPass");
     _renderPass = graphics::create<RenderPass>(renderPassInfo);
 

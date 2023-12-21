@@ -153,7 +153,7 @@ void Manager::createDefaultViewportsImpl() {
     _viewportsNext.clear();
 
     Viewport::CreateInfo viewportInfo;
-    viewportInfo.renderer = std::make_shared<FastRenderer>();
+    viewportInfo.renderer = std::make_shared<PhongRenderer>();
     viewportInfo.camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
     viewportInfo.sid = StringId("Main Viewport");
     _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));

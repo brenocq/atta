@@ -60,27 +60,56 @@ uint32_t BufferLayout::Element::sizeFromType(Type type) {
     return 0;
 }
 
-uint32_t BufferLayout::Element::alignmentFromType(Type type) {
-    switch (type) {
-        case Type::BOOL:
-        case Type::SAMPLER_2D:
-        case Type::SAMPLER_CUBE:
-            return 1;
-        case Type::INT:
-        case Type::UINT:
-        case Type::FLOAT:
-        case Type::VEC2:
-        case Type::VEC3:
-        case Type::VEC4:
-        case Type::IVEC2:
-        case Type::IVEC3:
-        case Type::IVEC4:
-        case Type::MAT3:
-        case Type::MAT4:
-            return 4;
-        default:
-            LOG_WARN("gfx::BufferLayout::Element", "Trying to get alignment of unknown type");
-            return 0;
+uint32_t BufferLayout::Element::alignmentFromType(AlignmentType alignmentType, Type type) {
+    switch (alignmentType) {
+        case AlignmentType::DEFAULT: {
+            switch (type) {
+                case Type::BOOL:
+                case Type::SAMPLER_2D:
+                case Type::SAMPLER_CUBE:
+                    return 1;
+                case Type::INT:
+                case Type::UINT:
+                case Type::FLOAT:
+                case Type::VEC2:
+                case Type::VEC3:
+                case Type::VEC4:
+                case Type::IVEC2:
+                case Type::IVEC3:
+                case Type::IVEC4:
+                case Type::MAT3:
+                case Type::MAT4:
+                    return 4;
+                default:
+                    LOG_WARN("gfx::BufferLayout::Element", "Trying to get alignment of unknown type");
+                    return 0;
+            }
+        }
+        case AlignmentType::GLSL: {
+            switch (type) {
+                case Type::BOOL:
+                case Type::SAMPLER_2D:
+                case Type::SAMPLER_CUBE:
+                    return 1;
+                case Type::INT:
+                case Type::UINT:
+                case Type::FLOAT:
+                    return 4;
+                case Type::VEC2:
+                case Type::IVEC2:
+                    return 8;
+                case Type::VEC3:
+                case Type::VEC4:
+                case Type::IVEC3:
+                case Type::IVEC4:
+                case Type::MAT3:
+                case Type::MAT4:
+                    return 16;
+                default:
+                    LOG_WARN("gfx::BufferLayout::Element", "Trying to get alignment of unknown type");
+                    return 0;
+            }
+        }
     }
     return 0;
 }
@@ -117,10 +146,9 @@ uint32_t BufferLayout::Element::componentCountFromType(Type type) {
 //----------------------------------//
 //---------- BufferLayout ----------//
 //----------------------------------//
-BufferLayout::BufferLayout(const std::initializer_list<Element>& elements) {
-    for (const auto& element : elements)
-        push(element.type, element.name);
-}
+BufferLayout::BufferLayout(AlignmentType alignmentType) : _alignmentType(alignmentType) {}
+
+void BufferLayout::setAlignmentType(AlignmentType alignmentType) { _alignmentType = alignmentType; }
 
 void BufferLayout::push(Element::Type type, std::string name, uint32_t customAlign) {
     if (type == Element::Type::NONE || exists(name))
@@ -134,7 +162,7 @@ void BufferLayout::push(Element::Type type, std::string name, uint32_t customAli
     if (_elements.empty())
         e.offset = 0;
     else {
-        uint32_t align = customAlign ? customAlign : Element::alignmentFromType(type);
+        uint32_t align = customAlign ? customAlign : Element::alignmentFromType(_alignmentType, type);
         uint32_t offset = _elements.back().offset + _elements.back().size;
         e.offset = (offset + align - 1) & ~(align - 1);
     }
@@ -160,7 +188,7 @@ uint32_t BufferLayout::getStride() const {
     // Get buffer alignment (largest type alignment)
     uint32_t bufferAlignment = 0;
     for (auto& element : _elements)
-        bufferAlignment = std::max(bufferAlignment, Element::alignmentFromType(element.type));
+        bufferAlignment = std::max(bufferAlignment, Element::alignmentFromType(_alignmentType, element.type));
 
     // Align buffer
     uint32_t stride = _elements.back().offset + _elements.back().size;

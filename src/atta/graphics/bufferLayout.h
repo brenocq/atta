@@ -11,6 +11,16 @@ namespace atta::graphics {
 
 class BufferLayout final {
   public:
+    /**
+     * @brief Alignment type to be used when building the buffer layout
+     *
+     * The default alignment type is the same used by the C++ standard, and it is used for buffers that can be tightly packed. The GLSL alignment type
+     * is used mainly when sending data to shaders, they differ mainly by the VEC3/MAT3/MAT4 alignment
+     *
+     * @warning The alignment type should be set before pushing types
+     */
+    enum class AlignmentType { DEFAULT = 0, GLSL };
+
     struct Element {
         enum class Type { NONE = 0, BOOL, INT, UINT, FLOAT, VEC2, VEC3, VEC4, IVEC2, IVEC3, IVEC4, MAT3, MAT4, SAMPLER_2D, SAMPLER_CUBE };
 
@@ -26,14 +36,16 @@ class BufferLayout final {
         /// Type size in bytes
         static uint32_t sizeFromType(Type type);
         /// Type alignment in bytes
-        static uint32_t alignmentFromType(Type type);
+        static uint32_t alignmentFromType(AlignmentType alignmentType, Type type);
         /// Number of component in the type (FLOAT -> 1, VEC2 -> 2, MAT4 -> 16, ...)
         static uint32_t componentCountFromType(Type type);
     };
 
-    BufferLayout() = default;
-    BufferLayout(const std::initializer_list<Element>& elements);
+    BufferLayout(AlignmentType alignmentType = AlignmentType::DEFAULT);
     ~BufferLayout() = default;
+
+    /// Set alignment type
+    void setAlignmentType(AlignmentType alignmentType);
 
     /**
      * @brief Push element
@@ -47,18 +59,24 @@ class BufferLayout final {
      * @param align Custom element alignment, set to 0 to type alignment
      */
     void push(Element::Type type, std::string name, uint32_t customAlign = 0);
+
     /// Get elements
     const std::vector<Element>& getElements() const;
+
     /// Check if element exists in the buffer
     bool exists(std::string name) const;
+
     /// Get number of elements
     uint32_t getElementCount() const;
+
     /// Get buffer stride in bytes (aligned sum of the size of all elements)
     uint32_t getStride() const;
+
     /// Check if buffer layout is empty (no elements)
     bool empty() const;
 
   private:
+    AlignmentType _alignmentType;   ///< How the elements should be aligned in the buffer
     std::vector<Element> _elements; ///< Elements in the buffer
 };
 

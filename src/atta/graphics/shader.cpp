@@ -31,6 +31,13 @@ Shader::Shader(const fs::path& file) : _file(file) {
     f.close();
     _aslCode = ss.str();
 
+    // Set buffer layout alignment
+    _vertexLayout.setAlignmentType(BufferLayout::AlignmentType::DEFAULT);
+    _perFrameLayout.setAlignmentType(BufferLayout::AlignmentType::GLSL);
+    _perDrawLayout.setAlignmentType(BufferLayout::AlignmentType::GLSL);
+    _perFrameImageLayout.setAlignmentType(BufferLayout::AlignmentType::GLSL);
+    _perDrawImageLayout.setAlignmentType(BufferLayout::AlignmentType::GLSL);
+
     processASL();
 }
 
