@@ -39,11 +39,14 @@ class BufferLayout final {
      * @brief Push element
      *
      * @note The element will not be pushed if the type is NONE, of if the name is duplicated
+     * @note The custom alignment is useful when working with structs. The type alignment of the first struct element may differ from the struct
+     * alignment
      *
      * @param type Element type
      * @param name Element name
+     * @param align Custom element alignment, set to 0 to type alignment
      */
-    void push(Element::Type type, std::string name);
+    void push(Element::Type type, std::string name, uint32_t customAlign = 0);
     /// Get elements
     const std::vector<Element>& getElements() const;
     /// Check if element exists in the buffer

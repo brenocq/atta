@@ -39,8 +39,14 @@ void Shader::setFloat(const char* name, float f) { updateVariable(name, reinterp
 void Shader::setVec2(const char* name, vec2 v) { updateVariable(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec2)); }
 void Shader::setVec3(const char* name, vec3 v) { updateVariable(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec3)); }
 void Shader::setVec4(const char* name, vec4 v) { updateVariable(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec4)); }
-void Shader::setMat3(const char* name, mat3 m) { updateVariable(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat3)); }
-void Shader::setMat4(const char* name, mat4 m) { updateVariable(name, reinterpret_cast<uint8_t*>(&m), sizeof(mat4)); }
+void Shader::setMat3(const char* name, mat3 m) {
+    mat3 mt = transpose(m); // GLSL uses column-major instead of row-major
+    updateVariable(name, reinterpret_cast<uint8_t*>(&mt), sizeof(mat3));
+}
+void Shader::setMat4(const char* name, mat4 m) {
+    mat4 mt = transpose(m); // GLSL uses column-major instead of row-major
+    updateVariable(name, reinterpret_cast<uint8_t*>(&mt), sizeof(mat4));
+}
 
 void Shader::updateVariable(const char* name, uint8_t* data, size_t size) {
     if (_uniformBufferData.empty() && _pushConstantData.empty()) {

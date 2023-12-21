@@ -7,11 +7,24 @@
 #include <atta/graphics/interface.h>
 #include <atta/graphics/pipeline.h>
 
+#include <atta/resource/interface.h>
+
+#include <atta/event/events/materialCreate.h>
+#include <atta/event/events/materialDestroy.h>
+#include <atta/event/events/materialUpdate.h>
+
 namespace atta::graphics {
 
 Pipeline::Pipeline(const CreateInfo& info)
     : _shader(info.shader), _renderPass(info.renderPass), _primitiveTopology(info.primitiveTopology), _backfaceCulling(info.backfaceCulling),
-      _wireframe(info.wireframe), _lineWidth(info.lineWidth), _debugName(info.debugName) {}
+      _wireframe(info.wireframe), _lineWidth(info.lineWidth), _debugName(info.debugName) {
+    //---------- Track material update ----------//
+    event::subscribe<event::MaterialCreate>(BIND_EVENT_FUNC(Pipeline::onMaterialCreate));
+    event::subscribe<event::MaterialDestroy>(BIND_EVENT_FUNC(Pipeline::onMaterialDestroy));
+    event::subscribe<event::MaterialUpdate>(BIND_EVENT_FUNC(Pipeline::onMaterialUpdate));
+    for (StringId materialSid : resource::getResources<resource::Material>())
+        _imageGroupsToCreate.insert(materialSid);
+}
 
 void Pipeline::setBool(const char* name, bool b) { _shader->setBool(name, b); }
 void Pipeline::setInt(const char* name, int i) { _shader->setInt(name, i); }
@@ -32,5 +45,47 @@ void Pipeline::renderCube() { LOG_WARN("Pipeline", "[w]renderCube[] was not impl
 std::shared_ptr<Shader> Pipeline::getShader() const { return _shader; };
 std::shared_ptr<RenderPass> Pipeline::getRenderPass() const { return _renderPass; };
 StringId Pipeline::getDebugName() const { return _debugName; }
+
+Pipeline::ImageGroupItem::ImageGroupItem(std::string name_, std::shared_ptr<Image> image_) : name(name_), image(image_) {}
+Pipeline::ImageGroupItem::ImageGroupItem(std::string name_, StringId image_) : name(name_) {
+    const auto& images = gfx::Manager::getInstance().getImages();
+    if (images.find(image_) == images.end()) {
+        LOG_WARN("gfx::Pipeline::ImageGroupItem", "Could not find image [w]$0[]", image_);
+        return;
+    }
+    image = images.at(image_);
+}
+
+void Pipeline::updateImageGroupsFromMaterials(ImageGroupFromMaterialFunc func) {
+    for (StringId sid : _imageGroupsToDestroy)
+        destroyImageGroup(sid.getString());
+    for (StringId sid : _imageGroupsToCreate)
+        createImageGroup(Pipeline::ImageGroupType::PER_DRAW, sid.getString());
+    for (StringId sid : _imageGroupsToUpdate) {
+        resource::Material* m = resource::get<resource::Material>(sid);
+        updateImageGroup(sid.getString(), func(m));
+    }
+    _imageGroupsToDestroy.clear();
+    _imageGroupsToUpdate.clear();
+    _imageGroupsToCreate.clear();
+}
+
+void Pipeline::onMaterialCreate(event::Event& event) {
+    event::MaterialCreate& e = reinterpret_cast<event::MaterialCreate&>(event);
+    _imageGroupsToCreate.insert(e.sid);
+    _imageGroupsToUpdate.insert(e.sid);
+}
+
+void Pipeline::onMaterialDestroy(event::Event& event) {
+    event::MaterialDestroy& e = reinterpret_cast<event::MaterialDestroy&>(event);
+    _imageGroupsToDestroy.insert(e.sid);
+    _imageGroupsToCreate.erase(e.sid);
+    _imageGroupsToUpdate.erase(e.sid);
+}
+
+void Pipeline::onMaterialUpdate(event::Event& event) {
+    event::MaterialUpdate& e = reinterpret_cast<event::MaterialUpdate&>(event);
+    _imageGroupsToUpdate.insert(e.sid);
+}
 
 } // namespace atta::graphics

@@ -7,9 +7,11 @@
 #ifndef ATTA_GRAPHICS_PIPELINE_H
 #define ATTA_GRAPHICS_PIPELINE_H
 
+#include <atta/event/event.h>
 #include <atta/graphics/renderPass.h>
 #include <atta/graphics/shader.h>
 #include <atta/graphics/vertexBuffer.h>
+#include <atta/resource/resources/material.h>
 #include <atta/utils/stringId.h>
 
 namespace atta::graphics {
@@ -39,12 +41,22 @@ class Pipeline {
 
     virtual void* getImGuiTexture() const = 0;
 
-    using ImageGroup = std::vector<std::pair<std::string, std::shared_ptr<Image>>>;
     enum class ImageGroupType { PER_FRAME = 0, PER_DRAW };
+    struct ImageGroupItem {
+        ImageGroupItem(std::string name_, std::shared_ptr<Image> image_);
+        ImageGroupItem(std::string name_, StringId image_);
+
+        std::string name;
+        std::shared_ptr<Image> image;
+    };
+    using ImageGroup = std::vector<ImageGroupItem>;
     /// Image groups should be created to update images, they are grouped by perFrame and perDraw
     virtual void createImageGroup(ImageGroupType type, std::string name) = 0;
     virtual void updateImageGroup(std::string name, ImageGroup imageGroup) = 0;
     virtual void destroyImageGroup(std::string name) = 0;
+
+    using ImageGroupFromMaterialFunc = std::function<ImageGroup(resource::Material*)>;
+    void updateImageGroupsFromMaterials(ImageGroupFromMaterialFunc func);
 
     void setBool(const char* name, bool b);
     void setInt(const char* name, int i);
@@ -79,6 +91,16 @@ class Pipeline {
     const bool _lineWidth;
 
     const StringId _debugName;
+
+  private:
+    void onMaterialCreate(event::Event& event);
+    void onMaterialDestroy(event::Event& event);
+    void onMaterialUpdate(event::Event& event);
+
+    // Helper to update image groups from materials
+    std::set<StringId> _imageGroupsToCreate;
+    std::set<StringId> _imageGroupsToUpdate;
+    std::set<StringId> _imageGroupsToDestroy;
 };
 
 } // namespace atta::graphics

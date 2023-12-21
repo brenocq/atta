@@ -335,8 +335,8 @@ void Pipeline::updateImageGroup(std::string name, ImageGroup imageGroup) {
         // Find image in image group
         std::shared_ptr<Image> image;
         for (const auto& imageItem : imageGroup)
-            if (imageItem.first == element.name && imageItem.second)
-                image = std::dynamic_pointer_cast<vk::Image>(imageItem.second);
+            if (imageItem.name == element.name && imageItem.image)
+                image = std::dynamic_pointer_cast<vk::Image>(imageItem.image);
 
         // Update descriptor
         if (image != nullptr)

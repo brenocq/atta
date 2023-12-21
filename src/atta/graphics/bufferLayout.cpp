@@ -122,7 +122,7 @@ BufferLayout::BufferLayout(const std::initializer_list<Element>& elements) {
         push(element.type, element.name);
 }
 
-void BufferLayout::push(Element::Type type, std::string name) {
+void BufferLayout::push(Element::Type type, std::string name, uint32_t customAlign) {
     if (type == Element::Type::NONE || exists(name))
         return;
     Element e{};
@@ -134,7 +134,7 @@ void BufferLayout::push(Element::Type type, std::string name) {
     if (_elements.empty())
         e.offset = 0;
     else {
-        uint32_t align = Element::alignmentFromType(type);
+        uint32_t align = customAlign ? customAlign : Element::alignmentFromType(type);
         uint32_t offset = _elements.back().offset + _elements.back().size;
         e.offset = (offset + align - 1) & ~(align - 1);
     }

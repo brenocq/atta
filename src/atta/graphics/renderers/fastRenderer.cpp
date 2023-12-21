@@ -11,17 +11,12 @@
 #include <atta/graphics/renderPass.h>
 
 #include <atta/resource/interface.h>
-#include <atta/resource/resources/mesh.h>
 
 #include <atta/component/components/material.h>
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/factory.h>
 #include <atta/component/interface.h>
-
-#include <atta/event/events/materialCreate.h>
-#include <atta/event/events/materialDestroy.h>
-#include <atta/event/events/materialUpdate.h>
 
 namespace atta::graphics {
 
@@ -55,13 +50,6 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
     //---------- Common pipelines ----------//
     _selectedPipeline = std::make_unique<SelectedPipeline>(_renderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(_renderPass);
-
-    //---------- Track material update ----------//
-    event::subscribe<event::MaterialCreate>(BIND_EVENT_FUNC(FastRenderer::onMaterialCreate));
-    event::subscribe<event::MaterialDestroy>(BIND_EVENT_FUNC(FastRenderer::onMaterialDestroy));
-    event::subscribe<event::MaterialUpdate>(BIND_EVENT_FUNC(FastRenderer::onMaterialUpdate));
-    for (StringId materialSid : resource::getResources<resource::Material>())
-        _imageGroupsToCreate.insert(materialSid);
 }
 
 FastRenderer::~FastRenderer() {}
@@ -74,24 +62,12 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
     }
 
     // Handle image group update from materials
-    for (StringId sid : _imageGroupsToDestroy)
-        _geometryPipeline->destroyImageGroup(sid.getString());
-    for (StringId sid : _imageGroupsToCreate)
-        _geometryPipeline->createImageGroup(Pipeline::ImageGroupType::PER_DRAW, sid.getString());
-    for (StringId sid : _imageGroupsToUpdate) {
-        resource::Material* m = resource::get<resource::Material>(sid);
-
-        std::shared_ptr<gfx::Image> albedoImage;
-        if (m->colorIsImage())
-            albedoImage = gfx::Manager::getInstance().getImages().at(m->getColorImage());
+    _geometryPipeline->updateImageGroupsFromMaterials([](resource::Material* material) {
         Pipeline::ImageGroup imageGroup;
-        imageGroup.push_back({"uAlbedoTexture", albedoImage});
-
-        _geometryPipeline->updateImageGroup(sid.getString(), imageGroup);
-    }
-    _imageGroupsToDestroy.clear();
-    _imageGroupsToUpdate.clear();
-    _imageGroupsToCreate.clear();
+        if (material->colorIsImage())
+            imageGroup.emplace_back("uAlbedoTexture", material->getColorImage());
+        return imageGroup;
+    });
 
     // Render
     _renderQueue->begin();
@@ -101,8 +77,8 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
             _geometryPipeline->begin(_renderQueue);
             {
                 std::vector<component::EntityId> entities = component::getNoPrototypeView();
-                _geometryPipeline->setMat4("uProjection", transpose(camera->getProj()));
-                _geometryPipeline->setMat4("uView", transpose(camera->getView()));
+                _geometryPipeline->setMat4("uProjection", camera->getProj());
+                _geometryPipeline->setMat4("uView", camera->getView());
 
                 for (auto entity : entities) {
                     component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
@@ -111,7 +87,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                     resource::Material* material = compMat ? compMat->getResource() : nullptr;
 
                     if (mesh && transform) {
-                        mat4 model = transpose(transform->getWorldTransformMatrix(entity));
+                        mat4 model = transform->getWorldTransformMatrix(entity);
                         _geometryPipeline->setMat4("uModel", model);
 
                         if (material) {
@@ -148,24 +124,6 @@ void FastRenderer::resize(uint32_t width, uint32_t height) {
         _width = width;
         _height = height;
     }
-}
-
-void FastRenderer::onMaterialCreate(event::Event& event) {
-    event::MaterialCreate& e = reinterpret_cast<event::MaterialCreate&>(event);
-    _imageGroupsToCreate.insert(e.sid);
-    _imageGroupsToUpdate.insert(e.sid);
-}
-
-void FastRenderer::onMaterialDestroy(event::Event& event) {
-    event::MaterialDestroy& e = reinterpret_cast<event::MaterialDestroy&>(event);
-    _imageGroupsToDestroy.insert(e.sid);
-    _imageGroupsToCreate.erase(e.sid);
-    _imageGroupsToUpdate.erase(e.sid);
-}
-
-void FastRenderer::onMaterialUpdate(event::Event& event) {
-    event::MaterialUpdate& e = reinterpret_cast<event::MaterialUpdate&>(event);
-    _imageGroupsToUpdate.insert(e.sid);
 }
 
 } // namespace atta::graphics
