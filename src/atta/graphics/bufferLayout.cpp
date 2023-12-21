@@ -87,10 +87,10 @@ uint32_t BufferLayout::Element::alignmentFromType(AlignmentType alignmentType, T
         }
         case AlignmentType::GLSL: {
             switch (type) {
-                case Type::BOOL:
                 case Type::SAMPLER_2D:
                 case Type::SAMPLER_CUBE:
                     return 1;
+                case Type::BOOL:
                 case Type::INT:
                 case Type::UINT:
                 case Type::FLOAT:
