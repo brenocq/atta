@@ -116,12 +116,14 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 
     // Descriptor set layouts
     std::vector<std::shared_ptr<DescriptorSetLayout>> descriptorSetLayouts;
+    bool createDefaultImageGroupPerFrame = false;
+    bool createDefaultImageGroupPerDraw = false;
     {
         // Uniform
         std::vector<DescriptorSetLayout::Binding> bindings;
         bindings.push_back({0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
-        _descriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
-        descriptorSetLayouts.push_back(_descriptorSetLayout);
+        _uniformDescriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
+        descriptorSetLayouts.push_back(_uniformDescriptorSetLayout);
     }
     {
         // Per frame images
@@ -137,6 +139,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
         if (bindings.size()) {
             _perFrameImageDescriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
             descriptorSetLayouts.push_back(_perFrameImageDescriptorSetLayout);
+            createDefaultImageGroupPerFrame = true;
         }
     }
     {
@@ -153,6 +156,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
         if (bindings.size()) {
             _perDrawImageDescriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
             descriptorSetLayouts.push_back(_perDrawImageDescriptorSetLayout);
+            createDefaultImageGroupPerDraw = true;
         }
     }
 
@@ -170,8 +174,14 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
         {VK_DESCRIPTOR_TYPE_SAMPLER, 8 * maxSets},                // Up to 8 samplerCube perDraw/perFrame
     };
     _descriptorPool = std::make_shared<DescriptorPool>(poolSizes, maxSets);
-    _descriptorSets = std::make_shared<DescriptorSets>(_descriptorPool, _descriptorSetLayout, _pipelineLayout, 1);
+    _descriptorSets = std::make_shared<DescriptorSets>(_descriptorPool, _uniformDescriptorSetLayout, _pipelineLayout, 1);
     _descriptorSets->update(0, std::dynamic_pointer_cast<vk::Shader>(_shader)->getUniformBuffer());
+
+    // Create default image group descriptor sets (pink images)
+    if (createDefaultImageGroupPerFrame)
+        createImageGroup(ImageGroupType::PER_FRAME, "atta::DefaultPerFramePink");
+    if (createDefaultImageGroupPerDraw)
+        createImageGroup(ImageGroupType::PER_DRAW, "atta::DefaultPerDrawPink");
 
     // Create Pipeline
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages = std::dynamic_pointer_cast<vk::Shader>(_shader)->getShaderStages();
@@ -195,7 +205,6 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 
     if (vkCreateGraphicsPipelines(_device->getHandle(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Pipeline", "Failed to create pipeline!");
-    LOG_DEBUG("Pipeline", "Pipeline created!");
 }
 
 Pipeline::~Pipeline() {
@@ -235,6 +244,12 @@ void Pipeline::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
 
     // Bind uniform buffer
     _descriptorSets->bind(commandBuffer, 0);
+
+    // Bind pink image groups
+    if (_imageGroups.find("atta::DefaultPerFramePink") != _imageGroups.end())
+        setImageGroup("atta::DefaultPerFramePink");
+    if (_imageGroups.find("atta::DefaultPerDrawPink") != _imageGroups.end())
+        setImageGroup("atta::DefaultPerDrawPink");
 }
 
 void Pipeline::end() {
@@ -272,22 +287,94 @@ void* Pipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_framebuffers[0]->getImage(0))->getImGuiImage());
 }
 
-void Pipeline::createImageGroup(std::string name, ImageGroup imageGroup) {
-    // TODO Detect descriptor set
+void Pipeline::createImageGroup(ImageGroupType type, std::string name) {
+    if (_imageGroups.find(name) != _imageGroups.end()) {
+        LOG_WARN("gfx::vk::Pipeline", "Could not create image group [w]$0[], this group already exists", name);
+        return;
+    }
+    if (type == ImageGroupType::PER_FRAME && _shader->getPerFrameImageLayout().empty()) {
+        LOG_WARN("gfx::vk::Pipeline", "Could not create image group [w]$0[], shader does not use [w]perFrame[] images", name);
+        return;
+    }
+    if (type == ImageGroupType::PER_DRAW && _shader->getPerDrawImageLayout().empty()) {
+        LOG_WARN("gfx::vk::Pipeline", "Could not create image group [w]$0[], shader does not use [w]perDraw[] images", name);
+        return;
+    }
 
-    // TODO Allocate descriptor set
+    std::shared_ptr<DescriptorSetLayout> descriptorSetLayout =
+        type == ImageGroupType::PER_FRAME ? _perFrameImageDescriptorSetLayout : _perDrawImageDescriptorSetLayout;
 
-    // TODO Update image groups
+    // Allocate descriptor set
+    std::shared_ptr<DescriptorSets> descriptorSet = std::make_shared<DescriptorSets>(_descriptorPool, descriptorSetLayout, _pipelineLayout, 1);
+
+    // Save descriptor set
+    ImageGroupInfo info;
+    info.type = type;
+    info.data = {};
+    info.descriptorSet = descriptorSet;
+    _imageGroups[name] = info;
+
+    // Update images to pink
+    updateImageGroup(name, {});
+}
+
+void Pipeline::updateImageGroup(std::string name, ImageGroup imageGroup) {
+    if (_imageGroups.find(name) == _imageGroups.end()) {
+        LOG_WARN("gfx::vk::Pipeline", "Could not update image group [w]$0[], this group was not created", name);
+        return;
+    }
+
+    // Get image group descriptor set
+    ImageGroupInfo& imageGroupInfo = _imageGroups[name];
+    const BufferLayout& imageLayout =
+        imageGroupInfo.type == ImageGroupType::PER_FRAME ? _shader->getPerFrameImageLayout() : _shader->getPerDrawImageLayout();
+
+    // Update descriptor set
+    size_t binding = 0;
+    for (const auto& element : imageLayout.getElements()) {
+        // Find image in image group
+        std::shared_ptr<Image> image;
+        for (const auto& imageItem : imageGroup)
+            if (imageItem.first == element.name && imageItem.second)
+                image = std::dynamic_pointer_cast<vk::Image>(imageItem.second);
+
+        // Update descriptor
+        if (image != nullptr)
+            imageGroupInfo.descriptorSet->update(binding++, image);
+        else {
+            // Bind pink
+            std::shared_ptr<vk::Image> image = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImages().at("textures/pink.png"));
+            imageGroupInfo.descriptorSet->update(binding++, image);
+        }
+    }
+
+    // Update image groups
+    imageGroupInfo.data = imageGroup;
 }
 
 void Pipeline::destroyImageGroup(std::string name) {
-    // TODO Free descriptor set
-
-    // TODO Update image groups
+    // Remove image group
+    _imageGroups.erase(name);
 }
 
 void Pipeline::setImageGroup(const char* name) {
-    // TODO Bind descriptor set
+    if (_renderQueue == nullptr) {
+        LOG_WARN("gfx::vk::Pipeline", "Can not set image group outside render pass");
+        return;
+    }
+    if (_imageGroups.find(name) == _imageGroups.end()) {
+        LOG_WARN("gfx::vk::Pipeline", "Can not set image group [w]$0[], image group not found", name);
+        return;
+    }
+
+    // Get command buffer
+    VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
+
+    // Bind descriptor set
+    uint32_t setIdx = 1;
+    if (!_shader->getPerFrameImageLayout().empty() && _imageGroups[name].type == ImageGroupType::PER_DRAW)
+        setIdx = 2;
+    _imageGroups[name].descriptorSet->bind(commandBuffer, setIdx);
 }
 
 VkPipeline Pipeline::getHandle() const { return _pipeline; }

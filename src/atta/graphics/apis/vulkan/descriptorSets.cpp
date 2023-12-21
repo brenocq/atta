@@ -33,8 +33,8 @@ std::vector<VkDescriptorSet> DescriptorSets::getHandle() const { return _descrip
 
 std::shared_ptr<Device> DescriptorSets::getDevice() const { return _device; }
 
-void DescriptorSets::update(uint32_t index, std::shared_ptr<UniformBuffer> uniformBuffer) const {
-    DescriptorSetLayout::Binding binding = _descriptorSetLayout->getBindings()[index];
+void DescriptorSets::update(uint32_t bindingIdx, std::shared_ptr<UniformBuffer> uniformBuffer) const {
+    DescriptorSetLayout::Binding binding = _descriptorSetLayout->getBindings()[bindingIdx];
 
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer = uniformBuffer->getHandle();
@@ -43,7 +43,7 @@ void DescriptorSets::update(uint32_t index, std::shared_ptr<UniformBuffer> unifo
 
     VkWriteDescriptorSet descriptorWrite{};
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = _descriptorSets[index];
+    descriptorWrite.dstSet = _descriptorSets[0];
     descriptorWrite.dstBinding = binding.binding;
     descriptorWrite.dstArrayElement = 0;
     descriptorWrite.descriptorType = binding.type;
@@ -52,8 +52,8 @@ void DescriptorSets::update(uint32_t index, std::shared_ptr<UniformBuffer> unifo
     vkUpdateDescriptorSets(_device->getHandle(), 1, &descriptorWrite, 0, nullptr);
 }
 
-void DescriptorSets::update(uint32_t index, std::shared_ptr<Image> image) const {
-    DescriptorSetLayout::Binding binding = _descriptorSetLayout->getBindings()[index];
+void DescriptorSets::update(uint32_t bindingIdx, std::shared_ptr<Image> image) const {
+    DescriptorSetLayout::Binding binding = _descriptorSetLayout->getBindings()[bindingIdx];
 
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -62,7 +62,7 @@ void DescriptorSets::update(uint32_t index, std::shared_ptr<Image> image) const 
 
     VkWriteDescriptorSet descriptorWrite{};
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = _descriptorSets[index];
+    descriptorWrite.dstSet = _descriptorSets[0];
     descriptorWrite.dstBinding = binding.binding;
     descriptorWrite.dstArrayElement = 0;
     descriptorWrite.descriptorType = binding.type;
@@ -71,9 +71,9 @@ void DescriptorSets::update(uint32_t index, std::shared_ptr<Image> image) const 
     vkUpdateDescriptorSets(_device->getHandle(), 1, &descriptorWrite, 0, nullptr);
 }
 
-void DescriptorSets::bind(VkCommandBuffer commandBuffer, size_t index, const uint32_t* dynamicOffset) {
+void DescriptorSets::bind(VkCommandBuffer commandBuffer, uint32_t setIdx, size_t index, const uint32_t* dynamicOffset) {
     uint32_t dynamicOffsetCount = dynamicOffset == nullptr ? 0 : 1;
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->getHandle(), 0, 1, &_descriptorSets[index],
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout->getHandle(), setIdx, 1, &_descriptorSets[0],
                             dynamicOffsetCount, dynamicOffset);
 }
 

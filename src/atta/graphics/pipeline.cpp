@@ -21,6 +21,8 @@ void Pipeline::setVec3(const char* name, vec3 v) { _shader->setVec3(name, v); }
 void Pipeline::setVec4(const char* name, vec4 v) { _shader->setVec4(name, v); }
 void Pipeline::setMat3(const char* name, mat3 m) { _shader->setMat3(name, m); }
 void Pipeline::setMat4(const char* name, mat4 m) { _shader->setMat4(name, m); }
+void Pipeline::setImageGroup(std::string name) { setImageGroup(name.c_str()); }
+void Pipeline::setImageGroup(StringId name) { setImageGroup(name.getString().c_str()); }
 
 void Pipeline::renderMesh(StringId meshSid) { LOG_WARN("Pipeline", "[w]renderMesh[] was not implemented yet"); }
 void Pipeline::renderQuad() { LOG_WARN("Pipeline", "[w]renderQuad[] was not implemented yet"); }

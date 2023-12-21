@@ -19,6 +19,10 @@
 #include <atta/component/factory.h>
 #include <atta/component/interface.h>
 
+#include <atta/event/events/materialCreate.h>
+#include <atta/event/events/materialDestroy.h>
+#include <atta/event/events/materialUpdate.h>
+
 namespace atta::graphics {
 
 FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
@@ -51,6 +55,13 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
     //---------- Common pipelines ----------//
     _selectedPipeline = std::make_unique<SelectedPipeline>(_renderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(_renderPass);
+
+    //---------- Track material update ----------//
+    event::subscribe<event::MaterialCreate>(BIND_EVENT_FUNC(FastRenderer::onMaterialCreate));
+    event::subscribe<event::MaterialDestroy>(BIND_EVENT_FUNC(FastRenderer::onMaterialDestroy));
+    event::subscribe<event::MaterialUpdate>(BIND_EVENT_FUNC(FastRenderer::onMaterialUpdate));
+    for (StringId materialSid : resource::getResources<resource::Material>())
+        _imageGroupsToCreate.insert(materialSid);
 }
 
 FastRenderer::~FastRenderer() {}
@@ -62,18 +73,25 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
         _wasResized = false;
     }
 
-    // Handle image group update (TODO do only once, update with events)
-    //{
-    //    std::vector<component::EntityId> entities = component::getNoPrototypeView();
-    //    for (auto entity : entities) {
-    //        component::Material* compMat = component::getComponent<component::Material>(entity);
-    //        resource::Material* material = compMat ? compMat->getResource() : nullptr;
+    // Handle image group update from materials
+    for (StringId sid : _imageGroupsToDestroy)
+        _geometryPipeline->destroyImageGroup(sid.getString());
+    for (StringId sid : _imageGroupsToCreate)
+        _geometryPipeline->createImageGroup(Pipeline::ImageGroupType::PER_DRAW, sid.getString());
+    for (StringId sid : _imageGroupsToUpdate) {
+        resource::Material* m = resource::get<resource::Material>(sid);
 
-    //        if (material)
-    //            _geometryPipeline->createImageGroup("myMaterial", {"uAlbedoTexture", material->colorImage});
-    //            // _geometryPipeline->removeImageGroup("myMaterial");
-    //    }
-    //}
+        std::shared_ptr<gfx::Image> albedoImage;
+        if (m->colorIsImage())
+            albedoImage = gfx::Manager::getInstance().getImages().at(m->getColorImage());
+        Pipeline::ImageGroup imageGroup;
+        imageGroup.push_back({"uAlbedoTexture", albedoImage});
+
+        _geometryPipeline->updateImageGroup(sid.getString(), imageGroup);
+    }
+    _imageGroupsToDestroy.clear();
+    _imageGroupsToUpdate.clear();
+    _imageGroupsToCreate.clear();
 
     // Render
     _renderQueue->begin();
@@ -98,11 +116,10 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
 
                         if (material) {
                             if (material->colorIsImage()) {
-                                // _geometryPipeline->bindImageGroup("myMaterial");
-                                // _geometryPipeline->setImage("uAlbedoTexture", material->colorImage);
+                                _geometryPipeline->setImageGroup(compMat->sid);
                                 _geometryPipeline->setVec3("uAlbedo", {-1, -1, -1});
                             } else
-                                _geometryPipeline->setVec3("uAlbedo", material->color);
+                                _geometryPipeline->setVec3("uAlbedo", material->getColor());
                         } else {
                             resource::Material::CreateInfo defaultMaterial{};
                             _geometryPipeline->setVec3("uAlbedo", defaultMaterial.color);
@@ -123,7 +140,6 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
     ////     _selectedPipeline->render(camera);
     //// if (_renderDrawer)
     ////     _drawerPipeline->render(camera);
-    //_renderPass->end();
 }
 
 void FastRenderer::resize(uint32_t width, uint32_t height) {
@@ -132,6 +148,24 @@ void FastRenderer::resize(uint32_t width, uint32_t height) {
         _width = width;
         _height = height;
     }
+}
+
+void FastRenderer::onMaterialCreate(event::Event& event) {
+    event::MaterialCreate& e = reinterpret_cast<event::MaterialCreate&>(event);
+    _imageGroupsToCreate.insert(e.sid);
+    _imageGroupsToUpdate.insert(e.sid);
+}
+
+void FastRenderer::onMaterialDestroy(event::Event& event) {
+    event::MaterialDestroy& e = reinterpret_cast<event::MaterialDestroy&>(event);
+    _imageGroupsToDestroy.insert(e.sid);
+    _imageGroupsToCreate.erase(e.sid);
+    _imageGroupsToUpdate.erase(e.sid);
+}
+
+void FastRenderer::onMaterialUpdate(event::Event& event) {
+    event::MaterialUpdate& e = reinterpret_cast<event::MaterialUpdate&>(event);
+    _imageGroupsToUpdate.insert(e.sid);
 }
 
 } // namespace atta::graphics

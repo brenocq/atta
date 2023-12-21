@@ -35,8 +35,10 @@ class Pipeline final : public gfx::Pipeline {
 
     void* getImGuiTexture() const override;
 
-    void createImageGroup(std::string name, ImageGroup imageGroup) override;
+    void createImageGroup(ImageGroupType type, std::string name) override;
+    void updateImageGroup(std::string name, ImageGroup imageGroup) override;
     void destroyImageGroup(std::string name) override;
+
     void setImageGroup(const char* name) override;
 
     VkPipeline getHandle() const;
@@ -49,7 +51,7 @@ class Pipeline final : public gfx::Pipeline {
 
     std::shared_ptr<PipelineLayout> _pipelineLayout;
     std::shared_ptr<DescriptorPool> _descriptorPool;
-    std::shared_ptr<DescriptorSetLayout> _descriptorSetLayout;
+    std::shared_ptr<DescriptorSetLayout> _uniformDescriptorSetLayout;
     std::shared_ptr<DescriptorSetLayout> _perFrameImageDescriptorSetLayout;
     std::shared_ptr<DescriptorSetLayout> _perDrawImageDescriptorSetLayout;
     std::shared_ptr<DescriptorSets> _descriptorSets;
@@ -58,7 +60,12 @@ class Pipeline final : public gfx::Pipeline {
     VkExtent2D _imageExtent;
     VkFormat _imageFormat;
 
-    std::map<std::string, ImageGroup> _imageGroups;
+    struct ImageGroupInfo {
+        ImageGroupType type;
+        ImageGroup data;
+        std::shared_ptr<DescriptorSets> descriptorSet;
+    };
+    std::map<std::string, ImageGroupInfo> _imageGroups;
 };
 
 } // namespace atta::graphics::vk

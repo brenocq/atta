@@ -11,9 +11,9 @@
 #include <atta/graphics/apis/vulkan/descriptorPool.h>
 #include <atta/graphics/apis/vulkan/descriptorSetLayout.h>
 #include <atta/graphics/apis/vulkan/device.h>
+#include <atta/graphics/apis/vulkan/image.h>
 #include <atta/graphics/apis/vulkan/pipelineLayout.h>
 #include <atta/graphics/apis/vulkan/uniformBuffer.h>
-#include <atta/graphics/apis/vulkan/image.h>
 
 namespace atta::graphics::vk {
 
@@ -27,10 +27,9 @@ class DescriptorSets {
     std::vector<VkDescriptorSet> getHandle() const;
     std::shared_ptr<Device> getDevice() const;
 
-    void update(uint32_t index, std::shared_ptr<UniformBuffer> uniformBuffer) const;
-    void update(uint32_t index, std::shared_ptr<Image> image) const;
-    void bind(VkCommandBuffer commandBuffer, size_t index, const uint32_t* dynamicOffset = nullptr);
-    void bind(VkCommandBuffer commandBuffer, size_t index, std::shared_ptr<Image> image);
+    void update(uint32_t bindingIdx, std::shared_ptr<UniformBuffer> uniformBuffer) const;
+    void update(uint32_t bindingIdx, std::shared_ptr<Image> image) const;
+    void bind(VkCommandBuffer commandBuffer, uint32_t setIdx, size_t index = 0, const uint32_t* dynamicOffset = nullptr);
 
   private:
     std::shared_ptr<Device> _device;

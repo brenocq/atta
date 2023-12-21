@@ -14,6 +14,7 @@ DescriptorPool::DescriptorPool(std::vector<VkDescriptorPoolSize> poolSizes, size
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
     poolInfo.maxSets = static_cast<uint32_t>(maxSets);
+    poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
     if (vkCreateDescriptorPool(_device->getHandle(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::DescriptorPool", "Failed to create descriptor pool");

@@ -13,6 +13,7 @@ namespace atta::resource {
 
 void startUp();
 void shutDown();
+void update();
 
 template <typename R, typename... Args>
 R* create(const fs::path& filename, Args... args);

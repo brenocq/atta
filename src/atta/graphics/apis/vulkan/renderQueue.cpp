@@ -15,6 +15,7 @@ RenderQueue::RenderQueue() : gfx::RenderQueue() {
     _commandPool = std::make_shared<vk::CommandPool>(_device);
     _commandBuffers = std::make_shared<vk::CommandBuffers>(_device, _commandPool, 1);
     _fence = std::make_shared<vk::Fence>(_device);
+    _fence->reset();
 }
 
 RenderQueue::~RenderQueue() {

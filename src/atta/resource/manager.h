@@ -21,6 +21,7 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
+    friend void update();
     template <typename R, typename... Args>
     friend R* create(const fs::path& filename, Args... args);
     template <typename R>
@@ -35,6 +36,7 @@ class Manager final {
   private:
     void startUpImpl();
     void shutDownImpl();
+    void updateImpl();
     void loadResourcesRecursively(fs::path directory);
     void onProjectOpen(event::Event& event);
 
@@ -51,6 +53,9 @@ class Manager final {
 
     template <typename R>
     void createLoadEvent(R* resource, StringId sid);
+
+    template <typename R>
+    void createDestroyEvent(StringId sid);
 
     memory::BitmapAllocator* _allocator;
     std::unordered_map<StringHash, uint8_t*> _resourceMap;

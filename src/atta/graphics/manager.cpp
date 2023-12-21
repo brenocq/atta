@@ -60,17 +60,17 @@ void Manager::startUpImpl() {
     _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
     _graphicsAPI->startUp();
 
-    //----- Compute Shaders -----//
-    // _computeEntityClick = std::make_unique<EntityClick>();
-
-    //----- Create viewports -----//
-    createDefaultViewportsImpl();
-
     //----- Resource sync -----//
     event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));
     event::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(Manager::onImageLoadEvent));
     event::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(Manager::onImageUpdateEvent));
     syncResources();
+
+    //----- Compute Shaders -----//
+    // _computeEntityClick = std::make_unique<EntityClick>();
+
+    //----- Create viewports -----//
+    createDefaultViewportsImpl();
 }
 
 void Manager::shutDownImpl() {

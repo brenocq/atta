@@ -251,9 +251,10 @@ void ViewportWindows::addBasicShapePopup() {
                 component::addComponent<component::Transform>(eid);
                 component::Mesh* m = component::addComponent<component::Mesh>(eid);
                 m->sid = basicShapesMesh[i];
-                resource::Material* matRes =
-                    resource::create<resource::Material>("defaultMaterial." + std::to_string(eid), resource::Material::CreateInfo{});
-                matRes->color = vec3(0.5f, 0.5f, 0.5f);
+
+                resource::Material::CreateInfo info{};
+                info.color = vec3(0.5f, 0.5f, 0.5f);
+                resource::Material* matRes = resource::create<resource::Material>("defaultMaterial." + std::to_string(eid), info);
                 component::Material* mat = component::addComponent<component::Material>(eid);
                 mat->sid = matRes->getId();
                 component::setSelectedEntity(eid);

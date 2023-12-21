@@ -140,7 +140,7 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
     std::vector<component::EntityId> entities = component::getNoPrototypeView();
 
     // Check current envinroment map
-    StringId currEnvironmentMap = StringId("textures/white.jpg"); // Default environment map is white texture
+    StringId currEnvironmentMap = StringId("textures/white.png"); // Default environment map is white texture
     for (auto entity : entities) {
         component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
 

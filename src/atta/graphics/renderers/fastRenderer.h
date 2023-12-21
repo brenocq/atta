@@ -7,6 +7,7 @@
 #ifndef ATTA_GRAPHICS_RENDERERS_FAST_RENDERER_H
 #define ATTA_GRAPHICS_RENDERERS_FAST_RENDERER_H
 
+#include <atta/event/event.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderPass.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
@@ -29,12 +30,20 @@ class FastRenderer final : public Renderer {
     std::shared_ptr<Framebuffer> getFramebuffer() { return _geometryPipeline->getRenderPass()->getFramebuffer(); }
 
   private:
+    void onMaterialCreate(event::Event& event);
+    void onMaterialDestroy(event::Event& event);
+    void onMaterialUpdate(event::Event& event);
+
     std::shared_ptr<RenderQueue> _renderQueue;
     std::shared_ptr<RenderPass> _renderPass;
     std::shared_ptr<Pipeline> _geometryPipeline;
     std::unique_ptr<SelectedPipeline> _selectedPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
     bool _wasResized;
+
+    std::set<StringId> _imageGroupsToCreate;
+    std::set<StringId> _imageGroupsToUpdate;
+    std::set<StringId> _imageGroupsToDestroy;
 };
 
 } // namespace atta::graphics

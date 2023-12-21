@@ -24,7 +24,8 @@ class Pipeline final : public gfx::Pipeline {
 
     void* getImGuiTexture() const override;
 
-    void createImageGroup(std::string name, ImageGroup imageGroup) override;
+    void createImageGroup(ImageGroupType type, std::string name) override;
+    void updateImageGroup(std::string name, ImageGroup imageGroup) override;
     void destroyImageGroup(std::string name) override;
 
     void setImageGroup(const char* name) override;
