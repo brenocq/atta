@@ -110,8 +110,8 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                             hasDirectionalLight = true;
                             vec3 direction = {0.0f, 0.0f, -1.0f};
                             transform->orientation.rotateVector(direction);
-                            _geometryPipeline->setVec3("uDirectionalLightDirection", direction);
-                            _geometryPipeline->setVec3("uDirectionalLightIntensity", dl->intensity);
+                            _geometryPipeline->setVec3("uDirectionalLight.direction", direction);
+                            _geometryPipeline->setVec3("uDirectionalLight.intensity", dl->intensity);
                         }
                         if (numPointLights++ == 10)
                             LOG_WARN("graphics::PhongRenderer", "Maximum number of point lights reached, 10 lights");
@@ -136,30 +136,30 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                             _geometryPipeline->setImageGroup(compMat->sid);
 
                             if (material->colorIsImage())
-                                _geometryPipeline->setVec3("uAlbedo", {-1, -1, -1});
+                                _geometryPipeline->setVec3("uMaterial.albedo", {-1, -1, -1});
                             else
-                                _geometryPipeline->setVec3("uAlbedo", material->getColor());
+                                _geometryPipeline->setVec3("uMaterial.albedo", material->getColor());
 
                             if (material->metallicIsImage())
-                                _geometryPipeline->setFloat("uMetallic", -1);
+                                _geometryPipeline->setFloat("uMaterial.metallic", -1);
                             else
-                                _geometryPipeline->setFloat("uMetallic", material->getMetallic());
+                                _geometryPipeline->setFloat("uMaterial.metallic", material->getMetallic());
 
                             if (material->roughnessIsImage())
-                                _geometryPipeline->setFloat("uRoughness", -1);
+                                _geometryPipeline->setFloat("uMaterial.roughness", -1);
                             else
-                                _geometryPipeline->setFloat("uRoughness", material->getRoughness());
+                                _geometryPipeline->setFloat("uMaterial.roughness", material->getRoughness());
 
                             if (material->aoIsImage())
-                                _geometryPipeline->setFloat("uAo", -1);
+                                _geometryPipeline->setFloat("uMaterial.ao", -1);
                             else
-                                _geometryPipeline->setFloat("uAo", material->getAo());
+                                _geometryPipeline->setFloat("uMaterial.ao", material->getAo());
                         } else {
                             resource::Material::CreateInfo defaultMaterial{};
-                            _geometryPipeline->setVec3("uAlbedo", defaultMaterial.color);
-                            _geometryPipeline->setFloat("uMetallic", defaultMaterial.metallic);
-                            _geometryPipeline->setFloat("uRoughness", defaultMaterial.roughness);
-                            _geometryPipeline->setFloat("uAo", defaultMaterial.ao);
+                            _geometryPipeline->setVec3("uMaterial.albedo", defaultMaterial.color);
+                            _geometryPipeline->setFloat("uMaterial.metallic", defaultMaterial.metallic);
+                            _geometryPipeline->setFloat("uMaterial.roughness", defaultMaterial.roughness);
+                            _geometryPipeline->setFloat("uMaterial.ao", defaultMaterial.ao);
                         }
 
                         // Draw mesh

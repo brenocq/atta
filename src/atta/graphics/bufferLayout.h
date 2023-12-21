@@ -34,7 +34,7 @@ class BufferLayout final {
         /// Convert type to string
         static std::string typeToString(Type type);
         /// Type size in bytes
-        static uint32_t sizeFromType(Type type);
+        static uint32_t sizeFromType(AlignmentType alignmentType, Type type);
         /// Type alignment in bytes
         static uint32_t alignmentFromType(AlignmentType alignmentType, Type type);
         /// Number of component in the type (FLOAT -> 1, VEC2 -> 2, MAT4 -> 16, ...)
@@ -66,8 +66,8 @@ class BufferLayout final {
     /// Check if element exists in the buffer
     bool exists(std::string name) const;
 
-    /// Get number of elements
-    uint32_t getElementCount() const;
+    /// Get buffer alignment in bytes (maximum alignment from elements)
+    uint32_t getAlignment() const;
 
     /// Get buffer stride in bytes (aligned sum of the size of all elements)
     uint32_t getStride() const;

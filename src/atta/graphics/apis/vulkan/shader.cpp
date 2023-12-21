@@ -40,8 +40,8 @@ void Shader::setVec2(const char* name, vec2 v) { updateVariable(name, reinterpre
 void Shader::setVec3(const char* name, vec3 v) { updateVariable(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec3)); }
 void Shader::setVec4(const char* name, vec4 v) { updateVariable(name, reinterpret_cast<uint8_t*>(&v), sizeof(vec4)); }
 void Shader::setMat3(const char* name, mat3 m) {
-    mat3 mt = transpose(m); // GLSL uses column-major instead of row-major
-    updateVariable(name, reinterpret_cast<uint8_t*>(&mt), sizeof(mat3));
+    mat4 mt = mat4(transpose(m)); // GLSL uses column-major instead of row-major (treated as 3 vec4)
+    updateVariable(name, reinterpret_cast<uint8_t*>(&mt), 3 * sizeof(vec4));
 }
 void Shader::setMat4(const char* name, mat4 m) {
     mat4 mt = transpose(m); // GLSL uses column-major instead of row-major
@@ -113,19 +113,30 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
     // GLSL version
     apiCode += "#version 450\n";
 
+    // Move custom type definitions to the beginning
+    std::regex structRegex(R"(struct\s+\w+\s*\{([^\}]*)\};)");
+    std::smatch structMatch;
+    auto structStart = iCode.cbegin();
+    while (std::regex_search(structStart, iCode.cend(), structMatch, structRegex)) {
+        // Add to apiCode
+        apiCode += structMatch.str() + "\n";
+        structStart = structMatch.suffix().first;
+    }
+    iCode = std::regex_replace(iCode, structRegex, "");
+
     // Uniform buffer
     if (!_perFrameLayout.getElements().empty()) {
         apiCode += "layout(set = 0, binding = 0) uniform UniformBufferObject {\n";
-        for (const BufferLayout::Element& element : _perFrameLayout.getElements())
-            apiCode += std::string("    ") + BufferLayout::Element::typeToString(element.type) + " " + element.name + ";\n";
+        for (const LayoutMember& member : _perFrameLayoutMembers)
+            apiCode += std::string("    ") + member.type + " " + member.name + ";\n";
         apiCode += "} ubo;\n\n";
     }
 
     // Push constants
     if (!_perDrawLayout.getElements().empty()) {
         apiCode += "layout(push_constant) uniform PushConstants {\n";
-        for (const BufferLayout::Element& element : _perDrawLayout.getElements())
-            apiCode += std::string("    ") + BufferLayout::Element::typeToString(element.type) + " " + element.name + ";\n";
+        for (const LayoutMember& member : _perDrawLayoutMembers)
+            apiCode += std::string("    ") + member.type + " " + member.name + ";\n";
         apiCode += "} push;\n\n";
     }
 
@@ -148,28 +159,28 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
     }
 
     // Remove perFrame/perDraw declarations from iCode
-    std::string iCodeFix = std::regex_replace(iCode, std::regex(R"(^(perFrame|perDraw) .*\n?)", std::regex_constants::multiline), "");
+    iCode = std::regex_replace(iCode, std::regex(R"(^(perFrame|perDraw) .*\n?)", std::regex_constants::multiline), "");
 
     // Replace perVertex declaration from iCode
     if (type == VERTEX)
-        iCodeFix = std::regex_replace(iCodeFix, std::regex(R"(\bperVertex)"), "out");
+        iCode = std::regex_replace(iCode, std::regex(R"(\bperVertex)"), "out");
     else if (type == FRAGMENT)
-        iCodeFix = std::regex_replace(iCodeFix, std::regex(R"(\bperVertex)"), "in");
+        iCode = std::regex_replace(iCode, std::regex(R"(\bperVertex)"), "in");
 
     // Append "ubo." when using uniform in iCode
-    for (const BufferLayout::Element& element : _perFrameLayout.getElements()) {
-        std::string patternStr = "\\b" + element.name + "\\b";
-        iCodeFix = std::regex_replace(iCodeFix, std::regex(patternStr), "ubo." + element.name);
+    for (const LayoutMember& member : _perFrameLayoutMembers) {
+        std::string patternStr = "\\b" + member.name + "\\b";
+        iCode = std::regex_replace(iCode, std::regex(patternStr), "ubo." + member.name);
     }
 
     // Append "push." when uniform push constant in iCode
-    for (const BufferLayout::Element& element : _perDrawLayout.getElements()) {
-        std::string patternStr = "\\b" + element.name + "\\b";
-        iCodeFix = std::regex_replace(iCodeFix, std::regex(patternStr), "push." + element.name);
+    for (const LayoutMember& member : _perDrawLayoutMembers) {
+        std::string patternStr = "\\b" + member.name + "\\b";
+        iCode = std::regex_replace(iCode, std::regex(patternStr), "push." + member.name);
     }
 
     // Add corrected iCode to apiCode
-    apiCode += iCodeFix;
+    apiCode += iCode;
 
     // Add location to in/out
     std::istringstream iss(apiCode);
@@ -232,7 +243,7 @@ void Shader::compile() {
 void Shader::bind() {
     _uniformBufferData.resize(_perFrameLayout.getStride());
     _pushConstantData.resize(_perDrawLayout.getStride());
-    _uniformImages.resize(_perFrameLayout.getElementCount());
+    _uniformImages.resize(_perFrameLayout.getElements().size());
 }
 
 void Shader::unbind() {

@@ -120,6 +120,9 @@ class Shader {
      */
     std::string removeUnusedFunctions(std::string code);
 
+    /// Parse custom types (structs) from _aslCode and populate _customTypes
+    void parseCustomTypes();
+
     /// Process vertex input from _aslCode and populate _vertexLayout
     void populateVertexLayout();
 
@@ -129,6 +132,20 @@ class Shader {
   protected:
     fs::path _file;
     std::string _aslCode;
+    std::map<std::string, BufferLayout> _customTypes; ///< Custom types extracted from _aslCode
+
+    /*
+     * @brief Store types and names stored in the layout
+     *
+     * This is necessary because we lose the struct and array information when populating the BufferLayout, which is the flat version of the
+     * layout
+     */
+    struct LayoutMember {
+        std::string type;
+        std::string name;
+    };
+    std::vector<LayoutMember> _perFrameLayoutMembers;
+    std::vector<LayoutMember> _perDrawLayoutMembers;
 
     BufferLayout _vertexLayout;        ///< Vertex layout from vertex shader input
     BufferLayout _perFrameLayout;      ///< Buffer layout from perFrame variables
