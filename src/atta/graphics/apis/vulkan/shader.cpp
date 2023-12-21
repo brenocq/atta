@@ -127,16 +127,24 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
     // Uniform buffer
     if (!_perFrameLayout.getElements().empty()) {
         apiCode += "layout(set = 0, binding = 0) uniform UniformBufferObject {\n";
-        for (const LayoutMember& member : _perFrameLayoutMembers)
-            apiCode += std::string("    ") + member.type + " " + member.name + ";\n";
+        for (const LayoutMember& member : _perFrameLayoutMembers) {
+            apiCode += std::string("    ") + member.type + " " + member.name;
+            if (member.isArray)
+                apiCode += "[" + std::to_string(member.arraySize) + "]";
+            apiCode += ";\n";
+        }
         apiCode += "} ubo;\n\n";
     }
 
     // Push constants
     if (!_perDrawLayout.getElements().empty()) {
         apiCode += "layout(push_constant) uniform PushConstants {\n";
-        for (const LayoutMember& member : _perDrawLayoutMembers)
-            apiCode += std::string("    ") + member.type + " " + member.name + ";\n";
+        for (const LayoutMember& member : _perDrawLayoutMembers) {
+            apiCode += std::string("    ") + member.type + " " + member.name;
+            if (member.isArray)
+                apiCode += "[" + std::to_string(member.arraySize) + "]";
+            apiCode += ";\n";
+        }
         apiCode += "} push;\n\n";
     }
 

@@ -14,12 +14,12 @@ class BufferLayout final {
     /**
      * @brief Alignment type to be used when building the buffer layout
      *
-     * The default alignment type is the same used by the C++ standard, and it is used for buffers that can be tightly packed. The GLSL alignment type
-     * is used mainly when sending data to shaders, they differ mainly by the VEC3/MAT3/MAT4 alignment
+     * The default alignment type is the same used by the C++ standard, and it is used for buffers that can be tightly packed. The STD140/STD430
+     * alignment type is used mainly when sending data to shaders, they differ mainly by the VEC3/MAT3/MAT4 alignment
      *
      * @warning The alignment type should be set before pushing types
      */
-    enum class AlignmentType { DEFAULT = 0, GLSL };
+    enum class AlignmentType { DEFAULT = 0, STD140, STD430 };
 
     struct Element {
         enum class Type { NONE = 0, BOOL, INT, UINT, FLOAT, VEC2, VEC3, VEC4, IVEC2, IVEC3, IVEC4, MAT3, MAT4, SAMPLER_2D, SAMPLER_CUBE };

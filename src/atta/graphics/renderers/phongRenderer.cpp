@@ -100,12 +100,12 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                     component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
 
                     if (transform && (pl || dl)) {
-                        // if (pl && numPointLights < 10) {
-                        //     vec3 position = transform->getWorldTransformMatrix(entity).getPosition();
-                        //     int i = numPointLights++;
-                        //     shader->setVec3(("pointLights[" + std::to_string(i) + "].position").c_str(), position);
-                        //     shader->setVec3(("pointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
-                        // }
+                        if (pl && numPointLights < 10) {
+                            vec3 position = transform->getWorldTransformMatrix(entity).getPosition();
+                            int i = numPointLights++;
+                            _geometryPipeline->setVec3(("uPointLights[" + std::to_string(i) + "].position").c_str(), position);
+                            _geometryPipeline->setVec3(("uPointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
+                        }
                         if (dl) {
                             hasDirectionalLight = true;
                             vec3 direction = {0.0f, 0.0f, -1.0f};
@@ -114,7 +114,7 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                             _geometryPipeline->setVec3("uDirectionalLight.intensity", dl->intensity);
                         }
                         if (numPointLights++ == 10)
-                            LOG_WARN("graphics::PhongRenderer", "Maximum number of point lights reached, 10 lights");
+                            LOG_WARN("gfx::PhongRenderer", "Maximum number of point lights reached, 10 lights");
                     }
                 }
                 _geometryPipeline->setInt("uNumPointLights", numPointLights);
@@ -134,26 +134,10 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
 
                         if (material) {
                             _geometryPipeline->setImageGroup(compMat->sid);
-
-                            if (material->colorIsImage())
-                                _geometryPipeline->setVec3("uMaterial.albedo", {-1, -1, -1});
-                            else
-                                _geometryPipeline->setVec3("uMaterial.albedo", material->getColor());
-
-                            if (material->metallicIsImage())
-                                _geometryPipeline->setFloat("uMaterial.metallic", -1);
-                            else
-                                _geometryPipeline->setFloat("uMaterial.metallic", material->getMetallic());
-
-                            if (material->roughnessIsImage())
-                                _geometryPipeline->setFloat("uMaterial.roughness", -1);
-                            else
-                                _geometryPipeline->setFloat("uMaterial.roughness", material->getRoughness());
-
-                            if (material->aoIsImage())
-                                _geometryPipeline->setFloat("uMaterial.ao", -1);
-                            else
-                                _geometryPipeline->setFloat("uMaterial.ao", material->getAo());
+                            _geometryPipeline->setVec3("uMaterial.albedo", material->colorIsImage() ? vec3(-1, -1, -1) : material->getColor());
+                            _geometryPipeline->setFloat("uMaterial.metallic", material->metallicIsImage() ? -1.0f : material->getMetallic());
+                            _geometryPipeline->setFloat("uMaterial.roughness", material->roughnessIsImage() ? -1.0f : material->getRoughness());
+                            _geometryPipeline->setFloat("uMaterial.ao", material->aoIsImage() ? -1.0f : material->getAo());
                         } else {
                             resource::Material::CreateInfo defaultMaterial{};
                             _geometryPipeline->setVec3("uMaterial.albedo", defaultMaterial.color);

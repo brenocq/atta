@@ -88,6 +88,15 @@ class Shader {
     std::string removeComments(std::string code);
 
     /**
+     * @brief Replace defines
+     *
+     * @param code ASL Code
+     *
+     * @return Code with applied defines
+     */
+    std::string replaceDefines(std::string code);
+
+    /**
      * @brief Check which entrypoints were defined
      *
      * Entrypoints can be VERTEX, GEOMETRY, FRAGMENT
@@ -141,8 +150,12 @@ class Shader {
      * layout
      */
     struct LayoutMember {
+        LayoutMember(std::string type_, std::string name_);
+        LayoutMember(std::string type_, std::string name_, size_t arraySize_);
         std::string type;
         std::string name;
+        bool isArray;
+        size_t arraySize;
     };
     std::vector<LayoutMember> _perFrameLayoutMembers;
     std::vector<LayoutMember> _perDrawLayoutMembers;

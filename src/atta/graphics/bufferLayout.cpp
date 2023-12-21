@@ -52,7 +52,8 @@ uint32_t BufferLayout::Element::sizeFromType(AlignmentType alignmentType, Type t
                     return 0;
             }
         }
-        case AlignmentType::GLSL: {
+        case AlignmentType::STD140:
+        case AlignmentType::STD430: {
             switch (type) {
                 case Type::BOOL:
                 case Type::INT:
@@ -108,7 +109,8 @@ uint32_t BufferLayout::Element::alignmentFromType(AlignmentType alignmentType, T
                     return 0;
             }
         }
-        case AlignmentType::GLSL: {
+        case AlignmentType::STD140:
+        case AlignmentType::STD430: {
             switch (type) {
                 case Type::SAMPLER_2D:
                 case Type::SAMPLER_CUBE:
@@ -120,14 +122,14 @@ uint32_t BufferLayout::Element::alignmentFromType(AlignmentType alignmentType, T
                     return 4;
                 case Type::VEC2:
                 case Type::IVEC2:
-                    return 8;
+                    return 2 * 4;
                 case Type::VEC3:
-                case Type::VEC4:
                 case Type::IVEC3:
+                case Type::VEC4:
                 case Type::IVEC4:
                 case Type::MAT3:
                 case Type::MAT4:
-                    return 16;
+                    return 4 * 4;
                 default:
                     LOG_WARN("gfx::BufferLayout::Element", "Trying to get alignment of unknown type");
                     return 0;

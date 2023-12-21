@@ -33,10 +33,10 @@ Shader::Shader(const fs::path& file) : _file(file) {
 
     // Set buffer layout alignment
     _vertexLayout.setAlignmentType(BufferLayout::AlignmentType::DEFAULT);
-    _perFrameLayout.setAlignmentType(BufferLayout::AlignmentType::GLSL);
-    _perDrawLayout.setAlignmentType(BufferLayout::AlignmentType::GLSL);
-    _perFrameImageLayout.setAlignmentType(BufferLayout::AlignmentType::GLSL);
-    _perDrawImageLayout.setAlignmentType(BufferLayout::AlignmentType::GLSL);
+    _perFrameLayout.setAlignmentType(BufferLayout::AlignmentType::STD140);
+    _perDrawLayout.setAlignmentType(BufferLayout::AlignmentType::STD430);
+    _perFrameImageLayout.setAlignmentType(BufferLayout::AlignmentType::STD430);
+    _perDrawImageLayout.setAlignmentType(BufferLayout::AlignmentType::STD430);
 
     processASL();
 }
@@ -54,6 +54,9 @@ void Shader::processASL() {
 
     // Remove comments
     _aslCode = removeComments(_aslCode);
+
+    // Replace defines
+    _aslCode = replaceDefines(_aslCode);
 
     // Parse custom types
     parseCustomTypes();
@@ -80,6 +83,25 @@ std::string Shader::removeComments(std::string code) {
     code = std::regex_replace(code, std::regex("//[^\n]*"), "");
     // Remove multi-line comments
     code = std::regex_replace(code, std::regex(R"(/\*([\s\S]*?)\*/)"), "");
+    return code;
+}
+
+std::string Shader::replaceDefines(std::string code) {
+    std::map<std::string, std::string> defines;
+
+    // Populate defines
+    std::regex defineRegex(R"(#define\s+(\w+)\s+(\w+)\s+)");
+    for (std::sregex_iterator it(code.begin(), code.end(), defineRegex), end; it != end; it++) {
+        std::smatch match = *it;
+        defines[match[1]] = match[2];
+    }
+
+    // Remove #define lines
+    code = std::regex_replace(code, defineRegex, "");
+
+    // Replace defines
+    for (const auto& [name, value] : defines)
+        code = std::regex_replace(code, std::regex("\\b" + name + "\\b"), value);
     return code;
 }
 
@@ -268,8 +290,8 @@ std::string Shader::removeUnusedFunctions(std::string code) {
 }
 
 void Shader::parseCustomTypes() {
-    std::regex structRegex(R"(struct\s+(\w+)\s*\{([^\}]*)\};)");
-    std::regex memberRegex(R"((\w+)\s+(\w+);)");
+    std::regex structRegex(R"(struct\s+(\w+)\s*\{([^\}]*)\}\s*;)");
+    std::regex memberRegex(R"((\w+)\s+(\w+)(\[\d+\])?\s*;)");
 
     // Match structs
     std::smatch structMatch;
@@ -286,7 +308,7 @@ void Shader::parseCustomTypes() {
         }
 
         BufferLayout structLayout;
-        structLayout.setAlignmentType(BufferLayout::AlignmentType::GLSL);
+        structLayout.setAlignmentType(BufferLayout::AlignmentType::STD430);
 
         // Extract members from struct
         std::smatch memberMatch;
@@ -294,33 +316,45 @@ void Shader::parseCustomTypes() {
         while (std::regex_search(memberStart, members.cend(), memberMatch, memberRegex)) {
             std::string memberType = memberMatch[1];
             std::string memberName = memberMatch[2];
+            size_t memberArraySize = 0;
+            if (memberMatch[3] != "") {
+                std::string noBracket = std::string(memberMatch[3]).substr(1, std::string(memberMatch[3]).size() - 2);
+                memberArraySize = std::stoul(noBracket);
+            }
+
             BufferLayout::Element::Type type = BufferLayout::Element::typeFromString(memberType);
+            for (size_t a = 0; a < std::max(size_t(1), memberArraySize); a++) {
+                std::string fullMemberName = memberName;
+                // Handle array types;
+                if (memberArraySize)
+                    fullMemberName += "[" + std::to_string(a) + "]";
 
-            if (type != BufferLayout::Element::Type::NONE) {
-                if (type == BufferLayout::Element::Type::SAMPLER_2D || type == BufferLayout::Element::Type::SAMPLER_CUBE) {
-                    LOG_WARN("gfx::Shader", "Struct [w]$0[] uses struct [w]$1[], but this type is not supported in structs", memberType,
-                             BufferLayout::Element::typeToString(type));
-                    memberStart = memberMatch.suffix().first;
-                    continue;
-                }
-                // Handle basic type
-                structLayout.push(type, memberName);
-            } else {
-                // Handle custom type
-                if (_customTypes.find(structName) != _customTypes.end()) {
-                    LOG_WARN("gfx::Shader", "Struct [w]$0[] uses struct [w]$1[], which was not defined yet", structName, memberType);
-                    memberStart = memberMatch.suffix().first;
-                    continue;
-                }
+                if (type != BufferLayout::Element::Type::NONE) {
+                    // Handle basic type
+                    if (type == BufferLayout::Element::Type::SAMPLER_2D || type == BufferLayout::Element::Type::SAMPLER_CUBE) {
+                        LOG_WARN("gfx::Shader", "Struct [w]$0[] uses struct [w]$1[], but this type is not supported in structs", memberType,
+                                 BufferLayout::Element::typeToString(type));
+                        memberStart = memberMatch.suffix().first;
+                        continue;
+                    }
+                    structLayout.push(type, fullMemberName);
+                } else {
+                    // Handle custom type
+                    if (_customTypes.find(structName) != _customTypes.end()) {
+                        LOG_WARN("gfx::Shader", "Struct [w]$0[] uses struct [w]$1[], which was not defined yet", structName, memberType);
+                        memberStart = memberMatch.suffix().first;
+                        continue;
+                    }
 
-                const BufferLayout& memberStructLayout = _customTypes[memberType];
-                for (size_t i = 0; i < memberStructLayout.getElements().size(); i++) {
-                    const BufferLayout::Element& e = memberStructLayout.getElements().at(i);
-                    std::string name = memberName + "." + e.name;
-                    if (i == 0)
-                        structLayout.push(e.type, name, memberStructLayout.getAlignment());
-                    else
-                        structLayout.push(e.type, name);
+                    const BufferLayout& memberStructLayout = _customTypes[memberType];
+                    for (size_t i = 0; i < memberStructLayout.getElements().size(); i++) {
+                        const BufferLayout::Element& e = memberStructLayout.getElements().at(i);
+                        std::string name = fullMemberName + "." + e.name;
+                        if (i == 0)
+                            structLayout.push(e.type, name, memberStructLayout.getAlignment());
+                        else
+                            structLayout.push(e.type, name);
+                    }
                 }
             }
 
@@ -362,7 +396,7 @@ void Shader::populateVertexLayout() {
 }
 
 void Shader::populateDescriptorLayouts() {
-    std::regex regex(R"(\b(perFrame|perDraw)\s+(\w+)\s+(\w+)\s*;)");
+    std::regex regex(R"(\b(perFrame|perDraw)\s+(\w+)\s+(\w+)(\[\d+\])?\s*;)");
     std::smatch match;
 
     auto start = _aslCode.cbegin();
@@ -371,46 +405,74 @@ void Shader::populateDescriptorLayouts() {
         std::string freq = match[1];
         std::string type = match[2];
         std::string name = match[3];
+        size_t arraySize = 0;
+        if (match[4] != "") {
+            std::string noBracket = std::string(match[4]).substr(1, std::string(match[4]).size() - 2);
+            arraySize = std::stoul(noBracket);
+        }
         BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
-        if (t != BufferLayout::Element::Type::NONE) {
-            // Handle basic types
-            if (type == "sampler2D" || type == "samplerCube") {
-                if (freq == "perFrame")
-                    _perFrameImageLayout.push(t, name);
-                else if (freq == "perDraw")
-                    _perDrawImageLayout.push(t, name);
-            } else {
-                if (freq == "perFrame")
-                    _perFrameLayout.push(t, name);
-                else if (freq == "perDraw")
-                    _perDrawLayout.push(t, name);
-            }
-        } else if (_customTypes.find(type) != _customTypes.end()) {
-            // Handle custom types
-            // NOTE: There should be no sampler2D or samplerCube in the struct
-            const BufferLayout& structLayout = _customTypes[type];
-            for (size_t i = 0; i < structLayout.getElements().size(); i++) {
-                const BufferLayout::Element& e = structLayout.getElements().at(i);
-                std::string memberName = name + "." + e.name;
-                uint32_t alignment = i == 0 ? structLayout.getAlignment() : 0;
-                if (freq == "perFrame")
-                    _perFrameLayout.push(e.type, memberName, alignment);
-                else if (freq == "perDraw")
-                    _perDrawLayout.push(e.type, memberName, alignment);
+
+        for (size_t i = 0; i < std::max(size_t(1), arraySize); i++) {
+            std::string fullName = name;
+            // Handle array types;
+            if (arraySize)
+                fullName += "[" + std::to_string(i) + "]";
+
+            if (t != BufferLayout::Element::Type::NONE) {
+                // Handle basic types
+                if (type == "sampler2D" || type == "samplerCube") {
+                    if (freq == "perFrame")
+                        _perFrameImageLayout.push(t, fullName);
+                    else if (freq == "perDraw")
+                        _perDrawImageLayout.push(t, fullName);
+                } else {
+                    if (freq == "perFrame")
+                        _perFrameLayout.push(t, fullName);
+                    else if (freq == "perDraw")
+                        _perDrawLayout.push(t, fullName);
+                }
+            } else if (_customTypes.find(type) != _customTypes.end()) {
+                // Handle custom types
+                // NOTE: There should be no sampler2D or samplerCube in the struct
+                const BufferLayout& structLayout = _customTypes[type];
+                for (size_t i = 0; i < structLayout.getElements().size(); i++) {
+                    const BufferLayout::Element& e = structLayout.getElements().at(i);
+                    std::string memberName = fullName + "." + e.name;
+                    uint32_t alignment = i == 0 ? structLayout.getAlignment() : 0;
+                    if (freq == "perFrame")
+                        _perFrameLayout.push(e.type, memberName, alignment);
+                    else if (freq == "perDraw")
+                        _perDrawLayout.push(e.type, memberName, alignment);
+                }
             }
         }
 
         // Keep track of types and names
         if (type != "sampler2D" && type != "samplerCube") {
-            if (freq == "perFrame")
-                _perFrameLayoutMembers.push_back({type, name});
-            else if (freq == "perDraw")
-                _perDrawLayoutMembers.push_back({type, name});
+            if (freq == "perFrame") {
+                if (arraySize)
+                    _perFrameLayoutMembers.emplace_back(type, name, arraySize);
+                else
+                    _perFrameLayoutMembers.emplace_back(type, name);
+            } else if (freq == "perDraw") {
+                if (arraySize)
+                    _perFrameLayoutMembers.emplace_back(type, name, arraySize);
+                else
+                    _perDrawLayoutMembers.emplace_back(type, name);
+            }
         }
 
         // Move to the next match
         start = match.suffix().first;
     }
+
+    // TODO debug offsets
+    // for (auto e : _perFrameLayout.getElements())
+    //    LOG_DEBUG("Shader", "[r]$0 [y]offset $1", e.name, e.offset);
 }
+
+Shader::LayoutMember::LayoutMember(std::string type_, std::string name_) : type(type_), name(name_), isArray(false), arraySize(0) {}
+Shader::LayoutMember::LayoutMember(std::string type_, std::string name_, size_t arraySize_)
+    : type(type_), name(name_), isArray(true), arraySize(arraySize_) {}
 
 } // namespace atta::graphics
