@@ -17,7 +17,7 @@ namespace atta::graphics::vk {
 RenderPass::RenderPass(const graphics::RenderPass::CreateInfo& info) : graphics::RenderPass(info), _device(common::getDevice()) {
     std::vector<VkAttachmentDescription> attachments;
     for (std::shared_ptr<gfx::Image> image : _framebuffer->getImages()) {
-        Image::Format format = image->getFormat();
+        Image::Format format = std::dynamic_pointer_cast<vk::Image>(image)->getSupportedFormat();
         if (Image::isColorFormat(format)) {
             VkAttachmentDescription colorAttachment{};
             colorAttachment.format = vk::Image::convertFormat(format);
@@ -114,7 +114,7 @@ void RenderPass::begin(VkCommandBuffer commandBuffer) {
 
     std::vector<VkClearValue> clearValues{};
     for (std::shared_ptr<gfx::Image> image : _framebuffer->getImages()) {
-        Image::Format format = image->getFormat();
+        Image::Format format = std::dynamic_pointer_cast<vk::Image>(image)->getSupportedFormat();
         if (Image::isColorFormat(format)) {
             vec4 color = _framebuffer->getClearColor();
             VkClearValue clearColor = {{color.x, color.y, color.z, color.w}};

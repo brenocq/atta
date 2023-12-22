@@ -169,10 +169,10 @@ std::vector<fs::path> Manager::getResourcePathsImpl() const {
 
 fs::path Manager::getBuildPathImpl() const { return fs::path(ATTA_BUILD_DIR); }
 
-std::vector<fs::path> Manager::getDirectoryFilesRecursiveImpl(fs::path directory) {
+std::vector<fs::path> Manager::getDirectoryFilesRecursiveImpl(const fs::path& directory) {
     std::vector<fs::path> files;
 #ifndef ATTA_OS_WEB
-    for (auto& p : fs::recursive_directory_iterator(directory))
+    for (const auto& p : fs::recursive_directory_iterator(directory))
         if (!p.is_directory())
             files.push_back(fs::relative(p.path(), directory));
 #else

@@ -26,7 +26,7 @@ Device::Device(std::shared_ptr<PhysicalDevice> physicalDevice) : _physicalDevice
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.flags = 0;
         queueCreateInfo.queueFamilyIndex = queueFamily;
-        queueCreateInfo.queueCount = 2; // Always asking for 2 queues (one for the thread manager and another to the GUI)
+        queueCreateInfo.queueCount = 1;
         queueCreateInfo.pQueuePriorities = &queuePriority;
         queueCreateInfos.push_back(queueCreateInfo);
     }

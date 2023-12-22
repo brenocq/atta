@@ -48,8 +48,8 @@ void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     }
 }
 
-int Framebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned y) {}
-std::vector<uint8_t> Framebuffer::readImage(unsigned attachmentIndex) {}
+int Framebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned y) { return 0; }
+std::vector<uint8_t> Framebuffer::readImage(unsigned attachmentIndex) { return {}; }
 
 VkFramebuffer Framebuffer::getHandle() const { return _framebuffer; }
 std::shared_ptr<Device> Framebuffer::getDevice() const { return _device; }

@@ -23,7 +23,7 @@ UniformBuffer::UniformBuffer(size_t uniformBufferSize, size_t numInstances)
 UniformBuffer::~UniformBuffer() { vkUnmapMemory(_device->getHandle(), _memory); }
 
 void UniformBuffer::writeInstance(const std::vector<uint8_t>& data, size_t instanceIdx) {
-    memcpy(_mappedData + getInstanceOffset(instanceIdx), data.data(), data.size());
+    memcpy((uint8_t*)_mappedData + getInstanceOffset(instanceIdx), data.data(), data.size());
 }
 
 uint32_t UniformBuffer::getInstanceOffset(size_t instanceIdx) { return _uniformBufferSize * instanceIdx; }

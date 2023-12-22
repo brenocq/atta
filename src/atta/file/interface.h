@@ -28,7 +28,7 @@ std::shared_ptr<Project> getProject();
 fs::path solveResourcePath(fs::path relativePath, bool mustExist = true);
 std::vector<fs::path> getResourcePaths();
 fs::path getBuildPath();
-std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
+std::vector<fs::path> getDirectoryFilesRecursive(const fs::path& directory);
 fs::path getDefaultProjectFolder();
 
 void update();

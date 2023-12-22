@@ -40,18 +40,18 @@ Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
     _format = info.format;
 
     switch (_format) {
-    case Format::RED8:
-        _channels = 1;
-        break;
-    case Format::RGB8:
-        _channels = 3;
-        break;
-    case Format::RGBA8:
-        _channels = 4;
-        break;
-    case Format::RGB16F:
-        _channels = 3;
-        break;
+        case Format::RED8:
+            _channels = 1;
+            break;
+        case Format::RGB8:
+            _channels = 3;
+            break;
+        case Format::RGBA8:
+            _channels = 4;
+            break;
+        case Format::RGB16F:
+            _channels = 3;
+            break;
     }
 
     _data = new uint8_t[_width * _height * _channels * getBytesPerChannel(_format)];

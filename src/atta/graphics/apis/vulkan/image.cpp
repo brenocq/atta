@@ -18,24 +18,35 @@ namespace atta::graphics::vk {
 Image::Image(const gfx::Image::CreateInfo& info)
     : gfx::Image(info), _image(VK_NULL_HANDLE), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
       _imGuiDescriptorSet(VK_NULL_HANDLE), _device(common::getDevice()), _destroyImage(true) {
-    _format = supportedFormat(_format);
+    _supportedFormat = supportedFormat(_format);
     resize(_width, _height, true);
 }
 
 Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device, VkImage image)
     : gfx::Image(info), _image(image), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
       _imGuiDescriptorSet(VK_NULL_HANDLE), _device(device), _destroyImage(false) {
-    _format = supportedFormat(_format);
+    _supportedFormat = supportedFormat(_format);
     createImageView();
 }
 
 Image::~Image() { destroy(); }
 
 void Image::write(uint8_t* data) {
-    size_t size = _width * _height * Image::getPixelSize(_format);
+    // Convert data from _format to _supportedFormat
+    uint32_t co = Image::getPixelSize(_format);          // Num channels original
+    uint32_t cs = Image::getPixelSize(_supportedFormat); // Num channels supported
+    _supportedData.resize(_width * _height * cs);
+    for (size_t y = 0; y < _height; y++)
+        for (size_t x = 0; x < _width; x++) {
+            size_t idx = x + y * _width;
+            size_t idxo = idx * co;
+            size_t idxs = idx * cs;
+            for (size_t c = 0; c < cs; c++)
+                _supportedData[idxs + c] = c < co ? data[idxo + c] : 0;
+        }
 
     // Copy data to GPU
-    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(data, size);
+    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(_supportedData.data(), _supportedData.size());
     transitionLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     copyFrom(stagingBuffer);
     transitionLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -55,7 +66,7 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     createImage();
     allocMemory();
     createImageView();
-    if (isColorFormat(_format))
+    if (isColorFormat(_supportedFormat))
         createSampler();
 
     // Transfer data if specified
@@ -80,6 +91,8 @@ VkImageView Image::getImageViewHandle() const { return _imageView; }
 VkSampler Image::getSamplerHandle() const { return _sampler; }
 
 std::shared_ptr<Device> Image::getDevice() const { return _device; }
+
+Image::Format Image::getSupportedFormat() const { return _supportedFormat; }
 
 void Image::copyFrom(std::shared_ptr<Buffer> buffer) {
     VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
@@ -106,7 +119,7 @@ Image::Format Image::supportedFormat(Image::Format format) {
 
     if (format == Format::RGB && !(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)) {
         Image::Format alternative = Format::RGBA;
-        LOG_WARN("gfx::vk::Image", "Format RGB not supported as color attachment, using RGBA instead");
+        // LOG_WARN("gfx::vk::Image", "Format RGB is not supported, using RGBA instead");
         return alternative;
     }
 
@@ -197,12 +210,12 @@ void Image::createImage() {
     info.extent = {_width, _height, 1};
     info.mipLevels = 1;
     info.arrayLayers = 1;
-    info.format = convertFormat(_format);
+    info.format = convertFormat(_supportedFormat);
     info.tiling = VK_IMAGE_TILING_OPTIMAL;
     info.initialLayout = _layout = VK_IMAGE_LAYOUT_UNDEFINED;
-    if (isColorFormat(_format))
+    if (isColorFormat(_supportedFormat))
         info.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-    else if (isDepthFormat(_format))
+    else if (isDepthFormat(_supportedFormat))
         info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     info.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -215,13 +228,13 @@ void Image::createImageView() {
     VkImageViewCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     info.image = _image;
-    info.format = convertFormat(_format);
+    info.format = convertFormat(_supportedFormat);
     if (_isCubemap) {
         info.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
         info.subresourceRange.layerCount = 6;
     } else {
         info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        info.subresourceRange.aspectMask = convertAspectFlags(_format);
+        info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
         info.subresourceRange.baseMipLevel = 0;
         info.subresourceRange.levelCount = _mipLevels;
         info.subresourceRange.baseArrayLayer = 0;

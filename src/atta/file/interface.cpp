@@ -26,7 +26,9 @@ std::vector<fs::path> getResourcePaths() { return Manager::getInstance().getReso
 
 fs::path getBuildPath() { return Manager::getInstance().getBuildPathImpl(); }
 
-std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory) { return Manager::getInstance().getDirectoryFilesRecursiveImpl(directory); }
+std::vector<fs::path> getDirectoryFilesRecursive(const fs::path& directory) {
+    return Manager::getInstance().getDirectoryFilesRecursiveImpl(directory);
+}
 
 fs::path getDefaultProjectFolder() { return Manager::getInstance()._defaultProjectFolder; }
 

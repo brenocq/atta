@@ -48,14 +48,15 @@ class Image final : public gfx::Image {
     VkSampler getSamplerHandle() const;
     std::shared_ptr<Device> getDevice() const;
 
+    Image::Format getSupportedFormat() const;
+
     void copyFrom(std::shared_ptr<Buffer> buffer);
 
     /**
-     * @brief Supported vulkan format
+     * @brief Convert format to supported vulkan format
      *
-     * The GPU may not support all formats. For example, some GPUs may not support RGB, only RGBA. When creating an image, ensure that the format is
-     * supported. If the format is not supported, a close format will be used instead. It is always possible to do getFormat to check which format is
-     * actually being used.
+     * The GPU may not support all formats. For example, some GPUs may not support RGB, only RGBA. If the format is not supported, a close format will
+     * be used instead. It is always possible to do getSupportedFormat to check which format is actually being used by vulkan.
      */
     static Image::Format supportedFormat(Image::Format format);
 
@@ -71,6 +72,14 @@ class Image final : public gfx::Image {
     void destroy();
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     void transitionLayout(VkImageLayout newLayout);
+
+    /**
+     * @brief Supported format by the GPU
+     *
+     * Vulkan image will be done using the supported format. Writing and reading user operations will be done with the original format
+     */
+    Format _supportedFormat;
+    std::vector<uint8_t> _supportedData; ///< Converted _data to _supportedFormat
 
     VkImage _image;
     VkImageView _imageView;
