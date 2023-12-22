@@ -30,8 +30,8 @@ PhongRenderer::PhongRenderer() : Renderer("PhongRenderer"), _wasResized(false) {
     Framebuffer::CreateInfo framebufferInfo{};
     framebufferInfo.attachments.push_back({Image::Format::RGBA});
     framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
-    framebufferInfo.width = 500;
-    framebufferInfo.height = 500;
+    _width = framebufferInfo.width = 500;
+    _height = framebufferInfo.height = 500;
     framebufferInfo.debugName = StringId("PhongRenderer Framebuffer");
 
     // Render Pass

@@ -36,12 +36,15 @@ class PbrRenderer final : public Renderer {
     void prefilterCubemap();
     void brdfLUT();
 
+    std::shared_ptr<RenderQueue> _renderQueue;
+    std::shared_ptr<RenderPass> _geometryRenderPass;
     std::shared_ptr<Pipeline> _geometryPipeline;
     std::unique_ptr<SelectedPipeline> _selectedPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
 
     std::shared_ptr<Shader> _backgroundShader;
     bool _firstRender;
+    bool _wasResized;
 
     //----- Lighting -----//
     // Directional light

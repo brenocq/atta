@@ -24,154 +24,155 @@
 
 namespace atta::graphics {
 
-PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _lastEnvironmentMap(StringId("Not defined")) {
-    // Framebuffer
-    Framebuffer::CreateInfo framebufferInfo{};
-    framebufferInfo.attachments.push_back({Image::Format::RGB});
-    framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
-    framebufferInfo.width = 500;
-    framebufferInfo.height = 500;
-    framebufferInfo.debugName = StringId("PbrRenderer Framebuffer");
-    std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
+PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasResized(false), _lastEnvironmentMap(StringId("Not defined")) {
+    // Render Queue
+    _renderQueue = graphics::create<RenderQueue>();
 
     //---------- Create geometry pipeline ----------//
     std::shared_ptr<RenderPass> geometryRenderPass;
     {
-        // Shader
-        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/pbrRenderer.asl");
+        // Framebuffer
+        Framebuffer::CreateInfo framebufferInfo{};
+        framebufferInfo.attachments.push_back({Image::Format::RGB});
+        framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
+        _width = framebufferInfo.width = 500;
+        _height = framebufferInfo.height = 500;
+        framebufferInfo.debugName = StringId("PbrRenderer Framebuffer");
 
         // Render Pass
         RenderPass::CreateInfo renderPassInfo{};
-        renderPassInfo.framebuffer = framebuffer;
+        renderPassInfo.framebuffer = graphics::create<Framebuffer>(framebufferInfo);
         renderPassInfo.debugName = StringId("PbrRenderer Render Pass");
-        geometryRenderPass = graphics::create<RenderPass>(renderPassInfo);
+        _geometryRenderPass = graphics::create<RenderPass>(renderPassInfo);
 
         // Pipeline
         Pipeline::CreateInfo geometryPipelineInfo{};
-        geometryPipelineInfo.shader = shader;
-        geometryPipelineInfo.renderPass = geometryRenderPass;
+        geometryPipelineInfo.shader = graphics::create<Shader>("shaders/pbrRenderer/pbrRenderer.asl");
+        geometryPipelineInfo.renderPass = _geometryRenderPass;
         _geometryPipeline = graphics::create<Pipeline>(geometryPipelineInfo);
     }
 
     //---------- Common pipelines ----------//
-    _selectedPipeline = std::make_unique<SelectedPipeline>(geometryRenderPass);
-    _drawerPipeline = std::make_unique<DrawerPipeline>(geometryRenderPass);
+    //_selectedPipeline = std::make_unique<SelectedPipeline>(_geometryRenderPass);
+    //_drawerPipeline = std::make_unique<DrawerPipeline>(_geometryRenderPass);
 
-    //---------- Create background shader ----------//
-    { _backgroundShader = graphics::create<Shader>("shaders/pbrRenderer/background.asl"); }
+    ////---------- Create background shader ----------//
+    //{ _backgroundShader = graphics::create<Shader>("shaders/pbrRenderer/background.asl"); }
 
-    //---------- Directional shadow mapping ----------//
-    {
-        // Framebuffer
-        Image::CreateInfo imageInfo;
-        imageInfo.format = Image::Format::DEPTH32F;
-        imageInfo.samplerWrap = Image::Wrap::BORDER;
-        imageInfo.borderColor = vec4(1.0f);
-        imageInfo.width = 1024;
-        imageInfo.height = 1024;
-        imageInfo.debugName = StringId("PbrRenderer::dirShadowMap::image");
-        std::shared_ptr<Image> depthImage = graphics::create<Image>(imageInfo);
+    ////---------- Directional shadow mapping ----------//
+    //{
+    //    // Framebuffer
+    //    Image::CreateInfo imageInfo;
+    //    imageInfo.format = Image::Format::DEPTH32F;
+    //    imageInfo.samplerWrap = Image::Wrap::BORDER;
+    //    imageInfo.borderColor = vec4(1.0f);
+    //    imageInfo.width = 1024;
+    //    imageInfo.height = 1024;
+    //    imageInfo.debugName = StringId("PbrRenderer::dirShadowMap::image");
+    //    std::shared_ptr<Image> depthImage = graphics::create<Image>(imageInfo);
 
-        Framebuffer::CreateInfo framebufferInfo{};
-        framebufferInfo.attachments.push_back({Image::Format::NONE, depthImage});
-        framebufferInfo.width = 1024;
-        framebufferInfo.height = 1024;
-        framebufferInfo.debugName = StringId("PbrRenderer::shadowMap::framebuffer");
-        std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
+    //    Framebuffer::CreateInfo framebufferInfo{};
+    //    framebufferInfo.attachments.push_back({Image::Format::NONE, depthImage});
+    //    framebufferInfo.width = 1024;
+    //    framebufferInfo.height = 1024;
+    //    framebufferInfo.debugName = StringId("PbrRenderer::shadowMap::framebuffer");
+    //    std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
-        // Shader
-        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/shadow.asl");
+    //    // Shader
+    //    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/shadow.asl");
 
-        // Render Pass
-        RenderPass::CreateInfo renderPassInfo{};
-        renderPassInfo.framebuffer = framebuffer;
-        renderPassInfo.debugName = StringId("PbrRenderer::shadowMap::renderPass");
-        std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
+    //    // Render Pass
+    //    RenderPass::CreateInfo renderPassInfo{};
+    //    renderPassInfo.framebuffer = framebuffer;
+    //    renderPassInfo.debugName = StringId("PbrRenderer::shadowMap::renderPass");
+    //    std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
 
-        // Pipeline
-        Pipeline::CreateInfo pipelineInfo{};
-        pipelineInfo.shader = shader;
-        pipelineInfo.renderPass = renderPass;
-        _shadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
-    }
+    //    // Pipeline
+    //    Pipeline::CreateInfo pipelineInfo{};
+    //    pipelineInfo.shader = shader;
+    //    pipelineInfo.renderPass = renderPass;
+    //    _shadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
+    //}
 
-    //---------- Omnidirectional shadow mapping ----------//
-    {
-        // Framebuffer
-        Image::CreateInfo imageInfo;
-        imageInfo.format = Image::Format::DEPTH32F;
-        imageInfo.width = 1024;
-        imageInfo.height = 1024;
-        imageInfo.isCubemap = true;
-        imageInfo.debugName = StringId("PbrRenderer::omniShadowMap::image");
-        _omnidirectionalShadowMap = graphics::create<Image>(imageInfo);
+    ////---------- Omnidirectional shadow mapping ----------//
+    //{
+    //    // Framebuffer
+    //    Image::CreateInfo imageInfo;
+    //    imageInfo.format = Image::Format::DEPTH32F;
+    //    imageInfo.width = 1024;
+    //    imageInfo.height = 1024;
+    //    imageInfo.isCubemap = true;
+    //    imageInfo.debugName = StringId("PbrRenderer::omniShadowMap::image");
+    //    _omnidirectionalShadowMap = graphics::create<Image>(imageInfo);
 
-        Framebuffer::CreateInfo framebufferInfo{};
-        framebufferInfo.attachments.push_back({Image::Format::NONE, _omnidirectionalShadowMap});
-        framebufferInfo.width = 1024;
-        framebufferInfo.height = 1024;
-        framebufferInfo.debugName = StringId("PbrRenderer::omniShadowMap::framebuffer");
-        std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
+    //    Framebuffer::CreateInfo framebufferInfo{};
+    //    framebufferInfo.attachments.push_back({Image::Format::NONE, _omnidirectionalShadowMap});
+    //    framebufferInfo.width = 1024;
+    //    framebufferInfo.height = 1024;
+    //    framebufferInfo.debugName = StringId("PbrRenderer::omniShadowMap::framebuffer");
+    //    std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
-        // Shader
-        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/omniShadow.asl");
+    //    // Shader
+    //    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/omniShadow.asl");
 
-        // Render Pass
-        RenderPass::CreateInfo renderPassInfo{};
-        renderPassInfo.framebuffer = framebuffer;
-        renderPassInfo.debugName = StringId("PbrRenderer::omniShadowMap::renderPass");
-        std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
+    //    // Render Pass
+    //    RenderPass::CreateInfo renderPassInfo{};
+    //    renderPassInfo.framebuffer = framebuffer;
+    //    renderPassInfo.debugName = StringId("PbrRenderer::omniShadowMap::renderPass");
+    //    std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
 
-        // Pipeline
-        Pipeline::CreateInfo pipelineInfo{};
-        pipelineInfo.shader = shader;
-        pipelineInfo.renderPass = renderPass;
-        _omniShadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
-    }
+    //    // Pipeline
+    //    Pipeline::CreateInfo pipelineInfo{};
+    //    pipelineInfo.shader = shader;
+    //    pipelineInfo.renderPass = renderPass;
+    //    _omniShadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
+    //}
 }
 
 PbrRenderer::~PbrRenderer() {}
 
 void PbrRenderer::render(std::shared_ptr<Camera> camera) {
-    if (_firstRender) {
-        brdfLUT();
+    if (_wasResized) {
+        _geometryPipeline->resize(_width, _height);
+        _wasResized = false;
     }
-
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    // if (_firstRender)
+    //     brdfLUT();
 
     // Check current envinroment map
-    StringId currEnvironmentMap = StringId("textures/white.png"); // Default environment map is white texture
-    for (auto entity : entities) {
-        component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
+    // std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    // StringId currEnvironmentMap = StringId("textures/white.png"); // Default environment map is white texture
+    // for (auto entity : entities) {
+    //    component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
 
-        if (el) {
-            currEnvironmentMap = el->sid;
-            break;
-        }
-    }
+    //    if (el) {
+    //        currEnvironmentMap = el->sid;
+    //        break;
+    //    }
+    //}
 
     // Recreate environment map if it is different from last one
-    if (currEnvironmentMap != _lastEnvironmentMap) {
-        _lastEnvironmentMap = currEnvironmentMap;
-        graphics::getGraphicsAPI()->generateCubemap(_lastEnvironmentMap);
-        irradianceCubemap();
-        prefilterCubemap();
-    }
+    // if (currEnvironmentMap != _lastEnvironmentMap) {
+    //    _lastEnvironmentMap = currEnvironmentMap;
+    //    graphics::getGraphicsAPI()->generateCubemap(_lastEnvironmentMap);
+    //    irradianceCubemap();
+    //    prefilterCubemap();
+    //}
 
-    shadowPass();
+    // shadowPass();
     geometryPass(camera);
 
-    if (_renderSelected)
-        _selectedPipeline->render(camera);
-    if (_renderDrawer)
-        _drawerPipeline->render(camera);
+    // if (_renderSelected)
+    //     _selectedPipeline->render(camera);
+    // if (_renderDrawer)
+    //     _drawerPipeline->render(camera);
 
     _firstRender = false;
 }
 
 void PbrRenderer::resize(uint32_t width, uint32_t height) {
     if (width != _width || height != _height) {
-        _geometryPipeline->resize(width, height);
+        _wasResized = true;
         _width = width;
         _height = height;
     }
@@ -282,7 +283,126 @@ void PbrRenderer::shadowPass() {
 }
 
 void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
-    // std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    // Handle image group update from materials
+    _geometryPipeline->updateImageGroupsFromMaterials([](resource::Material* material) {
+        Pipeline::ImageGroup imageGroup;
+        if (material->colorIsImage())
+            imageGroup.emplace_back("albedoTexture", material->getColorImage());
+        if (material->metallicIsImage())
+            imageGroup.emplace_back("metallicTexture", material->getMetallicImage());
+        if (material->roughnessIsImage())
+            imageGroup.emplace_back("roughnessTexture", material->getRoughnessImage());
+        if (material->aoIsImage())
+            imageGroup.emplace_back("aoTexture", material->getAoImage());
+        return imageGroup;
+    });
+
+    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+
+    // Render
+    _renderQueue->begin();
+    {
+        _geometryRenderPass->begin(_renderQueue);
+        {
+            _geometryPipeline->begin(_renderQueue);
+            {
+                //---------- PBR shader ----------//
+                _geometryPipeline->setMat4("projection", camera->getProj());
+                _geometryPipeline->setMat4("view", camera->getView());
+                _geometryPipeline->setVec3("camPos", camera->getPosition());
+                _geometryPipeline->setMat4("directionalLightMatrix", _directionalLightMatrix);
+                // _geometryPipeline->setImage("directionalShadowMap", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
+                // _geometryPipeline->setCubemap("omniShadowMap", _omnidirectionalShadowMap);
+                _geometryPipeline->setFloat("omniFarPlane", 25.0f);
+
+                // Always set environment textures (if there is no environment map, use white texture)
+                // _geometryPipeline->setCubemap("irradianceMap", "PbrRenderer::irradiance");
+                // _geometryPipeline->setCubemap("prefilterMap", "PbrRenderer::prefilter");
+                //_geometryPipeline->setImage("brdfLUT", "PbrRenderer::brdfLUT");
+
+                // if (_lastEnvironmentMap != "Not defined"_sid)
+                //     _geometryPipeline->setInt("numEnvironmentLights", 1);
+                // else {
+                //     LOG_WARN("graphics::PbrRenderer", "Number of environment light should always be 1 (white texture if not defined)");
+                //     _geometryPipeline->setInt("numEnvironmentLights", 0);
+                // }
+                _geometryPipeline->setMat3("environmentLightOri", mat3(1.0f));
+
+                //----- Lighting -----//
+                _environmentMapOri = mat3(1.0f);
+                int numPointLights = 0;
+                int numDirectionalLights = 0;
+                for (auto entity : entities) {
+                    component::Transform* transform = component::getComponent<component::Transform>(entity);
+                    component::PointLight* pl = component::getComponent<component::PointLight>(entity);
+                    component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
+                    component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
+
+                    if (transform && (pl || dl || el)) {
+                        if (pl && numPointLights < 10) {
+                            vec3 position = transform->getWorldTransformMatrix(entity).getPosition();
+                            int i = numPointLights++;
+                            _geometryPipeline->setVec3(("pointLights[" + std::to_string(i) + "].position").c_str(), position);
+                            _geometryPipeline->setVec3(("pointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
+                        }
+                        if (dl) {
+                            vec3 base = {0.0f, 0.0f, -1.0f};
+                            mat4 rotation;
+                            rotation.setPosOri({0, 0, 0}, transform->orientation);
+                            base = mat3(rotation) * base;
+                            _geometryPipeline->setVec3("directionalLight.direction", base);
+                            _geometryPipeline->setVec3("directionalLight.intensity", dl->intensity);
+                            numDirectionalLights++;
+                        }
+                        if (el) {
+                            mat4 ori;
+                            ori.setPosOri(vec3(0.0f), transform->orientation);
+                            _environmentMapOri = mat3(ori);
+                            _geometryPipeline->setMat3("environmentLightOri", transpose(_environmentMapOri));
+                        }
+                        if (numPointLights++ == 10)
+                            LOG_WARN("gfx::PbrRenderer", "Maximum number of point lights reached, 10 lights");
+                    }
+                }
+                _geometryPipeline->setInt("numPointLights", numPointLights);
+                _geometryPipeline->setInt("numDirectionalLights", numDirectionalLights ? 1 : 0);
+
+                //----- Meshes -----//
+                for (auto entity : entities) {
+                    component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+                    component::Transform* transform = component::getComponent<component::Transform>(entity);
+                    component::Material* compMat = component::getComponent<component::Material>(entity);
+                    resource::Material* material = compMat ? compMat->getResource() : nullptr;
+
+                    if (mesh && transform) {
+                        mat4 model = transform->getWorldTransformMatrix(entity);
+                        _geometryPipeline->setMat4("model", model);
+                        _geometryPipeline->setMat4("invModel", inverse(model));
+
+                        if (material) {
+                            _geometryPipeline->setImageGroup(compMat->sid);
+                            _geometryPipeline->setVec3("material.albedo", material->colorIsImage() ? vec3(-1, -1, -1) : material->getColor());
+                            _geometryPipeline->setFloat("material.metallic", material->metallicIsImage() ? -1.0f : material->getMetallic());
+                            _geometryPipeline->setFloat("material.roughness", material->roughnessIsImage() ? -1.0f : material->getRoughness());
+                            _geometryPipeline->setFloat("material.ao", material->aoIsImage() ? -1.0f : material->getAo());
+                        } else {
+                            resource::Material::CreateInfo defaultMaterial{};
+                            _geometryPipeline->setVec3("material.albedo", defaultMaterial.color);
+                            _geometryPipeline->setFloat("material.metallic", defaultMaterial.metallic);
+                            _geometryPipeline->setFloat("material.roughness", defaultMaterial.roughness);
+                            _geometryPipeline->setFloat("material.ao", defaultMaterial.ao);
+                        }
+
+                        // Draw mesh
+                        _geometryPipeline->renderMesh(mesh->sid);
+                    }
+                }
+            }
+            _geometryPipeline->end();
+        }
+        _geometryRenderPass->end();
+    }
+    _renderQueue->end();
     //_geometryPipeline->begin();
     //{
     //     //---------- PBR shader ----------//
@@ -422,66 +542,66 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
 }
 
 void PbrRenderer::irradianceCubemap() {
-    // Create shader
-    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/irradiance.asl");
+    //// Create shader
+    // std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/irradiance.asl");
 
-    // Generate irradiance cubemap
-    GraphicsAPI::GenerateProcessedCubemapInfo info;
-    info.cubemapSid = StringId("PbrRenderer::irradiance");
-    info.shader = shader;
-    info.width = 128;
-    info.height = 128;
-    info.numMipLevels = 1;
-    info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
-        if (mipLevel == 0 && face == 0) {
-            // TODO shader->setCubemap("environmentMap", _lastEnvironmentMap);
-            shader->setMat4("projection", transpose(proj));
-        }
-        shader->setMat4("view", transpose(view));
-    };
-    graphics::getGraphicsAPI()->generateProcessedCubemap(info);
+    //// Generate irradiance cubemap
+    // GraphicsAPI::GenerateProcessedCubemapInfo info;
+    // info.cubemapSid = StringId("PbrRenderer::irradiance");
+    // info.shader = shader;
+    // info.width = 128;
+    // info.height = 128;
+    // info.numMipLevels = 1;
+    // info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
+    //     if (mipLevel == 0 && face == 0) {
+    //         // TODO shader->setCubemap("environmentMap", _lastEnvironmentMap);
+    //         shader->setMat4("projection", transpose(proj));
+    //     }
+    //     shader->setMat4("view", transpose(view));
+    // };
+    // graphics::getGraphicsAPI()->generateProcessedCubemap(info);
 }
 
 void PbrRenderer::prefilterCubemap() {
-    // Create shader
-    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/asl.vert");
+    //// Create shader
+    // std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/asl.vert");
 
-    // Generate prefilter cubemap
-    GraphicsAPI::GenerateProcessedCubemapInfo info;
-    info.cubemapSid = StringId("PbrRenderer::prefilter");
-    info.shader = shader;
-    info.width = 512;
-    info.height = 512;
-    info.numMipLevels = 5;
-    info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
-        if (mipLevel == 0 && face == 0) {
-            // TODO shader->setCubemap("environmentMap", _lastEnvironmentMap);
-            shader->setMat4("projection", transpose(proj));
-        }
+    //// Generate prefilter cubemap
+    // GraphicsAPI::GenerateProcessedCubemapInfo info;
+    // info.cubemapSid = StringId("PbrRenderer::prefilter");
+    // info.shader = shader;
+    // info.width = 512;
+    // info.height = 512;
+    // info.numMipLevels = 5;
+    // info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
+    //     if (mipLevel == 0 && face == 0) {
+    //         // TODO shader->setCubemap("environmentMap", _lastEnvironmentMap);
+    //         shader->setMat4("projection", transpose(proj));
+    //     }
 
-        shader->setMat4("view", transpose(view));
+    //    shader->setMat4("view", transpose(view));
 
-        float roughness = (float)mipLevel / (float)(info.numMipLevels - 1);
-        shader->setFloat("roughness", roughness);
-    };
-    graphics::getGraphicsAPI()->generateProcessedCubemap(info);
+    //    float roughness = (float)mipLevel / (float)(info.numMipLevels - 1);
+    //    shader->setFloat("roughness", roughness);
+    //};
+    // graphics::getGraphicsAPI()->generateProcessedCubemap(info);
 }
 
 void PbrRenderer::brdfLUT() {
-    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/brdf.asl");
+    // std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/brdf.asl");
 
-    // Generate brdf LUT
-    GraphicsAPI::GenerateProcessedTextureInfo info;
-    info.textureSid = StringId("PbrRenderer::brdfLUT");
-    info.shader = shader;
-    info.imageInfo.format = Image::Format::RG16F;
-    info.imageInfo.samplerWrap = Image::Wrap::REPEAT;
-    info.imageInfo.width = 512;
-    info.imageInfo.height = 512;
-    info.imageInfo.mipLevels = 1;
-    info.imageInfo.debugName = StringId("PbrRenderer brdfLUT image");
+    //// Generate brdf LUT
+    // GraphicsAPI::GenerateProcessedTextureInfo info;
+    // info.textureSid = StringId("PbrRenderer::brdfLUT");
+    // info.shader = shader;
+    // info.imageInfo.format = Image::Format::RG16F;
+    // info.imageInfo.samplerWrap = Image::Wrap::REPEAT;
+    // info.imageInfo.width = 512;
+    // info.imageInfo.height = 512;
+    // info.imageInfo.mipLevels = 1;
+    // info.imageInfo.debugName = StringId("PbrRenderer brdfLUT image");
 
-    graphics::getGraphicsAPI()->generateProcessedTexture(info);
+    // graphics::getGraphicsAPI()->generateProcessedTexture(info);
 }
 
 } // namespace atta::graphics
