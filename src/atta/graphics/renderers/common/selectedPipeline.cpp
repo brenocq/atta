@@ -19,6 +19,7 @@ SelectedPipeline::SelectedPipeline(std::shared_ptr<RenderPass> renderPass) {
     Pipeline::CreateInfo pipelineInfo{};
     pipelineInfo.shader = shader;
     pipelineInfo.renderPass = renderPass;
+    pipelineInfo.debugName = StringId("Selected Pipeline");
     _pipeline = graphics::create<Pipeline>(pipelineInfo);
 }
 

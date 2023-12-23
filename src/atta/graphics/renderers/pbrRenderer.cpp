@@ -49,6 +49,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
         Pipeline::CreateInfo geometryPipelineInfo{};
         geometryPipelineInfo.shader = graphics::create<Shader>("shaders/pbrRenderer/pbrRenderer.asl");
         geometryPipelineInfo.renderPass = _geometryRenderPass;
+        geometryPipelineInfo.debugName = StringId("PbrRenderer Pipeline");
         _geometryPipeline = graphics::create<Pipeline>(geometryPipelineInfo);
     }
 

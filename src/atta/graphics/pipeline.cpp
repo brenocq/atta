@@ -22,8 +22,16 @@ Pipeline::Pipeline(const CreateInfo& info)
     event::subscribe<event::MaterialCreate>(BIND_EVENT_FUNC(Pipeline::onMaterialCreate));
     event::subscribe<event::MaterialDestroy>(BIND_EVENT_FUNC(Pipeline::onMaterialDestroy));
     event::subscribe<event::MaterialUpdate>(BIND_EVENT_FUNC(Pipeline::onMaterialUpdate));
-    for (StringId materialSid : resource::getResources<resource::Material>())
+    for (StringId materialSid : resource::getResources<resource::Material>()) {
         _imageGroupsToCreate.insert(materialSid);
+        _imageGroupsToUpdate.insert(materialSid);
+    }
+}
+
+Pipeline::~Pipeline() {
+    event::unsubscribe<event::MaterialCreate>(BIND_EVENT_FUNC(Pipeline::onMaterialCreate));
+    event::unsubscribe<event::MaterialDestroy>(BIND_EVENT_FUNC(Pipeline::onMaterialDestroy));
+    event::unsubscribe<event::MaterialUpdate>(BIND_EVENT_FUNC(Pipeline::onMaterialUpdate));
 }
 
 void Pipeline::setBool(const char* name, bool b) { _shader->setBool(name, b); }

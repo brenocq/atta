@@ -32,7 +32,7 @@ class Pipeline {
     };
 
     Pipeline(const CreateInfo& info);
-    virtual ~Pipeline() = default;
+    virtual ~Pipeline();
 
     virtual void begin(std::shared_ptr<RenderQueue> renderQueue) = 0;
     virtual void end() = 0;
