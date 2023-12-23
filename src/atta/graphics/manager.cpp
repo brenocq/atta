@@ -176,8 +176,8 @@ gfx::Image::Format Manager::convertFormat(res::Image::Format format) const {
             return gfx::Image::Format::RGB;
         case res::Image::Format::RGBA8:
             return gfx::Image::Format::RGBA;
-        case res::Image::Format::RGB16F:
-            return gfx::Image::Format::RGB16F;
+        case res::Image::Format::RGB32F:
+            return gfx::Image::Format::RGB32F;
         default:
             break;
     }

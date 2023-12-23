@@ -49,7 +49,7 @@ Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
         case Format::RGBA8:
             _channels = 4;
             break;
-        case Format::RGB16F:
+        case Format::RGB32F:
             _channels = 3;
             break;
     }
@@ -91,7 +91,7 @@ void Image::saveToFile() {
                  absolutePath.string());
 }
 
-uint32_t Image::getBytesPerChannel(Format format) { return format == Format::RGB16F ? 2 : 1; }
+uint32_t Image::getBytesPerChannel(Format format) { return format == Format::RGB32F ? 4 : 1; }
 
 void Image::load() {
     fs::path absolutePath = file::solveResourcePath(_filename);
@@ -119,23 +119,31 @@ void Image::load() {
                 _format = Format::RGB8;
             else if (_channels == 4)
                 _format = Format::RGBA8;
-            else
+            else {
                 LOG_WARN("resource::Image", "Image with $0 channels are not supported", _channels);
+                _width = 0;
+                _height = 0;
+                _channels = 0;
+                return;
+            }
         } else {
-            if (_channels != 3)
+            if (_channels != 3) {
                 LOG_WARN("resource::Image", "Only hdr with 3 channels are supported");
-
-            _format = Format::RGB16F;
+                _width = 0;
+                _height = 0;
+                _channels = 0;
+                return;
+            }
+            _format = Format::RGB32F;
         }
 
         // Copy temp data to _data
-        uint32_t bytesPerPixel = _format == Format::RGB16F ? 2 : 1;
-        uint32_t size = _width * _height * _channels * bytesPerPixel;
+        uint32_t size = _width * _height * _channels * getBytesPerChannel(_format);
         _data = new uint8_t[size];
         for (int i = 0; i < size; i++)
             _data[i] = data[i];
         stbi_image_free(data);
-        // LOG_WARN("resource::Image", "$3 -> w:$0, h:$1, c:$2", _width, _height, _channels, absolutePath);
+        // LOG_INFO("resource::Image", "[w]$3[] -> w:$0, h:$1, c:$2", _width, _height, _channels, absolutePath);
     } else {
         _width = 0;
         _height = 0;

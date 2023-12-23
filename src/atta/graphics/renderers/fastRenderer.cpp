@@ -30,7 +30,7 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
     framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
     _width = framebufferInfo.width = 500;
     _height = framebufferInfo.height = 500;
-    framebufferInfo.clearColor = {0.3f, 0.3f, 0.3f, 1.0f};
+    framebufferInfo.clearColor = {0.2f, 0.2f, 0.2f, 1.0f};
     framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
 
     // Render Pass

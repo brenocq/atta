@@ -19,7 +19,7 @@ class Image : public Resource, public memory::AllocatedObject<Image, SID("Resour
         RED8,
         RGB8,
         RGBA8,
-        RGB16F,
+        RGB32F,
     };
 
     struct CreateInfo {

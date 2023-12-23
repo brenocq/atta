@@ -37,6 +37,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
         framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
         _width = framebufferInfo.width = 500;
         _height = framebufferInfo.height = 500;
+        framebufferInfo.clearColor = {0.2f, 0.2f, 0.2f, 1.0f};
         framebufferInfo.debugName = StringId("PbrRenderer Framebuffer");
 
         // Render Pass

@@ -32,21 +32,45 @@ Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device,
 Image::~Image() { destroy(); }
 
 void Image::write(uint8_t* data) {
-    // Convert data from _format to _supportedFormat
-    uint32_t co = Image::getPixelSize(_format);          // Num channels original
-    uint32_t cs = Image::getPixelSize(_supportedFormat); // Num channels supported
-    _supportedData.resize(_width * _height * cs);
-    for (size_t y = 0; y < _height; y++)
-        for (size_t x = 0; x < _width; x++) {
-            size_t idx = x + y * _width;
-            size_t idxo = idx * co;
-            size_t idxs = idx * cs;
-            for (size_t c = 0; c < cs; c++)
-                _supportedData[idxs + c] = c < co ? data[idxo + c] : 0;
+    uint8_t* finalData = data;
+    uint32_t finalSize = _width * _height * Image::getPixelSize(_format);
+    if (_format != _supportedFormat) {
+        uint32_t co = Image::getNumChannels(_format);          // Num channels original
+        uint32_t cs = Image::getNumChannels(_supportedFormat); // Num channels supported
+        // Convert data from _format to _supportedFormat
+        if (_supportedFormat == Image::Format::RGBA) {
+            _supportedData.resize(_width * _height * cs);
+            for (size_t y = 0; y < _height; y++)
+                for (size_t x = 0; x < _width; x++) {
+                    size_t idx = x + y * _width;
+                    size_t idxo = idx * co;
+                    size_t idxs = idx * cs;
+                    for (size_t c = 0; c < cs; c++)
+                        _supportedData[idxs + c] = c < co ? data[idxo + c] : 255;
+                }
+        } else if (_supportedFormat == Image::Format::RGBA32F) {
+            _supportedData.resize(_width * _height * cs * sizeof(float));
+            float* oDataF = (float*)data;
+            float* sDataF = (float*)_supportedData.data();
+            for (size_t y = 0; y < _height; y++)
+                for (size_t x = 0; x < _width; x++) {
+                    size_t idx = x + y * _width;
+                    size_t idxo = idx * co;
+                    size_t idxs = idx * cs;
+                    for (size_t c = 0; c < cs; c++)
+                        sDataF[idxs + c] = c < co ? oDataF[idxo + c] : 1.0f;
+                }
+        } else {
+            LOG_ERROR("gfx::vk::Image", "Unknown format conversion when writing image. Image will not be written");
+            return;
         }
 
+        finalData = _supportedData.data();
+        finalSize = _supportedData.size();
+    }
+
     // Copy data to GPU
-    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(_supportedData.data(), _supportedData.size());
+    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(finalData, finalSize);
     transitionLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     copyFrom(stagingBuffer);
     transitionLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -121,6 +145,10 @@ Image::Format Image::supportedFormat(Image::Format format) {
         Image::Format alternative = Format::RGBA;
         // LOG_WARN("gfx::vk::Image", "Format RGB is not supported, using RGBA instead");
         return alternative;
+    } else if (format == Format::RGB32F && !(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)) {
+        Image::Format alternative = Format::RGBA32F;
+        // LOG_WARN("gfx::vk::Image", "Format RGB32F is not supported, using RGBA32F instead");
+        return alternative;
     }
 
     return format;
@@ -131,7 +159,7 @@ VkFormat Image::convertFormat(Image::Format format) {
         case Format::NONE:
             break;
         case Format::RED:
-            return VK_FORMAT_R8_UINT;
+            return VK_FORMAT_R8_UNORM;
         case Format::RED32I:
             return VK_FORMAT_R32_SINT;
         case Format::RG16F:
@@ -142,10 +170,14 @@ VkFormat Image::convertFormat(Image::Format format) {
             return VK_FORMAT_B8G8R8_UNORM;
         case Format::RGB16F:
             return VK_FORMAT_R16G16B16_SFLOAT;
+        case Format::RGB32F:
+            return VK_FORMAT_R32G32B32_SFLOAT;
         case Format::RGBA:
             return VK_FORMAT_R8G8B8A8_UNORM;
         case Format::BGRA:
             return VK_FORMAT_B8G8R8A8_UNORM;
+        case Format::RGBA32F:
+            return VK_FORMAT_R32G32B32A32_SFLOAT;
         case Format::DEPTH32F:
             return VK_FORMAT_D32_SFLOAT;
         case Format::DEPTH24_STENCIL8:
@@ -156,7 +188,7 @@ VkFormat Image::convertFormat(Image::Format format) {
 
 Image::Format Image::convertFormat(VkFormat format) {
     switch (format) {
-        case VK_FORMAT_R8_UINT:
+        case VK_FORMAT_R8_UNORM:
             return Format::RED;
         case VK_FORMAT_R32_SINT:
             return Format::RED32I;
@@ -168,10 +200,14 @@ Image::Format Image::convertFormat(VkFormat format) {
             return Format::BGR;
         case VK_FORMAT_R16G16B16_SFLOAT:
             return Format::RGB16F;
+        case VK_FORMAT_R32G32B32_SFLOAT:
+            return Format::RGB32F;
         case VK_FORMAT_R8G8B8A8_UNORM:
             return Format::RGBA;
         case VK_FORMAT_B8G8R8A8_UNORM:
             return Format::BGRA;
+        case VK_FORMAT_R32G32B32A32_SFLOAT:
+            return Format::RGBA32F;
         case VK_FORMAT_D32_SFLOAT:
             return Format::DEPTH32F;
         case VK_FORMAT_D24_UNORM_S8_UINT:
@@ -192,8 +228,10 @@ VkImageAspectFlags Image::convertAspectFlags(Image::Format format) {
         case Format::RGB:
         case Format::BGR:
         case Format::RGB16F:
+        case Format::RGB32F:
         case Format::RGBA:
         case Format::BGRA:
+        case Format::RGBA32F:
             return VK_IMAGE_ASPECT_COLOR_BIT;
         case Format::DEPTH32F:
             return VK_IMAGE_ASPECT_DEPTH_BIT;

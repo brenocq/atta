@@ -25,6 +25,8 @@ class Image {
         RED32I, // 4 byte
 
         RGB16F,
+        RGB32F,
+        RGBA32F,
         DEPTH32F,
         DEPTH24_STENCIL8,
     };
