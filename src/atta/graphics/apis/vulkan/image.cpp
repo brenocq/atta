@@ -7,6 +7,7 @@
 #include <atta/graphics/apis/vulkan/image.h>
 
 #include <atta/graphics/apis/vulkan/commandPool.h>
+#include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/stagingBuffer.h>
 
 // TODO should not have UI code here
@@ -328,8 +329,11 @@ void Image::allocMemory() {
 }
 
 void Image::destroy() {
-    if (_imGuiDescriptorSet != VK_NULL_HANDLE)
+    if (_imGuiDescriptorSet != VK_NULL_HANDLE) {
+        // Make sure ImGui is not using image before removing it
+        vkDeviceWaitIdle(common::getDevice()->getHandle());
         ImGui_ImplVulkan_RemoveTexture(_imGuiDescriptorSet);
+    }
     if (_imageView != VK_NULL_HANDLE)
         vkDestroyImageView(_device->getHandle(), _imageView, nullptr);
     if (_sampler != VK_NULL_HANDLE)

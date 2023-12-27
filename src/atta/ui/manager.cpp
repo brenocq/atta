@@ -64,6 +64,9 @@ void Manager::startUpImpl() {
 }
 
 void Manager::shutDownImpl() {
+    // Make sure all rendering operations are done
+    gfx::getGraphicsAPI()->waitDevice();
+
     switch (gfx::getGraphicsAPI()->getType()) {
         case gfx::GraphicsAPI::OPENGL:
             ImGui_ImplOpenGL3_Shutdown();

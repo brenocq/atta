@@ -101,7 +101,8 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
 
     glfwSetErrorCallback([](int error, const char* description) { LOG_ERROR("gfx::Window", "GLFW error($0): $1", error, std::string(description)); });
 
-    glfwMakeContextCurrent(_window);
+    if (info.useOpenGL)
+        glfwMakeContextCurrent(_window);
 
 #ifdef ATTA_OS_WEB
     int w = canvas_get_width();
