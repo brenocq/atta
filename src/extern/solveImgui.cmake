@@ -20,8 +20,11 @@ set(IMGUI_SOURCE
 	${FETCHCONTENT_BASE_DIR}/imgui-src/imgui_widgets.cpp
 	${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_glfw.cpp
 	${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_opengl3.cpp
-	${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_vulkan.cpp
 )
+if(ATTA_VULKAN_SUPPORT)
+    list(IMGUI_SOURCE APPEND ${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_vulkan.cpp)
+endif()
+
 add_library(imgui STATIC
 	${IMGUI_SOURCE}
 )
