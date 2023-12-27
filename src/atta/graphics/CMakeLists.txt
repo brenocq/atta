@@ -12,35 +12,6 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     apis/openGL/indexBuffer.cpp
     apis/openGL/pipeline.cpp
     apis/openGL/mesh.cpp
-    apis/vulkan/buffer.cpp
-    apis/vulkan/commandBuffers.cpp
-    apis/vulkan/commandPool.cpp
-    apis/vulkan/common.cpp
-    apis/vulkan/debugMessenger.cpp
-    apis/vulkan/descriptorPool.cpp
-    apis/vulkan/descriptorSetLayout.cpp
-    apis/vulkan/descriptorSets.cpp
-    apis/vulkan/device.cpp
-    apis/vulkan/fence.cpp
-    apis/vulkan/framebuffer.cpp
-    apis/vulkan/image.cpp
-    apis/vulkan/indexBuffer.cpp
-    apis/vulkan/instance.cpp
-    apis/vulkan/mesh.cpp
-    apis/vulkan/physicalDevice.cpp
-    apis/vulkan/pipelineLayout.cpp
-    apis/vulkan/pushConstant.cpp
-    apis/vulkan/renderPass.cpp
-    apis/vulkan/renderQueue.cpp
-    apis/vulkan/semaphore.cpp
-    apis/vulkan/pipeline.cpp
-    apis/vulkan/shader.cpp
-    apis/vulkan/stagingBuffer.cpp
-    apis/vulkan/surface.cpp
-    apis/vulkan/swapChain.cpp
-    apis/vulkan/uniformBuffer.cpp
-    apis/vulkan/vertexBuffer.cpp
-    apis/vulkan/vulkanAPI.cpp
 
     cameras/camera.cpp
     cameras/perspectiveCamera.cpp
@@ -74,6 +45,40 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     vertexBuffer.cpp
     viewport.cpp
 )
+
+if(ATTA_VULKAN_SUPPORT)
+    list(ATTA_GRAPHICS_MODULE_SOURCE APPEND
+        apis/vulkan/buffer.cpp
+        apis/vulkan/commandBuffers.cpp
+        apis/vulkan/commandPool.cpp
+        apis/vulkan/common.cpp
+        apis/vulkan/debugMessenger.cpp
+        apis/vulkan/descriptorPool.cpp
+        apis/vulkan/descriptorSetLayout.cpp
+        apis/vulkan/descriptorSets.cpp
+        apis/vulkan/device.cpp
+        apis/vulkan/fence.cpp
+        apis/vulkan/framebuffer.cpp
+        apis/vulkan/image.cpp
+        apis/vulkan/indexBuffer.cpp
+        apis/vulkan/instance.cpp
+        apis/vulkan/mesh.cpp
+        apis/vulkan/physicalDevice.cpp
+        apis/vulkan/pipelineLayout.cpp
+        apis/vulkan/pushConstant.cpp
+        apis/vulkan/renderPass.cpp
+        apis/vulkan/renderQueue.cpp
+        apis/vulkan/semaphore.cpp
+        apis/vulkan/pipeline.cpp
+        apis/vulkan/shader.cpp
+        apis/vulkan/stagingBuffer.cpp
+        apis/vulkan/surface.cpp
+        apis/vulkan/swapChain.cpp
+        apis/vulkan/uniformBuffer.cpp
+        apis/vulkan/vertexBuffer.cpp
+        apis/vulkan/vulkanAPI.cpp
+    )
+endif()
 
 add_library(atta_graphics_module STATIC
     ${ATTA_GRAPHICS_MODULE_SOURCE}

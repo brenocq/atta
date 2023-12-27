@@ -8,7 +8,9 @@
 #include <atta/graphics/manager.h>
 
 #include <atta/graphics/apis/openGL/openGL.h>
+#if ATTA_VULKAN_SUPPORT
 #include <atta/graphics/apis/vulkan/vulkan.h>
+#endif
 #include <atta/graphics/cameras/orthographicCamera.h>
 #include <atta/graphics/cameras/perspectiveCamera.h>
 #include <atta/graphics/renderers/fastRenderer.h>
@@ -31,8 +33,11 @@
 namespace atta::graphics {
 
 Manager::Manager() {
-    // TODO check vulkan support
+#if ATTA_VULKAN_SUPPORT
     _desiredGraphicsAPI = GraphicsAPI::VULKAN;
+#else
+    _desiredGraphicsAPI = GraphicsAPI::OPENGL;
+#endif
 }
 
 Manager& Manager::getInstance() {
@@ -62,9 +67,11 @@ void Manager::startUpImpl() {
     _window = std::static_pointer_cast<Window>(std::make_shared<GlfwWindow>(windowInfo));
 
     //----- Renderer API -----//
+#if ATTA_VULKAN_SUPPORT
     if (_desiredGraphicsAPI == GraphicsAPI::VULKAN)
         _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
     else
+#endif
         _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
     _graphicsAPI->startUp();
 
@@ -299,34 +306,42 @@ const std::unordered_map<StringId, std::shared_ptr<Image>>& Manager::getImages()
 // If the derived (e.g. VulkanImage) has the same type as the base (e.g. Image), it means that does not exists
 // an implementation of Image for vulkan
 
+#if ATTA_VULKAN_SUPPORT
+// Vulkan supported
+#define CHECK_VK_SUPPORT(x) vk::x
+#else
+// Vulkan not supported
+#define CHECK_VK_SUPPORT(x) x
+#endif
+
 template <>
 std::shared_ptr<Image> Manager::createImpl<Image>(Image::CreateInfo info) {
-    return createSpecific<Image, gl::Image, vk::Image>(info);
+    return createSpecific<Image, gl::Image, CHECK_VK_SUPPORT(Image)>(info);
 }
 
 template <>
 std::shared_ptr<Mesh> Manager::createImpl<Mesh>(Mesh::CreateInfo info) {
-    return createSpecific<Mesh, gl::Mesh, vk::Mesh>(info);
+    return createSpecific<Mesh, gl::Mesh, CHECK_VK_SUPPORT(Mesh)>(info);
 }
 
 template <>
 std::shared_ptr<Framebuffer> Manager::createImpl<Framebuffer>(Framebuffer::CreateInfo info) {
-    return createSpecific<Framebuffer, gl::Framebuffer, vk::Framebuffer>(info);
+    return createSpecific<Framebuffer, gl::Framebuffer, CHECK_VK_SUPPORT(Framebuffer)>(info);
 }
 
 template <>
 std::shared_ptr<VertexBuffer> Manager::createImpl<VertexBuffer>(VertexBuffer::CreateInfo info) {
-    return createSpecific<VertexBuffer, gl::VertexBuffer, vk::VertexBuffer>(info);
+    return createSpecific<VertexBuffer, gl::VertexBuffer, CHECK_VK_SUPPORT(VertexBuffer)>(info);
 }
 
 template <>
 std::shared_ptr<IndexBuffer> Manager::createImpl<IndexBuffer>(IndexBuffer::CreateInfo info) {
-    return createSpecific<IndexBuffer, gl::IndexBuffer, vk::IndexBuffer>(info);
+    return createSpecific<IndexBuffer, gl::IndexBuffer, CHECK_VK_SUPPORT(IndexBuffer)>(info);
 }
 
 template <>
 std::shared_ptr<RenderPass> Manager::createImpl<RenderPass>(RenderPass::CreateInfo info) {
-    return createSpecific<RenderPass, gl::RenderPass, vk::RenderPass>(info);
+    return createSpecific<RenderPass, gl::RenderPass, CHECK_VK_SUPPORT(RenderPass)>(info);
 }
 
 template <>
@@ -336,17 +351,17 @@ std::shared_ptr<Shader> Manager::createImpl<Shader>(const char* file) {
 
 template <>
 std::shared_ptr<Shader> Manager::createImpl<Shader>(fs::path file) {
-    return createSpecific<Shader, gl::Shader, vk::Shader>(file);
+    return createSpecific<Shader, gl::Shader, CHECK_VK_SUPPORT(Shader)>(file);
 }
 
 template <>
 std::shared_ptr<Pipeline> Manager::createImpl<Pipeline>(Pipeline::CreateInfo info) {
-    return createSpecific<Pipeline, gl::Pipeline, vk::Pipeline>(info);
+    return createSpecific<Pipeline, gl::Pipeline, CHECK_VK_SUPPORT(Pipeline)>(info);
 }
 
 template <>
 std::shared_ptr<RenderQueue> Manager::createImpl<RenderQueue>() {
-    return createSpecific<RenderQueue, gl::RenderQueue, vk::RenderQueue>();
+    return createSpecific<RenderQueue, gl::RenderQueue, CHECK_VK_SUPPORT(RenderQueue)>();
 }
 
 } // namespace atta::graphics

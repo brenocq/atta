@@ -13,7 +13,9 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#if ATTA_VULKAN_SUPPORT
 #include <backends/imgui_impl_vulkan.h>
+#endif
 #include <ImGuizmo.h>
 #include <implot.h>
 // clang-format on
@@ -72,7 +74,9 @@ void Manager::shutDownImpl() {
             ImGui_ImplOpenGL3_Shutdown();
             break;
         case gfx::GraphicsAPI::VULKAN:
+#if ATTA_VULKAN_SUPPORT
             ImGui_ImplVulkan_Shutdown();
+#endif
             break;
     }
     ImGui_ImplGlfw_Shutdown();
@@ -119,6 +123,7 @@ void Manager::initOpenGL() {
 }
 
 void Manager::initVulkan() {
+#if ATTA_VULKAN_SUPPORT
     GLFWwindow* window = (GLFWwindow*)gfx::getWindow()->getHandle();
     ImGui_ImplGlfw_InitForVulkan(window, true);
     std::shared_ptr<gfx::VulkanAPI> vulkanAPI = std::dynamic_pointer_cast<gfx::VulkanAPI>(gfx::getGraphicsAPI());
@@ -139,6 +144,7 @@ void Manager::initVulkan() {
     // Upload Fonts
     if (!ImGui_ImplVulkan_CreateFontsTexture())
         LOG_WARN("ui::Manager", "Failed to created ImGui font texture");
+#endif
 }
 
 void Manager::render() {
@@ -148,7 +154,9 @@ void Manager::render() {
             ImGui_ImplOpenGL3_NewFrame();
             break;
         case gfx::GraphicsAPI::VULKAN:
+#if ATTA_VULKAN_SUPPORT
             ImGui_ImplVulkan_NewFrame();
+#endif
             break;
     }
     ImGui_ImplGlfw_NewFrame();
@@ -165,8 +173,10 @@ void Manager::render() {
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
             break;
         case gfx::GraphicsAPI::VULKAN:
+#if ATTA_VULKAN_SUPPORT
             ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
                                             std::dynamic_pointer_cast<gfx::VulkanAPI>(gfx::getGraphicsAPI())->getCommandBuffers()->getCurrent());
+#endif
             break;
     }
 

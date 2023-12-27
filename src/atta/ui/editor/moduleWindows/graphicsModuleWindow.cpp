@@ -17,7 +17,12 @@ GraphicsModuleWindow::GraphicsModuleWindow() {
 
 void GraphicsModuleWindow::renderImpl() {
     // Graphics API control
-    const char* graphicsAPIs[] = {"OpenGL", "Vulkan"};
+    const char* graphicsAPIs[] = {
+        "OpenGL",
+#if ATTA_VULKAN_SUPPORT
+        "Vulkan"
+#endif
+    };
     int currentGraphicsAPI = int(graphics::getGraphicsAPI()->getType());
     if (ImGui::Combo("Graphics API", &currentGraphicsAPI, graphicsAPIs, IM_ARRAYSIZE(graphicsAPIs)))
         graphics::setGraphicsAPI(graphics::GraphicsAPI::Type(currentGraphicsAPI));
