@@ -7,10 +7,6 @@
 #ifndef ATTA_GRAPHICS_MESH_H
 #define ATTA_GRAPHICS_MESH_H
 
-#include <atta/graphics/apis/vulkan/common.h>
-#include <atta/graphics/apis/vulkan/indexBuffer.h>
-#include <atta/graphics/apis/vulkan/vertexBuffer.h>
-
 namespace atta::graphics {
 
 class Mesh {
