@@ -56,8 +56,8 @@ void Manager::startUpImpl() {
     _window = std::static_pointer_cast<Window>(std::make_shared<GlfwWindow>(windowInfo));
 
     //----- Renderer API -----//
-    //_graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
-    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
+    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
+    // _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
     _graphicsAPI->startUp();
 
     //----- Resource sync -----//
@@ -153,7 +153,7 @@ void Manager::createDefaultViewportsImpl() {
     _viewportsNext.clear();
 
     Viewport::CreateInfo viewportInfo;
-    viewportInfo.renderer = std::make_shared<PbrRenderer>();
+    viewportInfo.renderer = std::make_shared<FastRenderer>();
     viewportInfo.camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
     viewportInfo.sid = StringId("Main Viewport");
     _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));
@@ -237,16 +237,14 @@ void Manager::createMesh(StringId sid) {
     vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iVertex");
     vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iNormal");
     vertexInfo.layout.push(BufferLayout::Element::Type::VEC2, "iUV");
-    std::shared_ptr<VertexBuffer> vertexBuffer = create<VertexBuffer>(vertexInfo);
 
     IndexBuffer::CreateInfo indexInfo{};
     indexInfo.data = (uint8_t*)mesh->getIndices().data();
     indexInfo.size = mesh->getIndices().size() * sizeof(res::Mesh::Index);
-    std::shared_ptr<IndexBuffer> indexBuffer = create<IndexBuffer>(indexInfo);
 
     Mesh::CreateInfo info{};
-    info.vertexBuffer = vertexBuffer;
-    info.indexBuffer = indexBuffer;
+    info.vertexBufferInfo = vertexInfo;
+    info.indexBufferInfo = indexInfo;
     _meshes[sid] = create<Mesh>(info);
 }
 

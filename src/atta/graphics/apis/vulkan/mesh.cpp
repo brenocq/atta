@@ -10,12 +10,16 @@
 #include <atta/graphics/apis/vulkan/indexBuffer.h>
 #include <atta/graphics/apis/vulkan/stagingBuffer.h>
 #include <atta/graphics/apis/vulkan/vertexBuffer.h>
+#include <atta/graphics/interface.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>
 
 namespace atta::graphics::vk {
 
-Mesh::Mesh(CreateInfo info) : gfx::Mesh(info) {}
+Mesh::Mesh(CreateInfo info) : gfx::Mesh(info) {
+    _vertexBuffer = gfx::create<gfx::VertexBuffer>(info.vertexBufferInfo);
+    _indexBuffer = gfx::create<gfx::IndexBuffer>(info.indexBufferInfo);
+}
 
 Mesh::~Mesh() {}
 

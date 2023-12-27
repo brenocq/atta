@@ -22,6 +22,8 @@ class Pipeline final : public gfx::Pipeline {
 
     void resize(uint32_t width, uint32_t height) override;
 
+    void renderMesh(StringId meshSid) override;
+
     void* getImGuiTexture() const override;
 
     void createImageGroup(ImageGroupType type, std::string name) override;
@@ -29,6 +31,9 @@ class Pipeline final : public gfx::Pipeline {
     void destroyImageGroup(std::string name) override;
 
     void setImageGroup(const char* name) override;
+
+  private:
+    std::map<StringId, ImageGroup> _imageGroups;
 };
 
 } // namespace atta::graphics::gl

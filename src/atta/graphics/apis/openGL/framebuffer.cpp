@@ -76,9 +76,8 @@ void Framebuffer::bind(bool clear) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
 
-        // TODO Renderer should choose clear color
         if (_attachments[0].format == Image::Format::RGB || _attachments[0].format == Image::Format::RGBA)
-            glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+            glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
         if (_depthAttachmentIndex != -1 && _stencilAttachmentIndex != -1) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             glEnable(GL_DEPTH_TEST);

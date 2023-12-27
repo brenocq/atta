@@ -8,6 +8,6 @@
 
 namespace atta::graphics {
 
-Mesh::Mesh(CreateInfo info) : _vertexBuffer(info.vertexBuffer), _indexBuffer(info.indexBuffer) {}
+Mesh::Mesh(CreateInfo info) {}
 
 } // namespace atta::graphics

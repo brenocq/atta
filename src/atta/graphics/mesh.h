@@ -16,8 +16,8 @@ namespace atta::graphics {
 class Mesh {
   public:
     struct CreateInfo {
-        std::shared_ptr<VertexBuffer> vertexBuffer;
-        std::shared_ptr<IndexBuffer> indexBuffer;
+        VertexBuffer::CreateInfo vertexBufferInfo;
+        IndexBuffer::CreateInfo indexBufferInfo;
     };
 
     Mesh(CreateInfo info);

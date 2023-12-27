@@ -111,6 +111,10 @@ GLenum Image::convertSizedInternalFormat(Format format) {
             return GL_RGBA8;
         case Format::RGB16F:
             return GL_RGB16F;
+        case Format::RGB32F:
+            return GL_RGB32F;
+        case Format::RGBA32F:
+            return GL_RGBA32F;
         case Format::DEPTH32F:
             return GL_R32F;
         case Format::DEPTH24_STENCIL8:
@@ -129,10 +133,12 @@ GLenum Image::convertFormat(Format format) {
             return GL_RED_INTEGER;
         case Format::RG16F:
             return GL_RG;
-        case Format::RGB16F:
         case Format::RGB:
+        case Format::RGB16F:
+        case Format::RGB32F:
             return GL_RGB;
         case Format::RGBA:
+        case Format::RGBA32F:
             return GL_RGBA;
         case Format::DEPTH32F:
             return GL_DEPTH_COMPONENT;
@@ -154,10 +160,14 @@ GLenum Image::convertInternalFormat(Format format) {
             return GL_R32I;
         case Format::RGB16F:
             return GL_RGB16F;
+        case Format::RGB32F:
+            return GL_RGB32F;
         case Format::RGB:
             return GL_RGB;
         case Format::RGBA:
             return GL_RGBA;
+        case Format::RGBA32F:
+            return GL_RGBA32F;
         case Format::DEPTH32F:
             return GL_DEPTH_COMPONENT32F;
         case Format::DEPTH24_STENCIL8:
@@ -178,6 +188,8 @@ GLenum Image::convertDataType(Format format) {
             return GL_INT;
         case Format::RG16F:
         case Format::RGB16F:
+        case Format::RGB32F:
+        case Format::RGBA32F:
         case Format::DEPTH32F:
             return GL_FLOAT;
         case Format::DEPTH24_STENCIL8:
