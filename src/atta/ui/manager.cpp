@@ -4,7 +4,6 @@
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/graphics/apis/vulkan/vulkanAPI.h>
 #include <atta/graphics/interface.h>
 #include <atta/ui/manager.h>
 
@@ -15,6 +14,7 @@
 #include <backends/imgui_impl_opengl3.h>
 #if ATTA_VULKAN_SUPPORT
 #include <backends/imgui_impl_vulkan.h>
+#include <atta/graphics/apis/vulkan/vulkanAPI.h>
 #endif
 #include <ImGuizmo.h>
 #include <implot.h>
