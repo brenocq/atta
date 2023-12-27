@@ -47,7 +47,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
 )
 
 if(ATTA_VULKAN_SUPPORT)
-    list(ATTA_GRAPHICS_MODULE_SOURCE APPEND
+    list(APPEND ATTA_GRAPHICS_MODULE_SOURCE
         apis/vulkan/buffer.cpp
         apis/vulkan/commandBuffers.cpp
         apis/vulkan/commandPool.cpp

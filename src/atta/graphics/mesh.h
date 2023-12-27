@@ -7,6 +7,9 @@
 #ifndef ATTA_GRAPHICS_MESH_H
 #define ATTA_GRAPHICS_MESH_H
 
+#include <atta/graphics/indexBuffer.h>
+#include <atta/graphics/vertexBuffer.h>
+
 namespace atta::graphics {
 
 class Mesh {

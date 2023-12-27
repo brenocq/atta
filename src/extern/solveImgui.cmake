@@ -22,7 +22,7 @@ set(IMGUI_SOURCE
 	${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_opengl3.cpp
 )
 if(ATTA_VULKAN_SUPPORT)
-    list(IMGUI_SOURCE APPEND ${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_vulkan.cpp)
+    list(APPEND IMGUI_SOURCE ${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_vulkan.cpp)
 endif()
 
 add_library(imgui STATIC
