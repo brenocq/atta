@@ -9,6 +9,8 @@
 
 namespace atta::ui {
 
+DockSpace::DockSpace() : _firstTime(true) {}
+
 void DockSpace::render() {
     //----- Create DockSpace -----//
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -31,9 +33,8 @@ void DockSpace::render() {
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoWindowMenuButton);
 
         //----- Clear previous layout -----//
-        static auto firstTime = true;
-        if (firstTime) {
-            firstTime = false;
+        if (_firstTime) {
+            _firstTime = false;
 
             ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
             ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_DockSpace);

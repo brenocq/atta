@@ -23,6 +23,7 @@ namespace atta::graphics {
 
 class Manager final {
   public:
+    Manager();
     static Manager& getInstance();
 
     friend void startUp();
@@ -30,6 +31,8 @@ class Manager final {
     friend void update();
     template <typename T, typename... Args>
     friend std::shared_ptr<T> create(Args... args);
+
+    friend void setGraphicsAPI(GraphicsAPI::Type type);
 
     friend float getGraphicsFPS();
     friend void setGraphicsFPS(float graphicsFPS);
@@ -39,6 +42,8 @@ class Manager final {
     friend void setViewportRendering(bool viewportRendering);
 
     friend void setUiRenderFunc(std::function<void()> uiRenderFunc);
+    friend void setUiStartUpFunc(std::function<void()> uiStartUpFunc);
+    friend void setUiShutDownFunc(std::function<void()> uiShutDownFunc);
 
     friend std::shared_ptr<GraphicsAPI> getGraphicsAPI();
     friend std::shared_ptr<Window> getWindow();
@@ -65,6 +70,10 @@ class Manager final {
 
     std::shared_ptr<GraphicsAPI> getGraphicsAPIImpl() const;
     std::shared_ptr<Window> getWindowImpl() const;
+
+    void setGraphicsAPIImpl(GraphicsAPI::Type type);
+    void recreateGraphicsAPI();
+
     std::vector<std::shared_ptr<Viewport>>& getViewportsImpl();
     void clearViewportsImpl();
     void addViewportImpl(std::shared_ptr<Viewport> viewport);
@@ -84,8 +93,11 @@ class Manager final {
     void createImage(StringId sid);
 
     std::shared_ptr<Window> _window;
-    std::shared_ptr<GraphicsAPI> _graphicsAPI;
     float _graphicsFPS; ///< Desired graphics FPS
+
+    // Handle
+    GraphicsAPI::Type _desiredGraphicsAPI;
+    std::shared_ptr<GraphicsAPI> _graphicsAPI;
 
     // Resource binding
     std::unordered_map<StringId, std::shared_ptr<Mesh>> _meshes;
@@ -93,6 +105,8 @@ class Manager final {
 
     // UI
     std::function<void()> _uiRenderFunc;
+    std::function<void()> _uiStartUpFunc;  ///< Used to restart UI when graphics API changes
+    std::function<void()> _uiShutDownFunc; ///< Used to restart UI when graphics API changes
 
     // Viewports
     std::vector<std::shared_ptr<Viewport>> _viewports;

@@ -21,8 +21,6 @@ namespace atta::ui {
 
 class Editor final {
   public:
-    Editor();
-
     void render();
 
   private:

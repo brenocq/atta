@@ -7,7 +7,7 @@
 #ifndef ATTA_UI_MANAGER_H
 #define ATTA_UI_MANAGER_H
 
-#include <atta/ui/interface.h>
+#include <atta/graphics/interface.h>
 #include <atta/ui/editor/editor.h>
 
 namespace atta::ui {

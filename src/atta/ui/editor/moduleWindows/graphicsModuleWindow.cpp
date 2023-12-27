@@ -16,6 +16,13 @@ GraphicsModuleWindow::GraphicsModuleWindow() {
 }
 
 void GraphicsModuleWindow::renderImpl() {
+    // Graphics API control
+    const char* graphicsAPIs[] = {"OpenGL", "Vulkan"};
+    int currentGraphicsAPI = int(graphics::getGraphicsAPI()->getType());
+    if (ImGui::Combo("Graphics API", &currentGraphicsAPI, graphicsAPIs, IM_ARRAYSIZE(graphicsAPIs)))
+        graphics::setGraphicsAPI(graphics::GraphicsAPI::Type(currentGraphicsAPI));
+
+    // Rendering control
     float graphicsFPS = graphics::getGraphicsFPS();
     float viewportFPS = graphics::getViewportFPS();
     bool viewportRendering = graphics::getViewportRendering();

@@ -17,6 +17,7 @@ class Window {
         std::string title = "atta";
         size_t width = 1600;
         size_t height = 900;
+        bool useOpenGL = false; ///< GLFW needs to
     };
 
     enum class Event : event::Event::Type {

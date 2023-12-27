@@ -33,8 +33,10 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
     // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);// Needed for apple?
 
-    // glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);// <-- Vulkan
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API); // <--- XXX OPENGL
+    if (info.useOpenGL)
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+    else
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 

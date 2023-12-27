@@ -11,12 +11,14 @@ namespace atta::ui {
 
 class DockSpace {
   public:
+    DockSpace();
     void render();
 
     unsigned getViewportDockId() { return _viewportDockId; }
 
   private:
     unsigned _viewportDockId;
+    bool _firstTime;
 };
 
 } // namespace atta::ui

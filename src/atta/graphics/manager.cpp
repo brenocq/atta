@@ -30,6 +30,11 @@
 
 namespace atta::graphics {
 
+Manager::Manager() {
+    // TODO check vulkan support
+    _desiredGraphicsAPI = GraphicsAPI::VULKAN;
+}
+
 Manager& Manager::getInstance() {
     static Manager instance;
     return instance;
@@ -53,11 +58,14 @@ void Manager::startUpImpl() {
 
     //----- Window -----//
     Window::CreateInfo windowInfo{};
+    windowInfo.useOpenGL = _desiredGraphicsAPI == GraphicsAPI::OPENGL;
     _window = std::static_pointer_cast<Window>(std::make_shared<GlfwWindow>(windowInfo));
 
     //----- Renderer API -----//
-    _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
-    // _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
+    if (_desiredGraphicsAPI == GraphicsAPI::VULKAN)
+        _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<VulkanAPI>(_window));
+    else
+        _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
     _graphicsAPI->startUp();
 
     //----- Resource sync -----//
@@ -74,6 +82,10 @@ void Manager::startUpImpl() {
 }
 
 void Manager::shutDownImpl() {
+    event::unsubscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));
+    event::unsubscribe<event::ImageLoad>(BIND_EVENT_FUNC(Manager::onImageLoadEvent));
+    event::unsubscribe<event::ImageUpdate>(BIND_EVENT_FUNC(Manager::onImageUpdateEvent));
+
     _graphicsAPI->waitDevice();
 
     // Every reference to the framebuffers must be deleted before window deletion
@@ -85,12 +97,17 @@ void Manager::shutDownImpl() {
     _viewportsNext.clear();
 
     _computeEntityClick.reset();
+    _meshes.clear();
+    _images.clear();
     _graphicsAPI->shutDown();
     _graphicsAPI.reset();
     _window.reset();
 }
 
 void Manager::updateImpl() {
+    if (_graphicsAPI->getType() != _desiredGraphicsAPI)
+        recreateGraphicsAPI();
+
     // Graphics fps
     static clock_t gfxLastTime = std::clock();
     const clock_t gfxCurrTime = std::clock();
@@ -123,6 +140,17 @@ std::shared_ptr<GraphicsAPI> Manager::getGraphicsAPIImpl() const { return _graph
 
 std::shared_ptr<Window> Manager::getWindowImpl() const { return _window; }
 
+void Manager::setGraphicsAPIImpl(GraphicsAPI::Type type) { _desiredGraphicsAPI = type; }
+
+void Manager::recreateGraphicsAPI() {
+    if (_uiShutDownFunc)
+        _uiShutDownFunc();
+    shutDownImpl();
+    startUpImpl();
+    if (_uiStartUpFunc)
+        _uiStartUpFunc();
+}
+
 std::vector<std::shared_ptr<Viewport>>& Manager::getViewportsImpl() { return _viewports; }
 
 void Manager::clearViewportsImpl() {
@@ -153,7 +181,7 @@ void Manager::createDefaultViewportsImpl() {
     _viewportsNext.clear();
 
     Viewport::CreateInfo viewportInfo;
-    viewportInfo.renderer = std::make_shared<FastRenderer>();
+    viewportInfo.renderer = std::make_shared<PbrRenderer>();
     viewportInfo.camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
     viewportInfo.sid = StringId("Main Viewport");
     _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));

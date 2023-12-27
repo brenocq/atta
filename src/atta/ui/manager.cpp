@@ -56,6 +56,11 @@ void Manager::startUpImpl() {
     setTheme();
 
     gfx::setUiRenderFunc([&]() { render(); });
+    gfx::setUiShutDownFunc([&]() { shutDownImpl(); });
+    gfx::setUiStartUpFunc([&]() { startUpImpl(); });
+
+    // Create editor (make sure windows are reorganized after start up)
+    _editor = {};
 }
 
 void Manager::shutDownImpl() {

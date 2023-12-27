@@ -18,6 +18,8 @@ void update() {
 std::shared_ptr<GraphicsAPI> getGraphicsAPI() { return Manager::getInstance().getGraphicsAPIImpl(); };
 std::shared_ptr<Window> getWindow() { return Manager::getInstance().getWindowImpl(); };
 
+void setGraphicsAPI(GraphicsAPI::Type type) { Manager::getInstance().setGraphicsAPIImpl(type); }
+
 //----- Config -----//
 float getGraphicsFPS() { return Manager::getInstance()._graphicsFPS; }
 void setGraphicsFPS(float graphicsFPS) { Manager::getInstance()._graphicsFPS = graphicsFPS; }
@@ -28,6 +30,8 @@ void setViewportRendering(bool viewportRendering) { Manager::getInstance()._view
 
 //----- UI -----//
 void setUiRenderFunc(std::function<void()> uiRenderFunc) { Manager::getInstance()._uiRenderFunc = uiRenderFunc; }
+void setUiShutDownFunc(std::function<void()> uiShutDownFunc) { Manager::getInstance()._uiShutDownFunc = uiShutDownFunc; }
+void setUiStartUpFunc(std::function<void()> uiStartUpFunc) { Manager::getInstance()._uiStartUpFunc = uiStartUpFunc; }
 
 //----- Viewport -----//
 std::vector<std::shared_ptr<Viewport>> getViewports() { return Manager::getInstance().getViewportsImpl(); }

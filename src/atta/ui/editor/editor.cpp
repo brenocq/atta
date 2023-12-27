@@ -25,8 +25,6 @@
 
 namespace atta::ui {
 
-Editor::Editor() {}
-
 void Editor::render() {
     PROFILE();
     _dockSpace.render();
