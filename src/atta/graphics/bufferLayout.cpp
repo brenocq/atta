@@ -171,7 +171,7 @@ uint32_t BufferLayout::Element::componentCountFromType(Type type) {
 //----------------------------------//
 //---------- BufferLayout ----------//
 //----------------------------------//
-BufferLayout::BufferLayout(AlignmentType alignmentType) : _alignmentType(alignmentType) {}
+BufferLayout::BufferLayout(AlignmentType alignmentType) : _alignmentType(alignmentType), _forceNextAlign(0) {}
 
 void BufferLayout::setAlignmentType(AlignmentType alignmentType) { _alignmentType = alignmentType; }
 
@@ -187,12 +187,19 @@ void BufferLayout::push(Element::Type type, std::string name, uint32_t customAli
     if (_elements.empty())
         e.offset = 0;
     else {
-        uint32_t align = customAlign ? customAlign : Element::alignmentFromType(_alignmentType, type);
+        e.align = std::max(customAlign, _forceNextAlign);
+        e.align = e.align ? e.align : Element::alignmentFromType(_alignmentType, type);
+        _forceNextAlign = 0;
         uint32_t offset = _elements.back().offset + _elements.back().size;
-        e.offset = (offset + align - 1) & ~(align - 1);
+        e.offset = (offset + e.align - 1) & ~(e.align - 1);
     }
 
     _elements.push_back(e);
+}
+
+void BufferLayout::pushStructArrayAlign() {
+    if (_alignmentType == AlignmentType::STD140 || _alignmentType == AlignmentType::STD430)
+        _forceNextAlign = 16;
 }
 
 const std::vector<BufferLayout::Element>& BufferLayout::getElements() const { return _elements; }

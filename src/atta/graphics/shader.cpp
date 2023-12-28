@@ -325,9 +325,12 @@ void Shader::parseCustomTypes() {
             BufferLayout::Element::Type type = BufferLayout::Element::typeFromString(memberType);
             for (size_t a = 0; a < std::max(size_t(1), memberArraySize); a++) {
                 std::string fullMemberName = memberName;
-                // Handle array types;
-                if (memberArraySize)
+                // Handle array types
+                if (memberArraySize) {
                     fullMemberName += "[" + std::to_string(a) + "]";
+                    // Array start alignment
+                    structLayout.pushStructArrayAlign();
+                }
 
                 if (type != BufferLayout::Element::Type::NONE) {
                     // Handle basic type
@@ -346,16 +349,23 @@ void Shader::parseCustomTypes() {
                         continue;
                     }
 
+                    // Handle struct start alignment
+                    structLayout.pushStructArrayAlign();
+
                     const BufferLayout& memberStructLayout = _customTypes[memberType];
                     for (size_t i = 0; i < memberStructLayout.getElements().size(); i++) {
                         const BufferLayout::Element& e = memberStructLayout.getElements().at(i);
                         std::string name = fullMemberName + "." + e.name;
-                        if (i == 0)
-                            structLayout.push(e.type, name, memberStructLayout.getAlignment());
-                        else
-                            structLayout.push(e.type, name);
+                        structLayout.push(e.type, name, e.align);
                     }
+
+                    // Handle struct end alignment
+                    structLayout.pushStructArrayAlign();
                 }
+
+                // Handle array end alignment
+                if (memberArraySize)
+                    structLayout.pushStructArrayAlign();
             }
 
             memberStart = memberMatch.suffix().first;
@@ -418,6 +428,14 @@ void Shader::populateDescriptorLayouts() {
             if (arraySize)
                 fullName += "[" + std::to_string(i) + "]";
 
+            // Handle array start alignment
+            if (arraySize && type != "sampler2D" && type != "samplerCube") {
+                if (freq == "perFrame")
+                    _perFrameLayout.pushStructArrayAlign();
+                else if (freq == "perDraw")
+                    _perDrawLayout.pushStructArrayAlign();
+            }
+
             if (t != BufferLayout::Element::Type::NONE) {
                 // Handle basic types
                 if (type == "sampler2D" || type == "samplerCube") {
@@ -435,15 +453,35 @@ void Shader::populateDescriptorLayouts() {
                 // Handle custom types
                 // NOTE: There should be no sampler2D or samplerCube in the struct
                 const BufferLayout& structLayout = _customTypes[type];
+
+                // Handle struct start alignment
+                if (freq == "perFrame")
+                    _perFrameLayout.pushStructArrayAlign();
+                else if (freq == "perDraw")
+                    _perDrawLayout.pushStructArrayAlign();
+
                 for (size_t i = 0; i < structLayout.getElements().size(); i++) {
                     const BufferLayout::Element& e = structLayout.getElements().at(i);
                     std::string memberName = fullName + "." + e.name;
-                    uint32_t alignment = i == 0 ? structLayout.getAlignment() : 0;
                     if (freq == "perFrame")
-                        _perFrameLayout.push(e.type, memberName, alignment);
+                        _perFrameLayout.push(e.type, memberName, e.align);
                     else if (freq == "perDraw")
-                        _perDrawLayout.push(e.type, memberName, alignment);
+                        _perDrawLayout.push(e.type, memberName, e.align);
                 }
+
+                // Handle struct end alignment
+                if (freq == "perFrame")
+                    _perFrameLayout.pushStructArrayAlign();
+                else if (freq == "perDraw")
+                    _perDrawLayout.pushStructArrayAlign();
+            }
+
+            // Handle array end alignment
+            if (arraySize && type != "sampler2D" && type != "samplerCube") {
+                if (freq == "perFrame")
+                    _perFrameLayout.pushStructArrayAlign();
+                else if (freq == "perDraw")
+                    _perDrawLayout.pushStructArrayAlign();
             }
         }
 
@@ -465,10 +503,6 @@ void Shader::populateDescriptorLayouts() {
         // Move to the next match
         start = match.suffix().first;
     }
-
-    // TODO debug offsets
-    // for (auto e : _perFrameLayout.getElements())
-    //    LOG_DEBUG("Shader", "[r]$0 [y]offset $1", e.name, e.offset);
 }
 
 Shader::LayoutMember::LayoutMember(std::string type_, std::string name_) : type(type_), name(name_), isArray(false), arraySize(0) {}

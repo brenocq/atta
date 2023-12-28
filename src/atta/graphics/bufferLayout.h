@@ -27,6 +27,7 @@ class BufferLayout final {
         Type type;
         std::string name;
         uint32_t offset;
+        uint32_t align;
         uint32_t size;
 
         /// Convert string to type ("float" -> FLOAT, "sampler2D" -> SAMPLER_2D, ...)
@@ -60,6 +61,13 @@ class BufferLayout final {
      */
     void push(Element::Type type, std::string name, uint32_t customAlign = 0);
 
+    /**
+     * @brief Push struct/array alignment
+     *
+     * Ensure buffer alignment for the start/end of the struct/array
+     */
+    void pushStructArrayAlign();
+
     /// Get elements
     const std::vector<Element>& getElements() const;
 
@@ -78,6 +86,7 @@ class BufferLayout final {
   private:
     AlignmentType _alignmentType;   ///< How the elements should be aligned in the buffer
     std::vector<Element> _elements; ///< Elements in the buffer
+    uint32_t _forceNextAlign;       ///< Used to force next element alignment when pushing
 };
 
 } // namespace atta::graphics
