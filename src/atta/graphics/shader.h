@@ -135,6 +135,9 @@ class Shader {
     /// Process vertex input from _aslCode and populate _vertexLayout
     void populateVertexLayout();
 
+    /// Process fragment output from _aslCode and populate _fragmentLayout
+    void populateFragmentLayout();
+
     /// Go through all shader codes to extract variables and images to populate perDraw and perFrame layouts
     void populateDescriptorLayouts();
 
@@ -161,6 +164,7 @@ class Shader {
     std::vector<LayoutMember> _perDrawLayoutMembers;
 
     BufferLayout _vertexLayout;        ///< Vertex layout from vertex shader input
+    BufferLayout _fragmentLayout;      ///< Output attachments from fragment shader
     BufferLayout _perFrameLayout;      ///< Buffer layout from perFrame variables
     BufferLayout _perDrawLayout;       ///< Buffer layout from perDraw variables
     BufferLayout _perFrameImageLayout; ///< Image layout from perFrame textures

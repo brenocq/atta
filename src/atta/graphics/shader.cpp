@@ -64,6 +64,9 @@ void Shader::processASL() {
     // Populate vertex layout
     populateVertexLayout();
 
+    // Populate fragment layout
+    populateFragmentLayout();
+
     // Populate descriptor layouts
     populateDescriptorLayouts();
 
@@ -109,16 +112,14 @@ std::set<Shader::ShaderType> Shader::detectEntrypoints(std::string code) {
     std::map<ShaderType, int> shaderOccurrences;
 
     // Regular expressions to match function signatures
-    std::regex fragmentRegex(R"(vec4\s+fragment\s*\(\s*\))");
+    std::regex fragmentRegex(R"(void\s+fragment\s*\((\s*out\s+\w+\s+\w+\s*,?)*\s*\))");
     std::regex vertexRegex(R"(vec4\s+vertex\s*\((\s*\w+\s+\w+\s*,?)*\s*\))");
 
     // Search for the function signatures in the code and count occurrences
-    for (std::sregex_iterator it(code.begin(), code.end(), fragmentRegex), end; it != end; ++it) {
+    for (std::sregex_iterator it(code.begin(), code.end(), fragmentRegex), end; it != end; ++it)
         shaderOccurrences[ShaderType::FRAGMENT]++;
-    }
-    for (std::sregex_iterator it(code.begin(), code.end(), vertexRegex), end; it != end; ++it) {
+    for (std::sregex_iterator it(code.begin(), code.end(), vertexRegex), end; it != end; ++it)
         shaderOccurrences[ShaderType::VERTEX]++;
-    }
 
     std::set<ShaderType> result = {};
     for (auto [type, numOccurences] : shaderOccurrences) {
@@ -185,7 +186,7 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
                 if (i != _vertexLayout.getElements().size() - 1)
                     params += ", ";
             }
-            iCode = input + iCode + "void main() { POSITION = vertex(" + params + ");}";
+            iCode = input + iCode + "void main() { POSITION = vertex(" + params + "); }";
 
             // Replace
             iCode = std::regex_replace(iCode, std::regex(R"(\bPOSITION)"), "gl_Position");
@@ -194,7 +195,18 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
             break;
         }
         case FRAGMENT: {
-            iCode = aslCode + "out vec4 COLOR;\nvoid main() { COLOR = fragment();}";
+            std::string output;
+            std::string params;
+            for (size_t i = 0; i < _fragmentLayout.getElements().size(); i++) {
+                BufferLayout::Element element = _fragmentLayout.getElements()[i];
+                std::string typeStr = BufferLayout::Element::typeToString(element.type);
+                output += "out " + typeStr + " " + element.name + ";\n";
+                params += element.name;
+                if (i != _fragmentLayout.getElements().size() - 1)
+                    params += ", ";
+            }
+
+            iCode = output + aslCode + "void main() { fragment(" + params + "); }";
 
             // Replace
             iCode = std::regex_replace(iCode, std::regex(R"(\bDEPTH)"), "gl_FragDepth");
@@ -398,6 +410,35 @@ void Shader::populateVertexLayout() {
 
             BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
             _vertexLayout.push(t, name);
+
+            // Move to the next match
+            start = match.suffix().first;
+        }
+    }
+}
+
+void Shader::populateFragmentLayout() {
+    std::regex regexVertex(R"(void\s+fragment\s*\()");
+    std::smatch match;
+    auto start = _aslCode.cbegin();
+    auto end = _aslCode.cend();
+    if (std::regex_search(start, end, match, regexVertex)) {
+        // Calculate start and end
+        uint32_t paramStart = match.position() + match.length() - 1;
+        uint32_t paramEnd = paramStart;
+        while (paramEnd < _aslCode.size() - 1 && _aslCode[paramEnd] != ')')
+            paramEnd++;
+
+        start = _aslCode.cbegin() + paramStart;
+        end = _aslCode.cbegin() + paramEnd;
+
+        std::regex regexParam(R"(out\s+(\w+)\s+(\w+))");
+        while (std::regex_search(start, end, match, regexParam)) {
+            std::string type = match[1].str();
+            std::string name = match[2].str();
+
+            BufferLayout::Element::Type t = BufferLayout::Element::typeFromString(type);
+            _fragmentLayout.push(t, name);
 
             // Move to the next match
             start = match.suffix().first;

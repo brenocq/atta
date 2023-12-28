@@ -282,6 +282,9 @@ void Pipeline::renderMesh(StringId meshSid) {
     } else
         LOG_WARN("gfx::vk::Pipeline", "Could not render mesh [w]$0[], mesh not found", meshSid);
 }
+void Pipeline::renderQuad() { renderMesh("atta::gfx::quad"); }
+void Pipeline::renderQuad3() { renderMesh("atta::gfx::quad3"); }
+void Pipeline::renderCube() { renderMesh("atta::gfx::cube"); }
 
 void* Pipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_framebuffers[0]->getImage(0))->getImGuiImage());

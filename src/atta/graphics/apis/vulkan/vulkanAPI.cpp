@@ -184,14 +184,6 @@ void VulkanAPI::endFrame() {
     _currFrame = (_currFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void VulkanAPI::renderMesh(StringId meshSid) {}
-
-void VulkanAPI::renderQuad() {}
-
-void VulkanAPI::renderQuad3() {}
-
-void VulkanAPI::renderCube() {}
-
 void VulkanAPI::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) {}
 
 void VulkanAPI::generateCubemap(StringId textureSid, mat4 rotationMatrix) {}

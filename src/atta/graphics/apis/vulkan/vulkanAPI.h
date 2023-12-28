@@ -38,10 +38,6 @@ class VulkanAPI final : public GraphicsAPI {
     void beginFrame() override;
     void endFrame() override;
 
-    void renderMesh(StringId meshSid) override;
-    void renderQuad() override;
-    void renderQuad3() override;
-    void renderCube() override;
     void renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) override;
 
     void generateCubemap(StringId textureSid, mat4 rotationMatrix = mat4(1.0f)) override;

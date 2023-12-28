@@ -123,9 +123,11 @@ void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
 }
 
 int Framebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned y) {
+    bind(false);
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
     int pixel;
     glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
+    unbind();
     return pixel;
 }
 

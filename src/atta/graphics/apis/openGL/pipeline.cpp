@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/apis/openGL/image.h>
+#include <atta/graphics/apis/openGL/openGLAPI.h>
 #include <atta/graphics/apis/openGL/pipeline.h>
 #include <atta/graphics/apis/openGL/shader.h>
 #include <atta/graphics/interface.h>
@@ -25,11 +26,29 @@ void Pipeline::end() { _shader->unbind(); }
 void Pipeline::resize(uint32_t width, uint32_t height) { _renderPass->getFramebuffer()->resize(width, height); }
 
 void Pipeline::renderMesh(StringId meshSid) {
-    std::shared_ptr<Mesh> mesh = Manager::getInstance().getMeshes().at(meshSid);
+    std::shared_ptr<gfx::Mesh> mesh = Manager::getInstance().getMeshes().at(meshSid);
     if (mesh)
         mesh->draw();
     else
         LOG_WARN("gfx::gl::Pipeline", "Could not render mesh [w]$0[], mesh not found", meshSid);
+}
+
+void Pipeline::renderQuad() {
+    renderMesh("atta::gfx::quad");
+    if (_renderPass->getFramebuffer()->hasDepthAttachment())
+        glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void Pipeline::renderQuad3() {
+    renderMesh("atta::gfx::quad3");
+    if (_renderPass->getFramebuffer()->hasDepthAttachment())
+        glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void Pipeline::renderCube() {
+    renderMesh("atta::gfx::cube");
+    if (_renderPass->getFramebuffer()->hasDepthAttachment())
+        glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void* Pipeline::getImGuiTexture() const {

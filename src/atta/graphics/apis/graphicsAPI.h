@@ -29,10 +29,6 @@ class GraphicsAPI {
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 
-    virtual void renderMesh(StringId meshSid) = 0;
-    virtual void renderQuad() = 0;
-    virtual void renderQuad3() = 0;
-    virtual void renderCube() = 0;
     virtual void renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) = 0;
 
     virtual void generateCubemap(StringId textureSid, mat4 rotationMatrix = mat4(1.0f)) = 0;

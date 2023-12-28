@@ -82,7 +82,7 @@ void Manager::startUpImpl() {
     syncResources();
 
     //----- Compute Shaders -----//
-    // _computeEntityClick = std::make_unique<EntityClick>();
+    _computeEntityClick = std::make_unique<EntityClick>();
 
     //----- Create viewports -----//
     createDefaultViewportsImpl();
@@ -229,6 +229,128 @@ void Manager::syncResources() {
     // Initialize textures already loaded
     for (auto imgSid : resource::getResources<resource::Image>())
         createImage(imgSid);
+
+    //----- Create basic meshes -----//
+    // Quad
+    {
+        static float vertices[] = {
+            // Position   UV
+            -1.0f, 1.0f,  0.0f, 1.0f, // Top-left
+            -1.0f, -1.0f, 0.0f, 0.0f, // Bottom-left
+            1.0f,  -1.0f, 1.0f, 0.0f, // Bottom-right
+            1.0f,  1.0f,  1.0f, 1.0f, // Top-right
+        };
+        static uint32_t indices[] = {0, 1, 2, 0, 2, 3};
+        VertexBuffer::CreateInfo vertexInfo{};
+        vertexInfo.data = (uint8_t*)vertices;
+        vertexInfo.size = sizeof(vertices);
+        vertexInfo.layout = {};
+        vertexInfo.layout.push(BufferLayout::Element::Type::VEC2, "iVertex");
+        vertexInfo.layout.push(BufferLayout::Element::Type::VEC2, "iUV");
+
+        IndexBuffer::CreateInfo indexInfo{};
+        indexInfo.data = (uint8_t*)indices;
+        indexInfo.size = sizeof(indices);
+
+        Mesh::CreateInfo info{};
+        info.vertexBufferInfo = vertexInfo;
+        info.indexBufferInfo = indexInfo;
+        _meshes["atta::gfx::quad"] = create<Mesh>(info);
+    }
+    // Quad3
+    {
+        static float vertices[] = {
+            // Position         Normal            UV
+            -1.0f, 1.0f,  0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // Top-left
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom-left
+            1.0f,  -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, // Bottom-right
+            1.0f,  1.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // Top-right
+        };
+        static uint32_t indices[] = {0, 1, 2, 0, 2, 3};
+        VertexBuffer::CreateInfo vertexInfo{};
+        vertexInfo.data = (uint8_t*)vertices;
+        vertexInfo.size = sizeof(vertices);
+        vertexInfo.layout = {};
+        vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iVertex");
+        vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iNormal");
+        vertexInfo.layout.push(BufferLayout::Element::Type::VEC2, "iUV");
+
+        IndexBuffer::CreateInfo indexInfo{};
+        indexInfo.data = (uint8_t*)indices;
+        indexInfo.size = sizeof(indices);
+
+        Mesh::CreateInfo info{};
+        info.vertexBufferInfo = vertexInfo;
+        info.indexBufferInfo = indexInfo;
+        _meshes["atta::gfx::quad3"] = create<Mesh>(info);
+    }
+    // Cube
+    {
+        static float vertices[] = {
+            // Position         Normal            UV
+            // Back face
+            -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // Bottom-left
+            1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,   // Top-right
+            1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,  // Bottom-right
+            1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,   // Top-right
+            -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // Bottom-left
+            -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,  // Top-left
+            // Front face
+            -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom-left
+            1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  // Bottom-right
+            1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Top-right
+            1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,   // Top-right
+            -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,  // Top-left
+            -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom-left
+            // Left face
+            -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // Top-right
+            -1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // Top-left
+            -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // Bottom-left
+            -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // Bottom-left
+            -1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,  // Bottom-right
+            -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // Top-right
+            // Right face
+            1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // Top-left
+            1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // Bottom-right
+            1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,  // Top-right
+            1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // Bottom-right
+            1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // Top-left
+            1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,  // Bottom-left
+            // Bottom face
+            -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, // Top-right
+            1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,  // Top-left
+            1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,   // Bottom-left
+            1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,   // Bottom-left
+            -1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,  // Bottom-right
+            -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, // Top-right
+            // Top face
+            -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Top-left
+            1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,   // Bottom-right
+            1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,  // Top-right
+            1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,   // Bottom-right
+            -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Top-left
+            -1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f   // Bottom-left
+        };
+        static uint32_t indices[6 * 6];
+        for (size_t i = 0; i < 6 * 6; i++)
+            indices[i] = i;
+        VertexBuffer::CreateInfo vertexInfo{};
+        vertexInfo.data = (uint8_t*)vertices;
+        vertexInfo.size = sizeof(vertices);
+        vertexInfo.layout = {};
+        vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iVertex");
+        vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iNormal");
+        vertexInfo.layout.push(BufferLayout::Element::Type::VEC2, "iUV");
+
+        IndexBuffer::CreateInfo indexInfo{};
+        indexInfo.data = (uint8_t*)indices;
+        indexInfo.size = sizeof(indices);
+
+        Mesh::CreateInfo info{};
+        info.vertexBufferInfo = vertexInfo;
+        info.indexBufferInfo = indexInfo;
+        _meshes["atta::gfx::cube"] = create<Mesh>(info);
+    }
 }
 
 void Manager::onMeshLoadEvent(event::Event& event) {
