@@ -35,6 +35,17 @@ void Framebuffer::createAttachments() {
             info.height = _height;
             image = std::make_shared<Image>(info);
         }
+
+        Image::Format format = image->getFormat();
+        std::dynamic_pointer_cast<gl::Image>(image)->setFramebufferRead([=](vec2i offset, vec2i size) -> std::vector<uint8_t> {
+            glBindFramebuffer(GL_FRAMEBUFFER, _id);
+            glViewport(0, 0, _width, _height);
+            glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
+            std::vector<uint8_t> img(size.x * size.y * gfx::Image::getPixelSize(format));
+            glReadPixels(offset.x, offset.y, size.x, size.y, gl::Image::convertFormat(format), gl::Image::convertDataType(format), img.data());
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            return img;
+        });
         _images.push_back(image);
     }
 }
@@ -78,6 +89,12 @@ void Framebuffer::bind(bool clear) {
 
         if (_attachments[0].format == Image::Format::RGB || _attachments[0].format == Image::Format::RGBA)
             glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
+        else if (_attachments[0].format == Image::Format::RED32I) {
+            // XXX Not working
+            // GLint clearColor[4] = {1, 1, 1, 1};
+            // glClearBufferiv(GL_COLOR, GL_COLOR_ATTACHMENT0, clearColor);
+        }
+
         if (_depthAttachmentIndex != -1 && _stencilAttachmentIndex != -1) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             glEnable(GL_DEPTH_TEST);
@@ -120,29 +137,6 @@ void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
 
     // Unbind framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-int Framebuffer::readPixel(unsigned attachmentIndex, unsigned x, unsigned y) {
-    bind(false);
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-    int pixel;
-    glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
-    unbind();
-    return pixel;
-}
-
-std::vector<uint8_t> Framebuffer::readImage(unsigned attachmentIndex) {
-    int numChannels = Image::getNumChannels(_attachments[attachmentIndex].format);
-    GLenum formatOpenGL = Image::convertFormat(_attachments[attachmentIndex].format);
-    GLenum dataTypeOpenGL = Image::convertDataType(_attachments[attachmentIndex].format);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, _id);
-    glViewport(0, 0, _width, _height);
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-    std::vector<uint8_t> data(_width * _height * numChannels);
-    glReadPixels(0, 0, _width, _height, formatOpenGL, dataTypeOpenGL, &data[0]);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    return data;
 }
 
 //------------------------------------------------//

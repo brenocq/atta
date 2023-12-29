@@ -30,6 +30,15 @@ void Image::write(uint8_t* data) {
         LOG_WARN("gfx::gl::Image", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
 }
 
+std::vector<uint8_t> Image::read(vec2i offset, vec2i size) {
+    if (offset == vec2i() && size == vec2i())
+        size = vec2i(_width, _height);
+    if (_framebufferRead)
+        return _framebufferRead(offset, size);
+    LOG_DEBUG("gfx::gl::Image", "Can not read from an image that is not a framebuffer attachment");
+    return {};
+}
+
 void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     // Check if size was not changed
     if (!forceRecreate && (_width == width && _height == height))
@@ -91,6 +100,8 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
             glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     }
 }
+
+void Image::setFramebufferRead(std::function<std::vector<uint8_t>(vec2i, vec2i)> framebufferRead) { _framebufferRead = framebufferRead; }
 
 //------------------------------------------------//
 //---------- Atta to OpenGL conversions ----------//

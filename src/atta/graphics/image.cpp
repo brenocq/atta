@@ -18,8 +18,10 @@ uint32_t Image::getNumChannels(Format format) {
             break;
         case Format::RED:
         case Format::RED32I:
+        case Format::DEPTH32F:
             return 1;
         case Format::RG16F:
+        case Format::DEPTH24_STENCIL8:
             return 2;
         case Format::RGB:
         case Format::BGR:
@@ -30,8 +32,6 @@ uint32_t Image::getNumChannels(Format format) {
         case Format::BGRA:
         case Format::RGBA32F:
             return 4;
-        default:
-            break;
     }
     ASSERT(false, "Could not calculate number of channels. Unknown image format");
 }
@@ -42,15 +42,15 @@ uint32_t Image::getPixelSize(Format format) {
             break;
         case Format::RED:
             return 1;
-        case Format::RG16F:
-            return 4;
         case Format::RGB:
         case Format::BGR:
             return 3;
         case Format::RGBA:
         case Format::BGRA:
-            return 4;
         case Format::RED32I:
+        case Format::RG16F:
+        case Format::DEPTH32F:
+        case Format::DEPTH24_STENCIL8:
             return 4;
         case Format::RGB16F:
             return 6;
@@ -58,8 +58,6 @@ uint32_t Image::getPixelSize(Format format) {
             return 12;
         case Format::RGBA32F:
             return 16;
-        default:
-            break;
     }
     ASSERT(false, "Could not calculate pixel size. Unknown image format");
 }

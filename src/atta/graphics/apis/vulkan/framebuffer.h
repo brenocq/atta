@@ -26,9 +26,6 @@ class Framebuffer final : public gfx::Framebuffer {
 
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
-    int readPixel(unsigned attachmentIndex, unsigned x, unsigned y) override;
-    std::vector<uint8_t> readImage(unsigned attachmentIndex) override;
-
     VkFramebuffer getHandle() const;
     std::shared_ptr<Device> getDevice() const;
     std::shared_ptr<RenderPass> getRenderPass() const;

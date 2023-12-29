@@ -117,7 +117,20 @@ void RenderPass::begin(VkCommandBuffer commandBuffer) {
         Image::Format format = std::dynamic_pointer_cast<vk::Image>(image)->getSupportedFormat();
         if (Image::isColorFormat(format)) {
             vec4 color = _framebuffer->getClearColor();
-            VkClearValue clearColor = {{color.x, color.y, color.z, color.w}};
+            VkClearValue clearColor{};
+            for (size_t c = 0; c < Image::getNumChannels(format); c++) {
+                switch (Image::getBaseType(format)) {
+                    case Image::BaseType::FLOAT:
+                        clearColor.color.float32[c] = color[c];
+                        break;
+                    case Image::BaseType::INT:
+                        clearColor.color.int32[c] = std::round(color[c]);
+                        break;
+                    case Image::BaseType::UINT:
+                        clearColor.color.uint32[c] = std::round(color[c]);
+                        break;
+                }
+            }
             clearValues.push_back(clearColor);
         } else if (Image::isDepthFormat(format)) {
             VkClearValue clearDepth = {1.0f, 0};

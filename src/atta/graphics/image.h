@@ -58,6 +58,7 @@ class Image {
     virtual ~Image() = default;
 
     virtual void write(uint8_t* data) = 0;
+    virtual std::vector<uint8_t> read(vec2i offset = {0, 0}, vec2i size = {0, 0}) = 0;
     virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
 
     /* Get format

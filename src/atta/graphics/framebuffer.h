@@ -48,8 +48,6 @@ class Framebuffer {
     virtual void unbind() = 0;
 
     virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
-    virtual int readPixel(unsigned attachmentIndex, unsigned x, unsigned y) = 0;
-    virtual std::vector<uint8_t> readImage(unsigned attachmentIndex) = 0;
 
     std::vector<std::shared_ptr<Image>> getImages() const;
     std::shared_ptr<Image> getImage(uint32_t attachment = 0);

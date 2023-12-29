@@ -72,9 +72,60 @@ void Image::write(uint8_t* data) {
 
     // Copy data to GPU
     std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(finalData, finalSize);
-    transitionLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    copyFrom(stagingBuffer);
-    transitionLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
+    {
+        transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        VkBufferImageCopy region{};
+        region.bufferOffset = 0;
+        region.bufferRowLength = 0;
+        region.bufferImageHeight = 0;
+        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount = 1;
+        region.imageOffset = {0, 0, 0};
+        region.imageExtent = {_width, _height, 1};
+        vkCmdCopyBufferToImage(commandBuffer, stagingBuffer->getHandle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+        transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    }
+    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
+}
+
+std::vector<uint8_t> Image::read(vec2i offset, vec2i size) {
+    if (offset == vec2i() && size == vec2i())
+        size = vec2i(_width, _height);
+    std::vector<uint8_t> img(size.x * size.y * gfx::Image::getPixelSize(_supportedFormat));
+
+    Buffer::CreateInfo info{};
+    info.size = img.size();
+    info.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+    info.properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(info);
+
+    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
+    {
+        transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+        VkBufferImageCopy region{};
+        region.bufferOffset = 0;
+        region.bufferRowLength = 0;
+        region.bufferImageHeight = 0;
+        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount = 1;
+        region.imageOffset = {int32_t(offset.x), int32_t(offset.y), 0};
+        region.imageExtent = {uint32_t(size.x), uint32_t(size.y), 1};
+        vkCmdCopyImageToBuffer(commandBuffer, _image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer->getHandle(), 1, &region);
+        transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+    }
+    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
+
+    uint8_t* gpuData;
+    vkMapMemory(_device->getHandle(), buffer->getMemoryHandle(), 0, img.size(), 0, (void**)&gpuData);
+    for (size_t i = 0; i < img.size(); i++)
+        img[i] = gpuData[i];
+
+    return img;
 }
 
 void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
@@ -100,7 +151,12 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
 }
 
 void* Image::getImGuiImage() {
-    transitionLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    // Make sure image is readable
+    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
+    transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
+
+    // Create ImGui descriptor set if necessary
     if (_imGuiDescriptorSet == VK_NULL_HANDLE)
         _imGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(_sampler, _imageView, _layout);
 
@@ -119,25 +175,6 @@ std::shared_ptr<Device> Image::getDevice() const { return _device; }
 
 Image::Format Image::getSupportedFormat() const { return _supportedFormat; }
 
-void Image::copyFrom(std::shared_ptr<Buffer> buffer) {
-    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
-    {
-        VkBufferImageCopy region{};
-        region.bufferOffset = 0;
-        region.bufferRowLength = 0;
-        region.bufferImageHeight = 0;
-        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        region.imageSubresource.mipLevel = 0;
-        region.imageSubresource.baseArrayLayer = 0;
-        region.imageSubresource.layerCount = 1;
-        region.imageOffset = {0, 0, 0};
-        region.imageExtent = {_width, _height, 1};
-
-        vkCmdCopyBufferToImage(commandBuffer, buffer->getHandle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-    }
-    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
-}
-
 Image::Format Image::supportedFormat(Image::Format format) {
     VkFormatProperties formatProperties;
     vkGetPhysicalDeviceFormatProperties(common::getDevice()->getPhysicalDevice()->getHandle(), convertFormat(format), &formatProperties);
@@ -153,6 +190,29 @@ Image::Format Image::supportedFormat(Image::Format format) {
     }
 
     return format;
+}
+
+Image::BaseType Image::getBaseType(Format format) {
+    switch (format) {
+        case Format::NONE:
+            break;
+        case Format::RED:
+        case Format::RGB:
+        case Format::BGR:
+        case Format::RGBA:
+        case Format::BGRA:
+            return BaseType::FLOAT; // Vulkan UNORM format is used for these types
+        case Format::RED32I:
+            return BaseType::INT;
+        case Format::RG16F:
+        case Format::DEPTH32F:
+        case Format::DEPTH24_STENCIL8:
+        case Format::RGB16F:
+        case Format::RGB32F:
+        case Format::RGBA32F:
+            return BaseType::FLOAT;
+    }
+    ASSERT(false, "Could not calculate base type. Unknown image format");
 }
 
 VkFormat Image::convertFormat(Image::Format format) {
@@ -253,7 +313,8 @@ void Image::createImage() {
     info.tiling = VK_IMAGE_TILING_OPTIMAL;
     info.initialLayout = _layout = VK_IMAGE_LAYOUT_UNDEFINED;
     if (isColorFormat(_supportedFormat))
-        info.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+        info.usage =
+            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
     else if (isDepthFormat(_supportedFormat))
         info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -356,55 +417,58 @@ uint32_t Image::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags proper
     return 0;
 }
 
-void Image::transitionLayout(VkImageLayout newLayout) {
+void populateLayoutStage(VkImageLayout layout, VkPipelineStageFlags* stage, VkAccessFlags* access) {
+    switch (layout) {
+        case VK_IMAGE_LAYOUT_UNDEFINED:
+            *access = 0;
+            *stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            break;
+        case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+            *access = 0;
+            *stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            break;
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+            *access = VK_ACCESS_SHADER_READ_BIT;
+            *stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            break;
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+            *access = VK_ACCESS_TRANSFER_WRITE_BIT;
+            *stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            break;
+        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+            *access = VK_ACCESS_TRANSFER_READ_BIT;
+            *stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            break;
+        default:
+            LOG_WARN("gfx::vk::Image", "Unsupported layout transition: [w]$0", layout);
+            break;
+    }
+}
+
+void Image::transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout) {
     if (newLayout == _layout)
         return;
 
-    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
-    {
-        VkImageMemoryBarrier barrier{};
-        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-        barrier.oldLayout = _layout;
-        barrier.newLayout = newLayout;
-        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-        barrier.image = _image;
-        barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        barrier.subresourceRange.baseMipLevel = 0;
-        barrier.subresourceRange.levelCount = 1;
-        barrier.subresourceRange.baseArrayLayer = 0;
-        barrier.subresourceRange.layerCount = 1;
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.oldLayout = _layout;
+    barrier.newLayout = newLayout;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = _image;
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = 1;
 
-        VkPipelineStageFlags sourceStage;
-        VkPipelineStageFlags destinationStage;
+    VkPipelineStageFlags sourceStage;
+    VkPipelineStageFlags destinationStage;
 
-        if (_layout == VK_IMAGE_LAYOUT_UNDEFINED) {
-            barrier.srcAccessMask = 0;
-            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-        } else if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        } else if (_layout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
-            barrier.srcAccessMask = 0;
-            sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        } else
-            LOG_WARN("gfx::vk::Image", "Unsupported source layout transition");
+    populateLayoutStage(_layout, &sourceStage, &barrier.srcAccessMask);
+    populateLayoutStage(newLayout, &destinationStage, &barrier.dstAccessMask);
 
-        if (newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        } else if (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        } else if (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        } else
-            LOG_WARN("gfx::vk::Image", "Unsupported destination layout transition");
-
-        vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
-    }
-    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
+    vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     _layout = newLayout;
 }
 

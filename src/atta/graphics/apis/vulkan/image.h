@@ -40,6 +40,7 @@ class Image final : public gfx::Image {
     ~Image();
 
     void write(uint8_t* data) override;
+    std::vector<uint8_t> read(vec2i offset = {0, 0}, vec2i size = {0, 0}) override;
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
     void* getImGuiImage() override;
@@ -50,8 +51,6 @@ class Image final : public gfx::Image {
 
     Image::Format getSupportedFormat() const;
 
-    void copyFrom(std::shared_ptr<Buffer> buffer);
-
     /**
      * @brief Convert format to supported vulkan format
      *
@@ -60,6 +59,13 @@ class Image final : public gfx::Image {
      */
     static Image::Format supportedFormat(Image::Format format);
 
+    /// Format base type
+    enum class BaseType {
+        UINT,
+        INT,
+        FLOAT,
+    };
+    static BaseType getBaseType(Format format);
     static VkFormat convertFormat(Image::Format format);
     static Image::Format convertFormat(VkFormat format);
     static VkImageAspectFlags convertAspectFlags(Image::Format format);
@@ -71,7 +77,7 @@ class Image final : public gfx::Image {
     void allocMemory();
     void destroy();
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    void transitionLayout(VkImageLayout newLayout);
+    void transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 
     /**
      * @brief Supported format by the GPU

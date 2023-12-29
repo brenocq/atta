@@ -67,14 +67,6 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
         {
             _geometryPipeline->begin(_renderQueue);
             {
-                // Clear with -1
-                mat4 m(1.0f);
-                _geometryPipeline->setMat4("model", m);
-                _geometryPipeline->setMat4("projection", m);
-                _geometryPipeline->setMat4("view", m);
-                _geometryPipeline->setInt("entityId", -1);
-                _geometryPipeline->renderQuad3();
-
                 // Render entities with eid
                 std::vector<component::EntityId> entities = component::getNoPrototypeView();
                 _geometryPipeline->setMat4("projection", viewport->getCamera()->getProj());
@@ -103,11 +95,15 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
     }
     _renderQueue->end();
 
-    // Get pixel id
-    eid = _renderPass->getFramebuffer()->readPixel(0, pos.x, pos.y);
-    LOG_DEBUG("EntityClick", "Click $0 $1 was $2", pos.x, pos.y, eid);
+    // Get entityId at pixel
+    std::vector<uint8_t> pixel = _renderPass->getFramebuffer()->getImage(0)->read(pos, vec2i(1, 1));
+    if (pixel.size() == sizeof(int)) {
+        int* eid = (int*)pixel.data();
+        if (*eid <= maxEid && *eid >= 0)
+            return component::EntityId(*eid);
+    }
 
-    return eid > maxEid ? -1 : eid;
+    return -1;
 }
 
 } // namespace atta::graphics
