@@ -22,11 +22,11 @@ class Renderer : public file::Serializable {
     virtual void render(std::shared_ptr<Camera> camera) = 0;
     virtual void resize(uint32_t width, uint32_t height) = 0;
 
-    virtual uint32_t getWidth() const = 0;
-    virtual uint32_t getHeight() const = 0;
     virtual void* getImGuiTexture() const = 0;
     virtual std::shared_ptr<Framebuffer> getFramebuffer() = 0;
 
+    uint32_t getWidth() const { return _width; }
+    uint32_t getHeight() const { return _height; }
     std::string getName() const { return _name.getString(); }
     StringId getSID() const { return _name; }
 
@@ -39,6 +39,8 @@ class Renderer : public file::Serializable {
 
   protected:
     StringId _name;
+    uint32_t _width;
+    uint32_t _height;
     bool _renderDrawer;
     bool _renderSelected;
 };

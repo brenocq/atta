@@ -14,7 +14,7 @@
 namespace atta::graphics {
 
 /// Framebuffer interface
-/** This interface is implemented for each RendererAPI. The framebuffer have multiple attachments.
+/** This interface is implemented for each GraphicsAPI. The framebuffer have multiple attachments.
  * Usually one attachment is used for the output image, and the other to render the depth values.
  * But one framebuffer can have any number of attachments
  **/
@@ -48,11 +48,20 @@ class Framebuffer {
     virtual void unbind() = 0;
 
     virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
-    virtual int readPixel(unsigned attachmentIndex, unsigned x, unsigned y) = 0;
-    virtual std::vector<uint8_t> readImage(unsigned attachmentIndex) = 0;
+
+    std::vector<std::shared_ptr<Image>> getImages() const;
     std::shared_ptr<Image> getImage(uint32_t attachment = 0);
-    uint32_t getWidth() const { return _width; };
-    uint32_t getHeight() const { return _height; };
+    uint32_t getWidth() const { return _width; }
+    uint32_t getHeight() const { return _height; }
+    vec4 getClearColor() const { return _clearColor; }
+    StringId getDebugName() const { return _debugName; }
+
+    bool hasColorAttachment() const;
+    bool hasDepthAttachment() const;
+    bool hasStencilAttachment() const;
+    int getColorAttachmentIndex() const;
+    int getDepthAttachmentIndex() const;
+    int getStencilAttachmentIndex() const;
 
   protected:
     uint32_t _width;
@@ -60,7 +69,10 @@ class Framebuffer {
     vec4 _clearColor;
 
     std::vector<Attachment> _attachments;
-    std::map<uint32_t, std::shared_ptr<Image>> _images;
+    int _colorAttachmentIndex;
+    int _depthAttachmentIndex;
+    int _stencilAttachmentIndex;
+    std::vector<std::shared_ptr<Image>> _images;
 
     const StringId _debugName;
 };

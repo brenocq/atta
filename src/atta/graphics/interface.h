@@ -8,8 +8,7 @@
 #define ATTA_GRAPHICS_INTERFACE_H
 
 #include <atta/component/base.h>
-#include <atta/graphics/layers/layerStack.h>
-#include <atta/graphics/rendererAPI.h>
+#include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/viewport.h>
 #include <atta/graphics/windows/window.h>
 
@@ -19,14 +18,19 @@ void startUp();
 void shutDown();
 void update();
 
-void pushLayer(Layer* layer);
-
 // Used to create the object (image/pipeline/renderPass/...) based on the current rendererAPI
 // e.g.: Manager::create<Pipeline>(pipelineInfo) will create OpenGLPipeline or
 // VulkanPipeline or ... depending on the current renderering API
 template <typename T, typename... Args>
 std::shared_ptr<T> create(Args... args);
-std::shared_ptr<RendererAPI> getRendererAPI();
+std::shared_ptr<GraphicsAPI> getGraphicsAPI();
+std::shared_ptr<Window> getWindow();
+
+/** Set which graphics API should be used
+ *
+ * Can be used to switch between Vulkan and OpenGL. The window and API resources will be recreated.
+ */
+void setGraphicsAPI(GraphicsAPI::Type type);
 
 //----- Config -----//
 float getGraphicsFPS();
@@ -35,6 +39,11 @@ float getViewportFPS();
 void setViewportFPS(float viewportFPS);
 bool getViewportRendering();
 void setViewportRendering(bool viewportRendering);
+
+//----- UI -----//
+void setUiRenderFunc(std::function<void()> uiRenderFunc);
+void setUiShutDownFunc(std::function<void()> uiShutDownFunc);
+void setUiStartUpFunc(std::function<void()> uiStartUpFunc);
 
 //----- Viewport -----//
 std::vector<std::shared_ptr<Viewport>> getViewports();

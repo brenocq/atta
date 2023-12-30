@@ -4,20 +4,16 @@ set(ATTA_IMGUIZMO_TARGETS "")
 FetchContent_Declare(
     imguizmo
     GIT_REPOSITORY "https://github.com/CedricGuillemet/ImGuizmo.git"
-    GIT_TAG "1.83"
+    GIT_TAG "ba662b1"
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
 atta_log(Info Extern "Fetching ImGuizmo...")
 FetchContent_MakeAvailable(imguizmo)
-add_library(imguizmo STATIC
-    ${CMAKE_BINARY_DIR}/_deps/imguizmo-src/ImGuizmo.cpp
-)
-#target_include_directories(imguizmo PRIVATE ${CMAKE_BINARY_DIR}/_deps/imguizmo-src)
-#target_include_directories(imguizmo PUBLIC ${CMAKE_BINARY_DIR}/_deps/imgui-src)
+add_library(imguizmo STATIC ${FETCHCONTENT_BASE_DIR}/imguizmo-src/ImGuizmo.cpp)
 target_link_libraries(imguizmo PRIVATE imgui)
 
-atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/imguizmo-src)
+atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/imguizmo-src)
 atta_add_libs(imguizmo)
 
 atta_log(Success Extern "ImGuizmo support (source)")

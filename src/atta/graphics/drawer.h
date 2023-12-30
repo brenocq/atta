@@ -7,11 +7,9 @@
 #ifndef ATTA_GRAPHICS_DRAWER_H
 #define ATTA_GRAPHICS_DRAWER_H
 
+#include <atta/graphics/mesh.h>
 #include <atta/utils/math/math.h>
 #include <atta/utils/stringId.h>
-
-// TODO Abstract renderer API
-#include <atta/graphics/rendererAPIs/openGL/base.h>
 
 namespace atta::graphics {
 
@@ -45,20 +43,24 @@ class Drawer {
 
     // Get data
     template <typename T>
-    static std::vector<T>& get();
-    template <typename T>
     static std::map<StringHash, std::vector<T>>& getGroups();
     template <typename T>
     static unsigned getMaxNumber();
     template <typename T>
     static unsigned getCurrNumber();
 
-    // Draw
-    template <typename T>
-    static void draw();
+    /**
+     * @brief Update line and point data
+     *
+     * The mesh resource will be updated and the line/point will be sent to the GPU
+     */
+    static void update();
 
     // Core
     static Drawer& getInstance();
+
+    static StringId lineMeshName;  ///< Name of the mesh created to store lines
+    static StringId pointMeshName; ///< Name of the mesh created to store points
 
   private:
     Drawer();
@@ -72,8 +74,6 @@ class Drawer {
 
     // Get data implementation
     template <typename T>
-    std::vector<T>& getImpl();
-    template <typename T>
     std::map<StringHash, std::vector<T>>& getGroupsImpl();
     template <typename T>
     unsigned getMaxNumberImpl();
@@ -86,9 +86,8 @@ class Drawer {
     template <typename T>
     void setChanged(bool changed);
 
-    // Draw
     template <typename T>
-    void drawImpl();
+    void updateImpl();
 
     // The _lines vector is updated only when getImpl()
     // is called and _linesChanged is true. Analogous to _points
@@ -103,11 +102,6 @@ class Drawer {
     unsigned _currNumberOfPoints; // Always have the right number of points, even if _points still need to be updated
     bool _pointsChanged;
     std::vector<Point> _points; // Updated only when get() is called
-
-    OpenGLId _lineVAO;
-    OpenGLId _lineVBO;
-    OpenGLId _pointVAO;
-    OpenGLId _pointVBO;
 };
 } // namespace atta::graphics
 

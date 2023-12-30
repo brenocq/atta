@@ -7,29 +7,32 @@
 #ifndef ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 
+#include <atta/graphics/compute/entityClick.h>
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/indexBuffer.h>
+#include <atta/graphics/mesh.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderPass.h>
+#include <atta/graphics/renderQueue.h>
 #include <atta/graphics/shader.h>
-#include <atta/graphics/shaderGroup.h>
 #include <atta/graphics/vertexBuffer.h>
-
-#include <atta/graphics/compute/entityClick.h>
+#include <atta/resource/resources/image.h>
 
 namespace atta::graphics {
 
 class Manager final {
   public:
+    Manager();
     static Manager& getInstance();
 
     friend void startUp();
     friend void shutDown();
     friend void update();
-    friend void pushLayer(Layer* layer);
     template <typename T, typename... Args>
     friend std::shared_ptr<T> create(Args... args);
+
+    friend void setGraphicsAPI(GraphicsAPI::Type type);
 
     friend float getGraphicsFPS();
     friend void setGraphicsFPS(float graphicsFPS);
@@ -38,7 +41,12 @@ class Manager final {
     friend bool getViewportRendering();
     friend void setViewportRendering(bool viewportRendering);
 
-    friend std::shared_ptr<RendererAPI> getRendererAPI();
+    friend void setUiRenderFunc(std::function<void()> uiRenderFunc);
+    friend void setUiStartUpFunc(std::function<void()> uiStartUpFunc);
+    friend void setUiShutDownFunc(std::function<void()> uiShutDownFunc);
+
+    friend std::shared_ptr<GraphicsAPI> getGraphicsAPI();
+    friend std::shared_ptr<Window> getWindow();
     friend std::vector<std::shared_ptr<Viewport>> getViewports();
     friend void clearViewports();
     friend void addViewport(std::shared_ptr<Viewport> viewport);
@@ -47,33 +55,59 @@ class Manager final {
     friend component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
     friend void* getImGuiImage(StringId sid);
 
+    const std::unordered_map<StringId, std::shared_ptr<Mesh>>& getMeshes() const;
+    const std::unordered_map<StringId, std::shared_ptr<Image>>& getImages() const;
+
   private:
     void startUpImpl();
     void shutDownImpl();
     void updateImpl();
-    void pushLayerImpl(Layer* layer);
     template <typename T, typename... Args>
     std::shared_ptr<T> createImpl(Args... args);
 
     template <typename T, typename TOpenGL, typename TVulkan, typename... Args>
     std::shared_ptr<T> createSpecific(Args... args);
 
-    std::shared_ptr<RendererAPI> getRendererAPIImpl() const { return _rendererAPI; };
-    std::vector<std::shared_ptr<Viewport>>& getViewportsImpl() { return _viewports; };
+    std::shared_ptr<GraphicsAPI> getGraphicsAPIImpl() const;
+    std::shared_ptr<Window> getWindowImpl() const;
+
+    void setGraphicsAPIImpl(GraphicsAPI::Type type);
+    void recreateGraphicsAPI();
+
+    std::vector<std::shared_ptr<Viewport>>& getViewportsImpl();
     void clearViewportsImpl();
     void addViewportImpl(std::shared_ptr<Viewport> viewport);
     void removeViewportImpl(std::shared_ptr<Viewport> viewport);
     void createDefaultViewportsImpl();
     component::EntityId viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos);
+    void* getImGuiImageImpl(StringId sid);
 
-    void* getImGuiImageImpl(StringId sid) const { return _rendererAPI->getImGuiImage(sid); }
+    gfx::Image::Format convertFormat(res::Image::Format format) const;
+
+    // Handle resources
+    void syncResources();
+    void onMeshLoadEvent(event::Event& event);
+    void onMeshUpdateEvent(event::Event& event);
+    void onImageLoadEvent(event::Event& event);
+    void onImageUpdateEvent(event::Event& event);
+    void createMesh(StringId sid);
+    void createImage(StringId sid);
 
     std::shared_ptr<Window> _window;
-    std::shared_ptr<RendererAPI> _rendererAPI;
     float _graphicsFPS; ///< Desired graphics FPS
 
-    // Layer stack
-    std::unique_ptr<LayerStack> _layerStack;
+    // Handle
+    GraphicsAPI::Type _desiredGraphicsAPI;
+    std::shared_ptr<GraphicsAPI> _graphicsAPI;
+
+    // Resource binding
+    std::unordered_map<StringId, std::shared_ptr<Mesh>> _meshes;
+    std::unordered_map<StringId, std::shared_ptr<Image>> _images;
+
+    // UI
+    std::function<void()> _uiRenderFunc;
+    std::function<void()> _uiStartUpFunc;  ///< Used to restart UI when graphics API changes
+    std::function<void()> _uiShutDownFunc; ///< Used to restart UI when graphics API changes
 
     // Viewports
     std::vector<std::shared_ptr<Viewport>> _viewports;

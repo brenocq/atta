@@ -35,8 +35,8 @@ set(ATTA_ASSIMP_TARGETS "")
     atta_log(Info Extern "Fetching Assimp...")
     atta_FetchContent_MakeAvailable(assimp) 
 
-    atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/assimp-src/include)
-    atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/assimp-build/include)
+    atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/assimp-src/include)
+    atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/assimp-build/include)
     atta_add_libs(assimp)
 
     atta_log(Success Extern "Assimp support (source)")

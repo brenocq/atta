@@ -9,6 +9,7 @@
 
 #include <atta/component/base.h>
 #include <atta/graphics/pipeline.h>
+#include <atta/graphics/renderPass.h>
 #include <atta/graphics/viewport.h>
 #include <atta/utils/math/math.h>
 
@@ -23,6 +24,9 @@ class EntityClick {
   private:
     uint32_t _width;
     uint32_t _height;
+
+    std::shared_ptr<RenderQueue> _renderQueue;
+    std::shared_ptr<RenderPass> _renderPass;
     std::shared_ptr<Pipeline> _geometryPipeline;
 };
 

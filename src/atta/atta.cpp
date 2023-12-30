@@ -135,6 +135,7 @@ void Atta::loop() {
 
     file::update();
     graphics::update();
+    resource::update();
 }
 
 void Atta::step() {

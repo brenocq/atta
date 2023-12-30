@@ -46,7 +46,7 @@ void Json::parseAux(const std::string& str, unsigned& pos, bool& res) {
             // INT or FLOAT
             unsigned curr = pos;
             // Find first char that is not a digit or '-'
-            while (curr + 1 < str.size() && (str[curr] >= '0' && str[curr] <= '9' || str[curr] == '-'))
+            while (curr + 1 < str.size() && ((str[curr] >= '0' && str[curr] <= '9') || str[curr] == '-'))
                 curr++;
 
             // Check if it is .

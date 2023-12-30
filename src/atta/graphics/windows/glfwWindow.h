@@ -19,6 +19,8 @@ class GlfwWindow final : public Window {
     GlfwWindow(const Window::CreateInfo& info);
     ~GlfwWindow();
 
+    void* getHandle() const override;
+
     void update() override;
     void swapBuffers() override;
 

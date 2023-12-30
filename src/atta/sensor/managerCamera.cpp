@@ -59,7 +59,7 @@ void Manager::updateCameras(float dt) {
         updateCameraModel(cameraInfo);
 
         // Check if it is enabled
-        if(!cameraInfo.component->enabled)
+        if (!cameraInfo.component->enabled)
             continue;
 
         // Render if necessary
@@ -67,7 +67,7 @@ void Manager::updateCameras(float dt) {
         float interval = 1.0f / cameraInfo.component->fps;
         if (change >= interval) {
             cameraInfo.renderer->render(cameraInfo.camera);
-            cameraInfo.data = cameraInfo.renderer->getFramebuffer()->readImage(0);
+            cameraInfo.data = cameraInfo.renderer->getFramebuffer()->getImage(0)->read();
             cameraInfo.component->captureTime = Config::getTime();
         }
     }

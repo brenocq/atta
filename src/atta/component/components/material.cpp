@@ -12,8 +12,9 @@
 
 namespace atta::component {
 
-void renderComboImage(std::string attribute, StringId& image) {
-    bool isImage = (image != resource::Material::emptyImage);
+bool renderComboImage(std::string attribute, StringId& image) {
+    bool isImage = (image != StringId());
+    bool updated = false;
     std::string imguiId = attribute;
     if (isImage) {
         std::string selectedName = image.getString();
@@ -24,8 +25,10 @@ void renderComboImage(std::string attribute, StringId& image) {
                 if (imageStr == "")
                     imageStr = "##";
                 const bool selected = (rImage == image);
-                if (ImGui::Selectable(imageStr.c_str(), selected))
+                if (ImGui::Selectable(imageStr.c_str(), selected)) {
                     image = rImage;
+                    updated = true;
+                }
                 if (selected)
                     ImGui::SetItemDefaultFocus();
             }
@@ -33,8 +36,11 @@ void renderComboImage(std::string attribute, StringId& image) {
         }
     }
 
-    if (ImGui::Checkbox(("Is image##IsImage" + imguiId).c_str(), &isImage))
-        image = isImage ? "textures/white.jpg"_sid : resource::Material::emptyImage;
+    if (ImGui::Checkbox(("Is image##IsImage" + imguiId).c_str(), &isImage)) {
+        image = isImage ? "textures/white.png"_sid : StringId();
+        updated = true;
+    }
+    return updated;
 }
 
 void materialRenderImGui(void* data, std::string imguiId) {
@@ -132,29 +138,50 @@ void materialRenderImGui(void* data, std::string imguiId) {
     //---------- Edit ----------//
     ImGui::Text("Color");
     if (!m->colorIsImage()) {
-        ImGui::SliderFloat("R##ColorR", &m->color.x, 0.0f, 1.0f);
-        ImGui::SliderFloat("G##ColorG", &m->color.y, 0.0f, 1.0f);
-        ImGui::SliderFloat("B##ColorB", &m->color.z, 0.0f, 1.0f);
+        vec3 color = m->getColor();
+        bool updated = false;
+        if (ImGui::SliderFloat("R##ColorR", &color.x, 0.0f, 1.0f))
+            updated = true;
+        if (ImGui::SliderFloat("G##ColorG", &color.y, 0.0f, 1.0f))
+            updated = true;
+        if (ImGui::SliderFloat("B##ColorB", &color.z, 0.0f, 1.0f))
+            updated = true;
+        if (updated)
+            m->setColor(color);
     }
-    renderComboImage("Color", m->colorImage);
+    StringId colorImage = m->getColorImage();
+    if (renderComboImage("Color", colorImage))
+        m->setColorImage(colorImage);
 
     ImGui::Text("Roughness");
     if (!m->roughnessIsImage()) {
-        ImGui::SliderFloat("##Roughness", &m->roughness, 0.0f, 1.0f);
+        float roughness = m->getRoughness();
+        if (ImGui::SliderFloat("##Roughness", &roughness, 0.0f, 1.0f))
+            m->setRoughness(roughness);
     }
-    renderComboImage("Roughness", m->roughnessImage);
+    StringId roughnessImage = m->getRoughnessImage();
+    if (renderComboImage("Roughness", roughnessImage))
+        m->setRoughnessImage(roughnessImage);
 
     ImGui::Text("Metallic");
     if (!m->metallicIsImage()) {
-        ImGui::SliderFloat("##Metallic", &m->metallic, 0.0f, 1.0f);
+        float metallic = m->getMetallic();
+        if (ImGui::SliderFloat("##Metallic", &metallic, 0.0f, 1.0f))
+            m->setMetallic(metallic);
     }
-    renderComboImage("Metallic", m->metallicImage);
+    StringId metallicImage = m->getMetallicImage();
+    if (renderComboImage("Metallic", metallicImage))
+        m->setMetallicImage(metallicImage);
 
     ImGui::Text("AO");
     if (!m->aoIsImage()) {
-        ImGui::SliderFloat("##AO", &m->ao, 0.0f, 1.0f);
+        float ao = m->getAo();
+        if (ImGui::SliderFloat("##AO", &ao, 0.0f, 1.0f))
+            m->setAo(ao);
     }
-    renderComboImage("AO", m->aoImage);
+    StringId aoImage = m->getAoImage();
+    if (renderComboImage("AO", aoImage))
+        m->setAoImage(aoImage);
 }
 
 template <>

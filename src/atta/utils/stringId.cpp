@@ -46,6 +46,8 @@ std::vector<std::string> StringId::getStrings() {
     return strings;
 }
 
+StringId::operator fs::path() const { return fs::path(getString()); }
+
 } // namespace atta
 
 #ifdef ATTA_DEBUG_BUILD
