@@ -18,7 +18,7 @@ class Mesh final : public gfx::Mesh {
     Mesh(CreateInfo info);
     ~Mesh();
 
-    void draw() override;
+    void draw(size_t numVertices = 0) override;
 
     OpenGLId getHandle() const { return _id; }
 

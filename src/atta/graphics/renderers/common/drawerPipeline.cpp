@@ -43,7 +43,10 @@ void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
     {
         _linePipeline->setMat4("uProjection", camera->getProj());
         _linePipeline->setMat4("uView", camera->getView());
-        // _linePipeline->renderMesh(Drawer::lineMeshName);
+
+        size_t numLines = Drawer::getCurrNumber<Drawer::Line>();
+        if (numLines)
+            _linePipeline->renderMesh(Drawer::lineMeshName, numLines);
     }
     _linePipeline->end();
 
@@ -51,7 +54,10 @@ void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
     {
         _pointPipeline->setMat4("uProjection", camera->getProj());
         _pointPipeline->setMat4("uView", camera->getView());
-        // _pointPipeline->renderMesh(Drawer::pointMeshName);
+
+        size_t numPoints = Drawer::getCurrNumber<Drawer::Point>();
+        if (numPoints)
+            _pointPipeline->renderMesh(Drawer::pointMeshName, numPoints);
     }
     _pointPipeline->end();
 }

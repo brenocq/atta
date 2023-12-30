@@ -45,7 +45,7 @@ void Pipeline::setMat4(const char* name, mat4 m) { _shader->setMat4(name, m); }
 void Pipeline::setImageGroup(std::string name) { setImageGroup(name.c_str()); }
 void Pipeline::setImageGroup(StringId name) { setImageGroup(name.getString().c_str()); }
 
-void Pipeline::renderMesh(StringId meshSid) { LOG_WARN("Pipeline", "[w]renderMesh[] was not implemented yet"); }
+void Pipeline::renderMesh(StringId meshSid, size_t numVertices) { LOG_WARN("Pipeline", "[w]renderMesh[] was not implemented yet"); }
 void Pipeline::renderQuad() { LOG_WARN("Pipeline", "[w]renderQuad[] was not implemented yet"); }
 void Pipeline::renderQuad3() { LOG_WARN("Pipeline", "[w]renderQuad3[] was not implemented yet"); }
 void Pipeline::renderCube() { LOG_WARN("Pipeline", "[w]renderCube[] was not implemented yet"); }

@@ -24,15 +24,15 @@ Mesh::Mesh(CreateInfo info) : gfx::Mesh(info) {
 
 Mesh::~Mesh() {}
 
-void Mesh::draw() {}
+void Mesh::draw(size_t numVertices) {}
 
-void Mesh::draw(VkCommandBuffer commandBuffer) {
+void Mesh::draw(VkCommandBuffer commandBuffer, size_t numVertices) {
     std::dynamic_pointer_cast<vk::VertexBuffer>(_vertexBuffer)->bind(commandBuffer);
     if (_indexBuffer) {
         std::dynamic_pointer_cast<vk::IndexBuffer>(_indexBuffer)->bind(commandBuffer);
         vkCmdDrawIndexed(commandBuffer, _indexBuffer->getCount(), 1, 0, 0, 0);
     } else
-        vkCmdDraw(commandBuffer, _vertexBuffer->getCount(), 1, 0, 0);
+        vkCmdDraw(commandBuffer, numVertices == 0 ? _vertexBuffer->getCount() : numVertices, 1, 0, 0);
 }
 
 } // namespace atta::graphics::vk

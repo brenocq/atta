@@ -25,12 +25,12 @@ Mesh::~Mesh() {
         glDeleteVertexArrays(1, &_id);
 }
 
-void Mesh::draw() {
+void Mesh::draw(size_t numVertices) {
     glBindVertexArray(_id);
     if (_indexBuffer)
         glDrawElements(GL_TRIANGLES, _indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
     else
-        glDrawArrays(GL_TRIANGLES, 0, _vertexBuffer->getCount());
+        glDrawArrays(GL_TRIANGLES, 0, numVertices == 0 ? _vertexBuffer->getCount() : numVertices);
     glBindVertexArray(0);
 }
 

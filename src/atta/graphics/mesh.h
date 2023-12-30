@@ -27,7 +27,13 @@ class Mesh {
     Mesh(CreateInfo info);
     virtual ~Mesh() = default;
 
-    virtual void draw() = 0;
+    /**
+     * @brief Draw mesh
+     *
+     * @note If numVertices is negative, all vertices are drawn
+     * @warning numVertices should only be used if there is no index buffer
+     */
+    virtual void draw(size_t numVertices = 0) = 0;
 
     std::shared_ptr<VertexBuffer> getVertexBuffer() const;
     std::shared_ptr<IndexBuffer> getIndexBuffer() const;

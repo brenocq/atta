@@ -263,7 +263,7 @@ void Pipeline::resize(uint32_t width, uint32_t height) {
     _framebuffers[0]->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
 }
 
-void Pipeline::renderMesh(StringId meshSid) {
+void Pipeline::renderMesh(StringId meshSid, size_t numVertices) {
     std::shared_ptr<vk::Mesh> mesh = std::dynamic_pointer_cast<vk::Mesh>(Manager::getInstance().getMeshes().at(meshSid));
     if (mesh) {
         // Get command buffer
@@ -273,7 +273,7 @@ void Pipeline::renderMesh(StringId meshSid) {
         std::dynamic_pointer_cast<vk::Shader>(_shader)->pushConstants(commandBuffer, _pipelineLayout);
 
         // Draw mesh
-        mesh->draw(commandBuffer);
+        mesh->draw(commandBuffer, numVertices);
     } else
         LOG_WARN("gfx::vk::Pipeline", "Could not render mesh [w]$0[], mesh not found", meshSid);
 }

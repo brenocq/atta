@@ -70,7 +70,12 @@ class Pipeline {
     void setImageGroup(StringId name);
     virtual void setImageGroup(const char* name) = 0;
 
-    virtual void renderMesh(StringId meshSid);
+    /**
+     * @brief Render mesh
+     *
+     * @note If numVertices is set to zero, all vertices are rendered
+     */
+    virtual void renderMesh(StringId meshSid, size_t numVertices = 0);
     virtual void renderQuad();
     virtual void renderQuad3();
     virtual void renderCube();
