@@ -389,11 +389,23 @@ void Manager::createMesh(StringId sid) {
 
     VertexBuffer::CreateInfo vertexInfo{};
     vertexInfo.data = (uint8_t*)mesh->getVertices().data();
-    vertexInfo.size = mesh->getVertices().size() * sizeof(res::Mesh::Vertex);
-    vertexInfo.layout = {};
-    vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iVertex");
-    vertexInfo.layout.push(BufferLayout::Element::Type::VEC3, "iNormal");
-    vertexInfo.layout.push(BufferLayout::Element::Type::VEC2, "iUV");
+    vertexInfo.size = mesh->getVertices().size();
+    // Populate vertex layout
+    for (resource::Mesh::VertexElement element : mesh->getVertexLayout()) {
+        BufferLayout::Element::Type type;
+        switch (element.type) {
+            case resource::Mesh::Type::VEC2:
+                type = BufferLayout::Element::Type::VEC2;
+                break;
+            case resource::Mesh::Type::VEC3:
+                type = BufferLayout::Element::Type::VEC3;
+                break;
+            case resource::Mesh::Type::VEC4:
+                type = BufferLayout::Element::Type::VEC4;
+                break;
+        }
+        vertexInfo.layout.push(type, element.name);
+    }
 
     IndexBuffer::CreateInfo indexInfo{};
     indexInfo.data = (uint8_t*)mesh->getIndices().data();

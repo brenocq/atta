@@ -12,10 +12,15 @@
 
 namespace atta::resource {
 
-Mesh::Mesh(const fs::path& filename) : Resource(filename) { load(); }
+Mesh::Mesh(const fs::path& filename) : Resource(filename), _numVertices(0) { load(); }
 
 //---------- Assimp mesh loading ----------//
 void Mesh::load() {
+    _vertexLayout.resize(3);
+    _vertexLayout[0] = {Type::VEC3, "iPosition"};
+    _vertexLayout[1] = {Type::VEC3, "iNormal"};
+    _vertexLayout[2] = {Type::VEC2, "iUV"};
+
     fs::path absolutePath = file::solveResourcePath(_filename);
 
     Assimp::Importer importer;
@@ -45,22 +50,31 @@ void Mesh::processNode(aiNode* node, const aiScene* scene) {
     }
 }
 
+struct AssimpVertex {
+    vec3 position;
+    vec3 normal;
+    vec2 uv;
+};
+
 void Mesh::processMesh(aiMesh* mesh, const aiScene* scene) {
-    unsigned startIndex = _vertices.size();
+    unsigned startIndex = _numVertices;
     for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
-        Vertex vertex;
+        AssimpVertex vertex;
         // Process vertex positions, normals and texture coordinates
         vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
         vertex.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
 
         // Check if there are texture coords
-        if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
-        {
-            vertex.texCoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
-        } else
-            vertex.texCoord = vec2(0.0f, 0.0f);
+        if (mesh->mTextureCoords[0])
+            vertex.uv = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+        else
+            vertex.uv = vec2(0.0f, 0.0f);
 
-        _vertices.push_back(vertex);
+        // Push assimp vertex
+        uint8_t* data = (uint8_t*)&vertex;
+        for (size_t i = 0; i < sizeof(AssimpVertex); i++)
+            _vertices.push_back(data[i]);
+        _numVertices++;
     }
     // Process indices
     for (uint32_t i = 0; i < mesh->mNumFaces; i++) {

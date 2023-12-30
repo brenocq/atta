@@ -43,17 +43,13 @@ class Drawer {
 
     // Get data
     template <typename T>
-    static std::vector<T>& get();
+    static const std::vector<T>& get();
     template <typename T>
     static std::map<StringHash, std::vector<T>>& getGroups();
     template <typename T>
     static unsigned getMaxNumber();
     template <typename T>
     static unsigned getCurrNumber();
-
-    // Draw
-    template <typename T>
-    static void draw();
 
     // Core
     static Drawer& getInstance();
@@ -70,7 +66,7 @@ class Drawer {
 
     // Get data implementation
     template <typename T>
-    std::vector<T>& getImpl();
+    const std::vector<T>& getImpl();
     template <typename T>
     std::map<StringHash, std::vector<T>>& getGroupsImpl();
     template <typename T>
@@ -83,10 +79,6 @@ class Drawer {
     void setCurrNumber(unsigned number);
     template <typename T>
     void setChanged(bool changed);
-
-    // Draw
-    template <typename T>
-    void drawImpl();
 
     // The _lines vector is updated only when getImpl()
     // is called and _linesChanged is true. Analogous to _points

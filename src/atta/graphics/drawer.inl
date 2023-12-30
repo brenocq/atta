@@ -19,7 +19,7 @@ void Drawer::clear(StringId group) {
 
 // Get data
 template <typename T>
-std::vector<T>& Drawer::get() {
+const std::vector<T>& Drawer::get() {
     return getInstance().getImpl<T>();
 }
 template <typename T>
@@ -33,12 +33,6 @@ unsigned Drawer::getMaxNumber() {
 template <typename T>
 unsigned Drawer::getCurrNumber() {
     return getInstance().getCurrNumberImpl<T>();
-}
-
-// Draw
-template <typename T>
-void Drawer::draw() {
-    getInstance().drawImpl<T>();
 }
 
 // Draw 3d objects implementation
@@ -64,7 +58,7 @@ void Drawer::clearImpl(StringId group) {
 
 // Get data implementation
 template <typename T>
-std::vector<T>& Drawer::getImpl() {
+const std::vector<T>& Drawer::getImpl() {
     if constexpr (std::is_same<T, Drawer::Line>::value || std::is_same<T, Drawer::Point>::value) {
         if (getChanged<T>()) {
             setCurrNumber<T>(0);
@@ -152,33 +146,6 @@ void Drawer::setChanged(bool changed) {
         _pointsChanged = changed;
     else
         ASSERT(false, "Drawer setChanged() to unknown type $0", typeid(T).name());
-}
-
-// Draw
-template <typename T>
-void Drawer::drawImpl() {
-    if constexpr (std::is_same<T, Drawer::Line>::value) {
-        // glBindVertexArray(_lineVAO);
-        if (_linesChanged) {
-            // TODO Update _line vector and gpu buffer
-            getImpl<Drawer::Line>();
-            // glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
-            // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Line) * _currNumberOfLines, _lines.data());
-        }
-        // glDrawArrays(GL_LINES, 0, 2 * _currNumberOfLines);
-        // glBindVertexArray(0);
-    } else if constexpr (std::is_same<T, Drawer::Point>::value) {
-        // glBindVertexArray(_pointVAO);
-        if (_pointsChanged) {
-            // TODO Update _point vector and gpu buffer
-            getImpl<Drawer::Point>();
-            // glBindBuffer(GL_ARRAY_BUFFER, _pointVBO);
-            // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point) * _currNumberOfPoints, _points.data());
-        }
-        // glDrawArrays(GL_POINTS, 0, _currNumberOfPoints);
-        // glBindVertexArray(0);
-    } else
-        ASSERT(false, "Drawer draw() to unknown type $0", typeid(T).name());
 }
 
 } // namespace atta::graphics

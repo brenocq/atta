@@ -22,7 +22,6 @@ Drawer::Drawer()
         info.vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC3, "iPos");
         info.vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC4, "iColor");
         _lineBuffer = gfx::create<gfx::Mesh>(info);
-        LOG_DEBUG("Drawer", "Line buffer created");
     }
 
     // Point buffer
@@ -33,7 +32,6 @@ Drawer::Drawer()
         info.vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC3, "iPos");
         info.vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC4, "iColor");
         _pointBuffer = gfx::create<gfx::Mesh>(info);
-        LOG_DEBUG("Drawer", "Point buffer created");
     }
 }
 
@@ -45,10 +43,10 @@ Drawer& Drawer::getInstance() {
 void Drawer::clear(StringId group) { getInstance().clearImpl(group); }
 void Drawer::clearImpl(StringId group) {
     if (group == "No group"_sid) {
-        _currNumberOfLines = 0;
-        _currNumberOfPoints = 0;
-        _linesChanged = false;
-        _pointsChanged = false;
+        _lineGroups.clear();
+        _pointGroups.clear();
+        _linesChanged = true;
+        _pointsChanged = true;
     } else {
         clearImpl<Line>(group);
         clearImpl<Point>(group);

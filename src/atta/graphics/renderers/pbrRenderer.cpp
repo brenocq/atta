@@ -299,7 +299,9 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
         return imageGroup;
     });
 
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    // Update drawer data
+    if (_renderDrawer)
+        _drawerPipeline->update();
 
     // Render
     _renderQueue->begin();
@@ -334,6 +336,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                 _environmentMapOri = mat3(1.0f);
                 int numPointLights = 0;
                 int numDirectionalLights = 0;
+                std::vector<component::EntityId> entities = component::getNoPrototypeView();
                 for (auto entity : entities) {
                     component::Transform* transform = component::getComponent<component::Transform>(entity);
                     component::PointLight* pl = component::getComponent<component::PointLight>(entity);

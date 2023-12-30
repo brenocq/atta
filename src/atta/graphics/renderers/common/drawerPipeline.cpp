@@ -30,12 +30,25 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
     }
 }
 
+void DrawerPipeline::update() {
+    Drawer::clear();
+    Drawer::add<Drawer::Line>(Drawer::Line(vec3(0, 0, 0), vec3(1, 1, 1), vec4(1, 0, 0, 1), vec4(0, 1, 0, 1)));
+    Drawer::add<Drawer::Point>(Drawer::Point(vec3(0, 0, 0), vec4(0, 1, 0, 1)));
+    Drawer::add<Drawer::Point>(Drawer::Point(vec3(1, 1, 1), vec4(1, 0, 0, 1)));
+
+    std::vector<Drawer::Line> lines = Drawer::get<Drawer::Line>();
+    unsigned numLines = Drawer::getCurrNumber<Drawer::Line>();
+    std::vector<Drawer::Point> point = Drawer::get<Drawer::Point>();
+    unsigned numPoints = Drawer::getCurrNumber<Drawer::Point>();
+    LOG_DEBUG("DrawerPipeline", "Lines $0/$1 points $2/$3", numLines, lines.size(), numPoints, point.size());
+}
+
 void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
     _linePipeline->begin();
     {
         _linePipeline->setMat4("uProjection", camera->getProj());
         _linePipeline->setMat4("uView", camera->getView());
-        Drawer::draw<Drawer::Line>();
+        // Drawer::draw<Drawer::Line>();
     }
     _linePipeline->end();
 
@@ -43,7 +56,7 @@ void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
     {
         _pointPipeline->setMat4("uProjection", camera->getProj());
         _pointPipeline->setMat4("uView", camera->getView());
-        Drawer::draw<Drawer::Point>();
+        // Drawer::draw<Drawer::Point>();
     }
     _pointPipeline->end();
 }
