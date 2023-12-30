@@ -154,6 +154,7 @@ GLenum Framebuffer::convertDepthAttachmentType(Image::Format format) {
             break;
     }
     ASSERT(false, "Could not convert format to openGL depth attachment");
+    return 0;
 }
 
 } // namespace atta::graphics::gl

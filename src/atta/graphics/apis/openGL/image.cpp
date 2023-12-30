@@ -117,8 +117,10 @@ GLenum Image::convertSizedInternalFormat(Format format) {
         case Format::RG16F:
             return GL_RG16F;
         case Format::RGB:
+        case Format::BGR:
             return GL_RGB8;
         case Format::RGBA:
+        case Format::BGRA:
             return GL_RGBA8;
         case Format::RGB16F:
             return GL_RGB16F;
@@ -132,6 +134,7 @@ GLenum Image::convertSizedInternalFormat(Format format) {
             return GL_DEPTH24_STENCIL8;
     }
     ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
+    return 0;
 }
 
 GLenum Image::convertFormat(Format format) {
@@ -148,15 +151,20 @@ GLenum Image::convertFormat(Format format) {
         case Format::RGB16F:
         case Format::RGB32F:
             return GL_RGB;
+        case Format::BGR:
+            return GL_BGR;
         case Format::RGBA:
         case Format::RGBA32F:
             return GL_RGBA;
+        case Format::BGRA:
+            return GL_BGRA;
         case Format::DEPTH32F:
             return GL_DEPTH_COMPONENT;
         case Format::DEPTH24_STENCIL8:
             return GL_DEPTH_STENCIL;
     }
     ASSERT(false, "Could not convert format to openGL format. Unknown image format");
+    return 0;
 }
 
 GLenum Image::convertInternalFormat(Format format) {
@@ -175,8 +183,12 @@ GLenum Image::convertInternalFormat(Format format) {
             return GL_RGB32F;
         case Format::RGB:
             return GL_RGB;
+        case Format::BGR:
+            return GL_BGR;
         case Format::RGBA:
             return GL_RGBA;
+        case Format::BGRA:
+            return GL_BGRA;
         case Format::RGBA32F:
             return GL_RGBA32F;
         case Format::DEPTH32F:
@@ -185,6 +197,7 @@ GLenum Image::convertInternalFormat(Format format) {
             return GL_DEPTH24_STENCIL8;
     }
     ASSERT(false, "Could not convert format to internal openGL format. Unknown image format");
+    return 0;
 }
 
 GLenum Image::convertDataType(Format format) {
@@ -193,7 +206,9 @@ GLenum Image::convertDataType(Format format) {
             break;
         case Format::RED:
         case Format::RGB:
+        case Format::BGR:
         case Format::RGBA:
+        case Format::BGRA:
             return GL_UNSIGNED_BYTE;
         case Format::RED32I:
             return GL_INT;
@@ -207,6 +222,7 @@ GLenum Image::convertDataType(Format format) {
             return GL_UNSIGNED_INT_24_8;
     }
     ASSERT(false, "Could not convert format to openGL data type. Unknown image format");
+    return 0;
 }
 
 GLenum Image::convertSamplerWrap(Wrap samplerWrap) {
@@ -221,6 +237,7 @@ GLenum Image::convertSamplerWrap(Wrap samplerWrap) {
             return GL_CLAMP_TO_BORDER;
     }
     ASSERT(false, "Could not convert sampler wrap to openGL sampler wrap. Unknown sampler wrap");
+    return 0;
 }
 
 } // namespace atta::graphics::gl

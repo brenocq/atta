@@ -40,6 +40,9 @@ Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
     _format = info.format;
 
     switch (_format) {
+        case Format::NONE:
+            // Should have been returned when checked the format
+            return;
         case Format::RED8:
             _channels = 1;
             break;

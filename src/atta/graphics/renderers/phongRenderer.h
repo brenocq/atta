@@ -26,7 +26,7 @@ class PhongRenderer final : public Renderer {
     uint32_t getWidth() const override { return _geometryPipeline->getRenderPass()->getFramebuffer()->getWidth(); };
     uint32_t getHeight() const override { return _geometryPipeline->getRenderPass()->getFramebuffer()->getHeight(); };
     void* getImGuiTexture() const override { return _geometryPipeline->getImGuiTexture(); }
-    std::shared_ptr<Framebuffer> getFramebuffer() { return _geometryPipeline->getRenderPass()->getFramebuffer(); }
+    std::shared_ptr<Framebuffer> getFramebuffer() override { return _geometryPipeline->getRenderPass()->getFramebuffer(); }
 
   private:
     std::shared_ptr<RenderQueue> _renderQueue;

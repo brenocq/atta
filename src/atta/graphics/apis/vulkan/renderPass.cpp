@@ -120,6 +120,8 @@ void RenderPass::begin(VkCommandBuffer commandBuffer) {
             VkClearValue clearColor{};
             for (size_t c = 0; c < Image::getNumChannels(format); c++) {
                 switch (Image::getBaseType(format)) {
+                    case Image::BaseType::NONE:
+                        break;
                     case Image::BaseType::FLOAT:
                         clearColor.color.float32[c] = color[c];
                         break;

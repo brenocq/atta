@@ -75,12 +75,15 @@ class RayCastCallback : public b2RayCastCallback {
 
 //---------- Conversions ----------//
 inline b2BodyType attaToBox2D(component::RigidBody2D::Type type) {
-    if (type == component::RigidBody2D::DYNAMIC)
-        return b2_dynamicBody;
-    else if (type == component::RigidBody2D::KINEMATIC)
-        return b2_kinematicBody;
-    else if (type == component::RigidBody2D::STATIC)
-        return b2_staticBody;
+    switch (type) {
+        case component::RigidBody2D::DYNAMIC:
+            return b2_dynamicBody;
+        case component::RigidBody2D::KINEMATIC:
+            return b2_kinematicBody;
+        case component::RigidBody2D::STATIC:
+            return b2_staticBody;
+    }
+    return b2_staticBody;
 }
 
 //---------- Box2DEngine ----------//
@@ -158,7 +161,7 @@ void Box2DEngine::step(float dt) {
         auto rb2d = component::getComponent<component::RigidBody2D>(eid);
 
         // Check type change
-        if(body->GetType() != attaToBox2D(rb2d->type))
+        if (body->GetType() != attaToBox2D(rb2d->type))
             body->SetType(attaToBox2D(rb2d->type));
 
         // Get atta pos/angle

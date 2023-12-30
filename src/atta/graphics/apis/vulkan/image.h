@@ -69,6 +69,7 @@ class Image final : public gfx::Image {
 
     /// Format base type
     enum class BaseType {
+        NONE = 0,
         UINT,
         INT,
         FLOAT,

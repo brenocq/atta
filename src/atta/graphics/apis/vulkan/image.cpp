@@ -194,7 +194,7 @@ void Image::setLayout(VkImageLayout layout) { _layout = layout; }
 Image::BaseType Image::getBaseType(Format format) {
     switch (format) {
         case Format::NONE:
-            break;
+            return BaseType::NONE;
         case Format::RED:
         case Format::RGB:
         case Format::BGR:
@@ -212,12 +212,13 @@ Image::BaseType Image::getBaseType(Format format) {
             return BaseType::FLOAT;
     }
     ASSERT(false, "Could not calculate base type. Unknown image format");
+    return BaseType::NONE;
 }
 
 VkFormat Image::convertFormat(Image::Format format) {
     switch (format) {
         case Format::NONE:
-            break;
+            return VK_FORMAT_UNDEFINED;
         case Format::RED:
             return VK_FORMAT_R8_UNORM;
         case Format::RED32I:
@@ -244,6 +245,7 @@ VkFormat Image::convertFormat(Image::Format format) {
             return VK_FORMAT_D24_UNORM_S8_UINT;
     }
     ASSERT(false, "Could not convert atta format to vulkan format. Unknown image format");
+    return VK_FORMAT_UNDEFINED;
 }
 
 Image::Format Image::convertFormat(VkFormat format) {
@@ -273,9 +275,10 @@ Image::Format Image::convertFormat(VkFormat format) {
         case VK_FORMAT_D24_UNORM_S8_UINT:
             return Format::DEPTH24_STENCIL8;
         default:
-            ASSERT(false, "Could not convert vulkan format [w]$0[] to atta format. Unknown image format", common::toString(format));
-            return Format::NONE;
+            break;
     }
+    ASSERT(false, "Could not convert vulkan format [w]$0[] to atta format. Unknown image format", common::toString(format));
+    return Format::NONE;
 }
 
 VkImageAspectFlags Image::convertAspectFlags(Image::Format format) {

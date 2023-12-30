@@ -56,6 +56,7 @@ GLenum VertexBuffer::convertUsage(Usage usage) {
             break;
     }
     ASSERT(false, "Unknown vertex buffer usage");
+    return 0;
 }
 
 GLenum VertexBuffer::convertBaseType(BufferLayout::Element::Type type) {
@@ -79,6 +80,7 @@ GLenum VertexBuffer::convertBaseType(BufferLayout::Element::Type type) {
             break;
     }
     ASSERT(false, "Unknown vertex buffer element type");
+    return 0;
 }
 
 } // namespace atta::graphics::gl

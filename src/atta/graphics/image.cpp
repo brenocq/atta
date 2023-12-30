@@ -34,6 +34,7 @@ uint32_t Image::getNumChannels(Format format) {
             return 4;
     }
     ASSERT(false, "Could not calculate number of channels. Unknown image format");
+    return 0;
 }
 
 uint32_t Image::getPixelSize(Format format) {
@@ -60,6 +61,7 @@ uint32_t Image::getPixelSize(Format format) {
             return 16;
     }
     ASSERT(false, "Could not calculate pixel size. Unknown image format");
+    return 0;
 }
 
 bool Image::isColorFormat(Format format) { return !isDepthFormat(format) && !isStencilFormat(format); }

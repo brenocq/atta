@@ -390,6 +390,7 @@ VkPrimitiveTopology Pipeline::convert(Primitive topology) {
         case Primitive::TRIANGLE:
             return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     }
+    return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 }
 
 } // namespace atta::graphics::vk

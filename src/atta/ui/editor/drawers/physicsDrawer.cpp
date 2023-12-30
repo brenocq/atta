@@ -26,6 +26,8 @@ void PhysicsDrawer::update() {
     graphics::Drawer::clear<graphics::Drawer::Line>("atta::ui::PhysicsDrawer");
 
     switch (physics::getEngineType()) {
+        case physics::Engine::NONE:
+            break;
         case physics::Engine::BULLET:
             drawBullet();
             break;

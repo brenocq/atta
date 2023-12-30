@@ -40,7 +40,7 @@ void VersionWindow::checkInstalledVersions() {
             unsigned start = full.size() - 1;
             while (start > 0 && full[start] != '/')
                 start--;
-            std::string name = full.substr(start + 1, name.size() - start - 1);
+            std::string name = full.substr(start + 1, full.size() - start - 1);
             if (name.find("atta-") != std::string::npos)
                 _installedVersions.insert(name);
         }
