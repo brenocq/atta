@@ -26,7 +26,7 @@ class Pipeline final : public gfx::Pipeline {
     Pipeline(const gfx::Pipeline::CreateInfo& info);
     ~Pipeline();
 
-    void begin(std::shared_ptr<RenderQueue> renderQueue) override;
+    void begin() override;
     void end() override;
 
     void resize(uint32_t width, uint32_t height) override;

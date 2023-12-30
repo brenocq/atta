@@ -14,6 +14,11 @@ namespace atta::graphics {
 
 class Mesh {
   public:
+    /**
+     * @brief Mesh create info
+     *
+     * @note Index buffer can be empty if indices should not be used while drawing
+     */
     struct CreateInfo {
         VertexBuffer::CreateInfo vertexBufferInfo;
         IndexBuffer::CreateInfo indexBufferInfo;
@@ -25,8 +30,8 @@ class Mesh {
     virtual void draw() = 0;
 
   protected:
-    std::shared_ptr<VertexBuffer> _vertexBuffer;
-    std::shared_ptr<IndexBuffer> _indexBuffer;
+    std::shared_ptr<VertexBuffer> _vertexBuffer; ///< Vertex buffer
+    std::shared_ptr<IndexBuffer> _indexBuffer;   ///< Index buffer (may be nullptr)
 };
 
 } // namespace atta::graphics

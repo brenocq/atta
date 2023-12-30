@@ -7,11 +7,9 @@
 #ifndef ATTA_GRAPHICS_DRAWER_H
 #define ATTA_GRAPHICS_DRAWER_H
 
+#include <atta/graphics/mesh.h>
 #include <atta/utils/math/math.h>
 #include <atta/utils/stringId.h>
-
-// TODO Abstract renderer API
-#include <atta/graphics/apis/openGL/base.h>
 
 namespace atta::graphics {
 
@@ -104,10 +102,8 @@ class Drawer {
     bool _pointsChanged;
     std::vector<Point> _points; // Updated only when get() is called
 
-    gl::OpenGLId _lineVAO;
-    gl::OpenGLId _lineVBO;
-    gl::OpenGLId _pointVAO;
-    gl::OpenGLId _pointVBO;
+    std::shared_ptr<Mesh> _lineBuffer;  ///< Mesh with every two vertices being a line
+    std::shared_ptr<Mesh> _pointBuffer; ///< Mesh with every vertex being a point
 };
 } // namespace atta::graphics
 

@@ -19,7 +19,7 @@ Pipeline::Pipeline(const Pipeline::CreateInfo& info) : gfx::Pipeline(info) {
 
 Pipeline::~Pipeline() {}
 
-void Pipeline::begin(std::shared_ptr<RenderQueue> renderQueue) { _shader->bind(); }
+void Pipeline::begin() { _shader->bind(); }
 
 void Pipeline::end() { _shader->unbind(); }
 

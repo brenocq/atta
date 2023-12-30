@@ -158,31 +158,27 @@ void Drawer::setChanged(bool changed) {
 template <typename T>
 void Drawer::drawImpl() {
     if constexpr (std::is_same<T, Drawer::Line>::value) {
-        glBindVertexArray(_lineVAO);
+        // glBindVertexArray(_lineVAO);
         if (_linesChanged) {
-            // Update _line vector and gpu buffer
+            // TODO Update _line vector and gpu buffer
             getImpl<Drawer::Line>();
-            glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Line) * _currNumberOfLines, _lines.data());
+            // glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
+            // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Line) * _currNumberOfLines, _lines.data());
         }
-        glDrawArrays(GL_LINES, 0, 2 * _currNumberOfLines);
-        glBindVertexArray(0);
+        // glDrawArrays(GL_LINES, 0, 2 * _currNumberOfLines);
+        // glBindVertexArray(0);
     } else if constexpr (std::is_same<T, Drawer::Point>::value) {
-        glBindVertexArray(_pointVAO);
+        // glBindVertexArray(_pointVAO);
         if (_pointsChanged) {
-            // Update _point vector and gpu buffer
+            // TODO Update _point vector and gpu buffer
             getImpl<Drawer::Point>();
-            glBindBuffer(GL_ARRAY_BUFFER, _pointVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point) * _currNumberOfPoints, _points.data());
+            // glBindBuffer(GL_ARRAY_BUFFER, _pointVBO);
+            // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point) * _currNumberOfPoints, _points.data());
         }
-        glDrawArrays(GL_POINTS, 0, _currNumberOfPoints);
-        glBindVertexArray(0);
+        // glDrawArrays(GL_POINTS, 0, _currNumberOfPoints);
+        // glBindVertexArray(0);
     } else
         ASSERT(false, "Drawer draw() to unknown type $0", typeid(T).name());
 }
-
-//---------- Line specific ----------//
-
-//---------- Point specific ----------//
 
 } // namespace atta::graphics

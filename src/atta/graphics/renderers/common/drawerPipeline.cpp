@@ -13,12 +13,8 @@ namespace atta::graphics {
 DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
     //---------- Create line pipeline ----------//
     {
-        // Shader
-        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/line/line.asl");
-
         Pipeline::CreateInfo pipelineInfo{};
-        // Vertex input layout
-        pipelineInfo.shader = shader;
+        pipelineInfo.shader = graphics::create<Shader>("shaders/drawer/line.asl");
         pipelineInfo.renderPass = renderPass;
         pipelineInfo.debugName = StringId("Drawer Line Pipeline");
         _linePipeline = graphics::create<Pipeline>(pipelineInfo);
@@ -26,12 +22,8 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
 
     //---------- Create point pipeline ----------//
     {
-        // Shader
-        std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/point/point.asl");
-
         Pipeline::CreateInfo pipelineInfo{};
-        // Vertex input layout
-        pipelineInfo.shader = shader;
+        pipelineInfo.shader = graphics::create<Shader>("shaders/drawer/point.asl");
         pipelineInfo.renderPass = renderPass;
         pipelineInfo.debugName = StringId("Drawer Point Pipeline");
         _pointPipeline = graphics::create<Pipeline>(pipelineInfo);
@@ -39,25 +31,21 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
 }
 
 void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
-    //_linePipeline->begin();
-    //{
-    //    std::shared_ptr<Shader> shader = _linePipeline->getShader();
-    //    shader->bind();
-    //    shader->setMat4("projection", transpose(camera->getProj()));
-    //    shader->setMat4("view", transpose(camera->getView()));
-    //    Drawer::draw<Drawer::Line>();
-    //}
-    //_linePipeline->end();
+    _linePipeline->begin();
+    {
+        _linePipeline->setMat4("uProjection", camera->getProj());
+        _linePipeline->setMat4("uView", camera->getView());
+        Drawer::draw<Drawer::Line>();
+    }
+    _linePipeline->end();
 
-    //_pointPipeline->begin();
-    //{
-    //    std::shared_ptr<Shader> shader = _pointPipeline->getShader();
-    //    shader->bind();
-    //    shader->setMat4("projection", transpose(camera->getProj()));
-    //    shader->setMat4("view", transpose(camera->getView()));
-    //    Drawer::draw<Drawer::Point>();
-    //}
-    //_pointPipeline->end();
+    _pointPipeline->begin();
+    {
+        _pointPipeline->setMat4("uProjection", camera->getProj());
+        _pointPipeline->setMat4("uView", camera->getView());
+        Drawer::draw<Drawer::Point>();
+    }
+    _pointPipeline->end();
 }
 
 } // namespace atta::graphics

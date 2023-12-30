@@ -8,6 +8,7 @@
 #define ATTA_GRAPHICS_RENDERERS_COMMON_DRAWER_PIPELINE_H
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/pipeline.h>
+#include <atta/graphics/renderQueue.h>
 
 namespace atta::graphics {
 

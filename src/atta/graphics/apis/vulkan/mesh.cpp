@@ -18,7 +18,8 @@ namespace atta::graphics::vk {
 
 Mesh::Mesh(CreateInfo info) : gfx::Mesh(info) {
     _vertexBuffer = gfx::create<gfx::VertexBuffer>(info.vertexBufferInfo);
-    _indexBuffer = gfx::create<gfx::IndexBuffer>(info.indexBufferInfo);
+    if (info.indexBufferInfo.size > 0)
+        _indexBuffer = gfx::create<gfx::IndexBuffer>(info.indexBufferInfo);
 }
 
 Mesh::~Mesh() {}
@@ -28,7 +29,10 @@ void Mesh::draw() {}
 void Mesh::draw(VkCommandBuffer commandBuffer) {
     std::dynamic_pointer_cast<vk::VertexBuffer>(_vertexBuffer)->bind(commandBuffer);
     std::dynamic_pointer_cast<vk::IndexBuffer>(_indexBuffer)->bind(commandBuffer);
-    vkCmdDrawIndexed(commandBuffer, _indexBuffer->getCount(), 1, 0, 0, 0);
+    if (_indexBuffer)
+        vkCmdDrawIndexed(commandBuffer, _indexBuffer->getCount(), 1, 0, 0, 0);
+    else
+        vkCmdDraw(commandBuffer, _vertexBuffer->getCount(), 1, 0, 0);
 }
 
 } // namespace atta::graphics::vk

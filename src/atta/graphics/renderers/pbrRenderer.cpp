@@ -56,7 +56,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
 
     //---------- Common pipelines ----------//
     //_selectedPipeline = std::make_unique<SelectedPipeline>(_geometryRenderPass);
-    //_drawerPipeline = std::make_unique<DrawerPipeline>(_geometryRenderPass);
+    _drawerPipeline = std::make_unique<DrawerPipeline>(_geometryRenderPass);
 
     ////---------- Create background shader ----------//
     //{ _backgroundShader = graphics::create<Shader>("shaders/pbrRenderer/background.asl"); }
@@ -306,7 +306,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
     {
         _geometryRenderPass->begin(_renderQueue);
         {
-            _geometryPipeline->begin(_renderQueue);
+            _geometryPipeline->begin();
             {
                 //---------- PBR shader ----------//
                 _geometryPipeline->setMat4("projection", camera->getProj());
@@ -401,6 +401,9 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                 }
             }
             _geometryPipeline->end();
+
+            if (_renderDrawer)
+                _drawerPipeline->render(camera);
         }
         _geometryRenderPass->end();
     }

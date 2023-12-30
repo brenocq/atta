@@ -26,6 +26,7 @@ class RenderPass {
     virtual void end() = 0;
 
     std::shared_ptr<Framebuffer> getFramebuffer() const { return _framebuffer; }
+    std::shared_ptr<RenderQueue> getRenderQueue() const { return _renderQueue; }
 
   protected:
     std::shared_ptr<Framebuffer> _framebuffer;

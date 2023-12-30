@@ -213,9 +213,7 @@ Pipeline::~Pipeline() {
     _framebuffers.clear();
 }
 
-void Pipeline::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
-    _renderQueue = renderQueue;
-
+void Pipeline::begin() {
     // Bind shader
     _shader->bind();
 
@@ -223,7 +221,7 @@ void Pipeline::begin(std::shared_ptr<gfx::RenderQueue> renderQueue) {
     _framebuffers[0]->bind();
 
     // Bind pipeline
-    VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
+    VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderPass->getRenderQueue())->getCommandBuffer();
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline);
 
     // Configure viewport
@@ -258,9 +256,6 @@ void Pipeline::end() {
 
     // Unbind shader
     _shader->unbind();
-
-    // Release render queue
-    _renderQueue.reset();
 }
 
 void Pipeline::resize(uint32_t width, uint32_t height) {
@@ -272,7 +267,7 @@ void Pipeline::renderMesh(StringId meshSid) {
     std::shared_ptr<vk::Mesh> mesh = std::dynamic_pointer_cast<vk::Mesh>(Manager::getInstance().getMeshes().at(meshSid));
     if (mesh) {
         // Get command buffer
-        VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
+        VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderPass->getRenderQueue())->getCommandBuffer();
 
         // Write push constants
         std::dynamic_pointer_cast<vk::Shader>(_shader)->pushConstants(commandBuffer, _pipelineLayout);
@@ -361,7 +356,7 @@ void Pipeline::destroyImageGroup(std::string name) {
 }
 
 void Pipeline::setImageGroup(const char* name) {
-    if (_renderQueue == nullptr) {
+    if (_renderPass->getRenderQueue() == nullptr) {
         LOG_WARN("gfx::vk::Pipeline", "Can not set image group outside render pass");
         return;
     }
@@ -371,7 +366,7 @@ void Pipeline::setImageGroup(const char* name) {
     }
 
     // Get command buffer
-    VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderQueue)->getCommandBuffer();
+    VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderPass->getRenderQueue())->getCommandBuffer();
 
     // Bind descriptor set
     uint32_t setIdx = 1;

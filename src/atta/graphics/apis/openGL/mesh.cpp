@@ -15,7 +15,8 @@ Mesh::Mesh(CreateInfo info) : gfx::Mesh(info), _id(0) {
     glGenVertexArrays(1, &_id);
     glBindVertexArray(_id);
     _vertexBuffer = gfx::create<gfx::VertexBuffer>(info.vertexBufferInfo);
-    _indexBuffer = gfx::create<gfx::IndexBuffer>(info.indexBufferInfo);
+    if (info.indexBufferInfo.size > 0)
+        _indexBuffer = gfx::create<gfx::IndexBuffer>(info.indexBufferInfo);
     glBindVertexArray(0);
 }
 
@@ -26,7 +27,10 @@ Mesh::~Mesh() {
 
 void Mesh::draw() {
     glBindVertexArray(_id);
-    glDrawElements(GL_TRIANGLES, _indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
+    if (_indexBuffer)
+        glDrawElements(GL_TRIANGLES, _indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
+    else
+        glDrawArrays(GL_TRIANGLES, 0, _vertexBuffer->getCount());
     glBindVertexArray(0);
 }
 

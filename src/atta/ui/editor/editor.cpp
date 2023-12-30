@@ -38,9 +38,9 @@ void Editor::render() {
     _topBar.render();
     // _toolBar.render();
 
-    //// Drawers
-    //_physicsDrawer.update();
-    //_sensorDrawer.update();
+    // Drawers
+    _physicsDrawer.update();
+    _sensorDrawer.update();
 
     // Windows
     _entityWindow.render();

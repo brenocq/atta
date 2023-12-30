@@ -80,7 +80,7 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
     {
         _renderPass->begin(_renderQueue);
         {
-            _geometryPipeline->begin(_renderQueue);
+            _geometryPipeline->begin();
             {
                 std::vector<component::EntityId> entities = component::getNoPrototypeView();
                 _geometryPipeline->setMat4("uProjection", camera->getProj());

@@ -34,7 +34,7 @@ class Pipeline {
     Pipeline(const CreateInfo& info);
     virtual ~Pipeline();
 
-    virtual void begin(std::shared_ptr<RenderQueue> renderQueue) = 0;
+    virtual void begin() = 0;
     virtual void end() = 0;
 
     virtual void resize(uint32_t width, uint32_t height) = 0;
@@ -82,7 +82,6 @@ class Pipeline {
   protected:
     std::shared_ptr<Shader> _shader;
     std::shared_ptr<RenderPass> _renderPass;
-    std::shared_ptr<RenderQueue> _renderQueue;
 
     PrimitiveTopology _primitiveTopology;
 

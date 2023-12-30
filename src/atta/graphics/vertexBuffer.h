@@ -34,6 +34,9 @@ class VertexBuffer {
     uint32_t getSize() const { return _size; };
     BufferLayout getLayout() const { return _layout; }
 
+    /// Get number of vertices stored
+    uint32_t getCount() const;
+
   protected:
     BufferLayout _layout;
     Usage _usage;

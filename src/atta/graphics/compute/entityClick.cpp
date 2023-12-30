@@ -65,7 +65,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
     {
         _renderPass->begin(_renderQueue);
         {
-            _geometryPipeline->begin(_renderQueue);
+            _geometryPipeline->begin();
             {
                 // Render entities with eid
                 std::vector<component::EntityId> entities = component::getNoPrototypeView();

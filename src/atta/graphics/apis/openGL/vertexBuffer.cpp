@@ -20,11 +20,10 @@ VertexBuffer::VertexBuffer(const VertexBuffer::CreateInfo& info) : gfx::VertexBu
         uint32_t componentCount = BufferLayout::Element::componentCountFromType(element.type);
 
         // Define attribute format
-        if (openGLType == GL_INT) {
+        if (openGLType == GL_INT)
             glVertexAttribIPointer(i, componentCount, openGLType, _layout.getStride(), reinterpret_cast<void*>(element.offset));
-        } else {
+        else
             glVertexAttribPointer(i, componentCount, openGLType, GL_FALSE, _layout.getStride(), reinterpret_cast<void*>(element.offset));
-        }
 
         // Enable attribute
         glEnableVertexAttribArray(i);
