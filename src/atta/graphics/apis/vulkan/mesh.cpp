@@ -28,10 +28,10 @@ void Mesh::draw() {}
 
 void Mesh::draw(VkCommandBuffer commandBuffer) {
     std::dynamic_pointer_cast<vk::VertexBuffer>(_vertexBuffer)->bind(commandBuffer);
-    std::dynamic_pointer_cast<vk::IndexBuffer>(_indexBuffer)->bind(commandBuffer);
-    if (_indexBuffer)
+    if (_indexBuffer) {
+        std::dynamic_pointer_cast<vk::IndexBuffer>(_indexBuffer)->bind(commandBuffer);
         vkCmdDrawIndexed(commandBuffer, _indexBuffer->getCount(), 1, 0, 0, 0);
-    else
+    } else
         vkCmdDraw(commandBuffer, _vertexBuffer->getCount(), 1, 0, 0);
 }
 

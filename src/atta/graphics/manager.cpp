@@ -394,13 +394,13 @@ void Manager::createMesh(StringId sid) {
     for (resource::Mesh::VertexElement element : mesh->getVertexLayout()) {
         BufferLayout::Element::Type type;
         switch (element.type) {
-            case resource::Mesh::Type::VEC2:
+            case resource::Mesh::VertexElement::VEC2:
                 type = BufferLayout::Element::Type::VEC2;
                 break;
-            case resource::Mesh::Type::VEC3:
+            case resource::Mesh::VertexElement::VEC3:
                 type = BufferLayout::Element::Type::VEC3;
                 break;
-            case resource::Mesh::Type::VEC4:
+            case resource::Mesh::VertexElement::VEC4:
                 type = BufferLayout::Element::Type::VEC4;
                 break;
         }
@@ -408,8 +408,10 @@ void Manager::createMesh(StringId sid) {
     }
 
     IndexBuffer::CreateInfo indexInfo{};
-    indexInfo.data = (uint8_t*)mesh->getIndices().data();
-    indexInfo.size = mesh->getIndices().size() * sizeof(res::Mesh::Index);
+    if (!mesh->getIndices().empty()) {
+        indexInfo.data = (uint8_t*)mesh->getIndices().data();
+        indexInfo.size = mesh->getIndices().size() * sizeof(res::Mesh::Index);
+    }
 
     Mesh::CreateInfo info{};
     info.vertexBufferInfo = vertexInfo;

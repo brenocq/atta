@@ -12,14 +12,20 @@
 
 namespace atta::resource {
 
-Mesh::Mesh(const fs::path& filename) : Resource(filename), _numVertices(0) { load(); }
+Mesh::Mesh(const fs::path& filename) : Resource(filename), _assimpVertexIdx(0) { load(); }
+
+Mesh::Mesh(const fs::path& filename, const CreateInfo& info) : Resource(filename) {
+    _vertices = info.vertices;
+    _vertexLayout = info.vertexLayout;
+    _indices = info.indices;
+}
 
 //---------- Assimp mesh loading ----------//
 void Mesh::load() {
     _vertexLayout.resize(3);
-    _vertexLayout[0] = {Type::VEC3, "iPosition"};
-    _vertexLayout[1] = {Type::VEC3, "iNormal"};
-    _vertexLayout[2] = {Type::VEC2, "iUV"};
+    _vertexLayout[0] = {VertexElement::VEC3, "iPosition"};
+    _vertexLayout[1] = {VertexElement::VEC3, "iNormal"};
+    _vertexLayout[2] = {VertexElement::VEC2, "iUV"};
 
     fs::path absolutePath = file::solveResourcePath(_filename);
 
@@ -57,7 +63,7 @@ struct AssimpVertex {
 };
 
 void Mesh::processMesh(aiMesh* mesh, const aiScene* scene) {
-    unsigned startIndex = _numVertices;
+    unsigned startIndex = _assimpVertexIdx;
     for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
         AssimpVertex vertex;
         // Process vertex positions, normals and texture coordinates
@@ -74,7 +80,7 @@ void Mesh::processMesh(aiMesh* mesh, const aiScene* scene) {
         uint8_t* data = (uint8_t*)&vertex;
         for (size_t i = 0; i < sizeof(AssimpVertex); i++)
             _vertices.push_back(data[i]);
-        _numVertices++;
+        _assimpVertexIdx++;
     }
     // Process indices
     for (uint32_t i = 0; i < mesh->mNumFaces; i++) {

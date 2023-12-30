@@ -93,9 +93,6 @@ class Drawer {
     unsigned _currNumberOfPoints; // Always have the right number of points, even if _points still need to be updated
     bool _pointsChanged;
     std::vector<Point> _points; // Updated only when get() is called
-
-    std::shared_ptr<Mesh> _lineBuffer;  ///< Mesh with every two vertices being a line
-    std::shared_ptr<Mesh> _pointBuffer; ///< Mesh with every vertex being a point
 };
 } // namespace atta::graphics
 

@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/drawer.h>
-#include <atta/graphics/interface.h>
+#include <atta/resource/interface.h>
 
 namespace atta::graphics {
 
@@ -16,22 +16,24 @@ Drawer::Drawer()
     _points.resize(_maxNumberOfPoints);
     // Line buffer
     {
-        Mesh::CreateInfo info{};
-        info.vertexBufferInfo.data = (uint8_t*)_lines.data();
-        info.vertexBufferInfo.size = _lines.size() * sizeof(Line);
-        info.vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC3, "iPos");
-        info.vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC4, "iColor");
-        _lineBuffer = gfx::create<gfx::Mesh>(info);
+        res::Mesh::CreateInfo info{};
+        uint8_t* data = (uint8_t*)_lines.data();
+        size_t size = _lines.size() * sizeof(Line);
+        info.vertices = std::vector<uint8_t>(data, data + size);
+        info.vertexLayout.push_back({resource::Mesh::VertexElement::VEC3, "iPos"});
+        info.vertexLayout.push_back({resource::Mesh::VertexElement::VEC4, "iColor"});
+        res::create<res::Mesh>("atta::gfx::Drawer::lines", info);
     }
 
     // Point buffer
     {
-        Mesh::CreateInfo info{};
-        info.vertexBufferInfo.data = (uint8_t*)_points.data();
-        info.vertexBufferInfo.size = _points.size() * sizeof(Point);
-        info.vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC3, "iPos");
-        info.vertexBufferInfo.layout.push(BufferLayout::Element::Type::VEC4, "iColor");
-        _pointBuffer = gfx::create<gfx::Mesh>(info);
+        res::Mesh::CreateInfo info{};
+        uint8_t* data = (uint8_t*)_points.data();
+        size_t size = _points.size() * sizeof(Point);
+        info.vertices = std::vector<uint8_t>(data, data + size);
+        info.vertexLayout.push_back({resource::Mesh::VertexElement::VEC3, "iPos"});
+        info.vertexLayout.push_back({resource::Mesh::VertexElement::VEC4, "iColor"});
+        res::create<res::Mesh>("atta::gfx::Drawer::points", info);
     }
 }
 
