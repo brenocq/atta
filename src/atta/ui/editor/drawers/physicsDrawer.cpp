@@ -10,6 +10,7 @@
 #include <atta/component/components/boxCollider2D.h>
 #include <atta/component/components/circleCollider2D.h>
 #include <atta/component/components/cylinderCollider.h>
+#include <atta/component/components/polygonCollider2D.h>
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/rigidBody.h>
 #include <atta/component/components/sphereCollider.h>
@@ -244,6 +245,15 @@ void PhysicsDrawer::drawBox2D() {
             auto circle = component::getComponent<component::CircleCollider2D>(entity);
             if (circle)
                 drawCircle(pos + vec3(circle->offset, 0.0f), ori, scale * vec3(vec2(circle->radius), 1), color);
+
+            //----- Polygon collider 2D -----//
+            auto polygon = component::getComponent<component::PolygonCollider2D>(entity);
+            if (polygon) {
+                std::vector<vec3> points;
+                for (vec2 p : polygon->points)
+                    points.push_back(vec3(p, 0.0f));
+                drawPolygon(points, pos + vec3(polygon->offset, 0.0f), ori, scale, color);
+            }
         }
     }
 
@@ -352,6 +362,16 @@ void PhysicsDrawer::drawCylinder(vec3 position, quat orientation, vec3 scale, ve
         for (int i : std::vector<int>{-1, 1})
             graphics::Drawer::add(graphics::Drawer::Line(bottom + axis * scale.x * 0.5 * i, top + axis * scale.x * 0.5 * i, color, color),
                                   "atta::ui::PhysicsDrawer");
+}
+
+void PhysicsDrawer::drawPolygon(std::vector<vec3> points, vec3 position, quat orientation, vec3 scale, vec4 color) {
+    mat4 mat;
+    mat.setPosOriScale(position, orientation, scale);
+    for (auto& p : points)
+        p = vec3(mat * vec4(p, 1));
+
+    for (unsigned i = 0; i < points.size() - 1; i++)
+        graphics::Drawer::add(graphics::Drawer::Line(points[i], points[i + 1], color, color), "atta::ui::PhysicsDrawer");
 }
 
 } // namespace atta::ui
