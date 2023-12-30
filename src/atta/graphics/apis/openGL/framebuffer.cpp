@@ -87,24 +87,25 @@ void Framebuffer::bind(bool clear) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
 
-        if (_attachments[0].format == Image::Format::RGB || _attachments[0].format == Image::Format::RGBA)
+        if (_attachments[0].format == Image::Format::RGB || _attachments[0].format == Image::Format::RGBA) {
             glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
-        else if (_attachments[0].format == Image::Format::RED32I) {
-            // XXX Not working
-            // GLint clearColor[4] = {1, 1, 1, 1};
-            // glClearBufferiv(GL_COLOR, GL_COLOR_ATTACHMENT0, clearColor);
+            glClear(GL_COLOR_BUFFER_BIT);
+        } else if (_attachments[0].format == Image::Format::RED32I) {
+            GLint clearColor[4];
+            for (size_t i = 0; i < 4; i++)
+                clearColor[i] = (GLint)std::round(_clearColor[i]);
+            glClearBufferiv(GL_COLOR, GL_COLOR_ATTACHMENT0, clearColor);
         }
 
         if (_depthAttachmentIndex != -1 && _stencilAttachmentIndex != -1) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             glEnable(GL_DEPTH_TEST);
             glEnable(GL_STENCIL_TEST);
             glStencilMask(0x00);
         } else if (_depthAttachmentIndex != -1) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_DEPTH_BUFFER_BIT);
             glEnable(GL_DEPTH_TEST);
-        } else
-            glClear(GL_COLOR_BUFFER_BIT);
+        }
     }
 }
 

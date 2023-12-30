@@ -26,7 +26,7 @@ EntityClick::EntityClick() : _width(500), _height(500) {
     framebufferInfo.attachments.push_back({Image::Format::DEPTH32F});
     framebufferInfo.width = _width;
     framebufferInfo.height = _height;
-    framebufferInfo.clearColor = {-1, -1, -1, -1};
+    framebufferInfo.clearColor = {0, 0, 0, 0};
     framebufferInfo.debugName = StringId("EntityClick Framebuffer");
     std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
@@ -81,7 +81,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
                         _geometryPipeline->setMat4("model", model);
 
                         // component::EntityId
-                        _geometryPipeline->setInt("entityId", entity);
+                        _geometryPipeline->setInt("entityId", int(entity) + 1);
                         maxEid = std::max(maxEid, entity);
 
                         // Draw mesh
@@ -99,6 +99,7 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
     std::vector<uint8_t> pixel = _renderPass->getFramebuffer()->getImage(0)->read(pos, vec2i(1, 1));
     if (pixel.size() == sizeof(int)) {
         int* eid = (int*)pixel.data();
+        *eid -= 1;
         if (*eid <= maxEid && *eid >= 0)
             return component::EntityId(*eid);
     }
