@@ -48,7 +48,7 @@ void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
 
         size_t numLines = Drawer::getCurrNumber<Drawer::Line>();
         if (numLines)
-            _linePipeline->renderMesh(Drawer::lineMeshName, numLines);
+            _linePipeline->renderMesh(Drawer::lineMeshName, numLines * 2);
     }
     _linePipeline->end();
 
