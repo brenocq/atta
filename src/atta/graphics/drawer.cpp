@@ -85,12 +85,12 @@ void Drawer::updateImpl() {
             if constexpr (std::is_same<T, Drawer::Line>::value) {
                 res::Mesh* lineMesh = res::get<res::Mesh>(lineMeshName);
                 uint8_t* data = (uint8_t*)_lines.data();
-                size_t size = _currNumberOfLines * sizeof(Line);
+                size_t size = _lines.size() * sizeof(Line);
                 lineMesh->updateVertices(std::vector<uint8_t>(data, data + size));
             } else if constexpr (std::is_same<T, Drawer::Point>::value) {
                 res::Mesh* pointMesh = res::get<res::Mesh>(pointMeshName);
                 uint8_t* data = (uint8_t*)_points.data();
-                size_t size = _currNumberOfPoints * sizeof(Point);
+                size_t size = _points.size() * sizeof(Point);
                 pointMesh->updateVertices(std::vector<uint8_t>(data, data + size));
             }
 

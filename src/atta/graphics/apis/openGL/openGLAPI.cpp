@@ -68,9 +68,6 @@ void OpenGLAPI::startUp() {
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_PROGRAM_POINT_SIZE);
-
-    // Quad shader
-    _quadShader = std::make_shared<gl::Shader>("shaders/quad/shader.asl");
 }
 
 void OpenGLAPI::shutDown() {}
@@ -94,15 +91,15 @@ void* OpenGLAPI::getImGuiImage(StringId sid) const {
 }
 
 void OpenGLAPI::renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) {
-    glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
+    // glViewport(200, 200, framebuffer->getWidth(), framebuffer->getHeight());
 
-    LOG_DEBUG("gfx::OpenGLAPI", "Framebuffer from framebufferToScreen");
-    std::shared_ptr<gl::Framebuffer> openGLFramebuffer = std::static_pointer_cast<gl::Framebuffer>(framebuffer);
-    std::shared_ptr<gl::Image> openGLImage = std::static_pointer_cast<gl::Image>(openGLFramebuffer->getImage(0));
+    // LOG_DEBUG("gfx::OpenGLAPI", "Framebuffer from framebufferToScreen");
+    // std::shared_ptr<gl::Framebuffer> openGLFramebuffer = std::static_pointer_cast<gl::Framebuffer>(framebuffer);
+    // std::shared_ptr<gl::Image> openGLImage = std::static_pointer_cast<gl::Image>(openGLFramebuffer->getImage(0));
 
-    _quadShader->bind();
-    glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_2D, openGLImage->getHandle());
+    //_quadShader->bind();
+    // glDisable(GL_DEPTH_TEST);
+    // glBindTexture(GL_TEXTURE_2D, openGLImage->getHandle());
     // renderQuad();
 }
 

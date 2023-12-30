@@ -34,18 +34,6 @@ class OpenGLAPI final : public GraphicsAPI {
     void generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) override;
 
     void* getImGuiImage(StringId sid) const override;
-
-  private:
-    std::unordered_map<StringHash, gl::OpenGLId> _openGLCubemaps;
-
-    std::shared_ptr<gl::Shader> _quadShader;
-
-    gl::OpenGLId _quadVBO;
-    gl::OpenGLId _quadVAO;
-    gl::OpenGLId _quad3VBO;
-    gl::OpenGLId _quad3VAO;
-    gl::OpenGLId _cubeVBO;
-    gl::OpenGLId _cubeVAO;
 };
 
 } // namespace atta::graphics

@@ -68,6 +68,10 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
         return imageGroup;
     });
 
+    // Update drawer data
+    if (_renderDrawer)
+        _drawerPipeline->update();
+
     // Render
     _renderQueue->begin();
     {
@@ -106,6 +110,9 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                 }
             }
             _geometryPipeline->end();
+
+            if (_renderDrawer)
+                _drawerPipeline->render(camera);
         }
         _renderPass->end();
     }
@@ -113,8 +120,6 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
 
     //// if (_renderSelected)
     ////     _selectedPipeline->render(camera);
-    //// if (_renderDrawer)
-    ////     _drawerPipeline->render(camera);
 }
 
 void FastRenderer::resize(uint32_t width, uint32_t height) {

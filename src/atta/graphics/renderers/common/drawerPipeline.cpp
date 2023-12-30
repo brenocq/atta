@@ -32,13 +32,7 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
     }
 }
 
-void DrawerPipeline::update() {
-    Drawer::clear();
-    Drawer::add<Drawer::Line>(Drawer::Line(vec3(0, 0, 0), vec3(1, 1, 1), vec4(1, 0, 0, 1), vec4(0, 1, 0, 1)));
-    Drawer::add<Drawer::Point>(Drawer::Point(vec3(0, 0, 0), vec4(0, 1, 0, 1)));
-    Drawer::add<Drawer::Point>(Drawer::Point(vec3(1, 1, 1), vec4(1, 0, 0, 1)));
-    Drawer::update();
-}
+void DrawerPipeline::update() { Drawer::update(); }
 
 void DrawerPipeline::render(std::shared_ptr<Camera> camera) {
     _linePipeline->begin();
