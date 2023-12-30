@@ -52,7 +52,7 @@ class Pipeline final : public gfx::Pipeline {
   private:
     VkPipeline _pipeline;
     std::shared_ptr<Device> _device;
-    std::vector<std::shared_ptr<Framebuffer>> _framebuffers;
+    std::shared_ptr<Framebuffer> _framebuffer;
 
     std::shared_ptr<PipelineLayout> _pipelineLayout;
     std::shared_ptr<DescriptorPool> _descriptorPool;

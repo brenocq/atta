@@ -159,9 +159,6 @@ void* Image::getImGuiImage() {
     // Create ImGui descriptor set if necessary
     if (_imGuiDescriptorSet == VK_NULL_HANDLE)
         _imGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(_sampler, _imageView, _layout);
-
-    // ImGui will transition image layout
-    _layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     return static_cast<void*>(_imGuiDescriptorSet);
 }
 
@@ -191,6 +188,8 @@ Image::Format Image::supportedFormat(Image::Format format) {
 
     return format;
 }
+
+void Image::setLayout(VkImageLayout layout) { _layout = layout; }
 
 Image::BaseType Image::getBaseType(Format format) {
     switch (format) {
@@ -390,10 +389,11 @@ void Image::allocMemory() {
 }
 
 void Image::destroy() {
+    vkDeviceWaitIdle(common::getDevice()->getHandle());
     if (_imGuiDescriptorSet != VK_NULL_HANDLE) {
-        // Make sure ImGui is not using image before removing it
-        vkDeviceWaitIdle(common::getDevice()->getHandle());
-        ImGui_ImplVulkan_RemoveTexture(_imGuiDescriptorSet);
+        // XXX We would need to make sure this happens UI module is shut down, for now it is OK to not remove the texture because it is freed when the
+        // UI descroptor pool is freed. This will fail if a lot of images are created and destroyed while the UI is running
+        // ImGui_ImplVulkan_RemoveTexture(_imGuiDescriptorSet);
     }
     if (_imageView != VK_NULL_HANDLE)
         vkDestroyImageView(_device->getHandle(), _imageView, nullptr);

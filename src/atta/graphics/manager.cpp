@@ -202,7 +202,7 @@ component::EntityId Manager::viewportEntityClickImpl(std::shared_ptr<Viewport> v
     return _computeEntityClick->click(viewport, pos);
 }
 
-void* Manager::getImGuiImageImpl(StringId sid) const { return _graphicsAPI->getImGuiImage(sid); }
+void* Manager::getImGuiImageImpl(StringId sid) { return _images[sid]->getImGuiImage(); }
 
 gfx::Image::Format Manager::convertFormat(res::Image::Format format) const {
     switch (format) {

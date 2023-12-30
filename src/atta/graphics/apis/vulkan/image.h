@@ -52,6 +52,14 @@ class Image final : public gfx::Image {
     Image::Format getSupportedFormat() const;
 
     /**
+     * @brief Set image layout
+     *
+     * Can be used to update the image with its expected layout if it was changed by external operations. For example, after rendering if this image
+     * was used as an attachment
+     */
+    void setLayout(VkImageLayout layout);
+
+    /**
      * @brief Convert format to supported vulkan format
      *
      * The GPU may not support all formats. For example, some GPUs may not support RGB, only RGBA. If the format is not supported, a close format will

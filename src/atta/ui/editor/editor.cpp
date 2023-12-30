@@ -36,7 +36,7 @@ void Editor::render() {
 
     // Top interface
     _topBar.render();
-    // _toolBar.render();
+    _toolBar.render();
 
     // Drawers
     _physicsDrawer.update();

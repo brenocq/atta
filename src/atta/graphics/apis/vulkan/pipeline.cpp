@@ -15,8 +15,8 @@ namespace atta::graphics::vk {
 
 Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info), _device(common::getDevice()) {
     // Create framebuffer
-    _framebuffers.push_back(std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer()));
-    _framebuffers[0]->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
+    _framebuffer = std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer());
+    _framebuffer->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
 
     // Vertex input
     BufferLayout layout = _shader->getVertexBufferLayout();
@@ -70,7 +70,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     depthStencil.depthTestEnable = VK_FALSE;
     depthStencil.depthWriteEnable = VK_FALSE;
     depthStencil.stencilTestEnable = VK_FALSE;
-    if (_framebuffers[0]->hasDepthAttachment()) {
+    if (_framebuffer->hasDepthAttachment()) {
         depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         depthStencil.depthTestEnable = VK_TRUE;
         depthStencil.depthWriteEnable = VK_TRUE;
@@ -79,7 +79,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
         depthStencil.minDepthBounds = 0.0f;
         depthStencil.maxDepthBounds = 1.0f;
     }
-    if (_framebuffers[0]->hasStencilAttachment()) {
+    if (_framebuffer->hasStencilAttachment()) {
         depthStencil.stencilTestEnable = VK_FALSE;
         depthStencil.front = {};
         depthStencil.back = {};
@@ -210,7 +210,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 Pipeline::~Pipeline() {
     if (_pipeline != VK_NULL_HANDLE)
         vkDestroyPipeline(_device->getHandle(), _pipeline, nullptr);
-    _framebuffers.clear();
+    _framebuffer.reset();
 }
 
 void Pipeline::begin() {
@@ -218,7 +218,7 @@ void Pipeline::begin() {
     _shader->bind();
 
     // Bind framebuffer
-    _framebuffers[0]->bind();
+    _framebuffer->bind();
 
     // Bind pipeline
     VkCommandBuffer commandBuffer = std::dynamic_pointer_cast<vk::RenderQueue>(_renderPass->getRenderQueue())->getCommandBuffer();
@@ -228,8 +228,8 @@ void Pipeline::begin() {
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = _framebuffers[0]->getWidth();
-    viewport.height = _framebuffers[0]->getHeight();
+    viewport.width = _framebuffer->getWidth();
+    viewport.height = _framebuffer->getHeight();
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
@@ -254,13 +254,16 @@ void Pipeline::end() {
     // Write data to uniform buffer
     std::dynamic_pointer_cast<vk::Shader>(_shader)->pushUniformBuffer();
 
+    // Unbind framebuffer
+    _framebuffer->unbind();
+
     // Unbind shader
     _shader->unbind();
 }
 
 void Pipeline::resize(uint32_t width, uint32_t height) {
-    _framebuffers[0]->resize(width, height);
-    _framebuffers[0]->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
+    _framebuffer->resize(width, height);
+    _framebuffer->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
 }
 
 void Pipeline::renderMesh(StringId meshSid, size_t numVertices) {
@@ -282,7 +285,7 @@ void Pipeline::renderQuad3() { renderMesh("atta::gfx::quad3"); }
 void Pipeline::renderCube() { renderMesh("atta::gfx::cube"); }
 
 void* Pipeline::getImGuiTexture() const {
-    return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_framebuffers[0]->getImage(0))->getImGuiImage());
+    return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_framebuffer->getImage(0))->getImGuiImage());
 }
 
 void Pipeline::createImageGroup(ImageGroupType type, std::string name) {

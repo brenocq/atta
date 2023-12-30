@@ -11,8 +11,8 @@
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/interface.h>
 #include <atta/graphics/interface.h>
-#include <atta/ui/editor/toolBar/toolBar.h>
 #include <atta/ui/editor/components/button.h>
+#include <atta/ui/editor/toolBar/toolBar.h>
 #include <atta/utils/config.h>
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -94,8 +94,7 @@ void ToolBar::render() {
             // Real time interval
             const float rtInt = 0.1f;
 
-            if(firstTime)
-            {
+            if (firstTime) {
                 firstTime = false;
 
                 // Initialize speed slider with correct value
@@ -108,13 +107,12 @@ void ToolBar::render() {
                 else if (desiredStepSpeed == 0.0f)
                     speed = 2.0f;
                 else if (desiredStepSpeed < 1.0f) {
-                    if(Config::getDt() != 1)
-                    {
-                        float k = (desiredStepSpeed-Config::getDt())/(1-Config::getDt());
-                        speed = log10(9*k+1)-rtInt;
+                    if (Config::getDt() != 1) {
+                        float k = (desiredStepSpeed - Config::getDt()) / (1 - Config::getDt());
+                        speed = log10(9 * k + 1) - rtInt;
                     }
                 } else
-                    speed = log10(desiredStepSpeed)/2+rtInt+1;
+                    speed = log10(desiredStepSpeed) / 2 + rtInt + 1;
             }
 
             // Slider text

@@ -80,7 +80,7 @@ class Manager final {
     void removeViewportImpl(std::shared_ptr<Viewport> viewport);
     void createDefaultViewportsImpl();
     component::EntityId viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos);
-    void* getImGuiImageImpl(StringId sid) const;
+    void* getImGuiImageImpl(StringId sid);
 
     gfx::Image::Format convertFormat(res::Image::Format format) const;
 

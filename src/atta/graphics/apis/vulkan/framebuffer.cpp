@@ -23,7 +23,10 @@ void Framebuffer::bind(bool clear) {
         LOG_WARN("gfx::vk::Framebuffer", "Trying to bind framebuffer [w]$0[] that was never created", _debugName);
     }
 }
-void Framebuffer::unbind() {}
+void Framebuffer::unbind() {
+    for (size_t i = 0; i < _images.size(); i++)
+        std::dynamic_pointer_cast<vk::Image>(_images[i])->setLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+}
 
 void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     _width = width;
