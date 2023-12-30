@@ -27,7 +27,8 @@ class Manager final {
     friend std::shared_ptr<Project> getProject();
     friend fs::path solveResourcePath(fs::path relativePath, bool mustExist);
     friend std::vector<fs::path> getResourcePaths();
-    friend std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
+    friend fs::path getBuildPath();
+    friend std::vector<fs::path> getDirectoryFilesRecursive(const fs::path& directory);
     friend fs::path getDefaultProjectFolder();
     friend void update();
 
@@ -44,7 +45,8 @@ class Manager final {
 
     fs::path solveResourcePathImpl(fs::path relativePath, bool mustExist);
     std::vector<fs::path> getResourcePathsImpl() const;
-    std::vector<fs::path> getDirectoryFilesRecursiveImpl(fs::path directory);
+    fs::path getBuildPathImpl() const;
+    std::vector<fs::path> getDirectoryFilesRecursiveImpl(const fs::path& directory);
 
     // Handle events
     void onSimulationStateChange(event::Event& event);

@@ -69,8 +69,9 @@ void Manager::createDefaultImpl() {
     cube.add<Name>()->set("Cube");
     cube.add<Mesh>()->set("meshes/cube.obj");
 
-    resource::Material* rmt = resource::create<resource::Material>("Material", resource::Material::CreateInfo{});
-    rmt->color = {0.5, 0.5, 0.5};
+    resource::Material::CreateInfo mInfo{};
+    mInfo.color = {0.5, 0.5, 0.5};
+    resource::Material* rmt = resource::create<resource::Material>("Material", mInfo);
     cube.add<Material>()->set(rmt);
 
     // Light entity

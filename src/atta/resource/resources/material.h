@@ -13,21 +13,20 @@
 
 namespace atta::resource {
 
+class Manager;
 class Material : public Resource, public memory::AllocatedObject<Material, SID("ResourceAllocator")>, public file::Serializable {
   public:
-    static constexpr StringHash emptyImage = "emptyStringId"_sid;
-
     struct CreateInfo {
         vec3f color = vec3(1.0f, 0.0f, 1.0f);
         float metallic = 0.0f;
         float roughness = 0.5f;
         float ao = 1.0f;
 
-        StringId colorImage = emptyImage;
-        StringId metallicImage = emptyImage;
-        StringId roughnessImage = emptyImage;
-        StringId aoImage = emptyImage;
-        StringId normalImage = emptyImage;
+        StringId colorImage = {};
+        StringId metallicImage = {};
+        StringId roughnessImage = {};
+        StringId aoImage = {};
+        StringId normalImage = {};
     };
 
     Material();
@@ -40,31 +39,52 @@ class Material : public Resource, public memory::AllocatedObject<Material, SID("
     bool aoIsImage() const;
     bool hasNormalImage() const;
 
+    vec3f getColor() const;
+    StringId getColorImage() const;
+    float getMetallic() const;
+    StringId getMetallicImage() const;
+    float getRoughness() const;
+    StringId getRoughnessImage() const;
+    float getAo() const;
+    StringId getAoImage() const;
+    StringId getNormalImage() const;
+
     void setColor(vec3f value);
-    void setColor(StringId texture);
+    void setColorImage(StringId texture);
     void setMetallic(float value);
-    void setMetallic(StringId texture);
+    void setMetallicImage(StringId texture);
     void setRoughness(float value);
-    void setRoughness(StringId texture);
+    void setRoughnessImage(StringId texture);
     void setAo(float value);
-    void setAo(StringId texture);
-    void setNormal(StringId texture);
+    void setAoImage(StringId texture);
+    void setNormalImage(StringId texture);
 
     // Serializable
     void serialize(std::ostream& os) override;
     void deserialize(std::istream& is) override;
     unsigned getSerializedSize();
 
-    vec3f color;     ///< Material color
-    float metallic;  ///< Metallic coefficient. 0->dielectric, 1->metallic
-    float roughness; ///< Roughness coefficient. 0->very smooth, 1->very rough
-    float ao;        ///< Ambient occlusion coefficient. 0->totally occluded, 1->not occluded
+  private:
+    /**
+     * @brief Check if material was updated
+     *
+     * This method should only be called by the resource manager, it will be used to trigger material update events
+     */
+    bool wasUpdated();
+    friend Manager;
 
-    StringId colorImage;     ///< Override with texture
-    StringId metallicImage;  ///< Override Material::metallic with texture
-    StringId roughnessImage; ///< Override Material::roughness with texture
-    StringId aoImage;        ///< Override Material::ao with texture
-    StringId normalImage;    ///< Material normal map
+    vec3f _color;     ///< Material color
+    float _metallic;  ///< Metallic coefficient. 0->dielectric, 1->metallic
+    float _roughness; ///< Roughness coefficient. 0->very smooth, 1->very rough
+    float _ao;        ///< Ambient occlusion coefficient. 0->totally occluded, 1->not occluded
+
+    StringId _colorImage;     ///< Override with texture
+    StringId _metallicImage;  ///< Override Material::metallic with texture
+    StringId _roughnessImage; ///< Override Material::roughness with texture
+    StringId _aoImage;        ///< Override Material::ao with texture
+    StringId _normalImage;    ///< Material normal map
+
+    bool _updated; ///< Keep track if material was updated to trigger events
 };
 
 } // namespace atta::resource

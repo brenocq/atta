@@ -14,17 +14,24 @@ class Manager final {
     static Manager& getInstance();
 
     template <typename E>
-    friend void subscribe(Callback&& callback);
+    friend void subscribe(void* source, Callback&& callback);
+    template <typename E>
+    friend void unsubscribe(void* source, Callback&& callback);
     friend void publish(Event& event);
     friend void clear();
 
   private:
-    void subscribeImpl(Event::Type type, Callback&& callback);
+    void subscribeImpl(Event::Type type, void* source, Callback&& callback);
+    void unsubscribeImpl(Event::Type type, void* source, Callback&& callback);
 
     void publishImpl(Event& event) const;
     void clearImpl();
 
-    std::unordered_map<Event::Type, std::vector<Callback>> _observers;
+    struct Observer {
+        void* source;
+        Callback callback;
+    };
+    std::unordered_map<Event::Type, std::vector<Observer>> _observers;
 };
 
 } // namespace atta::event

@@ -16,7 +16,7 @@ jobs:
         }
 
     steps:
-      - uses: mymindstorm/setup-emsdk@v9
+      - uses: mymindstorm/setup-emsdk@v13
         
       - name: Checkout atta
         uses: actions/checkout@v2

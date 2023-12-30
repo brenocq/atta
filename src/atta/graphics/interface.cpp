@@ -15,9 +15,10 @@ void update() {
     Manager::getInstance().updateImpl();
 }
 
-void pushLayer(Layer* layer) { Manager::getInstance().pushLayerImpl(layer); }
+std::shared_ptr<GraphicsAPI> getGraphicsAPI() { return Manager::getInstance().getGraphicsAPIImpl(); };
+std::shared_ptr<Window> getWindow() { return Manager::getInstance().getWindowImpl(); };
 
-std::shared_ptr<RendererAPI> getRendererAPI() { return Manager::getInstance().getRendererAPIImpl(); };
+void setGraphicsAPI(GraphicsAPI::Type type) { Manager::getInstance().setGraphicsAPIImpl(type); }
 
 //----- Config -----//
 float getGraphicsFPS() { return Manager::getInstance()._graphicsFPS; }
@@ -26,6 +27,11 @@ float getViewportFPS() { return Manager::getInstance()._viewportFPS; }
 void setViewportFPS(float viewportFPS) { Manager::getInstance()._viewportFPS = viewportFPS; }
 bool getViewportRendering() { return Manager::getInstance()._viewportRendering; }
 void setViewportRendering(bool viewportRendering) { Manager::getInstance()._viewportRendering = viewportRendering; }
+
+//----- UI -----//
+void setUiRenderFunc(std::function<void()> uiRenderFunc) { Manager::getInstance()._uiRenderFunc = uiRenderFunc; }
+void setUiShutDownFunc(std::function<void()> uiShutDownFunc) { Manager::getInstance()._uiShutDownFunc = uiShutDownFunc; }
+void setUiStartUpFunc(std::function<void()> uiStartUpFunc) { Manager::getInstance()._uiStartUpFunc = uiStartUpFunc; }
 
 //----- Viewport -----//
 std::vector<std::shared_ptr<Viewport>> getViewports() { return Manager::getInstance().getViewportsImpl(); }

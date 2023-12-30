@@ -35,10 +35,13 @@ void Manager::destroyImpl(const fs::path& filename) {
         _resourceMap.erase(sid.getId());
         // Remove sid from vector
         std::vector<StringId> resources;
-        for(StringId rsid : _resourcesByType[typeid(R).hash_code()])
-            if(rsid != sid)
+        for (StringId rsid : _resourcesByType[typeid(R).hash_code()])
+            if (rsid != sid)
                 resources.push_back(rsid);
         _resourcesByType[typeid(R).hash_code()] = resources;
+
+        // Create resource destroy event
+        createDestroyEvent<R>(sid);
     }
 }
 
@@ -65,11 +68,20 @@ template <>
 void Manager::createLoadEvent<Image>(Image* resource, StringId sid);
 template <>
 void Manager::createLoadEvent<Material>(Material* resource, StringId sid);
+template <typename R>
+void Manager::createDestroyEvent(StringId sid) {
+    LOG_ERROR("resource::Manager", "Could create destroy event for resource [*w]$0[] ([w]$1[]). It is a resource?", sid, typeid(R).name());
+}
+template <>
+void Manager::createDestroyEvent<Mesh>(StringId sid);
+template <>
+void Manager::createDestroyEvent<Image>(StringId sid);
+template <>
+void Manager::createDestroyEvent<Material>(StringId sid);
 
 template <typename R>
 void Manager::destroyResourcesImpl() {
-    for(StringId sid : getResources<R>())
-    {
+    for (StringId sid : getResources<R>()) {
         delete reinterpret_cast<R*>(_resourceMap[sid.getId()]);
         _resourceMap.erase(sid.getId());
     }

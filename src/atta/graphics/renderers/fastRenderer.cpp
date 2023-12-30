@@ -9,10 +9,8 @@
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/interface.h>
 #include <atta/graphics/renderPass.h>
-#include <atta/graphics/rendererAPIs/openGL/openGLShaderGroup.h>
 
 #include <atta/resource/interface.h>
-#include <atta/resource/resources/mesh.h>
 
 #include <atta/component/components/material.h>
 #include <atta/component/components/mesh.h>
@@ -22,91 +20,114 @@
 
 namespace atta::graphics {
 
-FastRenderer::FastRenderer() : Renderer("FastRenderer") {
-    //---------- Create geometry pipeline ----------//
+FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
+    // Render Queue
+    _renderQueue = graphics::create<RenderQueue>();
+
     // Framebuffer
     Framebuffer::CreateInfo framebufferInfo{};
-    framebufferInfo.attachments.push_back({Image::Format::RGB});
+    framebufferInfo.attachments.push_back({Image::Format::RGBA});
     framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
-    framebufferInfo.width = 500;
-    framebufferInfo.height = 500;
+    _width = framebufferInfo.width = 500;
+    _height = framebufferInfo.height = 500;
+    framebufferInfo.clearColor = {0.2f, 0.2f, 0.2f, 1.0f};
     framebufferInfo.debugName = StringId("FastRenderer Framebuffer");
-    std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
-
-    // Shader Group
-    ShaderGroup::CreateInfo shaderGroupInfo{};
-    shaderGroupInfo.shaderPaths = {"shaders/fastRenderer/shader.vert", "shaders/fastRenderer/shader.frag"};
-    shaderGroupInfo.debugName = StringId("FastRenderer Shader Group");
-    std::shared_ptr<ShaderGroup> shaderGroup = graphics::create<ShaderGroup>(shaderGroupInfo);
 
     // Render Pass
     RenderPass::CreateInfo renderPassInfo{};
-    renderPassInfo.framebuffer = framebuffer;
-    renderPassInfo.debugName = StringId("FastRenderer Render Pass");
-    std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
+    renderPassInfo.framebuffer = graphics::create<Framebuffer>(framebufferInfo);
+    renderPassInfo.debugName = StringId("FastRenderer RenderPass");
+    _renderPass = graphics::create<RenderPass>(renderPassInfo);
 
+    //---------- Create geometry pipeline ----------//
     Pipeline::CreateInfo pipelineInfo{};
-    // Vertex input layout
-    pipelineInfo.shaderGroup = shaderGroup;
-    pipelineInfo.layout = {{"inPosition", VertexBufferElement::Type::VEC3},
-                           {"inNormal", VertexBufferElement::Type::VEC3},
-                           {"inTexCoord", VertexBufferElement::Type::VEC2}};
-    pipelineInfo.renderPass = renderPass;
+    pipelineInfo.shader = graphics::create<Shader>("shaders/fastRenderer/fastRenderer.asl");
+    pipelineInfo.renderPass = _renderPass;
+    pipelineInfo.debugName = StringId("FastRenderer Pipeline");
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 
     //---------- Common pipelines ----------//
-    _selectedPipeline = std::make_unique<SelectedPipeline>(renderPass, pipelineInfo.layout);
-    _drawerPipeline = std::make_unique<DrawerPipeline>(renderPass);
+    _selectedPipeline = std::make_unique<SelectedPipeline>(_renderPass);
+    _drawerPipeline = std::make_unique<DrawerPipeline>(_renderPass);
 }
 
 FastRenderer::~FastRenderer() {}
 
 void FastRenderer::render(std::shared_ptr<Camera> camera) {
-    std::vector<component::EntityId> entities = component::getNoPrototypeView();
-    _geometryPipeline->begin();
-    {
-        std::shared_ptr<ShaderGroup> shader = _geometryPipeline->getShaderGroup();
-
-        shader->setMat4("projection", transpose(camera->getProj()));
-        shader->setMat4("view", transpose(camera->getView()));
-
-        for (auto entity : entities) {
-            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-            component::Transform* transform = component::getComponent<component::Transform>(entity);
-            component::Material* compMat = component::getComponent<component::Material>(entity);
-            resource::Material* material = compMat ? compMat->getResource() : nullptr;
-
-            if (mesh && transform) {
-                mat4 model = transpose(transform->getWorldTransformMatrix(entity));
-                shader->setMat4("model", model);
-
-                if (material) {
-                    if (material->colorIsImage()) {
-                        shader->setImage("albedoTexture", material->colorImage);
-                        shader->setVec3("albedo", {-1, -1, -1});
-                    } else
-                        shader->setVec3("albedo", material->color);
-                } else {
-                    resource::Material::CreateInfo defaultMaterial{};
-                    shader->setVec3("albedo", defaultMaterial.color);
-                }
-
-                // Draw mesh
-                graphics::getRendererAPI()->renderMesh(mesh->sid);
-            }
-        }
+    // Handle resize (ensure that last framebuffer command finished)
+    if (_wasResized) {
+        _geometryPipeline->resize(_width, _height);
+        _wasResized = false;
     }
-    _geometryPipeline->end();
 
-    if (_renderSelected)
-        _selectedPipeline->render(camera);
+    // Handle image group update from materials
+    _geometryPipeline->updateImageGroupsFromMaterials([](resource::Material* material) {
+        Pipeline::ImageGroup imageGroup;
+        if (material->colorIsImage())
+            imageGroup.emplace_back("uAlbedoTexture", material->getColorImage());
+        return imageGroup;
+    });
+
+    // Update drawer data
     if (_renderDrawer)
-        _drawerPipeline->render(camera);
+        _drawerPipeline->update();
+
+    // Render
+    _renderQueue->begin();
+    {
+        _renderPass->begin(_renderQueue);
+        {
+            _geometryPipeline->begin();
+            {
+                std::vector<component::EntityId> entities = component::getNoPrototypeView();
+                _geometryPipeline->setMat4("uProjection", camera->getProj());
+                _geometryPipeline->setMat4("uView", camera->getView());
+
+                for (auto entity : entities) {
+                    component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+                    component::Transform* transform = component::getComponent<component::Transform>(entity);
+                    component::Material* compMat = component::getComponent<component::Material>(entity);
+                    resource::Material* material = compMat ? compMat->getResource() : nullptr;
+
+                    if (mesh && transform) {
+                        mat4 model = transform->getWorldTransformMatrix(entity);
+                        _geometryPipeline->setMat4("uModel", model);
+
+                        if (material) {
+                            if (material->colorIsImage()) {
+                                _geometryPipeline->setImageGroup(compMat->sid);
+                                _geometryPipeline->setVec3("uAlbedo", {-1, -1, -1});
+                            } else
+                                _geometryPipeline->setVec3("uAlbedo", material->getColor());
+                        } else {
+                            resource::Material::CreateInfo defaultMaterial{};
+                            _geometryPipeline->setVec3("uAlbedo", defaultMaterial.color);
+                        }
+
+                        // Draw mesh
+                        _geometryPipeline->renderMesh(mesh->sid);
+                    }
+                }
+            }
+            _geometryPipeline->end();
+
+            if (_renderDrawer)
+                _drawerPipeline->render(camera);
+        }
+        _renderPass->end();
+    }
+    _renderQueue->end();
+
+    //// if (_renderSelected)
+    ////     _selectedPipeline->render(camera);
 }
 
 void FastRenderer::resize(uint32_t width, uint32_t height) {
-    if (width != getWidth() || height != getHeight())
-        _geometryPipeline->getRenderPass()->getFramebuffer()->resize(width, height);
+    if (width != _width || height != _height) {
+        _wasResized = true;
+        _width = width;
+        _height = height;
+    }
 }
 
 } // namespace atta::graphics

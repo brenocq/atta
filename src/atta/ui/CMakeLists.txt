@@ -4,36 +4,35 @@ set(ATTA_UI_MODULE_SOURCE
     interface.cpp
     manager.cpp
 
-    layers/uiLayer.cpp
-    layers/editor/editorLayer.cpp
-    layers/editor/dockSpace.cpp
-    layers/editor/window.cpp
+    editor/editor.cpp
+    editor/dockSpace.cpp
+    editor/window.cpp
 
-    layers/editor/components/button.cpp
-    layers/editor/components/help.cpp
+    editor/components/button.cpp
+    editor/components/help.cpp
 
-    layers/editor/topBar/topBar.cpp
-    layers/editor/toolBar/toolBar.cpp
-    layers/editor/topBar/localWindows/repoWindow.cpp
-    layers/editor/topBar/localWindows/versionWindow.cpp
+    editor/topBar/topBar.cpp
+    editor/toolBar/toolBar.cpp
+    editor/topBar/localWindows/repoWindow.cpp
+    editor/topBar/localWindows/versionWindow.cpp
 
-    layers/editor/windows/entityWindow.cpp
-    layers/editor/windows/logWindow.cpp
-    layers/editor/windows/viewportWindows.cpp
-    layers/editor/windows/utils/fileSelectionWindow.cpp
+    editor/windows/entityWindow.cpp
+    editor/windows/logWindow.cpp
+    editor/windows/viewportWindows.cpp
+    editor/windows/utils/fileSelectionWindow.cpp
 
-    layers/editor/moduleWindows/graphicsModuleWindow.cpp
-    layers/editor/moduleWindows/ioModuleWindow.cpp
-    layers/editor/moduleWindows/physicsModuleWindow.cpp
-    layers/editor/moduleWindows/sensorModuleWindow.cpp
+    editor/moduleWindows/graphicsModuleWindow.cpp
+    editor/moduleWindows/ioModuleWindow.cpp
+    editor/moduleWindows/physicsModuleWindow.cpp
+    editor/moduleWindows/sensorModuleWindow.cpp
 
-    layers/editor/tools/timeProfiler/timeProfilerWindow.cpp
-    layers/editor/tools/timeProfiler/components/tearDown.cpp
-    layers/editor/tools/timeProfiler/components/flameGraph.cpp
-    layers/editor/tools/timeProfiler/components/timeline.cpp
+    editor/tools/timeProfiler/timeProfilerWindow.cpp
+    editor/tools/timeProfiler/components/tearDown.cpp
+    editor/tools/timeProfiler/components/flameGraph.cpp
+    editor/tools/timeProfiler/components/timeline.cpp
 
-	layers/editor/drawers/physicsDrawer.cpp
-	layers/editor/drawers/sensorDrawer.cpp
+	editor/drawers/physicsDrawer.cpp
+	editor/drawers/sensorDrawer.cpp
 )
 
 add_library(atta_ui_module STATIC

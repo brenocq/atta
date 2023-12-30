@@ -39,7 +39,7 @@ class BulletEngine : public Engine {
     const std::unordered_map<component::EntityId, std::unordered_map<component::EntityId, btPersistentManifold*>>& getCollisions();
 
   private:
-    void createRigidBody(component::EntityId entity);
+    void createRigidBody(component::EntityId entity) override;
     void createPrismaticJoint(component::PrismaticJoint* prismatic);
     void createRevoluteJoint(component::RevoluteJoint* revolute);
     void createRigidJoint(component::RigidJoint* rigid);

@@ -64,6 +64,7 @@ const uint8_t* CameraSensor::getImage() {
         if (cameraInfo.component == this)
             return cameraInfo.data.data();
     ASSERT(false, "(component::CameraSensor) Could not get camera frame from sensor::Manager.");
+    return nullptr;
 }
 
 } // namespace atta::component
