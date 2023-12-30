@@ -19,10 +19,6 @@ void Drawer::clear(StringId group) {
 
 // Get data
 template <typename T>
-const std::vector<T>& Drawer::get() {
-    return getInstance().getImpl<T>();
-}
-template <typename T>
 std::map<StringHash, std::vector<T>>& Drawer::getGroups() {
     return getInstance().getGroups<T>();
 }
@@ -57,37 +53,6 @@ void Drawer::clearImpl(StringId group) {
 }
 
 // Get data implementation
-template <typename T>
-const std::vector<T>& Drawer::getImpl() {
-    if constexpr (std::is_same<T, Drawer::Line>::value || std::is_same<T, Drawer::Point>::value) {
-        if (getChanged<T>()) {
-            setCurrNumber<T>(0);
-
-            std::map<StringHash, std::vector<T>> groups = getGroupsImpl<T>();
-            for (auto& [key, group] : groups) {
-                // Copy group objects to preallocated vector
-                for (uint32_t i = 0; i < group.size(); i++) {
-                    if constexpr (std::is_same<T, Drawer::Line>::value)
-                        _lines[_currNumberOfLines++] = group[i];
-                    else if constexpr (std::is_same<T, Drawer::Point>::value)
-                        _points[_currNumberOfPoints++] = group[i];
-                }
-            }
-            // Set changed as false
-            setChanged<T>(false);
-        }
-    }
-
-    if constexpr (std::is_same<T, Drawer::Line>::value)
-        return _lines;
-    else if constexpr (std::is_same<T, Drawer::Point>::value)
-        return _points;
-    else {
-        ASSERT(false, "Drawer get() to unknown type $0", typeid(T).name());
-        return {};
-    }
-}
-
 template <typename T>
 std::map<StringHash, std::vector<T>>& Drawer::getGroupsImpl() {
     if constexpr (std::is_same<T, Drawer::Line>::value)

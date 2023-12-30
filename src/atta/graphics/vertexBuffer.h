@@ -30,12 +30,11 @@ class VertexBuffer {
     virtual ~VertexBuffer() = default;
 
     virtual void bind() const = 0;
+    virtual void update(const uint8_t* data, uint32_t size) = 0;
 
-    uint32_t getSize() const { return _size; };
-    BufferLayout getLayout() const { return _layout; }
-
-    /// Get number of vertices stored
-    uint32_t getCount() const;
+    uint32_t getSize() const; ///< Get size in bytes
+    BufferLayout getLayout() const;
+    uint32_t getCount() const; ///< Get number of vertices stored
 
   protected:
     BufferLayout _layout;

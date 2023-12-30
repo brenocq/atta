@@ -43,16 +43,24 @@ class Drawer {
 
     // Get data
     template <typename T>
-    static const std::vector<T>& get();
-    template <typename T>
     static std::map<StringHash, std::vector<T>>& getGroups();
     template <typename T>
     static unsigned getMaxNumber();
     template <typename T>
     static unsigned getCurrNumber();
 
+    /**
+     * @brief Update line and point data
+     *
+     * The mesh resource will be updated and the line/point will be sent to the GPU
+     */
+    static void update();
+
     // Core
     static Drawer& getInstance();
+
+    static StringId lineMeshName;  ///< Name of the mesh created to store lines
+    static StringId pointMeshName; ///< Name of the mesh created to store points
 
   private:
     Drawer();
@@ -66,8 +74,6 @@ class Drawer {
 
     // Get data implementation
     template <typename T>
-    const std::vector<T>& getImpl();
-    template <typename T>
     std::map<StringHash, std::vector<T>>& getGroupsImpl();
     template <typename T>
     unsigned getMaxNumberImpl();
@@ -79,6 +85,9 @@ class Drawer {
     void setCurrNumber(unsigned number);
     template <typename T>
     void setChanged(bool changed);
+
+    template <typename T>
+    void updateImpl();
 
     // The _lines vector is updated only when getImpl()
     // is called and _linesChanged is true. Analogous to _points

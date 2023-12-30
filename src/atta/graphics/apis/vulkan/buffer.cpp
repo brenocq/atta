@@ -81,15 +81,22 @@ void Buffer::copy(std::shared_ptr<Buffer> src, std::shared_ptr<Buffer> dst) {
     common::getCommandPool()->endSingleTimeCommands(commandBuffer);
 }
 
-void Buffer::setData(uint8_t* data) {
-    StagingBuffer stagingBuffer{data, _bufferSize};
+void Buffer::setData(const uint8_t* data, size_t size) {
+    if (size > _bufferSize) {
+        LOG_WARN("gfx::vk::Buffer", "Trying to set data of size [w]$0[] to buffer with size [w]$1. Data will not be copied", size, _bufferSize);
+        return;
+    }
+    if (size == 0)
+        size = _bufferSize;
+
+    StagingBuffer stagingBuffer{data, size};
 
     VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
     {
         VkBufferCopy copyRegion{};
         copyRegion.srcOffset = 0;
         copyRegion.dstOffset = 0;
-        copyRegion.size = _bufferSize;
+        copyRegion.size = size;
         vkCmdCopyBuffer(commandBuffer, stagingBuffer.getHandle(), _buffer, 1, &copyRegion);
     }
     common::getCommandPool()->endSingleTimeCommands(commandBuffer);

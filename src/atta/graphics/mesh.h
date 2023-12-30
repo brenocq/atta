@@ -29,6 +29,9 @@ class Mesh {
 
     virtual void draw() = 0;
 
+    std::shared_ptr<VertexBuffer> getVertexBuffer() const;
+    std::shared_ptr<IndexBuffer> getIndexBuffer() const;
+
   protected:
     std::shared_ptr<VertexBuffer> _vertexBuffer; ///< Vertex buffer
     std::shared_ptr<IndexBuffer> _indexBuffer;   ///< Index buffer (may be nullptr)

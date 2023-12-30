@@ -36,14 +36,17 @@ class Mesh : public Resource, public memory::AllocatedObject<Mesh, SID("Resource
     Mesh(const fs::path& filename);
     Mesh(const fs::path& filename, const CreateInfo& info);
 
-    const std::vector<uint8_t>& getVertices() const { return _vertices; };
-    const std::vector<Index>& getIndices() const { return _indices; };
-    const VertexLayout& getVertexLayout() const { return _vertexLayout; }
+    void updateVertices(const std::vector<uint8_t>& vertices); ///< Update vertex data
+
+    const std::vector<uint8_t>& getVertices() const;
+    const std::vector<Index>& getIndices() const;
+    const VertexLayout& getVertexLayout() const;
 
   private:
-    void load();
+    void update() const;
 
     // Assimp mesh loading
+    void load();
     void processNode(aiNode* node, const aiScene* scene);
     void processMesh(aiMesh* mesh, const aiScene* scene);
     unsigned _assimpVertexIdx; ///< Used only to keep track of indices while processing the meshes

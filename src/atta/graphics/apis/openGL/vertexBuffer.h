@@ -18,6 +18,7 @@ class VertexBuffer final : public gfx::VertexBuffer {
     ~VertexBuffer();
 
     void bind() const override;
+    void update(const uint8_t* data, uint32_t size) override;
 
     OpenGLId getHandle() const { return _id; }
 

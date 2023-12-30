@@ -16,13 +16,14 @@ class DrawerPipeline final {
   public:
     DrawerPipeline(std::shared_ptr<RenderPass> renderPass);
 
-    /**
-     * @brief Update GPU data
-     *
-     * @note It should be called before render to make sure the GPU data is up to date
-     */
+    /// Update GPU line and point data
     void update();
 
+    /**
+     * @brief Render lines and points from drawer
+     *
+     * @note DrawerPipeline::update should be called before rendering to make sure that the GPU data is up to date
+     */
     void render(std::shared_ptr<Camera> camera);
 
   private:

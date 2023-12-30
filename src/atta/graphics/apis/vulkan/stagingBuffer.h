@@ -13,7 +13,7 @@ namespace atta::graphics::vk {
 
 class StagingBuffer final : public Buffer {
   public:
-    StagingBuffer(uint8_t* data, size_t size);
+    StagingBuffer(const uint8_t* data, size_t size);
     ~StagingBuffer();
 };
 

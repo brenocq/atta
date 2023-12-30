@@ -9,6 +9,9 @@
 
 namespace atta::graphics {
 
+StringId Drawer::lineMeshName = "atta::gfx::Drawer::line";
+StringId Drawer::pointMeshName = "atta::gfx::Drawer::point";
+
 Drawer::Drawer()
     : _maxNumberOfLines(100000), _currNumberOfLines(0), _linesChanged(false), _maxNumberOfPoints(1000000), _currNumberOfPoints(0),
       _pointsChanged(false) {
@@ -22,7 +25,7 @@ Drawer::Drawer()
         info.vertices = std::vector<uint8_t>(data, data + size);
         info.vertexLayout.push_back({resource::Mesh::VertexElement::VEC3, "iPos"});
         info.vertexLayout.push_back({resource::Mesh::VertexElement::VEC4, "iColor"});
-        res::create<res::Mesh>("atta::gfx::Drawer::lines", info);
+        res::create<res::Mesh>(lineMeshName, info);
     }
 
     // Point buffer
@@ -33,7 +36,7 @@ Drawer::Drawer()
         info.vertices = std::vector<uint8_t>(data, data + size);
         info.vertexLayout.push_back({resource::Mesh::VertexElement::VEC3, "iPos"});
         info.vertexLayout.push_back({resource::Mesh::VertexElement::VEC4, "iColor"});
-        res::create<res::Mesh>("atta::gfx::Drawer::points", info);
+        res::create<res::Mesh>(pointMeshName, info);
     }
 }
 
@@ -52,6 +55,48 @@ void Drawer::clearImpl(StringId group) {
     } else {
         clearImpl<Line>(group);
         clearImpl<Point>(group);
+    }
+}
+
+void Drawer::update() {
+    getInstance().updateImpl<Drawer::Line>();
+    getInstance().updateImpl<Drawer::Point>();
+}
+
+template <typename T>
+void Drawer::updateImpl() {
+    if constexpr (std::is_same<T, Drawer::Line>::value || std::is_same<T, Drawer::Point>::value) {
+        if (getChanged<T>()) {
+            setCurrNumber<T>(0);
+
+            // Populate vertex buffer
+            std::map<StringHash, std::vector<T>> groups = getGroupsImpl<T>();
+            for (auto& [key, group] : groups) {
+                // Copy group objects to preallocated vector
+                for (uint32_t i = 0; i < group.size(); i++) {
+                    if constexpr (std::is_same<T, Drawer::Line>::value)
+                        _lines[_currNumberOfLines++] = group[i];
+                    else if constexpr (std::is_same<T, Drawer::Point>::value)
+                        _points[_currNumberOfPoints++] = group[i];
+                }
+            }
+
+            // Update mesh
+            if constexpr (std::is_same<T, Drawer::Line>::value) {
+                res::Mesh* lineMesh = res::get<res::Mesh>(lineMeshName);
+                uint8_t* data = (uint8_t*)_lines.data();
+                size_t size = _currNumberOfLines * sizeof(Line);
+                lineMesh->updateVertices(std::vector<uint8_t>(data, data + size));
+            } else if constexpr (std::is_same<T, Drawer::Point>::value) {
+                res::Mesh* pointMesh = res::get<res::Mesh>(pointMeshName);
+                uint8_t* data = (uint8_t*)_points.data();
+                size_t size = _currNumberOfPoints * sizeof(Point);
+                pointMesh->updateVertices(std::vector<uint8_t>(data, data + size));
+            }
+
+            // Set changed as false
+            setChanged<T>(false);
+        }
     }
 }
 

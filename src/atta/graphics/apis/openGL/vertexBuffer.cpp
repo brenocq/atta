@@ -40,6 +40,12 @@ VertexBuffer::~VertexBuffer() {
 
 void VertexBuffer::bind() const { glBindBuffer(GL_ARRAY_BUFFER, _id); }
 
+void VertexBuffer::update(const uint8_t* data, uint32_t size) {
+    glBindBuffer(GL_ARRAY_BUFFER, _id);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 GLenum VertexBuffer::convertUsage(Usage usage) {
     switch (usage) {
         case Usage::STATIC:

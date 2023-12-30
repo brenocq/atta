@@ -29,7 +29,13 @@ class Buffer {
 
   protected:
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    void setData(uint8_t* data);
+
+    /**
+     * @brief Set buffer data
+     *
+     * @note If size is zero, _bufferSize is used instead
+     */
+    void setData(const uint8_t* data, size_t size = 0);
 
     VkBuffer _buffer;
     VkDeviceMemory _memory;

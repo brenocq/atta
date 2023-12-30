@@ -7,12 +7,13 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <atta/event/events/meshUpdate.h>
 #include <atta/file/manager.h>
 #include <atta/resource/resources/mesh.h>
 
 namespace atta::resource {
 
-Mesh::Mesh(const fs::path& filename) : Resource(filename), _assimpVertexIdx(0) { load(); }
+Mesh::Mesh(const fs::path& filename) : Resource(filename) { load(); }
 
 Mesh::Mesh(const fs::path& filename, const CreateInfo& info) : Resource(filename) {
     _vertices = info.vertices;
@@ -20,8 +21,23 @@ Mesh::Mesh(const fs::path& filename, const CreateInfo& info) : Resource(filename
     _indices = info.indices;
 }
 
+void Mesh::updateVertices(const std::vector<uint8_t>& vertices) {
+    _vertices = vertices;
+    update();
+}
+
+void Mesh::update() const {
+    event::MeshUpdate e(_id);
+    event::publish(e);
+}
+
+const std::vector<uint8_t>& Mesh::getVertices() const { return _vertices; }
+const std::vector<Mesh::Index>& Mesh::getIndices() const { return _indices; }
+const Mesh::VertexLayout& Mesh::getVertexLayout() const { return _vertexLayout; }
+
 //---------- Assimp mesh loading ----------//
 void Mesh::load() {
+    _assimpVertexIdx = 0;
     _vertexLayout.resize(3);
     _vertexLayout[0] = {VertexElement::VEC3, "iPosition"};
     _vertexLayout[1] = {VertexElement::VEC3, "iNormal"};

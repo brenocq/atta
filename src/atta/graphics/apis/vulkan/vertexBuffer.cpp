@@ -7,6 +7,7 @@
 #include <atta/graphics/apis/vulkan/vertexBuffer.h>
 
 #include <atta/graphics/apis/vulkan/commandBuffers.h>
+#include <atta/graphics/apis/vulkan/common.h>
 
 namespace atta::graphics::vk {
 
@@ -29,6 +30,8 @@ void VertexBuffer::bind(VkCommandBuffer commandBuffer) const {
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, &_buffer, offsets);
 }
+
+void VertexBuffer::update(const uint8_t* data, uint32_t size) { Buffer::setData(data, size); }
 
 VkVertexInputBindingDescription VertexBuffer::getBindingDescription(const BufferLayout& layout) {
     VkVertexInputBindingDescription bindingDescription{};

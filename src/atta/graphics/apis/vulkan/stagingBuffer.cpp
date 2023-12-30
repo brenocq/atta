@@ -8,7 +8,7 @@
 
 namespace atta::graphics::vk {
 
-StagingBuffer::StagingBuffer(uint8_t* data, size_t size)
+StagingBuffer::StagingBuffer(const uint8_t* data, size_t size)
     : Buffer({
           size,
           VK_BUFFER_USAGE_TRANSFER_SRC_BIT,

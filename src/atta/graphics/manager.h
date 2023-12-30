@@ -87,6 +87,7 @@ class Manager final {
     // Handle resources
     void syncResources();
     void onMeshLoadEvent(event::Event& event);
+    void onMeshUpdateEvent(event::Event& event);
     void onImageLoadEvent(event::Event& event);
     void onImageUpdateEvent(event::Event& event);
     void createMesh(StringId sid);
