@@ -186,12 +186,7 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
                 if (i != _vertexLayout.getElements().size() - 1)
                     params += ", ";
             }
-            iCode = input + iCode + "void main() { POSITION = vertex(" + params + "); }";
-
-            // Replace
-            iCode = std::regex_replace(iCode, std::regex(R"(\bPOSITION)"), "gl_Position");
-            iCode = std::regex_replace(iCode, std::regex(R"(\bPOINT_SIZE)"), "gl_PointSize");
-
+            iCode = input + iCode + "void main() { gl_Position = vertex(" + params + "); }";
             break;
         }
         case FRAGMENT: {
@@ -207,9 +202,6 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
             }
 
             iCode = output + aslCode + "void main() { fragment(" + params + "); }";
-
-            // Replace
-            iCode = std::regex_replace(iCode, std::regex(R"(\bDEPTH)"), "gl_FragDepth");
             break;
         }
         default:

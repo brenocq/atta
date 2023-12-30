@@ -67,6 +67,7 @@ void OpenGLAPI::startUp() {
     ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 0), "Atta requires OpenGL >= 3.0");
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_PROGRAM_POINT_SIZE);
 
     // Quad shader
     _quadShader = std::make_shared<gl::Shader>("shaders/quad/shader.asl");
