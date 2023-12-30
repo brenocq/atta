@@ -30,7 +30,7 @@ void Editor::render() {
     _dockSpace.render();
 
     // Demo
-    bool demo = true;
+    // bool demo = true;
     // ImGui::ShowDemoWindow(&demo);
     // ImPlot::ShowDemoWindow(&demo);
 
@@ -64,14 +64,14 @@ void Editor::render() {
 
     renderCameraWindows();
 
-    //// Project UI
-    // script::ProjectScript* project = script::getProjectScript();
-    // if (project)
-    //     try {
-    //         project->onUIRender();
-    //     } catch (std::exception& e) {
-    //         LOG_ERROR("ui::Editor", "Error when executing [w]ProjectScript::onUIRender[]: $0", e.what());
-    //     }
+    // Project UI
+    script::ProjectScript* project = script::getProjectScript();
+    if (project)
+        try {
+            project->onUIRender();
+        } catch (std::exception& e) {
+            LOG_ERROR("ui::Editor", "Error when executing [w]ProjectScript::onUIRender[]: $0", e.what());
+        }
 }
 
 void Editor::renderCameraWindows() {

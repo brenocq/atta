@@ -18,7 +18,6 @@ Image::~Image() {
 
 void Image::write(uint8_t* data) {
     if (!_isCubemap) {
-        // LOG_DEBUG("graphics::OpenGlImage", "Writing $0 -> $1 ($2)", data, (int)_id, _debugName);
         GLenum dataType = Image::convertDataType(_format);
         GLenum internalFormat = Image::convertInternalFormat(_format);
         GLenum format = Image::convertFormat(_format);

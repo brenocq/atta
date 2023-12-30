@@ -29,10 +29,10 @@ void OpenGLAPI::startUp() {
     ASSERT(status, "Failed to initialize Glad!");
 
     // Print info
-    // LOG_INFO("graphics::OpenGLAPI", "GPU Info:");
-    // LOG_INFO("graphics::OpenGLAPI", "  - Vendor: $0", glGetString(GL_VENDOR));
-    // LOG_INFO("graphics::OpenGLAPI", "  - Renderer: $0", glGetString(GL_RENDERER));
-    // LOG_INFO("graphics::OpenGLAPI", "  - Version: $0", glGetString(GL_VERSION));
+    LOG_INFO("gfx::gl::OpenGLAPI", "[w]GPU Info:");
+    LOG_INFO("gfx::gl::OpenGLAPI", "  - Vendor: [*w]$0", glGetString(GL_VENDOR));
+    LOG_INFO("gfx::gl::OpenGLAPI", "  - Renderer: [*w]$0", glGetString(GL_RENDERER));
+    LOG_INFO("gfx::gl::OpenGLAPI", "  - Version: [*w]$0", glGetString(GL_VERSION));
 
 #if defined(ATTA_DEBUG_BUILD) && !defined(ATTA_OS_WEB)
     // Enable Debug
