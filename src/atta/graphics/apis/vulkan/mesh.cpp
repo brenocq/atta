@@ -24,8 +24,6 @@ Mesh::Mesh(CreateInfo info) : gfx::Mesh(info) {
 
 Mesh::~Mesh() {}
 
-void Mesh::draw(size_t numVertices) {}
-
 void Mesh::draw(VkCommandBuffer commandBuffer, size_t numVertices) {
     std::dynamic_pointer_cast<vk::VertexBuffer>(_vertexBuffer)->bind(commandBuffer);
     if (_indexBuffer) {

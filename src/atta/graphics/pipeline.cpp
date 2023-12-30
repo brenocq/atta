@@ -16,7 +16,7 @@
 namespace atta::graphics {
 
 Pipeline::Pipeline(const CreateInfo& info)
-    : _shader(info.shader), _renderPass(info.renderPass), _primitiveTopology(info.primitiveTopology), _backfaceCulling(info.backfaceCulling),
+    : _shader(info.shader), _renderPass(info.renderPass), _primitive(info.primitive), _backfaceCulling(info.backfaceCulling),
       _wireframe(info.wireframe), _lineWidth(info.lineWidth), _debugName(info.debugName) {
     //---------- Track material update ----------//
     event::subscribe<event::MaterialCreate>(BIND_EVENT_FUNC(Pipeline::onMaterialCreate));

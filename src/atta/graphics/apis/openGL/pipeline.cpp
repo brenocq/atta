@@ -26,9 +26,9 @@ void Pipeline::end() { _shader->unbind(); }
 void Pipeline::resize(uint32_t width, uint32_t height) { _renderPass->getFramebuffer()->resize(width, height); }
 
 void Pipeline::renderMesh(StringId meshSid, size_t numVertices) {
-    std::shared_ptr<gfx::Mesh> mesh = Manager::getInstance().getMeshes().at(meshSid);
+    std::shared_ptr<gl::Mesh> mesh = std::dynamic_pointer_cast<gl::Mesh>(Manager::getInstance().getMeshes().at(meshSid));
     if (mesh)
-        mesh->draw(numVertices);
+        mesh->draw(_primitive, numVertices);
     else
         LOG_WARN("gfx::gl::Pipeline", "Could not render mesh [w]$0[], mesh not found", meshSid);
 }

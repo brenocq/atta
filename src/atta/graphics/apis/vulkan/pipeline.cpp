@@ -32,7 +32,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     // Input assembly
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.topology = convert(info.primitive);
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     // Viewport state
@@ -377,5 +377,16 @@ void Pipeline::setImageGroup(const char* name) {
 
 VkPipeline Pipeline::getHandle() const { return _pipeline; }
 std::shared_ptr<PipelineLayout> Pipeline::getPipelineLayout() const { return _pipelineLayout; }
+
+VkPrimitiveTopology Pipeline::convert(Primitive topology) {
+    switch (topology) {
+        case Primitive::POINT:
+            return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+        case Primitive::LINE:
+            return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+        case Primitive::TRIANGLE:
+            return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    }
+}
 
 } // namespace atta::graphics::vk

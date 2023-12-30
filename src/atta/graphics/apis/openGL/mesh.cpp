@@ -25,13 +25,25 @@ Mesh::~Mesh() {
         glDeleteVertexArrays(1, &_id);
 }
 
-void Mesh::draw(size_t numVertices) {
+void Mesh::draw(Pipeline::Primitive primitive, size_t numVertices) {
     glBindVertexArray(_id);
     if (_indexBuffer)
-        glDrawElements(GL_TRIANGLES, _indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
+        glDrawElements(convert(primitive), _indexBuffer->getCount(), GL_UNSIGNED_INT, 0);
     else
-        glDrawArrays(GL_TRIANGLES, 0, numVertices == 0 ? _vertexBuffer->getCount() : numVertices);
+        glDrawArrays(convert(primitive), 0, numVertices == 0 ? _vertexBuffer->getCount() : numVertices);
     glBindVertexArray(0);
+}
+
+GLenum Mesh::convert(Pipeline::Primitive primitive) {
+    switch (primitive) {
+        case Pipeline::Primitive::POINT:
+            return GL_POINTS;
+        case Pipeline::Primitive::LINE:
+            return GL_LINES;
+        case Pipeline::Primitive::TRIANGLE:
+            return GL_TRIANGLES;
+    }
+    return 0;
 }
 
 } // namespace atta::graphics::gl

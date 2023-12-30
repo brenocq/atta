@@ -18,12 +18,12 @@ namespace atta::graphics {
 
 class Pipeline {
   public:
-    enum PrimitiveTopology { NONE, POINT, LINE, TRIANGLE, LINE_STRIP, TRIANGLE_STRIP, TRIANGLE_FAN };
+    enum Primitive { POINT = 0, LINE, TRIANGLE };
 
     struct CreateInfo {
         std::shared_ptr<Shader> shader;
         std::shared_ptr<RenderPass> renderPass;
-        PrimitiveTopology primitiveTopology = PrimitiveTopology::TRIANGLE;
+        Primitive primitive = Primitive::TRIANGLE;
         bool backfaceCulling = true;
         bool wireframe = false;
         bool lineWidth = 1.0f;
@@ -74,6 +74,7 @@ class Pipeline {
      * @brief Render mesh
      *
      * @note If numVertices is set to zero, all vertices are rendered
+     * @warning numVertices should only be used if there is no index buffer
      */
     virtual void renderMesh(StringId meshSid, size_t numVertices = 0);
     virtual void renderQuad();
@@ -88,7 +89,7 @@ class Pipeline {
     std::shared_ptr<Shader> _shader;
     std::shared_ptr<RenderPass> _renderPass;
 
-    PrimitiveTopology _primitiveTopology;
+    Primitive _primitive;
 
     const bool _backfaceCulling;
     const bool _wireframe;

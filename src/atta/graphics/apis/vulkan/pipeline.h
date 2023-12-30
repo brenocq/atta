@@ -47,6 +47,8 @@ class Pipeline final : public gfx::Pipeline {
     VkPipeline getHandle() const;
     std::shared_ptr<PipelineLayout> getPipelineLayout() const;
 
+    static VkPrimitiveTopology convert(Primitive primitive);
+
   private:
     VkPipeline _pipeline;
     std::shared_ptr<Device> _device;

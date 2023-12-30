@@ -19,7 +19,6 @@ class Mesh final : public gfx::Mesh {
     Mesh(CreateInfo info);
     ~Mesh();
 
-    void draw(size_t numVertices = 0) override;
     void draw(VkCommandBuffer commandBuffer, size_t numVertices = 0);
 };
 
