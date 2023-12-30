@@ -14,7 +14,7 @@ namespace atta::graphics {
 std::vector<std::string> toStr = {"?",     "bool",  "int",   "uint", "float", "vec2",      "vec3",       "vec4",
                                   "ivec2", "ivec3", "ivec4", "mat3", "mat4",  "sampler2D", "samplerCube"};
 BufferLayout::Element::Type BufferLayout::Element::typeFromString(std::string type) {
-    for (int i = 0; i < toStr.size(); i++)
+    for (size_t i = 0; i < toStr.size(); i++)
         if (toStr[i] == type)
             return (Type)i;
     return Type::NONE;

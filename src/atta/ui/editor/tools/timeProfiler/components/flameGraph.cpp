@@ -12,8 +12,7 @@ namespace atta::ui {
 
 void FlameGraph::compute() {
     for (auto& [threadId, records] : Profiler::calcRecordsByThreadId(_lastRecordsSize)) {
-        for (int i = 0; i < records.size(); i++) {
-
+        for (size_t i = 0; i < records.size(); i++) {
         }
     }
     _lastRecordsSize = Profiler::getRecords().size();
@@ -51,8 +50,7 @@ void FlameGraph::render() {
         ImVec2 rmin = ImPlot::PlotToPixels(ImPlotPoint(0.25f, 0.75f));
         ImVec2 rmax = ImPlot::PlotToPixels(ImPlotPoint(0.75f, 0.25f));
         ImPlot::PushPlotClipRect();
-        if(_flameBar.name != StringId())
-        {
+        if (_flameBar.name != StringId()) {
             ImPlot::GetPlotDrawList()->AddCircleFilled(cntr, 20, IM_COL32(255, 255, 0, 255), 20);
             ImPlot::GetPlotDrawList()->AddRect(rmin, rmax, IM_COL32(128, 0, 255, 255));
         }

@@ -234,7 +234,6 @@ void Box2DEngine::createRigidBody(component::EntityId entity) {
     component::Transform worldT = t->getWorldTransform(entity);
     vec3 position = worldT.position;
     quat orientation = worldT.orientation;
-    vec3 scale = worldT.scale;
 
     // Create box2d body definition
     b2BodyDef bodyDef;
@@ -283,8 +282,6 @@ void Box2DEngine::createColliders(component::EntityId entity) {
 
     // Get world transform
     component::Transform worldT = t->getWorldTransform(entity);
-    vec3 position = worldT.position;
-    quat orientation = worldT.orientation;
     vec3 scale = worldT.scale;
     b2FixtureDef fixtureDef;
 

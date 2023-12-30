@@ -32,10 +32,8 @@ void ViewportWindows::render() {
     static clock_t vpLastTime = std::clock();
     const clock_t vpCurrTime = std::clock();
     const float vpTimeDiff = float(vpCurrTime - vpLastTime) / CLOCKS_PER_SEC;
-    bool shouldRenderViewports = false;
     if (graphics::getViewportRendering() && (graphics::getViewportFPS() > 0 && (vpTimeDiff > 1 / graphics::getViewportFPS()))) {
         vpLastTime = vpCurrTime;
-        shouldRenderViewports = true;
     }
 
     int i = -1;

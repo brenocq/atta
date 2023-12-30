@@ -29,14 +29,14 @@ void TearDown::compute() {
         for (auto& [threadId, records] : Profiler::calcRecordsByThreadId(_lastRecordsSize)) {
             std::vector<TimeInterval>& nestedTime = _nestedTime[threadId];
             // For each record in this thread
-            for (int i = 0; i < records.size(); i++) {
+            for (size_t i = 0; i < records.size(); i++) {
                 Profiler::Record r = records[i];
 
                 // Total time
                 Profiler::Time time = r.end - r.begin;
 
                 // Remove time of nested functions
-                for (int j = nestedTime.size() - 1; j >= 0; j--) {
+                for (int j = (int)nestedTime.size() - 1; j >= 0; j--) {
                     if (nestedTime[j].end < r.begin)
                         break;
                     else {
@@ -140,8 +140,8 @@ void TearDown::render() {
 
                     // Name
                     ImGui::TableNextColumn();
-                    std::string name =  _funcTime[row].name.getString();
-                    if(cropName)
+                    std::string name = _funcTime[row].name.getString();
+                    if (cropName)
                         name = Profiler::cropFuncName(name);
                     ImGui::Text(name.c_str());
 
@@ -170,9 +170,8 @@ void TearDown::render() {
                     float barPerc = _funcTime[row].time / float(_maxTime);
                     pMax.x = pMin.x + (pMax.x - pMin.x) * barPerc;
 
-                    if (pMax.x > pMin.x)
-                    {
-                        uint8_t r,g,b;
+                    if (pMax.x > pMin.x) {
+                        uint8_t r, g, b;
                         Profiler::getFuncColor(_funcTime[row].name, r, g, b);
                         drawList->AddRectFilled(pMin, pMax, IM_COL32(r, g, b, 255));
                     }

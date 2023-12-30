@@ -13,12 +13,12 @@ namespace atta::ui {
 void Timeline::compute() {
     for (auto& [threadId, records] : Profiler::calcRecordsByThreadId(_lastRecordsSize)) {
         std::vector<Profiler::Record>& sortedRecords = _sortedRecords[threadId];
-        for (int i = 0; i < records.size(); i++) {
+        for (size_t i = 0; i < records.size(); i++) {
             // Add to back
             sortedRecords.push_back(records[i]);
 
             // Move back until correct position
-            for (int j = sortedRecords.size() - 2; j >= 0; j--) {
+            for (int j = (int)sortedRecords.size() - 2; j >= 0; j--) {
                 if (sortedRecords[j].begin > sortedRecords[j + 1].begin)
                     std::swap(sortedRecords[j], sortedRecords[j + 1]);
                 else
@@ -92,7 +92,6 @@ void Timeline::render() {
             float pixelTime = size.x / sizePixels.x; // Time interval of each pixel
 
             ImPlot::PushPlotClipRect();
-            float nextDrawTime = 0;
             maxStackSize = 0;
             for (const Profiler::Record& record : records) {
                 // Free stack
@@ -125,24 +124,21 @@ void Timeline::render() {
                     min.x = std::max(beginTime, float(limits.X.Min));
                     max.x = std::min(endTime, float(limits.X.Max));
                     // Calculate text size
-                    ImPlotPoint textOrigin = ImPlot::PixelsToPlot(ImVec2(0,0));
+                    ImPlotPoint textOrigin = ImPlot::PixelsToPlot(ImVec2(0, 0));
                     ImPlotPoint textSize = ImPlot::PixelsToPlot(ImGui::CalcTextSize(name.c_str()));
                     textSize.x = textSize.x - textOrigin.x;
                     // If text too big, try funcName...
                     if (textSize.x >= max.x - min.x) {
                         // If can't render full name, try partial name
                         std::string fullName = name;
-                        for(int s = 5; s <= fullName.size()-3; s++)
-                        {
+                        for (size_t s = 5; s <= fullName.size() - 3; s++) {
                             std::string subStr = fullName.substr(0, s) + "...";
                             ImPlotPoint subTextSize = ImPlot::PixelsToPlot(ImGui::CalcTextSize(subStr.c_str()));
                             subTextSize.x = subTextSize.x - textOrigin.x;
-                            if (subTextSize.x < max.x - min.x)
-                            {
+                            if (subTextSize.x < max.x - min.x) {
                                 name = subStr;
                                 textSize = subTextSize;
-                            }
-                            else
+                            } else
                                 break;
                         }
                     }

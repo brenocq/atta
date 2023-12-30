@@ -58,7 +58,7 @@ Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
     }
 
     _data = new uint8_t[_width * _height * _channels * getBytesPerChannel(_format)];
-    for (int i = 0; i < _width * _height * _channels * getBytesPerChannel(_format); i++)
+    for (size_t i = 0; i < _width * _height * _channels * getBytesPerChannel(_format); i++)
         _data[i] = 0;
 }
 
@@ -143,7 +143,7 @@ void Image::load() {
         // Copy temp data to _data
         uint32_t size = _width * _height * _channels * getBytesPerChannel(_format);
         _data = new uint8_t[size];
-        for (int i = 0; i < size; i++)
+        for (size_t i = 0; i < size; i++)
             _data[i] = data[i];
         stbi_image_free(data);
         // LOG_INFO("resource::Image", "[w]$3[] -> w:$0, h:$1, c:$2", _width, _height, _channels, absolutePath);

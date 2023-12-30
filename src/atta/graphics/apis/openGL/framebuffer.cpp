@@ -56,14 +56,14 @@ void Framebuffer::bindAttachments() {
 
     for (unsigned i = 0; i < _images.size(); i++) {
         std::shared_ptr<Image> image = std::dynamic_pointer_cast<Image>(_images[i]);
-        bool isColor = (i != _depthAttachmentIndex) && (i != _stencilAttachmentIndex);
-        if (i == _depthAttachmentIndex) {
+        bool isColor = ((int)i != _depthAttachmentIndex) && ((int)i != _stencilAttachmentIndex);
+        if ((int)i == _depthAttachmentIndex) {
             if (!image->isCubemap())
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, image->getHandle(), 0);
             else
                 glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, image->getHandle(), 0);
         }
-        if (i == _stencilAttachmentIndex) {
+        if ((int)i == _stencilAttachmentIndex) {
             if (!image->isCubemap())
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, image->getHandle(), 0);
             else
@@ -94,7 +94,7 @@ void Framebuffer::bind(bool clear) {
             GLint clearColor[4];
             for (size_t i = 0; i < 4; i++)
                 clearColor[i] = (GLint)std::round(_clearColor[i]);
-            glClearBufferiv(GL_COLOR, GL_COLOR_ATTACHMENT0, clearColor);
+            glClearBufferiv(GL_COLOR, 0, clearColor);
         }
 
         if (_depthAttachmentIndex != -1 && _stencilAttachmentIndex != -1) {
