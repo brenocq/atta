@@ -30,8 +30,8 @@ void Editor::render() {
     _dockSpace.render();
 
     // Demo
-    // bool demo = true;
-    // ImGui::ShowDemoWindow(&demo);
+    bool demo = true;
+    ImGui::ShowDemoWindow(&demo);
     // ImPlot::ShowDemoWindow(&demo);
 
     // Top interface
