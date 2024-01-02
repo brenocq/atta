@@ -87,7 +87,23 @@ void Manager::shutDownImpl() {
 }
 
 void Manager::setTheme() {
-    ImVec4* colors = ImGui::GetStyle().Colors;
+    // Style
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.ScrollbarRounding = 0.0f;
+    style.TabRounding = 0.0f;
+    style.DockingSeparatorSize = 1.0f;
+    style.WindowPadding = ImVec2(5.0f, 5.0f);
+    style.FramePadding = ImVec2(3.0f, 3.0f);
+    style.GrabMinSize = 5.0f;
+    style.TabBorderSize = 0.0f;
+    style.TabBarBorderSize = 0.0f;
+    style.SeparatorTextBorderSize = 1.0f;
+    style.SeparatorTextPadding = ImVec2(10.0f, 0.0f);
+    style.DisplaySafeAreaPadding = ImVec2(0.0f, 0.0f);
+    style.ScrollbarSize = 12.0f;
+
+    // Colors
+    ImVec4* colors = style.Colors;
     colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
     colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
     colors[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
