@@ -1,12 +1,12 @@
 //--------------------------------------------------
 // Atta UI Module
-// help.h
-// Date: 2022-10-29
+// align.h
+// Date: 2024-01-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 
 namespace atta::ui {
 
-void Help(std::string text);
+void verticalAlign(float height, std::function<void()> func);
 
 } // namespace atta::ui

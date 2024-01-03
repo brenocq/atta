@@ -7,6 +7,6 @@
 
 namespace atta::ui {
 
-bool ImageButton(std::string name, float size);
+bool imageButton(std::string name, float size);
 
 } // namespace atta::ui

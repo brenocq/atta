@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/ui/editor/tools/timeProfiler/timeProfilerWindow.h>
-#include <atta/ui/editor/components/button.h>
+#include <atta/ui/editor/widgets/button.h>
 
 namespace atta::ui {
 
@@ -25,10 +25,10 @@ void TimeProfilerWindow::renderImpl() {
     }
 
     if (!Profiler::isRecording()) {
-        if (ui::ImageButton("play", buttonSize))
+        if (ui::imageButton("icons/play.png", buttonSize))
             Profiler::startRecording();
     } else {
-        if (ui::ImageButton("stop", buttonSize))
+        if (ui::imageButton("icons/stop.png", buttonSize))
             Profiler::stopRecording();
     }
 

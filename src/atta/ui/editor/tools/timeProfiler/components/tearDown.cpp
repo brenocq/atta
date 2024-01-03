@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/ui/editor/tools/timeProfiler/components/tearDown.h>
 
-#include <atta/ui/editor/components/help.h>
+#include <atta/ui/editor/widgets/help.h>
 
 #include "imgui.h"
 
@@ -95,7 +95,7 @@ void TearDown::render() {
     if (ImGui::Checkbox("Exclusive", &_exclusive))
         exclusiveChanged = true;
     ImGui::SameLine();
-    ui::Help("Set to exclude the time of nested function calls");
+    ui::help("Set to exclude the time of nested function calls");
 
     //----- Check for updates -----//
     static size_t lastRecordBegin = 0;

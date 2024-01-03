@@ -8,8 +8,10 @@ set(ATTA_UI_MODULE_SOURCE
     editor/dockSpace.cpp
     editor/window.cpp
 
-    editor/components/button.cpp
-    editor/components/help.cpp
+    editor/widgets/align.cpp
+    editor/widgets/button.cpp
+    editor/widgets/help.cpp
+    editor/widgets/image.cpp
 
     editor/topBar/topBar.cpp
     editor/toolBar/toolBar.cpp
