@@ -19,12 +19,13 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
 
     compute/entityClick.cpp
 
-    renderers/renderer.cpp
+    renderers/common/drawerPipeline.cpp
+    renderers/common/gridPipeline.cpp
+    renderers/common/selectedPipeline.cpp
     renderers/fastRenderer.cpp
     renderers/pbrRenderer.cpp
     renderers/phongRenderer.cpp
-    renderers/common/selectedPipeline.cpp
-    renderers/common/drawerPipeline.cpp
+    renderers/renderer.cpp
 
     windows/window.cpp
     windows/nullWindow.cpp

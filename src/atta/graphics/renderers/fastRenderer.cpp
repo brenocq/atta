@@ -47,8 +47,9 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 
     //---------- Common pipelines ----------//
-    _selectedPipeline = std::make_unique<SelectedPipeline>(_renderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(_renderPass);
+    _gridPipeline = std::make_unique<GridPipeline>(_renderPass);
+    _selectedPipeline = std::make_unique<SelectedPipeline>(_renderPass);
 }
 
 FastRenderer::~FastRenderer() {}
@@ -71,6 +72,9 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
     // Update drawer data
     if (_renderDrawer)
         _drawerPipeline->update();
+
+    // Update grid data
+    _gridPipeline->update(camera);
 
     // Render
     _renderQueue->begin();
@@ -113,6 +117,7 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
 
             if (_renderDrawer)
                 _drawerPipeline->render(camera);
+            _gridPipeline->render(camera);
         }
         _renderPass->end();
     }

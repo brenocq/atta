@@ -409,6 +409,9 @@ void Manager::createMesh(StringId sid) {
     for (resource::Mesh::VertexElement element : mesh->getVertexLayout()) {
         BufferLayout::Element::Type type;
         switch (element.type) {
+            case resource::Mesh::VertexElement::FLOAT:
+                type = BufferLayout::Element::Type::FLOAT;
+                break;
             case resource::Mesh::VertexElement::VEC2:
                 type = BufferLayout::Element::Type::VEC2;
                 break;
