@@ -96,15 +96,14 @@ void Framebuffer::bind(bool clear) {
                 clearColor[i] = (GLint)std::round(_clearColor[i]);
             glClearBufferiv(GL_COLOR, 0, clearColor);
         }
-
-        if (_depthAttachmentIndex != -1 && _stencilAttachmentIndex != -1) {
-            glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-            glEnable(GL_DEPTH_TEST);
-            glEnable(GL_STENCIL_TEST);
-            glStencilMask(0x00);
-        } else if (_depthAttachmentIndex != -1) {
+        if (_depthAttachmentIndex != -1) {
             glClear(GL_DEPTH_BUFFER_BIT);
             glEnable(GL_DEPTH_TEST);
+        }
+        if (_stencilAttachmentIndex != -1) {
+            glClear(GL_STENCIL_BUFFER_BIT);
+            glStencilMask(0x00);
+            glEnable(GL_STENCIL_TEST);
         }
     }
 }
