@@ -11,6 +11,7 @@
 #include <atta/event/events/materialCreate.h>
 #include <atta/event/events/materialDestroy.h>
 #include <atta/event/events/materialUpdate.h>
+#include <atta/event/events/meshDestroy.h>
 #include <atta/event/events/meshLoad.h>
 #include <atta/event/events/projectOpen.h>
 #include <atta/file/manager.h>
@@ -96,7 +97,10 @@ void Manager::createLoadEvent<Material>(Material* resource, StringId sid) {
 }
 
 template <>
-void Manager::createDestroyEvent<Mesh>(StringId sid) {}
+void Manager::createDestroyEvent<Mesh>(StringId sid) {
+    event::MeshDestroy e(sid);
+    event::publish(e);
+}
 template <>
 void Manager::createDestroyEvent<Image>(StringId sid) {}
 template <>

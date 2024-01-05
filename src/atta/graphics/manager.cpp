@@ -21,6 +21,7 @@
 
 #include <atta/event/events/imageLoad.h>
 #include <atta/event/events/imageUpdate.h>
+#include <atta/event/events/meshDestroy.h>
 #include <atta/event/events/meshLoad.h>
 #include <atta/event/events/meshUpdate.h>
 #include <atta/event/interface.h>
@@ -79,6 +80,7 @@ void Manager::startUpImpl() {
     //----- Resource sync -----//
     event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));
     event::subscribe<event::MeshUpdate>(BIND_EVENT_FUNC(Manager::onMeshUpdateEvent));
+    event::subscribe<event::MeshDestroy>(BIND_EVENT_FUNC(Manager::onMeshDestroyEvent));
     event::subscribe<event::ImageLoad>(BIND_EVENT_FUNC(Manager::onImageLoadEvent));
     event::subscribe<event::ImageUpdate>(BIND_EVENT_FUNC(Manager::onImageUpdateEvent));
     syncResources();
@@ -93,6 +95,7 @@ void Manager::startUpImpl() {
 void Manager::shutDownImpl() {
     event::unsubscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));
     event::unsubscribe<event::MeshUpdate>(BIND_EVENT_FUNC(Manager::onMeshUpdateEvent));
+    event::unsubscribe<event::MeshDestroy>(BIND_EVENT_FUNC(Manager::onMeshDestroyEvent));
     event::unsubscribe<event::ImageLoad>(BIND_EVENT_FUNC(Manager::onImageLoadEvent));
     event::unsubscribe<event::ImageUpdate>(BIND_EVENT_FUNC(Manager::onImageUpdateEvent));
 
@@ -370,6 +373,14 @@ void Manager::onMeshUpdateEvent(event::Event& event) {
         mesh->getVertexBuffer()->update(meshResource->getVertices().data(), meshResource->getVertices().size());
     } else
         LOG_WARN("gfx::Manager", "Can not update mesh [w]$0[] that was not created", e.sid);
+}
+
+void Manager::onMeshDestroyEvent(event::Event& event) {
+    event::MeshDestroy& e = reinterpret_cast<event::MeshDestroy&>(event);
+    if (_meshes.find(e.sid) != _meshes.end())
+        _meshes[e.sid].reset();
+    else
+        LOG_WARN("gfx::Manager", "Can not destroy mesh [w]$0[] that was not created", e.sid);
 }
 
 void Manager::onImageLoadEvent(event::Event& event) {

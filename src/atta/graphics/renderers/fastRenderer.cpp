@@ -69,12 +69,12 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
         return imageGroup;
     });
 
+    // Update grid data
+    _gridPipeline->update(camera);
+
     // Update drawer data
     if (_renderDrawer)
         _drawerPipeline->update();
-
-    // Update grid data
-    _gridPipeline->update(camera);
 
     // Render
     _renderQueue->begin();
@@ -115,9 +115,10 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
             }
             _geometryPipeline->end();
 
+            _gridPipeline->render(camera);
+
             if (_renderDrawer)
                 _drawerPipeline->render(camera);
-            _gridPipeline->render(camera);
         }
         _renderPass->end();
     }

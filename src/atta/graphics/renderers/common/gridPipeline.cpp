@@ -22,7 +22,6 @@ GridPipeline::GridPipeline(std::shared_ptr<RenderPass> renderPass) : _numLines(0
 
     // Create line mesh
     _gridMeshName = "atta::gfx::GridPipeline[" + std::to_string(_gridId++) + "]";
-    LOG_DEBUG("GridPipeline", "Mesh id $0", _gridMeshName);
     res::Mesh::CreateInfo meshInfo{};
     uint8_t* data = (uint8_t*)_lines.data();
     size_t size = _lines.size() * sizeof(Line);
@@ -33,9 +32,7 @@ GridPipeline::GridPipeline(std::shared_ptr<RenderPass> renderPass) : _numLines(0
     res::create<res::Mesh>(_gridMeshName, meshInfo);
 }
 
-GridPipeline::~GridPipeline() {
-    // TODO Delete grid
-}
+GridPipeline::~GridPipeline() { res::destroy<res::Mesh>(_gridMeshName); }
 
 void GridPipeline::update(std::shared_ptr<Camera> camera) {
     // Update grid
