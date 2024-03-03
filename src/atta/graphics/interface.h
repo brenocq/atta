@@ -46,12 +46,12 @@ void setUiShutDownFunc(std::function<void()> uiShutDownFunc);
 void setUiStartUpFunc(std::function<void()> uiStartUpFunc);
 
 //----- Viewport -----//
-std::vector<std::shared_ptr<Viewport>> getViewports();
-void clearViewports();
-void addViewport(std::shared_ptr<Viewport> viewport);
-void removeViewport(std::shared_ptr<Viewport> viewport);
-void createDefaultViewports();
-component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
+// std::vector<std::shared_ptr<Viewport>> getViewports();
+// void clearViewports();
+// void addViewport(std::shared_ptr<Viewport> viewport);
+// void removeViewport(std::shared_ptr<Viewport> viewport);
+// void createDefaultViewports();
+// component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
 void* getImGuiImage(StringId sid);
 
 } // namespace atta::graphics

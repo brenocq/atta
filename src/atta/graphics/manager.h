@@ -47,12 +47,12 @@ class Manager final {
 
     friend std::shared_ptr<GraphicsAPI> getGraphicsAPI();
     friend std::shared_ptr<Window> getWindow();
-    friend std::vector<std::shared_ptr<Viewport>> getViewports();
-    friend void clearViewports();
-    friend void addViewport(std::shared_ptr<Viewport> viewport);
-    friend void removeViewport(std::shared_ptr<Viewport> viewport);
-    friend void createDefaultViewports();
-    friend component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
+    // friend std::vector<std::shared_ptr<Viewport>> getViewports();
+    // friend void clearViewports();
+    // friend void addViewport(std::shared_ptr<Viewport> viewport);
+    // friend void removeViewport(std::shared_ptr<Viewport> viewport);
+    // friend void createDefaultViewports();
+    // friend component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
     friend void* getImGuiImage(StringId sid);
 
     const std::unordered_map<StringId, std::shared_ptr<Mesh>>& getMeshes() const;
@@ -75,11 +75,11 @@ class Manager final {
     void recreateGraphicsAPI();
 
     std::vector<std::shared_ptr<Viewport>>& getViewportsImpl();
-    void clearViewportsImpl();
-    void addViewportImpl(std::shared_ptr<Viewport> viewport);
-    void removeViewportImpl(std::shared_ptr<Viewport> viewport);
-    void createDefaultViewportsImpl();
-    component::EntityId viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos);
+    // void clearViewportsImpl();
+    // void addViewportImpl(std::shared_ptr<Viewport> viewport);
+    // void removeViewportImpl(std::shared_ptr<Viewport> viewport);
+    // void createDefaultViewportsImpl();
+    // component::EntityId viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos);
     void* getImGuiImageImpl(StringId sid);
 
     gfx::Image::Format convertFormat(res::Image::Format format) const;
