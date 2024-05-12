@@ -12,6 +12,7 @@
 #include <atta/physics/engines/box2DEngine.h>
 #include <atta/physics/interface.h>
 #include <atta/utils/config.h>
+#include <numeric>
 
 namespace atta::physics {
 
@@ -82,6 +83,7 @@ inline b2BodyType attaToBox2D(component::RigidBody2D::Type type) {
         return b2_kinematicBody;
     else if (type == component::RigidBody2D::STATIC)
         return b2_staticBody;
+    return b2_dynamicBody;
 }
 
 //---------- Box2DEngine ----------//
@@ -271,6 +273,113 @@ void Box2DEngine::deleteRigidBody(component::EntityId entity) {
     _bodies.erase(entity);
 }
 
+bool isConvexPolygon(const std::vector<vec2>& points) {
+    if (points.size() < 3)
+        return false;
+
+    bool isPositive = false;
+    bool isNegative = false;
+    for (size_t i = 0; i < points.size(); ++i) {
+        vec2 p1 = points[i];
+        vec2 p2 = points[(i + 1) % points.size()];
+        vec2 p3 = points[(i + 2) % points.size()];
+
+        float crossProduct = (p2.x - p1.x) * (p3.y - p2.y) - (p2.y - p1.y) * (p3.x - p2.x);
+        if (crossProduct > 0)
+            isPositive = true;
+        else if (crossProduct < 0)
+            isNegative = true;
+
+        // Check if found both positive and negative cross products
+        if (isPositive && isNegative)
+            return false;
+    }
+
+    // All cross products have the same sign
+    return true;
+}
+
+bool pointInTriangle(const vec2& p, const vec2& a, const vec2& b, const vec2& c) {
+    // Compute vectors
+    vec2 v0 = c - a;
+    vec2 v1 = b - a;
+    vec2 v2 = p - a;
+
+    // Compute dot products
+    float dot00 = v0.dot(v0);
+    float dot01 = v0.dot(v1);
+    float dot02 = v0.dot(v2);
+    float dot11 = v1.dot(v1);
+    float dot12 = v1.dot(v2);
+
+    // Compute barycentric coordinates
+    float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+    // Check if point is in triangle
+    return (u >= 0) && (v >= 0) && (u + v < 1);
+}
+
+bool isEar(const std::vector<vec2>& polygon, int a, int b, int c) {
+    // Check if triangle (a, b, c) is an ear
+    vec2 p1 = polygon[a];
+    vec2 p2 = polygon[b];
+    vec2 p3 = polygon[c];
+
+    if ((p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x) <= 0)
+        return false;
+
+    for (int i = 0; i < polygon.size(); ++i) {
+        if (i == a || i == b || i == c)
+            continue;
+        if (pointInTriangle(polygon[i], p1, p2, p3))
+            return false;
+    }
+
+    return true;
+}
+
+std::vector<std::vector<vec2>> splitConcaveToConvex(const std::vector<vec2>& concavePolygon) {
+    std::vector<std::vector<vec2>> convexPolygons;
+    std::vector<int> remainingVertices(concavePolygon.size());
+    std::iota(remainingVertices.begin(), remainingVertices.end(), 0); // Initialize with all vertices
+
+    while (remainingVertices.size() > 3) {
+        for (size_t i = 0; i < remainingVertices.size(); ++i) {
+            int prev = (i - 1 + remainingVertices.size()) % remainingVertices.size();
+            int curr = i;
+            int next = (i + 1) % remainingVertices.size();
+
+            if (isEar(concavePolygon, remainingVertices[prev], remainingVertices[curr], remainingVertices[next])) {
+                // Found an ear, cut it off
+                std::vector<vec2> newPolygon = {concavePolygon[remainingVertices[prev]], concavePolygon[remainingVertices[curr]],
+                                                concavePolygon[remainingVertices[next]]};
+                convexPolygons.push_back(newPolygon);
+                remainingVertices.erase(remainingVertices.begin() + curr);
+                break;
+            }
+        }
+    }
+
+    // Remaining vertices form the last convex polygon
+    convexPolygons.push_back({concavePolygon[remainingVertices[0]], concavePolygon[remainingVertices[1]], concavePolygon[remainingVertices[2]]});
+
+    return convexPolygons;
+}
+
+float polygonArea(const std::vector<vec2>& polygon) {
+    float area = 0.0f;
+    int numVertices = polygon.size();
+
+    for (int i = 0; i < numVertices; i++) {
+        int j = (i + 1) % numVertices;
+        area += (polygon[i].x * polygon[j].y) - (polygon[j].x * polygon[i].y);
+    }
+
+    return std::abs(area / 2.0f);
+}
+
 void Box2DEngine::createColliders(component::EntityId entity) {
     auto t = component::getComponent<component::Transform>(entity);
     auto rb2d = component::getComponent<component::RigidBody2D>(entity);
@@ -283,50 +392,85 @@ void Box2DEngine::createColliders(component::EntityId entity) {
     vec3 position = worldT.position;
     quat orientation = worldT.orientation;
     vec3 scale = worldT.scale;
-    b2FixtureDef fixtureDef;
 
-    // Shapes
-    b2PolygonShape polygonShape;
-    b2CircleShape circle;
-
-    // Create shape
-    float area = 1.0f;
+    // Create shapes
     if (box2d) {
+        // Box shape
+        b2PolygonShape polygonShape;
         polygonShape.SetAsBox(scale.x * box2d->size.x / 2.0f, scale.y * box2d->size.y / 2.0f);
-        fixtureDef.shape = &polygonShape;
+
         // Compute area
-        area = scale.x * box2d->size.x * scale.y * box2d->size.y;
+        float area = scale.x * box2d->size.x * scale.y * box2d->size.y;
+
+        // Material properties
+        b2FixtureDef fixtureDef;
+        fixtureDef.density = rb2d->mass / area;
+        fixtureDef.friction = rb2d->friction;
+        fixtureDef.restitution = rb2d->restitution;
+        fixtureDef.restitutionThreshold = 0.1f;
+        fixtureDef.shape = &polygonShape;
+
+        // Attach collider
+        _bodies[entity]->CreateFixture(&fixtureDef);
     } else if (circle2d) {
-        circle.m_radius = std::max(scale.x, scale.y) * circle2d->radius;
-        fixtureDef.shape = &circle;
+        // Circle shape
+        b2CircleShape circleShape;
+        circleShape.m_radius = std::max(scale.x, scale.y) * circle2d->radius;
+
         // Compute area
-        area = circle.m_radius * circle.m_radius * 3.14159265f;
+        float area = circleShape.m_radius * circleShape.m_radius * 3.14159265f;
+
+        // Material properties
+        b2FixtureDef fixtureDef;
+        fixtureDef.density = rb2d->mass / area;
+        fixtureDef.friction = rb2d->friction;
+        fixtureDef.restitution = rb2d->restitution;
+        fixtureDef.restitutionThreshold = 0.1f;
+        fixtureDef.shape = &circleShape;
+
+        // Attach collider
+        _bodies[entity]->CreateFixture(&fixtureDef);
     } else if (polygon2d) {
-        // Set polygon points
-        std::vector<b2Vec2> b2Points;
-        for (const auto& point : polygon2d->points)
-            b2Points.emplace_back(scale.x * point.x, scale.y * point.y);
-        polygonShape.Set(b2Points.data(), static_cast<int32>(b2Points.size()));
         // Compute area
-        b2MassData massData;
-        polygonShape.ComputeMass(&massData, 1.0f);
-        area = massData.mass;
-        fixtureDef.shape = &polygonShape;
+        std::vector<vec2> polygonPoints = polygon2d->points;
+        if (polygonPoints.back() == polygonPoints.front())
+            polygonPoints.pop_back();
+        for (auto& point : polygonPoints)
+            point = vec2(scale.x * point.x, scale.y * point.y);
+        float area = polygonArea(polygonPoints);
+        if (std::abs(area) < 0.000001f) {
+            LOG_WARN("Box2DEngine", "Rigid body polygon shape should not have zero area");
+            return;
+        }
+
+        // Split polygon in convex polygons if necessary
+        std::vector<std::vector<vec2>> convexPolygons;
+        if (isConvexPolygon(polygonPoints))
+            convexPolygons.push_back(polygonPoints);
+        else
+            convexPolygons = splitConcaveToConvex(polygonPoints);
+
+        // Create polygon shapes
+        for (const auto& polygon : convexPolygons) {
+            b2PolygonShape polygonShape;
+            // Set polygon points
+            std::vector<b2Vec2> b2Points;
+            for (const auto& point : polygon)
+                b2Points.emplace_back(point.x, point.y);
+            polygonShape.Set(b2Points.data(), static_cast<int32>(b2Points.size()));
+
+            // Material properties
+            b2FixtureDef fixtureDef;
+            fixtureDef.density = rb2d->mass / area;
+            fixtureDef.friction = rb2d->friction;
+            fixtureDef.restitution = rb2d->restitution;
+            fixtureDef.restitutionThreshold = 0.1f;
+            fixtureDef.shape = &polygonShape;
+
+            // Attach collider
+            _bodies[entity]->CreateFixture(&fixtureDef);
+        }
     }
-
-    if (area == 0.0f) {
-        LOG_WARN("Box2DEngine", "Rigid body collision shape should not have zero area");
-        area = 1.0f;
-    }
-
-    // Material properties
-    fixtureDef.density = rb2d->mass / area;
-    fixtureDef.friction = rb2d->friction;
-    fixtureDef.restitution = rb2d->restitution;
-    fixtureDef.restitutionThreshold = 0.1f;
-
-    // Attach collider
-    _bodies[entity]->CreateFixture(&fixtureDef);
 }
 
 void Box2DEngine::deleteColliders(component::EntityId entity) {
@@ -413,17 +557,12 @@ void Box2DEngine::createRigidJoint(component::RigidJoint* rigid) {
     vec3 worldDir = tb->position - ta->position;
     vec3 localDir = inverse(ta->getWorldTransformMatrix(rigid->bodyA)) * worldDir;
     vec3 localDirNorm = normalize(localDir);
-    b2Vec2 axis = b2Vec2(localDirNorm.x, localDirNorm.y);
     b2Vec2 anchor = b2Vec2(localDir.x, localDir.y);
 
-    b2PrismaticJointDef pjd;
-    pjd.Initialize(bodyA, bodyB, anchor, axis);
-    pjd.enableLimit = true;
-    pjd.lowerTranslation = localDir.length();
-    pjd.upperTranslation = localDir.length();
-    pjd.enableMotor = false;
+    b2WeldJointDef wjd;
+    wjd.Initialize(bodyA, bodyB, anchor);
 
-    _world->CreateJoint(&pjd);
+    _world->CreateJoint(&wjd);
 }
 
 std::vector<component::EntityId> Box2DEngine::getEntityCollisions(component::EntityId eid) {
