@@ -34,14 +34,14 @@ void setUiShutDownFunc(std::function<void()> uiShutDownFunc) { Manager::getInsta
 void setUiStartUpFunc(std::function<void()> uiStartUpFunc) { Manager::getInstance()._uiStartUpFunc = uiStartUpFunc; }
 
 //----- Viewport -----//
-std::vector<std::shared_ptr<Viewport>> getViewports() { return Manager::getInstance().getViewportsImpl(); }
-void clearViewports() { Manager::getInstance().clearViewportsImpl(); }
-void addViewport(std::shared_ptr<Viewport> viewport) { Manager::getInstance().addViewportImpl(viewport); }
-void removeViewport(std::shared_ptr<Viewport> viewport) { Manager::getInstance().removeViewportImpl(viewport); }
-void createDefaultViewports() { return Manager::getInstance().createDefaultViewportsImpl(); }
-component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos) {
-    return Manager::getInstance().viewportEntityClickImpl(viewport, pos);
-}
+// std::vector<std::shared_ptr<Viewport>> getViewports() { return Manager::getInstance().getViewportsImpl(); }
+// void clearViewports() { Manager::getInstance().clearViewportsImpl(); }
+// void addViewport(std::shared_ptr<Viewport> viewport) { Manager::getInstance().addViewportImpl(viewport); }
+// void removeViewport(std::shared_ptr<Viewport> viewport) { Manager::getInstance().removeViewportImpl(viewport); }
+// void createDefaultViewports() { return Manager::getInstance().createDefaultViewportsImpl(); }
+// component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos) {
+//    return Manager::getInstance().viewportEntityClickImpl(viewport, pos);
+//}
 
 void* getImGuiImage(StringId sid) { return Manager::getInstance().getImGuiImageImpl(sid); }
 

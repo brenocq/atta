@@ -93,45 +93,45 @@ void TopBar::render() {
             ImGui::EndMenu();
         }
 
-        if (ImGui::BeginMenu("Viewports")) {
-            std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
-            _viewportModals.resize(viewports.size());
-            int i = 0;
-            for (auto viewport : viewports) {
-                if (ImGui::MenuItem(viewport->getName().c_str()))
-                    _viewportModals[i] = true;
-                i++;
-            }
+        // if (ImGui::BeginMenu("Viewports")) {
+        //     std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
+        //     _viewportModals.resize(viewports.size());
+        //     int i = 0;
+        //     for (auto viewport : viewports) {
+        //         if (ImGui::MenuItem(viewport->getName().c_str()))
+        //             _viewportModals[i] = true;
+        //         i++;
+        //     }
 
-            ImGui::Separator();
+        //    ImGui::Separator();
 
-            if (ImGui::MenuItem("Create viewport")) {
-                // Choose viewport name
-                unsigned newViewportNumber = 0;
-                bool found = false;
-                while (!found) {
-                    found = true;
-                    for (auto viewport : viewports)
-                        if (viewport->getSID() == StringId("Viewport " + std::to_string(newViewportNumber))) {
-                            found = false;
-                            break;
-                        }
-                    if (!found)
-                        newViewportNumber++;
-                }
+        //    if (ImGui::MenuItem("Create viewport")) {
+        //        // Choose viewport name
+        //        unsigned newViewportNumber = 0;
+        //        bool found = false;
+        //        while (!found) {
+        //            found = true;
+        //            for (auto viewport : viewports)
+        //                if (viewport->getSID() == StringId("Viewport " + std::to_string(newViewportNumber))) {
+        //                    found = false;
+        //                    break;
+        //                }
+        //            if (!found)
+        //                newViewportNumber++;
+        //        }
 
-                // Create viewport
-                graphics::Viewport::CreateInfo viewportInfo;
-                viewportInfo.renderer = std::make_shared<graphics::PhongRenderer>();
-                viewportInfo.camera = std::static_pointer_cast<graphics::Camera>(
-                    std::make_shared<graphics::PerspectiveCamera>(graphics::PerspectiveCamera::CreateInfo{}));
-                viewportInfo.sid = StringId("Viewport " + std::to_string(newViewportNumber));
-                std::shared_ptr<graphics::Viewport> viewport = std::make_shared<graphics::Viewport>(viewportInfo);
-                graphics::addViewport(viewport);
-            }
+        //        // Create viewport
+        //        graphics::Viewport::CreateInfo viewportInfo;
+        //        viewportInfo.renderer = std::make_shared<graphics::PhongRenderer>();
+        //        viewportInfo.camera = std::static_pointer_cast<graphics::Camera>(
+        //            std::make_shared<graphics::PerspectiveCamera>(graphics::PerspectiveCamera::CreateInfo{}));
+        //        viewportInfo.sid = StringId("Viewport " + std::to_string(newViewportNumber));
+        //        std::shared_ptr<graphics::Viewport> viewport = std::make_shared<graphics::Viewport>(viewportInfo);
+        //        graphics::addViewport(viewport);
+        //    }
 
-            ImGui::EndMenu();
-        }
+        //    ImGui::EndMenu();
+        //}
 
         if (ImGui::BeginMenu("Modules")) {
             if (ImGui::MenuItem("Graphics"))
@@ -459,7 +459,7 @@ void TopBar::saveProjectModal() {
             component::clear();
             component::createDefault();
             // Replace viewports with default
-            graphics::createDefaultViewports();
+            // XXX  graphics::createDefaultViewports();
 
             if (_quitAfterSaveModal) {
                 event::WindowClose e;
@@ -474,38 +474,39 @@ void TopBar::saveProjectModal() {
 }
 
 void TopBar::viewportModals() {
-    std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
-    static std::vector<bool> newViewportModals; // If first time creating the modal
-    _viewportModals.resize(viewports.size());
+    // XXX
+    // std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
+    // static std::vector<bool> newViewportModals; // If first time creating the modal
+    //_viewportModals.resize(viewports.size());
 
-    // Check if first time creating viewport
-    newViewportModals.resize(_viewportModals.size());
-    for (unsigned i = 0; i < newViewportModals.size(); i++)
-        newViewportModals[i] = !newViewportModals[i] && _viewportModals[i];
+    //// Check if first time creating viewport
+    // newViewportModals.resize(_viewportModals.size());
+    // for (unsigned i = 0; i < newViewportModals.size(); i++)
+    //     newViewportModals[i] = !newViewportModals[i] && _viewportModals[i];
 
-    for (uint32_t i = 0; i < _viewportModals.size(); i++) {
-        char nameBuf[196];
-        sprintf(nameBuf, "%s###ViewportProps%s", viewports[i]->getName().c_str(), viewports[i]->getSID().getString().c_str());
+    // for (uint32_t i = 0; i < _viewportModals.size(); i++) {
+    //     char nameBuf[196];
+    //     sprintf(nameBuf, "%s###ViewportProps%s", viewports[i]->getName().c_str(), viewports[i]->getSID().getString().c_str());
 
-        bool open = _viewportModals[i];
-        if (open) {
-            if (newViewportModals[i])
-                ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f));
-            if (ImGui::Begin(nameBuf, &open)) {
-                viewports[i]->renderUI();
+    //    bool open = _viewportModals[i];
+    //    if (open) {
+    //        if (newViewportModals[i])
+    //            ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f));
+    //        if (ImGui::Begin(nameBuf, &open)) {
+    //            viewports[i]->renderUI();
 
-                ImGui::Separator();
-                if (ImGui::Button("Delete Viewport")) {
-                    graphics::removeViewport(viewports[i]);
-                    ImGui::End();
-                    break;
-                }
-            }
-            ImGui::End();
-            _viewportModals[i] = open;
-        }
-    }
-    newViewportModals = _viewportModals;
+    //            ImGui::Separator();
+    //            if (ImGui::Button("Delete Viewport")) {
+    //                graphics::removeViewport(viewports[i]);
+    //                ImGui::End();
+    //                break;
+    //            }
+    //        }
+    //        ImGui::End();
+    //        _viewportModals[i] = open;
+    //    }
+    //}
+    // newViewportModals = _viewportModals;
 }
 
 } // namespace atta::ui

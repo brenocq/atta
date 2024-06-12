@@ -10,6 +10,7 @@
 #include <atta/ui/editor/topBar/localWindows/repoWindow.h>
 
 namespace atta::ui {
+
 class TopBar {
   public:
     TopBar();
@@ -39,6 +40,7 @@ class TopBar {
     std::vector<bool> _viewportModals;    ///< Which viewports should be rendered
     std::vector<RepoWindow> _repoWindows; ///< Which repository windows are open
 };
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_EDITOR_TOP_BAR_TOP_BAR_H

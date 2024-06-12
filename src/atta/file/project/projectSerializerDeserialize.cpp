@@ -49,12 +49,13 @@ void ProjectSerializer::deserializeComponentModule(Section& section) {
 void ProjectSerializer::deserializeGraphicsModule(Section& section) {
     if (section.contains("viewports")) {
         std::vector<graphics::Viewport> viewports = std::vector<graphics::Viewport>(section["viewports"]);
-        graphics::clearViewports();
-        for (auto& viewport : viewports) {
-            std::shared_ptr<graphics::Viewport> v = std::make_shared<graphics::Viewport>();
-            *v = viewport;
-            graphics::addViewport(v);
-        }
+        LOG_WARN("file::ProjectSerializer", "Deserializing viewports was not implemented yet");
+        // graphics::clearViewports();
+        // for (auto& viewport : viewports) {
+        //     std::shared_ptr<graphics::Viewport> v = std::make_shared<graphics::Viewport>();
+        //     *v = viewport;
+        //     graphics::addViewport(v);
+        // }
     }
     if (section.contains("graphicsFPS"))
         graphics::setGraphicsFPS(float(section["graphicsFPS"]));

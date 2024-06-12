@@ -89,7 +89,7 @@ void Manager::startUpImpl() {
     _computeEntityClick = std::make_unique<EntityClick>();
 
     //----- Create viewports -----//
-    createDefaultViewportsImpl();
+    // createDefaultViewportsImpl();
 }
 
 void Manager::shutDownImpl() {
@@ -164,46 +164,46 @@ void Manager::recreateGraphicsAPI() {
         _uiStartUpFunc();
 }
 
-std::vector<std::shared_ptr<Viewport>>& Manager::getViewportsImpl() { return _viewports; }
+// std::vector<std::shared_ptr<Viewport>>& Manager::getViewportsImpl() { return _viewports; }
 
-void Manager::clearViewportsImpl() {
-    _viewportsNext.clear();
-    _swapViewports = true;
-}
-
-void Manager::addViewportImpl(std::shared_ptr<Viewport> viewport) {
-    _viewportsNext.push_back(viewport);
-    _swapViewports = true;
-}
-
-void Manager::removeViewportImpl(std::shared_ptr<Viewport> viewport) {
-    // TODO make it work with zero viewports
-    if (_viewportsNext.size() > 1) {
-        for (unsigned i = 0; i < _viewportsNext.size(); i++)
-            if (_viewportsNext[i] == viewport) {
-                _viewportsNext.erase(_viewportsNext.begin() + i);
-                break;
-            }
-        _swapViewports = true;
-    } else {
-        LOG_WARN("graphics::Manager", "It is not possible to have 0 viewports yet");
-    }
-}
-
-void Manager::createDefaultViewportsImpl() {
-    _viewportsNext.clear();
-
-    Viewport::CreateInfo viewportInfo;
-    viewportInfo.renderer = std::make_shared<PbrRenderer>();
-    viewportInfo.camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
-    viewportInfo.sid = StringId("Main Viewport");
-    _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));
-    _swapViewports = true;
-}
-
-component::EntityId Manager::viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos) {
-    return _computeEntityClick->click(viewport, pos);
-}
+// void Manager::clearViewportsImpl() {
+//     _viewportsNext.clear();
+//     _swapViewports = true;
+// }
+//
+// void Manager::addViewportImpl(std::shared_ptr<Viewport> viewport) {
+//     _viewportsNext.push_back(viewport);
+//     _swapViewports = true;
+// }
+//
+// void Manager::removeViewportImpl(std::shared_ptr<Viewport> viewport) {
+//     // TODO make it work with zero viewports
+//     if (_viewportsNext.size() > 1) {
+//         for (unsigned i = 0; i < _viewportsNext.size(); i++)
+//             if (_viewportsNext[i] == viewport) {
+//                 _viewportsNext.erase(_viewportsNext.begin() + i);
+//                 break;
+//             }
+//         _swapViewports = true;
+//     } else {
+//         LOG_WARN("graphics::Manager", "It is not possible to have 0 viewports yet");
+//     }
+// }
+//
+// void Manager::createDefaultViewportsImpl() {
+//     _viewportsNext.clear();
+//
+//     Viewport::CreateInfo viewportInfo;
+//     viewportInfo.renderer = std::make_shared<PbrRenderer>();
+//     viewportInfo.camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
+//     viewportInfo.sid = StringId("Main Viewport");
+//     _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));
+//     _swapViewports = true;
+// }
+//
+// component::EntityId Manager::viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos) {
+//     return _computeEntityClick->click(viewport, pos);
+// }
 
 void* Manager::getImGuiImageImpl(StringId sid) { return _images[sid]->getImGuiImage(); }
 

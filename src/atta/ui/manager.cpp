@@ -64,7 +64,7 @@ void Manager::startUpImpl() {
     gfx::setUiShutDownFunc([&]() { shutDownImpl(); });
     gfx::setUiStartUpFunc([&]() { startUpImpl(); });
 
-    // Create editor (make sure windows are reorganized after start up)
+    // Create editor window
     _editor = {};
 }
 
