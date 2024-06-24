@@ -16,6 +16,8 @@ class Instance {
     Instance();
     ~Instance();
 
+    bool wasCreated() const;
+
     VkInstance getHandle() const;
 
   private:
@@ -29,6 +31,7 @@ class Instance {
     std::vector<const char*> getEnabledLayers();
 
     VkInstance _instance;
+    bool _wasCreated;
     VkDebugUtilsMessengerEXT debugMessenger;
 };
 

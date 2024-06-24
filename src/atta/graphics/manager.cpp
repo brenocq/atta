@@ -35,10 +35,9 @@
 namespace atta::graphics {
 
 Manager::Manager() {
+    setGraphicsAPIImpl(GraphicsAPI::OPENGL);
 #if ATTA_VULKAN_SUPPORT
-    _desiredGraphicsAPI = GraphicsAPI::VULKAN;
-#else
-    _desiredGraphicsAPI = GraphicsAPI::OPENGL;
+    setGraphicsAPIImpl(GraphicsAPI::VULKAN);
 #endif
 }
 
@@ -153,7 +152,15 @@ std::shared_ptr<GraphicsAPI> Manager::getGraphicsAPIImpl() const { return _graph
 
 std::shared_ptr<Window> Manager::getWindowImpl() const { return _window; }
 
-void Manager::setGraphicsAPIImpl(GraphicsAPI::Type type) { _desiredGraphicsAPI = type; }
+void Manager::setGraphicsAPIImpl(GraphicsAPI::Type type) {
+#if ATTA_VULKAN_SUPPORT
+    if (type == GraphicsAPI::VULKAN && !VulkanAPI::isSupported()) {
+        LOG_WARN("gfx::Manager", "Failed to set graphics API to Vulkan");
+        return;
+    }
+#endif
+    _desiredGraphicsAPI = type;
+}
 
 void Manager::recreateGraphicsAPI() {
     if (_uiShutDownFunc)
