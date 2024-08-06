@@ -10,6 +10,7 @@
 #define _USE_MATH_DEFINES // Windows M_PI fix
 #include <any>
 #include <array>
+#include <algorithm>
 #include <bitset>
 #include <climits>
 #include <cmath>
