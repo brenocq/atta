@@ -12,7 +12,7 @@ if(ATTA_SYSTEM_NAME MATCHES "Linux")
             GIT_SHALLOW TRUE
         )
         atta_log(Info Extern "Fetching curlpp...")
-        atta_FetchContent_MakeAvailable(curlpp) 
+        atta_FetchContent_MakeAvailable(curlpp)
 
         # Fix INTERFACE_INCLUDE_DIRECTORIES to not include local build
         set_property(TARGET curlpp_static PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
