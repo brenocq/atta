@@ -8,6 +8,7 @@
 #define ATTA_PRE_COMPILED_HEADER_H
 
 #define _USE_MATH_DEFINES // Windows M_PI fix
+#include <algorithm>
 #include <any>
 #include <array>
 #include <bitset>
