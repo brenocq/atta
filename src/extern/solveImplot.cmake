@@ -20,7 +20,7 @@ set(IMPLOT_SOURCE
 add_library(implot STATIC
     ${IMPLOT_SOURCE}
 )
-target_include_directories(implot PUBLIC 
+target_include_directories(implot PUBLIC
     $<BUILD_INTERFACE:${FETCHCONTENT_BASE_DIR}/implot-src>
     $<INSTALL_INTERFACE:include/${ATTA_VERSION_SAFE}/extern/implot>
 )
