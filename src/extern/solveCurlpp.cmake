@@ -7,9 +7,8 @@ if(ATTA_SYSTEM_NAME MATCHES "Linux")
         FetchContent_Declare(
             curlpp
             GIT_REPOSITORY "https://github.com/jpbarrette/curlpp"
-            GIT_TAG "v0.8.1"
+            GIT_TAG "d080e301ec71061c46049d23fedfb8106be3153f"
             GIT_PROGRESS TRUE
-            GIT_SHALLOW TRUE
         )
         atta_log(Info Extern "Fetching curlpp...")
         atta_FetchContent_MakeAvailable(curlpp)
