@@ -6,7 +6,6 @@ FetchContent_Declare(
     GIT_REPOSITORY "https://github.com/CedricGuillemet/ImGuizmo.git"
     GIT_TAG "ba662b1"
     GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
 )
 atta_log(Info Extern "Fetching ImGuizmo...")
 FetchContent_MakeAvailable(imguizmo)
