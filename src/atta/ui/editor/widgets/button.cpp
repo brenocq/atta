@@ -11,8 +11,6 @@
 
 namespace atta::ui {
 
-bool imageButton(std::string name, float size) {
-    return ImGui::ImageButton(gfx::getImGuiImage(name), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0);
-}
+bool imageButton(std::string name, float size) { return ImGui::ImageButton(name.c_str(), (ImTextureID)(intptr_t)gfx::getImGuiImage(name), ImVec2(size, size)); }
 
 } // namespace atta::ui

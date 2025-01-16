@@ -73,7 +73,7 @@ void IOModuleWindow::cameraTabItem() {
                             size = ImVec2(avail.x, avail.x / ratio);
                         }
                         ImGui::SetCursorPos(ImVec2((window.x - size.x) * 0.5f, (window.y - avail.y) * 0.5f));
-                        ImGui::Image(_cameraImages[name]->getImGuiImage(), size, ImVec2(0, 0), ImVec2(1, 1));
+                        ImGui::Image((ImTextureID)(intptr_t)_cameraImages[name]->getImGuiImage(), size);
                     }
                 }
                 ImGui::EndChild();

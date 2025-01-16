@@ -101,6 +101,9 @@ void Manager::setTheme() {
     style.SeparatorTextPadding = ImVec2(10.0f, 0.0f);
     style.DisplaySafeAreaPadding = ImVec2(0.0f, 0.0f);
     style.ScrollbarSize = 12.0f;
+    style.FrameRounding = 5.0f;
+    style.ScrollbarRounding = 5.0f;
+    style.TabRounding = 5.0f;
 
     // Colors
     ImVec4* colors = style.Colors;
@@ -182,7 +185,8 @@ void Manager::initVulkan() {
     info.MinImageCount = 3;
     info.ImageCount = 3;
     info.CheckVkResultFn = nullptr;
-    ImGui_ImplVulkan_Init(&info, vulkanAPI->getRenderPass()->getHandle());
+    info.RenderPass = vulkanAPI->getRenderPass()->getHandle();
+    ImGui_ImplVulkan_Init(&info);
 
     // Upload Fonts
     if (!ImGui_ImplVulkan_CreateFontsTexture())
