@@ -4,7 +4,7 @@ set(ATTA_IMPLOT3D_TARGETS "")
 FetchContent_Declare(
     implot3d
     GIT_REPOSITORY "https://github.com/brenocq/implot3d"
-    GIT_TAG "v0.1"
+    GIT_TAG "main"
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
