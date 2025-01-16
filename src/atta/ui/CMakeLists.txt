@@ -41,6 +41,6 @@ add_library(atta_ui_module STATIC
     ${ATTA_UI_MODULE_SOURCE}
 )
 
-target_link_libraries(atta_ui_module PRIVATE atta_graphics_module atta_io_module atta_component_module ${ATTA_IMGUIZMO_TARGETS} ${ATTA_IMPLOT_TARGETS})
+target_link_libraries(atta_ui_module PRIVATE atta_graphics_module atta_io_module atta_component_module ${ATTA_IMGUIZMO_TARGETS} ${ATTA_IMPLOT_TARGETS} ${ATTA_IMPLOT3D_TARGETS})
 atta_target_common(atta_ui_module)
 atta_add_libs(atta_ui_module)

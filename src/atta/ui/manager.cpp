@@ -19,6 +19,7 @@
 #endif
 #include <ImGuizmo.h>
 #include <implot.h>
+#include <implot3d.h>
 // clang-format on
 
 namespace atta::ui {
@@ -32,6 +33,7 @@ void Manager::startUpImpl() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImPlot::CreateContext();
+    ImPlot3D::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
@@ -72,6 +74,11 @@ void Manager::shutDownImpl() {
     // Make sure all rendering operations are done
     gfx::getGraphicsAPI()->waitDevice();
 
+    // Destroy plotting contexts
+    ImPlot3D::DestroyContext();
+    ImPlot::DestroyContext();
+
+    // Destroy ImGui context
     switch (gfx::getGraphicsAPI()->getType()) {
         case gfx::GraphicsAPI::OPENGL:
             ImGui_ImplOpenGL3_Shutdown();

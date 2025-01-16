@@ -28,7 +28,7 @@ endif()
 add_library(imgui STATIC
 	${IMGUI_SOURCE}
 )
-target_include_directories(imgui PUBLIC 
+target_include_directories(imgui PUBLIC
     $<BUILD_INTERFACE:${FETCHCONTENT_BASE_DIR}/imgui-src>
     $<INSTALL_INTERFACE:include/${ATTA_VERSION_SAFE}/extern/imgui>
 )

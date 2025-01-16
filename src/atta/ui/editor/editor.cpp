@@ -10,6 +10,7 @@
 #include <atta/ui/editor/editor.h>
 #include <imgui_internal.h>
 #include <implot.h>
+#include <implot3d.h>
 
 #include <atta/ui/editor/moduleWindows/graphicsModuleWindow.h>
 #include <atta/ui/editor/moduleWindows/ioModuleWindow.h>
@@ -33,6 +34,7 @@ void Editor::render() {
     bool demo = true;
     ImGui::ShowDemoWindow(&demo);
     // ImPlot::ShowDemoWindow(&demo);
+    // ImPlot3D::ShowDemoWindow(&demo);
 
     // Top interface
     _topBar.render();
