@@ -94,23 +94,34 @@ void Manager::shutDownImpl() {
 }
 
 void Manager::setTheme() {
-    // Style
     ImGuiStyle& style = ImGui::GetStyle();
+
+    // Sizes main
     style.ScrollbarRounding = 0.0f;
     style.TabRounding = 0.0f;
-    style.DockingSeparatorSize = 1.0f;
-    style.WindowPadding = ImVec2(5.0f, 5.0f);
-    style.FramePadding = ImVec2(3.0f, 3.0f);
-    style.GrabMinSize = 5.0f;
-    style.TabBorderSize = 0.0f;
-    style.TabBarBorderSize = 0.0f;
-    style.SeparatorTextBorderSize = 1.0f;
-    style.SeparatorTextPadding = ImVec2(10.0f, 0.0f);
-    style.DisplaySafeAreaPadding = ImVec2(0.0f, 0.0f);
+    style.WindowPadding = ImVec2(8.0f, 5.0f);
+    style.FramePadding = ImVec2(4.0f, 3.0f);
+    style.ItemSpacing = ImVec2(5.0f, 4.0f);
+    style.ItemInnerSpacing = ImVec2(3.0f, 3.0f);
     style.ScrollbarSize = 12.0f;
+    style.GrabMinSize = 5.0f;
+    // Sizes borders
+    style.WindowBorderSize = 2.0f;
+    style.TabBorderSize = 0.0f;
+    style.TabBarBorderSize = 2.0f;
+    style.TabBarOverlineSize = 0.0f;
+    // Sizes rounding
     style.FrameRounding = 5.0f;
     style.ScrollbarRounding = 5.0f;
     style.TabRounding = 5.0f;
+    // Sizes widgets
+    style.SeparatorTextBorderSize = 1.0f;
+    style.SeparatorTextAlign = ImVec2(0.5f, 0.5f);
+    style.SeparatorTextPadding = ImVec2(0.0f, 0.0f);
+    // Sizes docking
+    style.DockingSeparatorSize = 2.0f;
+    // Sizes misc
+    style.DisplaySafeAreaPadding = ImVec2(0.0f, 0.0f);
 
     // Colors
     ImVec4* colors = style.Colors;
@@ -119,7 +130,7 @@ void Manager::setTheme() {
     colors[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
     colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
     colors[ImGuiCol_PopupBg] = ImVec4(0.09f, 0.09f, 0.09f, 0.98f);
-    colors[ImGuiCol_Border] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+    colors[ImGuiCol_Border] = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
     colors[ImGuiCol_BorderShadow] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
     colors[ImGuiCol_FrameBg] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
     colors[ImGuiCol_FrameBgHovered] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
@@ -138,7 +149,7 @@ void Manager::setTheme() {
     colors[ImGuiCol_Button] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
     colors[ImGuiCol_ButtonHovered] = ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
     colors[ImGuiCol_ButtonActive] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-    colors[ImGuiCol_Header] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+    colors[ImGuiCol_Header] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
     colors[ImGuiCol_HeaderHovered] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
     colors[ImGuiCol_HeaderActive] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
     colors[ImGuiCol_Separator] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
@@ -148,10 +159,11 @@ void Manager::setTheme() {
     colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.27f, 0.27f, 0.27f, 1.00f);
     colors[ImGuiCol_ResizeGripActive] = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
     colors[ImGuiCol_Tab] = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
-    colors[ImGuiCol_TabHovered] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
-    colors[ImGuiCol_TabActive] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
-    colors[ImGuiCol_TabUnfocused] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
-    colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+    colors[ImGuiCol_TabHovered] = ImVec4(0.18f, 0.18f, 0.18f, 1.16f);
+    colors[ImGuiCol_TabSelected] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    colors[ImGuiCol_TabSelectedOverline] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_TabDimmed] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+    colors[ImGuiCol_TabDimmedSelected] = ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
     colors[ImGuiCol_DockingPreview] = ImVec4(1.00f, 1.00f, 1.00f, 0.20f);
     colors[ImGuiCol_DockingEmptyBg] = ImVec4(1.00f, 1.00f, 1.00f, 0.20f);
     colors[ImGuiCol_PlotLines] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
@@ -163,7 +175,7 @@ void Manager::setTheme() {
     colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.00f, 1.00f, 1.00f, 0.02f);
     colors[ImGuiCol_TextSelectedBg] = ImVec4(1.00f, 1.00f, 1.00f, 0.20f);
     colors[ImGuiCol_DragDropTarget] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-    colors[ImGuiCol_NavHighlight] = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
+    colors[ImGuiCol_NavCursor] = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
     colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
     colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 1.00f, 1.00f, 0.08f);
