@@ -113,6 +113,7 @@ void Manager::setTheme() {
     // Sizes rounding
     style.FrameRounding = 5.0f;
     style.ScrollbarRounding = 5.0f;
+    style.GrabRounding = 5.0f;
     style.TabRounding = 5.0f;
     // Sizes widgets
     style.SeparatorTextBorderSize = 1.0f;
