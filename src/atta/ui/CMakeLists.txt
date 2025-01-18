@@ -11,7 +11,6 @@ set(ATTA_UI_MODULE_SOURCE
     widgets/image.cpp
 
     editor/dockSpace.cpp
-    editor/window.cpp
 
     editor/topBar/topBar.cpp
     editor/toolBar/toolBar.cpp
@@ -26,6 +25,7 @@ set(ATTA_UI_MODULE_SOURCE
     windows/physicsModuleWindow.cpp
     windows/sensorModuleWindow.cpp
     windows/viewportWindows.cpp
+    windows/window.cpp
 
     editor/tools/timeProfiler/timeProfilerWindow.cpp
     editor/tools/timeProfiler/components/tearDown.cpp

@@ -4,4 +4,4 @@
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/window.h>
+#include <atta/ui/windows/window.h>

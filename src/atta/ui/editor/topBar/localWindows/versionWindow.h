@@ -8,7 +8,7 @@
 #define ATTA_UI_EDITOR_TOP_BAR_LOCAL_WINDOWS_VERSION_WINDOW_H
 
 #include <atta/physics/interface.h>
-#include <atta/ui/editor/window.h>
+#include <atta/ui/windows/window.h>
 
 namespace atta::ui {
 

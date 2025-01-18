@@ -7,7 +7,7 @@
 #ifndef ATTA_UI_WINDOWS_UTILS_FILE_SELECTION_WINDOW_H
 #define ATTA_UI_WINDOWS_UTILS_FILE_SELECTION_WINDOW_H
 
-#include <atta/ui/editor/window.h>
+#include <atta/ui/windows/window.h>
 
 namespace atta::ui {
 

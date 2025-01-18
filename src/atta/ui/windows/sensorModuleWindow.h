@@ -8,7 +8,7 @@
 #define ATTA_UI_WINDOWS_SENSOR_MODULE_WINDOW_H
 
 #include <atta/sensor/interface.h>
-#include <atta/ui/editor/window.h>
+#include <atta/ui/windows/window.h>
 
 namespace atta::ui {
 

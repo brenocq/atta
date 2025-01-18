@@ -7,7 +7,7 @@
 #ifndef ATTA_UI_WINDOWS_IO_MODULE_WINDOW_H
 #define ATTA_UI_WINDOWS_IO_MODULE_WINDOW_H
 
-#include <atta/ui/editor/window.h>
+#include <atta/ui/windows/window.h>
 
 #include <atta/io/interface.h>
 

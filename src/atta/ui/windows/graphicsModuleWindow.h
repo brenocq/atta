@@ -8,7 +8,7 @@
 #define ATTA_UI_WINDOWS_GRAPHICS_MODULE_WINDOW_H
 
 #include <atta/graphics/interface.h>
-#include <atta/ui/editor/window.h>
+#include <atta/ui/windows/window.h>
 
 namespace atta::ui {
 

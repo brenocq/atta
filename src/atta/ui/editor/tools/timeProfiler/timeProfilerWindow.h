@@ -7,7 +7,7 @@
 #ifndef ATTA_UI_EDITOR_TOOLS_TIME_PROFILER_TIME_PROFILER_WINDOW_H
 #define ATTA_UI_EDITOR_TOOLS_TIME_PROFILER_TIME_PROFILER_WINDOW_H
 
-#include <atta/ui/editor/window.h>
+#include <atta/ui/windows/window.h>
 #include <atta/ui/editor/tools/timeProfiler/components/tearDown.h>
 #include <atta/ui/editor/tools/timeProfiler/components/flameGraph.h>
 #include <atta/ui/editor/tools/timeProfiler/components/timeline.h>
