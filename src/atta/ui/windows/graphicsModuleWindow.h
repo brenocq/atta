@@ -4,8 +4,8 @@
 // Date: 2022-10-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_EDITOR_WINDOWS_GRAPHICS_MODULE_WINDOW_H
-#define ATTA_UI_EDITOR_WINDOWS_GRAPHICS_MODULE_WINDOW_H
+#ifndef ATTA_UI_WINDOWS_GRAPHICS_MODULE_WINDOW_H
+#define ATTA_UI_WINDOWS_GRAPHICS_MODULE_WINDOW_H
 
 #include <atta/graphics/interface.h>
 #include <atta/ui/editor/window.h>
@@ -22,4 +22,4 @@ class GraphicsModuleWindow : public Window<GraphicsModuleWindow> {
 
 } // namespace atta::ui
 
-#endif // ATTA_UI_EDITOR_WINDOWS_GRAPHICS_MODULE_WINDOW_H
+#endif // ATTA_UI_WINDOWS_GRAPHICS_MODULE_WINDOW_H

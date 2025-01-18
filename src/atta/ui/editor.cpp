@@ -12,12 +12,12 @@
 #include <implot.h>
 #include <implot3d.h>
 
-#include <atta/ui/editor/moduleWindows/graphicsModuleWindow.h>
-#include <atta/ui/editor/moduleWindows/ioModuleWindow.h>
-#include <atta/ui/editor/moduleWindows/physicsModuleWindow.h>
-#include <atta/ui/editor/moduleWindows/sensorModuleWindow.h>
 #include <atta/ui/editor/tools/timeProfiler/timeProfilerWindow.h>
 #include <atta/ui/editor/topBar/localWindows/versionWindow.h>
+#include <atta/ui/windows/graphicsModuleWindow.h>
+#include <atta/ui/windows/ioModuleWindow.h>
+#include <atta/ui/windows/physicsModuleWindow.h>
+#include <atta/ui/windows/sensorModuleWindow.h>
 #include <atta/ui/windows/utils/fileSelectionWindow.h>
 
 #include <atta/component/components/name.h>

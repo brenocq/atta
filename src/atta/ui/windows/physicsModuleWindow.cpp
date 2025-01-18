@@ -4,7 +4,7 @@
 // Date: 2021-12-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/moduleWindows/physicsModuleWindow.h>
+#include <atta/ui/windows/physicsModuleWindow.h>
 
 #include <atta/physics/engines/bulletEngine.h>
 #include <atta/physics/interface.h>

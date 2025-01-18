@@ -4,8 +4,8 @@
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_EDITOR_WINDOWS_IO_MODULE_WINDOW_H
-#define ATTA_UI_EDITOR_WINDOWS_IO_MODULE_WINDOW_H
+#ifndef ATTA_UI_WINDOWS_IO_MODULE_WINDOW_H
+#define ATTA_UI_WINDOWS_IO_MODULE_WINDOW_H
 
 #include <atta/ui/editor/window.h>
 
@@ -59,4 +59,4 @@ class IOModuleWindow : public Window<IOModuleWindow> {
 
 } // namespace atta::ui
 
-#endif // ATTA_UI_EDITOR_WINDOWS_IO_MODULE_WINDOW_H
+#endif // ATTA_UI_WINDOWS_IO_MODULE_WINDOW_H

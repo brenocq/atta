@@ -4,7 +4,7 @@
 // Date: 2022-12-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/moduleWindows/sensorModuleWindow.h>
+#include <atta/ui/windows/sensorModuleWindow.h>
 
 #include <atta/sensor/interface.h>
 

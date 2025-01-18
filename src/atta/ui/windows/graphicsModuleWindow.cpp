@@ -4,7 +4,7 @@
 // Date: 2022-10-16
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/moduleWindows/graphicsModuleWindow.h>
+#include <atta/ui/windows/graphicsModuleWindow.h>
 
 #include <atta/graphics/interface.h>
 

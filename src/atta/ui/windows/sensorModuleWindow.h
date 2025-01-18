@@ -4,8 +4,8 @@
 // Date: 2022-12-07
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_EDITOR_WINDOWS_SENSOR_MODULE_WINDOW_H
-#define ATTA_UI_EDITOR_WINDOWS_SENSOR_MODULE_WINDOW_H
+#ifndef ATTA_UI_WINDOWS_SENSOR_MODULE_WINDOW_H
+#define ATTA_UI_WINDOWS_SENSOR_MODULE_WINDOW_H
 
 #include <atta/sensor/interface.h>
 #include <atta/ui/editor/window.h>
@@ -22,4 +22,4 @@ class SensorModuleWindow : public Window<SensorModuleWindow> {
 
 } // namespace atta::ui
 
-#endif // ATTA_UI_EDITOR_WINDOWS_SENSOR_MODULE_WINDOW_H
+#endif // ATTA_UI_WINDOWS_SENSOR_MODULE_WINDOW_H

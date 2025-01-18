@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include "stb_image.h"
-#include <atta/ui/editor/moduleWindows/ioModuleWindow.h>
+#include <atta/ui/windows/ioModuleWindow.h>
 
 namespace atta::ui {
 
@@ -38,6 +38,6 @@ void IOModuleWindow::renderImpl() {
 
 } // namespace atta::ui
 
-#include <atta/ui/editor/moduleWindows/ioModuleWindowBluetooth.cpp>
-#include <atta/ui/editor/moduleWindows/ioModuleWindowCamera.cpp>
-#include <atta/ui/editor/moduleWindows/ioModuleWindowSerial.cpp>
+#include <atta/ui/windows/ioModuleWindowBluetooth.cpp>
+#include <atta/ui/windows/ioModuleWindowCamera.cpp>
+#include <atta/ui/windows/ioModuleWindowSerial.cpp>

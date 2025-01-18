@@ -18,15 +18,14 @@ set(ATTA_UI_MODULE_SOURCE
     editor/topBar/localWindows/repoWindow.cpp
     editor/topBar/localWindows/versionWindow.cpp
 
-    windows/entityWindow.cpp
-    windows/logWindow.cpp
-    windows/viewportWindows.cpp
     windows/utils/fileSelectionWindow.cpp
-
-    editor/moduleWindows/graphicsModuleWindow.cpp
-    editor/moduleWindows/ioModuleWindow.cpp
-    editor/moduleWindows/physicsModuleWindow.cpp
-    editor/moduleWindows/sensorModuleWindow.cpp
+    windows/entityWindow.cpp
+    windows/graphicsModuleWindow.cpp
+    windows/ioModuleWindow.cpp
+    windows/logWindow.cpp
+    windows/physicsModuleWindow.cpp
+    windows/sensorModuleWindow.cpp
+    windows/viewportWindows.cpp
 
     editor/tools/timeProfiler/timeProfilerWindow.cpp
     editor/tools/timeProfiler/components/tearDown.cpp
