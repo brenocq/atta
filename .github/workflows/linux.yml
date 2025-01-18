@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install cmake xorg-dev curl 
+          sudo apt-get install cmake xorg-dev curl
 
       - name: Build
         run: ./build.sh --jobs 2 --compiler ${{ matrix.config.compiler }}
