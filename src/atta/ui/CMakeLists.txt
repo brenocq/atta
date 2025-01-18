@@ -10,8 +10,6 @@ set(ATTA_UI_MODULE_SOURCE
     widgets/help.cpp
     widgets/image.cpp
 
-    editor/dockSpace.cpp
-
     editor/topBar/topBar.cpp
     editor/toolBar/toolBar.cpp
     editor/topBar/localWindows/repoWindow.cpp

@@ -8,7 +8,6 @@
 #define ATTA_UI_EDITOR_H
 
 #include <atta/memory/allocatedObject.h>
-#include <atta/ui/editor/dockSpace.h>
 #include <atta/ui/editor/drawers/physicsDrawer.h>
 #include <atta/ui/editor/drawers/sensorDrawer.h>
 #include <atta/ui/editor/toolBar/toolBar.h>
@@ -23,10 +22,16 @@ class Editor final {
   public:
     void render();
 
+    unsigned getViewportDockId() { return _viewportDockId; }
+
   private:
+    void setupDocking();
     void renderCameraWindows();
 
-    DockSpace _dockSpace;
+    // Docking
+    unsigned _viewportDockId;
+    bool _firstRender = true;
+
     TopBar _topBar;
     ToolBar _toolBar;
     EntityWindow _entityWindow;
