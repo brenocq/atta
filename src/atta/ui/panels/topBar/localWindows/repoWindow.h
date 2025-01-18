@@ -4,8 +4,8 @@
 // Date: 2021-12-26
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_EDITOR_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
-#define ATTA_UI_EDITOR_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
+#ifndef ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
+#define ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
 
 #include <atta/component/interface.h>
 
@@ -47,4 +47,4 @@ class RepoWindow {
 
 } // namespace atta::ui
 
-#endif // ATTA_UI_EDITOR_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
+#endif // ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H

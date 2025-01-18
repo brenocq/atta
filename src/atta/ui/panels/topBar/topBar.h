@@ -4,10 +4,10 @@
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_EDITOR_TOP_BAR_TOP_BAR_H
-#define ATTA_UI_EDITOR_TOP_BAR_TOP_BAR_H
+#ifndef ATTA_UI_PANELS_TOP_BAR_TOP_BAR_H
+#define ATTA_UI_PANELS_TOP_BAR_TOP_BAR_H
 
-#include <atta/ui/editor/topBar/localWindows/repoWindow.h>
+#include <atta/ui/panels/topBar/localWindows/repoWindow.h>
 
 namespace atta::ui {
 
@@ -43,4 +43,4 @@ class TopBar {
 
 } // namespace atta::ui
 
-#endif // ATTA_UI_EDITOR_TOP_BAR_TOP_BAR_H
+#endif // ATTA_UI_PANELS_TOP_BAR_TOP_BAR_H

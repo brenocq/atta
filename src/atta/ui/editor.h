@@ -10,8 +10,8 @@
 #include <atta/memory/allocatedObject.h>
 #include <atta/ui/editor/drawers/physicsDrawer.h>
 #include <atta/ui/editor/drawers/sensorDrawer.h>
-#include <atta/ui/editor/toolBar/toolBar.h>
-#include <atta/ui/editor/topBar/topBar.h>
+#include <atta/ui/panels/toolBar/toolBar.h>
+#include <atta/ui/panels/topBar/topBar.h>
 #include <atta/ui/windows/entityWindow.h>
 #include <atta/ui/windows/logWindow.h>
 #include <atta/ui/windows/viewportWindows.h>

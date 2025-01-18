@@ -4,9 +4,9 @@
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/topBar/topBar.h>
+#include <atta/ui/panels/topBar/topBar.h>
 
-#include <atta/ui/editor/topBar/localWindows/versionWindow.h>
+#include <atta/ui/panels/topBar/localWindows/versionWindow.h>
 #include <atta/ui/widgets/align.h>
 #include <atta/ui/widgets/button.h>
 #include <atta/ui/widgets/image.h>

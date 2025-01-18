@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/cmakeConfig.h>
-#include <atta/ui/editor/topBar/localWindows/versionWindow.h>
+#include <atta/ui/panels/topBar/localWindows/versionWindow.h>
 #include <imgui_internal.h>
 
 namespace atta::ui {

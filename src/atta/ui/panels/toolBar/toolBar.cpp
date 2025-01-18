@@ -11,7 +11,7 @@
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/interface.h>
 #include <atta/graphics/interface.h>
-#include <atta/ui/editor/toolBar/toolBar.h>
+#include <atta/ui/panels/toolBar/toolBar.h>
 #include <atta/ui/widgets/button.h>
 #include <atta/utils/config.h>
 #include <imgui.h>

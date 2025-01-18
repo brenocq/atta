@@ -12,7 +12,7 @@
 #include <implot.h>
 #include <implot3d.h>
 
-#include <atta/ui/editor/topBar/localWindows/versionWindow.h>
+#include <atta/ui/panels/topBar/localWindows/versionWindow.h>
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
 #include <atta/ui/windows/physicsModuleWindow.h>

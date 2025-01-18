@@ -10,10 +10,10 @@ set(ATTA_UI_MODULE_SOURCE
     widgets/help.cpp
     widgets/image.cpp
 
-    editor/topBar/topBar.cpp
-    editor/toolBar/toolBar.cpp
-    editor/topBar/localWindows/repoWindow.cpp
-    editor/topBar/localWindows/versionWindow.cpp
+    panels/topBar/topBar.cpp
+    panels/toolBar/toolBar.cpp
+    panels/topBar/localWindows/repoWindow.cpp
+    panels/topBar/localWindows/versionWindow.cpp
 
     windows/timeProfiler/timeProfilerWindow.cpp
     windows/timeProfiler/components/tearDown.cpp

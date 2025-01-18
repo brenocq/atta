@@ -4,8 +4,8 @@
 // Date: 2021-12-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_EDITOR_TOOL_BAR_TOOL_BAR_H
-#define ATTA_UI_EDITOR_TOOL_BAR_TOOL_BAR_H
+#ifndef ATTA_UI_PANELS_TOOL_BAR_TOOL_BAR_H
+#define ATTA_UI_PANELS_TOOL_BAR_TOOL_BAR_H
 
 #include <atta/event/event.h>
 
@@ -20,4 +20,4 @@ class ToolBar {
 
 } // namespace atta::ui
 
-#endif // ATTA_UI_EDITOR_TOOL_BAR_TOOL_BAR_H
+#endif // ATTA_UI_PANELS_TOOL_BAR_TOOL_BAR_H
