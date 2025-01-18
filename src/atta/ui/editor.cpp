@@ -7,7 +7,7 @@
 #include <atta/graphics/interface.h>
 #include <atta/resource/interface.h>
 #include <atta/script/interface.h>
-#include <atta/ui/editor/editor.h>
+#include <atta/ui/editor.h>
 #include <imgui_internal.h>
 #include <implot.h>
 #include <implot3d.h>

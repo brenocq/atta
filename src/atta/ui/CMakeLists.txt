@@ -3,15 +3,15 @@ cmake_minimum_required(VERSION 3.14)
 set(ATTA_UI_MODULE_SOURCE
     interface.cpp
     manager.cpp
+    editor.cpp
 
-    editor/editor.cpp
+    widgets/align.cpp
+    widgets/button.cpp
+    widgets/help.cpp
+    widgets/image.cpp
+
     editor/dockSpace.cpp
     editor/window.cpp
-
-    editor/widgets/align.cpp
-    editor/widgets/button.cpp
-    editor/widgets/help.cpp
-    editor/widgets/image.cpp
 
     editor/topBar/topBar.cpp
     editor/toolBar/toolBar.cpp

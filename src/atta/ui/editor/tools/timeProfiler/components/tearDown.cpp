@@ -6,7 +6,7 @@
 //--------------------------------------------------
 #include <atta/ui/editor/tools/timeProfiler/components/tearDown.h>
 
-#include <atta/ui/editor/widgets/help.h>
+#include <atta/ui/widgets/help.h>
 
 #include "imgui.h"
 

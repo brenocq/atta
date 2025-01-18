@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/graphics/interface.h>
-#include <atta/ui/editor/widgets/image.h>
+#include <atta/ui/widgets/image.h>
 
 #include "imgui.h"
 

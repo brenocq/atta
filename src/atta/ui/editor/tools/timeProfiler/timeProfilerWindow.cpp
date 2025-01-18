@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/ui/editor/tools/timeProfiler/timeProfilerWindow.h>
-#include <atta/ui/editor/widgets/button.h>
+#include <atta/ui/widgets/button.h>
 
 namespace atta::ui {
 

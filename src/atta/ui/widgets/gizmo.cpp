@@ -4,7 +4,7 @@
 // Date: 2024-01-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/widgets/gizmo.h>
+#include <atta/ui/widgets/gizmo.h>
 
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>

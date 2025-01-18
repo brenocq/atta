@@ -7,9 +7,9 @@
 #include <atta/ui/editor/topBar/topBar.h>
 
 #include <atta/ui/editor/topBar/localWindows/versionWindow.h>
-#include <atta/ui/editor/widgets/align.h>
-#include <atta/ui/editor/widgets/button.h>
-#include <atta/ui/editor/widgets/image.h>
+#include <atta/ui/widgets/align.h>
+#include <atta/ui/widgets/button.h>
+#include <atta/ui/widgets/image.h>
 
 #include <atta/event/events/windowClose.h>
 #include <atta/event/interface.h>

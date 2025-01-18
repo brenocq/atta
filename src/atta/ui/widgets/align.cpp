@@ -4,7 +4,7 @@
 // Date: 2024-01-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/widgets/align.h>
+#include <atta/ui/widgets/align.h>
 
 #include "imgui.h"
 

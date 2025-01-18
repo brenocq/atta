@@ -4,7 +4,7 @@
 // Date: 2022-10-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/widgets/help.h>
+#include <atta/ui/widgets/help.h>
 
 #include "imgui.h"
 
