@@ -4,7 +4,7 @@
 // Date: 2022-10-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/tools/timeProfiler/components/flameGraph.h>
+#include <atta/ui/windows/timeProfiler/components/flameGraph.h>
 
 #include "implot.h"
 

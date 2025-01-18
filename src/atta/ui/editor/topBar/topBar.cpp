@@ -28,7 +28,7 @@
 #include <atta/ui/windows/sensorModuleWindow.h>
 #include <atta/ui/windows/utils/fileSelectionWindow.h>
 
-#include <atta/ui/editor/tools/timeProfiler/timeProfilerWindow.h>
+#include <atta/ui/windows/timeProfiler/timeProfilerWindow.h>
 
 namespace atta::ui {
 

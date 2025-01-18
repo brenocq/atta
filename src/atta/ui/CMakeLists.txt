@@ -15,6 +15,10 @@ set(ATTA_UI_MODULE_SOURCE
     editor/topBar/localWindows/repoWindow.cpp
     editor/topBar/localWindows/versionWindow.cpp
 
+    windows/timeProfiler/timeProfilerWindow.cpp
+    windows/timeProfiler/components/tearDown.cpp
+    windows/timeProfiler/components/flameGraph.cpp
+    windows/timeProfiler/components/timeline.cpp
     windows/utils/fileSelectionWindow.cpp
     windows/entityWindow.cpp
     windows/graphicsModuleWindow.cpp
@@ -24,11 +28,6 @@ set(ATTA_UI_MODULE_SOURCE
     windows/sensorModuleWindow.cpp
     windows/viewportWindows.cpp
     windows/window.cpp
-
-    editor/tools/timeProfiler/timeProfilerWindow.cpp
-    editor/tools/timeProfiler/components/tearDown.cpp
-    editor/tools/timeProfiler/components/flameGraph.cpp
-    editor/tools/timeProfiler/components/timeline.cpp
 
 	editor/drawers/physicsDrawer.cpp
 	editor/drawers/sensorDrawer.cpp
