@@ -4,6 +4,9 @@
 // Date: 2024-01-05
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#ifndef ATTA_UI_WIDGETS_GUIZMO_H
+#define ATTA_UI_WIDGETS_GUIZMO_H
+
 #include <atta/component/interface.h>
 #include <atta/graphics/cameras/camera.h>
 
@@ -36,3 +39,5 @@ class Gizmo {
 };
 
 } // namespace atta::ui
+
+#endif // ATTA_UI_WIDGETS_GUIZMO_H

@@ -4,8 +4,8 @@
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_EDITOR_WINDOWS_ENTITY_WINDOW_H
-#define ATTA_UI_EDITOR_WINDOWS_ENTITY_WINDOW_H
+#ifndef ATTA_UI_WINDOWS_ENTITY_WINDOW_H
+#define ATTA_UI_WINDOWS_ENTITY_WINDOW_H
 
 #include <atta/component/interface.h>
 
@@ -31,4 +31,4 @@ class EntityWindow {
 
 } // namespace atta::ui
 
-#endif // ATTA_UI_EDITOR_WINDOWS_ENTITY_WINDOW_H
+#endif // ATTA_UI_WINDOWS_ENTITY_WINDOW_H

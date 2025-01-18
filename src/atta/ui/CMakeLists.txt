@@ -18,10 +18,10 @@ set(ATTA_UI_MODULE_SOURCE
     editor/topBar/localWindows/repoWindow.cpp
     editor/topBar/localWindows/versionWindow.cpp
 
-    editor/windows/entityWindow.cpp
-    editor/windows/logWindow.cpp
-    editor/windows/viewportWindows.cpp
-    editor/windows/utils/fileSelectionWindow.cpp
+    windows/entityWindow.cpp
+    windows/logWindow.cpp
+    windows/viewportWindows.cpp
+    windows/utils/fileSelectionWindow.cpp
 
     editor/moduleWindows/graphicsModuleWindow.cpp
     editor/moduleWindows/ioModuleWindow.cpp

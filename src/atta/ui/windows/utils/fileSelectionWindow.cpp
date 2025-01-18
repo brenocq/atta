@@ -4,7 +4,7 @@
 // Date: 2022-01-24
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/windows/utils/fileSelectionWindow.h>
+#include <atta/ui/windows/utils/fileSelectionWindow.h>
 
 namespace atta::ui {
 

@@ -14,7 +14,7 @@
 #include <atta/graphics/interface.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/material.h>
-#include <atta/ui/editor/windows/viewportWindows.h>
+#include <atta/ui/windows/viewportWindows.h>
 
 #include <imgui.h>
 #include <imgui_internal.h>

@@ -1,19 +1,18 @@
 //--------------------------------------------------
 // Atta UI Module
-// logWindow.h
+// logWindow.cpp
 // Date: 2021-12-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_EDITOR_WINDOWS_LOG_WINDOW_H
-#define ATTA_UI_EDITOR_WINDOWS_LOG_WINDOW_H
+#include <atta/ui/windows/logWindow.h>
+#include <imgui.h>
+#include <implot.h>
 
 namespace atta::ui {
 
-class LogWindow {
-  public:
-    void render();
-};
+void LogWindow::render() {
+    ImGui::Begin("Log");
+    ImGui::End();
+}
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_EDITOR_WINDOWS_LOG_WINDOW_H

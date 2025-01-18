@@ -10,7 +10,7 @@
 #include <atta/resource/resources/mesh.h>
 #include <atta/script/manager.h>
 #include <atta/sensor/manager.h>
-#include <atta/ui/editor/windows/entityWindow.h>
+#include <atta/ui/windows/entityWindow.h>
 #include <imgui.h>
 
 namespace atta::ui {

@@ -26,7 +26,7 @@
 #include <atta/ui/editor/moduleWindows/ioModuleWindow.h>
 #include <atta/ui/editor/moduleWindows/physicsModuleWindow.h>
 #include <atta/ui/editor/moduleWindows/sensorModuleWindow.h>
-#include <atta/ui/editor/windows/utils/fileSelectionWindow.h>
+#include <atta/ui/windows/utils/fileSelectionWindow.h>
 
 #include <atta/ui/editor/tools/timeProfiler/timeProfilerWindow.h>
 
