@@ -8,8 +8,8 @@
 #define ATTA_UI_EDITOR_H
 
 #include <atta/memory/allocatedObject.h>
-#include <atta/ui/editor/drawers/physicsDrawer.h>
-#include <atta/ui/editor/drawers/sensorDrawer.h>
+#include <atta/ui/drawers/physicsDrawer.h>
+#include <atta/ui/drawers/sensorDrawer.h>
 #include <atta/ui/panels/toolBar/toolBar.h>
 #include <atta/ui/panels/topBar/topBar.h>
 #include <atta/ui/windows/entityWindow.h>

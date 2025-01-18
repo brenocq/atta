@@ -9,7 +9,7 @@
 #include <atta/component/interface.h>
 #include <atta/graphics/drawer.h>
 #include <atta/sensor/interface.h>
-#include <atta/ui/editor/drawers/sensorDrawer.h>
+#include <atta/ui/drawers/sensorDrawer.h>
 
 namespace atta::ui {
 

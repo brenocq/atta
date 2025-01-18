@@ -4,7 +4,7 @@
 // Date: 2021-12-03
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/editor/drawers/physicsDrawer.h>
+#include <atta/ui/drawers/physicsDrawer.h>
 
 #include <atta/component/components/boxCollider.h>
 #include <atta/component/components/boxCollider2D.h>

@@ -1,19 +1,18 @@
 cmake_minimum_required(VERSION 3.14)
 
 set(ATTA_UI_MODULE_SOURCE
-    interface.cpp
-    manager.cpp
-    editor.cpp
-
-    widgets/align.cpp
-    widgets/button.cpp
-    widgets/help.cpp
-    widgets/image.cpp
+	drawers/physicsDrawer.cpp
+	drawers/sensorDrawer.cpp
 
     panels/topBar/topBar.cpp
     panels/toolBar/toolBar.cpp
     panels/topBar/localWindows/repoWindow.cpp
     panels/topBar/localWindows/versionWindow.cpp
+
+    widgets/align.cpp
+    widgets/button.cpp
+    widgets/help.cpp
+    widgets/image.cpp
 
     windows/timeProfiler/timeProfilerWindow.cpp
     windows/timeProfiler/components/tearDown.cpp
@@ -29,8 +28,9 @@ set(ATTA_UI_MODULE_SOURCE
     windows/viewportWindows.cpp
     windows/window.cpp
 
-	editor/drawers/physicsDrawer.cpp
-	editor/drawers/sensorDrawer.cpp
+    interface.cpp
+    manager.cpp
+    editor.cpp
 )
 
 add_library(atta_ui_module STATIC
