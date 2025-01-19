@@ -48,7 +48,7 @@ void ProjectSerializer::deserializeComponentModule(Section& section) {
 
 void ProjectSerializer::deserializeGraphicsModule(Section& section) {
     if (section.contains("viewports")) {
-        std::vector<graphics::Viewport> viewports = std::vector<graphics::Viewport>(section["viewports"]);
+        std::vector<ui::Viewport> viewports = std::vector<ui::Viewport>(section["viewports"]);
         LOG_WARN("file::ProjectSerializer", "Deserializing viewports was not implemented yet");
         // graphics::clearViewports();
         // for (auto& viewport : viewports) {
@@ -59,10 +59,10 @@ void ProjectSerializer::deserializeGraphicsModule(Section& section) {
     }
     if (section.contains("graphicsFPS"))
         graphics::setGraphicsFPS(float(section["graphicsFPS"]));
-    if (section.contains("viewportFPS"))
-        graphics::setViewportFPS(float(section["viewportFPS"]));
-    if (section.contains("viewportRendering"))
-        graphics::setViewportRendering(bool(section["viewportRendering"]));
+    //if (section.contains("viewportFPS"))
+    //    graphics::setViewportFPS(float(section["viewportFPS"]));
+    //if (section.contains("viewportRendering"))
+    //    graphics::setViewportRendering(bool(section["viewportRendering"]));
 }
 
 void ProjectSerializer::deserializeResourceModule(Section& section) {

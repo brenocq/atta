@@ -44,7 +44,6 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     renderQueue.cpp
     shader.cpp
     vertexBuffer.cpp
-    viewport.cpp
 )
 
 if(ATTA_VULKAN_SUPPORT)

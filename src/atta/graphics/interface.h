@@ -9,7 +9,6 @@
 
 #include <atta/component/base.h>
 #include <atta/graphics/apis/graphicsAPI.h>
-#include <atta/graphics/viewport.h>
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
@@ -35,23 +34,12 @@ void setGraphicsAPI(GraphicsAPI::Type type);
 //----- Config -----//
 float getGraphicsFPS();
 void setGraphicsFPS(float graphicsFPS);
-float getViewportFPS();
-void setViewportFPS(float viewportFPS);
-bool getViewportRendering();
-void setViewportRendering(bool viewportRendering);
 
 //----- UI -----//
+void setUiRenderViewportsFunc(std::function<void()> uiRenderViewportsFunc);
 void setUiRenderFunc(std::function<void()> uiRenderFunc);
 void setUiShutDownFunc(std::function<void()> uiShutDownFunc);
 void setUiStartUpFunc(std::function<void()> uiStartUpFunc);
-
-//----- Viewport -----//
-// std::vector<std::shared_ptr<Viewport>> getViewports();
-// void clearViewports();
-// void addViewport(std::shared_ptr<Viewport> viewport);
-// void removeViewport(std::shared_ptr<Viewport> viewport);
-// void createDefaultViewports();
-// component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
 void* getImGuiImage(StringId sid);
 
 } // namespace atta::graphics

@@ -45,11 +45,11 @@ EntityClick::EntityClick() : _width(500), _height(500) {
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 }
 
-component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i pos) {
+component::EntityId EntityClick::click(std::shared_ptr<Renderer> renderer, std::shared_ptr<Camera> camera, vec2i pos) {
     component::EntityId eid = -1;
     component::EntityId maxEid = -1;
-    unsigned width = viewport->getWidth();
-    unsigned height = viewport->getHeight();
+    unsigned width = renderer->getWidth();
+    unsigned height = renderer->getHeight();
     // Resize
     if (width != _width || height != _height) {
         _geometryPipeline->resize(width, height);
@@ -69,8 +69,8 @@ component::EntityId EntityClick::click(std::shared_ptr<Viewport> viewport, vec2i
             {
                 // Render entities with eid
                 std::vector<component::EntityId> entities = component::getNoPrototypeView();
-                _geometryPipeline->setMat4("projection", viewport->getCamera()->getProj());
-                _geometryPipeline->setMat4("view", viewport->getCamera()->getView());
+                _geometryPipeline->setMat4("projection", camera->getProj());
+                _geometryPipeline->setMat4("view", camera->getView());
 
                 for (auto entity : entities) {
                     component::Mesh* mesh = component::getComponent<component::Mesh>(entity);

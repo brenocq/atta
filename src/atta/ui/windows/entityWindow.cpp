@@ -15,8 +15,6 @@
 
 namespace atta::ui {
 
-EntityWindow::EntityWindow() {}
-
 void EntityWindow::render() {
     ImGui::Begin("Scene");
     {

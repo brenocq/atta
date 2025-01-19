@@ -7,7 +7,6 @@
 #ifndef ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 
-#include <atta/graphics/compute/entityClick.h>
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/indexBuffer.h>
@@ -36,23 +35,14 @@ class Manager final {
 
     friend float getGraphicsFPS();
     friend void setGraphicsFPS(float graphicsFPS);
-    friend float getViewportFPS();
-    friend void setViewportFPS(float viewportFPS);
-    friend bool getViewportRendering();
-    friend void setViewportRendering(bool viewportRendering);
 
+    friend void setUiRenderViewportsFunc(std::function<void()> uiRenderViewportsFunc);
     friend void setUiRenderFunc(std::function<void()> uiRenderFunc);
     friend void setUiStartUpFunc(std::function<void()> uiStartUpFunc);
     friend void setUiShutDownFunc(std::function<void()> uiShutDownFunc);
 
     friend std::shared_ptr<GraphicsAPI> getGraphicsAPI();
     friend std::shared_ptr<Window> getWindow();
-    // friend std::vector<std::shared_ptr<Viewport>> getViewports();
-    // friend void clearViewports();
-    // friend void addViewport(std::shared_ptr<Viewport> viewport);
-    // friend void removeViewport(std::shared_ptr<Viewport> viewport);
-    // friend void createDefaultViewports();
-    // friend component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos);
     friend void* getImGuiImage(StringId sid);
 
     const std::unordered_map<StringId, std::shared_ptr<Mesh>>& getMeshes() const;
@@ -74,12 +64,6 @@ class Manager final {
     void setGraphicsAPIImpl(GraphicsAPI::Type type);
     void recreateGraphicsAPI();
 
-    std::vector<std::shared_ptr<Viewport>>& getViewportsImpl();
-    // void clearViewportsImpl();
-    // void addViewportImpl(std::shared_ptr<Viewport> viewport);
-    // void removeViewportImpl(std::shared_ptr<Viewport> viewport);
-    // void createDefaultViewportsImpl();
-    // component::EntityId viewportEntityClickImpl(std::shared_ptr<Viewport> viewport, vec2i pos);
     void* getImGuiImageImpl(StringId sid);
 
     gfx::Image::Format convertFormat(res::Image::Format format) const;
@@ -106,19 +90,10 @@ class Manager final {
     std::unordered_map<StringId, std::shared_ptr<Image>> _images;
 
     // UI
+    std::function<void()> _uiRenderViewportsFunc;
     std::function<void()> _uiRenderFunc;
     std::function<void()> _uiStartUpFunc;  ///< Used to restart UI when graphics API changes
     std::function<void()> _uiShutDownFunc; ///< Used to restart UI when graphics API changes
-
-    // Viewports
-    std::vector<std::shared_ptr<Viewport>> _viewports;
-    std::vector<std::shared_ptr<Viewport>> _viewportsNext; ///< Being used for now to update the viewports in the next frame without breaking imgui
-    bool _swapViewports;                                   ///< If _viewports should be swapped
-    float _viewportFPS;                                    ///< Desired viewport FPS (UI module handles the viewport rendering)
-    bool _viewportRendering;                               ///< If should render the viewport
-
-    // Compute
-    std::unique_ptr<EntityClick> _computeEntityClick;
 };
 
 } // namespace atta::graphics

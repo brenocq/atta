@@ -12,4 +12,8 @@ namespace atta::ui {
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
+//----- Viewport -----//
+bool getViewportRendering() { return Manager::getInstance().getViewportRenderingImpl(); }
+void setViewportRendering(bool viewportRendering) { Manager::getInstance().setViewportRenderingImpl(viewportRendering); }
+
 } // namespace atta::ui

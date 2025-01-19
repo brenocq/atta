@@ -12,6 +12,10 @@ namespace atta::ui {
 void startUp();
 void shutDown();
 
+//----- Viewport -----//
+bool getViewportRendering();
+void setViewportRendering(bool viewportRendering);
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_INTERFACE_H

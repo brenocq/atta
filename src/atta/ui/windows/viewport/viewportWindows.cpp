@@ -11,26 +11,45 @@
 #include <atta/component/components/rigidBody2D.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
+#include <atta/graphics/cameras/perspectiveCamera.h>
 #include <atta/graphics/interface.h>
+#include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/material.h>
-#include <atta/ui/windows/viewportWindows.h>
+#include <atta/ui/windows/viewport/viewportWindows.h>
 
 #include <imgui.h>
 #include <imgui_internal.h>
 
 namespace atta::ui {
 
-void ViewportWindows::render() {
+void ViewportWindows::startUp() {
+    _computeEntityClick = std::make_unique<gfx::EntityClick>();
+    createDefaultViewports();
+}
+
+void ViewportWindows::shutDown() {
+    _computeEntityClick.reset();
+    _viewports.clear();
+    _viewportsNext.clear();
+}
+
+void ViewportWindows::renderViewports() {
     PROFILE();
-    // std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
+    if (_viewportRendering)
+        for (auto& viewport : _viewports)
+            viewport->render();
+}
+
+void ViewportWindows::renderUI() {
+    PROFILE();
     static int activeViewport = 0;
 
     // Viewports fps
     static clock_t vpLastTime = std::clock();
     const clock_t vpCurrTime = std::clock();
     const float vpTimeDiff = float(vpCurrTime - vpLastTime) / CLOCKS_PER_SEC;
-    if (graphics::getViewportRendering() && (graphics::getViewportFPS() > 0 && (vpTimeDiff > 1 / graphics::getViewportFPS()))) {
+    if (_viewportRendering && (_viewportFPS > 0 && (vpTimeDiff > 1 / _viewportFPS))) {
         vpLastTime = vpCurrTime;
     }
 
@@ -125,7 +144,8 @@ void ViewportWindows::render() {
     //    //                snapValue = 45.0f;
     //    //            float snapValues[3] = {snapValue, snapValue, snapValue};
 
-    //    //            ImGuizmo::Manipulate(view.data, proj.data, mouseOperation, mouseMode, transform.data, nullptr, snap ? snapValues : nullptr);
+    //    //            ImGuizmo::Manipulate(view.data, proj.data, mouseOperation, mouseMode, transform.data, nullptr, snap ? snapValues :
+    //    nullptr);
 
     //    //            if (ImGuizmo::IsUsing()) {
     //    //                imGuizmoUsingMouse = true;
@@ -192,7 +212,7 @@ void ViewportWindows::render() {
     //    //    //----- Mouse click selection -----//
     //    //    if (!imGuizmoUsingMouse) {
     //    //        if (click.x >= 0 && click.y >= 0 && click.x < (int)viewport->getWidth() && click.y < (int)viewport->getHeight()) {
-    //    //            component::EntityId eid = graphics::viewportEntityClick(viewport, click);
+    //    //            component::EntityId eid = _computeEntityClick(viewport->getRenderer(), viewport->getCamera(), click);
     //    //            component::setSelectedEntity(eid);
     //    //        }
     //    //    }
@@ -208,6 +228,43 @@ void ViewportWindows::render() {
     //    if (!open)
     //        graphics::removeViewport(viewport);
     //}
+}
+
+std::vector<std::shared_ptr<Viewport>> ViewportWindows::getViewports() { return _viewports; }
+
+void ViewportWindows::clearViewports() {
+    _viewportsNext.clear();
+    _swapViewports = true;
+}
+
+void ViewportWindows::addViewport(std::shared_ptr<Viewport> viewport) {
+    _viewportsNext.push_back(viewport);
+    _swapViewports = true;
+}
+
+void ViewportWindows::removeViewport(std::shared_ptr<Viewport> viewport) {
+    // TODO make it work with zero viewports
+    if (_viewportsNext.size() > 1) {
+        for (unsigned i = 0; i < _viewportsNext.size(); i++)
+            if (_viewportsNext[i] == viewport) {
+                _viewportsNext.erase(_viewportsNext.begin() + i);
+                break;
+            }
+        _swapViewports = true;
+    } else {
+        LOG_WARN("ui::ViewportWindows", "It is not possible to have 0 viewports yet");
+    }
+}
+
+void ViewportWindows::createDefaultViewports() {
+    _viewportsNext.clear();
+
+    Viewport::CreateInfo viewportInfo;
+    viewportInfo.renderer = std::make_shared<gfx::PbrRenderer>();
+    viewportInfo.camera = std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{});
+    viewportInfo.sid = StringId("Main Viewport");
+    _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));
+    _swapViewports = true;
 }
 
 void ViewportWindows::addBasicShapePopup() {
@@ -237,5 +294,8 @@ void ViewportWindows::addBasicShapePopup() {
         ImGui::EndPopup();
     }
 }
+
+bool ViewportWindows::getViewportRendering() const { return _viewportRendering; }
+void ViewportWindows::setViewportRendering(bool viewportRendering) { _viewportRendering = viewportRendering; }
 
 } // namespace atta::ui

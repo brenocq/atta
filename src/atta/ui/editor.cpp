@@ -26,6 +26,12 @@
 
 namespace atta::ui {
 
+void Editor::startUp() { _viewportWindows.startUp(); }
+
+void Editor::shutDown() { _viewportWindows.shutDown(); }
+
+void Editor::renderViewports() { _viewportWindows.renderViewports(); }
+
 void Editor::render() {
     PROFILE();
     setupDocking();
@@ -47,7 +53,7 @@ void Editor::render() {
     // Windows
     _entityWindow.render();
     _logWindow.render();
-    _viewportWindows.render();
+    _viewportWindows.renderUI();
 
     // Module windows
     GraphicsModuleWindow::render();
@@ -75,6 +81,9 @@ void Editor::render() {
             LOG_ERROR("ui::Editor", "Error when executing [w]ProjectScript::onUIRender[]: $0", e.what());
         }
 }
+
+bool Editor::getViewportRendering() const { return _viewportWindows.getViewportRendering(); }
+void Editor::setViewportRendering(bool viewportRendering) { _viewportWindows.setViewportRendering(viewportRendering); }
 
 void Editor::setupDocking() {
     //----- Create DockSpace -----//

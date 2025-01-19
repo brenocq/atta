@@ -13,8 +13,6 @@ namespace atta::ui {
 
 class EntityWindow {
   public:
-    EntityWindow();
-
     void render();
 
   private:

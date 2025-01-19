@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// Atta Graphics Module
+// Atta UI Module
 // viewport.cpp
 // Date: 2021-09-14
 // By Breno Cunha Queiroz
@@ -10,10 +10,10 @@
 #include <atta/graphics/renderers/fastRenderer.h>
 #include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/graphics/renderers/phongRenderer.h>
-#include <atta/graphics/viewport.h>
+#include <atta/ui/windows/viewport/viewport.h>
 #include <imgui.h>
 
-namespace atta::graphics {
+namespace atta::ui {
 
 Viewport::Viewport() : Viewport(CreateInfo{}) {}
 
@@ -77,20 +77,20 @@ void Viewport::deserialize(std::istream& is) {
     std::string rendererName;
     file::read(is, rendererName);
     if (rendererName == "FastRenderer") {
-        _renderer = std::make_shared<FastRenderer>();
+        _renderer = std::make_shared<gfx::FastRenderer>();
         _renderer->deserialize(is);
     } else if (rendererName == "PhongRenderer") {
-        _renderer = std::make_shared<PhongRenderer>();
+        _renderer = std::make_shared<gfx::PhongRenderer>();
         _renderer->deserialize(is);
     } else if (rendererName == "PbrRenderer") {
-        _renderer = std::make_shared<PbrRenderer>();
+        _renderer = std::make_shared<gfx::PbrRenderer>();
         _renderer->deserialize(is);
     } else if (rendererName.size() == 0) {
         LOG_WARN("graphics::Viewport", "No renderer deserialized, using default renderer");
-        _renderer = std::make_shared<PhongRenderer>();
+        _renderer = std::make_shared<gfx::PhongRenderer>();
     } else {
         LOG_WARN("graphics::Viewport", "Unknown renderer [w]$0[] when deserializing", rendererName);
-        _renderer = std::make_shared<PhongRenderer>();
+        _renderer = std::make_shared<gfx::PhongRenderer>();
         _renderer->deserialize(is);
     }
 
@@ -98,24 +98,24 @@ void Viewport::deserialize(std::istream& is) {
     std::string cameraName;
     file::read(is, cameraName);
     if (cameraName == "OrthographicCamera") {
-        _camera = std::make_shared<OrthographicCamera>(OrthographicCamera::CreateInfo{});
+        _camera = std::make_shared<gfx::OrthographicCamera>(gfx::OrthographicCamera::CreateInfo{});
         _camera->deserialize(is);
     } else if (cameraName == "PerspectiveCamera") {
-        _camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
+        _camera = std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{});
         _camera->deserialize(is);
     } else if (cameraName.size() == 0) {
         LOG_WARN("graphics::Viewport", "No camera deserialized, using default camera");
-        _camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
+        _camera = std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{});
     } else {
         LOG_WARN("graphics::Viewport", "Unknown camera [w]$0[] when deserializing. This may break the serialization", cameraName);
-        _camera = std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{});
+        _camera = std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{});
     }
 }
 
 void Viewport::renderUI() {
     //---------- Name ----------//
     ImGui::Text("Name");
-    ImGui::InputText(("##ViewportName" + _sid.getString()).c_str(), _inputText, sizeof(_inputText)/sizeof(char));
+    ImGui::InputText(("##ViewportName" + _sid.getString()).c_str(), _inputText, sizeof(_inputText) / sizeof(char));
     _name = std::string(_inputText);
 
     //---------- Renderer ----------//
@@ -135,18 +135,18 @@ void Viewport::renderUI() {
         for (size_t j = 0; j < renderers.size(); j++) {
             if (ImGui::Selectable(renderers[j], comboValue == j)) {
                 switch (j) {
-                case 0:
-                    if (comboValue != 0)
-                        setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<FastRenderer>()));
-                    break;
-                case 1:
-                    if (comboValue != 1)
-                        setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PhongRenderer>()));
-                    break;
-                case 2:
-                    if (comboValue != 2)
-                        setRenderer(std::static_pointer_cast<Renderer>(std::make_shared<PbrRenderer>()));
-                    break;
+                    case 0:
+                        if (comboValue != 0)
+                            setRenderer(std::static_pointer_cast<gfx::Renderer>(std::make_shared<gfx::FastRenderer>()));
+                        break;
+                    case 1:
+                        if (comboValue != 1)
+                            setRenderer(std::static_pointer_cast<gfx::Renderer>(std::make_shared<gfx::PhongRenderer>()));
+                        break;
+                    case 2:
+                        if (comboValue != 2)
+                            setRenderer(std::static_pointer_cast<gfx::Renderer>(std::make_shared<gfx::PbrRenderer>()));
+                        break;
                 }
             }
             if (comboValue == j)
@@ -173,14 +173,14 @@ void Viewport::renderUI() {
         for (size_t j = 0; j < cameras.size(); j++) {
             if (ImGui::Selectable(cameras[j], comboValue == j)) {
                 switch (j) {
-                case 0:
-                    if (comboValue != 0)
-                        setCamera(std::make_shared<OrthographicCamera>(OrthographicCamera::CreateInfo{}));
-                    break;
-                case 1:
-                    if (comboValue != 1)
-                        setCamera(std::make_shared<PerspectiveCamera>(PerspectiveCamera::CreateInfo{}));
-                    break;
+                    case 0:
+                        if (comboValue != 0)
+                            setCamera(std::make_shared<gfx::OrthographicCamera>(gfx::OrthographicCamera::CreateInfo{}));
+                        break;
+                    case 1:
+                        if (comboValue != 1)
+                            setCamera(std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{}));
+                        break;
                 }
             }
             if (comboValue == j)
@@ -191,4 +191,4 @@ void Viewport::renderUI() {
     _camera->renderUI();
 }
 
-} // namespace atta::graphics
+} // namespace atta::ui

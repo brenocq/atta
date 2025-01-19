@@ -19,13 +19,14 @@ set(ATTA_UI_MODULE_SOURCE
     windows/timeProfiler/components/flameGraph.cpp
     windows/timeProfiler/components/timeline.cpp
     windows/utils/fileSelectionWindow.cpp
+    windows/viewport/viewport.cpp
+    windows/viewport/viewportWindows.cpp
     windows/entityWindow.cpp
     windows/graphicsModuleWindow.cpp
     windows/ioModuleWindow.cpp
     windows/logWindow.cpp
     windows/physicsModuleWindow.cpp
     windows/sensorModuleWindow.cpp
-    windows/viewportWindows.cpp
     windows/window.cpp
 
     interface.cpp

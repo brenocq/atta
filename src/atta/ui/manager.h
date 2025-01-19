@@ -18,10 +18,15 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
+    friend bool getViewportRendering();
+    friend void setViewportRendering(bool viewportRendering);
 
   private:
     void startUpImpl();
     void shutDownImpl();
+
+    bool getViewportRenderingImpl() const;
+    void setViewportRenderingImpl(bool viewportRendering);
 
     void setTheme();
     void initOpenGL();

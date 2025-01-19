@@ -62,17 +62,21 @@ void Manager::startUpImpl() {
     }
     setTheme();
 
+    gfx::setUiRenderViewportsFunc([&]() { _editor.renderViewports(); });
     gfx::setUiRenderFunc([&]() { render(); });
     gfx::setUiShutDownFunc([&]() { shutDownImpl(); });
     gfx::setUiStartUpFunc([&]() { startUpImpl(); });
 
-    // Create editor window
-    _editor = {};
+    // Start up editor window
+    _editor.startUp();
 }
 
 void Manager::shutDownImpl() {
     // Make sure all rendering operations are done
     gfx::getGraphicsAPI()->waitDevice();
+
+    // Destroy editor
+    _editor.shutDown();
 
     // Destroy plotting contexts
     ImPlot3D::DestroyContext();
@@ -92,6 +96,9 @@ void Manager::shutDownImpl() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
+
+bool Manager::getViewportRenderingImpl() const { return _editor.getViewportRendering(); }
+void Manager::setViewportRenderingImpl(bool viewportRendering) { _editor.setViewportRendering(viewportRendering); }
 
 void Manager::setTheme() {
     ImGuiStyle& style = ImGui::GetStyle();

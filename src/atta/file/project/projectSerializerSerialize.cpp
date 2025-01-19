@@ -66,8 +66,8 @@ void ProjectSerializer::serializeGraphicsModule(Section& section) {
     // section["viewports"] = viewports;
     LOG_WARN("file::ProjectSerializer", "Serializing viewports was not implemented yet");
     section["graphicsFPS"] = graphics::getGraphicsFPS();
-    section["viewportFPS"] = graphics::getViewportFPS();
-    section["viewportRendering"] = graphics::getViewportRendering();
+    // section["viewportFPS"] = graphics::getViewportFPS();
+    // section["viewportRendering"] = graphics::getViewportRendering();
 }
 
 void ProjectSerializer::serializeResourceModule(Section& section) {

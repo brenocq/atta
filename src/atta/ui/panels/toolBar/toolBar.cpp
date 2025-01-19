@@ -10,7 +10,7 @@
 #include <atta/event/events/simulationStep.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/interface.h>
-#include <atta/graphics/interface.h>
+#include <atta/ui/interface.h>
 #include <atta/ui/panels/toolBar/toolBar.h>
 #include <atta/ui/widgets/button.h>
 #include <atta/utils/config.h>
@@ -39,8 +39,8 @@ void ToolBar::render() {
 
         // View button
         {
-            if (ui::imageButton(graphics::getViewportRendering() ? "icons/view.png" : "icons/no-view.png", buttonH))
-                graphics::setViewportRendering(!graphics::getViewportRendering());
+            if (ui::imageButton(ui::getViewportRendering() ? "icons/view.png" : "icons/no-view.png", buttonH))
+                ui::setViewportRendering(!ui::getViewportRendering());
             ImGui::SameLine();
             ImGui::Dummy(ImVec2(10.0f, 0.0f));
         }

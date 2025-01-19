@@ -14,13 +14,20 @@
 #include <atta/ui/panels/topBar/topBar.h>
 #include <atta/ui/windows/entityWindow.h>
 #include <atta/ui/windows/logWindow.h>
-#include <atta/ui/windows/viewportWindows.h>
+#include <atta/ui/windows/viewport/viewportWindows.h>
 
 namespace atta::ui {
 
 class Editor final {
   public:
+    void startUp();
+    void shutDown();
+
+    void renderViewports();
     void render();
+
+    bool getViewportRendering() const;
+    void setViewportRendering(bool viewportRendering);
 
     unsigned getViewportDockId() { return _viewportDockId; }
 
