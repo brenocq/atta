@@ -11,17 +11,18 @@ OPTION(ATTA_WEB_BUILD_MODULE
 OPTION(ATTA_BUILD_DOCS
     "Build the documentation"
     OFF)
-option(ATTA_STATIC_PROJECT_FILE 
-    "Project to be linked statically to atta" 
+option(ATTA_STATIC_PROJECT_FILE
+    "Project to be linked statically to atta"
     "")
-option(ATTA_PROFILE 
-    "Set to ON to enable code profiling" 
+option(ATTA_PROFILE
+    "Set to ON to enable code profiling"
     ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(ATTA_VERSION_SAFE atta-${CMAKE_PROJECT_VERSION})
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/atta/cmakeConfig.h)
 
@@ -123,7 +124,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
         list(APPEND ATTA_OPTIONS -Wno-unused-parameter)
         # Script C linkage
         list(APPEND ATTA_OPTIONS -Wno-return-type-c-linkage)
-        # Math anonymous union 
+        # Math anonymous union
         #list(APPEND ATTA_OPTIONS -Wno-nested-anon-types -Wno-gnu-anonymous-struct)
         # Glad opengl definitions
         #list(APPEND ATTA_OPTIONS -Wno-macro-redefined)
@@ -218,7 +219,7 @@ if(ATTA_STATIC_PROJECT)
 endif()
 
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/script/scripts.h.in" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/script/scripts.h.in"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/script/scripts.h"
 )
 
@@ -236,7 +237,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     ########## Install files ##########
 
     # Install atta executable
-    install(TARGETS atta 
+    install(TARGETS atta
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ATTA_VERSION_SAFE}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ATTA_VERSION_SAFE}
