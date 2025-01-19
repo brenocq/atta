@@ -38,7 +38,7 @@ void Editor::render() {
 
     // Demo
     bool demo = true;
-    ImGui::ShowDemoWindow(&demo);
+    // ImGui::ShowDemoWindow(&demo);
     // ImPlot::ShowDemoWindow(&demo);
     // ImPlot3D::ShowDemoWindow(&demo);
 

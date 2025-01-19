@@ -252,17 +252,13 @@ void ViewportWindows::addViewport(std::shared_ptr<Viewport> viewport) {
 }
 
 void ViewportWindows::removeViewport(std::shared_ptr<Viewport> viewport) {
-    // TODO make it work with zero viewports
-    if (_viewportsNext.size() > 1) {
-        for (unsigned i = 0; i < _viewportsNext.size(); i++)
-            if (_viewportsNext[i] == viewport) {
-                _viewportsNext.erase(_viewportsNext.begin() + i);
-                break;
-            }
-        _swapViewports = true;
-    } else {
-        LOG_WARN("ui::ViewportWindows", "It is not possible to have 0 viewports yet");
-    }
+    _viewportsNext = _viewports;
+    for (unsigned i = 0; i < _viewportsNext.size(); i++)
+        if (_viewportsNext[i] == viewport) {
+            _viewportsNext.erase(_viewportsNext.begin() + i);
+            break;
+        }
+    _swapViewports = true;
 }
 
 void ViewportWindows::openViewportModal(StringId sid) const {
