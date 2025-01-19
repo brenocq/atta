@@ -10,6 +10,7 @@
 #include <atta/graphics/image.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
+#include <atta/graphics/renderers/common/gridPipeline.h>
 #include <atta/graphics/renderers/common/selectedPipeline.h>
 #include <atta/graphics/renderers/renderer.h>
 
@@ -23,10 +24,8 @@ class PbrRenderer final : public Renderer {
     void render(std::shared_ptr<Camera> camera) override;
     void resize(uint32_t width, uint32_t height) override;
 
-    uint32_t getWidth() const override { return _geometryPipeline->getRenderPass()->getFramebuffer()->getWidth(); };
-    uint32_t getHeight() const override { return _geometryPipeline->getRenderPass()->getFramebuffer()->getHeight(); };
     void* getImGuiTexture() const override { return _geometryPipeline->getImGuiTexture(); }
-    std::shared_ptr<Framebuffer> getFramebuffer() { return _geometryPipeline->getRenderPass()->getFramebuffer(); }
+    std::shared_ptr<Framebuffer> getFramebuffer() override { return _geometryPipeline->getRenderPass()->getFramebuffer(); }
 
   private:
     void shadowPass();
@@ -36,12 +35,16 @@ class PbrRenderer final : public Renderer {
     void prefilterCubemap();
     void brdfLUT();
 
+    std::shared_ptr<RenderQueue> _renderQueue;
+    std::shared_ptr<RenderPass> _geometryRenderPass;
     std::shared_ptr<Pipeline> _geometryPipeline;
-    std::unique_ptr<SelectedPipeline> _selectedPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
+    std::unique_ptr<GridPipeline> _gridPipeline;
+    std::unique_ptr<SelectedPipeline> _selectedPipeline;
 
-    std::shared_ptr<ShaderGroup> _backgroundShader;
+    std::shared_ptr<Shader> _backgroundShader;
     bool _firstRender;
+    bool _wasResized;
 
     //----- Lighting -----//
     // Directional light

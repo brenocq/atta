@@ -12,9 +12,9 @@ namespace atta::graphics {
 class IndexBuffer {
   public:
     struct CreateInfo {
-        const uint8_t* data = nullptr;
-        uint32_t size = 0;
-        uint32_t offset = 0;
+        uint8_t* data = nullptr;
+        uint32_t size = 0;   ///< Size in bytes
+        uint32_t offset = 0; ///< Offset in bytes
     };
 
     IndexBuffer(const CreateInfo& info);

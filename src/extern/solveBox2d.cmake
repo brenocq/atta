@@ -24,7 +24,7 @@ set(ATTA_BOX2D_TARGETS "")
     atta_log(Info Extern "Fetching Box2D...")
     FetchContent_MakeAvailable(box2d)
 
-    atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/box2d-src/include)
+    atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/box2d-src/include)
     atta_add_libs(box2d)
 
     atta_log(Success Extern "Box2D support (source)")

@@ -7,6 +7,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <atta/event/events/meshUpdate.h>
 #include <atta/file/manager.h>
 #include <atta/resource/resources/mesh.h>
 
@@ -14,8 +15,34 @@ namespace atta::resource {
 
 Mesh::Mesh(const fs::path& filename) : Resource(filename) { load(); }
 
+Mesh::Mesh(const fs::path& filename, const CreateInfo& info) : Resource(filename) {
+    _vertices = info.vertices;
+    _vertexLayout = info.vertexLayout;
+    _indices = info.indices;
+}
+
+void Mesh::updateVertices(const std::vector<uint8_t>& vertices) {
+    _vertices = vertices;
+    update();
+}
+
+void Mesh::update() const {
+    event::MeshUpdate e(_id);
+    event::publish(e);
+}
+
+const std::vector<uint8_t>& Mesh::getVertices() const { return _vertices; }
+const std::vector<Mesh::Index>& Mesh::getIndices() const { return _indices; }
+const Mesh::VertexLayout& Mesh::getVertexLayout() const { return _vertexLayout; }
+
 //---------- Assimp mesh loading ----------//
 void Mesh::load() {
+    _assimpVertexIdx = 0;
+    _vertexLayout.resize(3);
+    _vertexLayout[0] = {VertexElement::VEC3, "iPosition"};
+    _vertexLayout[1] = {VertexElement::VEC3, "iNormal"};
+    _vertexLayout[2] = {VertexElement::VEC2, "iUV"};
+
     fs::path absolutePath = file::solveResourcePath(_filename);
 
     Assimp::Importer importer;
@@ -45,22 +72,31 @@ void Mesh::processNode(aiNode* node, const aiScene* scene) {
     }
 }
 
+struct AssimpVertex {
+    vec3 position;
+    vec3 normal;
+    vec2 uv;
+};
+
 void Mesh::processMesh(aiMesh* mesh, const aiScene* scene) {
-    unsigned startIndex = _vertices.size();
+    unsigned startIndex = _assimpVertexIdx;
     for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
-        Vertex vertex;
+        AssimpVertex vertex;
         // Process vertex positions, normals and texture coordinates
         vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
         vertex.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
 
         // Check if there are texture coords
-        if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
-        {
-            vertex.texCoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
-        } else
-            vertex.texCoord = vec2(0.0f, 0.0f);
+        if (mesh->mTextureCoords[0])
+            vertex.uv = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+        else
+            vertex.uv = vec2(0.0f, 0.0f);
 
-        _vertices.push_back(vertex);
+        // Push assimp vertex
+        uint8_t* data = (uint8_t*)&vertex;
+        for (size_t i = 0; i < sizeof(AssimpVertex); i++)
+            _vertices.push_back(data[i]);
+        _assimpVertexIdx++;
     }
     // Process indices
     for (uint32_t i = 0; i < mesh->mNumFaces; i++) {

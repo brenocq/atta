@@ -19,10 +19,6 @@ void Drawer::clear(StringId group) {
 
 // Get data
 template <typename T>
-std::vector<T>& Drawer::get() {
-    return getInstance().getImpl<T>();
-}
-template <typename T>
 std::map<StringHash, std::vector<T>>& Drawer::getGroups() {
     return getInstance().getGroups<T>();
 }
@@ -33,12 +29,6 @@ unsigned Drawer::getMaxNumber() {
 template <typename T>
 unsigned Drawer::getCurrNumber() {
     return getInstance().getCurrNumberImpl<T>();
-}
-
-// Draw
-template <typename T>
-void Drawer::draw() {
-    getInstance().drawImpl<T>();
 }
 
 // Draw 3d objects implementation
@@ -63,37 +53,6 @@ void Drawer::clearImpl(StringId group) {
 }
 
 // Get data implementation
-template <typename T>
-std::vector<T>& Drawer::getImpl() {
-    if constexpr (std::is_same<T, Drawer::Line>::value || std::is_same<T, Drawer::Point>::value) {
-        if (getChanged<T>()) {
-            setCurrNumber<T>(0);
-
-            std::map<StringHash, std::vector<T>> groups = getGroupsImpl<T>();
-            for (auto& [key, group] : groups) {
-                // Copy group objects to preallocated vector
-                for (uint32_t i = 0; i < group.size(); i++) {
-                    if constexpr (std::is_same<T, Drawer::Line>::value)
-                        _lines[_currNumberOfLines++] = group[i];
-                    else if constexpr (std::is_same<T, Drawer::Point>::value)
-                        _points[_currNumberOfPoints++] = group[i];
-                }
-            }
-            // Set changed as false
-            setChanged<T>(false);
-        }
-    }
-
-    if constexpr (std::is_same<T, Drawer::Line>::value)
-        return _lines;
-    else if constexpr (std::is_same<T, Drawer::Point>::value)
-        return _points;
-    else {
-        ASSERT(false, "Drawer get() to unknown type $0", typeid(T).name());
-        return {};
-    }
-}
-
 template <typename T>
 std::map<StringHash, std::vector<T>>& Drawer::getGroupsImpl() {
     if constexpr (std::is_same<T, Drawer::Line>::value)
@@ -153,36 +112,5 @@ void Drawer::setChanged(bool changed) {
     else
         ASSERT(false, "Drawer setChanged() to unknown type $0", typeid(T).name());
 }
-
-// Draw
-template <typename T>
-void Drawer::drawImpl() {
-    if constexpr (std::is_same<T, Drawer::Line>::value) {
-        glBindVertexArray(_lineVAO);
-        if (_linesChanged) {
-            // Update _line vector and gpu buffer
-            getImpl<Drawer::Line>();
-            glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Line) * _currNumberOfLines, _lines.data());
-        }
-        glDrawArrays(GL_LINES, 0, 2 * _currNumberOfLines);
-        glBindVertexArray(0);
-    } else if constexpr (std::is_same<T, Drawer::Point>::value) {
-        glBindVertexArray(_pointVAO);
-        if (_pointsChanged) {
-            // Update _point vector and gpu buffer
-            getImpl<Drawer::Point>();
-            glBindBuffer(GL_ARRAY_BUFFER, _pointVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point) * _currNumberOfPoints, _points.data());
-        }
-        glDrawArrays(GL_POINTS, 0, _currNumberOfPoints);
-        glBindVertexArray(0);
-    } else
-        ASSERT(false, "Drawer draw() to unknown type $0", typeid(T).name());
-}
-
-//---------- Line specific ----------//
-
-//---------- Point specific ----------//
 
 } // namespace atta::graphics

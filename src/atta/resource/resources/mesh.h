@@ -19,26 +19,42 @@ namespace atta::resource {
 
 class Mesh : public Resource, public memory::AllocatedObject<Mesh, SID("ResourceAllocator")> {
   public:
-    struct Vertex {
-        vec3 position;
-        vec3 normal;
-        vec2 texCoord;
+    struct VertexElement {
+        enum Type { FLOAT = 0, VEC2, VEC3, VEC4 };
+        Type type;
+        std::string name;
+    };
+    using VertexLayout = std::vector<VertexElement>;
+    using Index = uint32_t;
+
+    struct CreateInfo {
+        std::vector<uint8_t> vertices;
+        VertexLayout vertexLayout;
+        std::vector<Index> indices;
     };
 
     Mesh(const fs::path& filename);
+    Mesh(const fs::path& filename, const CreateInfo& info);
 
-    const std::vector<Vertex>& getVertices() const { return _vertices; };
-    const std::vector<uint32_t>& getIndices() const { return _indices; };
+    void updateVertices(const std::vector<uint8_t>& vertices); ///< Update vertex data
+
+    const std::vector<uint8_t>& getVertices() const;
+    const std::vector<Index>& getIndices() const;
+    const VertexLayout& getVertexLayout() const;
 
   private:
-    void load();
+    void update() const;
 
     // Assimp mesh loading
+    void load();
     void processNode(aiNode* node, const aiScene* scene);
     void processMesh(aiMesh* mesh, const aiScene* scene);
+    unsigned _assimpVertexIdx; ///< Used only to keep track of indices while processing the meshes
 
-    std::vector<Vertex> _vertices;
-    std::vector<uint32_t> _indices;
+    /// Draw vertex data following the format specified in the vertex layout
+    std::vector<uint8_t> _vertices;
+    VertexLayout _vertexLayout;
+    std::vector<Index> _indices;
 };
 
 } // namespace atta::resource

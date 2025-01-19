@@ -24,7 +24,11 @@ fs::path solveResourcePath(fs::path relativePath, bool mustExist) { return Manag
 
 std::vector<fs::path> getResourcePaths() { return Manager::getInstance().getResourcePathsImpl(); }
 
-std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory) { return Manager::getInstance().getDirectoryFilesRecursiveImpl(directory); }
+fs::path getBuildPath() { return Manager::getInstance().getBuildPathImpl(); }
+
+std::vector<fs::path> getDirectoryFilesRecursive(const fs::path& directory) {
+    return Manager::getInstance().getDirectoryFilesRecursiveImpl(directory);
+}
 
 fs::path getDefaultProjectFolder() { return Manager::getInstance()._defaultProjectFolder; }
 

@@ -12,4 +12,14 @@ namespace atta::ui {
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
+//----- Viewport -----//
+const std::vector<std::shared_ptr<ui::Viewport>>& getViewports() { return Manager::getInstance().getViewportsImpl(); }
+void openViewportModal(StringId sid) { Manager::getInstance().openViewportModalImpl(sid); }
+void addViewport(std::shared_ptr<ui::Viewport> viewport) { Manager::getInstance().addViewportImpl(viewport); }
+
+bool getViewportRendering() { return Manager::getInstance().getViewportRenderingImpl(); }
+void setViewportRendering(bool viewportRendering) { Manager::getInstance().setViewportRenderingImpl(viewportRendering); }
+
+unsigned getViewportDockId() { return Manager::getInstance().getViewportDockIdImpl(); }
+
 } // namespace atta::ui

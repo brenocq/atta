@@ -20,19 +20,19 @@ void Camera::update() {
 
 void Camera::move() {
     switch (_control) {
-    case Control::PLANAR:
-        movePlanar();
-        break;
-    case Control::FIRST_PERSON:
-        moveFirstPerson();
-        break;
-    default:
-        break;
+        case Control::PLANAR:
+            movePlanar();
+            break;
+        case Control::FIRST_PERSON:
+            moveFirstPerson();
+            break;
+        default:
+            break;
     }
 }
 
 void Camera::movePlanar() {
-    if (!ImGui::IsMouseDown(2)) // Move only if middle button is pressed
+    if (!ImGui::IsMouseDown(ImGuiMouseButton_Middle)) // Move only if middle button is pressed
         return;
 
     ImGuiIO& io = ImGui::GetIO();
@@ -44,7 +44,7 @@ void Camera::movePlanar() {
 }
 
 void Camera::moveFirstPerson() {
-    if (!ImGui::IsMouseDown(2)) // Move only if middle button is pressed
+    if (!ImGui::IsMouseDown(ImGuiMouseButton_Middle)) // Move only if middle button is pressed
         return;
 
     static float lastTimeFront = 0;
@@ -63,70 +63,70 @@ void Camera::moveFirstPerson() {
     _up = vec3(0, 0, 1);
 
     // Move front/back
-    if (ImGui::IsKeyDown('W') || ImGui::IsKeyDown('S')) {
-        int key = 0;
+    if (ImGui::IsKeyDown(ImGuiKey_W) || ImGui::IsKeyDown(ImGuiKey_S)) {
+        ImGuiKey key = ImGuiKey_None;
 
-        if (ImGui::GetKeyData('W')->DownDuration > 0 && ImGui::GetKeyData('S')->DownDuration > 0)
-            if (ImGui::GetKeyData('W')->DownDuration < ImGui::GetKeyData('S')->DownDuration)
-                key = 'W';
+        if (ImGui::GetKeyData(ImGuiKey_W)->DownDuration > 0 && ImGui::GetKeyData(ImGuiKey_S)->DownDuration > 0)
+            if (ImGui::GetKeyData(ImGuiKey_W)->DownDuration < ImGui::GetKeyData(ImGuiKey_S)->DownDuration)
+                key = ImGuiKey_W;
             else
-                key = 'S';
-        else if (ImGui::GetKeyData('W')->DownDuration > 0)
-            key = 'W';
-        else if (ImGui::GetKeyData('S')->DownDuration > 0)
-            key = 'S';
+                key = ImGuiKey_S;
+        else if (ImGui::GetKeyData(ImGuiKey_W)->DownDuration > 0)
+            key = ImGuiKey_W;
+        else if (ImGui::GetKeyData(ImGuiKey_S)->DownDuration > 0)
+            key = ImGuiKey_S;
 
         if (key) {
             if (ImGui::GetKeyData(key)->DownDuration < lastTimeFront)
                 lastTimeFront = 0;
 
-            float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeFront) * (key == 'W' ? 1 : -1) * _speed;
+            float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeFront) * (key == ImGuiKey_W ? 1 : -1) * _speed;
             lastTimeFront = ImGui::GetKeyData(key)->DownDuration;
             _position += _front * delta;
         }
     }
 
     // Move left/right
-    if (ImGui::IsKeyDown('A') || ImGui::IsKeyDown('D')) {
-        int key = 0;
-        if (ImGui::GetKeyData('A')->DownDuration > 0 && ImGui::GetKeyData('D')->DownDuration > 0)
-            if (ImGui::GetKeyData('A')->DownDuration < ImGui::GetKeyData('D')->DownDuration)
-                key = 'A';
+    if (ImGui::IsKeyDown(ImGuiKey_A) || ImGui::IsKeyDown(ImGuiKey_D)) {
+        ImGuiKey key = ImGuiKey_None;
+        if (ImGui::GetKeyData(ImGuiKey_A)->DownDuration > 0 && ImGui::GetKeyData(ImGuiKey_D)->DownDuration > 0)
+            if (ImGui::GetKeyData(ImGuiKey_A)->DownDuration < ImGui::GetKeyData(ImGuiKey_D)->DownDuration)
+                key = ImGuiKey_A;
             else
-                key = 'D';
-        else if (ImGui::GetKeyData('A')->DownDuration > 0)
-            key = 'A';
-        else if (ImGui::GetKeyData('D')->DownDuration > 0)
-            key = 'D';
+                key = ImGuiKey_D;
+        else if (ImGui::GetKeyData(ImGuiKey_A)->DownDuration > 0)
+            key = ImGuiKey_A;
+        else if (ImGui::GetKeyData(ImGuiKey_D)->DownDuration > 0)
+            key = ImGuiKey_D;
 
         if (key) {
             if (ImGui::GetKeyData(key)->DownDuration < lastTimeLeft)
                 lastTimeLeft = 0;
 
-            float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeLeft) * (key == 'A' ? 1 : -1) * _speed;
+            float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeLeft) * (key == ImGuiKey_A ? 1 : -1) * _speed;
             lastTimeLeft = ImGui::GetKeyData(key)->DownDuration;
             _position += _left * delta;
         }
     }
 
     // Move up/down
-    if (ImGui::IsKeyDown('E') || ImGui::IsKeyDown('Q')) {
-        int key = 0;
-        if (ImGui::GetKeyData('E')->DownDuration > 0 && ImGui::GetKeyData('Q')->DownDuration > 0)
-            if (ImGui::GetKeyData('E')->DownDuration < ImGui::GetKeyData('Q')->DownDuration)
-                key = 'E';
+    if (ImGui::IsKeyDown(ImGuiKey_E) || ImGui::IsKeyDown(ImGuiKey_Q)) {
+        ImGuiKey key = ImGuiKey_None;
+        if (ImGui::GetKeyData(ImGuiKey_E)->DownDuration > 0 && ImGui::GetKeyData(ImGuiKey_Q)->DownDuration > 0)
+            if (ImGui::GetKeyData(ImGuiKey_E)->DownDuration < ImGui::GetKeyData(ImGuiKey_Q)->DownDuration)
+                key = ImGuiKey_E;
             else
-                key = 'Q';
-        else if (ImGui::GetKeyData('E')->DownDuration > 0)
-            key = 'E';
-        else if (ImGui::GetKeyData('Q')->DownDuration > 0)
-            key = 'Q';
+                key = ImGuiKey_Q;
+        else if (ImGui::GetKeyData(ImGuiKey_E)->DownDuration > 0)
+            key = ImGuiKey_E;
+        else if (ImGui::GetKeyData(ImGuiKey_Q)->DownDuration > 0)
+            key = ImGuiKey_Q;
 
         if (key) {
             if (ImGui::GetKeyData(key)->DownDuration < lastTimeUp)
                 lastTimeUp = 0;
 
-            float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeUp) * (key == 'E' ? 1 : -1) * _speed;
+            float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeUp) * (key == ImGuiKey_E ? 1 : -1) * _speed;
             lastTimeUp = ImGui::GetKeyData(key)->DownDuration;
             _position += _up * delta;
         }
@@ -146,14 +146,14 @@ void Camera::renderUI() {
         for (size_t j = 0; j < controls.size(); j++) {
             if (ImGui::Selectable(controls[j], comboValue == j)) {
                 switch (j) {
-                case 0:
-                    if (comboValue != 0)
-                        _control = Control::PLANAR;
-                    break;
-                case 1:
-                    if (comboValue != 1)
-                        _control = Control::FIRST_PERSON;
-                    break;
+                    case 0:
+                        if (comboValue != 0)
+                            _control = Control::PLANAR;
+                        break;
+                    case 1:
+                        if (comboValue != 1)
+                            _control = Control::FIRST_PERSON;
+                        break;
                 }
             }
             if (comboValue == j)

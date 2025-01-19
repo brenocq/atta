@@ -8,7 +8,10 @@
 #include <atta/resource/manager.h>
 
 #include <atta/event/events/imageLoad.h>
-#include <atta/event/events/materialLoad.h>
+#include <atta/event/events/materialCreate.h>
+#include <atta/event/events/materialDestroy.h>
+#include <atta/event/events/materialUpdate.h>
+#include <atta/event/events/meshDestroy.h>
 #include <atta/event/events/meshLoad.h>
 #include <atta/event/events/projectOpen.h>
 #include <atta/file/manager.h>
@@ -41,6 +44,17 @@ void Manager::startUpImpl() {
 
 void Manager::shutDownImpl() {}
 
+void Manager::updateImpl() {
+    // Publish material update events
+    for (StringId sid : _resourcesByType[typeid(Material).hash_code()]) {
+        Material* m = reinterpret_cast<Material*>(_resourceMap[sid.getId()]);
+        if (m->wasUpdated()) {
+            event::MaterialUpdate e(sid);
+            event::publish(e);
+        }
+    }
+}
+
 void Manager::onProjectOpen(event::Event& event) {
     for (auto& resourcePath : file::getResourcePaths())
         loadResourcesRecursively(resourcePath);
@@ -51,7 +65,7 @@ void Manager::loadResourcesRecursively(fs::path directory) {
     static const std::vector<std::string> imageExtensions{".jpg", ".jpeg", ".png", ".hdr", ".tga"};
 
     for (auto file : file::getDirectoryFilesRecursive(directory)) {
-        // Load as meshe
+        // Load as mesh
         for (auto& extension : meshExtensions)
             if (extension == file.extension().string()) {
                 resource::get<Mesh>(file.string());
@@ -78,7 +92,20 @@ void Manager::createLoadEvent<Image>(Image* resource, StringId sid) {
 }
 template <>
 void Manager::createLoadEvent<Material>(Material* resource, StringId sid) {
-    event::MaterialLoad e(sid);
+    event::MaterialCreate e(sid);
+    event::publish(e);
+}
+
+template <>
+void Manager::createDestroyEvent<Mesh>(StringId sid) {
+    event::MeshDestroy e(sid);
+    event::publish(e);
+}
+template <>
+void Manager::createDestroyEvent<Image>(StringId sid) {}
+template <>
+void Manager::createDestroyEvent<Material>(StringId sid) {
+    event::MaterialDestroy e(sid);
     event::publish(e);
 }
 

@@ -51,15 +51,14 @@ void LinuxFileWatcher::addWatch(fs::path directory) {
     }
 
     _pathsToWatch[directory] = wd;
-    // LOG_INFO("file::LinuxFileWatcher", "Watcher $0 created", directory, wd);
 
-    // Add subdirectories
-    for (auto& p : fs::directory_iterator(directory))
+    for (const auto& p : fs::directory_iterator(directory)) {
         if (p.is_directory()) {
             // Ignore hidden directories and build directory
             if (p.path().stem().string()[0] != '.' && p.path().stem().string() != "build")
                 addWatch(p.path());
         }
+    }
 }
 
 void LinuxFileWatcher::removeWatch(fs::path directory) { FileWatcher::removeWatch(directory); }

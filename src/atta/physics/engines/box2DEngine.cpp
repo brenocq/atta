@@ -77,13 +77,15 @@ class RayCastCallback : public b2RayCastCallback {
 
 //---------- Conversions ----------//
 inline b2BodyType attaToBox2D(component::RigidBody2D::Type type) {
-    if (type == component::RigidBody2D::DYNAMIC)
-        return b2_dynamicBody;
-    else if (type == component::RigidBody2D::KINEMATIC)
-        return b2_kinematicBody;
-    else if (type == component::RigidBody2D::STATIC)
-        return b2_staticBody;
-    return b2_dynamicBody;
+    switch (type) {
+        case component::RigidBody2D::DYNAMIC:
+            return b2_dynamicBody;
+        case component::RigidBody2D::KINEMATIC:
+            return b2_kinematicBody;
+        case component::RigidBody2D::STATIC:
+            return b2_staticBody;
+    }
+    return b2_staticBody;
 }
 
 //---------- Box2DEngine ----------//
@@ -233,7 +235,6 @@ void Box2DEngine::createRigidBody(component::EntityId entity) {
     component::Transform worldT = t->getWorldTransform(entity);
     vec3 position = worldT.position;
     quat orientation = worldT.orientation;
-    vec3 scale = worldT.scale;
 
     // Create box2d body definition
     b2BodyDef bodyDef;
@@ -389,8 +390,6 @@ void Box2DEngine::createColliders(component::EntityId entity) {
 
     // Get world transform
     component::Transform worldT = t->getWorldTransform(entity);
-    vec3 position = worldT.position;
-    quat orientation = worldT.orientation;
     vec3 scale = worldT.scale;
 
     // Create shapes
