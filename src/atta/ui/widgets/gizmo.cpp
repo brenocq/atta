@@ -20,7 +20,7 @@ Gizmo::Gizmo() : _operation(TRANSLATE), _mode(WORLD), _snap(false) {}
 
 void Gizmo::setOperation(Operation operation) { _operation = operation; }
 void Gizmo::setMode(Mode mode) { _mode = mode; }
-void Gizmo::setCamera(std::weak_ptr<gfx::Camera> camera) { _camera = camera; }
+void Gizmo::setViewport(std::weak_ptr<Viewport> viewport) { _viewport = viewport; }
 void Gizmo::setSnap(bool snap) { _snap = snap; }
 
 ImGuizmo::OPERATION convert(Gizmo::Operation operation) {
@@ -37,21 +37,21 @@ ImGuizmo::OPERATION convert(Gizmo::Operation operation) {
 ImGuizmo::MODE convert(Gizmo::Mode mode) { return mode == Gizmo::WORLD ? ImGuizmo::MODE::WORLD : ImGuizmo::MODE::LOCAL; }
 
 bool Gizmo::manipulate(cmp::EntityId entity) {
-    std::shared_ptr<gfx::Camera> camera = _camera.lock();
+    std::shared_ptr<Viewport> viewport = _viewport.lock();
     cmp::Transform* t = cmp::getComponent<cmp::Transform>(entity);
-    if (camera && t) {
+    if (viewport && t) {
         mat4 transform = transpose(t->getWorldTransformMatrix(entity));
 
+        ImGuizmo::SetOrthographic(viewport->getCamera()->getName() == "OrthographicCamera");
+        ImGuizmo::SetDrawlist();
         ImVec2 windowPos = ImGui::GetWindowPos();
-        ImVec2 windowSize = ImGui::GetWindowSize();
-        ImGuizmo::SetRect(windowPos.x, windowPos.y, windowSize.x - 10.0f, windowSize.y - 8.0f);
+        ImGuizmo::SetRect(windowPos.x, windowPos.y + 22.0f, viewport->getWidth(), viewport->getHeight());
 
         ImGuizmo::OPERATION operation = convert(_operation);
         ImGuizmo::MODE mode = convert(_mode);
 
-        ImGuizmo::SetOrthographic(camera->getName() == "OrthographicCamera");
-        mat4 view = transpose(camera->getView());
-        mat4 proj = transpose(camera->getProj());
+        mat4 view = transpose(viewport->getCamera()->getView());
+        mat4 proj = transpose(viewport->getCamera()->getProj());
         proj.mat[1][1] *= -1;
 
         float snapValue = 0.5f;
@@ -59,7 +59,8 @@ bool Gizmo::manipulate(cmp::EntityId entity) {
             snapValue = 45.0f;
         float snapValues[3] = {snapValue, snapValue, snapValue};
 
-        if (ImGuizmo::Manipulate(view.data, proj.data, operation, mode, transform.data, nullptr, _snap ? snapValues : nullptr)) {
+        ImGuizmo::Manipulate(view.data, proj.data, operation, mode, transform.data, nullptr, _snap ? snapValues : nullptr);
+        if (ImGuizmo::IsUsing()) {
             transform.transpose();
 
             // Get changed

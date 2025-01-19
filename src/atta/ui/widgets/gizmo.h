@@ -8,7 +8,7 @@
 #define ATTA_UI_WIDGETS_GUIZMO_H
 
 #include <atta/component/interface.h>
-#include <atta/graphics/cameras/camera.h>
+#include <atta/ui/windows/viewport/viewport.h>
 
 namespace atta::ui {
 
@@ -30,7 +30,7 @@ class Gizmo {
 
     void setOperation(Operation operation);
     void setMode(Mode mode);
-    void setCamera(std::weak_ptr<gfx::Camera> camera);
+    void setViewport(std::weak_ptr<Viewport> viewport);
     void setSnap(bool snap);
 
     bool manipulate(component::EntityId entity);
@@ -38,7 +38,7 @@ class Gizmo {
   private:
     Operation _operation;
     Mode _mode;
-    std::weak_ptr<gfx::Camera> _camera;
+    std::weak_ptr<Viewport> _viewport;
     bool _snap;
 };
 

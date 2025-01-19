@@ -89,12 +89,6 @@ void ViewportWindows::renderUI() {
                 if (ImGui::IsMouseClicked(2) && ImGui::IsWindowHovered())
                     activeViewport = i;
 
-                // Update camera (wheel pressed)
-                if (activeViewport == i && ImGui::IsWindowHovered()) {
-                    viewport->getCamera()->setViewportSize(viewport->getWidth(), viewport->getHeight());
-                    viewport->getCamera()->move();
-                }
-
                 //----- Mouse click -----//
                 vec2i click = {-1, -1};
                 if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) {
@@ -109,7 +103,7 @@ void ViewportWindows::renderUI() {
                 addBasicShapePopup();
 
                 //----- Operation selection -----//
-                if (ImGui::IsWindowHovered()) {
+                if (ImGui::IsWindowHovered() && !ImGui::IsMouseDown(ImGuiMouseButton_Middle)) {
                     ImGuiIO& io = ImGui::GetIO();
 
                     if (io.KeyCtrl)
@@ -131,10 +125,16 @@ void ViewportWindows::renderUI() {
 
                 //----- Gizmo manipulation -----//
                 bool gizmoUsingMouse = false;
-                _gizmo.setCamera(viewport->getCamera());
+                _gizmo.setViewport(viewport);
                 cmp::EntityId eid = component::getSelectedEntity();
                 if (eid >= 0 && _gizmo.manipulate(eid))
                     gizmoUsingMouse = true;
+
+                //----- Camera control -----//
+                if (activeViewport == i && ImGui::IsWindowHovered()) {
+                    viewport->getCamera()->setViewportSize(viewport->getWidth(), viewport->getHeight());
+                    viewport->getCamera()->move();
+                }
 
                 //----- Mouse click selection -----//
                 if (!gizmoUsingMouse) {
