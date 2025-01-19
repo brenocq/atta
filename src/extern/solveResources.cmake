@@ -1,5 +1,5 @@
 FetchContent_Declare(resources
-    URL "https://atta-resources.s3.amazonaws.com/v0.3.1-ui-temp.zip"
+    URL "https://atta-resources.s3.amazonaws.com/v0.3.2.zip"
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources
 )
 
