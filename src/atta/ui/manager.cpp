@@ -98,7 +98,7 @@ void Manager::shutDownImpl() {
 }
 
 const std::vector<std::shared_ptr<ui::Viewport>>& Manager::getViewportsImpl() const { return _editor.getViewports(); }
-void Manager::openViewportModalImpl(StringId sid) const { _editor.openViewportModal(sid); }
+void Manager::openViewportModalImpl(StringId sid) { _editor.openViewportModal(sid); }
 void Manager::addViewportImpl(std::shared_ptr<ui::Viewport> viewport) { _editor.addViewport(viewport); }
 
 bool Manager::getViewportRenderingImpl() const { return _editor.getViewportRendering(); }

@@ -30,7 +30,7 @@ class Manager final {
     void shutDownImpl();
 
     const std::vector<std::shared_ptr<ui::Viewport>>& getViewportsImpl() const;
-    void openViewportModalImpl(StringId sid) const;
+    void openViewportModalImpl(StringId sid);
     void addViewportImpl(std::shared_ptr<ui::Viewport> viewport);
     bool getViewportRenderingImpl() const;
     void setViewportRenderingImpl(bool viewportRendering);

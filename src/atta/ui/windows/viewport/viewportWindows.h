@@ -25,13 +25,14 @@ class ViewportWindows {
     void clearViewports();
     void addViewport(std::shared_ptr<Viewport> viewport);
     void removeViewport(std::shared_ptr<Viewport> viewport);
-    void openViewportModal(StringId sid) const;
+    void openViewportModal(StringId sid);
     bool getViewportRendering() const;
     void setViewportRendering(bool viewportRendering);
 
   private:
     void createDefaultViewports();
     void addBasicShapePopup();
+    void renderModals();
 
     std::vector<std::shared_ptr<Viewport>> _viewports;     ///< Current viewports to be rendered
     std::vector<std::shared_ptr<Viewport>> _viewportsNext; ///< Being used for now to update the viewports in the next frame without breaking imgui
@@ -41,6 +42,7 @@ class ViewportWindows {
 
     // Compute
     std::unique_ptr<gfx::EntityClick> _computeEntityClick;
+    std::map<StringId, bool> _openModals; ///< Open modals for each viewport
 };
 
 } // namespace atta::ui

@@ -83,7 +83,7 @@ void Editor::render() {
 }
 
 const std::vector<std::shared_ptr<ui::Viewport>>& Editor::getViewports() const { return _viewportWindows.getViewports(); }
-void Editor::openViewportModal(StringId sid) const { _viewportWindows.openViewportModal(sid); }
+void Editor::openViewportModal(StringId sid) { _viewportWindows.openViewportModal(sid); }
 void Editor::addViewport(std::shared_ptr<ui::Viewport> viewport) { _viewportWindows.addViewport(viewport); }
 bool Editor::getViewportRendering() const { return _viewportWindows.getViewportRendering(); }
 void Editor::setViewportRendering(bool viewportRendering) { _viewportWindows.setViewportRendering(viewportRendering); }
