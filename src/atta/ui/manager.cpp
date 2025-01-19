@@ -4,6 +4,7 @@
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/file/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/ui/manager.h>
 
@@ -18,6 +19,7 @@
 #endif
 #include <ImGuizmo.h>
 #include <implot.h>
+#include <implot3d.h>
 // clang-format on
 
 namespace atta::ui {
@@ -31,11 +33,14 @@ void Manager::startUpImpl() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImPlot::CreateContext();
+    ImPlot3D::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+
+    io.FontDefault = io.Fonts->AddFontFromFileTTF(file::solveResourcePath("fonts/NotoSans-Regular.ttf").string().c_str(), 16.0f);
 
     // Don't save imgui.ini
     io.IniFilename = NULL;
@@ -57,18 +62,27 @@ void Manager::startUpImpl() {
     }
     setTheme();
 
+    gfx::setUiRenderViewportsFunc([&]() { _editor.renderViewports(); });
     gfx::setUiRenderFunc([&]() { render(); });
     gfx::setUiShutDownFunc([&]() { shutDownImpl(); });
     gfx::setUiStartUpFunc([&]() { startUpImpl(); });
 
-    // Create editor (make sure windows are reorganized after start up)
-    _editor = {};
+    // Start up editor window
+    _editor.startUp();
 }
 
 void Manager::shutDownImpl() {
     // Make sure all rendering operations are done
     gfx::getGraphicsAPI()->waitDevice();
 
+    // Destroy editor
+    _editor.shutDown();
+
+    // Destroy plotting contexts
+    ImPlot3D::DestroyContext();
+    ImPlot::DestroyContext();
+
+    // Destroy ImGui context
     switch (gfx::getGraphicsAPI()->getType()) {
         case gfx::GraphicsAPI::OPENGL:
             ImGui_ImplOpenGL3_Shutdown();
@@ -83,37 +97,114 @@ void Manager::shutDownImpl() {
     ImGui::DestroyContext();
 }
 
+const std::vector<std::shared_ptr<ui::Viewport>>& Manager::getViewportsImpl() const { return _editor.getViewports(); }
+void Manager::openViewportModalImpl(StringId sid) { _editor.openViewportModal(sid); }
+void Manager::addViewportImpl(std::shared_ptr<ui::Viewport> viewport) { _editor.addViewport(viewport); }
+
+bool Manager::getViewportRenderingImpl() const { return _editor.getViewportRendering(); }
+void Manager::setViewportRenderingImpl(bool viewportRendering) { _editor.setViewportRendering(viewportRendering); }
+
+unsigned Manager::getViewportDockIdImpl() { return _editor.getViewportDockId(); }
+
 void Manager::setTheme() {
-    ImGui::StyleColorsDark();
-    auto& colors = ImGui::GetStyle().Colors;
-    colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
+    ImGuiStyle& style = ImGui::GetStyle();
 
-    // Headers
-    colors[ImGuiCol_Header] = ImVec4{0.25f, 0.255f, 0.26f, 1.0f};
-    colors[ImGuiCol_HeaderHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
-    colors[ImGuiCol_HeaderActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    // Sizes main
+    style.ScrollbarRounding = 0.0f;
+    style.TabRounding = 0.0f;
+    style.WindowPadding = ImVec2(8.0f, 5.0f);
+    style.FramePadding = ImVec2(4.0f, 3.0f);
+    style.ItemSpacing = ImVec2(5.0f, 4.0f);
+    style.ItemInnerSpacing = ImVec2(3.0f, 3.0f);
+    style.ScrollbarSize = 12.0f;
+    style.GrabMinSize = 5.0f;
+    // Sizes borders
+    style.WindowBorderSize = 1.0f;
+    style.TabBorderSize = 0.0f;
+    style.TabBarBorderSize = 1.0f;
+    style.TabBarOverlineSize = 0.0f;
+    // Sizes rounding
+    style.FrameRounding = 3.0f;
+    style.ScrollbarRounding = 3.0f;
+    style.GrabRounding = 3.0f;
+    style.TabRounding = 3.0f;
+    // Sizes widgets
+    style.SeparatorTextBorderSize = 1.0f;
+    style.SeparatorTextAlign = ImVec2(0.5f, 0.5f);
+    style.SeparatorTextPadding = ImVec2(0.0f, 0.0f);
+    // Sizes docking
+    style.DockingSeparatorSize = 2.0f;
+    // Sizes misc
+    style.DisplaySafeAreaPadding = ImVec2(0.0f, 0.0f);
 
-    // Buttons
-    colors[ImGuiCol_Button] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
-    colors[ImGuiCol_ButtonHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
-    colors[ImGuiCol_ButtonActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    constexpr ImVec4 bg = ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
+    constexpr ImVec4 titleActive = ImVec4(0.12f, 0.12f, 0.12f, 1.00f);
+    constexpr ImVec4 titleHovered = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+    constexpr ImVec4 titleSelected = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
+    constexpr ImVec4 bgActive = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    constexpr ImVec4 bgHovered = ImVec4(0.12f, 0.12f, 0.12f, 1.00f);
+    constexpr ImVec4 bgSelected = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+    constexpr ImVec4 disabled = ImVec4(0.15f, 0.15, 0.15f, 1.0f);
+    constexpr ImVec4 active = ImVec4(0.30f, 0.30f, 0.30f, 1.0f);
+    constexpr ImVec4 hovered = ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
+    constexpr ImVec4 selected = ImVec4(0.40f, 0.40f, 0.40f, 1.0f);
 
-    // Frame BG
-    colors[ImGuiCol_FrameBg] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
-    colors[ImGuiCol_FrameBgHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
-    colors[ImGuiCol_FrameBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-
-    // Tabs
-    colors[ImGuiCol_Tab] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TabHovered] = ImVec4{0.38f, 0.3805f, 0.381f, 1.0f};
-    colors[ImGuiCol_TabActive] = ImVec4{0.28f, 0.2805f, 0.281f, 1.0f};
-    colors[ImGuiCol_TabUnfocused] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TabUnfocusedActive] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
-
-    // Title
-    colors[ImGuiCol_TitleBg] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TitleBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    // Colors
+    ImVec4* colors = style.Colors;
+    colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+    colors[ImGuiCol_WindowBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_PopupBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.98f);
+    colors[ImGuiCol_Border] = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
+    colors[ImGuiCol_BorderShadow] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+    colors[ImGuiCol_FrameBg] = bgActive;
+    colors[ImGuiCol_FrameBgHovered] = bgHovered;
+    colors[ImGuiCol_FrameBgActive] = bgSelected;
+    colors[ImGuiCol_TitleBg] = titleActive;
+    colors[ImGuiCol_TitleBgActive] = titleSelected;
+    colors[ImGuiCol_TitleBgCollapsed] = titleActive;
+    colors[ImGuiCol_MenuBarBg] = active;
+    colors[ImGuiCol_ScrollbarBg] = bg;
+    colors[ImGuiCol_ScrollbarGrab] = active;
+    colors[ImGuiCol_ScrollbarGrabHovered] = hovered;
+    colors[ImGuiCol_ScrollbarGrabActive] = selected;
+    colors[ImGuiCol_CheckMark] = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
+    colors[ImGuiCol_SliderGrab] = active;
+    colors[ImGuiCol_SliderGrabActive] = selected;
+    colors[ImGuiCol_Button] = active;
+    colors[ImGuiCol_ButtonHovered] = hovered;
+    colors[ImGuiCol_ButtonActive] = selected;
+    colors[ImGuiCol_Header] = bgActive;
+    colors[ImGuiCol_HeaderHovered] = bgHovered;
+    colors[ImGuiCol_HeaderActive] = bgSelected;
+    colors[ImGuiCol_Separator] = active;
+    colors[ImGuiCol_SeparatorHovered] = hovered;
+    colors[ImGuiCol_SeparatorActive] = selected;
+    colors[ImGuiCol_ResizeGrip] = active;
+    colors[ImGuiCol_ResizeGripHovered] = hovered;
+    colors[ImGuiCol_ResizeGripActive] = selected;
+    colors[ImGuiCol_Tab] = disabled;
+    colors[ImGuiCol_TabHovered] = hovered;
+    colors[ImGuiCol_TabSelected] = selected;
+    colors[ImGuiCol_TabSelectedOverline] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_TabDimmed] = disabled;
+    colors[ImGuiCol_TabDimmedSelected] = selected;
+    colors[ImGuiCol_DockingPreview] = ImVec4(1.00f, 1.00f, 1.00f, 0.20f);
+    colors[ImGuiCol_DockingEmptyBg] = ImVec4(1.00f, 1.00f, 1.00f, 0.20f);
+    colors[ImGuiCol_PlotLines] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+    colors[ImGuiCol_TableHeaderBg] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
+    colors[ImGuiCol_TableBorderStrong] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+    colors[ImGuiCol_TableBorderLight] = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
+    colors[ImGuiCol_TableRowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.00f, 1.00f, 1.00f, 0.02f);
+    colors[ImGuiCol_TextSelectedBg] = ImVec4(1.00f, 1.00f, 1.00f, 0.20f);
+    colors[ImGuiCol_DragDropTarget] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    colors[ImGuiCol_NavCursor] = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
+    colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 1.00f, 1.00f, 0.08f);
 }
 
 void Manager::initOpenGL() {
@@ -139,7 +230,8 @@ void Manager::initVulkan() {
     info.MinImageCount = 3;
     info.ImageCount = 3;
     info.CheckVkResultFn = nullptr;
-    ImGui_ImplVulkan_Init(&info, vulkanAPI->getRenderPass()->getHandle());
+    info.RenderPass = vulkanAPI->getRenderPass()->getHandle();
+    ImGui_ImplVulkan_Init(&info);
 
     // Upload Fonts
     if (!ImGui_ImplVulkan_CreateFontsTexture())

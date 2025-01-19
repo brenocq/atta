@@ -25,6 +25,8 @@ tags
 imgui.ini
 
 # Debugging/Profile
+.cache/
 perf.*
 .gdb_history
 profile/
+compile_commands.json

@@ -10,6 +10,7 @@
 #include <atta/graphics/image.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
+#include <atta/graphics/renderers/common/gridPipeline.h>
 #include <atta/graphics/renderers/common/selectedPipeline.h>
 #include <atta/graphics/renderers/renderer.h>
 
@@ -37,8 +38,9 @@ class PbrRenderer final : public Renderer {
     std::shared_ptr<RenderQueue> _renderQueue;
     std::shared_ptr<RenderPass> _geometryRenderPass;
     std::shared_ptr<Pipeline> _geometryPipeline;
-    std::unique_ptr<SelectedPipeline> _selectedPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
+    std::unique_ptr<GridPipeline> _gridPipeline;
+    std::unique_ptr<SelectedPipeline> _selectedPipeline;
 
     std::shared_ptr<Shader> _backgroundShader;
     bool _firstRender;

@@ -50,8 +50,6 @@ const BufferLayout& Shader::getPerFrameImageLayout() const { return _perFrameIma
 const BufferLayout& Shader::getPerDrawImageLayout() const { return _perDrawImageLayout; }
 
 void Shader::processASL() {
-    LOG_DEBUG("gfx::Shader", "Preprocess ASL: [w]$0", _file.string());
-
     // Remove comments
     _aslCode = removeComments(_aslCode);
 

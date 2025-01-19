@@ -33,7 +33,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
     {
         // Framebuffer
         Framebuffer::CreateInfo framebufferInfo{};
-        framebufferInfo.attachments.push_back({Image::Format::RGB});
+        framebufferInfo.attachments.push_back({Image::Format::RGBA});
         framebufferInfo.attachments.push_back({Image::Format::DEPTH24_STENCIL8});
         _width = framebufferInfo.width = 500;
         _height = framebufferInfo.height = 500;
@@ -56,6 +56,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
 
     //---------- Common pipelines ----------//
     //_selectedPipeline = std::make_unique<SelectedPipeline>(_geometryRenderPass);
+    _gridPipeline = std::make_unique<GridPipeline>(_geometryRenderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(_geometryRenderPass);
 
     ////---------- Create background shader ----------//
@@ -299,6 +300,9 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
         return imageGroup;
     });
 
+    // Update grid data
+    _gridPipeline->update(camera);
+
     // Update drawer data
     if (_renderDrawer)
         _drawerPipeline->update();
@@ -404,6 +408,8 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                 }
             }
             _geometryPipeline->end();
+
+            _gridPipeline->render(camera);
 
             if (_renderDrawer)
                 _drawerPipeline->render(camera);

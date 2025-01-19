@@ -47,8 +47,9 @@ FastRenderer::FastRenderer() : Renderer("FastRenderer"), _wasResized(false) {
     _geometryPipeline = graphics::create<Pipeline>(pipelineInfo);
 
     //---------- Common pipelines ----------//
-    _selectedPipeline = std::make_unique<SelectedPipeline>(_renderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(_renderPass);
+    _gridPipeline = std::make_unique<GridPipeline>(_renderPass);
+    _selectedPipeline = std::make_unique<SelectedPipeline>(_renderPass);
 }
 
 FastRenderer::~FastRenderer() {}
@@ -67,6 +68,9 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
             imageGroup.emplace_back("uAlbedoTexture", material->getColorImage());
         return imageGroup;
     });
+
+    // Update grid data
+    _gridPipeline->update(camera);
 
     // Update drawer data
     if (_renderDrawer)
@@ -110,6 +114,8 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                 }
             }
             _geometryPipeline->end();
+
+            _gridPipeline->render(camera);
 
             if (_renderDrawer)
                 _drawerPipeline->render(camera);

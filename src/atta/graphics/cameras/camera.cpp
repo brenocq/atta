@@ -64,70 +64,70 @@ void Camera::moveFirstPerson() {
 
     // Move front/back
     if (ImGui::IsKeyDown(ImGuiKey_W) || ImGui::IsKeyDown(ImGuiKey_S)) {
-        int key = 0;
+        ImGuiKey key = ImGuiKey_None;
 
-        if (io.KeysData[ImGuiKey_W].DownDuration > 0 && io.KeysData[ImGuiKey_S].DownDuration > 0)
-            if (io.KeysData[ImGuiKey_W].DownDuration < io.KeysData[ImGuiKey_S].DownDuration)
+        if (ImGui::GetKeyData(ImGuiKey_W)->DownDuration > 0 && ImGui::GetKeyData(ImGuiKey_S)->DownDuration > 0)
+            if (ImGui::GetKeyData(ImGuiKey_W)->DownDuration < ImGui::GetKeyData(ImGuiKey_S)->DownDuration)
                 key = ImGuiKey_W;
             else
                 key = ImGuiKey_S;
-        else if (io.KeysData[ImGuiKey_W].DownDuration > 0)
+        else if (ImGui::GetKeyData(ImGuiKey_W)->DownDuration > 0)
             key = ImGuiKey_W;
-        else if (io.KeysData[ImGuiKey_S].DownDuration > 0)
+        else if (ImGui::GetKeyData(ImGuiKey_S)->DownDuration > 0)
             key = ImGuiKey_S;
 
         if (key) {
-            if (io.KeysData[key].DownDuration < lastTimeFront)
+            if (ImGui::GetKeyData(key)->DownDuration < lastTimeFront)
                 lastTimeFront = 0;
 
-            float delta = (io.KeysData[key].DownDuration - lastTimeFront) * (key == ImGuiKey_W ? 1 : -1) * _speed;
-            lastTimeFront = io.KeysData[key].DownDuration;
+            float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeFront) * (key == ImGuiKey_W ? 1 : -1) * _speed;
+            lastTimeFront = ImGui::GetKeyData(key)->DownDuration;
             _position += _front * delta;
         }
     }
 
     // Move left/right
     if (ImGui::IsKeyDown(ImGuiKey_A) || ImGui::IsKeyDown(ImGuiKey_D)) {
-        int key = 0;
-        if (io.KeysData[ImGuiKey_A].DownDuration > 0 && io.KeysData[ImGuiKey_D].DownDuration > 0)
-            if (io.KeysData[ImGuiKey_A].DownDuration < io.KeysData[ImGuiKey_D].DownDuration)
+        ImGuiKey key = ImGuiKey_None;
+        if (ImGui::GetKeyData(ImGuiKey_A)->DownDuration > 0 && ImGui::GetKeyData(ImGuiKey_D)->DownDuration > 0)
+            if (ImGui::GetKeyData(ImGuiKey_A)->DownDuration < ImGui::GetKeyData(ImGuiKey_D)->DownDuration)
                 key = ImGuiKey_A;
             else
                 key = ImGuiKey_D;
-        else if (io.KeysData[ImGuiKey_A].DownDuration > 0)
+        else if (ImGui::GetKeyData(ImGuiKey_A)->DownDuration > 0)
             key = ImGuiKey_A;
-        else if (io.KeysData[ImGuiKey_D].DownDuration > 0)
+        else if (ImGui::GetKeyData(ImGuiKey_D)->DownDuration > 0)
             key = ImGuiKey_D;
 
         if (key) {
-            if (io.KeysData[key].DownDuration < lastTimeLeft)
+            if (ImGui::GetKeyData(key)->DownDuration < lastTimeLeft)
                 lastTimeLeft = 0;
 
-            float delta = (io.KeysData[key].DownDuration - lastTimeLeft) * (key == ImGuiKey_A ? 1 : -1) * _speed;
-            lastTimeLeft = io.KeysData[key].DownDuration;
+            float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeLeft) * (key == ImGuiKey_A ? 1 : -1) * _speed;
+            lastTimeLeft = ImGui::GetKeyData(key)->DownDuration;
             _position += _left * delta;
         }
     }
 
     // Move up/down
     if (ImGui::IsKeyDown(ImGuiKey_E) || ImGui::IsKeyDown(ImGuiKey_Q)) {
-        int key = 0;
-        if (io.KeysData[ImGuiKey_E].DownDuration > 0 && io.KeysData[ImGuiKey_Q].DownDuration > 0)
-            if (io.KeysData[ImGuiKey_E].DownDuration < io.KeysData[ImGuiKey_Q].DownDuration)
+        ImGuiKey key = ImGuiKey_None;
+        if (ImGui::GetKeyData(ImGuiKey_E)->DownDuration > 0 && ImGui::GetKeyData(ImGuiKey_Q)->DownDuration > 0)
+            if (ImGui::GetKeyData(ImGuiKey_E)->DownDuration < ImGui::GetKeyData(ImGuiKey_Q)->DownDuration)
                 key = ImGuiKey_E;
             else
                 key = ImGuiKey_Q;
-        else if (io.KeysData[ImGuiKey_E].DownDuration > 0)
+        else if (ImGui::GetKeyData(ImGuiKey_E)->DownDuration > 0)
             key = ImGuiKey_E;
-        else if (io.KeysData[ImGuiKey_Q].DownDuration > 0)
+        else if (ImGui::GetKeyData(ImGuiKey_Q)->DownDuration > 0)
             key = ImGuiKey_Q;
 
         if (key) {
-            if (io.KeysData[key].DownDuration < lastTimeUp)
+            if (ImGui::GetKeyData(key)->DownDuration < lastTimeUp)
                 lastTimeUp = 0;
 
-            float delta = (io.KeysData[key].DownDuration - lastTimeUp) * (key == ImGuiKey_E ? 1 : -1) * _speed;
-            lastTimeUp = io.KeysData[key].DownDuration;
+            float delta = (ImGui::GetKeyData(key)->DownDuration - lastTimeUp) * (key == ImGuiKey_E ? 1 : -1) * _speed;
+            lastTimeUp = ImGui::GetKeyData(key)->DownDuration;
             _position += _up * delta;
         }
     }

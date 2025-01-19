@@ -10,7 +10,7 @@
 
 namespace atta::graphics::vk {
 
-Instance::Instance() {
+Instance::Instance() : _instance(VK_NULL_HANDLE) {
     // Application info
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -46,7 +46,8 @@ Instance::Instance() {
 
     // Create instance
     VkResult result = vkCreateInstance(&createInfo, nullptr, &_instance);
-    if (result != VK_SUCCESS)
+    _wasCreated = result == VK_SUCCESS;
+    if (!_wasCreated)
         LOG_ERROR("gfx::vk::Instance", "Failed to create vulkan instance! Code: $0", common::toString(result));
 }
 
@@ -54,6 +55,8 @@ Instance::~Instance() {
     if (_instance != VK_NULL_HANDLE)
         vkDestroyInstance(_instance, nullptr);
 }
+
+bool Instance::wasCreated() const { return _wasCreated; }
 
 VkInstance Instance::getHandle() const { return _instance; }
 

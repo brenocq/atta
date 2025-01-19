@@ -4,7 +4,7 @@ set(ATTA_IMGUI_TARGETS "")
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY "https://github.com/ocornut/imgui"
-    GIT_TAG "v1.90-docking"
+    GIT_TAG "v1.91.7-docking"
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
@@ -28,7 +28,7 @@ endif()
 add_library(imgui STATIC
 	${IMGUI_SOURCE}
 )
-target_include_directories(imgui PUBLIC 
+target_include_directories(imgui PUBLIC
     $<BUILD_INTERFACE:${FETCHCONTENT_BASE_DIR}/imgui-src>
     $<INSTALL_INTERFACE:include/${ATTA_VERSION_SAFE}/extern/imgui>
 )

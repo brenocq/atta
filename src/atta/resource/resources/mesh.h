@@ -20,7 +20,7 @@ namespace atta::resource {
 class Mesh : public Resource, public memory::AllocatedObject<Mesh, SID("ResourceAllocator")> {
   public:
     struct VertexElement {
-        enum Type { VEC2 = 0, VEC3, VEC4 };
+        enum Type { FLOAT = 0, VEC2, VEC3, VEC4 };
         Type type;
         std::string name;
     };

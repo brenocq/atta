@@ -10,6 +10,7 @@
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderPass.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
+#include <atta/graphics/renderers/common/gridPipeline.h>
 #include <atta/graphics/renderers/common/selectedPipeline.h>
 #include <atta/graphics/renderers/renderer.h>
 
@@ -31,6 +32,7 @@ class FastRenderer final : public Renderer {
     std::shared_ptr<RenderPass> _renderPass;
     std::shared_ptr<Pipeline> _geometryPipeline;
     std::unique_ptr<SelectedPipeline> _selectedPipeline;
+    std::unique_ptr<GridPipeline> _gridPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
     bool _wasResized;
 };

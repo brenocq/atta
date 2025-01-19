@@ -46,6 +46,8 @@ class VulkanAPI final : public GraphicsAPI {
 
     void* getImGuiImage(StringId sid) const override;
 
+    static bool isSupported();
+
     std::shared_ptr<vk::Instance> getInstance() const;
     std::shared_ptr<vk::PhysicalDevice> getPhysicalDevice() const;
     std::shared_ptr<vk::Device> getDevice() const;

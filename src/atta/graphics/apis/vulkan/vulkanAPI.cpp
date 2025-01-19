@@ -194,6 +194,11 @@ void VulkanAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
 
 void* VulkanAPI::getImGuiImage(StringId sid) const { return nullptr; }
 
+bool VulkanAPI::isSupported() {
+    vk::Instance instance;
+    return instance.wasCreated();
+}
+
 std::shared_ptr<vk::Instance> VulkanAPI::getInstance() const { return _instance; }
 
 std::shared_ptr<vk::PhysicalDevice> VulkanAPI::getPhysicalDevice() const { return _physicalDevice; }
