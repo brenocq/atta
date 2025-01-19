@@ -141,8 +141,8 @@ void ViewportWindows::renderUI() {
                 ImVec2 size = ImVec2(viewport->getWidth(), viewport->getHeight());
                 ImGui::Image((ImTextureID)(intptr_t)viewport->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));
 
-                //    //----- ImGuizmo -----//
-                //    bool imGuizmoUsingMouse = false;
+                //----- ImGuizmo -----//
+                bool imGuizmoUsingMouse = false;
                 //    component::EntityId entity = component::getSelectedEntity();
                 //    if (entity >= 0) {
                 //        component::Transform* t = component::getComponent<component::Transform>(entity);
@@ -230,12 +230,12 @@ void ViewportWindows::renderUI() {
                 //    }
 
                 //    //----- Mouse click selection -----//
-                //    if (!imGuizmoUsingMouse) {
-                //        if (click.x >= 0 && click.y >= 0 && click.x < (int)viewport->getWidth() && click.y < (int)viewport->getHeight()) {
-                //            component::EntityId eid = _computeEntityClick(viewport->getRenderer(), viewport->getCamera(), click);
-                //            component::setSelectedEntity(eid);
-                //        }
-                //    }
+                if (!imGuizmoUsingMouse) {
+                    if (click.x >= 0 && click.y >= 0 && click.x < (int)viewport->getWidth() && click.y < (int)viewport->getHeight()) {
+                        cmp::EntityId eid = _computeEntityClick->click(viewport->getRenderer(), viewport->getCamera(), click);
+                        cmp::setSelectedEntity(eid);
+                    }
+                }
 
                 //----- Resize -----//
                 ImVec2 windowSize = ImGui::GetWindowSize();
