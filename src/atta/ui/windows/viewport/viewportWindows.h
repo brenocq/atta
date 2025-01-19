@@ -9,6 +9,7 @@
 
 #include <atta/component/interface.h>
 #include <atta/graphics/compute/entityClick.h>
+#include <atta/ui/widgets/gizmo.h>
 #include <atta/ui/windows/viewport/viewport.h>
 
 namespace atta::ui {
@@ -40,8 +41,13 @@ class ViewportWindows {
     float _viewportFPS = 30.0;                             ///< Desired viewport FPS (UI module handles the viewport rendering)
     bool _viewportRendering = true;                        ///< If should render the viewport
 
+    // Gizmo
+    Gizmo _gizmo;
+
     // Compute
     std::unique_ptr<gfx::EntityClick> _computeEntityClick;
+
+    // Modals
     std::map<StringId, bool> _openModals; ///< Open modals for each viewport
 };
 

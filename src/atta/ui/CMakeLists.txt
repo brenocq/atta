@@ -11,6 +11,7 @@ set(ATTA_UI_MODULE_SOURCE
 
     widgets/align.cpp
     widgets/button.cpp
+    widgets/gizmo.cpp
     widgets/help.cpp
     widgets/image.cpp
 

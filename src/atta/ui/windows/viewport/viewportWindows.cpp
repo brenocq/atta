@@ -4,6 +4,7 @@
 // Date: 2021-12-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/component/base.h>
 #include <atta/component/components/material.h>
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/name.h>
@@ -107,130 +108,36 @@ void ViewportWindows::renderUI() {
                     ImGui::OpenPopup("Editor_AddBasicShape");
                 addBasicShapePopup();
 
-                //----- Keyboard click -----//
-                // static ImGuizmo::OPERATION mouseOperation = ImGuizmo::OPERATION::TRANSLATE;
-                // static ImGuizmo::MODE mouseMode = ImGuizmo::MODE::LOCAL;
-                // static bool snap = false;
+                //----- Operation selection -----//
+                if (ImGui::IsWindowHovered()) {
+                    ImGuiIO& io = ImGui::GetIO();
 
-                // if (ImGui::IsWindowHovered()) {
-                //     snap = false;
-                //     ImGuiIO& io = ImGui::GetIO();
-                //     if (ImGui::IsKeyPressed(ImGuiKey_T) && io.KeyCtrl) {
-                //         mouseOperation = ImGuizmo::OPERATION::TRANSLATE;
-                //         mouseMode = ImGuizmo::MODE::LOCAL;
-                //     } else if (ImGui::IsKeyPressed(ImGuiKey_T) && io.KeyShift) {
-                //         mouseOperation = ImGuizmo::OPERATION::TRANSLATE;
-                //         mouseMode = ImGuizmo::MODE::WORLD;
-                //     } else if (ImGui::IsKeyPressed(ImGuiKey_S) && io.KeyCtrl) {
-                //         mouseOperation = ImGuizmo::OPERATION::SCALE;
-                //         mouseMode = ImGuizmo::MODE::LOCAL;
-                //     } else if (ImGui::IsKeyPressed(ImGuiKey_S) && io.KeyShift) {
-                //         mouseOperation = ImGuizmo::OPERATION::SCALE;
-                //         mouseMode = ImGuizmo::MODE::WORLD;
-                //     } else if (ImGui::IsKeyPressed(ImGuiKey_R) && io.KeyCtrl) {
-                //         mouseOperation = ImGuizmo::OPERATION::ROTATE;
-                //         mouseMode = ImGuizmo::MODE::LOCAL;
-                //     } else if (ImGui::IsKeyPressed(ImGuiKey_R) && io.KeyShift) {
-                //         mouseOperation = ImGuizmo::OPERATION::ROTATE;
-                //         mouseMode = ImGuizmo::MODE::WORLD;
-                //     } else if (io.KeyCtrl)
-                //         snap = true;
-                // }
+                    if (io.KeyCtrl)
+                        _gizmo.setMode(Gizmo::LOCAL);
+                    if (io.KeyShift)
+                        _gizmo.setMode(Gizmo::WORLD);
 
-                //----- Render to texture -----//
+                    if (ImGui::IsKeyPressed(ImGuiKey_T))
+                        _gizmo.setOperation(Gizmo::TRANSLATE);
+                    else if (ImGui::IsKeyPressed(ImGuiKey_S))
+                        _gizmo.setOperation(Gizmo::SCALE);
+                    else if (ImGui::IsKeyPressed(ImGuiKey_R))
+                        _gizmo.setOperation(Gizmo::ROTATE);
+                }
+
+                //----- Render viewport to texture -----//
                 ImVec2 size = ImVec2(viewport->getWidth(), viewport->getHeight());
                 ImGui::Image((ImTextureID)(intptr_t)viewport->getImGuiTexture(), size, ImVec2(0, 0), ImVec2(1, 1));
 
-                //----- ImGuizmo -----//
-                bool imGuizmoUsingMouse = false;
-                //    component::EntityId entity = component::getSelectedEntity();
-                //    if (entity >= 0) {
-                //        component::Transform* t = component::getComponent<component::Transform>(entity);
+                //----- Gizmo manipulation -----//
+                bool gizmoUsingMouse = false;
+                _gizmo.setCamera(viewport->getCamera());
+                cmp::EntityId eid = component::getSelectedEntity();
+                if (eid >= 0 && _gizmo.manipulate(eid))
+                    gizmoUsingMouse = true;
 
-                //        if (t) {
-                //            ImGuizmo::SetOrthographic(viewport->getCamera()->getName() == "OrthographicCamera");
-                //            ImGuizmo::SetDrawlist();
-                //            ImGuizmo::SetRect(ImGui::GetWindowPos().x + 5.0f, ImGui::GetWindowPos().y + 24.0f, viewport->getWidth(),
-                //            viewport->getHeight());
-                //            mat4 view = transpose(viewport->getCamera()->getView());
-                //            mat4 proj = viewport->getCamera()->getProj();
-                //            proj.mat[1][1] *= -1;
-                //            proj.transpose();
-
-                //            mat4 transform = transpose(t->getWorldTransformMatrix(entity));
-
-                //            float snapValue = 0.5f;
-                //            if (mouseOperation == ImGuizmo::OPERATION::ROTATE)
-                //                snapValue = 45.0f;
-                //            float snapValues[3] = {snapValue, snapValue, snapValue};
-
-                //            ImGuizmo::Manipulate(view.data, proj.data, mouseOperation, mouseMode, transform.data, nullptr, snap ? snapValues :
-                //            nullptr);
-
-                //            if (ImGuizmo::IsUsing()) {
-                //                imGuizmoUsingMouse = true;
-                //                transform.transpose();
-
-                //                // Get changed
-                //                vec3 pos, scale;
-                //                quat newOri;
-                //                transform.getPosOriScale(pos, newOri, scale);
-                //                vec3 oriDelta = newOri.getEuler() - t->orientation.getEuler();
-                //                quat ori;
-                //                ori.setEuler(t->orientation.getEuler() + oriDelta);
-
-                //                // Delta world to local
-                //                component::Relationship* r = component::getComponent<component::Relationship>(entity);
-                //                if (r && r->getParent() != -1) {
-                //                    // Get transform of the first entity that has transform when going up in the hierarchy
-                //                    component::Transform* pt = nullptr;
-                //                    component::EntityId parentId = -1;
-                //                    while (pt == nullptr) {
-                //                        parentId = r->getParent();
-                //                        pt = component::getComponent<component::Transform>(parentId);
-                //                        r = component::getComponent<component::Relationship>(parentId);
-                //                        if (r->getParent() == -1)
-                //                            break;
-                //                    }
-
-                //                    // If found some entity with transform component, convert result to be relative to it
-                //                    if (pt) {
-                //                        component::Transform pTransform = pt->getWorldTransform(parentId);
-                //                        vec3 pPos = pTransform.position;
-                //                        vec3 pScale = pTransform.scale;
-                //                        quat pOri = pTransform.orientation;
-
-                //                        // Calculate pos ori scale relative to parent
-                //                        pos -= pPos;
-                //                        scale /= pScale;
-                //                        ori = ori * (-pOri); // Rotation from pOri to ori
-                //                    }
-                //                }
-
-                //                // Update entity transform
-                //                if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE)
-                //                    t->position = pos;
-                //                else if (mouseOperation == ImGuizmo::OPERATION::ROTATE)
-                //                    t->orientation = ori;
-                //                else if (mouseOperation == ImGuizmo::OPERATION::SCALE)
-                //                    t->scale = scale;
-
-                //                // component::RigidBody2D* rb2d = component::getComponent<component::RigidBody2D>(entity);
-                //                // if (rb2d) {
-                //                //     if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
-                //                //         vec2 pos = vec2(t->position);
-                //                //         float angle = -t->orientation.getEuler().z;
-                //                //         rb2d->setTransform(pos, angle);
-                //                //     } else if (mouseOperation == ImGuizmo::OPERATION::SCALE) {
-                //                //         // TODO Recreate box2d rigid body
-                //                //     }
-                //                // }
-                //            }
-                //        }
-                //    }
-
-                //    //----- Mouse click selection -----//
-                if (!imGuizmoUsingMouse) {
+                //----- Mouse click selection -----//
+                if (!gizmoUsingMouse) {
                     if (click.x >= 0 && click.y >= 0 && click.x < (int)viewport->getWidth() && click.y < (int)viewport->getHeight()) {
                         cmp::EntityId eid = _computeEntityClick->click(viewport->getRenderer(), viewport->getCamera(), click);
                         cmp::setSelectedEntity(eid);

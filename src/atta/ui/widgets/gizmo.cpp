@@ -16,35 +16,35 @@
 
 namespace atta::ui {
 
-Gizmo::Gizmo() : _operation(TRANSLATE), _mode(WORLD), _isOrthographic(false), _snap(false) {}
+Gizmo::Gizmo() : _operation(TRANSLATE), _mode(WORLD), _snap(false) {}
 
 void Gizmo::setOperation(Operation operation) { _operation = operation; }
 void Gizmo::setMode(Mode mode) { _mode = mode; }
+void Gizmo::setCamera(std::weak_ptr<gfx::Camera> camera) { _camera = camera; }
 void Gizmo::setSnap(bool snap) { _snap = snap; }
 
-void Gizmo::setCamera(std::weak_ptr<Camera> camera) { _camera = camera; }
-
-ImGuizmo::OPERATION convert(Operation operation) {
+ImGuizmo::OPERATION convert(Gizmo::Operation operation) {
     ImGuizmo::OPERATION result{};
-    if (operation & TRANSLATE > 0)
+    if ((operation & Gizmo::TRANSLATE) > 0)
         result = result | ImGuizmo::OPERATION::TRANSLATE;
-    if (operation & ROTATE > 0)
+    if ((operation & Gizmo::ROTATE) > 0)
         result = result | ImGuizmo::OPERATION::ROTATE;
-    if (operation & SCALE > 0)
+    if ((operation & Gizmo::SCALE) > 0)
         result = result | ImGuizmo::OPERATION::SCALE;
     return result;
 }
 
-ImGuizmo::MODE convert(Mode mode) { return mode == WORLD ? ImGuizmo::MODE::WORLD : ImGuizmo::MODE::LOCAL; }
+ImGuizmo::MODE convert(Gizmo::Mode mode) { return mode == Gizmo::WORLD ? ImGuizmo::MODE::WORLD : ImGuizmo::MODE::LOCAL; }
 
-bool Gizmo::manipulate(component::EntityId entity) {
-    std::shared_ptr<Camera> camera = _camera.lock();
-    component::Transform* t = component::getComponent<component::Transform>(entity);
-    if (t) {
+bool Gizmo::manipulate(cmp::EntityId entity) {
+    std::shared_ptr<gfx::Camera> camera = _camera.lock();
+    cmp::Transform* t = cmp::getComponent<cmp::Transform>(entity);
+    if (camera && t) {
         mat4 transform = transpose(t->getWorldTransformMatrix(entity));
 
-        ImGuizmo::SetDrawlist();
-        ImGuizmo::SetRect(ImGui::GetWindowPos().x + 5.0f, ImGui::GetWindowPos().y + 24.0f, 500, 500);
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        ImVec2 windowSize = ImGui::GetWindowSize();
+        ImGuizmo::SetRect(windowPos.x, windowPos.y, windowSize.x - 10.0f, windowSize.y - 8.0f);
 
         ImGuizmo::OPERATION operation = convert(_operation);
         ImGuizmo::MODE mode = convert(_mode);
@@ -54,7 +54,12 @@ bool Gizmo::manipulate(component::EntityId entity) {
         mat4 proj = transpose(camera->getProj());
         proj.mat[1][1] *= -1;
 
-        if (ImGuizmo::Manipulate(transpose(_view).data, _proj.data, operation, mode, transform.data, nullptr, snap ? snapValues : nullptr)) {
+        float snapValue = 0.5f;
+        if (operation == ImGuizmo::OPERATION::ROTATE)
+            snapValue = 45.0f;
+        float snapValues[3] = {snapValue, snapValue, snapValue};
+
+        if (ImGuizmo::Manipulate(view.data, proj.data, operation, mode, transform.data, nullptr, _snap ? snapValues : nullptr)) {
             transform.transpose();
 
             // Get changed
@@ -66,22 +71,22 @@ bool Gizmo::manipulate(component::EntityId entity) {
             ori.setEuler(t->orientation.getEuler() + oriDelta);
 
             // Delta world to local
-            component::Relationship* r = component::getComponent<component::Relationship>(entity);
+            cmp::Relationship* r = cmp::getComponent<cmp::Relationship>(entity);
             if (r && r->getParent() != -1) {
                 // Get transform of the first entity that has transform when going up in the hierarchy
-                component::Transform* pt = nullptr;
-                component::EntityId parentId = -1;
+                cmp::Transform* pt = nullptr;
+                cmp::EntityId parentId = -1;
                 while (pt == nullptr) {
                     parentId = r->getParent();
-                    pt = component::getComponent<component::Transform>(parentId);
-                    r = component::getComponent<component::Relationship>(parentId);
+                    pt = cmp::getComponent<cmp::Transform>(parentId);
+                    r = cmp::getComponent<cmp::Relationship>(parentId);
                     if (r->getParent() == -1)
                         break;
                 }
 
                 // If found some entity with transform component, convert result to be relative to it
                 if (pt) {
-                    component::Transform pTransform = pt->getWorldTransform(parentId);
+                    cmp::Transform pTransform = pt->getWorldTransform(parentId);
                     vec3 pPos = pTransform.position;
                     vec3 pScale = pTransform.scale;
                     quat pOri = pTransform.orientation;
@@ -94,14 +99,14 @@ bool Gizmo::manipulate(component::EntityId entity) {
             }
 
             // Update entity transform
-            if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE)
+            if (operation == ImGuizmo::OPERATION::TRANSLATE)
                 t->position = pos;
-            else if (mouseOperation == ImGuizmo::OPERATION::ROTATE)
+            else if (operation == ImGuizmo::OPERATION::ROTATE)
                 t->orientation = ori;
-            else if (mouseOperation == ImGuizmo::OPERATION::SCALE)
+            else if (operation == ImGuizmo::OPERATION::SCALE)
                 t->scale = scale;
 
-            // component::RigidBody2D* rb2d = component::getComponent<component::RigidBody2D>(entity);
+            // cmp::RigidBody2D* rb2d = cmp::getComponent<cmp::RigidBody2D>(entity);
             // if (rb2d) {
             //     if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
             //         vec2 pos = vec2(t->position);

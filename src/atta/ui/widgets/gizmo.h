@@ -18,15 +18,19 @@ class Gizmo {
         TRANSLATE = 1 << 0,
         ROTATE = 1 << 1,
         SCALE = 1 << 2,
+        TRANSLATE_ROTATE = TRANSLATE | ROTATE,
+        TRANSLATE_SCALE = TRANSLATE | SCALE,
+        ROTATE_SCALE = ROTATE | SCALE,
+        ALL = TRANSLATE | ROTATE | SCALE
     };
-    inline Operation operator|(OPERATION l, OPERATION r) { return Operation(int(l) | int(r)); }
+    friend inline Operation operator|(Operation l, Operation r) { return Operation(int(l) | int(r)); }
     enum Mode { WORLD = 0, LOCAL };
 
     Gizmo();
 
     void setOperation(Operation operation);
     void setMode(Mode mode);
-    void setCamera(std::weak_ptr<Camera> camera);
+    void setCamera(std::weak_ptr<gfx::Camera> camera);
     void setSnap(bool snap);
 
     bool manipulate(component::EntityId entity);
@@ -34,7 +38,7 @@ class Gizmo {
   private:
     Operation _operation;
     Mode _mode;
-    std::weak_ptr<Camera> _camera;
+    std::weak_ptr<gfx::Camera> _camera;
     bool _snap;
 };
 
