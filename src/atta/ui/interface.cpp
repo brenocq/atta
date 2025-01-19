@@ -20,4 +20,6 @@ void addViewport(std::shared_ptr<ui::Viewport> viewport) { Manager::getInstance(
 bool getViewportRendering() { return Manager::getInstance().getViewportRenderingImpl(); }
 void setViewportRendering(bool viewportRendering) { Manager::getInstance().setViewportRenderingImpl(viewportRendering); }
 
+unsigned getViewportDockId() { return Manager::getInstance().getViewportDockIdImpl(); }
+
 } // namespace atta::ui

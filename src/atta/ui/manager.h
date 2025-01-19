@@ -23,6 +23,7 @@ class Manager final {
     friend void addViewport(std::shared_ptr<ui::Viewport> viewport);
     friend bool getViewportRendering();
     friend void setViewportRendering(bool viewportRendering);
+    friend unsigned getViewportDockId();
 
   private:
     void startUpImpl();
@@ -33,6 +34,7 @@ class Manager final {
     void addViewportImpl(std::shared_ptr<ui::Viewport> viewport);
     bool getViewportRenderingImpl() const;
     void setViewportRenderingImpl(bool viewportRendering);
+    unsigned getViewportDockIdImpl();
 
     void setTheme();
     void initOpenGL();

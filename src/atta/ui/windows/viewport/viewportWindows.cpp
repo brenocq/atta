@@ -17,6 +17,7 @@
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/material.h>
 #include <atta/ui/windows/viewport/viewportWindows.h>
+#include <atta/ui/interface.h>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -67,6 +68,10 @@ void ViewportWindows::renderUI() {
         char nameBuf[128];
         sprintf(nameBuf, "%s###Viewport%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
         i++;
+
+        // Docking
+        ImGui::SetNextWindowDockID(ui::getViewportDockId(), ImGuiCond_FirstUseEver);
+
         // Render and resize
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         bool open = true;

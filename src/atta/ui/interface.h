@@ -21,6 +21,7 @@ void addViewport(std::shared_ptr<ui::Viewport> viewport);
 
 bool getViewportRendering();
 void setViewportRendering(bool viewportRendering);
+unsigned getViewportDockId();
 
 } // namespace atta::ui
 

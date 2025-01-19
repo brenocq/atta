@@ -106,28 +106,27 @@ void Editor::setupDocking() {
 
     ImGuiIO& io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-        ImGuiID dockspace_id = ImGui::GetID("EditorDockSpace");
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoWindowMenuButton);
+        ImGuiID dockspaceId = ImGui::GetID("EditorDockSpace");
+        ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoWindowMenuButton);
 
         //----- Clear previous layout -----//
         if (_firstRender) {
             _firstRender = false;
 
-            ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
-            ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_DockSpace);
-            ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+            ImGui::DockBuilderAddNode(dockspaceId, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_DockSpace);
+            ImGui::DockBuilderSetNodeSize(dockspaceId, viewport->Size);
 
-            auto dock_id_scene = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.20f, nullptr, &dockspace_id);
-            auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.20f, nullptr, &dockspace_id);
-            auto dock_id_vp_top = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.00f, nullptr, &dockspace_id);
+            auto dockIdCenter = ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Right, 0.20f, nullptr, &dockspaceId);
+            auto dockIdDown = ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Down, 0.20f, nullptr, &dockspaceId);
+            auto dockIdUp = ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Up, 0.00f, nullptr, &dockspaceId);
 
-            // we now dock our windows into the docking node we made above
-            _viewportDockId = dockspace_id;
-            ImGui::DockBuilderDockWindow("Main Viewport###ViewportMain Viewport", dockspace_id);
-            ImGui::DockBuilderDockWindow("Log", dock_id_down);
-            ImGui::DockBuilderDockWindow("Scene", dock_id_scene);
-            ImGui::DockBuilderDockWindow("##Toolbar", dock_id_vp_top);
-            ImGui::DockBuilderFinish(dockspace_id);
+            // Dock our windows into the docking node we made above
+            _viewportDockId = dockspaceId;
+            ImGui::DockBuilderDockWindow("Main Viewport###ViewportMain Viewport", dockspaceId);
+            ImGui::DockBuilderDockWindow("Log", dockIdDown);
+            ImGui::DockBuilderDockWindow("Scene", dockIdCenter);
+            ImGui::DockBuilderDockWindow("##Toolbar", dockIdUp);
+            ImGui::DockBuilderFinish(dockspaceId);
         }
     }
     ImGui::End();
