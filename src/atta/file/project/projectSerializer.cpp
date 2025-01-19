@@ -17,7 +17,7 @@
 #include <atta/resource/resources/mesh.h>
 
 #include <atta/graphics/interface.h>
-#include <atta/ui/windows/viewport/viewport.h>
+#include <atta/ui/interface.h>
 #include <atta/utils/config.h>
 
 #include <atta/physics/engines/bulletEngine.h>

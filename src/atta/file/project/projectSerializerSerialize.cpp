@@ -59,9 +59,9 @@ void ProjectSerializer::serializeComponentModule(Section& section) {
 }
 
 void ProjectSerializer::serializeGraphicsModule(Section& section) {
-    // std::vector<std::shared_ptr<graphics::Viewport>> pviewports = graphics::getViewports();
-    // std::vector<graphics::Viewport> viewports;
-    // for (auto pv : pviewports)
+    // std::vector<std::shared_ptr<ui::Viewport>> pviewports = ui::getViewports();
+    // std::vector<ui::Viewport> viewports;
+    // for (auto& pv : pviewports)
     //     viewports.push_back(*pv);
     // section["viewports"] = viewports;
     LOG_WARN("file::ProjectSerializer", "Serializing viewports was not implemented yet");
