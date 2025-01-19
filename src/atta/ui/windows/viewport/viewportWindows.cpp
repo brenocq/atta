@@ -238,7 +238,7 @@ void ViewportWindows::renderUI() {
     }
 }
 
-std::vector<std::shared_ptr<Viewport>> ViewportWindows::getViewports() { return _viewports; }
+const std::vector<std::shared_ptr<Viewport>>& ViewportWindows::getViewports() const { return _viewports; }
 
 void ViewportWindows::clearViewports() {
     _viewportsNext.clear();
@@ -246,6 +246,7 @@ void ViewportWindows::clearViewports() {
 }
 
 void ViewportWindows::addViewport(std::shared_ptr<Viewport> viewport) {
+    _viewportsNext = _viewports;
     _viewportsNext.push_back(viewport);
     _swapViewports = true;
 }
@@ -262,6 +263,42 @@ void ViewportWindows::removeViewport(std::shared_ptr<Viewport> viewport) {
     } else {
         LOG_WARN("ui::ViewportWindows", "It is not possible to have 0 viewports yet");
     }
+}
+
+void ViewportWindows::openViewportModal(StringId sid) const {
+    // XXX
+    // std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
+    // static std::vector<bool> newViewportModals; // If first time creating the modal
+    //_viewportModals.resize(viewports.size());
+
+    //// Check if first time creating viewport
+    // newViewportModals.resize(_viewportModals.size());
+    // for (unsigned i = 0; i < newViewportModals.size(); i++)
+    //     newViewportModals[i] = !newViewportModals[i] && _viewportModals[i];
+
+    // for (uint32_t i = 0; i < _viewportModals.size(); i++) {
+    //     char nameBuf[196];
+    //     sprintf(nameBuf, "%s###ViewportProps%s", viewports[i]->getName().c_str(), viewports[i]->getSID().getString().c_str());
+
+    //    bool open = _viewportModals[i];
+    //    if (open) {
+    //        if (newViewportModals[i])
+    //            ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f));
+    //        if (ImGui::Begin(nameBuf, &open)) {
+    //            viewports[i]->renderUI();
+
+    //            ImGui::Separator();
+    //            if (ImGui::Button("Delete Viewport")) {
+    //                graphics::removeViewport(viewports[i]);
+    //                ImGui::End();
+    //                break;
+    //            }
+    //        }
+    //        ImGui::End();
+    //        _viewportModals[i] = open;
+    //    }
+    //}
+    // newViewportModals = _viewportModals;
 }
 
 void ViewportWindows::createDefaultViewports() {

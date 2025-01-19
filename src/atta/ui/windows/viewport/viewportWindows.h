@@ -21,16 +21,16 @@ class ViewportWindows {
     void renderViewports();
     void renderUI();
 
-    std::vector<std::shared_ptr<Viewport>> getViewports();
+    const std::vector<std::shared_ptr<Viewport>>& getViewports() const;
     void clearViewports();
     void addViewport(std::shared_ptr<Viewport> viewport);
     void removeViewport(std::shared_ptr<Viewport> viewport);
-    void createDefaultViewports();
-
+    void openViewportModal(StringId sid) const;
     bool getViewportRendering() const;
     void setViewportRendering(bool viewportRendering);
 
   private:
+    void createDefaultViewports();
     void addBasicShapePopup();
 
     std::vector<std::shared_ptr<Viewport>> _viewports;     ///< Current viewports to be rendered

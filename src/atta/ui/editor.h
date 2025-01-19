@@ -26,6 +26,9 @@ class Editor final {
     void renderViewports();
     void render();
 
+    const std::vector<std::shared_ptr<ui::Viewport>>& getViewports() const;
+    void openViewportModal(StringId sid) const;
+    void addViewport(std::shared_ptr<ui::Viewport> viewport);
     bool getViewportRendering() const;
     void setViewportRendering(bool viewportRendering);
 

@@ -18,6 +18,9 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
+    friend const std::vector<std::shared_ptr<ui::Viewport>>& getViewports();
+    friend void openViewportModal(StringId sid);
+    friend void addViewport(std::shared_ptr<ui::Viewport> viewport);
     friend bool getViewportRendering();
     friend void setViewportRendering(bool viewportRendering);
 
@@ -25,6 +28,9 @@ class Manager final {
     void startUpImpl();
     void shutDownImpl();
 
+    const std::vector<std::shared_ptr<ui::Viewport>>& getViewportsImpl() const;
+    void openViewportModalImpl(StringId sid) const;
+    void addViewportImpl(std::shared_ptr<ui::Viewport> viewport);
     bool getViewportRenderingImpl() const;
     void setViewportRenderingImpl(bool viewportRendering);
 

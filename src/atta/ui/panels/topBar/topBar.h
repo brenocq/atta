@@ -18,13 +18,16 @@ class TopBar {
     void render();
 
   private:
+    void fileMenu();
+    void editMenu();
+    void windowMenu();
+    void helpMenu();
+
     void preferences();         ///< Render preferences window
     void openProjectModal();    ///< Render open project modal
     void openPublishedWindow(); ///< Render open published project modal
     void createProjectModal();  ///< Render create project modal
     void saveProjectModal();    ///< Render save project modal
-                                /** The viewport modal is used to change the viewport settings */
-    void viewportModals();      ///< Render viewport modal
 
     bool _waitingChooseAttaFile;
     bool _showPreferences;      ///< Show preferences modal
@@ -36,8 +39,6 @@ class TopBar {
 
     bool _quitAfterSaveModal; ///< If should quit application after save project modal response
 
-    /** True/false for each viewport window */
-    std::vector<bool> _viewportModals;    ///< Which viewports should be rendered
     std::vector<RepoWindow> _repoWindows; ///< Which repository windows are open
 };
 

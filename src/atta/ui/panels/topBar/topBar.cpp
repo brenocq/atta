@@ -22,13 +22,14 @@
 #include <atta/graphics/renderers/pbrRenderer.h>
 #include <atta/graphics/renderers/phongRenderer.h>
 
+#include <atta/ui/interface.h>
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
 #include <atta/ui/windows/physicsModuleWindow.h>
 #include <atta/ui/windows/sensorModuleWindow.h>
-#include <atta/ui/windows/utils/fileSelectionWindow.h>
-
 #include <atta/ui/windows/timeProfiler/timeProfilerWindow.h>
+#include <atta/ui/windows/utils/fileSelectionWindow.h>
+#include <atta/ui/windows/viewport/viewport.h>
 
 namespace atta::ui {
 
@@ -37,127 +38,16 @@ TopBar::TopBar() : _showPreferences(false) {}
 void TopBar::render() {
     if (ImGui::BeginMainMenuBar()) {
         ui::image("icons/atta_20x20.png", vec2(20, 20));
-
-        if (ImGui::BeginMenu("File")) {
-            if (file::isProjectOpen()) {
-                ImGui::Text(file::getProject()->getName().c_str());
-                ImGui::Separator();
-
-#ifndef ATTA_STATIC_PROJECT
-                if (ImGui::MenuItem("Close"))
-                    _showSaveProject = true;
-#endif
-            }
-
-#ifndef ATTA_STATIC_PROJECT
-            if (ImGui::BeginMenu("Open")) {
-                if (ImGui::MenuItem("From file")) {
-                    FileSelectionWindow::setOpen(true);
-                    _waitingChooseAttaFile = true;
-                }
-                if (ImGui::MenuItem("From published"))
-                    _showOpenPublished = true;
-
-                ImGui::EndMenu();
-            }
-#endif
-
-            if (file::isProjectOpen())
-                if (ImGui::MenuItem("Save"))
-                    file::saveProject();
-
-#ifndef ATTA_STATIC_PROJECT
-            if (ImGui::MenuItem("Save as"))
-                _showCreateProject = true;
-#endif
-
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Quit")) {
-                _showSaveProject = true;
-                _quitAfterSaveModal = true;
-            }
-            ImGui::EndMenu();
-        }
-
-        // if (ImGui::BeginMenu("Edit")) {
-        //     if (ImGui::MenuItem("Preferences"))
-        //         _showPreferences = true;
-
-        //    ImGui::EndMenu();
-        //}
-
-        if (ImGui::BeginMenu("Tools")) {
-            if (ImGui::MenuItem("Time Profiler"))
-                TimeProfilerWindow::setOpen(true);
-            ImGui::EndMenu();
-        }
-
-        // if (ImGui::BeginMenu("Viewports")) {
-        //     std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
-        //     _viewportModals.resize(viewports.size());
-        //     int i = 0;
-        //     for (auto viewport : viewports) {
-        //         if (ImGui::MenuItem(viewport->getName().c_str()))
-        //             _viewportModals[i] = true;
-        //         i++;
-        //     }
-
-        //    ImGui::Separator();
-
-        //    if (ImGui::MenuItem("Create viewport")) {
-        //        // Choose viewport name
-        //        unsigned newViewportNumber = 0;
-        //        bool found = false;
-        //        while (!found) {
-        //            found = true;
-        //            for (auto viewport : viewports)
-        //                if (viewport->getSID() == StringId("Viewport " + std::to_string(newViewportNumber))) {
-        //                    found = false;
-        //                    break;
-        //                }
-        //            if (!found)
-        //                newViewportNumber++;
-        //        }
-
-        //        // Create viewport
-        //        graphics::Viewport::CreateInfo viewportInfo;
-        //        viewportInfo.renderer = std::make_shared<graphics::PhongRenderer>();
-        //        viewportInfo.camera = std::static_pointer_cast<graphics::Camera>(
-        //            std::make_shared<graphics::PerspectiveCamera>(graphics::PerspectiveCamera::CreateInfo{}));
-        //        viewportInfo.sid = StringId("Viewport " + std::to_string(newViewportNumber));
-        //        std::shared_ptr<graphics::Viewport> viewport = std::make_shared<graphics::Viewport>(viewportInfo);
-        //        graphics::addViewport(viewport);
-        //    }
-
-        //    ImGui::EndMenu();
-        //}
-
-        if (ImGui::BeginMenu("Modules")) {
-            if (ImGui::MenuItem("Graphics"))
-                GraphicsModuleWindow::setOpen(true);
-            if (ImGui::MenuItem("IO"))
-                IOModuleWindow::setOpen(true);
-            if (ImGui::MenuItem("Physics"))
-                PhysicsModuleWindow::setOpen(true);
-            if (ImGui::MenuItem("Sensor"))
-                SensorModuleWindow::setOpen(true);
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Help")) {
-            if (ImGui::MenuItem("Version"))
-                VersionWindow::setOpen(true);
-            ImGui::EndMenu();
-        }
-
+        fileMenu();
+        editMenu();
+        windowMenu();
+        helpMenu();
         ImGui::EndMainMenuBar();
     }
     openProjectModal();
     openPublishedWindow();
     createProjectModal();
     preferences();
-    viewportModals();
     saveProjectModal();
 
     for (int i = (int)_repoWindows.size() - 1; i >= 0; i--) {
@@ -165,6 +55,123 @@ void TopBar::render() {
         r.render();
         if (r.getShouldClose())
             _repoWindows.erase(_repoWindows.begin() + i);
+    }
+}
+
+void TopBar::fileMenu() {
+    if (ImGui::BeginMenu("File")) {
+        if (file::isProjectOpen()) {
+            ImGui::Text(file::getProject()->getName().c_str());
+            ImGui::Separator();
+
+#ifndef ATTA_STATIC_PROJECT
+            if (ImGui::MenuItem("Close"))
+                _showSaveProject = true;
+#endif
+        }
+
+#ifndef ATTA_STATIC_PROJECT
+        if (ImGui::BeginMenu("Open")) {
+            if (ImGui::MenuItem("From file")) {
+                FileSelectionWindow::setOpen(true);
+                _waitingChooseAttaFile = true;
+            }
+            if (ImGui::MenuItem("From published"))
+                _showOpenPublished = true;
+
+            ImGui::EndMenu();
+        }
+#endif
+
+        if (file::isProjectOpen())
+            if (ImGui::MenuItem("Save"))
+                file::saveProject();
+
+#ifndef ATTA_STATIC_PROJECT
+        if (ImGui::MenuItem("Save as"))
+            _showCreateProject = true;
+#endif
+
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("Quit")) {
+            _showSaveProject = true;
+            _quitAfterSaveModal = true;
+        }
+        ImGui::EndMenu();
+    }
+}
+
+void TopBar::editMenu() {
+    if (ImGui::BeginMenu("Edit")) {
+        if (ImGui::MenuItem("Preferences"))
+            _showPreferences = true;
+
+        ImGui::EndMenu();
+    }
+}
+
+void TopBar::windowMenu() {
+    if (ImGui::BeginMenu("Window")) {
+        if (ImGui::BeginMenu("Viewports")) {
+            std::vector<std::shared_ptr<ui::Viewport>> viewports = ui::getViewports();
+            for (auto viewport : viewports)
+                if (ImGui::MenuItem(viewport->getName().c_str()))
+                    ui::openViewportModal(viewport->getSID());
+
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Create viewport")) {
+                // Choose viewport name
+                unsigned newViewportNumber = 0;
+                bool found = false;
+                while (!found) {
+                    found = true;
+                    for (auto viewport : viewports)
+                        if (viewport->getSID() == StringId("Viewport " + std::to_string(newViewportNumber))) {
+                            found = false;
+                            break;
+                        }
+                    if (!found)
+                        newViewportNumber++;
+                }
+
+                // Create viewport
+                ui::Viewport::CreateInfo viewportInfo;
+                viewportInfo.renderer = std::make_shared<gfx::PhongRenderer>();
+                viewportInfo.camera =
+                    std::static_pointer_cast<gfx::Camera>(std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{}));
+                viewportInfo.sid = StringId("Viewport " + std::to_string(newViewportNumber));
+                std::shared_ptr<ui::Viewport> viewport = std::make_shared<ui::Viewport>(viewportInfo);
+                ui::addViewport(viewport);
+            }
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::Separator();
+        if (ImGui::MenuItem("Graphics"))
+            GraphicsModuleWindow::setOpen(true);
+        if (ImGui::MenuItem("IO"))
+            IOModuleWindow::setOpen(true);
+        if (ImGui::MenuItem("Physics"))
+            PhysicsModuleWindow::setOpen(true);
+        if (ImGui::MenuItem("Sensor"))
+            SensorModuleWindow::setOpen(true);
+
+        ImGui::Separator();
+        if (ImGui::MenuItem("Time Profiler"))
+            TimeProfilerWindow::setOpen(true);
+
+        ImGui::EndMenu();
+    }
+}
+
+void TopBar::helpMenu() {
+    if (ImGui::BeginMenu("Help")) {
+        if (ImGui::MenuItem("Version"))
+            VersionWindow::setOpen(true);
+        ImGui::EndMenu();
     }
 }
 
@@ -471,42 +478,6 @@ void TopBar::saveProjectModal() {
 
         ImGui::EndPopup();
     }
-}
-
-void TopBar::viewportModals() {
-    // XXX
-    // std::vector<std::shared_ptr<graphics::Viewport>> viewports = graphics::getViewports();
-    // static std::vector<bool> newViewportModals; // If first time creating the modal
-    //_viewportModals.resize(viewports.size());
-
-    //// Check if first time creating viewport
-    // newViewportModals.resize(_viewportModals.size());
-    // for (unsigned i = 0; i < newViewportModals.size(); i++)
-    //     newViewportModals[i] = !newViewportModals[i] && _viewportModals[i];
-
-    // for (uint32_t i = 0; i < _viewportModals.size(); i++) {
-    //     char nameBuf[196];
-    //     sprintf(nameBuf, "%s###ViewportProps%s", viewports[i]->getName().c_str(), viewports[i]->getSID().getString().c_str());
-
-    //    bool open = _viewportModals[i];
-    //    if (open) {
-    //        if (newViewportModals[i])
-    //            ImGui::SetNextWindowSize(ImVec2(200.0f, 300.0f));
-    //        if (ImGui::Begin(nameBuf, &open)) {
-    //            viewports[i]->renderUI();
-
-    //            ImGui::Separator();
-    //            if (ImGui::Button("Delete Viewport")) {
-    //                graphics::removeViewport(viewports[i]);
-    //                ImGui::End();
-    //                break;
-    //            }
-    //        }
-    //        ImGui::End();
-    //        _viewportModals[i] = open;
-    //    }
-    //}
-    // newViewportModals = _viewportModals;
 }
 
 } // namespace atta::ui
