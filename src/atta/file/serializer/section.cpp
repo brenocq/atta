@@ -9,7 +9,14 @@
 namespace atta::file {
 
 //---------- Section ----------//
-std::string Section::toString() const { return ""; }
+std::string Section::toString() const {
+    std::ostringstream ss;
+    ss << "[" << _name << "]" << std::endl;
+    for (const auto& [key, value] : _map) {
+        ss << key << " = " << value.getStr() << std::endl;
+    }
+    return ss.str();
+}
 
 std::map<std::string, SectionData>& Section::map() { return _map; }
 

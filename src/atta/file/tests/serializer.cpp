@@ -98,8 +98,18 @@ TEST(File_Serializer, SectionData_StringToValue) {
         EXPECT_THAT(v[i], ElementsAreArray(expected[i]));
 }
 
-TEST(File_Serializer, Section_ToString) {}
+TEST(File_Serializer, Section_ToString) {
+    Section section("section");
+    section["key1"] = 10;
+    section["key2"] = true;
+    section["key3"] = "test";
+    EXPECT_EQ(section.toString(), "[section]\nkey1 = 10\nkey2 = true\nkey3 = \"test\"\n");
+}
 
 TEST(File_Serializer, Section_ToValue) {}
+
+TEST(File_Serializer, Serializer_Serialize) {}
+
+TEST(File_Serializer, Serializer_Deserialize) {}
 
 } // namespace
