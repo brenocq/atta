@@ -11,8 +11,8 @@ set(ATTA_SCRIPT_MODULE_SOURCE
     project/project.cpp
     project/projectSerializer.cpp
 
-    serializer/serializable.cpp
     serializer/section.cpp
+    serializer/serializer.cpp
 )
 
 add_library(atta_file_module STATIC

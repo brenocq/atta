@@ -51,10 +51,10 @@ void ProjectSerializer::serialize() {
     std::ofstream os(attaTemp, std::ofstream::trunc | std::ofstream::binary);
     std::string version =
         "ATTA" + std::to_string(ATTA_VERSION_MAJOR) + "." + std::to_string(ATTA_VERSION_MINOR) + "." + std::to_string(ATTA_VERSION_PATCH);
-    write(os, version);
+    // write(os, version);
 
     // Serialize data
-    section.serialize(os);
+    // section.serialize(os);
     os.close();
 
     // Override atta file with temp file
@@ -69,8 +69,8 @@ void ProjectSerializer::deserialize() {
 
     // Deserialize version
     std::string version;
-    read(is, version);
-    section.deserialize(is);
+    // read(is, version);
+    // section.deserialize(is);
     is.close();
 
     // Deserialize data

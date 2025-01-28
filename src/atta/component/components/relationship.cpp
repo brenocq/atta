@@ -19,23 +19,23 @@ ComponentDescription& TypedComponentRegistry<Relationship>::getDescription() {
         // Serialize
         {{"children",
           [](std::ostream& os, void* data) {
-              std::vector<Entity>* children = static_cast<std::vector<Entity>*>(data);
-              for (Entity child : *children)
-                  file::write(os, EntityId(child));
-              file::write(os, EntityId(-1));
+              // std::vector<Entity>* children = static_cast<std::vector<Entity>*>(data);
+              // for (Entity child : *children)
+              //     file::write(os, EntityId(child));
+              // file::write(os, EntityId(-1));
           }}},
         // Deserialize
         {{"children", [](std::istream& is, void* data) {
-              std::vector<Entity>* children = static_cast<std::vector<Entity>*>(data);
-              EntityId eid;
-#ifdef ATTA_OS_WEB
-              file::read(is, eid); // For some reason the first one is always zero when building for the web
+    // std::vector<Entity>* children = static_cast<std::vector<Entity>*>(data);
+    // EntityId eid;
+#ifdef ATTA_OS //_WEB
+               // file::read(is, eid); // For some reason the first one is always zero when building for the web
 #endif
-              file::read(is, eid);
-              while (eid != -1) {
-                  children->push_back(eid);
-                  file::read(is, eid);
-              }
+              // file::read(is, eid);
+              // while (eid != -1) {
+              //     children->push_back(eid);
+              //     file::read(is, eid);
+              // }
           }}}};
 
     return desc;

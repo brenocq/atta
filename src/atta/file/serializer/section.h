@@ -6,15 +6,13 @@
 //--------------------------------------------------
 #ifndef ATTA_FILE_SERIALIZER_SECTION_H
 #define ATTA_FILE_SERIALIZER_SECTION_H
-#include <atta/file/serializer/serializable.h>
-#include <atta/file/serializer/serializer.h>
 
 namespace atta::file {
 
 /// Section Data
 /** Store the binary data for each data and its type so that it is possible to print SectionData and serialize it
  **/
-class SectionData : Serializable {
+class SectionData {
   public:
     using TypeHash = StringId;
     SectionData();
@@ -36,8 +34,6 @@ class SectionData : Serializable {
     TypeHash getTypeHash() const;
 
     std::string toString() const;
-    void serialize(std::ostream& os) override;
-    void deserialize(std::istream& is) override;
 
   private:
     std::vector<uint8_t> _data;
@@ -55,7 +51,7 @@ class SectionData : Serializable {
  *  - Vector of sections (data as std::vector<Section>)
  *  - Data
  **/
-class Section : Serializable {
+class Section {
   public:
     Section();
     template <typename T>
@@ -113,10 +109,6 @@ class Section : Serializable {
     /// Assign vector of values
     template <typename T>
     void operator=(std::initializer_list<T> list);
-
-    //----- Serialization -----//
-    void serialize(std::ostream& os) override;
-    void deserialize(std::istream& is) override;
 
   private:
     enum Type { UNDEFINED = 0, MAP, VECTOR, DATA };

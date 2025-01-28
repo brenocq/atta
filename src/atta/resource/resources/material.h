@@ -7,14 +7,13 @@
 #ifndef ATTA_RESOURCE_RESOURCES_MATERIAL_H
 #define ATTA_RESOURCE_RESOURCES_MATERIAL_H
 
-#include <atta/file/serializer/serializable.h>
 #include <atta/memory/allocatedObject.h>
 #include <atta/resource/resource.h>
 
 namespace atta::resource {
 
 class Manager;
-class Material : public Resource, public memory::AllocatedObject<Material, SID("ResourceAllocator")>, public file::Serializable {
+class Material : public Resource, public memory::AllocatedObject<Material, SID("ResourceAllocator")> {
   public:
     struct CreateInfo {
         vec3f color = vec3(1.0f, 0.0f, 1.0f);
@@ -58,11 +57,6 @@ class Material : public Resource, public memory::AllocatedObject<Material, SID("
     void setAo(float value);
     void setAoImage(StringId texture);
     void setNormalImage(StringId texture);
-
-    // Serializable
-    void serialize(std::ostream& os) override;
-    void deserialize(std::istream& is) override;
-    unsigned getSerializedSize();
 
   private:
     /**

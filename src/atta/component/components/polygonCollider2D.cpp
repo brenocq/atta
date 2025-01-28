@@ -23,25 +23,25 @@ ComponentDescription& TypedComponentRegistry<PolygonCollider2D>::getDescription(
         // Serialize
         {{"points",
           [](std::ostream& os, void* data) {
-              std::vector<vec2>* points = static_cast<std::vector<vec2>*>(data);
-              file::write<uint32_t>(os, points->size());
-              for (vec2 p : *points) {
-                  file::write(os, p.x);
-                  file::write(os, p.y);
-              }
+              // std::vector<vec2>* points = static_cast<std::vector<vec2>*>(data);
+              // file::write<uint32_t>(os, points->size());
+              // for (vec2 p : *points) {
+              //     file::write(os, p.x);
+              //     file::write(os, p.y);
+              // }
           }}},
         // Deserialize
         {{"points",
           [](std::istream& is, void* data) {
-              std::vector<vec2>* points = static_cast<std::vector<vec2>*>(data);
-              uint32_t size;
-              file::read(is, size);
-              for (int i = 0; i < size; i++) {
-                  vec2 p;
-                  file::read(is, p.x);
-                  file::read(is, p.y);
-                  points->push_back(p);
-              }
+              // std::vector<vec2>* points = static_cast<std::vector<vec2>*>(data);
+              // uint32_t size;
+              // file::read(is, size);
+              // for (int i = 0; i < size; i++) {
+              //     vec2 p;
+              //     file::read(is, p.x);
+              //     file::read(is, p.y);
+              //     points->push_back(p);
+              // }
           }}},
         // renderUI
         {{"",
