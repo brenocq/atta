@@ -234,6 +234,62 @@ TEST(File_Serializer, Serializer_Serialize) {
     EXPECT_EQ(serializer.toString(), expected);
 }
 
-TEST(File_Serializer, Serializer_Deserialize) {}
+TEST(File_Serializer, Serializer_Deserialize) {
+    Serializer serializer;
+
+    // Input string with valid sections, extra spaces, and invalid lines
+    std::string input = R"(
+        [section1]
+        key1 = 10
+        key2 = true
+
+        key3 = "stringValue"
+        key4 = invalidString
+        = 10
+
+        [section2]
+        key1.vec2 = vector2(1.0, 2.0)
+        key2.vec3 =  vector3(1.0 , 2.0 , 3.0)
+        key3.vec4 = vector4(1.0, 2.0, 3.0, 4.0)
+        invalid_line_without_equals
+        another_invalid_line
+
+        [section3]
+        key1.vectorInt = { 1, 2, 3}
+        key2.vectorStr = {"one", "two", "three"}
+        key3.quat = quaternion(0.7071, 0.0, 0.0, 0.7071)
+    )";
+
+    serializer.fromString(input);
+
+    const auto& sections = serializer.getSections();
+    ASSERT_EQ(sections.size(), 3);
+
+    // Validate section1
+    const auto& section1 = sections[0];
+    EXPECT_EQ(section1.getName(), "section1");
+    EXPECT_EQ(section1.map().size(), 4);
+    EXPECT_EQ(int(section1["key1"]), 10);
+    EXPECT_EQ(bool(section1["key2"]), true);
+    EXPECT_EQ(std::string(section1["key3"]), "stringValue");
+    EXPECT_TRUE(section1.contains("key4"));
+    EXPECT_EQ(std::string(section1["key4"]), "");
+
+    // Validate section2
+    const auto& section2 = sections[1];
+    EXPECT_EQ(section2.getName(), "section2");
+    EXPECT_EQ(section2.map().size(), 3);
+    EXPECT_EQ(vec2(section2["key1.vec2"]), vec2(1.0f, 2.0f));
+    EXPECT_EQ(vec3(section2["key2.vec3"]), vec3(1.0f, 2.0f, 3.0f));
+    EXPECT_EQ(vec4(section2["key3.vec4"]), vec4(1.0f, 2.0f, 3.0f, 4.0f));
+
+    // Validate section3
+    const auto& section3 = sections[2];
+    EXPECT_EQ(section3.getName(), "section3");
+    EXPECT_EQ(section3.map().size(), 3);
+    EXPECT_THAT(std::vector<int>(section3["key1.vectorInt"]), ElementsAre(1, 2, 3));
+    EXPECT_THAT(std::vector<std::string>(section3["key2.vectorStr"]), ElementsAre("one", "two", "three"));
+    EXPECT_EQ(quat(section3["key3.quat"]), quat(0.7071f, 0.7071f, 0.0f, 0.0f));
+}
 
 } // namespace

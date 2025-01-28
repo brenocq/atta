@@ -10,13 +10,17 @@ namespace atta::file {
 
 //---------- Section ----------//
 
+const std::string& Section::getName() const { return _name; }
+
 std::map<std::string, SectionData>& Section::map() { return _map; }
 
 const std::map<std::string, SectionData>& Section::map() const { return _map; }
 
 SectionData& Section::operator[](std::string key) { return map()[key]; }
 
-bool Section::contains(std::string key) { return map().find(key) != map().end(); }
+const SectionData& Section::operator[](std::string key) const { return map().at(key); }
+
+bool Section::contains(std::string key) const { return map().find(key) != map().end(); }
 
 void Section::insertFromString(const std::string& string) {
     // Check if the input string is empty or contains only whitespace

@@ -55,14 +55,18 @@ class Section {
   public:
     Section(const std::string& name) : _name(name) {}
 
+    /// Get name
+    const std::string& getName() const;
+
     /// Get map
     std::map<std::string, SectionData>& map();
     const std::map<std::string, SectionData>& map() const;
 
     /// Map access
     SectionData& operator[](std::string key);
+    const SectionData& operator[](std::string key) const;
     void insertFromString(const std::string& string);
-    bool contains(std::string key);
+    bool contains(std::string key) const;
 
     /// To string
     std::string toString() const;
