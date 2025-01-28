@@ -37,15 +37,15 @@ void ProjectSerializer::serialize() {
     attaTemp.replace_extension(".atta.temp");
 
     // Load data to section
-    Section section;
-    serializeHeader(section["header"]);
-    serializeConfig(section["config"]);
-    serializeComponentModule(section["componentModule"]);
-    serializeGraphicsModule(section["graphicsModule"]);
-    serializeResourceModule(section["resourceModule"]);
-    serializePhysicsModule(section["physicsModule"]);
-    serializeSensorModule(section["sensorModule"]);
-    // LOG_DEBUG("file::ProjectSerializer", "Saving project: [w]$0", section);
+    Section section("Some section");
+    // serializeHeader(section["header"]);
+    // serializeConfig(section["config"]);
+    // serializeComponentModule(section["componentModule"]);
+    // serializeGraphicsModule(section["graphicsModule"]);
+    // serializeResourceModule(section["resourceModule"]);
+    // serializePhysicsModule(section["physicsModule"]);
+    // serializeSensorModule(section["sensorModule"]);
+    //  LOG_DEBUG("file::ProjectSerializer", "Saving project: [w]$0", section);
 
     // Serialize version
     std::ofstream os(attaTemp, std::ofstream::trunc | std::ofstream::binary);
@@ -62,7 +62,7 @@ void ProjectSerializer::serialize() {
 }
 
 void ProjectSerializer::deserialize() {
-    Section section;
+    Section section("Section");
     fs::path attaFile = _project->getFile();
 
     std::ifstream is(attaFile, std::ifstream::in | std::ifstream::binary);
@@ -74,13 +74,13 @@ void ProjectSerializer::deserialize() {
     is.close();
 
     // Deserialize data
-    deserializeHeader(section["header"]);
-    deserializeConfig(section["config"]);
-    deserializeComponentModule(section["componentModule"]);
-    deserializeGraphicsModule(section["graphicsModule"]);
-    deserializeResourceModule(section["resourceModule"]);
-    deserializePhysicsModule(section["physicsModule"]);
-    deserializeSensorModule(section["sensorModule"]);
+    // deserializeHeader(section["header"]);
+    // deserializeConfig(section["config"]);
+    // deserializeComponentModule(section["componentModule"]);
+    // deserializeGraphicsModule(section["graphicsModule"]);
+    // deserializeResourceModule(section["resourceModule"]);
+    // deserializePhysicsModule(section["physicsModule"]);
+    // deserializeSensorModule(section["sensorModule"]);
 }
 
 } // namespace atta::file
