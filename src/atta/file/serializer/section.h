@@ -26,12 +26,15 @@ class SectionData {
 
     const std::string& getStr() const { return _str; }
 
-    // Assign operator
+    // Assign operators
     template <typename T>
     void operator=(T&& value);
-
     template <typename T>
     void operator=(std::initializer_list<T> value);
+
+    // Explicit cast operator
+    template <typename T>
+    explicit operator T() const;
 
   private:
     std::string _str;

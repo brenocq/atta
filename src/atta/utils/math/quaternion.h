@@ -37,7 +37,10 @@ class quat {
     quat operator*(const U value) const;
 
     void operator+=(const vec3& vec);
-    bool operator!=(const quat& other);
+
+    // Logical operators
+    bool operator==(const quat& other) const;
+    bool operator!=(const quat& other) const;
 
     void rotateVector(vec3& vec) const;
     void addScaledVector(const vec3& vec, float scale);

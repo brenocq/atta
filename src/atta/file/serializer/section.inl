@@ -123,4 +123,146 @@ void SectionData::operator=(std::initializer_list<T> value) {
     _str = atta::file::toString(value);
 }
 
+template <typename T>
+SectionData::operator T() const {
+    using U = std::decay_t<T>;
+    if (_str.empty()) {
+        LOG_WARN("SectionData", "Trying to cast empty SectionData to type [w]$0[]", typeid(U).name());
+        return U();
+    }
+
+    // Handle std::vector
+    if constexpr (is_specialization<U, std::vector>::value) {
+        if (_str.front() != '{' || _str.back() != '}') {
+            LOG_WARN("SectionData", "Invalid vector format in SectionData when casting to [w]std::vector[]: [w]$0", _str);
+            return U();
+        }
+
+        // Parse the vector
+        using ValueType = typename U::value_type;
+        U result;
+        std::string element;
+        int nestedLevel = 0;
+        for (char ch : _str) {
+            if ((ch == ',' || ch == '}') && nestedLevel == 1) {
+                // Comma at the top level: finalize the current element
+
+                // Remove whitespaces from the start/end of the element
+                element.erase(0, element.find_first_not_of(" \t"));
+                element.erase(element.find_last_not_of(" \t") + 1);
+
+                // Recursively convert each element to ValueType
+                SectionData temp;
+                temp._str = std::move(element);
+                result.push_back(static_cast<ValueType>(temp));
+                element.clear();
+            } else {
+                // Adjust nested level for parentheses
+                if (ch == '(' || ch == '{')
+                    nestedLevel++;
+                if (ch == ')' || ch == '}')
+                    nestedLevel--;
+
+                // Skip initial "{"
+                if (nestedLevel == 1 && ch == '{')
+                    continue;
+
+                // Add the character to the current element
+                element += ch;
+            }
+        }
+
+        return result;
+    }
+    // Handle booleans
+    else if constexpr (std::is_same_v<U, bool>) {
+        return _str == "true" ? true : false;
+    }
+    // Handle arithmetic types (int, float, double, etc.)
+    else if constexpr (std::is_arithmetic_v<U>) {
+        std::istringstream iss(_str);
+        U value{};
+        if (iss >> value) {
+            return value;
+        }
+        LOG_WARN("SectionData", "Failed to cast SectionData to arithmetic type");
+        return U();
+    }
+    // Handle vector2
+    else if constexpr (is_vector2<U>::value) {
+        if (_str.substr(0, 7) != "vector2") {
+            LOG_WARN("SectionData", "Invalid format for vector2: [w]$0", _str);
+            return U();
+        }
+        std::istringstream iss(_str.substr(7)); // Skip the "vector2" prefix
+        char discard;
+        U result{};
+        if (iss >> discard && discard == '(' && iss >> std::ws >> result.x >> std::ws >> discard && discard == ',' &&
+            iss >> std::ws >> result.y >> std::ws >> discard && discard == ')') {
+            return result;
+        }
+        LOG_WARN("SectionData", "Failed to cast SectionData to vector2: [w]$0", _str);
+        return U();
+    }
+    // Handle vector3
+    else if constexpr (is_vector3<U>::value) {
+        if (_str.substr(0, 7) != "vector3") {
+            LOG_WARN("SectionData", "Invalid format for vector3: [w]$0", _str);
+            return U();
+        }
+        std::istringstream iss(_str.substr(7)); // Skip the "vector3" prefix
+        char discard;
+        U result{};
+        if (iss >> discard && discard == '(' && iss >> result.x && iss >> discard && discard == ',' && iss >> result.y && iss >> discard &&
+            discard == ',' && iss >> result.z && iss >> discard && discard == ')') {
+            return result;
+        }
+        LOG_WARN("SectionData", "Failed to cast SectionData to vector3");
+        return U();
+    }
+    // Handle vector4
+    else if constexpr (is_vector4<U>::value) {
+        if (_str.substr(0, 7) != "vector4") {
+            LOG_WARN("SectionData", "Invalid format for vector4: [w]$0", _str);
+            return U();
+        }
+        std::istringstream iss(_str.substr(7)); // Skip the "vector4" prefix
+        char discard;
+        U result{};
+        if (iss >> discard && discard == '(' && iss >> result.x && iss >> discard && discard == ',' && iss >> result.y && iss >> discard &&
+            discard == ',' && iss >> result.z && iss >> discard && discard == ',' && iss >> result.w && iss >> discard && discard == ')') {
+            return result;
+        }
+        LOG_WARN("SectionData", "Failed to cast SectionData to vector4");
+        return U();
+    }
+    // Handle quaternion
+    else if constexpr (std::is_same_v<U, atta::quat>) {
+        if (_str.substr(0, 10) != "quaternion") {
+            LOG_WARN("SectionData", "Invalid format for quaternion: [w]$0", _str);
+            return U();
+        }
+        std::istringstream iss(_str.substr(10)); // Skip the "quaternion" prefix
+        char discard;
+        U result{};
+        if (iss >> discard && discard == '(' && iss >> result.i && iss >> discard && discard == ',' && iss >> result.j && iss >> discard &&
+            discard == ',' && iss >> result.k && iss >> discard && discard == ',' && iss >> result.r && iss >> discard && discard == ')') {
+            return result;
+        }
+        LOG_WARN("SectionData", "Failed to cast SectionData to quaternion");
+        return U();
+    }
+    // Handle strings
+    else if constexpr (std::is_convertible_v<U, std::string>) {
+        if (_str.front() == '"' && _str.back() == '"')
+            return _str.substr(1, _str.size() - 2);
+        return U();
+    }
+    // Handle unsupported types
+    else {
+        LOG_WARN("SectionData", "Casting SectionData to type [w]$0[] is not supported", typeid(U).name());
+        return U();
+    }
+}
+
 } // namespace atta::file
