@@ -25,7 +25,7 @@ atta_add_libs(atta_file_module)
 
 ########## Testing ##########
 set(ATTA_FILE_MODULE_TEST_SOURCES
-    tests/section.cpp
+    tests/serializer.cpp
 )
 # Add to global test
 atta_add_tests(${ATTA_FILE_MODULE_TEST_SOURCES})

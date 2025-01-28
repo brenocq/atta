@@ -1,6 +1,6 @@
 //--------------------------------------------------
 // Atta File Module Tests
-// section.cpp
+// serializer.cpp
 // Date: 2022-06-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
@@ -15,7 +15,7 @@ using namespace testing;
 
 namespace {
 
-TEST(File_Section, SectionData_ValueToString) {
+TEST(File_Serializer, SectionData_ValueToString) {
     SectionData data = 10;
     EXPECT_EQ(data.getStr(), "10");
     data = true;
@@ -55,7 +55,7 @@ TEST(File_Section, SectionData_ValueToString) {
                                  std::to_string(0.7071f) + ")");
 }
 
-TEST(File_Section, SectionData_StringToValue) {
+TEST(File_Serializer, SectionData_StringToValue) {
     SectionData data = 10;
     EXPECT_EQ(int(data), 10);
     data = 10.0f;
@@ -81,13 +81,13 @@ TEST(File_Section, SectionData_StringToValue) {
     EXPECT_EQ(quat(data), quat(0.7071f, 0.7071f, 0.0f, 0.0f));
     // Test std::vector
     data = std::vector<int>{0, 1, 2};
-    EXPECT_THAT(std::vector<int>(data), ::testing::ElementsAre(0, 1, 2));
+    EXPECT_THAT(std::vector<int>(data), ElementsAre(0, 1, 2));
     data = std::vector<bool>{true, false, true};
-    EXPECT_THAT(std::vector<bool>(data), ::testing::ElementsAre(true, false, true));
+    EXPECT_THAT(std::vector<bool>(data), ElementsAre(true, false, true));
     data = std::vector<std::string>{"one", "two", "three"};
-    EXPECT_THAT(std::vector<std::string>(data), ::testing::ElementsAre("one", "two", "three"));
+    EXPECT_THAT(std::vector<std::string>(data), ElementsAre("one", "two", "three"));
     data = std::vector<vec2>{vec2(0.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 0.0f)};
-    EXPECT_THAT(std::vector<vec2>(data), ::testing::ElementsAre(vec2(0.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 0.0f)));
+    EXPECT_THAT(std::vector<vec2>(data), ElementsAre(vec2(0.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 0.0f)));
 
     // Test vector of vectors
     std::vector<std::vector<vec2>> expected = {std::vector<vec2>{vec2(0.0f, 0.0f), vec2(0.0f, 1.0f)},
@@ -95,11 +95,11 @@ TEST(File_Section, SectionData_StringToValue) {
     data = expected;
     std::vector<std::vector<vec2>> v = std::vector<std::vector<vec2>>(data);
     for (size_t i = 0; i < v.size(); i++)
-        EXPECT_THAT(v[i], ::testing::ElementsAreArray(expected[i]));
+        EXPECT_THAT(v[i], ElementsAreArray(expected[i]));
 }
 
-TEST(File_Section, Section_ToString) {}
+TEST(File_Serializer, Section_ToString) {}
 
-TEST(File_Section, Section_ToValue) {}
+TEST(File_Serializer, Section_ToValue) {}
 
 } // namespace
