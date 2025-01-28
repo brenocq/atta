@@ -24,6 +24,7 @@ class SectionData {
         *this = std::forward<T>(value); // Use the assignment operator
     }
 
+    void setStr(const std::string& str) { _str = str; }
     const std::string& getStr() const { return _str; }
 
     // Assign operators
@@ -60,6 +61,7 @@ class Section {
 
     /// Map access
     SectionData& operator[](std::string key);
+    void insertFromString(const std::string& string);
     bool contains(std::string key);
 
     /// To string

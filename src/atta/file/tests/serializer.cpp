@@ -5,6 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/file/serializer/section.h>
+#include <atta/file/serializer/serializer.h>
 #include <atta/utils/stringId.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -106,9 +107,132 @@ TEST(File_Serializer, Section_ToString) {
     EXPECT_EQ(section.toString(), "[section]\nkey1 = 10\nkey2 = true\nkey3 = \"test\"\n");
 }
 
-TEST(File_Serializer, Section_ToValue) {}
+TEST(File_Serializer, Section_InsertFromString) {
+    Section section("test_section");
 
-TEST(File_Serializer, Serializer_Serialize) {}
+    // Valid input strings
+    section.insertFromString("key1 = \"someString\"");
+    section.insertFromString("key2 = 10");
+    section.insertFromString("key3 = true");
+
+    // Verify the values by casting to their expected types
+    EXPECT_TRUE(section.contains("key1"));
+    EXPECT_EQ(std::string(section["key1"]), "someString");
+
+    EXPECT_TRUE(section.contains("key2"));
+    EXPECT_EQ(int(section["key2"]), 10);
+
+    EXPECT_TRUE(section.contains("key3"));
+    EXPECT_EQ(bool(section["key3"]), true);
+
+    // Invalid input strings
+    section.insertFromString("key4 =");
+    EXPECT_FALSE(section.contains("key4")); // No value after '='
+
+    section.insertFromString("= valueWithoutKey");
+    EXPECT_FALSE(section.contains("")); // No key before '='
+
+    section.insertFromString("key5 valueWithoutEquals");
+    EXPECT_FALSE(section.contains("key5")); // Missing '=' delimiter
+
+    // Strings with extra spaces and tabs
+    section.insertFromString("   key6    =    \"trimmedString\"   ");
+    EXPECT_TRUE(section.contains("key6"));
+    EXPECT_EQ(std::string(section["key6"]), "trimmedString");
+
+    section.insertFromString("\t\tkey7\t=\t42\t");
+    EXPECT_TRUE(section.contains("key7"));
+    EXPECT_EQ(int(section["key7"]), 42);
+
+    // Strings with newlines or empty input
+    section.insertFromString("key8 = valueWithNewline\n"); // Invalid string input
+    EXPECT_TRUE(section.contains("key8"));
+    EXPECT_EQ(std::string(section["key8"]), "");
+
+    section.insertFromString("");
+    EXPECT_FALSE(section.contains("")); // Empty string, nothing to add
+
+    section.insertFromString("   ");
+    EXPECT_FALSE(section.contains("   ")); // Only whitespace, nothing to add
+
+    // Test for overwriting existing keys
+    section.insertFromString("key1 = \"newValue\"");
+    EXPECT_EQ(std::string(section["key1"]), "newValue"); // Overwrite existing value
+
+    // Complex types
+    section.insertFromString("key9.vec2 = vector2(1.0, 2.0)");
+    EXPECT_TRUE(section.contains("key9.vec2"));
+    EXPECT_EQ(vec2(section["key9.vec2"]), vec2(1.0f, 2.0f));
+
+    section.insertFromString("key10.vec3 = vector3(1.0, 2.0, 3.0)");
+    EXPECT_TRUE(section.contains("key10.vec3"));
+    EXPECT_EQ(vec3(section["key10.vec3"]), vec3(1.0f, 2.0f, 3.0f));
+
+    section.insertFromString("key11.vec4 = vector4(1.0, 2.0, 3.0, 4.0)");
+    EXPECT_TRUE(section.contains("key11.vec4"));
+    EXPECT_EQ(vec4(section["key11.vec4"]), vec4(1.0f, 2.0f, 3.0f, 4.0f));
+
+    section.insertFromString("key12.quat = quaternion(0.7071, 0.0, 0.0, 0.7071)");
+    EXPECT_TRUE(section.contains("key12.quat"));
+    EXPECT_EQ(quat(section["key12.quat"]), quat(0.7071f, 0.7071f, 0.0f, 0.0f));
+
+    // Vector of elements
+    section.insertFromString("key13.vectorInt = {1, 2, 3}");
+    EXPECT_TRUE(section.contains("key13.vectorInt"));
+    EXPECT_THAT(std::vector<int>(section["key13.vectorInt"]), ElementsAre(1, 2, 3));
+
+    section.insertFromString("key14.vectorVec2 = {vector2(1.0, 2.0), vector2(3.0, 4.0)}");
+    EXPECT_TRUE(section.contains("key14.vectorVec2"));
+    EXPECT_THAT(std::vector<vec2>(section["key14.vectorVec2"]), ElementsAre(vec2(1.0f, 2.0f), vec2(3.0f, 4.0f)));
+}
+
+TEST(File_Serializer, Serializer_Serialize) {
+    Serializer serializer;
+    Section s0("section0");
+    s0["key1"] = 10;
+    s0["key2"] = true;
+    s0["key3"] = "test";
+    serializer.addSection(s0);
+
+    Section s1("section1");
+    s1["key1.vec2"] = vec2(1.0f, 2.0f);
+    s1["key2.vec3"] = vec3(1.0f, 2.0f, 3.0f);
+    s1["key3.vec4"] = vec4(1.0f, 2.0f, 3.0f, 4.0f);
+    s1["key4.quat"] = quat(0.7071f, 0.7071f, 0.0f, 0.0f);
+    serializer.addSection(s1);
+
+    Section s2("section2");
+    s2["key5.vectorInt"] = std::vector<int>{0, 1, 2};
+    s2["key6.vectorStr"] = std::vector<std::string>{"one", "two", "three"};
+    s2["key7.vectorVec2"] = std::vector<vec2>{vec2(0.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 0.0f)};
+    s2["key8.vectorVectorVec2"] =
+        std::vector<std::vector<vec2>>{std::vector<vec2>{vec2(0.0f, 0.0f), vec2(0.0f, 1.0f)}, std::vector<vec2>{vec2(1.0f, 0.0f), vec2(1.0f, 0.0f)}};
+    serializer.addSection(s2);
+
+    // Construct the expected serialized output
+    std::string expected =
+        "[section0]\n"
+        "key1 = 10\n"
+        "key2 = true\n"
+        "key3 = \"test\"\n"
+        "\n"
+        "[section1]\n"
+        "key1.vec2 = vector2(1.000000, 2.000000)\n"
+        "key2.vec3 = vector3(1.000000, 2.000000, 3.000000)\n"
+        "key3.vec4 = vector4(1.000000, 2.000000, 3.000000, 4.000000)\n"
+        "key4.quat = quaternion(0.707100, 0.000000, 0.000000, 0.707100)\n"
+        "\n"
+        "[section2]\n"
+        "key5.vectorInt = {0, 1, 2}\n"
+        "key6.vectorStr = {\"one\", \"two\", \"three\"}\n"
+        "key7.vectorVec2 = {vector2(0.000000, 0.000000), vector2(0.000000, 1.000000), vector2(1.000000, 0.000000)}\n"
+        "key8.vectorVectorVec2 = {{vector2(0.000000, 0.000000), vector2(0.000000, 1.000000)}, {vector2(1.000000, 0.000000), vector2(1.000000, "
+        "0.000000)}}\n"
+        "\n";
+
+    // Compare the serialized output with the expected string
+    EXPECT_EQ(serializer.toString(), expected);
+}
 
 TEST(File_Serializer, Serializer_Deserialize) {}
 
