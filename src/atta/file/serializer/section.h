@@ -55,25 +55,23 @@ class Section {
   public:
     Section(const std::string& name) : _name(name) {}
 
-    /// Get name
+    /// Getters
     const std::string& getName() const;
-
-    /// Get map
-    std::map<std::string, SectionData>& map();
-    const std::map<std::string, SectionData>& map() const;
     bool empty() const;
-
-    /// Map access
-    SectionData& operator[](std::string key);
-    const SectionData& operator[](std::string key) const;
-    void insertFromString(const std::string& string);
+    size_t size() const;
     bool contains(std::string key) const;
 
-    /// To string
+    /// Insert/read
+    SectionData& operator[](std::string key);
+    const SectionData& operator[](std::string key) const;
+
+    /// Serialize/deserialize
+    void insertFromString(const std::string& string);
     std::string toString() const;
 
   private:
     std::string _name;
+    std::vector<std::string> _keys; // Keys are stored in a vector to keep the order
     std::map<std::string, SectionData> _map;
 };
 

@@ -268,7 +268,7 @@ TEST(File_Serializer, Serializer_Deserialize) {
     // Validate section1
     const auto& section1 = sections[0];
     EXPECT_EQ(section1.getName(), "section1");
-    EXPECT_EQ(section1.map().size(), 4);
+    EXPECT_EQ(section1.size(), 4);
     EXPECT_EQ(int(section1["key1"]), 10);
     EXPECT_EQ(bool(section1["key2"]), true);
     EXPECT_EQ(std::string(section1["key3"]), "stringValue");
@@ -278,7 +278,7 @@ TEST(File_Serializer, Serializer_Deserialize) {
     // Validate section2
     const auto& section2 = sections[1];
     EXPECT_EQ(section2.getName(), "section2");
-    EXPECT_EQ(section2.map().size(), 3);
+    EXPECT_EQ(section2.size(), 3);
     EXPECT_EQ(vec2(section2["key1.vec2"]), vec2(1.0f, 2.0f));
     EXPECT_EQ(vec3(section2["key2.vec3"]), vec3(1.0f, 2.0f, 3.0f));
     EXPECT_EQ(vec4(section2["key3.vec4"]), vec4(1.0f, 2.0f, 3.0f, 4.0f));
@@ -286,7 +286,7 @@ TEST(File_Serializer, Serializer_Deserialize) {
     // Validate section3
     const auto& section3 = sections[2];
     EXPECT_EQ(section3.getName(), "section3");
-    EXPECT_EQ(section3.map().size(), 3);
+    EXPECT_EQ(section3.size(), 3);
     EXPECT_THAT(std::vector<int>(section3["key1.vectorInt"]), ElementsAre(1, 2, 3));
     EXPECT_THAT(std::vector<std::string>(section3["key2.vectorStr"]), ElementsAre("one", "two", "three"));
     EXPECT_EQ(quat(section3["key3.quat"]), quat(0.7071f, 0.7071f, 0.0f, 0.0f));

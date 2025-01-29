@@ -12,17 +12,19 @@ namespace atta::file {
 
 const std::string& Section::getName() const { return _name; }
 
-std::map<std::string, SectionData>& Section::map() { return _map; }
-
-const std::map<std::string, SectionData>& Section::map() const { return _map; }
-
 bool Section::empty() const { return _map.empty(); }
 
-SectionData& Section::operator[](std::string key) { return map()[key]; }
+size_t Section::size() const { return _map.size(); }
 
-const SectionData& Section::operator[](std::string key) const { return map().at(key); }
+bool Section::contains(std::string key) const { return _map.find(key) != _map.end(); }
 
-bool Section::contains(std::string key) const { return map().find(key) != map().end(); }
+SectionData& Section::operator[](std::string key) {
+    if (!contains(key))
+        _keys.push_back(key);
+    return _map[key];
+}
+
+const SectionData& Section::operator[](std::string key) const { return _map.at(key); }
 
 void Section::insertFromString(const std::string& string) {
     // Check if the input string is empty or contains only whitespace
@@ -46,6 +48,7 @@ void Section::insertFromString(const std::string& string) {
         // Add to the map
         SectionData data;
         data.setStr(value);
+        _keys.push_back(key);
         _map[key] = std::move(data);
     }
 }
@@ -53,8 +56,8 @@ void Section::insertFromString(const std::string& string) {
 std::string Section::toString() const {
     std::ostringstream ss;
     ss << "[" << _name << "]" << std::endl;
-    for (const auto& [key, value] : _map) {
-        ss << key << " = " << value.getStr() << std::endl;
+    for (const std::string& key : _keys) {
+        ss << key << " = " << _map.at(key).getStr() << std::endl;
     }
     return ss.str();
 }
