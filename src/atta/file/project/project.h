@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #ifndef ATTA_FILE_PROJECT_PROJECT_H
 #define ATTA_FILE_PROJECT_PROJECT_H
-#include <atta/file/project/project.h>
 
 namespace atta::file {
 

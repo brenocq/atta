@@ -16,6 +16,8 @@ std::map<std::string, SectionData>& Section::map() { return _map; }
 
 const std::map<std::string, SectionData>& Section::map() const { return _map; }
 
+bool Section::empty() const { return _map.empty(); }
+
 SectionData& Section::operator[](std::string key) { return map()[key]; }
 
 const SectionData& Section::operator[](std::string key) const { return map().at(key); }

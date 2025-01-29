@@ -7,7 +7,7 @@
 #ifndef ATTA_FILE_PROJECT_PROJECT_SERIALIZER_H
 #define ATTA_FILE_PROJECT_PROJECT_SERIALIZER_H
 #include <atta/file/project/project.h>
-#include <atta/file/serializer/section.h>
+#include <atta/file/serializer/serializer.h>
 
 namespace atta::file {
 
@@ -20,26 +20,21 @@ class ProjectSerializer final {
     void deserialize();
 
   private:
-    void serializeHeader(Section& section);
-    void deserializeHeader(Section& section);
+    Section serializeProject();
+    Section serializeConfig();
+    Section serializeGraphicsModule();
+    Section serializeResourceModule();
+    Section serializePhysicsModule();
+    Section serializeSensorModule();
+    std::vector<Section> serializeNodes();
 
-    void serializeConfig(Section& section);
+    void deserializeProject(Section& section);
     void deserializeConfig(Section& section);
-
-    void serializeComponentModule(Section& section);
-    void deserializeComponentModule(Section& section);
-
-    void serializeGraphicsModule(Section& section);
     void deserializeGraphicsModule(Section& section);
-
-    void serializeResourceModule(Section& section);
     void deserializeResourceModule(Section& section);
-
-    void serializePhysicsModule(Section& section);
     void deserializePhysicsModule(Section& section);
-
-    void serializeSensorModule(Section& section);
     void deserializeSensorModule(Section& section);
+    void deserializeNode(Section& section);
 
     std::shared_ptr<Project> _project;
 };

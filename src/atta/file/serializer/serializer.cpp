@@ -31,6 +31,8 @@ void Serializer::deserialize(const fs::path& file) {
 std::string Serializer::toString() const {
     std::ostringstream ss;
     for (const auto& section : _sections) {
+        if (section.empty())
+            continue;
         ss << section.toString();
         ss << std::endl;
     }

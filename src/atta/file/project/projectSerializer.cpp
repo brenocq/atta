@@ -32,33 +32,25 @@ ProjectSerializer::ProjectSerializer(std::shared_ptr<Project> project) : _projec
 ProjectSerializer::~ProjectSerializer() {}
 
 void ProjectSerializer::serialize() {
+    Serializer serializer;
+    serializer.addSection(serializeProject());
+    serializer.addSection(serializeConfig());
+    serializer.addSection(serializeGraphicsModule());
+    serializer.addSection(serializeResourceModule());
+    serializer.addSection(serializePhysicsModule());
+    serializer.addSection(serializeSensorModule());
+    std::vector<Section> nodes = serializeNodes();
+    for (const Section& node : nodes)
+        serializer.addSection(node);
+
     // Serialize to temporary file
     fs::path attaTemp = _project->getFile();
     attaTemp.replace_extension(".atta.temp");
-
-    // Load data to section
-    Section section("Some section");
-    // serializeHeader(section["header"]);
-    // serializeConfig(section["config"]);
-    // serializeComponentModule(section["componentModule"]);
-    // serializeGraphicsModule(section["graphicsModule"]);
-    // serializeResourceModule(section["resourceModule"]);
-    // serializePhysicsModule(section["physicsModule"]);
-    // serializeSensorModule(section["sensorModule"]);
-    //  LOG_DEBUG("file::ProjectSerializer", "Saving project: [w]$0", section);
-
-    // Serialize version
-    std::ofstream os(attaTemp, std::ofstream::trunc | std::ofstream::binary);
-    std::string version =
-        "ATTA" + std::to_string(ATTA_VERSION_MAJOR) + "." + std::to_string(ATTA_VERSION_MINOR) + "." + std::to_string(ATTA_VERSION_PATCH);
-    // write(os, version);
-
-    // Serialize data
-    // section.serialize(os);
-    os.close();
+    serializer.serialize(attaTemp);
 
     // Override atta file with temp file
     fs::rename(attaTemp, _project->getFile());
+    LOG_SUCCESS("file::ProjectSerializer", "Project [w]$0[] was saved", _project->getName());
 }
 
 void ProjectSerializer::deserialize() {
@@ -68,10 +60,10 @@ void ProjectSerializer::deserialize() {
     std::ifstream is(attaFile, std::ifstream::in | std::ifstream::binary);
 
     // Deserialize version
-    std::string version;
+    // std::string version;
     // read(is, version);
     // section.deserialize(is);
-    is.close();
+    // is.close();
 
     // Deserialize data
     // deserializeHeader(section["header"]);
@@ -83,7 +75,48 @@ void ProjectSerializer::deserialize() {
     // deserializeSensorModule(section["sensorModule"]);
 }
 
-} // namespace atta::file
+Section ProjectSerializer::serializeProject() {
+    Section section("project");
+    section["attaVersion"] = std::vector<int>{ATTA_VERSION_MAJOR, ATTA_VERSION_MINOR, ATTA_VERSION_PATCH};
+    section["name"] = _project->getName();
+    return section;
+}
 
-#include <atta/file/project/projectSerializerDeserialize.cpp>
-#include <atta/file/project/projectSerializerSerialize.cpp>
+Section ProjectSerializer::serializeConfig() {
+    Section section("config");
+    section["dt"] = Config::getDt();
+    section["desiredStepSpeed"] = Config::getDesiredStepSpeed();
+    return section;
+}
+
+Section ProjectSerializer::serializeGraphicsModule() {
+    Section section("graphics");
+    return section;
+}
+
+Section ProjectSerializer::serializeResourceModule() {
+    Section section("resource");
+    return section;
+}
+
+Section ProjectSerializer::serializePhysicsModule() {
+    Section section("physics");
+    return section;
+}
+
+Section ProjectSerializer::serializeSensorModule() {
+    Section section("physics");
+    return section;
+}
+
+std::vector<Section> ProjectSerializer::serializeNodes() { return {}; }
+
+void ProjectSerializer::deserializeProject(Section& section) {}
+void ProjectSerializer::deserializeConfig(Section& section) {}
+void ProjectSerializer::deserializeGraphicsModule(Section& section) {}
+void ProjectSerializer::deserializeResourceModule(Section& section) {}
+void ProjectSerializer::deserializePhysicsModule(Section& section) {}
+void ProjectSerializer::deserializeSensorModule(Section& section) {}
+void ProjectSerializer::deserializeNode(Section& section) {}
+
+} // namespace atta::file

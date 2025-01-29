@@ -61,6 +61,7 @@ class Section {
     /// Get map
     std::map<std::string, SectionData>& map();
     const std::map<std::string, SectionData>& map() const;
+    bool empty() const;
 
     /// Map access
     SectionData& operator[](std::string key);
