@@ -161,6 +161,30 @@ std::vector<Section> ProjectSerializer::serializeResources() {
 
         sections.push_back(std::move(section));
     }
+
+    // Serialize images
+    res::Image::CreateInfo defaultImage{};
+    std::vector<StringId> imageSids = res::getResources<res::Image>();
+    for (StringId sid : imageSids) {
+        res::Image* img = res::get<res::Image>(sid.getString());
+        Section section("image");
+
+        // Id
+        section["id"] = sid.getString();
+
+        // Serialize dimensions if they are different from defaults
+        if (img->getWidth() != defaultImage.width)
+            section["width"] = img->getWidth();
+        if (img->getHeight() != defaultImage.height)
+            section["height"] = img->getHeight();
+
+        // Serialize format if it's not the default
+        if (img->getFormat() != defaultImage.format)
+            section["format"] = res::Image::formatToString.at(img->getFormat());
+
+        sections.push_back(std::move(section));
+    }
+
     return sections;
 }
 

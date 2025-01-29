@@ -17,6 +17,16 @@
 
 namespace atta::resource {
 
+// Define Format-to-String Mapping
+const std::unordered_map<Image::Format, std::string> Image::formatToString = {
+    {Format::NONE, "NONE"}, {Format::RED8, "RED8"}, {Format::RGB8, "RGB8"}, {Format::RGBA8, "RGBA8"}, {Format::RGB32F, "RGB32F"},
+};
+
+// Define String-to-Format Mapping
+const std::unordered_map<std::string, Image::Format> Image::stringToFormat = {
+    {"NONE", Format::NONE}, {"RED8", Format::RED8}, {"RGB8", Format::RGB8}, {"RGBA8", Format::RGBA8}, {"RGB32F", Format::RGB32F},
+};
+
 Image::Image(const fs::path& filename) : Resource(filename) { load(); }
 
 Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
