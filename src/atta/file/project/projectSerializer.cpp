@@ -36,9 +36,13 @@ void ProjectSerializer::serialize() {
     serializer.addSection(serializeProject());
     serializer.addSection(serializeConfig());
     serializer.addSection(serializeGraphicsModule());
-    serializer.addSection(serializeResourceModule());
     serializer.addSection(serializePhysicsModule());
     serializer.addSection(serializeSensorModule());
+
+    std::vector<Section> resources = serializeResources();
+    for (const Section& resource : resources)
+        serializer.addSection(resource);
+
     std::vector<Section> nodes = serializeNodes();
     for (const Section& node : nodes)
         serializer.addSection(node);
@@ -91,11 +95,14 @@ Section ProjectSerializer::serializeConfig() {
 
 Section ProjectSerializer::serializeGraphicsModule() {
     Section section("graphics");
-    return section;
-}
-
-Section ProjectSerializer::serializeResourceModule() {
-    Section section("resource");
+    // std::vector<std::shared_ptr<ui::Viewport>> pviewports = ui::getViewports();
+    // std::vector<ui::Viewport> viewports;
+    // for (auto& pv : pviewports)
+    //     viewports.push_back(*pv);
+    // section["viewports"] = viewports;
+    // LOG_WARN("file::ProjectSerializer", "Serializing viewports was not implemented yet");
+    section["graphicsFPS"] = gfx::getGraphicsFPS();
+    section["viewportRendering"] = ui::getViewportRendering();
     return section;
 }
 
@@ -107,6 +114,54 @@ Section ProjectSerializer::serializePhysicsModule() {
 Section ProjectSerializer::serializeSensorModule() {
     Section section("physics");
     return section;
+}
+
+std::vector<Section> ProjectSerializer::serializeResources() {
+    std::vector<Section> sections;
+
+    // Serialize materials
+    res::Material::CreateInfo defaultMaterial{};
+    std::vector<StringId> materialSids = res::getResources<res::Material>();
+    for (StringId sid : materialSids) {
+        res::Material* m = res::get<res::Material>(sid.getString());
+        Section section("material");
+
+        // Id
+        section["id"] = sid.getString();
+
+        // Serialize color if it is not the default
+        if (m->getColor() != defaultMaterial.color)
+            section["color"] = m->getColor();
+
+        // Serialize color texture if used
+        if (m->colorIsImage())
+            section["colorImage"] = m->getColorImage().getString();
+
+        // Serialize metallic factor or image
+        if (m->getMetallic() != defaultMaterial.metallic)
+            section["metallic"] = m->getMetallic();
+        if (m->metallicIsImage())
+            section["metallicImage"] = m->getMetallicImage().getString();
+
+        // Serialize roughness factor or image
+        if (m->getRoughness() != defaultMaterial.roughness)
+            section["roughness"] = m->getRoughness();
+        if (m->roughnessIsImage())
+            section["roughnessImage"] = m->getRoughnessImage().getString();
+
+        // Serialize ambient occlusion factor or image
+        if (m->getAo() != defaultMaterial.ao)
+            section["ao"] = m->getAo();
+        if (m->aoIsImage())
+            section["aoImage"] = m->getAoImage().getString();
+
+        // Serialize normal map if it exists
+        if (m->hasNormalImage())
+            section["normalImage"] = m->getNormalImage().getString();
+
+        sections.push_back(std::move(section));
+    }
+    return sections;
 }
 
 std::vector<Section> ProjectSerializer::serializeNodes() { return {}; }
