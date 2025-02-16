@@ -81,7 +81,7 @@ void ProjectSerializer::deserialize() {
 
 Section ProjectSerializer::serializeProject() {
     Section section("project");
-    section["attaVersion"] = std::vector<int>{ATTA_VERSION_MAJOR, ATTA_VERSION_MINOR, ATTA_VERSION_PATCH};
+    section["attaVersion"] = std::string{ATTA_VERSION};
     section["name"] = _project->getName();
     return section;
 }
@@ -123,7 +123,9 @@ Section ProjectSerializer::serializePhysicsModule() {
 }
 
 Section ProjectSerializer::serializeSensorModule() {
-    Section section("physics");
+    Section section("sensor");
+    section["showCameras"] = sensor::getShowCameras();
+    section["showInfrareds"] = sensor::getShowInfrareds();
     return section;
 }
 
@@ -176,7 +178,60 @@ std::vector<Section> ProjectSerializer::serializeResources() {
     return sections;
 }
 
-std::vector<Section> ProjectSerializer::serializeNodes() { return {}; }
+std::vector<Section> ProjectSerializer::serializeNodes() {
+    std::vector<Section> sections;
+    std::vector<cmp::EntityId> entities = cmp::getNoCloneView();
+    for (cmp::EntityId entity : entities) {
+        Section section("node");
+        section["id"] = entity;
+
+        // Serialize components
+        for (cmp::ComponentRegistry* compReg : component::getComponentRegistries()) {
+            // Check if entity has this component
+            cmp::Component* comp = cmp::getComponentById(compReg->getId(), entity);
+            if (comp == nullptr)
+                continue;
+
+            std::string name = compReg->getDescription().name;
+            LOG_DEBUG("ProjectSerializer", "Entity $0 has component $1", entity, name);
+            section[name] = true;
+
+            //// Get all entities that have this component
+            // std::vector<component::EntityId> eids;
+            // std::vector<component::Component*> components;
+            // for (auto entity : entities) {
+            //     component::Component* comp = component::getComponentById(compReg->getId(), entity);
+            //     if (comp != nullptr) {
+            //         eids.push_back(entity);
+            //         components.push_back(comp);
+            //     }
+            // }
+            // if (eids.size()) {
+            //     section["components"][name]["entityIds"] = eids;
+
+            //    // Serialize components
+            //    std::vector<uint8_t> componentsData;
+            //    for (component::Component* component : components) {
+            //        size_t size = compReg->getSerializedSize(component);
+            //        // Create temporary buffer
+            //        std::vector<uint8_t> temp(size);
+            //        // Serialize to temporary buffer
+            //        std::stringstream ss;
+            //        compReg->serialize(ss, component);
+            //        ss.seekg(0, std::ios_base::beg);
+            //        ss.read((char*)temp.data(), temp.size());
+
+            //        // Copy from temporary buffer to componentsData
+            //        componentsData.insert(componentsData.end(), temp.begin(), temp.end());
+            //    }
+            //    section["components"][name]["data"] = componentsData;
+            //}
+        }
+
+        sections.push_back(std::move(section));
+    }
+    return sections;
+}
 
 void ProjectSerializer::deserializeProject(Section& section) {}
 void ProjectSerializer::deserializeConfig(Section& section) {}
