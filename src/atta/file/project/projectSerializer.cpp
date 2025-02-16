@@ -9,6 +9,7 @@
 #include <atta/file/serializer/section.h>
 #include <atta/file/serializer/serializer.h>
 
+#include <atta/component/base.h>
 #include <atta/component/components/components.h>
 #include <atta/component/interface.h>
 
@@ -19,6 +20,7 @@
 #include <atta/graphics/interface.h>
 #include <atta/ui/interface.h>
 #include <atta/utils/config.h>
+#include <atta/utils/stringUtils.h>
 
 #include <atta/physics/engines/bulletEngine.h>
 #include <atta/physics/interface.h>
@@ -178,54 +180,75 @@ std::vector<Section> ProjectSerializer::serializeResources() {
     return sections;
 }
 
+void serializeAttribute(Section& section, const std::string& cmpName, cmp::Component* data, const cmp::AttributeDescription& attribute) {
+    std::string dataKey = cmpName + '.' + toCamelCase(attribute.name);
+    uint8_t* ptr = reinterpret_cast<uint8_t*>(data) + attribute.offset; // Base pointer to the attribute
+
+    switch (attribute.type) {
+        case cmp::AttributeType::BOOL:
+            section[dataKey] = *reinterpret_cast<bool*>(ptr);
+            break;
+        case cmp::AttributeType::CHAR:
+            section[dataKey] = *reinterpret_cast<char*>(ptr);
+            break;
+        case cmp::AttributeType::INT8:
+            section[dataKey] = *reinterpret_cast<int8_t*>(ptr);
+            break;
+        case cmp::AttributeType::INT16:
+            section[dataKey] = *reinterpret_cast<int16_t*>(ptr);
+            break;
+        case cmp::AttributeType::INT32:
+            section[dataKey] = *reinterpret_cast<int32_t*>(ptr);
+            break;
+        case cmp::AttributeType::INT64:
+            section[dataKey] = *reinterpret_cast<int64_t*>(ptr);
+            break;
+        case cmp::AttributeType::UINT8:
+            section[dataKey] = *reinterpret_cast<uint8_t*>(ptr);
+            break;
+        case cmp::AttributeType::UINT16:
+            section[dataKey] = *reinterpret_cast<uint16_t*>(ptr);
+            break;
+        case cmp::AttributeType::UINT32:
+            section[dataKey] = *reinterpret_cast<uint32_t*>(ptr);
+            break;
+        case cmp::AttributeType::UINT64:
+            section[dataKey] = *reinterpret_cast<uint64_t*>(ptr);
+            break;
+        case cmp::AttributeType::FLOAT32:
+            section[dataKey] = *reinterpret_cast<float*>(ptr);
+            break;
+        case cmp::AttributeType::FLOAT64:
+            section[dataKey] = *reinterpret_cast<double*>(ptr);
+            break;
+        case cmp::AttributeType::QUAT:
+            section[dataKey] = *reinterpret_cast<quat*>(ptr);
+            break;
+        default:
+            LOG_WARN("file::ProjectSerializer", "Attribute [w]$0.$1[] has unsupported type [w]$2[]. The attribute will not be saved to .atta",
+                     cmpName, attribute.name, static_cast<int>(attribute.type));
+            break;
+    }
+}
+
 std::vector<Section> ProjectSerializer::serializeNodes() {
     std::vector<Section> sections;
     std::vector<cmp::EntityId> entities = cmp::getNoCloneView();
+    // Serialize each entity as a node
     for (cmp::EntityId entity : entities) {
         Section section("node");
         section["id"] = entity;
 
         // Serialize components
-        for (cmp::ComponentRegistry* compReg : component::getComponentRegistries()) {
+        for (cmp::ComponentRegistry* compReg : cmp::getComponentRegistries()) {
             // Check if entity has this component
             cmp::Component* comp = cmp::getComponentById(compReg->getId(), entity);
             if (comp == nullptr)
                 continue;
-
-            std::string name = compReg->getDescription().name;
-            LOG_DEBUG("ProjectSerializer", "Entity $0 has component $1", entity, name);
-            section[name] = true;
-
-            //// Get all entities that have this component
-            // std::vector<component::EntityId> eids;
-            // std::vector<component::Component*> components;
-            // for (auto entity : entities) {
-            //     component::Component* comp = component::getComponentById(compReg->getId(), entity);
-            //     if (comp != nullptr) {
-            //         eids.push_back(entity);
-            //         components.push_back(comp);
-            //     }
-            // }
-            // if (eids.size()) {
-            //     section["components"][name]["entityIds"] = eids;
-
-            //    // Serialize components
-            //    std::vector<uint8_t> componentsData;
-            //    for (component::Component* component : components) {
-            //        size_t size = compReg->getSerializedSize(component);
-            //        // Create temporary buffer
-            //        std::vector<uint8_t> temp(size);
-            //        // Serialize to temporary buffer
-            //        std::stringstream ss;
-            //        compReg->serialize(ss, component);
-            //        ss.seekg(0, std::ios_base::beg);
-            //        ss.read((char*)temp.data(), temp.size());
-
-            //        // Copy from temporary buffer to componentsData
-            //        componentsData.insert(componentsData.end(), temp.begin(), temp.end());
-            //    }
-            //    section["components"][name]["data"] = componentsData;
-            //}
+            // Serialize each attribute of the component
+            std::string cmpName = toCamelCase(compReg->getDescription().name);
+            for (const cmp::AttributeDescription& attribute : compReg->getDescription().attributeDescriptions)
+                serializeAttribute(section, cmpName, comp, attribute);
         }
 
         sections.push_back(std::move(section));
