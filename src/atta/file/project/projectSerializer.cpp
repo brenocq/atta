@@ -229,14 +229,10 @@ void serializeAttribute(Section& section, const std::string& cmpName, cmp::Compo
         case cmp::AttributeType::FLOAT64:
             section[dataKey] = *reinterpret_cast<double*>(ptr);
             break;
-        case cmp::AttributeType::QUAT:
-            section[dataKey] = *reinterpret_cast<quat*>(ptr);
-            break;
-        case cmp::AttributeType::STRINGID:
-            section[dataKey] = reinterpret_cast<StringId*>(ptr)->getString();
+        case cmp::AttributeType::VECTOR_CHAR:
+            section[dataKey] = std::string(reinterpret_cast<char*>(ptr), reinterpret_cast<char*>(ptr) + size / sizeof(char));
             break;
             ATTA_SERIALIZE_VECTOR(BOOL, bool)
-            ATTA_SERIALIZE_VECTOR(CHAR, char)
             ATTA_SERIALIZE_VECTOR(INT8, int8_t)
             ATTA_SERIALIZE_VECTOR(INT16, int16_t)
             ATTA_SERIALIZE_VECTOR(INT32, int32_t)
@@ -247,6 +243,15 @@ void serializeAttribute(Section& section, const std::string& cmpName, cmp::Compo
             ATTA_SERIALIZE_VECTOR(UINT64, uint64_t)
             ATTA_SERIALIZE_VECTOR(FLOAT32, float)
             ATTA_SERIALIZE_VECTOR(FLOAT64, double)
+        case cmp::AttributeType::QUAT:
+            section[dataKey] = *reinterpret_cast<quat*>(ptr);
+            break;
+        case cmp::AttributeType::STRINGID:
+            section[dataKey] = reinterpret_cast<StringId*>(ptr)->getString();
+            break;
+        case cmp::AttributeType::CUSTOM:
+            // Ignore custom attributes
+            break;
         default:
             LOG_WARN("file::ProjectSerializer", "Attribute [w]$0.$1[] has unsupported type [w]$2[]. The attribute will not be saved to .atta",
                      cmpName, attribute.name, static_cast<int>(attribute.type));

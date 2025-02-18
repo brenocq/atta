@@ -216,9 +216,7 @@ void ComponentRegistry::renderUIAttribute(AttributeDescription aDesc, void* d, u
         case AttributeType::BOOL:
             ComponentRegistry::renderUIAttribute<AttributeType::BOOL>(aDesc, d, size, imguiId + aDesc.name);
             break;
-        case AttributeType::CHAR:
-            ComponentRegistry::renderUIAttribute<AttributeType::CHAR>(aDesc, d, size, imguiId + aDesc.name);
-            break;
+            ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(CHAR)
             ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT8)
             ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT16)
             ATTA_COMPONENT_REGISTER_RENDER_UI_CASE(INT32)
@@ -364,4 +362,5 @@ void ComponentRegistry::renderUIAttribute<AttributeType::CHAR>(AttributeDescript
     char* data = (char*)d;
     ImGui::InputText((aDesc.name + "##" + imguiId).c_str(), data, size);
 }
+
 } // namespace atta::component
