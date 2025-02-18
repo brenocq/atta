@@ -210,7 +210,10 @@ void serializeAttribute(Section& section, const std::string& cmpName, cmp::Compo
             section[dataKey] = *reinterpret_cast<uint16_t*>(ptr);
             break;
         case cmp::AttributeType::UINT32:
-            section[dataKey] = *reinterpret_cast<uint32_t*>(ptr);
+            if (attribute.options.size() > 0)
+                section[dataKey] = std::any_cast<const char*>(attribute.options[*reinterpret_cast<uint32_t*>(ptr)]);
+            else
+                section[dataKey] = *reinterpret_cast<uint32_t*>(ptr);
             break;
         case cmp::AttributeType::UINT64:
             section[dataKey] = *reinterpret_cast<uint64_t*>(ptr);
@@ -223,6 +226,9 @@ void serializeAttribute(Section& section, const std::string& cmpName, cmp::Compo
             break;
         case cmp::AttributeType::QUAT:
             section[dataKey] = *reinterpret_cast<quat*>(ptr);
+            break;
+        case cmp::AttributeType::STRINGID:
+            section[dataKey] = reinterpret_cast<StringId*>(ptr)->getString();
             break;
         default:
             LOG_WARN("file::ProjectSerializer", "Attribute [w]$0.$1[] has unsupported type [w]$2[]. The attribute will not be saved to .atta",

@@ -24,8 +24,8 @@ ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription() {
             {AttributeType::FLOAT32, offsetof(CameraSensor, far), "far", 0.0f, 10000.0f, 0.5f},
             {AttributeType::FLOAT32, offsetof(CameraSensor, near), "near", 0.0f, 10000.0f, 0.5f},
             {AttributeType::FLOAT32, offsetof(CameraSensor, fps), "fps", 0.0f, 120.0f},
-            {AttributeType::UINT32, offsetof(CameraSensor, cameraType), "cameraType", {}, {}, {}, {"Orthographic", "Perspective"}},
-            {AttributeType::UINT32, offsetof(CameraSensor, rendererType), "rendererType", {}, {}, {}, {"Fast", "Phong", "Pbr"}},
+            {AttributeType::UINT32, offsetof(CameraSensor, cameraType), "cameraType", {}, {}, {}, {"ORTHOGRAPHIC", "PERSPECTIVE"}},
+            {AttributeType::UINT32, offsetof(CameraSensor, rendererType), "rendererType", {}, {}, {}, {"FAST", "PHONG", "PBR"}},
             {AttributeType::FLOAT32, offsetof(CameraSensor, captureTime), "captureTime"},
         },
         1024,                                      // Max instances
