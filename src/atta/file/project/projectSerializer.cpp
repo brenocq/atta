@@ -180,7 +180,12 @@ std::vector<Section> ProjectSerializer::serializeResources() {
     return sections;
 }
 
-void serializeAttribute(Section& section, const std::string& cmpName, cmp::Component* data, const cmp::AttributeDescription& attribute) {
+#define ATTA_SERIALIZE_VECTOR(TYPE, CAST_TYPE)                                                                                                       \
+    case cmp::AttributeType::VECTOR_##TYPE:                                                                                                          \
+        section[dataKey] = std::vector<CAST_TYPE>(reinterpret_cast<CAST_TYPE*>(ptr), reinterpret_cast<CAST_TYPE*>(ptr) + size / sizeof(CAST_TYPE));  \
+        break;
+
+void serializeAttribute(Section& section, const std::string& cmpName, cmp::Component* data, const cmp::AttributeDescription& attribute, size_t size) {
     std::string dataKey = cmpName + '.' + toCamelCase(attribute.name);
     uint8_t* ptr = reinterpret_cast<uint8_t*>(data) + attribute.offset; // Base pointer to the attribute
 
@@ -230,6 +235,18 @@ void serializeAttribute(Section& section, const std::string& cmpName, cmp::Compo
         case cmp::AttributeType::STRINGID:
             section[dataKey] = reinterpret_cast<StringId*>(ptr)->getString();
             break;
+            ATTA_SERIALIZE_VECTOR(BOOL, bool)
+            ATTA_SERIALIZE_VECTOR(CHAR, char)
+            ATTA_SERIALIZE_VECTOR(INT8, int8_t)
+            ATTA_SERIALIZE_VECTOR(INT16, int16_t)
+            ATTA_SERIALIZE_VECTOR(INT32, int32_t)
+            ATTA_SERIALIZE_VECTOR(INT64, int64_t)
+            ATTA_SERIALIZE_VECTOR(UINT8, uint8_t)
+            ATTA_SERIALIZE_VECTOR(UINT16, uint16_t)
+            ATTA_SERIALIZE_VECTOR(UINT32, uint32_t)
+            ATTA_SERIALIZE_VECTOR(UINT64, uint64_t)
+            ATTA_SERIALIZE_VECTOR(FLOAT32, float)
+            ATTA_SERIALIZE_VECTOR(FLOAT64, double)
         default:
             LOG_WARN("file::ProjectSerializer", "Attribute [w]$0.$1[] has unsupported type [w]$2[]. The attribute will not be saved to .atta",
                      cmpName, attribute.name, static_cast<int>(attribute.type));
@@ -253,8 +270,14 @@ std::vector<Section> ProjectSerializer::serializeNodes() {
                 continue;
             // Serialize each attribute of the component
             std::string cmpName = toCamelCase(compReg->getDescription().name);
-            for (const cmp::AttributeDescription& attribute : compReg->getDescription().attributeDescriptions)
-                serializeAttribute(section, cmpName, comp, attribute);
+
+            const std::vector<cmp::AttributeDescription> attributeDescriptions = compReg->getDescription().attributeDescriptions;
+            for (size_t i = 0; i < attributeDescriptions.size(); i++) {
+                cmp::AttributeDescription aDesc = attributeDescriptions[i];
+                size_t size = (i == attributeDescriptions.size() - 1) ? compReg->getSizeof() - aDesc.offset
+                                                                      : attributeDescriptions[i + 1].offset - aDesc.offset;
+                serializeAttribute(section, cmpName, comp, aDesc, size);
+            }
         }
 
         sections.push_back(std::move(section));
