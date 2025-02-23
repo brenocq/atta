@@ -15,7 +15,7 @@ ComponentDescription& TypedComponentRegistry<PolygonCollider2D>::getDescription(
     static ComponentDescription desc = {
         "Polygon Collider 2D",
         {
-            {AttributeType::FLOAT32, offsetof(PolygonCollider2D, offset), "offset", -2000.0f, 2000.0f, 0.01f},
+            {AttributeType::VECTOR_FLOAT32, offsetof(PolygonCollider2D, offset), "offset", -2000.0f, 2000.0f, 0.01f},
             {AttributeType::CUSTOM, offsetof(PolygonCollider2D, points), "points"},
         },
         // Max instances
