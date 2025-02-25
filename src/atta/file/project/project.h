@@ -33,6 +33,7 @@ class Project final {
     std::vector<fs::path> _resourceRootPaths;
 
     friend Manager;
+    friend class ProjectSerializer;
 };
 
 } // namespace atta::file

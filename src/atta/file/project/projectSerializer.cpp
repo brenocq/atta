@@ -59,26 +59,37 @@ void ProjectSerializer::serialize() {
     LOG_SUCCESS("file::ProjectSerializer", "Project [w]$0[] was saved", _project->getName());
 }
 
-void ProjectSerializer::deserialize() {
-    Section section("Section");
+bool ProjectSerializer::deserialize() {
     fs::path attaFile = _project->getFile();
+    Serializer serializer;
+    serializer.deserialize(attaFile);
 
-    std::ifstream is(attaFile, std::ifstream::in | std::ifstream::binary);
+    // Make sure atta versions match
+    bool canLoadProject = false;
+    for (const Section& section : serializer.getSections()) {
+        if (section.getName() == "project") {
+            canLoadProject = deserializeProject(section);
+            break;
+        }
+    }
+    if (!canLoadProject)
+        return false;
 
-    // Deserialize version
-    // std::string version;
-    // read(is, version);
-    // section.deserialize(is);
-    // is.close();
-
-    // Deserialize data
-    // deserializeHeader(section["header"]);
-    // deserializeConfig(section["config"]);
-    // deserializeComponentModule(section["componentModule"]);
-    // deserializeGraphicsModule(section["graphicsModule"]);
-    // deserializeResourceModule(section["resourceModule"]);
-    // deserializePhysicsModule(section["physicsModule"]);
-    // deserializeSensorModule(section["sensorModule"]);
+    for (const Section& section : serializer.getSections()) {
+        if (section.getName() == "config")
+            deserializeConfig(section);
+        else if (section.getName() == "graphics")
+            deserializeGraphicsModule(section);
+        else if (section.getName() == "physics")
+            deserializePhysicsModule(section);
+        else if (section.getName() == "sensor")
+            deserializeSensorModule(section);
+        else if (section.getName() == "material")
+            deserializeMaterial(section);
+        else if (section.getName() == "node")
+            deserializeNode(section);
+    }
+    return true;
 }
 
 Section ProjectSerializer::serializeProject() {
@@ -290,12 +301,74 @@ std::vector<Section> ProjectSerializer::serializeNodes() {
     return sections;
 }
 
-void ProjectSerializer::deserializeProject(Section& section) {}
-void ProjectSerializer::deserializeConfig(Section& section) {}
-void ProjectSerializer::deserializeGraphicsModule(Section& section) {}
-void ProjectSerializer::deserializeResourceModule(Section& section) {}
-void ProjectSerializer::deserializePhysicsModule(Section& section) {}
-void ProjectSerializer::deserializeSensorModule(Section& section) {}
-void ProjectSerializer::deserializeNode(Section& section) {}
+bool ProjectSerializer::deserializeProject(const Section& section) {
+    if (!section.contains("attaVersion")) {
+        LOG_WARN("file::ProjectSerializer", "Project [w]$0[] does not have an atta version. The project will not be loaded", _project->getName());
+        return false;
+    }
+    std::string projectAttaVersion = std::string(section["attaVersion"]);
+    if (projectAttaVersion != ATTA_VERSION) {
+        LOG_WARN(
+            "file::ProjectSerializer",
+            "Project [w]$0[] was created with atta version [w]$1[], which does not match this atta version [w]$2[]. The project will not be loaded",
+            _project->getName(), projectAttaVersion, ATTA_VERSION);
+        return false;
+    }
+
+    // Load project name
+    if (section.contains("name"))
+        _project->_name = std::string(section["name"]);
+    return true;
+}
+
+void ProjectSerializer::deserializeConfig(const Section& section) {
+    if (section.contains("dt"))
+        Config::setDt(float(section["dt"]));
+    if (section.contains("desiredStepSpeed"))
+        Config::setDesiredStepSpeed(float(section["desiredStepSpeed"]));
+}
+
+void ProjectSerializer::deserializeGraphicsModule(const Section& section) {
+    if (section.contains("graphicsFPS"))
+        gfx::setGraphicsFPS(float(section["graphicsFPS"]));
+    if (section.contains("viewportRendering"))
+        ui::setViewportRendering(bool(section["viewportRendering"]));
+}
+
+void ProjectSerializer::deserializePhysicsModule(const Section& section) {}
+
+void ProjectSerializer::deserializeSensorModule(const Section& section) {}
+
+void ProjectSerializer::deserializeMaterial(const Section& section) {
+    res::Material::CreateInfo material{};
+    if (!section.contains("id")) {
+        LOG_WARN("file::ProjectSerializer", "Material section does not have an id. The material will not be loaded");
+        return;
+    }
+    std::string id = std::string(section["id"]);
+
+    if (section.contains("color"))
+        material.color = vec3f(section["color"]);
+    if (section.contains("colorImage"))
+        material.colorImage = StringId(std::string(section["colorImage"]));
+    if (section.contains("metallic"))
+        material.metallic = float(section["metallic"]);
+    if (section.contains("metallicImage"))
+        material.metallicImage = StringId(std::string(section["metallicImage"]));
+    if (section.contains("roughness"))
+        material.roughness = float(section["roughness"]);
+    if (section.contains("roughnessImage"))
+        material.roughnessImage = StringId(std::string(section["roughnessImage"]));
+    if (section.contains("ao"))
+        material.ao = float(section["ao"]);
+    if (section.contains("aoImage"))
+        material.aoImage = StringId(std::string(section["aoImage"]));
+    if (section.contains("normalImage"))
+        material.normalImage = StringId(std::string(section["normalImage"]));
+
+    res::create<res::Material>(id, material);
+}
+
+void ProjectSerializer::deserializeNode(const Section& section) {}
 
 } // namespace atta::file

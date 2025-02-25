@@ -14,6 +14,7 @@
 #include <atta/file/manager.h>
 #include <atta/file/watchers/linuxFileWatcher.h>
 #include <atta/file/watchers/nullFileWatcher.h>
+#include <atta/resource/interface.h>
 
 #ifdef ATTA_OS_WEB
 // Need to use "linux" build-in commands instead of std::filesystem
@@ -72,12 +73,19 @@ bool Manager::openProjectImpl(fs::path projectFile) {
     if (!fs::exists(projectFile))
         _projectSerializer->serialize();
 
-    // Clear components and read project file
+    // Clear components before loading
     component::clear();
+    // Clear resources before loading
+    resource::destroyResources<resource::Material>();
 
+    // Load project
     event::ProjectBeforeDeserialize ed;
     event::publish(ed);
-    _projectSerializer->deserialize();
+    bool success = _projectSerializer->deserialize();
+    if (!success) {
+        LOG_ERROR("file::Manager", "Failed to open project [w]$0[]", fs::absolute(projectFile));
+        return false;
+    }
 
     // Watch project directory file changes
     _fileWatcher->addWatch(_project->getDirectory());

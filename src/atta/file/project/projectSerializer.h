@@ -17,7 +17,7 @@ class ProjectSerializer final {
     ~ProjectSerializer();
 
     void serialize();
-    void deserialize();
+    bool deserialize();
 
   private:
     Section serializeProject();
@@ -28,13 +28,13 @@ class ProjectSerializer final {
     std::vector<Section> serializeResources();
     std::vector<Section> serializeNodes();
 
-    void deserializeProject(Section& section);
-    void deserializeConfig(Section& section);
-    void deserializeGraphicsModule(Section& section);
-    void deserializeResourceModule(Section& section);
-    void deserializePhysicsModule(Section& section);
-    void deserializeSensorModule(Section& section);
-    void deserializeNode(Section& section);
+    bool deserializeProject(const Section& section);
+    void deserializeConfig(const Section& section);
+    void deserializeGraphicsModule(const Section& section);
+    void deserializePhysicsModule(const Section& section);
+    void deserializeSensorModule(const Section& section);
+    void deserializeMaterial(const Section& section);
+    void deserializeNode(const Section& section);
 
     std::shared_ptr<Project> _project;
 };
