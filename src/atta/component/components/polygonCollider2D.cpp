@@ -44,48 +44,48 @@ ComponentDescription& TypedComponentRegistry<PolygonCollider2D>::getDescription(
               // }
           }}},
         // renderUI
-        {{"",
-          [=](void* data, std::string imguiId) // Define how the component will be rendered
-          {
-              // Render offset
-              const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<PolygonCollider2D>::getDescription().attributeDescriptions;
-              float size = aDescs[1].offset - aDescs[0].offset;
-              void* attribData = (void*)((uint8_t*)data + aDescs[0].offset);
-              ComponentRegistry::renderUIAttribute(aDescs[0], attribData, size, imguiId + aDescs[0].name);
+        //{{"",
+        //  [=](void* data, std::string imguiId) // Define how the component will be rendered
+        //  {
+        //      // Render offset
+        //      const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<PolygonCollider2D>::getDescription().attributeDescriptions;
+        //      float size = aDescs[1].offset - aDescs[0].offset;
+        //      void* attribData = (void*)((uint8_t*)data + aDescs[0].offset);
+        //      ComponentRegistry::renderUIAttribute(aDescs[0], attribData, size, imguiId + aDescs[0].name);
 
-              ImGui::Text("Points");
-              std::vector<vec2>* points = (std::vector<vec2>*)((uint8_t*)data + aDescs[1].offset);
-              for (int i = 0; i < points->size(); i++) {
-                  ImGui::PushID(i);
-                  {
-                      // Edit point
-                      ImGui::DragFloat2("##PolygonCollider2DPoint", (float*)&((*points)[i]));
+        //      ImGui::Text("Points");
+        //      std::vector<vec2>* points = (std::vector<vec2>*)((uint8_t*)data + aDescs[1].offset);
+        //      for (int i = 0; i < points->size(); i++) {
+        //          ImGui::PushID(i);
+        //          {
+        //              // Edit point
+        //              ImGui::DragFloat2("##PolygonCollider2DPoint", (float*)&((*points)[i]));
 
-                      // Delete point
-                      ImGui::SameLine();
-                      if (ImGui::Button("-##PolygonCollider2DDeletePoint"))
-                          points->erase(points->begin() + i);
+        //              // Delete point
+        //              ImGui::SameLine();
+        //              if (ImGui::Button("-##PolygonCollider2DDeletePoint"))
+        //                  points->erase(points->begin() + i);
 
-                      // Rearrange point
-                      if (i > 0) {
-                          ImGui::SameLine();
-                          if (ImGui::Button("^")) {
-                              std::swap((*points)[i], (*points)[i - 1]);
-                          }
-                      }
-                      if (i < points->size() - 1) {
-                          ImGui::SameLine();
-                          if (ImGui::Button("v")) {
-                              std::swap((*points)[i], (*points)[i + 1]);
-                          }
-                      }
-                  }
-                  ImGui::PopID();
-              }
-              // Add point
-              if (ImGui::Button("+##PolygonCollider2DAddPoint"))
-                  points->push_back({});
-          }}},
+        //              // Rearrange point
+        //              if (i > 0) {
+        //                  ImGui::SameLine();
+        //                  if (ImGui::Button("^")) {
+        //                      std::swap((*points)[i], (*points)[i - 1]);
+        //                  }
+        //              }
+        //              if (i < points->size() - 1) {
+        //                  ImGui::SameLine();
+        //                  if (ImGui::Button("v")) {
+        //                      std::swap((*points)[i], (*points)[i + 1]);
+        //                  }
+        //              }
+        //          }
+        //          ImGui::PopID();
+        //      }
+        //      // Add point
+        //      if (ImGui::Button("+##PolygonCollider2DAddPoint"))
+        //          points->push_back({});
+        //  }}},
     };
 
     return desc;

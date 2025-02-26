@@ -28,9 +28,6 @@ class TypedComponentRegistry : public ComponentRegistry {
         return instance;
     }
 
-    void renderUI(Component* component) override { renderUIImpl((T*)component); }
-    static void renderUI(T* component) { getInstance().renderUIImpl(component); }
-
     void serialize(std::ostream& os, Component* component) override { serializeImpl(os, (T*)component); }
     void deserialize(std::istream& is, Component* component) override { deserializeImpl(is, (T*)component); }
     static void serialize(std::ostream& os, T* component) { getInstance().serializeImpl(os, component); }
@@ -44,7 +41,6 @@ class TypedComponentRegistry : public ComponentRegistry {
   private:
     TypedComponentRegistry<T>();
 
-    void renderUIImpl(T* component);
     void serializeImpl(std::ostream& os, T* component);
     void deserializeImpl(std::istream& is, T* component);
 };

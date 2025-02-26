@@ -28,29 +28,32 @@ ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription() {
             {AttributeType::UINT32, offsetof(CameraSensor, rendererType), "rendererType", {}, {}, {}, {"FAST", "PHONG", "PBR"}},
             {AttributeType::FLOAT32, offsetof(CameraSensor, captureTime), "captureTime"},
         },
-        1024,                                      // Max instances
-        {},                                        // Serialize
-        {},                                        // Deserialize
-        {                                          // renderUI
-         {"", [=](void* data, std::string imguiId) // Define how the component will be rendered
-          {
-              const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<CameraSensor>::getDescription().attributeDescriptions;
+        1024, // Max instances
+        {},   // Serialize
+        {},   // Deserialize
+              //{                                          // renderUI
+              // {"", [=](void* data, std::string imguiId) // Define how the component will be rendered
+              //  {
+              //      const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<CameraSensor>::getDescription().attributeDescriptions;
 
-              if (ImGui::Button(("View image" + imguiId + "image").c_str())) {
-                  event::UiCameraComponent event;
-                  event.component = static_cast<CameraSensor*>(data);
-                  event.uiEvent = event::UiCameraComponent::UiEvent::VIEW_BUTTON_CLICKED;
-                  event::publish(event);
-              }
+        //      if (ImGui::Button(("View image" + imguiId + "image").c_str())) {
+        //          event::UiCameraComponent event;
+        //          event.component = static_cast<CameraSensor*>(data);
+        //          event.uiEvent = event::UiCameraComponent::UiEvent::VIEW_BUTTON_CLICKED;
+        //          event::publish(event);
+        //      }
 
-              for (unsigned i = 0; i < aDescs.size(); i++) {
-                  // Calculate data and size
-                  float size = (i != aDescs.size() - 1) ? aDescs[i + 1].offset - aDescs[i].offset : sizeof(CameraSensor) - aDescs[i].offset;
-                  void* attribData = (void*)((uint8_t*)data + aDescs[i].offset);
+        //      for (unsigned i = 0; i < aDescs.size(); i++) {
+        //          // Calculate data and size
+        //          float size = (i != aDescs.size() - 1) ? aDescs[i + 1].offset - aDescs[i].offset : sizeof(CameraSensor) - aDescs[i].offset;
+        //          void* attribData = (void*)((uint8_t*)data + aDescs[i].offset);
 
-                  ComponentRegistry::renderUIAttribute(aDescs[i], attribData, size, imguiId + aDescs[i].name);
-              }
-          }}}};
+        //          ComponentRegistry::renderUIAttribute(aDescs[i], attribData, size, imguiId + aDescs[i].name);
+        //      }
+        //  },
+        //}
+        //}
+    };
 
     return desc;
 }

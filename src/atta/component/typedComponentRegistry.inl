@@ -13,34 +13,6 @@ TypedComponentRegistry<T>::TypedComponentRegistry() : ComponentRegistry(sizeof(T
 }
 
 template <typename T>
-void TypedComponentRegistry<T>::renderUIImpl(T* component) {
-    DASSERT(this != nullptr, "Trying to call TypedComponentRegistry<$0>::renderUI() on nullptr component", std::string(typeid(T).name()));
-
-    // Check if full component renderUI was defined
-    if (description->renderUI.find("") != description->renderUI.end()) {
-        std::string imguiId = "##" + description->name;
-        description->renderUI[""](reinterpret_cast<void*>(component), imguiId);
-        return;
-    }
-
-    const std::vector<AttributeDescription> attributeDescriptions = description->attributeDescriptions;
-
-    // Render UI for each attribute
-    for (unsigned i = 0; i < attributeDescriptions.size(); i++) {
-        AttributeDescription aDesc = attributeDescriptions[i];
-
-        // Calculate data and size
-        void* data = (void*)((uint8_t*)component + aDesc.offset);
-        unsigned size = (i == attributeDescriptions.size() - 1) ? sizeof(T) - aDesc.offset : attributeDescriptions[i + 1].offset - aDesc.offset;
-
-        const std::string imguiId = "##" + description->name;
-
-        // Render attribute
-        ComponentRegistry::renderUIAttribute(aDesc, data, size, imguiId);
-    }
-}
-
-template <typename T>
 void TypedComponentRegistry<T>::serializeImpl(std::ostream& os, T* component) {
     uint8_t* curr = reinterpret_cast<uint8_t*>(component);
     for (unsigned i = 0; i < description->attributeDescriptions.size(); i++) {
