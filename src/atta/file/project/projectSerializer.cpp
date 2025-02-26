@@ -335,9 +335,31 @@ void ProjectSerializer::deserializeGraphicsModule(const Section& section) {
         ui::setViewportRendering(bool(section["viewportRendering"]));
 }
 
-void ProjectSerializer::deserializePhysicsModule(const Section& section) {}
+void ProjectSerializer::deserializePhysicsModule(const Section& section) {
+    if (section.contains("engine"))
+        physics::setEngineType(physics::Engine::stringToType.at(std::string(section["engine"])));
+    if (section.contains("gravity"))
+        physics::setGravity(vec3(section["gravity"]));
+    if (section.contains("showColliders"))
+        physics::setShowColliders(bool(section["showColliders"]));
+    if (section.contains("showContacts"))
+        physics::setShowContacts(bool(section["showContacts"]));
+    if (section.contains("showJoints"))
+        physics::setShowJoints(bool(section["showJoints"]));
 
-void ProjectSerializer::deserializeSensorModule(const Section& section) {}
+    auto bullet = physics::getEngine<physics::BulletEngine>();
+    if (section.contains("bullet.showAabb"))
+        bullet->setShowAabb(bool(section["bullet.showAabb"]));
+    if (section.contains("bullet.numSubSteps"))
+        bullet->setNumSubSteps(unsigned(section["bullet.numSubSteps"]));
+}
+
+void ProjectSerializer::deserializeSensorModule(const Section& section) {
+    if (section.contains("showCameras"))
+        sensor::setShowCameras(bool(section["showCameras"]));
+    if (section.contains("showInfrareds"))
+        sensor::setShowInfrareds(bool(section["showInfrareds"]));
+}
 
 void ProjectSerializer::deserializeMaterial(const Section& section) {
     res::Material::CreateInfo material{};
