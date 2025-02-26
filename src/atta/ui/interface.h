@@ -7,12 +7,19 @@
 #ifndef ATTA_UI_INTERFACE_H
 #define ATTA_UI_INTERFACE_H
 
+#include <atta/component/base.h>
+#include <atta/component/components/component.h>
 #include <atta/ui/windows/viewport/viewport.h>
 
 namespace atta::ui {
 
 void startUp();
 void shutDown();
+
+//----- Custom component UI -----//
+using ComponentUIFunc = std::function<void(cmp::Component*)>;
+void registerComponentUI(cmp::ComponentId cid, ComponentUIFunc renderFunc);
+std::optional<ComponentUIFunc> getComponentUI(cmp::ComponentId cid);
 
 //----- Viewport -----//
 const std::vector<std::shared_ptr<ui::Viewport>>& getViewports();

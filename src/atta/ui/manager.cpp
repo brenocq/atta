@@ -7,6 +7,7 @@
 #include <atta/file/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/ui/manager.h>
+#include <atta/ui/widgets/component.h>
 
 // clang-format off
 #include <GLFW/glfw3.h>
@@ -95,6 +96,14 @@ void Manager::shutDownImpl() {
     }
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+}
+
+void Manager::registerComponentUIImpl(cmp::ComponentId cid, ComponentUIFunc renderFunc) { _componentRenderFuncs[cid] = renderFunc; }
+
+std::optional<Manager::ComponentUIFunc> Manager::getComponentUIImpl(cmp::ComponentId cid) {
+    if (_componentRenderFuncs.find(cid) != _componentRenderFuncs.end())
+        return _componentRenderFuncs[cid];
+    return std::nullopt;
 }
 
 const std::vector<std::shared_ptr<ui::Viewport>>& Manager::getViewportsImpl() const { return _editor.getViewports(); }

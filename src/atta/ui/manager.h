@@ -18,6 +18,12 @@ class Manager final {
 
     friend void startUp();
     friend void shutDown();
+
+    //----- Custom component rendering -----//
+    using ComponentUIFunc = std::function<void(cmp::Component*)>;
+    friend void registerComponentUI(cmp::ComponentId cid, ComponentUIFunc renderFunc);
+    friend std::optional<ComponentUIFunc> getComponentUI(cmp::ComponentId cid);
+
     friend const std::vector<std::shared_ptr<ui::Viewport>>& getViewports();
     friend void openViewportModal(StringId sid);
     friend void addViewport(std::shared_ptr<ui::Viewport> viewport);
@@ -28,6 +34,9 @@ class Manager final {
   private:
     void startUpImpl();
     void shutDownImpl();
+
+    void registerComponentUIImpl(cmp::ComponentId cid, ComponentUIFunc renderFunc);
+    std::optional<ComponentUIFunc> getComponentUIImpl(cmp::ComponentId cid);
 
     const std::vector<std::shared_ptr<ui::Viewport>>& getViewportsImpl() const;
     void openViewportModalImpl(StringId sid);
@@ -42,6 +51,8 @@ class Manager final {
 
     void render();
     Editor _editor;
+
+    std::map<cmp::ComponentId, ComponentUIFunc> _componentRenderFuncs;
 };
 
 } // namespace atta::ui

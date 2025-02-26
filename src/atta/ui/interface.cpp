@@ -12,6 +12,11 @@ namespace atta::ui {
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
+//----- Custom component rendering -----//
+using ComponentUIFunc = std::function<void(cmp::Component*)>;
+void registerComponentUI(cmp::ComponentId cid, ComponentUIFunc renderFunc) { Manager::getInstance().registerComponentUIImpl(cid, renderFunc); }
+std::optional<ComponentUIFunc> getComponentUI(cmp::ComponentId cid) { return Manager::getInstance().getComponentUIImpl(cid); }
+
 //----- Viewport -----//
 const std::vector<std::shared_ptr<ui::Viewport>>& getViewports() { return Manager::getInstance().getViewportsImpl(); }
 void openViewportModal(StringId sid) { Manager::getInstance().openViewportModalImpl(sid); }
