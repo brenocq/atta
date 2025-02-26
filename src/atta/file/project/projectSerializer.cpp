@@ -224,7 +224,7 @@ void serializeAttribute(Section& section, const std::string& cmpName, cmp::Compo
         case cmp::AttributeType::UINT32:
             if (attribute.options.size() > 0)
                 // Serialize uint32_t from enum as string
-                section[dataKey] = std::any_cast<const char*>(attribute.options[*reinterpret_cast<uint32_t*>(ptr)]);
+                section[dataKey] = attribute.options[*reinterpret_cast<uint32_t*>(ptr)];
             else
                 section[dataKey] = *reinterpret_cast<uint32_t*>(ptr);
             break;
@@ -440,8 +440,7 @@ void deserializeAttribute(const Section& section, const std::string& cmpName, cm
             if (!attribute.options.empty()) {
                 // Deserialize uint32_t from enum as string
                 std::string value = std::string(section[dataKey]);
-                auto it = std::find_if(attribute.options.begin(), attribute.options.end(),
-                                       [&](const std::any& a) { return std::any_cast<std::string>(a) == value; });
+                auto it = std::find(attribute.options.begin(), attribute.options.end(), value);
                 if (it != attribute.options.end())
                     *reinterpret_cast<uint32_t*>(ptr) = std::distance(attribute.options.begin(), it);
             } else {

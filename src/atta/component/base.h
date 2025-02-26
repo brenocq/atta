@@ -75,7 +75,7 @@ struct AttributeDescription {
     std::any min;
     std::any max;
     float step;
-    std::vector<std::any> options;
+    std::vector<std::string> options;// Enum options
 };
 
 // FIXME Sometimes crashing when trying to delete the description

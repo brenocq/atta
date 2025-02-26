@@ -7,6 +7,7 @@
 #include <atta/component/componentRegistry.h>
 #include <atta/component/interface.h>
 #include <imgui.h>
+#include <type_traits>
 
 namespace atta::component {
 void ComponentRegistry::registerToManager() { component::registerComponent(this); }
@@ -140,63 +141,28 @@ void renderCombo(AttributeDescription aDesc, void* d, unsigned size, std::string
                  typeid(T).name());
         return;
     }
-
-    // Check if all values inside option have the same type
-    // for(auto it = aDesc.options.begin(); it != aDesc.options.end(); it++)
-    //    if(it->type() != (it+1)->type())
-    //    {
-    //        LOG_WARN("Component", "The component attribute [w]$0[] cannot be rendered because it has entries of different types.", aDesc.name);
-    //        return;
-    //    }
-
-    // Check if they are value entries
-    for (auto it = aDesc.options.begin(); it != aDesc.options.end(); it++)
-        if (it->type() != typeid(const char*) && it->type() != typeid(T)) {
-            LOG_WARN("component::ComponentRegistry",
-                     "The component attribute [w]$0[] cannot be rendered because the values inside its "
-                     "atta::ComponentRegistry::AttributeDescriptoin::options should be all of type [w]const char*[] or [w]$1[]",
-                     aDesc.name, typeid(T).name());
-            return;
-        }
 #endif
 
-    enum Result { INDEX_AS_RESULT, VALUE_AS_RESULT } result = INDEX_AS_RESULT;
+    // Create preview values
     std::vector<std::string> valuesPreview;
-    if (aDesc.options.begin()->type() == typeid(const char*)) {
-        for (auto value : aDesc.options)
-            valuesPreview.push_back(std::string(std::any_cast<const char*>(value)));
-        result = INDEX_AS_RESULT;
-    } else if (aDesc.options.begin()->type() == typeid(T)) {
-        for (auto value : aDesc.options)
-            valuesPreview.push_back(std::to_string(std::any_cast<T>(value)));
-        result = VALUE_AS_RESULT;
-    }
+    for (std::string value : aDesc.options)
+        valuesPreview.push_back(value);
 
+    // Find selected value
     int comboValue = -1;
-    if (result == INDEX_AS_RESULT) {
-        for (size_t i = 0; i < valuesPreview.size(); i++)
-            if (*data == (T)i)
-                comboValue = i;
-    } else if (result == VALUE_AS_RESULT) {
-        auto it = aDesc.options.begin();
-        for (size_t i = 0; i < valuesPreview.size(); i++, it++)
-            if (*data == std::any_cast<T>(*it))
-                comboValue = i;
-    }
+    for (size_t i = 0; i < valuesPreview.size(); i++)
+        if ((T)i == *data)
+            comboValue = i;
     if (comboValue == -1) {
         comboValue = 0;
-        *data = std::any_cast<T>(*aDesc.options.begin());
+        *data = (T)0;
     }
 
     if (ImGui::BeginCombo((aDesc.name + "##" + imguiId).c_str(), valuesPreview[comboValue].c_str())) {
         auto it = aDesc.options.begin();
         for (size_t i = 0; i < valuesPreview.size(); i++, it++) {
-            if (ImGui::Selectable(valuesPreview[i].c_str(), (size_t)comboValue == i)) {
-                if (result == INDEX_AS_RESULT)
-                    *data = (T)i;
-                else if (result == VALUE_AS_RESULT)
-                    *data = std::any_cast<T>(*it);
-            }
+            if (ImGui::Selectable(valuesPreview[i].c_str(), (size_t)comboValue == i))
+                *data = (T)i;
             if ((size_t)comboValue == i)
                 ImGui::SetItemDefaultFocus();
         }
@@ -238,25 +204,31 @@ void ComponentRegistry::renderUIAttribute(AttributeDescription aDesc, void* d, u
     }
 }
 
-#define ATTA_RENDER_UI_ATTRIBUTE_NUMBER(AttaType, CppType)                                                                                           \
+#define ATTA_RENDER_UI_ATTRIBUTE_COMBO_SLIDER(AttaType, CppType)                                                                                     \
     template <>                                                                                                                                      \
     void ComponentRegistry::renderUIAttribute<AttributeType::AttaType>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {    \
-        if (aDesc.options.size() == 0)                                                                                                               \
+        if (aDesc.options.empty())                                                                                                                   \
             renderSliders<CppType>(aDesc, d, size, imguiId);                                                                                         \
         else                                                                                                                                         \
             renderCombo<CppType>(aDesc, d, size, imguiId);                                                                                           \
     }
 
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(INT8, int8_t);
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(INT16, int16_t);
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(INT32, int32_t);
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(INT64, int64_t);
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(UINT8, uint8_t);
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(UINT16, uint16_t);
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(UINT32, uint32_t);
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(UINT64, uint64_t);
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(FLOAT32, float);
-ATTA_RENDER_UI_ATTRIBUTE_NUMBER(FLOAT64, double);
+#define ATTA_RENDER_UI_ATTRIBUTE_SLIDER(AttaType, CppType)                                                                                           \
+    template <>                                                                                                                                      \
+    void ComponentRegistry::renderUIAttribute<AttributeType::AttaType>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {    \
+        renderSliders<CppType>(aDesc, d, size, imguiId);                                                                                             \
+    }
+
+ATTA_RENDER_UI_ATTRIBUTE_COMBO_SLIDER(INT8, int8_t);
+ATTA_RENDER_UI_ATTRIBUTE_COMBO_SLIDER(INT16, int16_t);
+ATTA_RENDER_UI_ATTRIBUTE_COMBO_SLIDER(INT32, int32_t);
+ATTA_RENDER_UI_ATTRIBUTE_COMBO_SLIDER(INT64, int64_t);
+ATTA_RENDER_UI_ATTRIBUTE_COMBO_SLIDER(UINT8, uint8_t);
+ATTA_RENDER_UI_ATTRIBUTE_COMBO_SLIDER(UINT16, uint16_t);
+ATTA_RENDER_UI_ATTRIBUTE_COMBO_SLIDER(UINT32, uint32_t);
+ATTA_RENDER_UI_ATTRIBUTE_COMBO_SLIDER(UINT64, uint64_t);
+ATTA_RENDER_UI_ATTRIBUTE_SLIDER(FLOAT32, float);
+ATTA_RENDER_UI_ATTRIBUTE_SLIDER(FLOAT64, double);
 
 template <>
 void ComponentRegistry::renderUIAttribute<AttributeType::QUAT>(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {
