@@ -5,28 +5,23 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/cmakeConfig.h>
-#include <atta/file/project/projectSerializer.h>
-#include <atta/file/serializer/section.h>
-#include <atta/file/serializer/serializer.h>
-
 #include <atta/component/base.h>
 #include <atta/component/components/components.h>
 #include <atta/component/components/relationship.h>
 #include <atta/component/interface.h>
-
+#include <atta/file/project/projectSerializer.h>
+#include <atta/file/serializer/section.h>
+#include <atta/file/serializer/serializer.h>
+#include <atta/graphics/interface.h>
+#include <atta/physics/engines/bulletEngine.h>
+#include <atta/physics/interface.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/image.h>
 #include <atta/resource/resources/mesh.h>
-
-#include <atta/graphics/interface.h>
+#include <atta/sensor/interface.h>
 #include <atta/ui/interface.h>
 #include <atta/utils/config.h>
 #include <atta/utils/stringUtils.h>
-
-#include <atta/physics/engines/bulletEngine.h>
-#include <atta/physics/interface.h>
-
-#include <atta/sensor/interface.h>
 
 namespace atta::file {
 
@@ -243,7 +238,7 @@ void serializeAttribute(Section& section, const std::string& cmpName, cmp::Compo
             section[dataKey] = *reinterpret_cast<double*>(ptr);
             break;
         case cmp::AttributeType::VECTOR_CHAR:
-            section[dataKey] = std::string(reinterpret_cast<char*>(ptr), reinterpret_cast<char*>(ptr) + size / sizeof(char));
+            section[dataKey] = std::string(reinterpret_cast<char*>(ptr));
             break;
             ATTA_SERIALIZE_VECTOR(BOOL, bool)
             ATTA_SERIALIZE_VECTOR(INT8, int8_t)
@@ -521,7 +516,7 @@ void ProjectSerializer::deserializeNode(const Section& section) {
         std::string cmpName = toCamelCase(compReg->getDescription().name);
 
         if (cmpName == "relationship") {
-            // TODO implement serialization of custom components
+            // TODO implement deserialization of custom components
             if (section.contains("relationship.parent")) {
                 // Check if parent is valid
                 cmp::EntityId parent = uint32_t(section["relationship.parent"]);
