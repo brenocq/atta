@@ -34,8 +34,8 @@ printHelp()
    echo "-d or --debug"
    echo "        Build with debug information."
    echo
-   echo "-g or --gdb"
-   echo "        Run with gdb."
+   echo "-D or --debugger"
+   echo "        Run with a debugger (prefers LLDB, falls back to GDB)."
    echo
    echo "-c or --compiler <name>"
    echo "        Select the compiler."
@@ -74,8 +74,18 @@ buildDefault()
     # Run
     if [[ "$RUN_AFTER" == "true" ]]; then
         echo "---------- Running ----------"
-        if [[ "$USE_GDB" == "true" ]]; then
-            gdb -ex r --args bin/atta $PROJECT_TO_RUN
+        if [[ "$USE_DEBUGGER" == "true" ]]; then
+            # Detect available debugger (prefer LLDB)
+            if command -v lldb &> /dev/null; then
+                echo "Using LLDB for debugging..."
+                lldb --one-line "run" -- bin/atta -- $PROJECT_TO_RUN
+            elif command -v gdb &> /dev/null; then
+                echo "Using GDB for debugging..."
+                gdb -ex r --args bin/atta $PROJECT_TO_RUN
+            else
+                echo "Error: No debugger found (LLDB or GDB). Install one to continue."
+                exit 1
+            fi
         else
             bin/atta $PROJECT_TO_RUN
         fi
@@ -131,8 +141,8 @@ while [[ $# -gt 0 ]]; do
       BUILD_NAME="debug"
       shift # past argument
       ;;
-    -g|--gdb)
-      USE_GDB="true"
+    -D|--debugger)
+      USE_DEBUGGER="true"
       RUN_AFTER="true"
       shift # past argument
       ;;
