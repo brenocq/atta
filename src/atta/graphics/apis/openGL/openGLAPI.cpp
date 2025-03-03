@@ -34,8 +34,7 @@ void OpenGLAPI::startUp() {
     LOG_INFO("gfx::gl::OpenGLAPI", "  - Renderer: [*w]$0", glGetString(GL_RENDERER));
     LOG_INFO("gfx::gl::OpenGLAPI", "  - Version: [*w]$0", glGetString(GL_VERSION));
 
-#if defined(ATTA_DEBUG_BUILD) && !defined(ATTA_OS_WEB)
-    // Enable Debug
+#if defined(ATTA_DEBUG_BUILD) && !defined(ATTA_OS_WEB) && !defined(ATTA_OS_MACOS)
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(
