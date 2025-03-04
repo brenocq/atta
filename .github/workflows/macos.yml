@@ -1,5 +1,16 @@
-name: MacOS
-on: [push, pull_request, release]
+name: 🍎 MacOS
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to run CI on"
+        required: false
+        default: main
 
 jobs:
   build:
@@ -9,15 +20,13 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - {
-          name: "MacOS Latest",
-          os: macos-latest,
-          build_type: "Release"
-        }
+        - { name: "MacOS Latest", os: macos-latest, build_type: "Release" }
 
     steps:
       - name: Checkout atta
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
 
       - name: Install dependencies on macos
         if: startsWith(matrix.config.os, 'macos')
