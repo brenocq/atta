@@ -26,9 +26,21 @@ Shader::~Shader() {
 }
 
 std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
-    std::string apiCode = "#version 300 es\n"
-                          "precision mediump float;\n" +
-                          iCode;
+    uint32_t openGLVersion = gfx::getGraphicsAPI()->getAPIVersion();
+    std::string apiCode;
+
+    if (openGLVersion >= 410) {
+        // macOS (OpenGL Core 4.1)
+        apiCode = "#version 410 core\n";
+    } else if (openGLVersion >= 300 && openGLVersion < 400) {
+        // OpenGL ES (Linux, Android, Web)
+        apiCode = "#version 300 es\n"
+                  "precision mediump float;\n";
+    } else {
+        // Default fallback (use OpenGL 3.0 if nothing else works)
+        apiCode = "#version 300 core\n";
+    }
+    apiCode += iCode;
 
     // Replace perFrame/perDraw
     apiCode = std::regex_replace(apiCode, std::regex(R"(\b(perFrame|perDraw))"), "uniform");
