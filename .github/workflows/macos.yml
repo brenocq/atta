@@ -6,11 +6,6 @@ on:
       - main
   pull_request:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: "Branch to run CI on"
-        required: false
-        default: main
 
 jobs:
   build:
