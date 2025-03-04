@@ -123,5 +123,12 @@ jobs:
       - name: Create and Push New Git Tag
         if: env.run_versioning == 'true'
         run: |
-          git tag "v$NEW_VERSION"
+          # Fetch the PR title from GitHub event payload
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "::notice::PR Title: $PR_TITLE"
+
+          # Create an annotated tag with the PR title as the description
+          git tag -a "v$NEW_VERSION" -m "$PR_TITLE"
+
+          # Push the tag to the remote repository
           git push origin "v$NEW_VERSION"
