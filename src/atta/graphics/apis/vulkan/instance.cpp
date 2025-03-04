@@ -19,6 +19,8 @@ Instance::Instance() : _instance(VK_NULL_HANDLE) {
     appInfo.pEngineName = "No Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_3;
+    uint32_t version = appInfo.apiVersion;
+    _apiVersion = VK_VERSION_MAJOR(version) * 100 + VK_VERSION_MINOR(version) * 10;
 
     // Create instance info
     VkInstanceCreateInfo createInfo{};
@@ -59,6 +61,8 @@ Instance::~Instance() {
 bool Instance::wasCreated() const { return _wasCreated; }
 
 VkInstance Instance::getHandle() const { return _instance; }
+
+uint32_t Instance::getApiVersion() const { return _apiVersion; }
 
 void Instance::printAvailableExtensions() {
     LOG_INFO("gfx::vk::Instance", "Available instance extensions:");

@@ -28,11 +28,20 @@ void OpenGLAPI::startUp() {
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     ASSERT(status, "Failed to initialize Glad!");
 
+    // Check OpenGL version
+    int versionMajor;
+    int versionMinor;
+    glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
+    glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
+    _apiVersion = uint32_t(versionMajor * 100 + versionMinor * 10);
+
     // Print info
     LOG_INFO("gfx::gl::OpenGLAPI", "[w]GPU Info:");
     LOG_INFO("gfx::gl::OpenGLAPI", "  - Vendor: [*w]$0", glGetString(GL_VENDOR));
     LOG_INFO("gfx::gl::OpenGLAPI", "  - Renderer: [*w]$0", glGetString(GL_RENDERER));
-    LOG_INFO("gfx::gl::OpenGLAPI", "  - Version: [*w]$0", glGetString(GL_VERSION));
+    LOG_INFO("gfx::gl::OpenGLAPI", "  - Version: [*w]$0 (OpenGL $1.$2)", glGetString(GL_VERSION), versionMajor, versionMinor);
+
+    ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 0), "Atta requires OpenGL >= 3.0");
 
 #if defined(ATTA_DEBUG_BUILD) && !defined(ATTA_OS_WEB) && !defined(ATTA_OS_MACOS)
     glEnable(GL_DEBUG_OUTPUT);
@@ -57,13 +66,6 @@ void OpenGLAPI::startUp() {
         },
         nullptr);
 #endif // ATTA_DEBUG_BUILD
-
-    // Check OpenGL version
-    int versionMajor;
-    int versionMinor;
-    glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
-    glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
-    ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 0), "Atta requires OpenGL >= 3.0");
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_PROGRAM_POINT_SIZE);
