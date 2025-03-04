@@ -3,16 +3,16 @@ name: 🏷️ Auto Versioning
 on:
   pull_request:
     types:
-      - synchronize  # XXX Temporary to test the workflow
-      #- closed  # Runs when PR is merged
+      - labeled  # Runs when labels are added to the PR
 
 jobs:
   versioning:
-    #if: github.event.pull_request.merged == true  # Only run if PR is merged
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history to enable merging
 
       - name: Set up Git
         run: |
@@ -28,8 +28,42 @@ jobs:
             console.log("PR Labels:", labels);
             return labels;
 
+      - name: Check if Version Label Exists
+        id: check_version_label
+        run: |
+          if echo "${{ steps.labels.outputs.result }}" | grep -Eq "version:(major|minor|patch)"; then
+            echo "run_versioning=true" >> $GITHUB_ENV
+          else
+            echo "No versioning label found. Skipping workflow."
+            exit 0
+          fi
+
+      - name: Merge `dev` into PR Branch
+        run: |
+          git fetch origin dev
+          git checkout ${{ github.head_ref }}
+          if git merge --no-edit origin/dev; then
+            echo "Merge successful."
+          else
+            echo "::error::Merge conflict detected! Resolve conflicts manually."
+            exit 1
+          fi
+        continue-on-error: false
+
+      - name: Get Current Version from `dev`
+        run: |
+          git checkout origin/dev -- CMakeLists.txt
+          VERSION=$(sed -nE 's/project\(atta VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' CMakeLists.txt)
+
+          if [[ -z "$VERSION" ]]; then
+            echo "::error::Failed to extract version from CMakeLists.txt"
+            exit 1
+          fi
+
+          echo "::notice::Current Version (from dev): $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Determine Version Increment
-        id: version_type
         run: |
           echo "::notice::PR Labels Found: ${{ steps.labels.outputs.result }}"
           if echo "${{ steps.labels.outputs.result }}" | grep -q "version:major"; then
@@ -43,18 +77,8 @@ jobs:
             echo "::notice::Version Increment: patch"
           fi
 
-      - name: Read and Increment Version
-        id: update_version
+      - name: Increment Version
         run: |
-          VERSION=$(sed -nE 's/project\(atta VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' CMakeLists.txt)
-
-          if [[ -z "$VERSION" ]]; then
-            echo "::error::Failed to extract version from CMakeLists.txt"
-            exit 1
-          fi
-
-          echo "::notice::Current Version: $VERSION"
-
           IFS='.' read -r major minor patch <<< "$VERSION"
 
           case "$increment" in
@@ -67,15 +91,29 @@ jobs:
           echo "::notice::New Version: $NEW_VERSION"
 
           sed -i -E "s/(project\(atta VERSION) [0-9]+\.[0-9]+\.[0-9]+/\1 $NEW_VERSION/" CMakeLists.txt
-          echo "version=$NEW_VERSION" >> $GITHUB_ENV
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-      - name: Commit and Push Updated Version
+      - name: Commit Updated Version (If Changed)
         run: |
           git add CMakeLists.txt
-          git commit --allow-empty -m "Chore: Bump version to ${{ env.version }}"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Chore: Bump version to $NEW_VERSION"
+            git push origin ${{ github.head_ref }}
+          fi
 
-      - name: Create Git Tag
+      - name: Delete Old Tag (If Exists)
         run: |
-          git tag "v${{ env.version }}"
-          git push origin "v${{ env.version }}"
+          if git rev-parse "v$NEW_VERSION" >/dev/null 2>&1; then
+            git push --delete origin "v$NEW_VERSION"
+            git tag -d "v$NEW_VERSION"
+            echo "Deleted existing tag v$NEW_VERSION."
+          else
+            echo "No existing tag v$NEW_VERSION found."
+          fi
+
+      - name: Create and Push New Git Tag
+        run: |
+          git tag "v$NEW_VERSION"
+          git push origin "v$NEW_VERSION"

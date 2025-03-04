@@ -20,8 +20,6 @@ jobs:
     steps:
       - name: Checkout atta
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
 
       - name: Install dependencies on macos
         if: startsWith(matrix.config.os, 'macos')
