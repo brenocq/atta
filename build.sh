@@ -83,7 +83,7 @@ buildDefault()
                 echo "Using GDB for debugging..."
                 gdb -ex r --args bin/atta $PROJECT_TO_RUN
             else
-                echo "Error: No debugger found (LLDB or GDB). Install one to continue."
+                echo -e "\033[1m\033[31m[Error] \033[0m\033[31mNo debugger found (LLDB or GDB). Install one to continue."
                 exit 1
             fi
         else
