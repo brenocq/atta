@@ -7,6 +7,7 @@ on:
 
 jobs:
   versioning:
+    name: Auto Versioning
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -34,11 +35,12 @@ jobs:
           if echo "${{ steps.labels.outputs.result }}" | grep -Eq "version:(major|minor|patch)"; then
             echo "run_versioning=true" >> $GITHUB_ENV
           else
-            echo "No versioning label found. Skipping workflow."
+            echo "::notice::No versioning label found. Skipping workflow."
             exit 0
           fi
 
       - name: Merge `dev` into PR Branch
+        if: env.run_versioning == 'true'
         run: |
           git fetch origin dev
           git checkout ${{ github.head_ref }}
@@ -51,6 +53,7 @@ jobs:
         continue-on-error: false
 
       - name: Get Current Version from `dev`
+        if: env.run_versioning == 'true'
         run: |
           git checkout origin/dev -- CMakeLists.txt
           VERSION=$(sed -nE 's/project\(atta VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' CMakeLists.txt)
@@ -64,6 +67,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Determine Version Increment
+        if: env.run_versioning == 'true'
         run: |
           echo "::notice::PR Labels Found: ${{ steps.labels.outputs.result }}"
           if echo "${{ steps.labels.outputs.result }}" | grep -q "version:major"; then
@@ -78,6 +82,7 @@ jobs:
           fi
 
       - name: Increment Version
+        if: env.run_versioning == 'true'
         run: |
           IFS='.' read -r major minor patch <<< "$VERSION"
 
@@ -94,6 +99,7 @@ jobs:
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Commit Updated Version (If Changed)
+        if: env.run_versioning == 'true'
         run: |
           git add CMakeLists.txt
           if git diff --staged --quiet; then
@@ -104,6 +110,7 @@ jobs:
           fi
 
       - name: Delete Old Tag (If Exists)
+        if: env.run_versioning == 'true'
         run: |
           if git rev-parse "v$NEW_VERSION" >/dev/null 2>&1; then
             git push --delete origin "v$NEW_VERSION"
@@ -114,6 +121,7 @@ jobs:
           fi
 
       - name: Create and Push New Git Tag
+        if: env.run_versioning == 'true'
         run: |
           git tag "v$NEW_VERSION"
           git push origin "v$NEW_VERSION"
