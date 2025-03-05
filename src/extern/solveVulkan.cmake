@@ -1,7 +1,7 @@
 set(ATTA_VULKAN_SUPPORT FALSE)
 set(ATTA_VULKAN_TARGETS "")
 
-find_package(Vulkan)
+#find_package(Vulkan)
 
 if(Vulkan_FOUND)
     set(ATTA_VULKAN_SUPPORT TRUE)

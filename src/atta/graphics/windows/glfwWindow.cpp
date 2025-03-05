@@ -39,7 +39,6 @@ GlfwWindow::GlfwWindow(const CreateInfo& info) : Window(info) {
 #else
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
     } else

@@ -29,16 +29,18 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
     uint32_t openGLVersion = gfx::getGraphicsAPI()->getAPIVersion();
     std::string apiCode;
 
-    if (openGLVersion >= 410) {
-        // macOS (OpenGL Core 4.1)
+    if (openGLVersion >= 460) {
+        apiCode = "#version 460 core\n";
+    } else if (openGLVersion >= 410) {
         apiCode = "#version 410 core\n";
-    } else if (openGLVersion >= 300 && openGLVersion < 400) {
-        // OpenGL ES (Linux, Android, Web)
+    } else if (openGLVersion >= 330) {
+        apiCode = "#version 330 core\n";
+    } else if (openGLVersion >= 300) {
         apiCode = "#version 300 es\n"
                   "precision mediump float;\n";
     } else {
-        // Default fallback (use OpenGL 3.0 if nothing else works)
-        apiCode = "#version 300 core\n";
+        LOG_ERROR("gfx::gl::Shader", "Compiling shaders for OpenGL version [w]$0[] is not supported", openGLVersion);
+        return "";
     }
     apiCode += iCode;
 
@@ -50,44 +52,6 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
         apiCode = std::regex_replace(apiCode, std::regex(R"(\bperVertex)"), "out");
     else if (type == FRAGMENT)
         apiCode = std::regex_replace(apiCode, std::regex(R"(\bperVertex)"), "in");
-
-    //    if (_file == "shaders/grid/grid.asl") {
-    //        if (type == VERTEX) {
-    //            apiCode = R"(#version 410 core
-    // in vec3 iPos;
-    // in vec4 iColor;
-    // in float iWidth;
-    // uniform mat4 uView;
-    // uniform mat4 uProjection;
-    // uniform vec3 uCamPos;
-    //
-    // out vec4 vColor;
-    // out vec3 vFragPos;
-    //
-    // vec4 vertex(vec3 iPos, vec4 iColor, float iWidth) {
-    //    vec4 pos = uProjection * uView * vec4(iPos, 1.0);
-    //    vColor = iColor;
-    //    vFragPos = iPos;
-    //    return vec4(pos.xyz, pos.w);
-    //}
-    //
-    // void main() { gl_Position = vertex(iPos, iColor, iWidth); }
-    //)";
-    //        } else if (type == FRAGMENT) {
-    //            apiCode = R"(#version 410 core
-    // uniform mat4 uView;
-    // uniform mat4 uProjection;
-    // uniform vec3 uCamPos;
-    //
-    // in vec4 vColor;
-    // in vec3 vFragPos;
-    //
-    // out vec4 fColor;
-    //
-    // void main() { fColor = vec4(1.0, 1.0, 0.0, 1.0); }
-    //)";
-    //        }
-    //    }
 
     // Populate texture units
     std::regex regexTexture(R"(\s*uniform\s+(sampler2D|samplerCube)\s+(\w+)\s*;)");
