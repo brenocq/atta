@@ -408,11 +408,11 @@ void Shader::populateVertexLayout() {
 }
 
 void Shader::populateFragmentLayout() {
-    std::regex regexVertex(R"(void\s+fragment\s*\()");
+    std::regex regexFragment(R"(void\s+fragment\s*\()");
     std::smatch match;
     auto start = _aslCode.cbegin();
     auto end = _aslCode.cend();
-    if (std::regex_search(start, end, match, regexVertex)) {
+    if (std::regex_search(start, end, match, regexFragment)) {
         // Calculate start and end
         uint32_t paramStart = match.position() + match.length() - 1;
         uint32_t paramEnd = paramStart;

@@ -39,7 +39,8 @@ void OpenGLAPI::startUp() {
     LOG_INFO("gfx::gl::OpenGLAPI", "[w]GPU Info:");
     LOG_INFO("gfx::gl::OpenGLAPI", "  - Vendor: [*w]$0", glGetString(GL_VENDOR));
     LOG_INFO("gfx::gl::OpenGLAPI", "  - Renderer: [*w]$0", glGetString(GL_RENDERER));
-    LOG_INFO("gfx::gl::OpenGLAPI", "  - Version: [*w]$0 (OpenGL $1.$2)", glGetString(GL_VERSION), versionMajor, versionMinor);
+    LOG_INFO("gfx::gl::OpenGLAPI", "  - OpenGL Version: [*w]$0 ($1.$2)", glGetString(GL_VERSION), versionMajor, versionMinor);
+    LOG_INFO("gfx::gl::OpenGLAPI", "  - GLSL Version: [*w]$0", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 0), "Atta requires OpenGL >= 3.0");
 

@@ -51,6 +51,44 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
     else if (type == FRAGMENT)
         apiCode = std::regex_replace(apiCode, std::regex(R"(\bperVertex)"), "in");
 
+    //    if (_file == "shaders/grid/grid.asl") {
+    //        if (type == VERTEX) {
+    //            apiCode = R"(#version 410 core
+    // in vec3 iPos;
+    // in vec4 iColor;
+    // in float iWidth;
+    // uniform mat4 uView;
+    // uniform mat4 uProjection;
+    // uniform vec3 uCamPos;
+    //
+    // out vec4 vColor;
+    // out vec3 vFragPos;
+    //
+    // vec4 vertex(vec3 iPos, vec4 iColor, float iWidth) {
+    //    vec4 pos = uProjection * uView * vec4(iPos, 1.0);
+    //    vColor = iColor;
+    //    vFragPos = iPos;
+    //    return vec4(pos.xyz, pos.w);
+    //}
+    //
+    // void main() { gl_Position = vertex(iPos, iColor, iWidth); }
+    //)";
+    //        } else if (type == FRAGMENT) {
+    //            apiCode = R"(#version 410 core
+    // uniform mat4 uView;
+    // uniform mat4 uProjection;
+    // uniform vec3 uCamPos;
+    //
+    // in vec4 vColor;
+    // in vec3 vFragPos;
+    //
+    // out vec4 fColor;
+    //
+    // void main() { fColor = vec4(1.0, 1.0, 0.0, 1.0); }
+    //)";
+    //        }
+    //    }
+
     // Populate texture units
     std::regex regexTexture(R"(\s*uniform\s+(sampler2D|samplerCube)\s+(\w+)\s*;)");
     std::smatch match;
