@@ -55,8 +55,7 @@ jobs:
       - name: Get Current Version from `dev`
         if: env.run_versioning == 'true'
         run: |
-          git checkout origin/dev -- CMakeLists.txt
-          VERSION=$(sed -nE 's/project\(atta VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' CMakeLists.txt)
+          VERSION=$(git show origin/dev:CMakeLists.txt | sed -nE 's/project\(atta VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')
 
           if [[ -z "$VERSION" ]]; then
             echo "::error::Failed to extract version from CMakeLists.txt"
