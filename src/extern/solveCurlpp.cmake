@@ -24,5 +24,5 @@ if(ATTA_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 if(ATTA_CURLPP_SUPPORT)
-    list(APPEND ATTA_DEFINITIONS "ATTA_CURLPP_SUPPORT")
+    atta_add_definition(ATTA_CURLPP_SUPPORT)
 endif()
