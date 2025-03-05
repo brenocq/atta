@@ -125,10 +125,12 @@ jobs:
         run: |
           # Fetch the PR title from GitHub event payload
           PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
           echo "::notice::PR Title: $PR_TITLE"
+          echo "::notice::PR Number: $PR_NUMBER"
 
           # Create an annotated tag with the PR title as the description
-          git tag -a "v$NEW_VERSION" -m "$PR_TITLE"
+          git tag -a "v$NEW_VERSION" -m "PR #$PR_NUMBER - $PR_TITLE"
 
           # Push the tag to the remote repository
           git push origin "v$NEW_VERSION"
