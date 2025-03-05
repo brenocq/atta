@@ -22,6 +22,7 @@ VulkanAPI::~VulkanAPI() {
 
 void VulkanAPI::startUp() {
     _instance = std::make_shared<vk::Instance>();
+    _apiVersion = _instance->getApiVersion();
 #ifdef ATTA_DEBUG_BUILD
     _debugMessenger = std::make_shared<vk::DebugMessenger>(_instance);
 #endif

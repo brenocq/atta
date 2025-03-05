@@ -26,9 +26,23 @@ Shader::~Shader() {
 }
 
 std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
-    std::string apiCode = "#version 300 es\n"
-                          "precision mediump float;\n" +
-                          iCode;
+    uint32_t openGLVersion = gfx::getGraphicsAPI()->getAPIVersion();
+    std::string apiCode;
+
+    if (openGLVersion >= 460) {
+        apiCode = "#version 460 core\n";
+    } else if (openGLVersion >= 410) {
+        apiCode = "#version 410 core\n";
+    } else if (openGLVersion >= 330) {
+        apiCode = "#version 330 core\n";
+    } else if (openGLVersion >= 300) {
+        apiCode = "#version 300 es\n"
+                  "precision mediump float;\n";
+    } else {
+        LOG_ERROR("gfx::gl::Shader", "Compiling shaders for OpenGL version [w]$0[] is not supported", openGLVersion);
+        return "";
+    }
+    apiCode += iCode;
 
     // Replace perFrame/perDraw
     apiCode = std::regex_replace(apiCode, std::regex(R"(\b(perFrame|perDraw))"), "uniform");
@@ -60,6 +74,7 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
         // Move to the next match
         start = match.suffix().first;
     }
+    // LOG_DEBUG("gfx::gl::Shader", "Generated API code for shader [g]$1[]\n[w]$0[]", apiCode, _file.string());
 
     return apiCode;
 }
@@ -81,13 +96,23 @@ void Shader::compile() {
         glShaderSource(id, 1, &code, NULL);
         glCompileShader(id);
 
+        // Get log
+        int logLength = 0;
+        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLength);
+        std::vector<char> log(logLength);
+        glGetShaderInfoLog(id, logLength, NULL, log.data());
+
         // Check errors
         int success;
-        char infoLog[512];
         glGetShaderiv(id, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(id, 512, NULL, infoLog);
-            LOG_ERROR("gfx::gl::Shader", "Failed to compile shader [w]$0[] type [w]$1[]. Error: [w]$2", _file.string(), type, infoLog);
+            LOG_ERROR("gfx::gl::Shader", "Failed to compile shader [w]$0[] type [w]$1[] with error: \n[w]$2", _file.string(), type, log.data());
+        } else {
+            // Check warnings if no errors
+            if (logLength > 1) {
+                // Log may contain warnings even if compilation succeeds
+                LOG_WARN("gfx::gl::Shader", "Shader [w]$0[] type [w]$1[] compiled with messages: \n[w]$2", _file.string(), type, log.data());
+            }
         }
     }
 
@@ -101,11 +126,13 @@ void Shader::compile() {
     glLinkProgram(_id);
 
     int success;
-    char infoLog[512];
     glGetProgramiv(_id, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(_id, 512, NULL, infoLog);
-        LOG_ERROR("gfx::gl::Shader", "Failed to link shader [w]$0[]. Error: [w]$1", _file.string(), infoLog);
+        int logLength = 0;
+        glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLength);
+        std::vector<char> log(logLength);
+        glGetProgramInfoLog(_id, logLength, NULL, log.data());
+        LOG_ERROR("gfx::gl::Shader", "Failed to link shader [w]$0[] with error: \n[w]$1", _file.string(), log.data());
     }
 
     // Detach and delete shaders

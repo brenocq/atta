@@ -35,15 +35,11 @@ class Image {
         NONE = 0,
         CLAMP,
         REPEAT,
-        BORDER // Clamp to border
     };
 
     struct CreateInfo {
         Format format = Format::RGBA;
         Wrap samplerWrap = Wrap::REPEAT;
-        /// Image border color
-        /** Only used when samplerWrap is set to BORDER **/
-        vec4 borderColor = vec4(1.0f);
         uint32_t width = 1;
         uint32_t height = 1;
         uint32_t mipLevels = 1;
@@ -84,7 +80,6 @@ class Image {
   protected:
     Format _format;
     Wrap _samplerWrap;
-    vec4 _borderColor;
     uint32_t _width;
     uint32_t _height;
     uint32_t _mipLevels;
