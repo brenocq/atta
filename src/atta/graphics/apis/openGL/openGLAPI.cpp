@@ -25,7 +25,11 @@ OpenGLAPI::~OpenGLAPI() {}
 
 void OpenGLAPI::startUp() {
     // Initialize GLAD
-    int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+#ifdef ATTA_OS_WEB
+    int status = gladLoadGLES2(glfwGetProcAddress);
+#else
+    int status = gladLoadGL(glfwGetProcAddress);
+#endif
     ASSERT(status, "Failed to initialize Glad!");
 
     // Check OpenGL version
@@ -69,7 +73,6 @@ void OpenGLAPI::startUp() {
 #endif // ATTA_DEBUG_BUILD
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_PROGRAM_POINT_SIZE);
 }
 
 void OpenGLAPI::shutDown() {}

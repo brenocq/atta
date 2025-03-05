@@ -12,12 +12,14 @@
 #include <atta/event/events/windowMouseScroll.h>
 #include <atta/event/events/windowResize.h>
 #include <atta/graphics/windows/glfwWindow.h>
-#include <glad/glad.h>
 
 #ifdef ATTA_OS_WEB
 #include <emscripten.h>
 EM_JS(int, canvas_get_width, (), { return Module.canvas.width; });
 EM_JS(int, canvas_get_height, (), { return Module.canvas.height; });
+#include <glad/gles2.h>
+#else
+#include <glad/gl.h>
 #endif
 
 namespace atta::graphics {

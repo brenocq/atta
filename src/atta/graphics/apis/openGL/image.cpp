@@ -67,11 +67,6 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        if (_samplerWrap == Image::Wrap::BORDER) {
-            float borderColor[] = {_borderColor.x, _borderColor.y, _borderColor.z, _borderColor.w};
-            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-        }
-
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, dataType, _data);
 
         if (_mipLevels > 1)
@@ -89,11 +84,6 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, wrapMode);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        if (_samplerWrap == Image::Wrap::BORDER) {
-            float borderColor[] = {_borderColor.x, _borderColor.y, _borderColor.z, _borderColor.w};
-            glTexParameterfv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, borderColor);
-        }
 
         if (_mipLevels > 1)
             glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
@@ -151,12 +141,14 @@ GLenum Image::convertFormat(Format format) {
         case Format::RGB32F:
             return GL_RGB;
         case Format::BGR:
-            return GL_BGR;
+            LOG_WARN("gfx::gl::Image", "BGR format is not supported by OpenGL. Using RGB instead");
+            return GL_RGB;
         case Format::RGBA:
         case Format::RGBA32F:
             return GL_RGBA;
         case Format::BGRA:
-            return GL_BGRA;
+            LOG_WARN("gfx::gl::Image", "BGRA format is not supported by OpenGL. Using RGBA instead");
+            return GL_RGBA;
         case Format::DEPTH32F:
             return GL_DEPTH_COMPONENT;
         case Format::DEPTH24_STENCIL8:
@@ -183,11 +175,13 @@ GLenum Image::convertInternalFormat(Format format) {
         case Format::RGB:
             return GL_RGB;
         case Format::BGR:
-            return GL_BGR;
+            LOG_WARN("gfx::gl::Image", "BGR format is not supported by OpenGL. Using RGB instead");
+            return GL_RGB;
         case Format::RGBA:
             return GL_RGBA;
         case Format::BGRA:
-            return GL_BGRA;
+            LOG_WARN("gfx::gl::Image", "BGRA format is not supported by OpenGL. Using RGBA instead");
+            return GL_RGBA;
         case Format::RGBA32F:
             return GL_RGBA32F;
         case Format::DEPTH32F:
@@ -232,8 +226,6 @@ GLenum Image::convertSamplerWrap(Wrap samplerWrap) {
             return GL_CLAMP_TO_EDGE;
         case Wrap::REPEAT:
             return GL_REPEAT;
-        case Wrap::BORDER:
-            return GL_CLAMP_TO_BORDER;
     }
     ASSERT(false, "Could not convert sampler wrap to openGL sampler wrap. Unknown sampler wrap");
     return 0;
