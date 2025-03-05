@@ -1,4 +1,4 @@
-name: Update readme buttons
+name: 📄 Update README
 
 on:
   project_card:
