@@ -1,12 +1,22 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.3.3 LANGUAGES CXX C)
+project(atta VERSION 0.3.4 LANGUAGES CXX C)
 
-option(ATTA_BUILD_TESTS "Set to ON to build also the test executables" ON)
-option(ATTA_BUILD_DOCS "Build the documentation" OFF)
-option(ATTA_WEB_BUILD_MODULE "Set to ON to generate only the javascript module" OFF)
-option(ATTA_STATIC_PROJECT_FILE "Project to be linked statically to atta" "")
-option(ATTA_PROFILE "Set to ON to enable code profiling" ON)
+OPTION(ATTA_BUILD_TESTS
+    "Set to ON to build also the test executables"
+    ON)
+OPTION(ATTA_WEB_BUILD_MODULE
+    "Set to ON to generate only the javascript module"
+    OFF)
+OPTION(ATTA_BUILD_DOCS
+    "Build the documentation"
+    OFF)
+option(ATTA_STATIC_PROJECT_FILE
+    "Project to be linked statically to atta"
+    "")
+option(ATTA_PROFILE
+    "Set to ON to enable code profiling"
+    ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -32,26 +42,26 @@ include(cmake/log.cmake)
 atta_log(Info "Main" "cmake build type: ${CMAKE_BUILD_TYPE}")
 atta_log(Info "Main" "cmake build dir: ${CMAKE_BINARY_DIR}")
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    atta_add_definition(ATTA_DEBUG_BUILD)
+    list(APPEND ATTA_DEFINITIONS "ATTA_DEBUG_BUILD")
 endif()
 
 if(ATTA_STATIC_PROJECT_FILE)
     set(ATTA_STATIC_PROJECT TRUE)
-    atta_add_definition(ATTA_STATIC_PROJECT)
+    list(APPEND ATTA_DEFINITIONS "ATTA_STATIC_PROJECT")
     atta_log(Info "Main" "Building atta statically linked to ${ATTA_STATIC_PROJECT_FILE}")
 else()
     set(ATTA_STATIC_PROJECT FALSE)
 endif()
 
 if(ATTA_PROFILE)
-    atta_add_definition(ATTA_PROFILE)
+    list(APPEND ATTA_DEFINITIONS "ATTA_PROFILE")
 endif()
 
 ########## OS Specific ##########
 atta_log(Info "Main" "cmake system name: ${CMAKE_SYSTEM_NAME}")
 if(CMAKE_SYSTEM_NAME STREQUAL Windows)#----- Windows build
     set(ATTA_SYSTEM_NAME "Windows")
-    atta_add_definition(ATTA_OS_WINDOWS)
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_WINDOWS")
     # Force google test to link the runtimes dynamically (to avoid visual studio link error)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     # Fix assert __VA_ARGS__ expansion
@@ -59,21 +69,21 @@ if(CMAKE_SYSTEM_NAME STREQUAL Windows)#----- Windows build
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)#----- MacOS build
     set(ATTA_SYSTEM_NAME "MacOS")
-    atta_add_definition(ATTA_OS_MACOS)
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_MACOS")
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)#----- Linux build
     set(ATTA_SYSTEM_NAME "Linux")
-    atta_add_definition(ATTA_OS_LINUX)
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_LINUX")
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(ATTA_SYSTEM_NAME "Web")
-    atta_add_definition(ATTA_OS_WEB)
+    list(APPEND ATTA_DEFINITIONS "ATTA_OS_WEB")
 
     # Configure web build
     set(ATTA_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
 
     # Configure emscripten link flags
-    set(EMSCRIPTEN_LINK_PROPERTIES "-s MAX_WEBGL_VERSION=2 -s USE_GLFW=3 -s GL_ENABLE_GET_PROC_ADDRESS")
+    set(EMSCRIPTEN_LINK_PROPERTIES "-s USE_WEBGL2=1 -s USE_GLFW=3 -s GL_ENABLE_GET_PROC_ADDRESS")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/resources@/resources/")
