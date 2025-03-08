@@ -21,13 +21,27 @@ VulkanAPI::~VulkanAPI() {
 }
 
 void VulkanAPI::startUp() {
+    // Load global Vulkan functions via glad
+    if (!gladLoaderLoadVulkan(nullptr, &vkGetInstanceProcAddr)) {
+        LOG_ERROR("Vulkan", "Failed to load global Vulkan functions via glad!");
+        return;
+    }
+
     _instance = std::make_shared<vk::Instance>();
+
     _apiVersion = _instance->getApiVersion();
 #ifdef ATTA_DEBUG_BUILD
     _debugMessenger = std::make_shared<vk::DebugMessenger>(_instance);
 #endif
     _physicalDevice = std::make_shared<vk::PhysicalDevice>(_instance);
     _device = std::make_shared<vk::Device>(_physicalDevice);
+
+    // Load instance-specific functions
+    if (!gladLoaderLoadVulkan(_instance->getHandle(), _physicalDevice->getHandle(), _device->getHandle())) {
+        LOG_ERROR("Vulkan", "Failed to load Vulkan instance functions via glad!");
+        return;
+    }
+
     _commandPool = std::make_shared<vk::CommandPool>(_device);
     _commandBuffers = std::make_shared<vk::CommandBuffers>(_device, _commandPool, MAX_FRAMES_IN_FLIGHT);
 
