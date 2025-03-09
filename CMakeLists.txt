@@ -62,7 +62,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)#----- MacOS build
     set(ATTA_SYSTEM_NAME "MacOS")
     atta_add_definition(ATTA_OS_MACOS)
 
-    # Make sure vulkan is disabled in web MacOS
+    # Make sure Vulkan is disabled in MacOS build
     if(ATTA_VULKAN_SUPPORT)
         atta_log(Info "Main" "Disabling Vulkan in MacOS build")
         set(ATTA_VULKAN_SUPPORT OFF)
@@ -71,6 +71,14 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)#----- MacOS build
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)#----- Linux build
     set(ATTA_SYSTEM_NAME "Linux")
     atta_add_definition(ATTA_OS_LINUX)
+
+    # Check for Vulkan headers
+    include(CheckIncludeFile)
+    check_include_file("vulkan/vulkan.h" HAVE_VULKAN_HEADER)
+    if(NOT HAVE_VULKAN_HEADER)
+        atta_log(Info "Main" "Vulkan headers not found. Disabling Vulkan support")
+        set(ATTA_VULKAN_SUPPORT OFF)
+    endif()
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(ATTA_SYSTEM_NAME "Web")
@@ -85,7 +93,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/resources@/resources/")
 
-    # Make sure vulkan is disabled in web build
+    # Make sure Vulkan is disabled in Web build
     if(ATTA_VULKAN_SUPPORT)
         atta_log(Info "Main" "Disabling Vulkan in web build")
         set(ATTA_VULKAN_SUPPORT OFF)
