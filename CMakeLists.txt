@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.3.4 LANGUAGES CXX C)
+project(atta VERSION 0.3.5 LANGUAGES CXX C)
 
 option(ATTA_BUILD_TESTS "Set to ON to build also the test executables" ON)
 option(ATTA_BUILD_DOCS "Build the documentation" OFF)
 option(ATTA_WEB_BUILD_MODULE "Set to ON to generate only the javascript module" OFF)
 option(ATTA_STATIC_PROJECT_FILE "Project to be linked statically to atta" "")
 option(ATTA_PROFILE "Set to ON to enable code profiling" ON)
+option(ATTA_VULKAN_SUPPORT "Set to OFF to disable Vulkan support and force OpenGL" ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -61,6 +62,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)#----- MacOS build
     set(ATTA_SYSTEM_NAME "MacOS")
     atta_add_definition(ATTA_OS_MACOS)
 
+    # Make sure Vulkan is disabled in MacOS build
+    if(ATTA_VULKAN_SUPPORT)
+        atta_log(Info "Main" "Disabling Vulkan in MacOS build")
+        set(ATTA_VULKAN_SUPPORT OFF)
+    endif()
+
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)#----- Linux build
     set(ATTA_SYSTEM_NAME "Linux")
     atta_add_definition(ATTA_OS_LINUX)
@@ -78,6 +85,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/resources@/resources/")
 
+    # Make sure Vulkan is disabled in Web build
+    if(ATTA_VULKAN_SUPPORT)
+        atta_log(Info "Main" "Disabling Vulkan in web build")
+        set(ATTA_VULKAN_SUPPORT OFF)
+    endif()
 
     if(ATTA_STATIC_PROJECT_FILE)
         # Copy project filee
@@ -99,6 +111,18 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     list(APPEND ATTA_LINK_PROP ${EMSCRIPTEN_LINK_PROPERTIES})
 else()#----- Unknown build
     message(SEND_ERROR "Unknown system name: ${CMAKE_SYSTEM_NAME}")
+endif()
+
+# Check for Vulkan headers
+if(ATTA_VULKAN_SUPPORT)
+    if(ATTA_SYSTEM_NAME STREQUAL "Windows" OR ATTA_SYSTEM_NAME STREQUAL "Linux")
+        include(CheckIncludeFile)
+        check_include_file("vulkan/vulkan.h" HAVE_VULKAN_HEADER)
+        if(NOT HAVE_VULKAN_HEADER)
+            atta_log(Info "Main" "Vulkan headers not found. Disabling Vulkan support")
+            set(ATTA_VULKAN_SUPPORT OFF)
+        endif()
+    endif()
 endif()
 
 ########## Options ##########
@@ -124,7 +148,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
     endif()
 endif()
 
-##### Releaese #####
+##### Release #####
 if(CMAKE_BUILD_TYPE MATCHES Release)
     if(MSVC)
         list(APPEND ATTA_OPTIONS /O2)
@@ -152,6 +176,10 @@ set(ATTA_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
 
 ########## Atta/Extern directories ##########
+if(ATTA_VULKAN_SUPPORT)
+    atta_add_definition(ATTA_VULKAN_SUPPORT)
+endif()
+
 include(FetchContent)
 list(APPEND ATTA_INCLUDE_DIRS ${ATTA_PATH}/src)
 include(${CMAKE_CURRENT_SOURCE_DIR}/src/extern/extern.cmake)

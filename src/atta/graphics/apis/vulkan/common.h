@@ -7,7 +7,7 @@
 #ifndef ATTA_GRAPHICS_APIS_VULKAN_COMMON_H
 #define ATTA_GRAPHICS_APIS_VULKAN_COMMON_H
 
-#include "vulkan/vulkan.h"
+#include <volk.h>
 
 namespace atta::graphics::vk {
 class Device;
