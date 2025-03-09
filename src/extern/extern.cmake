@@ -18,6 +18,7 @@ endmacro()
 
 include(solveResources)
 include(solveGoogleTest)
+include(solveShaderc)
 include(solveVolk)
 include(solveGlfw)
 include(solveGlad)
