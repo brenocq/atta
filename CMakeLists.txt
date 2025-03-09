@@ -72,14 +72,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)#----- Linux build
     set(ATTA_SYSTEM_NAME "Linux")
     atta_add_definition(ATTA_OS_LINUX)
 
-    # Check for Vulkan headers
-    include(CheckIncludeFile)
-    check_include_file("vulkan/vulkan.h" HAVE_VULKAN_HEADER)
-    if(NOT HAVE_VULKAN_HEADER)
-        atta_log(Info "Main" "Vulkan headers not found. Disabling Vulkan support")
-        set(ATTA_VULKAN_SUPPORT OFF)
-    endif()
-
 elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(ATTA_SYSTEM_NAME "Web")
     atta_add_definition(ATTA_OS_WEB)
@@ -119,6 +111,18 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     list(APPEND ATTA_LINK_PROP ${EMSCRIPTEN_LINK_PROPERTIES})
 else()#----- Unknown build
     message(SEND_ERROR "Unknown system name: ${CMAKE_SYSTEM_NAME}")
+endif()
+
+# Check for Vulkan headers
+if(ATTA_VULKAN_SUPPORT)
+    if(ATTA_SYSTEM_NAME STREQUAL "Windows" OR ATTA_SYSTEM_NAME STREQUAL "Linux")
+        include(CheckIncludeFile)
+        check_include_file("vulkan/vulkan.h" HAVE_VULKAN_HEADER)
+        if(NOT HAVE_VULKAN_HEADER)
+            atta_log(Info "Main" "Vulkan headers not found. Disabling Vulkan support")
+            set(ATTA_VULKAN_SUPPORT OFF)
+        endif()
+    endif()
 endif()
 
 ########## Options ##########
