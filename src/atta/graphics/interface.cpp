@@ -19,6 +19,7 @@ std::shared_ptr<GraphicsAPI> getGraphicsAPI() { return Manager::getInstance().ge
 std::shared_ptr<Window> getWindow() { return Manager::getInstance().getWindowImpl(); };
 
 void setGraphicsAPI(GraphicsAPI::Type type) { Manager::getInstance().setGraphicsAPIImpl(type); }
+std::vector<GraphicsAPI::Type> getSupportedGraphicsAPIs() { return Manager::getInstance().getSupportedGraphicsAPIsImpl(); }
 
 //----- Config -----//
 float getGraphicsFPS() { return Manager::getInstance()._graphicsFPS; }

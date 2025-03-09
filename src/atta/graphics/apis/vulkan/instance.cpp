@@ -67,6 +67,12 @@ VkInstance Instance::getHandle() const { return _instance; }
 
 uint32_t Instance::getApiVersion() const { return _apiVersion; }
 
+bool Instance::hasCompatibleGPU() const {
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+    return deviceCount > 0;
+}
+
 void Instance::printAvailableExtensions() {
     LOG_INFO("gfx::vk::Instance", "Available instance extensions:");
     for (const auto& extension : getAvailableExtensions())

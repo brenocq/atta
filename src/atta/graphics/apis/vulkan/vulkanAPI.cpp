@@ -209,7 +209,7 @@ bool VulkanAPI::isSupported() {
     if (!loadVulkan())
         return false;
     vk::Instance instance;
-    return instance.wasCreated();
+    return instance.wasCreated() && instance.hasCompatibleGPU();
 }
 
 std::shared_ptr<vk::Instance> VulkanAPI::getInstance() const { return _instance; }
