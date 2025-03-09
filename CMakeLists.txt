@@ -62,6 +62,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)#----- MacOS build
     set(ATTA_SYSTEM_NAME "MacOS")
     atta_add_definition(ATTA_OS_MACOS)
 
+    # Make sure vulkan is disabled in web MacOS
+    if(ATTA_VULKAN_SUPPORT)
+        atta_log(Info "Main" "Disabling Vulkan in MacOS build")
+        set(ATTA_VULKAN_SUPPORT OFF)
+    endif()
+
 elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)#----- Linux build
     set(ATTA_SYSTEM_NAME "Linux")
     atta_add_definition(ATTA_OS_LINUX)
