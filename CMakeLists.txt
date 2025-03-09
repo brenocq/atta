@@ -7,6 +7,7 @@ option(ATTA_BUILD_DOCS "Build the documentation" OFF)
 option(ATTA_WEB_BUILD_MODULE "Set to ON to generate only the javascript module" OFF)
 option(ATTA_STATIC_PROJECT_FILE "Project to be linked statically to atta" "")
 option(ATTA_PROFILE "Set to ON to enable code profiling" ON)
+option(ATTA_VULKAN_SUPPORT "Set to OFF to disable Vulkan support and force OpenGL" ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -78,6 +79,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} -s NO_DISABLE_EXCEPTION_CATCHING -s EXIT_RUNTIME=1")
     set(EMSCRIPTEN_LINK_PROPERTIES "${EMSCRIPTEN_LINK_PROPERTIES} --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/resources@/resources/")
 
+    # Make sure vulkan is disabled in web build
+    if(ATTA_VULKAN_SUPPORT)
+        atta_log(Info "Main" "Disabling Vulkan in web build")
+        set(ATTA_VULKAN_SUPPORT OFF)
+    endif()
 
     if(ATTA_STATIC_PROJECT_FILE)
         # Copy project filee
@@ -124,7 +130,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
     endif()
 endif()
 
-##### Releaese #####
+##### Release #####
 if(CMAKE_BUILD_TYPE MATCHES Release)
     if(MSVC)
         list(APPEND ATTA_OPTIONS /O2)
@@ -152,6 +158,10 @@ set(ATTA_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 list(APPEND ATTA_PCH "${CMAKE_CURRENT_SOURCE_DIR}/src/atta/pch.h")
 
 ########## Atta/Extern directories ##########
+if(ATTA_VULKAN_SUPPORT)
+    atta_add_definition(ATTA_VULKAN_SUPPORT)
+endif()
+
 include(FetchContent)
 list(APPEND ATTA_INCLUDE_DIRS ${ATTA_PATH}/src)
 include(${CMAKE_CURRENT_SOURCE_DIR}/src/extern/extern.cmake)

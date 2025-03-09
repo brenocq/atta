@@ -18,7 +18,7 @@ endmacro()
 
 include(solveResources)
 include(solveGoogleTest)
-include(solveVulkan)
+include(solveVolk)
 include(solveGlfw)
 include(solveGlad)
 include(solveImgui)

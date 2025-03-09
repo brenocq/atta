@@ -7,6 +7,7 @@
 #ifndef ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 
+#include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/indexBuffer.h>

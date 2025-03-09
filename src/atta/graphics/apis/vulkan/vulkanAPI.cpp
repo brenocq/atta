@@ -13,6 +13,8 @@
 
 namespace atta::graphics {
 
+bool VulkanAPI::_vulkanLoaded = false;
+
 VulkanAPI::VulkanAPI(std::shared_ptr<Window> window) : GraphicsAPI(GraphicsAPI::VULKAN, window), _currFrame(0), _windowResized(false) {}
 
 VulkanAPI::~VulkanAPI() {
@@ -21,26 +23,20 @@ VulkanAPI::~VulkanAPI() {
 }
 
 void VulkanAPI::startUp() {
-    // Load global Vulkan functions via glad
-    if (!gladLoaderLoadVulkan(nullptr, &vkGetInstanceProcAddr)) {
-        LOG_ERROR("Vulkan", "Failed to load global Vulkan functions via glad!");
+    // Load Vulkan loader
+    if (!loadVulkan()) {
+        LOG_ERROR("Vulkan", "Failed to load Vulkan loader! Vulkan is probably not supported in this machine");
         return;
     }
 
     _instance = std::make_shared<vk::Instance>();
-
     _apiVersion = _instance->getApiVersion();
+
 #ifdef ATTA_DEBUG_BUILD
     _debugMessenger = std::make_shared<vk::DebugMessenger>(_instance);
 #endif
     _physicalDevice = std::make_shared<vk::PhysicalDevice>(_instance);
     _device = std::make_shared<vk::Device>(_physicalDevice);
-
-    // Load instance-specific functions
-    if (!gladLoaderLoadVulkan(_instance->getHandle(), _physicalDevice->getHandle(), _device->getHandle())) {
-        LOG_ERROR("Vulkan", "Failed to load Vulkan instance functions via glad!");
-        return;
-    }
 
     _commandPool = std::make_shared<vk::CommandPool>(_device);
     _commandBuffers = std::make_shared<vk::CommandBuffers>(_device, _commandPool, MAX_FRAMES_IN_FLIGHT);
@@ -210,6 +206,8 @@ void VulkanAPI::generateProcessedTexture(GenerateProcessedTextureInfo gptInfo) {
 void* VulkanAPI::getImGuiImage(StringId sid) const { return nullptr; }
 
 bool VulkanAPI::isSupported() {
+    if (!loadVulkan())
+        return false;
     vk::Instance instance;
     return instance.wasCreated();
 }
@@ -227,6 +225,12 @@ std::shared_ptr<vk::CommandPool> VulkanAPI::getCommandPool() const { return _com
 std::shared_ptr<vk::RenderPass> VulkanAPI::getRenderPass() const { return _renderPass; }
 
 std::shared_ptr<vk::DescriptorPool> VulkanAPI::getUiDescriptorPool() const { return _uiDescriptorPool; }
+
+bool VulkanAPI::loadVulkan() {
+    if (_vulkanLoaded)
+        return true;
+    return volkInitialize() == VK_SUCCESS;
+}
 
 void VulkanAPI::recreateSwapChain() {
     while (_window->getWidth() == 0 && _window->getHeight() == 0) {
