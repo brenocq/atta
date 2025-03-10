@@ -4,8 +4,11 @@
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/component/components/mesh.h>
 #include <atta/file/interface.h>
 #include <atta/graphics/interface.h>
+#include <atta/resource/interface.h>
+#include <atta/ui/interface.h>
 #include <atta/ui/manager.h>
 #include <atta/ui/widgets/component.h>
 
@@ -68,6 +71,8 @@ void Manager::startUpImpl() {
     gfx::setUiShutDownFunc([&]() { shutDownImpl(); });
     gfx::setUiStartUpFunc([&]() { startUpImpl(); });
 
+    registerCustomComponentUIs();
+
     // Start up editor window
     _editor.startUp();
 }
@@ -96,6 +101,35 @@ void Manager::shutDownImpl() {
     }
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+}
+
+void Manager::registerCustomComponentUIs() {
+    //---------- Mesh ----------//
+    ui::registerComponentUI<cmp::Mesh>([](cmp::Entity entity, cmp::Component* comp) {
+        // Get mesh resource
+        cmp::Mesh* mesh = static_cast<cmp::Mesh*>(comp);
+        res::Mesh* m = res::get<res::Mesh>(mesh->sid.getString());
+        if (m == nullptr)
+            return;
+
+        std::string selectedName = mesh->sid.getString();
+
+        // Selection
+        if (ImGui::BeginCombo("##Combo", selectedName.c_str())) {
+            std::vector<StringId> rMeshes = res::getResources<res::Mesh>();
+            for (StringId rMesh : rMeshes) {
+                std::string meshStr = rMesh.getString();
+                if (meshStr == "")
+                    meshStr = "##";
+                const bool selected = (rMesh == mesh->sid);
+                if (ImGui::Selectable(meshStr.c_str(), selected))
+                    mesh->sid = rMesh;
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    });
 }
 
 void Manager::registerComponentUIImpl(cmp::ComponentId cid, ComponentUIFunc renderFunc) { _componentRenderFuncs[cid] = renderFunc; }

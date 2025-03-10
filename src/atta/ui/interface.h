@@ -7,8 +7,7 @@
 #ifndef ATTA_UI_INTERFACE_H
 #define ATTA_UI_INTERFACE_H
 
-#include <atta/component/base.h>
-#include <atta/component/components/component.h>
+#include <atta/component/interface.h>
 #include <atta/ui/windows/viewport/viewport.h>
 
 namespace atta::ui {
@@ -17,8 +16,12 @@ void startUp();
 void shutDown();
 
 //----- Custom component UI -----//
-using ComponentUIFunc = std::function<void(cmp::Component*)>;
+using ComponentUIFunc = std::function<void(cmp::Entity, cmp::Component*)>;
+template <typename T>
+void registerComponentUI(ComponentUIFunc renderFunc);
 void registerComponentUI(cmp::ComponentId cid, ComponentUIFunc renderFunc);
+template <typename T>
+std::optional<ComponentUIFunc> getComponentUI();
 std::optional<ComponentUIFunc> getComponentUI(cmp::ComponentId cid);
 
 //----- Viewport -----//
@@ -31,5 +34,7 @@ void setViewportRendering(bool viewportRendering);
 unsigned getViewportDockId();
 
 } // namespace atta::ui
+
+#include <atta/ui/interface.inl>
 
 #endif // ATTA_UI_INTERFACE_H

@@ -9,10 +9,11 @@
 
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
+#include <atta/component/entity.h>
 
 namespace atta::ui {
 
-void componentWidget(cmp::ComponentId cid, cmp::Component* comp);
+void componentWidget(cmp::Entity entity, cmp::ComponentId cid, cmp::Component* comp);
 
 } // namespace atta::ui
 

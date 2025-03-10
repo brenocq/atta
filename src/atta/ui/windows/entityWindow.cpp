@@ -138,7 +138,7 @@ void EntityWindow::renderComponents() {
             if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
                 bool open = true;
                 if (ImGui::CollapsingHeader((name + "##Components" + name + "Header").c_str(), &open))
-                    componentWidget(compReg->getId(), (component::Component*)component);
+                    componentWidget(cmp::Entity(selected), compReg->getId(), (component::Component*)component);
                 if (!open)
                     component::removeComponentById(compReg->getId(), selected);
             }

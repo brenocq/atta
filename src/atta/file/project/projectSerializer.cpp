@@ -27,8 +27,6 @@ namespace atta::file {
 
 ProjectSerializer::ProjectSerializer(std::shared_ptr<Project> project) : _project(project) {}
 
-ProjectSerializer::~ProjectSerializer() {}
-
 void ProjectSerializer::serialize() {
     Serializer serializer;
     serializer.addSection(serializeProject());

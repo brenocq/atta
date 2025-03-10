@@ -10,31 +10,6 @@
 
 namespace atta::component {
 
-// void meshRenderImGui(void* data, std::string imguiId) {
-//     Mesh* mesh = static_cast<Mesh*>(data);
-//     resource::Mesh* m = resource::get<resource::Mesh>(mesh->sid.getString());
-//     if (m == nullptr)
-//         return;
-//
-//     std::string selectedName = mesh->sid.getString();
-//
-//     //---------- Selection ----------//
-//     if (ImGui::BeginCombo(("##Combo" + imguiId).c_str(), selectedName.c_str())) {
-//         std::vector<StringId> rMeshes = resource::getResources<resource::Mesh>();
-//         for (StringId rMesh : rMeshes) {
-//             std::string meshStr = rMesh.getString();
-//             if (meshStr == "")
-//                 meshStr = "##";
-//             const bool selected = (rMesh == mesh->sid);
-//             if (ImGui::Selectable(meshStr.c_str(), selected))
-//                 mesh->sid = rMesh;
-//             if (selected)
-//                 ImGui::SetItemDefaultFocus();
-//         }
-//         ImGui::EndCombo();
-//     }
-// }
-
 template <>
 ComponentDescription& TypedComponentRegistry<Mesh>::getDescription() {
     static ComponentDescription desc = {
@@ -45,10 +20,6 @@ ComponentDescription& TypedComponentRegistry<Mesh>::getDescription() {
         1024, // Max instances
         {},   // Serialize
         {},   // Deserialize
-              //{     // renderUI
-              // {
-              //     "", meshRenderImGui // Define how the component will be rendered
-              // }}
     };
 
     return desc;

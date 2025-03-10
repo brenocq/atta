@@ -334,11 +334,11 @@ void renderAttribute(cmp::AttributeDescription aDesc, void* d, unsigned size) {
     }
 }
 
-void componentWidget(cmp::ComponentId cid, cmp::Component* comp) {
+void componentWidget(cmp::Entity entity, cmp::ComponentId cid, cmp::Component* comp) {
     // Check if custom rendering was defined for this component
     std::optional<ComponentUIFunc> uiFunc = ui::getComponentUI(cid);
     if (uiFunc.has_value()) {
-        uiFunc.value()(comp);
+        uiFunc.value()(entity, comp);
         return;
     }
 

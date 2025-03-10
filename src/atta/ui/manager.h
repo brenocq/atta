@@ -20,7 +20,7 @@ class Manager final {
     friend void shutDown();
 
     //----- Custom component rendering -----//
-    using ComponentUIFunc = std::function<void(cmp::Component*)>;
+    using ComponentUIFunc = std::function<void(cmp::Entity, cmp::Component*)>;
     friend void registerComponentUI(cmp::ComponentId cid, ComponentUIFunc renderFunc);
     friend std::optional<ComponentUIFunc> getComponentUI(cmp::ComponentId cid);
 
@@ -35,6 +35,7 @@ class Manager final {
     void startUpImpl();
     void shutDownImpl();
 
+    void registerCustomComponentUIs();
     void registerComponentUIImpl(cmp::ComponentId cid, ComponentUIFunc renderFunc);
     std::optional<ComponentUIFunc> getComponentUIImpl(cmp::ComponentId cid);
 

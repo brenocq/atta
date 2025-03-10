@@ -14,7 +14,6 @@ namespace atta::file {
 class ProjectSerializer final {
   public:
     ProjectSerializer(std::shared_ptr<Project> project);
-    ~ProjectSerializer();
 
     void serialize();
     bool deserialize();
