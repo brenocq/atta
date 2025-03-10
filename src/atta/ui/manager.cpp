@@ -7,6 +7,7 @@
 #include <atta/component/components/cameraSensor.h>
 #include <atta/component/components/material.h>
 #include <atta/component/components/mesh.h>
+#include <atta/component/components/polygonCollider2D.h>
 #include <atta/component/typedComponentRegistry.h>
 #include <atta/event/events/uiCameraComponent.h>
 #include <atta/event/interface.h>
@@ -321,6 +322,50 @@ void Manager::registerCustomComponentUIs() {
         StringId aoImage = m->getAoImage();
         if (renderComboImage("AO", aoImage))
             m->setAoImage(aoImage);
+    });
+
+    //---------- Polygon Collider 2D ----------//
+    ui::registerComponentUI<cmp::PolygonCollider2D>([](cmp::Entity entity, cmp::Component* comp) {
+        // Render offset
+        const std::vector<cmp::AttributeDescription> aDescs =
+            cmp::TypedComponentRegistry<cmp::PolygonCollider2D>::getInstance().getDescription().attributeDescriptions;
+        void* attribData = (void*)((uint8_t*)comp + aDescs[0].offset);
+        float size = aDescs[1].offset - aDescs[0].offset;
+        renderAttribute(aDescs[0], attribData, size);
+
+        // Render polygon points
+        ImGui::Text("Points");
+        std::vector<vec2>* points = (std::vector<vec2>*)((uint8_t*)comp + aDescs[1].offset);
+        for (int i = 0; i < points->size(); i++) {
+            ImGui::PushID(i);
+            {
+                // Edit point
+                ImGui::DragFloat2("##PolygonCollider2DPoint", (float*)&((*points)[i]));
+
+                // Delete point
+                ImGui::SameLine();
+                if (ImGui::Button("-##PolygonCollider2DDeletePoint"))
+                    points->erase(points->begin() + i);
+
+                // Rearrange point
+                if (i > 0) {
+                    ImGui::SameLine();
+                    if (ImGui::Button("^")) {
+                        std::swap((*points)[i], (*points)[i - 1]);
+                    }
+                }
+                if (i < points->size() - 1) {
+                    ImGui::SameLine();
+                    if (ImGui::Button("v")) {
+                        std::swap((*points)[i], (*points)[i + 1]);
+                    }
+                }
+            }
+            ImGui::PopID();
+        }
+        // Add point
+        if (ImGui::Button("+##PolygonCollider2DAddPoint"))
+            points->push_back({});
     });
 }
 
