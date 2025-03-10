@@ -21,28 +21,9 @@ ComponentDescription& TypedComponentRegistry<PolygonCollider2D>::getDescription(
         // Max instances
         1024,
         // Serialize
-        {{"points",
-          [](std::ostream& os, void* data) {
-              // std::vector<vec2>* points = static_cast<std::vector<vec2>*>(data);
-              // file::write<uint32_t>(os, points->size());
-              // for (vec2 p : *points) {
-              //     file::write(os, p.x);
-              //     file::write(os, p.y);
-              // }
-          }}},
+        {{"points", [](std::ostream& os, void* data) {}}},
         // Deserialize
-        {{"points",
-          [](std::istream& is, void* data) {
-              // std::vector<vec2>* points = static_cast<std::vector<vec2>*>(data);
-              // uint32_t size;
-              // file::read(is, size);
-              // for (int i = 0; i < size; i++) {
-              //     vec2 p;
-              //     file::read(is, p.x);
-              //     file::read(is, p.y);
-              //     points->push_back(p);
-              // }
-          }}},
+        {{"points", [](std::istream& is, void* data) {}}},
     };
 
     return desc;

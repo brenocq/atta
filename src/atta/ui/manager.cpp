@@ -369,9 +369,9 @@ void Manager::registerCustomComponentUIs() {
     });
 }
 
-void Manager::registerComponentUIImpl(cmp::ComponentId cid, ComponentUIFunc renderFunc) { _componentRenderFuncs[cid] = renderFunc; }
+void Manager::registerComponentUIImpl(cmp::ComponentId cid, const ComponentUIFunc& renderFunc) { _componentRenderFuncs[cid] = renderFunc; }
 
-std::optional<Manager::ComponentUIFunc> Manager::getComponentUIImpl(cmp::ComponentId cid) {
+std::optional<ComponentUIFunc> Manager::getComponentUIImpl(cmp::ComponentId cid) {
     if (_componentRenderFuncs.find(cid) != _componentRenderFuncs.end())
         return _componentRenderFuncs[cid];
     return std::nullopt;

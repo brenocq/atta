@@ -8,7 +8,7 @@
 namespace atta::ui {
 
 template <typename T>
-void registerComponentUI(ComponentUIFunc renderFunc) {
+void registerComponentUI(const ComponentUIFunc& renderFunc) {
     registerComponentUI(cmp::getId<T>(), renderFunc);
 }
 

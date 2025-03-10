@@ -9,6 +9,7 @@
 
 #include <atta/graphics/interface.h>
 #include <atta/ui/editor.h>
+#include <atta/ui/interface.h>
 
 namespace atta::ui {
 
@@ -20,8 +21,7 @@ class Manager final {
     friend void shutDown();
 
     //----- Custom component rendering -----//
-    using ComponentUIFunc = std::function<void(cmp::Entity, cmp::Component*)>;
-    friend void registerComponentUI(cmp::ComponentId cid, ComponentUIFunc renderFunc);
+    friend void registerComponentUI(cmp::ComponentId cid, const ComponentUIFunc& renderFunc);
     friend std::optional<ComponentUIFunc> getComponentUI(cmp::ComponentId cid);
 
     friend const std::vector<std::shared_ptr<ui::Viewport>>& getViewports();
@@ -36,7 +36,7 @@ class Manager final {
     void shutDownImpl();
 
     void registerCustomComponentUIs();
-    void registerComponentUIImpl(cmp::ComponentId cid, ComponentUIFunc renderFunc);
+    void registerComponentUIImpl(cmp::ComponentId cid, const ComponentUIFunc& renderFunc);
     std::optional<ComponentUIFunc> getComponentUIImpl(cmp::ComponentId cid);
 
     const std::vector<std::shared_ptr<ui::Viewport>>& getViewportsImpl() const;

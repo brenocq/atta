@@ -18,8 +18,8 @@ void shutDown();
 //----- Custom component UI -----//
 using ComponentUIFunc = std::function<void(cmp::Entity, cmp::Component*)>;
 template <typename T>
-void registerComponentUI(ComponentUIFunc renderFunc);
-void registerComponentUI(cmp::ComponentId cid, ComponentUIFunc renderFunc);
+void registerComponentUI(const ComponentUIFunc& renderFunc);
+void registerComponentUI(cmp::ComponentId cid, const ComponentUIFunc& renderFunc);
 template <typename T>
 std::optional<ComponentUIFunc> getComponentUI();
 std::optional<ComponentUIFunc> getComponentUI(cmp::ComponentId cid);

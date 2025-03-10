@@ -13,7 +13,7 @@ void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
 //----- Custom component rendering -----//
-void registerComponentUI(cmp::ComponentId cid, ComponentUIFunc renderFunc) { Manager::getInstance().registerComponentUIImpl(cid, renderFunc); }
+void registerComponentUI(cmp::ComponentId cid, const ComponentUIFunc& renderFunc) { Manager::getInstance().registerComponentUIImpl(cid, renderFunc); }
 std::optional<ComponentUIFunc> getComponentUI(cmp::ComponentId cid) { return Manager::getInstance().getComponentUIImpl(cid); }
 
 //----- Viewport -----//

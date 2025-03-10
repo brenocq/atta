@@ -9,6 +9,7 @@
 #include <atta/component/components/components.h>
 #include <atta/component/components/relationship.h>
 #include <atta/component/interface.h>
+#include <atta/file/interface.h>
 #include <atta/file/project/projectSerializer.h>
 #include <atta/file/serializer/section.h>
 #include <atta/file/serializer/serializer.h>
@@ -282,20 +283,27 @@ std::vector<Section> ProjectSerializer::serializeNodes() {
             // Serialize each attribute of the component
             std::string cmpName = toCamelCase(compReg->getDescription().name);
 
-            if (cmpName == "relationship") {
-                // TODO implement serialization of custom components
-                cmp::Relationship* rel = cmp::Entity(eid).get<cmp::Relationship>();
-                if (rel == nullptr)
-                    continue;
-                if (rel->getParent() != -1)
-                    section[cmpName + ".parent"] = rel->getParent().getId();
+            std::optional<SerializeFunc> serializeFunc;
+            std::optional<DeserializeFunc> deserializeFunc;
+            file::getComponentIO(compReg->getId(), serializeFunc, deserializeFunc);
+            if (serializeFunc.has_value() && deserializeFunc.has_value()) {
+                serializeFunc.value()(section, comp);
             } else {
-                const std::vector<cmp::AttributeDescription> attributeDescriptions = compReg->getDescription().attributeDescriptions;
-                for (size_t i = 0; i < attributeDescriptions.size(); i++) {
-                    cmp::AttributeDescription aDesc = attributeDescriptions[i];
-                    size_t size = (i == attributeDescriptions.size() - 1) ? compReg->getSizeof() - aDesc.offset
-                                                                          : attributeDescriptions[i + 1].offset - aDesc.offset;
-                    serializeAttribute(section, cmpName, comp, aDesc, size);
+                if (cmpName == "relationship") {
+                    // TODO implement serialization of custom components
+                    cmp::Relationship* rel = cmp::Entity(eid).get<cmp::Relationship>();
+                    if (rel == nullptr)
+                        continue;
+                    if (rel->getParent() != -1)
+                        section[cmpName + ".parent"] = rel->getParent().getId();
+                } else {
+                    const std::vector<cmp::AttributeDescription> attributeDescriptions = compReg->getDescription().attributeDescriptions;
+                    for (size_t i = 0; i < attributeDescriptions.size(); i++) {
+                        cmp::AttributeDescription aDesc = attributeDescriptions[i];
+                        size_t size = (i == attributeDescriptions.size() - 1) ? compReg->getSizeof() - aDesc.offset
+                                                                              : attributeDescriptions[i + 1].offset - aDesc.offset;
+                        serializeAttribute(section, cmpName, comp, aDesc, size);
+                    }
                 }
             }
         }
@@ -511,45 +519,51 @@ void ProjectSerializer::deserializeNode(const Section& section) {
     // Iterate through all registered components
     for (cmp::ComponentRegistry* compReg : cmp::getComponentRegistries()) {
         std::string cmpName = toCamelCase(compReg->getDescription().name);
+        std::optional<SerializeFunc> serializeFunc;
+        std::optional<DeserializeFunc> deserializeFunc;
+        file::getComponentIO(compReg->getId(), serializeFunc, deserializeFunc);
+        if (serializeFunc.has_value() && deserializeFunc.has_value()) {
+            deserializeFunc.value()(section, entity);
+        } else {
+            if (cmpName == "relationship") {
+                // TODO implement deserialization of custom components
+                if (section.contains("relationship.parent")) {
+                    // Check if parent is valid
+                    cmp::EntityId parent = uint32_t(section["relationship.parent"]);
+                    if (parent == -1)
+                        continue;
 
-        if (cmpName == "relationship") {
-            // TODO implement deserialization of custom components
-            if (section.contains("relationship.parent")) {
-                // Check if parent is valid
-                cmp::EntityId parent = uint32_t(section["relationship.parent"]);
-                if (parent == -1)
+                    // Create parent if it doesn't exist yet
+                    std::vector<cmp::EntityId> entities = cmp::getEntitiesView();
+                    bool parentExists = std::find(entities.begin(), entities.end(), parent) != entities.end();
+                    if (!parentExists)
+                        cmp::createEntity(parent);
+
+                    // Update relationship component
+                    entity.add<cmp::Relationship>()->setParent(parent, entity);
+
+                    LOG_DEBUG("file::ProjectSerializer", "--------------> Entity [w]$0[] parent [w]$1", entity, parent);
+                }
+            } else {
+                // Check if this component exists in the serialized section
+                bool hasComponent = false;
+                for (const cmp::AttributeDescription& attribute : compReg->getDescription().attributeDescriptions) {
+                    std::string dataKey = cmpName + '.' + toCamelCase(attribute.name);
+                    if (section.contains(dataKey)) {
+                        hasComponent = true;
+                        break;
+                    }
+                }
+                if (!hasComponent)
                     continue;
 
-                // Create parent if it doesn't exist yet
-                std::vector<cmp::EntityId> entities = cmp::getEntitiesView();
-                bool parentExists = std::find(entities.begin(), entities.end(), parent) != entities.end();
-                if (!parentExists)
-                    cmp::createEntity(parent);
+                // Add component to entity
+                cmp::Component* comp = cmp::addComponentById(compReg->getId(), entity);
 
-                // Update relationship component
-                entity.add<cmp::Relationship>()->setParent(parent, entity);
-
-                LOG_DEBUG("file::ProjectSerializer", "--------------> Entity [w]$0[] parent [w]$1", entity, parent);
-            }
-        } else {
-            // Check if this component exists in the serialized section
-            bool hasComponent = false;
-            for (const cmp::AttributeDescription& attribute : compReg->getDescription().attributeDescriptions) {
-                std::string dataKey = cmpName + '.' + toCamelCase(attribute.name);
-                if (section.contains(dataKey)) {
-                    hasComponent = true;
-                    break;
+                // Deserialize each attribute
+                for (const cmp::AttributeDescription& attribute : compReg->getDescription().attributeDescriptions) {
+                    deserializeAttribute(section, cmpName, comp, attribute);
                 }
-            }
-            if (!hasComponent)
-                continue;
-
-            // Add component to entity
-            cmp::Component* comp = cmp::addComponentById(compReg->getId(), entity);
-
-            // Deserialize each attribute
-            for (const cmp::AttributeDescription& attribute : compReg->getDescription().attributeDescriptions) {
-                deserializeAttribute(section, cmpName, comp, attribute);
             }
         }
     }
