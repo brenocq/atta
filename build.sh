@@ -15,54 +15,58 @@ RUN_AFTER="false"
 PROJECT_TO_RUN=""
 INSTALL_AFTER="false"
 NUM_JOBS=""
+CMAKE_VULKAN=""
 
 printHelp()
 {
-   echo "Atta build script"
-   echo
-   echo "Usage: ./build.sh [option(s)]"
-   echo
-   echo "Options:"
-   echo
-   echo "-h or --help"
-   echo "        This help menu"
-   echo
-   echo "-t or --type <option>"
-   echo "        Which type of build."
-   echo "        Valid options are: default, web, web_module, docs"
-   echo
-   echo "-d or --debug"
-   echo "        Build with debug information."
-   echo
-   echo "-g or --gdb"
-   echo "        Run with gdb."
-   echo
-   echo "-c or --compiler <name>"
-   echo "        Select the compiler."
-   echo
-   echo "-j or --jobs <num_jobs>"
-   echo "        Set number of jobs to use when building."
-   echo
-   echo "-s or --static <project_file>"
-   echo "        Build statically linked to a project."
-   echo "        The file should be a valid .atta"
-   echo
-   echo "-r or --run"
-   echo "        Run after build."
-   echo
-   echo "-p or --project <project_file>"
-   echo "        Specify project to run."
-   echo
-   echo "-i or --install"
-   echo "        Install after build."
-   exit
+    echo "Atta build script"
+    echo
+    echo "Usage: ./build.sh [option(s)]"
+    echo
+    echo "Options:"
+    echo
+    echo "-h or --help"
+    echo "        This help menu"
+    echo
+    echo "-t or --type <option>"
+    echo "        Which type of build."
+    echo "        Valid options are: default, web, web_module, docs"
+    echo
+    echo "-d or --debug"
+    echo "        Build with debug information."
+    echo
+    echo "-D or --debugger"
+    echo "        Run with a debugger (prefers LLDB, falls back to GDB)."
+    echo
+    echo "-c or --compiler <name>"
+    echo "        Select the compiler."
+    echo
+    echo "-j or --jobs <num_jobs>"
+    echo "        Set number of jobs to use when building."
+    echo
+    echo "-s or --static <project_file>"
+    echo "        Build statically linked to a project."
+    echo "        The file should be a valid .atta"
+    echo
+    echo "-r or --run"
+    echo "        Run after build."
+    echo
+    echo "-p or --project <project_file>"
+    echo "        Specify project to run."
+    echo
+    echo "-i or --install"
+    echo "        Install after build."
+    echo
+    echo "--disable-vulkan"
+    echo "        Disable Vulkan support."
+    exit
 }
 
 buildDefault()
 {
     echo "---------- Building ----------"
     # Build
-    cmake $CMAKE_BUILD_TYPE $CMAKE_COMPILER $CMAKE_ATTA_STATIC $SOURCE_PATH
+    cmake $CMAKE_BUILD_TYPE $CMAKE_COMPILER $CMAKE_ATTA_STATIC $CMAKE_VULKAN $SOURCE_PATH
     make -j $NUM_JOBS
 
     # Install
@@ -74,8 +78,18 @@ buildDefault()
     # Run
     if [[ "$RUN_AFTER" == "true" ]]; then
         echo "---------- Running ----------"
-        if [[ "$USE_GDB" == "true" ]]; then
-            gdb -ex r --args bin/atta $PROJECT_TO_RUN
+        if [[ "$USE_DEBUGGER" == "true" ]]; then
+            # Detect available debugger (prefer LLDB)
+            if command -v lldb &> /dev/null; then
+                echo "Using LLDB for debugging..."
+                lldb --one-line "run" -- bin/atta -- $PROJECT_TO_RUN
+            elif command -v gdb &> /dev/null; then
+                echo "Using GDB for debugging..."
+                gdb -ex r --args bin/atta $PROJECT_TO_RUN
+            else
+                echo -e "\033[1m\033[31m[Error] \033[0m\033[31mNo debugger found (LLDB or GDB). Install one to continue."
+                exit 1
+            fi
         else
             bin/atta $PROJECT_TO_RUN
         fi
@@ -131,8 +145,8 @@ while [[ $# -gt 0 ]]; do
       BUILD_NAME="debug"
       shift # past argument
       ;;
-    -g|--gdb)
-      USE_GDB="true"
+    -D|--debugger)
+      USE_DEBUGGER="true"
       RUN_AFTER="true"
       shift # past argument
       ;;
@@ -172,6 +186,10 @@ while [[ $# -gt 0 ]]; do
       BUILD_NAME_SUFIX="-static"
       shift # past argument
       shift # past value
+      ;;
+    --disable-vulkan)
+      CMAKE_VULKAN="-DATTA_VULKAN_SUPPORT=OFF"
+      shift
       ;;
     -*|--*)
       echo "Unknown option $1"

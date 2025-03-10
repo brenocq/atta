@@ -96,6 +96,7 @@ Atta::~Atta() {
 
 #ifdef ATTA_OS_WEB
 #include <emscripten.h>
+
 void attaLoop(void* atta) { ((Atta*)atta)->loop(); }
 
 void Atta::run() {

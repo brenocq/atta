@@ -29,6 +29,19 @@ class GraphicsAPI {
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 
+    /// Get Graphics API version
+    ///
+    /// This function returns the version of the active graphics API (OpenGL or Vulkan).
+    ///
+    /// - **For OpenGL**, the version is encoded as:
+    ///   - OpenGL 3.0 → `300`
+    ///   - OpenGL 4.1 → `410`
+    ///
+    /// - **For Vulkan**, only the **major and minor versions** are returned, ignoring the patch and variant:
+    ///   - Vulkan 1.4.304.0 → `140`
+    ///   - Vulkan 1.2.232.0 → `120`
+    uint32_t getAPIVersion() const { return _apiVersion; };
+
     virtual void renderFramebufferToQuad(std::shared_ptr<Framebuffer> framebuffer) = 0;
 
     virtual void generateCubemap(StringId textureSid, mat4 rotationMatrix = mat4(1.0f)) = 0;
@@ -59,6 +72,7 @@ class GraphicsAPI {
   protected:
     Type _type;
     std::shared_ptr<Window> _window;
+    uint32_t _apiVersion = 0;
 };
 
 } // namespace atta::graphics

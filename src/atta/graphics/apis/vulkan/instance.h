@@ -19,6 +19,10 @@ class Instance {
     bool wasCreated() const;
 
     VkInstance getHandle() const;
+    uint32_t getApiVersion() const;
+
+    /// True if there is a GPU with vulkan support
+    bool hasCompatibleGPU() const;
 
   private:
     void printAvailableExtensions();
@@ -33,6 +37,7 @@ class Instance {
     VkInstance _instance;
     bool _wasCreated;
     VkDebugUtilsMessengerEXT debugMessenger;
+    uint32_t _apiVersion;
 };
 
 } // namespace atta::graphics::vk

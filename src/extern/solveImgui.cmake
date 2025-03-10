@@ -25,14 +25,16 @@ if(ATTA_VULKAN_SUPPORT)
     list(APPEND IMGUI_SOURCE ${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_vulkan.cpp)
 endif()
 
-add_library(imgui STATIC
-	${IMGUI_SOURCE}
-)
+add_library(imgui STATIC ${IMGUI_SOURCE})
 target_include_directories(imgui PUBLIC
     $<BUILD_INTERFACE:${FETCHCONTENT_BASE_DIR}/imgui-src>
     $<INSTALL_INTERFACE:include/${ATTA_VERSION_SAFE}/extern/imgui>
 )
-target_link_libraries(imgui PRIVATE glfw)
+target_link_libraries(imgui PRIVATE ${ATTA_GLFW_TARGETS})
+if(ATTA_VULKAN_SUPPORT)
+    target_link_libraries(imgui PRIVATE ${ATTA_VOLK_TARGETS})
+    target_compile_options(imgui PUBLIC -DIMGUI_IMPL_VULKAN_USE_VOLK)
+endif()
 if(NOT MSVC)
 	target_compile_options(imgui PRIVATE -Wno-invalid-noreturn)
 endif()

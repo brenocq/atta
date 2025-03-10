@@ -7,7 +7,11 @@
 #ifndef ATTA_GRAPHICS_APIS_OPENGL_BASE_H
 #define ATTA_GRAPHICS_APIS_OPENGL_BASE_H
 
-#include <glad/glad.h>
+#ifdef ATTA_OS_WEB
+#include <glad/gles2.h>
+#else
+#include <glad/gl.h>
+#endif
 
 namespace atta::graphics::gl {
 

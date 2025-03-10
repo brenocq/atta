@@ -139,6 +139,16 @@ void Manager::setGraphicsAPIImpl(GraphicsAPI::Type type) {
     _desiredGraphicsAPI = type;
 }
 
+std::vector<GraphicsAPI::Type> Manager::getSupportedGraphicsAPIsImpl() const {
+    std::vector<GraphicsAPI::Type> supported;
+    supported.push_back(GraphicsAPI::OPENGL);
+#if ATTA_VULKAN_SUPPORT
+    if (VulkanAPI::isSupported())
+        supported.push_back(GraphicsAPI::VULKAN);
+#endif
+    return supported;
+}
+
 void Manager::recreateGraphicsAPI() {
     if (_uiShutDownFunc)
         _uiShutDownFunc();
