@@ -15,6 +15,9 @@ namespace atta::ui {
 
 void componentWidget(cmp::Entity entity, cmp::ComponentId cid, cmp::Component* comp);
 
+void renderAttributes(const std::vector<cmp::AttributeDescription>& aDescs, cmp::Component* comp, unsigned compSizeOf);
+void renderAttribute(cmp::AttributeDescription aDesc, void* d, unsigned size);
+
 } // namespace atta::ui
 
 #endif // ATTA_UI_WIDGETS_COMPONENT_H

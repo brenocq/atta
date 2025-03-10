@@ -334,14 +334,23 @@ void renderAttribute(cmp::AttributeDescription aDesc, void* d, unsigned size) {
     }
 }
 
-void componentWidget(cmp::Entity entity, cmp::ComponentId cid, cmp::Component* comp) {
-    // Check if custom rendering was defined for this component
-    std::optional<ComponentUIFunc> uiFunc = ui::getComponentUI(cid);
-    if (uiFunc.has_value()) {
-        uiFunc.value()(entity, comp);
-        return;
-    }
+void renderAttributes(const std::vector<cmp::AttributeDescription>& aDescs, cmp::Component* comp, unsigned compSizeOf) {
+    // Render UI for each attribute
+    for (unsigned i = 0; i < aDescs.size(); i++) {
+        cmp::AttributeDescription aDesc = aDescs[i];
 
+        // Calculate data and size
+        void* data = (void*)((uint8_t*)comp + aDesc.offset);
+        unsigned size = (i == aDescs.size() - 1) ? compSizeOf - aDesc.offset : aDescs[i + 1].offset - aDesc.offset;
+
+        // Render attribute
+        ImGui::PushID(aDesc.name.c_str());
+        renderAttribute(aDesc, data, size);
+        ImGui::PopID();
+    }
+}
+
+void componentDefaultRender(cmp::Entity entity, cmp::ComponentId cid, cmp::Component* comp) {
     // Get component description
     std::vector<cmp::ComponentRegistry*> cmpRegs = cmp::getComponentRegistries();
     cmp::ComponentRegistry* cmpReg = nullptr;
@@ -355,25 +364,23 @@ void componentWidget(cmp::Entity entity, cmp::ComponentId cid, cmp::Component* c
         LOG_ERROR("ui::componentWidget", "ComponentId [w]$0[] is invalid, there are only [w]$1`[] components registered", cid, cmpRegs.size());
         return;
     }
+
+    // Render component attributes
     const cmp::ComponentDescription& description = cmpReg->getDescription();
-    LOG_DEBUG("ui::componentWidget", "Rendering component [w]$0[]", description.name);
-
     const std::vector<cmp::AttributeDescription> attributeDescriptions = description.attributeDescriptions;
+    renderAttributes(attributeDescriptions, comp, cmpReg->getSizeof());
+}
 
-    // Render UI for each attribute
-    for (unsigned i = 0; i < attributeDescriptions.size(); i++) {
-        cmp::AttributeDescription aDesc = attributeDescriptions[i];
-
-        // Calculate data and size
-        void* data = (void*)((uint8_t*)comp + aDesc.offset);
-        unsigned size =
-            (i == attributeDescriptions.size() - 1) ? cmpReg->getSizeof() - aDesc.offset : attributeDescriptions[i + 1].offset - aDesc.offset;
-
-        // Render attribute
-        ImGui::PushID((description.name + aDesc.name).c_str());
-        renderAttribute(aDesc, data, size);
-        ImGui::PopID();
+void componentWidget(cmp::Entity entity, cmp::ComponentId cid, cmp::Component* comp) {
+    // Check if custom rendering was defined for this component
+    std::optional<ComponentUIFunc> uiFunc = ui::getComponentUI(cid);
+    if (uiFunc.has_value()) {
+        // Custom component UI (custom UI specified defined for this component)
+        uiFunc.value()(entity, comp);
+        return;
     }
+    // Default component UI (render attributes)
+    componentDefaultRender(entity, cid, comp);
 }
 
 } // namespace atta::ui

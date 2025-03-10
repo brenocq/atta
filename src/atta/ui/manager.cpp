@@ -4,7 +4,11 @@
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/component/components/cameraSensor.h>
 #include <atta/component/components/mesh.h>
+#include <atta/component/typedComponentRegistry.h>
+#include <atta/event/events/uiCameraComponent.h>
+#include <atta/event/interface.h>
 #include <atta/file/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/resource/interface.h>
@@ -129,6 +133,20 @@ void Manager::registerCustomComponentUIs() {
             }
             ImGui::EndCombo();
         }
+    });
+
+    //---------- Camera ----------//
+    ui::registerComponentUI<cmp::CameraSensor>([](cmp::Entity entity, cmp::Component* comp) {
+        if (ImGui::Button("View image")) {
+            evt::UiCameraComponent event;
+            event.component = static_cast<cmp::CameraSensor*>(comp);
+            event.uiEvent = evt::UiCameraComponent::UiEvent::VIEW_BUTTON_CLICKED;
+            evt::publish(event);
+        }
+
+        const std::vector<cmp::AttributeDescription> aDescs =
+            cmp::TypedComponentRegistry<cmp::CameraSensor>::getInstance().getDescription().attributeDescriptions;
+        renderAttributes(aDescs, comp, sizeof(cmp::CameraSensor));
     });
 }
 
