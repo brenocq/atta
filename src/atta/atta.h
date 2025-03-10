@@ -10,6 +10,12 @@
 #include <atta/memory/allocators/stackAllocator.h>
 #include <ctime>
 
+//check if ROS2 is enabled
+#ifdef WITH_ROS2
+#include <atta/RosPlugin/include/RosPlugin.hpp>
+#else
+#include <atta/RosPlugin/include/RosPluginStub.hpp>  // Use the stub instead
+#endif
 namespace atta {
 class Atta {
   public:
@@ -37,6 +43,8 @@ class Atta {
     bool _shouldStep;
     clock_t _lastStep;
     clock_t _currStep;
+    
+    std::shared_ptr<RosPlugin> ros_node;
 };
 } // namespace atta
 

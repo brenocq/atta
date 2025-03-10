@@ -7,6 +7,14 @@ option(ATTA_BUILD_DOCS "Build the documentation" OFF)
 option(ATTA_WEB_BUILD_MODULE "Set to ON to generate only the javascript module" OFF)
 option(ATTA_STATIC_PROJECT_FILE "Project to be linked statically to atta" "")
 option(ATTA_PROFILE "Set to ON to enable code profiling" ON)
+option(WITH_ROS2 "Build with ROS 2 support" OFF)
+
+#auto-detection of ROS environment
+if(DEFINED ENV{ROS_DISTRO})
+    set(WITH_ROS2 ON)
+endif()
+
+message(STATUS "WITH_ROS2 is set to: ${WITH_ROS2}")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

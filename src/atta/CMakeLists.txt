@@ -23,6 +23,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/physics)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sensor)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/io)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/RosPlugin)
 
 set(ATTA_TEST_SOURCES ${ATTA_TEST_SOURCES} PARENT_SCOPE)
 set(ATTA_LIBS ${ATTA_LIBS} PARENT_SCOPE)
