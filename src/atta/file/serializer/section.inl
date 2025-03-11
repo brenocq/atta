@@ -84,21 +84,21 @@ std::string toString(const T& value) {
     }
     // Handle vector2
     else if constexpr (atta::file::is_vector2_v<U>) {
-        return "vector2(" + std::to_string(value.x) + ", " + std::to_string(value.y) + ")";
+        return "vec2(" + std::to_string(value.x) + ", " + std::to_string(value.y) + ")";
     }
     // Handle vector3
     else if constexpr (atta::file::is_vector3_v<U>) {
-        return "vector3(" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + ")";
+        return "vec3(" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + ")";
     }
-    // Handle vector4
+    // Handle vec4
     else if constexpr (atta::file::is_vector4_v<U>) {
-        return "vector4(" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + ", " +
-               std::to_string(value.w) + ")";
+        return "vec4(" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + ", " + std::to_string(value.w) +
+               ")";
     }
     // Handle quat
     else if constexpr (std::is_same_v<U, atta::quat>) {
-        return "quaternion(" + std::to_string(value.i) + ", " + std::to_string(value.j) + ", " + std::to_string(value.k) + ", " +
-               std::to_string(value.r) + ")";
+        return "quat(" + std::to_string(value.i) + ", " + std::to_string(value.j) + ", " + std::to_string(value.k) + ", " + std::to_string(value.r) +
+               ")";
     }
     // Handle strings
     else if constexpr (std::is_convertible_v<U, std::string>) {
@@ -190,66 +190,66 @@ SectionData::operator T() const {
     }
     // Handle vector2
     else if constexpr (is_vector2<U>::value) {
-        if (_str.substr(0, 7) != "vector2") {
-            LOG_WARN("SectionData", "Invalid format for vector2: [w]$0", _str);
+        if (_str.substr(0, 4) != "vec2") {
+            LOG_WARN("SectionData", "Invalid format for vec2: [w]$0", _str);
             return U();
         }
-        std::istringstream iss(_str.substr(7)); // Skip the "vector2" prefix
+        std::istringstream iss(_str.substr(4)); // Skip the "vec2" prefix
         char discard;
         U result{};
         if (iss >> discard && discard == '(' && iss >> std::ws >> result.x >> std::ws >> discard && discard == ',' &&
             iss >> std::ws >> result.y >> std::ws >> discard && discard == ')') {
             return result;
         }
-        LOG_WARN("SectionData", "Failed to cast SectionData to vector2: [w]$0", _str);
+        LOG_WARN("SectionData", "Failed to cast SectionData to vec2: [w]$0", _str);
         return U();
     }
     // Handle vector3
     else if constexpr (is_vector3<U>::value) {
-        if (_str.substr(0, 7) != "vector3") {
-            LOG_WARN("SectionData", "Invalid format for vector3: [w]$0", _str);
+        if (_str.substr(0, 4) != "vec3") {
+            LOG_WARN("SectionData", "Invalid format for vec3: [w]$0", _str);
             return U();
         }
-        std::istringstream iss(_str.substr(7)); // Skip the "vector3" prefix
+        std::istringstream iss(_str.substr(4)); // Skip the "vec3" prefix
         char discard;
         U result{};
         if (iss >> discard && discard == '(' && iss >> result.x && iss >> discard && discard == ',' && iss >> result.y && iss >> discard &&
             discard == ',' && iss >> result.z && iss >> discard && discard == ')') {
             return result;
         }
-        LOG_WARN("SectionData", "Failed to cast SectionData to vector3");
+        LOG_WARN("SectionData", "Failed to cast SectionData to vec3");
         return U();
     }
     // Handle vector4
     else if constexpr (is_vector4<U>::value) {
-        if (_str.substr(0, 7) != "vector4") {
-            LOG_WARN("SectionData", "Invalid format for vector4: [w]$0", _str);
+        if (_str.substr(0, 4) != "vec4") {
+            LOG_WARN("SectionData", "Invalid format for vec4: [w]$0", _str);
             return U();
         }
-        std::istringstream iss(_str.substr(7)); // Skip the "vector4" prefix
+        std::istringstream iss(_str.substr(4)); // Skip the "vec4" prefix
         char discard;
         U result{};
         if (iss >> discard && discard == '(' && iss >> result.x && iss >> discard && discard == ',' && iss >> result.y && iss >> discard &&
             discard == ',' && iss >> result.z && iss >> discard && discard == ',' && iss >> result.w && iss >> discard && discard == ')') {
             return result;
         }
-        LOG_WARN("SectionData", "Failed to cast SectionData to vector4");
+        LOG_WARN("SectionData", "Failed to cast SectionData to vec4");
         return U();
     }
     // Handle quaternion
     else if constexpr (std::is_same_v<U, atta::quat>) {
-        if (_str.substr(0, 10) != "quaternion") {
-            LOG_WARN("SectionData", "Invalid format for quaternion: [w]$0", _str);
+        if (_str.substr(0, 4) != "quat") {
+            LOG_WARN("SectionData", "Invalid format for quat: [w]$0", _str);
             return U();
         }
-        std::istringstream iss(_str.substr(10)); // Skip the "quaternion" prefix
+        std::istringstream iss(_str.substr(4)); // Skip the "quat" prefix
         char discard;
         U result{};
         if (iss >> discard && discard == '(' && iss >> result.i && iss >> discard && discard == ',' && iss >> result.j && iss >> discard &&
             discard == ',' && iss >> result.k && iss >> discard && discard == ',' && iss >> result.r && iss >> discard && discard == ')') {
             return result;
         }
-        LOG_WARN("SectionData", "Failed to cast SectionData to quaternion");
+        LOG_WARN("SectionData", "Failed to cast SectionData to quat");
         return U();
     }
     // Handle strings

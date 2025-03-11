@@ -311,18 +311,19 @@ bool ProjectSerializer::deserializeProject(const Section& section) {
         LOG_WARN("file::ProjectSerializer", "Project [w]$0[] does not have an atta version. The project will not be loaded", _project->getName());
         return false;
     }
-    std::string projectAttaVersion = std::string(section["attaVersion"]);
-    if (projectAttaVersion != ATTA_VERSION) {
-        LOG_WARN(
-            "file::ProjectSerializer",
-            "Project [w]$0[] was created with atta version [w]$1[], which does not match this atta version [w]$2[]. The project will not be loaded",
-            _project->getName(), projectAttaVersion, ATTA_VERSION);
-        return false;
-    }
 
     // Load project name
     if (section.contains("name"))
         _project->_name = std::string(section["name"]);
+
+    // Check atta version
+    std::string projectAttaVersion = std::string(section["attaVersion"]);
+    if (projectAttaVersion != ATTA_VERSION) {
+        LOG_WARN("file::ProjectSerializer",
+                 "Project [w]$0[] was created with atta version [w]$1[], which does not match your atta version [w]$2[]. You may experience "
+                 "some issues",
+                 _project->getName(), projectAttaVersion, ATTA_VERSION);
+    }
     return true;
 }
 

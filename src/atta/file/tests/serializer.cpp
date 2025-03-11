@@ -45,15 +45,15 @@ TEST(File_Serializer, SectionData_ValueToString) {
     EXPECT_EQ(data.getStr(), "{true, false}");
     // Test custom atta types
     data = vec2(1.0f, 2.0f);
-    EXPECT_EQ(data.getStr(), "vector2(" + std::to_string(1.0f) + ", " + std::to_string(2.0f) + ")");
+    EXPECT_EQ(data.getStr(), "vec2(" + std::to_string(1.0f) + ", " + std::to_string(2.0f) + ")");
     data = vec3(1.0f, 2.0f, 3.0f);
-    EXPECT_EQ(data.getStr(), "vector3(" + std::to_string(1.0f) + ", " + std::to_string(2.0f) + ", " + std::to_string(3.0f) + ")");
+    EXPECT_EQ(data.getStr(), "vec3(" + std::to_string(1.0f) + ", " + std::to_string(2.0f) + ", " + std::to_string(3.0f) + ")");
     data = vec4(1.0f, 2.0f, 3.0f, 4.0f);
     EXPECT_EQ(data.getStr(),
-              "vector4(" + std::to_string(1.0f) + ", " + std::to_string(2.0f) + ", " + std::to_string(3.0f) + ", " + std::to_string(4.0f) + ")");
+              "vec4(" + std::to_string(1.0f) + ", " + std::to_string(2.0f) + ", " + std::to_string(3.0f) + ", " + std::to_string(4.0f) + ")");
     data = quat(0.7071f, 0.7071f, 0.0f, 0.0f); // TODO quat constructor should be quat(i, j, k, r)
-    EXPECT_EQ(data.getStr(), "quaternion(" + std::to_string(0.7071f) + ", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ", " +
-                                 std::to_string(0.7071f) + ")");
+    EXPECT_EQ(data.getStr(),
+              "quat(" + std::to_string(0.7071f) + ", " + std::to_string(0.0f) + ", " + std::to_string(0.0f) + ", " + std::to_string(0.7071f) + ")");
 }
 
 TEST(File_Serializer, SectionData_StringToValue) {
@@ -160,19 +160,19 @@ TEST(File_Serializer, Section_InsertFromString) {
     EXPECT_EQ(std::string(section["key1"]), "newValue"); // Overwrite existing value
 
     // Complex types
-    section.insertFromString("key9.vec2 = vector2(1.0, 2.0)");
+    section.insertFromString("key9.vec2 = vec2(1.0, 2.0)");
     EXPECT_TRUE(section.contains("key9.vec2"));
     EXPECT_EQ(vec2(section["key9.vec2"]), vec2(1.0f, 2.0f));
 
-    section.insertFromString("key10.vec3 = vector3(1.0, 2.0, 3.0)");
+    section.insertFromString("key10.vec3 = vec3(1.0, 2.0, 3.0)");
     EXPECT_TRUE(section.contains("key10.vec3"));
     EXPECT_EQ(vec3(section["key10.vec3"]), vec3(1.0f, 2.0f, 3.0f));
 
-    section.insertFromString("key11.vec4 = vector4(1.0, 2.0, 3.0, 4.0)");
+    section.insertFromString("key11.vec4 = vec4(1.0, 2.0, 3.0, 4.0)");
     EXPECT_TRUE(section.contains("key11.vec4"));
     EXPECT_EQ(vec4(section["key11.vec4"]), vec4(1.0f, 2.0f, 3.0f, 4.0f));
 
-    section.insertFromString("key12.quat = quaternion(0.7071, 0.0, 0.0, 0.7071)");
+    section.insertFromString("key12.quat = quat(0.7071, 0.0, 0.0, 0.7071)");
     EXPECT_TRUE(section.contains("key12.quat"));
     EXPECT_EQ(quat(section["key12.quat"]), quat(0.7071f, 0.7071f, 0.0f, 0.0f));
 
@@ -181,7 +181,7 @@ TEST(File_Serializer, Section_InsertFromString) {
     EXPECT_TRUE(section.contains("key13.vectorInt"));
     EXPECT_THAT(std::vector<int>(section["key13.vectorInt"]), ElementsAre(1, 2, 3));
 
-    section.insertFromString("key14.vectorVec2 = {vector2(1.0, 2.0), vector2(3.0, 4.0)}");
+    section.insertFromString("key14.vectorVec2 = {vec2(1.0, 2.0), vec2(3.0, 4.0)}");
     EXPECT_TRUE(section.contains("key14.vectorVec2"));
     EXPECT_THAT(std::vector<vec2>(section["key14.vectorVec2"]), ElementsAre(vec2(1.0f, 2.0f), vec2(3.0f, 4.0f)));
 }
@@ -210,25 +210,24 @@ TEST(File_Serializer, Serializer_Serialize) {
     serializer.addSection(s2);
 
     // Construct the expected serialized output
-    std::string expected =
-        "[section0]\n"
-        "key1 = 10\n"
-        "key2 = true\n"
-        "key3 = \"test\"\n"
-        "\n"
-        "[section1]\n"
-        "key1.vec2 = vector2(1.000000, 2.000000)\n"
-        "key2.vec3 = vector3(1.000000, 2.000000, 3.000000)\n"
-        "key3.vec4 = vector4(1.000000, 2.000000, 3.000000, 4.000000)\n"
-        "key4.quat = quaternion(0.707100, 0.000000, 0.000000, 0.707100)\n"
-        "\n"
-        "[section2]\n"
-        "key5.vectorInt = {0, 1, 2}\n"
-        "key6.vectorStr = {\"one\", \"two\", \"three\"}\n"
-        "key7.vectorVec2 = {vector2(0.000000, 0.000000), vector2(0.000000, 1.000000), vector2(1.000000, 0.000000)}\n"
-        "key8.vectorVectorVec2 = {{vector2(0.000000, 0.000000), vector2(0.000000, 1.000000)}, {vector2(1.000000, 0.000000), vector2(1.000000, "
-        "0.000000)}}\n"
-        "\n";
+    std::string expected = "[section0]\n"
+                           "key1 = 10\n"
+                           "key2 = true\n"
+                           "key3 = \"test\"\n"
+                           "\n"
+                           "[section1]\n"
+                           "key1.vec2 = vec2(1.000000, 2.000000)\n"
+                           "key2.vec3 = vec3(1.000000, 2.000000, 3.000000)\n"
+                           "key3.vec4 = vec4(1.000000, 2.000000, 3.000000, 4.000000)\n"
+                           "key4.quat = quat(0.707100, 0.000000, 0.000000, 0.707100)\n"
+                           "\n"
+                           "[section2]\n"
+                           "key5.vectorInt = {0, 1, 2}\n"
+                           "key6.vectorStr = {\"one\", \"two\", \"three\"}\n"
+                           "key7.vectorVec2 = {vec2(0.000000, 0.000000), vec2(0.000000, 1.000000), vec2(1.000000, 0.000000)}\n"
+                           "key8.vectorVectorVec2 = {{vec2(0.000000, 0.000000), vec2(0.000000, 1.000000)}, {vec2(1.000000, 0.000000), vec2(1.000000, "
+                           "0.000000)}}\n"
+                           "\n";
 
     // Compare the serialized output with the expected string
     EXPECT_EQ(serializer.toString(), expected);
@@ -248,16 +247,16 @@ TEST(File_Serializer, Serializer_Deserialize) {
         = 10
 
         [section2]
-        key1.vec2 = vector2(1.0, 2.0)
-        key2.vec3 =  vector3(1.0 , 2.0 , 3.0)
-        key3.vec4 = vector4(1.0, 2.0, 3.0, 4.0)
+        key1.vec2 = vec2(1.0, 2.0)
+        key2.vec3 =  vec3(1.0 , 2.0 , 3.0)
+        key3.vec4 = vec4(1.0, 2.0, 3.0, 4.0)
         invalid_line_without_equals
         another_invalid_line
 
         [section3]
         key1.vectorInt = { 1, 2, 3}
         key2.vectorStr = {"one", "two", "three"}
-        key3.quat = quaternion(0.7071, 0.0, 0.0, 0.7071)
+        key3.quat = quat(0.7071, 0.0, 0.0, 0.7071)
     )";
 
     serializer.fromString(input);
