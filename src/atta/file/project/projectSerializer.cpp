@@ -222,7 +222,15 @@ std::vector<Section> ProjectSerializer::serializeViewports() {
 
 #define ATTA_SERIALIZE_VECTOR(TYPE, CAST_TYPE)                                                                                                       \
     case cmp::AttributeType::VECTOR_##TYPE:                                                                                                          \
-        section[dataKey] = std::vector<CAST_TYPE>(reinterpret_cast<CAST_TYPE*>(ptr), reinterpret_cast<CAST_TYPE*>(ptr) + size / sizeof(CAST_TYPE));  \
+        if (size / sizeof(CAST_TYPE) == 2)                                                                                                           \
+            section[dataKey] = *reinterpret_cast<atta::vector2<CAST_TYPE>*>(ptr);                                                                    \
+        else if (size / sizeof(CAST_TYPE) == 3)                                                                                                      \
+            section[dataKey] = *reinterpret_cast<atta::vector3<CAST_TYPE>*>(ptr);                                                                    \
+        else if (size / sizeof(CAST_TYPE) == 4)                                                                                                      \
+            section[dataKey] = *reinterpret_cast<atta::vector4<CAST_TYPE>*>(ptr);                                                                    \
+        else                                                                                                                                         \
+            section[dataKey] =                                                                                                                       \
+                std::vector<CAST_TYPE>(reinterpret_cast<CAST_TYPE*>(ptr), reinterpret_cast<CAST_TYPE*>(ptr) + size / sizeof(CAST_TYPE));             \
         break;
 
 void serializeAttribute(Section& section, const std::string& cmpName, cmp::Component* data, const cmp::AttributeDescription& attribute, size_t size) {
@@ -433,12 +441,21 @@ void ProjectSerializer::deserializeMaterial(const Section& section) {
 
 #define ATTA_DESERIALIZE_VECTOR(TYPE, CAST_TYPE)                                                                                                     \
     case cmp::AttributeType::VECTOR_##TYPE: {                                                                                                        \
-        std::vector<CAST_TYPE> vec = std::vector<CAST_TYPE>(section[dataKey]);                                                                       \
-        std::copy(vec.begin(), vec.end(), reinterpret_cast<CAST_TYPE*>(ptr));                                                                        \
+        if (size / sizeof(CAST_TYPE) == 2)                                                                                                           \
+            *reinterpret_cast<atta::vector2<CAST_TYPE>*>(ptr) = atta::vector2<CAST_TYPE>(section[dataKey]);                                          \
+        else if (size / sizeof(CAST_TYPE) == 3)                                                                                                      \
+            *reinterpret_cast<atta::vector3<CAST_TYPE>*>(ptr) = atta::vector3<CAST_TYPE>(section[dataKey]);                                          \
+        else if (size / sizeof(CAST_TYPE) == 4)                                                                                                      \
+            *reinterpret_cast<atta::vector4<CAST_TYPE>*>(ptr) = atta::vector4<CAST_TYPE>(section[dataKey]);                                          \
+        else {                                                                                                                                       \
+            std::vector<CAST_TYPE> vec = std::vector<CAST_TYPE>(section[dataKey]);                                                                   \
+            std::copy(vec.begin(), vec.end(), reinterpret_cast<CAST_TYPE*>(ptr));                                                                    \
+        }                                                                                                                                            \
         break;                                                                                                                                       \
     }
 
-void deserializeAttribute(const Section& section, const std::string& cmpName, cmp::Component* comp, const cmp::AttributeDescription& attribute) {
+void deserializeAttribute(const Section& section, const std::string& cmpName, cmp::Component* comp, const cmp::AttributeDescription& attribute,
+                          size_t size) {
     std::string dataKey = cmpName + '.' + toCamelCase(attribute.name);
     if (!section.contains(dataKey))
         return;
@@ -631,8 +648,12 @@ void ProjectSerializer::deserializeNode(const Section& section) {
             cmp::Component* comp = cmp::addComponentById(compReg->getId(), entity);
 
             // Deserialize each attribute
-            for (const cmp::AttributeDescription& attribute : compReg->getDescription().attributeDescriptions) {
-                deserializeAttribute(section, cmpName, comp, attribute);
+            const std::vector<cmp::AttributeDescription> attributeDescriptions = compReg->getDescription().attributeDescriptions;
+            for (size_t i = 0; i < attributeDescriptions.size(); i++) {
+                cmp::AttributeDescription aDesc = attributeDescriptions[i];
+                size_t size = (i == attributeDescriptions.size() - 1) ? compReg->getSizeof() - aDesc.offset
+                                                                      : attributeDescriptions[i + 1].offset - aDesc.offset;
+                deserializeAttribute(section, cmpName, comp, aDesc, size);
             }
         }
     }
