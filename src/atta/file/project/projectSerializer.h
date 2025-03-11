@@ -25,6 +25,7 @@ class ProjectSerializer final {
     Section serializePhysicsModule();
     Section serializeSensorModule();
     std::vector<Section> serializeResources();
+    std::vector<Section> serializeViewports();
     std::vector<Section> serializeNodes();
 
     bool deserializeProject(const Section& section);
@@ -33,9 +34,11 @@ class ProjectSerializer final {
     void deserializePhysicsModule(const Section& section);
     void deserializeSensorModule(const Section& section);
     void deserializeMaterial(const Section& section);
+    void deserializeViewport(const Section& section);
     void deserializeNode(const Section& section);
 
     std::shared_ptr<Project> _project;
+    bool _firstViewport = true;
 };
 
 } // namespace atta::file

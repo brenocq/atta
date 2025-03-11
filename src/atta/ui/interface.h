@@ -27,6 +27,7 @@ std::optional<ComponentUIFunc> getComponentUI(cmp::ComponentId cid);
 //----- Viewport -----//
 const std::vector<std::shared_ptr<ui::Viewport>>& getViewports();
 void openViewportModal(StringId sid);
+void clearViewports();
 void addViewport(std::shared_ptr<ui::Viewport> viewport);
 
 bool getViewportRendering();

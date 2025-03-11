@@ -13,7 +13,12 @@
 #include <atta/file/project/projectSerializer.h>
 #include <atta/file/serializer/section.h>
 #include <atta/file/serializer/serializer.h>
+#include <atta/graphics/cameras/orthographicCamera.h>
+#include <atta/graphics/cameras/perspectiveCamera.h>
 #include <atta/graphics/interface.h>
+#include <atta/graphics/renderers/fastRenderer.h>
+#include <atta/graphics/renderers/pbrRenderer.h>
+#include <atta/graphics/renderers/phongRenderer.h>
 #include <atta/physics/engines/bulletEngine.h>
 #include <atta/physics/interface.h>
 #include <atta/resource/interface.h>
@@ -39,6 +44,10 @@ void ProjectSerializer::serialize() {
     std::vector<Section> resources = serializeResources();
     for (const Section& resource : resources)
         serializer.addSection(resource);
+
+    std::vector<Section> viewports = serializeViewports();
+    for (const Section& viewport : viewports)
+        serializer.addSection(viewport);
 
     std::vector<Section> nodes = serializeNodes();
     for (const Section& node : nodes)
@@ -70,6 +79,8 @@ bool ProjectSerializer::deserialize() {
     if (!canLoadProject)
         return false;
 
+    _firstViewport = true;
+
     for (const Section& section : serializer.getSections()) {
         if (section.getName() == "config")
             deserializeConfig(section);
@@ -81,6 +92,8 @@ bool ProjectSerializer::deserialize() {
             deserializeSensorModule(section);
         else if (section.getName() == "material")
             deserializeMaterial(section);
+        else if (section.getName() == "viewport")
+            deserializeViewport(section);
         else if (section.getName() == "node")
             deserializeNode(section);
     }
@@ -103,12 +116,6 @@ Section ProjectSerializer::serializeConfig() {
 
 Section ProjectSerializer::serializeGraphicsModule() {
     Section section("graphics");
-    // std::vector<std::shared_ptr<ui::Viewport>> pviewports = ui::getViewports();
-    // std::vector<ui::Viewport> viewports;
-    // for (auto& pv : pviewports)
-    //     viewports.push_back(*pv);
-    // section["viewports"] = viewports;
-    // LOG_WARN("file::ProjectSerializer", "Serializing viewports was not implemented yet");
     section["graphicsFPS"] = gfx::getGraphicsFPS();
     section["viewportRendering"] = ui::getViewportRendering();
     return section;
@@ -179,6 +186,33 @@ std::vector<Section> ProjectSerializer::serializeResources() {
         // Serialize normal map if it exists
         if (m->hasNormalImage())
             section["normalImage"] = m->getNormalImage().getString();
+
+        sections.push_back(std::move(section));
+    }
+
+    return sections;
+}
+
+std::vector<Section> ProjectSerializer::serializeViewports() {
+    std::vector<Section> sections;
+
+    // Serialize materials
+    res::Material::CreateInfo defaultMaterial{};
+    std::vector<std::shared_ptr<ui::Viewport>> viewports = ui::getViewports();
+    for (const auto& viewport : viewports) {
+        Section section("viewport");
+        section["name"] = viewport->getName();
+
+        // Serialize renderer
+        std::shared_ptr<gfx::Renderer> renderer = viewport->getRenderer();
+        section["renderer.type"] = renderer->getName();
+
+        // Serialize camera
+        std::shared_ptr<gfx::Camera> camera = viewport->getCamera();
+        section["camera.type"] = camera->getName();
+        section["camera.position"] = camera->getPosition();
+        section["camera.lookAt"] = camera->getPosition() + camera->getFront();
+        section["camera.up"] = camera->getUp();
 
         sections.push_back(std::move(section));
     }
@@ -486,6 +520,65 @@ void deserializeAttribute(const Section& section, const std::string& cmpName, cm
                      attribute.name, static_cast<int>(attribute.type));
             break;
     }
+}
+
+void ProjectSerializer::deserializeViewport(const Section& section) {
+    static int viewportId = 0;
+
+    // Clear viewports before loading
+    if (_firstViewport) {
+        _firstViewport = false;
+        ui::clearViewports();
+        viewportId = 0;
+    }
+
+    ui::Viewport::CreateInfo info{};
+
+    // Viewport ID
+    info.sid = StringId("Viewport " + std::to_string(viewportId++));
+
+    // Viewport name
+    if (section.contains("name"))
+        info.name = std::string(section["name"]);
+
+    // Viewport renderer
+    if (section.contains("renderer.type")) {
+        std::string rendererType = std::string(section["renderer.type"]);
+        if (rendererType == "FastRenderer")
+            info.renderer = std::make_shared<gfx::FastRenderer>();
+        else if (rendererType == "PhongRenderer")
+            info.renderer = std::make_shared<gfx::PhongRenderer>();
+        else if (rendererType == "PbrRenderer")
+            info.renderer = std::make_shared<gfx::PbrRenderer>();
+    }
+
+    // Viewport camera
+    if (section.contains("camera.type")) {
+        std::string cameraType = std::string(section["camera.type"]);
+        if (cameraType == "OrthographicCamera") {
+            gfx::OrthographicCamera::CreateInfo cInfo{};
+            if (section.contains("camera.position"))
+                cInfo.position = vec3(section["camera.position"]);
+            if (section.contains("camera.lookAt"))
+                cInfo.lookAt = vec3(section["camera.lookAt"]);
+            if (section.contains("camera.up"))
+                cInfo.up = vec3(section["camera.up"]);
+            info.camera = std::make_shared<gfx::OrthographicCamera>(cInfo);
+        } else if (cameraType == "PerspectiveCamera") {
+            gfx::PerspectiveCamera::CreateInfo cInfo{};
+            if (section.contains("camera.position"))
+                cInfo.position = vec3(section["camera.position"]);
+            if (section.contains("camera.lookAt"))
+                cInfo.lookAt = vec3(section["camera.lookAt"]);
+            if (section.contains("camera.up"))
+                cInfo.up = vec3(section["camera.up"]);
+            info.camera = std::make_shared<gfx::PerspectiveCamera>(cInfo);
+        }
+    }
+
+    // Add viewport to UI
+    std::shared_ptr<ui::Viewport> viewport = std::make_shared<ui::Viewport>(info);
+    ui::addViewport(viewport);
 }
 
 void ProjectSerializer::deserializeNode(const Section& section) {
