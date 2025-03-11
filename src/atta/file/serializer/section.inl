@@ -104,6 +104,10 @@ std::string toString(const T& value) {
     else if constexpr (std::is_convertible_v<U, std::string>) {
         return "\"" + std::string(value) + "\"";
     }
+    // Handle convertible to bool (bool reference in std::vector<bool>)
+    else if constexpr (std::is_convertible_v<U, bool>) {
+        return static_cast<bool>(value) ? "true" : "false";
+    }
     // Unsupported type
     else {
         LOG_WARN("SectionData", "Serialization of type [w]$0[] is not supported", typeid(U).name());
