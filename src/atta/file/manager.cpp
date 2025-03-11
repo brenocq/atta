@@ -6,6 +6,7 @@
 //--------------------------------------------------
 #include <atta/cmakeConfig.h>
 #include <atta/component/components/polygonCollider2D.h>
+#include <atta/component/components/relationship.h>
 #include <atta/component/entity.h>
 #include <atta/component/interface.h>
 #include <atta/event/events/projectBeforeDeserialize.h>
@@ -161,10 +162,30 @@ void Manager::closeProjectImpl() {
 bool Manager::isProjectOpenImpl() const { return _project != nullptr; }
 
 void Manager::registerCustomComponentIOs() {
+    file::registerComponentIO<cmp::Relationship>(
+        [](Section& section, cmp::Component* c) {
+            cmp::Relationship* rel = static_cast<cmp::Relationship*>(c);
+            if (rel->getParent() != -1)
+                section["relationship.parent"] = rel->getParent().getId();
+        },
+        [](const Section& section, cmp::Entity entity) {
+            if (section.contains("relationship.parent")) {
+                cmp::EntityId parent = uint32_t(section["relationship.parent"]);
+
+                // Create parent if it doesn't exist yet
+                std::vector<cmp::EntityId> entities = cmp::getEntitiesView();
+                bool parentExists = std::find(entities.begin(), entities.end(), parent) != entities.end();
+                if (!parentExists)
+                    cmp::createEntity(parent);
+
+                // Update relationship component
+                entity.add<cmp::Relationship>()->setParent(parent, entity);
+            }
+        });
+
     file::registerComponentIO<cmp::PolygonCollider2D>(
         [](Section& section, cmp::Component* c) {
             cmp::PolygonCollider2D* collider = static_cast<cmp::PolygonCollider2D*>(c);
-            LOG_DEBUG("file::Manager", "Serializing PolygonCollider2D with $0 points", collider->points.size());
             section["polygonCollider2D.offset"] = collider->offset;
             section["polygonCollider2D.points"] = collider->points;
         },
@@ -173,7 +194,6 @@ void Manager::registerCustomComponentIOs() {
                 cmp::PolygonCollider2D* collider = entity.add<cmp::PolygonCollider2D>();
                 collider->offset = vec2(section["polygonCollider2D.offset"]);
                 collider->points = std::vector<vec2>(section["polygonCollider2D.points"]);
-                LOG_DEBUG("file::Manager", "Deerializing PolygonCollider2D");
             }
         });
 }

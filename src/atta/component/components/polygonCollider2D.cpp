@@ -20,10 +20,6 @@ ComponentDescription& TypedComponentRegistry<PolygonCollider2D>::getDescription(
         },
         // Max instances
         1024,
-        // Serialize
-        {{"points", [](std::ostream& os, void* data) {}}},
-        // Deserialize
-        {{"points", [](std::istream& is, void* data) {}}},
     };
 
     return desc;

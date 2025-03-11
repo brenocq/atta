@@ -18,8 +18,6 @@ ComponentDescription& TypedComponentRegistry<Mesh>::getDescription() {
             {AttributeType::STRINGID, offsetof(Mesh, sid), "sid", {}, {}, {}, {}},
         },
         1024, // Max instances
-        {},   // Serialize
-        {},   // Deserialize
     };
 
     return desc;

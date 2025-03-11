@@ -29,8 +29,6 @@ ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription() {
             {AttributeType::FLOAT32, offsetof(CameraSensor, captureTime), "captureTime"},
         },
         1024, // Max instances
-        {},   // Serialize
-        {},   // Deserialize
     };
 
     return desc;

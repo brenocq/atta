@@ -14,10 +14,9 @@ namespace atta::component {
 template <>
 ComponentDescription& TypedComponentRegistry<Material>::getDescription() {
     static ComponentDescription desc = {
-        "Material", {{AttributeType::STRINGID, offsetof(Material, sid), "sid", {}, {}, {}, {}}},
+        "Material",
+        {{AttributeType::STRINGID, offsetof(Material, sid), "sid", {}, {}, {}, {}}},
         1024, // Max instances
-        {},   // Serialize
-        {},   // Deserialize
     };
 
     return desc;
