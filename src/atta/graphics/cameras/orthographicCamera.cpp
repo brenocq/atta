@@ -4,7 +4,6 @@
 // Date: 2021-09-14
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/file/serializer/serializer.h>
 #include <atta/graphics/cameras/orthographicCamera.h>
 #include <imgui.h>
 
@@ -27,31 +26,6 @@ OrthographicCamera::OrthographicCamera(CreateInfo info) : Camera("OrthographicCa
 mat4 OrthographicCamera::getView() const { return lookAt(_position, _position + _front, _up); }
 
 mat4 OrthographicCamera::getProj() const { return orthographic(_height, _ratio, _far); }
-
-void OrthographicCamera::serialize(std::ostream& os) {
-    file::write(os, std::string("OrthographicCamera"));
-    file::write(os, _position);
-    file::write(os, _left);
-    file::write(os, _up);
-    file::write(os, _front);
-    file::write(os, _ratio);
-    file::write(os, _control);
-    file::write(os, _speed);
-    file::write(os, _far);
-    file::write(os, _height);
-}
-
-void OrthographicCamera::deserialize(std::istream& is) {
-    file::read(is, _position);
-    file::read(is, _left);
-    file::read(is, _up);
-    file::read(is, _front);
-    file::read(is, _ratio);
-    file::read(is, _control);
-    file::read(is, _speed);
-    file::read(is, _far);
-    file::read(is, _height);
-}
 
 void OrthographicCamera::movePlanar() {
     ImGuiIO& io = ImGui::GetIO();

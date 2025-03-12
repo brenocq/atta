@@ -11,18 +11,21 @@
 
 #include <atta/event/interface.h>
 
+#include <atta/component/base.h>
+#include <atta/component/components/component.h>
+#include <atta/component/entity.h>
+#include <atta/component/factory.h>
+#include <atta/component/typedComponentRegistry.h>
 #include <atta/memory/allocators/bitmapAllocator.h>
 #include <atta/memory/allocators/poolAllocatorT.h>
 #include <atta/memory/allocators/stackAllocator.h>
 #include <atta/memory/interface.h>
-#include <atta/component/factory.h>
 
 namespace atta::component {
 
 constexpr unsigned maxRegisteredComponents = 32;
 constexpr unsigned maxEntities = 1024;
 
-class ComponentRegistry;
 class Manager final {
   public:
     static Manager& getInstance();

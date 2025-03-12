@@ -4,7 +4,6 @@
 // Date: 2021-09-14
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/file/serializer/serializer.h>
 #include <atta/graphics/cameras/orthographicCamera.h>
 #include <atta/graphics/cameras/perspectiveCamera.h>
 #include <atta/graphics/renderers/fastRenderer.h>
@@ -43,73 +42,6 @@ void Viewport::render() {
 void Viewport::resize(uint32_t width, uint32_t height) {
     _camera->setRatio(width / (float)height);
     _renderer->resize(width, height);
-}
-
-void Viewport::serialize(std::ostream& os) {
-    //----- Write viewport name -----//
-    file::write(os, _sid);
-    file::write(os, _name);
-
-    //----- Write renderer -----//
-    if (_renderer)
-        _renderer->serialize(os);
-    else
-        file::write(os, std::string(""));
-
-    //----- Write camera -----//
-    if (_camera)
-        _camera->serialize(os);
-    else
-        file::write(os, std::string(""));
-}
-
-void Viewport::deserialize(std::istream& is) {
-    //----- Read viewport name -----//
-    // Read string
-    file::read(is, _sid);
-    file::read(is, _name);
-    unsigned i = 0;
-    for (auto c : _name)
-        _inputText[i++] = c;
-    _inputText[i] = '\0';
-
-    //----- Read renderer -----//
-    std::string rendererName;
-    file::read(is, rendererName);
-    if (rendererName == "FastRenderer") {
-        _renderer = std::make_shared<gfx::FastRenderer>();
-        _renderer->deserialize(is);
-    } else if (rendererName == "PhongRenderer") {
-        _renderer = std::make_shared<gfx::PhongRenderer>();
-        _renderer->deserialize(is);
-    } else if (rendererName == "PbrRenderer") {
-        _renderer = std::make_shared<gfx::PbrRenderer>();
-        _renderer->deserialize(is);
-    } else if (rendererName.size() == 0) {
-        LOG_WARN("graphics::Viewport", "No renderer deserialized, using default renderer");
-        _renderer = std::make_shared<gfx::PhongRenderer>();
-    } else {
-        LOG_WARN("graphics::Viewport", "Unknown renderer [w]$0[] when deserializing", rendererName);
-        _renderer = std::make_shared<gfx::PhongRenderer>();
-        _renderer->deserialize(is);
-    }
-
-    //----- Read camera -----//
-    std::string cameraName;
-    file::read(is, cameraName);
-    if (cameraName == "OrthographicCamera") {
-        _camera = std::make_shared<gfx::OrthographicCamera>(gfx::OrthographicCamera::CreateInfo{});
-        _camera->deserialize(is);
-    } else if (cameraName == "PerspectiveCamera") {
-        _camera = std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{});
-        _camera->deserialize(is);
-    } else if (cameraName.size() == 0) {
-        LOG_WARN("graphics::Viewport", "No camera deserialized, using default camera");
-        _camera = std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{});
-    } else {
-        LOG_WARN("graphics::Viewport", "Unknown camera [w]$0[] when deserializing. This may break the serialization", cameraName);
-        _camera = std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{});
-    }
 }
 
 void Viewport::renderUI() {
