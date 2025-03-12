@@ -27,6 +27,7 @@ class OrthographicCamera : public Camera {
 
     mat4 getView() const override;
     mat4 getProj() const override;
+    float getHeight() const { return _height; }
 
   private:
     virtual void movePlanar() override;
