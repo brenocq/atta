@@ -37,10 +37,9 @@ void Editor::render() {
     setupDocking();
 
     // Demo
-    bool demo = true;
-    // ImGui::ShowDemoWindow(&demo);
-    // ImPlot::ShowDemoWindow(&demo);
-    // ImPlot3D::ShowDemoWindow(&demo);
+    // ImGui::ShowDemoWindow();
+    // ImPlot::ShowDemoWindow();
+    // ImPlot3D::ShowDemoWindow();
 
     // Top interface
     _topBar.render();

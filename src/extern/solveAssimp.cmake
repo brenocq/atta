@@ -33,7 +33,7 @@ set(ATTA_ASSIMP_TARGETS "")
         URL "http://storage.googleapis.com/atta-deps/assimp-5.2.4-light.zip"
     )
     atta_log(Info Extern "Fetching Assimp...")
-    atta_FetchContent_MakeAvailable(assimp) 
+    atta_FetchContent_MakeAvailable(assimp)
 
     atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/assimp-src/include)
     atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/assimp-build/include)
