@@ -35,7 +35,7 @@ class Factory {
     Entity _firstClone;  ///< First clone created
 
     uint64_t _numEntitiesCloned;      ///< Number of entities cloned (prototype entity and its children)
-    uint64_t _numEntitiesInitialized; ///< Auxiliar variable to keep track of component creation
+    uint64_t _numEntitiesInitialized; ///< Auxiliary variable to keep track of component creation
 };
 } // namespace atta::component
 
