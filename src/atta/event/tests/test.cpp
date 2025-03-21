@@ -59,7 +59,7 @@ TEST(Event, Subscribe) {
 
     TestObserver observer;
 
-    event::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer, _1));
+    event::subscribe<TestEvent>(&observer, std::bind(&TestObserver::handle, &observer, _1));
 
     EXPECT_EQ(observer.getSum(), 0);
 }
@@ -79,11 +79,11 @@ TEST(Event, MultipleEventsObservers) {
     event::publish(e0);
 
     // The observer0 should not receive testEvents, so its sum stays in 0
-    event::subscribe<event::WindowMouseMove>(std::bind(&TestObserver::handle, &observer0, _1));
+    event::subscribe<event::WindowMouseMove>(&observer0, std::bind(&TestObserver::handle, &observer0, _1));
     // The observer1 receives all testEvents after subscription
-    event::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer1, _1));
+    event::subscribe<TestEvent>(&observer1, std::bind(&TestObserver::handle, &observer1, _1));
     // Because observer1 will consume the events, observer2 will not receive any event
-    event::subscribe<TestEvent>(std::bind(&TestObserver::handle, &observer2, _1));
+    event::subscribe<TestEvent>(&observer2, std::bind(&TestObserver::handle, &observer2, _1));
 
     // Publish more two events, 2+4=6
     event::publish(e1);

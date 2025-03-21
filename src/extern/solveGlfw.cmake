@@ -22,13 +22,12 @@ if(NOT ATTA_SYSTEM_NAME MATCHES "Web")
             GIT_SHALLOW TRUE
         )
 
-        atta_add_include_dirs(${CMAKE_BINARY_DIR}/_deps/glfw-src/include)
-        atta_add_libs(glfw)
-
         atta_log("Info" "Extern" "Fetching GLFW...")
         FetchContent_MakeAvailable(glfw)
 
         atta_log(Success Extern "GLFW support (source)")
+        atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/glfw-src/include)
+        atta_add_libs(glfw)
         set(ATTA_GLFW_SUPPORT TRUE)
         set(ATTA_GLFW_TARGETS glfw)
     #endif()

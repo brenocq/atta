@@ -1,6 +1,6 @@
-name: Update readme buttons
+name: 📄 Update README
 
-on: 
+on:
   project_card:
     types: [created, deleted, moved]
   project:

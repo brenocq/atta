@@ -82,7 +82,6 @@ void BulletEngine::step(float dt) {
         auto t = component::getComponent<component::Transform>(eid);
         component::Transform worldT = t->getWorldTransform(eid);
         vec3 position = worldT.position;
-        vec3 scale = worldT.scale;
         quat orientation = worldT.orientation;
 
         // Get bullet transform
@@ -142,7 +141,7 @@ void BulletEngine::step(float dt) {
         // TODO Should go through collisionObjects from the root down the relationship hierarchy,
         // strange simulations may happen otherwise because of wrong parent transform
         btCollisionObject* obj = _world->getCollisionObjectArray()[j];
-        btRigidBody* body = btRigidBody::upcast(obj);
+        // btRigidBody* body = btRigidBody::upcast(obj);
         btTransform trans;
         trans = obj->getWorldTransform();
 
@@ -213,7 +212,7 @@ void BulletEngine::stop() {
     }
 
     // Delete collision shapes
-    for (size_t i = 0; i < _collisionShapes.size(); i++) {
+    for (int i = 0; i < _collisionShapes.size(); i++) {
         delete _collisionShapes[i];
         _collisionShapes[i] = nullptr;
     }

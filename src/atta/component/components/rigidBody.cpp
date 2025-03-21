@@ -10,7 +10,7 @@ namespace atta::component {
 template <>
 ComponentDescription& TypedComponentRegistry<RigidBody>::getDescription() {
     static ComponentDescription desc = {"Rigid Body",
-                                        {{AttributeType::UINT32, offsetof(RigidBody, type), "type", {}, {}, {}, {"Dynamic", "Kinematic", "Static"}},
+                                        {{AttributeType::UINT32, offsetof(RigidBody, type), "type", {}, {}, {}, {"DYNAMIC", "KINEMATIC", "STATIC"}},
                                          {AttributeType::FLOAT32, offsetof(RigidBody, linearVelocity), "linearVelocity", {}, {}, 0.001f},
                                          {AttributeType::FLOAT32, offsetof(RigidBody, angularVelocity), "angularVelocity", {}, {}, 0.001f},
                                          {AttributeType::FLOAT32, offsetof(RigidBody, mass), "mass", 0.0f, 100.0f, 0.001f},

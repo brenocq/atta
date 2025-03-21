@@ -15,28 +15,21 @@ void update() {
     Manager::getInstance().updateImpl();
 }
 
-void pushLayer(Layer* layer) { Manager::getInstance().pushLayerImpl(layer); }
+std::shared_ptr<GraphicsAPI> getGraphicsAPI() { return Manager::getInstance().getGraphicsAPIImpl(); };
+std::shared_ptr<Window> getWindow() { return Manager::getInstance().getWindowImpl(); };
 
-std::shared_ptr<RendererAPI> getRendererAPI() { return Manager::getInstance().getRendererAPIImpl(); };
+void setGraphicsAPI(GraphicsAPI::Type type) { Manager::getInstance().setGraphicsAPIImpl(type); }
+std::vector<GraphicsAPI::Type> getSupportedGraphicsAPIs() { return Manager::getInstance().getSupportedGraphicsAPIsImpl(); }
 
 //----- Config -----//
 float getGraphicsFPS() { return Manager::getInstance()._graphicsFPS; }
 void setGraphicsFPS(float graphicsFPS) { Manager::getInstance()._graphicsFPS = graphicsFPS; }
-float getViewportFPS() { return Manager::getInstance()._viewportFPS; }
-void setViewportFPS(float viewportFPS) { Manager::getInstance()._viewportFPS = viewportFPS; }
-bool getViewportRendering() { return Manager::getInstance()._viewportRendering; }
-void setViewportRendering(bool viewportRendering) { Manager::getInstance()._viewportRendering = viewportRendering; }
 
-//----- Viewport -----//
-std::vector<std::shared_ptr<Viewport>> getViewports() { return Manager::getInstance().getViewportsImpl(); }
-void clearViewports() { Manager::getInstance().clearViewportsImpl(); }
-void addViewport(std::shared_ptr<Viewport> viewport) { Manager::getInstance().addViewportImpl(viewport); }
-void removeViewport(std::shared_ptr<Viewport> viewport) { Manager::getInstance().removeViewportImpl(viewport); }
-void createDefaultViewports() { return Manager::getInstance().createDefaultViewportsImpl(); }
-component::EntityId viewportEntityClick(std::shared_ptr<Viewport> viewport, vec2i pos) {
-    return Manager::getInstance().viewportEntityClickImpl(viewport, pos);
-}
-
+//----- UI -----//
+void setUiRenderViewportsFunc(std::function<void()> uiRenderViewportsFunc) { Manager::getInstance()._uiRenderViewportsFunc = uiRenderViewportsFunc; }
+void setUiRenderFunc(std::function<void()> uiRenderFunc) { Manager::getInstance()._uiRenderFunc = uiRenderFunc; }
+void setUiShutDownFunc(std::function<void()> uiShutDownFunc) { Manager::getInstance()._uiShutDownFunc = uiShutDownFunc; }
+void setUiStartUpFunc(std::function<void()> uiStartUpFunc) { Manager::getInstance()._uiStartUpFunc = uiStartUpFunc; }
 void* getImGuiImage(StringId sid) { return Manager::getInstance().getImGuiImageImpl(sid); }
 
 } // namespace atta::graphics

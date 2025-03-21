@@ -93,10 +93,12 @@ void quat::operator+=(const vec3& vec) {
     k += q.k * 0.5f;
 }
 
-bool quat::operator!=(const quat& other) {
-    return std::abs(other.i - i) > 0.00001f || std::abs(other.j - j) > 0.00001f || std::abs(other.k - k) > 0.00001f ||
-           std::abs(other.r - r) > 0.00001f;
+bool quat::operator==(const quat& other) const {
+    return std::abs(other.i - i) < 0.00001f && std::abs(other.j - j) < 0.00001f && std::abs(other.k - k) < 0.00001f &&
+           std::abs(other.r - r) < 0.00001f;
 }
+
+bool quat::operator!=(const quat& other) const { return !(*this == other); }
 
 void quat::addScaledVector(const vec3& vec, float scale) {
     quat q(0, vec.x * scale, vec.y * scale, vec.z * scale);

@@ -789,13 +789,11 @@ bool LinuxBluetooth::notifyCharStart(const Char& ch, NotifyFunction func) {
 bool LinuxBluetooth::notifyCharStop(const Char& ch) {
     Char* cch = nullptr;
     LinuxChar* lch = nullptr;
-    LinuxDevice* lDev = nullptr;
     for (auto& llDev : _linuxDevices)
         for (auto& lServ : llDev.services)
             for (auto& llch : lServ.chars)
                 if (llch.uuid == ch.uuid) {
                     lch = &llch;
-                    lDev = &llDev;
                 }
     for (auto& llDev : _devices)
         for (auto& lServ : llDev.services)

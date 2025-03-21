@@ -39,6 +39,9 @@ class Engine {
     Type getType() const { return _type; }
     bool getRunning() const { return _running; }
 
+    static const std::unordered_map<Type, std::string> typeToString;
+    static const std::unordered_map<std::string, Type> stringToType;
+
   protected:
     Type _type;    ///< Physics engine type
     bool _running; ///< If physics engine is performing simulations

@@ -17,6 +17,7 @@ class Window {
         std::string title = "atta";
         size_t width = 1600;
         size_t height = 900;
+        bool useOpenGL = false; ///< GLFW needs to
     };
 
     enum class Event : event::Event::Type {
@@ -32,6 +33,8 @@ class Window {
 
     Window(const CreateInfo& info);
     virtual ~Window() = default;
+
+    virtual void* getHandle() const { return nullptr; };
 
     size_t getWidth() const { return _width; }
     size_t getHeight() const { return _height; }

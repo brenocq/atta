@@ -34,6 +34,7 @@ class StringId {
 
     static constexpr StringHash crc32b(const char* str);
     static std::vector<std::string> getStrings();
+    operator fs::path() const;
 
   private:
     StringHash _id;

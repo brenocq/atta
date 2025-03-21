@@ -26,7 +26,7 @@ set(ATTA_BULLET_TARGETS "")
     FetchContent_MakeAvailable(bullet3)
 
     atta_add_include_dirs(
-        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/_deps/bullet3-src/src>
+        $<BUILD_INTERFACE:${FETCHCONTENT_BASE_DIR}/bullet3-src/src>
         $<INSTALL_INTERFACE:include/${ATTA_VERSION_SAFE}/extern/bullet3/src>
     )
 

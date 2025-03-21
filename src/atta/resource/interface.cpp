@@ -10,5 +10,6 @@ namespace atta::resource {
 
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
+void update() { Manager::getInstance().updateImpl(); }
 
 } // namespace atta::resource

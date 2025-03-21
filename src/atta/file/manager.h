@@ -25,9 +25,14 @@ class Manager final {
     friend void closeProject();
     friend bool isProjectOpen();
     friend std::shared_ptr<Project> getProject();
+
+    friend void registerComponentIO(cmp::ComponentId cid, const SerializeFunc& serialize, const DeserializeFunc& deserialize);
+    friend void getComponentIO(cmp::ComponentId cid, std::optional<SerializeFunc>& serialize, std::optional<DeserializeFunc>& deserialize);
+
     friend fs::path solveResourcePath(fs::path relativePath, bool mustExist);
     friend std::vector<fs::path> getResourcePaths();
-    friend std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory);
+    friend fs::path getBuildPath();
+    friend std::vector<fs::path> getDirectoryFilesRecursive(const fs::path& directory);
     friend fs::path getDefaultProjectFolder();
     friend void update();
 
@@ -42,9 +47,15 @@ class Manager final {
     bool isProjectOpenImpl() const;
     std::shared_ptr<Project> getProjectImpl() const { return _project; }
 
+    void registerCustomComponentIOs();
+
+    void registerComponentIOImpl(cmp::ComponentId cid, const SerializeFunc& serialize, const DeserializeFunc& deserialize);
+    void getComponentIOImpl(cmp::ComponentId cid, std::optional<SerializeFunc>& serialize, std::optional<DeserializeFunc>& deserialize) const;
+
     fs::path solveResourcePathImpl(fs::path relativePath, bool mustExist);
     std::vector<fs::path> getResourcePathsImpl() const;
-    std::vector<fs::path> getDirectoryFilesRecursiveImpl(fs::path directory);
+    fs::path getBuildPathImpl() const;
+    std::vector<fs::path> getDirectoryFilesRecursiveImpl(const fs::path& directory);
 
     // Handle events
     void onSimulationStateChange(event::Event& event);
@@ -57,6 +68,9 @@ class Manager final {
     std::shared_ptr<ProjectSerializer> _projectSerializer;
     bool _simulationRunning;
     fs::path _defaultProjectFolder; ///< Default folder to clone published projects and save projects
+
+    std::map<cmp::ComponentId, SerializeFunc> _componentSerialize;     // Custom component serialization
+    std::map<cmp::ComponentId, DeserializeFunc> _componentDeserialize; // Custom component deserialization
 };
 
 } // namespace atta::file

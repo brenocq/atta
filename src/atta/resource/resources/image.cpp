@@ -17,6 +17,16 @@
 
 namespace atta::resource {
 
+// Map format to string
+const std::unordered_map<Image::Format, std::string> Image::formatToString = {
+    {Format::NONE, "NONE"}, {Format::RED8, "RED8"}, {Format::RGB8, "RGB8"}, {Format::RGBA8, "RGBA8"}, {Format::RGB32F, "RGB32F"},
+};
+
+// Map string to format
+const std::unordered_map<std::string, Image::Format> Image::stringToFormat = {
+    {"NONE", Format::NONE}, {"RED8", Format::RED8}, {"RGB8", Format::RGB8}, {"RGBA8", Format::RGBA8}, {"RGB32F", Format::RGB32F},
+};
+
 Image::Image(const fs::path& filename) : Resource(filename) { load(); }
 
 Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
@@ -40,22 +50,25 @@ Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
     _format = info.format;
 
     switch (_format) {
-    case Format::RED8:
-        _channels = 1;
-        break;
-    case Format::RGB8:
-        _channels = 3;
-        break;
-    case Format::RGBA8:
-        _channels = 4;
-        break;
-    case Format::RGB16F:
-        _channels = 3;
-        break;
+        case Format::NONE:
+            // Should have been returned when checked the format
+            return;
+        case Format::RED8:
+            _channels = 1;
+            break;
+        case Format::RGB8:
+            _channels = 3;
+            break;
+        case Format::RGBA8:
+            _channels = 4;
+            break;
+        case Format::RGB32F:
+            _channels = 3;
+            break;
     }
 
     _data = new uint8_t[_width * _height * _channels * getBytesPerChannel(_format)];
-    for (int i = 0; i < _width * _height * _channels * getBytesPerChannel(_format); i++)
+    for (size_t i = 0; i < _width * _height * _channels * getBytesPerChannel(_format); i++)
         _data[i] = 0;
 }
 
@@ -91,7 +104,7 @@ void Image::saveToFile() {
                  absolutePath.string());
 }
 
-uint32_t Image::getBytesPerChannel(Format format) { return format == Format::RGB16F ? 2 : 1; }
+uint32_t Image::getBytesPerChannel(Format format) { return format == Format::RGB32F ? 4 : 1; }
 
 void Image::load() {
     fs::path absolutePath = file::solveResourcePath(_filename);
@@ -119,23 +132,31 @@ void Image::load() {
                 _format = Format::RGB8;
             else if (_channels == 4)
                 _format = Format::RGBA8;
-            else
+            else {
                 LOG_WARN("resource::Image", "Image with $0 channels are not supported", _channels);
+                _width = 0;
+                _height = 0;
+                _channels = 0;
+                return;
+            }
         } else {
-            if (_channels != 3)
+            if (_channels != 3) {
                 LOG_WARN("resource::Image", "Only hdr with 3 channels are supported");
-
-            _format = Format::RGB16F;
+                _width = 0;
+                _height = 0;
+                _channels = 0;
+                return;
+            }
+            _format = Format::RGB32F;
         }
 
         // Copy temp data to _data
-        uint32_t bytesPerPixel = _format == Format::RGB16F ? 2 : 1;
-        uint32_t size = _width * _height * _channels * bytesPerPixel;
+        uint32_t size = _width * _height * _channels * getBytesPerChannel(_format);
         _data = new uint8_t[size];
-        for (int i = 0; i < size; i++)
+        for (size_t i = 0; i < size; i++)
             _data[i] = data[i];
         stbi_image_free(data);
-        // LOG_WARN("resource::Image", "$3 -> w:$0, h:$1, c:$2", _width, _height, _channels, absolutePath);
+        // LOG_INFO("resource::Image", "[w]$3[] -> w:$0, h:$1, c:$2", _width, _height, _channels, absolutePath);
     } else {
         _width = 0;
         _height = 0;

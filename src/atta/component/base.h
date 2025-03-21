@@ -75,7 +75,7 @@ struct AttributeDescription {
     std::any min;
     std::any max;
     float step;
-    std::vector<std::any> options;
+    std::vector<std::string> options;// Enum options
 };
 
 // FIXME Sometimes crashing when trying to delete the description
@@ -83,9 +83,6 @@ struct ComponentDescription {
     std::string name;
     std::vector<AttributeDescription> attributeDescriptions;
     unsigned maxInstances = 1024; // Maximum number of component instances
-    std::map<std::string, std::function<void(std::ostream& os, void* data)>> serialize;
-    std::map<std::string, std::function<void(std::istream& is, void* data)>> deserialize;
-    std::map<std::string, std::function<void(void* data, std::string imguiId)>> renderUI;
 };
 
 } // namespace atta::component

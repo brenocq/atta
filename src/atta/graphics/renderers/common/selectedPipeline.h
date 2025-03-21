@@ -13,7 +13,7 @@ namespace atta::graphics {
 
 class SelectedPipeline final {
   public:
-    SelectedPipeline(std::shared_ptr<RenderPass> renderPass, VertexBufferLayout layout);
+    SelectedPipeline(std::shared_ptr<RenderPass> renderPass);
 
     void render(std::shared_ptr<Camera> camera);
 

@@ -11,265 +11,262 @@ struct is_specialization : std::false_type {};
 template <template <typename...> class Ref, typename... Args>
 struct is_specialization<Ref<Args...>, Ref> : std::true_type {};
 
+//----- vec2 check -----//
+// Primary template (false case)
+template <typename T>
+struct is_vector2 : std::false_type {};
+// Specialization for vector2
+template <typename T>
+struct is_vector2<vector2<T>> : std::true_type {};
+// Helper variable template for convenience (C++14 and later)
+template <typename T>
+inline constexpr bool is_vector2_v = is_vector2<T>::value;
+
+//----- vec3 check -----//
+// Primary template (false case)
+template <typename T>
+struct is_vector3 : std::false_type {};
+// Specialization for vector3
+template <typename T>
+struct is_vector3<vector3<T>> : std::true_type {};
+// Helper variable template for convenience (C++14 and later)
+template <typename T>
+inline constexpr bool is_vector3_v = is_vector3<T>::value;
+
+//----- vec4 check -----//
+// Primary template (false case)
+template <typename T>
+struct is_vector4 : std::false_type {};
+// Specialization for vector4
+template <typename T>
+struct is_vector4<vector4<T>> : std::true_type {};
+// Helper variable template for convenience (C++14 and later)
+template <typename T>
+inline constexpr bool is_vector4_v = is_vector4<T>::value;
+
+//---------- Type conversions ----------//
+template <typename T>
+std::string toString(const T& value) {
+    using U = std::decay_t<T>;
+
+    // Handle std::vector
+    if constexpr (is_specialization<U, std::vector>::value) {
+        std::string result = "{";
+        for (size_t i = 0; i < value.size(); i++) {
+            result += toString(value[i]); // Recursively call for vector elements
+            if (i != value.size() - 1) {
+                result += ", ";
+            }
+        }
+        result += "}";
+        return result;
+    }
+    // Handle std::initializer_list
+    else if constexpr (is_specialization<U, std::initializer_list>::value) {
+        std::string result = "{";
+        size_t i = 0;
+        for (const auto& elem : value) {
+            result += toString(elem);
+            if (++i != value.size()) {
+                result += ", ";
+            }
+        }
+        result += "}";
+        return result;
+    }
+    // Handle booleans
+    else if constexpr (std::is_same_v<U, bool>) {
+        return value ? "true" : "false";
+    }
+    // Handle arithmetic types
+    else if constexpr (std::is_arithmetic_v<U>) {
+        return std::to_string(value);
+    }
+    // Handle vector2
+    else if constexpr (atta::file::is_vector2_v<U>) {
+        return "vec2(" + std::to_string(value.x) + ", " + std::to_string(value.y) + ")";
+    }
+    // Handle vector3
+    else if constexpr (atta::file::is_vector3_v<U>) {
+        return "vec3(" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + ")";
+    }
+    // Handle vec4
+    else if constexpr (atta::file::is_vector4_v<U>) {
+        return "vec4(" + std::to_string(value.x) + ", " + std::to_string(value.y) + ", " + std::to_string(value.z) + ", " + std::to_string(value.w) +
+               ")";
+    }
+    // Handle quat
+    else if constexpr (std::is_same_v<U, atta::quat>) {
+        return "quat(" + std::to_string(value.i) + ", " + std::to_string(value.j) + ", " + std::to_string(value.k) + ", " + std::to_string(value.r) +
+               ")";
+    }
+    // Handle strings
+    else if constexpr (std::is_convertible_v<U, std::string>) {
+        return "\"" + std::string(value) + "\"";
+    }
+    // Handle convertible to bool (bool reference in std::vector<bool>)
+    else if constexpr (std::is_convertible_v<U, bool>) {
+        return static_cast<bool>(value) ? "true" : "false";
+    }
+    // Unsupported type
+    else {
+        LOG_WARN("SectionData", "Serialization of type [w]$0[] is not supported", typeid(U).name());
+        return {};
+    }
+    return {};
+}
+
 //---------- SectionData ----------//
 template <typename T>
 void SectionData::operator=(T&& value) {
+    _str = atta::file::toString(value);
+}
+
+template <typename T>
+void SectionData::operator=(std::initializer_list<T> value) {
+    _str = atta::file::toString(value);
+}
+
+template <typename T>
+SectionData::operator T() const {
     using U = std::decay_t<T>;
-    registerType<U>();
-    _typeHash = StringId(typeid(U).name());
-
-    //----- Store serializable object -----//
-    if constexpr (std::is_base_of_v<Serializable, U>) {
-        // Allocate space and copy to _data
-        _data.resize(value.getSerializedSize());
-
-        // Serialize to temporary buffer
-        std::stringstream ss;
-        value.serialize(ss);
-
-        // Copy to _data
-        ss.seekg(0, std::ios_base::beg);
-        ss.read((char*)_data.data(), _data.size());
+    if (_str.empty()) {
+        LOG_WARN("SectionData", "Trying to cast empty SectionData to type [w]$0[]", typeid(U).name());
+        return U();
     }
-    //----- Store std::vector -----//
-    else if constexpr (is_specialization<U, std::vector>::value) {
-        // If it is std::vector
-        using V = typename U::value_type;
 
-        if constexpr (std::is_base_of_v<Serializable, V>) {
-            // If it is std::vector of serializable
-            _data.clear();
-            for (auto el : value) {
-                // Create temporary buffer
-                std::vector<uint8_t> newData(el.getSerializedSize());
-
-                // Serialize to temporary buffer
-                std::stringstream ss;
-                el.serialize(ss);
-                ss.seekg(0, std::ios_base::beg);
-                ss.read((char*)newData.data(), newData.size());
-
-                // Copy newData to _data
-                _data.insert(_data.end(), newData.begin(), newData.end());
-            }
-        } else {
-            // Allocate space
-            _data.resize(sizeof(V) * value.size());
-
-            // Copy data
-            V* data = (V*)_data.data();
-            for (unsigned i = 0; i < value.size(); i++) {
-                *data = value[i];
-                data++;
-            }
+    // Handle std::vector
+    if constexpr (is_specialization<U, std::vector>::value) {
+        if (_str.front() != '{' || _str.back() != '}') {
+            LOG_WARN("SectionData", "Invalid vector format in SectionData when casting to [w]std::vector[]: [w]$0", _str);
+            return U();
         }
-    }
-    //----- Store const char* -----//
-    else if constexpr (std::is_same_v<U, const char*>) {
-        std::string str(value);
-        _data.resize(str.size());
-        for (unsigned i = 0; i < str.size(); i++)
-            _data[i] = str[i];
-    }
-    //----- Store std::string -----//
-    else if constexpr (std::is_same_v<U, std::string>) {
-        _data.resize(value.size());
-        for (unsigned i = 0; i < value.size(); i++)
-            _data[i] = value[i];
-    }
-    //----- Store other types -----//
-    else {
-        // If it is any other type
-        // LOG_DEBUG("SectionData", "Attrib $0", typeid(T).name());
-        _data.resize(sizeof(U));
-        U* u = (U*)_data.data();
-        *u = value;
-    }
-}
 
-template <typename T>
-T SectionData::get() {
-    // Set type if it was not set yet
-    if (_typeHash == "undefined"_sid) {
-        _typeHash = StringId(typeid(T).name());
-        registerType<T>();
-    }
+        // Parse the vector
+        using ValueType = typename U::value_type;
+        U result;
+        std::string element;
+        int nestedLevel = 0;
+        for (char ch : _str) {
+            if ((ch == ',' || ch == '}') && nestedLevel == 1) {
+                // Comma at the top level: finalize the current element
 
-    return getConst<T>();
-}
+                // Remove whitespaces from the start/end of the element
+                element.erase(0, element.find_first_not_of(" \t"));
+                element.erase(element.find_last_not_of(" \t") + 1);
 
-template <typename T>
-T SectionData::getConst() const {
-    if (_data.empty())
-        return T{};
-
-    //----- Get serializable object -----//
-    if constexpr (std::is_base_of_v<Serializable, T>) {
-        // Serialize to temporary buffer
-        std::stringstream ss;
-        write(ss, _data.data(), _data.size());
-
-        T t;
-        t.deserialize(ss);
-        return t;
-    }
-    //----- Get std::vector -----//
-    else if constexpr (is_specialization<T, std::vector>::value) {
-        using V = typename T::value_type; // Vector value type
-
-        // Build vector from data and return
-        if (_typeHash == StringId(typeid(T).name())) {
-            // Create return vector
-            T vec;
-
-            if constexpr (std::is_base_of_v<Serializable, V>) {
-                // If it is std::vector of serializable
-
-                // Serialize to temporary buffer
-                std::stringstream ss;
-                write(ss, _data.data(), _data.size());
-
-                // Deserialize all elements
-                while ((size_t)ss.tellg() < _data.size()) {
-                    V v;
-                    v.deserialize(ss);
-                    vec.push_back(v);
-                }
+                // Recursively convert each element to ValueType
+                SectionData temp;
+                temp._str = std::move(element);
+                result.push_back(static_cast<ValueType>(temp));
+                element.clear();
             } else {
-                vec.resize(_data.size() / sizeof(V));
+                // Adjust nested level for parentheses
+                if (ch == '(' || ch == '{')
+                    nestedLevel++;
+                if (ch == ')' || ch == '}')
+                    nestedLevel--;
 
-                // Copy to return vector
-                const V* data = (const V*)&_data.at(0);
-                for (unsigned i = 0; i < vec.size(); i++)
-                    vec[i] = data[i];
+                // Skip initial "{"
+                if (nestedLevel == 1 && ch == '{')
+                    continue;
+
+                // Add the character to the current element
+                element += ch;
             }
-            return vec;
-
-        } else {
-            LOG_WARN("file::SectionData", "Wrong section casting to [w]$0[] (aka [w]std::vector<$1>[]), value is of type [w]$2[]", typeid(T).name(),
-                     typeid(V).name(), _typeHash);
-            return T{};
         }
+
+        return result;
     }
-    //----- Get std::string -----//
-    else if constexpr (std::is_same_v<T, std::string>) {
-        std::string str(_data.begin(), _data.end());
-        return str;
+    // Handle booleans
+    else if constexpr (std::is_same_v<U, bool>) {
+        return _str == "true" ? true : false;
     }
-    //----- Get other types -----//
-    else {
-        // Return data
-        const T* ptr = getPtrConst<T>();
-        if (ptr == nullptr)
-            return T{};
-        else {
-            T copy = *ptr;
-            return copy;
+    // Handle arithmetic types (int, float, double, etc.)
+    else if constexpr (std::is_arithmetic_v<U>) {
+        std::istringstream iss(_str);
+        U value{};
+        if (iss >> value) {
+            return value;
         }
+        LOG_WARN("SectionData", "Failed to cast SectionData to arithmetic type");
+        return U();
     }
-}
-
-template <typename T>
-T* SectionData::getPtr() {
-    // Set type if it was not set yet
-    if (_typeHash == "undefined"_sid) {
-        _typeHash = StringId(typeid(T).name());
-        registerType<T>();
+    // Handle vector2
+    else if constexpr (is_vector2<U>::value) {
+        if (_str.substr(0, 4) != "vec2") {
+            LOG_WARN("SectionData", "Invalid format for vec2: [w]$0", _str);
+            return U();
+        }
+        std::istringstream iss(_str.substr(4)); // Skip the "vec2" prefix
+        char discard;
+        U result{};
+        if (iss >> discard && discard == '(' && iss >> std::ws >> result.x >> std::ws >> discard && discard == ',' &&
+            iss >> std::ws >> result.y >> std::ws >> discard && discard == ')') {
+            return result;
+        }
+        LOG_WARN("SectionData", "Failed to cast SectionData to vec2: [w]$0", _str);
+        return U();
     }
-
-    return getPtrConst<T>();
-}
-
-template <typename T>
-T* SectionData::getPtrConst() const {
-    if (_data.size() > 0 && _typeHash == StringId(typeid(T).name()))
-        return (T*)&_data[0];
+    // Handle vector3
+    else if constexpr (is_vector3<U>::value) {
+        if (_str.substr(0, 4) != "vec3") {
+            LOG_WARN("SectionData", "Invalid format for vec3: [w]$0", _str);
+            return U();
+        }
+        std::istringstream iss(_str.substr(4)); // Skip the "vec3" prefix
+        char discard;
+        U result{};
+        if (iss >> discard && discard == '(' && iss >> result.x && iss >> discard && discard == ',' && iss >> result.y && iss >> discard &&
+            discard == ',' && iss >> result.z && iss >> discard && discard == ')') {
+            return result;
+        }
+        LOG_WARN("SectionData", "Failed to cast SectionData to vec3");
+        return U();
+    }
+    // Handle vector4
+    else if constexpr (is_vector4<U>::value) {
+        if (_str.substr(0, 4) != "vec4") {
+            LOG_WARN("SectionData", "Invalid format for vec4: [w]$0", _str);
+            return U();
+        }
+        std::istringstream iss(_str.substr(4)); // Skip the "vec4" prefix
+        char discard;
+        U result{};
+        if (iss >> discard && discard == '(' && iss >> result.x && iss >> discard && discard == ',' && iss >> result.y && iss >> discard &&
+            discard == ',' && iss >> result.z && iss >> discard && discard == ',' && iss >> result.w && iss >> discard && discard == ')') {
+            return result;
+        }
+        LOG_WARN("SectionData", "Failed to cast SectionData to vec4");
+        return U();
+    }
+    // Handle quaternion
+    else if constexpr (std::is_same_v<U, atta::quat>) {
+        if (_str.substr(0, 4) != "quat") {
+            LOG_WARN("SectionData", "Invalid format for quat: [w]$0", _str);
+            return U();
+        }
+        std::istringstream iss(_str.substr(4)); // Skip the "quat" prefix
+        char discard;
+        U result{};
+        if (iss >> discard && discard == '(' && iss >> result.i && iss >> discard && discard == ',' && iss >> result.j && iss >> discard &&
+            discard == ',' && iss >> result.k && iss >> discard && discard == ',' && iss >> result.r && iss >> discard && discard == ')') {
+            return result;
+        }
+        LOG_WARN("SectionData", "Failed to cast SectionData to quat");
+        return U();
+    }
+    // Handle strings
+    else if constexpr (std::is_convertible_v<U, std::string>) {
+        if (_str.front() == '"' && _str.back() == '"')
+            return _str.substr(1, _str.size() - 2);
+        return U();
+    }
+    // Handle unsupported types
     else {
-        LOG_WARN("file::SectionData", "Wrong section casting to [w]$0[], value is of type [w]$1[]", typeid(T).name(), _typeHash);
-        return nullptr;
+        LOG_WARN("SectionData", "Casting SectionData to type [w]$0[] is not supported", typeid(U).name());
+        return U();
     }
-}
-
-template <typename T>
-void SectionData::registerType() {
-    if (_typeToString.find(StringId(typeid(T).name())) == _typeToString.end()) {
-        _typeToString[StringId(typeid(T).name())] = [](std::vector<uint8_t> data) {
-            //----- Print std::vector -----//
-            if constexpr (is_specialization<T, std::vector>::value) {
-                using V = typename T::value_type; // Vector value type
-                // T vec;
-                // vec.resize(data.size()/sizeof(V));
-                // const V* d = (const V*)&data.at(0);
-                // for(unsigned i = 0; i < vec.size(); i++)
-                //     vec[i] = d[i];
-
-                // std::stringstream ss;
-                // ss << vec;
-                // return std::string(ss.str());
-                return "std::vector<" + std::string(typeid(V).name()) + ">";
-            }
-            //----- Print std::string -----//
-            else if constexpr (std::is_same_v<std::string, T> || std::is_same_v<const char*, T>) {
-                // If it is string
-                std::string str(data.begin(), data.end());
-                return "\"" + str + "\"";
-            }
-            //----- Print others -----//
-            else {
-                // if constexpr(is_streamable<std::stringstream, T>::value)
-                //{
-                //     // If it is printable
-                //     std::stringstream ss;
-                //     ss << *(T*)(&data[0]);
-                //     return std::string(ss.str());
-                // }
-                // else
-                //  Otherwise, print name
-                return std::string(typeid(T).name());
-            }
-
-            return std::string("");
-        };
-    }
-}
-
-//---------- Section ----------//
-template <typename T>
-Section::Section(T value) {
-    if constexpr (std::is_same_v<T, std::vector<Section>>)
-        vector() = value;
-    else if constexpr (std::is_same_v<T, std::map<std::string, Section>>)
-        map() = value;
-    else
-        data() = value;
-}
-
-template <typename T>
-void Section::operator=(T value) {
-    if constexpr (std::is_same_v<T, std::vector<Section>>)
-        vector() = value;
-    else if constexpr (std::is_same_v<T, std::map<std::string, Section>>)
-        map() = value;
-    else
-        data() = value;
-}
-
-template <typename T>
-void Section::operator=(std::initializer_list<T> list) {
-    if constexpr (std::is_same_v<T, Section>)
-        vector() = std::vector<Section>(list);
-    else
-        data() = std::vector<T>(list);
-}
-
-template <typename T>
-Section::operator T() {
-    if (isData())
-        return _data.get<T>();
-    else
-        LOG_WARN("file::Section", "Trying to cast section as [w]$0[], but this section is not data", typeid(T).name());
-
-    return T{};
 }
 
 } // namespace atta::file

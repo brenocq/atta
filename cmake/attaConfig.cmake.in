@@ -35,7 +35,7 @@ macro(atta_add_target target sources)
     endforeach()
     list(APPEND ATTA_PROJECT_HEADERS ${headers})
 
-    # This variable is used to know which targets shuld be linked to atta when building statically
+    # This variable is used to know which targets should be linked to atta when building statically
     list(APPEND ATTA_PROJECT_TARGETS ${target})
     # Update variable
     get_directory_property(hasParent PARENT_DIRECTORY)

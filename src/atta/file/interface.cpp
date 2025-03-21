@@ -12,7 +12,7 @@ namespace atta::file {
 void startUp() { Manager::getInstance().startUpImpl(); }
 void shutDown() { Manager::getInstance().shutDownImpl(); }
 
-// Project
+//----- Project -----//
 bool openProject(fs::path projectFile) { return Manager::getInstance().openProjectImpl(projectFile); }
 bool createProject(fs::path projectFile) { return Manager::getInstance().createProjectImpl(projectFile); }
 void saveProject() { Manager::getInstance().saveProjectImpl(); }
@@ -20,11 +20,25 @@ void closeProject() { Manager::getInstance().closeProjectImpl(); }
 bool isProjectOpen() { return Manager::getInstance().isProjectOpenImpl(); }
 std::shared_ptr<Project> getProject() { return Manager::getInstance().getProjectImpl(); }
 
+//----- Custom component (de)serialization -----//
+void registerComponentIO(cmp::ComponentId cid, const SerializeFunc& serialize, const DeserializeFunc& deserialize) {
+    Manager::getInstance().registerComponentIOImpl(cid, serialize, deserialize);
+}
+
+void getComponentIO(cmp::ComponentId cid, std::optional<SerializeFunc>& serialize, std::optional<DeserializeFunc>& deserialize) {
+    Manager::getInstance().getComponentIOImpl(cid, serialize, deserialize);
+}
+
+//----- Path -----//
 fs::path solveResourcePath(fs::path relativePath, bool mustExist) { return Manager::getInstance().solveResourcePathImpl(relativePath, mustExist); }
 
 std::vector<fs::path> getResourcePaths() { return Manager::getInstance().getResourcePathsImpl(); }
 
-std::vector<fs::path> getDirectoryFilesRecursive(fs::path directory) { return Manager::getInstance().getDirectoryFilesRecursiveImpl(directory); }
+fs::path getBuildPath() { return Manager::getInstance().getBuildPathImpl(); }
+
+std::vector<fs::path> getDirectoryFilesRecursive(const fs::path& directory) {
+    return Manager::getInstance().getDirectoryFilesRecursiveImpl(directory);
+}
 
 fs::path getDefaultProjectFolder() { return Manager::getInstance()._defaultProjectFolder; }
 

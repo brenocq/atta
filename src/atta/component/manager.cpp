@@ -69,8 +69,9 @@ void Manager::createDefaultImpl() {
     cube.add<Name>()->set("Cube");
     cube.add<Mesh>()->set("meshes/cube.obj");
 
-    resource::Material* rmt = resource::create<resource::Material>("Material", resource::Material::CreateInfo{});
-    rmt->color = {0.5, 0.5, 0.5};
+    resource::Material::CreateInfo mInfo{};
+    mInfo.color = {0.5, 0.5, 0.5};
+    resource::Material* rmt = resource::create<resource::Material>("Material", mInfo);
     cube.add<Material>()->set(rmt);
 
     // Light entity
@@ -599,14 +600,14 @@ void Manager::onMeshEvent(event::Event& event) {
         case event::MeshLoad::type: {
             event::MeshLoad& e = reinterpret_cast<event::MeshLoad&>(event);
             bool found = false;
-            for (auto op : TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options)
-                if (std::any_cast<StringId>(op) == e.sid) {
+            for (std::string op : TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options)
+                if (e.sid == op) {
                     found = true;
                     break;
                 }
 
             if (!found)
-                TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
+                TypedComponentRegistry<Mesh>::description->attributeDescriptions[0].options.push_back(e.sid.getString());
 
             break;
         }
@@ -623,14 +624,14 @@ void Manager::onImageEvent(event::Event& event) {
             // Update environment light options
             {
                 bool found = false;
-                for (auto op : TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options)
-                    if (std::any_cast<StringId>(op) == e.sid) {
+                for (std::string op : TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options)
+                    if (e.sid == op) {
                         found = true;
                         break;
                     }
 
                 if (!found) {
-                    TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.push_back(std::any(e.sid));
+                    TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.push_back(e.sid.getString());
                 }
             }
 
@@ -646,7 +647,7 @@ void Manager::onScriptEvent(event::Event& event) {
 
     TypedComponentRegistry<Script>::description->attributeDescriptions[0].options.clear();
     for (StringId script : e.scriptSids)
-        TypedComponentRegistry<Script>::description->attributeDescriptions[0].options.push_back(std::any(script));
+        TypedComponentRegistry<Script>::description->attributeDescriptions[0].options.push_back(script.getString());
 
     // Created pool to new components if necessary
     createComponentPoolsFromRegistered();

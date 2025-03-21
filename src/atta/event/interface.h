@@ -12,12 +12,12 @@
 namespace atta::event {
 
 using Callback = std::function<void(Event&)>;
-#define BIND_EVENT_FUNC(x) std::bind(&x, this, std::placeholders::_1)
+#define BIND_EVENT_FUNC(x) (void*)this, std::bind(&x, this, std::placeholders::_1)
 
-// static void subscribe(Event::Type type, Callback&& callback) { getInstance().subscribeImpl(type, std::move(callback)); }
 template <typename E>
-void subscribe(Callback&& callback);
-// static void subscribe(Event::Type type, Callback&& callback) { getInstance()._observers[type].push_back(callback); }
+void subscribe(void* source, Callback&& callback);
+template <typename E>
+void unsubscribe(void* source, Callback&& callback);
 void publish(Event& event);
 void clear();
 
@@ -28,8 +28,13 @@ void clear();
 namespace atta::event {
 
 template <typename E>
-void subscribe(Callback&& callback) {
-    Manager::getInstance().subscribeImpl(E::type, std::move(callback));
+void subscribe(void* source, Callback&& callback) {
+    Manager::getInstance().subscribeImpl(E::type, source, std::move(callback));
+}
+
+template <typename E>
+void unsubscribe(void* source, Callback&& callback) {
+    Manager::getInstance().unsubscribeImpl(E::type, source, std::move(callback));
 }
 
 } // namespace atta::event

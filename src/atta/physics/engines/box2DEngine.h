@@ -25,10 +25,10 @@ class Box2DEngine : public Engine {
     void step(float dt) override;
     void stop() override;
 
-    void createRigidBody(component::EntityId entity);
-    void deleteRigidBody(component::EntityId entity);
-    void createColliders(component::EntityId entity);
-    void deleteColliders(component::EntityId entity);
+    void createRigidBody(component::EntityId entity) override;
+    void deleteRigidBody(component::EntityId entity) override;
+    void createColliders(component::EntityId entity) override;
+    void deleteColliders(component::EntityId entity) override;
 
     std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) override;
     std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) override;
@@ -54,6 +54,7 @@ class Box2DEngine : public Engine {
     void createRigidJoint(component::RigidJoint* rigid);
 
     std::shared_ptr<b2World> _world;
+    b2Body* _groundBody; ///< Ground body used to apply top-down friction if necessary
     std::unordered_map<component::EntityId, b2Body*> _bodies;
     std::unordered_map<component::RigidBody2D*, component::EntityId> _componentToEntity;
     std::unordered_map<component::EntityId, std::unordered_set<component::EntityId>> _collisions;

@@ -1,5 +1,11 @@
-name: Windows
-on: [push, pull_request, release]
+name: 🪟 Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -9,15 +15,11 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - {
-          name: "Windows Latest",
-          os: windows-latest,
-          build_type: "Release"
-        }
+        - { name: "Windows Latest", os: windows-latest, build_type: "Release" }
 
     steps:
       - name: Checkout atta
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
