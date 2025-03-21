@@ -224,10 +224,13 @@ if(ATTA_STATIC_PROJECT)
     set(ATTA_INSTALL_PCH ${ATTA_PCH})
     configure_file(cmake/attaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake" @ONLY)
 
+    # Build static project and link it if CMakeLists.txt exists
     get_filename_component(projectDirectory ${ATTA_STATIC_PROJECT_FILE} DIRECTORY)
-    add_subdirectory(${projectDirectory} ${projectDirectory}/build)
-    # The project targets will are saved to ATTA_PROJECT_TARGETS (atta_add_target macro)
-    target_link_libraries(atta PUBLIC ${ATTA_PROJECT_TARGETS})
+    if(EXISTS "${projectDirectory}/CMakeLists.txt")
+        add_subdirectory(${projectDirectory} ${projectDirectory}/build)
+        # The project targets will are saved to ATTA_PROJECT_TARGETS (atta_add_target macro)
+        target_link_libraries(atta PUBLIC ${ATTA_PROJECT_TARGETS})
+    endif()
 
     # Populate ATTA_STATIC_PROJECT_SCRIPTS to write includes to scripts.h file
     set(ATTA_STATIC_PROJECT_SCRIPTS "")
