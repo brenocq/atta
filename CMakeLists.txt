@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.3.6 LANGUAGES CXX C)
+project(atta VERSION 0.3.7 LANGUAGES CXX C)
 
 option(ATTA_BUILD_TESTS "Set to ON to build also the test executables" ON)
 option(ATTA_BUILD_DOCS "Build the documentation" OFF)
@@ -92,9 +92,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     endif()
 
     if(ATTA_STATIC_PROJECT_FILE)
-        # Copy project filee
+        # Copy project file
         configure_file(${ATTA_STATIC_PROJECT_FILE} project/project.atta COPYONLY)
 
+        # Copy project resources
+        # TODO it may fail if the resources are populated by the project CMakeLists.txt during the first build
         get_filename_component(projectDir ${ATTA_STATIC_PROJECT_FILE} DIRECTORY)
         if(EXISTS "${projectDir}/resources")
             file(COPY "${projectDir}/resources" DESTINATION "project")
@@ -222,10 +224,13 @@ if(ATTA_STATIC_PROJECT)
     set(ATTA_INSTALL_PCH ${ATTA_PCH})
     configure_file(cmake/attaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/attaConfig.cmake" @ONLY)
 
+    # Build static project and link it if CMakeLists.txt exists
     get_filename_component(projectDirectory ${ATTA_STATIC_PROJECT_FILE} DIRECTORY)
-    add_subdirectory(${projectDirectory} ${projectDirectory}/build)
-    # The project targets will are saved to ATTA_PROJECT_TARGETS (atta_add_target macro)
-    target_link_libraries(atta PUBLIC ${ATTA_PROJECT_TARGETS})
+    if(EXISTS "${projectDirectory}/CMakeLists.txt")
+        add_subdirectory(${projectDirectory} ${projectDirectory}/build)
+        # The project targets will are saved to ATTA_PROJECT_TARGETS (atta_add_target macro)
+        target_link_libraries(atta PUBLIC ${ATTA_PROJECT_TARGETS})
+    endif()
 
     # Populate ATTA_STATIC_PROJECT_SCRIPTS to write includes to scripts.h file
     set(ATTA_STATIC_PROJECT_SCRIPTS "")
@@ -260,10 +265,10 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
         PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ATTA_VERSION_SAFE}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ATTA_VERSION_SAFE}
     )
-    # Install atta-X.X.X.X executable
+    # Install atta-X.X.X executable
     install(FILES $<TARGET_FILE:atta> TYPE BIN RENAME ${ATTA_VERSION_SAFE} PERMISSIONS WORLD_EXECUTE)
 
-    # Install atta_test-X.X.X.X executable
+    # Install atta_test-X.X.X executable
     if(ATTA_BUILD_TESTS)
         install(TARGETS atta_test RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
         install(FILES $<TARGET_FILE:atta_test> TYPE BIN RENAME atta_test-${CMAKE_PROJECT_VERSION} PERMISSIONS WORLD_EXECUTE)
@@ -278,6 +283,8 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
         FILES_MATCHING REGEX ".*\.(h|inl)$")
     install(DIRECTORY ${CMAKE_BINARY_DIR}/_deps/implot-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/implot
         FILES_MATCHING REGEX ".*\.(h|cpp)$")
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/_deps/implot3d-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/implot3d
+        FILES_MATCHING REGEX ".*\.(h|cpp)$")
     install(DIRECTORY ${CMAKE_BINARY_DIR}/_deps/bullet3-src/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/bullet3
         FILES_MATCHING REGEX ".*\.(h|cpp)$")
     install(DIRECTORY src/extern/glad/ DESTINATION include/${ATTA_VERSION_SAFE}/extern/glad
@@ -289,6 +296,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE})
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/imgui)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/implot)
+    list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/implot3d)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/bullet3/src)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/glad/include)
     list(APPEND ATTA_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/${ATTA_VERSION_SAFE}/extern/stb_image)

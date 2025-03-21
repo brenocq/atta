@@ -213,6 +213,9 @@ std::vector<Section> ProjectSerializer::serializeViewports() {
         section["camera.position"] = camera->getPosition();
         section["camera.lookAt"] = camera->getPosition() + camera->getFront();
         section["camera.up"] = camera->getUp();
+        if (camera->getName() == "OrthographicCamera") {
+            section["camera.height"] = std::dynamic_pointer_cast<gfx::OrthographicCamera>(camera)->getHeight();
+        }
 
         sections.push_back(std::move(section));
     }
@@ -580,6 +583,8 @@ void ProjectSerializer::deserializeViewport(const Section& section) {
                 cInfo.lookAt = vec3(section["camera.lookAt"]);
             if (section.contains("camera.up"))
                 cInfo.up = vec3(section["camera.up"]);
+            if (section.contains("camera.height"))
+                cInfo.height = float(section["camera.height"]);
             info.camera = std::make_shared<gfx::OrthographicCamera>(cInfo);
         } else if (cameraType == "PerspectiveCamera") {
             gfx::PerspectiveCamera::CreateInfo cInfo{};
