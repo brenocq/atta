@@ -8,7 +8,6 @@ if(ATTA_VULKAN_SUPPORT)
         GIT_REPOSITORY "https://github.com/KhronosGroup/SPIRV-Headers.git"
         GIT_TAG "54a521dd130ae1b2f38fef79b09515702d135bdd"
         GIT_PROGRESS TRUE
-        GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(spirv-headers)
 
@@ -18,7 +17,6 @@ if(ATTA_VULKAN_SUPPORT)
         GIT_REPOSITORY "https://github.com/KhronosGroup/SPIRV-Tools.git"
         GIT_TAG "9e470ef0f95d6923fa19dc5c5dc48c1442eb5a8b"
         GIT_PROGRESS TRUE
-        GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(spirv-tools)
 
