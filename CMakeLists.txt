@@ -92,9 +92,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)#----- Web build
     endif()
 
     if(ATTA_STATIC_PROJECT_FILE)
-        # Copy project filee
+        # Copy project file
         configure_file(${ATTA_STATIC_PROJECT_FILE} project/project.atta COPYONLY)
 
+        # Copy project resources
+        # TODO it may fail if the resources are populated by the project CMakeLists.txt during the first build
         get_filename_component(projectDir ${ATTA_STATIC_PROJECT_FILE} DIRECTORY)
         if(EXISTS "${projectDir}/resources")
             file(COPY "${projectDir}/resources" DESTINATION "project")
