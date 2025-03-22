@@ -5,6 +5,8 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/component/components/environmentLight.h>
+#include <atta/resource/interface.h>
+#include <atta/resource/resources/image.h>
 
 namespace atta::component {
 
@@ -20,8 +22,13 @@ ComponentDescription& TypedComponentRegistry<EnvironmentLight>::getDescription()
 }
 
 EnvironmentLight::EnvironmentLight() {
-    if (TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.size())
-        sid = StringId(*(TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.begin()));
+    // Set first .hdr image as default image for environment lights
+    for (StringId resourceSid : resource::getResources<resource::Image>()) {
+        if (resourceSid.getString().find(".hdr") != std::string::npos) {
+            sid = resourceSid;
+            break;
+        }
+    }
 }
 
 } // namespace atta::component

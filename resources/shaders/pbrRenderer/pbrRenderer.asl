@@ -115,8 +115,10 @@ void fragment(out vec4 outColor) {
     vec3 Lo = vec3(0.0);
     //----- Point lights -----//
     for (int i = 0; i < numPointLights; i++) {
+        // Compute light direction
         vec3 L = normalize(pointLights[i].position - worldPos);
-        vec3 H = normalize(V + L);
+
+        // Compute radiance
         float dist = length(pointLights[i].position - worldPos);
         float attenuation = 1.0 / (dist * dist);
         vec3 radiance = pointLights[i].intensity * attenuation;
@@ -176,9 +178,9 @@ vec3 calcLightContribution(vec3 L, vec3 N, vec3 V, vec3 radiance, vec3 albedo, f
     float G = geometrySmith(N, V, L, roughness);
     vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
-    vec3 numerator = D * G * F;
-    float denominator = 4.0f * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
-    vec3 specular = numerator / denominator;
+    vec3 num = D * G * F;
+    float denom = 4.0f * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+    vec3 specular = num / denom;
 
     vec3 kS = F;              // Reflection/specular fraction
     vec3 kD = vec3(1.0) - kS; // Refraction/diffuse fraction
@@ -257,30 +259,29 @@ float distributionGGX(vec3 N, vec3 H, float roughness) {
     float NdotH = max(dot(N, H), 0.0);
     float NdotH2 = NdotH * NdotH;
 
-    float nom = a2;
+    float num = a2;
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
     denom = PI * denom * denom;
 
-    return nom / denom;
+    return num / denom;
 }
 
-float geometrySchlickGGX(float NdotV, float k) {
-    float nom = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-    return nom / denom;
-}
-
-float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+float geometrySchlickGGX(float NdotV, float roughness) {
     // Compute k for direct lighting
     float r = (roughness + 1.0);
     float k = (r * r) / 8.0;
-    // TODO Compute k for IBL
 
+    float num = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+    return num / denom;
+}
+
+float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
     // Smith's method to take into account both view direction and light direction
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = geometrySchlickGGX(NdotV, k);
-    float ggx1 = geometrySchlickGGX(NdotL, k);
+    float ggx2 = geometrySchlickGGX(NdotV, roughness);
+    float ggx1 = geometrySchlickGGX(NdotL, roughness);
 
     return ggx1 * ggx2;
 }
