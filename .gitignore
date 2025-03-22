@@ -7,9 +7,13 @@
 
 # Build
 /build/
-/scripts/local_*.sh
 /projects/
-/resources/
+
+# Resources
+/resources/fonts/
+/resources/icons/
+/resources/meshes/
+/resources/textures/
 
 # Visual Studio
 /.vs
