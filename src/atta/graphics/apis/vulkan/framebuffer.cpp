@@ -52,7 +52,49 @@ void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
 }
 
 void Framebuffer::setLayer(uint32_t layer) {
-    // TODO
+    // For now, support only framebuffers with a single attachment that is a cubemap
+    if (_images.size() != 1) {
+        LOG_ERROR("gfx::vk::Framebuffer", "setLayer is only supported for framebuffers with one attachment, not for framebuffer [w]$0[]", _debugName);
+        return;
+    }
+
+    // Get the image and ensure it's a cubemap
+    std::shared_ptr<gfx::Image> image = _images[0];
+    std::shared_ptr<vk::Image> vkImage = std::dynamic_pointer_cast<vk::Image>(image);
+    if (!vkImage->isCubemap()) {
+        LOG_ERROR("gfx::vk::Framebuffer", "setLayer called on a non-cubemap image for framebuffer [w]$0[]", _debugName);
+        return;
+    }
+
+    // Destroy the existing framebuffer if it exists
+    if (_framebuffer != VK_NULL_HANDLE) {
+        vkDestroyFramebuffer(_device->getHandle(), _framebuffer, nullptr);
+        _framebuffer = VK_NULL_HANDLE;
+    }
+
+    // Retrieve the image view for the desired cubemap face (layer)
+    VkImageView faceView = vkImage->getCubemapImageViewHandle(layer);
+    if (faceView == VK_NULL_HANDLE) {
+        LOG_ERROR("gfx::vk::Framebuffer", "Failed to get cubemap image view for layer %d", layer);
+        return;
+    }
+
+    // Create a new framebuffer with this per-face view
+    std::vector<VkImageView> attachments = {faceView};
+
+    VkFramebufferCreateInfo fbInfo{};
+    fbInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    fbInfo.renderPass = _renderPass->getHandle();
+    fbInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+    fbInfo.pAttachments = attachments.data();
+    fbInfo.width = _width;
+    fbInfo.height = _height;
+    fbInfo.layers = 1;
+
+    if (vkCreateFramebuffer(_device->getHandle(), &fbInfo, nullptr, &_framebuffer) != VK_SUCCESS) {
+        LOG_ERROR("gfx::vk::Framebuffer", "Failed to create framebuffer for cubemap layer %d", layer);
+        return;
+    }
 }
 
 VkFramebuffer Framebuffer::getHandle() const { return _framebuffer; }
