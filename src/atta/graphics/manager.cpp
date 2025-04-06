@@ -83,7 +83,7 @@ void Manager::startUpImpl() {
     //----- Create shaders -----//
     _equiToCubemap = std::make_unique<EquiToCubemap>();
     // Create pink default cubemap
-    _cubemapImages["atta::gfx::pinkCubemap"] = _equiToCubemap->createCubemap("atta::gfx::pink");
+    _cubemapImages["atta::gfx::pink"] = _equiToCubemap->createCubemap("atta::gfx::pink");
 
     //----- Resource sync -----//
     event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));

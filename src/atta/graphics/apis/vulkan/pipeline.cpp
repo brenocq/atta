@@ -330,13 +330,18 @@ void Pipeline::updateImageGroup(std::string name, ImageGroup imageGroup) {
             if (imageItem.name == element.name && imageItem.image)
                 image = std::dynamic_pointer_cast<vk::Image>(imageItem.image);
 
-        // Update descriptor: if no image, use a default pink image.
+        // Update descriptor: if no image, use a default pink image
         if (image != nullptr)
             imageGroupInfo.descriptorSet->update(binding++, image);
         else {
             // Set default pink image to this binding
-            StringId imageSid = element.type == BufferLayout::Element::Type::SAMPLER_2D ? "atta::gfx::pink" : "atta::gfx::pinkCubemap";
-            std::shared_ptr<vk::Image> defaultImage = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImage(imageSid));
+            std::shared_ptr<vk::Image> defaultImage;
+            if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
+                defaultImage = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImage("atta::gfx::pink"));
+            else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
+                defaultImage = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getCubemapImage("atta::gfx::pink"));
+            else
+                LOG_ERROR("gfx::vk::Pipeline", "Could not set default image for [w]$0[], unknown image type", element.name);
             imageGroupInfo.descriptorSet->update(binding++, defaultImage);
         }
     }
