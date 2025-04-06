@@ -52,12 +52,33 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
     _renderPass = graphics::create<RenderPass>(renderPassInfo);
 
     //---------- Graphics pipeline ----------//
-    // Vertex input layout
+    // Create Pipeline
     Pipeline::CreateInfo pipelineInfo{};
     pipelineInfo.shader = graphics::create<Shader>("shaders/compute/equiToCubemap.asl");
     pipelineInfo.renderPass = _renderPass;
     renderPassInfo.debugName = StringId("EquiToCubemap Pipeline");
     _pipeline = graphics::create<Pipeline>(pipelineInfo);
+
+    // Create Image Group
+    _pipeline->createImageGroup(Pipeline::ImageGroupType::PER_DRAW, "imgGroup");
+    _pipeline->updateImageGroup("imgGroup", {{"uEquirectangularMap", image}});
+
+    // Define projection and view matrices
+    mat4 proj = perspective(M_PI, 1.0f, 0.1f, 10.0f);
+    std::array<mat4, 6> views = {
+        // Positive X face: look toward +X, with Z as up.
+        lookAt(vec3(0.0f), vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
+        // Negative X face: look toward -X, with Z as up.
+        lookAt(vec3(0.0f), vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
+        // Positive Y face: look toward +Y, with Z as up.
+        lookAt(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
+        // Negative Y face: look toward -Y, with Z as up.
+        lookAt(vec3(0.0f), vec3(0.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
+        // Positive Z face: since forward (0,0,1) is parallel to global up, choose a different up (e.g. (0,1,0))
+        lookAt(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, 1.0f, 0.0f)),
+        // Negative Z face: similarly choose (0,1,0) for up.
+        lookAt(vec3(0.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f)),
+    };
 
     // Render
     for (size_t i = 0; i < 6; i++) {
@@ -68,7 +89,9 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
             {
                 _pipeline->begin();
                 {
-                    // TODO
+                    _pipeline->setMat4("uProjection", proj);
+                    _pipeline->setMat4("uView", views[i]);
+                    _pipeline->setImageGroup("imgGroup");
                     _pipeline->renderQuad();
                 }
                 _pipeline->end();
