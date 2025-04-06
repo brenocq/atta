@@ -14,7 +14,7 @@ size_t GridPipeline::_gridId = 0;
 
 GridPipeline::GridPipeline(std::shared_ptr<RenderPass> renderPass) : _numLines(0) {
     Pipeline::CreateInfo pipelineInfo{};
-    pipelineInfo.shader = gfx::create<Shader>("shaders/grid/grid.asl");
+    pipelineInfo.shader = gfx::create<Shader>("shaders/common/grid.asl");
     pipelineInfo.renderPass = renderPass;
     pipelineInfo.primitive = Pipeline::Primitive::LINE;
     pipelineInfo.debugName = StringId("Grid Pipeline");
