@@ -18,6 +18,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     cameras/orthographicCamera.cpp
 
     compute/entityClick.cpp
+    compute/equiToCubemap.cpp
 
     renderers/common/drawerPipeline.cpp
     renderers/common/gridPipeline.cpp

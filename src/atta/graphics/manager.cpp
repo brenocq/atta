@@ -74,6 +74,15 @@ void Manager::startUpImpl() {
         _graphicsAPI = std::static_pointer_cast<GraphicsAPI>(std::make_shared<OpenGLAPI>(_window));
     _graphicsAPI->startUp();
 
+    //----- Create default images/meshes -----//
+    // Create images (e.g. white, black, pink)
+    createDefaultImages();
+    // Create meshes (e.g. quad, quad3, cube)
+    createDefaultMeshes();
+
+    //----- Create shaders -----//
+    _equiToCubemap = std::make_unique<EquiToCubemap>();
+
     //----- Resource sync -----//
     event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));
     event::subscribe<event::MeshUpdate>(BIND_EVENT_FUNC(Manager::onMeshUpdateEvent));
@@ -92,6 +101,7 @@ void Manager::shutDownImpl() {
 
     _graphicsAPI->waitDevice();
 
+    _equiToCubemap.reset();
     _meshes.clear();
     _images.clear();
     _graphicsAPI->shutDown();
@@ -179,16 +189,44 @@ gfx::Image::Format Manager::convertFormat(res::Image::Format format) const {
     return gfx::Image::Format::NONE;
 }
 
-void Manager::syncResources() {
-    _meshes.clear();
-    _images.clear();
-    // Initialize meshes already loaded
-    for (auto meshSid : resource::getResources<resource::Mesh>())
-        createMesh(meshSid);
-    // Initialize textures already loaded
-    for (auto imgSid : resource::getResources<resource::Image>())
-        createImage(imgSid);
+void Manager::createDefaultImages() {
+    //----- Create basic images -----//
+    // White
+    {
+        static uint8_t white[] = {255, 255, 255, 255};
+        Image::CreateInfo info{};
+        info.format = Image::Format::RGBA;
+        info.width = 1;
+        info.height = 1;
+        info.data = white;
+        info.debugName = "White";
+        _images["atta::gfx::white"] = create<Image>(info);
+    }
+    // Black
+    {
+        static uint8_t black[] = {0, 0, 0, 255};
+        Image::CreateInfo info{};
+        info.format = Image::Format::RGBA;
+        info.width = 1;
+        info.height = 1;
+        info.data = black;
+        info.debugName = "Black";
+        _images["atta::gfx::black"] = create<Image>(info);
+    }
+    // Pink
+    {
+        static uint8_t pink[] = {255, 0, 255, 255};
+        Image::CreateInfo info{};
+        info.format = Image::Format::RGBA;
+        info.width = 1;
+        info.height = 1;
+        info.data = pink;
+        info.debugName = "Pink";
+        _images["atta::gfx::pink"] = create<Image>(info);
+    }
+}
 
+void Manager::createDefaultMeshes() {
     //----- Create basic meshes -----//
     // Quad
     {
@@ -312,6 +350,15 @@ void Manager::syncResources() {
     }
 }
 
+void Manager::syncResources() {
+    // Initialize meshes already loaded
+    for (auto meshSid : resource::getResources<resource::Mesh>())
+        createMesh(meshSid);
+    // Initialize textures already loaded
+    for (auto imgSid : resource::getResources<resource::Image>())
+        createImage(imgSid);
+}
+
 void Manager::onMeshLoadEvent(event::Event& event) {
     event::MeshLoad& e = reinterpret_cast<event::MeshLoad&>(event);
     createMesh(e.sid);
@@ -413,13 +460,19 @@ void Manager::createImage(StringId sid) {
     if (image == nullptr)
         LOG_WARN("gfx::Manager", "Could not initialize gfx::Image from [w]$0[]", sid);
 
-    Image::CreateInfo info{};
-    info.width = image->getWidth();
-    info.height = image->getHeight();
-    info.data = image->getData();
-    info.format = convertFormat(image->getFormat());
-    info.debugName = sid;
-    _images[sid] = create<Image>(info);
+    if (sid.getString().find(".hdr") != std::string::npos) {
+        // Create cubemap image
+        _images[sid] = _equiToCubemap->createCubemap(sid);
+    } else {
+        // Create 2D image
+        Image::CreateInfo info{};
+        info.width = image->getWidth();
+        info.height = image->getHeight();
+        info.data = image->getData();
+        info.format = convertFormat(image->getFormat());
+        info.debugName = sid;
+        _images[sid] = create<Image>(info);
+    }
 }
 
 const std::unordered_map<StringId, std::shared_ptr<Mesh>>& Manager::getMeshes() const { return _meshes; }
