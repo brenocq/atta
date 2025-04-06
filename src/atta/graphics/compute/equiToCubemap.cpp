@@ -60,8 +60,8 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
     _pipeline = graphics::create<Pipeline>(pipelineInfo);
 
     // Create Image Group
-    _pipeline->createImageGroup(Pipeline::ImageGroupType::PER_DRAW, "imgGroup");
-    _pipeline->updateImageGroup("imgGroup", {{"uEquirectangularMap", image}});
+    _pipeline->createImageGroup(Pipeline::ImageGroupType::PER_FRAME, "equiImg");
+    _pipeline->updateImageGroup("equiImg", {{"uEquirectangularMap", image}});
 
     // Define projection and view matrices
     mat4 proj = perspective(M_PI, 1.0f, 0.1f, 10.0f);
@@ -91,7 +91,7 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
                 {
                     _pipeline->setMat4("uProjection", proj);
                     _pipeline->setMat4("uView", views[i]);
-                    _pipeline->setImageGroup("imgGroup");
+                    _pipeline->setImageGroup("equiImg");
                     _pipeline->renderQuad();
                 }
                 _pipeline->end();

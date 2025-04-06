@@ -129,11 +129,9 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
         std::vector<DescriptorSetLayout::Binding> bindings;
         for (const auto& element : _shader->getPerFrameImageLayout().getElements()) {
             uint32_t bindingIdx = bindings.size();
-            if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
+            if (element.type == BufferLayout::Element::Type::SAMPLER_2D || element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
                 bindings.push_back(
                     {bindingIdx, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
-            else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
-                bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
         }
         if (bindings.size()) {
             _perFrameImageDescriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
@@ -146,11 +144,9 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
         std::vector<DescriptorSetLayout::Binding> bindings;
         for (const auto& element : _shader->getPerDrawImageLayout().getElements()) {
             uint32_t bindingIdx = bindings.size();
-            if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
+            if (element.type == BufferLayout::Element::Type::SAMPLER_2D || element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
                 bindings.push_back(
                     {bindingIdx, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
-            else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
-                bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
         }
         if (bindings.size()) {
             _perDrawImageDescriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
@@ -169,8 +165,7 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     const uint32_t maxSets = 254; // Maximum number of image groups
     std::vector<VkDescriptorPoolSize> poolSizes = {
         {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},                   // Up to 1 uniform buffer
-        {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8 * maxSets}, // Up to 8 sampler2D perDraw/perFrame
-        {VK_DESCRIPTOR_TYPE_SAMPLER, 8 * maxSets},                // Up to 8 samplerCube perDraw/perFrame
+        {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8 * maxSets}, // Up to 8 sampler2D/samplerCube perDraw/perFrame
     };
     _descriptorPool = std::make_shared<DescriptorPool>(poolSizes, maxSets);
     _descriptorSets = std::make_shared<DescriptorSets>(_descriptorPool, _uniformDescriptorSetLayout, _pipelineLayout, 1);
@@ -335,13 +330,14 @@ void Pipeline::updateImageGroup(std::string name, ImageGroup imageGroup) {
             if (imageItem.name == element.name && imageItem.image)
                 image = std::dynamic_pointer_cast<vk::Image>(imageItem.image);
 
-        // Update descriptor
+        // Update descriptor: if no image, use a default pink image.
         if (image != nullptr)
             imageGroupInfo.descriptorSet->update(binding++, image);
         else {
-            // Bind pink
-            std::shared_ptr<vk::Image> image = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImage("atta::gfx::pink"));
-            imageGroupInfo.descriptorSet->update(binding++, image);
+            // Set default pink image to this binding
+            StringId imageSid = element.type == BufferLayout::Element::Type::SAMPLER_2D ? "atta::gfx::pink" : "atta::gfx::pinkCubemap";
+            std::shared_ptr<vk::Image> defaultImage = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImage(imageSid));
+            imageGroupInfo.descriptorSet->update(binding++, defaultImage);
         }
     }
 

@@ -1,6 +1,6 @@
 perFrame mat4 uProjection;
 perFrame mat4 uView;
-perFrame samplerCube uEnvironmentMap;
+perFrame sampler2D uEnvironmentMap;
 
 perVertex vec3 vTexCoords;
 
@@ -16,5 +16,6 @@ vec4 vertex(vec3 iVertex, vec3 iNormal, vec2 iUV) {
 
 void fragment(out vec4 color) {
     // Sample the cubemap using the normalized direction
-    color = texture(uEnvironmentMap, normalize(vTexCoords));
+    //color = texture(uEnvironmentMap, normalize(vTexCoords));
+    color = vec4(1,0,0,1); // Ensure alpha is 1.0
 }
