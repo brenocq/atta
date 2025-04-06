@@ -77,7 +77,7 @@ class Pipeline {
      * @note If numVertices is set to zero, all vertices are rendered
      * @warning numVertices should only be used if there is no index buffer
      */
-    virtual void renderMesh(StringId meshSid, size_t numVertices = 0);
+    virtual void renderMesh(StringId meshSid, size_t numVertices = 0) = 0;
     virtual void renderQuad();
     virtual void renderQuad3();
     virtual void renderCube();

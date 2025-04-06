@@ -49,24 +49,6 @@ void Pipeline::renderMesh(StringId meshSid, size_t numVertices) {
         LOG_WARN("gfx::gl::Pipeline", "Could not render mesh [w]$0[], mesh not found", meshSid);
 }
 
-void Pipeline::renderQuad() {
-    renderMesh("atta::gfx::quad");
-    if (_renderPass->getFramebuffer()->hasDepthAttachment())
-        glClear(GL_DEPTH_BUFFER_BIT);
-}
-
-void Pipeline::renderQuad3() {
-    renderMesh("atta::gfx::quad3");
-    if (_renderPass->getFramebuffer()->hasDepthAttachment())
-        glClear(GL_DEPTH_BUFFER_BIT);
-}
-
-void Pipeline::renderCube() {
-    renderMesh("atta::gfx::cube");
-    if (_renderPass->getFramebuffer()->hasDepthAttachment())
-        glClear(GL_DEPTH_BUFFER_BIT);
-}
-
 void* Pipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<gl::Image>(_renderPass->getFramebuffer()->getImage(0))->getImGuiImage());
 }
