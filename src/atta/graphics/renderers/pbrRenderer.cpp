@@ -56,6 +56,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
 
     //---------- Common pipelines ----------//
     //_selectedPipeline = std::make_unique<SelectedPipeline>(_geometryRenderPass);
+    _skyboxPipeline = std::make_unique<SkyboxPipeline>(_geometryRenderPass);
     _gridPipeline = std::make_unique<GridPipeline>(_geometryRenderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(_geometryRenderPass);
 
@@ -312,6 +313,10 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
     {
         _geometryRenderPass->begin(_renderQueue);
         {
+            // Render skybox
+            _skyboxPipeline->render(camera);
+
+            // Render meshes
             _geometryPipeline->begin();
             {
                 //---------- PBR shader ----------//

@@ -15,6 +15,7 @@ namespace atta::graphics::vk {
 
 Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info), _device(common::getDevice()) {
     // Create framebuffer
+    // TODO do not create framebuffer if already created for this render pass
     _framebuffer = std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer());
     _framebuffer->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
 
@@ -67,11 +68,11 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 
     // Depth stencil
     VkPipelineDepthStencilStateCreateInfo depthStencil{};
+    depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     depthStencil.depthTestEnable = VK_FALSE;
     depthStencil.depthWriteEnable = VK_FALSE;
     depthStencil.stencilTestEnable = VK_FALSE;
-    if (_framebuffer->hasDepthAttachment()) {
-        depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    if (_framebuffer->hasDepthAttachment() && _enableDepthTest) {
         depthStencil.depthTestEnable = VK_TRUE;
         depthStencil.depthWriteEnable = VK_TRUE;
         depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;

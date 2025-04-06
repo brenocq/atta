@@ -12,6 +12,7 @@
 #include <atta/graphics/renderers/common/drawerPipeline.h>
 #include <atta/graphics/renderers/common/gridPipeline.h>
 #include <atta/graphics/renderers/common/selectedPipeline.h>
+#include <atta/graphics/renderers/common/skyboxPipeline.h>
 #include <atta/graphics/renderers/renderer.h>
 
 namespace atta::graphics {
@@ -38,6 +39,8 @@ class PbrRenderer final : public Renderer {
     std::shared_ptr<RenderQueue> _renderQueue;
     std::shared_ptr<RenderPass> _geometryRenderPass;
     std::shared_ptr<Pipeline> _geometryPipeline;
+
+    std::unique_ptr<SkyboxPipeline> _skyboxPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
     std::unique_ptr<GridPipeline> _gridPipeline;
     std::unique_ptr<SelectedPipeline> _selectedPipeline;

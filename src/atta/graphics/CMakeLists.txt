@@ -22,6 +22,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     renderers/common/drawerPipeline.cpp
     renderers/common/gridPipeline.cpp
     renderers/common/selectedPipeline.cpp
+    renderers/common/skyboxPipeline.cpp
     renderers/fastRenderer.cpp
     renderers/pbrRenderer.cpp
     renderers/phongRenderer.cpp

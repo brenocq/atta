@@ -27,6 +27,7 @@ class Pipeline {
         bool backfaceCulling = true;
         bool wireframe = false;
         bool lineWidth = 1.0f;
+        bool enableDepthTest = true; // Can be set to false to disable depth testing for this pipeline
 
         StringId debugName = StringId("Unnamed Pipeline");
     };
@@ -94,6 +95,7 @@ class Pipeline {
     const bool _backfaceCulling;
     const bool _wireframe;
     const bool _lineWidth;
+    const bool _enableDepthTest;
 
     const StringId _debugName;
 
