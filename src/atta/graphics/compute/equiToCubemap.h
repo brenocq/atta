@@ -20,8 +20,7 @@ class EquiToCubemap {
     /**
      * @brief Create a cubemap image from an equirectangular image
      *
-     * @param textureSid The name image resource to be created from
-     * @param rotationMatrix The rotation matrix to be applied to the cubemap
+     * @param textureSid The name gfx::Image to be created from
      */
     std::shared_ptr<gfx::Image> createCubemap(StringId imageSid);
 

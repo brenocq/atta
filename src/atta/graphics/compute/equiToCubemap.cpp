@@ -41,9 +41,9 @@ EquiToCubemap::EquiToCubemap() : _width(512), _height(512) {
 std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
     LOG_VERBOSE("gfx::EquiToCubemap", "Create cubemap from image [w]$0[]", imageSid);
 
-    res::Image* imageRes = resource::get<resource::Image>(imageSid);
-    if (imageRes == nullptr) {
-        LOG_ERROR("gfx::EquiToCubemap", "Could not create cubemap, image resource [w]$0[] does not exist", imageSid);
+    std::shared_ptr<gfx::Image> image = gfx::Manager::getInstance().getImage(imageSid);
+    if (image == nullptr) {
+        LOG_ERROR("gfx::EquiToCubemap", "Could not create cubemap, image [w]$0[] does not exist", imageSid);
         return nullptr;
     }
 

@@ -340,7 +340,7 @@ void Pipeline::updateImageGroup(std::string name, ImageGroup imageGroup) {
             imageGroupInfo.descriptorSet->update(binding++, image);
         else {
             // Bind pink
-            std::shared_ptr<vk::Image> image = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImages().at("atta::gfx::pink"));
+            std::shared_ptr<vk::Image> image = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImage("atta::gfx::pink"));
             imageGroupInfo.descriptorSet->update(binding++, image);
         }
     }

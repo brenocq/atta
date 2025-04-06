@@ -82,6 +82,8 @@ void Manager::startUpImpl() {
 
     //----- Create shaders -----//
     _equiToCubemap = std::make_unique<EquiToCubemap>();
+    // Create pink default cubemap
+    _cubemapImages["atta::gfx::pinkCubemap"] = _equiToCubemap->createCubemap("atta::gfx::pink");
 
     //----- Resource sync -----//
     event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));
@@ -104,6 +106,7 @@ void Manager::shutDownImpl() {
     _equiToCubemap.reset();
     _meshes.clear();
     _images.clear();
+    _cubemapImages.clear();
     _graphicsAPI->shutDown();
     _graphicsAPI.reset();
     _window.reset();
@@ -460,23 +463,35 @@ void Manager::createImage(StringId sid) {
     if (image == nullptr)
         LOG_WARN("gfx::Manager", "Could not initialize gfx::Image from [w]$0[]", sid);
 
-    if (sid.getString().find(".hdr") != std::string::npos) {
-        // Create cubemap image
-        _images[sid] = _equiToCubemap->createCubemap(sid);
-    } else {
-        // Create 2D image
-        Image::CreateInfo info{};
-        info.width = image->getWidth();
-        info.height = image->getHeight();
-        info.data = image->getData();
-        info.format = convertFormat(image->getFormat());
-        info.debugName = sid;
-        _images[sid] = create<Image>(info);
-    }
+    // Create 2D image
+    Image::CreateInfo info{};
+    info.width = image->getWidth();
+    info.height = image->getHeight();
+    info.data = image->getData();
+    info.format = convertFormat(image->getFormat());
+    info.debugName = sid;
+    _images[sid] = create<Image>(info);
+
+    // If it is HDR image, also create cubemap image
+    if (sid.getString().find(".hdr") != std::string::npos)
+        _cubemapImages[sid] = _equiToCubemap->createCubemap(sid);
 }
 
+std::shared_ptr<Mesh> Manager::getMesh(StringId sid) const {
+    auto it = _meshes.find(sid);
+    return it != _meshes.end() ? it->second : nullptr;
+}
+std::shared_ptr<Image> Manager::getImage(StringId sid) const {
+    auto it = _images.find(sid);
+    return it != _images.end() ? it->second : nullptr;
+}
+std::shared_ptr<Image> Manager::getCubemapImage(StringId sid) const {
+    auto it = _cubemapImages.find(sid);
+    return it != _cubemapImages.end() ? it->second : nullptr;
+}
 const std::unordered_map<StringId, std::shared_ptr<Mesh>>& Manager::getMeshes() const { return _meshes; }
 const std::unordered_map<StringId, std::shared_ptr<Image>>& Manager::getImages() const { return _images; }
+const std::unordered_map<StringId, std::shared_ptr<Image>>& Manager::getCubemapImages() const { return _cubemapImages; }
 
 //---------- Register API specific implementations ----------//
 // For each type, will return the OpenGL, Vulkan, ... implementation based on the current active graphicsAPI

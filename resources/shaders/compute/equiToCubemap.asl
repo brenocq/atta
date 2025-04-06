@@ -4,8 +4,6 @@ perFrame sampler2D equirectangularMap;
 
 perVertex vec3 localPos;
 
-vec2 sampleSphericalMap(vec3 v);
-
 vec4 vertex(vec3 iPos, vec3 iNormal, vec2 iUV) {
     localPos = iPos;
     return projection * view * vec4(localPos, 1.0);
