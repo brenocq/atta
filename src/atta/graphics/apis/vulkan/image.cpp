@@ -310,7 +310,14 @@ void Image::createImage() {
     info.imageType = VK_IMAGE_TYPE_2D;
     info.extent = {_width, _height, 1};
     info.mipLevels = 1;
-    info.arrayLayers = 1;
+    // If this is a cubemap, use 6 layers, else 1.
+    if (_isCubemap) {
+        info.arrayLayers = 6;
+        info.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+    } else {
+        info.arrayLayers = 1;
+        info.flags = 0;
+    }
     info.format = convertFormat(_supportedFormat);
     info.tiling = VK_IMAGE_TILING_OPTIMAL;
     info.initialLayout = _layout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -321,7 +328,6 @@ void Image::createImage() {
         info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     info.samples = VK_SAMPLE_COUNT_1_BIT;
-    info.flags = 0;
     if (vkCreateImage(_device->getHandle(), &info, nullptr, &_image) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Image", "Failed to create image");
 }
@@ -331,15 +337,15 @@ void Image::createImageView() {
     info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     info.image = _image;
     info.format = convertFormat(_supportedFormat);
+    info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
+    info.subresourceRange.baseMipLevel = 0;
+    info.subresourceRange.levelCount = _mipLevels;
+    info.subresourceRange.baseArrayLayer = 0;
     if (_isCubemap) {
         info.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
         info.subresourceRange.layerCount = 6;
     } else {
         info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
-        info.subresourceRange.baseMipLevel = 0;
-        info.subresourceRange.levelCount = _mipLevels;
-        info.subresourceRange.baseArrayLayer = 0;
         info.subresourceRange.layerCount = 1;
     }
 
@@ -463,7 +469,7 @@ void Image::transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLay
     barrier.subresourceRange.baseMipLevel = 0;
     barrier.subresourceRange.levelCount = 1;
     barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount = 1;
+    barrier.subresourceRange.layerCount = _isCubemap ? 6 : 1;
 
     VkPipelineStageFlags sourceStage;
     VkPipelineStageFlags destinationStage;

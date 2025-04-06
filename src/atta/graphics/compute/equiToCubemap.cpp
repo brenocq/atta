@@ -53,7 +53,7 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
     imageInfo.height = _height;
     imageInfo.isCubemap = true;
     imageInfo.debugName = imageSid.getString() + " Cubemap";
-    std::shared_ptr<gfx::Image> cubemapImage = nullptr;//graphics::create<gfx::Image>(imageInfo);
+    std::shared_ptr<gfx::Image> cubemapImage = graphics::create<gfx::Image>(imageInfo);
 
     // Render
     //_renderQueue->begin();
