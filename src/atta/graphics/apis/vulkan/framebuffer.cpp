@@ -51,6 +51,10 @@ void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     }
 }
 
+void Framebuffer::setLayer(uint32_t layer) {
+    // TODO
+}
+
 VkFramebuffer Framebuffer::getHandle() const { return _framebuffer; }
 std::shared_ptr<Device> Framebuffer::getDevice() const { return _device; }
 std::shared_ptr<RenderPass> Framebuffer::getRenderPass() const { return _renderPass; }

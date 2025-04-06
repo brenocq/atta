@@ -56,19 +56,23 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
     std::shared_ptr<gfx::Image> cubemapImage = graphics::create<gfx::Image>(imageInfo);
 
     // Render
-    //_renderQueue->begin();
-    //{
-    //    _renderPass->begin(_renderQueue);
-    //    {
-    //        _pipeline->begin();
-    //        {
-    //            // TODO
-    //        }
-    //        _pipeline->end();
-    //    }
-    //    _renderPass->end();
-    //}
-    //_renderQueue->end();
+    _renderQueue->begin();
+    {
+        for (size_t i = 0; i < 6; i++) {
+            _renderPass->getFramebuffer()->setLayer(i);
+            _renderPass->begin(_renderQueue);
+            {
+                _pipeline->begin();
+                {
+                    // TODO
+                    _pipeline->renderQuad();
+                }
+                _pipeline->end();
+            }
+            _renderPass->end();
+        }
+    }
+    _renderQueue->end();
 
     return cubemapImage;
 }

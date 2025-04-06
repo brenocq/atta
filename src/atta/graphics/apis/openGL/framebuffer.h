@@ -22,6 +22,8 @@ class Framebuffer final : public gfx::Framebuffer {
 
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
+    void setLayer(uint32_t layer) override;
+
     static GLenum convertDepthAttachmentType(Image::Format format);
 
   private:

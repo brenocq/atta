@@ -33,62 +33,65 @@ Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device,
 Image::~Image() { destroy(); }
 
 void Image::write(uint8_t* data) {
-    uint8_t* finalData = data;
-    uint32_t finalSize = _width * _height * Image::getPixelSize(_format);
-    if (_format != _supportedFormat) {
-        uint32_t co = Image::getNumChannels(_format);          // Num channels original
-        uint32_t cs = Image::getNumChannels(_supportedFormat); // Num channels supported
-        // Convert data from _format to _supportedFormat
-        if (_supportedFormat == Image::Format::RGBA) {
-            _supportedData.resize(_width * _height * cs);
-            for (size_t y = 0; y < _height; y++)
-                for (size_t x = 0; x < _width; x++) {
-                    size_t idx = x + y * _width;
-                    size_t idxo = idx * co;
-                    size_t idxs = idx * cs;
-                    for (size_t c = 0; c < cs; c++)
-                        _supportedData[idxs + c] = c < co ? data[idxo + c] : 255;
-                }
-        } else if (_supportedFormat == Image::Format::RGBA32F) {
-            _supportedData.resize(_width * _height * cs * sizeof(float));
-            float* oDataF = (float*)data;
-            float* sDataF = (float*)_supportedData.data();
-            for (size_t y = 0; y < _height; y++)
-                for (size_t x = 0; x < _width; x++) {
-                    size_t idx = x + y * _width;
-                    size_t idxo = idx * co;
-                    size_t idxs = idx * cs;
-                    for (size_t c = 0; c < cs; c++)
-                        sDataF[idxs + c] = c < co ? oDataF[idxo + c] : 1.0f;
-                }
-        } else {
-            LOG_ERROR("gfx::vk::Image", "Unknown format conversion when writing image. Image will not be written");
-            return;
+    if (!_isCubemap) {
+        uint8_t* finalData = data;
+        uint32_t finalSize = _width * _height * Image::getPixelSize(_format);
+        if (_format != _supportedFormat) {
+            uint32_t co = Image::getNumChannels(_format);          // Num channels original
+            uint32_t cs = Image::getNumChannels(_supportedFormat); // Num channels supported
+            // Convert data from _format to _supportedFormat
+            if (_supportedFormat == Image::Format::RGBA) {
+                _supportedData.resize(_width * _height * cs);
+                for (size_t y = 0; y < _height; y++)
+                    for (size_t x = 0; x < _width; x++) {
+                        size_t idx = x + y * _width;
+                        size_t idxo = idx * co;
+                        size_t idxs = idx * cs;
+                        for (size_t c = 0; c < cs; c++)
+                            _supportedData[idxs + c] = c < co ? data[idxo + c] : 255;
+                    }
+            } else if (_supportedFormat == Image::Format::RGBA32F) {
+                _supportedData.resize(_width * _height * cs * sizeof(float));
+                float* oDataF = (float*)data;
+                float* sDataF = (float*)_supportedData.data();
+                for (size_t y = 0; y < _height; y++)
+                    for (size_t x = 0; x < _width; x++) {
+                        size_t idx = x + y * _width;
+                        size_t idxo = idx * co;
+                        size_t idxs = idx * cs;
+                        for (size_t c = 0; c < cs; c++)
+                            sDataF[idxs + c] = c < co ? oDataF[idxo + c] : 1.0f;
+                    }
+            } else {
+                LOG_ERROR("gfx::vk::Image", "Unknown format conversion when writing image. Image will not be written");
+                return;
+            }
+
+            finalData = _supportedData.data();
+            finalSize = _supportedData.size();
         }
 
-        finalData = _supportedData.data();
-        finalSize = _supportedData.size();
-    }
-
-    // Copy data to GPU
-    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(finalData, finalSize);
-    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
-    {
-        transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        VkBufferImageCopy region{};
-        region.bufferOffset = 0;
-        region.bufferRowLength = 0;
-        region.bufferImageHeight = 0;
-        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        region.imageSubresource.mipLevel = 0;
-        region.imageSubresource.baseArrayLayer = 0;
-        region.imageSubresource.layerCount = 1;
-        region.imageOffset = {0, 0, 0};
-        region.imageExtent = {_width, _height, 1};
-        vkCmdCopyBufferToImage(commandBuffer, stagingBuffer->getHandle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-        transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    }
-    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
+        // Copy data to GPU
+        std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(finalData, finalSize);
+        VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
+        {
+            transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+            VkBufferImageCopy region{};
+            region.bufferOffset = 0;
+            region.bufferRowLength = 0;
+            region.bufferImageHeight = 0;
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.mipLevel = 0;
+            region.imageSubresource.baseArrayLayer = 0;
+            region.imageSubresource.layerCount = 1;
+            region.imageOffset = {0, 0, 0};
+            region.imageExtent = {_width, _height, 1};
+            vkCmdCopyBufferToImage(commandBuffer, stagingBuffer->getHandle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+            transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        }
+        common::getCommandPool()->endSingleTimeCommands(commandBuffer);
+    } else
+        LOG_WARN("gfx::vk::Image", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
 }
 
 std::vector<uint8_t> Image::read(vec2i offset, vec2i size) {
