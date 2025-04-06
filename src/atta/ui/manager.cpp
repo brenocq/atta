@@ -4,8 +4,8 @@
 // Date: 2021-09-28
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/component/components/environmentLight.h>
 #include <atta/component/components/cameraSensor.h>
+#include <atta/component/components/environmentLight.h>
 #include <atta/component/components/material.h>
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/polygonCollider2D.h>
@@ -119,6 +119,9 @@ bool renderComboImage(std::string attribute, StringId& image) {
         if (ImGui::BeginCombo(("##ComboImage" + imguiId).c_str(), selectedName.c_str())) {
             std::vector<StringId> rImages = resource::getResources<resource::Image>();
             for (StringId rImage : rImages) {
+                // Ignore .hdr images (they are created as cubemaps instead of 2D images)
+                if (rImage.getString().find(".hdr") != std::string::npos)
+                    continue;
                 std::string imageStr = rImage.getString();
                 if (imageStr == "")
                     imageStr = "##";
