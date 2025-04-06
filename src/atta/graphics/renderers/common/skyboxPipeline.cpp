@@ -18,7 +18,7 @@ SkyboxPipeline::SkyboxPipeline(std::shared_ptr<RenderPass> renderPass) {
     _pipeline = gfx::create<Pipeline>(pipelineInfo);
 }
 
-void SkyboxPipeline::render(std::shared_ptr<Camera> camera) {
+void SkyboxPipeline::render(std::shared_ptr<Camera> camera, StringId envImg) {
     _pipeline->begin();
     {
         _pipeline->setMat4("uProjection", camera->getProj());

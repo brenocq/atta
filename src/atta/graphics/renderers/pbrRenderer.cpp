@@ -24,7 +24,7 @@
 
 namespace atta::graphics {
 
-PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasResized(false), _lastEnvironmentMap(StringId("Not defined")) {
+PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasResized(false), _lastEnvironmentImg(StringId()) {
     // Render Queue
     _renderQueue = graphics::create<RenderQueue>();
 
@@ -144,24 +144,24 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
     //     brdfLUT();
 
     // Check current envinroment map
-    // std::vector<component::EntityId> entities = component::getNoPrototypeView();
-    // StringId currEnvironmentMap = StringId("textures/white.png"); // Default environment map is white texture
-    // for (auto entity : entities) {
-    //    component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
-
-    //    if (el) {
-    //        currEnvironmentMap = el->sid;
-    //        break;
-    //    }
-    //}
+    std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    StringId currEnvironmentImg{};
+    for (auto entity : entities) {
+        component::EnvironmentLight* el = component::getComponent<component::EnvironmentLight>(entity);
+        if (el) {
+            currEnvironmentImg = el->sid;
+            break;
+        }
+    }
 
     // Recreate environment map if it is different from last one
-    // if (currEnvironmentMap != _lastEnvironmentMap) {
-    //    _lastEnvironmentMap = currEnvironmentMap;
-    //    graphics::getGraphicsAPI()->generateCubemap(_lastEnvironmentMap);
-    //    irradianceCubemap();
-    //    prefilterCubemap();
-    //}
+    if (currEnvironmentImg != _lastEnvironmentImg) {
+        _lastEnvironmentImg = currEnvironmentImg;
+        if (_lastEnvironmentImg != StringId()) {
+            // irradianceCubemap();
+            // prefilterCubemap();
+        }
+    }
 
     // shadowPass();
     geometryPass(camera);
@@ -313,8 +313,9 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
     {
         _geometryRenderPass->begin(_renderQueue);
         {
-            // Render skybox
-            _skyboxPipeline->render(camera);
+            // Render skybox if there is an environment light
+            if (_lastEnvironmentImg != StringId())
+                _skyboxPipeline->render(camera, _lastEnvironmentImg);
 
             // Render meshes
             _geometryPipeline->begin();
@@ -333,7 +334,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                 // _geometryPipeline->setCubemap("prefilterMap", "PbrRenderer::prefilter");
                 //_geometryPipeline->setImage("brdfLUT", "PbrRenderer::brdfLUT");
 
-                // if (_lastEnvironmentMap != "Not defined"_sid)
+                // if (_lastEnvironmentImg != "Not defined"_sid)
                 //     _geometryPipeline->setInt("numEnvironmentLights", 1);
                 // else {
                 //     LOG_WARN("graphics::PbrRenderer", "Number of environment light should always be 1 (white texture if not defined)");
@@ -441,7 +442,7 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
     //    shader->setCubemap("prefilterMap", "PbrRenderer::prefilter");
     //    shader->setImage("brdfLUT", "PbrRenderer::brdfLUT");
 
-    //    if (_lastEnvironmentMap != "Not defined"_sid)
+    //    if (_lastEnvironmentImg != "Not defined"_sid)
     //        shader->setInt("numEnvironmentLights", 1);
     //    else {
     //        LOG_WARN("graphics::PbrRenderer", "Number of environment light should always be 1 (white texture if not defined)");
@@ -545,11 +546,11 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
     //    }
 
     //    //---------- Background shader ----------//
-    //    if (_lastEnvironmentMap != "Not defined"_sid) {
+    //    if (_lastEnvironmentImg != "Not defined"_sid) {
     //        _backgroundShader->bind();
     //        _backgroundShader->setMat4("projection", transpose(camera->getProj()));
     //        _backgroundShader->setMat4("view", transpose(camera->getView()));
-    //        _backgroundShader->setCubemap("environmentMap", _lastEnvironmentMap);
+    //        _backgroundShader->setCubemap("environmentMap", _lastEnvironmentImg);
     //        //_backgroundShader->setCubemap("environmentMap", _omnidirectionalShadowMap);
     //        //_backgroundShader->setCubemap("environmentMap", "PbrRenderer::irradiance");
     //        _backgroundShader->setMat3("environmentMapOri", _environmentMapOri);
@@ -573,7 +574,7 @@ void PbrRenderer::irradianceCubemap() {
     // info.numMipLevels = 1;
     // info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
     //     if (mipLevel == 0 && face == 0) {
-    //         // TODO shader->setCubemap("environmentMap", _lastEnvironmentMap);
+    //         // TODO shader->setCubemap("environmentMap", _lastEnvironmentImg);
     //         shader->setMat4("projection", transpose(proj));
     //     }
     //     shader->setMat4("view", transpose(view));
@@ -594,7 +595,7 @@ void PbrRenderer::prefilterCubemap() {
     // info.numMipLevels = 5;
     // info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
     //     if (mipLevel == 0 && face == 0) {
-    //         // TODO shader->setCubemap("environmentMap", _lastEnvironmentMap);
+    //         // TODO shader->setCubemap("environmentMap", _lastEnvironmentImg);
     //         shader->setMat4("projection", transpose(proj));
     //     }
 

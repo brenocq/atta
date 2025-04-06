@@ -16,7 +16,7 @@ class SkyboxPipeline final {
     SkyboxPipeline(std::shared_ptr<RenderPass> renderPass);
 
     /// Render skybox
-    void render(std::shared_ptr<Camera> camera);
+    void render(std::shared_ptr<Camera> camera, StringId envImg);
 
   private:
     std::shared_ptr<Pipeline> _pipeline;

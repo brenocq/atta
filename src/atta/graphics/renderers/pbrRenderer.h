@@ -53,7 +53,7 @@ class PbrRenderer final : public Renderer {
     // Directional light
     mat3 _directionalLightMatrix;
     // Environment light
-    StringId _lastEnvironmentMap;
+    StringId _lastEnvironmentImg;
     mat3 _environmentMapOri;
 
     // Shadow mapping
