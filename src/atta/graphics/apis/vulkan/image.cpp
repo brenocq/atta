@@ -11,7 +11,6 @@
 #include <atta/graphics/apis/vulkan/stagingBuffer.h>
 
 // TODO should not have UI code here
-#include "imgui.h"
 #include <backends/imgui_impl_vulkan.h>
 
 namespace atta::graphics::vk {
@@ -27,7 +26,7 @@ Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device,
     : gfx::Image(info), _image(image), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
       _imGuiDescriptorSet(VK_NULL_HANDLE), _device(device), _destroyImage(false) {
     _supportedFormat = supportedFormat(_format);
-    createImageView();
+    createImageViews();
 }
 
 Image::~Image() { destroy(); }
@@ -144,7 +143,7 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     // Create new handles
     createImage();
     allocMemory();
-    createImageView();
+    createImageViews();
     if (isColorFormat(_supportedFormat))
         createSampler();
 
@@ -168,6 +167,14 @@ void* Image::getImGuiImage() {
 VkImage Image::getImageHandle() const { return _image; }
 
 VkImageView Image::getImageViewHandle() const { return _imageView; }
+
+VkImageView Image::getCubemapImageViewHandle(uint32_t layer) const {
+    if (layer >= _cubemapImageViews.size()) {
+        LOG_ERROR("gfx::vk::Image", "getCubemapImageViewHandle with layer index out of bounds. Image debug name: [w]$0[]", _debugName);
+        return VK_NULL_HANDLE;
+    }
+    return _cubemapImageViews[layer];
+}
 
 VkSampler Image::getSamplerHandle() const { return _sampler; }
 
@@ -335,7 +342,7 @@ void Image::createImage() {
         LOG_ERROR("gfx::vk::Image", "Failed to create image");
 }
 
-void Image::createImageView() {
+VkImageView Image::createImageView(uint32_t layer, uint32_t layerCount) {
     VkImageViewCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     info.image = _image;
@@ -343,17 +350,24 @@ void Image::createImageView() {
     info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
     info.subresourceRange.baseMipLevel = 0;
     info.subresourceRange.levelCount = _mipLevels;
-    info.subresourceRange.baseArrayLayer = 0;
-    if (_isCubemap) {
-        info.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
-        info.subresourceRange.layerCount = 6;
-    } else {
-        info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        info.subresourceRange.layerCount = 1;
-    }
+    info.subresourceRange.baseArrayLayer = layer;
+    info.viewType = layerCount == 6 ? VK_IMAGE_VIEW_TYPE_CUBE : VK_IMAGE_VIEW_TYPE_2D;
+    info.subresourceRange.layerCount = layerCount;
 
-    if (vkCreateImageView(_device->getHandle(), &info, nullptr, &_imageView) != VK_SUCCESS)
-        LOG_ERROR("gfx::vk::Image", "Failed to create image view");
+    VkImageView imageView;
+    if (vkCreateImageView(_device->getHandle(), &info, nullptr, &imageView) != VK_SUCCESS)
+        LOG_ERROR("gfx::vk::Image", "Failed to create image view for image [w]$0[] (layer $0 layerCount $1)", _debugName, layer, layerCount);
+    return imageView;
+}
+
+void Image::createImageViews() {
+    if (_isCubemap) {
+        _imageView = createImageView(0, 6);
+        for (uint32_t i = 0; i < 6; i++)
+            _cubemapImageViews[i] = createImageView(i, 1);
+    } else {
+        _imageView = createImageView();
+    }
 }
 
 void Image::createSampler() {
@@ -409,6 +423,9 @@ void Image::destroy() {
     }
     if (_imageView != VK_NULL_HANDLE)
         vkDestroyImageView(_device->getHandle(), _imageView, nullptr);
+    for (const VkImageView& imageView : _cubemapImageViews)
+        if (imageView != VK_NULL_HANDLE)
+            vkDestroyImageView(_device->getHandle(), imageView, nullptr);
     if (_sampler != VK_NULL_HANDLE)
         vkDestroySampler(_device->getHandle(), _sampler, nullptr);
     if (_image != VK_NULL_HANDLE && _destroyImage)

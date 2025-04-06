@@ -135,7 +135,9 @@ void RenderPass::begin(VkCommandBuffer commandBuffer) {
             }
             clearValues.push_back(clearColor);
         } else if (Image::isDepthFormat(format)) {
-            VkClearValue clearDepth = {1.0f, 0};
+            VkClearValue clearDepth = {};
+            clearDepth.depthStencil.depth = 1.0f;
+            clearDepth.depthStencil.stencil = 0;
             clearValues.push_back(clearDepth);
         }
     }

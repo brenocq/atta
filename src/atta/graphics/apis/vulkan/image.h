@@ -46,6 +46,7 @@ class Image final : public gfx::Image {
     void* getImGuiImage() override;
     VkImage getImageHandle() const;
     VkImageView getImageViewHandle() const;
+    VkImageView getCubemapImageViewHandle(uint32_t layer) const;
     VkSampler getSamplerHandle() const;
     std::shared_ptr<Device> getDevice() const;
 
@@ -81,7 +82,8 @@ class Image final : public gfx::Image {
 
   private:
     void createImage();
-    void createImageView();
+    VkImageView createImageView(uint32_t layer = 0, uint32_t layerCount = 1);
+    void createImageViews();
     void createSampler();
     void allocMemory();
     void destroy();
@@ -97,7 +99,8 @@ class Image final : public gfx::Image {
     std::vector<uint8_t> _supportedData; ///< Converted _data to _supportedFormat
 
     VkImage _image;
-    VkImageView _imageView;
+    VkImageView _imageView;                          // Image view for the whole image (all layers)
+    std::array<VkImageView, 6> _cubemapImageViews{}; // Image view for each face of a cubemap image
     VkSampler _sampler;
     VkDeviceMemory _memory;
     VkImageLayout _layout;
