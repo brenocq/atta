@@ -82,8 +82,6 @@ void Manager::startUpImpl() {
 
     //----- Create shaders -----//
     _equiToCubemap = std::make_unique<EquiToCubemap>();
-    // Create pink default cubemap
-    _cubemapImages["atta::gfx::pink"] = _equiToCubemap->createCubemap("atta::gfx::pink");
 
     //----- Resource sync -----//
     event::subscribe<event::MeshLoad>(BIND_EVENT_FUNC(Manager::onMeshLoadEvent));
@@ -106,7 +104,6 @@ void Manager::shutDownImpl() {
     _equiToCubemap.reset();
     _meshes.clear();
     _images.clear();
-    _cubemapImages.clear();
     _graphicsAPI->shutDown();
     _graphicsAPI.reset();
     _window.reset();
@@ -193,7 +190,7 @@ gfx::Image::Format Manager::convertFormat(res::Image::Format format) const {
 }
 
 void Manager::createDefaultImages() {
-    //----- Create basic images -----//
+    //----- Create default 2D images -----//
     // White
     {
         static uint8_t white[] = {255, 255, 255, 255};
@@ -227,10 +224,81 @@ void Manager::createDefaultImages() {
         info.debugName = "Pink";
         _images["atta::gfx::pink"] = create<Image>(info);
     }
+
+    //----- Create default cubemap images -----//
+    // WhiteCubemap: each face has a slightly different white tone
+    {
+        static uint8_t whiteCubemap[] = {// +X face: pure white
+                                         255, 255, 255, 255,
+                                         // -X face: slightly off white
+                                         240, 240, 240, 255,
+                                         // +Y face: warm white
+                                         255, 250, 240, 255,
+                                         // -Y face: cool white
+                                         230, 240, 255, 255,
+                                         // +Z face: bright white
+                                         255, 245, 245, 255,
+                                         // -Z face: neutral white
+                                         245, 245, 245, 255};
+        Image::CreateInfo info{};
+        info.format = Image::Format::RGBA;
+        info.width = 1; // Each face is 1x1 pixel
+        info.height = 1;
+        info.data = whiteCubemap;
+        info.debugName = "WhiteCubemap";
+        info.isCubemap = true;
+        _images["atta::gfx::whiteCubemap"] = create<Image>(info);
+    }
+    // BlackCubemap: each face uses a different dark shade
+    {
+        static uint8_t blackCubemap[] = {// +X face: absolute black
+                                         0, 0, 0, 255,
+                                         // -X face: very dark gray
+                                         10, 10, 10, 255,
+                                         // +Y face: dark gray
+                                         20, 20, 20, 255,
+                                         // -Y face: slightly lighter dark gray
+                                         30, 30, 30, 255,
+                                         // +Z face: medium-dark gray
+                                         40, 40, 40, 255,
+                                         // -Z face: light dark gray
+                                         50, 50, 50, 255};
+        Image::CreateInfo info{};
+        info.format = Image::Format::RGBA;
+        info.width = 1;
+        info.height = 1;
+        info.data = blackCubemap;
+        info.debugName = "BlackCubemap";
+        info.isCubemap = true;
+        _images["atta::gfx::blackCubemap"] = create<Image>(info);
+    }
+    // PinkCubemap: each face with a unique pink tone
+    {
+        static uint8_t pinkCubemap[] = {// +X face: vivid pink
+                                        255, 0, 255, 255,
+                                        // -X face: deep magenta
+                                        200, 0, 200, 255,
+                                        // +Y face: soft pink
+                                        255, 150, 255, 255,
+                                        // -Y face: muted pink
+                                        180, 0, 180, 255,
+                                        // +Z face: hot pink
+                                        255, 0, 230, 255,
+                                        // -Z face: pastel pink
+                                        240, 0, 240, 255};
+        Image::CreateInfo info{};
+        info.format = Image::Format::RGBA;
+        info.width = 1;
+        info.height = 1;
+        info.data = pinkCubemap;
+        info.debugName = "PinkCubemap";
+        info.isCubemap = true;
+        _images["atta::gfx::pinkCubemap"] = create<Image>(info);
+    }
 }
 
 void Manager::createDefaultMeshes() {
-    //----- Create basic meshes -----//
+    //----- Create default meshes -----//
     // Quad
     {
         static float vertices[] = {
@@ -463,18 +531,21 @@ void Manager::createImage(StringId sid) {
     if (image == nullptr)
         LOG_WARN("gfx::Manager", "Could not initialize gfx::Image from [w]$0[]", sid);
 
-    // Create 2D image
     Image::CreateInfo info{};
     info.width = image->getWidth();
     info.height = image->getHeight();
     info.data = image->getData();
     info.format = convertFormat(image->getFormat());
     info.debugName = sid;
-    _images[sid] = create<Image>(info);
-
-    // If it is HDR image, also create cubemap image
-    if (sid.getString().find(".hdr") != std::string::npos)
-        _cubemapImages[sid] = _equiToCubemap->createCubemap(sid);
+    if (sid.getString().find(".hdr") == std::string::npos) {
+        // If it is not HDR image, just create the 2D image
+        _images[sid] = create<Image>(info);
+    } else {
+        // If it is HDR image, create both 2D image and cubemap image
+        StringId sid2D = sid.getString() + "::2D";
+        _images[sid2D] = create<Image>(info);
+        _images[sid] = _equiToCubemap->createCubemap(sid2D);
+    }
 }
 
 std::shared_ptr<Mesh> Manager::getMesh(StringId sid) const {
@@ -485,13 +556,8 @@ std::shared_ptr<Image> Manager::getImage(StringId sid) const {
     auto it = _images.find(sid);
     return it != _images.end() ? it->second : nullptr;
 }
-std::shared_ptr<Image> Manager::getCubemapImage(StringId sid) const {
-    auto it = _cubemapImages.find(sid);
-    return it != _cubemapImages.end() ? it->second : nullptr;
-}
 const std::unordered_map<StringId, std::shared_ptr<Mesh>>& Manager::getMeshes() const { return _meshes; }
 const std::unordered_map<StringId, std::shared_ptr<Image>>& Manager::getImages() const { return _images; }
-const std::unordered_map<StringId, std::shared_ptr<Image>>& Manager::getCubemapImages() const { return _cubemapImages; }
 
 //---------- Register API specific implementations ----------//
 // For each type, will return the OpenGL, Vulkan, ... implementation based on the current active graphicsAPI

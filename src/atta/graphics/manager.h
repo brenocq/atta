@@ -50,10 +50,8 @@ class Manager final {
 
     std::shared_ptr<Mesh> getMesh(StringId sid) const;
     std::shared_ptr<Image> getImage(StringId sid) const;
-    std::shared_ptr<Image> getCubemapImage(StringId sid) const;
     const std::unordered_map<StringId, std::shared_ptr<Mesh>>& getMeshes() const;
     const std::unordered_map<StringId, std::shared_ptr<Image>>& getImages() const;
-    const std::unordered_map<StringId, std::shared_ptr<Image>>& getCubemapImages() const;
 
   private:
     void startUpImpl();
@@ -101,7 +99,6 @@ class Manager final {
     // Resource binding
     std::unordered_map<StringId, std::shared_ptr<Mesh>> _meshes;
     std::unordered_map<StringId, std::shared_ptr<Image>> _images;
-    std::unordered_map<StringId, std::shared_ptr<Image>> _cubemapImages;
 
     // UI
     std::function<void()> _uiRenderViewportsFunc;

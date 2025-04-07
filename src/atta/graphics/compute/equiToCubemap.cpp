@@ -92,7 +92,7 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
                     _pipeline->setMat4("uProjection", proj);
                     _pipeline->setMat4("uView", views[i]);
                     _pipeline->setImageGroup("equiImg");
-                    _pipeline->renderQuad();
+                    _pipeline->renderCube();
                 }
                 _pipeline->end();
             }

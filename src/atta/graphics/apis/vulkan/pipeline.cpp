@@ -336,12 +336,16 @@ void Pipeline::updateImageGroup(std::string name, ImageGroup imageGroup) {
         else {
             // Set default pink image to this binding
             std::shared_ptr<vk::Image> defaultImage;
+            StringId defaultImageSid{};
             if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
-                defaultImage = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImage("atta::gfx::pink"));
+                defaultImageSid = "atta::gfx::pink";
             else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
-                defaultImage = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getCubemapImage("atta::gfx::pink"));
-            else
+                defaultImageSid = "atta::gfx::pinkCubemap";
+            else {
                 LOG_ERROR("gfx::vk::Pipeline", "Could not set default image for [w]$0[], unknown image type", element.name);
+                continue;
+            }
+            defaultImage = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImage(defaultImageSid));
             imageGroupInfo.descriptorSet->update(binding++, defaultImage);
         }
     }

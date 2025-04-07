@@ -17,16 +17,25 @@ Image::~Image() {
 }
 
 void Image::write(uint8_t* data) {
-    if (!_isCubemap) {
-        GLenum dataType = Image::convertDataType(_format);
-        GLenum internalFormat = Image::convertInternalFormat(_format);
-        GLenum format = Image::convertFormat(_format);
+    GLenum dataType = Image::convertDataType(_format);
+    GLenum internalFormat = Image::convertInternalFormat(_format);
+    GLenum format = Image::convertFormat(_format);
 
+    if (!_isCubemap) {
         glBindTexture(GL_TEXTURE_2D, _id);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _width, _height, format, dataType, data);
         glBindTexture(GL_TEXTURE_2D, 0);
-    } else
-        LOG_WARN("gfx::gl::Image", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
+    } else {
+        glBindTexture(GL_TEXTURE_CUBE_MAP, _id);
+
+        // Calculate the size (in bytes) of one face
+        uint32_t faceSize = _width * _height * Image::getPixelSize(_format);
+
+        // Update each of the six faces
+        for (unsigned int i = 0; i < 6; i++)
+            glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, 0, 0, _width, _height, format, dataType, data + (i * faceSize));
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    }
 }
 
 std::vector<uint8_t> Image::read(vec2i offset, vec2i size) {

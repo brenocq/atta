@@ -32,49 +32,61 @@ Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device,
 Image::~Image() { destroy(); }
 
 void Image::write(uint8_t* data) {
-    if (!_isCubemap) {
-        uint8_t* finalData = data;
-        uint32_t finalSize = _width * _height * Image::getPixelSize(_format);
-        if (_format != _supportedFormat) {
-            uint32_t co = Image::getNumChannels(_format);          // Num channels original
-            uint32_t cs = Image::getNumChannels(_supportedFormat); // Num channels supported
-            // Convert data from _format to _supportedFormat
-            if (_supportedFormat == Image::Format::RGBA) {
-                _supportedData.resize(_width * _height * cs);
-                for (size_t y = 0; y < _height; y++)
-                    for (size_t x = 0; x < _width; x++) {
-                        size_t idx = x + y * _width;
-                        size_t idxo = idx * co;
-                        size_t idxs = idx * cs;
-                        for (size_t c = 0; c < cs; c++)
-                            _supportedData[idxs + c] = c < co ? data[idxo + c] : 255;
-                    }
-            } else if (_supportedFormat == Image::Format::RGBA32F) {
-                _supportedData.resize(_width * _height * cs * sizeof(float));
-                float* oDataF = (float*)data;
-                float* sDataF = (float*)_supportedData.data();
-                for (size_t y = 0; y < _height; y++)
-                    for (size_t x = 0; x < _width; x++) {
-                        size_t idx = x + y * _width;
-                        size_t idxo = idx * co;
-                        size_t idxs = idx * cs;
-                        for (size_t c = 0; c < cs; c++)
-                            sDataF[idxs + c] = c < co ? oDataF[idxo + c] : 1.0f;
-                    }
-            } else {
-                LOG_ERROR("gfx::vk::Image", "Unknown format conversion when writing image. Image will not be written");
-                return;
-            }
+    // Determine number of faces: 6 for cubemaps, 1 for 2D textures
+    uint32_t numFaces = _isCubemap ? 6 : 1;
 
-            finalData = _supportedData.data();
-            finalSize = _supportedData.size();
+    uint8_t* finalData = data;
+    uint32_t finalSize = _width * _height * Image::getPixelSize(_format) * numFaces;
+
+    // If the chosen format is not supported by the GPU, convert data to _supportedFormat
+    if (_format != _supportedFormat) {
+        // Get channel counts for original and supported formats
+        uint32_t co = Image::getNumChannels(_format);          // Number of channels in original format
+        uint32_t cs = Image::getNumChannels(_supportedFormat); // Number of channels in supported format
+
+        // Resize _supportedData to store the converted data
+        _supportedData.resize(_width * _height * Image::getPixelSize(_supportedFormat) * numFaces);
+
+        // Process each face separately
+        for (uint32_t face = 0; face < numFaces; face++) {
+            // Loop over each pixel in the face
+            for (size_t y = 0; y < _height; y++) {
+                for (size_t x = 0; x < _width; x++) {
+                    size_t pixelIdx = x + y * _width + face * _width * _height;
+
+                    // Compute source and destination indices for this pixel
+                    size_t srcIdx = pixelIdx * Image::getPixelSize(_format);
+                    size_t dstIdx = pixelIdx * Image::getPixelSize(_supportedFormat);
+
+                    // If converting to RGBA (8-bit) format
+                    if (_format == Image::Format::RGB && _supportedFormat == Image::Format::RGBA) {
+                        for (size_t c = 0; c < cs; c++)
+                            _supportedData[dstIdx + c] = (c < co ? data[srcIdx + c] : 255);
+                    }
+                    // If converting to RGBA32F (float) format
+                    else if (_format == Image::Format::RGB32F && _supportedFormat == Image::Format::RGBA32F) {
+                        float* oDataF = reinterpret_cast<float*>(&data[srcIdx]);
+                        float* sDataF = reinterpret_cast<float*>(&_supportedData[dstIdx]);
+                        for (size_t c = 0; c < cs; c++)
+                            sDataF[c] = (c < co ? oDataF[c] : 1.0f);
+                    } else {
+                        LOG_ERROR("gfx::vk::Image", "Unknown format conversion when writing image. Image will not be written");
+                        return;
+                    }
+                }
+            }
         }
 
-        // Copy data to GPU
-        std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(finalData, finalSize);
-        VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
-        {
-            transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        finalData = _supportedData.data();
+        finalSize = (uint32_t)_supportedData.size();
+    }
+
+    // Copy finalData to GPU using a staging buffer
+    std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(finalData, finalSize);
+    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
+    {
+        transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        if (!_isCubemap) {
             VkBufferImageCopy region{};
             region.bufferOffset = 0;
             region.bufferRowLength = 0;
@@ -86,11 +98,27 @@ void Image::write(uint8_t* data) {
             region.imageOffset = {0, 0, 0};
             region.imageExtent = {_width, _height, 1};
             vkCmdCopyBufferToImage(commandBuffer, stagingBuffer->getHandle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-            transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        } else {
+            // Prepare an array of 6 regions, one for each cubemap face
+            std::array<VkBufferImageCopy, 6> regions{};
+            uint32_t supportedPixelSize = Image::getPixelSize(_supportedFormat);
+            for (uint32_t i = 0; i < 6; i++) {
+                regions[i].bufferOffset = i * (_width * _height * supportedPixelSize);
+                regions[i].bufferRowLength = 0;
+                regions[i].bufferImageHeight = 0;
+                regions[i].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                regions[i].imageSubresource.mipLevel = 0;
+                regions[i].imageSubresource.baseArrayLayer = i;
+                regions[i].imageSubresource.layerCount = 1;
+                regions[i].imageOffset = {0, 0, 0};
+                regions[i].imageExtent = {_width, _height, 1};
+            }
+            vkCmdCopyBufferToImage(commandBuffer, stagingBuffer->getHandle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                   static_cast<uint32_t>(regions.size()), regions.data());
         }
-        common::getCommandPool()->endSingleTimeCommands(commandBuffer);
-    } else
-        LOG_WARN("gfx::vk::Image", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
+        transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    }
+    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
 }
 
 std::vector<uint8_t> Image::read(vec2i offset, vec2i size) {
@@ -417,8 +445,8 @@ void Image::allocMemory() {
 void Image::destroy() {
     vkDeviceWaitIdle(common::getDevice()->getHandle());
     if (_imGuiDescriptorSet != VK_NULL_HANDLE) {
-        // XXX We would need to make sure this happens UI module is shut down, for now it is OK to not remove the texture because it is freed when the
-        // UI descroptor pool is freed. This will fail if a lot of images are created and destroyed while the UI is running
+        // XXX We would need to make sure this happens UI module is shut down, for now it is OK to not remove the texture because it is freed when
+        // the UI descroptor pool is freed. This will fail if a lot of images are created and destroyed while the UI is running
         // ImGui_ImplVulkan_RemoveTexture(_imGuiDescriptorSet);
     }
     if (_imageView != VK_NULL_HANDLE)
