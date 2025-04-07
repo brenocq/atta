@@ -194,7 +194,11 @@ void Shader::setImage(const char* name, std::shared_ptr<gfx::Image> inImage) {
 
     // Activate texture unit
     glActiveTexture(GL_TEXTURE0 + imgUnit);
-    glBindTexture(GL_TEXTURE_2D, image->getHandle());
+    // Bind the texture with the proper target
+    if (image->isCubemap())
+        glBindTexture(GL_TEXTURE_CUBE_MAP, image->getHandle());
+    else
+        glBindTexture(GL_TEXTURE_2D, image->getHandle());
 }
 
 void Shader::setCubemap(const char* name, std::shared_ptr<gfx::Image> inImage) {

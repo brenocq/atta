@@ -72,6 +72,10 @@ void OpenGLAPI::startUp() {
         nullptr);
 #endif // ATTA_DEBUG_BUILD
 
+    // Enable cubemap seamless if supported
+    if (_apiVersion >= 320)
+        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
     glEnable(GL_DEPTH_TEST);
 }
 

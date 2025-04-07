@@ -23,7 +23,7 @@ SkyboxPipeline::SkyboxPipeline(std::shared_ptr<RenderPass> renderPass) {
 
 void SkyboxPipeline::render(std::shared_ptr<Camera> camera, StringId envImg) {
     // Update environment map image
-    _pipeline->updateImageGroup("envImg", {{"uEnvironmentMap", "atta::gfx::blackCubemap"}});
+    _pipeline->updateImageGroup("envImg", {{"uEnvironmentMap", "atta::gfx::pinkCubemap"}});
 
     _pipeline->begin();
     {
