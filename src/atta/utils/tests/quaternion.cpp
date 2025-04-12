@@ -4,10 +4,7 @@
 // Date: 2025-04-12
 // By: Breno Cunha Queiroz
 //--------------------------------------------------
-#include "atta/utils/math/quaternion.h"
-#include "atta/utils/math/matrix.h"
-#include "atta/utils/math/vector.h"
-#include <cmath>
+#include <atta/utils/math/quaternion.h>
 #include <gtest/gtest.h>
 
 using namespace atta;
@@ -116,5 +113,50 @@ TEST(Utils_Quaternion, AddScaledVector) {
     q.normalize();
     float norm = std::sqrt(q.r * q.r + q.i * q.i + q.j * q.j + q.k * q.k);
     EXPECT_NEAR(norm, 1.0f, 1e-5f);
+}
+
+TEST(Utils_Quaternion, TwoDRotation) {
+    // Set a 2D angle (rotation about Z)
+    float angle = M_PI / 4.0f; // 45 degrees
+    quat q;
+    q.set2DAngle(angle);
+    // get2DAngle should return the same angle (within tolerance)
+    float recovered = q.get2DAngle();
+    EXPECT_NEAR(recovered, angle, 1e-3f);
+
+    // Additionally, test rotation of a 2D vector (ignoring z)
+    vec3 v(1.0f, 0.0f, 0.0f);
+    q.rotateVector(v);
+    // A 45° rotation about Z should rotate (1,0,0) to (sqrt(2)/2, sqrt(2)/2, 0)
+    vec3 expected(std::sqrt(2.0f) / 2, std::sqrt(2.0f) / 2, 0.0f);
+    EXPECT_NEAR(v.x, expected.x, 1e-3f);
+    EXPECT_NEAR(v.y, expected.y, 1e-3f);
+    EXPECT_NEAR(v.z, expected.z, 1e-3f);
+}
+
+TEST(Utils_Quaternion, RotationFromVectors) {
+    // Define two vectors: rotate from (1,0,0) to (0,1,0)
+    vec3 before(1.0f, 0.0f, 0.0f);
+    vec3 after(0.0f, 1.0f, 0.0f);
+    quat q;
+    q.setRotationFromVectors(before, after);
+
+    // Expected: rotation of 90 degrees (PI/2) about the Z-axis.
+    float expectedAngle = M_PI / 2.0f;
+    vec3 expectedAxis(0.0f, 0.0f, 1.0f);
+    quat expected;
+    expected.setAxisAngle(expectedAxis, expectedAngle);
+
+    // Compare the quaternions for equivalence (remember, q and -q represent the same rotation)
+    EXPECT_NEAR(q.r, expected.r, 1e-3f);
+    EXPECT_NEAR(q.i, expected.i, 1e-3f);
+    EXPECT_NEAR(q.j, expected.j, 1e-3f);
+    EXPECT_NEAR(q.k, expected.k, 1e-3f);
+
+    // Alternatively, compare their rotation matrices:
+    mat3 m1 = q.getRotationMatrix();
+    mat3 m2 = expected.getRotationMatrix();
+    for (int i = 0; i < 9; i++)
+        EXPECT_NEAR(m1.data[i], m2.data[i], 1e-3f);
 }
 } // namespace

@@ -182,14 +182,13 @@ vec3 quat::getEuler() const {
 }
 
 void quat::set2DAngle(float angle) {
-    // ZYX euler
-    r = std::cos(-angle / 2.0);
+    r = std::cos(angle / 2.0);
     i = 0;
     j = 0;
-    k = std::sin(-angle / 2.0);
+    k = std::sin(angle / 2.0);
 }
 
-float quat::get2DAngle() const { return -std::atan2(2.0 * (r * k + i * j), 1 - 2.0 * (j * j + k * k)); }
+float quat::get2DAngle() const { return std::atan2(2.0 * (r * k + i * j), 1 - 2.0 * (j * j + k * k)); }
 
 void quat::setAxisAngle(const vec3& v, float angle) {
     vec3 axis = atta::normalize(v);
@@ -203,10 +202,10 @@ void quat::setAxisAngle(const vec3& v, float angle) {
 }
 
 void quat::getAxisAngle(vec3& v, float& angle) const {
-    vec3 result;
     quat q = *this;
     q.normalize();
-    float s = std::sqrt(1 - r * r);
+    float s = std::sqrt(1 - q.r * q.r);
+    vec3 result;
     if (s < 0.001) {
         result.x = q.i;
         result.y = q.j;
@@ -217,7 +216,7 @@ void quat::getAxisAngle(vec3& v, float& angle) const {
         result.z = q.k / s;
     }
     v = result;
-    angle = 2 * std::acos(r);
+    angle = 2 * std::acos(q.r);
 }
 
 mat3 quat::getRotationMatrix() const {
@@ -234,7 +233,6 @@ mat3 quat::getRotationMatrix() const {
     result.mat[2][1] = 2 * (j * k + r * i);
     result.mat[2][2] = 2 * (r * r + k * k) - 1;
 
-    result.transpose();
     return result;
 }
 
