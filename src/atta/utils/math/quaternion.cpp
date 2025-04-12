@@ -133,27 +133,61 @@ void quat::rotateAroundAxis(const vec3& axis, float angle) {
 }
 
 void quat::setRotationFromVectors(const vec3& before, const vec3& after) {
-    // Given two vectors, return the quaternion representing the shortest rotation between the two vectors
-    vec3 rotAxis = cross(before, after);
-    float cosTheta = dot(before, after);
-    float halfAngle = std::acos(cosTheta) * 0.5f;
-    // Degenerated cases
-    if (cosTheta == 1) // Equal directions
+    // Given two vectors, compute the quaternion representing the shortest rotation between them
+
+    // It's safer to work with normalized vectors
+    vec3 nBefore = before.normalized();
+    vec3 nAfter = after.normalized();
+
+    float cosTheta = dot(nBefore, nAfter);
+
+    // Use a tolerance for floating point comparisons to check for parallel vectors
+    const float parallelThreshold = 1.0f - std::numeric_limits<float>::epsilon() * 10; // A small tolerance
+
+    if (cosTheta >= parallelThreshold) { // Vectors are pointing in the same direction
+        // Set to identity quaternion (no rotation)
+        r = 1.0f;
+        i = 0.0f;
+        j = 0.0f;
+        k = 0.0f;
         return;
-    else if (cosTheta == -1) // Opposite directions
-    {
-        // Choose one of the tangent vectors
-        if (before.x > before.y)
-            rotAxis = cross(before, vec3(0, 1, 0));
-        else
-            rotAxis = cross(before, vec3(1, 0, 0));
     }
-    rotAxis.normalize();
-    float cosHalfAngle = std::cos(halfAngle);
+
+    // Clamp cosTheta before acos due to potential floating point errors making it slightly > 1 or < -1
+    float clampedCosTheta = std::max(-1.0f, std::min(1.0f, cosTheta));
+    float angle = std::acos(clampedCosTheta); // Full angle between vectors
+
+    vec3 rotAxis;
+
+    if (cosTheta <= -parallelThreshold) { // Vectors are pointing in opposite directions (180 degrees)
+        // Angle is PI. Need to find an arbitrary axis perpendicular to nBefore
+        // A robust way to find a perpendicular vector:
+        vec3 perpAxis = vec3(1.0f, 0.0f, 0.0f); // Try X-axis
+        // If nBefore is (almost) parallel to the chosen axis, pick another one
+        if (std::abs(dot(nBefore, perpAxis)) > 0.999f)
+            perpAxis = vec3(0.0f, 1.0f, 0.0f); // Try Y-axis
+        rotAxis = atta::normalize(cross(nBefore, perpAxis));
+        angle = M_PI; // Explicitly set angle to PI for 180 degrees
+
+        // Set using axis-angle formula for 180 degrees (halfAngle = PI/2)
+        // r = cos(PI/2) = 0
+        // {i, j, k} = sin(PI/2) * rotAxis = rotAxis
+        r = 0.0f;
+        i = rotAxis.x;
+        j = rotAxis.y;
+        k = rotAxis.z;
+        return; // Done
+
+    } else {
+        // General case: vectors are not parallel
+        rotAxis = atta::normalize(cross(nBefore, nAfter));
+    }
+
+    // Use the axis-angle formula: q = (cos(angle/2), sin(angle/2) * axis)
+    float halfAngle = angle * 0.5f;
     float sinHalfAngle = std::sin(halfAngle);
 
-    // Create rotation quaternion
-    r = cosHalfAngle;
+    r = std::cos(halfAngle);
     i = sinHalfAngle * rotAxis.x;
     j = sinHalfAngle * rotAxis.y;
     k = sinHalfAngle * rotAxis.z;
@@ -219,21 +253,53 @@ void quat::getAxisAngle(vec3& v, float& angle) const {
     angle = 2 * std::acos(q.r);
 }
 
+void quat::setRotationMatrix(const mat3& R) {
+    // Compute the trace of the rotation matrix
+    float trace = R.mat[0][0] + R.mat[1][1] + R.mat[2][2];
+
+    if (trace > 0) {
+        float S = std::sqrt(trace + 1.0f) * 2.0f; // S = 4 * r
+        r = 0.25f * S;
+        i = (R.mat[2][1] - R.mat[1][2]) / S;
+        j = (R.mat[0][2] - R.mat[2][0]) / S;
+        k = (R.mat[1][0] - R.mat[0][1]) / S;
+    } else if (R.mat[0][0] > R.mat[1][1] && R.mat[0][0] > R.mat[2][2]) {
+        float S = std::sqrt(1.0f + R.mat[0][0] - R.mat[1][1] - R.mat[2][2]) * 2.0f; // S = 4 * i
+        r = (R.mat[2][1] - R.mat[1][2]) / S;
+        i = 0.25f * S;
+        j = (R.mat[0][1] + R.mat[1][0]) / S;
+        k = (R.mat[0][2] + R.mat[2][0]) / S;
+    } else if (R.mat[1][1] > R.mat[2][2]) {
+        float S = std::sqrt(1.0f + R.mat[1][1] - R.mat[0][0] - R.mat[2][2]) * 2.0f; // S = 4 * j
+        r = (R.mat[0][2] - R.mat[2][0]) / S;
+        i = (R.mat[0][1] + R.mat[1][0]) / S;
+        j = 0.25f * S;
+        k = (R.mat[1][2] + R.mat[2][1]) / S;
+    } else {
+        float S = std::sqrt(1.0f + R.mat[2][2] - R.mat[0][0] - R.mat[1][1]) * 2.0f; // S = 4 * k
+        r = (R.mat[1][0] - R.mat[0][1]) / S;
+        i = (R.mat[0][2] + R.mat[2][0]) / S;
+        j = (R.mat[1][2] + R.mat[2][1]) / S;
+        k = 0.25f * S;
+    }
+    normalize();
+}
+
 mat3 quat::getRotationMatrix() const {
-    mat3 result;
-    result.mat[0][0] = 2 * (r * r + i * i) - 1;
-    result.mat[0][1] = 2 * (i * j - r * k);
-    result.mat[0][2] = 2 * (i * k + r * j);
+    mat3 R;
+    R.mat[0][0] = 2 * (r * r + i * i) - 1;
+    R.mat[0][1] = 2 * (i * j - r * k);
+    R.mat[0][2] = 2 * (i * k + r * j);
 
-    result.mat[1][0] = 2 * (i * j + r * k);
-    result.mat[1][1] = 2 * (r * r + j * j) - 1;
-    result.mat[1][2] = 2 * (j * k - r * i);
+    R.mat[1][0] = 2 * (i * j + r * k);
+    R.mat[1][1] = 2 * (r * r + j * j) - 1;
+    R.mat[1][2] = 2 * (j * k - r * i);
 
-    result.mat[2][0] = 2 * (i * k - r * j);
-    result.mat[2][1] = 2 * (j * k + r * i);
-    result.mat[2][2] = 2 * (r * r + k * k) - 1;
+    R.mat[2][0] = 2 * (i * k - r * j);
+    R.mat[2][1] = 2 * (j * k + r * i);
+    R.mat[2][2] = 2 * (r * r + k * k) - 1;
 
-    return result;
+    return R;
 }
 
 std::string quat::toString() const {

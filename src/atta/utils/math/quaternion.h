@@ -53,6 +53,7 @@ class quat {
     float get2DAngle() const;
     void setAxisAngle(const vec3& v, float angle);
     void getAxisAngle(vec3& v, float& angle) const;
+    void setRotationMatrix(const mat3& R);
     mat3 getRotationMatrix() const;
 
     std::string toString() const;
