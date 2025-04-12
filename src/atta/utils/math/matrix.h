@@ -165,7 +165,6 @@ inline mat4 rotationFromEuler(float R, float P, float Y) {
 inline mat4 posOri(const vec3& pos, const quat& q) {
     mat4 res;
     res.setPosOri(pos, q);
-
     return res;
 }
 
@@ -173,7 +172,6 @@ inline mat4 posOri(const vec3& pos, const quat& q) {
 inline mat4 posOriScale(const vec3& pos, const quat& q, const vec3& scale) {
     mat4 res;
     res.setPosOriScale(pos, q, scale);
-
     return res;
 }
 
