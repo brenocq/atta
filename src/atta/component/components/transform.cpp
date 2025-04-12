@@ -68,10 +68,13 @@ Transform Transform::getEntityWorldTransform(EntityId entity) {
     auto t = component::getComponent<Transform>(curr);
     auto r = component::getComponent<Relationship>(curr);
 
+    // Go up the hierarchy until the first entity with transform component if found
     do {
+        // Return the world transform of the first entity with transform component
         if (t)
             return t->getWorldTransform(curr);
 
+        // Return default transform if no transform component is found
         curr = r->getParent();
         if (curr == -1)
             return Transform{};
@@ -91,9 +94,8 @@ Transform Transform::operator*(const Transform& o) const {
 
     // Calculate scale
     vec3 finalScale = o.scale;
-    o.orientation.rotateVector(finalScale);
-    finalScale *= scale;
-    world.scale = finalScale;
+    orientation.rotateVector(finalScale);
+    world.scale = scale * finalScale;
 
     // Calculate position
     vec3 finalPos = scale * o.position;

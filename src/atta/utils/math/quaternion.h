@@ -25,9 +25,9 @@ class quat {
     void normalize();
     void inverse();
 
-    // quat multiplication
-    void operator*=(const quat& multiplier);
-    quat operator*(const quat& multiplier) const;
+    // Quaternion multiplication (note that in q1 * q2, the q2 rotation is applied first, then q1)
+    void operator*=(const quat& quat);
+    quat operator*(const quat& quat) const;
     quat operator-() const;
 
     // Multiply scalar

@@ -44,17 +44,14 @@ void quat::inverse() {
 }
 
 // quat multiplication
-void quat::operator*=(const quat& multiplier) {
-    quat q = *this;
-    r = q.r * multiplier.r - q.i * multiplier.i - q.j * multiplier.j - q.k * multiplier.k;
-    i = q.r * multiplier.i + q.i * multiplier.r + q.j * multiplier.k - q.k * multiplier.j;
-    j = q.r * multiplier.j + q.j * multiplier.r + q.k * multiplier.i - q.i * multiplier.k;
-    k = q.r * multiplier.k + q.k * multiplier.r + q.i * multiplier.j - q.j * multiplier.i;
-}
+void quat::operator*=(const quat& q2) { *this = (*this) * q2; }
 
-quat quat::operator*(const quat& multiplier) const {
-    quat result = (*this);
-    result *= multiplier;
+quat quat::operator*(const quat& other) const {
+    quat result;
+    result.r = r * other.r - i * other.i - j * other.j - k * other.k;
+    result.i = r * other.i + i * other.r + j * other.k - k * other.j;
+    result.j = r * other.j + j * other.r + k * other.i - i * other.k;
+    result.k = r * other.k + k * other.r + i * other.j - j * other.i;
     return result;
 }
 
