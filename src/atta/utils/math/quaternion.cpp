@@ -59,8 +59,11 @@ quat quat::operator*(const quat& multiplier) const {
 }
 
 quat quat::operator-() const {
-    quat q = (*this);
-    q.r *= -1;
+    quat q;
+    q.r = -r;
+    q.i = -i;
+    q.j = -j;
+    q.k = -k;
     return q;
 }
 
@@ -111,7 +114,7 @@ void quat::addScaledVector(const vec3& vec, float scale) {
 
 void quat::rotateVector(vec3& vec) const {
     vec3 v = vec;
-    vec3 u = {-i, -j, -k};
+    vec3 u = {i, j, k};
     float s = r;
     vec = 2.0f * dot(u, v) * u + (s * s - dot(u, u)) * v + 2.0f * s * cross(u, v);
 }
@@ -121,8 +124,8 @@ void quat::rotateAroundAxis(const vec3& axis, float angle) {
     // The angle must be in radians
     // Counter clockwise rotation around the axis
     float halfAngle = angle / 2.0f;
-    float c = cos(halfAngle);
-    float s = sin(halfAngle);
+    float c = std::cos(halfAngle);
+    float s = std::sin(halfAngle);
     quat q(c, s * axis.x, s * axis.y, s * axis.z);
     q.normalize();
     normalize();
@@ -133,7 +136,7 @@ void quat::setRotationFromVectors(const vec3& before, const vec3& after) {
     // Given two vectors, return the quaternion representing the shortest rotation between the two vectors
     vec3 rotAxis = cross(before, after);
     float cosTheta = dot(before, after);
-    float halfAngle = acos(cosTheta) * 0.5f;
+    float halfAngle = std::acos(cosTheta) * 0.5f;
     // Degenerated cases
     if (cosTheta == 1) // Equal directions
         return;
@@ -146,8 +149,8 @@ void quat::setRotationFromVectors(const vec3& before, const vec3& after) {
             rotAxis = cross(before, vec3(1, 0, 0));
     }
     rotAxis.normalize();
-    float cosHalfAngle = cos(halfAngle);
-    float sinHalfAngle = sin(halfAngle);
+    float cosHalfAngle = std::cos(halfAngle);
+    float sinHalfAngle = std::sin(halfAngle);
 
     // Create rotation quaternion
     r = cosHalfAngle;
@@ -158,10 +161,10 @@ void quat::setRotationFromVectors(const vec3& before, const vec3& after) {
 
 void quat::setEuler(const vec3& e) {
     // ZYX euler
-    r = cos(e.x / 2.0) * cos(e.y / 2.0) * cos(e.z / 2.0) + sin(e.x / 2.0) * sin(e.y / 2.0) * sin(e.z / 2.0);
-    i = sin(e.x / 2.0) * cos(e.y / 2.0) * cos(e.z / 2.0) - cos(e.x / 2.0) * sin(e.y / 2.0) * sin(e.z / 2.0);
-    j = cos(e.x / 2.0) * sin(e.y / 2.0) * cos(e.z / 2.0) + sin(e.x / 2.0) * cos(e.y / 2.0) * sin(e.z / 2.0);
-    k = cos(e.x / 2.0) * cos(e.y / 2.0) * sin(e.z / 2.0) - sin(e.x / 2.0) * sin(e.y / 2.0) * cos(e.z / 2.0);
+    r = std::cos(e.x / 2.0) * std::cos(e.y / 2.0) * std::cos(e.z / 2.0) + std::sin(e.x / 2.0) * std::sin(e.y / 2.0) * std::sin(e.z / 2.0);
+    i = std::sin(e.x / 2.0) * std::cos(e.y / 2.0) * std::cos(e.z / 2.0) - std::cos(e.x / 2.0) * std::sin(e.y / 2.0) * std::sin(e.z / 2.0);
+    j = std::cos(e.x / 2.0) * std::sin(e.y / 2.0) * std::cos(e.z / 2.0) + std::sin(e.x / 2.0) * std::cos(e.y / 2.0) * std::sin(e.z / 2.0);
+    k = std::cos(e.x / 2.0) * std::cos(e.y / 2.0) * std::sin(e.z / 2.0) - std::sin(e.x / 2.0) * std::sin(e.y / 2.0) * std::cos(e.z / 2.0);
     normalize();
 }
 
@@ -180,19 +183,19 @@ vec3 quat::getEuler() const {
 
 void quat::set2DAngle(float angle) {
     // ZYX euler
-    r = cos(-angle / 2.0);
+    r = std::cos(-angle / 2.0);
     i = 0;
     j = 0;
-    k = sin(-angle / 2.0);
+    k = std::sin(-angle / 2.0);
 }
 
-float quat::get2DAngle() const { return -atan2(2.0 * (r * k + i * j), 1 - 2.0 * (j * j + k * k)); }
+float quat::get2DAngle() const { return -std::atan2(2.0 * (r * k + i * j), 1 - 2.0 * (j * j + k * k)); }
 
 void quat::setAxisAngle(const vec3& v, float angle) {
     vec3 axis = atta::normalize(v);
     float halfAngle = angle / 2.0f;
-    float c = cos(halfAngle);
-    float s = sin(halfAngle);
+    float c = std::cos(halfAngle);
+    float s = std::sin(halfAngle);
     r = c;
     i = s * axis.x;
     j = s * axis.y;
@@ -203,7 +206,7 @@ void quat::getAxisAngle(vec3& v, float& angle) const {
     vec3 result;
     quat q = *this;
     q.normalize();
-    float s = sqrt(1 - r * r);
+    float s = std::sqrt(1 - r * r);
     if (s < 0.001) {
         result.x = q.i;
         result.y = q.j;
@@ -214,7 +217,7 @@ void quat::getAxisAngle(vec3& v, float& angle) const {
         result.z = q.k / s;
     }
     v = result;
-    angle = 2 * acos(r);
+    angle = 2 * std::acos(r);
 }
 
 mat3 quat::getRotationMatrix() const {
