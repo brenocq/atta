@@ -196,6 +196,7 @@ void BulletEngine::step(float dt) {
 void BulletEngine::stop() {
     _running = false;
     _bodyToEntity.clear();
+    _componentToEntity.clear();
     _entityToBody.clear();
     _collisions.clear();
     gContactStartedCallback = nullptr;
@@ -355,7 +356,7 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
                               btVector3(position.x, position.y, position.z));
 
     // Create collision shape
-    btCollisionShape* colShape;
+    btCollisionShape* colShape = nullptr;
     if (box)
         colShape = new btBoxShape(btVector3(scale.x * box->size.x / 2.0f, scale.y * box->size.y / 2.0f, scale.z * box->size.z / 2.0f));
     else if (sphere)
@@ -387,7 +388,68 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     // add the body to the dynamics world
     _world->addRigidBody(body);
     _bodyToEntity[body] = entity;
+    _componentToEntity[rb] = entity;
     _entityToBody[entity] = body;
+}
+
+void BulletEngine::setLinearVelocity(component::RigidBody* rb, vec3 vel) {
+    if (_componentToEntity.find(rb) == _componentToEntity.end())
+        return;
+    if (Config::getState() != Config::State::IDLE) {
+        btRigidBody* body = _entityToBody[_componentToEntity[rb]];
+        body->setLinearVelocity(btVector3(vel.x, vel.y, vel.z));
+        if (vel.squareLength() > 0)
+            body->activate();
+    }
+}
+
+void BulletEngine::setAngularVelocity(component::RigidBody* rb, vec3 omega) {
+    if (_componentToEntity.find(rb) == _componentToEntity.end())
+        return;
+    if (Config::getState() != Config::State::IDLE) {
+        btRigidBody* body = _entityToBody[_componentToEntity[rb]];
+        body->setAngularVelocity(btVector3(omega.x, omega.y, omega.z));
+        if (omega.squareLength() > 0)
+            body->activate();
+    }
+}
+
+void BulletEngine::applyForce(component::RigidBody* rb, vec3 force, vec3 point) {
+    if (_componentToEntity.find(rb) == _componentToEntity.end())
+        return;
+    cmp::Entity e = _componentToEntity[rb];
+    auto t = cmp::getComponent<cmp::Transform>(e);
+    if (t) {
+        vec3 relPoint = point - t->position;
+        if (Config::getState() != Config::State::IDLE) {
+            btRigidBody* body = _entityToBody[e];
+            body->applyForce(btVector3(force.x, force.y, force.z), btVector3(relPoint.x, relPoint.y, relPoint.z));
+            if (force.squareLength() > 0)
+                body->activate();
+        }
+    }
+}
+
+void BulletEngine::applyForceToCenter(component::RigidBody* rb, vec3 force) {
+    if (_componentToEntity.find(rb) == _componentToEntity.end())
+        return;
+    if (Config::getState() != Config::State::IDLE) {
+        btRigidBody* body = _entityToBody[_componentToEntity[rb]];
+        body->applyCentralForce(btVector3(force.x, force.y, force.z));
+        if (force.squareLength() > 0)
+            body->activate();
+    }
+}
+
+void BulletEngine::applyTorque(component::RigidBody* rb, vec3 torque) {
+    if (_componentToEntity.find(rb) == _componentToEntity.end())
+        return;
+    if (Config::getState() != Config::State::IDLE) {
+        btRigidBody* body = _entityToBody[_componentToEntity[rb]];
+        body->applyTorque(btVector3(torque.x, torque.y, torque.z));
+        if (torque.squareLength() > 0)
+            body->activate();
+    }
 }
 
 //----------------------------------------------//

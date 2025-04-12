@@ -10,6 +10,7 @@
 #include "btBulletDynamicsCommon.h"
 #include <atta/component/components/prismaticJoint.h>
 #include <atta/component/components/revoluteJoint.h>
+#include <atta/component/components/rigidBody.h>
 #include <atta/component/components/rigidJoint.h>
 #include <atta/physics/engines/engine.h>
 
@@ -29,6 +30,13 @@ class BulletEngine : public Engine {
     bool areColliding(component::EntityId eid0, component::EntityId eid1) override;
 
     void updateGravity() override;
+
+    // component::RigidBody interface
+    void setLinearVelocity(component::RigidBody* rb, vec3 vel);
+    void setAngularVelocity(component::RigidBody* rb, vec3 omega);
+    void applyForce(component::RigidBody* rb, vec3 force, vec3 point);
+    void applyForceToCenter(component::RigidBody* rb, vec3 force);
+    void applyTorque(component::RigidBody* rb, vec3 torque);
 
     unsigned getNumSubSteps() const;
     void setNumSubSteps(unsigned numSubSteps);
@@ -60,6 +68,7 @@ class BulletEngine : public Engine {
     // World data
     std::unordered_map<component::EntityId, btRigidBody*> _entityToBody;
     std::unordered_map<btRigidBody*, component::EntityId> _bodyToEntity;
+    std::unordered_map<component::RigidBody*, component::EntityId> _componentToEntity;
     std::unordered_map<component::EntityId, std::unordered_map<component::EntityId, btPersistentManifold*>> _collisions;
     std::unordered_map<component::EntityId, std::vector<component::EntityId>> _connectedEntities; ///< Which entities are connect by joints
 
