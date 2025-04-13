@@ -36,13 +36,16 @@ class quat {
     template <typename U>
     quat operator*(const U value) const;
 
+    // Multiply vector
+    void rotateVector(vec3& vec) const;
+    vec3 operator*(const vec3& vec) const;
+
     void operator+=(const vec3& vec);
 
     // Logical operators
     bool operator==(const quat& other) const;
     bool operator!=(const quat& other) const;
 
-    void rotateVector(vec3& vec) const;
     void addScaledVector(const vec3& vec, float scale);
     void rotateAroundAxis(const vec3& axis, float angle);
 

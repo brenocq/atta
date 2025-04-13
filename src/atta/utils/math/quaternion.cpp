@@ -55,6 +55,20 @@ quat quat::operator*(const quat& other) const {
     return result;
 }
 
+// vec3 multiplication
+void quat::rotateVector(vec3& vec) const {
+    vec3 v = vec;
+    vec3 u = {i, j, k};
+    float s = r;
+    vec = 2.0f * dot(u, v) * u + (s * s - dot(u, u)) * v + 2.0f * s * cross(u, v);
+}
+
+vec3 quat::operator*(const vec3& vec) const {
+    vec3 result = vec;
+    rotateVector(result);
+    return result;
+}
+
 quat quat::operator-() const {
     quat q;
     q.r = -r;
@@ -107,13 +121,6 @@ void quat::addScaledVector(const vec3& vec, float scale) {
     i += q.i * 0.5f;
     j += q.j * 0.5f;
     k += q.k * 0.5f;
-}
-
-void quat::rotateVector(vec3& vec) const {
-    vec3 v = vec;
-    vec3 u = {i, j, k};
-    float s = r;
-    vec = 2.0f * dot(u, v) * u + (s * s - dot(u, u)) * v + 2.0f * s * cross(u, v);
 }
 
 void quat::rotateAroundAxis(const vec3& axis, float angle) {
