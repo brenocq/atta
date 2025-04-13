@@ -29,24 +29,6 @@ ComponentDescription& TypedComponentRegistry<RigidBody>::getDescription() {
     return desc;
 }
 
-void RigidBody::setLinearVelocity(vec3 vel) {
-    if (phy::getEngineType() == phy::Engine::BULLET) {
-        std::shared_ptr<phy::BulletEngine> bEngine = std::static_pointer_cast<phy::BulletEngine>(phy::getEngine());
-        bEngine->setLinearVelocity(this, vel);
-    } else {
-        LOG_WARN("cmp::RigidBody", "Could not execute [w]setLinearVelocity[], BULLET is not the current physics engine");
-    }
-}
-
-void RigidBody::setAngularVelocity(vec3 omega) {
-    if (phy::getEngineType() == phy::Engine::BULLET) {
-        std::shared_ptr<phy::BulletEngine> bEngine = std::static_pointer_cast<phy::BulletEngine>(phy::getEngine());
-        bEngine->setAngularVelocity(this, omega);
-    } else {
-        LOG_WARN("cmp::RigidBody", "Could not execute [w]setAngularVelocity[], BULLET is not the current physics engine");
-    }
-}
-
 void RigidBody::applyForce(vec3 force, vec3 point) {
     if (phy::getEngineType() == phy::Engine::BULLET) {
         std::shared_ptr<phy::BulletEngine> bEngine = std::static_pointer_cast<phy::BulletEngine>(phy::getEngine());

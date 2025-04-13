@@ -78,31 +78,65 @@ void BulletEngine::step(float dt) {
         btCollisionObject* obj = _world->getCollisionObjectArray()[j];
         btRigidBody* body = btRigidBody::upcast(obj);
         component::EntityId eid = BT_USRPTR_TO_EID(obj->getUserPointer());
-
-        // Update mass
         auto rb = component::getComponent<component::RigidBody>(eid);
-        if (rb->type == component::RigidBody::DYNAMIC)
-            body->setMassProps(rb->mass, body->getLocalInertia());
 
-        // Get atta transform
-        auto t = component::getComponent<component::Transform>(eid);
-        component::Transform worldT = t->getWorldTransform(eid);
-        vec3 position = worldT.position;
-        quat orientation = worldT.orientation;
-
-        // Get bullet transform
-        btTransform trans;
-        trans = obj->getWorldTransform();
-        quat physicsOrientation = btToAtta(trans.getRotation());
-        vec3 physicsPosition = btToAtta(trans.getOrigin());
-
-        // Check if atta and bullet transforms match
-        if (position != physicsPosition || orientation != physicsOrientation) {
-            trans = btTransform(attaToBt(orientation), attaToBt(position));
-            body->setWorldTransform(trans);
-
-            // Wake up entity
+        // Wake up entity if it is not active
+        if (rb->awake && !body->isActive()) {
+            LOG_INFO("BulletEngine", "Updating awake");
             wakeUpEntity(eid);
+        }
+
+        // Update linear velocity
+        if (rb->linearVelocity != btToAtta(body->getLinearVelocity())) {
+            LOG_INFO("BulletEngine", "Updating lin vel");
+            body->setLinearVelocity(attaToBt(rb->linearVelocity));
+            wakeUpEntity(eid);
+        }
+
+        // Update angular velocity
+        if (rb->angularVelocity != btToAtta(body->getAngularVelocity())) {
+            LOG_INFO("BulletEngine", "Updating ang vel");
+            body->setAngularVelocity(attaToBt(rb->angularVelocity));
+            wakeUpEntity(eid);
+        }
+
+        if (rb->type == component::RigidBody::DYNAMIC) {
+            // Update mass
+            if (rb->mass != body->getMass()) {
+                LOG_INFO("BulletEngine", "Updating mass $0 to $1", rb->mass, body->getMass());
+                body->setMassProps(rb->mass, body->getLocalInertia());
+                rb->mass = body->getMass(); // Bullet's internal mass may be slightly different
+            }
+
+            // Update linear/angular damping
+            if (rb->linearDamping != body->getLinearDamping() || rb->angularDamping != body->getAngularDamping()) {
+                LOG_INFO("BulletEngine", "Updating damping");
+                body->setDamping(rb->linearDamping, rb->angularDamping);
+            }
+        }
+
+        // Update transform (position/orientation)
+        {
+            // Get atta transform
+            auto t = component::getComponent<component::Transform>(eid);
+            component::Transform worldT = t->getWorldTransform(eid);
+            vec3 position = worldT.position;
+            quat orientation = worldT.orientation;
+
+            // Get bullet transform
+            btTransform trans;
+            trans = obj->getWorldTransform();
+            quat physicsOrientation = btToAtta(trans.getRotation());
+            vec3 physicsPosition = btToAtta(trans.getOrigin());
+
+            // Check if atta and bullet transforms match
+            if (position != physicsPosition || orientation != physicsOrientation) {
+                trans = btTransform(attaToBt(orientation), attaToBt(position));
+                body->setWorldTransform(trans);
+
+                // Wake up entity
+                wakeUpEntity(eid);
+            }
         }
     }
 
@@ -159,6 +193,9 @@ void BulletEngine::step(float dt) {
         auto rb = component::getComponent<component::RigidBody>(eid);
         rb->linearVelocity = btToAtta(body->getLinearVelocity());
         rb->angularVelocity = btToAtta(body->getAngularVelocity());
+
+        // Update is awake
+        rb->awake = body->isActive();
     }
 
     //----- Update atta joints -----//
@@ -371,8 +408,15 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     // Create rigid body
     btDefaultMotionState* motionState = new btDefaultMotionState(bodyTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, colShape, localInertia);
+    rbInfo.m_linearDamping = rb->linearDamping;
+    rbInfo.m_angularDamping = rb->angularDamping;
+    rbInfo.m_friction = rb->friction;
+    rbInfo.m_restitution = rb->restitution;
     btRigidBody* body = new btRigidBody(rbInfo);
     body->setUserPointer(reinterpret_cast<uint8_t*>(entity));
+
+    // Update mass with body's internal mass
+    rb->mass = body->getMass();
 
     // Allow sleep control
     if (!rb->allowSleep)
@@ -383,30 +427,6 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     _bodyToEntity[body] = entity;
     _componentToEntity[rb] = entity;
     _entityToBody[entity] = body;
-}
-
-void BulletEngine::setLinearVelocity(component::RigidBody* rb, vec3 vel) {
-    if (_componentToEntity.find(rb) == _componentToEntity.end())
-        return;
-    if (Config::getState() != Config::State::IDLE) {
-        cmp::Entity eid = _componentToEntity[rb];
-        btRigidBody* body = _entityToBody[eid];
-        body->setLinearVelocity(attaToBt(vel));
-        if (vel.squareLength() > 0)
-            wakeUpEntity(eid);
-    }
-}
-
-void BulletEngine::setAngularVelocity(component::RigidBody* rb, vec3 omega) {
-    if (_componentToEntity.find(rb) == _componentToEntity.end())
-        return;
-    if (Config::getState() != Config::State::IDLE) {
-        cmp::Entity eid = _componentToEntity[rb];
-        btRigidBody* body = _entityToBody[eid];
-        body->setAngularVelocity(attaToBt(omega));
-        if (omega.squareLength() > 0)
-            wakeUpEntity(eid);
-    }
 }
 
 void BulletEngine::applyForce(component::RigidBody* rb, vec3 force, vec3 point) {

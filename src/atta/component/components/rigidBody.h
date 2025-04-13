@@ -55,13 +55,6 @@ struct RigidBody final : public Component {
     bool allowSleep = true; ///< If the rigid body can sleep
     bool awake = true;      ///< If the rigid body start awake or sleeping
 
-    /// Set linear velocity
-    /// @param vel velocity in meters/second
-    void setLinearVelocity(vec3 vel);
-    /// Set angular velocity
-    /// @param omega velocity in radians/second
-    void setAngularVelocity(vec3 omega);
-
     /// Apply a force at a world point. If the force is not applied at the center of mass,
     /// it will generate a torque and affect the angular velocity.
     /// @param force the world force vector in Newtons (N).
