@@ -343,6 +343,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     # Write cmake targets
     install(EXPORT atta_targets
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${ATTA_VERSION_SAFE}
+        NAMESPACE atta::
         FILE attaTargets.cmake
     )
 endif()
