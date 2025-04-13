@@ -55,6 +55,8 @@ class BulletEngine : public Engine {
     static void collisionStarted(btPersistentManifold* const& manifold);
     static void collisionEnded(btPersistentManifold* const& manifold);
 
+    void wakeUpEntity(component::EntityId entity);
+
     unsigned _numSubSteps; ///< Number of physics sub steps for each simulation step
 
     // World configutation
