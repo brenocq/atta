@@ -157,8 +157,8 @@ void BulletEngine::step(float dt) {
 
         // Update rigid body
         auto rb = component::getComponent<component::RigidBody>(eid);
-        btVector3 linearVelocity = body->getLinearVelocity();
-        btVector3 angularVelocity = body->getAngularVelocity();
+        rb->linearVelocity = btToAtta(body->getLinearVelocity());
+        rb->angularVelocity = btToAtta(body->getAngularVelocity());
     }
 
     //----- Update atta joints -----//
