@@ -19,11 +19,14 @@ class quat {
     float k; // Third complex
 
     quat() : r(1), i(0), j(0), k(0) {}
-    quat(const vec3& v) { setEuler(v); }
+    explicit quat(const vec3& v) { setEuler(v); }
     quat(const float r, const float i, const float j, const float k) : r(r), i(i), j(j), k(k) {}
 
     void normalize();
+    quat normalized() const;
+
     void inverse();
+    quat inversed() const;
 
     // Quaternion multiplication (note that in q1 * q2, the q2 rotation is applied first, then q1)
     void operator*=(const quat& quat);

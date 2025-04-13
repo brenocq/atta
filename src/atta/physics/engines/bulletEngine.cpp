@@ -29,9 +29,9 @@ BulletEngine::~BulletEngine() {
 
 //---------- Conversions ----------//
 inline btVector3 attaToBt(const vec3& vec) { return btVector3(vec.x, vec.y, vec.z); }
-inline btQuaternion attaToBt(const quat& q) { return btQuaternion(-q.i, -q.j, -q.k, q.r); }
+inline btQuaternion attaToBt(const quat& q) { return btQuaternion(q.i, q.j, q.k, q.r); }
 inline vec3 btToAtta(const btVector3& vec) { return vec3(vec.getX(), vec.getY(), vec.getZ()); }
-inline quat btToAtta(const btQuaternion& q) { return quat(q.getW(), -q.getX(), -q.getY(), -q.getZ()); }
+inline quat btToAtta(const btQuaternion& q) { return quat(q.getW(), q.getX(), q.getY(), q.getZ()); }
 
 //----------------------------------------------//
 //------------------- START --------------------//
@@ -81,14 +81,11 @@ void BulletEngine::step(float dt) {
         auto rb = component::getComponent<component::RigidBody>(eid);
 
         // Wake up entity if it is not active
-        if (rb->awake && !body->isActive()) {
-            LOG_INFO("BulletEngine", "Updating awake");
+        if (rb->awake && !body->isActive())
             wakeUpEntity(eid);
-        }
 
         // Update linear velocity
         if (rb->linearVelocity != btToAtta(body->getLinearVelocity())) {
-            LOG_INFO("BulletEngine", "Updating lin vel");
             body->setLinearVelocity(attaToBt(rb->linearVelocity));
             wakeUpEntity(eid);
         }
@@ -103,16 +100,13 @@ void BulletEngine::step(float dt) {
         if (rb->type == component::RigidBody::DYNAMIC) {
             // Update mass
             if (rb->mass != body->getMass()) {
-                LOG_INFO("BulletEngine", "Updating mass $0 to $1", rb->mass, body->getMass());
                 body->setMassProps(rb->mass, body->getLocalInertia());
                 rb->mass = body->getMass(); // Bullet's internal mass may be slightly different
             }
 
             // Update linear/angular damping
-            if (rb->linearDamping != body->getLinearDamping() || rb->angularDamping != body->getAngularDamping()) {
-                LOG_INFO("BulletEngine", "Updating damping");
+            if (rb->linearDamping != body->getLinearDamping() || rb->angularDamping != body->getAngularDamping())
                 body->setDamping(rb->linearDamping, rb->angularDamping);
-            }
         }
 
         // Update transform (position/orientation)

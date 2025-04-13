@@ -27,6 +27,12 @@ void quat::normalize() {
     k *= d;
 }
 
+quat quat::normalized() const {
+    quat q = *this;
+    q.normalize();
+    return q;
+}
+
 void quat::inverse() {
     float d = r * r + i * i + j * j + k * k;
     // Check for zero length quaternion, and use the no-rotation
@@ -41,6 +47,12 @@ void quat::inverse() {
     i = -i / d;
     j = -j / d;
     k = -k / d;
+}
+
+quat quat::inversed() const {
+    quat q = *this;
+    q.inverse();
+    return q;
 }
 
 // quat multiplication

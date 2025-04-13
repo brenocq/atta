@@ -32,8 +32,8 @@ struct RigidBody final : public Component {
 
     Type type = DYNAMIC;
     // Rigid body state
-    vec3 linearVelocity = {0.0f, 0.0f, 0.0f};  ///< Linear velocity
-    vec3 angularVelocity = {0.0f, 0.0f, 0.0f}; ///< Angular velocity
+    vec3 linearVelocity = {0.0f, 0.0f, 0.0f};  ///< Linear velocity in world frame (m/s)
+    vec3 angularVelocity = {0.0f, 0.0f, 0.0f}; ///< Angular velocity in world frame (rad/s)
     // Material properties
     float mass = 1.0f;     ///< Physics material mass
     float friction = 0.5f; ///< Physics material friction coefficient
