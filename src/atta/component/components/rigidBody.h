@@ -30,15 +30,6 @@ struct RigidBody final : public Component {
      */
     enum Type : uint32_t { DYNAMIC = 0, KINEMATIC, STATIC };
 
-    enum Constraint {
-        FREEZE_ORIENTATION_X = (1 << 0),
-        FREEZE_ORIENTATION_Y = (1 << 1),
-        FREEZE_ORIENTATION_Z = (1 << 2),
-        FREEZE_POSITION_X = (1 << 3),
-        FREEZE_POSITION_Y = (1 << 4),
-        FREEZE_POSITION_Z = (1 << 5),
-    };
-
     Type type = DYNAMIC;
     // Rigid body state
     vec3 linearVelocity = {0.0f, 0.0f, 0.0f};  ///< Linear velocity
@@ -63,8 +54,6 @@ struct RigidBody final : public Component {
      */
     bool allowSleep = true; ///< If the rigid body can sleep
     bool awake = true;      ///< If the rigid body start awake or sleeping
-                            /** Use RigidBody::Constraint to specify the contraints */
-    uint8_t constraints;    ///< Rigid body constraints
 
     /// Set linear velocity
     /// @param vel velocity in meters/second
