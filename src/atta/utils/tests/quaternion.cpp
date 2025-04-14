@@ -33,10 +33,10 @@ TEST(Utils_Quaternion, Normalization) {
     EXPECT_FLOAT_EQ(qZero.k, 0.0f);
 }
 
-TEST(Utils_Quaternion, Inverse) {
+TEST(Utils_Quaternion, Invert) {
     quat q(0.7071f, 0.7071f, 0.0f, 0.0f); // Normalized 90deg rotation around X
     quat qInv = q;
-    qInv.inverse();
+    qInv.invert();
     quat identity = q * qInv;
     // The product of a quaternion and its inverse should be approximately the identity quaternion
     EXPECT_NEAR(identity.r, 1.0f, 1e-6f);
@@ -46,7 +46,7 @@ TEST(Utils_Quaternion, Inverse) {
 
     // Test inverse of near-zero quaternion (should become identity)
     quat qZero(0.0f, 0.0f, 0.0f, 0.0f);
-    qZero.inverse();
+    qZero.invert();
     EXPECT_FLOAT_EQ(qZero.r, 1.0f);
     EXPECT_FLOAT_EQ(qZero.i, 0.0f);
     EXPECT_FLOAT_EQ(qZero.j, 0.0f);

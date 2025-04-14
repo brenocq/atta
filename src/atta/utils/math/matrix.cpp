@@ -289,8 +289,13 @@ void mat4::invert() {
     setInverse(ori);
 }
 
-void mat4::transpose() {
+mat4 mat4::inverted() const {
+    mat4 ori;
+    ori.setInverse(*this);
+    return ori;
+}
 
+void mat4::transpose() {
     std::swap(data[1], data[4]);
     std::swap(data[2], data[8]);
     std::swap(data[3], data[12]);
@@ -299,6 +304,12 @@ void mat4::transpose() {
     std::swap(data[7], data[13]);
 
     std::swap(data[11], data[14]);
+}
+
+mat4 mat4::transposed() const {
+    mat4 result = *this;
+    result.transpose();
+    return result;
 }
 
 // Transform direction vector
@@ -674,14 +685,26 @@ void mat3::setInverse(const mat3& m) {
 
 // Inverts this matrix
 void mat3::invert() {
-    mat3 ori = *this;
-    setInverse(ori);
+    mat3 m = *this;
+    setInverse(m);
+}
+
+mat3 mat3::inverted() const {
+    mat3 m;
+    m.setInverse(*this);
+    return m;
 }
 
 void mat3::transpose() {
     std::swap(data[1], data[3]);
     std::swap(data[2], data[6]);
     std::swap(data[5], data[7]);
+}
+
+mat3 mat3::transposed() const {
+    mat3 result = *this;
+    result.transpose();
+    return result;
 }
 
 // Multiply matrices
@@ -881,7 +904,19 @@ void mat2::invert() {
     setInverse(ori);
 }
 
+mat2 mat2::inverted() const {
+    mat2 m;
+    m.setInverse(*this);
+    return m;
+}
+
 void mat2::transpose() { std::swap(data[1], data[2]); }
+
+mat2 mat2::transposed() const {
+    mat2 result = *this;
+    result.transpose();
+    return result;
+}
 
 // Multiply matrices
 mat2 mat2::operator*(const mat2& o) const {

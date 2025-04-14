@@ -30,8 +30,21 @@ BulletEngine::~BulletEngine() {
 //---------- Conversions ----------//
 inline btVector3 attaToBt(const vec3& vec) { return btVector3(vec.x, vec.y, vec.z); }
 inline btQuaternion attaToBt(const quat& q) { return btQuaternion(q.i, q.j, q.k, q.r); }
+inline btMatrix3x3 attaToBt(const mat3& mat) {
+    return btMatrix3x3(mat.data[0], mat.data[1], mat.data[2], // Row 0
+                       mat.data[3], mat.data[4], mat.data[5], // Row 1
+                       mat.data[6], mat.data[7], mat.data[8]  // Row 2
+    );
+}
+
 inline vec3 btToAtta(const btVector3& vec) { return vec3(vec.getX(), vec.getY(), vec.getZ()); }
 inline quat btToAtta(const btQuaternion& q) { return quat(q.getW(), q.getX(), q.getY(), q.getZ()); }
+inline mat3 btToAtta(const btMatrix3x3& mat) {
+    return mat3(mat[0].getX(), mat[0].getY(), mat[0].getZ(), // Row 0
+                mat[1].getX(), mat[1].getY(), mat[1].getZ(), // Row 1
+                mat[2].getX(), mat[2].getY(), mat[2].getZ()  // Row 2
+    );
+}
 
 //----------------------------------------------//
 //------------------- START --------------------//
@@ -461,6 +474,19 @@ void BulletEngine::applyTorque(component::RigidBody* rb, vec3 torque) {
         if (torque.squareLength() > 0)
             wakeUpEntity(eid);
     }
+}
+
+mat3 BulletEngine::getInertiaTensor(component::RigidBody* rb) {
+    if (_componentToEntity.find(rb) == _componentToEntity.end())
+        return mat3(1.0f);
+
+    if (Config::getState() != Config::State::IDLE) {
+        cmp::Entity eid = _componentToEntity[rb];
+        btRigidBody* body = _entityToBody[eid];
+        mat3 invInertia = btToAtta(body->getInvInertiaTensorWorld());
+        return invInertia.inverted();
+    }
+    return mat3(1.0f);
 }
 
 //----------------------------------------------//

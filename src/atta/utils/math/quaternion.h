@@ -25,8 +25,8 @@ class quat {
     void normalize();
     quat normalized() const;
 
-    void inverse();
-    quat inversed() const;
+    void invert();
+    quat inverted() const;
 
     // Quaternion multiplication (note that in q1 * q2, the q2 rotation is applied first, then q1)
     void operator*=(const quat& quat);
@@ -76,10 +76,7 @@ inline vec3 quatToEuler(const quat& q) {
     return e;
 }
 
-inline quat inverse(quat q) {
-    q.inverse();
-    return q;
-}
+inline quat inverse(quat q) { return q.inverted(); }
 
 // <<
 inline std::ostream& operator<<(std::ostream& os, const quat& q) { return os << q.toString(); }

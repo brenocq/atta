@@ -69,6 +69,9 @@ struct RigidBody final : public Component {
     /// the linear velocity of the center of mass.
     /// @param torque about the z-axis (out of the screen), usually in N-m.
     void applyTorque(vec3 torque);
+
+    /// Get the inertia tensor of the rigid body in the world frame.
+    mat3 getInertiaTensor();
 };
 ATTA_REGISTER_COMPONENT(RigidBody)
 template <>

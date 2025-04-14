@@ -56,4 +56,14 @@ void RigidBody::applyTorque(vec3 torque) {
     }
 }
 
+mat3 RigidBody::getInertiaTensor() {
+    if (phy::getEngineType() == phy::Engine::BULLET) {
+        std::shared_ptr<phy::BulletEngine> bEngine = std::static_pointer_cast<phy::BulletEngine>(phy::getEngine());
+        return bEngine->getInertiaTensor(this);
+    } else {
+        LOG_WARN("cmp::RigidBody", "Could not execute [w]getInertiaTensor[], BULLET is not the current physics engine");
+        return mat3(1.0f);
+    }
+}
+
 } // namespace atta::component

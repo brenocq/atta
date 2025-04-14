@@ -33,7 +33,7 @@ quat quat::normalized() const {
     return q;
 }
 
-void quat::inverse() {
+void quat::invert() {
     float d = r * r + i * i + j * j + k * k;
     // Check for zero length quaternion, and use the no-rotation
     // quaternion in that case
@@ -49,9 +49,9 @@ void quat::inverse() {
     k = -k / d;
 }
 
-quat quat::inversed() const {
+quat quat::inverted() const {
     quat q = *this;
-    q.inverse();
+    q.invert();
     return q;
 }
 

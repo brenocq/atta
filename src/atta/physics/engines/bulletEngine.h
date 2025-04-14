@@ -32,11 +32,10 @@ class BulletEngine : public Engine {
     void updateGravity() override;
 
     // component::RigidBody interface
-    void setLinearVelocity(component::RigidBody* rb, vec3 vel);
-    void setAngularVelocity(component::RigidBody* rb, vec3 omega);
     void applyForce(component::RigidBody* rb, vec3 force, vec3 point);
     void applyForceToCenter(component::RigidBody* rb, vec3 force);
     void applyTorque(component::RigidBody* rb, vec3 torque);
+    mat3 getInertiaTensor(component::RigidBody* rb);
 
     unsigned getNumSubSteps() const;
     void setNumSubSteps(unsigned numSubSteps);
