@@ -30,6 +30,9 @@ target_link_libraries(implot3d PRIVATE glfw imgui)
 atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/implot3d-src)
 atta_add_libs(implot3d)
 
-atta_log(Success Extern "ImPlot support (source)")
+# Also make implot3d available in the atta namespace
+add_library(atta::implot3d ALIAS implot3d)
+
+atta_log(Success Extern "ImPlot3D support (source)")
 set(ATTA_IMPLOT3D_SUPPORT TRUE)
 set(ATTA_IMPLOT3D_TARGETS implot3d)

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(atta VERSION 0.3.8 LANGUAGES CXX C)
+project(atta VERSION 0.3.9 LANGUAGES CXX C)
 
 option(ATTA_BUILD_TESTS "Set to ON to build also the test executables" ON)
 option(ATTA_BUILD_DOCS "Build the documentation" OFF)
@@ -343,6 +343,7 @@ if(NOT (ATTA_SYSTEM_NAME MATCHES "Web") AND NOT ATTA_STATIC_PROJECT_FILE)
     # Write cmake targets
     install(EXPORT atta_targets
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${ATTA_VERSION_SAFE}
+        NAMESPACE atta::
         FILE attaTargets.cmake
     )
 endif()

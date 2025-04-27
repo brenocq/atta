@@ -68,10 +68,13 @@ Transform Transform::getEntityWorldTransform(EntityId entity) {
     auto t = component::getComponent<Transform>(curr);
     auto r = component::getComponent<Relationship>(curr);
 
+    // Go up the hierarchy until the first entity with transform component if found
     do {
+        // Return the world transform of the first entity with transform component
         if (t)
             return t->getWorldTransform(curr);
 
+        // Return default transform if no transform component is found
         curr = r->getParent();
         if (curr == -1)
             return Transform{};
@@ -85,40 +88,21 @@ Transform Transform::getEntityWorldTransform(EntityId entity) {
 Transform Transform::operator*(const Transform& o) const {
     // World = parent * local
     Transform world;
-
-    // Calculate orientation
+    world.position = position + orientation * (scale * o.position);
     world.orientation = orientation * o.orientation;
-
-    // Calculate scale
-    vec3 finalScale = o.scale;
-    o.orientation.rotateVector(finalScale);
-    finalScale *= scale;
-    world.scale = finalScale;
-
-    // Calculate position
-    vec3 finalPos = scale * o.position;
-    orientation.rotateVector(finalPos);
-    world.position = position + finalPos;
+    world.scale = scale * o.scale;
 
     return world;
 }
 
 Transform Transform::operator/(const Transform& o) const {
     // Local = world / parent
-    Transform local;
-
     quat oriConj = inverse(o.orientation);
 
-    // Calculate orientation
+    Transform local;
+    local.position = oriConj * (position - o.position) / o.scale;
     local.orientation = oriConj * orientation;
-
-    // Calculate scale
     local.scale = scale / o.scale;
-    oriConj.rotateVector(local.scale);
-
-    // Calculate position
-    local.position = (position - o.position) / o.scale;
-    oriConj.rotateVector(local.position);
 
     return local;
 }

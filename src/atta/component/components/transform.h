@@ -30,7 +30,7 @@ struct Transform final : public Component {
 
     /// Get transform in the world coordinate system
     /** If the entity is child of another entity the
-     * resulting transform will depend on its parent 
+     * resulting transform will depend on its parent
      * world transform.
      *
      * The world transform will only differ from the local
