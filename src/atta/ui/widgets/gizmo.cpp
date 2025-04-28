@@ -40,7 +40,7 @@ bool Gizmo::manipulate(cmp::EntityId entity) {
     std::shared_ptr<Viewport> viewport = _viewport.lock();
     cmp::Transform* t = cmp::getComponent<cmp::Transform>(entity);
     if (viewport && t) {
-        mat4 transform = transpose(t->getWorldTransformMatrix(entity));
+        mat4 transform = t->getWorldTransformMatrix(entity).transposed();
 
         ImGuizmo::SetOrthographic(viewport->getCamera()->getName() == "OrthographicCamera");
         ImGuizmo::SetDrawlist();

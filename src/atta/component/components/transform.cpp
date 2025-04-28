@@ -39,14 +39,26 @@ Transform Transform::getWorldTransform(EntityId entity) {
 void Transform::setWorldTransform(EntityId entity, Transform worldTransform) {
     (*this) = worldTransform;
 
-    // Go up the hierarchy until root to calculate world to local transform
-    // TODO maybe need to go top down instead
+    // Convert world transform to local transform by removing all parent transformations.
+    // This transformation needs to be applied from the top-most entity to the current entity
+
+    // Build the stack to store hierarchy from top-most entity to the current entity
+    std::stack<EntityId> parentStack;
     Relationship* relationship = component::getComponent<Relationship>(entity);
     while (relationship && relationship->getParent() >= 0) {
-        Transform* ptransform = component::getComponent<Transform>(relationship->getParent());
+        parentStack.push(relationship->getParent());
+        relationship = component::getComponent<Relationship>(relationship->getParent());
+    }
+
+    // Apply the transformations from the top-most entity to the current entity
+    while (!parentStack.empty()) {
+        EntityId parent = parentStack.top();
+        parentStack.pop();
+
+        // Apply the inverse transformation of the parent
+        Transform* ptransform = component::getComponent<Transform>(parent);
         if (ptransform)
             (*this) = (*this) / *ptransform;
-        relationship = component::getComponent<Relationship>(relationship->getParent());
     }
 }
 
@@ -97,7 +109,7 @@ Transform Transform::operator*(const Transform& o) const {
 
 Transform Transform::operator/(const Transform& o) const {
     // Local = world / parent
-    quat oriConj = inverse(o.orientation);
+    quat oriConj = o.orientation.normalized().inverted();
 
     Transform local;
     local.position = oriConj * (position - o.position) / o.scale;
