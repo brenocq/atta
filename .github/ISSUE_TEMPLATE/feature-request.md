@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: 🚀 Feature request
 about: Suggest an idea or enhancement for Atta
 title: '[Feature] A brief, descriptive title'
 labels: type:feat, status:idea

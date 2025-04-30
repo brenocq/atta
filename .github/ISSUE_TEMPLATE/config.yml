@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Ask a Question / General Discussion
+  - name: ❓ Q&A
     url: https://github.com/brenocq/atta/discussions/categories/q-a
-    about: Please use GitHub Discussions for questions, help requests, and general chat.
-  - name: Atta Gallery / Examples
+    about: Please use GitHub Discussions for questions, help requests, and general chat
+  - name: 📸 Atta Gallery
     url: https://github.com/brenocq/atta/discussions/categories/gallery
-    about: Check out the gallery for examples of what Atta can do.
+    about: Check out the gallery for examples of what Atta can do
