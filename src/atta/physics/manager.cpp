@@ -126,6 +126,7 @@ void Manager::onComponentChange(event::Event& event) {
                     _engine->createColliders(e.entityId);
             }
             if (is3DPhysicsColliderComponent(e.componentId)) {
+                // TODO
             }
             break;
         }
@@ -138,6 +139,7 @@ void Manager::onComponentChange(event::Event& event) {
                     _engine->deleteColliders(e.entityId);
             }
             if (is3DPhysicsColliderComponent(e.componentId)) {
+                // TODO
             }
             break;
         }

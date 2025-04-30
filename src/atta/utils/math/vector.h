@@ -95,6 +95,7 @@ class vector4 {
 
     // Normalize
     void normalize();
+    vector4<T> normalized() const;
 
     // Unit
     vector4<T> unit() const;
@@ -234,6 +235,7 @@ class vector3 {
 
     // Normalize
     void normalize();
+    vector3<T> normalized() const;
 
     // Unit
     vector3<T> unit() const;
@@ -376,6 +378,7 @@ class vector2 {
 
     // Normalize
     void normalize();
+    vector2<T> normalized() const;
 
     // Unit
     vector2<T> unit() const;

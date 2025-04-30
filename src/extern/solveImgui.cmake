@@ -42,6 +42,9 @@ endif()
 atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/imgui-src)
 atta_add_libs(imgui)
 
+# Also make imgui available in the atta namespace
+add_library(atta::imgui ALIAS imgui)
+
 atta_log(Success Extern "ImGui support (source)")
 set(ATTA_IMGUI_SUPPORT TRUE)
 set(ATTA_IMGUI_TARGETS imgui)

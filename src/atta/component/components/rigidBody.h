@@ -30,19 +30,10 @@ struct RigidBody final : public Component {
      */
     enum Type : uint32_t { DYNAMIC = 0, KINEMATIC, STATIC };
 
-    enum Constraint {
-        FREEZE_ORIENTATION_X = (1 << 0),
-        FREEZE_ORIENTATION_Y = (1 << 1),
-        FREEZE_ORIENTATION_Z = (1 << 2),
-        FREEZE_POSITION_X = (1 << 3),
-        FREEZE_POSITION_Y = (1 << 4),
-        FREEZE_POSITION_Z = (1 << 5),
-    };
-
     Type type = DYNAMIC;
     // Rigid body state
-    vec3 linearVelocity = {0.0f, 0.0f, 0.0f};  ///< Linear velocity
-    vec3 angularVelocity = {0.0f, 0.0f, 0.0f}; ///< Angular velocity
+    vec3 linearVelocity = {0.0f, 0.0f, 0.0f};  ///< Linear velocity in world frame (m/s)
+    vec3 angularVelocity = {0.0f, 0.0f, 0.0f}; ///< Angular velocity in world frame (rad/s)
     // Material properties
     float mass = 1.0f;     ///< Physics material mass
     float friction = 0.5f; ///< Physics material friction coefficient
@@ -63,8 +54,24 @@ struct RigidBody final : public Component {
      */
     bool allowSleep = true; ///< If the rigid body can sleep
     bool awake = true;      ///< If the rigid body start awake or sleeping
-                            /** Use RigidBody::Constraint to specify the contraints */
-    uint8_t constraints;    ///< Rigid body constraints
+
+    /// Apply a force at a world point. If the force is not applied at the center of mass,
+    /// it will generate a torque and affect the angular velocity.
+    /// @param force the world force vector in Newtons (N).
+    /// @param point the world position of the point of application.
+    void applyForce(vec3 force, vec3 point);
+
+    /// Apply a force to the body's center of mass.
+    /// @param force the world force vector in Newtons (N).
+    void applyForceToCenter(vec3 force);
+
+    /// Apply a torque. This affects the angular velocity without affecting
+    /// the linear velocity of the center of mass.
+    /// @param torque about the z-axis (out of the screen), usually in N-m.
+    void applyTorque(vec3 torque);
+
+    /// Get the inertia tensor of the rigid body in the world frame.
+    mat3 getInertiaTensor();
 };
 ATTA_REGISTER_COMPONENT(RigidBody)
 template <>
