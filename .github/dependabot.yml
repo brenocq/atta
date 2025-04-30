@@ -13,3 +13,7 @@ updates:
       - "brenocq"
     assignees:
       - "brenocq"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
