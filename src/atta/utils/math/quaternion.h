@@ -19,15 +19,18 @@ class quat {
     float k; // Third complex
 
     quat() : r(1), i(0), j(0), k(0) {}
-    quat(const vec3& v) { setEuler(v); }
+    explicit quat(const vec3& v) { setEuler(v); }
     quat(const float r, const float i, const float j, const float k) : r(r), i(i), j(j), k(k) {}
 
     void normalize();
-    void inverse();
+    quat normalized() const;
 
-    // quat multiplication
-    void operator*=(const quat& multiplier);
-    quat operator*(const quat& multiplier) const;
+    void invert();
+    quat inverted() const;
+
+    // Quaternion multiplication (note that in q1 * q2, the q2 rotation is applied first, then q1)
+    void operator*=(const quat& quat);
+    quat operator*(const quat& quat) const;
     quat operator-() const;
 
     // Multiply scalar
@@ -36,13 +39,16 @@ class quat {
     template <typename U>
     quat operator*(const U value) const;
 
+    // Multiply vector
+    void rotateVector(vec3& vec) const;
+    vec3 operator*(const vec3& vec) const;
+
     void operator+=(const vec3& vec);
 
     // Logical operators
     bool operator==(const quat& other) const;
     bool operator!=(const quat& other) const;
 
-    void rotateVector(vec3& vec) const;
     void addScaledVector(const vec3& vec, float scale);
     void rotateAroundAxis(const vec3& axis, float angle);
 
@@ -53,6 +59,7 @@ class quat {
     float get2DAngle() const;
     void setAxisAngle(const vec3& v, float angle);
     void getAxisAngle(vec3& v, float& angle) const;
+    void setRotationMatrix(const mat3& R);
     mat3 getRotationMatrix() const;
 
     std::string toString() const;
@@ -69,10 +76,7 @@ inline vec3 quatToEuler(const quat& q) {
     return e;
 }
 
-inline quat inverse(quat q) {
-    q.inverse();
-    return q;
-}
+inline quat inverse(quat q) { return q.inverted(); }
 
 // <<
 inline std::ostream& operator<<(std::ostream& os, const quat& q) { return os << q.toString(); }

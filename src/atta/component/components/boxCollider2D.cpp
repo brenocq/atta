@@ -13,8 +13,8 @@ ComponentDescription& TypedComponentRegistry<BoxCollider2D>::getDescription() {
     static ComponentDescription desc = {
         "Box Collider 2D",
         {
-            {AttributeType::FLOAT32, offsetof(BoxCollider2D, size), "size", 0.0001f, 2000.0f, 0.01f},
-            {AttributeType::FLOAT32, offsetof(BoxCollider2D, offset), "offset", -2000.0f, 2000.0f, 0.01f},
+            {AttributeType::VECTOR_FLOAT32, offsetof(BoxCollider2D, size), "size", 0.0001f, 2000.0f, 0.01f},
+            {AttributeType::VECTOR_FLOAT32, offsetof(BoxCollider2D, offset), "offset", -2000.0f, 2000.0f, 0.01f},
         },
     };
 
