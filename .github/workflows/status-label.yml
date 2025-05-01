@@ -1,4 +1,4 @@
-name: Update Status Labels
+name: 🛠️ Status Labels
 
 on:
   pull_request:
@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   update-labels:
+    name: Update Status Labels
     runs-on: ubuntu-latest
 
     steps:
