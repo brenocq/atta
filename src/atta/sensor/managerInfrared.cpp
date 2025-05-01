@@ -88,7 +88,7 @@ void Manager::updateInfrareds(float dt) {
             vec3 begin = worldTrans.position;
             vec3 end = begin + rayDir * ir->upperLimit;
             std::vector<phy::RayCastHit> hits = phy::rayCast(begin, end, true);
-            if(hits.size())
+            if (hits.size())
                 measurement = hits[0].distance;
             else
                 measurement = ir->upperLimit;
