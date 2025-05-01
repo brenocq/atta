@@ -26,56 +26,56 @@ bool ignoreSpaces(const std::string& str, unsigned& pos) {
 std::string Json::dump() {
     std::string result;
     switch (_type) {
-    case NONE: {
-        result = "null";
-        break;
-    }
-    case BOOL: {
-        result = _value.b ? "true" : "false";
-        break;
-    }
-    case INT: {
-        result = std::to_string(_value.i);
-        break;
-    }
-    case FLOAT: {
-        result = std::to_string(_value.f);
-        break;
-    }
-    case STRING: {
-        std::vector<char> str;
-        str.push_back('"');
-        for (char c : _string) {
-            if (c == '"')
-                str.push_back('\\');
-            str.push_back(c);
+        case NONE: {
+            result = "null";
+            break;
         }
-        str.push_back('"');
-        result = std::string(str.begin(), str.end());
-        break;
-    }
-    case VECTOR: {
-        result += "[";
-        for (unsigned i = 0; i < _vector.size(); i++) {
-            result += _vector[i].dump();
-            if (i < _vector.size() - 1)
-                result += ", ";
+        case BOOL: {
+            result = _value.b ? "true" : "false";
+            break;
         }
-        result += "]";
-        break;
-    }
-    case MAP: {
-        result += "{";
-        unsigned i = 0;
-        for (auto& [key, value] : _map) {
-            result += "\"" + key + "\": ";
-            result += value.dump();
-            if (i++ < _map.size() - 1)
-                result += ", ";
+        case INT: {
+            result = std::to_string(_value.i);
+            break;
         }
-        result += "}";
-        break;
-    }
+        case FLOAT: {
+            result = std::to_string(_value.f);
+            break;
+        }
+        case STRING: {
+            std::vector<char> str;
+            str.push_back('"');
+            for (char c : _string) {
+                if (c == '"')
+                    str.push_back('\\');
+                str.push_back(c);
+            }
+            str.push_back('"');
+            result = std::string(str.begin(), str.end());
+            break;
+        }
+        case VECTOR: {
+            result += "[";
+            for (unsigned i = 0; i < _vector.size(); i++) {
+                result += _vector[i].dump();
+                if (i < _vector.size() - 1)
+                    result += ", ";
+            }
+            result += "]";
+            break;
+        }
+        case MAP: {
+            result += "{";
+            unsigned i = 0;
+            for (auto& [key, value] : _map) {
+                result += "\"" + key + "\": ";
+                result += value.dump();
+                if (i++ < _map.size() - 1)
+                    result += ", ";
+            }
+            result += "}";
+            break;
+        }
     }
     return result;
 }

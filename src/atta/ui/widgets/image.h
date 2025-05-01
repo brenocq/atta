@@ -13,4 +13,4 @@ void image(std::string name, vec2 size);
 
 } // namespace atta::ui
 
-#endif// ATTA_UI_WIDGETS_IMAGE_H
+#endif // ATTA_UI_WIDGETS_IMAGE_H

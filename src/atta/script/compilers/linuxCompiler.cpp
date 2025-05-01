@@ -177,15 +177,14 @@ void LinuxCompiler::findTargetFiles(StringId target) {
 
     // Get all files that where included
     std::set<fs::path> targetFiles(cmakeTargetFiles.begin(), cmakeTargetFiles.end());
-    for(fs::path file : cmakeTargetFiles)
-    {
+    for (fs::path file : cmakeTargetFiles) {
         std::vector<fs::path> includedFiles = getIncludedFiles(file);
         targetFiles.insert(includedFiles.begin(), includedFiles.end());
     }
 
     // Update files related to this target
     _targetFiles[target] = {};
-    for(fs::path file : targetFiles)
+    for (fs::path file : targetFiles)
         _targetFiles[target].push_back(file);
 }
 

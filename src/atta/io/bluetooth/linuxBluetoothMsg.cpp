@@ -125,85 +125,85 @@ int LinuxBluetooth::bluezParseInterface(sd_bus_message* m, const char* opath, Bl
 
     // If know this interface, parse and return
     switch (msgType) {
-    case MSG_DEVICE_SCAN: {
-        if (strcmp(intf, "org.bluez.Device1") == 0) {
-            // Get device information
-            Device dev{};
-            LinuxDevice devL{};
-            r = bluezParseDevice1(m, opath, &dev, &devL);
+        case MSG_DEVICE_SCAN: {
+            if (strcmp(intf, "org.bluez.Device1") == 0) {
+                // Get device information
+                Device dev{};
+                LinuxDevice devL{};
+                r = bluezParseDevice1(m, opath, &dev, &devL);
 
-            bool found = false;
-            for (Device& d : _devices) {
-                if (d.mac == dev.mac) {
-                    d = dev;
-                    found = true;
-                    break;
+                bool found = false;
+                for (Device& d : _devices) {
+                    if (d.mac == dev.mac) {
+                        d = dev;
+                        found = true;
+                        break;
+                    }
                 }
-            }
-            if (!found) {
-                _devices.push_back(dev);
-                _linuxDevices.push_back(devL);
-                if (dev.connected)
-                    populateDeviceServices(&_linuxDevices.back());
-            }
+                if (!found) {
+                    _devices.push_back(dev);
+                    _linuxDevices.push_back(devL);
+                    if (dev.connected)
+                        populateDeviceServices(&_linuxDevices.back());
+                }
 
-            return r;
-        }
-        break;
-    }
-    case MSG_DEVICE: {
-        if (strcmp(intf, "org.bluez.Device1") == 0) {
-            // Update device information
-            LinuxDevice* lDev = static_cast<LinuxDevice*>(user);
-            Device* dev = nullptr;
-            for (unsigned i = 0; i < _devices.size(); i++)
-                if (_devices[i].mac == lDev->mac)
-                    dev = &_devices[i];
-            if (dev == nullptr) {
-                LOG_WARN(_debugName.getString(), "Unable to find device when parsing Device1 interface");
                 return r;
             }
-
-            r = bluezParseDevice1(m, opath, dev, lDev);
-            return r;
+            break;
         }
-        break;
-    }
-    case MSG_SERVICE: {
-        if (strcmp(intf, "org.bluez.GattService1") == 0) {
-            LinuxService* lServ = static_cast<LinuxService*>(user);
-            if (lServ == nullptr) {
-                LOG_WARN(_debugName.getString(), "Unable to find service when parsing Service1 interface");
+        case MSG_DEVICE: {
+            if (strcmp(intf, "org.bluez.Device1") == 0) {
+                // Update device information
+                LinuxDevice* lDev = static_cast<LinuxDevice*>(user);
+                Device* dev = nullptr;
+                for (unsigned i = 0; i < _devices.size(); i++)
+                    if (_devices[i].mac == lDev->mac)
+                        dev = &_devices[i];
+                if (dev == nullptr) {
+                    LOG_WARN(_debugName.getString(), "Unable to find device when parsing Device1 interface");
+                    return r;
+                }
+
+                r = bluezParseDevice1(m, opath, dev, lDev);
                 return r;
             }
-
-            r = bluezParseService1(m, opath, lServ);
-            return r;
+            break;
         }
-        break;
-    }
-    case MSG_CHARS: {
-        if (strcmp(intf, "org.bluez.GattCharacteristic1") == 0) {
-            LinuxService* lServ = static_cast<LinuxService*>(user);
-            Service* serv = nullptr;
-            for (Device& device : _devices)
-                for (Service& s : device.services)
-                    if (s.uuid == lServ->uuid)
-                        serv = &s;
-            if (lServ == nullptr || serv == nullptr) {
-                LOG_WARN(_debugName.getString(), "Unable to find service when parsing Characteristic1 interface");
+        case MSG_SERVICE: {
+            if (strcmp(intf, "org.bluez.GattService1") == 0) {
+                LinuxService* lServ = static_cast<LinuxService*>(user);
+                if (lServ == nullptr) {
+                    LOG_WARN(_debugName.getString(), "Unable to find service when parsing Service1 interface");
+                    return r;
+                }
+
+                r = bluezParseService1(m, opath, lServ);
                 return r;
             }
-
-            LinuxChar lch{};
-            Char ch{};
-            r = bluezParseCharacteristic1(m, opath, &ch, &lch);
-            lServ->chars.push_back(lch);
-            serv->chars.push_back(ch);
-            return r;
+            break;
         }
-        break;
-    }
+        case MSG_CHARS: {
+            if (strcmp(intf, "org.bluez.GattCharacteristic1") == 0) {
+                LinuxService* lServ = static_cast<LinuxService*>(user);
+                Service* serv = nullptr;
+                for (Device& device : _devices)
+                    for (Service& s : device.services)
+                        if (s.uuid == lServ->uuid)
+                            serv = &s;
+                if (lServ == nullptr || serv == nullptr) {
+                    LOG_WARN(_debugName.getString(), "Unable to find service when parsing Characteristic1 interface");
+                    return r;
+                }
+
+                LinuxChar lch{};
+                Char ch{};
+                r = bluezParseCharacteristic1(m, opath, &ch, &lch);
+                lServ->chars.push_back(lch);
+                serv->chars.push_back(ch);
+                return r;
+            }
+            break;
+        }
     }
 
     // Unknown interface or action, skip

@@ -8,8 +8,8 @@
 #include <atta/graphics/interface.h>
 
 #include <atta/file/manager.h>
-#include <shaderc/shaderc.hpp>
 #include <regex>
+#include <shaderc/shaderc.hpp>
 
 namespace atta::graphics::vk {
 
@@ -232,9 +232,15 @@ void Shader::compile() {
         // Compute shaderc kind
         shaderc_shader_kind shaderKind;
         switch (type) {
-            case VERTEX: shaderKind = shaderc_vertex_shader; break;
-            case GEOMETRY: shaderKind = shaderc_geometry_shader; break;
-            case FRAGMENT: shaderKind = shaderc_fragment_shader; break;
+            case VERTEX:
+                shaderKind = shaderc_vertex_shader;
+                break;
+            case GEOMETRY:
+                shaderKind = shaderc_geometry_shader;
+                break;
+            case FRAGMENT:
+                shaderKind = shaderc_fragment_shader;
+                break;
             default:
                 LOG_ERROR("gfx::vk::Shader", "Unsupported shader type when compiling [w]$0[]", _file.string());
                 continue;
@@ -243,12 +249,7 @@ void Shader::compile() {
         // Compile shader using shaderc
         shaderc::Compiler compiler;
         shaderc::CompileOptions options;
-        shaderc::CompilationResult result = compiler.CompileGlslToSpv(
-            shaderCode.apiCode,
-            shaderKind,
-            in.string().c_str(),
-            options
-        );
+        shaderc::CompilationResult result = compiler.CompileGlslToSpv(shaderCode.apiCode, shaderKind, in.string().c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
             LOG_ERROR("gfx::vk::Shader", "Shader compilation failed: $0", result.GetErrorMessage());
             continue;

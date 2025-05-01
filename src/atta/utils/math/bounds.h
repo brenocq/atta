@@ -7,8 +7,8 @@
 #ifndef ATTA_UTILS_MATH_BOUNDS_H
 #define ATTA_UTILS_MATH_BOUNDS_H
 
-#include <atta/utils/math/vector.h>
 #include <atta/utils/math/ray.h>
+#include <atta/utils/math/vector.h>
 
 namespace atta {
 //---------- Bounds 3 ----------//

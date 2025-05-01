@@ -27,17 +27,16 @@ void LinuxLinker::linkTarget(StringId target, Script** script, ProjectScript** p
     fs::path libCpyDir = projectDir / "build" / "atta" / "script" / target.getString();
 
     // Keep some of the last library versions (segfault if library still in use)
-    if (fs::exists(libCpyDir))
-    {
+    if (fs::exists(libCpyDir)) {
         // Get files
         std::vector<std::string> files;
-        for(auto entry : fs::directory_iterator(libCpyDir))
+        for (auto entry : fs::directory_iterator(libCpyDir))
             files.push_back(entry.path().string());
 
         std::sort(files.begin(), files.end());
         // Keep up to 10 old files (should be only one)
-        if(files.size())
-            for(int i = 0; i < int(files.size())-10; i++)
+        if (files.size())
+            for (int i = 0; i < int(files.size()) - 10; i++)
                 fs::remove(files[i]);
     }
     fs::create_directories(libCpyDir);
