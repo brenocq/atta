@@ -6,7 +6,7 @@ on:
       - dev
     paths:
       - 'src/atta/**/*.{h,cpp,inl}'
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 jobs:
   format-check:
