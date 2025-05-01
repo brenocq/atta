@@ -23,7 +23,7 @@ class TearDown {
         StringId name;
         Profiler::Time time;
     };
-    std::vector<FuncTime> _funcTime; 
+    std::vector<FuncTime> _funcTime;
     size_t _lastRecordsSize;
     bool _exclusive;
 

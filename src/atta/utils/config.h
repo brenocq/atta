@@ -33,8 +33,8 @@ class Config final {
     State _state;
 
     //----- Stepping -----//
-    float _dt;    ///< Simulation step in seconds
-    float _time;  ///< Current simulation time
+    float _dt;   ///< Simulation step in seconds
+    float _time; ///< Current simulation time
     /// Desired step speed
     /** Desired speed relative to real time
      * 0.0 = step as fast as possible

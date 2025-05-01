@@ -13,7 +13,7 @@ namespace atta::script {
 class Script {
   public:
     Script() = default;
-    virtual ~Script() {};
+    virtual ~Script() {}
     virtual void update(component::Entity entity, float dt) = 0;
 };
 

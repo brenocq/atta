@@ -4,8 +4,8 @@
 // Date: 2022-06-12
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/script/scripts.h>
 #include <atta/event/events/projectOpen.h>
+#include <atta/script/scripts.h>
 
 namespace atta::script {
 

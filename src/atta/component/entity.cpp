@@ -19,7 +19,7 @@ bool Entity::exists() const { return _id >= 0; }
 EntityId Entity::getId() const { return _id; }
 
 bool Entity::isPrototype() const {
-    if(get<component::Prototype>())
+    if (get<component::Prototype>())
         return true;
 
     Entity p = getParent();

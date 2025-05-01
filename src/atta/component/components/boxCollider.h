@@ -14,7 +14,7 @@ namespace atta::component {
 /// %Component to create a box collider
 /** This collider can be used with 3D physics.
  *
- * Transform and RigidBody components are necessary 
+ * Transform and RigidBody components are necessary
  * for the entity to participate in the physics iteration.
  *
  * The box will also be scaled by the Transform scale.

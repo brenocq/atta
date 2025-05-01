@@ -479,8 +479,8 @@ TEST(Utils_Math_Vector, TypeDeduction) {
     }
 }
 
-//#include <immintrin.h>
-// TEST(Utils_Math_Vector, SIMD128)
+// #include <immintrin.h>
+//  TEST(Utils_Math_Vector, SIMD128)
 //{
 //	class Vec128
 //	{
