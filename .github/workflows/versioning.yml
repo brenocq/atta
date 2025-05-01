@@ -5,7 +5,7 @@ on:
     types:
       - labeled  # Runs when labels are added to the PR
     branches:
-      - dev  # Only run for PRs targeting the dev branch
+      - main  # Only run for PRs targeting the main branch
     if: github.event.pull_request.merged == false  # Skip if PR is already merged
 
 jobs:
@@ -42,12 +42,12 @@ jobs:
             exit 0
           fi
 
-      - name: Merge `dev` into PR Branch
+      - name: Merge `main` into PR Branch
         if: env.run_versioning == 'true'
         run: |
-          git fetch origin dev
+          git fetch origin main
           git checkout ${{ github.head_ref }}
-          if git merge --no-edit origin/dev; then
+          if git merge --no-edit origin/main; then
             echo "Merge successful."
           else
             echo "::error::Merge conflict detected! Resolve conflicts manually."
@@ -55,17 +55,17 @@ jobs:
           fi
         continue-on-error: false
 
-      - name: Get Current Version from `dev`
+      - name: Get Current Version from `main`
         if: env.run_versioning == 'true'
         run: |
-          VERSION=$(git show origin/dev:CMakeLists.txt | sed -nE 's/project\(atta VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')
+          VERSION=$(git show origin/main:CMakeLists.txt | sed -nE 's/project\(atta VERSION ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')
 
           if [[ -z "$VERSION" ]]; then
             echo "::error::Failed to extract version from CMakeLists.txt"
             exit 1
           fi
 
-          echo "::notice::Current Version (from dev): $VERSION"
+          echo "::notice::Current Version (from main): $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Determine Version Increment

@@ -59,14 +59,14 @@ Atta uses the standard Fork & Pull Request workflow.
 
 1.  **Fork the Repository:** Create a fork of the `brenocq/atta` repository to your own GitHub account.
 2.  **Clone Your Fork:** Clone your forked repository locally: `git clone git@github.com:YOUR_USERNAME/atta.git`
-3.  **Create a Branch:** Create a new branch for your changes, based off the `dev` branch: `git checkout dev && git pull origin dev && git checkout -b feat/your-feature-name` (replace `feat/your-feature-name` with a descriptive name).
+3.  **Create a Branch:** Create a new branch for your changes, based off the `main` branch: `git checkout main && git pull origin main && git checkout -b feat/your-feature-name` (replace `feat/your-feature-name` with a descriptive name).
 4.  **Make Changes:** Implement your feature or fix the bug. Ensure your code adheres to the project's [Code Style](#code-style).
 5.  **Commit Changes:** Commit your changes with clear and concise commit messages.
 6.  **Push Branch:** Push your feature branch to your fork: `git push origin feat/your-feature-name`
-7.  **Open a Pull Request:** Go to the `brenocq/atta` repository on GitHub and open a Pull Request comparing your fork's feature branch (`YOUR_USERNAME/atta:feat/your-feature-name`) to the main repository's `dev` branch (`brenocq/atta:dev`).
+7.  **Open a Pull Request:** Go to the `brenocq/atta` repository on GitHub and open a Pull Request comparing your fork's feature branch (`YOUR_USERNAME/atta:feat/your-feature-name`) to the main repository's `main` branch (`brenocq/atta:main`).
 8.  **Link Issue:** In the PR description, link the issue(s) your PR addresses using keywords like `Fixes #123` or `Closes #123`. This helps with tracking and automated status updates.
 9.  **Review Process:** Your PR will be reviewed. Automated checks (like formatting and code analysis) must pass. Be prepared to discuss your changes and make adjustments based on feedback.
-10. **Merging:** Once approved and all checks pass, your PR will be merged into the `dev` branch.
+10. **Merging:** Once approved and all checks pass, your PR will be merged into the `main` branch.
 
 ## Code Style
 
