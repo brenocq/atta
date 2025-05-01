@@ -2,10 +2,6 @@ name: 🕵 Check clang-format
 
 on:
   pull_request:
-    branches:
-      - main
-    paths:
-      - 'src/atta/**/*.{h,cpp,inl}'
   workflow_dispatch:
 
 jobs:
