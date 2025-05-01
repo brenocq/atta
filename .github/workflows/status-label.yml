@@ -1,0 +1,98 @@
+name: Update Status Labels
+
+on:
+  pull_request:
+    types:
+      - opened
+      - closed
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  update-labels:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set PR status to review
+      if: ${{ github.event.action == 'opened' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const prNumber = context.payload.pull_request.number;
+          await github.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            labels: ['status:review']
+          });
+
+          const linkedIssues = context.payload.pull_request.body.match(/(?:Fixes|Closes) #\d+/g) || [];
+          for (const issueRef of linkedIssues) {
+            const issueNumber = parseInt(issueRef.split('#')[1]);
+            await github.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              name: 'status:idea'
+            }).catch(() => {});
+            await github.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              name: 'status:todo'
+            }).catch(() => {});
+            await github.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              name: 'status:doing'
+            }).catch(() => {});
+            await github.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['status:review']
+            });
+          }
+
+    - name: Set PR and linked issues to done
+      if: ${{ github.event.action == 'closed' && github.event.pull_request.merged == true }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const prNumber = context.payload.pull_request.number;
+          await github.issues.removeLabel({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            name: 'status:review'
+          }).catch(() => {});
+          await github.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            labels: ['status:done']
+          });
+
+          const linkedIssues = context.payload.pull_request.body.match(/(?:Fixes|Closes) #\d+/g) || [];
+          for (const issueRef of linkedIssues) {
+            const issueNumber = parseInt(issueRef.split('#')[1]);
+            await github.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              name: 'status:review'
+            }).catch(() => {});
+            await github.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['status:done']
+            });
+          }
