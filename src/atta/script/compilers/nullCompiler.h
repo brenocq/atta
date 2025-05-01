@@ -15,8 +15,8 @@ class NullCompiler : public Compiler {
   public:
     NullCompiler() = default;
 
-    void compileAll() override {};
-    void compileTarget(StringId target) override {};
+    void compileAll() override {}
+    void compileTarget(StringId target) override {}
 };
 
 } // namespace atta::script
