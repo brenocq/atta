@@ -12,27 +12,27 @@ namespace atta::script {
 class ProjectScript {
   public:
     ProjectScript() = default;
-    virtual ~ProjectScript() {};
+    virtual ~ProjectScript() {}
 
     //---------- Load/Unload ----------//
-    virtual void onLoad() {};
-    virtual void onUnload() {};
+    virtual void onLoad() {}
+    virtual void onUnload() {}
 
     //---------- Simulation ----------//
-    virtual void onStart() {};
-    virtual void onStop() {};
+    virtual void onStart() {}
+    virtual void onStop() {}
 
-    virtual void onContinue() {};
-    virtual void onPause() {};
+    virtual void onContinue() {}
+    virtual void onPause() {}
 
-    virtual void onUpdateBefore(float delta) {};
-    virtual void onUpdateAfter(float delta) {};
+    virtual void onUpdateBefore(float delta) {}
+    virtual void onUpdateAfter(float delta) {}
 
     //---------- Editor ----------//
-    virtual void onUIRender() {};
+    virtual void onUIRender() {}
 
     //---------- While ----------//
-    virtual void onAttaLoop() {};
+    virtual void onAttaLoop() {}
 };
 } // namespace atta::script
 
