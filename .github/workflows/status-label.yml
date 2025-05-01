@@ -24,41 +24,47 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
+          console.log('PR opened event triggered');
           const prNumber = context.payload.pull_request.number;
+          console.log(`PR Number: ${prNumber}`);
           await github.issues.addLabels({
             owner: context.repo.owner,
             repo: context.repo.repo,
             issue_number: prNumber,
             labels: ['status:review']
           });
+          console.log('Added status:review label to PR');
 
           const linkedIssues = context.payload.pull_request.body.match(/(?:Fixes|Closes) #\d+/g) || [];
+          console.log(`Linked Issues: ${linkedIssues}`);
           for (const issueRef of linkedIssues) {
             const issueNumber = parseInt(issueRef.split('#')[1]);
+            console.log(`Processing linked issue: ${issueNumber}`);
             await github.issues.removeLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               name: 'status:idea'
-            }).catch(() => {});
+            }).catch(() => console.log('status:idea label not found'));
             await github.issues.removeLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               name: 'status:todo'
-            }).catch(() => {});
+            }).catch(() => console.log('status:todo label not found'));
             await github.issues.removeLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               name: 'status:doing'
-            }).catch(() => {});
+            }).catch(() => console.log('status:doing label not found'));
             await github.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               labels: ['status:review']
             });
+            console.log(`Added status:review label to issue: ${issueNumber}`);
           }
 
     - name: Set PR and linked issues to done
@@ -66,33 +72,39 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
+          console.log('PR closed and merged event triggered');
           const prNumber = context.payload.pull_request.number;
+          console.log(`PR Number: ${prNumber}`);
           await github.issues.removeLabel({
             owner: context.repo.owner,
             repo: context.repo.repo,
             issue_number: prNumber,
             name: 'status:review'
-          }).catch(() => {});
+          }).catch(() => console.log('status:review label not found on PR'));
           await github.issues.addLabels({
             owner: context.repo.owner,
             repo: context.repo.repo,
             issue_number: prNumber,
             labels: ['status:done']
           });
+          console.log('Added status:done label to PR');
 
           const linkedIssues = context.payload.pull_request.body.match(/(?:Fixes|Closes) #\d+/g) || [];
+          console.log(`Linked Issues: ${linkedIssues}`);
           for (const issueRef of linkedIssues) {
             const issueNumber = parseInt(issueRef.split('#')[1]);
+            console.log(`Processing linked issue: ${issueNumber}`);
             await github.issues.removeLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               name: 'status:review'
-            }).catch(() => {});
+            }).catch(() => console.log('status:review label not found on issue'));
             await github.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
               labels: ['status:done']
             });
+            console.log(`Added status:done label to issue: ${issueNumber}`);
           }
