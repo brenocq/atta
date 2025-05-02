@@ -35,30 +35,30 @@ jobs:
           }
           console.log(`PR Number: ${prNumber}`);
 
-          // Remove all labels starting with 'status:' from the PR
+          // Remove all labels starting with 'status:' from the PR, except 'status:review'
           const prLabels = context.payload.pull_request.labels || [];
+          let alreadyInReview = false;
           for (const label of prLabels) {
-            if (label.name.startsWith('status:')) {
+            if (label.name === 'status:review') {
+              alreadyInReview = true;
+            } else if (label.name.startsWith('status:')) {
               await github.rest.issues.removeLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                name: label.name
-              }).catch(() => console.log(`Label ${label.name} not found on PR`));
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              name: label.name
+              });
             }
           }
 
-          // Add 'status:review' label to the PR
-          if (github?.rest?.issues?.addLabels) {
+          // Add 'status:review' label to the PR if not already present
+          if (!alreadyInReview) {
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
               labels: ['status:review']
             });
-            console.log('Added status:review label to PR');
-          } else {
-            console.log('Error: github.rest.issues.addLabels is not available');
           }
 
           // Process linked issues
@@ -82,22 +82,18 @@ jobs:
                   repo: context.repo.repo,
                   issue_number: issueNumber,
                   name: label.name
-                }).catch(() => console.log(`Label ${label.name} not found on issue ${issueNumber}`));
+                });
               }
             }
 
             // Add 'status:review' label to the linked issue
-            if (github?.rest?.issues?.addLabels) {
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-                labels: ['status:review']
-              });
-              console.log(`Added status:review label to issue: ${issueNumber}`);
-            } else {
-              console.log('Error: github.rest.issues.addLabels is not available');
-            }
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['status:review']
+            });
+            console.log(`Added status:review label to issue: ${issueNumber}`);
           }
 
     - name: Set PR and linked issues to done
@@ -113,44 +109,36 @@ jobs:
             return;
           }
           console.log(`PR Number: ${prNumber}`);
-          if (github?.rest?.issues?.removeLabel && github?.rest?.issues?.addLabels) {
-            await github.rest.issues.removeLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              name: 'status:review'
-            }).catch(() => console.log('status:review label not found on PR'));
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              labels: ['status:done']
-            });
-            console.log('Added status:done label to PR');
-          } else {
-            console.log('Error: github.rest.issues.removeLabel or github.rest.issues.addLabels is not available');
-          }
+          await github.rest.issues.removeLabel({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            name: 'status:review'
+          }).catch(() => console.log('status:review label not found on PR'));
+          await github.rest.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            labels: ['status:done']
+          });
+          console.log('Added status:done label to PR');
 
           const linkedIssues = context.payload.pull_request.body?.match(/(?:Fixes|Closes) #\d+/g) || [];
           console.log(`Linked Issues: ${linkedIssues}`);
           for (const issueRef of linkedIssues) {
             const issueNumber = parseInt(issueRef.split('#')[1]);
             console.log(`Processing linked issue: ${issueNumber}`);
-            if (github?.rest?.issues?.removeLabel && github?.rest?.issues?.addLabels) {
-              await github.rest.issues.removeLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-                name: 'status:review'
-              }).catch(() => console.log('status:review label not found on issue'));
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-                labels: ['status:done']
-              });
-              console.log(`Added status:done label to issue: ${issueNumber}`);
-            } else {
-              console.log('Error: github.rest.issues.removeLabel or github.rest.issues.addLabels is not available');
-            }
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              name: 'status:review'
+            }).catch(() => console.log('status:review label not found on issue'));
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['status:done']
+            });
+            console.log(`Added status:done label to issue: ${issueNumber}`);
           }
