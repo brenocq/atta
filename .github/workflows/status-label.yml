@@ -39,7 +39,7 @@ jobs:
           const prLabels = context.payload.pull_request.labels || [];
           for (const label of prLabels) {
             if (label.name.startsWith('status:')) {
-              await github.issues.removeLabel({
+              await github.rest.issues.removeLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
@@ -49,8 +49,8 @@ jobs:
           }
 
           // Add 'status:review' label to the PR
-          if (github?.issues?.addLabels) {
-            await github.issues.addLabels({
+          if (github?.rest?.issues?.addLabels) {
+            await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
@@ -58,7 +58,7 @@ jobs:
             });
             console.log('Added status:review label to PR');
           } else {
-            console.log('Error: github.issues.addLabels is not available');
+            console.log('Error: github.rest.issues.addLabels is not available');
           }
 
           // Process linked issues
@@ -69,7 +69,7 @@ jobs:
             console.log(`Processing linked issue: ${issueNumber}`);
 
             // Remove all labels starting with 'status:' from the linked issue
-            const issueLabels = (await github.issues.listLabelsOnIssue({
+            const issueLabels = (await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber
@@ -77,7 +77,7 @@ jobs:
 
             for (const label of issueLabels) {
               if (label.name.startsWith('status:')) {
-                await github.issues.removeLabel({
+                await github.rest.issues.removeLabel({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issueNumber,
@@ -87,8 +87,8 @@ jobs:
             }
 
             // Add 'status:review' label to the linked issue
-            if (github?.issues?.addLabels) {
-              await github.issues.addLabels({
+            if (github?.rest?.issues?.addLabels) {
+              await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
@@ -96,7 +96,7 @@ jobs:
               });
               console.log(`Added status:review label to issue: ${issueNumber}`);
             } else {
-              console.log('Error: github.issues.addLabels is not available');
+              console.log('Error: github.rest.issues.addLabels is not available');
             }
           }
 
@@ -113,14 +113,14 @@ jobs:
             return;
           }
           console.log(`PR Number: ${prNumber}`);
-          if (github?.issues?.removeLabel && github?.issues?.addLabels) {
-            await github.issues.removeLabel({
+          if (github?.rest?.issues?.removeLabel && github?.rest?.issues?.addLabels) {
+            await github.rest.issues.removeLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
               name: 'status:review'
             }).catch(() => console.log('status:review label not found on PR'));
-            await github.issues.addLabels({
+            await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
@@ -128,7 +128,7 @@ jobs:
             });
             console.log('Added status:done label to PR');
           } else {
-            console.log('Error: github.issues.removeLabel or github.issues.addLabels is not available');
+            console.log('Error: github.rest.issues.removeLabel or github.rest.issues.addLabels is not available');
           }
 
           const linkedIssues = context.payload.pull_request.body?.match(/(?:Fixes|Closes) #\d+/g) || [];
@@ -136,14 +136,14 @@ jobs:
           for (const issueRef of linkedIssues) {
             const issueNumber = parseInt(issueRef.split('#')[1]);
             console.log(`Processing linked issue: ${issueNumber}`);
-            if (github?.issues?.removeLabel && github?.issues?.addLabels) {
-              await github.issues.removeLabel({
+            if (github?.rest?.issues?.removeLabel && github?.rest?.issues?.addLabels) {
+              await github.rest.issues.removeLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
                 name: 'status:review'
               }).catch(() => console.log('status:review label not found on issue'));
-              await github.issues.addLabels({
+              await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
@@ -151,6 +151,6 @@ jobs:
               });
               console.log(`Added status:done label to issue: ${issueNumber}`);
             } else {
-              console.log('Error: github.issues.removeLabel or github.issues.addLabels is not available');
+              console.log('Error: github.rest.issues.removeLabel or github.rest.issues.addLabels is not available');
             }
           }
