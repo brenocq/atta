@@ -4,8 +4,8 @@ on:
   pull_request:
     types:
       - opened
+      - reopened
       - closed
-      - reopened # For testing
 
 permissions:
   contents: read
@@ -22,7 +22,6 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set PR status to review
-      # Reopened event is used for testing
       if: ${{ github.event.action == 'opened' || github.event.action == 'reopened' }}
       uses: actions/github-script@v6
       with:
@@ -109,8 +108,7 @@ jobs:
           }
 
     - name: Set PR and linked issues to done
-      # && github.event.pull_request.merged == true (disabled for testing)
-      if: ${{ github.event.action == 'closed'}}
+      if: ${{ github.event.action == 'closed' && github.event.pull_request.merged == true }}
       uses: actions/github-script@v6
       with:
         script: |
