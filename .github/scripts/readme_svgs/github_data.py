@@ -4,19 +4,26 @@ import logging
 import json
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Tuple
 
 #----- Configuration -----#
 REPO_OWNER = "brenocq"
 REPO_NAME = "atta"
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
-API_BASE_URL = "https://api.github.com/graphql"
+API_BASE_URL_REST = "https://api.github.com/"
+API_BASE_URL_GRAPHQL = "https://api.github.com/graphql"
 if not GITHUB_TOKEN:
     raise ValueError("GITHUB_TOKEN environment variable is not set")
 
-HEADERS = {
+HEADERS_GRAPHQL = {
     "Authorization": f"Bearer {GITHUB_TOKEN}",
     "Content-Type": "application/json"
+}
+
+HEADERS_REST = {
+    "Authorization": f"Bearer {GITHUB_TOKEN}",
+    "Accept": "application/vnd.github.v3+json",
+    "X-GitHub-Api-Version": "2022-11-28"
 }
 
 #----- Logging -----#
@@ -81,8 +88,94 @@ class Issue:
     linked_pr: Optional[int] = None
     linked_pr_state: Optional[PrState] = None
     commit_count: Optional[int] = None
+    files_changed: Optional[int] = None
     additions: Optional[int] = None
     deletions: Optional[int] = None
+
+
+#----- Branch/PR stats -----#
+def get_branch_stats(branch: str) -> Optional[Tuple[int, int, int, int]]:
+    """
+    Fetches stats for a specific branch.
+
+    Args:
+        branch: The name of the branch.
+
+    Returns:
+        A tuple containing:
+        (commit_count, files_changed, total_additions, total_deletions)
+        Returns None if fetching fails.
+    """
+
+    compare_url = f"{API_BASE_URL_REST}/repos/{REPO_OWNER}/{REPO_NAME}/compare/main...{branch}"
+
+    ahead_by = 0
+    total_additions = 0
+    total_deletions = 0
+
+    try:
+        response = requests.get(compare_url, headers=HEADERS_REST)
+        response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
+        data = response.json()
+
+        ahead_by = data.get('ahead_by', 0)
+
+        files_changed = data.get('files', [])
+        if files_changed: # Ensure the key exists and the list is not empty
+            for file_info in files_changed:
+                total_additions += file_info.get('additions', 0)
+                total_deletions += file_info.get('deletions', 0)
+        return ahead_by, len(files_changed), total_additions, total_deletions
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+             logging.error(f"Comparison failed: Branch '{branch}' not found (404). Error: {e}")
+        else:
+             logging.error(f"Error fetching comparison from GitHub API: {e}")
+    except requests.exceptions.RequestException as e:
+         logging.error(f"Network or Request error fetching comparison: {e}")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred during comparison: {e}")
+
+    return None
+
+def get_pr_stats(pr_number: int) -> Optional[Tuple[int, int, int, int]]:
+    """
+    Fetches stats for a specific Pull Request.
+
+    Args:
+        pr_number: The number of the pull request.
+
+    Returns:
+        A tuple containing:
+        (commit_count, files_changed, total_additions, total_deletions)
+        Returns None if fetching fails.
+    """
+    pr_url = f"{API_BASE_URL_REST}/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}"
+
+    try:
+        response = requests.get(pr_url, headers=HEADERS_REST)
+        response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
+        data = response.json()
+
+        # Extract the stats directly from the PR data
+        commit_count = data.get('commits', 0)
+        files_changed = data.get('changed_files', 0)
+        total_additions = data.get('additions', 0)
+        total_deletions = data.get('deletions', 0)
+
+        return commit_count, files_changed, total_additions, total_deletions
+
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+             logging.error(f"Fetching PR failed: PR #{pr_number} not found in {REPO_OWNER}/{REPO_NAME} (404). Error: {e}")
+        else:
+             logging.error(f"Error fetching PR details from GitHub API ({e.response.status_code}): {e}")
+    except requests.exceptions.RequestException as e:
+         logging.error(f"Network or Request error fetching PR details: {e}")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred fetching PR details: {e}")
+
+    return None
 
 #----- Parsing Helper -----#
 def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
@@ -186,7 +279,15 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
     incomplete_tasks = body.count("[ ]") + body.count("\\[ \\]")
     total_tasks = completed_tasks + incomplete_tasks
 
-    #--- TODO commits/additions/deletions ---#
+    #--- Commits/Additions/Deletions ---#
+    commit_count = None
+    files_changed = None
+    additions = None
+    deletions = None
+    if linked_pr is not None:
+        commit_count, files_changed, additions, deletions = get_pr_stats(linked_pr)
+    elif linked_branch_name is not None:
+        commit_count, files_changed, additions, deletions = get_branch_stats(linked_branch_name)
 
     #--- TODO Last interaction ---#
 
@@ -209,6 +310,10 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
         linked_branch = linked_branch_name,
         linked_pr = linked_pr,
         linked_pr_state = linked_pr_state,
+        commit_count = commit_count,
+        files_changed = files_changed,
+        additions = additions,
+        deletions = deletions,
         last_interaction_user = author_login, # TODO
         last_interaction_type = IssueInteraction.OPENED, # TODO
         last_interaction_at = updated_at, # TODO
@@ -217,13 +322,11 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
     return issue
 
 #----- Fetch Issues -----#
-def fetch_issues(owner: str, repo: str, count: int) -> List[Issue]:
+def fetch_issues(count: int) -> List[Issue]:
     """
     Fetches issues, prioritizing pinned issues, then filling with recent open issues.
 
     Args:
-        owner: Repository owner.
-        repo: Repository name.
         count: The total number of issues desired in the final list.
 
     Returns:
@@ -232,7 +335,7 @@ def fetch_issues(owner: str, repo: str, count: int) -> List[Issue]:
 
     query = f"""
     query GetIssues {{
-      repository(owner: "{owner}", name: "{repo}") {{
+      repository(owner: "{REPO_OWNER}", name: "{REPO_NAME}") {{
         issues(first: 10, orderBy: {{field: UPDATED_AT, direction: DESC}}) {{
           nodes {{
               number
@@ -294,9 +397,9 @@ def fetch_issues(owner: str, repo: str, count: int) -> List[Issue]:
 
     fetched_issues: List[Issue] = []
 
-    logging.info(f"Fetching last {count} updated open issues from {owner}/{repo}...")
+    logging.info(f"Fetching last {count} updated open issues from {REPO_OWNER}/{REPO_NAME}...")
     try:
-        response = requests.post(API_BASE_URL, headers=HEADERS, json={"query": query})
+        response = requests.post(API_BASE_URL_GRAPHQL, headers=HEADERS_GRAPHQL, json={"query": query})
         response.raise_for_status()
         data = response.json()
         issues_data = data.get('data', {}).get('repository', {}).get('issues', {}).get('nodes', [])
@@ -328,7 +431,7 @@ def fetch_issues(owner: str, repo: str, count: int) -> List[Issue]:
 
 #----- Main -----#
 if __name__ == "__main__":
-    top_issues = fetch_issues(REPO_OWNER, REPO_NAME, 5)
+    top_issues = fetch_issues(5)
     for issue in top_issues:
         logging.info(10*"-" + f"ISSUE #{issue.number}" + 10*"-");
         logging.info(f"PRINT {issue}");
