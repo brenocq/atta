@@ -57,15 +57,15 @@ STYLE=f"""
         ry: 6px;
     }}
 
-    icon.open {{
+    .open {{
         fill: var(--icon-open);
     }}
 
-    icon.closed {{
+    .closed {{
         fill: var(--icon-closed);
     }}
 
-    icon.default {{
+    .default {{
         fill: var(--icon-default);
     }}
 

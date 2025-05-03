@@ -1,9 +1,4 @@
-import os
-import requests
-import base64
-import html
 import logging
-from datetime import datetime
 from common import STYLE, estimate_text_size
 import github_data
 
