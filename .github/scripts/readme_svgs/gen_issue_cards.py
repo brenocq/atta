@@ -87,9 +87,24 @@ def generate_issue_svg(issue):
         """
         label_x += label_width + int_pad
 
+    right_footer_x = width - card_pad
+    if issue.deletions is not None:
+        right_footer_x -= common.estimate_text_width(f"-{issue.deletions}", 14)
+        svg += f"""
+            <!-- Deletions -->
+            <text class="small" fill="var(--fgColor-danger)" x="{right_footer_x}" y="{height-card_pad-1}">-{issue.deletions}</text>
+            """
+    if issue.additions is not None:
+        right_footer_x -= common.estimate_text_width(f"-{issue.additions}", 14) + int_pad*2
+        svg += f"""
+            <!-- Additions -->
+            <text class="small" fill="var(--fgColor-success)" x="{right_footer_x}" y="{height-card_pad-1}">+{issue.additions}</text>
+            """
+
+
     svg += f"""
         <!-- Contributor Comment -->
-        <text class="muted" x="{card_pad}" y="{height-card_pad-1}">{contributor_comment}</text>
+        <text class="small" fill="var(--fgColor-muted)" x="{card_pad}" y="{height-card_pad-1}">{contributor_comment}</text>
     </svg>
     """
 

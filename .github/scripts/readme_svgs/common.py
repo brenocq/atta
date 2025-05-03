@@ -9,6 +9,8 @@ STYLE=f"""
          --fgColor-default: #1f2328;
          --fgColor-accent: #0969da;
          --fgColor-muted: #59636e;
+         --fgColor-success: #1a7f37;
+         --fgColor-danger: #d1242f;
          --button-background-color: #f6f8fa;
          --text-large: 1rem;
          --text-medium: 0.875rem;
@@ -30,10 +32,13 @@ STYLE=f"""
         font-weight: var(--text-weight-semibold);
     }}
 
-    text.muted {{
-        fill: var(--fgColor-muted);
+    text.small {{
         font-size: var(--text-small);
         font-weight: var(--text-weight-normal);
+    }}
+
+    text.muted {{
+        fill: ;
     }}
 
     text.counter {{
@@ -111,6 +116,8 @@ STYLE=f"""
             --fgColor-default: #d1d7e0;
             --fgColor-muted: #9198a1;
             --fgColor-accent: #478be6;
+            --fgColor-success: #57ab5a;
+            --fgColor-danger: #e5534b;
             --button-background-color: #2a313c;
         }}
 
