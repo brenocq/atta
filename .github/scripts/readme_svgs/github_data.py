@@ -515,12 +515,12 @@ def fetch_top_issues(count: int) -> List[Issue]:
     return fetched_issues
 
 #----- Main -----#
-if __name__ == "__main__":
-    status_labels = fetch_status_labels()
-    for label in status_labels:
-        logging.info(f"LABEL {label}");
-
-    top_issues = fetch_top_issues(10)
-    for issue in top_issues:
-        logging.info(10*"-" + f"ISSUE #{issue.number}" + 10*"-");
-        logging.info(f"ISSUE {issue}");
+#if __name__ == "__main__":
+#    status_labels = fetch_status_labels()
+#    for label in status_labels:
+#        logging.info(f"LABEL {label}");
+#
+#    top_issues = fetch_top_issues(10)
+#    for issue in top_issues:
+#        logging.info(10*"-" + f"ISSUE #{issue.number}" + 10*"-");
+#        logging.info(f"ISSUE {issue}");
