@@ -87,6 +87,11 @@ class Issue:
     additions: Optional[int] = None
     deletions: Optional[int] = None
 
+@dataclass
+class StatusLabel:
+    name: str
+    color: str
+    issue_count: int
 
 #----- Branch/PR stats -----#
 def get_branch_stats(branch: str) -> Optional[Tuple[int, int, int, int]]:
@@ -322,8 +327,60 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
 
     return issue
 
+#----- Fetch Status Labels -----#
+def fetch_status_labels() -> List[StatusLabel]:
+    """
+    Fetches the status labels from the repository.
+
+    Returns:
+        A list of tuples containing label names, their color, and number of issues with that label.
+    """
+
+    query = f"""
+    query GetStatusLabels {{
+      repository(owner: "{REPO_OWNER}", name: "{REPO_NAME}") {{
+        labels(first: 50) {{
+          nodes {{
+              name
+              color
+              issues {{
+                totalCount
+              }}
+            }}
+          }}
+        }}
+      }}
+    """
+
+    fetched_labels: List[StatusLabel] = []
+
+    logging.info(f"Fetching status labels from {REPO_OWNER}/{REPO_NAME}...")
+    try:
+        response = requests.post(API_BASE_URL_GRAPHQL, headers=HEADERS_GRAPHQL, json={"query": query})
+        response.raise_for_status()
+        data = response.json()
+        labels_data = data.get('data', {}).get('repository', {}).get('labels', {}).get('nodes', [])
+        logging.info(f"Received {len(labels_data)} items from API. Parsing...")
+
+        for label_data in labels_data:
+            label_name = label_data.get('name', '')
+            label_color = f"#{label_data.get('color', '')}"
+            issue_count = label_data.get('issues', {}).get('totalCount', 0)
+            if 'status:' in label_name:
+                fetched_labels.append(StatusLabel(name=label_name, color=label_color, issue_count=issue_count))
+
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching status labels from GitHub API: {e}")
+    except json.JSONDecodeError as e:
+         logging.error(f"Error decoding JSON response from GitHub API: {e}")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+
+    logging.info(f"Returning {len(fetched_labels)} labels.")
+    return fetched_labels
+
 #----- Fetch Issues -----#
-def fetch_issues(count: int) -> List[Issue]:
+def fetch_top_issues(count: int) -> List[Issue]:
     """
     Fetches issues, prioritizing pinned issues, then filling with recent open issues.
 
@@ -459,7 +516,11 @@ def fetch_issues(count: int) -> List[Issue]:
 
 #----- Main -----#
 if __name__ == "__main__":
-    top_issues = fetch_issues(10)
+    status_labels = fetch_status_labels()
+    for label in status_labels:
+        logging.info(f"LABEL {label}");
+
+    top_issues = fetch_top_issues(10)
     for issue in top_issues:
         logging.info(10*"-" + f"ISSUE #{issue.number}" + 10*"-");
-        logging.info(f"PRINT {issue}");
+        logging.info(f"ISSUE {issue}");
