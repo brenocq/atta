@@ -6,21 +6,28 @@ STYLE=f"""
          --icon-open: #1a7f37;
          --icon-closed: #8250df;
          --icon-default: #59636e;
-         --fgColor-default: #25292e;
+         --fgColor-default: #1f2328;
          --fgColor-accent: #0969da;
          --fgColor-muted: #59636e;
          --button-background-color: #f6f8fa;
+         --text-large: 1rem;
+         --text-medium: 0.875rem;
+         --text-small: 0.75rem;
+         --text-weight-light: 300;
+         --text-weight-normal: 400;
+         --text-weight-medium: 500;
+         --text-weight-semibold: 600;
      }}
 
     text {{
         font-family: Arial, sans-serif;
-        font-size: 14px;
+        font-size: var(--text-medium);
     }}
 
     text.title {{
-        fill: var(--fgColor-accent);
-        font-size: 14px;
-        font-weight: bold;
+        fill: var(--fgColor-default);
+        font-size: var(--text-large);
+        font-weight: var(--text-weight-semibold);
     }}
 
     text.counter {{
