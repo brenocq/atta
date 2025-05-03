@@ -42,10 +42,24 @@ STYLE=f"""
     }}
 
     text.label {{
+        font-size: var(--text-medium);
+        font-weight: var(--text-weight-semibold);
+    }}
+
+    text.label-muted {{
+        fill: var(--fgColor-muted);
+        font-size: var(--text-small);
+        font-weight: var(--text-weight-normal);
     }}
 
     rect.labelBg {{
         fill-opacity: 1.0;
+    }}
+
+    rect.labelBg-muted {{
+        fill: none;
+        stroke: var(--border-color);
+        stroke-width: 0.5px;
     }}
 
     rect.button {{

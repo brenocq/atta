@@ -59,6 +59,24 @@ def generate_issue_svg(issue):
         <path class="icon-default" transform="translate({width-card_pad-issue_icon_size}, {card_pad})" d="{PIN_16}"/>
 
         """
+
+    label_x = card_pad
+    label_y = card_pad + issue_icon_size + int_pad
+    for label in issue.labels:
+        label_color = label.color
+        label_text = label.name
+        label_width = common.estimate_text_width(label_text, 12) + 15
+        label_height = 16
+
+        svg += f"""
+        <!-- Label -->
+        <g transform="translate({label_x + label_width/2}, {label_y})">
+            <rect class="labelBg-muted" x="{-label_width/2}" y="0" width="{label_width}" height="{label_height}" rx="8"/>
+            <text class="label-muted" x="0" y="{label_height/2+1}" text-anchor="middle" dominant-baseline="middle">{label_text}</text>
+        </g>
+        """
+        label_x += label_width + int_pad
+
     svg += """
     </svg>
     """
