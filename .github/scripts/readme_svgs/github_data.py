@@ -337,7 +337,7 @@ def fetch_issues(count: int) -> List[Issue]:
     query = f"""
     query GetIssues {{
       repository(owner: "{REPO_OWNER}", name: "{REPO_NAME}") {{
-        issues(first: 10, orderBy: {{field: UPDATED_AT, direction: DESC}}) {{
+        issues(first: 50, orderBy: {{field: UPDATED_AT, direction: DESC}}) {{
           nodes {{
               number
               title
@@ -407,7 +407,7 @@ def fetch_issues(count: int) -> List[Issue]:
 
     fetched_issues: List[Issue] = []
 
-    logging.info(f"Fetching last {count} updated open issues from {REPO_OWNER}/{REPO_NAME}...")
+    logging.info(f"Fetching last {count} updated issues from {REPO_OWNER}/{REPO_NAME}...")
     try:
         response = requests.post(API_BASE_URL_GRAPHQL, headers=HEADERS_GRAPHQL, json={"query": query})
         response.raise_for_status()
@@ -420,14 +420,32 @@ def fetch_issues(count: int) -> List[Issue]:
 
         logging.info(f"Received {len(issues_data)} items from API. Parsing...")
 
+        # Parse pinned issues first
         for issue_data in issues_data:
+            if len(fetched_issues) >= count:
+                break
             try:
+                if not issue_data.get('isPinned', False):
+                    continue
+                # Parse the raw data into the structured Issue object
+                pinned_issue = parse_issue_from_data(issue_data)
+                fetched_issues.append(pinned_issue)
+            except Exception as parse_error:
+                 logging.error(f"Failed to parse pinned issue #{issue_data.get('number')}: {parse_error}", exc_info=True)
+
+        # Parse remaining issues (most recent first)
+        for issue_data in issues_data:
+            if len(fetched_issues) >= count:
+                break
+            try:
+                # Skip already added pinned issues
+                if issue_data.get('isPinned', False):
+                    continue
                 # Parse the raw data into the structured Issue object
                 issue = parse_issue_from_data(issue_data)
                 fetched_issues.append(issue)
             except Exception as parse_error:
                  logging.error(f"Failed to parse issue #{issue_data.get('number')}: {parse_error}", exc_info=True)
-
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching issues from GitHub API: {e}")
@@ -441,7 +459,7 @@ def fetch_issues(count: int) -> List[Issue]:
 
 #----- Main -----#
 if __name__ == "__main__":
-    top_issues = fetch_issues(5)
+    top_issues = fetch_issues(10)
     for issue in top_issues:
         logging.info(10*"-" + f"ISSUE #{issue.number}" + 10*"-");
         logging.info(f"PRINT {issue}");
