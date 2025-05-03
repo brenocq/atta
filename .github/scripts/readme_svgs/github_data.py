@@ -44,11 +44,6 @@ class PrState(Enum):
     CLOSED = auto()
     MERGED = auto()
 
-class IssueInteraction(Enum):
-    OPENED = auto()
-    EDITED = auto()
-    COMMENTED = auto()
-
 @dataclass
 class Label:
     name: str
@@ -73,17 +68,17 @@ class Issue:
     state: IssueState
     url: str
     author: str
+    created_at: str # ISO 8601 format string
     labels: List[Label]
     contributors: List[str]
     contributors_avatars: List[str]
     reactions: Reactions
-    last_interaction_user: str
-    last_interaction_type: IssueInteraction
-    last_interaction_at: str # ISO 8601 format string
     is_pinned: bool = False
     completed_tasks: int = 0
     total_tasks: int = 0
     comment_count: int = 0
+    last_commenter: Optional[str] = None
+    last_commented_at: Optional[str] = None # ISO 8601 format string
     linked_branch: Optional[str] = None
     linked_pr: Optional[int] = None
     linked_pr_state: Optional[PrState] = None
@@ -240,7 +235,8 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
             contributors_map[login] = assignee.get('avatarUrl')
     # Commenters
     comments = issue_data.get('comments').get('nodes', [])
-    for comment in comments:
+    sorted_comments = sorted(comments, key=lambda x: x.get('createdAt'))
+    for comment in sorted_comments:
         commenter = comment.get('author')
         login = commenter.get('login')
         if login not in contributors_map:
@@ -248,6 +244,13 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
     # Insertion order is preserved in Python 3.7+
     contributors_logins = list(contributors_map.keys())
     contributors_avatars = list(contributors_map.values())
+
+    #--- Last commenter ---#
+    last_commenter = None
+    last_commented_at = None
+    if sorted_comments and len(sorted_comments) > 0:
+        last_commenter = sorted_comments[-1].get('author', {}).get('login')
+        last_commented_at = sorted_comments[-1].get('createdAt')
 
     #--- Linked branch ---#
     linked_branches_data = issue_data.get('linkedBranches', {}).get('nodes', [])
@@ -289,8 +292,6 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
     elif linked_branch_name is not None:
         commit_count, files_changed, additions, deletions = get_branch_stats(linked_branch_name)
 
-    #--- TODO Last interaction ---#
-
     #--- Create Issue ---#
     issue = Issue(
         number = issue_data['number'],
@@ -300,13 +301,16 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
         state = state_enum,
         url = issue_data['url'],
         author = author_login,
-        comment_count = comment_count,
+        created_at = issue_data['createdAt'],
         labels = parsed_labels,
         contributors = contributors_logins,
         contributors_avatars = contributors_avatars,
         reactions = parsed_reactions,
         completed_tasks = completed_tasks,
         total_tasks = total_tasks,
+        comment_count = comment_count,
+        last_commenter = last_commenter,
+        last_commented_at = last_commented_at,
         linked_branch = linked_branch_name,
         linked_pr = linked_pr,
         linked_pr_state = linked_pr_state,
@@ -314,9 +318,6 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
         files_changed = files_changed,
         additions = additions,
         deletions = deletions,
-        last_interaction_user = author_login, # TODO
-        last_interaction_type = IssueInteraction.OPENED, # TODO
-        last_interaction_at = updated_at, # TODO
     )
 
     return issue
@@ -348,7 +349,16 @@ def fetch_issues(count: int) -> List[Issue]:
               author {{ login avatarUrl(size: 40) }}
               labels(first: 10) {{ nodes {{ name color }} }}
               assignees(first: 10) {{ nodes {{ login avatarUrl(size: 40) }} }}
-              comments(first: 50) {{ totalCount nodes {{ author {{ login avatarUrl(size: 40) }} }} }}
+              comments(first: 50, orderBy: {{ field: UPDATED_AT, direction: DESC }}) {{
+                totalCount
+                nodes {{
+                  createdAt
+                  author {{
+                    login
+                    avatarUrl(size: 40)
+                  }}
+                }}
+              }}
               reactionGroups {{
                 content
                 reactors {{
