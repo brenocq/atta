@@ -180,7 +180,11 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
         elif subject.get('state') == 'CLOSED':
             linked_pr_state = PrState.CLOSED
 
-    #--- TODO Parse tasks ---#
+    #--- Parse tasks ---#
+    body = issue_data.get('body', '')
+    completed_tasks = body.count("[x]") + body.count("\\[x\\]") + body.count("[X]") + body.count("\\[X\\]")
+    incomplete_tasks = body.count("[ ]") + body.count("\\[ \\]")
+    total_tasks = completed_tasks + incomplete_tasks
 
     #--- TODO commits/additions/deletions ---#
 
@@ -200,6 +204,8 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
         contributors = contributors_logins,
         contributors_avatars = contributors_avatars,
         reactions = parsed_reactions,
+        completed_tasks = completed_tasks,
+        total_tasks = total_tasks,
         linked_branch = linked_branch_name,
         linked_pr = linked_pr,
         linked_pr_state = linked_pr_state,
