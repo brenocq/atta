@@ -33,8 +33,18 @@ def generate_issue_svg(issue):
     if issue.state == IssueState.CLOSED:
         issue_icon_class = "icon-closed"
 
-    # Estimate title size
-    title_width = common.estimate_text_width(issue.title, 16)
+    # Format dates
+    created_at_dt = datetime.strptime(issue.created_at, "%Y-%m-%dT%H:%M:%SZ")
+    created_at_formatted = f"{created_at_dt.strftime('%b')} {created_at_dt.day}"
+    last_commented_at_formatted = None
+    if issue.last_commented_at:
+        last_commented_at_dt = datetime.strptime(issue.last_commented_at, "%Y-%m-%dT%H:%M:%SZ")
+        last_commented_at_formatted = f"{last_commented_at_dt.strftime('%b')} {last_commented_at_dt.day}"
+
+    # Build the contributor text
+    contributor_comment =  f'<tspan style="text-decoration: underline;">{issue.author}</tspan> opened on {created_at_formatted}'
+    if issue.last_commenter and last_commented_at_formatted:
+        contributor_comment = contributor_comment + f' · <tspan style="text-decoration: underline;">{issue.last_commenter}</tspan> commented on {last_commented_at_formatted}'
 
     svg = f"""
     <svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">
@@ -77,7 +87,9 @@ def generate_issue_svg(issue):
         """
         label_x += label_width + int_pad
 
-    svg += """
+    svg += f"""
+        <!-- Contributor Comment -->
+        <text class="muted" x="{card_pad}" y="{height-card_pad-1}">{contributor_comment}</text>
     </svg>
     """
 

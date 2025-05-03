@@ -30,6 +30,12 @@ STYLE=f"""
         font-weight: var(--text-weight-semibold);
     }}
 
+    text.muted {{
+        fill: var(--fgColor-muted);
+        font-size: var(--text-small);
+        font-weight: var(--text-weight-normal);
+    }}
+
     text.counter {{
         fill: var(--fgColor-muted);
         font-size: 40px;
