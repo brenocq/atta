@@ -77,7 +77,7 @@ class Issue:
     completed_tasks: int = 0
     total_tasks: int = 0
     comment_count: int = 0
-    linked_branches: List[str] = field(default_factory=list)
+    linked_branch: Optional[str] = None
     linked_pr: Optional[int] = None
     linked_pr_state: Optional[PrState] = None
     commit_count: Optional[int] = None
@@ -156,9 +156,20 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
     contributors_logins = list(contributors_map.keys())
     contributors_avatars = list(contributors_map.values())
 
-    #--- TODO Linked branch ---#
+    #--- Linked branch ---#
+    linked_branches_data = issue_data.get('linkedBranches', {}).get('nodes', [])
+    linked_branch_name = None
+    linked_branch_commit = None
+    # If there are multiple linked branches, we take the first one
+    for branch in linked_branches_data:
+        branch_ref = branch.get('ref', {})
+        linked_branch_name = branch_ref.get('name')
+        linked_branch_commit = branch_ref.get('target', {}).get('oid')
+        break
 
-    #--- TODO Linked PR ---#
+    #--- Linked PR ---#
+
+    #--- TODO Parse tasks ---#
 
     #--- TODO commits/additions/deletions ---#
 
@@ -178,6 +189,7 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
         contributors = contributors_logins,
         contributors_avatars = contributors_avatars,
         reactions = parsed_reactions,
+        linked_branch = linked_branch_name,
         last_interaction_user = author_login, # TODO
         last_interaction_type = IssueInteraction.OPENED, # TODO
         last_interaction_at = updated_at, # TODO
