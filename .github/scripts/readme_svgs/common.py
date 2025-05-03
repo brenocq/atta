@@ -64,15 +64,15 @@ STYLE=f"""
         ry: 6px;
     }}
 
-    .open {{
+    .icon-open {{
         fill: var(--icon-open);
     }}
 
-    .closed {{
+    .icon-closed {{
         fill: var(--icon-closed);
     }}
 
-    .default {{
+    .icon-default {{
         fill: var(--icon-default);
     }}
 
