@@ -168,6 +168,17 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
         break
 
     #--- Linked PR ---#
+    timeline_items = issue_data.get('timelineItems', {}).get('nodes', [])
+    linked_pr = None
+    linked_pr_state = None
+    for item in timeline_items:
+        subject = item.get('subject')
+        linked_pr = subject.get('number')
+        linked_pr_state = PrState.OPEN
+        if subject.get('state') == 'MERGED':
+            linked_pr_state = PrState.MERGED
+        elif subject.get('state') == 'CLOSED':
+            linked_pr_state = PrState.CLOSED
 
     #--- TODO Parse tasks ---#
 
@@ -190,6 +201,8 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
         contributors_avatars = contributors_avatars,
         reactions = parsed_reactions,
         linked_branch = linked_branch_name,
+        linked_pr = linked_pr,
+        linked_pr_state = linked_pr_state,
         last_interaction_user = author_login, # TODO
         last_interaction_type = IssueInteraction.OPENED, # TODO
         last_interaction_at = updated_at, # TODO
