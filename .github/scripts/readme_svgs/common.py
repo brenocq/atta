@@ -3,14 +3,12 @@ STYLE=f"""
 <style>
     :root {{
          --border-color: #d1d9e0;
-         --icon-open: #1a7f37;
-         --icon-closed: #8250df;
-         --icon-default: #59636e;
          --fgColor-default: #1f2328;
          --fgColor-accent: #0969da;
          --fgColor-muted: #59636e;
          --fgColor-success: #1a7f37;
          --fgColor-danger: #d1242f;
+         --fgColor-done: #8250df;
          --button-background-color: #f6f8fa;
          --text-large: 1rem;
          --text-medium: 0.875rem;
@@ -38,7 +36,7 @@ STYLE=f"""
     }}
 
     text.muted {{
-        fill: ;
+        fill: var(--fgColor-muted);
     }}
 
     text.counter {{
@@ -90,15 +88,19 @@ STYLE=f"""
     }}
 
     .icon-open {{
-        fill: var(--icon-open);
+        fill: var(--fgColor-success);
     }}
 
     .icon-closed {{
-        fill: var(--icon-closed);
+        fill: var(--fgColor-done);
+    }}
+
+    .icon-muted {{
+        fill: var(--fgColor-muted);
     }}
 
     .icon-default {{
-        fill: var(--icon-default);
+        fill: var(--fgColor-default);
     }}
 
     @media (prefers-color-scheme: light) {{
@@ -110,14 +112,12 @@ STYLE=f"""
     @media (prefers-color-scheme: dark) {{
         :root {{
             --border-color: #3d444d;
-            --icon-open: #57ab5a;
-            --icon-closed: #986ee2;
-            --icon-default: #9198a1;
             --fgColor-default: #d1d7e0;
             --fgColor-muted: #9198a1;
             --fgColor-accent: #478be6;
             --fgColor-success: #57ab5a;
             --fgColor-danger: #e5534b;
+            --fgColor-done: #986ee2;
             --button-background-color: #2a313c;
         }}
 
