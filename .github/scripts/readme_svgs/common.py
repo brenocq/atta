@@ -9,7 +9,8 @@ STYLE=f"""
          --fgColor-success: #1a7f37;
          --fgColor-danger: #d1242f;
          --fgColor-done: #8250df;
-         --button-background-color: #f6f8fa;
+         --bgColor-neutral-muted: #818b981f;
+         --bgColor-success: #1f883d;
          --text-large: 1rem;
          --text-medium: 0.875rem;
          --text-small: 0.75rem;
@@ -76,20 +77,20 @@ STYLE=f"""
         stroke-width: 0.5px;
     }}
 
-    rect.button {{
-        fill: var(--button-background-color);
-        stroke: var(--border-color);
-        stroke-width: 1px;
-        rx: 6px;
-        ry: 6px;
-    }}
-
     rect.card {{
         fill: none;
         stroke: var(--border-color);
         stroke-width: 1.5px;
         rx: 6px;
         ry: 6px;
+    }}
+
+    rect.progress-bg {{
+        fill: var(--bgColor-neutral-muted);
+    }}
+
+    rect.progress-fill {{
+        fill: var(--bgColor-success);
     }}
 
     .icon-open {{
@@ -127,6 +128,8 @@ STYLE=f"""
             --fgColor-success: #57ab5a;
             --fgColor-danger: #e5534b;
             --fgColor-done: #986ee2;
+            --bgColor-neutral-muted: #656c7633;
+            --bgColor-success: #347d39;
             --button-background-color: #2a313c;
         }}
 

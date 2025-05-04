@@ -125,6 +125,12 @@ def generate_issue_svg(issue):
         </g>
         """
 
+    # Contributor comment
+    svg += f"""
+        <!-- Contributor Comment -->
+        <text class="small" fill="var(--fgColor-muted)" x="{card_pad}" y="{height-card_pad-1}">{contributor_comment}</text>
+    """
+
     right_footer_x = width - card_pad
     right_footer_y = height - card_pad
     # Deletions
@@ -260,9 +266,45 @@ def generate_issue_svg(issue):
                 </g>
                 """
 
+    # Progress bar
+    if issue.total_tasks:
+        progress = issue.completed_tasks / issue.total_tasks
+        progress_width = width / 2
+        progress_height = 8
+        radius = progress_height / 2
+        progress_x = card_pad
+        progress_y = (height - progress_height) / 2 - 4
+        progress_fill_width = max(int(progress_width * progress), radius*2)
+        progress_text_y = progress_height + 12
+
+        # Build progress text
+        bold_tspan = '<tspan style="font-weight: var(--text-weight-semibold);">'
+        tspan_end = '</tspan>'
+
+        percentage = int(progress * 100)
+        done = issue.completed_tasks
+        todo = issue.total_tasks - issue.completed_tasks
+
+        progress_text = f"""<text class="small muted" x="0" y="{progress_text_y}">"""
+        progress_text += f"{bold_tspan}{percentage}%{tspan_end} complete"
+        if done > 0:
+            progress_text += f" · {bold_tspan}{done}{tspan_end} done"
+        if todo > 0:
+            progress_text += f" · {bold_tspan}{todo}{tspan_end} to do"
+        progress_text += "</text>"
+
+        # Build the progress bar
+        svg += f"""
+        <!-- Progress Bar -->
+        <g transform="translate({progress_x}, {progress_y})">
+            <rect class="progress-bg" rx="{radius}" ry="{radius}" x="0" y="0" width="{progress_width}" height="{progress_height}"/>
+            <rect class="progress-fill" rx="{radius}" ry="{radius}" x="0" y="0" width="{progress_fill_width}" height="{progress_height}"/>
+            {progress_text}
+        </g>
+        """
+
+    # End SVG
     svg += f"""
-        <!-- Contributor Comment -->
-        <text class="small" fill="var(--fgColor-muted)" x="{card_pad}" y="{height-card_pad-1}">{contributor_comment}</text>
     </svg>
     """
 
