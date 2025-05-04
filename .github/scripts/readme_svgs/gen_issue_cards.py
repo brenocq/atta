@@ -1,4 +1,6 @@
 import logging
+import requests
+import base64
 from datetime import datetime
 import common
 import github_data
@@ -19,12 +21,27 @@ ISSUE_COUNT = 10
 
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s')
 
+def fetch_base64_image(url):
+    """
+    Fetch an image from the given URL and return its Base64-encoded representation.
+    """
+    response = requests.get(url)
+    if response.status_code == 200:
+        return base64.b64encode(response.content).decode('utf-8')
+    else:
+        raise ValueError(f"Failed to fetch image from {url}, status code: {response.status_code}")
+
+
 def generate_issue_svg(issue):
     width = 800
     height = 100
 
     card_pad = 8 # Card padding
     int_pad = 4 # Internal padding
+
+    # Avatar info
+    avatar_size = 35
+    avatar_gap = 20
 
     # Issue icon
     icon_size = 16
@@ -54,6 +71,15 @@ def generate_issue_svg(issue):
     svg = f"""
     <svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">
         <!-- {issue.url} -->
+
+        <!-- Definitions -->
+        <defs>
+            <clipPath id="circle-clip">
+                <circle cx="0" cy="0" r="{avatar_size / 2}" />
+            </clipPath>
+        </defs>
+
+        <!-- Style -->
         {common.STYLE}
 
         <!-- Card Background -->
@@ -69,6 +95,8 @@ def generate_issue_svg(issue):
 
         """
     top_right_x = width-card_pad
+
+    # Pinned icon
     if issue.is_pinned:
         top_right_x -= icon_size
         svg += f"""
@@ -77,6 +105,7 @@ def generate_issue_svg(issue):
 
         """
 
+    # Labels
     label_x = top_right_x
     label_y = card_pad
     for label in issue.labels:
@@ -96,6 +125,7 @@ def generate_issue_svg(issue):
 
     right_footer_x = width - card_pad
     right_footer_y = height - card_pad
+    # Deletions
     if issue.deletions is not None:
         text = f"-{issue.deletions}"
         right_footer_x -= common.estimate_text_width(text, 14)
@@ -103,6 +133,7 @@ def generate_issue_svg(issue):
             <!-- Deletions -->
             <text class="small" fill="var(--fgColor-danger)" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
             """
+    # Additions
     if issue.additions is not None:
         text = f"+{issue.additions}"
         right_footer_x -= common.estimate_text_width(text, 14) + int_pad
@@ -110,6 +141,7 @@ def generate_issue_svg(issue):
             <!-- Additions -->
             <text class="small" fill="var(--fgColor-success)" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
             """
+    # Number of commits
     if issue.commit_count is not None and issue.commit_count > 0:
         text = f"{issue.commit_count}"
         right_footer_x -= common.estimate_text_width(text, 14) + int_pad
@@ -121,6 +153,7 @@ def generate_issue_svg(issue):
         svg += f"""
             <path class="icon-default" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{COMMIT_16}"/>
             """
+    # Linked PR
     if issue.linked_pr is not None:
         text = f"#{issue.linked_pr}"
         right_footer_x -= common.estimate_text_width(text, 14) + int_pad
@@ -140,6 +173,7 @@ def generate_issue_svg(issue):
         svg += f"""
             <path class="{path_class}" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{pr_path}"/>
             """
+    # Linked branch
     elif issue.linked_branch is not None:
         text = f"{issue.linked_branch}"
         right_footer_x -= common.estimate_text_width(text, 13) + int_pad
@@ -152,6 +186,25 @@ def generate_issue_svg(issue):
             <path class="icon-default" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{BRANCH_16}"/>
             """
 
+    # Render contributor avatars
+    avatar_x = width - card_pad - avatar_size / 2
+    avatar_y = height / 2 + 4
+    svg += """
+        <!-- Avatars -->
+        """
+    for avatar in issue.contributors_avatars:
+        try:
+            base64_image = fetch_base64_image(avatar)
+            svg += f"""
+            <g transform="translate({avatar_x}, {avatar_y})">
+                <image x="{-avatar_size / 2}" y="{-avatar_size / 2}" width="{avatar_size}" height="{avatar_size}" href="data:image/png;base64,{base64_image}" clip-path="url(#circle-clip)" />
+            </g>
+            """
+            avatar_x -= avatar_gap
+        except ValueError as e:
+            print(f"Failed to fetch image {avatar}, error: {e}")
+    svg += """
+        """
 
     svg += f"""
         <!-- Contributor Comment -->
