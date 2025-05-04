@@ -126,7 +126,6 @@ def generate_issue_svg(issue):
             <!-- Linked PR -->
             <text class="small" fill="var(--fgColor-default)" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
             """
-
         pr_path = PULL_REQUEST_16
         path_class = "icon-open"
         if issue.linked_pr_state == PrState.CLOSED:
@@ -138,6 +137,17 @@ def generate_issue_svg(issue):
         right_footer_x -= 14
         svg += f"""
             <path class="{path_class}" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{pr_path}"/>
+            """
+    elif issue.linked_branch is not None:
+        text = f"{issue.linked_branch}"
+        right_footer_x -= common.estimate_text_width(text, 13) + int_pad
+        svg += f"""
+            <!-- Linked Branch -->
+            <text class="small" fill="var(--fgColor-default)" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
+            """
+        right_footer_x -= 14
+        svg += f"""
+            <path class="icon-default" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{BRANCH_16}"/>
             """
 
 
