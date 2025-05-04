@@ -16,6 +16,7 @@ BRANCH_16 = "M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 
 PULL_REQUEST_16 = "M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354ZM3.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 9.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm8.25.75a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Z"
 PULL_REQUEST_MERGED_16 = "M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218ZM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm8.5-4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM5 3.25a.75.75 0 1 0 0 .005V3.25Z"
 PULL_REQUEST_CLOSED_16 = "M3.25 1A2.25 2.25 0 0 1 4 5.372v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.251 2.251 0 0 1 3.25 1Zm9.5 5.5a.75.75 0 0 1 .75.75v3.378a2.251 2.251 0 1 1-1.5 0V7.25a.75.75 0 0 1 .75-.75Zm-2.03-5.273a.75.75 0 0 1 1.06 0l.97.97.97-.97a.748.748 0 0 1 1.265.332.75.75 0 0 1-.205.729l-.97.97.97.97a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-.97-.97-.97.97a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l.97-.97-.97-.97a.75.75 0 0 1 0-1.06ZM2.5 3.25a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0ZM3.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm9.5 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"
+COMMENT_16 = "M1 2.75C1 1.784 1.784 1 2.75 1h10.5c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0 1 13.25 12H9.06l-2.573 2.573A1.458 1.458 0 0 1 4 13.543V12H2.75A1.75 1.75 0 0 1 1 10.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h4.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
 
 ISSUE_COUNT = 10
 
@@ -118,7 +119,7 @@ def generate_issue_svg(issue):
         svg += f"""
         <!-- Label -->
         <g transform="translate({label_x + label_width/2}, {label_y})">
-            <rect class="labelBg-muted" x="{-label_width/2}" y="0" width="{label_width}" height="{label_height}" rx="8"/>
+            <rect class="labelBg-muted" x="{-label_width/2}" y="0" width="{label_width}" height="{label_height}" rx="{label_height/2}"/>
             <text class="label-muted" x="0" y="{label_height/2+1}" text-anchor="middle" dominant-baseline="middle">{label_text}</text>
         </g>
         """
@@ -186,8 +187,8 @@ def generate_issue_svg(issue):
             <path class="icon-default" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{BRANCH_16}"/>
             """
 
-    # Render contributor avatars
-    avatar_x = width - card_pad - avatar_size / 2
+    # Contributor avatars
+    middle_right_x = width - card_pad - avatar_size / 2
     avatar_y = height / 2 + 4
     svg += """
         <!-- Avatars -->
@@ -196,14 +197,31 @@ def generate_issue_svg(issue):
         try:
             base64_image = fetch_base64_image(avatar)
             svg += f"""
-            <g transform="translate({avatar_x}, {avatar_y})">
+            <g transform="translate({middle_right_x}, {avatar_y})">
                 <image x="{-avatar_size / 2}" y="{-avatar_size / 2}" width="{avatar_size}" height="{avatar_size}" href="data:image/png;base64,{base64_image}" clip-path="url(#circle-clip)" />
             </g>
             """
-            avatar_x -= avatar_gap
+            middle_right_x -= avatar_gap
         except ValueError as e:
             print(f"Failed to fetch image {avatar}, error: {e}")
     svg += """
+        """
+
+    # Comments
+    if issue.comment_count > 0:
+        text = f"{issue.comment_count}"
+        pad = 6
+        label_width = icon_size + common.estimate_text_width(text, 14) + pad*2
+        label_height = icon_size + int_pad
+        middle_right_x -= label_width + int_pad
+
+        svg += f"""
+        <!-- Comments -->
+        <g transform="translate({middle_right_x}, {height / 2 - icon_size/2 + 3})">
+            <rect class="labelBg-muted" x="0" y="0" width="{label_width}" height="{label_height}" rx="{label_height/2}"/>
+            <path class="icon-muted" transform="translate({pad}, {int_pad/2+2}) scale(0.875)" d="{COMMENT_16}"/>
+            <text class="small muted" x="{pad+icon_size}" y="14">{issue.comment_count}</text>
+        </g>
         """
 
     svg += f"""

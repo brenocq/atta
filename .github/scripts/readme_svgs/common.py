@@ -35,6 +35,11 @@ STYLE=f"""
         font-weight: var(--text-weight-normal);
     }}
 
+    text.medium {{
+        font-size: var(--text-medium);
+        font-weight: var(--text-weight-normal);
+    }}
+
     text.muted {{
         fill: var(--fgColor-muted);
     }}
