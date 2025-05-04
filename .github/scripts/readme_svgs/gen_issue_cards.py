@@ -199,6 +199,7 @@ def generate_issue_svg(issue):
             svg += f"""
             <g transform="translate({middle_right_x}, {avatar_y})">
                 <image x="{-avatar_size / 2}" y="{-avatar_size / 2}" width="{avatar_size}" height="{avatar_size}" href="data:image/png;base64,{base64_image}" clip-path="url(#circle-clip)" />
+                <circle cx="0" cy="0" r="{avatar_size / 2}" fill="none" stroke="var(--fgColor-muted)" stroke-width="1" />
             </g>
             """
             middle_right_x -= avatar_gap
