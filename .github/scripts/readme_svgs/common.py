@@ -95,6 +95,10 @@ STYLE=f"""
         fill: var(--fgColor-done);
     }}
 
+    .icon-danger {{
+        fill: var(--fgColor-danger);
+    }}
+
     .icon-muted {{
         fill: var(--fgColor-muted);
     }}
