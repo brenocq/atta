@@ -21,13 +21,13 @@ logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s')
 
 def generate_issue_svg(issue):
     width = 800
-    height = 120
+    height = 100
 
     card_pad = 8 # Card padding
     int_pad = 4 # Internal padding
 
     # Issue icon
-    issue_icon_size = 16
+    icon_size = 16
     issue_icon_path = ISSUE_OPEN_16
     if issue.type == IssueType.FEATURE and issue.state == IssueState.CLOSED:
         issue_icon_path = ISSUE_CLOSED_16
@@ -63,25 +63,28 @@ def generate_issue_svg(issue):
         <path class="{issue_icon_class}" transform="translate({card_pad}, {card_pad})" d="{issue_icon_path}"/>
 
         <!-- Issue Title -->
-        <text class="title" x="{card_pad+issue_icon_size+int_pad}" y="{card_pad+issue_icon_size/2+2}" text-anchor="start" dominant-baseline="middle">
+        <text class="title" x="{card_pad+icon_size+int_pad}" y="{card_pad+icon_size/2+2}" text-anchor="start" dominant-baseline="middle">
             {issue.title} <tspan style="fill: var(--fgColor-muted);font-weight: var(--text-weight-normal);">#{issue.number}</tspan>
         </text>
 
         """
+    top_right_x = width-card_pad
     if issue.is_pinned:
+        top_right_x -= icon_size
         svg += f"""
         <!-- Pinned Icon -->
-        <path class="icon-muted" transform="translate({width-card_pad-issue_icon_size}, {card_pad})" d="{PIN_16}"/>
+        <path class="icon-muted" transform="translate({top_right_x}, {card_pad})" d="{PIN_16}"/>
 
         """
 
-    label_x = card_pad
-    label_y = card_pad + issue_icon_size + int_pad
+    label_x = top_right_x
+    label_y = card_pad
     for label in issue.labels:
         label_color = label.color
         label_text = label.name
         label_width = common.estimate_text_width(label_text, 12) + 15
-        label_height = 16
+        label_height = icon_size
+        label_x -= label_width + int_pad
 
         svg += f"""
         <!-- Label -->
@@ -90,7 +93,6 @@ def generate_issue_svg(issue):
             <text class="label-muted" x="0" y="{label_height/2+1}" text-anchor="middle" dominant-baseline="middle">{label_text}</text>
         </g>
         """
-        label_x += label_width + int_pad
 
     right_footer_x = width - card_pad
     right_footer_y = height - card_pad
