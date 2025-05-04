@@ -98,6 +98,10 @@ STYLE=f"""
     }}
 
     .icon-closed {{
+        fill: var(--fgColor-muted);
+    }}
+
+    .icon-completed {{
         fill: var(--fgColor-done);
     }}
 

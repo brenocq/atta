@@ -37,6 +37,7 @@ class IssueType(Enum):
 
 class IssueState(Enum):
     OPEN = auto()
+    COMPLETED = auto()
     CLOSED = auto()
 
 class PrState(Enum):
@@ -182,7 +183,9 @@ def parse_issue_from_data(issue_data: Dict[str, Any]) -> Issue:
     """Parses raw API dict into an Issue dataclass, requires post-processing."""
 
     #--- Basic Fields ---#
-    state_enum = IssueState.OPEN if issue_data.get('state') == 'OPEN' else IssueState.CLOSED
+    state_enum = IssueState.OPEN if issue_data.get('state') == 'OPEN' else IssueState.COMPLETED
+    if issue_data.get('stateReason') == 'NOT_PLANNED':
+        state_enum = IssueState.CLOSED
     comment_count = issue_data.get('comments', {}).get('totalCount', 0)
     author_login = issue_data.get('author', {}).get('login', 'unknown')
     author_avatar = issue_data.get('author', {}).get('avatarUrl', '')
@@ -401,6 +404,7 @@ def fetch_top_issues(count: int) -> List[Issue]:
               isPinned
               url
               state
+              stateReason
               createdAt
               updatedAt
               author {{ login avatarUrl(size: 40) }}
