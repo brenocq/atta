@@ -31,9 +31,9 @@ Atta is a robotics simulator, mainly focused on multi-robot systems with tons of
 Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs).
 
 ## Progress
-- ✨ The cards below are automatically updated to reflect the [Issues](https://github.com/brenocq/atta/issues).
+- ✨ The cards below are automatically updated to reflect the [Issues](https://github.com/brenocq/atta/issues?q=is%3Aissue%20sort%3Aupdated-desc)
 - 💡 Click on a card to explore the task progress
-- 🤝 Your reactions guide development! Add a ❤️ to your favorite features.
+- 🤝 Your reactions guide development! Add a ❤️ to your favorite features
 
 <div align="center">
   <a href="https://github.com/brenocq/atta/issues?q=is%3Aissue%20label%3Astatus%3Aidea"><img src="https://github.com/brenocq/atta/blob/generated-svgs/status_idea.svg"/></a>
