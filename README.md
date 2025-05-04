@@ -65,7 +65,7 @@ Check out the atta website for a [getting started guide](https://atta.brenocq.co
   <a href="https://github.com/brenocq/atta/issues?q=is%3Aissue%20sort%3Aupdated-desc"><img src="https://github.com/user-attachments/assets/e3deab96-be62-42b4-886b-a8509ffe761a"/></a>
 </div>
 
-_If you are interested in knowing how these cards were made, check [#63](https://github.com/brenocq/atta/issues/63)_ 🙂
+_For details on how these cards were created, refer to [issue #63](https://github.com/brenocq/atta/issues/63)._
 
 ## Architecture
 Atta is composed of decoupled modules, the current modules are:
