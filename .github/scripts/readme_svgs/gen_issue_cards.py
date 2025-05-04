@@ -1,6 +1,7 @@
 import logging
 import requests
 import base64
+import dataclasses
 from datetime import datetime
 import common
 import github_data
@@ -148,11 +149,11 @@ def generate_issue_svg(issue):
         right_footer_x -= common.estimate_text_width(text, 14) + int_pad
         svg += f"""
             <!-- Commit Count -->
-            <text class="small" fill="var(--fgColor-default)" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
+            <text class="small muted" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
             """
         right_footer_x -= 14
         svg += f"""
-            <path class="icon-default" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{COMMIT_16}"/>
+            <path class="icon-muted" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{COMMIT_16}"/>
             """
     # Linked PR
     if issue.linked_pr is not None:
@@ -160,7 +161,7 @@ def generate_issue_svg(issue):
         right_footer_x -= common.estimate_text_width(text, 14) + int_pad
         svg += f"""
             <!-- Linked PR -->
-            <text class="small" fill="var(--fgColor-default)" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
+            <text class="small muted" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
             """
         pr_path = PULL_REQUEST_16
         path_class = "icon-open"
@@ -180,16 +181,17 @@ def generate_issue_svg(issue):
         right_footer_x -= common.estimate_text_width(text, 13) + int_pad
         svg += f"""
             <!-- Linked Branch -->
-            <text class="small" fill="var(--fgColor-default)" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
+            <text class="small muted" x="{right_footer_x}" y="{right_footer_y}">{text}</text>
             """
         right_footer_x -= 14
         svg += f"""
-            <path class="icon-default" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{BRANCH_16}"/>
+            <path class="icon-muted" transform="translate({right_footer_x}, {right_footer_y-10}) scale(0.75)" d="{BRANCH_16}"/>
             """
 
     # Contributor avatars
     middle_right_x = width - card_pad - avatar_size / 2
-    avatar_y = height / 2 + 4
+    middle_y_off = 4
+    avatar_y = height / 2 + middle_y_off
     svg += """
         <!-- Avatars -->
         """
@@ -199,7 +201,7 @@ def generate_issue_svg(issue):
             svg += f"""
             <g transform="translate({middle_right_x}, {avatar_y})">
                 <image x="{-avatar_size / 2}" y="{-avatar_size / 2}" width="{avatar_size}" height="{avatar_size}" href="data:image/png;base64,{base64_image}" clip-path="url(#circle-clip)" />
-                <circle cx="0" cy="0" r="{avatar_size / 2}" fill="none" stroke="var(--fgColor-muted)" stroke-width="1" />
+                <circle cx="0" cy="0" r="{avatar_size / 2}" fill="none" stroke="var(--border-color)" stroke-width="1" />
             </g>
             """
             middle_right_x -= avatar_gap
@@ -211,19 +213,52 @@ def generate_issue_svg(issue):
     # Comments
     if issue.comment_count > 0:
         text = f"{issue.comment_count}"
-        pad = 6
+        pad = 8
         label_width = icon_size + common.estimate_text_width(text, 14) + pad*2
-        label_height = icon_size + int_pad
+        label_height = icon_size + int_pad * 1.5
         middle_right_x -= label_width + int_pad
 
         svg += f"""
         <!-- Comments -->
-        <g transform="translate({middle_right_x}, {height / 2 - icon_size/2 + 3})">
+        <g transform="translate({middle_right_x}, {height / 2 - label_height/2 + middle_y_off})">
             <rect class="labelBg-muted" x="0" y="0" width="{label_width}" height="{label_height}" rx="{label_height/2}"/>
-            <path class="icon-muted" transform="translate({pad}, {int_pad/2+2}) scale(0.875)" d="{COMMENT_16}"/>
-            <text class="small muted" x="{pad+icon_size}" y="14">{issue.comment_count}</text>
+            <path class="icon-muted" transform="translate({pad-1}, {int_pad/2+2}) scale(0.875)" d="{COMMENT_16}"/>
+            <text class="small muted" x="{pad+icon_size}" y="15">{issue.comment_count}</text>
         </g>
         """
+
+
+    # Reactions
+    reaction_emoji_map = {
+        "plus_one": "👍",
+        "minus_one": "👎",
+        "laugh": "😄",
+        "hooray": "🎉",
+        "confused": "🤔",
+        "heart": "❤️",
+        "rocket": "🚀",
+        "eyes": "👀",
+    }
+    if hasattr(issue, 'reactions') and issue.reactions:
+        for reaction_name, count in reversed(dataclasses.asdict(issue.reactions).items()):
+            if count > 0:
+                emoji = reaction_emoji_map.get(reaction_name)
+                if not emoji: # Skip if we don't have an emoji for this reaction
+                    continue
+                text = f"{count}"
+                pad = 8
+                label_width = icon_size + common.estimate_text_width(text, 14) + pad*2
+                label_height = icon_size + int_pad*1.5
+                middle_right_x -= label_width + int_pad
+
+                svg += f"""
+                <!-- Comments -->
+                <g transform="translate({middle_right_x}, {height / 2 - label_height/2 + middle_y_off})">
+                    <rect class="labelBg-muted" x="0" y="0" width="{label_width}" height="{label_height}" rx="{label_height/2}"/>
+                    <text class="small muted" x="{pad-1}" y="15">{emoji}</text>
+                    <text class="small muted" x="{pad+icon_size}" y="15">{count}</text>
+                </g>
+                """
 
     svg += f"""
         <!-- Contributor Comment -->
