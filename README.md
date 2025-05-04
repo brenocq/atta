@@ -31,26 +31,41 @@ Atta is a robotics simulator, mainly focused on multi-robot systems with tons of
 Check out the atta website for a [getting started guide](https://atta.brenocq.com/docs).
 
 ## Progress
-Check the atta progress by **clicking on the buttons below**. [Issues](https://github.com/brenocq/atta/issues) with bugs and [discussions](https://github.com/brenocq/atta/discussions) with new ideas are very welcome :bowtie:.
+- ✨ The cards below are automatically updated to reflect the [Issues](https://github.com/brenocq/atta/issues).
+- 💡 Click on a card to explore the task progress
+- 🤝 Your reactions guide development! Add a ❤️ to your favorite features.
 
 <div align="center">
-
-[![ComponentModule](https://storage.googleapis.com/atta-images/main/component_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/8)
-[![EventModule](https://storage.googleapis.com/atta-images/main/event_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/13)
-[![FileModule](https://storage.googleapis.com/atta-images/main/file_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/14)
-[![GraphicsModule](https://storage.googleapis.com/atta-images/main/graphics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/16)
-[![IOModule](https://storage.googleapis.com/atta-images/main/io_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/17)
-[![MemoryModule](https://storage.googleapis.com/atta-images/main/memory_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/15)
-[![PhysicsModule](https://storage.googleapis.com/atta-images/main/physics_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/6)
-[![ResourceModule](https://storage.googleapis.com/atta-images/main/resource_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/12)
-[![ScriptModule](https://storage.googleapis.com/atta-images/main/script_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/11)
-[![SensorModule](https://storage.googleapis.com/atta-images/main/sensor_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/10)
-[![UIModule](https://storage.googleapis.com/atta-images/main/ui_system_button_github_progress.png?)](https://github.com/brenocq/atta/projects/9)
-[![Docs](https://storage.googleapis.com/atta-images/main/docs_button_github_progress.png?)](https://github.com/brenocq/atta/projects/18)
-
+  <a href="https://github.com/brenocq/atta/issues?q=is%3Aissue%20label%3Astatus%3Aidea"><img src="https://github.com/brenocq/atta/blob/generated-svgs/status_idea.svg"/></a>
+  <a href="https://github.com/brenocq/atta/issues?q=is%3Aissue%20label%3Astatus%3Atodo"><img src="https://github.com/brenocq/atta/blob/generated-svgs/status_todo.svg"/></a>
+  <a href="https://github.com/brenocq/atta/issues?q=is%3Aissue%20label%3Astatus%3Adoing"><img src="https://github.com/brenocq/atta/blob/generated-svgs/status_doing.svg"/></a>
+  <a href="https://github.com/brenocq/atta/issues?q=is%3Aissue%20label%3Astatus%3Areview"><img src="https://github.com/brenocq/atta/blob/generated-svgs/status_review.svg"/></a>
+  <a href="https://github.com/brenocq/atta/issues?q=is%3Aissue%20label%3Astatus%3Adone"><img src="https://github.com/brenocq/atta/blob/generated-svgs/status_done.svg"/></a>
 </div>
 
-_Obs: There is a github workflow to update the progress bar of each icon automatically heh_
+<div align="center">
+  <a href="https://redirect.brenocq.com/?url=https://raw.githubusercontent.com/brenocq/atta/refs/heads/generated-svgs/issue_0.svg"><img src="https://github.com/brenocq/atta/blob/generated-svgs/issue_0.svg"/></a>
+</div>
+<div align="center">
+  <a href="https://redirect.brenocq.com/?url=https://raw.githubusercontent.com/brenocq/atta/refs/heads/generated-svgs/issue_1.svg"><img src="https://github.com/brenocq/atta/blob/generated-svgs/issue_1.svg"/></a>
+</div>
+<div align="center">
+  <a href="https://redirect.brenocq.com/?url=https://raw.githubusercontent.com/brenocq/atta/refs/heads/generated-svgs/issue_2.svg"><img src="https://github.com/brenocq/atta/blob/generated-svgs/issue_2.svg"/></a>
+</div>
+<div align="center">
+  <a href="https://redirect.brenocq.com/?url=https://raw.githubusercontent.com/brenocq/atta/refs/heads/generated-svgs/issue_3.svg"><img src="https://github.com/brenocq/atta/blob/generated-svgs/issue_3.svg"/></a>
+</div>
+<div align="center">
+  <a href="https://redirect.brenocq.com/?url=https://raw.githubusercontent.com/brenocq/atta/refs/heads/generated-svgs/issue_4.svg"><img src="https://github.com/brenocq/atta/blob/generated-svgs/issue_4.svg"/></a>
+</div>
+<div align="center">
+  <a href="https://redirect.brenocq.com/?url=https://raw.githubusercontent.com/brenocq/atta/refs/heads/generated-svgs/issue_5.svg"><img src="https://github.com/brenocq/atta/blob/generated-svgs/issue_5.svg"/></a>
+</div>
+<div align="center">
+  <a href="https://github.com/brenocq/atta/issues?q=is%3Aissue%20sort%3Aupdated-desc"><img src="https://github.com/user-attachments/assets/e3deab96-be62-42b4-886b-a8509ffe761a"/></a>
+</div>
+
+_For details on how these cards were created, refer to [issue #63](https://github.com/brenocq/atta/issues/63)._
 
 ## Architecture
 Atta is composed of decoupled modules, the current modules are:
