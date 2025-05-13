@@ -67,9 +67,29 @@ Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
             break;
     }
 
-    _data = new uint8_t[_width * _height * _channels * getBytesPerChannel(_format)];
-    for (size_t i = 0; i < _width * _height * _channels * getBytesPerChannel(_format); i++)
-        _data[i] = 0;
+    // Allocate memory for the image data
+    size_t bytesPerChannel = getBytesPerChannel(_format);
+    _data = new uint8_t[_width * _height * _channels * bytesPerChannel];
+
+    // Initialize image to pink by default
+    uint8_t* ptr = reinterpret_cast<uint8_t*>(_data);
+    for (size_t i = 0; i < _width * _height; i++) {
+        for (size_t c = 0; c < _channels; c++) {
+            // Set maximum value for red/blue/alpha
+            if (c == 0 || c == 2 || c == 3) {
+                if (isFloatFormat(_format))
+                    *reinterpret_cast<float*>(ptr) = 1.0f;
+                else
+                    *ptr = 0xFF;
+            } else {
+                if (isFloatFormat(_format))
+                    *reinterpret_cast<float*>(ptr) = 0.0f;
+                else
+                    *ptr = 0x00;
+            }
+            ptr += bytesPerChannel;
+        }
+    }
 }
 
 Image::~Image() { delete[] _data; }
