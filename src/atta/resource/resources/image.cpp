@@ -27,7 +27,11 @@ const std::unordered_map<std::string, Image::Format> Image::stringToFormat = {
     {"NONE", Format::NONE}, {"RED8", Format::RED8}, {"RGB8", Format::RGB8}, {"RGBA8", Format::RGBA8}, {"RGB32F", Format::RGB32F},
 };
 
-Image::Image(const fs::path& filename) : Resource(filename) { load(); }
+Image::Image(const fs::path& filename) : Resource(filename) {
+    fs::path absolutePath = file::solveResourcePath(_filename);
+    // Do not trigger update event because a load event will be triggered by the res::Manager
+    load(absolutePath, false);
+}
 
 Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
     if (info.format == Format::NONE) {
@@ -57,13 +61,11 @@ Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
             _channels = 1;
             break;
         case Format::RGB8:
+        case Format::RGB32F:
             _channels = 3;
             break;
         case Format::RGBA8:
             _channels = 4;
-            break;
-        case Format::RGB32F:
-            _channels = 3;
             break;
     }
 
@@ -92,7 +94,10 @@ Image::Image(const fs::path& filename, CreateInfo info) : Resource(filename) {
     }
 }
 
-Image::~Image() { delete[] _data; }
+Image::~Image() {
+    delete[] _data;
+    _data = nullptr;
+}
 
 void Image::resize(uint32_t width, uint32_t height) {
     _width = width;
@@ -114,10 +119,10 @@ void Image::saveToFile() {
 
     // Save buffer as image
     if (absolutePath.extension() == fs::path(".jpeg") || absolutePath.extension() == fs::path(".jpg")) {
-        LOG_DEBUG("resource::Image", "Saving [w]$0[] as JPG image", absolutePath.string());
+        LOG_INFO("resource::Image", "Saving [w]$0[] as JPG image", absolutePath.string());
         stbi_write_jpg(absolutePath.string().c_str(), _width, _height, _channels, _data, _channels * _width);
     } else if (absolutePath.extension() == fs::path(".png")) {
-        LOG_DEBUG("resource::Image", "Saving [w]$0[] as PNG image", absolutePath.string());
+        LOG_INFO("resource::Image", "Saving [w]$0[] as PNG image", absolutePath.string());
         stbi_write_png(absolutePath.string().c_str(), _width, _height, _channels, _data, _channels * _width);
     } else
         LOG_WARN("resource::Image", "Unknown image extension '[w]$0[]' when trying to save [w]$1[]", absolutePath.extension().string(),
@@ -126,63 +131,74 @@ void Image::saveToFile() {
 
 uint32_t Image::getBytesPerChannel(Format format) { return format == Format::RGB32F ? 4 : 1; }
 
-void Image::load() {
-    fs::path absolutePath = file::solveResourcePath(_filename);
-    std::string extension = _filename.extension().string();
+bool Image::isFloatFormat(Format format) { return format == Format::RGB32F; }
+
+void Image::load(const fs::path& filename, bool triggerUpdate) {
+    if (!fs::exists(filename)) {
+        LOG_ERROR("resource::Image", "Failed to load image from file [w]$0[], the file does not exist", filename.string());
+        return;
+    }
+    std::string extension = filename.extension().string();
 
     uint8_t* data = nullptr;
     int width, height, channels;
     if (extension != ".hdr") {
-        data = stbi_load(absolutePath.string().c_str(), &width, &height, &channels, 0);
+        data = stbi_load(filename.string().c_str(), &width, &height, &channels, 0);
     } else {
         stbi_set_flip_vertically_on_load(true);
-        data = reinterpret_cast<uint8_t*>(stbi_loadf(absolutePath.string().c_str(), &width, &height, &channels, 0));
+        data = reinterpret_cast<uint8_t*>(stbi_loadf(filename.string().c_str(), &width, &height, &channels, 0));
         stbi_set_flip_vertically_on_load(false);
     }
 
     if (data) {
-        _width = width;
-        _height = height;
-        _channels = channels;
+        Format format = Format::NONE;
 
         if (extension != ".hdr") {
-            if (_channels == 1)
-                _format = Format::RED8;
-            else if (_channels == 3)
-                _format = Format::RGB8;
-            else if (_channels == 4)
-                _format = Format::RGBA8;
+            if (channels == 1)
+                format = Format::RED8;
+            else if (channels == 3)
+                format = Format::RGB8;
+            else if (channels == 4)
+                format = Format::RGBA8;
             else {
-                LOG_WARN("resource::Image", "Image with $0 channels are not supported", _channels);
-                _width = 0;
-                _height = 0;
-                _channels = 0;
+                LOG_WARN("resource::Image", "Image with $0 channels are not supported", channels);
                 return;
             }
         } else {
-            if (_channels != 3) {
+            if (channels != 3) {
                 LOG_WARN("resource::Image", "Only hdr with 3 channels are supported");
-                _width = 0;
-                _height = 0;
-                _channels = 0;
                 return;
             }
-            _format = Format::RGB32F;
+            format = Format::RGB32F;
+        }
+
+        // Update image properties
+        _width = width;
+        _height = height;
+        _channels = channels;
+        _format = format;
+
+        // Free _data if it was already allocated
+        if (_data != nullptr) {
+            delete[] _data;
+            _data = nullptr;
         }
 
         // Copy temp data to _data
         uint32_t size = _width * _height * _channels * getBytesPerChannel(_format);
+
         _data = new uint8_t[size];
         for (size_t i = 0; i < size; i++)
             _data[i] = data[i];
         stbi_image_free(data);
-        // LOG_INFO("resource::Image", "[w]$3[] -> w:$0, h:$1, c:$2", _width, _height, _channels, absolutePath);
+
+        // Trigger event to notify graphics module to update the image
+        if (triggerUpdate)
+            update();
+
+        // LOG_INFO("resource::Image", "[w]$3[] -> w:$0, h:$1, c:$2", _width, _height, _channels, filename);
     } else {
-        _width = 0;
-        _height = 0;
-        _channels = 0;
-        _format = Format::NONE;
-        LOG_ERROR("resource::Image", "Failed to load image [w]$0[]", absolutePath);
+        LOG_ERROR("resource::Image", "Failed to load image [w]$0[]", filename);
     }
 }
 

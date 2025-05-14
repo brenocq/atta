@@ -33,6 +33,7 @@ Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device,
 Image::~Image() { destroy(); }
 
 void Image::write(uint8_t* data) {
+    // TODO Writing is not working correctly if the image is currently being used in the swapchain
     uint8_t* finalData = data;
     uint32_t finalSize = _width * _height * Image::getPixelSize(_format);
     if (_format != _supportedFormat) {

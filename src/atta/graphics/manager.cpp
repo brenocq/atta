@@ -348,17 +348,23 @@ void Manager::onImageUpdateEvent(event::Event& event) {
     // Get image resource
     resource::Image* imageRes = resource::get<resource::Image>(e.sid.getString());
     if (imageRes == nullptr) {
-        LOG_WARN("gfx::Manager", "Could not update image from [w]$0[], image resource does not exists", e.sid.getString());
+        LOG_ERROR("gfx::Manager", "Could not update image from [w]$0[], image resource does not exists", e.sid.getString());
         return;
     }
 
     // Get image
     if (_images.find(e.sid) == _images.end()) {
         _images[e.sid]->write(resource::get<resource::Image>(e.sid.getString())->getData());
-        LOG_WARN("gfx::Manager", "Could not update image [w]$0[] that does not exists", e.sid);
+        LOG_ERROR("gfx::Manager", "Could not update image [w]$0[] that does not exists", e.sid);
         return;
     }
     std::shared_ptr<gfx::Image> image = _images[e.sid];
+
+    if (image->getFormat() != convertFormat(imageRes->getFormat())) {
+        // TODO The image format may have changed during the update, the image needs to be recreated in this case
+        LOG_ERROR("gfx::Manager", "Could not update image [w]$0[], the format has changed", e.sid);
+        return;
+    }
 
     // Resize image if needed
     if (image->getWidth() != imageRes->getWidth() || image->getHeight() != imageRes->getHeight())
