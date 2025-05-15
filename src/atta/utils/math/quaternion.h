@@ -18,9 +18,9 @@ class quat {
     float j; // Second complex
     float k; // Third complex
 
-    quat() : r(1), i(0), j(0), k(0) {}
+    constexpr quat() : r(1), i(0), j(0), k(0) {}
     explicit quat(const vec3& v) { setEuler(v); }
-    quat(const float r, const float i, const float j, const float k) : r(r), i(i), j(j), k(k) {}
+    constexpr quat(const float r, const float i, const float j, const float k) : r(r), i(i), j(j), k(k) {}
 
     void normalize();
     quat normalized() const;

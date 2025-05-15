@@ -20,8 +20,8 @@ class ray {
     float time;
     // const Medium medium;
 
-    ray() : tMax(infinity), time(0.0f) {}
-    ray(const vec3& o, const vec3& d, float tMax = infinity, float time = 0.0f) : o(o), d(d), tMax(tMax), time(time) {}
+    constexpr ray() : tMax(infinity), time(0.0f) {}
+    constexpr ray(const vec3& o, const vec3& d, float tMax = infinity, float time = 0.0f) : o(o), d(d), tMax(tMax), time(time) {}
 
     vec3 operator()(float t) const { return o + t * d; }
 };

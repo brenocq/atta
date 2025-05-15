@@ -25,9 +25,9 @@ class bounds3 {
         pMax = vector3<T>(maxNum, maxNum, maxNum);
     }
 
-    bounds3(const vector3<T>& p) : pMin(p), pMax(p) {}
+    constexpr bounds3(const vector3<T>& p) : pMin(p), pMax(p) {}
 
-    bounds3(const vector3<T>& p1, const vector3<T>& p2) : pMin(min(p1, p2)), pMax(max(p1, p2)) {}
+    constexpr bounds3(const vector3<T>& p1, const vector3<T>& p2) : pMin(min(p1, p2)), pMax(max(p1, p2)) {}
 
     inline bool intersectP(const ray& r, float* hitt0, float* hitt1) const;
 };
@@ -46,8 +46,8 @@ class bounds2 {
         pMax = vector2<T>(maxNum, maxNum);
     }
 
-    bounds2(const vector2<T>& p) : pMin(p), pMax(p) {}
-    bounds2(const vector2<T>& p1, const vector2<T>& p2) : pMin(min(p1, p2)), pMax(max(p1, p2)) {}
+    constexpr bounds2(const vector2<T>& p) : pMin(p), pMax(p) {}
+    constexpr bounds2(const vector2<T>& p1, const vector2<T>& p2) : pMin(min(p1, p2)), pMax(max(p1, p2)) {}
 };
 
 //---------- Inline functions ----------//
