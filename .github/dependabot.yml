@@ -9,8 +9,6 @@ updates:
       - "type:chore"
       - "prio:low"
       - "status:review"
-    reviewers:
-      - "brenocq"
     assignees:
       - "brenocq"
     groups:
