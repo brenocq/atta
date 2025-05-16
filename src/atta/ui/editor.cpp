@@ -37,7 +37,7 @@ void Editor::render() {
     setupDocking();
 
     // Demo
-    // ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
     // ImPlot::ShowDemoWindow();
     // ImPlot3D::ShowDemoWindow();
 

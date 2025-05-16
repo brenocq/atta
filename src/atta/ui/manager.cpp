@@ -49,18 +49,10 @@ void Manager::startUpImpl() {
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-
+    // Use NotoSans font
     io.FontDefault = io.Fonts->AddFontFromFileTTF(file::solveResourcePath("fonts/NotoSans-Regular.ttf").string().c_str(), 16.0f);
-
-    // Don't save imgui.ini
+    // Don't save imgui.ini (it will be saved to the .atta file instead)
     io.IniFilename = NULL;
-#ifdef ATTA_OS_WEB
-    // Disable file-system access when building with Emscripten (no fopen() of the imgui.init file)
-    io.IniFilename = NULL;
-#else
-    // Multiple viewports not supported for the web
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport
-#endif
 
     switch (gfx::getGraphicsAPI()->getType()) {
         case gfx::GraphicsAPI::OPENGL:
