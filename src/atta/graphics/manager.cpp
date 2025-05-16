@@ -354,7 +354,6 @@ void Manager::onImageUpdateEvent(event::Event& event) {
 
     // Get image
     if (_images.find(e.sid) == _images.end()) {
-        _images[e.sid]->write(resource::get<resource::Image>(e.sid.getString())->getData());
         LOG_ERROR("gfx::Manager", "Could not update image [w]$0[] that does not exists", e.sid);
         return;
     }
