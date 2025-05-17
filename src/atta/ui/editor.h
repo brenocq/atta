@@ -41,7 +41,6 @@ class Editor final {
 
     // Docking
     unsigned _viewportDockId;
-    bool _firstRender = true;
 
     TopBar _topBar;
     ToolBar _toolBar;
