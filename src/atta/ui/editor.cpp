@@ -106,10 +106,18 @@ void Editor::setupDocking() {
         ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Down, 0.2f, &dockIdDown, &dockIdCenter);
         ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Up, 0.0f, &dockIdUp, &dockIdCenter);
 
-        // Dock our windows into the docking node we made above
+        // Default docking for viewport windows
         ImGui::DockBuilderDockWindow("###AttaViewport::Main Viewport", dockIdCenter);
-        ImGui::DockBuilderDockWindow("Log##AttaLog", dockIdDown);
-        ImGui::DockBuilderDockWindow("Scene##AttaScene", dockIdRight);
+
+        // Default docking for module windows
+        ImGui::DockBuilderDockWindow("IO Module##Atta", dockIdLeft);
+        ImGui::DockBuilderDockWindow("Graphics Module##Atta", dockIdLeft);
+        ImGui::DockBuilderDockWindow("Physics Module##Atta", dockIdLeft);
+        ImGui::DockBuilderDockWindow("Sensor Module##Atta", dockIdLeft);
+
+        // Default docking for editor windows
+        ImGui::DockBuilderDockWindow("Log##Atta", dockIdDown);
+        ImGui::DockBuilderDockWindow("Scene##Atta", dockIdRight);
         ImGui::DockBuilderDockWindow("##AttaToolbar", dockIdUp);
         ImGui::DockBuilderFinish(_viewportDockId);
     }

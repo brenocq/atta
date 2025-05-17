@@ -24,6 +24,7 @@
 #include <atta/graphics/renderers/phongRenderer.h>
 
 #include <atta/ui/interface.h>
+#include <atta/ui/windows/entityWindow.h>
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
 #include <atta/ui/windows/physicsModuleWindow.h>
@@ -114,6 +115,7 @@ void TopBar::editMenu() {
 
 void TopBar::windowMenu() {
     if (ImGui::BeginMenu("Window")) {
+        //---------- Viewport windows ----------//
         if (ImGui::BeginMenu("Viewports")) {
             std::vector<std::shared_ptr<ui::Viewport>> viewports = ui::getViewports();
             for (auto viewport : viewports)
@@ -150,17 +152,38 @@ void TopBar::windowMenu() {
             ImGui::EndMenu();
         }
 
-        ImGui::Separator();
-        if (ImGui::MenuItem("Graphics"))
-            GraphicsModuleWindow::setOpen(true);
-        if (ImGui::MenuItem("IO"))
-            IOModuleWindow::setOpen(true);
-        if (ImGui::MenuItem("Physics"))
-            PhysicsModuleWindow::setOpen(true);
-        if (ImGui::MenuItem("Sensor"))
-            SensorModuleWindow::setOpen(true);
+        //---------- Module windows ----------//
+        ImGui::SeparatorText("Modules");
+        // NOTE I think it would be better to move those module windows to Preferences window
 
-        ImGui::Separator();
+        // Graphics module window
+        bool graphicsModuleOpen = GraphicsModuleWindow::getOpen();
+        if (ImGui::MenuItem("Graphics", nullptr, &graphicsModuleOpen))
+            GraphicsModuleWindow::setOpen(graphicsModuleOpen);
+
+        // IO module window
+        bool ioModuleOpen = IOModuleWindow::getOpen();
+        if (ImGui::MenuItem("IO", nullptr, &ioModuleOpen))
+            IOModuleWindow::setOpen(ioModuleOpen);
+
+        // Physics module window
+        bool physicsModuleOpen = PhysicsModuleWindow::getOpen();
+        if (ImGui::MenuItem("Physics", nullptr, &physicsModuleOpen))
+            PhysicsModuleWindow::setOpen(physicsModuleOpen);
+
+        // Sensor module window
+        bool sensorModuleOpen = SensorModuleWindow::getOpen();
+        if (ImGui::MenuItem("Sensor", nullptr, &sensorModuleOpen))
+            SensorModuleWindow::setOpen(sensorModuleOpen);
+
+        //---------- Editor windows ----------//
+        ImGui::SeparatorText("Editor");
+
+        // Entity window
+        // bool entityWindowOpen = EntityWindow::getOpen();
+        // if (ImGui::Checkbox("Entity", &entityWindowOpen))
+        //    EntityWindow::setOpen(entityWindowOpen);
+
         if (ImGui::MenuItem("Time Profiler"))
             TimeProfilerWindow::setOpen(true);
 

@@ -16,17 +16,18 @@ namespace atta::ui {
 template <typename T>
 class Window {
   public:
-    static void render();
-    static void setOpen(bool open) { getInstance()._open = open; }
-
     static T& getInstance() {
         static T instance;
         return instance;
     }
 
+    static void render();
+
+    static void setOpen(bool open) { getInstance()._open = open; }
+    static bool getOpen() { return getInstance()._open; }
+
     static std::string getName() { return getInstance()._name; }
     static StringId getSID() { return getInstance()._sid; }
-    static bool getOpen() { return getInstance()._open; }
 
   protected:
     void setName(std::string name) {
@@ -49,7 +50,7 @@ void Window<T>::render() {
     T& window = getInstance();
     if (window._open) {
         ImGui::SetNextWindowSize(ImVec2(window._initialSize.x, window._initialSize.y), ImGuiCond_FirstUseEver);
-        ImGui::Begin(window._name.c_str(), &(window._open));
+        ImGui::Begin((window._name + "##Atta").c_str(), &(window._open));
         window.renderImpl();
         ImGui::End();
     }

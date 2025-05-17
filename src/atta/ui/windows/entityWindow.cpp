@@ -17,7 +17,7 @@
 namespace atta::ui {
 
 void EntityWindow::render() {
-    ImGui::Begin("Scene##AttaScene");
+    ImGui::Begin("Scene##Atta");
     {
         if (ImGui::BeginDragDropTarget()) {
             if (ImGui::AcceptDragDropPayload("component::EntityId"))

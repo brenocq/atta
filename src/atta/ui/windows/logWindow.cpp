@@ -11,7 +11,7 @@
 namespace atta::ui {
 
 void LogWindow::render() {
-    ImGui::Begin("Log##AttaLog");
+    ImGui::Begin("Log##Atta");
     ImGui::End();
 }
 
