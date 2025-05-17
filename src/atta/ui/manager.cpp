@@ -377,7 +377,7 @@ void Manager::addViewportImpl(std::shared_ptr<ui::Viewport> viewport) { _editor.
 bool Manager::getViewportRenderingImpl() const { return _editor.getViewportRendering(); }
 void Manager::setViewportRenderingImpl(bool viewportRendering) { _editor.setViewportRendering(viewportRendering); }
 
-unsigned Manager::getViewportDockIdImpl() { return _editor.getViewportDockId(); }
+unsigned Manager::getViewportDockIdImpl() { return _editor.getCenterDockId(); }
 
 void Manager::setTheme() {
     ImGuiStyle& style = ImGui::GetStyle();

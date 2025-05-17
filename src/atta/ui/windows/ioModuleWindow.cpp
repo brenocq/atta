@@ -10,7 +10,7 @@
 namespace atta::ui {
 
 IOModuleWindow::IOModuleWindow() {
-    setName("IO Module");
+    initialize("IO Module");
     _initialSize = vec2(350.0f, 500.0f);
 }
 

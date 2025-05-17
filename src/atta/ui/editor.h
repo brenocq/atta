@@ -16,13 +16,12 @@
 #include <atta/ui/windows/entityWindow.h>
 #include <atta/ui/windows/logWindow.h>
 #include <atta/ui/windows/viewport/viewportWindows.h>
+#include <imgui.h>
 
 namespace atta::ui {
 
 class Editor final {
   public:
-    enum class DockPosition { LEFT, RIGHT, UP, DOWN, CENTER };
-
     void startUp();
     void shutDown();
 
@@ -36,14 +35,21 @@ class Editor final {
     bool getViewportRendering() const;
     void setViewportRendering(bool viewportRendering);
 
-    unsigned getViewportDockId() { return _viewportDockId; }
+    ImGuiID getCenterDockId() const { return _centerDockId; }
+    ImGuiID getLeftDockId() const { return _leftDockId; }
+    ImGuiID getRightDockId() const { return _rightDockId; }
+    ImGuiID getDownDockId() const { return _downDockId; }
 
   private:
     void setupDocking();
     void renderCameraWindows();
 
     // Docking
-    unsigned _viewportDockId;
+    ImGuiID _rootDockId;
+    ImGuiID _centerDockId;
+    ImGuiID _leftDockId;
+    ImGuiID _rightDockId;
+    ImGuiID _downDockId;
 
     MenuBar _menuBar;
     ToolBar _toolBar;

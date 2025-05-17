@@ -11,7 +11,7 @@
 namespace atta::ui {
 
 GraphicsModuleWindow::GraphicsModuleWindow() {
-    setName("Graphics Module");
+    initialize("Graphics Module");
     _initialSize = vec2(300.0f, 200.0f);
 }
 

@@ -11,7 +11,7 @@
 namespace atta::ui {
 
 SensorModuleWindow::SensorModuleWindow() {
-    setName("Sensor Module");
+    initialize("Sensor Module");
     _initialSize = vec2(250.0f, 300.0f);
 }
 

@@ -12,7 +12,7 @@
 namespace atta::ui {
 
 PhysicsModuleWindow::PhysicsModuleWindow() {
-    setName("Physics Module");
+    initialize("Physics Module");
     _initialSize = vec2(250.0f, 300.0f);
 }
 
