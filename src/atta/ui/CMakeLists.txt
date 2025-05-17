@@ -15,6 +15,7 @@ set(ATTA_UI_MODULE_SOURCE
     widgets/gizmo.cpp
     widgets/help.cpp
     widgets/image.cpp
+    widgets/utils.cpp
 
     windows/timeProfiler/timeProfilerWindow.cpp
     windows/timeProfiler/components/tearDown.cpp

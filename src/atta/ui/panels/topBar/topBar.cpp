@@ -10,6 +10,7 @@
 #include <atta/ui/widgets/align.h>
 #include <atta/ui/widgets/button.h>
 #include <atta/ui/widgets/image.h>
+#include <atta/ui/widgets/utils.h>
 
 #include <atta/event/events/windowClose.h>
 #include <atta/event/interface.h>
@@ -169,7 +170,21 @@ void TopBar::windowMenu() {
 
 void TopBar::helpMenu() {
     if (ImGui::BeginMenu("Help")) {
-        if (ImGui::MenuItem("Version"))
+        if (ImGui::MenuItem("Online documentation"))
+            ui::openUrl("https://atta.brenocq.com/docs");
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("Report a bug"))
+            ui::openUrl("https://github.com/brenocq/atta/issues/new?template=bug-report.md");
+        if (ImGui::MenuItem("Request a feature"))
+            ui::openUrl("https://github.com/brenocq/atta/issues/new?template=feature-request.md");
+        if (ImGui::MenuItem("Gallery"))
+            ui::openUrl("https://github.com/brenocq/atta/discussions/135");
+        if (ImGui::MenuItem("Ask for help (Q&A)"))
+            ui::openUrl("https://github.com/brenocq/atta/discussions/new?category=q-a");
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("About Atta..."))
             VersionWindow::setOpen(true);
         ImGui::EndMenu();
     }
