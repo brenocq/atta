@@ -26,7 +26,7 @@ void StatusBar::render() {
         std::string versionText = "v" + std::string(ATTA_VERSION);
         ImVec2 versionTextSize = ImGui::CalcTextSize(versionText.c_str());
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - versionTextSize.x);
-        ImGui::TextUnformatted(versionText.c_str());
+        ImGui::TextLinkOpenURL(versionText.c_str(), ("https://github.com/brenocq/atta/releases/tag/" + versionText).c_str());
     }
     ImGui::End();
 
