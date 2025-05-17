@@ -66,7 +66,7 @@ void ViewportWindows::renderUI() {
     int i = -1;
     for (auto viewport : _viewports) {
         char nameBuf[128];
-        sprintf(nameBuf, "%s##AttaViewport", viewport->getName().c_str());
+        sprintf(nameBuf, "%s###AttaViewport::%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
         i++;
 
         // Docking
@@ -188,7 +188,7 @@ void ViewportWindows::openViewportModal(StringId sid) { _openModals[sid] = true;
 void ViewportWindows::renderModals() {
     for (auto& viewport : _viewports) {
         char nameBuf[196];
-        sprintf(nameBuf, "%s###ViewportModal%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
+        sprintf(nameBuf, "%s###AttaViewportModal::%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
 
         StringId sid = viewport->getSID();
         bool open = _openModals[sid];

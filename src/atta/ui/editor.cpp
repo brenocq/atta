@@ -107,7 +107,7 @@ void Editor::setupDocking() {
         ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Up, 0.0f, &dockIdUp, &dockIdCenter);
 
         // Dock our windows into the docking node we made above
-        ImGui::DockBuilderDockWindow("Main Viewport##AttaViewport", dockIdCenter);
+        ImGui::DockBuilderDockWindow("###AttaViewport::Main Viewport", dockIdCenter);
         ImGui::DockBuilderDockWindow("Log##AttaLog", dockIdDown);
         ImGui::DockBuilderDockWindow("Scene##AttaScene", dockIdRight);
         ImGui::DockBuilderDockWindow("##AttaToolbar", dockIdUp);
