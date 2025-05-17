@@ -1,7 +1,7 @@
 #include "RosPlugin.hpp"
 
 
-RosPlugin::RosPlugin() {
+ros::ros() {
     // Initialize ROS 2 and create a node and check if ros is not already running
     if (!rclcpp::ok()) { rclcpp::init(0, nullptr); } 
     //create ros node
@@ -9,17 +9,11 @@ RosPlugin::RosPlugin() {
 
     createPublishers();
     createThread();
-    timer_ = node_->create_wall_timer(
-        std::chrono::seconds(2), 
-        std::bind(&RosPlugin::publishData, this)
-    );
-
-    LOG_SUCCESS("Node", "Created");
-    publishData();   
+    LOG_SUCCESS("[Ros Node]", "Created");
 
 }
 
-RosPlugin::~RosPlugin() {
+ros::~ros() {
        //clean up
         if (executor_) {
         executor_->cancel();
@@ -35,21 +29,20 @@ RosPlugin::~RosPlugin() {
 }
 
 
-void RosPlugin::publishData() {
+void ros::publishData(std::string msg) {
     auto message = std_msgs::msg::String();
-    message.data = "Hello from RosPlugin!";
+    message.data = msg;
     publisher_->publish(message);
-    LOG_SUCCESS("Node", "publishData");
-    RCLCPP_INFO(node_->get_logger(), "ROS publishData");
-}
 
-void RosPlugin::createPublishers(){
+    //RCLCPP_INFO(node_->get_logger(),"%s", msg.c_str());
+}
+void ros::createPublishers(){
 
     // Create a publisher on topic "atta"
     publisher_ = node_->create_publisher<std_msgs::msg::String>("atta", 10);
     RCLCPP_INFO(node_->get_logger(), "ROS Plugin Node Started!");
 }
-void RosPlugin::createThread(){
+void ros::createThread(){
 
     // Create and spin executor in separate thread
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();

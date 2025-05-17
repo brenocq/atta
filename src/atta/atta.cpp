@@ -50,8 +50,8 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     sensor::startUp();
     script::startUp();
 
-    ros_node = std::make_shared<RosPlugin>();
-    
+    ros_node = std::make_shared<ros>();
+    ros_node->publishData("Started");
     // Atta is the last one to reveice events
     event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
     event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
@@ -117,7 +117,7 @@ void Atta::loop() {
     PROFILE();
     _currStep = std::clock();
     const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
-
+    ros_node->publishData("another loop");
     if (Config::getState() == Config::State::RUNNING) {
         if (Config::getDesiredStepSpeed() == 0.0f) {
             // Step as fast as possible
@@ -151,6 +151,7 @@ void Atta::step() {
     physics::update(dt);
     sensor::update(dt);
     script::update(dt);
+    //ros::update();
     Config::getInstance()._time += dt;
 }
 
