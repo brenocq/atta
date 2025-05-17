@@ -18,4 +18,10 @@ void verticalAlign(float height, std::function<void()> func) {
     ImGui::SetCursorPosY(originalPosY);
 }
 
+void textRightAligned(const std::string& text) {
+    ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - textSize.x);
+    ImGui::TextUnformatted(text.c_str());
+}
+
 } // namespace atta::ui

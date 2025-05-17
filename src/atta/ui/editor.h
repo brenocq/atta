@@ -10,6 +10,7 @@
 #include <atta/memory/allocatedObject.h>
 #include <atta/ui/drawers/physicsDrawer.h>
 #include <atta/ui/drawers/sensorDrawer.h>
+#include <atta/ui/panels/statusBar/statusBar.h>
 #include <atta/ui/panels/toolBar/toolBar.h>
 #include <atta/ui/panels/topBar/topBar.h>
 #include <atta/ui/windows/entityWindow.h>
@@ -20,6 +21,8 @@ namespace atta::ui {
 
 class Editor final {
   public:
+    enum class DockPosition { LEFT, RIGHT, UP, DOWN, CENTER };
+
     void startUp();
     void shutDown();
 
@@ -44,6 +47,7 @@ class Editor final {
 
     TopBar _topBar;
     ToolBar _toolBar;
+    StatusBar _statusBar;
     EntityWindow _entityWindow;
     LogWindow _logWindow;
     ViewportWindows _viewportWindows;

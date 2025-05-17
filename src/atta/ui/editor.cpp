@@ -8,6 +8,7 @@
 #include <atta/resource/interface.h>
 #include <atta/script/interface.h>
 #include <atta/ui/editor.h>
+#include <imgui.h>
 #include <imgui_internal.h>
 #include <implot.h>
 #include <implot3d.h>
@@ -41,9 +42,10 @@ void Editor::render() {
     // ImPlot::ShowDemoWindow();
     // ImPlot3D::ShowDemoWindow();
 
-    // Top interface
+    // Panels
     _topBar.render();
     _toolBar.render();
+    _statusBar.render();
 
     // Drawers
     _physicsDrawer.update();
@@ -60,7 +62,7 @@ void Editor::render() {
     PhysicsModuleWindow::render();
     SensorModuleWindow::render();
 
-    // Tools
+    // Editor windows
     TimeProfilerWindow::render();
 
     // Windows utils
@@ -100,16 +102,21 @@ void Editor::setupDocking() {
         firstRender = false;
 
         // Create main docking nodes
-        ImGuiID dockIdLeft, dockIdRight, dockIdUp, dockIdDown, dockIdCenter;
-        ImGui::DockBuilderSplitNode(_viewportDockId, ImGuiDir_Left, 0.2f, &dockIdLeft, &dockIdCenter);
+        ImGuiID dockIdStatus, dockIdToolbar, dockIdLeft, dockIdRight, dockIdDown, dockIdCenter;
+        ImGui::DockBuilderSplitNode(_viewportDockId, ImGuiDir_Down, 0.022f, &dockIdStatus, &dockIdCenter);
+        ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Left, 0.2f, &dockIdLeft, &dockIdCenter);
         ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Right, 0.2f, &dockIdRight, &dockIdCenter);
         ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Down, 0.2f, &dockIdDown, &dockIdCenter);
-        ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Up, 0.0f, &dockIdUp, &dockIdCenter);
+        ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Up, 0.0f, &dockIdToolbar, &dockIdCenter);
 
-        // Disable split for toolbar node
-        ImGuiDockNode* node = ImGui::DockBuilderGetNode(dockIdUp);
-        if (node)
-            node->LocalFlags |= ImGuiDockNodeFlags_NoSplit | ImGuiDockNodeFlags_NoDockingOverMe;
+        // Disable split for toolbar/status bar nodes
+        ImGuiDockNodeFlags noDockingFlags = ImGuiDockNodeFlags_NoDockingSplit | ImGuiDockNodeFlags_NoDockingOverCentralNode;
+        ImGuiDockNode* tbNode = ImGui::DockBuilderGetNode(dockIdToolbar);
+        ImGuiDockNode* sbNode = ImGui::DockBuilderGetNode(dockIdStatus);
+        if (tbNode)
+            tbNode->LocalFlags |= noDockingFlags;
+        if (sbNode)
+            sbNode->LocalFlags |= noDockingFlags;
 
         // Default docking for viewport windows
         ImGui::DockBuilderDockWindow("###AttaViewport::Main Viewport", dockIdCenter);
@@ -121,7 +128,8 @@ void Editor::setupDocking() {
         ImGui::DockBuilderDockWindow("Sensor Module##Atta", dockIdLeft);
 
         // Default docking for editor windows
-        ImGui::DockBuilderDockWindow("##AttaToolbar", dockIdUp);
+        ImGui::DockBuilderDockWindow("##AttaToolBar", dockIdToolbar);
+        ImGui::DockBuilderDockWindow("##AttaStatusBar", dockIdStatus);
         ImGui::DockBuilderDockWindow("Log##Atta", dockIdDown);
         ImGui::DockBuilderDockWindow("Scene##Atta", dockIdRight);
         ImGui::DockBuilderFinish(_viewportDockId);

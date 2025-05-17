@@ -32,6 +32,8 @@ class Manager final {
     friend void setViewportRendering(bool viewportRendering);
     friend unsigned getViewportDockId();
 
+    const Editor& getEditor() const { return _editor; }
+
   private:
     void startUpImpl();
     void shutDownImpl();

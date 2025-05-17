@@ -27,11 +27,13 @@ void ToolBar::render() {
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 1.0f));
 
-    ImGuiWindowClass window_class;
-    window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoResize;
-    ImGui::SetNextWindowClass(&window_class);
+    // Setup panel window class
+    ImGuiWindowClass windowClass;
+    windowClass.DockNodeFlagsOverrideSet =
+        ImGuiDockNodeFlags_NoDockingSplit | ImGuiDockNodeFlags_NoDockingOverCentralNode | ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoResize;
+    ImGui::SetNextWindowClass(&windowClass);
 
-    ImGui::Begin("##AttaToolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    ImGui::Begin("##AttaToolBar", nullptr, ImGuiWindowFlags_NoDecoration);
     {
         float buttonH = ImGui::GetWindowHeight() - 10.0f;
         ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x * 0.5f -

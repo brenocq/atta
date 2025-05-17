@@ -8,6 +8,7 @@ set(ATTA_UI_MODULE_SOURCE
     panels/toolBar/toolBar.cpp
     panels/topBar/localWindows/repoWindow.cpp
     panels/topBar/localWindows/versionWindow.cpp
+    panels/statusBar/statusBar.cpp
 
     widgets/align.cpp
     widgets/button.cpp
