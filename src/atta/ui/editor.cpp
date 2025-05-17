@@ -13,7 +13,7 @@
 #include <implot.h>
 #include <implot3d.h>
 
-#include <atta/ui/panels/topBar/localWindows/versionWindow.h>
+#include <atta/ui/panels/menuBar/localWindows/versionWindow.h>
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
 #include <atta/ui/windows/physicsModuleWindow.h>
@@ -43,7 +43,7 @@ void Editor::render() {
     // ImPlot3D::ShowDemoWindow();
 
     // Panels
-    _topBar.render();
+    _menuBar.render();
     _toolBar.render();
     _statusBar.render();
 
@@ -68,7 +68,7 @@ void Editor::render() {
     // Windows utils
     FileSelectionWindow::render();
 
-    // Topbar windows
+    // MenuBar windows
     VersionWindow::render();
 
     renderCameraWindows();

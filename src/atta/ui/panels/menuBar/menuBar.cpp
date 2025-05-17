@@ -1,12 +1,12 @@
 //--------------------------------------------------
 // Atta UI Module
-// topBar.cpp
+// menuBar.cpp
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#include <atta/ui/panels/topBar/topBar.h>
+#include <atta/ui/panels/menuBar/menuBar.h>
 
-#include <atta/ui/panels/topBar/localWindows/versionWindow.h>
+#include <atta/ui/panels/menuBar/localWindows/versionWindow.h>
 #include <atta/ui/widgets/align.h>
 #include <atta/ui/widgets/button.h>
 #include <atta/ui/widgets/image.h>
@@ -35,9 +35,9 @@
 
 namespace atta::ui {
 
-TopBar::TopBar() : _showPreferences(false) {}
+MenuBar::MenuBar() : _showPreferences(false) {}
 
-void TopBar::render() {
+void MenuBar::render() {
     if (ImGui::BeginMainMenuBar()) {
         ui::image("icons/atta_20x20.png", vec2(20, 20));
         fileMenu();
@@ -60,7 +60,7 @@ void TopBar::render() {
     }
 }
 
-void TopBar::fileMenu() {
+void MenuBar::fileMenu() {
     if (ImGui::BeginMenu("File")) {
         if (file::isProjectOpen()) {
             ImGui::Text(file::getProject()->getName().c_str());
@@ -104,7 +104,7 @@ void TopBar::fileMenu() {
     }
 }
 
-void TopBar::editMenu() {
+void MenuBar::editMenu() {
     if (ImGui::BeginMenu("Edit")) {
         if (ImGui::MenuItem("Preferences"))
             _showPreferences = true;
@@ -113,7 +113,7 @@ void TopBar::editMenu() {
     }
 }
 
-void TopBar::windowMenu() {
+void MenuBar::windowMenu() {
     if (ImGui::BeginMenu("Window")) {
         //---------- Viewport windows ----------//
         if (ImGui::BeginMenu("Viewports")) {
@@ -191,7 +191,7 @@ void TopBar::windowMenu() {
     }
 }
 
-void TopBar::helpMenu() {
+void MenuBar::helpMenu() {
     if (ImGui::BeginMenu("Help")) {
         if (ImGui::MenuItem("Online documentation"))
             ui::openUrl("https://atta.brenocq.com/docs");
@@ -213,7 +213,7 @@ void TopBar::helpMenu() {
     }
 }
 
-void TopBar::preferences() {
+void MenuBar::preferences() {
     if (_showPreferences) {
         if (ImGui::Begin("Preferences", &_showPreferences)) {
             std::vector<std::string> stringIds = StringId::getStrings();
@@ -224,7 +224,7 @@ void TopBar::preferences() {
     }
 }
 
-void TopBar::openProjectModal() {
+void MenuBar::openProjectModal() {
     // Check if user chose some file
     if (_waitingChooseAttaFile && !FileSelectionWindow::getChosenFile().empty()) {
         _waitingChooseAttaFile = false;
@@ -238,7 +238,7 @@ void TopBar::openProjectModal() {
         _waitingChooseAttaFile = false;
 }
 
-void TopBar::openPublishedWindow() {
+void MenuBar::openPublishedWindow() {
     // #ifdef ATTA_CPPRESTSDK_SUPPORT
     //         static bool lastShow = false;
     //         std::string modalName = "Open Published##OpenPUblishedModal";
@@ -310,11 +310,11 @@ void TopBar::openPublishedWindow() {
     //                     }
     //                     catch (const http_exception& e)
     //                     {
-    //                         LOG_WARN("ui::TopBar", "Could not get published projects json: $0", e.what());
+    //                         LOG_WARN("ui::MenuBar", "Could not get published projects json: $0", e.what());
     //                     }
     //                     catch (const json::json_exception& e)
     //                     {
-    //                         LOG_WARN("ui::TopBar", "Could not serialize published json: $0", e.what());
+    //                         LOG_WARN("ui::MenuBar", "Could not serialize published json: $0", e.what());
     //                     }
     //                 });
     //         }
@@ -408,7 +408,7 @@ void TopBar::openPublishedWindow() {
     //                                     fs::create_directories(pathToClone);
     //                                 fs::current_path(pathToClone);
     //                                 std::string command = "git clone git@github.com:" + project.username+"/"+project.reponame+".git";
-    //                                 LOG_VERBOSE("ui::TopBar", "Running command: $0", command);
+    //                                 LOG_VERBOSE("ui::MenuBar", "Running command: $0", command);
     //                                 std::system(command.c_str());
     //                                 fs::current_path(prevPath);
     //                             }
@@ -442,7 +442,7 @@ void TopBar::openPublishedWindow() {
     // #endif// ATTA_CPPRESTSDK_SUPPORT
 }
 
-void TopBar::createProjectModal() {
+void MenuBar::createProjectModal() {
     static bool lastShow = false;
     if (_showCreateProject && !lastShow) {
         // OBS: Doing this because can't open popup inside menuitem
@@ -477,7 +477,7 @@ void TopBar::createProjectModal() {
     }
 }
 
-void TopBar::saveProjectModal() {
+void MenuBar::saveProjectModal() {
     static bool lastShow = false;
     if (_showSaveProject && !lastShow) {
         // OBS: Doing this because can't open popup inside menuitem

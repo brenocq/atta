@@ -1,19 +1,19 @@
 //--------------------------------------------------
 // Atta UI Module
-// topBar.h
+// menuBar.h
 // Date: 2021-09-01
 // By Breno Cunha Queiroz
 //--------------------------------------------------
-#ifndef ATTA_UI_PANELS_TOP_BAR_TOP_BAR_H
-#define ATTA_UI_PANELS_TOP_BAR_TOP_BAR_H
+#ifndef ATTA_UI_PANELS_MENU_BAR_MENU_BAR_H
+#define ATTA_UI_PANELS_MENU_BAR_MENU_BAR_H
 
-#include <atta/ui/panels/topBar/localWindows/repoWindow.h>
+#include <atta/ui/panels/menuBar/localWindows/repoWindow.h>
 
 namespace atta::ui {
 
-class TopBar {
+class MenuBar {
   public:
-    TopBar();
+    MenuBar();
 
     void render();
 
@@ -44,4 +44,4 @@ class TopBar {
 
 } // namespace atta::ui
 
-#endif // ATTA_UI_PANELS_TOP_BAR_TOP_BAR_H
+#endif // ATTA_UI_PANELS_MENU_BAR_MENU_BAR_H

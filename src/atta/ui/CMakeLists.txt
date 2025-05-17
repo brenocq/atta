@@ -4,10 +4,10 @@ set(ATTA_UI_MODULE_SOURCE
 	drawers/physicsDrawer.cpp
 	drawers/sensorDrawer.cpp
 
-    panels/topBar/topBar.cpp
+    panels/menuBar/menuBar.cpp
     panels/toolBar/toolBar.cpp
-    panels/topBar/localWindows/repoWindow.cpp
-    panels/topBar/localWindows/versionWindow.cpp
+    panels/menuBar/localWindows/repoWindow.cpp
+    panels/menuBar/localWindows/versionWindow.cpp
     panels/statusBar/statusBar.cpp
 
     widgets/align.cpp

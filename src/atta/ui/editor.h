@@ -10,9 +10,9 @@
 #include <atta/memory/allocatedObject.h>
 #include <atta/ui/drawers/physicsDrawer.h>
 #include <atta/ui/drawers/sensorDrawer.h>
+#include <atta/ui/panels/menuBar/menuBar.h>
 #include <atta/ui/panels/statusBar/statusBar.h>
 #include <atta/ui/panels/toolBar/toolBar.h>
-#include <atta/ui/panels/topBar/topBar.h>
 #include <atta/ui/windows/entityWindow.h>
 #include <atta/ui/windows/logWindow.h>
 #include <atta/ui/windows/viewport/viewportWindows.h>
@@ -45,7 +45,7 @@ class Editor final {
     // Docking
     unsigned _viewportDockId;
 
-    TopBar _topBar;
+    MenuBar _menuBar;
     ToolBar _toolBar;
     StatusBar _statusBar;
     EntityWindow _entityWindow;

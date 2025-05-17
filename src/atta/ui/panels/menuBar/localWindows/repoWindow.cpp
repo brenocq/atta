@@ -5,7 +5,7 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/file/manager.h>
-#include <atta/ui/panels/topBar/localWindows/repoWindow.h>
+#include <atta/ui/panels/menuBar/localWindows/repoWindow.h>
 #include <imgui.h>
 
 namespace atta::ui {
