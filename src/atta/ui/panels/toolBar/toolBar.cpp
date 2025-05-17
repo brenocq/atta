@@ -31,7 +31,7 @@ void ToolBar::render() {
     window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoResize;
     ImGui::SetNextWindowClass(&window_class);
 
-    ImGui::Begin("##Toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    ImGui::Begin("##AttaToolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     {
         float buttonH = ImGui::GetWindowHeight() - 10.0f;
         ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x * 0.5f -
