@@ -92,7 +92,7 @@ void Editor::setupDocking() {
     //----- Create DockSpace -----//
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
     _viewportDockId = ImGui::GetID("##AttaDockSpace");
-    ImGui::DockSpaceOverViewport(_viewportDockId, viewport);
+    ImGui::DockSpaceOverViewport(_viewportDockId, viewport, ImGuiDockNodeFlags_NoWindowMenuButton);
 
     //----- Create DockSpace nodes -----//
     static bool firstRender = true;
@@ -106,6 +106,11 @@ void Editor::setupDocking() {
         ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Down, 0.2f, &dockIdDown, &dockIdCenter);
         ImGui::DockBuilderSplitNode(dockIdCenter, ImGuiDir_Up, 0.0f, &dockIdUp, &dockIdCenter);
 
+        // Disable split for toolbar node
+        ImGuiDockNode* node = ImGui::DockBuilderGetNode(dockIdUp);
+        if (node)
+            node->LocalFlags |= ImGuiDockNodeFlags_NoSplit | ImGuiDockNodeFlags_NoDockingOverMe;
+
         // Default docking for viewport windows
         ImGui::DockBuilderDockWindow("###AttaViewport::Main Viewport", dockIdCenter);
 
@@ -116,9 +121,9 @@ void Editor::setupDocking() {
         ImGui::DockBuilderDockWindow("Sensor Module##Atta", dockIdLeft);
 
         // Default docking for editor windows
+        ImGui::DockBuilderDockWindow("##AttaToolbar", dockIdUp);
         ImGui::DockBuilderDockWindow("Log##Atta", dockIdDown);
         ImGui::DockBuilderDockWindow("Scene##Atta", dockIdRight);
-        ImGui::DockBuilderDockWindow("##AttaToolbar", dockIdUp);
         ImGui::DockBuilderFinish(_viewportDockId);
     }
 }
