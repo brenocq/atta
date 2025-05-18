@@ -25,6 +25,7 @@ class ProjectSerializer final {
     Section serializePhysicsModule();
     Section serializeSensorModule();
     std::vector<Section> serializeResources();
+    std::vector<Section> serializeWindows();
     std::vector<Section> serializeViewports();
     std::vector<Section> serializeNodes();
 

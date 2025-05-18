@@ -8,6 +8,7 @@
 #define ATTA_UI_INTERFACE_H
 
 #include <atta/component/interface.h>
+#include <atta/ui/windowInfo.h>
 #include <atta/ui/windows/viewport/viewport.h>
 
 namespace atta::ui {
@@ -33,6 +34,9 @@ void addViewport(std::shared_ptr<ui::Viewport> viewport);
 bool getViewportRendering();
 void setViewportRendering(bool viewportRendering);
 unsigned getViewportDockId();
+
+//----- Window -----//
+const std::vector<ui::WindowInfo>& getWindowInfos();
 
 } // namespace atta::ui
 

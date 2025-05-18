@@ -10,6 +10,7 @@
 #include <atta/graphics/interface.h>
 #include <atta/ui/editor.h>
 #include <atta/ui/interface.h>
+#include <atta/ui/windowInfo.h>
 
 namespace atta::ui {
 
@@ -32,6 +33,8 @@ class Manager final {
     friend void setViewportRendering(bool viewportRendering);
     friend unsigned getViewportDockId();
 
+    friend const std::vector<WindowInfo>& getWindowInfos();
+
     const Editor& getEditor() const { return _editor; }
 
   private:
@@ -49,6 +52,8 @@ class Manager final {
     bool getViewportRenderingImpl() const;
     void setViewportRenderingImpl(bool viewportRendering);
     unsigned getViewportDockIdImpl();
+
+    const std::vector<WindowInfo>& getWindowInfosImpl() const;
 
     void setTheme();
     void initOpenGL();

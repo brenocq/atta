@@ -33,9 +33,10 @@ set(ATTA_UI_MODULE_SOURCE
     windows/sensorModuleWindow.cpp
     windows/window.cpp
 
+    editor.cpp
     interface.cpp
     manager.cpp
-    editor.cpp
+    windowInfo.cpp
 )
 
 add_library(atta_ui_module STATIC

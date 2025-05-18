@@ -379,6 +379,11 @@ void Manager::setViewportRenderingImpl(bool viewportRendering) { _editor.setView
 
 unsigned Manager::getViewportDockIdImpl() { return _editor.getCenterDockId(); }
 
+const std::vector<WindowInfo>& Manager::getWindowInfosImpl() const {
+    LOG_WARN("ui::Manager", "getWindowInfosImpl() is not implemented yet.");
+    return {};
+}
+
 void Manager::setTheme() {
     ImGuiStyle& style = ImGui::GetStyle();
 

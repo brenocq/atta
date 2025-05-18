@@ -45,6 +45,10 @@ void ProjectSerializer::serialize() {
     for (const Section& resource : resources)
         serializer.addSection(resource);
 
+    std::vector<Section> windows = serializeWindows();
+    for (const Section& window : windows)
+        serializer.addSection(window);
+
     std::vector<Section> viewports = serializeViewports();
     for (const Section& viewport : viewports)
         serializer.addSection(viewport);
@@ -189,6 +193,15 @@ std::vector<Section> ProjectSerializer::serializeResources() {
 
         sections.push_back(std::move(section));
     }
+
+    return sections;
+}
+
+std::vector<Section> ProjectSerializer::serializeWindows() {
+    std::vector<Section> sections;
+
+    const std::vector<ui::WindowInfo>& windowInfos = ui::getWindowInfos();
+    LOG_DEBUG("ui::ProjectSerializer", "Serializing [w]$0[] windows", windowInfos.size());
 
     return sections;
 }
