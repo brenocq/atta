@@ -188,7 +188,7 @@ void ViewportWindows::openViewportModal(StringId sid) { _openModals[sid] = true;
 void ViewportWindows::renderModals() {
     for (auto& viewport : _viewports) {
         char nameBuf[196];
-        sprintf(nameBuf, "%s###%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
+        sprintf(nameBuf, "%s###AttaPrivate%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
 
         StringId sid = viewport->getSID();
         bool open = _openModals[sid];

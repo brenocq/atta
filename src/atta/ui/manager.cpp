@@ -405,14 +405,17 @@ const std::vector<WindowInfo> Manager::getWindowInfosImpl() const {
         // Skip ImGui debug window
         if (windowInfo.name == "Debug##Default")
             continue;
-        // Skip fixed Atta windows
-        if (windowInfo.name == "##AttaToolBar" || windowInfo.name == "##AttaMenuBar" || windowInfo.name == "##AttaStatusBar")
-            continue;
-        // Skip menus
-        if (windowInfo.name == "##MainMenuBar" || windowInfo.name.find("##Menu") != std::string::npos)
-            continue;
         // Skip ImGui main dock space window
         if (windowInfo.name.find("WindowOverViewport_") != std::string::npos)
+            continue;
+        // Skip ImGui menus
+        if (windowInfo.name == "##MainMenuBar" || windowInfo.name.find("##Menu") != std::string::npos)
+            continue;
+        // Skip ImGui popups
+        if (windowInfo.name.find("##Popup_") != std::string::npos)
+            continue;
+        // Skip Atta private windows
+        if (windowInfo.name.find("##AttaPrivate") != std::string::npos)
             continue;
 
         LOG_DEBUG("ui::Manager", "Window: $0 (pos $1 size $2 col $3)", windowInfo.name, windowInfo.position, windowInfo.size, windowInfo.collapsed);

@@ -118,8 +118,8 @@ void Editor::setupDocking() {
             sbNode->LocalFlags |= noDockingFlags;
 
         // Default docking for editor windows
-        ImGui::DockBuilderDockWindow("##AttaToolBar", dockIdToolbar);
-        ImGui::DockBuilderDockWindow("##AttaStatusBar", dockIdStatus);
+        ImGui::DockBuilderDockWindow("##AttaPrivateToolBar", dockIdToolbar);
+        ImGui::DockBuilderDockWindow("##AttaPrivateStatusBar", dockIdStatus);
         ImGui::DockBuilderFinish(_rootDockId);
     }
 }
@@ -131,10 +131,12 @@ void Editor::renderCameraWindows() {
         if (cameras[i].showWindow) {
             component::Name* name = component::getComponent<component::Name>(cameras[i].entity);
             std::string windowName = name != nullptr ? name->name : "Camera";
-            ImGui::Begin((windowName + "##CameraWindow" + std::to_string(cameras[i].entity)).c_str(), &(cameras[i].showWindow));
+            ImGui::Begin((windowName + "##AttaPrivateCameraWindow" + std::to_string(cameras[i].entity)).c_str(), &(cameras[i].showWindow));
             {
-                ImVec2 size = ImVec2(cameras[i].renderer->getWidth(), cameras[i].renderer->getHeight());
-                ImGui::Image((ImTextureID)(intptr_t)cameras[i].renderer->getImGuiTexture(), size);
+                // TODO it will crash if the renderer did not render yet
+                // ImVec2 size = ImVec2(cameras[i].renderer->getWidth(), cameras[i].renderer->getHeight());
+                // ImGui::Image((ImTextureID)(intptr_t)cameras[i].renderer->getImGuiTexture(), size);
+                ImGui::Text("TODO :)");
             }
             ImGui::End();
         }

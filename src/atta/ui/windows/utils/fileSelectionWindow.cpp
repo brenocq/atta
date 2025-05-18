@@ -10,6 +10,7 @@ namespace atta::ui {
 
 FileSelectionWindow::FileSelectionWindow() {
     setName("File Selection");
+    _isPrivate = true;
     setPathImpl(fs::current_path());
 }
 
@@ -86,7 +87,7 @@ void FileSelectionWindow::renderFileTree() {
     static int selectedItem = 0;
 
     ImVec2 region = ImGui::GetContentRegionAvail();
-    if (ImGui::BeginTable("filetree", 3, flags, ImVec2(region.x, region.y - 30.0f))) {
+    if (ImGui::BeginTable("File Tree", 3, flags, ImVec2(region.x, region.y - 30.0f))) {
         ImGui::TableSetupScrollFreeze(0, 1); // Top row always visible
         ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_None);
         ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed, 50.0f);

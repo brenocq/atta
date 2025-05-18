@@ -58,6 +58,7 @@ class Window {
         _sid = StringId(name);
         _name = name;
         _open = false;
+        _isPrivate = false;
         _initialDockPosition = dockPosition;
         _initialSize = size;
         _initialPosition = position;
@@ -70,6 +71,7 @@ class Window {
     StringId _sid;
     std::string _name;
     bool _open;
+    bool _isPrivate; // If true, the window will not be serialized to the project file
 
     // Initial window state
     vec2 _initialSize;
@@ -91,7 +93,7 @@ void Window<T>::render() {
             ImGui::SetNextWindowPos(ImVec2(window._initialPosition.x, window._initialPosition.y), ImGuiCond_FirstUseEver);
 
         // Render window
-        ImGui::Begin((window._name + "##Atta").c_str(), &(window._open));
+        ImGui::Begin((window._name + "##Atta" + (window._isPrivate ? "Private" : "")).c_str(), &(window._open));
         window.renderImpl();
         ImGui::End();
     }

@@ -33,7 +33,7 @@ void ToolBar::render() {
         ImGuiDockNodeFlags_NoDockingSplit | ImGuiDockNodeFlags_NoDockingOverCentralNode | ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoResize;
     ImGui::SetNextWindowClass(&windowClass);
 
-    ImGui::Begin("##AttaToolBar", nullptr, ImGuiWindowFlags_NoDecoration);
+    ImGui::Begin("##AttaPrivateToolBar", nullptr, ImGuiWindowFlags_NoDecoration);
     {
         float buttonH = ImGui::GetWindowHeight() - 10.0f;
         ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMax().x * 0.5f -

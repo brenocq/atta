@@ -10,7 +10,10 @@
 
 namespace atta::ui {
 
-VersionWindow::VersionWindow() { setName("Version"); }
+VersionWindow::VersionWindow() {
+    setName("Version");
+    _isPrivate = true;
+}
 
 void VersionWindow::renderImpl() {
     static bool checkVersions = true;

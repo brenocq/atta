@@ -21,7 +21,7 @@ void StatusBar::render() {
         ImGuiDockNodeFlags_NoDockingSplit | ImGuiDockNodeFlags_NoDockingOverCentralNode | ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoResize;
     ImGui::SetNextWindowClass(&windowClass);
 
-    ImGui::Begin("##AttaStatusBar", nullptr, ImGuiWindowFlags_NoDecoration);
+    ImGui::Begin("##AttaPrivateStatusBar", nullptr, ImGuiWindowFlags_NoDecoration);
     {
         std::string versionText = "v" + std::string(ATTA_VERSION);
         ImVec2 versionTextSize = ImGui::CalcTextSize(versionText.c_str());
