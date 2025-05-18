@@ -33,11 +33,14 @@ set(ATTA_ASSIMP_TARGETS "")
         URL "http://storage.googleapis.com/atta-deps/assimp-5.2.4-light.zip"
     )
     atta_log(Info Extern "Fetching Assimp...")
-    atta_FetchContent_MakeAvailable(assimp) 
+    atta_FetchContent_MakeAvailable(assimp)
 
     atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/assimp-src/include)
     atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/assimp-build/include)
     atta_add_libs(assimp)
+
+    # Also make assimp available in the atta namespace
+    add_library(atta::assimp ALIAS assimp)
 
     atta_log(Success Extern "Assimp support (source)")
     set(ATTA_ASSIMP_SUPPORT TRUE)

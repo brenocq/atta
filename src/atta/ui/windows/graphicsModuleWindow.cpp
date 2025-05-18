@@ -16,20 +16,49 @@ GraphicsModuleWindow::GraphicsModuleWindow() {
 }
 
 void GraphicsModuleWindow::renderImpl() {
-    // Graphics API control
-    const char* graphicsAPIs[] = {"OpenGL",
-#if ATTA_VULKAN_SUPPORT
-                                  "Vulkan"
-#endif
+    static std::vector<gfx::GraphicsAPI::Type> supportedGraphicsAPIs{};
+    std::vector<const char*> supportedGraphicsAPIsStr{};
+    static std::map<gfx::GraphicsAPI::Type, const char*> typeToString = {
+        {gfx::GraphicsAPI::Type::OPENGL, "OpenGL"},
+        {gfx::GraphicsAPI::Type::VULKAN, "Vulkan"},
     };
-    int currentGraphicsAPI = int(graphics::getGraphicsAPI()->getType());
-    if (ImGui::Combo("Graphics API", &currentGraphicsAPI, graphicsAPIs, IM_ARRAYSIZE(graphicsAPIs)))
-        graphics::setGraphicsAPI(graphics::GraphicsAPI::Type(currentGraphicsAPI));
+    static std::map<const char*, gfx::GraphicsAPI::Type> stringToType = {
+        {"OpenGL", gfx::GraphicsAPI::Type::OPENGL},
+        {"Vulkan", gfx::GraphicsAPI::Type::VULKAN},
+    };
+
+    // Get supported graphics APIs (once)
+    if (supportedGraphicsAPIs.empty()) {
+        supportedGraphicsAPIs = gfx::getSupportedGraphicsAPIs();
+        for (auto api : supportedGraphicsAPIs)
+            supportedGraphicsAPIsStr.push_back(typeToString[api]);
+    }
+
+    // Get the current API index
+    int currentGraphicsAPIIndex = 0;
+    gfx::GraphicsAPI::Type currentAPIType = graphics::getGraphicsAPI()->getType();
+    for (size_t i = 0; i < supportedGraphicsAPIs.size(); ++i) {
+        if (supportedGraphicsAPIs[i] == currentAPIType) {
+            currentGraphicsAPIIndex = static_cast<int>(i);
+            break;
+        }
+    }
+
+    // Combo to change the graphics API
+    auto getter = [](void* data, int idx) -> const char* {
+        std::vector<gfx::GraphicsAPI::Type>* apis = static_cast<std::vector<gfx::GraphicsAPI::Type>*>(data);
+        if (idx >= 0 && idx < apis->size()) {
+            return typeToString[(*apis)[idx]]; // Assuming typeToString is still available
+        }
+        return nullptr;
+    };
+    if (ImGui::Combo("Graphics API", &currentGraphicsAPIIndex, getter, &supportedGraphicsAPIs, supportedGraphicsAPIs.size()))
+        gfx::setGraphicsAPI(supportedGraphicsAPIs[currentGraphicsAPIIndex]);
 
     // Rendering control
     float graphicsFPS = graphics::getGraphicsFPS();
     if (ImGui::DragFloat("Graphics FPS", &graphicsFPS, 0.1f, 10.0f, 60.0f, "%.1f") && graphicsFPS >= 10.0f)
-        graphics::setGraphicsFPS(graphicsFPS);
+        gfx::setGraphicsFPS(graphicsFPS);
 }
 
 } // namespace atta::ui

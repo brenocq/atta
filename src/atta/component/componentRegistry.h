@@ -18,12 +18,6 @@ class ComponentRegistry {
     ComponentRegistry(unsigned sizeofT, std::string typeidName, size_t typeidHash)
         : _sizeof(sizeofT), _typeidName(typeidName), _typeidHash(typeidHash), _index(0), _poolCreated(false) {}
 
-    virtual void renderUI(Component* component) = 0;
-
-    virtual void serialize(std::ostream& os, Component* component) = 0;
-    virtual void deserialize(std::istream& is, Component* component) = 0;
-    unsigned getSerializedSize(Component* component);
-
     virtual ComponentDescription& getDescription() = 0;
     virtual std::vector<uint8_t> getDefault() = 0;
     unsigned getSizeof() const { return _sizeof; }
@@ -36,10 +30,6 @@ class ComponentRegistry {
 
   protected:
     void registerToManager();
-
-    template <AttributeType attributeType>
-    void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId) {}
-    void renderUIAttribute(AttributeDescription aDesc, void* d, unsigned size, std::string imguiId);
 
     unsigned _sizeof;        // sizeof(T)
     std::string _typeidName; // typeid(T).name()
@@ -59,5 +49,4 @@ class ComponentRegistry {
 inline std::ostream& operator<<(std::ostream& os, ComponentRegistry& c) { return os << c.getDescription().name; }
 } // namespace atta::component
 
-#include <atta/component/componentRegistry.inl>
 #endif // ATTA_COMPONENT_COMPONENT_REGISTRY_H

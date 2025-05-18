@@ -11,8 +11,8 @@ set(ATTA_SCRIPT_MODULE_SOURCE
     project/project.cpp
     project/projectSerializer.cpp
 
-    serializer/serializable.cpp
     serializer/section.cpp
+    serializer/serializer.cpp
 )
 
 add_library(atta_file_module STATIC
@@ -25,7 +25,7 @@ atta_add_libs(atta_file_module)
 
 ########## Testing ##########
 set(ATTA_FILE_MODULE_TEST_SOURCES
-    tests/section.cpp
+    tests/serializer.cpp
 )
 # Add to global test
 atta_add_tests(${ATTA_FILE_MODULE_TEST_SOURCES})
