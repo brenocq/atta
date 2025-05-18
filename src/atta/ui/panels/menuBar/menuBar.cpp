@@ -27,6 +27,7 @@
 #include <atta/ui/windows/entityWindow.h>
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
+#include <atta/ui/windows/outputWindow.h>
 #include <atta/ui/windows/physicsModuleWindow.h>
 #include <atta/ui/windows/sensorModuleWindow.h>
 #include <atta/ui/windows/timeProfiler/timeProfilerWindow.h>
@@ -183,6 +184,10 @@ void MenuBar::windowMenu() {
         // bool entityWindowOpen = EntityWindow::getOpen();
         // if (ImGui::Checkbox("Entity", &entityWindowOpen))
         //    EntityWindow::setOpen(entityWindowOpen);
+
+        bool outputOpen = OutputWindow::getOpen();
+        if (ImGui::MenuItem("Output", nullptr, &outputOpen))
+            OutputWindow::setOpen(outputOpen);
 
         if (ImGui::MenuItem("Time Profiler"))
             TimeProfilerWindow::setOpen(true);

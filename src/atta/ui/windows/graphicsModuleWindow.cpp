@@ -10,10 +10,7 @@
 
 namespace atta::ui {
 
-GraphicsModuleWindow::GraphicsModuleWindow() {
-    initialize("Graphics Module");
-    _initialSize = vec2(300.0f, 200.0f);
-}
+GraphicsModuleWindow::GraphicsModuleWindow() { initialize("Graphics Module"); }
 
 void GraphicsModuleWindow::renderImpl() {
     static std::vector<gfx::GraphicsAPI::Type> supportedGraphicsAPIs{};

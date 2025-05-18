@@ -11,10 +11,7 @@
 
 namespace atta::ui {
 
-PhysicsModuleWindow::PhysicsModuleWindow() {
-    initialize("Physics Module");
-    _initialSize = vec2(250.0f, 300.0f);
-}
+PhysicsModuleWindow::PhysicsModuleWindow() { initialize("Physics Module"); }
 
 void PhysicsModuleWindow::renderImpl() {
     ImGui::Text("Engine");

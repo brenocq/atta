@@ -10,10 +10,7 @@
 
 namespace atta::ui {
 
-SensorModuleWindow::SensorModuleWindow() {
-    initialize("Sensor Module");
-    _initialSize = vec2(250.0f, 300.0f);
-}
+SensorModuleWindow::SensorModuleWindow() { initialize("Sensor Module"); }
 
 void SensorModuleWindow::renderImpl() {
     bool showCameras = sensor::getShowCameras();

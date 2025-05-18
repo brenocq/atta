@@ -15,6 +15,7 @@
 #include <atta/ui/panels/menuBar/localWindows/versionWindow.h>
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
+#include <atta/ui/windows/outputWindow.h>
 #include <atta/ui/windows/physicsModuleWindow.h>
 #include <atta/ui/windows/sensorModuleWindow.h>
 #include <atta/ui/windows/timeProfiler/timeProfilerWindow.h>
@@ -52,7 +53,7 @@ void Editor::render() {
 
     // Windows
     _entityWindow.render();
-    _logWindow.render();
+    OutputWindow::render();
     _viewportWindows.renderUI();
 
     // Module windows
@@ -120,16 +121,9 @@ void Editor::setupDocking() {
         // Default docking for viewport windows
         ImGui::DockBuilderDockWindow("###AttaViewport::Main Viewport", _centerDockId);
 
-        // Default docking for module windows
-        // ImGui::DockBuilderDockWindow("IO Module##Atta", dockIdLeft);
-        // ImGui::DockBuilderDockWindow("Graphics Module##Atta", dockIdLeft);
-        // ImGui::DockBuilderDockWindow("Physics Module##Atta", dockIdLeft);
-        // ImGui::DockBuilderDockWindow("Sensor Module##Atta", dockIdLeft);
-
         // Default docking for editor windows
         ImGui::DockBuilderDockWindow("##AttaToolBar", dockIdToolbar);
         ImGui::DockBuilderDockWindow("##AttaStatusBar", dockIdStatus);
-        ImGui::DockBuilderDockWindow("Log##Atta", _downDockId);
         ImGui::DockBuilderDockWindow("Scene##Atta", _rightDockId);
         ImGui::DockBuilderFinish(_rootDockId);
     }

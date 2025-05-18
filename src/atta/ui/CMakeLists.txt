@@ -28,7 +28,7 @@ set(ATTA_UI_MODULE_SOURCE
     windows/entityWindow.cpp
     windows/graphicsModuleWindow.cpp
     windows/ioModuleWindow.cpp
-    windows/logWindow.cpp
+    windows/outputWindow.cpp
     windows/physicsModuleWindow.cpp
     windows/sensorModuleWindow.cpp
     windows/window.cpp

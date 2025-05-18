@@ -14,7 +14,6 @@
 #include <atta/ui/panels/statusBar/statusBar.h>
 #include <atta/ui/panels/toolBar/toolBar.h>
 #include <atta/ui/windows/entityWindow.h>
-#include <atta/ui/windows/logWindow.h>
 #include <atta/ui/windows/viewport/viewportWindows.h>
 #include <imgui.h>
 
@@ -55,7 +54,6 @@ class Editor final {
     ToolBar _toolBar;
     StatusBar _statusBar;
     EntityWindow _entityWindow;
-    LogWindow _logWindow;
     ViewportWindows _viewportWindows;
 
     // Drawers
