@@ -188,7 +188,7 @@ void ViewportWindows::openViewportModal(StringId sid) { _openModals[sid] = true;
 void ViewportWindows::renderModals() {
     for (auto& viewport : _viewports) {
         char nameBuf[196];
-        sprintf(nameBuf, "%s###AttaViewportModal::%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
+        sprintf(nameBuf, "%s###%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
 
         StringId sid = viewport->getSID();
         bool open = _openModals[sid];
@@ -214,9 +214,9 @@ void ViewportWindows::createDefaultViewports() {
     _viewportsNext.clear();
 
     Viewport::CreateInfo viewportInfo;
+    viewportInfo.name = "Main Viewport";
     viewportInfo.renderer = std::make_shared<gfx::PbrRenderer>();
     viewportInfo.camera = std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{});
-    viewportInfo.sid = StringId("Main Viewport");
     _viewportsNext.push_back(std::make_shared<Viewport>(viewportInfo));
     _swapViewports = true;
 }

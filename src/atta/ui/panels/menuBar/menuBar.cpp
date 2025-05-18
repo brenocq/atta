@@ -119,9 +119,11 @@ void MenuBar::windowMenu() {
         //---------- Viewport windows ----------//
         if (ImGui::BeginMenu("Viewports")) {
             std::vector<std::shared_ptr<ui::Viewport>> viewports = ui::getViewports();
-            for (auto viewport : viewports)
-                if (ImGui::MenuItem(viewport->getName().c_str()))
-                    ui::openViewportModal(viewport->getSID());
+            for (auto viewport : viewports) {
+                StringId sid = viewport->getSID();
+                if (ImGui::MenuItem((viewport->getName() + "###Menu" + sid.getString()).c_str()))
+                    ui::openViewportModal(sid);
+            }
 
             ImGui::Separator();
 
@@ -132,7 +134,7 @@ void MenuBar::windowMenu() {
                 while (!found) {
                     found = true;
                     for (auto viewport : viewports)
-                        if (viewport->getSID() == StringId("Viewport " + std::to_string(newViewportNumber))) {
+                        if (viewport->getName() == "Viewport " + std::to_string(newViewportNumber)) {
                             found = false;
                             break;
                         }
@@ -142,10 +144,10 @@ void MenuBar::windowMenu() {
 
                 // Create viewport
                 ui::Viewport::CreateInfo viewportInfo;
+                viewportInfo.name = "Viewport " + std::to_string(newViewportNumber++);
                 viewportInfo.renderer = std::make_shared<gfx::PhongRenderer>();
                 viewportInfo.camera =
                     std::static_pointer_cast<gfx::Camera>(std::make_shared<gfx::PerspectiveCamera>(gfx::PerspectiveCamera::CreateInfo{}));
-                viewportInfo.sid = StringId("Viewport " + std::to_string(newViewportNumber));
                 std::shared_ptr<ui::Viewport> viewport = std::make_shared<ui::Viewport>(viewportInfo);
                 ui::addViewport(viewport);
             }

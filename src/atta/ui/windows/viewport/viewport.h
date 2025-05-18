@@ -16,10 +16,9 @@ namespace atta::ui {
 class Viewport final {
   public:
     struct CreateInfo {
-        StringId sid = StringId("Unnamed viewport");
+        std::string name = "Viewport";
         std::shared_ptr<gfx::Renderer> renderer = nullptr;
         std::shared_ptr<gfx::Camera> camera = nullptr;
-        std::string name;
     };
     Viewport();
     Viewport(CreateInfo info);
@@ -44,6 +43,7 @@ class Viewport final {
     void renderUI();
 
   private:
+    static size_t _viewportCount; ///< Number of viewports created
     StringId _sid;
     std::shared_ptr<gfx::Renderer> _renderer;
     // If want to change the renderer, store new renderer in _newRenderer until next frame to avoid destroying current renderer that can still be in

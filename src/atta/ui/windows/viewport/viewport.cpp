@@ -14,13 +14,13 @@
 
 namespace atta::ui {
 
+size_t Viewport::_viewportCount = 0;
+
 Viewport::Viewport() : Viewport(CreateInfo{}) {}
 
-Viewport::Viewport(CreateInfo info) : _sid(info.sid), _renderer(info.renderer), _camera(info.camera) {
-    if (info.name.size() == 0)
-        _name = _sid.getString();
-    else
-        _name = info.name;
+Viewport::Viewport(CreateInfo info) : _renderer(info.renderer), _camera(info.camera) {
+    _sid = StringId("AttaViewport[" + std::to_string(_viewportCount++) + "]");
+    _name = info.name;
 
     unsigned i = 0;
     for (auto c : _name)
@@ -47,7 +47,7 @@ void Viewport::resize(uint32_t width, uint32_t height) {
 void Viewport::renderUI() {
     //---------- Name ----------//
     ImGui::Text("Name");
-    ImGui::InputText(("##ViewportName" + _sid.getString()).c_str(), _inputText, sizeof(_inputText) / sizeof(char));
+    ImGui::InputText(("##Name" + _sid.getString()).c_str(), _inputText, sizeof(_inputText) / sizeof(char));
     _name = std::string(_inputText);
 
     //---------- Renderer ----------//

@@ -567,9 +567,6 @@ void ProjectSerializer::deserializeViewport(const Section& section) {
 
     ui::Viewport::CreateInfo info{};
 
-    // Viewport ID
-    info.sid = StringId("Viewport " + std::to_string(viewportId++));
-
     // Viewport name
     if (section.contains("name"))
         info.name = std::string(section["name"]);
