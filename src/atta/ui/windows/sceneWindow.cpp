@@ -1,6 +1,6 @@
 //--------------------------------------------------
 // Atta UI Module
-// entityWindow.cpp
+// sceneWindow.cpp
 // Date: 2021-09-02
 // By Breno Cunha Queiroz
 //--------------------------------------------------
@@ -11,28 +11,29 @@
 #include <atta/script/manager.h>
 #include <atta/sensor/manager.h>
 #include <atta/ui/widgets/component.h>
-#include <atta/ui/windows/entityWindow.h>
+#include <atta/ui/windows/sceneWindow.h>
 #include <imgui.h>
 
 namespace atta::ui {
 
-void EntityWindow::render() {
-    ImGui::Begin("Scene##Atta");
-    {
-        if (ImGui::BeginDragDropTarget()) {
-            if (ImGui::AcceptDragDropPayload("component::EntityId"))
-                LOG_DEBUG("ui::EntityWindow", "Drop outside");
-            ImGui::EndDragDropTarget();
-        }
-
-        renderTree();
-        ImGui::Separator();
-        renderComponents();
-    }
-    ImGui::End();
+SceneWindow::SceneWindow() {
+    initialize("Scene", DockPosition::RIGHT);
+    _open = true;
 }
 
-void EntityWindow::renderTree() {
+void SceneWindow::renderImpl() {
+    if (ImGui::BeginDragDropTarget()) {
+        if (ImGui::AcceptDragDropPayload("component::EntityId"))
+            LOG_DEBUG("ui::SceneWindow", "Drop outside");
+        ImGui::EndDragDropTarget();
+    }
+
+    renderTree();
+    ImGui::Separator();
+    renderComponents();
+}
+
+void SceneWindow::renderTree() {
     std::vector<component::EntityId> entities = component::getEntitiesView();
     int i = 0;
 
@@ -64,7 +65,7 @@ void EntityWindow::renderTree() {
     _entitiesToCopy.clear();
 }
 
-void EntityWindow::renderTreeNode(component::EntityId entity, int& i) {
+void SceneWindow::renderTreeNode(component::EntityId entity, int& i) {
     //----- Name -----//
     std::string name = "<Entity " + std::to_string(entity) + ">";
     component::Name* n = component::getComponent<component::Name>(entity);
@@ -123,7 +124,7 @@ void EntityWindow::renderTreeNode(component::EntityId entity, int& i) {
     }
 }
 
-void EntityWindow::renderComponents() {
+void SceneWindow::renderComponents() {
     component::EntityId selected = component::getSelectedEntity();
     if (selected == -1)
         return;
@@ -168,7 +169,7 @@ void EntityWindow::renderComponents() {
     }
 }
 
-void EntityWindow::textureCombo(std::string comboId, StringId& sid) {
+void SceneWindow::textureCombo(std::string comboId, StringId& sid) {
     std::vector<StringId> textures = resource::getResources<resource::Image>();
 
     if (sid == "Empty texture") {

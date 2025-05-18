@@ -14,9 +14,7 @@ OutputWindow::OutputWindow() {
 }
 
 void OutputWindow::renderImpl() {
-    ImGui::Text("Log");
-    ImGui::NewLine();
-    ImGui::Text("Log");
+    // TODO Implement this: https://github.com/brenocq/atta/issues/83
 }
 
 } // namespace atta::ui

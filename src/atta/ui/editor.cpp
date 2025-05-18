@@ -16,6 +16,7 @@
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
 #include <atta/ui/windows/outputWindow.h>
+#include <atta/ui/windows/sceneWindow.h>
 #include <atta/ui/windows/physicsModuleWindow.h>
 #include <atta/ui/windows/sensorModuleWindow.h>
 #include <atta/ui/windows/timeProfiler/timeProfilerWindow.h>
@@ -51,11 +52,6 @@ void Editor::render() {
     _physicsDrawer.update();
     _sensorDrawer.update();
 
-    // Windows
-    _entityWindow.render();
-    OutputWindow::render();
-    _viewportWindows.renderUI();
-
     // Module windows
     GraphicsModuleWindow::render();
     IOModuleWindow::render();
@@ -63,6 +59,9 @@ void Editor::render() {
     SensorModuleWindow::render();
 
     // Editor windows
+    _viewportWindows.renderUI();
+    SceneWindow::render();
+    OutputWindow::render();
     TimeProfilerWindow::render();
 
     // Windows utils

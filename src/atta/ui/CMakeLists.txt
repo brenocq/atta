@@ -25,11 +25,11 @@ set(ATTA_UI_MODULE_SOURCE
     windows/utils/fileSelectionWindow.cpp
     windows/viewport/viewport.cpp
     windows/viewport/viewportWindows.cpp
-    windows/entityWindow.cpp
     windows/graphicsModuleWindow.cpp
     windows/ioModuleWindow.cpp
     windows/outputWindow.cpp
     windows/physicsModuleWindow.cpp
+    windows/sceneWindow.cpp
     windows/sensorModuleWindow.cpp
     windows/window.cpp
 

@@ -13,7 +13,6 @@
 #include <atta/ui/panels/menuBar/menuBar.h>
 #include <atta/ui/panels/statusBar/statusBar.h>
 #include <atta/ui/panels/toolBar/toolBar.h>
-#include <atta/ui/windows/entityWindow.h>
 #include <atta/ui/windows/viewport/viewportWindows.h>
 #include <imgui.h>
 
@@ -53,7 +52,6 @@ class Editor final {
     MenuBar _menuBar;
     ToolBar _toolBar;
     StatusBar _statusBar;
-    EntityWindow _entityWindow;
     ViewportWindows _viewportWindows;
 
     // Drawers

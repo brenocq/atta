@@ -24,11 +24,11 @@
 #include <atta/graphics/renderers/phongRenderer.h>
 
 #include <atta/ui/interface.h>
-#include <atta/ui/windows/entityWindow.h>
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
 #include <atta/ui/windows/outputWindow.h>
 #include <atta/ui/windows/physicsModuleWindow.h>
+#include <atta/ui/windows/sceneWindow.h>
 #include <atta/ui/windows/sensorModuleWindow.h>
 #include <atta/ui/windows/timeProfiler/timeProfilerWindow.h>
 #include <atta/ui/windows/utils/fileSelectionWindow.h>
@@ -180,17 +180,20 @@ void MenuBar::windowMenu() {
         //---------- Editor windows ----------//
         ImGui::SeparatorText("Editor");
 
-        // Entity window
-        // bool entityWindowOpen = EntityWindow::getOpen();
-        // if (ImGui::Checkbox("Entity", &entityWindowOpen))
-        //    EntityWindow::setOpen(entityWindowOpen);
+        // Scene window
+        bool sceneOpen = SceneWindow::getOpen();
+        if (ImGui::MenuItem("Scene", nullptr, &sceneOpen))
+            SceneWindow::setOpen(sceneOpen);
 
+        // Output window
         bool outputOpen = OutputWindow::getOpen();
         if (ImGui::MenuItem("Output", nullptr, &outputOpen))
             OutputWindow::setOpen(outputOpen);
 
-        if (ImGui::MenuItem("Time Profiler"))
-            TimeProfilerWindow::setOpen(true);
+        // Time profiler window
+        bool timeProfilerOpen = TimeProfilerWindow::getOpen();
+        if (ImGui::MenuItem("Time Profiler", nullptr, &timeProfilerOpen))
+            TimeProfilerWindow::setOpen(timeProfilerOpen);
 
         ImGui::EndMenu();
     }

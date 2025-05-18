@@ -18,7 +18,7 @@ namespace atta::ui {
 template <typename T>
 class Window {
   public:
-    enum class DockPosition { LEFT, RIGHT, UP, DOWN, CENTER, FLOATING };
+    enum class DockPosition { LEFT = 0, RIGHT, UP, DOWN, CENTER, FLOATING };
 
     static T& getInstance() {
         static T instance;
