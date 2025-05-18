@@ -21,6 +21,7 @@
 // clang-format off
 #include <GLFW/glfw3.h>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #if ATTA_VULKAN_SUPPORT
@@ -379,9 +380,46 @@ void Manager::setViewportRenderingImpl(bool viewportRendering) { _editor.setView
 
 unsigned Manager::getViewportDockIdImpl() { return _editor.getCenterDockId(); }
 
-const std::vector<WindowInfo>& Manager::getWindowInfosImpl() const {
+const std::vector<WindowInfo> Manager::getWindowInfosImpl() const {
     LOG_WARN("ui::Manager", "getWindowInfosImpl() is not implemented yet.");
-    return {};
+
+    std::vector<WindowInfo> windowInfos;
+
+    ImGuiContext& g = *ImGui::GetCurrentContext();
+    ImVector<ImGuiWindow*>& imguiWindows = g.Windows;
+
+    for (int i = 0; i < imguiWindows.Size; i++) {
+        ImGuiWindow* window = imguiWindows[i];
+        // if (window->Hidden)
+        //     continue;
+
+        WindowInfo windowInfo;
+        windowInfo.name = window->Name;
+        windowInfo.size = vec2(window->Size.x, window->Size.y);
+        windowInfo.position = vec2(window->Pos.x, window->Pos.y);
+        windowInfo.collapsed = window->Collapsed;
+
+        // Skip ImGuizmo window
+        if (windowInfo.name == "gizmo")
+            continue;
+        // Skip ImGui debug window
+        if (windowInfo.name == "Debug##Default")
+            continue;
+        // Skip fixed Atta windows
+        if (windowInfo.name == "##AttaToolBar" || windowInfo.name == "##AttaMenuBar" || windowInfo.name == "##AttaStatusBar")
+            continue;
+        // Skip menus
+        if (windowInfo.name == "##MainMenuBar" || windowInfo.name.find("##Menu") != std::string::npos)
+            continue;
+        // Skip ImGui main dock space window
+        if (windowInfo.name.find("WindowOverViewport_") != std::string::npos)
+            continue;
+
+        LOG_DEBUG("ui::Manager", "Window: $0 (pos $1 size $2 col $3)", windowInfo.name, windowInfo.position, windowInfo.size, windowInfo.collapsed);
+        windowInfos.push_back(windowInfo);
+    }
+
+    return windowInfos;
 }
 
 void Manager::setTheme() {

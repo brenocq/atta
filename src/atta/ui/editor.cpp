@@ -16,8 +16,8 @@
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
 #include <atta/ui/windows/outputWindow.h>
-#include <atta/ui/windows/sceneWindow.h>
 #include <atta/ui/windows/physicsModuleWindow.h>
+#include <atta/ui/windows/sceneWindow.h>
 #include <atta/ui/windows/sensorModuleWindow.h>
 #include <atta/ui/windows/timeProfiler/timeProfilerWindow.h>
 #include <atta/ui/windows/utils/fileSelectionWindow.h>
@@ -39,7 +39,7 @@ void Editor::render() {
     setupDocking();
 
     // Demo
-    ImGui::ShowDemoWindow();
+    // ImGui::ShowDemoWindow();
     // ImPlot::ShowDemoWindow();
     // ImPlot3D::ShowDemoWindow();
 
@@ -117,13 +117,9 @@ void Editor::setupDocking() {
         if (sbNode)
             sbNode->LocalFlags |= noDockingFlags;
 
-        // Default docking for viewport windows
-        ImGui::DockBuilderDockWindow("###AttaViewport::Main Viewport", _centerDockId);
-
         // Default docking for editor windows
         ImGui::DockBuilderDockWindow("##AttaToolBar", dockIdToolbar);
         ImGui::DockBuilderDockWindow("##AttaStatusBar", dockIdStatus);
-        ImGui::DockBuilderDockWindow("Scene##Atta", _rightDockId);
         ImGui::DockBuilderFinish(_rootDockId);
     }
 }

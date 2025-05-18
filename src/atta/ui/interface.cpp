@@ -28,6 +28,6 @@ void setViewportRendering(bool viewportRendering) { Manager::getInstance().setVi
 unsigned getViewportDockId() { return Manager::getInstance().getViewportDockIdImpl(); }
 
 //----- Window -----//
-const std::vector<ui::WindowInfo>& getWindowInfos() { return Manager::getInstance().getWindowInfosImpl(); }
+const std::vector<ui::WindowInfo> getWindowInfos() { return Manager::getInstance().getWindowInfosImpl(); }
 
 } // namespace atta::ui

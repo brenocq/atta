@@ -36,7 +36,7 @@ void setViewportRendering(bool viewportRendering);
 unsigned getViewportDockId();
 
 //----- Window -----//
-const std::vector<ui::WindowInfo>& getWindowInfos();
+const std::vector<ui::WindowInfo> getWindowInfos();
 
 } // namespace atta::ui
 

@@ -33,7 +33,7 @@ class Manager final {
     friend void setViewportRendering(bool viewportRendering);
     friend unsigned getViewportDockId();
 
-    friend const std::vector<WindowInfo>& getWindowInfos();
+    friend const std::vector<WindowInfo> getWindowInfos();
 
     const Editor& getEditor() const { return _editor; }
 
@@ -53,7 +53,7 @@ class Manager final {
     void setViewportRenderingImpl(bool viewportRendering);
     unsigned getViewportDockIdImpl();
 
-    const std::vector<WindowInfo>& getWindowInfosImpl() const;
+    const std::vector<WindowInfo> getWindowInfosImpl() const;
 
     void setTheme();
     void initOpenGL();
