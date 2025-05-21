@@ -66,7 +66,7 @@ void ViewportWindows::renderUI() {
     int i = -1;
     for (auto viewport : _viewports) {
         char nameBuf[128];
-        sprintf(nameBuf, "%s###AttaViewport::%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
+        sprintf(nameBuf, "%s###%s", viewport->getName().c_str(), viewport->getSID().getString().c_str());
         i++;
 
         // Docking

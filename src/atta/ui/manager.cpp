@@ -381,8 +381,6 @@ void Manager::setViewportRenderingImpl(bool viewportRendering) { _editor.setView
 unsigned Manager::getViewportDockIdImpl() { return _editor.getCenterDockId(); }
 
 const std::vector<WindowInfo> Manager::getWindowInfosImpl() const {
-    LOG_WARN("ui::Manager", "getWindowInfosImpl() is not implemented yet.");
-
     std::vector<WindowInfo> windowInfos;
 
     ImGuiContext& g = *ImGui::GetCurrentContext();
@@ -390,8 +388,6 @@ const std::vector<WindowInfo> Manager::getWindowInfosImpl() const {
 
     for (int i = 0; i < imguiWindows.Size; i++) {
         ImGuiWindow* window = imguiWindows[i];
-        // if (window->Hidden)
-        //     continue;
 
         WindowInfo windowInfo;
         windowInfo.name = window->Name;
