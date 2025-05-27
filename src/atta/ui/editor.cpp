@@ -110,8 +110,11 @@ void Editor::setupDocking() {
 
         // Disable split for toolbar/status bar nodes
         ImGuiDockNodeFlags noDockingFlags = ImGuiDockNodeFlags_NoDockingSplit | ImGuiDockNodeFlags_NoDockingOverCentralNode;
+        ImGuiDockNode* rootNode = ImGui::DockBuilderGetNode(_rootDockId);
         ImGuiDockNode* tbNode = ImGui::DockBuilderGetNode(dockIdToolbar);
         ImGuiDockNode* sbNode = ImGui::DockBuilderGetNode(dockIdStatus);
+        if (rootNode)
+            rootNode->LocalFlags |= noDockingFlags;
         if (tbNode)
             tbNode->LocalFlags |= noDockingFlags;
         if (sbNode)
@@ -121,6 +124,12 @@ void Editor::setupDocking() {
         ImGui::DockBuilderDockWindow("##AttaPrivateToolBar", dockIdToolbar);
         ImGui::DockBuilderDockWindow("##AttaPrivateStatusBar", dockIdStatus);
         ImGui::DockBuilderFinish(_rootDockId);
+
+        LOG_DEBUG("Editor", "Docking left: $0", _leftDockId);
+        LOG_DEBUG("Editor", "Docking right: $0", _rightDockId);
+        LOG_DEBUG("Editor", "Docking down: $0", _downDockId);
+        LOG_DEBUG("Editor", "Docking center: $0", _centerDockId);
+        LOG_DEBUG("Editor", "Docking root: $0", _rootDockId);
     }
 }
 

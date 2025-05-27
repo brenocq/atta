@@ -380,11 +380,30 @@ void Manager::setViewportRenderingImpl(bool viewportRendering) { _editor.setView
 
 unsigned Manager::getViewportDockIdImpl() { return _editor.getCenterDockId(); }
 
+void printDockNodes(ImGuiDockNode* node, int depth) {
+    if (node == nullptr)
+        return;
+
+    std::string depthStr(depth, ' ');
+    LOG_DEBUG("Editor", depthStr + "DockNode: $0", node->ID);
+
+    for (int i = 0; i < node->Windows.Size; i++) {
+        ImGuiWindow* window = node->Windows[i];
+        LOG_DEBUG("Editor", depthStr + " -Window: $0", window->Name);
+    }
+
+    for (int i = 0; i < 2; i++)
+        printDockNodes(node->ChildNodes[i], depth + 1);
+}
+
 const std::vector<WindowInfo> Manager::getWindowInfosImpl() const {
     std::vector<WindowInfo> windowInfos;
 
     ImGuiContext& g = *ImGui::GetCurrentContext();
     ImVector<ImGuiWindow*>& imguiWindows = g.Windows;
+
+    ImGuiDockNode* rootDockNode = ImGui::DockBuilderGetNode(_editor.getRootDockId());
+    printDockNodes(rootDockNode, 0);
 
     for (int i = 0; i < imguiWindows.Size; i++) {
         ImGuiWindow* window = imguiWindows[i];
@@ -410,11 +429,20 @@ const std::vector<WindowInfo> Manager::getWindowInfosImpl() const {
         // Skip ImGui popups
         if (windowInfo.name.find("##Popup_") != std::string::npos)
             continue;
+        // Skip ImGui tootips
+        if (windowInfo.name.find("##Tooltip_") != std::string::npos)
+            continue;
         // Skip Atta private windows
         if (windowInfo.name.find("##AttaPrivate") != std::string::npos)
             continue;
 
         LOG_DEBUG("ui::Manager", "Window: $0 (pos $1 size $2 col $3)", windowInfo.name, windowInfo.position, windowInfo.size, windowInfo.collapsed);
+        if (window->DockNode) {
+            LOG_DEBUG("ui::Manager", "    Docked to: ID $0 Size $1", window->DockNode->ID, window->DockNode->Windows.Size);
+            if (window->DockNode->ParentNode) {
+                LOG_DEBUG("ui::Manager", "    Parent: $0", window->DockNode->ParentNode->ID);
+            }
+        }
         windowInfos.push_back(windowInfo);
     }
 

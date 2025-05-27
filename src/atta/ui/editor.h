@@ -33,6 +33,7 @@ class Editor final {
     bool getViewportRendering() const;
     void setViewportRendering(bool viewportRendering);
 
+    ImGuiID getRootDockId() const { return _rootDockId; }
     ImGuiID getCenterDockId() const { return _centerDockId; }
     ImGuiID getLeftDockId() const { return _leftDockId; }
     ImGuiID getRightDockId() const { return _rightDockId; }
