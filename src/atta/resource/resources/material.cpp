@@ -4,6 +4,7 @@
 // Date: 2022-08-13
 // By Breno Cunha Queiroz
 //--------------------------------------------------
+#include <atta/file/serializer/serializer.h>
 #include <atta/resource/resources/material.h>
 
 namespace atta::resource {
@@ -77,6 +78,34 @@ void Material::setNormalImage(StringId texture) {
     _normalImage = texture;
     _updated = true;
 }
+
+void Material::serialize(std::ostream& os) {
+    file::write(os, _id);
+    file::write(os, _color);
+    file::write(os, _metallic);
+    file::write(os, _roughness);
+    file::write(os, _ao);
+    file::write(os, _colorImage);
+    file::write(os, _metallicImage);
+    file::write(os, _roughnessImage);
+    file::write(os, _aoImage);
+    file::write(os, _normalImage);
+}
+
+void Material::deserialize(std::istream& is) {
+    file::read(is, _id);
+    file::read(is, _color);
+    file::read(is, _metallic);
+    file::read(is, _roughness);
+    file::read(is, _ao);
+    file::read(is, _colorImage);
+    file::read(is, _metallicImage);
+    file::read(is, _roughnessImage);
+    file::read(is, _aoImage);
+    file::read(is, _normalImage);
+}
+
+unsigned Material::getSerializedSize() { return file::Serializable::getSerializedSize(this); }
 
 bool Material::wasUpdated() {
     bool updated = _updated;

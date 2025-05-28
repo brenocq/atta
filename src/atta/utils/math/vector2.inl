@@ -160,14 +160,6 @@ void vector2<T>::normalize() {
         (*this) *= 1.0f / l;
 }
 
-// Normalized
-template <typename T>
-vector2<T> vector2<T>::normalized() const {
-    vector2<T> result = *this;
-    result.normalize();
-    return result;
-}
-
 // Unit
 template <typename T>
 vector2<T> vector2<T>::unit() const {

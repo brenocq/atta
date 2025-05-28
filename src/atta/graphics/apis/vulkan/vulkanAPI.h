@@ -57,14 +57,8 @@ class VulkanAPI final : public GraphicsAPI {
     std::shared_ptr<vk::DescriptorPool> getUiDescriptorPool() const;
 
   private:
-    /// Load Vulkan loader using Volk
-    static bool loadVulkan();
-
     void recreateSwapChain();
     void onWindowResize(evt::Event e);
-
-    /// True if the Vulkan loader was sucessfully loaded using Volk
-    static bool _vulkanLoaded;
 
     static constexpr int MAX_FRAMES_IN_FLIGHT = 1;
     uint32_t _currFrame;

@@ -274,14 +274,6 @@ inline vector3<T> normalize(const vector3<T>& v) {
     return v;
 }
 
-// Normalized
-template <typename T>
-vector3<T> vector3<T>::normalized() const {
-    vector3<T> result = *this;
-    result.normalize();
-    return result;
-}
-
 // Dot
 template <typename T>
 inline auto dot(const vector3<T>& v1, const vector3<T>& v2) {

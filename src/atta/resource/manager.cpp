@@ -64,9 +64,6 @@ void Manager::loadResourcesRecursively(fs::path directory) {
     static const std::vector<std::string> meshExtensions{".obj", ".fbx", ".FBX", ".fbx", ".stl", ".ply"};
     static const std::vector<std::string> imageExtensions{".jpg", ".jpeg", ".png", ".hdr", ".tga"};
 
-    if (!fs::exists(directory))
-        return;
-
     for (auto file : file::getDirectoryFilesRecursive(directory)) {
         // Load as mesh
         for (auto& extension : meshExtensions)

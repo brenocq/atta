@@ -15,8 +15,8 @@ ComponentDescription& TypedComponentRegistry<RigidBody2D>::getDescription() {
     static ComponentDescription desc = {
         "Rigid Body 2D",
         {
-            {AttributeType::UINT32, offsetof(RigidBody2D, type), "type", {}, {}, {}, {"DYNAMIC", "KINEMATIC", "STATIC"}},
-            {AttributeType::VECTOR_FLOAT32, offsetof(RigidBody2D, linearVelocity), "linearVelocity", {}, {}, 0.001f},
+            {AttributeType::UINT32, offsetof(RigidBody2D, type), "type", {}, {}, {}, {"Dynamic", "Kinematic", "Static"}},
+            {AttributeType::FLOAT32, offsetof(RigidBody2D, linearVelocity), "linearVelocity", {}, {}, 0.001f},
             {AttributeType::FLOAT32, offsetof(RigidBody2D, angularVelocity), "angularVelocity", {}, {}, 0.001f},
             {AttributeType::FLOAT32, offsetof(RigidBody2D, mass), "mass", 0.0f, 100.0f, 0.001f},
             {AttributeType::FLOAT32, offsetof(RigidBody2D, friction), "friction", 0.0f, 1.0f, 0.001f},

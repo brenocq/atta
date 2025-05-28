@@ -39,26 +39,14 @@ Transform Transform::getWorldTransform(EntityId entity) {
 void Transform::setWorldTransform(EntityId entity, Transform worldTransform) {
     (*this) = worldTransform;
 
-    // Convert world transform to local transform by removing all parent transformations.
-    // This transformation needs to be applied from the top-most entity to the current entity
-
-    // Build the stack to store hierarchy from top-most entity to the current entity
-    std::stack<EntityId> parentStack;
+    // Go up the hierarchy until root to calculate world to local transform
+    // TODO maybe need to go top down instead
     Relationship* relationship = component::getComponent<Relationship>(entity);
     while (relationship && relationship->getParent() >= 0) {
-        parentStack.push(relationship->getParent());
-        relationship = component::getComponent<Relationship>(relationship->getParent());
-    }
-
-    // Apply the transformations from the top-most entity to the current entity
-    while (!parentStack.empty()) {
-        EntityId parent = parentStack.top();
-        parentStack.pop();
-
-        // Apply the inverse transformation of the parent
-        Transform* ptransform = component::getComponent<Transform>(parent);
+        Transform* ptransform = component::getComponent<Transform>(relationship->getParent());
         if (ptransform)
             (*this) = (*this) / *ptransform;
+        relationship = component::getComponent<Relationship>(relationship->getParent());
     }
 }
 
@@ -80,13 +68,10 @@ Transform Transform::getEntityWorldTransform(EntityId entity) {
     auto t = component::getComponent<Transform>(curr);
     auto r = component::getComponent<Relationship>(curr);
 
-    // Go up the hierarchy until the first entity with transform component if found
     do {
-        // Return the world transform of the first entity with transform component
         if (t)
             return t->getWorldTransform(curr);
 
-        // Return default transform if no transform component is found
         curr = r->getParent();
         if (curr == -1)
             return Transform{};
@@ -100,21 +85,40 @@ Transform Transform::getEntityWorldTransform(EntityId entity) {
 Transform Transform::operator*(const Transform& o) const {
     // World = parent * local
     Transform world;
-    world.position = position + orientation * (scale * o.position);
+
+    // Calculate orientation
     world.orientation = orientation * o.orientation;
-    world.scale = scale * o.scale;
+
+    // Calculate scale
+    vec3 finalScale = o.scale;
+    o.orientation.rotateVector(finalScale);
+    finalScale *= scale;
+    world.scale = finalScale;
+
+    // Calculate position
+    vec3 finalPos = scale * o.position;
+    orientation.rotateVector(finalPos);
+    world.position = position + finalPos;
 
     return world;
 }
 
 Transform Transform::operator/(const Transform& o) const {
     // Local = world / parent
-    quat oriConj = o.orientation.normalized().inverted();
-
     Transform local;
-    local.position = oriConj * (position - o.position) / o.scale;
+
+    quat oriConj = inverse(o.orientation);
+
+    // Calculate orientation
     local.orientation = oriConj * orientation;
+
+    // Calculate scale
     local.scale = scale / o.scale;
+    oriConj.rotateVector(local.scale);
+
+    // Calculate position
+    local.position = (position - o.position) / o.scale;
+    oriConj.rotateVector(local.position);
 
     return local;
 }

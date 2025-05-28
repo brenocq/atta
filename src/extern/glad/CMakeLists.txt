@@ -8,6 +8,7 @@ else()
     set(GLAD_SOURCE
         src/egl.c    # Embedded-System Graphics Library
         src/gl.c     # OpenGL
+        src/vulkan.c # Vulkan
     )
 endif()
 

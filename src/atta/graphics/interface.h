@@ -31,12 +31,6 @@ std::shared_ptr<Window> getWindow();
  */
 void setGraphicsAPI(GraphicsAPI::Type type);
 
-/** Get which graphics APIs are supported
- *
- * Returns a vector with the supported graphics APIs.
- */
-std::vector<GraphicsAPI::Type> getSupportedGraphicsAPIs();
-
 //----- Config -----//
 float getGraphicsFPS();
 void setGraphicsFPS(float graphicsFPS);

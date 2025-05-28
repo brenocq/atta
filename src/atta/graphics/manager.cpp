@@ -139,16 +139,6 @@ void Manager::setGraphicsAPIImpl(GraphicsAPI::Type type) {
     _desiredGraphicsAPI = type;
 }
 
-std::vector<GraphicsAPI::Type> Manager::getSupportedGraphicsAPIsImpl() const {
-    std::vector<GraphicsAPI::Type> supported;
-    supported.push_back(GraphicsAPI::OPENGL);
-#if ATTA_VULKAN_SUPPORT
-    if (VulkanAPI::isSupported())
-        supported.push_back(GraphicsAPI::VULKAN);
-#endif
-    return supported;
-}
-
 void Manager::recreateGraphicsAPI() {
     if (_uiShutDownFunc)
         _uiShutDownFunc();
@@ -343,33 +333,27 @@ void Manager::onImageLoadEvent(event::Event& event) {
 }
 
 void Manager::onImageUpdateEvent(event::Event& event) {
-    event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
+    // TODO update image
+    // event::ImageUpdate& e = reinterpret_cast<event::ImageUpdate&>(event);
+    // resource::Image* image = resource::get<resource::Image>(e.sid.getString());
+    // if (image == nullptr) {
+    //    LOG_WARN("gfx::OpenGLAPI", "Could not create OpenGL texture from [w]$0[], image resource does not exists", e.sid.getString());
+    //    return;
+    //}
+    // if (_openGLImages.find(e.sid.getId()) == _openGLImages.end()) {
+    //    LOG_WARN("gfx::OpenGLAPI", "OpenGL texture [w]$0[] was not loaded before update", e.sid.getString());
+    //    return;
+    //}
 
-    // Get image resource
-    resource::Image* imageRes = resource::get<resource::Image>(e.sid.getString());
-    if (imageRes == nullptr) {
-        LOG_WARN("gfx::Manager", "Could not update image from [w]$0[], image resource does not exists", e.sid.getString());
-        return;
-    }
-
-    // Get image
-    if (_images.find(e.sid) == _images.end()) {
-        _images[e.sid]->write(resource::get<resource::Image>(e.sid.getString())->getData());
-        LOG_WARN("gfx::Manager", "Could not update image [w]$0[] that does not exists", e.sid);
-        return;
-    }
-    std::shared_ptr<gfx::Image> image = _images[e.sid];
-
-    // Resize image if needed
-    if (image->getWidth() != imageRes->getWidth() || image->getHeight() != imageRes->getHeight())
-        image->resize(imageRes->getWidth(), imageRes->getHeight());
-
-    // Update image data
-    image->write(imageRes->getData());
+    // std::shared_ptr<gl::Image> openGLImage = _openGLImages[e.sid.getId()];
+    // if (openGLImage->getWidth() != image->getWidth() || openGLImage->getHeight() != image->getHeight())
+    //     openGLImage->resize(image->getWidth(), image->getHeight());
+    // else
+    //     openGLImage->write(image->getData());
 }
 
 void Manager::createMesh(StringId sid) {
-    LOG_VERBOSE("gfx::Manager", "Create mesh [w]$0[]", sid);
+    LOG_DEBUG("gfx::Manager", "Create mesh [w]$0[]", sid);
     resource::Mesh* mesh = resource::get<resource::Mesh>(sid.getString());
 
     VertexBuffer::CreateInfo vertexInfo{};
@@ -408,7 +392,7 @@ void Manager::createMesh(StringId sid) {
 }
 
 void Manager::createImage(StringId sid) {
-    LOG_VERBOSE("gfx::Manager", "Create image [w]$0[]", sid);
+    LOG_DEBUG("gfx::Manager", "Create image [w]$0[]", sid);
     resource::Image* image = resource::get<resource::Image>(sid);
     if (image == nullptr)
         LOG_WARN("gfx::Manager", "Could not initialize gfx::Image from [w]$0[]", sid);

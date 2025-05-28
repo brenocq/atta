@@ -42,8 +42,6 @@ class Image : public Resource, public memory::AllocatedObject<Image, SID("Resour
     Format getFormat() const { return _format; }
 
     static uint32_t getBytesPerChannel(Format format);
-    static const std::unordered_map<Format, std::string> formatToString;
-    static const std::unordered_map<std::string, Format> stringToFormat;
 
   private:
     void load();

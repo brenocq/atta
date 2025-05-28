@@ -7,38 +7,41 @@
 #ifndef ATTA_FILE_PROJECT_PROJECT_SERIALIZER_H
 #define ATTA_FILE_PROJECT_PROJECT_SERIALIZER_H
 #include <atta/file/project/project.h>
-#include <atta/file/serializer/serializer.h>
+#include <atta/file/serializer/section.h>
 
 namespace atta::file {
 
 class ProjectSerializer final {
   public:
     ProjectSerializer(std::shared_ptr<Project> project);
+    ~ProjectSerializer();
 
     void serialize();
-    bool deserialize();
+    void deserialize();
 
   private:
-    Section serializeProject();
-    Section serializeConfig();
-    Section serializeGraphicsModule();
-    Section serializePhysicsModule();
-    Section serializeSensorModule();
-    std::vector<Section> serializeResources();
-    std::vector<Section> serializeViewports();
-    std::vector<Section> serializeNodes();
+    void serializeHeader(Section& section);
+    void deserializeHeader(Section& section);
 
-    bool deserializeProject(const Section& section);
-    void deserializeConfig(const Section& section);
-    void deserializeGraphicsModule(const Section& section);
-    void deserializePhysicsModule(const Section& section);
-    void deserializeSensorModule(const Section& section);
-    void deserializeMaterial(const Section& section);
-    void deserializeViewport(const Section& section);
-    void deserializeNode(const Section& section);
+    void serializeConfig(Section& section);
+    void deserializeConfig(Section& section);
+
+    void serializeComponentModule(Section& section);
+    void deserializeComponentModule(Section& section);
+
+    void serializeGraphicsModule(Section& section);
+    void deserializeGraphicsModule(Section& section);
+
+    void serializeResourceModule(Section& section);
+    void deserializeResourceModule(Section& section);
+
+    void serializePhysicsModule(Section& section);
+    void deserializePhysicsModule(Section& section);
+
+    void serializeSensorModule(Section& section);
+    void deserializeSensorModule(Section& section);
 
     std::shared_ptr<Project> _project;
-    bool _firstViewport = true;
 };
 
 } // namespace atta::file

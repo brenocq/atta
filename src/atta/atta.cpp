@@ -70,8 +70,10 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
         LOG_WARN("Atta", "Project [w]$0[] will not be open because atta was built statically linked to [w]$1[]", info.projectFile, projectFile);
 #else
     // If a project was defined as argument, open project
-    if (!info.projectFile.empty())
+    if (!info.projectFile.empty()) {
+        graphics::update(); // Need to update to register the viewports
         file::openProject(info.projectFile);
+    }
 #endif
 
     _currStep = _lastStep = std::clock();

@@ -248,7 +248,7 @@ void PhysicsDrawer::drawBox2D() {
 
             //----- Polygon collider 2D -----//
             auto polygon = component::getComponent<component::PolygonCollider2D>(entity);
-            if (polygon && polygon->points.size() >= 2) {
+            if (polygon) {
                 std::vector<vec3> points;
                 for (vec2 p : polygon->points)
                     points.push_back(vec3(p, 0.0f));

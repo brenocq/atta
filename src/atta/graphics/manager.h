@@ -7,7 +7,6 @@
 #ifndef ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 #define ATTA_GRAPHICS_GRAPHICS_MANAGER_H
 
-#include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/indexBuffer.h>
@@ -36,7 +35,6 @@ class Manager final {
 
     friend float getGraphicsFPS();
     friend void setGraphicsFPS(float graphicsFPS);
-    friend std::vector<GraphicsAPI::Type> getSupportedGraphicsAPIs();
 
     friend void setUiRenderViewportsFunc(std::function<void()> uiRenderViewportsFunc);
     friend void setUiRenderFunc(std::function<void()> uiRenderFunc);
@@ -64,7 +62,6 @@ class Manager final {
     std::shared_ptr<Window> getWindowImpl() const;
 
     void setGraphicsAPIImpl(GraphicsAPI::Type type);
-    std::vector<GraphicsAPI::Type> getSupportedGraphicsAPIsImpl() const;
     void recreateGraphicsAPI();
 
     void* getImGuiImageImpl(StringId sid);

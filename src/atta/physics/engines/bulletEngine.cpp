@@ -27,25 +27,6 @@ BulletEngine::~BulletEngine() {
         stop();
 }
 
-//---------- Conversions ----------//
-inline btVector3 attaToBt(const vec3& vec) { return btVector3(vec.x, vec.y, vec.z); }
-inline btQuaternion attaToBt(const quat& q) { return btQuaternion(q.i, q.j, q.k, q.r); }
-inline btMatrix3x3 attaToBt(const mat3& mat) {
-    return btMatrix3x3(mat.data[0], mat.data[1], mat.data[2], // Row 0
-                       mat.data[3], mat.data[4], mat.data[5], // Row 1
-                       mat.data[6], mat.data[7], mat.data[8]  // Row 2
-    );
-}
-
-inline vec3 btToAtta(const btVector3& vec) { return vec3(vec.getX(), vec.getY(), vec.getZ()); }
-inline quat btToAtta(const btQuaternion& q) { return quat(q.getW(), q.getX(), q.getY(), q.getZ()); }
-inline mat3 btToAtta(const btMatrix3x3& mat) {
-    return mat3(mat[0].getX(), mat[0].getY(), mat[0].getZ(), // Row 0
-                mat[1].getX(), mat[1].getY(), mat[1].getZ(), // Row 1
-                mat[2].getX(), mat[2].getY(), mat[2].getZ()  // Row 2
-    );
-}
-
 //----------------------------------------------//
 //------------------- START --------------------//
 //----------------------------------------------//
@@ -91,59 +72,38 @@ void BulletEngine::step(float dt) {
         btCollisionObject* obj = _world->getCollisionObjectArray()[j];
         btRigidBody* body = btRigidBody::upcast(obj);
         component::EntityId eid = BT_USRPTR_TO_EID(obj->getUserPointer());
+
+        // Update mass
         auto rb = component::getComponent<component::RigidBody>(eid);
+        if (rb->type == component::RigidBody::DYNAMIC)
+            body->setMassProps(rb->mass, body->getLocalInertia());
 
-        // Wake up entity if it is not active
-        if (rb->awake && !body->isActive())
-            wakeUpEntity(eid);
+        // Get atta transform
+        auto t = component::getComponent<component::Transform>(eid);
+        component::Transform worldT = t->getWorldTransform(eid);
+        vec3 position = worldT.position;
+        quat orientation = worldT.orientation;
 
-        // Update linear velocity
-        if (rb->linearVelocity != btToAtta(body->getLinearVelocity())) {
-            body->setLinearVelocity(attaToBt(rb->linearVelocity));
-            wakeUpEntity(eid);
-        }
+        // Get bullet transform
+        btTransform trans;
+        trans = obj->getWorldTransform();
+        quat physicsOrientation(trans.getRotation().w(), -trans.getRotation().x(), -trans.getRotation().y(), -trans.getRotation().z());
+        vec3 physicsPosition(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
 
-        // Update angular velocity
-        if (rb->angularVelocity != btToAtta(body->getAngularVelocity())) {
-            LOG_INFO("BulletEngine", "Updating ang vel");
-            body->setAngularVelocity(attaToBt(rb->angularVelocity));
-            wakeUpEntity(eid);
-        }
+        // Check if atta and bullet transforms match
+        if (position != physicsPosition || orientation != physicsOrientation) {
+            trans = btTransform(btQuaternion(-orientation.i, -orientation.j, -orientation.k, orientation.r),
+                                btVector3(position.x, position.y, position.z));
+            body->setWorldTransform(trans);
 
-        if (rb->type == component::RigidBody::DYNAMIC) {
-            // Update mass
-            if (rb->mass != body->getMass()) {
-                body->setMassProps(rb->mass, body->getLocalInertia());
-                rb->mass = body->getMass(); // Bullet's internal mass may be slightly different
-            }
+            // Activate this body
+            body->activate();
 
-            // Update linear/angular damping
-            if (rb->linearDamping != body->getLinearDamping() || rb->angularDamping != body->getAngularDamping())
-                body->setDamping(rb->linearDamping, rb->angularDamping);
-        }
-
-        // Update transform (position/orientation)
-        {
-            // Get atta transform
-            auto t = component::getComponent<component::Transform>(eid);
-            component::Transform worldT = t->getWorldTransform(eid);
-            vec3 position = worldT.position;
-            quat orientation = worldT.orientation;
-
-            // Get bullet transform
-            btTransform trans;
-            trans = obj->getWorldTransform();
-            quat physicsOrientation = btToAtta(trans.getRotation());
-            vec3 physicsPosition = btToAtta(trans.getOrigin());
-
-            // Check if atta and bullet transforms match
-            if (position != physicsPosition || orientation != physicsOrientation) {
-                trans = btTransform(attaToBt(orientation), attaToBt(position));
-                body->setWorldTransform(trans);
-
-                // Wake up entity
-                wakeUpEntity(eid);
-            }
+            // Activate bodies linked to this body
+            if (_connectedEntities.find(eid) != _connectedEntities.end())
+                for (auto other : _connectedEntities[eid])
+                    if (_entityToBody.find(other) != _entityToBody.end())
+                        _entityToBody[other]->activate();
         }
     }
 
@@ -181,28 +141,29 @@ void BulletEngine::step(float dt) {
         // TODO Should go through collisionObjects from the root down the relationship hierarchy,
         // strange simulations may happen otherwise because of wrong parent transform
         btCollisionObject* obj = _world->getCollisionObjectArray()[j];
-        btRigidBody* body = btRigidBody::upcast(obj);
+        // btRigidBody* body = btRigidBody::upcast(obj);
         btTransform trans;
         trans = obj->getWorldTransform();
 
         // Calculate world transform
         component::EntityId eid = BT_USRPTR_TO_EID(obj->getUserPointer());
         auto t = component::getComponent<component::Transform>(eid);
+        vec3 pos = {trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()};
+        quat ori = quat(trans.getRotation().w(), -trans.getRotation().x(), -trans.getRotation().y(), -trans.getRotation().z());
 
         // Update world transform
         component::Transform worldTrans;
-        worldTrans.position = btToAtta(trans.getOrigin());
-        worldTrans.orientation = btToAtta(trans.getRotation());
+        worldTrans.position = pos;
+        worldTrans.orientation = ori;
         worldTrans.scale = t->scale;
         t->setWorldTransform(eid, worldTrans);
 
         // Update rigid body
-        auto rb = component::getComponent<component::RigidBody>(eid);
-        rb->linearVelocity = btToAtta(body->getLinearVelocity());
-        rb->angularVelocity = btToAtta(body->getAngularVelocity());
-
-        // Update is awake
-        rb->awake = body->isActive();
+        // auto rb = component::getComponent<component::RigidBody>(eid);
+        // btScalar linearDamping = body->getLinearDamping();
+        // btScalar angularDamping = body->getAngularDamping();
+        // btVector3 linearVelocity = body->getLinearVelocity();
+        // btVector3 angularVelocity = body->getAngularVelocity();
     }
 
     //----- Update atta joints -----//
@@ -235,7 +196,6 @@ void BulletEngine::step(float dt) {
 void BulletEngine::stop() {
     _running = false;
     _bodyToEntity.clear();
-    _componentToEntity.clear();
     _entityToBody.clear();
     _collisions.clear();
     gContactStartedCallback = nullptr;
@@ -272,8 +232,8 @@ std::vector<component::EntityId> BulletEngine::getEntityCollisions(component::En
 
 std::vector<RayCastHit> BulletEngine::rayCast(vec3 begin, vec3 end, bool onlyFirst) {
     std::vector<RayCastHit> result;
-    btVector3 btBegin = attaToBt(begin);
-    btVector3 btEnd = attaToBt(end);
+    btVector3 btBegin(begin.x, begin.y, begin.z);
+    btVector3 btEnd(end.x, end.y, end.z);
 
     if (onlyFirst) {
         // Create ray cast callback
@@ -323,7 +283,8 @@ void BulletEngine::updateGravity() {
         }
 
         // Update gravity
-        _world->setGravity(attaToBt(physics::getGravity()));
+        vec3 g = physics::getGravity();
+        _world->setGravity(btVector3(g.x, g.y, g.z));
     }
 }
 
@@ -345,7 +306,7 @@ bnd3 BulletEngine::getAabb(component::EntityId entity) {
     if (rb) {
         btVector3 aabbMin, aabbMax;
         rb->getAabb(aabbMin, aabbMax);
-        return bnd3(btToAtta(aabbMin), btToAtta(aabbMax));
+        return bnd3(vec3(aabbMin.x(), aabbMin.y(), aabbMin.z()), vec3(aabbMax.x(), aabbMax.y(), aabbMax.z()));
     } else
         LOG_WARN("physics::BulletEngine", "Trying to get bullet aabb of entity [w]$0[], but this entity does not have a bullet rigid body", entity);
 
@@ -390,10 +351,11 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     quat orientation = worldT.orientation;
 
     // Calculate transform
-    btTransform bodyTransform(attaToBt(orientation), attaToBt(position));
+    btTransform bodyTransform(btQuaternion(-orientation.i, -orientation.j, -orientation.k, orientation.r),
+                              btVector3(position.x, position.y, position.z));
 
     // Create collision shape
-    btCollisionShape* colShape = nullptr;
+    btCollisionShape* colShape;
     if (box)
         colShape = new btBoxShape(btVector3(scale.x * box->size.x / 2.0f, scale.y * box->size.y / 2.0f, scale.z * box->size.z / 2.0f));
     else if (sphere)
@@ -415,15 +377,8 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     // Create rigid body
     btDefaultMotionState* motionState = new btDefaultMotionState(bodyTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, colShape, localInertia);
-    rbInfo.m_linearDamping = rb->linearDamping;
-    rbInfo.m_angularDamping = rb->angularDamping;
-    rbInfo.m_friction = rb->friction;
-    rbInfo.m_restitution = rb->restitution;
     btRigidBody* body = new btRigidBody(rbInfo);
     body->setUserPointer(reinterpret_cast<uint8_t*>(entity));
-
-    // Update mass with body's internal mass
-    rb->mass = body->getMass();
 
     // Allow sleep control
     if (!rb->allowSleep)
@@ -432,61 +387,7 @@ void BulletEngine::createRigidBody(component::EntityId entity) {
     // add the body to the dynamics world
     _world->addRigidBody(body);
     _bodyToEntity[body] = entity;
-    _componentToEntity[rb] = entity;
     _entityToBody[entity] = body;
-}
-
-void BulletEngine::applyForce(component::RigidBody* rb, vec3 force, vec3 point) {
-    if (_componentToEntity.find(rb) == _componentToEntity.end())
-        return;
-    cmp::Entity e = _componentToEntity[rb];
-    auto t = cmp::getComponent<cmp::Transform>(e);
-    if (t) {
-        vec3 relPoint = point - t->position;
-        if (Config::getState() != Config::State::IDLE) {
-            btRigidBody* body = _entityToBody[e];
-            body->applyForce(attaToBt(force), attaToBt(relPoint));
-            if (force.squareLength() > 0)
-                wakeUpEntity(e);
-        }
-    }
-}
-
-void BulletEngine::applyForceToCenter(component::RigidBody* rb, vec3 force) {
-    if (_componentToEntity.find(rb) == _componentToEntity.end())
-        return;
-    if (Config::getState() != Config::State::IDLE) {
-        cmp::Entity eid = _componentToEntity[rb];
-        btRigidBody* body = _entityToBody[eid];
-        body->applyCentralForce(attaToBt(force));
-        if (force.squareLength() > 0)
-            wakeUpEntity(eid);
-    }
-}
-
-void BulletEngine::applyTorque(component::RigidBody* rb, vec3 torque) {
-    if (_componentToEntity.find(rb) == _componentToEntity.end())
-        return;
-    if (Config::getState() != Config::State::IDLE) {
-        cmp::Entity eid = _componentToEntity[rb];
-        btRigidBody* body = _entityToBody[eid];
-        body->applyTorque(attaToBt(torque));
-        if (torque.squareLength() > 0)
-            wakeUpEntity(eid);
-    }
-}
-
-mat3 BulletEngine::getInertiaTensor(component::RigidBody* rb) {
-    if (_componentToEntity.find(rb) == _componentToEntity.end())
-        return mat3(1.0f);
-
-    if (Config::getState() != Config::State::IDLE) {
-        cmp::Entity eid = _componentToEntity[rb];
-        btRigidBody* body = _entityToBody[eid];
-        mat3 invInertia = btToAtta(body->getInvInertiaTensorWorld());
-        return invInertia.inverted();
-    }
-    return mat3(1.0f);
 }
 
 //----------------------------------------------//
@@ -509,8 +410,8 @@ void BulletEngine::createPrismaticJoint(component::PrismaticJoint* prismatic) {
     vec3 aB = prismatic->anchorB;
 
     // Calculate frames
-    btTransform frameInA(attaToBt(qA), attaToBt(aA));
-    btTransform frameInB(attaToBt(qB), attaToBt(aB));
+    btTransform frameInA(btQuaternion(-qA.i, -qA.j, -qA.k, qA.r), btVector3(aA.x, aA.y, aA.z));
+    btTransform frameInB(btQuaternion(-qB.i, -qB.j, -qB.k, qB.r), btVector3(aB.x, aB.y, aB.z));
 
     // Create constraint
     btSliderConstraint* slider = new btSliderConstraint(*rbA, *rbB, frameInA, frameInB, true);
@@ -642,20 +543,6 @@ void BulletEngine::collisionEnded(btPersistentManifold* const& manifold) {
     component::EntityId eidB = BT_USRPTR_TO_EID(obB->getUserPointer());
     bullet->_collisions[eidA].erase(eidB);
     bullet->_collisions[eidB].erase(eidA);
-}
-
-void BulletEngine::wakeUpEntity(component::EntityId entity) {
-    btRigidBody* body = _entityToBody[entity];
-
-    // Activate this body
-    body->activate();
-
-    // Activate bodies linked to this body
-    // TODO: This may be done automatically by Bullet, need to check
-    if (_connectedEntities.find(entity) != _connectedEntities.end())
-        for (auto other : _connectedEntities[entity])
-            if (_entityToBody.find(other) != _entityToBody.end())
-                _entityToBody[other]->activate();
 }
 
 } // namespace atta::physics

@@ -15,7 +15,7 @@ ComponentDescription& TypedComponentRegistry<CircleCollider2D>::getDescription()
         "Circle Collider 2D",
         {
             {AttributeType::FLOAT32, offsetof(CircleCollider2D, radius), "radius", 0.0001f, 2000.0f, 0.01f},
-            {AttributeType::VECTOR_FLOAT32, offsetof(CircleCollider2D, offset), "offset", -2000.0f, 2000.0f, 0.01f},
+            {AttributeType::FLOAT32, offsetof(CircleCollider2D, offset), "offset", -2000.0f, 2000.0f, 0.01f},
         },
     };
 

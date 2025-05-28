@@ -6,7 +6,6 @@
 //--------------------------------------------------
 #ifndef ATTA_COMPONENT_ENTITY_H
 #define ATTA_COMPONENT_ENTITY_H
-
 #include <atta/component/base.h>
 
 namespace atta::component {

@@ -49,10 +49,7 @@ Instance::Instance() : _instance(VK_NULL_HANDLE) {
     // Create instance
     VkResult result = vkCreateInstance(&createInfo, nullptr, &_instance);
     _wasCreated = result == VK_SUCCESS;
-    if (_wasCreated) {
-        // Load Vulkan functions using Volk
-        volkLoadInstance(_instance);
-    } else
+    if (!_wasCreated)
         LOG_ERROR("gfx::vk::Instance", "Failed to create vulkan instance! Code: $0", common::toString(result));
 }
 
@@ -66,12 +63,6 @@ bool Instance::wasCreated() const { return _wasCreated; }
 VkInstance Instance::getHandle() const { return _instance; }
 
 uint32_t Instance::getApiVersion() const { return _apiVersion; }
-
-bool Instance::hasCompatibleGPU() const {
-    uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
-    return deviceCount > 0;
-}
 
 void Instance::printAvailableExtensions() {
     LOG_INFO("gfx::vk::Instance", "Available instance extensions:");

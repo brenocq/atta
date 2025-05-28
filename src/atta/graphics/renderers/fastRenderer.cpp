@@ -98,8 +98,11 @@ void FastRenderer::render(std::shared_ptr<Camera> camera) {
                         _geometryPipeline->setMat4("uModel", model);
 
                         if (material) {
-                            _geometryPipeline->setImageGroup(compMat->sid);
-                            _geometryPipeline->setVec3("uAlbedo", material->colorIsImage() ? vec3(-1, -1, -1) : material->getColor());
+                            if (material->colorIsImage()) {
+                                _geometryPipeline->setImageGroup(compMat->sid);
+                                _geometryPipeline->setVec3("uAlbedo", {-1, -1, -1});
+                            } else
+                                _geometryPipeline->setVec3("uAlbedo", material->getColor());
                         } else {
                             resource::Material::CreateInfo defaultMaterial{};
                             _geometryPipeline->setVec3("uAlbedo", defaultMaterial.color);

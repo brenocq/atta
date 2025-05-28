@@ -6,74 +6,129 @@
 //--------------------------------------------------
 #ifndef ATTA_FILE_SERIALIZER_SECTION_H
 #define ATTA_FILE_SERIALIZER_SECTION_H
+#include <atta/file/serializer/serializable.h>
+#include <atta/file/serializer/serializer.h>
 
 namespace atta::file {
 
-/** Section Data
- *
- * Handles conversion between string and data types
+/// Section Data
+/** Store the binary data for each data and its type so that it is possible to print SectionData and serialize it
  **/
-class SectionData {
+class SectionData : Serializable {
   public:
-    // Default constructor
-    SectionData() = default;
+    using TypeHash = StringId;
+    SectionData();
 
-    // Constructor to handle initialization
-    template <typename T>
-    SectionData(T&& value) {
-        *this = std::forward<T>(value); // Use the assignment operator
-    }
+    void clear();
 
-    void setStr(const std::string& str) { _str = str; }
-    const std::string& getStr() const { return _str; }
-
-    // Assign operators
     template <typename T>
     void operator=(T&& value);
-    template <typename T>
-    void operator=(std::initializer_list<T> value);
 
-    // Explicit cast operator
     template <typename T>
-    explicit operator T() const;
+    T get();
+    template <typename T>
+    T getConst() const;
+    template <typename T>
+    T* getPtr();
+    template <typename T>
+    T* getPtrConst() const;
+
+    TypeHash getTypeHash() const;
+
+    std::string toString() const;
+    void serialize(std::ostream& os) override;
+    void deserialize(std::istream& is) override;
 
   private:
-    std::string _str;
+    std::vector<uint8_t> _data;
+    TypeHash _typeHash;
+
+    using PrintFunction = std::function<std::string(std::vector<uint8_t> data)>;
+
+    template <typename T>
+    static void registerType();
+    static std::unordered_map<TypeHash, PrintFunction> _typeToString;
 };
 
-/** Each serialized file is composed of multiple sections
- *
- *  Each section looks like this when serialized:
- *  ```
- *  [sectionName]
- *  key1 = "someString"
- *  key2 = 10
- *  key3 = true
- *  ```
+/** There are three main possibilities for a section:
+ *  - Map of sections (data as std::map<std::string, Section>)
+ *  - Vector of sections (data as std::vector<Section>)
+ *  - Data
  **/
-class Section {
+class Section : Serializable {
   public:
-    Section(const std::string& name) : _name(name) {}
+    Section();
+    template <typename T>
+    explicit Section(T value);
 
-    /// Getters
-    const std::string& getName() const;
-    bool empty() const;
+    Section(const Section& section);
+
+    // Check type
+    bool isUndefined() const;
+    bool isMap() const;
+    bool isVector() const;
+    bool isData() const;
+
     size_t size() const;
-    bool contains(std::string key) const;
-
-    /// Insert/read
-    SectionData& operator[](std::string key);
-    const SectionData& operator[](std::string key) const;
-
-    /// Serialize/deserialize
-    void insertFromString(const std::string& string);
     std::string toString() const;
 
+    //----- Data -----//
+    /// Get data
+    SectionData& data();
+    const SectionData& data() const;
+
+    /// Assign data
+    template <typename T>
+    void operator=(T value);
+
+    /// Get data (casting)
+    template <typename T>
+    explicit operator T();
+
+    //----- Map -----//
+    /// Get map
+    std::map<std::string, Section>& map();
+    const std::map<std::string, Section>& map() const;
+
+    /// Map access
+    Section& operator[](std::string key);
+
+    bool contains(std::string key);
+
+    //----- Vector -----//
+    /// Get vector
+    std::vector<Section>& vector();
+    const std::vector<Section>& vector() const;
+
+    /// Vector access
+    Section& operator[](unsigned i);
+
+    /// Push to vector
+    void push_back(Section section);
+    void operator+=(Section section);
+
+    /// Get last section
+    Section& back();
+
+    /// Assign vector of values
+    template <typename T>
+    void operator=(std::initializer_list<T> list);
+
+    //----- Serialization -----//
+    void serialize(std::ostream& os) override;
+    void deserialize(std::istream& is) override;
+
   private:
-    std::string _name;
-    std::vector<std::string> _keys; // Keys are stored in a vector to keep the order
-    std::map<std::string, SectionData> _map;
+    enum Type { UNDEFINED = 0, MAP, VECTOR, DATA };
+
+    std::map<std::string, Section> _map;
+    std::vector<Section> _vector;
+    SectionData _data;
+    Type _type;
 };
+
+// <<
+inline std::ostream& operator<<(std::ostream& os, const Section& v) { return os << v.toString(); }
 
 } // namespace atta::file
 

@@ -10,7 +10,6 @@
 #include <atta/resource/resources/mesh.h>
 #include <atta/script/manager.h>
 #include <atta/sensor/manager.h>
-#include <atta/ui/widgets/component.h>
 #include <atta/ui/windows/entityWindow.h>
 #include <imgui.h>
 
@@ -138,7 +137,7 @@ void EntityWindow::renderComponents() {
             if (compReg->getId() != component::TypedComponentRegistry<component::Relationship>::getInstance().getId()) {
                 bool open = true;
                 if (ImGui::CollapsingHeader((name + "##Components" + name + "Header").c_str(), &open))
-                    componentWidget(cmp::Entity(selected), compReg->getId(), (component::Component*)component);
+                    compReg->renderUI((component::Component*)component);
                 if (!open)
                     component::removeComponentById(compReg->getId(), selected);
             }

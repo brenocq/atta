@@ -24,12 +24,33 @@ ComponentDescription& TypedComponentRegistry<CameraSensor>::getDescription() {
             {AttributeType::FLOAT32, offsetof(CameraSensor, far), "far", 0.0f, 10000.0f, 0.5f},
             {AttributeType::FLOAT32, offsetof(CameraSensor, near), "near", 0.0f, 10000.0f, 0.5f},
             {AttributeType::FLOAT32, offsetof(CameraSensor, fps), "fps", 0.0f, 120.0f},
-            {AttributeType::UINT32, offsetof(CameraSensor, cameraType), "cameraType", {}, {}, {}, {"ORTHOGRAPHIC", "PERSPECTIVE"}},
-            {AttributeType::UINT32, offsetof(CameraSensor, rendererType), "rendererType", {}, {}, {}, {"FAST", "PHONG", "PBR"}},
+            {AttributeType::UINT32, offsetof(CameraSensor, cameraType), "cameraType", {}, {}, {}, {"Orthographic", "Perspective"}},
+            {AttributeType::UINT32, offsetof(CameraSensor, rendererType), "rendererType", {}, {}, {}, {"Fast", "Phong", "Pbr"}},
             {AttributeType::FLOAT32, offsetof(CameraSensor, captureTime), "captureTime"},
         },
-        1024, // Max instances
-    };
+        1024,                                      // Max instances
+        {},                                        // Serialize
+        {},                                        // Deserialize
+        {                                          // renderUI
+         {"", [=](void* data, std::string imguiId) // Define how the component will be rendered
+          {
+              const std::vector<AttributeDescription> aDescs = TypedComponentRegistry<CameraSensor>::getDescription().attributeDescriptions;
+
+              if (ImGui::Button(("View image" + imguiId + "image").c_str())) {
+                  event::UiCameraComponent event;
+                  event.component = static_cast<CameraSensor*>(data);
+                  event.uiEvent = event::UiCameraComponent::UiEvent::VIEW_BUTTON_CLICKED;
+                  event::publish(event);
+              }
+
+              for (unsigned i = 0; i < aDescs.size(); i++) {
+                  // Calculate data and size
+                  float size = (i != aDescs.size() - 1) ? aDescs[i + 1].offset - aDescs[i].offset : sizeof(CameraSensor) - aDescs[i].offset;
+                  void* attribData = (void*)((uint8_t*)data + aDescs[i].offset);
+
+                  ComponentRegistry::renderUIAttribute(aDescs[i], attribData, size, imguiId + aDescs[i].name);
+              }
+          }}}};
 
     return desc;
 }

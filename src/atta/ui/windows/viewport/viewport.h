@@ -7,13 +7,14 @@
 #ifndef ATTA_UI_WINDOWS_VIEWPORT_VIEWPORT_H
 #define ATTA_UI_WINDOWS_VIEWPORT_VIEWPORT_H
 
+#include <atta/file/serializer/serializable.h>
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/renderers/renderer.h>
 #include <atta/utils/stringId.h>
 
 namespace atta::ui {
 
-class Viewport final {
+class Viewport final : public file::Serializable {
   public:
     struct CreateInfo {
         StringId sid = StringId("Unnamed viewport");
@@ -40,6 +41,10 @@ class Viewport final {
     void setRenderer(std::shared_ptr<gfx::Renderer> renderer) { _newRenderer = renderer; }
     void setCamera(std::shared_ptr<gfx::Camera> camera) { _camera = camera; }
 
+    // Serializable
+    void serialize(std::ostream& os) override;
+    void deserialize(std::istream& is) override;
+    unsigned getSerializedSize() { return file::Serializable::getSerializedSize(this); }
     // UI
     void renderUI();
 

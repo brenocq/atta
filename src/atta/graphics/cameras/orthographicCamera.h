@@ -24,10 +24,11 @@ class OrthographicCamera : public Camera {
     };
 
     OrthographicCamera(CreateInfo info);
+    void serialize(std::ostream& os) override;
+    void deserialize(std::istream& is) override;
 
     mat4 getView() const override;
     mat4 getProj() const override;
-    float getHeight() const { return _height; }
 
   private:
     virtual void movePlanar() override;

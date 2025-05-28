@@ -25,25 +25,20 @@ if(ATTA_VULKAN_SUPPORT)
     list(APPEND IMGUI_SOURCE ${FETCHCONTENT_BASE_DIR}/imgui-src/backends/imgui_impl_vulkan.cpp)
 endif()
 
-add_library(imgui STATIC ${IMGUI_SOURCE})
+add_library(imgui STATIC
+	${IMGUI_SOURCE}
+)
 target_include_directories(imgui PUBLIC
     $<BUILD_INTERFACE:${FETCHCONTENT_BASE_DIR}/imgui-src>
     $<INSTALL_INTERFACE:include/${ATTA_VERSION_SAFE}/extern/imgui>
 )
-target_link_libraries(imgui PRIVATE ${ATTA_GLFW_TARGETS})
-if(ATTA_VULKAN_SUPPORT)
-    target_link_libraries(imgui PRIVATE ${ATTA_VOLK_TARGETS})
-    target_compile_options(imgui PUBLIC -DIMGUI_IMPL_VULKAN_USE_VOLK)
-endif()
+target_link_libraries(imgui PRIVATE glfw)
 if(NOT MSVC)
 	target_compile_options(imgui PRIVATE -Wno-invalid-noreturn)
 endif()
 
 atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/imgui-src)
 atta_add_libs(imgui)
-
-# Also make imgui available in the atta namespace
-add_library(atta::imgui ALIAS imgui)
 
 atta_log(Success Extern "ImGui support (source)")
 set(ATTA_IMGUI_SUPPORT TRUE)

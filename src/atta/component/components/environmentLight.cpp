@@ -21,7 +21,7 @@ ComponentDescription& TypedComponentRegistry<EnvironmentLight>::getDescription()
 
 EnvironmentLight::EnvironmentLight() {
     if (TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.size())
-        sid = StringId(*(TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.begin()));
+        sid = std::any_cast<StringId>(*(TypedComponentRegistry<EnvironmentLight>::description->attributeDescriptions[0].options.begin()));
 }
 
 } // namespace atta::component

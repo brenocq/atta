@@ -21,9 +21,6 @@ class Instance {
     VkInstance getHandle() const;
     uint32_t getApiVersion() const;
 
-    /// True if there is a GPU with vulkan support
-    bool hasCompatibleGPU() const;
-
   private:
     void printAvailableExtensions();
     void printAvailableLayers();

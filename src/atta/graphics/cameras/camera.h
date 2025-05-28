@@ -7,11 +7,12 @@
 #ifndef ATTA_GRAPHICS_CAMERAS_CAMERA_H
 #define ATTA_GRAPHICS_CAMERAS_CAMERA_H
 
+#include <atta/file/serializer/serializable.h>
 #include <atta/utils/math/math.h>
 
 namespace atta::graphics {
 
-class Camera {
+class Camera : public file::Serializable {
   public:
     Camera(std::string name) : _name(name) {}
     virtual ~Camera() = default;

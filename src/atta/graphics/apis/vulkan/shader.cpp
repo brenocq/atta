@@ -8,7 +8,6 @@
 #include <atta/graphics/interface.h>
 
 #include <atta/file/manager.h>
-#include <shaderc/shaderc.hpp>
 #include <regex>
 
 namespace atta::graphics::vk {
@@ -229,37 +228,17 @@ void Shader::compile() {
             continue;
         }
 
-        // Compute shaderc kind
-        shaderc_shader_kind shaderKind;
-        switch (type) {
-            case VERTEX: shaderKind = shaderc_vertex_shader; break;
-            case GEOMETRY: shaderKind = shaderc_geometry_shader; break;
-            case FRAGMENT: shaderKind = shaderc_fragment_shader; break;
-            default:
-                LOG_ERROR("gfx::vk::Shader", "Unsupported shader type when compiling [w]$0[]", _file.string());
-                continue;
-        }
+        // Compile shader
+        fs::path out = in.string() + ".spv";
+        if (!runCommand("glslc " + in.string() + " -o " + out.string()))
+            return;
 
-        // Compile shader using shaderc
-        shaderc::Compiler compiler;
-        shaderc::CompileOptions options;
-        shaderc::CompilationResult result = compiler.CompileGlslToSpv(
-            shaderCode.apiCode,
-            shaderKind,
-            in.string().c_str(),
-            options
-        );
-        if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
-            LOG_ERROR("gfx::vk::Shader", "Shader compilation failed: $0", result.GetErrorMessage());
-            continue;
-        }
-        std::vector<uint32_t> spirvCode(result.cbegin(), result.cend());
-
-        // Create shader module
+        // Load shader and create shader module
+        std::string spirvCode = readFile(fs::path(out));
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = spirvCode.size() * sizeof(uint32_t);
-        createInfo.pCode = spirvCode.data();
+        createInfo.codeSize = spirvCode.size();
+        createInfo.pCode = (const uint32_t*)spirvCode.data();
 
         VkShaderModule shader;
         if (vkCreateShaderModule(_device->getHandle(), &createInfo, nullptr, &shader) != VK_SUCCESS)
