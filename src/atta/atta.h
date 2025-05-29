@@ -44,7 +44,7 @@ class Atta {
     clock_t _lastStep;
     clock_t _currStep;
     
-    std::shared_ptr<ros> ros_node;
+    std::shared_ptr<rosPlugin> ros_node;
 };
 } // namespace atta
 

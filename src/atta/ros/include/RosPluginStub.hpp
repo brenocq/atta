@@ -6,12 +6,12 @@
 #include <memory>
 
 
-class ros {
+class rosPlugin {
 public:
-    ros();
-    ~ros();
+    rosPlugin();
+    ~rosPlugin();
 
-    //void update();
+    void update();
     void publishData(std::string msg);
 private:
     void createPublishers();

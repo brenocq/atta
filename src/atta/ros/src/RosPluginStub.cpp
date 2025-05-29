@@ -1,13 +1,14 @@
 #include "RosPluginStub.hpp"
 
 
-ros::ros() {
+rosPlugin::rosPlugin() {
     
 }
 
-ros::~ros() {}
+rosPlugin::~rosPlugin() {}
 
-void ros::createPublishers() {}
-void ros::createServices() {}
-void ros::publishData(std::string msg) {}
-void ros::createThread() {}
+void rosPlugin::createPublishers() {}
+void rosPlugin::createServices() {}
+void rosPlugin::publishData(std::string msg) {}
+void rosPlugin::createThread() {}
+void rosPlugin::update(){}

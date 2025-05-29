@@ -50,7 +50,7 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     sensor::startUp();
     script::startUp();
 
-    ros_node = std::make_shared<ros>();
+    ros_node = std::make_shared<rosPlugin>();
     ros_node->publishData("Started");
     // Atta is the last one to reveice events
     event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
