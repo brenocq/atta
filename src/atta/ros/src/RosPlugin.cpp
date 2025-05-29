@@ -16,13 +16,13 @@ rosPlugin::rosPlugin() {
 
     //Simulation Services
     pausePhysics = node_->create_service<std_srvs::srv::Trigger>(
-                    "Simulation_Control/pause_physics",
+                    "atta/Simulation_Control/pause_physics",
                     std::bind(&rosPlugin::pauseCallback,this,std::placeholders::_1, std::placeholders::_2));
     unPausePhysics = node_->create_service<std_srvs::srv::Trigger>(
-                    "Simulation_Control/unPause_physics",
+                    "atta/Simulation_Control/unPause_physics",
                     std::bind(&rosPlugin::unPauseCallback,this,std::placeholders::_1, std::placeholders::_2));
     resetSimulation = node_->create_service<std_srvs::srv::Trigger>(
-                    "Simulation_Control/reset_physics",
+                    "atta/Simulation_Control/reset_physics",
                     std::bind(&rosPlugin::resetCallback,this,std::placeholders::_1, std::placeholders::_2));
     //___
 
