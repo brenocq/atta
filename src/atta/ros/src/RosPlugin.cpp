@@ -1,13 +1,14 @@
 #include "RosPlugin.hpp"
-#include <atta/event/event.h>
 #include <atta/event/interface.h>
 #include <atta/event/events/simulationPause.h>
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
+#include <atta/event/events/simulationStep.h>
+#include <atta/component/components/transform.h>
 
 rosPlugin::rosPlugin() {
     // Initialize ROS 2 and create a node and check if ros is not already running
-    if (!rclcpp::ok()) { rclcpp::init(0, nullptr); } 
+    if (!rclcpp::ok()) { rclcpp::init(0, nullptr); rosInitializedHere=true; } 
     //create ros node
     node_ = std::make_shared<rclcpp::Node>("ros_plugin_node");
 
@@ -24,22 +25,26 @@ rosPlugin::rosPlugin() {
     resetSimulation = node_->create_service<std_srvs::srv::Trigger>(
                     "atta/Simulation_Control/reset_physics",
                     std::bind(&rosPlugin::resetCallback,this,std::placeholders::_1, std::placeholders::_2));
+    stepSimulation = node_->create_service<std_srvs::srv::Trigger>(
+                    "atta/Simulation_Control/step_Simulation",
+                    std::bind(&rosPlugin::stepCallback,this,std::placeholders::_1, std::placeholders::_2));
     //___
 
     LOG_SUCCESS("Ros Node", "Created");
 }
 
 rosPlugin::~rosPlugin() {
-       //clean up
-        if (executor_) {
+    //clean up
+    if (executor_) {
         executor_->cancel();
     }
-    
     if (executor_thread_.joinable()) {
         executor_thread_.join();
     }
-
-    if (rclcpp::ok()) {
+    deleteAllPubs();
+    node_.reset();
+    executor_.reset();
+    if (rclcpp::ok() && rosInitializedHere) {
         rclcpp::shutdown();
     }
 }
@@ -68,7 +73,7 @@ void rosPlugin::createThread(){
     });
 } 
 void rosPlugin::update(){
-
+    this->updateTransform();
 }
 
 // Simulation Control
@@ -117,3 +122,81 @@ void rosPlugin::resetCallback(const std::shared_ptr<std_srvs::srv::Trigger::Requ
         response->message = "Failed to stop simulation.";
     }
     }     
+void rosPlugin::stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+                            std::shared_ptr<std_srvs::srv::Trigger::Response> response){
+    try{
+    // atta side
+    atta::event::SimulationStep stepSim;
+    atta::event::publish(stepSim);
+    // ros side
+    response->success = true;
+    response->message = "Simulation stepped successfully";
+    }
+    catch (...){
+        response->success = false;
+        response->message = "Failed to step simulation.";
+    }
+}
+
+void rosPlugin::createTransformPublisher(const atta::event::CreateComponent& event){
+    //create topci name
+    std::string eName = "E" + std::to_string(event.entityId);
+    std::string cName = "C" + std::to_string(event.componentId);
+    std::string topic_name = "atta/"+ eName + "/" + cName + "/Odometry";
+    int key = event.entityId;
+    // make sure if publisher already exists
+    if (transformPubs.find(key) == transformPubs.end()){
+       
+        auto Tpub = node_->create_publisher<geometry_msgs::msg::Pose>(topic_name, 10);
+        transformPubs[key] = Tpub;
+        LOG_SUCCESS("ros", "Publisher created");
+    }else {
+        LOG_ERROR("ros", "Publisher creation failed");
+    }
+
+}
+void rosPlugin::updateTransform(){
+
+    for(const auto& [entityId, publisher]: transformPubs){
+        //check that the publisher has subscribers
+        if (publisher->get_subscription_count() == 0){
+            continue;
+        }
+        //get transform component from entity
+        auto* transform = atta::component::getComponent<atta::component::Transform>(entityId);
+        if (!transform){
+        LOG_ERROR("ros", "Failed to get transform component for entityId: %d", entityId);
+        continue;
+        }
+        //cast transform data in ros msg format
+        atta::component::Transform data = transform->getWorldTransform(entityId);
+        geometry_msgs::msg::Pose msg;
+        msg.position.x = data.position.x;
+        msg.position.y = data.position.y;
+        msg.position.z = data.position.z;
+
+        msg.orientation.w = data.orientation.r;
+        msg.orientation.x = data.orientation.i;
+        msg.orientation.y = data.orientation.j;
+        msg.orientation.z = data.orientation.k; 
+        //publish msg
+        try{
+            publisher->publish(msg);
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("ros", "Exception during publish: %s", e.what());
+        } catch (...) {
+            LOG_ERROR("ros", "Unknown error while publishing transform msg");
+        }
+        
+    }
+}
+void rosPlugin::deleteAllPubs(){
+    for(auto& [entityId, publisher]: transformPubs){
+        if (publisher) {
+            publisher.reset();  // Explicitly release the shared_ptr
+        }
+        transformPubs.clear();
+    }
+
+}

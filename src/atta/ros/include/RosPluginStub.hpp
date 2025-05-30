@@ -4,7 +4,8 @@
 
 #include <thread>
 #include <memory>
-
+#include <atta/event/event.h>
+#include <atta/event/events/createComponent.h>
 
 class rosPlugin {
 public:
@@ -13,6 +14,7 @@ public:
 
     void update();
     void publishData(std::string msg);
+    void createTransformPublisher(const atta::event::CreateComponent& event);
 private:
     void createPublishers();
     void createServices();

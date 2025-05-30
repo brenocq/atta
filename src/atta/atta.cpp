@@ -15,6 +15,10 @@
 #include <atta/event/events/windowClose.h>
 
 #include <atta/component/interface.h>
+#include <atta/component/components/components.h>
+#include <atta/event/events/createComponent.h>
+#include <atta/event/events/deleteComponent.h>
+#include <atta/event/events/deleteEntity.h>
 #include <atta/file/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/memory/interface.h>
@@ -59,7 +63,7 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     event::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-
+    event::subscribe<event::CreateComponent>(BIND_EVENT_FUNC(Atta::createTransformPublisher));
     LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
     fs::path projectFile = fs::path(ATTA_STATIC_PROJECT_FILE);
@@ -117,7 +121,7 @@ void Atta::loop() {
     PROFILE();
     _currStep = std::clock();
     const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
-    ros_node->publishData("another loop");
+    //ros_node->publishData("another loop");
     if (Config::getState() == Config::State::RUNNING) {
         if (Config::getDesiredStepSpeed() == 0.0f) {
             // Step as fast as possible
@@ -151,7 +155,7 @@ void Atta::step() {
     physics::update(dt);
     sensor::update(dt);
     script::update(dt);
-    //ros::update();
+    ros_node->update();
     Config::getInstance()._time += dt;
 }
 
@@ -202,5 +206,11 @@ void Atta::onSimulationStateChange(event::Event& event) {
             LOG_WARN("Atta", "Unknown simulation event");
         }
     }
+}
+void Atta::createTransformPublisher(event::Event& event){
+    //get component type and send it to ros
+    auto& createCompEvent = static_cast<atta::event::CreateComponent&>(event);
+    ros_node->createTransformPublisher(createCompEvent);
+    LOG_SUCCESS("Atta", "Publisher Created");
 }
 } // namespace atta

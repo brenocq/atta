@@ -8,6 +8,7 @@ if(WITH_ROS2)
     find_package(rclcpp REQUIRED)
     find_package(std_msgs REQUIRED)
     find_package(std_srvs REQUIRED)
+    find_package(geometry_msgs REQUIRED)
 
     set(ROS_PLUGIN_SOURCE   src/RosPlugin.cpp)
     set(ROS_PLUGIN_HEADERS  include/RosPlugin.hpp)
@@ -36,11 +37,15 @@ if(WITH_ROS2)
                             $<INSTALL_INTERFACE:include>
                             ${rclcpp_INCLUDE_DIRS}
                             ${std_msgs_INCLUDE_DIRS}
-                            ${std_srvs_INCLUDE_DIRS})
-    target_link_libraries(ros_plugin PUBLIC 
-                            rclcpp::rclcpp
-                            ${std_msgs_LIBRARIES}
-                            ${std_srvs_LIBRARIES})
+                            ${std_srvs_INCLUDE_DIRS}
+                            ${geometry_msgs_INCLUDE_DIRS})
+    ament_target_dependencies(ros_plugin
+                            rclcpp
+                            std_msgs
+                            std_srvs
+                            geometry_msgs
+                        )
+                        
 else()
     # Link the ROS2 stub libraries
     target_include_directories(ros_plugin PUBLIC
@@ -65,7 +70,7 @@ install(
 )
 
 if(WITH_ROS2)
-    ament_export_dependencies(rclcpp std_msgs std_srvs)
+    ament_export_dependencies(rclcpp std_msgs std_srvs geometry_msgs)
     ament_export_targets(ros_plugin_export HAS_LIBRARY_TARGET)
     ament_package()
 endif()
