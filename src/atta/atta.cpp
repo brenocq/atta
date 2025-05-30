@@ -64,6 +64,8 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::CreateComponent>(BIND_EVENT_FUNC(Atta::createTransformPublisher));
+    event::subscribe<event::DeleteComponent>(BIND_EVENT_FUNC(Atta::deleteTransformPublisher));
+    event::subscribe<event::DeleteEntity>(BIND_EVENT_FUNC(Atta::deleteTransformPublisher));
     LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
     fs::path projectFile = fs::path(ATTA_STATIC_PROJECT_FILE);
@@ -210,7 +212,15 @@ void Atta::onSimulationStateChange(event::Event& event) {
 void Atta::createTransformPublisher(event::Event& event){
     //get component type and send it to ros
     auto& createCompEvent = static_cast<atta::event::CreateComponent&>(event);
-    ros_node->createTransformPublisher(createCompEvent);
-    LOG_SUCCESS("Atta", "Publisher Created");
+    if(createCompEvent.componentId == COMPONENT_POOL_SID(component::Transform)){
+        ros_node->createTransformPublisher(createCompEvent);
+    }
+
+}
+void Atta::deleteTransformPublisher(event::Event& event){
+    auto& createCompEvent = static_cast<atta::event::CreateComponent&>(event);
+    if(createCompEvent.componentId == COMPONENT_POOL_SID(component::Transform)){
+        ros_node->deleteTransformPub(createCompEvent.entityId);
+    }
 }
 } // namespace atta

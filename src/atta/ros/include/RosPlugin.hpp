@@ -26,6 +26,7 @@ public:
     //create transform Publisher
     void createTransformPublisher(const atta::event::CreateComponent& event);
     //___
+    bool deleteTransformPub(int id);
 private:
     void createPublishers();
     void createServices();

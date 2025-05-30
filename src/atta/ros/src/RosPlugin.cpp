@@ -139,7 +139,7 @@ void rosPlugin::stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Reque
 }
 
 void rosPlugin::createTransformPublisher(const atta::event::CreateComponent& event){
-    //create topci name
+    //create topic name
     std::string eName = "E" + std::to_string(event.entityId);
     std::string cName = "C" + std::to_string(event.componentId);
     std::string topic_name = "atta/"+ eName + "/" + cName + "/Odometry";
@@ -149,9 +149,9 @@ void rosPlugin::createTransformPublisher(const atta::event::CreateComponent& eve
        
         auto Tpub = node_->create_publisher<geometry_msgs::msg::Pose>(topic_name, 10);
         transformPubs[key] = Tpub;
-        LOG_SUCCESS("ros", "Publisher created");
+        LOG_SUCCESS("Ros", "Transform Publisher created");
     }else {
-        LOG_ERROR("ros", "Publisher creation failed");
+        LOG_ERROR("Ros", "Publisher creation failed");
     }
 
 }
@@ -199,4 +199,13 @@ void rosPlugin::deleteAllPubs(){
         transformPubs.clear();
     }
 
+}
+bool rosPlugin::deleteTransformPub(int id){
+    if (transformPubs.find(id) != transformPubs.end()){
+        transformPubs.erase(id);
+        LOG_SUCCESS("Ros", "Transform Publisher deleted");
+        return true;
+    }else{
+        return false;
+    }
 }

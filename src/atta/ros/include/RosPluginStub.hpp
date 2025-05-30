@@ -15,12 +15,13 @@ public:
     void update();
     void publishData(std::string msg);
     void createTransformPublisher(const atta::event::CreateComponent& event);
+    bool deleteTransformPub(int id);
 private:
     void createPublishers();
     void createServices();
 
     void createThread();
-
+    
 };
 
 #endif // ROS_PLUGIN_STUB_HPP
