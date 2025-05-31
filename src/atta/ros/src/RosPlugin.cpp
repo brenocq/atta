@@ -5,6 +5,7 @@
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/simulationStep.h>
 #include <atta/component/components/transform.h>
+#include <atta/component/components/name.h>
 
 rosPlugin::rosPlugin() {
     // Initialize ROS 2 and create a node and check if ros is not already running
@@ -139,11 +140,11 @@ void rosPlugin::stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Reque
 }
 
 void rosPlugin::createTransformPublisher(const atta::event::CreateComponent& event){
-    //create topic name
-    std::string eName = "E" + std::to_string(event.entityId);
-    std::string cName = "C" + std::to_string(event.componentId);
-    std::string topic_name = "atta/"+ eName + "/" + cName + "/Odometry";
     int key = event.entityId;
+    //create topic name
+    auto* cName = atta::component::getComponent<atta::component::Name>(key);
+    std::string eName = cName? std::string(cName->name) : "E" + std::to_string(key);
+    std::string topic_name = "atta/"+ eName + "/transform/Odometry";
     // make sure if publisher already exists
     if (transformPubs.find(key) == transformPubs.end()){
        
