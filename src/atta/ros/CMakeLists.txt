@@ -11,7 +11,7 @@ if(WITH_ROS2)
     find_package(geometry_msgs REQUIRED)
 
     set(ROS_PLUGIN_SOURCE   src/RosPlugin.cpp)
-    set(ROS_PLUGIN_HEADERS  include/RosPlugin.hpp)
+    set(ROS_PLUGIN_HEADERS  include/RosPlugin.hpp include/Util.hpp)
 
     
 else()

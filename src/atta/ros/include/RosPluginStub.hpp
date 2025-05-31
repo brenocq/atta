@@ -14,8 +14,8 @@ public:
 
     void update();
     void publishData(std::string msg);
-    void createTransformPublisher(const atta::event::CreateComponent& event);
-    bool deleteTransformPub(int id);
+    void createTransformTopics(const atta::event::CreateComponent& event);
+    bool deleteTransformTopics(int id);
 private:
     void createPublishers();
     void createServices();

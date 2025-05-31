@@ -6,6 +6,8 @@
 #include <atta/event/events/simulationStep.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/components/name.h>
+#include "Util.hpp"
+#include <exception>
 
 rosPlugin::rosPlugin() {
     // Initialize ROS 2 and create a node and check if ros is not already running
@@ -42,7 +44,7 @@ rosPlugin::~rosPlugin() {
     if (executor_thread_.joinable()) {
         executor_thread_.join();
     }
-    deleteAllPubs();
+    deleteAllTopics();
     node_.reset();
     executor_.reset();
     if (rclcpp::ok() && rosInitializedHere) {
@@ -139,22 +141,41 @@ void rosPlugin::stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Reque
     }
 }
 
-void rosPlugin::createTransformPublisher(const atta::event::CreateComponent& event){
+void rosPlugin::createTransformTopics(const atta::event::CreateComponent& event){
     int key = event.entityId;
+    
     //create topic name
     auto* cName = atta::component::getComponent<atta::component::Name>(key);
     std::string eName = cName? std::string(cName->name) : "E" + std::to_string(key);
-    std::string topic_name = "atta/"+ eName + "/transform/Odometry";
-    // make sure if publisher already exists
+    removeSpacesFrom(eName);
+    std::string pub_Topic_name = "atta/"+ eName + "/transform/Odometry";
+    std::string sub_Topic_name = "atta/"+ eName + "/transform/Set";
+    
+    // make sure if publisher already exists, if not create it
+    try{
     if (transformPubs.find(key) == transformPubs.end()){
-       
-        auto Tpub = node_->create_publisher<geometry_msgs::msg::Pose>(topic_name, 10);
+        auto Tpub = node_->create_publisher<geometry_msgs::msg::Pose>(pub_Topic_name, 10);
         transformPubs[key] = Tpub;
-        LOG_SUCCESS("Ros", "Transform Publisher created");
     }else {
-        LOG_ERROR("Ros", "Publisher creation failed");
+        LOG_ERROR("Ros", "Publisher creation failed; Key " + std::to_string(key) + "already exists.");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Publisher: ") + e.what());
     }
 
+    // make sure if subscriber already exists, if not create it
+    try{
+    if (transformSubs.find(key) == transformSubs.end()){
+        auto Tsub = node_->create_subscription<geometry_msgs::msg::Pose>(sub_Topic_name, 10,
+                                                                         [this,key](geometry_msgs::msg::Pose::SharedPtr  msg){
+                                                                            this->transformCallback(msg, key);}
+                                                                         );
+        transformSubs[key] = Tsub;
+    }else {
+        LOG_ERROR("Ros", "Subscriber creation failed");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Subscriber: ") + e.what());
+    }
+    LOG_SUCCESS("Ros", std::string("Transform Topics created for ID:") + std::to_string(key));
 }
 void rosPlugin::updateTransform(){
 
@@ -166,7 +187,7 @@ void rosPlugin::updateTransform(){
         //get transform component from entity
         auto* transform = atta::component::getComponent<atta::component::Transform>(entityId);
         if (!transform){
-        LOG_ERROR("ros", "Failed to get transform component for entityId: %d", entityId);
+        LOG_ERROR("ros", std::string( "Failed to get transform component for entityId: ") + std::to_string(entityId));
         continue;
         }
         //cast transform data in ros msg format
@@ -185,28 +206,59 @@ void rosPlugin::updateTransform(){
             publisher->publish(msg);
         }
         catch (const std::exception& e) {
-            LOG_ERROR("ros", "Exception during publish: %s", e.what());
+            LOG_ERROR("ros", std::string("Exception during publish: ") + e.what());
         } catch (...) {
             LOG_ERROR("ros", "Unknown error while publishing transform msg");
         }
         
     }
 }
-void rosPlugin::deleteAllPubs(){
+void rosPlugin::deleteAllTopics(){
     for(auto& [entityId, publisher]: transformPubs){
         if (publisher) {
             publisher.reset();  // Explicitly release the shared_ptr
         }
         transformPubs.clear();
     }
+    for(auto& [entityId, subscriber]: transformSubs){
+        if (subscriber) {
+            subscriber.reset();  // Explicitly release the shared_ptr
+        }
+        transformSubs.clear();
+    }
 
 }
-bool rosPlugin::deleteTransformPub(int id){
+bool rosPlugin::deleteTransformTopics(int id){
     if (transformPubs.find(id) != transformPubs.end()){
-        transformPubs.erase(id);
-        LOG_SUCCESS("Ros", "Transform Publisher deleted");
-        return true;
+            transformPubs.erase(id);
     }else{
+        LOG_ERROR("Ros", "Failed to delete Transform Publisher for id: " + std::to_string(id) + " or id doesnt exist");
         return false;
     }
+    if (transformSubs.find(id) != transformSubs.end()){
+            transformSubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete Subscriber Publisher for id: " + std::to_string(id) + " or id doesnt exist");
+        return false;
+    }
+    LOG_SUCCESS("Ros", "Transform Topics deleted for id: " + std::to_string(id));
+    return true;
+}
+void rosPlugin::transformCallback(const geometry_msgs::msg::Pose::SharedPtr msg, int key) const{
+
+    //get transform component from entity
+    auto* transform = atta::component::getComponent<atta::component::Transform>(key);
+    //cast ros msg format to transform data format
+    atta::component::Transform data;
+    data.position.x = msg->position.x;
+    data.position.y = msg->position.y;
+    data.position.z = msg->position.z;
+
+    data.orientation.r = msg->orientation.w;
+    data.orientation.i = msg->orientation.x;
+    data.orientation.j = msg->orientation.y;
+    data.orientation.k = msg->orientation.z;
+    //send data to transform object
+    transform->setWorldTransform(key, data);
+
 }

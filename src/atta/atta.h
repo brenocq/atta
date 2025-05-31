@@ -34,8 +34,8 @@ class Atta {
     // Handle events
     void onWindowClose(event::Event& event);
     void onSimulationStateChange(event::Event& event);
-    void createTransformPublisher(event::Event& event);
-    void deleteTransformPublisher(event::Event& event);
+    void createTransformTopics(event::Event& event);
+    void deleteTransformTopics(event::Event& event);
     // Memory
     memory::StackAllocator* _mainAllocator;
 

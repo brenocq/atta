@@ -23,33 +23,29 @@ public:
     void update();
     void publishData(std::string msg);
 
-    //create transform Publisher
-    void createTransformPublisher(const atta::event::CreateComponent& event);
+    //create/delete transform Topics
+    void createTransformTopics(const atta::event::CreateComponent& event);
+    bool deleteTransformTopics(int id);
     //___
-    bool deleteTransformPub(int id);
 private:
-    void createPublishers();
-    void createServices();
-
-    void deletePublisher();
-    void createThread();
+    //setup
     bool rosInitializedHere = false;
     rclcpp::Node::SharedPtr node_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    rclcpp::TimerBase::SharedPtr timer_;
     std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> executor_;
     std::thread executor_thread_;
-    std::vector<rclcpp::Publisher<std_msgs::msg::String>> mypubs;
-    //Maps of Publisher
+    //___
+    //Maps of Topics
     std::unordered_map<std::string, rclcpp::Publisher<std_msgs::msg::String>::SharedPtr> stringPubs;
     std::unordered_map<int, rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr> transformPubs;
-    void deleteAllPubs();
+    std::unordered_map<int, rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr> transformSubs;
+    void deleteAllTopics();
     //___
-
+    // SubscribersCallBack
+    void transformCallback(const geometry_msgs::msg::Pose::SharedPtr msg, int key) const;
+    //___
     //topic update
     void updateTransform();
     //___
-
     //standard services
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr pausePhysics;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr unPausePhysics;
@@ -64,6 +60,15 @@ private:
     void stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
                              std::shared_ptr<std_srvs::srv::Trigger::Response> response);                                
     //___
+
+    void createPublishers();
+    void createServices();
+
+    void deletePublisher();
+    void createThread();
+    
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::TimerBase::SharedPtr timer_;
 };
 
 #endif // ROS_PLUGIN_HPP
