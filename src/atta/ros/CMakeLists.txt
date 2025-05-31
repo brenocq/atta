@@ -8,6 +8,7 @@ if(WITH_ROS2)
     find_package(rclcpp REQUIRED)
     find_package(std_msgs REQUIRED)
     find_package(std_srvs REQUIRED)
+    find_package(tf2_ros REQUIRED)
     find_package(geometry_msgs REQUIRED)
 
     set(ROS_PLUGIN_SOURCE   src/RosPlugin.cpp)
@@ -43,6 +44,7 @@ if(WITH_ROS2)
                             rclcpp
                             std_msgs
                             std_srvs
+                            tf2_ros
                             geometry_msgs
                         )
                         

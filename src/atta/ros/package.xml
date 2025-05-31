@@ -10,7 +10,7 @@
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
-
+  <depend>tf2_ros</depend>
   <!-- Build tools -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 

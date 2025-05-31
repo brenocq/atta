@@ -12,9 +12,9 @@
 rosPlugin::rosPlugin() {
     // Initialize ROS 2 and create a node and check if ros is not already running
     if (!rclcpp::ok()) { rclcpp::init(0, nullptr); rosInitializedHere=true; } 
-    //create ros node
+    //create ros node and tf broadcaster
     node_ = std::make_shared<rclcpp::Node>("ros_plugin_node");
-
+    tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(node_);
     createPublishers();
     createThread();
 
@@ -77,6 +77,7 @@ void rosPlugin::createThread(){
 } 
 void rosPlugin::update(){
     this->updateTransform();
+    //this->update_tf2_transform();
 }
 
 // Simulation Control
@@ -161,7 +162,7 @@ void rosPlugin::createTransformTopics(const atta::event::CreateComponent& event)
     }}catch(const std::exception& e){
         LOG_ERROR("Ros",std::string("error creating Publisher: ") + e.what());
     }
-
+    // ___
     // make sure if subscriber already exists, if not create it
     try{
     if (transformSubs.find(key) == transformSubs.end()){
@@ -175,14 +176,16 @@ void rosPlugin::createTransformTopics(const atta::event::CreateComponent& event)
     }}catch(const std::exception& e){
         LOG_ERROR("Ros",std::string("error creating Subscriber: ") + e.what());
     }
-    LOG_SUCCESS("Ros", std::string("Transform Topics created for ID:") + std::to_string(key));
+    // ___
+    LOG_SUCCESS("Ros", std::string("tf2 Transform Topics created for ID:") + std::to_string(key));
 }
 void rosPlugin::updateTransform(){
-
+    std::vector<geometry_msgs::msg::TransformStamped> tf_links;
+    bool hasSubs = true;
     for(const auto& [entityId, publisher]: transformPubs){
         //check that the publisher has subscribers
-        if (publisher->get_subscription_count() == 0){
-            continue;
+       if (publisher->get_subscription_count() == 0){
+            hasSubs = false;
         }
         //get transform component from entity
         auto* transform = atta::component::getComponent<atta::component::Transform>(entityId);
@@ -190,20 +193,37 @@ void rosPlugin::updateTransform(){
         LOG_ERROR("ros", std::string( "Failed to get transform component for entityId: ") + std::to_string(entityId));
         continue;
         }
-        //cast transform data in ros msg format
+        //cast transform data in ros msg and tf msg format
         atta::component::Transform data = transform->getWorldTransform(entityId);
-        geometry_msgs::msg::Pose msg;
-        msg.position.x = data.position.x;
-        msg.position.y = data.position.y;
-        msg.position.z = data.position.z;
+        geometry_msgs::msg::Pose pose;
+        geometry_msgs::msg::TransformStamped tf;
+        
+        tf.header.stamp = node_->get_clock()->now();
+        //TODO get actual parent and child components
+        tf.header.frame_id = "world";
+        tf.child_frame_id = "child" + std::to_string(entityId);
 
-        msg.orientation.w = data.orientation.r;
-        msg.orientation.x = data.orientation.i;
-        msg.orientation.y = data.orientation.j;
-        msg.orientation.z = data.orientation.k; 
+        pose.position.x = data.position.x;
+        pose.position.y = data.position.y;
+        pose.position.z = data.position.z;
+        tf.transform.translation.x = data.position.x;
+        tf.transform.translation.y = data.position.y;
+        tf.transform.translation.z = data.position.z;
+
+        pose.orientation.w = data.orientation.r;
+        pose.orientation.x = data.orientation.i;
+        pose.orientation.y = data.orientation.j;
+        pose.orientation.z = data.orientation.k;
+        tf.transform.rotation.w = data.orientation.r;
+        tf.transform.rotation.x = data.orientation.i;
+        tf.transform.rotation.y = data.orientation.j;
+        tf.transform.rotation.z = data.orientation.k; 
         //publish msg
         try{
-            publisher->publish(msg);
+            if(hasSubs){
+                publisher->publish(pose);
+            }
+            tf_links.push_back(tf);
         }
         catch (const std::exception& e) {
             LOG_ERROR("ros", std::string("Exception during publish: ") + e.what());
@@ -211,21 +231,53 @@ void rosPlugin::updateTransform(){
             LOG_ERROR("ros", "Unknown error while publishing transform msg");
         }
         
+    }//for loop end
+    tf_broadcaster_->sendTransform(tf_links);
+}
+
+void rosPlugin::update_tf2_transform(){
+    std::vector<geometry_msgs::msg::TransformStamped> tf_links;
+    for(const auto& [entityId, link]: transformPubs){
+       
+        //cast transform data in ros msg format
+        auto* transform = atta::component::getComponent<atta::component::Transform>(entityId);
+        atta::component::Transform data = transform->getWorldTransform(entityId);
+
+        geometry_msgs::msg::TransformStamped msg;
+        
+        msg.header.stamp = node_->get_clock()->now();
+        //TODO get actual parent and child components
+        msg.header.frame_id = "world";
+        msg.child_frame_id = "child" + std::to_string(entityId);
+
+        msg.transform.translation.x = data.position.x;
+        msg.transform.translation.y = data.position.y;
+        msg.transform.translation.z = data.position.z;
+
+        msg.transform.rotation.w = data.orientation.r;
+        msg.transform.rotation.x = data.orientation.i;
+        msg.transform.rotation.y = data.orientation.j;
+        msg.transform.rotation.z = data.orientation.k; 
+
+        tf_links.push_back(msg);
     }
+    tf_broadcaster_->sendTransform(tf_links);
+
 }
 void rosPlugin::deleteAllTopics(){
     for(auto& [entityId, publisher]: transformPubs){
         if (publisher) {
             publisher.reset();  // Explicitly release the shared_ptr
         }
-        transformPubs.clear();
     }
+    transformPubs.clear();
     for(auto& [entityId, subscriber]: transformSubs){
         if (subscriber) {
             subscriber.reset();  // Explicitly release the shared_ptr
         }
-        transformSubs.clear();
+       
     }
+    transformSubs.clear();
 
 }
 bool rosPlugin::deleteTransformTopics(int id){
