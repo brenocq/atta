@@ -4,8 +4,9 @@
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/simulationStep.h>
+#include <atta/component/entity.h>
 #include <atta/component/components/transform.h>
-#include <atta/component/components/name.h>
+#include <atta/component/components/relationship.h>
 #include "Util.hpp"
 #include <exception>
 
@@ -146,9 +147,7 @@ void rosPlugin::createTransformTopics(const atta::event::CreateComponent& event)
     int key = event.entityId;
     
     //create topic name
-    auto* cName = atta::component::getComponent<atta::component::Name>(key);
-    std::string eName = cName? std::string(cName->name) : "E" + std::to_string(key);
-    removeSpacesFrom(eName);
+    std::string eName = nameOf(key);
     std::string pub_Topic_name = "atta/"+ eName + "/transform/Odometry";
     std::string sub_Topic_name = "atta/"+ eName + "/transform/Set";
     
@@ -200,8 +199,14 @@ void rosPlugin::updateTransform(){
         
         tf.header.stamp = node_->get_clock()->now();
         //TODO get actual parent and child components
-        tf.header.frame_id = "world";
-        tf.child_frame_id = "child" + std::to_string(entityId);
+        std::string parentName = "world";
+        if (auto* child = atta::component::getComponent<atta::component::Relationship>(entityId)){
+            atta::component::Entity parent = child->getParent();
+            if (parent != -1)  // valid parent check
+                parentName =  nameOf(parent.getId());
+        }
+        tf.header.frame_id = parentName;
+        tf.child_frame_id = nameOf(entityId);
 
         pose.position.x = data.position.x;
         pose.position.y = data.position.y;
