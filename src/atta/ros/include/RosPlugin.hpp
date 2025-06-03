@@ -15,6 +15,7 @@
 #include <atta/component/components/transform.h>
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
+#include <sensor_msgs/msg/range.hpp>
 
 class rosPlugin {
 public:
@@ -27,6 +28,8 @@ public:
     //create/delete transform Topics
     void createTransformTopics(const atta::event::CreateComponent& event);
     bool deleteTransformTopics(int id);
+    void createIRTopics(const atta::event::CreateComponent& event);
+    void deleteIRTopics(int id);
     //___
 private:
     //setup
@@ -40,6 +43,7 @@ private:
     std::unordered_map<std::string, rclcpp::Publisher<std_msgs::msg::String>::SharedPtr> stringPubs;
     std::unordered_map<int, rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr> transformPubs;
     std::unordered_map<int, rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr> transformSubs;
+    std::unordered_map<int, rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> IRPubs;
     void deleteAllTopics();
     //___
     // SubscribersCallBack
@@ -47,7 +51,7 @@ private:
     //___
     //topic update
     void updateTransform();
-    void update_tf2_transform();
+    void updateIr();
     //___
     //standard services
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr pausePhysics;
@@ -61,17 +65,19 @@ private:
     void resetCallback(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
                              std::shared_ptr<std_srvs::srv::Trigger::Response> response);               
     void stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
-                             std::shared_ptr<std_srvs::srv::Trigger::Response> response);                                
+                             std::shared_ptr<std_srvs::srv::Trigger::Response> response);  
+    void createServices();
+    void deleteServices();
     //___
 
     void createPublishers();
-    void createServices();
+    
 
     void deletePublisher();
     void createThread();
     
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    rclcpp::TimerBase::SharedPtr timer_;
+    //rclcpp::TimerBase::SharedPtr timer_;
 };
 
 #endif // ROS_PLUGIN_HPP

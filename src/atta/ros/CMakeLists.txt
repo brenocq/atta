@@ -10,6 +10,7 @@ if(WITH_ROS2)
     find_package(std_srvs REQUIRED)
     find_package(tf2_ros REQUIRED)
     find_package(geometry_msgs REQUIRED)
+    find_package(sensor_msgs)
 
     set(ROS_PLUGIN_SOURCE   src/RosPlugin.cpp)
     set(ROS_PLUGIN_HEADERS  include/RosPlugin.hpp include/Util.hpp)
@@ -39,13 +40,15 @@ if(WITH_ROS2)
                             ${rclcpp_INCLUDE_DIRS}
                             ${std_msgs_INCLUDE_DIRS}
                             ${std_srvs_INCLUDE_DIRS}
-                            ${geometry_msgs_INCLUDE_DIRS})
+                            ${geometry_msgs_INCLUDE_DIRS}
+                            ${sensor_msgs_INCLUDE_DIRS})
     ament_target_dependencies(ros_plugin
                             rclcpp
                             std_msgs
                             std_srvs
                             tf2_ros
                             geometry_msgs
+                            sensor_msgs
                         )
                         
 else()
