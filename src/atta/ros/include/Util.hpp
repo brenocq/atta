@@ -3,6 +3,10 @@
 #include <string>
 #include <algorithm>
 #include <atta/component/components/name.h>
+#include <atta/component/entity.h>
+#include <atta/component/components/relationship.h>
+#include <atta/component/components/transform.h>
+#include <atta/component/components/infraredSensor.h>
 
 inline std::string nameOf(int key){
     

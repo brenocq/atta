@@ -4,11 +4,9 @@
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/simulationStep.h>
-#include <atta/component/entity.h>
-#include <atta/component/components/transform.h>
-#include <atta/component/components/relationship.h>
-#include <atta/component/components/infraredSensor.h>
-#include "Util.hpp"
+
+#include "Util.hpp" // also contains used components header
+
 #include <exception>
 
 rosPlugin::rosPlugin() {
@@ -182,7 +180,7 @@ void rosPlugin::createTransformTopics(const atta::event::CreateComponent& event)
     
     //create topic name
     std::string eName = nameOf(key);
-    std::string pub_Topic_name = "atta/"+ eName + "/transform/Odometry";
+    std::string pub_Topic_name = "atta/"+ eName + "/transform/Get";
     std::string sub_Topic_name = "atta/"+ eName + "/transform/Set";
     
     // make sure if publisher already exists, if not create it
@@ -371,7 +369,8 @@ void rosPlugin::updateIr(){
         msg.header.stamp = node_->get_clock()->now();
         msg.header.frame_id = nameOf(entityId);
         msg.radiation_type = sensor_msgs::msg::Range::INFRARED;
-        //msg.field_of_view = IR->;
+        // TODO ==> needs to be updated
+        msg.field_of_view = 0.1; 
         msg.min_range = IR->lowerLimit;
         msg.max_range = IR->upperLimit;
         msg.range = IR->measurement;
