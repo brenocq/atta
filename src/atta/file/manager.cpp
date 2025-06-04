@@ -5,15 +5,20 @@
 // By Breno Cunha Queiroz
 //--------------------------------------------------
 #include <atta/cmakeConfig.h>
+#include <atta/component/components/polygonCollider2D.h>
+#include <atta/component/components/relationship.h>
+#include <atta/component/entity.h>
 #include <atta/component/interface.h>
 #include <atta/event/events/projectBeforeDeserialize.h>
 #include <atta/event/events/projectClose.h>
 #include <atta/event/events/projectOpen.h>
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
+#include <atta/file/interface.h>
 #include <atta/file/manager.h>
 #include <atta/file/watchers/linuxFileWatcher.h>
 #include <atta/file/watchers/nullFileWatcher.h>
+#include <atta/resource/interface.h>
 
 #ifdef ATTA_OS_WEB
 // Need to use "linux" build-in commands instead of std::filesystem
@@ -40,12 +45,16 @@ void Manager::startUpImpl() {
 
     event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
     event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Manager::onSimulationStateChange));
+    registerCustomComponentIOs();
 
     // Default folder to clone published projects
     _defaultProjectFolder = fs::path(ATTA_DIR) / "projects";
 }
 
-void Manager::shutDownImpl() {}
+void Manager::shutDownImpl() {
+    _componentSerialize.clear();
+    _componentDeserialize.clear();
+}
 
 bool Manager::openProjectImpl(fs::path projectFile) {
 #ifdef ATTA_STATIC_PROJECT
@@ -72,12 +81,19 @@ bool Manager::openProjectImpl(fs::path projectFile) {
     if (!fs::exists(projectFile))
         _projectSerializer->serialize();
 
-    // Clear components and read project file
+    // Clear components before loading
     component::clear();
+    // Clear resources before loading
+    resource::destroyResources<resource::Material>();
 
+    // Load project
     event::ProjectBeforeDeserialize ed;
     event::publish(ed);
-    _projectSerializer->deserialize();
+    bool success = _projectSerializer->deserialize();
+    if (!success) {
+        LOG_ERROR("file::Manager", "Failed to open project [w]$0[]", fs::absolute(projectFile));
+        return false;
+    }
 
     // Watch project directory file changes
     _fileWatcher->addWatch(_project->getDirectory());
@@ -144,6 +160,57 @@ void Manager::closeProjectImpl() {
 }
 
 bool Manager::isProjectOpenImpl() const { return _project != nullptr; }
+
+void Manager::registerCustomComponentIOs() {
+    file::registerComponentIO<cmp::Relationship>(
+        [](Section& section, cmp::Component* c) {
+            cmp::Relationship* rel = static_cast<cmp::Relationship*>(c);
+            if (rel->getParent() != -1)
+                section["relationship.parent"] = rel->getParent().getId();
+        },
+        [](const Section& section, cmp::Entity entity) {
+            if (section.contains("relationship.parent")) {
+                cmp::EntityId parent = uint32_t(section["relationship.parent"]);
+
+                // Create parent if it doesn't exist yet
+                std::vector<cmp::EntityId> entities = cmp::getEntitiesView();
+                bool parentExists = std::find(entities.begin(), entities.end(), parent) != entities.end();
+                if (!parentExists)
+                    cmp::createEntity(parent);
+
+                // Update relationship component
+                entity.add<cmp::Relationship>()->setParent(parent, entity);
+            }
+        });
+
+    file::registerComponentIO<cmp::PolygonCollider2D>(
+        [](Section& section, cmp::Component* c) {
+            cmp::PolygonCollider2D* collider = static_cast<cmp::PolygonCollider2D*>(c);
+            section["polygonCollider2D.offset"] = collider->offset;
+            section["polygonCollider2D.points"] = collider->points;
+        },
+        [](const Section& section, cmp::Entity entity) {
+            if (section.contains("polygonCollider2D.offset")) {
+                cmp::PolygonCollider2D* collider = entity.add<cmp::PolygonCollider2D>();
+                collider->offset = vec2(section["polygonCollider2D.offset"]);
+                collider->points = std::vector<vec2>(section["polygonCollider2D.points"]);
+            }
+        });
+}
+
+void Manager::registerComponentIOImpl(cmp::ComponentId cid, const SerializeFunc& serialize, const DeserializeFunc& deserialize) {
+    _componentSerialize[cid] = serialize;
+    _componentDeserialize[cid] = deserialize;
+}
+
+void Manager::getComponentIOImpl(cmp::ComponentId cid, std::optional<SerializeFunc>& serialize, std::optional<DeserializeFunc>& deserialize) const {
+    serialize = std::nullopt;
+    deserialize = std::nullopt;
+    if (_componentSerialize.find(cid) != _componentSerialize.end())
+        serialize = _componentSerialize.at(cid);
+    if (_componentDeserialize.find(cid) != _componentDeserialize.end())
+        deserialize = _componentDeserialize.at(cid);
+}
 
 // TODO remove and use multi threading
 void Manager::updateImpl() { _fileWatcher->update(); }

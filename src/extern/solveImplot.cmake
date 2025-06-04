@@ -29,6 +29,9 @@ target_link_libraries(implot PRIVATE glfw imgui)
 atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/implot-src)
 atta_add_libs(implot)
 
+# Also make implot available in the atta namespace
+add_library(atta::implot ALIAS implot)
+
 atta_log(Success Extern "ImPlot support (source)")
 set(ATTA_IMPLOT_SUPPORT TRUE)
 set(ATTA_IMPLOT_TARGETS implot)

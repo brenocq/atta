@@ -25,6 +25,10 @@ class Manager final {
     friend void closeProject();
     friend bool isProjectOpen();
     friend std::shared_ptr<Project> getProject();
+
+    friend void registerComponentIO(cmp::ComponentId cid, const SerializeFunc& serialize, const DeserializeFunc& deserialize);
+    friend void getComponentIO(cmp::ComponentId cid, std::optional<SerializeFunc>& serialize, std::optional<DeserializeFunc>& deserialize);
+
     friend fs::path solveResourcePath(fs::path relativePath, bool mustExist);
     friend std::vector<fs::path> getResourcePaths();
     friend fs::path getBuildPath();
@@ -43,6 +47,11 @@ class Manager final {
     bool isProjectOpenImpl() const;
     std::shared_ptr<Project> getProjectImpl() const { return _project; }
 
+    void registerCustomComponentIOs();
+
+    void registerComponentIOImpl(cmp::ComponentId cid, const SerializeFunc& serialize, const DeserializeFunc& deserialize);
+    void getComponentIOImpl(cmp::ComponentId cid, std::optional<SerializeFunc>& serialize, std::optional<DeserializeFunc>& deserialize) const;
+
     fs::path solveResourcePathImpl(fs::path relativePath, bool mustExist);
     std::vector<fs::path> getResourcePathsImpl() const;
     fs::path getBuildPathImpl() const;
@@ -59,6 +68,9 @@ class Manager final {
     std::shared_ptr<ProjectSerializer> _projectSerializer;
     bool _simulationRunning;
     fs::path _defaultProjectFolder; ///< Default folder to clone published projects and save projects
+
+    std::map<cmp::ComponentId, SerializeFunc> _componentSerialize;     // Custom component serialization
+    std::map<cmp::ComponentId, DeserializeFunc> _componentDeserialize; // Custom component deserialization
 };
 
 } // namespace atta::file

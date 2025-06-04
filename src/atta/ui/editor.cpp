@@ -37,10 +37,9 @@ void Editor::render() {
     setupDocking();
 
     // Demo
-    bool demo = true;
-    // ImGui::ShowDemoWindow(&demo);
-    // ImPlot::ShowDemoWindow(&demo);
-    // ImPlot3D::ShowDemoWindow(&demo);
+    // ImGui::ShowDemoWindow();
+    // ImPlot::ShowDemoWindow();
+    // ImPlot3D::ShowDemoWindow();
 
     // Top interface
     _topBar.render();
@@ -84,6 +83,7 @@ void Editor::render() {
 
 const std::vector<std::shared_ptr<ui::Viewport>>& Editor::getViewports() const { return _viewportWindows.getViewports(); }
 void Editor::openViewportModal(StringId sid) { _viewportWindows.openViewportModal(sid); }
+void Editor::clearViewports() { _viewportWindows.clearViewports(); }
 void Editor::addViewport(std::shared_ptr<ui::Viewport> viewport) { _viewportWindows.addViewport(viewport); }
 bool Editor::getViewportRendering() const { return _viewportWindows.getViewportRendering(); }
 void Editor::setViewportRendering(bool viewportRendering) { _viewportWindows.setViewportRendering(viewportRendering); }

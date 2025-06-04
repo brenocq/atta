@@ -40,7 +40,7 @@ bool Gizmo::manipulate(cmp::EntityId entity) {
     std::shared_ptr<Viewport> viewport = _viewport.lock();
     cmp::Transform* t = cmp::getComponent<cmp::Transform>(entity);
     if (viewport && t) {
-        mat4 transform = transpose(t->getWorldTransformMatrix(entity));
+        mat4 transform = t->getWorldTransformMatrix(entity).transposed();
 
         ImGuizmo::SetOrthographic(viewport->getCamera()->getName() == "OrthographicCamera");
         ImGuizmo::SetDrawlist();
@@ -63,60 +63,10 @@ bool Gizmo::manipulate(cmp::EntityId entity) {
         if (ImGuizmo::IsUsing()) {
             transform.transpose();
 
-            // Get changed
-            vec3 pos, scale;
-            quat newOri;
-            transform.getPosOriScale(pos, newOri, scale);
-            vec3 oriDelta = newOri.getEuler() - t->orientation.getEuler();
-            quat ori;
-            ori.setEuler(t->orientation.getEuler() + oriDelta);
-
-            // Delta world to local
-            cmp::Relationship* r = cmp::getComponent<cmp::Relationship>(entity);
-            if (r && r->getParent() != -1) {
-                // Get transform of the first entity that has transform when going up in the hierarchy
-                cmp::Transform* pt = nullptr;
-                cmp::EntityId parentId = -1;
-                while (pt == nullptr) {
-                    parentId = r->getParent();
-                    pt = cmp::getComponent<cmp::Transform>(parentId);
-                    r = cmp::getComponent<cmp::Relationship>(parentId);
-                    if (r->getParent() == -1)
-                        break;
-                }
-
-                // If found some entity with transform component, convert result to be relative to it
-                if (pt) {
-                    cmp::Transform pTransform = pt->getWorldTransform(parentId);
-                    vec3 pPos = pTransform.position;
-                    vec3 pScale = pTransform.scale;
-                    quat pOri = pTransform.orientation;
-
-                    // Calculate pos ori scale relative to parent
-                    pos -= pPos;
-                    scale /= pScale;
-                    ori = ori * (-pOri); // Rotation from pOri to ori
-                }
-            }
-
-            // Update entity transform
-            if (operation == ImGuizmo::OPERATION::TRANSLATE)
-                t->position = pos;
-            else if (operation == ImGuizmo::OPERATION::ROTATE)
-                t->orientation = ori;
-            else if (operation == ImGuizmo::OPERATION::SCALE)
-                t->scale = scale;
-
-            // cmp::RigidBody2D* rb2d = cmp::getComponent<cmp::RigidBody2D>(entity);
-            // if (rb2d) {
-            //     if (mouseOperation == ImGuizmo::OPERATION::TRANSLATE || mouseOperation == ImGuizmo::OPERATION::ROTATE) {
-            //         vec2 pos = vec2(t->position);
-            //         float angle = -t->orientation.getEuler().z;
-            //         rb2d->setTransform(pos, angle);
-            //     } else if (mouseOperation == ImGuizmo::OPERATION::SCALE) {
-            //         // TODO Recreate box2d rigid body
-            //     }
-            // }
+            // Set new world transform
+            cmp::Transform newT;
+            transform.getPosOriScale(newT.position, newT.orientation, newT.scale);
+            t->setWorldTransform(entity, newT);
             return true;
         }
     }

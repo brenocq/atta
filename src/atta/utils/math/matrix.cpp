@@ -289,8 +289,13 @@ void mat4::invert() {
     setInverse(ori);
 }
 
-void mat4::transpose() {
+mat4 mat4::inverted() const {
+    mat4 ori;
+    ori.setInverse(*this);
+    return ori;
+}
 
+void mat4::transpose() {
     std::swap(data[1], data[4]);
     std::swap(data[2], data[8]);
     std::swap(data[3], data[12]);
@@ -299,6 +304,12 @@ void mat4::transpose() {
     std::swap(data[7], data[13]);
 
     std::swap(data[11], data[14]);
+}
+
+mat4 mat4::transposed() const {
+    mat4 result = *this;
+    result.transpose();
+    return result;
 }
 
 // Transform direction vector
@@ -339,44 +350,25 @@ vec3 mat4::transformInverse(const vec3& vector) const {
 // Gets a vector representing one axis (one column) in the matrix.
 vec3 mat4::getAxisVector(int i) const { return vec3(data[i], data[i + 4], data[i + 8]); }
 
-// Sets this matrix to be the rotation matrix corresponding to
-// the given quaternion.
 void mat4::setPosOri(const vec3& pos, const quat& q) {
-    mat[0][0] = 1 - (2 * q.j * q.j + 2 * q.k * q.k);
-    mat[0][1] = 2 * q.i * q.j - 2 * q.k * q.r;
-    mat[0][2] = 2 * q.i * q.k + 2 * q.j * q.r;
-    mat[0][3] = pos.x;
+    // Obtain the 3x3 rotation matrix from the quaternion
+    mat3 R = q.getRotationMatrix();
 
-    mat[1][0] = 2 * q.i * q.j + 2 * q.k * q.r;
-    mat[1][1] = 1 - (2 * q.i * q.i + 2 * q.k * q.k);
-    mat[1][2] = 2 * q.j * q.k - 2 * q.i * q.r;
-    mat[1][3] = pos.y;
-
-    mat[2][0] = 2 * q.i * q.k - 2 * q.j * q.r;
-    mat[2][1] = 2 * q.j * q.k + 2 * q.i * q.r;
-    mat[2][2] = 1 - (2 * q.i * q.i + 2 * q.j * q.j);
-    mat[2][3] = pos.z;
-
-    mat[3][0] = 0;
-    mat[3][1] = 0;
-    mat[3][2] = 0;
-    mat[3][3] = 1;
-}
-
-void mat4::setPosOriScale(const vec3& pos, const quat& q, const vec3& scale) {
-    data[0] = (1 - (2 * q.j * q.j + 2 * q.k * q.k)) * scale.x;
-    data[1] = (2 * q.i * q.j + 2 * q.k * q.r) * scale.y;
-    data[2] = (2 * q.i * q.k - 2 * q.j * q.r) * scale.z;
+    // Embed the rotation matrix into the 4x4 matrix
+    // Translation is placed in the fourth column
+    data[0] = R.data[0];
+    data[1] = R.data[1];
+    data[2] = R.data[2];
     data[3] = pos.x;
 
-    data[4] = (2 * q.i * q.j - 2 * q.k * q.r) * scale.x;
-    data[5] = (1 - (2 * q.i * q.i + 2 * q.k * q.k)) * scale.y;
-    data[6] = (2 * q.j * q.k + 2 * q.i * q.r) * scale.z;
+    data[4] = R.data[3];
+    data[5] = R.data[4];
+    data[6] = R.data[5];
     data[7] = pos.y;
 
-    data[8] = (2 * q.i * q.k + 2 * q.j * q.r) * scale.x;
-    data[9] = (2 * q.j * q.k - 2 * q.i * q.r) * scale.y;
-    data[10] = (1 - (2 * q.i * q.i + 2 * q.j * q.j)) * scale.z;
+    data[8] = R.data[6];
+    data[9] = R.data[7];
+    data[10] = R.data[8];
     data[11] = pos.z;
 
     data[12] = 0;
@@ -385,39 +377,77 @@ void mat4::setPosOriScale(const vec3& pos, const quat& q, const vec3& scale) {
     data[15] = 1;
 }
 
-vec3 mat4::getPosition() const {
-    vec3 pos;
-    pos.x = mat[0][3];
-    pos.y = mat[1][3];
-    pos.z = mat[2][3];
+void mat4::setPosOriScale(const vec3& pos, const quat& q, const vec3& scale) {
+    // Obtain the 3x3 rotation matrix from the quaternion
+    mat3 R = q.getRotationMatrix();
 
-    return pos;
+    // Apply scaling along each axis (scaling is applied per column of R)
+    data[0] = R.data[0] * scale.x;
+    data[1] = R.data[1] * scale.y;
+    data[2] = R.data[2] * scale.z;
+    data[3] = pos.x;
+
+    data[4] = R.data[3] * scale.x;
+    data[5] = R.data[4] * scale.y;
+    data[6] = R.data[5] * scale.z;
+    data[7] = pos.y;
+
+    data[8] = R.data[6] * scale.x;
+    data[9] = R.data[7] * scale.y;
+    data[10] = R.data[8] * scale.z;
+    data[11] = pos.z;
+
+    data[12] = 0;
+    data[13] = 0;
+    data[14] = 0;
+    data[15] = 1;
 }
 
+vec3 mat4::getPosition() const { return vec3(data[3], data[7], data[11]); }
+
 quat mat4::getOrientation() const {
-    quat q{};
-    vec3 scale = getScale();
+    quat resultQuat; // Default constructor initializes to identity (1, 0, 0, 0)
 
-    if (scale.x == 0 || scale.y == 0 || scale.z == 0) {
-        LOG_WARN("atta::quat", "Could not calculate orientation, scale component is zero");
-        return q;
+    // Extract scale from the lengths of the column vectors of the 3x3 rotation/scale part.
+    // Assumes data is row-major: data[0]=m00, data[1]=m01, ..., data[4]=m10, etc.
+    vec3 scale;
+    scale.x = length(vec3(data[0], data[4], data[8]));  // Length of first column vector (X-axis basis)
+    scale.y = length(vec3(data[1], data[5], data[9]));  // Length of second column vector (Y-axis basis)
+    scale.z = length(vec3(data[2], data[6], data[10])); // Length of third column vector (Z-axis basis)
+
+    // Define a small tolerance for checking near-zero scale
+    const float epsilon = std::numeric_limits<float>::epsilon() * 100;
+
+    // Check if any scale component is zero or very close to zero
+    if (std::abs(scale.x) < epsilon || std::abs(scale.y) < epsilon || std::abs(scale.z) < epsilon) {
+        // Cannot reliably extract orientation if scaling is zero along any axis
+        LOG_WARN("atta::mat4", "[w]getOrientation[] failed: Matrix has zero or near-zero scale component(s)");
+        return resultQuat; // Return identity quaternion
     }
 
-    double b1_squared = 0.25 * (1.0 + mat[0][0] / scale.x + mat[1][1] / scale.y + mat[2][2] / scale.z);
-    if (b1_squared > 0.0000001) {
-        double b1 = sqrt(b1_squared);
-        double over_b1_4 = 0.25 / b1;
-        double b2 = -(mat[2][1] / scale.y - mat[1][2] / scale.z) * over_b1_4;
-        double b3 = -(mat[0][2] / scale.z - mat[2][0] / scale.x) * over_b1_4;
-        double b4 = -(mat[1][0] / scale.x - mat[0][1] / scale.y) * over_b1_4;
-        q = quat(b1, b2, b3, b4);
-        q.normalize();
-    } else {
-        // Supress warning because it happens often when the entity scale is small
-        // LOG_WARN("atta::mat4", "[w](getOrientation)[] Could not calculate quaternion from [w]$0[], operations with very small number [w]$1[]", *this, b1_squared);
-    }
+    // Create the rotation matrix by dividing the columns by their respective scale factors.
+    mat3 rotationMatrix;
 
-    return q;
+    // Column 0
+    rotationMatrix.data[0] = data[0] / scale.x;
+    rotationMatrix.data[3] = data[4] / scale.x;
+    rotationMatrix.data[6] = data[8] / scale.x;
+
+    // Column 1
+    rotationMatrix.data[1] = data[1] / scale.y;
+    rotationMatrix.data[4] = data[5] / scale.y;
+    rotationMatrix.data[7] = data[9] / scale.y;
+
+    // Column 2
+    rotationMatrix.data[2] = data[2] / scale.z;
+    rotationMatrix.data[5] = data[6] / scale.z;
+    rotationMatrix.data[8] = data[10] / scale.z;
+
+    // Convert the pure rotation matrix to a quaternion
+    // The setRotationMatrix function should handle normalization
+    resultQuat.setRotationMatrix(rotationMatrix);
+
+    return resultQuat;
 }
 
 vec3 mat4::getScale() const {
@@ -655,14 +685,26 @@ void mat3::setInverse(const mat3& m) {
 
 // Inverts this matrix
 void mat3::invert() {
-    mat3 ori = *this;
-    setInverse(ori);
+    mat3 m = *this;
+    setInverse(m);
+}
+
+mat3 mat3::inverted() const {
+    mat3 m;
+    m.setInverse(*this);
+    return m;
 }
 
 void mat3::transpose() {
     std::swap(data[1], data[3]);
     std::swap(data[2], data[6]);
     std::swap(data[5], data[7]);
+}
+
+mat3 mat3::transposed() const {
+    mat3 result = *this;
+    result.transpose();
+    return result;
 }
 
 // Multiply matrices
@@ -862,7 +904,19 @@ void mat2::invert() {
     setInverse(ori);
 }
 
+mat2 mat2::inverted() const {
+    mat2 m;
+    m.setInverse(*this);
+    return m;
+}
+
 void mat2::transpose() { std::swap(data[1], data[2]); }
+
+mat2 mat2::transposed() const {
+    mat2 result = *this;
+    result.transpose();
+    return result;
+}
 
 // Multiply matrices
 mat2 mat2::operator*(const mat2& o) const {
