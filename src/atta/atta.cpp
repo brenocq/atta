@@ -27,7 +27,7 @@
 #include <atta/script/interface.h>
 #include <atta/sensor/interface.h>
 #include <atta/ui/interface.h>
-
+#include <atta/ros/include/interface.hpp>
 #include <atta/cmakeConfig.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/utils/config.h>
@@ -53,9 +53,9 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     physics::startUp();
     sensor::startUp();
     script::startUp();
-
-    ros_node = std::make_shared<rosPlugin>();
-    ros_node->publishData("Started");
+    ros::startUp();
+    //ros_node = std::make_shared<rosPlugin>();
+    //ros_node->publishData("Started");
     // Atta is the last one to reveice events
     event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
     event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
@@ -64,7 +64,7 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::CreateComponent>(BIND_EVENT_FUNC(Atta::createComponentTopics));
-    event::subscribe<event::DeleteComponent>(BIND_EVENT_FUNC(Atta::createComponentTopics));
+    event::subscribe<event::DeleteComponent>(BIND_EVENT_FUNC(Atta::deleteComponentTopics));
     event::subscribe<event::DeleteEntity>(BIND_EVENT_FUNC(Atta::deleteComponentTopics));
     LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
@@ -86,8 +86,8 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
 Atta::~Atta() {
     // TODO ask user if should close or not
     // file::saveProject();
-    ros_node.reset();
-    ros_node = nullptr;
+
+    ros::shutDown();
     file::closeProject();
     sensor::shutDown();
     physics::shutDown();
@@ -157,7 +157,7 @@ void Atta::step() {
     physics::update(dt);
     sensor::update(dt);
     script::update(dt);
-    ros_node->update();
+    ros::update();
     Config::getInstance()._time += dt;
 }
 
@@ -213,18 +213,25 @@ void Atta::createComponentTopics(event::Event& event){
     //get component type and send it to ros
     auto& createCompEvent = static_cast<atta::event::CreateComponent&>(event);
 
-    if(createCompEvent.componentId == COMPONENT_POOL_SID(component::Transform)){
-        ros_node->createTransformTopics(createCompEvent);
+    /*switch (createCompEvent.componentId){
+
+
+        case 
+    }*/
+
+
+    if(createCompEvent.componentId == component::getId<component::Transform>()){
+        ros::node->createTransformTopics(createCompEvent);
     }
-    if(createCompEvent.componentId == COMPONENT_POOL_SID(component::InfraredSensor)){
-        ros_node->createIRTopics(createCompEvent);
+    if(createCompEvent.componentId == COMPONENT_POOL_SID(component::getId<component::InfraredSensor>())){
+        ros::node->createIRTopics(createCompEvent);
     }
 
 }
 void Atta::deleteComponentTopics(event::Event& event){
-    auto& createCompEvent = static_cast<atta::event::CreateComponent&>(event);
-    if(createCompEvent.componentId == COMPONENT_POOL_SID(component::Transform)){
-        ros_node->deleteTransformTopics(createCompEvent.entityId);
+    auto& deleteCompEvent = static_cast<atta::event::DeleteComponent&>(event);
+    if(deleteCompEvent.componentId == COMPONENT_POOL_SID(component::Transform)){
+        ros::node->deleteTransformTopics(deleteCompEvent.entityId);
     }
 }
 } // namespace atta

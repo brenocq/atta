@@ -6,7 +6,7 @@
 #include <memory>
 #include <atta/event/event.h>
 #include <atta/event/events/createComponent.h>
-
+namespace atta::ros {
 class rosPlugin {
 public:
     rosPlugin();
@@ -15,15 +15,14 @@ public:
     void update();
     void publishData(std::string msg);
     void createTransformTopics(const atta::event::CreateComponent& event);
-    bool deleteTransformTopics(int id);
+    void deleteTransformTopics(int id);
     void createIRTopics(const atta::event::CreateComponent& event);
     void deleteIRTopics(int id);
 private:
     void createPublishers();
     void createServices();
-
     void createThread();
     
 };
-
+}
 #endif // ROS_PLUGIN_STUB_HPP

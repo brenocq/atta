@@ -4,11 +4,10 @@
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/simulationStep.h>
-
 #include "Util.hpp" // also contains used components header
 
 #include <exception>
-
+namespace atta::ros {
 rosPlugin::rosPlugin() {
     // Initialize ROS 2 and create a node and check if ros is not already running
     if (!rclcpp::ok()) { rclcpp::init(0, nullptr); rosInitializedHere=true; } 
@@ -60,6 +59,10 @@ void rosPlugin::createPublishers(){
     // Create a publisher on topic "atta"
     publisher_ = node_->create_publisher<std_msgs::msg::String>("atta", 10);
     RCLCPP_INFO(node_->get_logger(), "ROS Plugin Node Started!");
+    // Create a clock publisher on topic "atta/clock"
+    rosClock = node_->create_publisher<rosgraph_msgs::msg::Clock>("atta/clock", 10);
+    RCLCPP_INFO(node_->get_logger(), "ROS Plugin Node Started!");
+
 }
 void rosPlugin::createThread(){
 
@@ -77,6 +80,7 @@ void rosPlugin::createThread(){
 void rosPlugin::update(){
     updateTransform();
     updateIr();
+    updateClock();
 }
 void rosPlugin::createServices(){
     //Simulation Services
@@ -98,19 +102,15 @@ void rosPlugin::deleteServices(){
     // Reset services
     if (pausePhysics) {
         pausePhysics.reset();
-        pausePhysics = nullptr;
     }
     if (unPausePhysics) {
         unPausePhysics.reset();
-        unPausePhysics = nullptr;
     }
     if (resetSimulation) {
         resetSimulation.reset();
-        resetSimulation = nullptr;
     }
     if (stepSimulation) {
         stepSimulation.reset();
-        stepSimulation = nullptr;
     }
 }
 // Simulation Control
@@ -177,7 +177,6 @@ void rosPlugin::stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Reque
 
 void rosPlugin::createTransformTopics(const atta::event::CreateComponent& event){
     int key = event.entityId;
-    
     //create topic name
     std::string eName = nameOf(key);
     std::string pub_Topic_name = "atta/"+ eName + "/transform/Get";
@@ -295,21 +294,20 @@ void rosPlugin::deleteAllTopics(){
     //_
 
 }
-bool rosPlugin::deleteTransformTopics(int id){
+void rosPlugin::deleteTransformTopics(int id){
     if (transformPubs.find(id) != transformPubs.end()){
             transformPubs.erase(id);
     }else{
         LOG_ERROR("Ros", "Failed to delete Transform Publisher for id: " + std::to_string(id) + " or id doesnt exist");
-        return false;
+
     }
     if (transformSubs.find(id) != transformSubs.end()){
             transformSubs.erase(id);
     }else{
         LOG_ERROR("Ros", "Failed to delete Subscriber Publisher for id: " + std::to_string(id) + " or id doesnt exist");
-        return false;
-    }
+   }
     LOG_SUCCESS("Ros", "Transform Topics deleted for id: " + std::to_string(id));
-    return true;
+
 }
 void rosPlugin::transformCallback(const geometry_msgs::msg::Pose::SharedPtr msg, int key) const{
 
@@ -396,4 +394,10 @@ void rosPlugin::deleteIRTopics(int id){
         LOG_ERROR("Ros", "Failed to delete IR Publisher for id: " + std::to_string(id) + " or id doesnt exist");
     }
     LOG_SUCCESS("Ros", "IR Topics deleted for id: " + std::to_string(id));
+}
+void rosPlugin::updateClock(){
+    auto msg = rosgraph_msgs::msg::Clock();
+    msg.clock = node_->now();
+    rosClock->publish(msg);
+}
 }

@@ -12,15 +12,24 @@ if(WITH_ROS2)
     find_package(geometry_msgs REQUIRED)
     find_package(sensor_msgs)
 
-    set(ROS_PLUGIN_SOURCE   src/RosPlugin.cpp)
-    set(ROS_PLUGIN_HEADERS  include/RosPlugin.hpp include/Util.hpp)
+    set(ROS_PLUGIN_SOURCE   
+         src/RosPlugin.cpp
+         src/interface.cpp)
+    set(ROS_PLUGIN_HEADERS  
+         include/RosPlugin.hpp
+         include/Util.hpp
+         include/interface.hpp)
 
     
 else()
     # use the stub instead   
     message(STATUS "Building without ROS2 support, using stub.")
-    set(ROS_PLUGIN_SOURCE src/RosPluginStub.cpp)
-    set(ROS_PLUGIN_HEADERS include/RosPluginStub.hpp)
+    set(ROS_PLUGIN_SOURCE 
+         src/RosPluginStub.cpp
+         src/interface.cpp)
+    set(ROS_PLUGIN_HEADERS 
+         include/RosPluginStub.hpp
+         include/interface.hpp)
 
 
 endif()
@@ -49,6 +58,7 @@ if(WITH_ROS2)
                             tf2_ros
                             geometry_msgs
                             sensor_msgs
+                            rosgraph_msgs
                         )
                         
 else()

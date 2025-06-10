@@ -12,11 +12,12 @@
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <sensor_msgs/msg/range.hpp>
+#include <rosgraph_msgs/msg/clock.hpp>
 
 #include <atta/event/event.h>
 #include <atta/event/events/createComponent.h>
 #include <atta/component/components/component.h>
-
+namespace atta::ros {
 
 class rosPlugin {
 public:
@@ -28,7 +29,7 @@ public:
 
     //create/delete transform Topics
     void createTransformTopics(const atta::event::CreateComponent& event);
-    bool deleteTransformTopics(int id);
+    void deleteTransformTopics(int id);
     void createIRTopics(const atta::event::CreateComponent& event);
     void deleteIRTopics(int id);
     //___
@@ -53,6 +54,7 @@ private:
     //topic update
     void updateTransform();
     void updateIr();
+    void updateClock();
     //___
     //standard services
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr pausePhysics;
@@ -78,7 +80,8 @@ private:
     void createThread();
     
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::Publisher<rosgraph_msgs::msg::Clock>::SharedPtr rosClock;
     //rclcpp::TimerBase::SharedPtr timer_;
 };
-
+}
 #endif // ROS_PLUGIN_HPP

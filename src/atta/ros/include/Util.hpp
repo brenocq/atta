@@ -7,9 +7,8 @@
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/components/infraredSensor.h>
-
+namespace atta::ros {
 inline std::string nameOf(int key){
-    
     if (auto* cName = atta::component::getComponent<atta::component::Name>(key)) {
         std::string name = cName->name;
         std::replace(name.begin(), name.end(), ' ', '_');
@@ -18,4 +17,5 @@ inline std::string nameOf(int key){
 
         return "Entity_" + std::to_string(key);
     }
+}
 }

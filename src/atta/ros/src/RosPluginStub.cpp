@@ -1,14 +1,17 @@
 #include "RosPluginStub.hpp"
+#include "Util.hpp"
+namespace atta::ros {
 
-
-rosPlugin::rosPlugin() {
-    
-}
-
+rosPlugin::rosPlugin() {}
 rosPlugin::~rosPlugin() {}
 
-void rosPlugin::createPublishers() {}
-void rosPlugin::createServices() {}
-void rosPlugin::publishData(std::string msg) {}
-void rosPlugin::createThread() {}
-void rosPlugin::update(){}
+    void update();
+    void publishData(std::string msg){}
+    void createTransformTopics(const atta::event::CreateComponent& event){}
+    bool deleteTransformTopics(int id){}
+    void createIRTopics(const atta::event::CreateComponent& event){}
+    void deleteIRTopics(int id){}
+    void createPublishers(){}
+    void createServices(){}
+    void createThread(){}
+}

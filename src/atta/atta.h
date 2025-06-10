@@ -12,7 +12,7 @@
 
 //check if ROS2 is enabled
 #ifdef WITH_ROS2
-#include <atta/ros/include/RosPlugin.hpp>
+#include <atta/ros/include/RosPlugin.hpp> //use the main class
 #else
 #include <atta/ros/include/RosPluginStub.hpp>  // Use the stub instead
 #endif
@@ -45,7 +45,7 @@ class Atta {
     clock_t _lastStep;
     clock_t _currStep;
     
-    std::shared_ptr<rosPlugin> ros_node;
+    //std::shared_ptr<rosPlugin> ros_node;
 };
 } // namespace atta
 
