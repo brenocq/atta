@@ -33,6 +33,7 @@ public:
     void createIRTopics(const atta::event::CreateComponent& event);
     void deleteIRTopics(int id);
     //___
+    void deleteAllTopics();
 private:
     //setup
     bool rosInitializedHere = false;
@@ -46,15 +47,15 @@ private:
     std::unordered_map<int, rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr> transformPubs;
     std::unordered_map<int, rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr> transformSubs;
     std::unordered_map<int, rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> IRPubs;
-    void deleteAllTopics();
     //___
     // SubscribersCallBack
     void transformCallback(const geometry_msgs::msg::Pose::SharedPtr msg, int key) const;
     //___
     //topic update
-    void updateTransform();
-    void updateIr();
-    void updateClock();
+    void updateTransform(); // update the trasform componeents x,y,z and orientation r,i,j,k
+    void updateIr();        // update the IR components with the IR Distance
+    void updateClock();     // update the Ros CLock
+    void updateCamera();    // update the Camera Feedback
     //___
     //standard services
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr pausePhysics;

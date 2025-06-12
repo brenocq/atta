@@ -14,11 +14,6 @@
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/windowClose.h>
 
-#include <atta/component/interface.h>
-#include <atta/component/components/components.h>
-#include <atta/event/events/createComponent.h>
-#include <atta/event/events/deleteComponent.h>
-#include <atta/event/events/deleteEntity.h>
 #include <atta/file/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/memory/interface.h>
@@ -63,9 +58,6 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     event::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-    event::subscribe<event::CreateComponent>(BIND_EVENT_FUNC(Atta::createComponentTopics));
-    event::subscribe<event::DeleteComponent>(BIND_EVENT_FUNC(Atta::deleteComponentTopics));
-    event::subscribe<event::DeleteEntity>(BIND_EVENT_FUNC(Atta::deleteComponentTopics));
     LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
     fs::path projectFile = fs::path(ATTA_STATIC_PROJECT_FILE);
@@ -207,31 +199,6 @@ void Atta::onSimulationStateChange(event::Event& event) {
         default: {
             LOG_WARN("Atta", "Unknown simulation event");
         }
-    }
-}
-void Atta::createComponentTopics(event::Event& event){
-    //get component type and send it to ros
-    auto& createCompEvent = static_cast<atta::event::CreateComponent&>(event);
-
-    /*switch (createCompEvent.componentId){
-
-
-        case 
-    }*/
-
-
-    if(createCompEvent.componentId == component::getId<component::Transform>()){
-        ros::node->createTransformTopics(createCompEvent);
-    }
-    if(createCompEvent.componentId == COMPONENT_POOL_SID(component::getId<component::InfraredSensor>())){
-        ros::node->createIRTopics(createCompEvent);
-    }
-
-}
-void Atta::deleteComponentTopics(event::Event& event){
-    auto& deleteCompEvent = static_cast<atta::event::DeleteComponent&>(event);
-    if(deleteCompEvent.componentId == COMPONENT_POOL_SID(component::Transform)){
-        ros::node->deleteTransformTopics(deleteCompEvent.entityId);
     }
 }
 } // namespace atta

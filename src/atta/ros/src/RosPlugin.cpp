@@ -17,7 +17,7 @@ rosPlugin::rosPlugin() {
     createPublishers();
     createServices();
     createThread();
-    LOG_SUCCESS("Ros Node", "Created");
+    LOG_SUCCESS("Ros", "Node Created");
 }
 
 rosPlugin::~rosPlugin() {
@@ -271,6 +271,7 @@ void rosPlugin::updateTransform(){
     tf_broadcaster_->sendTransform(tf_links);
 }
 void rosPlugin::deleteAllTopics(){
+    LOG_SUCCESS("Ros", "deleting all topic");
     for(auto& [entityId, publisher]: transformPubs){
         if (publisher) {
             publisher.reset();  // Explicitly release the shared_ptr
@@ -396,6 +397,10 @@ void rosPlugin::deleteIRTopics(int id){
     LOG_SUCCESS("Ros", "IR Topics deleted for id: " + std::to_string(id));
 }
 void rosPlugin::updateClock(){
+    // if it has no subscribers dont send anything
+    if (rosClock->get_subscription_count() == 0){
+        return;
+    }
     auto msg = rosgraph_msgs::msg::Clock();
     msg.clock = node_->now();
     rosClock->publish(msg);

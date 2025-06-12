@@ -10,12 +10,6 @@
 #include <atta/memory/allocators/stackAllocator.h>
 #include <ctime>
 
-//check if ROS2 is enabled
-#ifdef WITH_ROS2
-#include <atta/ros/include/RosPlugin.hpp> //use the main class
-#else
-#include <atta/ros/include/RosPluginStub.hpp>  // Use the stub instead
-#endif
 namespace atta {
 class Atta {
   public:
@@ -34,8 +28,6 @@ class Atta {
     // Handle events
     void onWindowClose(event::Event& event);
     void onSimulationStateChange(event::Event& event);
-    void createComponentTopics(event::Event& event);
-    void deleteComponentTopics(event::Event& event);
     // Memory
     memory::StackAllocator* _mainAllocator;
 
