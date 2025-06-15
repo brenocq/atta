@@ -13,7 +13,7 @@
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <sensor_msgs/msg/range.hpp>
 #include <rosgraph_msgs/msg/clock.hpp>
-
+#include "ros_plugin/msg/rigid_body.hpp"
 #include <atta/event/event.h>
 #include <atta/event/events/createComponent.h>
 #include <atta/component/components/component.h>
@@ -30,8 +30,12 @@ public:
     //create/delete transform Topics
     void createTransformTopics(const atta::event::CreateComponent& event);
     void deleteTransformTopics(int id);
+    //create/delete IR Topics
     void createIRTopics(const atta::event::CreateComponent& event);
     void deleteIRTopics(int id);
+    //create/delete RigidBody topics
+    void createRigidTopics(const atta::event::CreateComponent& event);
+    void deleteRigidTopics(int id);
     //___
     void deleteAllTopics();
 private:
@@ -47,15 +51,19 @@ private:
     std::unordered_map<int, rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr> transformPubs;
     std::unordered_map<int, rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr> transformSubs;
     std::unordered_map<int, rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> IRPubs;
+    std::unordered_map<int, rclcpp::Publisher<ros_plugin::msg::RigidBody>::SharedPtr> RigidBodyPubs;
+    std::unordered_map<int, rclcpp::Subscription<ros_plugin::msg::RigidBody>::SharedPtr> RigidBodySubs;
     //___
     // SubscribersCallBack
     void transformCallback(const geometry_msgs::msg::Pose::SharedPtr msg, int key) const;
+    void rigidBodyCallback(const ros_plugin::msg::RigidBody::SharedPtr msg, int key) const;
     //___
     //topic update
     void updateTransform(); // update the trasform componeents x,y,z and orientation r,i,j,k
     void updateIr();        // update the IR components with the IR Distance
     void updateClock();     // update the Ros CLock
     void updateCamera();    // update the Camera Feedback
+    void updateRigidBody(); // update the RigidBody physics data
     //___
     //standard services
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr pausePhysics;
@@ -79,7 +87,6 @@ private:
 
     void deletePublisher();
     void createThread();
-    
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
     rclcpp::Publisher<rosgraph_msgs::msg::Clock>::SharedPtr rosClock;
     //rclcpp::TimerBase::SharedPtr timer_;

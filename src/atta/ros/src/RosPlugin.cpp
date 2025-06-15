@@ -57,7 +57,7 @@ void rosPlugin::publishData(std::string msg) {
 void rosPlugin::createPublishers(){
 
     // Create a publisher on topic "atta"
-    publisher_ = node_->create_publisher<std_msgs::msg::String>("atta", 10);
+    publisher_ = node_->create_publisher<std_msgs::msg::String>("atta/INFO", 10);
     RCLCPP_INFO(node_->get_logger(), "ROS Plugin Node Started!");
     // Create a clock publisher on topic "atta/clock"
     rosClock = node_->create_publisher<rosgraph_msgs::msg::Clock>("atta/clock", 10);
@@ -81,6 +81,7 @@ void rosPlugin::update(){
     updateTransform();
     updateIr();
     updateClock();
+    updateRigidBody();
 }
 void rosPlugin::createServices(){
     //Simulation Services
@@ -174,7 +175,7 @@ void rosPlugin::stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Reque
         response->message = "Failed to step simulation.";
     }
 }
-
+// Components topics
 void rosPlugin::createTransformTopics(const atta::event::CreateComponent& event){
     int key = event.entityId;
     //create topic name
@@ -305,7 +306,7 @@ void rosPlugin::deleteTransformTopics(int id){
     if (transformSubs.find(id) != transformSubs.end()){
             transformSubs.erase(id);
     }else{
-        LOG_ERROR("Ros", "Failed to delete Subscriber Publisher for id: " + std::to_string(id) + " or id doesnt exist");
+        LOG_ERROR("Ros", "Failed to delete Transform Subscriber for id: " + std::to_string(id) + " or id doesnt exist");
    }
     LOG_SUCCESS("Ros", "Transform Topics deleted for id: " + std::to_string(id));
 
@@ -404,5 +405,65 @@ void rosPlugin::updateClock(){
     auto msg = rosgraph_msgs::msg::Clock();
     msg.clock = node_->now();
     rosClock->publish(msg);
+}
+void rosPlugin::createRigidTopics(const atta::event::CreateComponent& event){
+    int key = event.entityId;
+    //create topic name
+    std::string eName = nameOf(key);
+    std::string pub_Topic_name = "atta/"+ eName + "/RigidBody/Get";
+    std::string sub_Topic_name = "atta/"+ eName + "/RigidBody/Set";
+    
+    // make sure if publisher already exists, if not create it
+    try{
+    if (RigidBodyPubs.find(key) == RigidBodyPubs.end()){
+        auto Rpub = node_->create_publisher<ros_plugin::msg::RigidBody>(pub_Topic_name, 10);
+        RigidBodyPubs[key] = Rpub;
+    }else {
+        LOG_ERROR("Ros", "Publisher creation failed; Key " + std::to_string(key) + "already exists.");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Publisher: ") + e.what());
+    }
+    // ___
+    // make sure if subscriber already exists, if not create it
+    try{
+    if (RigidBodySubs.find(key) == RigidBodySubs.end()){
+        auto Rsub = node_->create_subscription<ros_plugin::msg::RigidBody>(sub_Topic_name, 10,
+                                                                         [this,key](ros_plugin::msg::RigidBody::SharedPtr  msg){
+                                                                            this->rigidBodyCallback(msg, key);}
+                                                                         );
+        RigidBodySubs[key] = Rsub;
+    }else {
+        LOG_ERROR("Ros", "Subscriber creation failed");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Subscriber: ") + e.what());
+    }
+    // ___
+    LOG_SUCCESS("Ros", std::string("RigidBody Topics created for ID:") + std::to_string(key));
+}
+void rosPlugin::deleteRigidTopics(int id){
+    if (RigidBodyPubs.find(id) != RigidBodyPubs.end()){
+            RigidBodyPubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete RigidBody Publisher for id: " + std::to_string(id) + " or id doesnt exist");
+
+    }
+    if (RigidBodySubs.find(id) != RigidBodySubs.end()){
+            RigidBodySubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete RigidBody Subscriber for id: " + std::to_string(id) + " or id doesnt exist");
+   }
+    LOG_SUCCESS("Ros", "RigidBody Topics deleted for id: " + std::to_string(id));
+
+}
+void rosPlugin::updateRigidBody(){;}
+void rosPlugin::rigidBodyCallback(const ros_plugin::msg::RigidBody::SharedPtr msg, int key) const {
+    //get transform component from entity
+    auto* rigidBody = atta::component::getComponent<atta::component::RigidBody>(key);
+    //cast ros msg format to transform data format
+    atta::component::RigidBody data;
+    data.mass = msg->mass;
+
+    //send data to transform object
+    rigidBody->mass = data.mass;
 }
 }

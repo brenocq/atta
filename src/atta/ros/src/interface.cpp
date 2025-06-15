@@ -73,7 +73,7 @@ void update(){
 }
 void openNewProject(event::Event& event){
     //clear all previous publishers and subscriber to allow for new ones to be created
-    node->deleteAllTopics();
+    //node->deleteAllTopics();
 }
 void createComponentTopics(event::Event& event){
     //get component type and send it to ros
@@ -91,7 +91,7 @@ void createComponentTopics(event::Event& event){
 
     else {
         ros::node->publishData("component Id not recognized, cannot create topic");
-        LOG_ERROR("Ros", "component Id not recognized, cannot create topic");
+        //LOG_ERROR("Ros", "component Id not recognized, cannot create topic");
     }
 
 }

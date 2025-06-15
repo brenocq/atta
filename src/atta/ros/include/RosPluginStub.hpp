@@ -19,6 +19,8 @@ public:
     void createIRTopics(const atta::event::CreateComponent& event);
     void deleteIRTopics(int id);
     void deleteAllTopics();
+    void createRigidTopics(const atta::event::CreateComponent& event);
+    void deleteRigidTopics(int id);
 private:
     void createPublishers();
     void createServices();

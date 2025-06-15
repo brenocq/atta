@@ -11,7 +11,8 @@ if(WITH_ROS2)
     find_package(tf2_ros REQUIRED)
     find_package(geometry_msgs REQUIRED)
     find_package(sensor_msgs)
-
+    find_package(rosidl_default_generators REQUIRED)
+    
     set(ROS_PLUGIN_SOURCE   
          src/RosPlugin.cpp
          src/interface.cpp)
@@ -19,6 +20,11 @@ if(WITH_ROS2)
          include/RosPlugin.hpp
          include/Util.hpp
          include/interface.hpp)
+
+    rosidl_generate_interfaces(${PROJECT_NAME}
+        "msg/RigidBody.msg"
+        DEPENDENCIES std_msgs geometry_msgs
+    )
 
     
 else()
@@ -36,22 +42,25 @@ endif()
 
 
 # Create a static library
-add_library(ros_plugin STATIC
+add_library(ros_plugin_lib STATIC
     ${ROS_PLUGIN_SOURCE}
     ${ROS_PLUGIN_HEADERS}
 )
 
 if(WITH_ROS2)
     # Link the ROS2 libraries
-    target_include_directories(ros_plugin PUBLIC
+    rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
+    target_link_libraries(ros_plugin_lib "${cpp_typesupport_target}")
+    target_include_directories(ros_plugin_lib PUBLIC
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                             $<INSTALL_INTERFACE:include>
                             ${rclcpp_INCLUDE_DIRS}
-                            ${std_msgs_INCLUDE_DIRS}
-                            ${std_srvs_INCLUDE_DIRS}
-                            ${geometry_msgs_INCLUDE_DIRS}
-                            ${sensor_msgs_INCLUDE_DIRS})
-    ament_target_dependencies(ros_plugin
+                            #${std_msgs_INCLUDE_DIRS}
+                            #${std_srvs_INCLUDE_DIRS}
+                            #${geometry_msgs_INCLUDE_DIRS}
+                            #${sensor_msgs_INCLUDE_DIRS}
+                            )   
+    ament_target_dependencies(ros_plugin_lib
                             rclcpp
                             std_msgs
                             std_srvs
@@ -59,11 +68,12 @@ if(WITH_ROS2)
                             geometry_msgs
                             sensor_msgs
                             rosgraph_msgs
-                        )
+                            rosidl_default_runtime
+                            )
                         
 else()
     # Link the ROS2 stub libraries
-    target_include_directories(ros_plugin PUBLIC
+    target_include_directories(ros_plugin_lib PUBLIC
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                             $<INSTALL_INTERFACE:include>
                             )
@@ -71,12 +81,12 @@ endif()
 
 
 
-atta_target_common(ros_plugin)
-atta_add_libs(ros_plugin)
+atta_target_common(ros_plugin_lib)
+atta_add_libs(ros_plugin_lib)
 
 
 install(
-    TARGETS ros_plugin
+    TARGETS ros_plugin_lib
     EXPORT ros_plugin_export
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
@@ -91,5 +101,5 @@ if(WITH_ROS2)
 endif()
 
 if(TARGET atta_lib)
-    target_link_libraries(atta_lib PUBLIC ros_plugin)
+    target_link_libraries(atta_lib PUBLIC ros_plugin_lib)
 endif()
