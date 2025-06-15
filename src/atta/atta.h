@@ -28,7 +28,6 @@ class Atta {
     // Handle events
     void onWindowClose(event::Event& event);
     void onSimulationStateChange(event::Event& event);
-
     // Memory
     memory::StackAllocator* _mainAllocator;
 
@@ -37,6 +36,8 @@ class Atta {
     bool _shouldStep;
     clock_t _lastStep;
     clock_t _currStep;
+    
+    //std::shared_ptr<rosPlugin> ros_node;
 };
 } // namespace atta
 
