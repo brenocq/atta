@@ -10,9 +10,10 @@ if(WITH_ROS2)
     find_package(std_srvs REQUIRED)
     find_package(tf2_ros REQUIRED)
     find_package(geometry_msgs REQUIRED)
-    find_package(sensor_msgs)
+    find_package(sensor_msgs REQUIRED)
     find_package(rosidl_default_generators REQUIRED)
-    
+
+    set(BUILD_SHARED_LIBS ON)
     set(ROS_PLUGIN_SOURCE   
          src/RosPlugin.cpp
          src/interface.cpp)
@@ -25,6 +26,14 @@ if(WITH_ROS2)
         "msg/RigidBody.msg"
         DEPENDENCIES std_msgs geometry_msgs
     )
+    # Create a static library
+    add_library(ros_plugin_lib STATIC
+    ${ROS_PLUGIN_SOURCE}
+    ${ROS_PLUGIN_HEADERS}
+    )
+    # Link the ROS2 libraries
+    rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
+    target_link_libraries(ros_plugin_lib "${cpp_typesupport_target}")
 
     
 else()
@@ -41,24 +50,16 @@ else()
 endif()
 
 
-# Create a static library
-add_library(ros_plugin_lib STATIC
-    ${ROS_PLUGIN_SOURCE}
-    ${ROS_PLUGIN_HEADERS}
-)
-
 if(WITH_ROS2)
-    # Link the ROS2 libraries
-    rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
-    target_link_libraries(ros_plugin_lib "${cpp_typesupport_target}")
     target_include_directories(ros_plugin_lib PUBLIC
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp>
                             $<INSTALL_INTERFACE:include>
                             ${rclcpp_INCLUDE_DIRS}
-                            #${std_msgs_INCLUDE_DIRS}
-                            #${std_srvs_INCLUDE_DIRS}
-                            #${geometry_msgs_INCLUDE_DIRS}
-                            #${sensor_msgs_INCLUDE_DIRS}
+                            ${std_msgs_INCLUDE_DIRS}
+                            ${std_srvs_INCLUDE_DIRS}
+                            ${geometry_msgs_INCLUDE_DIRS}
+                            ${sensor_msgs_INCLUDE_DIRS}
                             )   
     ament_target_dependencies(ros_plugin_lib
                             rclcpp
@@ -70,6 +71,8 @@ if(WITH_ROS2)
                             rosgraph_msgs
                             rosidl_default_runtime
                             )
+    add_dependencies(ros_plugin_lib ${PROJECT_NAME}__rosidl_typesupport_cpp)
+    install(DIRECTORY include/ DESTINATION include)
                         
 else()
     # Link the ROS2 stub libraries
@@ -95,7 +98,7 @@ install(
 )
 
 if(WITH_ROS2)
-    ament_export_dependencies(rclcpp std_msgs std_srvs geometry_msgs)
+    ament_export_dependencies(rclcpp std_msgs std_srvs geometry_msgs rosidl_default_runtime)
     ament_export_targets(ros_plugin_export HAS_LIBRARY_TARGET)
     ament_package()
 endif()

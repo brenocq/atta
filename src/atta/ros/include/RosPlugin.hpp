@@ -13,7 +13,8 @@
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <sensor_msgs/msg/range.hpp>
 #include <rosgraph_msgs/msg/clock.hpp>
-#include "ros_plugin/msg/rigid_body.hpp"
+#include "ros_plugin/msg/rigid_body.hpp"    //not used for now as it compicates the interaction with atta
+#include <geometry_msgs/msg/twist.hpp>
 #include <atta/event/event.h>
 #include <atta/event/events/createComponent.h>
 #include <atta/component/components/component.h>
@@ -51,12 +52,12 @@ private:
     std::unordered_map<int, rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr> transformPubs;
     std::unordered_map<int, rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr> transformSubs;
     std::unordered_map<int, rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> IRPubs;
-    std::unordered_map<int, rclcpp::Publisher<ros_plugin::msg::RigidBody>::SharedPtr> RigidBodyPubs;
-    std::unordered_map<int, rclcpp::Subscription<ros_plugin::msg::RigidBody>::SharedPtr> RigidBodySubs;
+    std::unordered_map<int, rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr> RigidBodyPubs;
+    std::unordered_map<int, rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr> RigidBodySubs;
     //___
     // SubscribersCallBack
     void transformCallback(const geometry_msgs::msg::Pose::SharedPtr msg, int key) const;
-    void rigidBodyCallback(const ros_plugin::msg::RigidBody::SharedPtr msg, int key) const;
+    void rigidBodyCallback(const geometry_msgs::msg::Twist::SharedPtr msg, int key) const;
     //___
     //topic update
     void updateTransform(); // update the trasform componeents x,y,z and orientation r,i,j,k

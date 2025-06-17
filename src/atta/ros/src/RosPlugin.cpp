@@ -329,6 +329,7 @@ void rosPlugin::transformCallback(const geometry_msgs::msg::Pose::SharedPtr msg,
     transform->setWorldTransform(key, data);
 
 }
+// IR Methods
 void rosPlugin::createIRTopics(const atta::event::CreateComponent& event){
     int key = event.entityId;
     
@@ -351,19 +352,18 @@ void rosPlugin::createIRTopics(const atta::event::CreateComponent& event){
 }
 void rosPlugin::updateIr(){
     std::vector<sensor_msgs::msg::Range> irMsg;
-    bool hasSubs = true;
     for(const auto& [entityId, publisher]: IRPubs){
         //check that the publisher has subscribers
        if (publisher->get_subscription_count() == 0){
-            hasSubs = false;
+            continue;
         }
-        //get transform component from entity
+        //get IR component from entity
         auto* IR = atta::component::getComponent<atta::component::InfraredSensor>(entityId);
         if (!IR){
         LOG_ERROR("ros", std::string( "Failed to get IR component for entityId: ") + std::to_string(entityId));
         continue;
         }
-        //cast transform data in ros msg and tf msg format
+        //cast IR data in ros msg and tf msg format
         sensor_msgs::msg::Range msg;
 
         msg.header.stamp = node_->get_clock()->now();
@@ -377,9 +377,7 @@ void rosPlugin::updateIr(){
 
         //publish msg
         try{
-            if(hasSubs){
-                publisher->publish(msg);
-            }
+            publisher->publish(msg);
         }
         catch (const std::exception& e) {
             LOG_ERROR("ros", std::string("Exception during publish: ") + e.what());
@@ -406,6 +404,7 @@ void rosPlugin::updateClock(){
     msg.clock = node_->now();
     rosClock->publish(msg);
 }
+// RigidBody Methods
 void rosPlugin::createRigidTopics(const atta::event::CreateComponent& event){
     int key = event.entityId;
     //create topic name
@@ -416,8 +415,9 @@ void rosPlugin::createRigidTopics(const atta::event::CreateComponent& event){
     // make sure if publisher already exists, if not create it
     try{
     if (RigidBodyPubs.find(key) == RigidBodyPubs.end()){
-        auto Rpub = node_->create_publisher<ros_plugin::msg::RigidBody>(pub_Topic_name, 10);
+        auto Rpub = node_->create_publisher<geometry_msgs::msg::Twist>(pub_Topic_name, 10);
         RigidBodyPubs[key] = Rpub;
+        LOG_SUCCESS("Ros", "RigidBody Publisher create for entity id: "+ std::to_string(key) );
     }else {
         LOG_ERROR("Ros", "Publisher creation failed; Key " + std::to_string(key) + "already exists.");
     }}catch(const std::exception& e){
@@ -427,18 +427,18 @@ void rosPlugin::createRigidTopics(const atta::event::CreateComponent& event){
     // make sure if subscriber already exists, if not create it
     try{
     if (RigidBodySubs.find(key) == RigidBodySubs.end()){
-        auto Rsub = node_->create_subscription<ros_plugin::msg::RigidBody>(sub_Topic_name, 10,
-                                                                         [this,key](ros_plugin::msg::RigidBody::SharedPtr  msg){
+        auto Rsub = node_->create_subscription<geometry_msgs::msg::Twist>(sub_Topic_name, 10,
+                                                                         [this,key](geometry_msgs::msg::Twist::SharedPtr  msg){
                                                                             this->rigidBodyCallback(msg, key);}
                                                                          );
         RigidBodySubs[key] = Rsub;
+        LOG_SUCCESS("Ros", "RigidBody Subscriber create for entity id: "+ std::to_string(key) );
     }else {
         LOG_ERROR("Ros", "Subscriber creation failed");
     }}catch(const std::exception& e){
         LOG_ERROR("Ros",std::string("error creating Subscriber: ") + e.what());
     }
     // ___
-    LOG_SUCCESS("Ros", std::string("RigidBody Topics created for ID:") + std::to_string(key));
 }
 void rosPlugin::deleteRigidTopics(int id){
     if (RigidBodyPubs.find(id) != RigidBodyPubs.end()){
@@ -455,15 +455,54 @@ void rosPlugin::deleteRigidTopics(int id){
     LOG_SUCCESS("Ros", "RigidBody Topics deleted for id: " + std::to_string(id));
 
 }
-void rosPlugin::updateRigidBody(){;}
-void rosPlugin::rigidBodyCallback(const ros_plugin::msg::RigidBody::SharedPtr msg, int key) const {
+void rosPlugin::updateRigidBody(){
+
+    for(const auto& [entityId, publisher]: RigidBodyPubs){
+        //check that the publisher has subscribers if he has non then skip him
+       if (publisher->get_subscription_count() == 0){
+            continue;
+        }
+        //get transform component from entity
+        auto* RB = atta::component::getComponent<atta::component::RigidBody>(entityId);
+        if (!RB){
+        LOG_ERROR("ros", std::string( "Failed to get RigidBody component for entityId: ") + std::to_string(entityId));
+        continue;
+        }
+        //cast transform data in ros msg and tf msg format
+        geometry_msgs::msg::Twist msg;
+
+        msg.linear.x = RB->linearVelocity[0];
+        msg.linear.y = RB->linearVelocity[1];
+        msg.linear.z = RB->linearVelocity[2];
+        msg.angular.x = RB->angularVelocity[0];
+        msg.angular.y = RB->angularVelocity[1];
+        msg.angular.z = RB->angularVelocity[2];
+
+        //publish msg
+        try{
+
+            publisher->publish(msg);
+
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("ros", std::string("Exception during publish: ") + e.what());
+        } catch (...) {
+            LOG_ERROR("ros", "Unknown error while publishing transform msg");
+        }
+        
+    }//for loop end
+}
+void rosPlugin::rigidBodyCallback(const geometry_msgs::msg::Twist::SharedPtr msg, int key) const {
     //get transform component from entity
     auto* rigidBody = atta::component::getComponent<atta::component::RigidBody>(key);
     //cast ros msg format to transform data format
-    atta::component::RigidBody data;
-    data.mass = msg->mass;
+    rigidBody->linearVelocity[0] = msg->linear.x;
+    rigidBody->linearVelocity[1] = msg->linear.y;
+    rigidBody->linearVelocity[2] = msg->linear.z;
 
-    //send data to transform object
-    rigidBody->mass = data.mass;
+    rigidBody->angularVelocity[0] = msg->angular.x;
+    rigidBody->angularVelocity[1] = msg->angular.y;
+    rigidBody->angularVelocity[2] = msg->angular.z;
+    
 }
 }
