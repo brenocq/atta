@@ -80,8 +80,8 @@ void rosPlugin::createThread(){
 void rosPlugin::update(){
     updateTransform();
     updateIr();
-    updateClock();
     updateRigidBody();
+    updateClock();
 }
 void rosPlugin::createServices(){
     //Simulation Services
@@ -179,7 +179,7 @@ void rosPlugin::stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Reque
 void rosPlugin::createTransformTopics(const atta::event::CreateComponent& event){
     int key = event.entityId;
     //create topic name
-    std::string eName = nameOf(key);
+    std::string eName = shortenTopic(getFullName(key));
     std::string pub_Topic_name = "atta/"+ eName + "/transform/Get";
     std::string sub_Topic_name = "atta/"+ eName + "/transform/Set";
     
@@ -334,8 +334,8 @@ void rosPlugin::createIRTopics(const atta::event::CreateComponent& event){
     int key = event.entityId;
     
     //create topic name
-    std::string eName = nameOf(key);
-    std::string pub_Topic_name = "atta/"+ eName + "/IR/Reading";
+    std::string eName = getFullName(key);
+    std::string pub_Topic_name = "atta/"+ shortenTopic(eName) + "/IR/Reading";
     
     // make sure if publisher already exists, if not create it
     try{
@@ -395,6 +395,7 @@ void rosPlugin::deleteIRTopics(int id){
     }
     LOG_SUCCESS("Ros", "IR Topics deleted for id: " + std::to_string(id));
 }
+// Clock Method
 void rosPlugin::updateClock(){
     // if it has no subscribers dont send anything
     if (rosClock->get_subscription_count() == 0){
@@ -408,7 +409,7 @@ void rosPlugin::updateClock(){
 void rosPlugin::createRigidTopics(const atta::event::CreateComponent& event){
     int key = event.entityId;
     //create topic name
-    std::string eName = nameOf(key);
+    std::string eName = shortenTopic(getFullName(key));
     std::string pub_Topic_name = "atta/"+ eName + "/RigidBody/Get";
     std::string sub_Topic_name = "atta/"+ eName + "/RigidBody/Set";
     
