@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "string": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "forward_list": "cpp",
+        "rope": "cpp",
+        "slist": "cpp"
+    }
+}
