@@ -1,7 +1,7 @@
 #ifndef ROS_PLUGIN_STUB_HPP
 #define ROS_PLUGIN_STUB_HPP
-
-
+#define BIND_FREE_EVENT_FUNC(x) \
+    (void*)nullptr, std::bind(&x, std::placeholders::_1)
 #include <thread>
 #include <memory>
 #include <atta/event/event.h>
@@ -21,6 +21,8 @@ public:
     void deleteAllTopics();
     void createRigidTopics(const atta::event::CreateComponent& event);
     void deleteRigidTopics(int id);
+    void createCameraTopics(const atta::event::CreateComponent& event);
+    void deleteCameraTopics(int id);
 private:
     void createPublishers();
     void createServices();

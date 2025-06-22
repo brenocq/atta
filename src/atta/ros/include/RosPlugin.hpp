@@ -1,6 +1,9 @@
 #ifndef ROS_PLUGIN_HPP
 #define ROS_PLUGIN_HPP
-
+#define BIND_FREE_EVENT_FUNC(x) \
+    (void*)nullptr, std::bind(&x, std::placeholders::_1)
+#define BIND_MEMBER_EVENT_FUNC(x) \
+    this, [this](atta::event::Event&) { this->x(); }
 #include <rclcpp/rclcpp.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 #include <std_msgs/msg/string.hpp>
@@ -12,6 +15,7 @@
 #include <geometry_msgs/msg/pose.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <sensor_msgs/msg/range.hpp>
+#include <sensor_msgs/msg/image.hpp>
 #include <rosgraph_msgs/msg/clock.hpp>
 #include "ros_plugin/msg/rigid_body.hpp"    //not used for now as it compicates the interaction with atta
 #include <geometry_msgs/msg/twist.hpp>
@@ -37,14 +41,25 @@ public:
     //create/delete RigidBody topics
     void createRigidTopics(const atta::event::CreateComponent& event);
     void deleteRigidTopics(int id);
+    //create/delete Camera topics
+    void createCameraThread();
+    void createCameraTopics(const atta::event::CreateComponent& event);
+    void deleteCameraTopics(int id);
+    void setCameraRate(double fps);
+    void startCameraTimer();
+    void pauseCameraTimer();
+    void stopCameraTimer();
     //___
     void deleteAllTopics();
 private:
     //setup
     bool rosInitializedHere = false;
     rclcpp::Node::SharedPtr node_;
+    rclcpp::TimerBase::SharedPtr camera_timer_;
+    rclcpp::CallbackGroup::SharedPtr camera_group_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-    std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> executor_;
+    ////std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> executor_;
+    std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> executor_;
     std::thread executor_thread_;
     //___
     //Maps of Topics
@@ -54,6 +69,7 @@ private:
     std::unordered_map<int, rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr> IRPubs;
     std::unordered_map<int, rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr> RigidBodyPubs;
     std::unordered_map<int, rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr> RigidBodySubs;
+    std::unordered_map<int, rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr> CameraPubs;
     //___
     // SubscribersCallBack
     void transformCallback(const geometry_msgs::msg::Pose::SharedPtr msg, int key) const;
@@ -90,7 +106,6 @@ private:
     void createThread();
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
     rclcpp::Publisher<rosgraph_msgs::msg::Clock>::SharedPtr rosClock;
-    //rclcpp::TimerBase::SharedPtr timer_;
 };
 }
 #endif // ROS_PLUGIN_HPP

@@ -4,6 +4,7 @@
 #include <atta/event/events/simulationStart.h>
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/simulationStep.h>
+#include <sensor_msgs/msg/image.hpp>
 #include "Util.hpp" // also contains used components header
 
 #include <exception>
@@ -14,8 +15,22 @@ rosPlugin::rosPlugin() {
     //create ros node and tf broadcaster
     node_ = std::make_shared<rclcpp::Node>("ros_plugin_node");
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(node_);
+    // Camera Sensor setup
+    event::subscribe<event::SimulationStart>(BIND_MEMBER_EVENT_FUNC(rosPlugin::startCameraTimer));
+    event::subscribe<event::SimulationPause>(BIND_MEMBER_EVENT_FUNC(rosPlugin::stopCameraTimer));
+    event::subscribe<event::SimulationStep>(BIND_MEMBER_EVENT_FUNC(rosPlugin::stopCameraTimer));
+    event::subscribe<event::SimulationStop>(BIND_MEMBER_EVENT_FUNC(rosPlugin::stopCameraTimer));
+    camera_group_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive); 
+    camera_timer_ = node_->create_wall_timer(
+    std::chrono::milliseconds(33), // for 30 fps
+    std::bind(&rosPlugin::updateCamera, this),
+    camera_group_
+    );
+    camera_timer_->cancel(); // dont start untill simulation start
+    // creating the startup Publisher and services
     createPublishers();
     createServices();
+    // start the threades and executer
     createThread();
     LOG_SUCCESS("Ros", "Node Created");
 }
@@ -67,13 +82,13 @@ void rosPlugin::createPublishers(){
 void rosPlugin::createThread(){
 
     // Create and spin executor in separate thread
-    executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+    executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>(rclcpp::ExecutorOptions(), 2);
     executor_->add_node(node_);
     executor_thread_ = std::thread([this]() {
         try {
             executor_->spin();  // Will exit cleanly after cancel()
         } catch (const std::exception &e) {
-            LOG_ERROR("Ros",std::string("error creating Subscriber: ") + std::string(e.what()));
+            LOG_ERROR("Ros",std::string("error creating thread executer: ") + std::string(e.what()));
         }
     });
 } 
@@ -505,5 +520,111 @@ void rosPlugin::rigidBodyCallback(const geometry_msgs::msg::Twist::SharedPtr msg
     rigidBody->angularVelocity[1] = msg->angular.y;
     rigidBody->angularVelocity[2] = msg->angular.z;
     
+}
+// Camera sensor methods
+void rosPlugin::createCameraTopics(const atta::event::CreateComponent& event){
+    int key = event.entityId;
+    //create topic name
+    std::string eName = shortenTopic(getFullName(key));
+    std::string pub_Topic_name = "atta/"+ eName + "/CameraSensor/image";
+
+    // make sure if publisher already exists, if not create it
+    try{
+    if (CameraPubs.find(key) == CameraPubs.end()){
+        auto Cpub = node_->create_publisher<sensor_msgs::msg::Image>(pub_Topic_name, 10);
+        CameraPubs[key] = Cpub;
+        LOG_SUCCESS("Ros", "Camera sensor Publisher create for entity id: "+ std::to_string(key) );
+    }else {
+        LOG_ERROR("Ros", "Publisher creation failed; Key " + std::to_string(key) + "already exists.");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Publisher: ") +  e.what());
+    }
+    // ___
+}
+void rosPlugin::deleteCameraTopics(int id){
+    if (CameraPubs.find(id) != CameraPubs.end()){
+            CameraPubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete Camera sensor Publisher for id: " + std::to_string(id) + " or id doesnt exist");
+    }
+    LOG_SUCCESS("Ros", "Camera sensor Publisher deleted for id: " + std::to_string(id));
+}
+void rosPlugin::updateCamera(){
+
+    for(const auto& [entityId, publisher]: CameraPubs){
+        //check that the publisher has subscribers
+       if (publisher->get_subscription_count() == 0){
+            continue;
+        }
+        //get IR component from entity
+        auto* cam = atta::component::getComponent<atta::component::CameraSensor>(entityId);
+        if (!cam){
+        LOG_ERROR("ros", std::string( "Failed to get Cam component for entityId: ") + std::to_string(entityId));
+        continue;
+        }
+        //cast IR data in ros msg and tf msg format
+        sensor_msgs::msg::Image image_msg;
+        //get image data
+        const uint8_t* image_data = cam->getImage();
+        if (image_data == nullptr) {
+            LOG_WARN("ros", std::string("No image data available for entityId: ") + std::to_string(entityId));
+            continue;
+        }
+        image_msg.header.stamp = node_->get_clock()->now();
+        image_msg.header.frame_id = "camera_" + std::to_string(entityId);
+        image_msg.height = cam->height;
+        image_msg.width = cam->width;
+        image_msg.encoding = "rgb8"; 
+        image_msg.is_bigendian = false; 
+        image_msg.step = cam->width * 3;
+        size_t data_size = static_cast<size_t>(cam->width) * cam->height * 3;
+        image_msg.data.assign(image_data, image_data + data_size);
+        //publish msg
+        try{
+            publisher->publish(image_msg);
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("ros", std::string("Exception during publish: ") + e.what());
+        } catch (...) {
+            LOG_ERROR("ros", "Unknown error while publishing transform msg");
+        }
+        
+    }//for loop end
+}
+void rosPlugin::setCameraRate(double fps) {
+    // Stop the old timer
+    if (camera_timer_) {
+        camera_timer_->cancel();
+    }
+
+    auto interval = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::duration<double>(1.0 / fps)
+    );
+
+    camera_timer_ = node_->create_wall_timer(
+        interval,
+        std::bind(&rosPlugin::updateCamera, this),
+        camera_group_
+    );
+
+    LOG_INFO("Ros", "Camera timer updated to " + std::to_string(fps) + " FPS");
+}    
+void rosPlugin::startCameraTimer(){
+    if (camera_timer_) {
+        camera_timer_->reset();  // starts or resumes the timer
+        LOG_INFO("Ros", "Simulation started: camera timer resumed");
+    }
+}
+/*void pauseCameraTimer(){
+    if (camera_timer_) {
+        camera_timer_->cancel();  // pauses the timer
+        LOG_INFO("Ros", "Simulation paused: camera timer paused");
+    }
+}*/
+void rosPlugin::stopCameraTimer(){
+    if (camera_timer_) {
+        camera_timer_->cancel();  // also stop timer on simulation stop
+        LOG_INFO("Ros", "Simulation stopped: camera timer stopped");
+    }
 }
 }

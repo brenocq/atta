@@ -11,8 +11,6 @@
 #include <atta/component/components/components.h>
 #include <atta/component/components/rigidBody.h>
 
-#define BIND_FREE_EVENT_FUNC(x) \
-    (void*)nullptr, std::bind(&x, std::placeholders::_1)
 namespace atta::ros {
 std::shared_ptr<rosPlugin> node = nullptr;
 
@@ -35,19 +33,7 @@ void startUp() {
     //----- Module Memory -----//
     // Get main memory
     memory::Allocator* mainAllocator = memory::getAllocator(SSID("MainAllocator"));
-    // 1. Stack for per-callback temporary data (FASTEST)
-    /*size_t stackSize = 20 * 1024 * 1024; // 20MB
-    uint8_t* stackMem =  static_cast<uint8_t*>(mainAllocator->allocBytes(stackSize, sizeof(uint8_t)));
-    memory::StackAllocator* _stackAllocator = new memory::StackAllocator(stackMem, stackSize);
-    memory::registerAllocator(SSID("ROSStack"), _stackAllocator);
-    
-    // 2. Pool for messages (MOST EFFICIENT for fixed-size)
-    size_t poolSize = 5 * 1024 * 1024; // 5MB
-    uint8_t* poolMem = static_cast<uint8_t*>(mainAllocator->allocBytes(poolSize, sizeof(uint8_t)));
-    memory::PoolAllocator* _messagePool = new memory::PoolAllocator(poolMem, 1000, 256, 256);
-    memory::registerAllocator(SSID("ROSMessagePool"), _messagePool);
-    */
-    // 3. Bitmap for buffers (MOST FLEXIBLE)
+    // Bitmap 
     size_t bitmapSize = 100 * 1024 * 1024; // 100MB
     uint8_t* bitmapMem = static_cast<uint8_t*>(mainAllocator->allocBytes(bitmapSize, sizeof(uint8_t)));
     memory::BitmapAllocator* _bufferAllocator = new memory::BitmapAllocator(bitmapMem, bitmapSize, 4096);
@@ -62,7 +48,7 @@ void startUp() {
     event::subscribe<event::ProjectOpen>(BIND_FREE_EVENT_FUNC(ros::openNewProject));
     event::subscribe<event::CreateComponent>(BIND_FREE_EVENT_FUNC(ros::createComponentTopics));
     event::subscribe<event::DeleteComponent>(BIND_FREE_EVENT_FUNC(ros::deleteComponentTopics));
-    event::subscribe<event::DeleteEntity>(BIND_FREE_EVENT_FUNC(ros::deleteComponentTopics));
+    event::subscribe<event::DeleteEntity>(BIND_FREE_EVENT_FUNC(ros::deleteComponentTopics));   
 }
 
 void shutDown() {
@@ -85,7 +71,7 @@ void createComponentTopics(event::Event& event){
     }else if (createCompEvent.componentId ==  component::getId<component::RigidBody>()){       //Rigid body compoenet topic creation
         ros::node->createRigidTopics(createCompEvent);
     }else if (createCompEvent.componentId ==  component::getId<component::CameraSensor>()){     //CameraS  compoenet topic creation
-        //ros::node->;
+        ros::node->createCameraTopics(createCompEvent);
     }
 
 
@@ -103,8 +89,10 @@ void deleteComponentTopics(event::Event& event){
         ros::node->deleteTransformTopics(deleteCompEvent.entityId);
     }else if(deleteCompEvent.componentId ==  component::getId<component::InfraredSensor>()){    //IR compoenet topic Deletion
         ros::node->deleteIRTopics(deleteCompEvent.entityId);
-    }else if (deleteCompEvent.componentId ==  component::getId<component::RigidBody>()){       //Rigid body compoenet topic creation
+    }else if (deleteCompEvent.componentId ==  component::getId<component::RigidBody>()){       //Rigid body compoenet topic Deletion
         ros::node->deleteRigidTopics(deleteCompEvent.entityId);
+    }else if (deleteCompEvent.componentId ==  component::getId<component::CameraSensor>()){       //CameraSensor compoenet topic Deletion
+        ros::node->deleteCameraTopics(deleteCompEvent.entityId);
     }
     else {
         ros::node->publishData("component Id not recognized, cannot delete topic");

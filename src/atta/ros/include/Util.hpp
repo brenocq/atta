@@ -8,6 +8,7 @@
 #include <atta/component/components/transform.h>
 #include <atta/component/components/infraredSensor.h>
 #include <atta/component/components/rigidBody.h>
+#include <atta/component/components/cameraSensor.h>
 namespace atta::ros {
 inline std::string nameOf(int key){
     if (auto* cName = atta::component::getComponent<atta::component::Name>(key)) {
