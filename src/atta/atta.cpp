@@ -14,7 +14,6 @@
 #include <atta/event/events/simulationStop.h>
 #include <atta/event/events/windowClose.h>
 
-#include <atta/component/interface.h>
 #include <atta/file/interface.h>
 #include <atta/graphics/interface.h>
 #include <atta/memory/interface.h>
@@ -23,7 +22,7 @@
 #include <atta/script/interface.h>
 #include <atta/sensor/interface.h>
 #include <atta/ui/interface.h>
-
+#include <atta/ros/include/interface.hpp>
 #include <atta/cmakeConfig.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/utils/config.h>
@@ -49,7 +48,9 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     physics::startUp();
     sensor::startUp();
     script::startUp();
-
+    ros::startUp();
+    //ros_node = std::make_shared<rosPlugin>();
+    //ros_node->publishData("Started");
     // Atta is the last one to reveice events
     event::subscribe<event::WindowClose>(BIND_EVENT_FUNC(Atta::onWindowClose));
     event::subscribe<event::SimulationStart>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
@@ -57,7 +58,6 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
     event::subscribe<event::SimulationContinue>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationPause>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
     event::subscribe<event::SimulationStop>(BIND_EVENT_FUNC(Atta::onSimulationStateChange));
-
     LOG_SUCCESS("Atta", "Initialized");
 #ifdef ATTA_STATIC_PROJECT
     fs::path projectFile = fs::path(ATTA_STATIC_PROJECT_FILE);
@@ -78,6 +78,8 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
 Atta::~Atta() {
     // TODO ask user if should close or not
     // file::saveProject();
+
+    ros::shutDown();
     file::closeProject();
     sensor::shutDown();
     physics::shutDown();
@@ -113,7 +115,7 @@ void Atta::loop() {
     PROFILE();
     _currStep = std::clock();
     const float timeDiff = float(_currStep - _lastStep) / CLOCKS_PER_SEC;
-
+    //ros_node->publishData("another loop");
     if (Config::getState() == Config::State::RUNNING) {
         if (Config::getDesiredStepSpeed() == 0.0f) {
             // Step as fast as possible
@@ -147,6 +149,7 @@ void Atta::step() {
     physics::update(dt);
     sensor::update(dt);
     script::update(dt);
+    ros::update();
     Config::getInstance()._time += dt;
 }
 

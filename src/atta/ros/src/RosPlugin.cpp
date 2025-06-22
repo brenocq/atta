@@ -1,0 +1,630 @@
+#include "RosPlugin.hpp"
+#include <atta/event/interface.h>
+#include <atta/event/events/simulationPause.h>
+#include <atta/event/events/simulationStart.h>
+#include <atta/event/events/simulationStop.h>
+#include <atta/event/events/simulationStep.h>
+#include <sensor_msgs/msg/image.hpp>
+#include "Util.hpp" // also contains used components header
+
+#include <exception>
+namespace atta::ros {
+rosPlugin::rosPlugin() {
+    // Initialize ROS 2 and create a node and check if ros is not already running
+    if (!rclcpp::ok()) { rclcpp::init(0, nullptr); rosInitializedHere=true; } 
+    //create ros node and tf broadcaster
+    node_ = std::make_shared<rclcpp::Node>("ros_plugin_node");
+    tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(node_);
+    // Camera Sensor setup
+    event::subscribe<event::SimulationStart>(BIND_MEMBER_EVENT_FUNC(rosPlugin::startCameraTimer));
+    event::subscribe<event::SimulationPause>(BIND_MEMBER_EVENT_FUNC(rosPlugin::stopCameraTimer));
+    event::subscribe<event::SimulationStep>(BIND_MEMBER_EVENT_FUNC(rosPlugin::stopCameraTimer));
+    event::subscribe<event::SimulationStop>(BIND_MEMBER_EVENT_FUNC(rosPlugin::stopCameraTimer));
+    camera_group_ = node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive); 
+    camera_timer_ = node_->create_wall_timer(
+    std::chrono::milliseconds(33), // for 30 fps
+    std::bind(&rosPlugin::updateCamera, this),
+    camera_group_
+    );
+    camera_timer_->cancel(); // dont start untill simulation start
+    // creating the startup Publisher and services
+    createPublishers();
+    createServices();
+    // start the threades and executer
+    createThread();
+    LOG_SUCCESS("Ros", "Node Created");
+}
+
+rosPlugin::~rosPlugin() {
+    //clean up
+    if (executor_) {
+        executor_->cancel();
+    }
+    if (executor_thread_.joinable()) {
+        executor_thread_.join();
+    }
+    deleteAllTopics();
+    deleteServices();
+    publisher_.reset();
+    if (tf_broadcaster_) {
+        tf_broadcaster_.reset();
+    }
+    if (executor_) {
+        executor_.reset();
+    }
+    if (node_) {
+        node_.reset();
+    }
+    if (rosInitializedHere && rclcpp::ok()) {
+        rclcpp::shutdown();
+        rosInitializedHere = false;
+    }
+}
+
+
+void rosPlugin::publishData(std::string msg) {
+    auto message = std_msgs::msg::String();
+    message.data = msg;
+    publisher_->publish(message);
+
+    //RCLCPP_INFO(node_->get_logger(),"%s", msg.c_str());
+}
+void rosPlugin::createPublishers(){
+
+    // Create a publisher on topic "atta"
+    publisher_ = node_->create_publisher<std_msgs::msg::String>("atta/INFO", 10);
+    RCLCPP_INFO(node_->get_logger(), "ROS Plugin Node Started!");
+    // Create a clock publisher on topic "atta/clock"
+    rosClock = node_->create_publisher<rosgraph_msgs::msg::Clock>("atta/clock", 10);
+    RCLCPP_INFO(node_->get_logger(), "ROS Plugin Node Started!");
+
+}
+void rosPlugin::createThread(){
+
+    // Create and spin executor in separate thread
+    executor_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>(rclcpp::ExecutorOptions(), 2);
+    executor_->add_node(node_);
+    executor_thread_ = std::thread([this]() {
+        try {
+            executor_->spin();  // Will exit cleanly after cancel()
+        } catch (const std::exception &e) {
+            LOG_ERROR("Ros",std::string("error creating thread executer: ") + std::string(e.what()));
+        }
+    });
+} 
+void rosPlugin::update(){
+    updateTransform();
+    updateIr();
+    updateRigidBody();
+    updateClock();
+}
+void rosPlugin::createServices(){
+    //Simulation Services
+    pausePhysics = node_->create_service<std_srvs::srv::Trigger>(
+                    "atta/Simulation_Control/pause_physics",
+                    std::bind(&rosPlugin::pauseCallback,this,std::placeholders::_1, std::placeholders::_2));
+    unPausePhysics = node_->create_service<std_srvs::srv::Trigger>(
+                    "atta/Simulation_Control/unPause_physics",
+                    std::bind(&rosPlugin::unPauseCallback,this,std::placeholders::_1, std::placeholders::_2));
+    resetSimulation = node_->create_service<std_srvs::srv::Trigger>(
+                    "atta/Simulation_Control/reset_physics",
+                    std::bind(&rosPlugin::resetCallback,this,std::placeholders::_1, std::placeholders::_2));
+    stepSimulation = node_->create_service<std_srvs::srv::Trigger>(
+                    "atta/Simulation_Control/step_Simulation",
+                    std::bind(&rosPlugin::stepCallback,this,std::placeholders::_1, std::placeholders::_2));
+    //___
+}
+void rosPlugin::deleteServices(){
+    // Reset services
+    if (pausePhysics) {
+        pausePhysics.reset();
+    }
+    if (unPausePhysics) {
+        unPausePhysics.reset();
+    }
+    if (resetSimulation) {
+        resetSimulation.reset();
+    }
+    if (stepSimulation) {
+        stepSimulation.reset();
+    }
+}
+// Simulation Control
+void rosPlugin::pauseCallback(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+                            std::shared_ptr<std_srvs::srv::Trigger::Response> response){
+    try{
+    // atta side
+    atta::event::SimulationPause pauseEvent;
+    atta::event::publish(pauseEvent);
+    // ros side
+    response->success = true;
+    response->message = "Simulation paused successfully";
+    }
+    catch (...){
+        response->success = false;
+        response->message = "Failed to pause simulation.";
+    }
+    }
+void rosPlugin::unPauseCallback(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+                            std::shared_ptr<std_srvs::srv::Trigger::Response> response){
+    try{
+    // atta side
+    atta::event::SimulationStart startEvent;
+    atta::event::publish(startEvent);
+    // ros side
+    response->success = true;
+    response->message = "Simulation resumed successfully";
+    }
+    catch (...){
+        response->success = false;
+        response->message = "Failed to resume simulation.";
+    }
+    }
+void rosPlugin::resetCallback(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+                            std::shared_ptr<std_srvs::srv::Trigger::Response> response){
+    try{
+    // atta side
+    atta::event::SimulationStop stopEvent;
+    atta::event::publish(stopEvent);
+    // ros side
+    response->success = true;
+    response->message = "Simulation stopped successfully";
+    }
+    catch (...){
+        response->success = false;
+        response->message = "Failed to stop simulation.";
+    }
+    }     
+void rosPlugin::stepCallback(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+                            std::shared_ptr<std_srvs::srv::Trigger::Response> response){
+    try{
+    // atta side
+    atta::event::SimulationStep stepSim;
+    atta::event::publish(stepSim);
+    // ros side
+    response->success = true;
+    response->message = "Simulation stepped successfully";
+    }
+    catch (...){
+        response->success = false;
+        response->message = "Failed to step simulation.";
+    }
+}
+// Components topics
+void rosPlugin::createTransformTopics(const atta::event::CreateComponent& event){
+    int key = event.entityId;
+    //create topic name
+    std::string eName = shortenTopic(getFullName(key));
+    std::string pub_Topic_name = "atta/"+ eName + "/transform/Get";
+    std::string sub_Topic_name = "atta/"+ eName + "/transform/Set";
+    
+    // make sure if publisher already exists, if not create it
+    try{
+    if (transformPubs.find(key) == transformPubs.end()){
+        auto Tpub = node_->create_publisher<geometry_msgs::msg::Pose>(pub_Topic_name, 10);
+        transformPubs[key] = Tpub;
+    }else {
+        LOG_ERROR("Ros", "Publisher creation failed; Key " + std::to_string(key) + "already exists.");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Publisher: ") + e.what());
+    }
+    // ___
+    // make sure if subscriber already exists, if not create it
+    try{
+    if (transformSubs.find(key) == transformSubs.end()){
+        auto Tsub = node_->create_subscription<geometry_msgs::msg::Pose>(sub_Topic_name, 10,
+                                                                         [this,key](geometry_msgs::msg::Pose::SharedPtr  msg){
+                                                                            this->transformCallback(msg, key);}
+                                                                         );
+        transformSubs[key] = Tsub;
+    }else {
+        LOG_ERROR("Ros", "Subscriber creation failed");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Subscriber: ") + e.what());
+    }
+    // ___
+    LOG_SUCCESS("Ros", std::string("tf2 Transform Topics created for ID:") + std::to_string(key));
+}
+void rosPlugin::updateTransform(){
+    std::vector<geometry_msgs::msg::TransformStamped> tf_links;
+    bool hasSubs = true;
+    for(const auto& [entityId, publisher]: transformPubs){
+        //check that the publisher has subscribers
+       if (publisher->get_subscription_count() == 0){
+            hasSubs = false;
+        }
+        //get transform component from entity
+        auto* transform = atta::component::getComponent<atta::component::Transform>(entityId);
+        if (!transform){
+        LOG_ERROR("ros", std::string( "Failed to get transform component for entityId: ") + std::to_string(entityId));
+        continue;
+        }
+        //cast transform data in ros msg and tf msg format
+        atta::component::Transform data = transform->getWorldTransform(entityId);
+        geometry_msgs::msg::Pose pose;
+        geometry_msgs::msg::TransformStamped tf;
+        
+        tf.header.stamp = node_->get_clock()->now();
+        //TODO get actual parent and child components
+        std::string parentName = "world";
+        if (auto* child = atta::component::getComponent<atta::component::Relationship>(entityId)){
+            atta::component::Entity parent = child->getParent();
+            if (parent != -1)  // valid parent check
+                parentName =  nameOf(parent.getId());
+        }
+        tf.header.frame_id = parentName;
+        tf.child_frame_id = nameOf(entityId);
+
+        pose.position.x = data.position.x;
+        pose.position.y = data.position.y;
+        pose.position.z = data.position.z;
+        tf.transform.translation.x = data.position.x;
+        tf.transform.translation.y = data.position.y;
+        tf.transform.translation.z = data.position.z;
+
+        pose.orientation.w = data.orientation.r;
+        pose.orientation.x = data.orientation.i;
+        pose.orientation.y = data.orientation.j;
+        pose.orientation.z = data.orientation.k;
+        tf.transform.rotation.w = data.orientation.r;
+        tf.transform.rotation.x = data.orientation.i;
+        tf.transform.rotation.y = data.orientation.j;
+        tf.transform.rotation.z = data.orientation.k; 
+        //publish msg
+        try{
+            if(hasSubs){
+                publisher->publish(pose);
+            }
+            tf_links.push_back(tf);
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("ros", std::string("Exception during publish: ") + e.what());
+        } catch (...) {
+            LOG_ERROR("ros", "Unknown error while publishing transform msg");
+        }
+        
+    }//for loop end
+    tf_broadcaster_->sendTransform(tf_links);
+}
+void rosPlugin::deleteAllTopics(){
+    LOG_SUCCESS("Ros", "deleting all topic");
+    for(auto& [entityId, publisher]: transformPubs){
+        if (publisher) {
+            publisher.reset();  // Explicitly release the shared_ptr
+        }
+    }
+    transformPubs.clear();
+    for(auto& [entityId, subscriber]: transformSubs){
+        if (subscriber) {
+            subscriber.reset();  // Explicitly release the shared_ptr
+        }
+       
+    }
+    transformSubs.clear();
+    //IR
+    for(auto& [entityId, publisher]: IRPubs){
+        if (publisher) {
+            publisher.reset();  // Explicitly release the shared_ptr
+        }
+    }
+    IRPubs.clear();
+    //_
+
+}
+void rosPlugin::deleteTransformTopics(int id){
+    if (transformPubs.find(id) != transformPubs.end()){
+            transformPubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete Transform Publisher for id: " + std::to_string(id) + " or id doesnt exist");
+
+    }
+    if (transformSubs.find(id) != transformSubs.end()){
+            transformSubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete Transform Subscriber for id: " + std::to_string(id) + " or id doesnt exist");
+   }
+    LOG_SUCCESS("Ros", "Transform Topics deleted for id: " + std::to_string(id));
+
+}
+void rosPlugin::transformCallback(const geometry_msgs::msg::Pose::SharedPtr msg, int key) const{
+
+    //get transform component from entity
+    auto* transform = atta::component::getComponent<atta::component::Transform>(key);
+    //cast ros msg format to transform data format
+    atta::component::Transform data;
+    data.position.x = msg->position.x;
+    data.position.y = msg->position.y;
+    data.position.z = msg->position.z;
+
+    data.orientation.r = msg->orientation.w;
+    data.orientation.i = msg->orientation.x;
+    data.orientation.j = msg->orientation.y;
+    data.orientation.k = msg->orientation.z;
+    //send data to transform object
+    transform->setWorldTransform(key, data);
+
+}
+// IR Methods
+void rosPlugin::createIRTopics(const atta::event::CreateComponent& event){
+    int key = event.entityId;
+    
+    //create topic name
+    std::string eName = getFullName(key);
+    std::string pub_Topic_name = "atta/"+ shortenTopic(eName) + "/IR/Reading";
+    
+    // make sure if publisher already exists, if not create it
+    try{
+    if (IRPubs.find(key) == IRPubs.end()){
+        auto IrPub = node_->create_publisher<sensor_msgs::msg::Range>(pub_Topic_name, 10);
+        IRPubs[key] = IrPub;
+    }else {
+        LOG_ERROR("Ros", "Publisher creation failed; Key " + std::to_string(key) + "already exists.");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Publisher: ") + e.what());
+    }
+    // ___
+    LOG_SUCCESS("Ros", std::string("Ir Topic created for ID:") + std::to_string(key));
+}
+void rosPlugin::updateIr(){
+    std::vector<sensor_msgs::msg::Range> irMsg;
+    for(const auto& [entityId, publisher]: IRPubs){
+        //check that the publisher has subscribers
+       if (publisher->get_subscription_count() == 0){
+            continue;
+        }
+        //get IR component from entity
+        auto* IR = atta::component::getComponent<atta::component::InfraredSensor>(entityId);
+        if (!IR){
+        LOG_ERROR("ros", std::string( "Failed to get IR component for entityId: ") + std::to_string(entityId));
+        continue;
+        }
+        //cast IR data in ros msg and tf msg format
+        sensor_msgs::msg::Range msg;
+
+        msg.header.stamp = node_->get_clock()->now();
+        msg.header.frame_id = nameOf(entityId);
+        msg.radiation_type = sensor_msgs::msg::Range::INFRARED;
+        // TODO ==> needs to be updated
+        msg.field_of_view = 0.1; 
+        msg.min_range = IR->lowerLimit;
+        msg.max_range = IR->upperLimit;
+        msg.range = IR->measurement;
+
+        //publish msg
+        try{
+            publisher->publish(msg);
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("ros", std::string("Exception during publish: ") + e.what());
+        } catch (...) {
+            LOG_ERROR("ros", "Unknown error while publishing transform msg");
+        }
+        
+    }//for loop end
+}
+void rosPlugin::deleteIRTopics(int id){
+    if (IRPubs.find(id) != IRPubs.end()){
+            IRPubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete IR Publisher for id: " + std::to_string(id) + " or id doesnt exist");
+    }
+    LOG_SUCCESS("Ros", "IR Topics deleted for id: " + std::to_string(id));
+}
+// Clock Method
+void rosPlugin::updateClock(){
+    // if it has no subscribers dont send anything
+    if (rosClock->get_subscription_count() == 0){
+        return;
+    }
+    auto msg = rosgraph_msgs::msg::Clock();
+    msg.clock = node_->now();
+    rosClock->publish(msg);
+}
+// RigidBody Methods
+void rosPlugin::createRigidTopics(const atta::event::CreateComponent& event){
+    int key = event.entityId;
+    //create topic name
+    std::string eName = shortenTopic(getFullName(key));
+    std::string pub_Topic_name = "atta/"+ eName + "/RigidBody/Get";
+    std::string sub_Topic_name = "atta/"+ eName + "/RigidBody/Set";
+    
+    // make sure if publisher already exists, if not create it
+    try{
+    if (RigidBodyPubs.find(key) == RigidBodyPubs.end()){
+        auto Rpub = node_->create_publisher<geometry_msgs::msg::Twist>(pub_Topic_name, 10);
+        RigidBodyPubs[key] = Rpub;
+        LOG_SUCCESS("Ros", "RigidBody Publisher create for entity id: "+ std::to_string(key) );
+    }else {
+        LOG_ERROR("Ros", "Publisher creation failed; Key " + std::to_string(key) + "already exists.");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Publisher: ") + e.what());
+    }
+    // ___
+    // make sure if subscriber already exists, if not create it
+    try{
+    if (RigidBodySubs.find(key) == RigidBodySubs.end()){
+        auto Rsub = node_->create_subscription<geometry_msgs::msg::Twist>(sub_Topic_name, 10,
+                                                                         [this,key](geometry_msgs::msg::Twist::SharedPtr  msg){
+                                                                            this->rigidBodyCallback(msg, key);}
+                                                                         );
+        RigidBodySubs[key] = Rsub;
+        LOG_SUCCESS("Ros", "RigidBody Subscriber create for entity id: "+ std::to_string(key) );
+    }else {
+        LOG_ERROR("Ros", "Subscriber creation failed");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Subscriber: ") + e.what());
+    }
+    // ___
+}
+void rosPlugin::deleteRigidTopics(int id){
+    if (RigidBodyPubs.find(id) != RigidBodyPubs.end()){
+            RigidBodyPubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete RigidBody Publisher for id: " + std::to_string(id) + " or id doesnt exist");
+
+    }
+    if (RigidBodySubs.find(id) != RigidBodySubs.end()){
+            RigidBodySubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete RigidBody Subscriber for id: " + std::to_string(id) + " or id doesnt exist");
+   }
+    LOG_SUCCESS("Ros", "RigidBody Topics deleted for id: " + std::to_string(id));
+
+}
+void rosPlugin::updateRigidBody(){
+
+    for(const auto& [entityId, publisher]: RigidBodyPubs){
+        //check that the publisher has subscribers if he has non then skip him
+       if (publisher->get_subscription_count() == 0){
+            continue;
+        }
+        //get transform component from entity
+        auto* RB = atta::component::getComponent<atta::component::RigidBody>(entityId);
+        if (!RB){
+        LOG_ERROR("ros", std::string( "Failed to get RigidBody component for entityId: ") + std::to_string(entityId));
+        continue;
+        }
+        //cast transform data in ros msg and tf msg format
+        geometry_msgs::msg::Twist msg;
+
+        msg.linear.x = RB->linearVelocity[0];
+        msg.linear.y = RB->linearVelocity[1];
+        msg.linear.z = RB->linearVelocity[2];
+        msg.angular.x = RB->angularVelocity[0];
+        msg.angular.y = RB->angularVelocity[1];
+        msg.angular.z = RB->angularVelocity[2];
+
+        //publish msg
+        try{
+
+            publisher->publish(msg);
+
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("ros", std::string("Exception during publish: ") + e.what());
+        } catch (...) {
+            LOG_ERROR("ros", "Unknown error while publishing transform msg");
+        }
+        
+    }//for loop end
+}
+void rosPlugin::rigidBodyCallback(const geometry_msgs::msg::Twist::SharedPtr msg, int key) const {
+    //get transform component from entity
+    auto* rigidBody = atta::component::getComponent<atta::component::RigidBody>(key);
+    //cast ros msg format to transform data format
+    rigidBody->linearVelocity[0] = msg->linear.x;
+    rigidBody->linearVelocity[1] = msg->linear.y;
+    rigidBody->linearVelocity[2] = msg->linear.z;
+
+    rigidBody->angularVelocity[0] = msg->angular.x;
+    rigidBody->angularVelocity[1] = msg->angular.y;
+    rigidBody->angularVelocity[2] = msg->angular.z;
+    
+}
+// Camera sensor methods
+void rosPlugin::createCameraTopics(const atta::event::CreateComponent& event){
+    int key = event.entityId;
+    //create topic name
+    std::string eName = shortenTopic(getFullName(key));
+    std::string pub_Topic_name = "atta/"+ eName + "/CameraSensor/image";
+
+    // make sure if publisher already exists, if not create it
+    try{
+    if (CameraPubs.find(key) == CameraPubs.end()){
+        auto Cpub = node_->create_publisher<sensor_msgs::msg::Image>(pub_Topic_name, 10);
+        CameraPubs[key] = Cpub;
+        LOG_SUCCESS("Ros", "Camera sensor Publisher create for entity id: "+ std::to_string(key) );
+    }else {
+        LOG_ERROR("Ros", "Publisher creation failed; Key " + std::to_string(key) + "already exists.");
+    }}catch(const std::exception& e){
+        LOG_ERROR("Ros",std::string("error creating Publisher: ") +  e.what());
+    }
+    // ___
+}
+void rosPlugin::deleteCameraTopics(int id){
+    if (CameraPubs.find(id) != CameraPubs.end()){
+            CameraPubs.erase(id);
+    }else{
+        LOG_ERROR("Ros", "Failed to delete Camera sensor Publisher for id: " + std::to_string(id) + " or id doesnt exist");
+    }
+    LOG_SUCCESS("Ros", "Camera sensor Publisher deleted for id: " + std::to_string(id));
+}
+void rosPlugin::updateCamera(){
+
+    for(const auto& [entityId, publisher]: CameraPubs){
+        //check that the publisher has subscribers
+       if (publisher->get_subscription_count() == 0){
+            continue;
+        }
+        //get IR component from entity
+        auto* cam = atta::component::getComponent<atta::component::CameraSensor>(entityId);
+        if (!cam){
+        LOG_ERROR("ros", std::string( "Failed to get Cam component for entityId: ") + std::to_string(entityId));
+        continue;
+        }
+        //cast IR data in ros msg and tf msg format
+        sensor_msgs::msg::Image image_msg;
+        //get image data
+        const uint8_t* image_data = cam->getImage();
+        if (image_data == nullptr) {
+            LOG_WARN("ros", std::string("No image data available for entityId: ") + std::to_string(entityId));
+            continue;
+        }
+        image_msg.header.stamp = node_->get_clock()->now();
+        image_msg.header.frame_id = "camera_" + std::to_string(entityId);
+        image_msg.height = cam->height;
+        image_msg.width = cam->width;
+        image_msg.encoding = "rgb8"; 
+        image_msg.is_bigendian = false; 
+        image_msg.step = cam->width * 3;
+        size_t data_size = static_cast<size_t>(cam->width) * cam->height * 3;
+        image_msg.data.assign(image_data, image_data + data_size);
+        //publish msg
+        try{
+            publisher->publish(image_msg);
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("ros", std::string("Exception during publish: ") + e.what());
+        } catch (...) {
+            LOG_ERROR("ros", "Unknown error while publishing transform msg");
+        }
+        
+    }//for loop end
+}
+void rosPlugin::setCameraRate(double fps) {
+    // Stop the old timer
+    if (camera_timer_) {
+        camera_timer_->cancel();
+    }
+
+    auto interval = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::duration<double>(1.0 / fps)
+    );
+
+    camera_timer_ = node_->create_wall_timer(
+        interval,
+        std::bind(&rosPlugin::updateCamera, this),
+        camera_group_
+    );
+
+    LOG_INFO("Ros", "Camera timer updated to " + std::to_string(fps) + " FPS");
+}    
+void rosPlugin::startCameraTimer(){
+    if (camera_timer_) {
+        camera_timer_->reset();  // starts or resumes the timer
+        LOG_INFO("Ros", "Simulation started: camera timer resumed");
+    }
+}
+/*void pauseCameraTimer(){
+    if (camera_timer_) {
+        camera_timer_->cancel();  // pauses the timer
+        LOG_INFO("Ros", "Simulation paused: camera timer paused");
+    }
+}*/
+void rosPlugin::stopCameraTimer(){
+    if (camera_timer_) {
+        camera_timer_->cancel();  // also stop timer on simulation stop
+        LOG_INFO("Ros", "Simulation stopped: camera timer stopped");
+    }
+}
+}
