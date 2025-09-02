@@ -21,12 +21,6 @@ jobs:
       - name: Checkout atta
         uses: actions/checkout@v5
 
-      - name: Install dependencies on macos
-        if: startsWith(matrix.config.os, 'macos')
-        run: |
-          brew install cmake
-          cmake --version
-
       - name: Configure
         run: |
           mkdir build
