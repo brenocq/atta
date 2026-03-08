@@ -506,13 +506,10 @@ void Manager::initVulkan() {
     info.Allocator = nullptr;
     info.MinImageCount = 3;
     info.ImageCount = 3;
+    info.PipelineInfoMain.RenderPass = vulkanAPI->getRenderPass()->getHandle();
+    info.PipelineInfoMain.Subpass = 0;
     info.CheckVkResultFn = nullptr;
-    info.RenderPass = vulkanAPI->getRenderPass()->getHandle();
     ImGui_ImplVulkan_Init(&info);
-
-    // Upload Fonts
-    if (!ImGui_ImplVulkan_CreateFontsTexture())
-        LOG_WARN("ui::Manager", "Failed to created ImGui font texture");
 #endif
 }
 
