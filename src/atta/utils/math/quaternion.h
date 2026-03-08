@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UTILS_MATH_QUATERNION_H
-#define ATTA_UTILS_MATH_QUATERNION_H
+#pragma once
 
 #include <atta/utils/math/vector.h>
 
@@ -77,4 +76,3 @@ inline quat inverse(quat q) { return q.inverted(); }
 // <<
 inline std::ostream& operator<<(std::ostream& os, const quat& q) { return os << q.toString(); }
 } // namespace atta
-#endif // ATTA_UTILS_MATH_QUATERNION_H

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_COMPONENT_FACTORY_H
-#define ATTA_COMPONENT_FACTORY_H
+#pragma once
 
 #include <atta/component/entity.h>
 
@@ -34,5 +33,3 @@ class Factory {
     uint64_t _numEntitiesInitialized; ///< Auxiliary variable to keep track of component creation
 };
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_ENTITY_H

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_IO_SERIAL_LINUX_SERIAL_H
-#define ATTA_IO_SERIAL_LINUX_SERIAL_H
+#pragma once
 
 #ifdef ATTA_OS_LINUX
 #include <asm/termbits.h>
@@ -29,4 +28,3 @@ class LinuxSerial final : public Serial {
 
 } // namespace atta::io
 #endif // ATTA_OS_LINUX
-#endif // ATTA_IO_SERIAL_LINUX_SERIAL_H

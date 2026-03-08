@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_FILE_PROJECT_PROJECT_SERIALIZER_H
-#define ATTA_FILE_PROJECT_PROJECT_SERIALIZER_H
+#pragma once
 #include <atta/file/project/project.h>
 #include <atta/file/serializer/serializer.h>
 
@@ -38,5 +37,3 @@ class ProjectSerializer final {
 };
 
 } // namespace atta::file
-
-#endif // ATTA_FILE_PROJECT_PROJECT_SERIALIZER_H

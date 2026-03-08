@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_SENSOR_INTERFACE_H
-#define ATTA_SENSOR_INTERFACE_H
+#pragma once
 
 #include <atta/component/base.h>
 #include <atta/component/components/cameraSensor.h>
@@ -50,5 +49,3 @@ bool getShowInfrareds();
 void setShowInfrareds(bool showInfrareds);
 
 } // namespace atta::sensor
-
-#endif // ATTA_SENSOR_INTERFACE_H

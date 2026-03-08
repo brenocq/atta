@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_COMPONENT_ENTITY_H
-#define ATTA_COMPONENT_ENTITY_H
+#pragma once
 
 #include <atta/component/base.h>
 
@@ -43,5 +42,3 @@ class Entity {
 };
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_ENTITY_H

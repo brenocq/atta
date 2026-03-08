@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_SCRIPT_COMPILERS_LINUX_COMPILER_H
-#define ATTA_SCRIPT_COMPILERS_LINUX_COMPILER_H
+#pragma once
 #ifdef ATTA_OS_LINUX
 
 #include <atta/script/compilers/compiler.h>
@@ -27,4 +26,3 @@ class LinuxCompiler : public Compiler {
 } // namespace atta::script
 
 #endif // ATTA_OS_LINUX
-#endif // ATTA_SCRIPT_COMPILERS_LINUX_COMPILER_H

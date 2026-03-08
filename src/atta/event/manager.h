@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_EVENT_EVENT_MANAGER_H
-#define ATTA_EVENT_EVENT_MANAGER_H
+#pragma once
 
 namespace atta::event {
 
@@ -31,5 +30,3 @@ class Manager final {
 };
 
 } // namespace atta::event
-
-#endif // ATTA_EVENT_EVENT_MANAGER_H

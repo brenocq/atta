@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H
-#define ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H
+#pragma once
 
 #include <atta/component/interface.h>
 #include <atta/file/serializer/serializer.h>
@@ -65,5 +64,3 @@ template <>
 ComponentDescription& TypedComponentRegistry<Relationship>::getDescription();
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H

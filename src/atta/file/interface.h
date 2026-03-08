@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_FILE_INTERFACE_H
-#define ATTA_FILE_INTERFACE_H
+#pragma once
 
 #include <atta/component/interface.h>
 #include <atta/file/project/project.h>
@@ -46,5 +45,3 @@ void update();
 } // namespace atta::file
 
 #include <atta/file/interface.inl>
-
-#endif // ATTA_FILE_INTERFACE_H

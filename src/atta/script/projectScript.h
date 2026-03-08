@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_SCRIPT_PROJECT_SCRIPT_H
-#define ATTA_SCRIPT_PROJECT_SCRIPT_H
+#pragma once
 
 namespace atta::script {
 
@@ -54,5 +53,3 @@ class ProjectScriptRegistration {
     }                                                                                                                                                \
     }
 #endif
-
-#endif // ATTA_SCRIPT_PROJECT_SCRIPT_H

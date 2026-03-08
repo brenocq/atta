@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_GRAPHICS_MANAGER_H
-#define ATTA_GRAPHICS_GRAPHICS_MANAGER_H
+#pragma once
 
 #include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/framebuffer.h>
@@ -98,5 +97,3 @@ class Manager final {
 } // namespace atta::graphics
 
 #include <atta/graphics/manager.inl>
-
-#endif // ATTA_GRAPHICS_GRAPHICS_MANAGER_H

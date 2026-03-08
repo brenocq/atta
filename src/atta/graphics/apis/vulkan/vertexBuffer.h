@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_VERTEX_BUFFER_H
-#define ATTA_GRAPHICS_APIS_VULKAN_VERTEX_BUFFER_H
+#pragma once
 
 #include <atta/graphics/apis/vulkan/buffer.h>
 #include <atta/graphics/vertexBuffer.h>
@@ -26,5 +25,3 @@ class VertexBuffer final : public Buffer, public gfx::VertexBuffer {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_VERTEX_BUFFER_H

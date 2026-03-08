@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_PHYSICS_PHYSICS_ENGINES_BOX2D_ENGINE_H
-#define ATTA_PHYSICS_PHYSICS_ENGINES_BOX2D_ENGINE_H
+#pragma once
 
 #include "box2d/box2d.h"
 #include <atta/component/components/prismaticJoint.h>
@@ -57,5 +56,3 @@ class Box2DEngine : public Engine {
 };
 
 } // namespace atta::physics
-
-#endif // ATTA_PHYSICS_PHYSICS_ENGINES_BOX2D_ENGINE_H

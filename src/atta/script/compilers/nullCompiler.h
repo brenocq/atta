@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_SCRIPT_COMPILERS_NULL_COMPILER_H
-#define ATTA_SCRIPT_COMPILERS_NULL_COMPILER_H
+#pragma once
 
 #include <atta/script/compilers/compiler.h>
 
@@ -16,5 +15,3 @@ class NullCompiler : public Compiler {
 };
 
 } // namespace atta::script
-
-#endif // ATTA_SCRIPT_COMPILERS_NULL_COMPILER_H

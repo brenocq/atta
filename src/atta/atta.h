@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_ATTA_H
-#define ATTA_ATTA_H
+#pragma once
 #include <atta/event/event.h>
 #include <atta/memory/allocators/stackAllocator.h>
 #include <ctime>
@@ -35,5 +34,3 @@ class Atta {
     clock_t _currStep;
 };
 } // namespace atta
-
-#endif // ATTA_ATTA_H

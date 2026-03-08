@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UI_WIDGETS_GUIZMO_H
-#define ATTA_UI_WIDGETS_GUIZMO_H
+#pragma once
 
 #include <atta/component/interface.h>
 #include <atta/ui/windows/viewport/viewport.h>
@@ -39,5 +38,3 @@ class Gizmo {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_WIDGETS_GUIZMO_H

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UTILS_MATH_BOUNDS_H
-#define ATTA_UTILS_MATH_BOUNDS_H
+#pragma once
 
 #include <atta/utils/math/ray.h>
 #include <atta/utils/math/vector.h>
@@ -142,5 +141,3 @@ using bnd2f = bounds2<float>;
 using bnd2d = bounds2<double>;
 using bnd2i = bounds2<int>;
 } // namespace atta
-
-#endif // ATTA_UTILS_MATH_BOUNDS_H

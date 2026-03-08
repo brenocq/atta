@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_BUFFER_LAYOUT_H
-#define ATTA_GRAPHICS_BUFFER_LAYOUT_H
+#pragma once
 
 namespace atta::graphics {
 
@@ -86,5 +85,3 @@ class BufferLayout final {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_BUFFER_LAYOUT_H

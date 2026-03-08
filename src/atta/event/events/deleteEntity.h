@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_EVENT_EVENTS_DELETE_ENTITY_H
-#define ATTA_EVENT_EVENTS_DELETE_ENTITY_H
+#pragma once
 #include <atta/component/interface.h>
 #include <atta/event/event.h>
 
@@ -13,4 +12,3 @@ class DeleteEntity : public EventTyped<SID("DeleteEntity")> {
 };
 
 } // namespace atta::event
-#endif // ATTA_EVENT_EVENTS_DELETE_ENTITY_H

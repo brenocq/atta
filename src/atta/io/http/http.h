@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_IO_HTTP_HTTP_H
-#define ATTA_IO_HTTP_HTTP_H
+#pragma once
 
 #include <atta/utils/stringId.h>
 
@@ -39,5 +38,3 @@ class Http {
 };
 
 } // namespace atta::io
-
-#endif // ATTA_IO_HTTP_HTTP_H

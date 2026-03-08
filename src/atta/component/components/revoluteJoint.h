@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
-#ifndef ATTA_COMPONENT_COMPONENTS_REVOLUTE_JOINT_H
-#define ATTA_COMPONENT_COMPONENTS_REVOLUTE_JOINT_H
 #include <atta/component/base.h>
 #include <atta/component/interface.h>
 
@@ -34,5 +33,3 @@ template <>
 ComponentDescription& TypedComponentRegistry<RevoluteJoint>::getDescription();
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_COMPONENTS_REVOLUTE_JOINT_COMPONENT_BASE_H

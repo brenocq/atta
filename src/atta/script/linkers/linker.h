@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_SCRIPT_LINKERS_LINKER_H
-#define ATTA_SCRIPT_LINKERS_LINKER_H
+#pragma once
 
 #include <atta/script/projectScript.h>
 #include <atta/script/script.h>
@@ -19,5 +18,3 @@ class Linker {
 };
 
 } // namespace atta::script
-
-#endif // ATTA_SCRIPT_LINKERS_LINKER_H

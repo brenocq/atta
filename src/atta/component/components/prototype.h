@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_COMPONENT_COMPONENTS_PROTOTYPE_H
-#define ATTA_COMPONENT_COMPONENTS_PROTOTYPE_H
+#pragma once
 
 #include <atta/component/interface.h>
 
@@ -23,5 +22,3 @@ template <>
 ComponentDescription& TypedComponentRegistry<Prototype>::getDescription();
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_COMPONENTS_PROTOTYPE_H

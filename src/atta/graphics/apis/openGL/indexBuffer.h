@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_INDEX_BUFFER_H
-#define ATTA_GRAPHICS_APIS_OPENGL_INDEX_BUFFER_H
+#pragma once
 
 #include <atta/graphics/apis/openGL/base.h>
 #include <atta/graphics/indexBuffer.h>
@@ -22,5 +21,3 @@ class IndexBuffer final : public gfx::IndexBuffer {
 };
 
 } // namespace atta::graphics::gl
-
-#endif // ATTA_GRAPHICS_APIS_OPENGL_INDEX_BUFFER_H

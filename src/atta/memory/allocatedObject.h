@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_MEMORY_ALLOCATED_OBJECT_H
-#define ATTA_MEMORY_ALLOCATED_OBJECT_H
+#pragma once
 #include <atta/utils/stringId.h>
 
 namespace atta::memory {
@@ -52,4 +51,3 @@ class AllocatedObject {
 } // namespace atta::memory
 
 #include <atta/memory/allocatedObject.inl>
-#endif // ATTA_MEMORY_ALLOCATED_OBJECT_H

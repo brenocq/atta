@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_IO_CAMERA_LINUX_CAMERA_H
-#define ATTA_IO_CAMERA_LINUX_CAMERA_H
+#pragma once
 
 #ifdef ATTA_OS_LINUX
 #include <atta/io/camera/camera.h>
@@ -44,4 +43,3 @@ class LinuxCamera : public Camera {
 } // namespace atta::io
 
 #endif // ATTA_OS_LINUX
-#endif // ATTA_IO_CAMERA_LINUX_CAMERA_H

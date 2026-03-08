@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H
-#define ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H
+#pragma once
 
 #include <atta/event/event.h>
 #include <atta/graphics/apis/graphicsAPI.h>
@@ -89,5 +88,3 @@ class VulkanAPI final : public GraphicsAPI {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_VULKAN_API_H

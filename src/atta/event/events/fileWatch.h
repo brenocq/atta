@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_EVENT_EVENTS_FILE_WATCH_H
-#define ATTA_EVENT_EVENTS_FILE_WATCH_H
+#pragma once
 #include <atta/event/event.h>
 
 namespace atta::event {
@@ -34,4 +33,3 @@ inline std::stringstream& operator<<(std::stringstream& ss, const FileWatch& e) 
 }
 
 } // namespace atta::event
-#endif // ATTA_EVENT_EVENTS_FILE_WATCH_H

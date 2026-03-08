@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_SCRIPT_COMPILERS_COMPILER_H
-#define ATTA_SCRIPT_COMPILERS_COMPILER_H
+#pragma once
 
 #include <atta/utils/stringId.h>
 
@@ -25,5 +24,3 @@ class Compiler {
 };
 
 } // namespace atta::script
-
-#endif // ATTA_SCRIPT_COMPILERS_COMPILER_H

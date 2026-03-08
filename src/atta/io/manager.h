@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_IO_MANAGER_H
-#define ATTA_IO_MANAGER_H
+#pragma once
 
 #include <atta/io/bluetooth/bluetooth.h>
 #include <atta/io/camera/camera.h>
@@ -30,4 +29,3 @@ class Manager final {
 } // namespace atta::io
 
 #include <atta/io/manager.inl>
-#endif // ATTA_IO_MANAGER_H

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_RENDERERS_FAST_RENDERER_H
-#define ATTA_GRAPHICS_RENDERERS_FAST_RENDERER_H
+#pragma once
 
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderPass.h>
@@ -34,5 +33,3 @@ class FastRenderer final : public Renderer {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_RENDERERS_FAST_RENDERER_H

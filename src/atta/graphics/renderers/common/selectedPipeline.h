@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H
-#define ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H
+#pragma once
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/pipeline.h>
 
@@ -18,5 +17,3 @@ class SelectedPipeline final {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H

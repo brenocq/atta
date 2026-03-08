@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_RESOURCE_RESOURCE_H
-#define ATTA_RESOURCE_RESOURCE_H
+#pragma once
 
 #include <atta/utils/stringId.h>
 
@@ -22,5 +21,3 @@ class Resource {
 };
 
 } // namespace atta::resource
-
-#endif // ATTA_RESOURCE_RESOURCE_H

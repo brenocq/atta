@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_BASE_H
-#define ATTA_GRAPHICS_APIS_OPENGL_BASE_H
+#pragma once
 
 #ifdef ATTA_OS_WEB
 #include <glad/gles2.h>
@@ -14,5 +13,3 @@ namespace atta::graphics::gl {
 using OpenGLId = uint32_t;
 
 }
-
-#endif // ATTA_GRAPHICS_APIS_OPENGL_BASE_H

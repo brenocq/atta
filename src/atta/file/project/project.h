@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_FILE_PROJECT_PROJECT_H
-#define ATTA_FILE_PROJECT_PROJECT_H
+#pragma once
 
 namespace atta::file {
 
@@ -33,5 +32,3 @@ class Project final {
 };
 
 } // namespace atta::file
-
-#endif // ATTA_FILE_PROJECT_PROJECT_H

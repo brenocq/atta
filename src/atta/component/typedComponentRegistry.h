@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_COMPONENT_TYPED_COMPONENT_REGISTRY_H
-#define ATTA_COMPONENT_TYPED_COMPONENT_REGISTRY_H
+#pragma once
 
 #include <atta/component/base.h>
 #include <atta/component/componentRegistry.h>
@@ -55,5 +54,3 @@ class ComponentRegistration {
 } // namespace atta::component
 
 #include <atta/component/typedComponentRegistry.inl>
-
-#endif // ATTA_COMPONENT_TYPED_COMPONENT_REGISTRY_H

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_COMMON_H
-#define ATTA_GRAPHICS_APIS_VULKAN_COMMON_H
+#pragma once
 
 #include <volk.h>
 
@@ -20,5 +19,3 @@ std::shared_ptr<vk::CommandBuffers> getCommandBuffers();
 std::shared_ptr<vk::CommandPool> getCommandPool();
 
 } // namespace atta::graphics::vk::common
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_COMMON_H

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UI_EDITOR_H
-#define ATTA_UI_EDITOR_H
+#pragma once
 
 #include <atta/memory/allocatedObject.h>
 #include <atta/ui/drawers/physicsDrawer.h>
@@ -51,5 +50,3 @@ class Editor final {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_EDITOR_H

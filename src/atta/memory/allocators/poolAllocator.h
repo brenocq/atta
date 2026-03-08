@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_MEMORY_ALLOCATORS_POOL_ALLOCATOR_H
-#define ATTA_MEMORY_ALLOCATORS_POOL_ALLOCATOR_H
+#pragma once
 #include <atta/memory/allocator.h>
 
 namespace atta::memory {
@@ -38,5 +37,3 @@ class PoolAllocator : public Allocator {
 };
 
 } // namespace atta::memory
-
-#endif // ATTA_MEMORY_ALLOCATORS_POOL_ALLOCATOR_H

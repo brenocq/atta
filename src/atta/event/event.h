@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_EVENT_EVENT_H
-#define ATTA_EVENT_EVENT_H
+#pragma once
 #include <atta/utils/stringId.h>
 
 namespace atta::event {
@@ -34,5 +33,3 @@ class EventTyped : public Event {
 };
 
 } // namespace atta::event
-
-#endif // ATTA_EVENT_EVENT_H

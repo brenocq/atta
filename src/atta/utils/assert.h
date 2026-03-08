@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UTILS_ASSERT_H
-#define ATTA_UTILS_ASSERT_H
+#pragma once
 #include <assert.h>
 
 namespace atta {
@@ -15,8 +14,8 @@ namespace atta {
         }                                                                                                                                            \
     }
 
-//LOG_ERROR("Assert", "Test Assert 1 arg $0", x); \
-// Assert with error message
+// LOG_ERROR("Assert", "Test Assert 1 arg $0", x); \
+//  Assert with error message
 #define ASSERT_W_ARGS(x, ...)                                                                                                                        \
     {                                                                                                                                                \
         if (!(x)) {                                                                                                                                  \
@@ -26,8 +25,8 @@ namespace atta {
         }                                                                                                                                            \
     }
 
-//LOG_ERROR("Assert", "Test Assert w args $0", x); \
-// Check number of arguments and select which assert to call (up to 9 arguments)
+// LOG_ERROR("Assert", "Test Assert w args $0", x); \
+//  Check number of arguments and select which assert to call (up to 9 arguments)
 #define ASSERT_SELECT(_1, _2, _3, _4, _5, _6, _7, _8, _9, NAME, ...) NAME
 #define ASSERT(...)                                                                                                                                  \
     ASSERT_SELECT(__VA_ARGS__, ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS, ASSERT_W_ARGS,              \
@@ -42,4 +41,3 @@ namespace atta {
 #endif
 
 } // namespace atta
-#endif // ATTA_UTILS_ASSERT_H

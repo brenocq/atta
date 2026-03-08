@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_PRE_COMPILED_HEADER_H
-#define ATTA_PRE_COMPILED_HEADER_H
+#pragma once
 
 #define _USE_MATH_DEFINES // Windows M_PI fix
 #include <algorithm>
@@ -35,5 +34,3 @@ namespace fs = std::filesystem;
 #include <atta/utils/math/math.h>
 #include <atta/utils/namespaces.h>
 #include <atta/utils/profiler.h>
-
-#endif // ATTA_PRE_COMPILED_HEADER_H

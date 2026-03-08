@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_RESOURCE_RESOURCES_MATERIAL_H
-#define ATTA_RESOURCE_RESOURCES_MATERIAL_H
+#pragma once
 
 #include <atta/memory/allocatedObject.h>
 #include <atta/resource/resource.h>
@@ -78,5 +77,3 @@ class Material : public Resource, public memory::AllocatedObject<Material, SID("
 };
 
 } // namespace atta::resource
-
-#endif // ATTA_RESOURCE_RESOURCES_MATERIAL_H

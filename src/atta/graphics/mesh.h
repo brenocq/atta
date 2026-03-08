@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_MESH_H
-#define ATTA_GRAPHICS_MESH_H
+#pragma once
 
 #include <atta/graphics/indexBuffer.h>
 #include <atta/graphics/vertexBuffer.h>
@@ -32,5 +31,3 @@ class Mesh {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_MESH_H

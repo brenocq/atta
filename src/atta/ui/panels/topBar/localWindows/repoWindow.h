@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
-#define ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H
+#pragma once
 
 #include <atta/component/interface.h>
 
@@ -42,5 +41,3 @@ class RepoWindow {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_REPO_WINDOW_H

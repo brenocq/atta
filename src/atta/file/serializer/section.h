@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_FILE_SERIALIZER_SECTION_H
-#define ATTA_FILE_SERIALIZER_SECTION_H
+#pragma once
 
 namespace atta::file {
 
@@ -74,5 +73,3 @@ class Section {
 } // namespace atta::file
 
 #include <atta/file/serializer/section.inl>
-
-#endif // ATTA_FILE_SERIALIZER_SECTION_H

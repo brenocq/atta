@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_COMPONENT_COMPONENTS_H
-#define ATTA_COMPONENT_COMPONENTS_H
+#pragma once
 
 namespace atta::component {
 
@@ -12,5 +11,3 @@ struct Component {
 };
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_COMPONENTS_H

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_FILE_WATCHER_FILE_WATCHER_H
-#define ATTA_FILE_WATCHER_FILE_WATCHER_H
+#pragma once
 
 namespace atta::file {
 
@@ -19,5 +18,3 @@ class FileWatcher {
 };
 
 } // namespace atta::file
-
-#endif // ATTA_FILE_WATCHER_FILE_WATCHER_H

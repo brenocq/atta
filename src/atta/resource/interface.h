@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_RESOURCE_INTERFACE_H
-#define ATTA_RESOURCE_INTERFACE_H
+#pragma once
 
 #include <atta/utils/stringId.h>
 
@@ -50,5 +49,3 @@ std::vector<StringId> getResources() {
 }
 
 } // namespace atta::resource
-
-#endif // ATTA_RESOURCE_INTERFACE_H

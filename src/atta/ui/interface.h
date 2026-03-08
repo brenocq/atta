@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UI_INTERFACE_H
-#define ATTA_UI_INTERFACE_H
+#pragma once
 
 #include <atta/component/interface.h>
 #include <atta/ui/windows/viewport/viewport.h>
@@ -33,5 +32,3 @@ unsigned getViewportDockId();
 } // namespace atta::ui
 
 #include <atta/ui/interface.inl>
-
-#endif // ATTA_UI_INTERFACE_H

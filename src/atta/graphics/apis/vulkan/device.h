@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_DEVICE_H
-#define ATTA_GRAPHICS_APIS_VULKAN_DEVICE_H
+#pragma once
 
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/physicalDevice.h>
@@ -38,5 +37,3 @@ class Device {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_DEVICE_H

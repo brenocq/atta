@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_RENDER_PASS_H
-#define ATTA_GRAPHICS_APIS_VULKAN_RENDER_PASS_H
+#pragma once
 
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/device.h>
@@ -31,5 +30,3 @@ class RenderPass final : public gfx::RenderPass {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_RENDER_PASS_H

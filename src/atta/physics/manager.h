@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_PHYSICS_MANAGER_H
-#define ATTA_PHYSICS_MANAGER_H
+#pragma once
 
 #include <atta/event/event.h>
 #include <atta/physics/engines/box2DEngine.h>
@@ -62,5 +61,3 @@ class Manager final {
 };
 
 } // namespace atta::physics
-
-#endif // ATTA_PHYSICS_MANAGER_H

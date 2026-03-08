@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_CAMERAS_PERSPECTIVE_CAMERA_H
-#define ATTA_GRAPHICS_CAMERAS_PERSPECTIVE_CAMERA_H
+#pragma once
 #include <atta/graphics/cameras/camera.h>
 
 namespace atta::graphics {
@@ -32,5 +31,3 @@ class PerspectiveCamera : public Camera {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_CAMERAS_PERSPECTIVE_CAMERA_H

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_RESOURCE_RESOURCE_MANAGER_H
-#define ATTA_RESOURCE_RESOURCE_MANAGER_H
+#pragma once
 
 #include <atta/event/interface.h>
 #include <atta/memory/allocators/bitmapAllocator.h>
@@ -61,5 +60,3 @@ class Manager final {
 } // namespace atta::resource
 
 #include <atta/resource/manager.inl>
-
-#endif // ATTA_RESOURCE_RESOURCE_MANAGER_H

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_IO_SERIAL_SERIAL_H
-#define ATTA_IO_SERIAL_SERIAL_H
+#pragma once
 
 #include <atta/utils/stringId.h>
 
@@ -48,5 +47,3 @@ class Serial {
 };
 
 } // namespace atta::io
-
-#endif // ATTA_IO_SERIAL_SERIAL_H

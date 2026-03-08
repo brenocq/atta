@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_H
-#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_H
+#pragma once
 
 #include <atta/graphics/apis/openGL/base.h>
 #include <atta/graphics/apis/openGL/framebuffer.h>
@@ -14,5 +13,3 @@
 #include <atta/graphics/apis/openGL/renderQueue.h>
 #include <atta/graphics/apis/openGL/shader.h>
 #include <atta/graphics/apis/openGL/vertexBuffer.h>
-
-#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_H

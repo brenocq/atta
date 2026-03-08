@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_EVENT_EVENTS_UI_CAMERA_COMPONENT_H
-#define ATTA_EVENT_EVENTS_UI_CAMERA_COMPONENT_H
+#pragma once
 #include <atta/event/event.h>
+#include <atta/component/components/cameraSensor.h>
 
 namespace atta::event {
 
@@ -17,5 +17,3 @@ class UiCameraComponent : public EventTyped<SID("UiCameraComponent")> {
 };
 
 } // namespace atta::event
-
-#endif // ATTA_EVENT_EVENTS_UI_CAMERA_COMPONENT_H

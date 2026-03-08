@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UTILS_NAMESPACES_H
-#define ATTA_UTILS_NAMESPACES_H
+#pragma once
 
 namespace atta::component {}
 namespace atta::event {}
@@ -24,5 +23,3 @@ namespace res = ::atta::resource;
 namespace scr = ::atta::script;
 namespace sen = ::atta::sensor;
 namespace ui = ::atta::ui;
-
-#endif // ATTA_UTILS_NAMESPACES_H

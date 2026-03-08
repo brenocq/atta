@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_INTERFACE_H
-#define ATTA_GRAPHICS_INTERFACE_H
+#pragma once
 
 #include <atta/component/base.h>
 #include <atta/graphics/apis/graphicsAPI.h>
@@ -56,5 +55,3 @@ std::shared_ptr<T> create(Args... args) {
 }
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_INTERFACE_H

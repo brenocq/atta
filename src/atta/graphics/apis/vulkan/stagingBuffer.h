@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_STAGING_BUFFER_H
-#define ATTA_GRAPHICS_APIS_VULKAN_STAGING_BUFFER_H
+#pragma once
 
 #include <atta/graphics/apis/vulkan/buffer.h>
 
@@ -14,5 +13,3 @@ class StagingBuffer final : public Buffer {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_STAGING_BUFFER_H

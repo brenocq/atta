@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UI_MANAGER_H
-#define ATTA_UI_MANAGER_H
+#pragma once
 
 #include <atta/graphics/interface.h>
 #include <atta/ui/editor.h>
@@ -55,5 +54,3 @@ class Manager final {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_MANAGER_H

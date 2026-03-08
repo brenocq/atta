@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UTILS_STRING_UTILS_H
-#define ATTA_UTILS_STRING_UTILS_H
+#pragma once
 
 namespace atta {
 
@@ -21,5 +20,3 @@ std::string toSnakeCase(const std::string& input);
 std::string toTitleCase(const std::string& input);
 
 } // namespace atta
-
-#endif // ATTA_UTILS_STRING_UTILS_H

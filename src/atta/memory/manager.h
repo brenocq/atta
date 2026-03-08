@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_MEMORY_MEMORY_MANAGER_H
-#define ATTA_MEMORY_MEMORY_MANAGER_H
+#pragma once
 
 namespace atta::memory {
 
@@ -24,5 +23,3 @@ class Manager final {
 };
 
 } // namespace atta::memory
-
-#endif // ATTA_MEMORY_MEMORY_MANAGER_H

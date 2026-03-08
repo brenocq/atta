@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_SCRIPT_MANAGER_H
-#define ATTA_SCRIPT_MANAGER_H
+#pragma once
 
 #include <atta/script/projectScript.h>
 #include <atta/script/script.h>
@@ -63,5 +62,3 @@ class Manager final {
 };
 
 } // namespace atta::script
-
-#endif // ATTA_SCRIPT_MANAGER_H

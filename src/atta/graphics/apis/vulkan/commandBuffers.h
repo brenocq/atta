@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_COMMAND_BUFFERS_H
-#define ATTA_GRAPHICS_APIS_VULKAN_COMMAND_BUFFERS_H
+#pragma once
 
 #include <atta/graphics/apis/vulkan/commandPool.h>
 #include <atta/graphics/apis/vulkan/common.h>
@@ -49,5 +48,3 @@ class CommandBuffers {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_COMMAND_BUFFERS_H

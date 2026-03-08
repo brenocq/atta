@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_RENDER_QUEUE_H
-#define ATTA_GRAPHICS_APIS_OPENGL_RENDER_QUEUE_H
+#pragma once
 
 #include <atta/graphics/renderQueue.h>
 
@@ -14,5 +13,3 @@ class RenderQueue final : public gfx::RenderQueue {
 };
 
 } // namespace atta::graphics::gl
-
-#endif // ATTA_GRAPHICS_APIS_OPENGL_RENDER_QUEUE_H

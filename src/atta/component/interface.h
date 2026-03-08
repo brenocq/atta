@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_COMPONENT_INTERFACE_H
-#define ATTA_COMPONENT_INTERFACE_H
+#pragma once
 
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
@@ -80,5 +79,3 @@ T* getComponent(Entity entity) {
 }
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_INTERFACE_H

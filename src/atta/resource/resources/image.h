@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_RESOURCE_RESOURCES_IMAGE_H
-#define ATTA_RESOURCE_RESOURCES_IMAGE_H
+#pragma once
 
 #include <atta/memory/allocatedObject.h>
 #include <atta/resource/resource.h>
@@ -52,5 +51,3 @@ class Image : public Resource, public memory::AllocatedObject<Image, SID("Resour
 };
 
 } // namespace atta::resource
-
-#endif // ATTA_RESOURCE_RESOURCES_IMAGE_H

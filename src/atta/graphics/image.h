@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_GRAPHICS_IMAGE_H
-#define ATTA_GRAPHICS_IMAGE_H
+#pragma once
 
 #include <atta/graphics/base.h>
 #include <atta/utils/stringId.h>
@@ -86,5 +85,3 @@ class Image {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_IMAGE_H

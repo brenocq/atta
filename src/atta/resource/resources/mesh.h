@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_RESOURCE_RESOURCES_MESH_H
-#define ATTA_RESOURCE_RESOURCES_MESH_H
+#pragma once
 
 #include <atta/memory/allocatedObject.h>
 #include <atta/resource/resource.h>
@@ -54,5 +53,3 @@ class Mesh : public Resource, public memory::AllocatedObject<Mesh, SID("Resource
 };
 
 } // namespace atta::resource
-
-#endif // ATTA_RESOURCE_RESOURCES_MESH_H

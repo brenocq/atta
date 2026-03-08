@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
-#ifndef ATTA_UI_WINDOWS_TIME_PROFILER_TIME_PROFILER_WINDOW_H
-#define ATTA_UI_WINDOWS_TIME_PROFILER_TIME_PROFILER_WINDOW_H
+#pragma once
 
 #include <atta/ui/windows/timeProfiler/components/flameGraph.h>
 #include <atta/ui/windows/timeProfiler/components/tearDown.h>
@@ -24,5 +23,3 @@ class TimeProfilerWindow : public Window<TimeProfilerWindow> {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_WINDOWS_TIME_PROFILER_TIME_PROFILER_WINDOW_H
