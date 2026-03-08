@@ -6,6 +6,8 @@ perVertex vec3 localPos;
 
 vec4 vertex(vec3 iPos, vec3 iNormal, vec2 iUV) {
     localPos = iPos;
+    // Add small dependency between vertex and normal/uv to avoid compilation error
+    localPos += iNormal / 10000.0f + vec3(iUV,0) / 10000.0f;
     return uProjection * uView * vec4(localPos, 1.0);
 }
 

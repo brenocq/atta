@@ -41,7 +41,7 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
     framebufferInfo.attachments.push_back(attachment);
     framebufferInfo.width = _width;
     framebufferInfo.height = _height;
-    framebufferInfo.clearColor = {0, 0, 0, 1};
+    framebufferInfo.clearColor = {0, 100, 0, 255};
     framebufferInfo.debugName = StringId("EquiToCubemap Framebuffer");
     std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 

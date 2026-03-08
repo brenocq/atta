@@ -56,6 +56,14 @@ class Image final : public gfx::Image {
     void setLayout(VkImageLayout layout);
 
     /**
+     * @brief Transition image layout
+     *
+     * Transition image layout to a new layout. A pipeline barrier will be created to perform the transition. This can be used to ensure
+     * the image is in the correct layout to be bind to a shader.
+     */
+    void transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
+
+    /**
      * @brief Convert format to supported vulkan format
      *
      * The GPU may not support all formats. For example, some GPUs may not support RGB, only RGBA. If the format is not supported, a close format will
@@ -83,7 +91,6 @@ class Image final : public gfx::Image {
     void allocMemory();
     void destroy();
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    void transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 
     /**
      * @brief Supported format by the GPU
