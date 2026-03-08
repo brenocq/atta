@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// cylinderCollider.h
-// Date: 2022-10-15
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_COMPONENT_COMPONENTS_CYLINDER_COLLIDER_H
 #define ATTA_COMPONENT_COMPONENTS_CYLINDER_COLLIDER_H
 

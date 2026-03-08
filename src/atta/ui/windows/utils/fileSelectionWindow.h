@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// fileSelectionWindow.h
-// Date: 2022-01-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UI_WINDOWS_UTILS_FILE_SELECTION_WINDOW_H
 #define ATTA_UI_WINDOWS_UTILS_FILE_SELECTION_WINDOW_H
 

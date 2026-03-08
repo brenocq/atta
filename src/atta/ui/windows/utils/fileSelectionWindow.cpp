@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// fileSelectionWindow.cpp
-// Date: 2022-01-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/windows/utils/fileSelectionWindow.h>
 
 namespace atta::ui {

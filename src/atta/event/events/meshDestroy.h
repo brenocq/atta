@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Event Module
-// meshDestroy.h
-// Date: 2024-01-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_EVENT_EVENTS_MESH_DESTROY_H
 #define ATTA_EVENT_EVENTS_MESH_DESTROY_H
 #include <atta/event/event.h>

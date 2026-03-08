@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// phongRenderer.cpp
-// Date: 2021-09-18
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/renderers/phongRenderer.h>
 
 #include <atta/graphics/framebuffer.h>

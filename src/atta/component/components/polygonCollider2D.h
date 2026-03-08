@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// polygonCollider2D.h
-// Date: 2022-10-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_COMPONENT_COMPONENTS_POLYGON_COLLIDER_2D_H
 #define ATTA_COMPONENT_COMPONENTS_POLYGON_COLLIDER_2D_H
 

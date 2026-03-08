@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Resource Module
-// mesh.h
-// Date: 2021-09-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_RESOURCE_RESOURCES_MESH_H
 #define ATTA_RESOURCE_RESOURCES_MESH_H
 

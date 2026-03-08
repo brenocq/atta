@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Resource Module
-// manager.h
-// Date: 2021-09-07
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_RESOURCE_RESOURCE_MANAGER_H
 #define ATTA_RESOURCE_RESOURCE_MANAGER_H
 

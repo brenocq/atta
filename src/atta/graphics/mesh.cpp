@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// mesh.cpp
-// Date: 2023-04-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/mesh.h>
 
 namespace atta::graphics {

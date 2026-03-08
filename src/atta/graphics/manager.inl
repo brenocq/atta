@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// manager.inl
-// Date: 2021-09-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 namespace atta::graphics {
 
 template <typename T, typename... Args>

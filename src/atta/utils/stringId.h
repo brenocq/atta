@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Utils Module
-// stringId.h
-// Date: 2021-08-18
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UTILS_STRING_ID_H
 #define ATTA_UTILS_STRING_ID_H
 #include <cstdint>

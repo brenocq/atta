@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// tearDown.h
-// Date: 2022-10-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UI_WINDOWS_TIME_PROFILER_COMPONENTS_TEAR_DOWN_H
 #define ATTA_UI_WINDOWS_TIME_PROFILER_COMPONENTS_TEAR_DOWN_H
 

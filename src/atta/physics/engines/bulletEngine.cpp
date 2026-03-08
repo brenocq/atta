@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Physics Module
-// bulletEngine.cpp
-// Date: 2021-12-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/boxCollider.h>
 #include <atta/component/components/cylinderCollider.h>
 #include <atta/component/components/rigidBody.h>

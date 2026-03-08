@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// vertexBuffer.h
-// Date: 2021-09-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_GRAPHICS_APIS_OPENGL_VERTEX_BUFFER_H
 #define ATTA_GRAPHICS_APIS_OPENGL_VERTEX_BUFFER_H
 

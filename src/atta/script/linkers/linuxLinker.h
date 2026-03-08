@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Script Module
-// linuxLinker.h
-// Date: 2021-09-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_SCRIPT_LINKERS_LINUX_LINKER_H
 #define ATTA_SCRIPT_LINKERS_LINUX_LINKER_H
 #ifdef ATTA_OS_LINUX

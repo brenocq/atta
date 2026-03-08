@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// rigidBody.h
-// Date: 2021-12-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_COMPONENT_COMPONENTS_RIGID_BODY_H
 #define ATTA_COMPONENT_COMPONENTS_RIGID_BODY_H
 

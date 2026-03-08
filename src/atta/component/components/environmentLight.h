@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// environmentLight.h
-// Date: 2022-01-03
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_COMPONENT_COMPONENTS_ENVIRONMENT_LIGHT_H
 #define ATTA_COMPONENT_COMPONENTS_ENVIRONMENT_LIGHT_H
 

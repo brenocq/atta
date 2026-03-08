@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// script.h
-// Date: 2021-09-02
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_COMPONENT_COMPONENTS_SCRIPT_H
 #define ATTA_COMPONENT_COMPONENTS_SCRIPT_H
 #include <atta/component/interface.h>

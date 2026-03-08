@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// directionalLight.h
-// Date: 2021-09-18
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_COMPONENT_COMPONENTS_DIRECTIONAL_LIGHT_H
 #define ATTA_COMPONENT_COMPONENTS_DIRECTIONAL_LIGHT_H
 

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// topBar.cpp
-// Date: 2021-09-01
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/panels/topBar/topBar.h>
 
 #include <atta/ui/panels/topBar/localWindows/versionWindow.h>

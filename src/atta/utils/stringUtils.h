@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Utils Module
-// stringUtils.h
-// Date: 2025-02-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UTILS_STRING_UTILS_H
 #define ATTA_UTILS_STRING_UTILS_H
 

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Event Module
-// createEntity.h
-// Date: 2022-03-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_EVENT_EVENTS_CREATE_ENTITY_H
 #define ATTA_EVENT_EVENTS_CREATE_ENTITY_H
 #include <atta/component/interface.h>

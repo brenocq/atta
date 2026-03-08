@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// phongRenderer.h
-// Date: 2021-09-18
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_GRAPHICS_RENDERERS_PHONG_RENDERER_H
 #define ATTA_GRAPHICS_RENDERERS_PHONG_RENDERER_H
 

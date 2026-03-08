@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// serial.h
-// Date: 2021-09-29
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_IO_SERIAL_SERIAL_H
 #define ATTA_IO_SERIAL_SERIAL_H
 

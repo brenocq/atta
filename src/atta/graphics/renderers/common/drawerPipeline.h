@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// drawerPipeline.h
-// Date: 2021-11-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_GRAPHICS_RENDERERS_COMMON_DRAWER_PIPELINE_H
 #define ATTA_GRAPHICS_RENDERERS_COMMON_DRAWER_PIPELINE_H
 #include <atta/graphics/cameras/camera.h>

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Memory Module
-// manager.h
-// Date: 2021-08-20
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_MEMORY_MEMORY_MANAGER_H
 #define ATTA_MEMORY_MEMORY_MANAGER_H
 

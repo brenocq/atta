@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math
-// math.h
-// Date: 2021-01-08
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UTILS_MATH_MATH_H
 #define ATTA_UTILS_MATH_MATH_H
 

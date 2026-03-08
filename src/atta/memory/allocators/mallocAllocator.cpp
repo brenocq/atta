@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Memory Module
-// mallocAllocator.cpp
-// Date: 2021-08-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/memory/allocators/mallocAllocator.h>
 
 namespace atta::memory {

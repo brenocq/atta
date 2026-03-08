@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Event Module
-// manager.h
-// Date: 2021-08-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_EVENT_EVENT_MANAGER_H
 #define ATTA_EVENT_EVENT_MANAGER_H
 

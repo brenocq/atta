@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// json.h
-// Date: 2022-06-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_IO_HTTP_JSON_H
 #define ATTA_IO_HTTP_JSON_H
 

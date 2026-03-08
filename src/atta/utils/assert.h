@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Utils Module
-// assert.h
-// Date: 2021-02-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UTILS_ASSERT_H
 #define ATTA_UTILS_ASSERT_H
 #include <assert.h>

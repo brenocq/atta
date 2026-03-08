@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math
-// bounds.h
-// Date: 2020-12-30
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UTILS_MATH_BOUNDS_H
 #define ATTA_UTILS_MATH_BOUNDS_H
 

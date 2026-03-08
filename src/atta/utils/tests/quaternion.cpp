@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math Tests
-// quaternion.cpp
-// Date: 2025-04-12
-// By: Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/utils/math/quaternion.h>
 #include <gtest/gtest.h>
 

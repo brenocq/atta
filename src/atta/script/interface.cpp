@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Script Module
-// manager.cpp
-// Date: 2022-08-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/script/interface.h>
 #include <atta/script/manager.h>
 

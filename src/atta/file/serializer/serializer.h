@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta File Module
-// serializer.h
-// Date: 2025-01-28
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_FILE_SERIALIZER_SERIALIZER_H
 #define ATTA_FILE_SERIALIZER_SERIALIZER_H
 #include <atta/file/serializer/section.h>

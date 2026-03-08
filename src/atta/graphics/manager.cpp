@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// manager.cpp
-// Date: 2021-08-23
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/interface.h>
 #include <atta/graphics/manager.h>
 

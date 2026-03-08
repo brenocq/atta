@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// serial.cpp
-// Date: 2021-09-29
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/io/serial/serial.h>
 
 namespace atta::io {

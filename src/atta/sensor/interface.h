@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Sensor Module
-// interface.h
-// Date: 2022-08-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_SENSOR_INTERFACE_H
 #define ATTA_SENSOR_INTERFACE_H
 

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Utils Module
-// config.h
-// Date: 2022-03-12
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UTILS_CONFIG_H
 #define ATTA_UTILS_CONFIG_H
 

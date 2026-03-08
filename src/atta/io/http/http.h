@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// http.h
-// Date: 2022-02-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_IO_HTTP_HTTP_H
 #define ATTA_IO_HTTP_HTTP_H
 

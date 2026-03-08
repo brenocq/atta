@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Event Module
-// imageUpdate.h
-// Date: 2021-09-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_EVENT_EVENTS_IMAGE_UPDATE_H
 #define ATTA_EVENT_EVENTS_IMAGE_UPDATE_H
 #include <atta/event/event.h>

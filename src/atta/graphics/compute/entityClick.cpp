@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// entityClick.cpp
-// Date: 2021-11-14
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/compute/entityClick.h>
 
 #include <atta/component/components/mesh.h>

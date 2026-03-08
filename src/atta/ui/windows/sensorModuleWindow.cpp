@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// sensorModuleWindow.cpp
-// Date: 2022-12-07
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/windows/sensorModuleWindow.h>
 
 #include <atta/sensor/interface.h>

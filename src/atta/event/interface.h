@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Event Module
-// interface.h
-// Date: 2022-08-13
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_EVENT_INTERFACE_H
 #define ATTA_EVENT_INTERFACE_H
 

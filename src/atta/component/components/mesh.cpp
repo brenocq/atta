@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// mesh.cpp
-// Date: 2021-09-02
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/mesh.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/mesh.h>

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math
-// quaternion.h
-// Date: 2020-12-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UTILS_MATH_QUATERNION_H
 #define ATTA_UTILS_MATH_QUATERNION_H
 

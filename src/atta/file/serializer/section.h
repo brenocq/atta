@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta File Module
-// section.h
-// Date: 2022-04-22
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_FILE_SERIALIZER_SECTION_H
 #define ATTA_FILE_SERIALIZER_SECTION_H
 

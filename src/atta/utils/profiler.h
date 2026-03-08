@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Utils Module
-// profiler.h
-// Date: 2022-10-22
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UTILS_PROFILER_H
 #define ATTA_UTILS_PROFILER_H
 #include <atta/utils/stringId.h>

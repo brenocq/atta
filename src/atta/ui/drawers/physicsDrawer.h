@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// physicsDrawer.h
-// Date: 2021-12-03
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UI_DRAWERS_PHYSICS_DRAWER_H
 #define ATTA_UI_DRAWERS_PHYSICS_DRAWER_H
 

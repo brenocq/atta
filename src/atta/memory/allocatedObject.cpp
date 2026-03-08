@@ -1,7 +1,3 @@
-//--------------------------------------------------
-// Atta Memory Module
-// allocatedObject.cpp
-// Date: 2021-08-21
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/memory/allocatedObject.h>

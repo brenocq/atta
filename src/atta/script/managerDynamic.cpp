@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Script Module
-// managerDynamic.cpp
-// Date: 2022-06-12
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/interface.h>
 #include <atta/event/events/fileWatch.h>
 #include <atta/event/events/projectBeforeDeserialize.h>

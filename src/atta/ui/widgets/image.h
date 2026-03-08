@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// image.h
-// Date: 2024-01-03
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UI_WIDGETS_IMAGE_H
 #define ATTA_UI_WIDGETS_IMAGE_H
 

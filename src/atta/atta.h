@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta
-// atta.h
-// Date: 2021-08-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_ATTA_H
 #define ATTA_ATTA_H
 #include <atta/event/event.h>

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// selectedPipeline.h
-// Date: 2021-11-15
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H
 #define ATTA_GRAPHICS_RENDERERS_COMMON_SELECTED_PIPELINE_H
 #include <atta/graphics/cameras/camera.h>

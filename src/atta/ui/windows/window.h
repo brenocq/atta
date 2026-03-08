@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// window.h
-// Date: 2021-09-28
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UI_WINDOWS_WINDOW_H
 #define ATTA_UI_WINDOWS_WINDOW_H
 

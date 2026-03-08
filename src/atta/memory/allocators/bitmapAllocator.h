@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Memory Module
-// bitmapAllocator.h
-// Date: 2021-08-27
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_MEMORY_ALLOCATORS_BITMAP_ALLOCATOR_H
 #define ATTA_MEMORY_ALLOCATORS_BITMAP_ALLOCATOR_H
 #include <atta/memory/allocator.h>

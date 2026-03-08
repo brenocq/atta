@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// viewport.h
-// Date: 2021-09-14
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UI_WINDOWS_VIEWPORT_VIEWPORT_H
 #define ATTA_UI_WINDOWS_VIEWPORT_VIEWPORT_H
 

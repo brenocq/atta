@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// bluetooth.cpp
-// Date: 2022-03-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/io/bluetooth/bluetooth.h>
 
 namespace atta::io {

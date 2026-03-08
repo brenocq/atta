@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// versionWindow.h
-// Date: 2022-06-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_VERSION_WINDOW_H
 #define ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_VERSION_WINDOW_H
 

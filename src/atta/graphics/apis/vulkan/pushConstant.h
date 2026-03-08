@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// pushConstant.h
-// Date: 2023-12-18
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_GRAPHICS_APIS_VULKAN_PUSH_CONSTANT_H
 #define ATTA_GRAPHICS_APIS_VULKAN_PUSH_CONSTANT_H
 

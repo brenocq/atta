@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// fence.h
-// Date: 2023-04-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifndef ATTA_GRAPHICS_APIS_VULKAN_FENCE_H
 #define ATTA_GRAPHICS_APIS_VULKAN_FENCE_H
 
