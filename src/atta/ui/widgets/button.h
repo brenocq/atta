@@ -1,16 +1,9 @@
-//--------------------------------------------------
-// Atta UI Module
-// button.h
-// Date: 2022-10-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UI_WIDGETS_BUTTON_H
-#define ATTA_UI_WIDGETS_BUTTON_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::ui {
 
 bool imageButton(std::string name, float size);
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_WIDGETS_BUTTON_H

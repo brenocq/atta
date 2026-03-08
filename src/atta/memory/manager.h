@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Memory Module
-// manager.h
-// Date: 2021-08-20
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_MEMORY_MEMORY_MANAGER_H
-#define ATTA_MEMORY_MEMORY_MANAGER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::memory {
 
@@ -28,5 +23,3 @@ class Manager final {
 };
 
 } // namespace atta::memory
-
-#endif // ATTA_MEMORY_MEMORY_MANAGER_H

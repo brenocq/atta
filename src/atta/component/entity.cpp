@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// entity.cpp
-// Date: 2021-09-04
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/interface.h>
 
 #include <atta/component/components/prototype.h>
@@ -19,7 +15,7 @@ bool Entity::exists() const { return _id >= 0; }
 EntityId Entity::getId() const { return _id; }
 
 bool Entity::isPrototype() const {
-    if(get<component::Prototype>())
+    if (get<component::Prototype>())
         return true;
 
     Entity p = getParent();

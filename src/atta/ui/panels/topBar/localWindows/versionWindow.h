@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta UI Module
-// versionWindow.h
-// Date: 2022-06-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_VERSION_WINDOW_H
-#define ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_VERSION_WINDOW_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/physics/interface.h>
 #include <atta/ui/windows/window.h>
@@ -24,5 +19,3 @@ class VersionWindow : public Window<VersionWindow> {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_PANELS_TOP_BAR_LOCAL_WINDOWS_VERSION_WINDOW_H

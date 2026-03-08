@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// versionWindow.cpp
-// Date: 2022-06-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/cmakeConfig.h>
 #include <atta/ui/panels/topBar/localWindows/versionWindow.h>
 #include <imgui_internal.h>

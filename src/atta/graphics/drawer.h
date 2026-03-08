@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// drawer.h
-// Date: 2021-09-25
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_DRAWER_H
-#define ATTA_GRAPHICS_DRAWER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/mesh.h>
 #include <atta/utils/math/math.h>
@@ -106,5 +101,3 @@ class Drawer {
 } // namespace atta::graphics
 
 #include <atta/graphics/drawer.inl>
-
-#endif // ATTA_GRAPHICS_DRAWER_H

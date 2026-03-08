@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta UI Module
-// tearDown.h
-// Date: 2022-10-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UI_WINDOWS_TIME_PROFILER_COMPONENTS_TEAR_DOWN_H
-#define ATTA_UI_WINDOWS_TIME_PROFILER_COMPONENTS_TEAR_DOWN_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::ui {
 
@@ -23,7 +18,7 @@ class TearDown {
         StringId name;
         Profiler::Time time;
     };
-    std::vector<FuncTime> _funcTime; 
+    std::vector<FuncTime> _funcTime;
     size_t _lastRecordsSize;
     bool _exclusive;
 
@@ -41,5 +36,3 @@ class TearDown {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_WINDOWS_TIME_PROFILER_COMPONENTS_TEAR_DOWN_H

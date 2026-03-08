@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta File Module
-// interface.inl
-// Date: 2025-03-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 
 namespace atta::file {
 

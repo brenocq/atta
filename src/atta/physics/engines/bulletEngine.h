@@ -1,15 +1,11 @@
-//--------------------------------------------------
-// Atta Physics Module
-// bulletEngine.h
-// Date: 2021-12-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_PHYSICS_ENGINES_BULLET_ENGINE_H
-#define ATTA_PHYSICS_ENGINES_BULLET_ENGINE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include "btBulletDynamicsCommon.h"
 #include <atta/component/components/prismaticJoint.h>
 #include <atta/component/components/revoluteJoint.h>
+#include <atta/component/components/rigidBody.h>
 #include <atta/component/components/rigidJoint.h>
 #include <atta/physics/engines/engine.h>
 
@@ -30,6 +26,12 @@ class BulletEngine : public Engine {
 
     void updateGravity() override;
 
+    // component::RigidBody interface
+    void applyForce(component::RigidBody* rb, vec3 force, vec3 point);
+    void applyForceToCenter(component::RigidBody* rb, vec3 force);
+    void applyTorque(component::RigidBody* rb, vec3 torque);
+    mat3 getInertiaTensor(component::RigidBody* rb);
+
     unsigned getNumSubSteps() const;
     void setNumSubSteps(unsigned numSubSteps);
     bool getShowAabb() const;
@@ -47,6 +49,8 @@ class BulletEngine : public Engine {
     static void collisionStarted(btPersistentManifold* const& manifold);
     static void collisionEnded(btPersistentManifold* const& manifold);
 
+    void wakeUpEntity(component::EntityId entity);
+
     unsigned _numSubSteps; ///< Number of physics sub steps for each simulation step
 
     // World configutation
@@ -60,6 +64,7 @@ class BulletEngine : public Engine {
     // World data
     std::unordered_map<component::EntityId, btRigidBody*> _entityToBody;
     std::unordered_map<btRigidBody*, component::EntityId> _bodyToEntity;
+    std::unordered_map<component::RigidBody*, component::EntityId> _componentToEntity;
     std::unordered_map<component::EntityId, std::unordered_map<component::EntityId, btPersistentManifold*>> _collisions;
     std::unordered_map<component::EntityId, std::vector<component::EntityId>> _connectedEntities; ///< Which entities are connect by joints
 
@@ -68,5 +73,3 @@ class BulletEngine : public Engine {
 };
 
 } // namespace atta::physics
-
-#endif // ATTA_PHYSICS_ENGINES_BULLET_ENGINE_H

@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Resource Module
-// interface.h
-// Date: 2022-08-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_RESOURCE_INTERFACE_H
-#define ATTA_RESOURCE_INTERFACE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/utils/stringId.h>
 
@@ -54,5 +49,3 @@ std::vector<StringId> getResources() {
 }
 
 } // namespace atta::resource
-
-#endif // ATTA_RESOURCE_INTERFACE_H

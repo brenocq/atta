@@ -1,0 +1,214 @@
+[project]
+attaVersion = "0.3.7"
+name = "ray-cast"
+
+[config]
+dt = 0.015000
+desiredStepSpeed = 1.000000
+
+[graphics]
+graphicsFPS = 30.000000
+viewportRendering = true
+
+[physics]
+engine = "BULLET"
+gravity = vec3(0.000000, 0.000000, -9.810000)
+showColliders = true
+showContacts = true
+showJoints = false
+bullet.showAabb = true
+bullet.numSubSteps = 1
+
+[sensor]
+showCameras = true
+showInfrareds = true
+
+[material]
+id = "Material"
+color = vec3(0.500000, 0.500000, 0.500000)
+
+[material]
+id = "no-hit"
+color = vec3(0.000000, 1.000000, 0.000000)
+
+[material]
+id = "hit"
+color = vec3(1.000000, 0.000000, 0.000000)
+
+[viewport]
+name = "Main Viewport"
+renderer.type = "PbrRenderer"
+camera.type = "PerspectiveCamera"
+camera.position = vec3(0.016100, 6.133805, 5.980965)
+camera.lookAt = vec3(0.012555, 5.365857, 5.340463)
+camera.up = vec3(-0.002957, -0.640496, 0.767956)
+
+[node]
+id = 0
+name.name = "Cubes"
+
+[node]
+id = 1
+relationship.parent = 0
+boxCollider.size = 1.000000
+boxCollider.offset = 0.000000
+material.sid = "no-hit"
+mesh.sid = "meshes/cube.obj"
+name.name = "Cube 0"
+rigidBody.type = "DYNAMIC"
+rigidBody.linearVelocity = 0.000000
+rigidBody.angularVelocity = 0.000000
+rigidBody.mass = 1.000000
+rigidBody.friction = 0.500000
+rigidBody.restitution = 0.500000
+rigidBody.linearDamping = 0.000000
+rigidBody.angularDamping = 0.000000
+rigidBody.allowSleep = true
+rigidBody.awake = true
+rigidBody.constraints = 53
+transform.position = vec3(-2.735451, -0.001828, 0.548385)
+transform.orientation = quat(0.000001, -0.000001, -0.001544, 0.999999)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 2
+relationship.parent = 0
+boxCollider.size = 1.000000
+boxCollider.offset = 0.000000
+material.sid = "no-hit"
+mesh.sid = "meshes/cube.obj"
+name.name = "Cube 1"
+rigidBody.type = "DYNAMIC"
+rigidBody.linearVelocity = 0.000000
+rigidBody.angularVelocity = 0.000000
+rigidBody.mass = 1.000000
+rigidBody.friction = 0.500000
+rigidBody.restitution = 0.500000
+rigidBody.linearDamping = 0.000000
+rigidBody.angularDamping = 0.000000
+rigidBody.allowSleep = true
+rigidBody.awake = true
+rigidBody.constraints = 53
+transform.position = vec3(-1.122977, 0.004250, 1.289916)
+transform.orientation = quat(-0.000001, -0.000001, 0.003555, 0.999994)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 3
+relationship.parent = 0
+boxCollider.size = 1.000000
+boxCollider.offset = 0.000000
+material.sid = "hit"
+mesh.sid = "meshes/cube.obj"
+name.name = "Cube 2"
+rigidBody.type = "DYNAMIC"
+rigidBody.linearVelocity = 0.000000
+rigidBody.angularVelocity = 0.000000
+rigidBody.mass = 1.000000
+rigidBody.friction = 0.500000
+rigidBody.restitution = 0.500000
+rigidBody.linearDamping = 0.000000
+rigidBody.angularDamping = 0.000000
+rigidBody.allowSleep = true
+rigidBody.awake = true
+rigidBody.constraints = 53
+transform.position = vec3(0.000054, -0.000167, 0.525020)
+transform.orientation = quat(0.000020, 0.000001, -0.000004, 1.000000)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 4
+relationship.parent = 0
+boxCollider.size = 1.000000
+boxCollider.offset = 0.000000
+material.sid = "no-hit"
+mesh.sid = "meshes/cube.obj"
+name.name = "Cube 3"
+rigidBody.type = "DYNAMIC"
+rigidBody.linearVelocity = 0.000000
+rigidBody.angularVelocity = 0.000000
+rigidBody.mass = 1.000000
+rigidBody.friction = 0.500000
+rigidBody.restitution = 0.500000
+rigidBody.linearDamping = 0.000000
+rigidBody.angularDamping = 0.000000
+rigidBody.allowSleep = true
+rigidBody.awake = true
+rigidBody.constraints = 53
+transform.position = vec3(0.450948, -0.000205, 2.134415)
+transform.orientation = quat(-0.000000, -0.000000, -0.000009, 1.000000)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 5
+relationship.parent = 0
+boxCollider.size = 1.000000
+boxCollider.offset = 0.000000
+material.sid = "hit"
+mesh.sid = "meshes/cube.obj"
+name.name = "Cube 4"
+rigidBody.type = "DYNAMIC"
+rigidBody.linearVelocity = 0.000000
+rigidBody.angularVelocity = 0.000000
+rigidBody.mass = 1.000000
+rigidBody.friction = 0.500000
+rigidBody.restitution = 0.500000
+rigidBody.linearDamping = 0.000000
+rigidBody.angularDamping = 0.000000
+rigidBody.allowSleep = true
+rigidBody.awake = true
+rigidBody.constraints = 53
+transform.position = vec3(2.000070, -0.000160, 0.538776)
+transform.orientation = quat(0.000009, 0.000010, -0.000036, 1.000000)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 6
+material.sid = "hit"
+mesh.sid = "meshes/sphere.obj"
+name.name = "Control 0"
+transform.position = vec3(3.276534, -0.697962, 0.852704)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.100000, 0.100000, 0.100000)
+
+[node]
+id = 7
+material.sid = "hit"
+mesh.sid = "meshes/sphere.obj"
+name.name = "Control 1"
+transform.position = vec3(-3.379542, 1.383669, 0.877853)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.100000, 0.100000, 0.100000)
+
+[node]
+id = 8
+boxCollider.size = 1.000000
+boxCollider.offset = 0.000000
+material.sid = "Material"
+mesh.sid = "meshes/cube.obj"
+name.name = "Ground"
+rigidBody.type = "STATIC"
+rigidBody.linearVelocity = 0.000000
+rigidBody.angularVelocity = 0.000000
+rigidBody.mass = 1.000000
+rigidBody.friction = 0.500000
+rigidBody.restitution = 0.500000
+rigidBody.linearDamping = 0.000000
+rigidBody.angularDamping = 0.000000
+rigidBody.allowSleep = true
+rigidBody.awake = true
+rigidBody.constraints = 53
+transform.position = vec3(0.000000, 0.000000, 0.000000)
+transform.orientation = quat(-0.000000, -0.000000, -0.000000, 1.000000)
+transform.scale = vec3(10.000000, 10.000000, 0.100000)
+
+[node]
+id = 9
+material.sid = "Material"
+mesh.sid = "meshes/sphere.obj"
+name.name = "Point light"
+pointLight.intensity = vec3(2.000000, 2.000000, 2.000000)
+transform.position = vec3(0.000000, 0.000000, 4.985532)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.100000, 0.100000, 0.100000)
+

@@ -43,3 +43,13 @@ atta_create_local_test(
     "tests/math.cpp"
     "atta_utils"
 )
+atta_create_local_test(
+    atta_utils_matrix_test
+    "tests/matrix.cpp"
+    "atta_utils"
+)
+atta_create_local_test(
+    atta_utils_quaternion_test
+    "tests/quaternion.cpp"
+    "atta_utils"
+)

@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Component Module
-// manager.h
-// Date: 2021-08-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_COMPONENT_MANAGER_H
-#define ATTA_COMPONENT_MANAGER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 // XXX for now manage.h should not be included, include interface.h instead
 
@@ -149,5 +144,3 @@ class Manager final {
 } // namespace atta::component
 
 #include <atta/component/manager.inl>
-
-#endif // ATTA_COMPONENT_MANAGER_H

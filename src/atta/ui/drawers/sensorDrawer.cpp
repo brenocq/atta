@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// sensorDrawer.cpp
-// Date: 2022-03-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/prototype.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>

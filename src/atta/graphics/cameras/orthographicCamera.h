@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// orthographicCamera.h
-// Date: 2021-09-14
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_CAMERAS_ORTHOGRAPHIC_CAMERA_H
-#define ATTA_GRAPHICS_CAMERAS_ORTHOGRAPHIC_CAMERA_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/cameras/camera.h>
 
@@ -37,5 +32,3 @@ class OrthographicCamera : public Camera {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_CAMERAS_ORTHOGRAPHIC_CAMERA_H

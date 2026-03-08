@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// button.cpp
-// Date: 2022-10-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/widgets/button.h>
 
 #include "imgui.h"
@@ -11,6 +7,8 @@
 
 namespace atta::ui {
 
-bool imageButton(std::string name, float size) { return ImGui::ImageButton(name.c_str(), (ImTextureID)(intptr_t)gfx::getImGuiImage(name), ImVec2(size, size)); }
+bool imageButton(std::string name, float size) {
+    return ImGui::ImageButton(name.c_str(), (ImTextureID)(intptr_t)gfx::getImGuiImage(name), ImVec2(size, size));
+}
 
 } // namespace atta::ui

@@ -1,38 +1,33 @@
-//--------------------------------------------------
-// Atta Script Module
-// projectScript.h
-// Date: 2021-09-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_SCRIPT_PROJECT_SCRIPT_H
-#define ATTA_SCRIPT_PROJECT_SCRIPT_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::script {
 
 class ProjectScript {
   public:
     ProjectScript() = default;
-    virtual ~ProjectScript(){};
+    virtual ~ProjectScript() {}
 
     //---------- Load/Unload ----------//
-    virtual void onLoad(){};
-    virtual void onUnload(){};
+    virtual void onLoad() {}
+    virtual void onUnload() {}
 
     //---------- Simulation ----------//
-    virtual void onStart(){};
-    virtual void onStop(){};
+    virtual void onStart() {}
+    virtual void onStop() {}
 
-    virtual void onContinue(){};
-    virtual void onPause(){};
+    virtual void onContinue() {}
+    virtual void onPause() {}
 
-    virtual void onUpdateBefore(float delta){};
-    virtual void onUpdateAfter(float delta){};
+    virtual void onUpdateBefore(float delta) {}
+    virtual void onUpdateAfter(float delta) {}
 
     //---------- Editor ----------//
-    virtual void onUIRender(){};
+    virtual void onUIRender() {}
 
     //---------- While ----------//
-    virtual void onAttaLoop(){};
+    virtual void onAttaLoop() {}
 };
 } // namespace atta::script
 
@@ -58,5 +53,3 @@ class ProjectScriptRegistration {
     }                                                                                                                                                \
     }
 #endif
-
-#endif // ATTA_SCRIPT_PROJECT_SCRIPT_H

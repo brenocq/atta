@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// cylinderCollider.cpp
-// Date: 2022-10-15
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/cylinderCollider.h>
 
 namespace atta::component {
@@ -15,7 +11,7 @@ ComponentDescription& TypedComponentRegistry<CylinderCollider>::getDescription()
         {
             {AttributeType::FLOAT32, offsetof(CylinderCollider, radius), "radius", 0.0001f, 2000.0f, 0.01f},
             {AttributeType::FLOAT32, offsetof(CylinderCollider, height), "height", 0.0001f, 2000.0f, 0.01f},
-            {AttributeType::FLOAT32, offsetof(CylinderCollider, offset), "offset", -2000.0f, 2000.0f, 0.01f},
+            {AttributeType::VECTOR_FLOAT32, offsetof(CylinderCollider, offset), "offset", -2000.0f, 2000.0f, 0.01f},
         },
     };
 

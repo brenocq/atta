@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Resource Module
-// image.h
-// Date: 2021-09-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_RESOURCE_RESOURCES_IMAGE_H
-#define ATTA_RESOURCE_RESOURCES_IMAGE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/memory/allocatedObject.h>
 #include <atta/resource/resource.h>
@@ -56,5 +51,3 @@ class Image : public Resource, public memory::AllocatedObject<Image, SID("Resour
 };
 
 } // namespace atta::resource
-
-#endif // ATTA_RESOURCE_RESOURCES_IMAGE_H

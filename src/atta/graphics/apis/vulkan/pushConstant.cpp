@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// pushConstant.cpp
-// Date: 2023-12-18
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/apis/vulkan/pushConstant.h>
 
 namespace atta::graphics::vk {

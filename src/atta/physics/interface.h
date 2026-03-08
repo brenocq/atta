@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Physics Module
-// interface.h
-// Date: 2022-08-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_PHYSICS_INTERFACE_H
-#define ATTA_PHYSICS_INTERFACE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/physics/engines/engine.h>
 
@@ -65,5 +60,3 @@ std::shared_ptr<T> getEngine() {
 }
 
 } // namespace atta::physics
-
-#endif // ATTA_PHYSICS_INTERFACE_H

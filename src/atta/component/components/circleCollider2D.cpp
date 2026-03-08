@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// circleCollider2D.cpp
-// Date: 2021-11-30
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/circleCollider2D.h>
 #include <atta/component/components/transform.h>
 
@@ -15,7 +11,7 @@ ComponentDescription& TypedComponentRegistry<CircleCollider2D>::getDescription()
         "Circle Collider 2D",
         {
             {AttributeType::FLOAT32, offsetof(CircleCollider2D, radius), "radius", 0.0001f, 2000.0f, 0.01f},
-            {AttributeType::FLOAT32, offsetof(CircleCollider2D, offset), "offset", -2000.0f, 2000.0f, 0.01f},
+            {AttributeType::VECTOR_FLOAT32, offsetof(CircleCollider2D, offset), "offset", -2000.0f, 2000.0f, 0.01f},
         },
     };
 

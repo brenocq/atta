@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta UI Module
-// topBar.h
-// Date: 2021-09-01
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UI_PANELS_TOP_BAR_TOP_BAR_H
-#define ATTA_UI_PANELS_TOP_BAR_TOP_BAR_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/ui/panels/topBar/localWindows/repoWindow.h>
 
@@ -43,5 +38,3 @@ class TopBar {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_PANELS_TOP_BAR_TOP_BAR_H

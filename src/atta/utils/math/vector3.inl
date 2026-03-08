@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math
-// vector3.inl
-// Date: 2021-08-27
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 
 namespace atta {
 
@@ -272,6 +268,14 @@ inline vector3<T> normalize(const vector3<T>& v) {
     if (l > 0)
         return v * 1.0f / l;
     return v;
+}
+
+// Normalized
+template <typename T>
+vector3<T> vector3<T>::normalized() const {
+    vector3<T> result = *this;
+    result.normalize();
+    return result;
 }
 
 // Dot

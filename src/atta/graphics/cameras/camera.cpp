@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// camera.cpp
-// Date: 2021-09-14
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/cameras/camera.h>
 #include <imgui_internal.h>
 

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// fileSelectionWindow.cpp
-// Date: 2022-01-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/windows/utils/fileSelectionWindow.h>
 
 namespace atta::ui {
@@ -82,7 +78,7 @@ void FileSelectionWindow::renderFileTree() {
 
     static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV |
                                    ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
-    static ImGuiSelectableFlags selectableFlags = ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap;
+    static ImGuiSelectableFlags selectableFlags = ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap;
     static int selectedItem = 0;
 
     ImVec2 region = ImGui::GetContentRegionAvail();

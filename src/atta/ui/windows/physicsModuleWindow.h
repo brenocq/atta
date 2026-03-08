@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta UI Module
-// physicsModuleWindow.h
-// Date: 2021-12-01
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UI_WINDOWS_PHYSICS_MODULE_WINDOW_H
-#define ATTA_UI_WINDOWS_PHYSICS_MODULE_WINDOW_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/physics/interface.h>
 #include <atta/ui/windows/window.h>
@@ -21,5 +16,3 @@ class PhysicsModuleWindow : public Window<PhysicsModuleWindow> {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_WINDOWS_PHYSICS_MODULE_WINDOW_H

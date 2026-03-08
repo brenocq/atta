@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// image.cpp
-// Date: 2023-04-04
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/apis/vulkan/image.h>
 
 #include <atta/graphics/apis/vulkan/commandPool.h>

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Physics Module
-// manager.cpp
-// Date: 2021-11-27
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/physics/interface.h>
 
 #include <atta/physics/engines/box2DEngine.h>
@@ -126,6 +122,7 @@ void Manager::onComponentChange(event::Event& event) {
                     _engine->createColliders(e.entityId);
             }
             if (is3DPhysicsColliderComponent(e.componentId)) {
+                // TODO
             }
             break;
         }
@@ -138,6 +135,7 @@ void Manager::onComponentChange(event::Event& event) {
                     _engine->deleteColliders(e.entityId);
             }
             if (is3DPhysicsColliderComponent(e.componentId)) {
+                // TODO
             }
             break;
         }

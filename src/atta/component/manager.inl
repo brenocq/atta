@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// manager.h
-// Date: 2021-11-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 namespace atta::component {
 
 template <typename T>

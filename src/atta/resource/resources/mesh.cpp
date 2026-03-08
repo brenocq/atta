@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Resource Module
-// mesh.cpp
-// Date: 2021-09-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>

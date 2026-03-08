@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// renderPass.cpp
-// Date: 2021-09-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/renderPass.h>
 
 namespace atta::graphics {

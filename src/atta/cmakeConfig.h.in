@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta
-// cmakeConfig.h           
-// Date: 2021-09-15
-// By Breno Cunha Queiroz  
-//--------------------------------------------------
-#ifndef ATTA_CMAKE_CONFIG   
-#define ATTA_CMAKE_CONFIG   
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #ifdef ATTA_OS_WEB
 #define ATTA_DIR "/"
@@ -24,7 +19,7 @@
 #define ATTA_INSTALLED_VERSIONS_DIR "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@"
 
 // Project path when atta is built statically linked to one project
-#ifdef ATTA_STATIC_PROJECT 
+#ifdef ATTA_STATIC_PROJECT
 
 #ifdef ATTA_OS_WEB
 #define ATTA_STATIC_PROJECT_FILE "/project/project.atta"
@@ -33,5 +28,3 @@
 #endif
 
 #endif
-
-#endif// ATTA_CMAKE_CONFIG

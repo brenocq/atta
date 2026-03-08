@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// renderPass.h
-// Date: 2021-09-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDER_PASS_H
-#define ATTA_GRAPHICS_RENDER_PASS_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/renderQueue.h>
 #include <atta/utils/stringId.h>
@@ -37,5 +32,3 @@ class RenderPass {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_RENDER_PASS_H

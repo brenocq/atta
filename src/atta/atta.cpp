@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta
-// atta.cpp
-// Date: 2021-08-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/atta.h>
 
 #include <atta/event/event.h>
@@ -68,10 +64,8 @@ Atta::Atta(const CreateInfo& info) : _shouldFinish(false) {
         LOG_WARN("Atta", "Project [w]$0[] will not be open because atta was built statically linked to [w]$1[]", info.projectFile, projectFile);
 #else
     // If a project was defined as argument, open project
-    if (!info.projectFile.empty()) {
-        graphics::update(); // Need to update to register the viewports
+    if (!info.projectFile.empty())
         file::openProject(info.projectFile);
-    }
 #endif
 
     _currStep = _lastStep = std::clock();

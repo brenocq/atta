@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// pointLight.cpp
-// Date: 2021-11-23
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/pointLight.h>
 
 namespace atta::component {

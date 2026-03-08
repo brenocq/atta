@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Component Module
-// transform.h
-// Date: 2021-09-02
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_TRANSFORM_H
-#define ATTA_COMPONENT_COMPONENTS_TRANSFORM_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/component/interface.h>
 
@@ -30,7 +25,7 @@ struct Transform final : public Component {
 
     /// Get transform in the world coordinate system
     /** If the entity is child of another entity the
-     * resulting transform will depend on its parent 
+     * resulting transform will depend on its parent
      * world transform.
      *
      * The world transform will only differ from the local
@@ -74,5 +69,3 @@ template <>
 ComponentDescription& TypedComponentRegistry<Transform>::getDescription();
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_COMPONENTS_TRANSFORM_H

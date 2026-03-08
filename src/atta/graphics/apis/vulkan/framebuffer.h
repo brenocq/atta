@@ -1,16 +1,11 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// framebuffer.h
-// Date: 2023-04-04
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_FRAMEBUFFER_H
-#define ATTA_GRAPHICS_APIS_VULKAN_FRAMEBUFFER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/device.h>
-#include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/apis/vulkan/image.h>
+#include <atta/graphics/apis/vulkan/renderPass.h>
 #include <atta/graphics/framebuffer.h>
 
 namespace atta::graphics::vk {
@@ -41,5 +36,3 @@ class Framebuffer final : public gfx::Framebuffer {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_FRAMEBUFFER_H

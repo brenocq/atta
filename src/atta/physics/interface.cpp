@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Physics Module
-// interface.cpp
-// Date: 2022-08-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/physics/interface.h>
 
 namespace atta::physics {
@@ -31,9 +27,7 @@ void setShowJoints(bool showJoints) { Manager::getInstance()._showJoints = showJ
 
 //---------- Queries ----------//
 std::vector<component::EntityId> getEntityCollisions(component::EntityId eid) { return Manager::getInstance()._engine->getEntityCollisions(eid); }
-std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) {
-    return Manager::getInstance()._engine->rayCast(begin, end, onlyFirst);
-}
+std::vector<RayCastHit> rayCast(vec3 begin, vec3 end, bool onlyFirst) { return Manager::getInstance()._engine->rayCast(begin, end, onlyFirst); }
 bool areColliding(component::EntityId eid0, component::EntityId eid1) { return Manager::getInstance()._engine->areColliding(eid0, eid1); }
 
 } // namespace atta::physics

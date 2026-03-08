@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// descriptorSetLayout.h
-// Date: 2023-04-07
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_DESCRIPTOR_SET_LAYOUT_H
-#define ATTA_GRAPHICS_APIS_VULKAN_DESCRIPTOR_SET_LAYOUT_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/device.h>
@@ -34,5 +29,3 @@ class DescriptorSetLayout {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_DESCRIPTOR_SET_LAYOUT_H

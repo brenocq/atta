@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Component Module
-// base.h
-// Date: 2021-09-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_COMPONENT_BASE_H
-#define ATTA_COMPONENT_BASE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/utils/stringId.h>
 
 namespace atta::component {
@@ -15,7 +10,7 @@ namespace atta::component {
 #define COMPONENT_POOL_SID_BY_NAME(typeidTname) SID((std::string("Component_") + typeidTname + "Allocator").c_str())
 #define COMPONENT_POOL_SSID_BY_NAME(typeidTname) SSID((std::string("Component_") + typeidTname + "Allocator").c_str())
 
-using EntityId = int32_t;           // Index inside entity pool
+using EntityId = int32_t;       // Index inside entity pool
 using ComponentId = StringHash; // Component allocator name hash (COMPONENT_POOL_SID(T) result)
 
 enum class AttributeType {
@@ -75,7 +70,7 @@ struct AttributeDescription {
     std::any min;
     std::any max;
     float step;
-    std::vector<std::string> options;// Enum options
+    std::vector<std::string> options; // Enum options
 };
 
 // FIXME Sometimes crashing when trying to delete the description
@@ -86,5 +81,3 @@ struct ComponentDescription {
 };
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_BASE_H

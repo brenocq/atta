@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Script Module
-// linuxCompiler.h
-// Date: 2021-09-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifdef ATTA_OS_LINUX
 
 #include <atta/file/manager.h>
@@ -177,15 +173,14 @@ void LinuxCompiler::findTargetFiles(StringId target) {
 
     // Get all files that where included
     std::set<fs::path> targetFiles(cmakeTargetFiles.begin(), cmakeTargetFiles.end());
-    for(fs::path file : cmakeTargetFiles)
-    {
+    for (fs::path file : cmakeTargetFiles) {
         std::vector<fs::path> includedFiles = getIncludedFiles(file);
         targetFiles.insert(includedFiles.begin(), includedFiles.end());
     }
 
     // Update files related to this target
     _targetFiles[target] = {};
-    for(fs::path file : targetFiles)
+    for (fs::path file : targetFiles)
         _targetFiles[target].push_back(file);
 }
 

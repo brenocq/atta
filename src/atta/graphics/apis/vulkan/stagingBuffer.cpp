@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// stagingBuffer.cpp
-// Date: 2023-04-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/apis/vulkan/stagingBuffer.h>
 
 namespace atta::graphics::vk {

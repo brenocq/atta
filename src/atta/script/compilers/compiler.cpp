@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Script Module
-// compiler.cpp
-// Date: 2021-09-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/file/interface.h>
 #include <atta/script/compilers/compiler.h>
 
@@ -38,7 +34,7 @@ std::vector<fs::path> Compiler::getIncludedFiles(fs::path file) {
                 // If found #include, get file name
                 size_t posBegin = line.find('"') != std::string::npos ? line.find('"') : line.find('<');
                 if (posBegin != std::string::npos) {
-                    size_t posEnd = line.find('"', posBegin+1) != std::string::npos ? line.find('"', posBegin+1) : line.find('>', posBegin+1);
+                    size_t posEnd = line.find('"', posBegin + 1) != std::string::npos ? line.find('"', posBegin + 1) : line.find('>', posBegin + 1);
                     if (posEnd != std::string::npos) {
                         std::string possibleFile = line.substr(posBegin + 1, posEnd - posBegin - 1);
                         for (auto base : possibleBases) {

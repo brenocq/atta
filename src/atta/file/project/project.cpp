@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta File Module
-// project.cpp
-// Date: 2021-09-15
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/cmakeConfig.h>
 #include <atta/file/project/project.h>
 
@@ -11,8 +7,7 @@ namespace atta::file {
 
 Project::Project(fs::path file) : _name(file.stem().string()), _file(fs::absolute(file)), _directory(file.parent_path()) {
     fs::path projectResourcePath = _directory / "resources";
-    if (fs::exists(projectResourcePath))
-        _resourceRootPaths.push_back(projectResourcePath);
+    _resourceRootPaths.push_back(projectResourcePath);
     _resourceRootPaths.push_back(fs::path(ATTA_DIR) / "resources");
 
     LOG_DEBUG("file::Project", "Opened project [*g]$0[] ([w]$1[])", _name, _file);

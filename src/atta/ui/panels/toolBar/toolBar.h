@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta UI Module
-// toolBar.h
-// Date: 2021-12-28
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UI_PANELS_TOOL_BAR_TOOL_BAR_H
-#define ATTA_UI_PANELS_TOOL_BAR_TOOL_BAR_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/event/event.h>
 
@@ -19,5 +14,3 @@ class ToolBar {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_PANELS_TOOL_BAR_TOOL_BAR_H

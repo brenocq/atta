@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Event Module
-// deleteComponent.h
-// Date: 2022-03-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_EVENT_EVENTS_DELETE_COMPONENT_H
-#define ATTA_EVENT_EVENTS_DELETE_COMPONENT_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/component/interface.h>
 #include <atta/event/event.h>
 
@@ -18,4 +13,3 @@ class DeleteComponent : public EventTyped<SID("DeleteComponent")> {
 };
 
 } // namespace atta::event
-#endif // ATTA_EVENT_EVENTS_DELETE_COMPONENT_H

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// drawerPipeline.cpp
-// Date: 2021-11-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/drawer.h>
 #include <atta/graphics/interface.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>

@@ -18,10 +18,10 @@ jobs:
         - { name: "Web Latest", os: ubuntu-latest, build_type: "Release" }
 
     steps:
-      - uses: mymindstorm/setup-emsdk@v13
+      - uses: mymindstorm/setup-emsdk@v14
 
       - name: Checkout atta
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Configure
         run: |
@@ -30,4 +30,4 @@ jobs:
           emcmake cmake ..
 
       - name: Build
-        run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
+        run: cmake --build build --parallel 4 --config ${{ matrix.config.build_type }}

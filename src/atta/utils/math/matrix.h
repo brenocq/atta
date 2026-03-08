@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Math
-// matrix.h
-// Date: 2020-12-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_MATH_MATRIX_HH
-#define ATTA_UTILS_MATH_MATRIX_HH
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/utils/math/quaternion.h>
 #include <atta/utils/math/vector.h>
@@ -64,7 +59,10 @@ class mat4 {
     mat4 operator*(const float v) const;
 
     void invert();
+    mat4 inverted() const;
+
     void transpose();
+    mat4 transposed() const;
 
     vec3 transformDirection(const vec3& vector) const;
     vec3 transformInverseDirection(const vec3& vector) const;
@@ -165,7 +163,6 @@ inline mat4 rotationFromEuler(float R, float P, float Y) {
 inline mat4 posOri(const vec3& pos, const quat& q) {
     mat4 res;
     res.setPosOri(pos, q);
-
     return res;
 }
 
@@ -173,7 +170,6 @@ inline mat4 posOri(const vec3& pos, const quat& q) {
 inline mat4 posOriScale(const vec3& pos, const quat& q, const vec3& scale) {
     mat4 res;
     res.setPosOriScale(pos, q, scale);
-
     return res;
 }
 
@@ -225,8 +221,14 @@ class mat3 {
     // Inverts this matrix
     void invert();
 
+    // Get the inverted matrix
+    mat3 inverted() const;
+
     // Transpose this matrix
     void transpose();
+
+    // Get the transposed matrix
+    mat3 transposed() const;
 
     // Assing matrix
     // mat3 operator=(const mat3 &o);
@@ -304,8 +306,14 @@ class mat2 {
     // Inverts this matrix
     void invert();
 
+    // Get the inverted matrix
+    mat2 inverted() const;
+
     // Transpose this matrix
     void transpose();
+
+    // Get the transposed matrix
+    mat2 transposed() const;
 
     // Multiply matrices
     mat2 operator*(const mat2& o) const;
@@ -435,4 +443,3 @@ using mati = matrix<int>;
 } // namespace atta
 
 #include <atta/utils/math/matrix.inl>
-#endif // ATTA_UTILS_MATH_MATRIX_H

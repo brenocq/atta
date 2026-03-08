@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// stagingBuffer.h
-// Date: 2023-04-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_STAGING_BUFFER_H
-#define ATTA_GRAPHICS_APIS_VULKAN_STAGING_BUFFER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/vulkan/buffer.h>
 
@@ -18,5 +13,3 @@ class StagingBuffer final : public Buffer {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_STAGING_BUFFER_H

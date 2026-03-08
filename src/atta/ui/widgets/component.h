@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta UI Module
-// component.h
-// Date: 2025-02-26
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UI_WIDGETS_COMPONENT_H
-#define ATTA_UI_WIDGETS_COMPONENT_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
@@ -19,5 +14,3 @@ void renderAttributes(const std::vector<cmp::AttributeDescription>& aDescs, cmp:
 void renderAttribute(cmp::AttributeDescription aDesc, void* d, unsigned size);
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_WIDGETS_COMPONENT_H

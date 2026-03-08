@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// physicsModuleWindow.cpp
-// Date: 2021-12-01
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/windows/physicsModuleWindow.h>
 
 #include <atta/physics/engines/bulletEngine.h>
@@ -27,7 +23,6 @@ void PhysicsModuleWindow::renderImpl() {
             if (ImGui::Selectable(physicsEngines[i].c_str(), i == selected)) {
                 selected = (physics::Engine::Type)i;
                 physics::setEngineType(selected);
-
             }
             if (i == selected)
                 ImGui::SetItemDefaultFocus();
@@ -96,9 +91,9 @@ void PhysicsModuleWindow::renderImpl() {
             // Number of collisions
             unsigned numCollisions2 = 0;
             auto collisions = bullet->getCollisions();
-            for(auto [bodyA, bodiesB] : collisions)
+            for (auto [bodyA, bodiesB] : collisions)
                 numCollisions2 += bodiesB.size();
-            ImGui::Text("Num collisions: %u", numCollisions2/2);
+            ImGui::Text("Num collisions: %u", numCollisions2 / 2);
             break;
         }
     }

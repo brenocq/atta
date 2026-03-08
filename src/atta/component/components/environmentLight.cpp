@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// environmentLight.cpp
-// Date: 2022-01-03
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/environmentLight.h>
 #include <atta/resource/interface.h>
 #include <atta/resource/resources/image.h>

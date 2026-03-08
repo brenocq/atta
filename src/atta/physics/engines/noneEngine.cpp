@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Physics Module
-// noneEngine.cpp
-// Date: 2022-09-29
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/physics/engines/noneEngine.h>
 #include <atta/physics/interface.h>
 

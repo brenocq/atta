@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// editor.cpp
-// Date: 2021-09-01
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/interface.h>
 #include <atta/resource/interface.h>
 #include <atta/script/interface.h>
@@ -12,6 +8,7 @@
 #include <implot.h>
 #include <implot3d.h>
 
+#include <atta/ui/panels/topBar/localWindows/examplesWindow.h>
 #include <atta/ui/panels/topBar/localWindows/versionWindow.h>
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
@@ -68,6 +65,7 @@ void Editor::render() {
 
     // Topbar windows
     VersionWindow::render();
+    ExamplesWindow::render();
 
     renderCameraWindows();
 

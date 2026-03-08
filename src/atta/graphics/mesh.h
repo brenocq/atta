@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// mesh.h
-// Date: 2023-04-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_MESH_H
-#define ATTA_GRAPHICS_MESH_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/indexBuffer.h>
 #include <atta/graphics/vertexBuffer.h>
@@ -36,5 +31,3 @@ class Mesh {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_MESH_H

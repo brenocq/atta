@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math
-// vector4.inl
-// Date: 2021-08-27
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 
 namespace atta {
 
@@ -169,6 +165,14 @@ void vector4<T>::normalize() {
     float l = length();
     if (l > 0)
         (*this) *= 1.0f / l;
+}
+
+// Normalized
+template <typename T>
+vector4<T> vector4<T>::normalized() const {
+    vector4<T> result = *this;
+    result.normalize();
+    return result;
 }
 
 // Unit

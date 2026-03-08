@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// glfwWindow.cpp
-// Date: 2021-08-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/event/events/windowClose.h>
 #include <atta/event/events/windowFocus.h>
 #include <atta/event/events/windowKeyboardButton.h>

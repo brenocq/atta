@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// sphereCollider.cpp
-// Date: 2021-11-30
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
 
@@ -15,7 +11,7 @@ ComponentDescription& TypedComponentRegistry<SphereCollider>::getDescription() {
         "Sphere Collider",
         {
             {AttributeType::FLOAT32, offsetof(SphereCollider, radius), "radius", 0.0001f, 2000.0f, 0.01f},
-            {AttributeType::FLOAT32, offsetof(SphereCollider, offset), "offset", -2000.0f, 2000.0f, 0.01f},
+            {AttributeType::VECTOR_FLOAT32, offsetof(SphereCollider, offset), "offset", -2000.0f, 2000.0f, 0.01f},
         },
     };
 

@@ -1,0 +1,37 @@
+[project]
+attaVersion = "0.3.7"
+name = "Logging"
+
+[config]
+dt = 0.015000
+desiredStepSpeed = 1.000000
+
+[graphics]
+graphicsFPS = 30.000000
+viewportRendering = true
+
+[physics]
+engine = "BULLET"
+gravity = vec3(0.000000, 0.000000, -9.810000)
+showColliders = true
+showContacts = false
+showJoints = false
+bullet.showAabb = false
+bullet.numSubSteps = 1
+
+[sensor]
+showCameras = true
+showInfrareds = true
+
+[material]
+id = "Material"
+color = vec3(0.500000, 0.500000, 0.500000)
+
+[viewport]
+name = "Main Viewport"
+renderer.type = "PbrRenderer"
+camera.type = "PerspectiveCamera"
+camera.position = vec3(2.000000, 2.000000, 2.000000)
+camera.lookAt = vec3(1.422650, 1.422650, 1.422650)
+camera.up = vec3(-0.408248, -0.408248, 0.816497)
+

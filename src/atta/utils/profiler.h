@@ -1,27 +1,22 @@
-//--------------------------------------------------
-// Atta Utils Module
-// profiler.h
-// Date: 2022-10-22
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_PROFILER_H
-#define ATTA_UTILS_PROFILER_H
-#include <chrono>
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/utils/stringId.h>
+#include <chrono>
 
 namespace atta {
 
 //---------- Profiler ----------//
 class Profiler {
   public:
-    using Time = uint64_t;///< Time point in ns
-    using ThreadId = uint32_t;///< Thread id
-    static constexpr Time ticksPerSecond = 1000*1000*1000;
+    using Time = uint64_t;     ///< Time point in ns
+    using ThreadId = uint32_t; ///< Thread id
+    static constexpr Time ticksPerSecond = 1000 * 1000 * 1000;
     struct Record {
-        StringId name;///< Function name
-        ThreadId threadId;///< Thread Id
-        Time begin;///< Start time in ns
-        Time end;///< End time in ns
+        StringId name;     ///< Function name
+        ThreadId threadId; ///< Thread Id
+        Time begin;        ///< Start time in ns
+        Time end;          ///< End time in ns
     };
 
     static Profiler& getInstance();
@@ -56,7 +51,6 @@ class Profiler {
     /// Get function name without return type and parameters
     static std::string cropFuncName(std::string name);
 
-
   private:
     Profiler() = default;
 
@@ -68,11 +62,11 @@ class Profiler {
 
 //---------- ProfilerRecord ----------//
 class ProfilerRecord {
-public:
+  public:
     ProfilerRecord(StringId name);
     ~ProfilerRecord();
 
-private:
+  private:
     StringId _name;
     static bool _record;
     std::chrono::time_point<std::chrono::high_resolution_clock> _startTime;
@@ -93,5 +87,3 @@ private:
 #endif
 
 #define PROFILE() PROFILE_NAME(__PRETTY_FUNCTION__)
-
-#endif // ATTA_UTILS_PROFILER_H

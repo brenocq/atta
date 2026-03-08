@@ -1,12 +1,7 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// glfwWindow.h
-// Date: 2021-08-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_WINDOWS_GLFW_WINDOW_H
-#define ATTA_GRAPHICS_WINDOWS_GLFW_WINDOW_H
-//#if defined(ATTA_OS_LINUX) || defined(ATTA_OS_MACOS) || defined(ATTA_OS_WINDOWS)
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
+// #if defined(ATTA_OS_LINUX) || defined(ATTA_OS_MACOS) || defined(ATTA_OS_WINDOWS)
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -31,5 +26,4 @@ class GlfwWindow final : public Window {
 
 } // namespace atta::graphics
 
-//#endif// ATTA_OS_XXX
-#endif // ATTA_GRAPHICS_WINDOWS_GLFW_WINDOW_H
+// #endif// ATTA_OS_XXX

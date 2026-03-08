@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Pre Compiled Header
-// pcb.h
-// Date: 2021-08-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_PRE_COMPILED_HEADER_H
-#define ATTA_PRE_COMPILED_HEADER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #define _USE_MATH_DEFINES // Windows M_PI fix
 #include <algorithm>
@@ -23,6 +18,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <queue>
 #include <set>
 #include <sstream>
 #include <stack>
@@ -38,5 +34,3 @@ namespace fs = std::filesystem;
 #include <atta/utils/math/math.h>
 #include <atta/utils/namespaces.h>
 #include <atta/utils/profiler.h>
-
-#endif // ATTA_PRE_COMPILED_HEADER_H

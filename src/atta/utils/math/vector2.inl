@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math
-// vector2.inl
-// Date: 2021-08-28
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 
 namespace atta {
 
@@ -158,6 +154,14 @@ void vector2<T>::normalize() {
     float l = length();
     if (l > 0)
         (*this) *= 1.0f / l;
+}
+
+// Normalized
+template <typename T>
+vector2<T> vector2<T>::normalized() const {
+    vector2<T> result = *this;
+    result.normalize();
+    return result;
 }
 
 // Unit

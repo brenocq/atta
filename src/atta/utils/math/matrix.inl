@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math
-// matrix.inl
-// Date: 2021-04-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 namespace atta {
 template <typename T>
 matrix<T>::matrix(unsigned _nrows, unsigned _ncols) : nrows(_nrows), ncols(_ncols) {

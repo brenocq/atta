@@ -1,6 +1,23 @@
 #!/bin/bash
 set -e
 
+# Colors
+BOLD="\033[1m"
+RESET="\033[0m"
+RED="\033[31m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+BLUE="\033[34m"
+CYAN="\033[36m"
+WHITE="\033[37m"
+DIM="\033[2m"
+
+info()    { echo -e "${BOLD}${BLUE}[atta]${RESET} $*"; }
+success() { echo -e "${BOLD}${GREEN}[atta]${RESET} $*"; }
+warn()    { echo -e "${BOLD}${YELLOW}[atta]${RESET} $*"; }
+error()   { echo -e "${BOLD}${RED}[atta]${RESET} $*"; }
+section() { echo -e "\n${BOLD}${CYAN}━━━ $* ${RESET}"; }
+
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 SOURCE_PATH="$SCRIPT_PATH"
 BUILD_PATH="$SOURCE_PATH/build"
@@ -19,75 +36,73 @@ CMAKE_VULKAN="-DATTA_VULKAN_SUPPORT=ON"
 
 printHelp()
 {
-    echo "Atta build script"
+    echo -e "${BOLD}Atta build script${RESET}"
     echo
-    echo "Usage: ./build.sh [option(s)]"
+    echo -e "Usage: ${CYAN}./build.sh${RESET} ${DIM}[option(s)]${RESET}"
     echo
-    echo "Options:"
+    echo -e "${BOLD}Options:${RESET}"
     echo
-    echo "-h or --help"
-    echo "        This help menu"
+    echo -e "  ${YELLOW}-h${RESET}, ${YELLOW}--help${RESET}"
+    echo -e "        This help menu"
     echo
-    echo "-t or --type <option>"
-    echo "        Which type of build."
-    echo "        Valid options are: default, web, web_module, docs"
+    echo -e "  ${YELLOW}-t${RESET}, ${YELLOW}--type${RESET} ${DIM}<option>${RESET}"
+    echo -e "        Which type of build."
+    echo -e "        Valid options are: ${CYAN}default${RESET}, ${CYAN}web${RESET}, ${CYAN}web_module${RESET}, ${CYAN}docs${RESET}"
     echo
-    echo "-d or --debug"
-    echo "        Build with debug information."
+    echo -e "  ${YELLOW}-d${RESET}, ${YELLOW}--debug${RESET}"
+    echo -e "        Build with debug information."
     echo
-    echo "-D or --debugger"
-    echo "        Run with a debugger (prefers LLDB, falls back to GDB)."
+    echo -e "  ${YELLOW}-D${RESET}, ${YELLOW}--debugger${RESET}"
+    echo -e "        Run with a debugger (prefers LLDB, falls back to GDB)."
     echo
-    echo "-c or --compiler <name>"
-    echo "        Select the compiler."
+    echo -e "  ${YELLOW}-c${RESET}, ${YELLOW}--compiler${RESET} ${DIM}<name>${RESET}"
+    echo -e "        Select the compiler."
     echo
-    echo "-j or --jobs <num_jobs>"
-    echo "        Set number of jobs to use when building."
+    echo -e "  ${YELLOW}-j${RESET}, ${YELLOW}--jobs${RESET} ${DIM}<num_jobs>${RESET}"
+    echo -e "        Set number of jobs to use when building."
     echo
-    echo "-s or --static <project_file>"
-    echo "        Build statically linked to a project."
-    echo "        The file should be a valid .atta"
+    echo -e "  ${YELLOW}-s${RESET}, ${YELLOW}--static${RESET} ${DIM}<project_file>${RESET}"
+    echo -e "        Build statically linked to a project."
+    echo -e "        The file should be a valid ${DIM}.atta${RESET}"
     echo
-    echo "-r or --run"
-    echo "        Run after build."
+    echo -e "  ${YELLOW}-r${RESET}, ${YELLOW}--run${RESET}"
+    echo -e "        Run after build."
     echo
-    echo "-p or --project <project_file>"
-    echo "        Specify project to run."
+    echo -e "  ${YELLOW}-p${RESET}, ${YELLOW}--project${RESET} ${DIM}<project_file>${RESET}"
+    echo -e "        Specify project to run."
     echo
-    echo "-i or --install"
-    echo "        Install after build."
+    echo -e "  ${YELLOW}-i${RESET}, ${YELLOW}--install${RESET}"
+    echo -e "        Install after build."
     echo
-    echo "--disable-vulkan"
-    echo "        Disable Vulkan support."
+    echo -e "  ${YELLOW}--disable-vulkan${RESET}"
+    echo -e "        Disable Vulkan support."
     exit
 }
 
 buildDefault()
 {
-    echo "---------- Building ----------"
-    # Build
+    section "Building"
     cmake $CMAKE_BUILD_TYPE $CMAKE_COMPILER $CMAKE_ATTA_STATIC $CMAKE_VULKAN $SOURCE_PATH
     make -j $NUM_JOBS
+    success "Build complete"
 
-    # Install
     if [[ "$INSTALL_AFTER" == "true" ]]; then
-        echo "---------- Installing ----------"
-       sudo make install
+        section "Installing"
+        sudo make install
+        success "Install complete"
     fi
 
-    # Run
     if [[ "$RUN_AFTER" == "true" ]]; then
-        echo "---------- Running ----------"
+        section "Running"
         if [[ "$USE_DEBUGGER" == "true" ]]; then
-            # Detect available debugger (prefer LLDB)
             if command -v lldb &> /dev/null; then
-                echo "Using LLDB for debugging..."
+                info "Using LLDB for debugging..."
                 lldb --one-line "run" -- bin/atta -- $PROJECT_TO_RUN
             elif command -v gdb &> /dev/null; then
-                echo "Using GDB for debugging..."
+                info "Using GDB for debugging..."
                 gdb -ex r --args bin/atta $PROJECT_TO_RUN
             else
-                echo -e "\033[1m\033[31m[Error] \033[0m\033[31mNo debugger found (LLDB or GDB). Install one to continue."
+                error "No debugger found (LLDB or GDB). Install one to continue."
                 exit 1
             fi
         else
@@ -100,10 +115,9 @@ buildDefault()
 
 buildWeb()
 {
-    # Check if emscripten is installed
     if ! command -v emcmake &> /dev/null
     then
-        echo -e "\033[1m\033[31m[Error] \033[0m\033[31mEmscripten is not installed, please follow the instruction here: \033[37mhttps://emscripten.org/docs/getting_started/downloads.html"
+        error "Emscripten is not installed, please follow the instructions at: ${WHITE}https://emscripten.org/docs/getting_started/downloads.html${RESET}"
         exit
     fi
 
@@ -112,14 +126,13 @@ buildWeb()
         CMAKE_MODULE="-DATTA_WEB_BUILD_MODULE=ON"
     fi
 
-    # Build
-    echo "---------- Building web ----------"
+    section "Building web"
     emcmake cmake $CMAKE_MODULE $CMAKE_BUILD_TYPE $CMAKE_ATTA_STATIC $SOURCE_PATH
     make -j $NUM_JOBS
+    success "Web build complete"
 
-    # Run
     if [[ "$RUN_AFTER" == "true" ]]; then
-        echo "---------- Running web ----------"
+        section "Running web"
         emrun bin/atta.html
     fi
 
@@ -128,9 +141,10 @@ buildWeb()
 
 buildDocs()
 {
-    echo "---------- Building docs ----------"
+    section "Building docs"
     cmake -ATTA_BUILD_DOCS=ON -DATTA_BUILD_TESTS=OFF $SOURCE_PATH
     make -j $NUM_JOBS
+    success "Docs build complete"
     exit
 }
 
@@ -192,7 +206,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -*|--*)
-      echo "Unknown option $1"
+      error "Unknown option $1"
       exit
       ;;
   esac
@@ -215,7 +229,7 @@ docs)
   buildDocs
   ;;
 *)
-  echo "Unknown build type $BUILD_TYPE"
+  error "Unknown build type ${BOLD}$BUILD_TYPE${RESET}"
   exit
   ;;
 esac

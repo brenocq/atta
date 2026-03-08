@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Utils Tests
-// stringId.cpp
-// Date: 2021-08-18
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/utils/math/math.h>
 #include <gtest/gtest.h>
 
@@ -479,8 +475,8 @@ TEST(Utils_Math_Vector, TypeDeduction) {
     }
 }
 
-//#include <immintrin.h>
-// TEST(Utils_Math_Vector, SIMD128)
+// #include <immintrin.h>
+//  TEST(Utils_Math_Vector, SIMD128)
 //{
 //	class Vec128
 //	{

@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Event Module
-// simulationStop.h
-// Date: 2021-09-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_EVENT_EVENTS_SIMULATION_STOP_H
-#define ATTA_EVENT_EVENTS_SIMULATION_STOP_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/event/event.h>
 
 namespace atta::event {
@@ -16,5 +11,3 @@ class SimulationStop : public EventTyped<SID("SimulationStop")> {
 };
 
 } // namespace atta::event
-
-#endif // ATTA_EVENT_EVENTS_SIMULATION_STOP_H

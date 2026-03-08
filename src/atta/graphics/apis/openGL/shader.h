@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// shader.h
-// Date: 2021-09-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_SHADER_H
-#define ATTA_GRAPHICS_APIS_OPENGL_SHADER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/openGL/base.h>
 #include <atta/graphics/image.h>
@@ -47,5 +42,3 @@ class Shader final : public gfx::Shader {
 };
 
 } // namespace atta::graphics::gl
-
-#endif // ATTA_GRAPHICS_APIS_OPENGL_SHADER_H

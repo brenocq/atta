@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// pipeline.h
-// Date: 2021-09-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_PIPELINE_H
-#define ATTA_GRAPHICS_PIPELINE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/event/event.h>
 #include <atta/graphics/renderPass.h>
@@ -111,5 +106,3 @@ class Pipeline {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_PIPELINE_H

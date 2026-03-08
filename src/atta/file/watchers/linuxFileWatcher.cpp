@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta File Module
-// linuxFileWatcher.cpp
-// Date: 2021-09-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #ifdef ATTA_OS_LINUX
 #include <atta/event/events/fileWatch.h>
 #include <atta/event/interface.h>

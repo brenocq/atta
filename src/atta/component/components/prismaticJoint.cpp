@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// prismaticJoint.cpp
-// Date: 2021-12-04
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/prismaticJoint.h>
 
 namespace atta::component {

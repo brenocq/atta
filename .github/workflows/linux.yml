@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout atta
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         run: |
@@ -28,7 +28,7 @@ jobs:
           sudo apt-get install cmake xorg-dev curl
 
       - name: Build
-        run: ./build.sh --jobs 2 --compiler ${{ matrix.config.compiler }}
+        run: ./build.sh --jobs 4 --compiler ${{ matrix.config.compiler }}
 
       - name: Test
         run: ctest

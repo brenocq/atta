@@ -1,0 +1,96 @@
+[project]
+attaVersion = "0.3.7"
+name = "simple-script"
+
+[config]
+dt = 0.015000
+desiredStepSpeed = 8.890705
+
+[graphics]
+graphicsFPS = 30.000000
+viewportRendering = true
+
+[physics]
+engine = "BULLET"
+gravity = vec3(0.000000, 0.000000, -9.810000)
+showColliders = true
+showContacts = false
+showJoints = false
+bullet.showAabb = false
+bullet.numSubSteps = 1
+
+[sensor]
+showCameras = true
+showInfrareds = true
+
+[material]
+id = "Material"
+color = vec3(0.500000, 0.500000, 0.500000)
+
+[material]
+id = "RedMaterial"
+color = vec3(1.000000, 0.000000, 0.000000)
+
+[material]
+id = "BlueMaterial"
+color = vec3(0.000000, 0.000000, 1.000000)
+
+[material]
+id = "GreenMaterial"
+color = vec3(0.000000, 1.000000, 0.000000)
+
+[material]
+id = "CubeMaterial"
+color = vec3(0.495000, 0.515000, 0.530000)
+
+[viewport]
+name = "Main Viewport"
+renderer.type = "PbrRenderer"
+camera.type = "PerspectiveCamera"
+camera.position = vec3(-0.820497, 2.569897, 2.584723)
+camera.lookAt = vec3(-0.580617, 1.803931, 1.988271)
+camera.up = vec3(0.178256, -0.569192, 0.802649)
+
+[node]
+id = 0
+script.sid = "LightScript"
+material.sid = "RedMaterial"
+mesh.sid = "meshes/sphere.obj"
+name.name = "Point Light 0"
+pointLight.intensity = vec3(1.000000, 0.000000, 0.000000)
+transform.position = vec3(0.789618, 0.903605, 1.200000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.100000, 0.100000, 0.100000)
+
+[node]
+id = 1
+script.sid = "LightScript"
+material.sid = "GreenMaterial"
+mesh.sid = "meshes/sphere.obj"
+name.name = "Point Light 1"
+pointLight.intensity = vec3(0.000000, 1.000000, 0.000000)
+transform.position = vec3(-1.151770, 0.336786, 1.200000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.100000, 0.100000, 0.100000)
+
+[node]
+id = 2
+script.sid = "LightScript"
+material.sid = "BlueMaterial"
+mesh.sid = "meshes/sphere.obj"
+name.name = "Point Light 2"
+pointLight.intensity = vec3(0.000000, 0.000000, 1.000000)
+transform.position = vec3(0.173067, -1.187454, 1.200000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.100000, 0.100000, 0.100000)
+
+[node]
+id = 3
+script.sid = "CubeScript"
+material.sid = "CubeMaterial"
+mesh.sid = "meshes/cube.obj"
+name.name = "Cube"
+transform.position = vec3(0.000000, 0.000000, 0.000000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.845276, 0.845276, 0.845276)
+

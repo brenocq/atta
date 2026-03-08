@@ -1,0 +1,23 @@
+name: 🕵 Check clang-format
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  format-check:
+    name: Check clang-format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format
+
+      - name: Check clang-format
+        run: |
+          find src/atta/ -type f \( -name "*.h" -o -name "*.cpp" -o -name "*.inl" \) -exec clang-format --dry-run --Werror {} +

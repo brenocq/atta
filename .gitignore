@@ -20,7 +20,7 @@
 /CMakeSettings.json
 
 # Vim
-tags
+codecompanion*.json
 
 # Local config
 /src/atta/cmakeConfig.h

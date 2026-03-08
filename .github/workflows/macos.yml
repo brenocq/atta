@@ -19,13 +19,7 @@ jobs:
 
     steps:
       - name: Checkout atta
-        uses: actions/checkout@v4
-
-      - name: Install dependencies on macos
-        if: startsWith(matrix.config.os, 'macos')
-        run: |
-          brew install cmake
-          cmake --version
+        uses: actions/checkout@v5
 
       - name: Configure
         run: |
@@ -34,7 +28,7 @@ jobs:
           cmake ..
 
       - name: Build
-        run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
+        run: cmake --build build --parallel 4 --config ${{ matrix.config.build_type }}
 
       - name: Test
         run: ctest

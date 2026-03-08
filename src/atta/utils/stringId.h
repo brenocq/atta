@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Utils Module
-// stringId.h
-// Date: 2021-08-18
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_STRING_ID_H
-#define ATTA_UTILS_STRING_ID_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <cstdint>
 
 namespace atta {
@@ -68,4 +63,3 @@ struct hash<atta::StringId> {
 } // namespace std
 
 #include <atta/utils/stringId.inl>
-#endif // ATTA_UTILS_STRING_ID_H

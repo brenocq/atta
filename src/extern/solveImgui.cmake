@@ -4,7 +4,7 @@ set(ATTA_IMGUI_TARGETS "")
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY "https://github.com/ocornut/imgui"
-    GIT_TAG "v1.91.7-docking"
+    GIT_TAG "v1.92.6-docking"
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
@@ -41,6 +41,9 @@ endif()
 
 atta_add_include_dirs(${FETCHCONTENT_BASE_DIR}/imgui-src)
 atta_add_libs(imgui)
+
+# Also make imgui available in the atta namespace
+add_library(atta::imgui ALIAS imgui)
 
 atta_log(Success Extern "ImGui support (source)")
 set(ATTA_IMGUI_SUPPORT TRUE)

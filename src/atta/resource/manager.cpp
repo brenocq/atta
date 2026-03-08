@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Resource Module
-// manager.cpp
-// Date: 2021-09-07
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/resource/interface.h>
 #include <atta/resource/manager.h>
 
@@ -63,6 +59,9 @@ void Manager::onProjectOpen(event::Event& event) {
 void Manager::loadResourcesRecursively(fs::path directory) {
     static const std::vector<std::string> meshExtensions{".obj", ".fbx", ".FBX", ".fbx", ".stl", ".ply"};
     static const std::vector<std::string> imageExtensions{".jpg", ".jpeg", ".png", ".hdr", ".tga"};
+
+    if (!fs::exists(directory))
+        return;
 
     for (auto file : file::getDirectoryFilesRecursive(directory)) {
         // Load as mesh
