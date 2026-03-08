@@ -8,6 +8,7 @@
 #include <implot.h>
 #include <implot3d.h>
 
+#include <atta/ui/panels/topBar/localWindows/examplesWindow.h>
 #include <atta/ui/panels/topBar/localWindows/versionWindow.h>
 #include <atta/ui/windows/graphicsModuleWindow.h>
 #include <atta/ui/windows/ioModuleWindow.h>
@@ -64,6 +65,7 @@ void Editor::render() {
 
     // Topbar windows
     VersionWindow::render();
+    ExamplesWindow::render();
 
     renderCameraWindows();
 

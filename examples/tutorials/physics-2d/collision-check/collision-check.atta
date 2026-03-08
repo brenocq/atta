@@ -1,0 +1,92 @@
+[project]
+attaVersion = "0.3.7"
+name = "collision-check"
+
+[config]
+dt = 0.015000
+desiredStepSpeed = 1.000000
+
+[graphics]
+graphicsFPS = 30.000000
+viewportRendering = true
+
+[physics]
+engine = "BOX2D"
+gravity = vec3(0.000000, -9.810000, -9.810000)
+showColliders = true
+showContacts = true
+showJoints = false
+bullet.showAabb = false
+bullet.numSubSteps = 1
+
+[sensor]
+showCameras = true
+showInfrareds = true
+
+[material]
+id = "Material"
+color = vec3(0.500000, 0.500000, 0.500000)
+
+[material]
+id = "not-colliding"
+color = vec3(0.000000, 1.000000, 0.000000)
+
+[material]
+id = "colliding"
+color = vec3(1.000000, 0.000000, 0.000000)
+
+[viewport]
+name = "Main Viewport"
+renderer.type = "FastRenderer"
+camera.type = "OrthographicCamera"
+camera.position = vec3(0.000000, 0.000000, 10.000000)
+camera.lookAt = vec3(0.000000, 0.000000, 9.000000)
+camera.up = vec3(0.000000, 1.000000, 0.000000)
+camera.height = 5.000000
+
+[node]
+id = 0
+rigidBody2D.type = "STATIC"
+rigidBody2D.linearVelocity = 0.000000
+rigidBody2D.angularVelocity = 0.000000
+rigidBody2D.mass = 1.000000
+rigidBody2D.friction = 0.500000
+rigidBody2D.restitution = 0.500000
+rigidBody2D.linearDamping = 0.000000
+rigidBody2D.angularDamping = 0.000000
+rigidBody2D.allowSleep = true
+rigidBody2D.awake = true
+rigidBody2D.fixedRotation = false
+rigidBody2D.groundFriction = false
+boxCollider2D.size = 1.000000
+boxCollider2D.offset = 0.000000
+material.sid = "not-colliding"
+mesh.sid = "meshes/plane.obj"
+name.name = "Ground"
+transform.position = vec3(0.000000, 0.000000, 0.000000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(5.000000, 0.100000, 1.000000)
+
+[node]
+id = 1
+rigidBody2D.type = "DYNAMIC"
+rigidBody2D.linearVelocity = 0.000000
+rigidBody2D.angularVelocity = 0.000000
+rigidBody2D.mass = 1.000000
+rigidBody2D.friction = 0.500000
+rigidBody2D.restitution = 0.000000
+rigidBody2D.linearDamping = 0.100000
+rigidBody2D.angularDamping = 0.100000
+rigidBody2D.allowSleep = true
+rigidBody2D.awake = true
+rigidBody2D.fixedRotation = false
+rigidBody2D.groundFriction = false
+boxCollider2D.size = 1.000000
+boxCollider2D.offset = 0.000000
+material.sid = "not-colliding"
+mesh.sid = "meshes/plane.obj"
+name.name = "Box"
+transform.position = vec3(0.002844, 1.475557, 0.600000)
+transform.orientation = quat(0.000000, 0.000000, -0.318081, 0.948064)
+transform.scale = vec3(0.500000, 0.500000, 1.000000)
+

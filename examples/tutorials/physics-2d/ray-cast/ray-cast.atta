@@ -1,0 +1,188 @@
+[project]
+attaVersion = "0.3.7"
+name = "ray-cast"
+
+[config]
+dt = 0.015000
+desiredStepSpeed = 1.000000
+
+[graphics]
+graphicsFPS = 30.000000
+viewportRendering = true
+
+[physics]
+engine = "BOX2D"
+gravity = vec3(0.000000, 0.000000, -9.810000)
+showColliders = true
+showContacts = false
+showJoints = false
+bullet.showAabb = false
+bullet.numSubSteps = 1
+
+[sensor]
+showCameras = true
+showInfrareds = true
+
+[material]
+id = "Material"
+color = vec3(0.500000, 0.500000, 0.500000)
+
+[material]
+id = "no-hit"
+color = vec3(0.000000, 1.000000, 0.000000)
+
+[material]
+id = "hit"
+color = vec3(1.000000, 0.000000, 0.000000)
+
+[viewport]
+name = "Main Viewport"
+renderer.type = "FastRenderer"
+camera.type = "OrthographicCamera"
+camera.position = vec3(0.000000, 0.000000, 10.000000)
+camera.lookAt = vec3(0.000000, 0.000000, 9.000000)
+camera.up = vec3(0.000000, 1.000000, 0.000000)
+camera.height = 5.000000
+
+[node]
+id = 0
+name.name = "Boxes"
+
+[node]
+id = 1
+rigidBody2D.type = "STATIC"
+rigidBody2D.linearVelocity = 0.000000
+rigidBody2D.angularVelocity = 0.000000
+rigidBody2D.mass = 1.000000
+rigidBody2D.friction = 0.500000
+rigidBody2D.restitution = 0.500000
+rigidBody2D.linearDamping = 0.000000
+rigidBody2D.angularDamping = 0.000000
+rigidBody2D.allowSleep = true
+rigidBody2D.awake = true
+rigidBody2D.fixedRotation = false
+rigidBody2D.groundFriction = false
+relationship.parent = 0
+boxCollider2D.size = 1.000000
+boxCollider2D.offset = 0.000000
+material.sid = "no-hit"
+mesh.sid = "meshes/plane.obj"
+name.name = "Box 0"
+transform.position = vec3(-2.000000, 0.000000, 0.000000)
+transform.orientation = quat(-0.000000, -0.000000, -0.000000, 1.000000)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 2
+rigidBody2D.type = "STATIC"
+rigidBody2D.linearVelocity = 0.000000
+rigidBody2D.angularVelocity = 0.000000
+rigidBody2D.mass = 1.000000
+rigidBody2D.friction = 0.500000
+rigidBody2D.restitution = 0.500000
+rigidBody2D.linearDamping = 0.000000
+rigidBody2D.angularDamping = 0.000000
+rigidBody2D.allowSleep = true
+rigidBody2D.awake = true
+rigidBody2D.fixedRotation = false
+rigidBody2D.groundFriction = false
+relationship.parent = 0
+boxCollider2D.size = 1.000000
+boxCollider2D.offset = 0.000000
+material.sid = "hit"
+mesh.sid = "meshes/plane.obj"
+name.name = "Box 1"
+transform.position = vec3(-1.000000, 0.000000, 0.000000)
+transform.orientation = quat(-0.000000, -0.000000, -0.000000, 1.000000)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 3
+rigidBody2D.type = "STATIC"
+rigidBody2D.linearVelocity = 0.000000
+rigidBody2D.angularVelocity = 0.000000
+rigidBody2D.mass = 1.000000
+rigidBody2D.friction = 0.500000
+rigidBody2D.restitution = 0.500000
+rigidBody2D.linearDamping = 0.000000
+rigidBody2D.angularDamping = 0.000000
+rigidBody2D.allowSleep = true
+rigidBody2D.awake = true
+rigidBody2D.fixedRotation = false
+rigidBody2D.groundFriction = false
+relationship.parent = 0
+boxCollider2D.size = 1.000000
+boxCollider2D.offset = 0.000000
+material.sid = "hit"
+mesh.sid = "meshes/plane.obj"
+name.name = "Box 2"
+transform.position = vec3(0.000000, 0.000000, 0.000000)
+transform.orientation = quat(-0.000000, -0.000000, -0.000000, 1.000000)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 4
+rigidBody2D.type = "STATIC"
+rigidBody2D.linearVelocity = 0.000000
+rigidBody2D.angularVelocity = 0.000000
+rigidBody2D.mass = 1.000000
+rigidBody2D.friction = 0.500000
+rigidBody2D.restitution = 0.500000
+rigidBody2D.linearDamping = 0.000000
+rigidBody2D.angularDamping = 0.000000
+rigidBody2D.allowSleep = true
+rigidBody2D.awake = true
+rigidBody2D.fixedRotation = false
+rigidBody2D.groundFriction = false
+relationship.parent = 0
+boxCollider2D.size = 1.000000
+boxCollider2D.offset = 0.000000
+material.sid = "hit"
+mesh.sid = "meshes/plane.obj"
+name.name = "Box 3"
+transform.position = vec3(1.000000, 0.000000, 0.000000)
+transform.orientation = quat(-0.000000, -0.000000, -0.000000, 1.000000)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 5
+rigidBody2D.type = "STATIC"
+rigidBody2D.linearVelocity = 0.000000
+rigidBody2D.angularVelocity = 0.000000
+rigidBody2D.mass = 1.000000
+rigidBody2D.friction = 0.500000
+rigidBody2D.restitution = 0.500000
+rigidBody2D.linearDamping = 0.000000
+rigidBody2D.angularDamping = 0.000000
+rigidBody2D.allowSleep = true
+rigidBody2D.awake = true
+rigidBody2D.fixedRotation = false
+rigidBody2D.groundFriction = false
+relationship.parent = 0
+boxCollider2D.size = 1.000000
+boxCollider2D.offset = 0.000000
+material.sid = "no-hit"
+mesh.sid = "meshes/plane.obj"
+name.name = "Box 4"
+transform.position = vec3(2.000000, 0.000000, 0.000000)
+transform.orientation = quat(-0.000000, -0.000000, -0.000000, 1.000000)
+transform.scale = vec3(0.900000, 0.900000, 1.000000)
+
+[node]
+id = 6
+material.sid = "hit"
+mesh.sid = "meshes/disk.obj"
+name.name = "Control 0"
+transform.position = vec3(2.531645, -1.542721, 0.000000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.100000, 0.100000, 1.000000)
+
+[node]
+id = 7
+material.sid = "hit"
+mesh.sid = "meshes/disk.obj"
+name.name = "Control 1"
+transform.position = vec3(-2.460442, 1.511076, 0.000000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.100000, 0.100000, 1.000000)
+
