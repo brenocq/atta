@@ -57,6 +57,7 @@ void VulkanAPI::startUp() {
     gfx::Framebuffer::CreateInfo framebufferInfo{};
     framebufferInfo.width = _swapChain->getImages()[0]->getWidth();
     framebufferInfo.height = _swapChain->getImages()[0]->getHeight();
+    framebufferInfo.isSwapchain = true;
     size_t i = 0;
     for (std::shared_ptr<Image> image : _swapChain->getImages()) {
         gfx::Framebuffer::Attachment attachment{};

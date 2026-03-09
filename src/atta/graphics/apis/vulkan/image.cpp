@@ -176,6 +176,12 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
         write(_data);
 }
 
+void Image::prepareForSampling() {
+    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
+    transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
+}
+
 void* Image::getImGuiImage() {
     // Make sure image is readable
     VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
@@ -478,6 +484,10 @@ void populateLayoutStage(VkImageLayout layout, VkPipelineStageFlags* stage, VkAc
             break;
         case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
             *access = 0;
+            *stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            break;
+        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+            *access = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
             *stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
             break;
         case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:

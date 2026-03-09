@@ -20,8 +20,9 @@ void Framebuffer::bind(bool clear) {
     }
 }
 void Framebuffer::unbind() {
+    VkImageLayout layout = _isSwapchain ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     for (size_t i = 0; i < _images.size(); i++)
-        std::dynamic_pointer_cast<vk::Image>(_images[i])->setLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+        std::dynamic_pointer_cast<vk::Image>(_images[i])->setLayout(layout);
 }
 
 void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {

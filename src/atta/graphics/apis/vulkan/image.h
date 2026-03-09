@@ -37,6 +37,7 @@ class Image final : public gfx::Image {
     void write(uint8_t* data) override;
     std::vector<uint8_t> read(vec2i offset = {0, 0}, vec2i size = {0, 0}) override;
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
+    void prepareForSampling() override;
 
     void* getImGuiImage() override;
     VkImage getImageHandle() const;

@@ -95,6 +95,8 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
         _renderQueue->end();
     }
 
+    cubemapImage->prepareForSampling();
+
     return cubemapImage;
 }
 

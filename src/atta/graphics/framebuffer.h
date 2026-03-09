@@ -30,6 +30,7 @@ class Framebuffer {
         uint32_t width;                             ///< Framebuffer width
         uint32_t height;                            ///< Framebuffer height
         vec4 clearColor = {0.0f, 0.0f, 0.0f, 0.0f}; ///< Color to be used when cleaning the color attachments
+        bool isSwapchain = false;                   ///< Whether this framebuffer wraps a swapchain image
 
         std::vector<Attachment> attachments = {};
 
@@ -53,6 +54,7 @@ class Framebuffer {
     uint32_t getHeight() const { return _height; }
     vec4 getClearColor() const { return _clearColor; }
     StringId getDebugName() const { return _debugName; }
+    bool isSwapchain() const { return _isSwapchain; }
 
     bool hasColorAttachment() const;
     bool hasDepthAttachment() const;
@@ -65,6 +67,7 @@ class Framebuffer {
     uint32_t _width;
     uint32_t _height;
     vec4 _clearColor;
+    bool _isSwapchain;
 
     std::vector<Attachment> _attachments;
     int _colorAttachmentIndex;
