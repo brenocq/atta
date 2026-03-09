@@ -17,6 +17,7 @@ class SkyboxPipeline final {
 
     /// Render skybox
     void render(std::shared_ptr<Camera> camera, StringId envImg);
+    void render(std::shared_ptr<Camera> camera, std::shared_ptr<gfx::Image> envImg);
 
   private:
     std::shared_ptr<Pipeline> _pipeline;

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #pragma once
 
+#include <atta/graphics/compute/irradiance.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
@@ -27,7 +28,6 @@ class PbrRenderer final : public Renderer {
     void shadowPass();
     void geometryPass(std::shared_ptr<Camera> camera);
 
-    void irradianceCubemap();
     void prefilterCubemap();
     void brdfLUT();
 
@@ -50,6 +50,9 @@ class PbrRenderer final : public Renderer {
     // Environment light
     StringId _lastEnvironmentImg;
     mat3 _environmentMapOri;
+    // Irradiance image
+    std::unique_ptr<Irradiance> _irradiance;
+    std::shared_ptr<Image> _irradianceImage;
 
     // Shadow mapping
     std::shared_ptr<Pipeline> _shadowMapPipeline;

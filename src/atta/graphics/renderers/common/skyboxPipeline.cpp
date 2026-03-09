@@ -22,7 +22,19 @@ SkyboxPipeline::SkyboxPipeline(std::shared_ptr<RenderPass> renderPass) {
 }
 
 void SkyboxPipeline::render(std::shared_ptr<Camera> camera, StringId envImg) {
-    // Update environment map image
+    _pipeline->updateImageGroup("envImg", {{"uEnvironmentMap", envImg}});
+
+    _pipeline->begin();
+    {
+        _pipeline->setImageGroup("envImg");
+        _pipeline->setMat4("uProjection", camera->getProj());
+        _pipeline->setMat4("uView", camera->getView());
+        _pipeline->renderCube();
+    }
+    _pipeline->end();
+}
+
+void SkyboxPipeline::render(std::shared_ptr<Camera> camera, std::shared_ptr<gfx::Image> envImg) {
     _pipeline->updateImageGroup("envImg", {{"uEnvironmentMap", envImg}});
 
     _pipeline->begin();

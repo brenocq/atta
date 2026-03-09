@@ -38,7 +38,7 @@ perFrame float omniFarPlane;
 // Environment light - IBL
 perFrame mat3 environmentLightOri;
 // perFrame samplerCube prefilterMap;
-// perFrame samplerCube irradianceMap;
+perFrame samplerCube irradianceMap;
 // perFrame sampler2D brdfLUT;
 
 //----- Per Draw -----//
@@ -145,13 +145,13 @@ void fragment(out vec4 outColor) {
         vec3 kS = F;
         vec3 kD = 1.0 - kS;
         kD *= 1.0 - metallic;
-        vec3 irradiance = vec3(1, 1, 1); // texture(irradianceMap, environmentLightOri * N).rgb;
+        vec3 irradiance = texture(irradianceMap, environmentLightOri * N).rgb;
         vec3 diffuse = irradiance * albedo;
 
         // Specular IBL
         const float MAX_REFLECTION_LOD = 4.0;
         vec3 R = reflect(-V, N);
-        vec3 prefilteredColor = vec3(1, 1, 1); // textureLod(prefilterMap, environmentLightOri * R, roughness * MAX_REFLECTION_LOD).rgb;
+        vec3 prefilteredColor = vec3(1, 0, 0); // textureLod(prefilterMap, environmentLightOri * R, roughness * MAX_REFLECTION_LOD).rgb;
         vec2 brdf = vec2(0, 0);                // texture(brdfLUT, vec2(max(dot(environmentLightOri * N, V), 0.0), roughness)).rg;
         vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 

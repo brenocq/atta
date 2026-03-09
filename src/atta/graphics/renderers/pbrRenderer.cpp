@@ -21,6 +21,8 @@
 namespace atta::graphics {
 
 PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasResized(false), _lastEnvironmentImg(StringId()) {
+    _irradiance = std::make_unique<Irradiance>();
+
     // Render Queue
     _renderQueue = graphics::create<RenderQueue>();
 
@@ -48,6 +50,7 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
         geometryPipelineInfo.renderPass = _geometryRenderPass;
         geometryPipelineInfo.debugName = StringId("PbrRenderer Pipeline");
         _geometryPipeline = graphics::create<Pipeline>(geometryPipelineInfo);
+        _geometryPipeline->createImageGroup(Pipeline::ImageGroupType::PER_FRAME, "iblImg");
     }
 
     //---------- Common pipelines ----------//
@@ -154,7 +157,9 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
     if (currEnvironmentImg != _lastEnvironmentImg) {
         _lastEnvironmentImg = currEnvironmentImg;
         if (_lastEnvironmentImg != StringId()) {
-            // irradianceCubemap();
+            _irradianceImage = _irradiance->createIrradianceCubemap(_lastEnvironmentImg);
+            if (_irradianceImage)
+                _geometryPipeline->updateImageGroup("iblImg", {{"irradianceMap", _irradianceImage}});
             // prefilterCubemap();
         }
     }
@@ -325,17 +330,9 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                 // _geometryPipeline->setCubemap("omniShadowMap", _omnidirectionalShadowMap);
                 _geometryPipeline->setFloat("omniFarPlane", 25.0f);
 
-                // Always set environment textures (if there is no environment map, use white texture)
-                // _geometryPipeline->setCubemap("irradianceMap", "PbrRenderer::irradiance");
-                // _geometryPipeline->setCubemap("prefilterMap", "PbrRenderer::prefilter");
-                //_geometryPipeline->setImage("brdfLUT", "PbrRenderer::brdfLUT");
-
-                // if (_lastEnvironmentImg != "Not defined"_sid)
-                //     _geometryPipeline->setInt("numEnvironmentLights", 1);
-                // else {
-                //     LOG_WARN("graphics::PbrRenderer", "Number of environment light should always be 1 (white texture if not defined)");
-                //     _geometryPipeline->setInt("numEnvironmentLights", 0);
-                // }
+                // Bind IBL textures
+                _geometryPipeline->setImageGroup("iblImg");
+                _geometryPipeline->setInt("numEnvironmentLights", _irradianceImage ? 1 : 0);
                 _geometryPipeline->setMat3("environmentLightOri", mat3(1.0f));
 
                 //----- Lighting -----//
@@ -555,27 +552,6 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
     //    }
     //}
     //_geometryPipeline->end();
-}
-
-void PbrRenderer::irradianceCubemap() {
-    //// Create shader
-    // std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/compute/irradiance.asl");
-
-    //// Generate irradiance cubemap
-    // GraphicsAPI::GenerateProcessedCubemapInfo info;
-    // info.cubemapSid = StringId("PbrRenderer::irradiance");
-    // info.shader = shader;
-    // info.width = 128;
-    // info.height = 128;
-    // info.numMipLevels = 1;
-    // info.func = [&](std::shared_ptr<Shader> shader, mat4 proj, mat4 view, int face, int mipLevel) {
-    //     if (mipLevel == 0 && face == 0) {
-    //         // TODO shader->setCubemap("environmentMap", _lastEnvironmentImg);
-    //         shader->setMat4("projection", transpose(proj));
-    //     }
-    //     shader->setMat4("view", transpose(view));
-    // };
-    // graphics::getGraphicsAPI()->generateProcessedCubemap(info);
 }
 
 void PbrRenderer::prefilterCubemap() {

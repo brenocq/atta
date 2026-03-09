@@ -19,6 +19,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
 
     compute/entityClick.cpp
     compute/equiToCubemap.cpp
+    compute/irradiance.cpp
 
     renderers/common/drawerPipeline.cpp
     renderers/common/gridPipeline.cpp
