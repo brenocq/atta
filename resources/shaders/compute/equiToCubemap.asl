@@ -11,15 +11,16 @@ vec4 vertex(vec3 iPos, vec3 iNormal, vec2 iUV) {
     return uProjection * uView * vec4(localPos, 1.0);
 }
 
-vec4 fragment() {
-    vec2 uv = sampleSphericalMap(normalize(localPos));
-    return vec4(texture(uEquirectangularMap, uv).rgb, 1.0);
-}
-
 const vec2 invAtan = vec2(0.1591, 0.3183);
 vec2 sampleSphericalMap(vec3 v) {
-    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
+    // Z-up convention: azimuth in XY plane, elevation along Z axis
+    vec2 uv = vec2(atan(v.y, v.x), asin(v.z));
     uv *= invAtan;
     uv += 0.5;
     return uv;
+}
+
+void fragment(out vec4 color) {
+    vec2 uv = sampleSphericalMap(normalize(localPos));
+    color = vec4(texture(uEquirectangularMap, uv).rgb, 1.0);
 }

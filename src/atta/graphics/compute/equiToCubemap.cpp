@@ -41,7 +41,7 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
     framebufferInfo.attachments.push_back(attachment);
     framebufferInfo.width = _width;
     framebufferInfo.height = _height;
-    framebufferInfo.clearColor = {0, 100, 0, 255};
+    framebufferInfo.clearColor = {255, 0, 255, 255};
     framebufferInfo.debugName = StringId("EquiToCubemap Framebuffer");
     std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
@@ -63,21 +63,15 @@ std::shared_ptr<gfx::Image> EquiToCubemap::createCubemap(StringId imageSid) {
     _pipeline->createImageGroup(Pipeline::ImageGroupType::PER_FRAME, "equiImg");
     _pipeline->updateImageGroup("equiImg", {{"uEquirectangularMap", image}});
 
-    // Define projection and view matrices
-    mat4 proj = perspective(M_PI, 1.0f, 0.1f, 10.0f);
+    // Define projection and view matrices.
+    mat4 proj = perspective(M_PI / 2.0f, 1.0f, 0.1f, 10.0f);
     std::array<mat4, 6> views = {
-        // Positive X face: look toward +X, with Z as up.
-        lookAt(vec3(0.0f), vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
-        // Negative X face: look toward -X, with Z as up.
-        lookAt(vec3(0.0f), vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
-        // Positive Y face: look toward +Y, with Z as up.
-        lookAt(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
-        // Negative Y face: look toward -Y, with Z as up.
-        lookAt(vec3(0.0f), vec3(0.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
-        // Positive Z face: since forward (0,0,1) is parallel to global up, choose a different up (e.g. (0,1,0))
-        lookAt(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, 1.0f, 0.0f)),
-        // Negative Z face: similarly choose (0,1,0) for up.
-        lookAt(vec3(0.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f)),
+        lookAt(vec3(0.0f), vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)), // +X face
+        lookAt(vec3(0.0f), vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)), // -X face
+        lookAt(vec3(0.0f), vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)), // +Y face
+        lookAt(vec3(0.0f), vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)), // -Y face
+        lookAt(vec3(0.0f), vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)), // +Z face
+        lookAt(vec3(0.0f), vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f)), // -Z face
     };
 
     // Render
