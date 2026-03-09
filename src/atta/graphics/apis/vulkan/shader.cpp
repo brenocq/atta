@@ -14,8 +14,11 @@ Shader::Shader(const fs::path& file) : gfx::Shader(file), _device(common::getDev
         shaderCode.apiCode = generateApiCode(type, shaderCode.iCode);
     compile();
 
-    // Create uniform buffer
-    _uniformBuffer = std::make_shared<UniformBuffer>(_perFrameLayout.getStride());
+    // Create uniform buffer (only if shader has perFrame non-image uniforms)
+    if (_perFrameLayout.getStride() > 0)
+        _uniformBuffer = std::make_shared<UniformBuffer>(_perFrameLayout.getStride());
+    else
+        _uniformBuffer = nullptr;
 
     // Create push constant
     if (_perDrawLayout.getStride() > 0)
@@ -278,7 +281,10 @@ void Shader::unbind() {
     _uniformImages.clear();
 }
 
-void Shader::pushUniformBuffer() { _uniformBuffer->writeInstance(_uniformBufferData); }
+void Shader::pushUniformBuffer() {
+    if (_uniformBuffer)
+        _uniformBuffer->writeInstance(_uniformBufferData);
+}
 
 void Shader::pushConstants(VkCommandBuffer commandBuffer, std::shared_ptr<PipelineLayout> pipelineLayout) {
     if (!_pushConstantData.empty())

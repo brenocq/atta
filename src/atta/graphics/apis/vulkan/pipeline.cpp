@@ -165,7 +165,8 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     };
     _descriptorPool = std::make_shared<DescriptorPool>(poolSizes, maxSets);
     _descriptorSets = std::make_shared<DescriptorSets>(_descriptorPool, _uniformDescriptorSetLayout, _pipelineLayout, 1);
-    _descriptorSets->update(0, std::dynamic_pointer_cast<vk::Shader>(_shader)->getUniformBuffer());
+    if (auto uniformBuffer = std::dynamic_pointer_cast<vk::Shader>(_shader)->getUniformBuffer())
+        _descriptorSets->update(0, uniformBuffer);
 
     // Create default image group descriptor sets (pink images)
     if (createDefaultImageGroupPerFrame)

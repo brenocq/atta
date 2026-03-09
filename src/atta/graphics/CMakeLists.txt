@@ -17,6 +17,7 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     cameras/perspectiveCamera.cpp
     cameras/orthographicCamera.cpp
 
+    compute/brdfLut.cpp
     compute/entityClick.cpp
     compute/equiToCubemap.cpp
     compute/irradiance.cpp

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #pragma once
 
+#include <atta/graphics/compute/brdfLut.h>
 #include <atta/graphics/compute/irradiance.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/pipeline.h>
@@ -30,6 +31,7 @@ class PbrRenderer final : public Renderer {
 
     void prefilterCubemap();
     void brdfLUT();
+    void updateIblImageGroup();
 
     std::shared_ptr<RenderQueue> _renderQueue;
     std::shared_ptr<RenderPass> _geometryRenderPass;
@@ -53,6 +55,8 @@ class PbrRenderer final : public Renderer {
     // Irradiance image
     std::unique_ptr<Irradiance> _irradiance;
     std::shared_ptr<Image> _irradianceImage;
+    std::unique_ptr<BrdfLut> _brdfLut;
+    std::shared_ptr<Image> _brdfLutImage;
 
     // Shadow mapping
     std::shared_ptr<Pipeline> _shadowMapPipeline;

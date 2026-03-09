@@ -22,6 +22,7 @@ namespace atta::graphics {
 
 PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasResized(false), _lastEnvironmentImg(StringId()) {
     _irradiance = std::make_unique<Irradiance>();
+    _brdfLut = std::make_unique<BrdfLut>();
 
     // Render Queue
     _renderQueue = graphics::create<RenderQueue>();
@@ -139,10 +140,13 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
         _geometryPipeline->resize(_width, _height);
         _wasResized = false;
     }
-    // if (_firstRender)
-    //     brdfLUT();
+    if (_firstRender) {
+        _brdfLutImage = _brdfLut->generate();
+        updateIblImageGroup();
+    }
 
-    // Check current envinroment map
+    // Check current environment map
+
     std::vector<component::EntityId> entities = component::getNoPrototypeView();
     StringId currEnvironmentImg{};
     for (auto entity : entities) {
@@ -158,10 +162,9 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
         _lastEnvironmentImg = currEnvironmentImg;
         if (_lastEnvironmentImg != StringId()) {
             _irradianceImage = _irradiance->createIrradianceCubemap(_lastEnvironmentImg);
-            if (_irradianceImage)
-                _geometryPipeline->updateImageGroup("iblImg", {{"irradianceMap", _irradianceImage}});
             // prefilterCubemap();
         }
+        updateIblImageGroup();
     }
 
     // shadowPass();
@@ -577,6 +580,15 @@ void PbrRenderer::prefilterCubemap() {
     //    shader->setFloat("roughness", roughness);
     //};
     // graphics::getGraphicsAPI()->generateProcessedCubemap(info);
+}
+
+void PbrRenderer::updateIblImageGroup() {
+    Pipeline::ImageGroup iblImages;
+    if (_irradianceImage)
+        iblImages.emplace_back("irradianceMap", _irradianceImage);
+    if (_brdfLutImage)
+        iblImages.emplace_back("brdfLUT", _brdfLutImage);
+    _geometryPipeline->updateImageGroup("iblImg", iblImages);
 }
 
 void PbrRenderer::brdfLUT() {

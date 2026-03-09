@@ -39,7 +39,7 @@ perFrame float omniFarPlane;
 perFrame mat3 environmentLightOri;
 // perFrame samplerCube prefilterMap;
 perFrame samplerCube irradianceMap;
-// perFrame sampler2D brdfLUT;
+perFrame sampler2D brdfLUT;
 
 //----- Per Draw -----//
 perDraw mat4 model;
@@ -152,7 +152,7 @@ void fragment(out vec4 outColor) {
         const float MAX_REFLECTION_LOD = 4.0;
         vec3 R = reflect(-V, N);
         vec3 prefilteredColor = vec3(1, 0, 0); // textureLod(prefilterMap, environmentLightOri * R, roughness * MAX_REFLECTION_LOD).rgb;
-        vec2 brdf = vec2(0, 0);                // texture(brdfLUT, vec2(max(dot(environmentLightOri * N, V), 0.0), roughness)).rg;
+        vec2 brdf = texture(brdfLUT, vec2(max(dot(environmentLightOri * N, V), 0.0), roughness)).rg;
         vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
         ambient = (kD * diffuse + specular) * ao;

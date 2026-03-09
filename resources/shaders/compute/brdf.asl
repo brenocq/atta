@@ -1,8 +1,8 @@
 perVertex vec2 uv;
 
-vec4 vertex(vec3 iPos, vec3 iNormal, vec2 iUV) {
+vec4 vertex(vec2 iVertex, vec2 iUV) {
     uv = iUV;
-    return vec4(iPos, 1.0);
+    return vec4(iVertex, 0.0, 1.0);
 }
 
 const float PI = 3.14159265359;
