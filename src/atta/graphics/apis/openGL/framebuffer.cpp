@@ -143,11 +143,13 @@ void Framebuffer::setLayer(uint32_t layer) {
     std::shared_ptr<Image> image = std::dynamic_pointer_cast<Image>(_images[0]);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer, image->getHandle(), 0);
 
-    // Unbind framebuffer
+        // Unbind framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-//------------------------------------------------//
+void Framebuffer::setLayerAndMip(uint32_t layer, uint32_t mipLevel) {
+    LOG_WARN("gfx::gl::Framebuffer", "setLayerAndMip is not implemented for OpenGL");
+}
 //---------- Atta to OpenGL conversions ----------//
 //------------------------------------------------//
 GLenum Framebuffer::convertDepthAttachmentType(Image::Format format) {

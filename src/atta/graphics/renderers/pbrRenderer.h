@@ -4,6 +4,7 @@
 
 #include <atta/graphics/compute/brdfLut.h>
 #include <atta/graphics/compute/irradiance.h>
+#include <atta/graphics/compute/prefilter.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
@@ -29,8 +30,6 @@ class PbrRenderer final : public Renderer {
     void shadowPass();
     void geometryPass(std::shared_ptr<Camera> camera);
 
-    void prefilterCubemap();
-    void brdfLUT();
     void updateIblImageGroup();
 
     std::shared_ptr<RenderQueue> _renderQueue;
@@ -55,6 +54,8 @@ class PbrRenderer final : public Renderer {
     // Irradiance image
     std::unique_ptr<Irradiance> _irradiance;
     std::shared_ptr<Image> _irradianceImage;
+    std::unique_ptr<Prefilter> _prefilter;
+    std::shared_ptr<Image> _prefilterImage;
     std::unique_ptr<BrdfLut> _brdfLut;
     std::shared_ptr<Image> _brdfLutImage;
 

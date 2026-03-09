@@ -47,6 +47,8 @@ class Framebuffer {
 
     // When the attachment is a cubemap image, you can use this method set the layer to be used
     virtual void setLayer(uint32_t layer) = 0;
+    // When the attachment is a cubemap image with multiple mip levels, you can use this method to set the layer and mip level
+    virtual void setLayerAndMip(uint32_t layer, uint32_t mipLevel) = 0;
 
     std::vector<std::shared_ptr<Image>> getImages() const;
     std::shared_ptr<Image> getImage(uint32_t attachment = 0);

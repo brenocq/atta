@@ -94,6 +94,46 @@ void Framebuffer::setLayer(uint32_t layer) {
     }
 }
 
+void Framebuffer::setLayerAndMip(uint32_t layer, uint32_t mipLevel) {
+    if (_images.size() != 1) {
+        LOG_ERROR("gfx::vk::Framebuffer", "setLayerAndMip is only supported for framebuffers with one attachment, not for framebuffer [w]$0[]", _debugName);
+        return;
+    }
+
+    std::shared_ptr<vk::Image> vkImage = std::dynamic_pointer_cast<vk::Image>(_images[0]);
+    if (!vkImage->isCubemap()) {
+        LOG_ERROR("gfx::vk::Framebuffer", "setLayerAndMip called on a non-cubemap image for framebuffer [w]$0[]", _debugName);
+        return;
+    }
+
+    if (_framebuffer != VK_NULL_HANDLE) {
+        vkDestroyFramebuffer(_device->getHandle(), _framebuffer, nullptr);
+        _framebuffer = VK_NULL_HANDLE;
+    }
+
+    VkImageView faceView = vkImage->getCubemapFaceMipImageViewHandle(layer, mipLevel);
+    if (faceView == VK_NULL_HANDLE) {
+        LOG_ERROR("gfx::vk::Framebuffer", "Failed to get cubemap face+mip image view for layer $0 mip $1", layer, mipLevel);
+        return;
+    }
+
+    std::vector<VkImageView> attachments = {faceView};
+
+    VkFramebufferCreateInfo fbInfo{};
+    fbInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    fbInfo.renderPass = _renderPass->getHandle();
+    fbInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+    fbInfo.pAttachments = attachments.data();
+    fbInfo.width = _width;
+    fbInfo.height = _height;
+    fbInfo.layers = 1;
+
+    if (vkCreateFramebuffer(_device->getHandle(), &fbInfo, nullptr, &_framebuffer) != VK_SUCCESS) {
+        LOG_ERROR("gfx::vk::Framebuffer", "Failed to create framebuffer for cubemap layer $0 mip $1", layer, mipLevel);
+        return;
+    }
+}
+
 VkFramebuffer Framebuffer::getHandle() const { return _framebuffer; }
 std::shared_ptr<Device> Framebuffer::getDevice() const { return _device; }
 std::shared_ptr<RenderPass> Framebuffer::getRenderPass() const { return _renderPass; }
@@ -105,10 +145,17 @@ void Framebuffer::create(std::shared_ptr<RenderPass> renderPass) {
     if (_framebuffer != VK_NULL_HANDLE)
         vkDestroyFramebuffer(_device->getHandle(), _framebuffer, nullptr);
 
-    // Get image views
+    // Get image views (framebuffer attachments must have levelCount == 1)
     std::vector<VkImageView> attachments;
-    for (std::shared_ptr<gfx::Image> image : _images)
-        attachments.push_back(std::dynamic_pointer_cast<vk::Image>(image)->getImageViewHandle());
+    for (std::shared_ptr<gfx::Image> image : _images) {
+        auto vkImage = std::dynamic_pointer_cast<vk::Image>(image);
+        // Cubemap images: use face 0 mip 0 as a valid single-mip placeholder.
+        // setLayer() or setLayerAndMip() will replace it with the correct view before rendering.
+        if (vkImage->isCubemap())
+            attachments.push_back(vkImage->getCubemapFaceMipImageViewHandle(0, 0));
+        else
+            attachments.push_back(vkImage->getImageViewHandle());
+    }
 
     // Create framebuffer
     VkFramebufferCreateInfo framebufferInfo{};

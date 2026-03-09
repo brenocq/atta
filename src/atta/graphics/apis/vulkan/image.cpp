@@ -206,6 +206,32 @@ VkImageView Image::getCubemapImageViewHandle(uint32_t layer) const {
     return _cubemapImageViews[layer];
 }
 
+VkImageView Image::getCubemapFaceMipImageViewHandle(uint32_t layer, uint32_t mipLevel) {
+    uint32_t key = layer * _mipLevels + mipLevel;
+    auto it = _cubemapFaceMipImageViews.find(key);
+    if (it != _cubemapFaceMipImageViews.end())
+        return it->second;
+
+    VkImageViewCreateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    info.image = _image;
+    info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    info.format = convertFormat(_supportedFormat);
+    info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
+    info.subresourceRange.baseMipLevel = mipLevel;
+    info.subresourceRange.levelCount = 1;
+    info.subresourceRange.baseArrayLayer = layer;
+    info.subresourceRange.layerCount = 1;
+
+    VkImageView view;
+    if (vkCreateImageView(_device->getHandle(), &info, nullptr, &view) != VK_SUCCESS) {
+        LOG_ERROR("gfx::vk::Image", "Failed to create cubemap face+mip image view (layer=$0 mip=$1) for [w]$2[]", layer, mipLevel, _debugName);
+        return VK_NULL_HANDLE;
+    }
+    _cubemapFaceMipImageViews[key] = view;
+    return view;
+}
+
 VkSampler Image::getSamplerHandle() const { return _sampler; }
 
 std::shared_ptr<Device> Image::getDevice() const { return _device; }
@@ -342,6 +368,7 @@ VkImageAspectFlags Image::convertAspectFlags(Image::Format format) {
             return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
     }
     ASSERT(false, "Could not convert atta format to vulkan aspect flags. Unknown image format");
+    return VK_IMAGE_ASPECT_COLOR_BIT;
 }
 
 void Image::createImage() {
@@ -349,7 +376,7 @@ void Image::createImage() {
     info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     info.imageType = VK_IMAGE_TYPE_2D;
     info.extent = {_width, _height, 1};
-    info.mipLevels = 1;
+    info.mipLevels = _mipLevels;
     // If this is a cubemap, use 6 layers, else 1.
     if (_isCubemap) {
         info.arrayLayers = 6;
@@ -456,6 +483,9 @@ void Image::destroy() {
     for (const VkImageView& imageView : _cubemapImageViews)
         if (imageView != VK_NULL_HANDLE)
             vkDestroyImageView(_device->getHandle(), imageView, nullptr);
+    for (auto& [key, imageView] : _cubemapFaceMipImageViews)
+        if (imageView != VK_NULL_HANDLE)
+            vkDestroyImageView(_device->getHandle(), imageView, nullptr);
     if (_sampler != VK_NULL_HANDLE)
         vkDestroySampler(_device->getHandle(), _sampler, nullptr);
     if (_image != VK_NULL_HANDLE && _destroyImage)
@@ -521,7 +551,7 @@ void Image::transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLay
     barrier.image = _image;
     barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.levelCount = _mipLevels;
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = _isCubemap ? 6 : 1;
 

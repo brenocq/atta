@@ -22,6 +22,7 @@ class Framebuffer final : public gfx::Framebuffer {
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
     void setLayer(uint32_t layer) override;
+    void setLayerAndMip(uint32_t layer, uint32_t mipLevel) override;
 
     VkFramebuffer getHandle() const;
     std::shared_ptr<Device> getDevice() const;
