@@ -33,7 +33,8 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
         apiCode = "#version 330 core\n";
     } else if (openGLVersion >= 300) {
         apiCode = "#version 300 es\n"
-                  "precision mediump float;\n";
+                  "precision highp float;\n"
+                  "precision highp int;\n";
     } else {
         LOG_ERROR("gfx::gl::Shader", "Compiling shaders for OpenGL version [w]$0[] is not supported", openGLVersion);
         return "";
@@ -71,6 +72,11 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
         // Move to the next match
         start = match.suffix().first;
     }
+
+    // Strip f/F suffix from float literals for GLSL ES (e.g. 1.0f -> 1.0)
+    if (openGLVersion < 330)
+        apiCode = std::regex_replace(apiCode, std::regex(R"((\d+\.\d*)[fF]\b)"), "$1");
+
     // LOG_DEBUG("gfx::gl::Shader", "Generated API code for shader [g]$1[]\n[w]$0[]", apiCode, _file.string());
 
     return apiCode;

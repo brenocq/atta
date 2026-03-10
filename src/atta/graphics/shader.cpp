@@ -175,7 +175,7 @@ std::string Shader::generateICode(ShaderType type, std::string aslCode) {
             for (size_t i = 0; i < _vertexLayout.getElements().size(); i++) {
                 BufferLayout::Element element = _vertexLayout.getElements()[i];
                 std::string typeStr = BufferLayout::Element::typeToString(element.type);
-                input += "in " + typeStr + " " + element.name + ";\n";
+                input += "layout(location = " + std::to_string(i) + ") in " + typeStr + " " + element.name + ";\n";
                 params += element.name;
                 if (i != _vertexLayout.getElements().size() - 1)
                     params += ", ";
