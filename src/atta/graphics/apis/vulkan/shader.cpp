@@ -112,6 +112,7 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
 
     // GLSL version
     apiCode += "#version 450\n";
+    apiCode += "#define ATTA_VULKAN 1\n";
 
     // Move custom type definitions to the beginning
     std::regex structRegex(R"(struct\s+\w+\s*\{([^\}]*)\};)");

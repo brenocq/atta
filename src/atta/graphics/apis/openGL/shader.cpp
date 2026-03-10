@@ -38,6 +38,7 @@ std::string Shader::generateApiCode(ShaderType type, std::string iCode) {
         LOG_ERROR("gfx::gl::Shader", "Compiling shaders for OpenGL version [w]$0[] is not supported", openGLVersion);
         return "";
     }
+    apiCode += "#define ATTA_OPENGL 1\n";
     apiCode += iCode;
 
     // Replace perFrame/perDraw
