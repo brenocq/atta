@@ -13,7 +13,7 @@ namespace atta::graphics {
 
 Pipeline::Pipeline(const CreateInfo& info)
     : _shader(info.shader), _renderPass(info.renderPass), _primitive(info.primitive), _backfaceCulling(info.backfaceCulling),
-      _wireframe(info.wireframe), _lineWidth(info.lineWidth), _debugName(info.debugName) {
+      _wireframe(info.wireframe), _lineWidth(info.lineWidth), _enableDepthTest(info.enableDepthTest), _debugName(info.debugName) {
     //---------- Track material update ----------//
     event::subscribe<event::MaterialCreate>(BIND_EVENT_FUNC(Pipeline::onMaterialCreate));
     event::subscribe<event::MaterialDestroy>(BIND_EVENT_FUNC(Pipeline::onMaterialDestroy));
@@ -41,10 +41,9 @@ void Pipeline::setMat4(const char* name, mat4 m) { _shader->setMat4(name, m); }
 void Pipeline::setImageGroup(std::string name) { setImageGroup(name.c_str()); }
 void Pipeline::setImageGroup(StringId name) { setImageGroup(name.getString().c_str()); }
 
-void Pipeline::renderMesh(StringId meshSid, size_t numVertices) { LOG_WARN("Pipeline", "[w]renderMesh[] was not implemented yet"); }
-void Pipeline::renderQuad() { LOG_WARN("Pipeline", "[w]renderQuad[] was not implemented yet"); }
-void Pipeline::renderQuad3() { LOG_WARN("Pipeline", "[w]renderQuad3[] was not implemented yet"); }
-void Pipeline::renderCube() { LOG_WARN("Pipeline", "[w]renderCube[] was not implemented yet"); }
+void Pipeline::renderQuad() { renderMesh("atta::gfx::quad"); }
+void Pipeline::renderQuad3() { renderMesh("atta::gfx::quad3"); }
+void Pipeline::renderCube() { renderMesh("atta::gfx::cube"); }
 
 std::shared_ptr<Shader> Pipeline::getShader() const { return _shader; };
 std::shared_ptr<RenderPass> Pipeline::getRenderPass() const { return _renderPass; };

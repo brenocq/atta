@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/cameraSensor.h>
+#include <atta/component/components/environmentLight.h>
 #include <atta/component/components/material.h>
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/polygonCollider2D.h>
@@ -114,6 +115,9 @@ bool renderComboImage(std::string attribute, StringId& image) {
         if (ImGui::BeginCombo(("##ComboImage" + imguiId).c_str(), selectedName.c_str())) {
             std::vector<StringId> rImages = resource::getResources<resource::Image>();
             for (StringId rImage : rImages) {
+                // Ignore .hdr images (they are created as cubemaps instead of 2D images)
+                if (rImage.getString().find(".hdr") != std::string::npos)
+                    continue;
                 std::string imageStr = rImage.getString();
                 if (imageStr == "")
                     imageStr = "##";
@@ -318,6 +322,31 @@ void Manager::registerCustomComponentUIs() {
         StringId aoImage = m->getAoImage();
         if (renderComboImage("AO", aoImage))
             m->setAoImage(aoImage);
+    });
+
+    //---------- Environment Light ----------//
+    ui::registerComponentUI<cmp::EnvironmentLight>([](cmp::Entity entity, cmp::Component* comp) {
+        cmp::EnvironmentLight* envLight = static_cast<cmp::EnvironmentLight*>(comp);
+
+        std::string selectedImage = envLight->sid.getString();
+
+        if (ImGui::BeginCombo("Image##EnvComboImage", selectedImage.c_str())) {
+            std::vector<StringId> rImages = resource::getResources<resource::Image>();
+            for (StringId rImage : rImages) {
+                std::string imageStr = rImage.getString();
+                bool isHdrImage = imageStr.find(".hdr") != std::string::npos;
+                if (!isHdrImage)
+                    continue;
+                const bool selected = (rImage == selectedImage);
+                if (ImGui::Selectable(imageStr.c_str(), selected)) {
+                    envLight->sid = rImage;
+                    selectedImage = rImage.getString();
+                }
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
     });
 
     //---------- Polygon Collider 2D ----------//

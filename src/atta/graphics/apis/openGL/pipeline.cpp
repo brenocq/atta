@@ -15,9 +15,25 @@ Pipeline::Pipeline(const Pipeline::CreateInfo& info) : gfx::Pipeline(info) {
 
 Pipeline::~Pipeline() {}
 
-void Pipeline::begin() { _shader->bind(); }
+void Pipeline::begin() {
+    // Disable depth testing
+    if (!_enableDepthTest) {
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
+    }
 
-void Pipeline::end() { _shader->unbind(); }
+    _shader->bind();
+}
+
+void Pipeline::end() {
+    _shader->unbind();
+
+    // Restore depth testing
+    if (!_enableDepthTest) {
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+    }
+}
 
 void Pipeline::resize(uint32_t width, uint32_t height) { _renderPass->getFramebuffer()->resize(width, height); }
 
@@ -27,24 +43,6 @@ void Pipeline::renderMesh(StringId meshSid, size_t numVertices) {
         mesh->draw(_primitive, numVertices);
     else
         LOG_WARN("gfx::gl::Pipeline", "Could not render mesh [w]$0[], mesh not found", meshSid);
-}
-
-void Pipeline::renderQuad() {
-    renderMesh("atta::gfx::quad");
-    if (_renderPass->getFramebuffer()->hasDepthAttachment())
-        glClear(GL_DEPTH_BUFFER_BIT);
-}
-
-void Pipeline::renderQuad3() {
-    renderMesh("atta::gfx::quad3");
-    if (_renderPass->getFramebuffer()->hasDepthAttachment())
-        glClear(GL_DEPTH_BUFFER_BIT);
-}
-
-void Pipeline::renderCube() {
-    renderMesh("atta::gfx::cube");
-    if (_renderPass->getFramebuffer()->hasDepthAttachment())
-        glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void* Pipeline::getImGuiTexture() const {

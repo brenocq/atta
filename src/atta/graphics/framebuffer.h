@@ -30,6 +30,7 @@ class Framebuffer {
         uint32_t width;                             ///< Framebuffer width
         uint32_t height;                            ///< Framebuffer height
         vec4 clearColor = {0.0f, 0.0f, 0.0f, 0.0f}; ///< Color to be used when cleaning the color attachments
+        bool isSwapchain = false;                   ///< Whether this framebuffer wraps a swapchain image
 
         std::vector<Attachment> attachments = {};
 
@@ -44,12 +45,18 @@ class Framebuffer {
 
     virtual void resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
 
+    // When the attachment is a cubemap image, you can use this method set the layer to be used
+    virtual void setLayer(uint32_t layer) = 0;
+    // When the attachment is a cubemap image with multiple mip levels, you can use this method to set the layer and mip level
+    virtual void setLayerAndMip(uint32_t layer, uint32_t mipLevel) = 0;
+
     std::vector<std::shared_ptr<Image>> getImages() const;
     std::shared_ptr<Image> getImage(uint32_t attachment = 0);
     uint32_t getWidth() const { return _width; }
     uint32_t getHeight() const { return _height; }
     vec4 getClearColor() const { return _clearColor; }
     StringId getDebugName() const { return _debugName; }
+    bool isSwapchain() const { return _isSwapchain; }
 
     bool hasColorAttachment() const;
     bool hasDepthAttachment() const;
@@ -62,6 +69,7 @@ class Framebuffer {
     uint32_t _width;
     uint32_t _height;
     vec4 _clearColor;
+    bool _isSwapchain;
 
     std::vector<Attachment> _attachments;
     int _colorAttachmentIndex;

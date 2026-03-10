@@ -68,6 +68,12 @@ void OpenGLAPI::startUp() {
         nullptr);
 #endif // ATTA_DEBUG_BUILD
 
+    // Enable cubemap seamless if supported (desktop OpenGL only, not available in WebGL/GLES)
+#ifndef ATTA_OS_WEB
+    if (_apiVersion >= 320)
+        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+#endif
+
     glEnable(GL_DEPTH_TEST);
 }
 

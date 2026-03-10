@@ -5,7 +5,8 @@
 namespace atta::graphics {
 
 Framebuffer::Framebuffer(const CreateInfo& info)
-    : _width(info.width), _height(info.height), _clearColor(info.clearColor), _attachments(info.attachments), _debugName(info.debugName) {
+    : _width(info.width), _height(info.height), _clearColor(info.clearColor), _isSwapchain(info.isSwapchain), _attachments(info.attachments),
+      _debugName(info.debugName) {
     DASSERT(_attachments.size() > 0, "It is not possible to create framebuffer with no attachments");
 
     // Check consistency and populate color and depth attachments

@@ -2,11 +2,15 @@
 // SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #pragma once
 
+#include <atta/graphics/compute/brdfLut.h>
+#include <atta/graphics/compute/irradiance.h>
+#include <atta/graphics/compute/prefilter.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderers/common/drawerPipeline.h>
 #include <atta/graphics/renderers/common/gridPipeline.h>
 #include <atta/graphics/renderers/common/selectedPipeline.h>
+#include <atta/graphics/renderers/common/skyboxPipeline.h>
 #include <atta/graphics/renderers/renderer.h>
 
 namespace atta::graphics {
@@ -26,13 +30,13 @@ class PbrRenderer final : public Renderer {
     void shadowPass();
     void geometryPass(std::shared_ptr<Camera> camera);
 
-    void irradianceCubemap();
-    void prefilterCubemap();
-    void brdfLUT();
+    void updateIblImageGroup();
 
     std::shared_ptr<RenderQueue> _renderQueue;
     std::shared_ptr<RenderPass> _geometryRenderPass;
     std::shared_ptr<Pipeline> _geometryPipeline;
+
+    std::unique_ptr<SkyboxPipeline> _skyboxPipeline;
     std::unique_ptr<DrawerPipeline> _drawerPipeline;
     std::unique_ptr<GridPipeline> _gridPipeline;
     std::unique_ptr<SelectedPipeline> _selectedPipeline;
@@ -42,14 +46,23 @@ class PbrRenderer final : public Renderer {
     bool _wasResized;
 
     //----- Lighting -----//
-    // Directional light
-    mat3 _directionalLightMatrix;
     // Environment light
-    StringId _lastEnvironmentMap;
+    StringId _lastEnvironmentImg;
     mat3 _environmentMapOri;
+    // Irradiance image
+    std::unique_ptr<Irradiance> _irradiance;
+    std::shared_ptr<Image> _irradianceImage;
+    std::unique_ptr<Prefilter> _prefilter;
+    std::shared_ptr<Image> _prefilterImage;
+    std::unique_ptr<BrdfLut> _brdfLut;
+    std::shared_ptr<Image> _brdfLutImage;
 
     // Shadow mapping
     std::shared_ptr<Pipeline> _shadowMapPipeline;
+    std::shared_ptr<RenderPass> _shadowMapRenderPass;
+    std::shared_ptr<Framebuffer> _shadowMapFramebuffer;
+    std::shared_ptr<Image> _directionalShadowMap;
+    mat4 _directionalLightMatrix;
     std::shared_ptr<Pipeline> _omniShadowMapPipeline;
     std::shared_ptr<Image> _omnidirectionalShadowMap;
 };

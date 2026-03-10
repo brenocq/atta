@@ -110,6 +110,8 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                             int i = numPointLights++;
                             _geometryPipeline->setVec3(("uPointLights[" + std::to_string(i) + "].position").c_str(), position);
                             _geometryPipeline->setVec3(("uPointLights[" + std::to_string(i) + "].intensity").c_str(), pl->intensity);
+                        } else if (pl) {
+                            LOG_WARN("gfx::PhongRenderer", "Maximum number of point lights reached, 10 lights");
                         }
                         if (dl) {
                             hasDirectionalLight = true;
@@ -118,8 +120,6 @@ void PhongRenderer::render(std::shared_ptr<Camera> camera) {
                             _geometryPipeline->setVec3("uDirectionalLight.direction", direction);
                             _geometryPipeline->setVec3("uDirectionalLight.intensity", dl->intensity);
                         }
-                        if (numPointLights++ == 10)
-                            LOG_WARN("gfx::PhongRenderer", "Maximum number of point lights reached, 10 lights");
                     }
                 }
                 _geometryPipeline->setInt("uNumPointLights", numPointLights);

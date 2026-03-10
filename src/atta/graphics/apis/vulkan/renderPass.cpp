@@ -23,14 +23,14 @@ RenderPass::RenderPass(const graphics::RenderPass::CreateInfo& info) : graphics:
             colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
             colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            colorAttachment.finalLayout = _framebuffer->isSwapchain() ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             attachments.push_back(colorAttachment);
         } else if (Image::isDepthFormat(format) || Image::isStencilFormat(format)) {
             VkAttachmentDescription depthAttachment{};
             depthAttachment.format = vk::Image::convertFormat(format);
             depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
             depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-            depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
             depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -131,7 +131,9 @@ void RenderPass::begin(VkCommandBuffer commandBuffer) {
             }
             clearValues.push_back(clearColor);
         } else if (Image::isDepthFormat(format)) {
-            VkClearValue clearDepth = {1.0f, 0};
+            VkClearValue clearDepth = {};
+            clearDepth.depthStencil.depth = 1.0f;
+            clearDepth.depthStencil.stencil = 0;
             clearValues.push_back(clearDepth);
         }
     }

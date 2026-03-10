@@ -22,6 +22,7 @@ class Pipeline {
         bool backfaceCulling = true;
         bool wireframe = false;
         bool lineWidth = 1.0f;
+        bool enableDepthTest = true; // Can be set to false to disable depth testing for this pipeline
 
         StringId debugName = StringId("Unnamed Pipeline");
     };
@@ -71,7 +72,7 @@ class Pipeline {
      * @note If numVertices is set to zero, all vertices are rendered
      * @warning numVertices should only be used if there is no index buffer
      */
-    virtual void renderMesh(StringId meshSid, size_t numVertices = 0);
+    virtual void renderMesh(StringId meshSid, size_t numVertices = 0) = 0;
     virtual void renderQuad();
     virtual void renderQuad3();
     virtual void renderCube();
@@ -89,6 +90,7 @@ class Pipeline {
     const bool _backfaceCulling;
     const bool _wireframe;
     const bool _lineWidth;
+    const bool _enableDepthTest;
 
     const StringId _debugName;
 

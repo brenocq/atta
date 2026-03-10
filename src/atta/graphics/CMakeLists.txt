@@ -17,11 +17,16 @@ set(ATTA_GRAPHICS_MODULE_SOURCE
     cameras/perspectiveCamera.cpp
     cameras/orthographicCamera.cpp
 
+    compute/brdfLut.cpp
     compute/entityClick.cpp
+    compute/equiToCubemap.cpp
+    compute/irradiance.cpp
+    compute/prefilter.cpp
 
     renderers/common/drawerPipeline.cpp
     renderers/common/gridPipeline.cpp
     renderers/common/selectedPipeline.cpp
+    renderers/common/skyboxPipeline.cpp
     renderers/fastRenderer.cpp
     renderers/pbrRenderer.cpp
     renderers/phongRenderer.cpp

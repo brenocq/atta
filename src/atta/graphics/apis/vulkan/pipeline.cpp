@@ -11,6 +11,7 @@ namespace atta::graphics::vk {
 
 Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info), _device(common::getDevice()) {
     // Create framebuffer
+    // TODO do not create framebuffer if already created for this render pass
     _framebuffer = std::dynamic_pointer_cast<vk::Framebuffer>(_renderPass->getFramebuffer());
     _framebuffer->create(std::dynamic_pointer_cast<vk::RenderPass>(_renderPass));
 
@@ -63,11 +64,11 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
 
     // Depth stencil
     VkPipelineDepthStencilStateCreateInfo depthStencil{};
+    depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     depthStencil.depthTestEnable = VK_FALSE;
     depthStencil.depthWriteEnable = VK_FALSE;
     depthStencil.stencilTestEnable = VK_FALSE;
-    if (_framebuffer->hasDepthAttachment()) {
-        depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    if (_framebuffer->hasDepthAttachment() && _enableDepthTest) {
         depthStencil.depthTestEnable = VK_TRUE;
         depthStencil.depthWriteEnable = VK_TRUE;
         depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
@@ -85,21 +86,24 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     VkPipelineColorBlendAttachmentState colorBlendAttachment{};
     colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachment.blendEnable = VK_FALSE;
-    if (gfx::Image::getNumChannels(_framebuffer->getImage(0)->getFormat()) == 4) {
-        colorBlendAttachment.blendEnable = VK_TRUE;
-        colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-        colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-        colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+    if (_framebuffer->hasColorAttachment()) {
+        int colorIdx = _framebuffer->getColorAttachmentIndex();
+        if (gfx::Image::getNumChannels(_framebuffer->getImage(colorIdx)->getFormat()) == 4) {
+            colorBlendAttachment.blendEnable = VK_TRUE;
+            colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+            colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+            colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+            colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+            colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+            colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+        }
     }
 
     VkPipelineColorBlendStateCreateInfo colorBlending{};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     colorBlending.logicOpEnable = VK_FALSE;
-    colorBlending.attachmentCount = 1;
-    colorBlending.pAttachments = &colorBlendAttachment;
+    colorBlending.attachmentCount = _framebuffer->hasColorAttachment() ? 1 : 0;
+    colorBlending.pAttachments = _framebuffer->hasColorAttachment() ? &colorBlendAttachment : nullptr;
 
     // Dynamic state
     std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
@@ -124,11 +128,9 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
         std::vector<DescriptorSetLayout::Binding> bindings;
         for (const auto& element : _shader->getPerFrameImageLayout().getElements()) {
             uint32_t bindingIdx = bindings.size();
-            if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
+            if (element.type == BufferLayout::Element::Type::SAMPLER_2D || element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
                 bindings.push_back(
                     {bindingIdx, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
-            else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
-                bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
         }
         if (bindings.size()) {
             _perFrameImageDescriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
@@ -141,11 +143,9 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
         std::vector<DescriptorSetLayout::Binding> bindings;
         for (const auto& element : _shader->getPerDrawImageLayout().getElements()) {
             uint32_t bindingIdx = bindings.size();
-            if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
+            if (element.type == BufferLayout::Element::Type::SAMPLER_2D || element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
                 bindings.push_back(
                     {bindingIdx, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
-            else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
-                bindings.push_back({bindingIdx, 1, VK_DESCRIPTOR_TYPE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT});
         }
         if (bindings.size()) {
             _perDrawImageDescriptorSetLayout = std::make_shared<DescriptorSetLayout>(bindings);
@@ -164,12 +164,12 @@ Pipeline::Pipeline(const gfx::Pipeline::CreateInfo& info) : gfx::Pipeline(info),
     const uint32_t maxSets = 254; // Maximum number of image groups
     std::vector<VkDescriptorPoolSize> poolSizes = {
         {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},                   // Up to 1 uniform buffer
-        {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8 * maxSets}, // Up to 8 sampler2D perDraw/perFrame
-        {VK_DESCRIPTOR_TYPE_SAMPLER, 8 * maxSets},                // Up to 8 samplerCube perDraw/perFrame
+        {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8 * maxSets}, // Up to 8 sampler2D/samplerCube perDraw/perFrame
     };
     _descriptorPool = std::make_shared<DescriptorPool>(poolSizes, maxSets);
     _descriptorSets = std::make_shared<DescriptorSets>(_descriptorPool, _uniformDescriptorSetLayout, _pipelineLayout, 1);
-    _descriptorSets->update(0, std::dynamic_pointer_cast<vk::Shader>(_shader)->getUniformBuffer());
+    if (auto uniformBuffer = std::dynamic_pointer_cast<vk::Shader>(_shader)->getUniformBuffer())
+        _descriptorSets->update(0, uniformBuffer);
 
     // Create default image group descriptor sets (pink images)
     if (createDefaultImageGroupPerFrame)
@@ -274,9 +274,6 @@ void Pipeline::renderMesh(StringId meshSid, size_t numVertices) {
     } else
         LOG_WARN("gfx::vk::Pipeline", "Could not render mesh [w]$0[], mesh not found", meshSid);
 }
-void Pipeline::renderQuad() { renderMesh("atta::gfx::quad"); }
-void Pipeline::renderQuad3() { renderMesh("atta::gfx::quad3"); }
-void Pipeline::renderCube() { renderMesh("atta::gfx::cube"); }
 
 void* Pipeline::getImGuiTexture() const {
     return reinterpret_cast<void*>(std::static_pointer_cast<Image>(_framebuffer->getImage(0))->getImGuiImage());
@@ -333,13 +330,23 @@ void Pipeline::updateImageGroup(std::string name, ImageGroup imageGroup) {
             if (imageItem.name == element.name && imageItem.image)
                 image = std::dynamic_pointer_cast<vk::Image>(imageItem.image);
 
-        // Update descriptor
+        // Update descriptor: if no image, use a default pink image
         if (image != nullptr)
             imageGroupInfo.descriptorSet->update(binding++, image);
         else {
-            // Bind pink
-            std::shared_ptr<vk::Image> image = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImages().at("textures/pink.png"));
-            imageGroupInfo.descriptorSet->update(binding++, image);
+            // Set default pink image to this binding
+            std::shared_ptr<vk::Image> defaultImage;
+            StringId defaultImageSid{};
+            if (element.type == BufferLayout::Element::Type::SAMPLER_2D)
+                defaultImageSid = "atta::gfx::pink";
+            else if (element.type == BufferLayout::Element::Type::SAMPLER_CUBE)
+                defaultImageSid = "atta::gfx::pinkCubemap";
+            else {
+                LOG_ERROR("gfx::vk::Pipeline", "Could not set default image for [w]$0[], unknown image type", element.name);
+                continue;
+            }
+            defaultImage = std::dynamic_pointer_cast<vk::Image>(gfx::Manager::getInstance().getImage(defaultImageSid));
+            imageGroupInfo.descriptorSet->update(binding++, defaultImage);
         }
     }
 

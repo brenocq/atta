@@ -1,5 +1,5 @@
 [project]
-attaVersion = "0.3.7"
+attaVersion = "0.3.10"
 name = "material-resource"
 
 [config]
@@ -165,4 +165,9 @@ name.name = "Directional light"
 transform.position = vec3(0.000000, 0.000000, 2.548024)
 transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
 transform.scale = vec3(1.000000, 1.000000, 1.000000)
+
+[node]
+id = 9
+environmentLight.sid = "environment/suburban_soccer_park_2k.hdr"
+name.name = "Environment light"
 

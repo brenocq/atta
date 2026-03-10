@@ -3,6 +3,7 @@
 #pragma once
 
 #include <atta/graphics/apis/graphicsAPI.h>
+#include <atta/graphics/compute/equiToCubemap.h>
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
 #include <atta/graphics/indexBuffer.h>
@@ -42,6 +43,8 @@ class Manager final {
     friend std::shared_ptr<Window> getWindow();
     friend void* getImGuiImage(StringId sid);
 
+    std::shared_ptr<Mesh> getMesh(StringId sid) const;
+    std::shared_ptr<Image> getImage(StringId sid) const;
     const std::unordered_map<StringId, std::shared_ptr<Mesh>>& getMeshes() const;
     const std::unordered_map<StringId, std::shared_ptr<Image>>& getImages() const;
 
@@ -67,6 +70,8 @@ class Manager final {
     gfx::Image::Format convertFormat(res::Image::Format format) const;
 
     // Handle resources
+    void createDefaultImages();
+    void createDefaultMeshes();
     void syncResources();
     void onMeshLoadEvent(event::Event& event);
     void onMeshUpdateEvent(event::Event& event);
@@ -82,6 +87,9 @@ class Manager final {
     // Handle
     GraphicsAPI::Type _desiredGraphicsAPI;
     std::shared_ptr<GraphicsAPI> _graphicsAPI;
+
+    // Compute shaders
+    std::unique_ptr<EquiToCubemap> _equiToCubemap; ///< Used to convert equirectangular res::Image to cubemap gfx::Image
 
     // Resource binding
     std::unordered_map<StringId, std::shared_ptr<Mesh>> _meshes;

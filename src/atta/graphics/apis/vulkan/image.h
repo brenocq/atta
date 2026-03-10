@@ -6,6 +6,7 @@
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/device.h>
 #include <atta/graphics/image.h>
+#include <unordered_map>
 
 namespace atta::graphics::vk {
 
@@ -37,10 +38,13 @@ class Image final : public gfx::Image {
     void write(uint8_t* data) override;
     std::vector<uint8_t> read(vec2i offset = {0, 0}, vec2i size = {0, 0}) override;
     void resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
+    void prepareForSampling() override;
 
     void* getImGuiImage() override;
     VkImage getImageHandle() const;
     VkImageView getImageViewHandle() const;
+    VkImageView getCubemapImageViewHandle(uint32_t layer) const;
+    VkImageView getCubemapFaceMipImageViewHandle(uint32_t layer, uint32_t mipLevel);
     VkSampler getSamplerHandle() const;
     std::shared_ptr<Device> getDevice() const;
 
@@ -53,6 +57,14 @@ class Image final : public gfx::Image {
      * was used as an attachment
      */
     void setLayout(VkImageLayout layout);
+
+    /**
+     * @brief Transition image layout
+     *
+     * Transition image layout to a new layout. A pipeline barrier will be created to perform the transition. This can be used to ensure
+     * the image is in the correct layout to be bind to a shader.
+     */
+    void transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 
     /**
      * @brief Convert format to supported vulkan format
@@ -76,12 +88,12 @@ class Image final : public gfx::Image {
 
   private:
     void createImage();
-    void createImageView();
+    VkImageView createImageView(uint32_t layer = 0, uint32_t layerCount = 1);
+    void createImageViews();
     void createSampler();
     void allocMemory();
     void destroy();
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    void transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 
     /**
      * @brief Supported format by the GPU
@@ -92,7 +104,9 @@ class Image final : public gfx::Image {
     std::vector<uint8_t> _supportedData; ///< Converted _data to _supportedFormat
 
     VkImage _image;
-    VkImageView _imageView;
+    VkImageView _imageView;                                              // Image view for the whole image (all layers)
+    std::array<VkImageView, 6> _cubemapImageViews{};                     // Image view for each face of a cubemap image
+    std::unordered_map<uint32_t, VkImageView> _cubemapFaceMipImageViews; // Image view for each face+mip of a cubemap image
     VkSampler _sampler;
     VkDeviceMemory _memory;
     VkImageLayout _layout;

@@ -54,23 +54,16 @@ void Framebuffer::bindAttachments() {
         std::shared_ptr<Image> image = std::dynamic_pointer_cast<Image>(_images[i]);
         bool isColor = ((int)i != _depthAttachmentIndex) && ((int)i != _stencilAttachmentIndex);
         if ((int)i == _depthAttachmentIndex) {
-            if (!image->isCubemap())
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, image->getHandle(), 0);
-            else
-                glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, image->getHandle(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, image->getHandle(), 0);
         }
         if ((int)i == _stencilAttachmentIndex) {
-            if (!image->isCubemap())
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, image->getHandle(), 0);
-            else
-                glFramebufferTexture(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, image->getHandle(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, image->getHandle(), 0);
         }
-
         if (isColor) {
-            if (!image->isCubemap())
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorIndex, GL_TEXTURE_2D, image->getHandle(), 0);
+            if (image->isCubemap())
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorIndex, GL_TEXTURE_CUBE_MAP_POSITIVE_X, image->getHandle(), 0);
             else
-                glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorIndex, image->getHandle(), 0);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorIndex, GL_TEXTURE_2D, image->getHandle(), 0);
             colorIndex++;
         }
     }
@@ -120,9 +113,10 @@ void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
 
     //----- Update attachment images -----//
-    // Resize attachments
+    // Only resize framebuffer-owned images (not pre-created ones passed via attachment.image)
     for (unsigned i = 0; i < _attachments.size(); i++)
-        _images[i]->resize(width, height, forceRecreate);
+        if (!_attachments[i].image)
+            _images[i]->resize(width, height, forceRecreate);
 
     // Bind attachments
     bindAttachments();
@@ -135,7 +129,38 @@ void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-//------------------------------------------------//
+void Framebuffer::setLayer(uint32_t layer) {
+    if (_images.size() != 1 || _colorAttachmentIndex == -1) {
+        LOG_ERROR(
+            "gfx::gl::Framebuffer",
+            "Error when setting layer for framebuffer [w]$0[]. It is only possible to set layer for a framebuffer with one cubemap color attachment",
+            _debugName);
+        return;
+    }
+    // Bind framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, _id);
+
+    // Update layer
+    std::shared_ptr<Image> image = std::dynamic_pointer_cast<Image>(_images[0]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer, image->getHandle(), 0);
+
+    // Unbind framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Framebuffer::setLayerAndMip(uint32_t layer, uint32_t mipLevel) {
+    if (_images.size() != 1 || _colorAttachmentIndex == -1) {
+        LOG_ERROR("gfx::gl::Framebuffer",
+                  "Error when setting layer+mip for framebuffer [w]$0[]. It is only possible to set layer+mip for a framebuffer with one cubemap "
+                  "color attachment",
+                  _debugName);
+        return;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, _id);
+    std::shared_ptr<Image> image = std::dynamic_pointer_cast<Image>(_images[0]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer, image->getHandle(), mipLevel);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 //---------- Atta to OpenGL conversions ----------//
 //------------------------------------------------//
 GLenum Framebuffer::convertDepthAttachmentType(Image::Format format) {

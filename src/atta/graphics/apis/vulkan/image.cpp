@@ -7,7 +7,6 @@
 #include <atta/graphics/apis/vulkan/stagingBuffer.h>
 
 // TODO should not have UI code here
-#include "imgui.h"
 #include <backends/imgui_impl_vulkan.h>
 
 namespace atta::graphics::vk {
@@ -23,65 +22,96 @@ Image::Image(const gfx::Image::CreateInfo& info, std::shared_ptr<Device> device,
     : gfx::Image(info), _image(image), _imageView(VK_NULL_HANDLE), _sampler(VK_NULL_HANDLE), _memory(VK_NULL_HANDLE),
       _imGuiDescriptorSet(VK_NULL_HANDLE), _device(device), _destroyImage(false) {
     _supportedFormat = supportedFormat(_format);
-    createImageView();
+    createImageViews();
 }
 
 Image::~Image() { destroy(); }
 
 void Image::write(uint8_t* data) {
+    // Determine number of faces: 6 for cubemaps, 1 for 2D textures
+    uint32_t numFaces = _isCubemap ? 6 : 1;
+
     uint8_t* finalData = data;
-    uint32_t finalSize = _width * _height * Image::getPixelSize(_format);
+    uint32_t finalSize = _width * _height * Image::getPixelSize(_format) * numFaces;
+
+    // If the chosen format is not supported by the GPU, convert data to _supportedFormat
     if (_format != _supportedFormat) {
-        uint32_t co = Image::getNumChannels(_format);          // Num channels original
-        uint32_t cs = Image::getNumChannels(_supportedFormat); // Num channels supported
-        // Convert data from _format to _supportedFormat
-        if (_supportedFormat == Image::Format::RGBA) {
-            _supportedData.resize(_width * _height * cs);
-            for (size_t y = 0; y < _height; y++)
+        // Get channel counts for original and supported formats
+        uint32_t co = Image::getNumChannels(_format);          // Number of channels in original format
+        uint32_t cs = Image::getNumChannels(_supportedFormat); // Number of channels in supported format
+
+        // Resize _supportedData to store the converted data
+        _supportedData.resize(_width * _height * Image::getPixelSize(_supportedFormat) * numFaces);
+
+        // Process each face separately
+        for (uint32_t face = 0; face < numFaces; face++) {
+            // Loop over each pixel in the face
+            for (size_t y = 0; y < _height; y++) {
                 for (size_t x = 0; x < _width; x++) {
-                    size_t idx = x + y * _width;
-                    size_t idxo = idx * co;
-                    size_t idxs = idx * cs;
-                    for (size_t c = 0; c < cs; c++)
-                        _supportedData[idxs + c] = c < co ? data[idxo + c] : 255;
+                    size_t pixelIdx = x + y * _width + face * _width * _height;
+
+                    // Compute source and destination indices for this pixel
+                    size_t srcIdx = pixelIdx * Image::getPixelSize(_format);
+                    size_t dstIdx = pixelIdx * Image::getPixelSize(_supportedFormat);
+
+                    // If converting to RGBA (8-bit) format
+                    if (_format == Image::Format::RGB && _supportedFormat == Image::Format::RGBA) {
+                        for (size_t c = 0; c < cs; c++)
+                            _supportedData[dstIdx + c] = (c < co ? data[srcIdx + c] : 255);
+                    }
+                    // If converting to RGBA32F (float) format
+                    else if (_format == Image::Format::RGB32F && _supportedFormat == Image::Format::RGBA32F) {
+                        float* oDataF = reinterpret_cast<float*>(&data[srcIdx]);
+                        float* sDataF = reinterpret_cast<float*>(&_supportedData[dstIdx]);
+                        for (size_t c = 0; c < cs; c++)
+                            sDataF[c] = (c < co ? oDataF[c] : 1.0f);
+                    } else {
+                        LOG_ERROR("gfx::vk::Image", "Unknown format conversion when writing image. Image will not be written");
+                        return;
+                    }
                 }
-        } else if (_supportedFormat == Image::Format::RGBA32F) {
-            _supportedData.resize(_width * _height * cs * sizeof(float));
-            float* oDataF = (float*)data;
-            float* sDataF = (float*)_supportedData.data();
-            for (size_t y = 0; y < _height; y++)
-                for (size_t x = 0; x < _width; x++) {
-                    size_t idx = x + y * _width;
-                    size_t idxo = idx * co;
-                    size_t idxs = idx * cs;
-                    for (size_t c = 0; c < cs; c++)
-                        sDataF[idxs + c] = c < co ? oDataF[idxo + c] : 1.0f;
-                }
-        } else {
-            LOG_ERROR("gfx::vk::Image", "Unknown format conversion when writing image. Image will not be written");
-            return;
+            }
         }
 
         finalData = _supportedData.data();
-        finalSize = _supportedData.size();
+        finalSize = (uint32_t)_supportedData.size();
     }
 
-    // Copy data to GPU
+    // Copy finalData to GPU using a staging buffer
     std::shared_ptr<StagingBuffer> stagingBuffer = std::make_shared<StagingBuffer>(finalData, finalSize);
     VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
     {
         transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        VkBufferImageCopy region{};
-        region.bufferOffset = 0;
-        region.bufferRowLength = 0;
-        region.bufferImageHeight = 0;
-        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        region.imageSubresource.mipLevel = 0;
-        region.imageSubresource.baseArrayLayer = 0;
-        region.imageSubresource.layerCount = 1;
-        region.imageOffset = {0, 0, 0};
-        region.imageExtent = {_width, _height, 1};
-        vkCmdCopyBufferToImage(commandBuffer, stagingBuffer->getHandle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+        if (!_isCubemap) {
+            VkBufferImageCopy region{};
+            region.bufferOffset = 0;
+            region.bufferRowLength = 0;
+            region.bufferImageHeight = 0;
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.mipLevel = 0;
+            region.imageSubresource.baseArrayLayer = 0;
+            region.imageSubresource.layerCount = 1;
+            region.imageOffset = {0, 0, 0};
+            region.imageExtent = {_width, _height, 1};
+            vkCmdCopyBufferToImage(commandBuffer, stagingBuffer->getHandle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+        } else {
+            // Prepare an array of 6 regions, one for each cubemap face
+            std::array<VkBufferImageCopy, 6> regions{};
+            uint32_t supportedPixelSize = Image::getPixelSize(_supportedFormat);
+            for (uint32_t i = 0; i < 6; i++) {
+                regions[i].bufferOffset = i * (_width * _height * supportedPixelSize);
+                regions[i].bufferRowLength = 0;
+                regions[i].bufferImageHeight = 0;
+                regions[i].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                regions[i].imageSubresource.mipLevel = 0;
+                regions[i].imageSubresource.baseArrayLayer = i;
+                regions[i].imageSubresource.layerCount = 1;
+                regions[i].imageOffset = {0, 0, 0};
+                regions[i].imageExtent = {_width, _height, 1};
+            }
+            vkCmdCopyBufferToImage(commandBuffer, stagingBuffer->getHandle(), _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                   static_cast<uint32_t>(regions.size()), regions.data());
+        }
         transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     }
     common::getCommandPool()->endSingleTimeCommands(commandBuffer);
@@ -137,13 +167,19 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     // Create new handles
     createImage();
     allocMemory();
-    createImageView();
-    if (isColorFormat(_supportedFormat))
+    createImageViews();
+    if (isColorFormat(_supportedFormat) || isDepthFormat(_supportedFormat))
         createSampler();
 
     // Transfer data if specified
     if (_data)
         write(_data);
+}
+
+void Image::prepareForSampling() {
+    VkCommandBuffer commandBuffer = common::getCommandPool()->beginSingleTimeCommands();
+    transitionLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    common::getCommandPool()->endSingleTimeCommands(commandBuffer);
 }
 
 void* Image::getImGuiImage() {
@@ -161,6 +197,40 @@ void* Image::getImGuiImage() {
 VkImage Image::getImageHandle() const { return _image; }
 
 VkImageView Image::getImageViewHandle() const { return _imageView; }
+
+VkImageView Image::getCubemapImageViewHandle(uint32_t layer) const {
+    if (layer >= _cubemapImageViews.size()) {
+        LOG_ERROR("gfx::vk::Image", "getCubemapImageViewHandle with layer index out of bounds. Image debug name: [w]$0[]", _debugName);
+        return VK_NULL_HANDLE;
+    }
+    return _cubemapImageViews[layer];
+}
+
+VkImageView Image::getCubemapFaceMipImageViewHandle(uint32_t layer, uint32_t mipLevel) {
+    uint32_t key = layer * _mipLevels + mipLevel;
+    auto it = _cubemapFaceMipImageViews.find(key);
+    if (it != _cubemapFaceMipImageViews.end())
+        return it->second;
+
+    VkImageViewCreateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    info.image = _image;
+    info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    info.format = convertFormat(_supportedFormat);
+    info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
+    info.subresourceRange.baseMipLevel = mipLevel;
+    info.subresourceRange.levelCount = 1;
+    info.subresourceRange.baseArrayLayer = layer;
+    info.subresourceRange.layerCount = 1;
+
+    VkImageView view;
+    if (vkCreateImageView(_device->getHandle(), &info, nullptr, &view) != VK_SUCCESS) {
+        LOG_ERROR("gfx::vk::Image", "Failed to create cubemap face+mip image view (layer=$0 mip=$1) for [w]$2[]", layer, mipLevel, _debugName);
+        return VK_NULL_HANDLE;
+    }
+    _cubemapFaceMipImageViews[key] = view;
+    return view;
+}
 
 VkSampler Image::getSamplerHandle() const { return _sampler; }
 
@@ -298,6 +368,7 @@ VkImageAspectFlags Image::convertAspectFlags(Image::Format format) {
             return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
     }
     ASSERT(false, "Could not convert atta format to vulkan aspect flags. Unknown image format");
+    return VK_IMAGE_ASPECT_COLOR_BIT;
 }
 
 void Image::createImage() {
@@ -305,8 +376,15 @@ void Image::createImage() {
     info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     info.imageType = VK_IMAGE_TYPE_2D;
     info.extent = {_width, _height, 1};
-    info.mipLevels = 1;
-    info.arrayLayers = 1;
+    info.mipLevels = _mipLevels;
+    // If this is a cubemap, use 6 layers, else 1.
+    if (_isCubemap) {
+        info.arrayLayers = 6;
+        info.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+    } else {
+        info.arrayLayers = 1;
+        info.flags = 0;
+    }
     info.format = convertFormat(_supportedFormat);
     info.tiling = VK_IMAGE_TILING_OPTIMAL;
     info.initialLayout = _layout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -314,45 +392,62 @@ void Image::createImage() {
         info.usage =
             VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
     else if (isDepthFormat(_supportedFormat))
-        info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
     info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     info.samples = VK_SAMPLE_COUNT_1_BIT;
-    info.flags = 0;
     if (vkCreateImage(_device->getHandle(), &info, nullptr, &_image) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Image", "Failed to create image");
 }
 
-void Image::createImageView() {
+VkImageView Image::createImageView(uint32_t layer, uint32_t layerCount) {
     VkImageViewCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     info.image = _image;
     info.format = convertFormat(_supportedFormat);
-    if (_isCubemap) {
-        info.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
-        info.subresourceRange.layerCount = 6;
-    } else {
-        info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
-        info.subresourceRange.baseMipLevel = 0;
-        info.subresourceRange.levelCount = _mipLevels;
-        info.subresourceRange.baseArrayLayer = 0;
-        info.subresourceRange.layerCount = 1;
-    }
+    info.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
+    info.subresourceRange.baseMipLevel = 0;
+    info.subresourceRange.levelCount = _mipLevels;
+    info.subresourceRange.baseArrayLayer = layer;
+    info.viewType = layerCount == 6 ? VK_IMAGE_VIEW_TYPE_CUBE : VK_IMAGE_VIEW_TYPE_2D;
+    info.subresourceRange.layerCount = layerCount;
 
-    if (vkCreateImageView(_device->getHandle(), &info, nullptr, &_imageView) != VK_SUCCESS)
-        LOG_ERROR("gfx::vk::Image", "Failed to create image view");
+    VkImageView imageView;
+    if (vkCreateImageView(_device->getHandle(), &info, nullptr, &imageView) != VK_SUCCESS)
+        LOG_ERROR("gfx::vk::Image", "Failed to create image view for image [w]$0[] (layer $0 layerCount $1)", _debugName, layer, layerCount);
+    return imageView;
+}
+
+void Image::createImageViews() {
+    if (_isCubemap) {
+        _imageView = createImageView(0, 6);
+        for (uint32_t i = 0; i < 6; i++)
+            _cubemapImageViews[i] = createImageView(i, 1);
+    } else {
+        _imageView = createImageView();
+    }
 }
 
 void Image::createSampler() {
+    VkSamplerAddressMode addressMode;
+    switch (_samplerWrap) {
+        case Wrap::CLAMP:
+            addressMode = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            break;
+        case Wrap::REPEAT:
+        default:
+            addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            break;
+    }
+
     VkSamplerCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     // Mag/min filters
     info.magFilter = VK_FILTER_LINEAR;
     info.minFilter = VK_FILTER_LINEAR;
     // Address mode
-    info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    info.addressModeU = addressMode;
+    info.addressModeV = addressMode;
+    info.addressModeW = addressMode;
     info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
     // Anisotropy
     info.anisotropyEnable = VK_TRUE;
@@ -368,7 +463,7 @@ void Image::createSampler() {
     info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
     info.mipLodBias = 0.0f;
     info.minLod = 0.0f;
-    info.maxLod = 0.0f;
+    info.maxLod = static_cast<float>(_mipLevels - 1);
 
     if (vkCreateSampler(_device->getHandle(), &info, nullptr, &_sampler) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Image", "Failed to create texture sampler");
@@ -390,12 +485,18 @@ void Image::allocMemory() {
 void Image::destroy() {
     vkDeviceWaitIdle(common::getDevice()->getHandle());
     if (_imGuiDescriptorSet != VK_NULL_HANDLE) {
-        // XXX We would need to make sure this happens UI module is shut down, for now it is OK to not remove the texture because it is freed when the
-        // UI descroptor pool is freed. This will fail if a lot of images are created and destroyed while the UI is running
+        // XXX We would need to make sure this happens UI module is shut down, for now it is OK to not remove the texture because it is freed when
+        // the UI descroptor pool is freed. This will fail if a lot of images are created and destroyed while the UI is running
         // ImGui_ImplVulkan_RemoveTexture(_imGuiDescriptorSet);
     }
     if (_imageView != VK_NULL_HANDLE)
         vkDestroyImageView(_device->getHandle(), _imageView, nullptr);
+    for (const VkImageView& imageView : _cubemapImageViews)
+        if (imageView != VK_NULL_HANDLE)
+            vkDestroyImageView(_device->getHandle(), imageView, nullptr);
+    for (auto& [key, imageView] : _cubemapFaceMipImageViews)
+        if (imageView != VK_NULL_HANDLE)
+            vkDestroyImageView(_device->getHandle(), imageView, nullptr);
     if (_sampler != VK_NULL_HANDLE)
         vkDestroySampler(_device->getHandle(), _sampler, nullptr);
     if (_image != VK_NULL_HANDLE && _destroyImage)
@@ -426,6 +527,14 @@ void populateLayoutStage(VkImageLayout layout, VkPipelineStageFlags* stage, VkAc
             *access = 0;
             *stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
             break;
+        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+            *access = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            *stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            break;
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+            *access = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+            *stage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+            break;
         case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
             *access = VK_ACCESS_SHADER_READ_BIT;
             *stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
@@ -455,11 +564,11 @@ void Image::transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLay
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.image = _image;
-    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
     barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.levelCount = _mipLevels;
     barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount = 1;
+    barrier.subresourceRange.layerCount = _isCubemap ? 6 : 1;
 
     VkPipelineStageFlags sourceStage;
     VkPipelineStageFlags destinationStage;

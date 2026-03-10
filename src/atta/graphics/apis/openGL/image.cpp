@@ -13,16 +13,29 @@ Image::~Image() {
 }
 
 void Image::write(uint8_t* data) {
-    if (!_isCubemap) {
-        GLenum dataType = Image::convertDataType(_format);
-        GLenum internalFormat = Image::convertInternalFormat(_format);
-        GLenum format = Image::convertFormat(_format);
+    GLenum dataType = Image::convertDataType(_format);
+    GLenum internalFormat = Image::convertInternalFormat(_format);
+    GLenum format = Image::convertFormat(_format);
 
+    if (!_isCubemap) {
         glBindTexture(GL_TEXTURE_2D, _id);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _width, _height, format, dataType, data);
+        if (_mipLevels > 1)
+            glGenerateMipmap(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, 0);
-    } else
-        LOG_WARN("gfx::gl::Image", "Writing to cubemap image is not implemented yet. Image debug name: [w]$0[]", _debugName);
+    } else {
+        glBindTexture(GL_TEXTURE_CUBE_MAP, _id);
+
+        // Calculate the size (in bytes) of one face
+        uint32_t faceSize = _width * _height * Image::getPixelSize(_format);
+
+        // Update each of the six faces
+        for (unsigned int i = 0; i < 6; i++)
+            glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, 0, 0, _width, _height, format, dataType, data + (i * faceSize));
+        if (_mipLevels > 1)
+            glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    }
 }
 
 std::vector<uint8_t> Image::read(vec2i offset, vec2i size) {
@@ -73,7 +86,6 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
 
         for (unsigned int i = 0; i < 6; i++)
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, _width, _height, 0, format, dataType, _data);
-        // glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, _width, _height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, wrapMode);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, wrapMode);
@@ -84,6 +96,10 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
         if (_mipLevels > 1)
             glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     }
+
+    // Update the texture data if _data is set
+    if (_data)
+        write(_data);
 }
 
 void Image::setFramebufferRead(std::function<std::vector<uint8_t>(vec2i, vec2i)> framebufferRead) { _framebufferRead = framebufferRead; }

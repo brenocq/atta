@@ -10,7 +10,7 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
     //---------- Create line pipeline ----------//
     {
         Pipeline::CreateInfo pipelineInfo{};
-        pipelineInfo.shader = graphics::create<Shader>("shaders/drawer/line.asl");
+        pipelineInfo.shader = graphics::create<Shader>("shaders/common/drawerLine.asl");
         pipelineInfo.renderPass = renderPass;
         pipelineInfo.primitive = Pipeline::Primitive::LINE;
         pipelineInfo.debugName = StringId("Drawer Line Pipeline");
@@ -20,7 +20,7 @@ DrawerPipeline::DrawerPipeline(std::shared_ptr<RenderPass> renderPass) {
     //---------- Create point pipeline ----------//
     {
         Pipeline::CreateInfo pipelineInfo{};
-        pipelineInfo.shader = graphics::create<Shader>("shaders/drawer/point.asl");
+        pipelineInfo.shader = graphics::create<Shader>("shaders/common/drawerPoint.asl");
         pipelineInfo.renderPass = renderPass;
         pipelineInfo.primitive = Pipeline::Primitive::POINT;
         pipelineInfo.debugName = StringId("Drawer Point Pipeline");
