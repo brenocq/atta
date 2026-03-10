@@ -113,8 +113,8 @@ vec3 calcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 3.0f);
     // combine results
-    float diffuse = uDiffuseStrength * diff * roughness;
-    float specular = uSpecularStrength * spec * metallic;
+    vec3 diffuse = albedo * uDiffuseStrength * diff;
+    vec3 specular = vec3(uSpecularStrength * spec * metallic);
     return light.intensity * (diffuse + specular);
 }
 
@@ -129,7 +129,7 @@ vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     float dist = length(light.position - fragPos);
     float attenuation = 1.0 / (2.0f + 2.0f * dist + 2.0 * (dist * dist));
     // combine results
-    float diffuse = uDiffuseStrength * diff * roughness;
-    float specular = uSpecularStrength * spec * metallic;
+    vec3 diffuse = albedo * uDiffuseStrength * diff;
+    vec3 specular = vec3(uSpecularStrength * spec * metallic);
     return light.intensity * attenuation * (diffuse + specular);
 }
