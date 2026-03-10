@@ -31,9 +31,7 @@ perFrame PointLight pointLights[MAX_NUM_POINT_LIGHTS];
 
 // Directional light - Shadow map
 perFrame DirectionalLight directionalLight;
-// perFrame samplerCube omniShadowMap;
 perFrame sampler2D directionalShadowMap;
-perFrame float omniFarPlane;
 
 // Environment light - IBL
 perFrame mat3 environmentLightOri;
@@ -80,7 +78,6 @@ vec4 vertex(vec3 inPosition, vec3 inNormal, vec2 inTexCoord) {
 //----- Fragment Shader -----//
 vec3 calcLightContribution(vec3 L, vec3 N, vec3 V, vec3 radiance, vec3 albedo, float metallic, float roughness, vec3 F0);
 float directionalShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir);
-float omniShadowCalculation(vec3 lightPos, vec3 normal);
 float distributionGGX(vec3 N, vec3 H, float roughness);       // Distribution of microsurface normals
 float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness); // Microsurface shadowing
 vec3 fresnelSchlick(float cosTheta, vec3 F0);                 // Reflect-refract ratio
@@ -124,7 +121,6 @@ void fragment(out vec4 outColor) {
         vec3 radiance = pointLights[i].intensity * attenuation;
 
         float shadow = 0.0f;
-        // shadow = omniShadowCalculation(pointLights[i].position, N);
         Lo += calcLightContribution(L, N, V, radiance, albedo, metallic, roughness, F0) * (1.0f - shadow);
     }
 
@@ -215,39 +211,6 @@ float directionalShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lig
     // No shadow outside the light frustum
     if (projCoords.z > 1.0)
         shadow = 0.0;
-
-    return shadow;
-}
-
-vec3 sampleOffsetDirections[20] =
-    vec3[](vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1), vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-           vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0), vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
-           vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1));
-
-float omniShadowCalculation(vec3 lightPos, vec3 normal) {
-    // get vector between fragment position and light position
-    vec3 fragToLight = worldPos - lightPos;
-    // use the light to fragment vector to sample from the depth map
-    float closestDepth = 0.0f; // texture(omniShadowMap, fragToLight).r;
-    if (closestDepth == 1.0f)
-        return 0.0f;
-    // it is currently in linear range between [0,1]. Re-transform back to original value
-    closestDepth *= omniFarPlane;
-    // now get current linear depth as the length between the fragment and light position
-    float currentDepth = length(fragToLight);
-    // now test for shadows
-    float shadow = 0.0;
-    float bias = 0.15;
-    int samples = 20;
-    float viewDistance = length(camPos - worldPos);
-    float diskRadius = (1.0 + (viewDistance / omniFarPlane)) / 25.0;
-    for (int i = 0; i < samples; ++i) {
-        float closestDepth = 0.0f;    // texture(omniShadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
-        closestDepth *= omniFarPlane; // undo mapping [0;1]
-        if (currentDepth - bias > closestDepth)
-            shadow += 1.0;
-    }
-    shadow /= float(samples);
 
     return shadow;
 }

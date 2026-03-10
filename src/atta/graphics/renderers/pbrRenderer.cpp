@@ -61,9 +61,6 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
     _gridPipeline = std::make_unique<GridPipeline>(_geometryRenderPass);
     _drawerPipeline = std::make_unique<DrawerPipeline>(_geometryRenderPass);
 
-    ////---------- Create background shader ----------//
-    //{ _backgroundShader = graphics::create<Shader>("shaders/pbrRenderer/background.asl"); }
-
     //---------- Directional shadow mapping ----------//
     {
         Image::CreateInfo imageInfo{};
@@ -93,40 +90,6 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
         pipelineInfo.renderPass = _shadowMapRenderPass;
         _shadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
     }
-
-    ////---------- Omnidirectional shadow mapping ----------//
-    //{
-    //    // Framebuffer
-    //    Image::CreateInfo imageInfo;
-    //    imageInfo.format = Image::Format::DEPTH32F;
-    //    imageInfo.width = 1024;
-    //    imageInfo.height = 1024;
-    //    imageInfo.isCubemap = true;
-    //    imageInfo.debugName = StringId("PbrRenderer::omniShadowMap::image");
-    //    _omnidirectionalShadowMap = graphics::create<Image>(imageInfo);
-
-    //    Framebuffer::CreateInfo framebufferInfo{};
-    //    framebufferInfo.attachments.push_back({Image::Format::NONE, _omnidirectionalShadowMap});
-    //    framebufferInfo.width = 1024;
-    //    framebufferInfo.height = 1024;
-    //    framebufferInfo.debugName = StringId("PbrRenderer::omniShadowMap::framebuffer");
-    //    std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
-
-    //    // Shader
-    //    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/omniShadow.asl");
-
-    //    // Render Pass
-    //    RenderPass::CreateInfo renderPassInfo{};
-    //    renderPassInfo.framebuffer = framebuffer;
-    //    renderPassInfo.debugName = StringId("PbrRenderer::omniShadowMap::renderPass");
-    //    std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
-
-    //    // Pipeline
-    //    Pipeline::CreateInfo pipelineInfo{};
-    //    pipelineInfo.shader = shader;
-    //    pipelineInfo.renderPass = renderPass;
-    //    _omniShadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
-    //}
 }
 
 PbrRenderer::~PbrRenderer() {}
@@ -142,7 +105,6 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
     }
 
     // Check current environment map
-
     std::vector<component::EntityId> entities = component::getNoPrototypeView();
     StringId currEnvironmentImg{};
     for (auto entity : entities) {
@@ -238,63 +200,6 @@ void PbrRenderer::shadowPass() {
     }
     _renderQueue->end();
     _directionalShadowMap->prepareForSampling();
-
-    ////----- Omnidirectional shadow mapping -----//
-    // component::EntityId pointLightEntity = -1;
-    // for (auto entity : entities) {
-    //     component::PointLight* pl = component::getComponent<component::PointLight>(entity);
-    //     component::Transform* t = component::getComponent<component::Transform>(entity);
-    //     if (pl && t) {
-    //         pointLightEntity = entity;
-    //         break;
-    //     }
-    // }
-
-    // if (pointLightEntity != -1) {
-    //     _omniShadowMapPipeline->begin();
-    //     {
-    //         std::shared_ptr<Shader> shader = _omniShadowMapPipeline->getShader();
-    //         shader->bind();
-
-    //        // Create light matrix
-    //        component::Transform* t = component::getComponent<component::Transform>(pointLightEntity);
-
-    //        // TODO world position
-    //        float fov = radians(90.0f);
-    //        float ratio = 1.0f;
-    //        float near = 0.01f;
-    //        float far = 25.0f;
-    //        mat4 proj = perspective(fov, ratio, near, far);
-    //        std::vector<mat4> shadowMatrices = {proj * lookAt(t->position, t->position + vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
-    //                                            proj * lookAt(t->position, t->position + vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),
-    //                                            proj * lookAt(t->position, t->position + vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),
-    //                                            proj * lookAt(t->position, t->position + vec3(0.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f)),
-    //                                            proj * lookAt(t->position, t->position + vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, -1.0f, 0.0f)),
-    //                                            proj * lookAt(t->position, t->position + vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, -1.0f, 0.0f))};
-
-    //        shader->setMat4("shadowMatrices[0]", transpose(shadowMatrices[0]));
-    //        shader->setMat4("shadowMatrices[1]", transpose(shadowMatrices[1]));
-    //        shader->setMat4("shadowMatrices[2]", transpose(shadowMatrices[2]));
-    //        shader->setMat4("shadowMatrices[3]", transpose(shadowMatrices[3]));
-    //        shader->setMat4("shadowMatrices[4]", transpose(shadowMatrices[4]));
-    //        shader->setMat4("shadowMatrices[5]", transpose(shadowMatrices[5]));
-    //        shader->setMat4("model", transpose(t->getWorldTransformMatrix(pointLightEntity)));
-    //        shader->setVec3("lightPos", t->position);
-    //        shader->setFloat("far_plane", far);
-
-    //        // Fill shadow map rendering the scene
-    //        for (auto entity : entities) {
-    //            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-    //            component::Transform* transform = component::getComponent<component::Transform>(entity);
-
-    //            if (mesh && transform) {
-    //                shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
-    //                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
-    //            }
-    //        }
-    //    }
-    //    _omniShadowMapPipeline->end();
-    //}
 }
 
 void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
@@ -336,9 +241,6 @@ void PbrRenderer::geometryPass(std::shared_ptr<Camera> camera) {
                 _geometryPipeline->setMat4("view", camera->getView());
                 _geometryPipeline->setVec3("camPos", camera->getPosition());
                 _geometryPipeline->setMat4("directionalLightMatrix", _directionalLightMatrix);
-                // _geometryPipeline->setImage("directionalShadowMap", _shadowMapPipeline->getRenderPass()->getFramebuffer()->getImage());
-                // _geometryPipeline->setCubemap("omniShadowMap", _omnidirectionalShadowMap);
-                _geometryPipeline->setFloat("omniFarPlane", 25.0f);
 
                 // Bind IBL textures
                 _geometryPipeline->setImageGroup("iblImg");
