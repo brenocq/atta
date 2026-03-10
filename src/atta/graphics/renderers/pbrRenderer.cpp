@@ -64,40 +64,35 @@ PbrRenderer::PbrRenderer() : Renderer("PbrRenderer"), _firstRender(true), _wasRe
     ////---------- Create background shader ----------//
     //{ _backgroundShader = graphics::create<Shader>("shaders/pbrRenderer/background.asl"); }
 
-    ////---------- Directional shadow mapping ----------//
-    //{
-    //    // Framebuffer
-    //    Image::CreateInfo imageInfo;
-    //    imageInfo.format = Image::Format::DEPTH32F;
-    //    imageInfo.samplerWrap = Image::Wrap::BORDER;
-    //    imageInfo.borderColor = vec4(1.0f);
-    //    imageInfo.width = 1024;
-    //    imageInfo.height = 1024;
-    //    imageInfo.debugName = StringId("PbrRenderer::dirShadowMap::image");
-    //    std::shared_ptr<Image> depthImage = graphics::create<Image>(imageInfo);
+    //---------- Directional shadow mapping ----------//
+    {
+        Image::CreateInfo imageInfo{};
+        imageInfo.format = Image::Format::DEPTH32F;
+        imageInfo.samplerWrap = Image::Wrap::CLAMP;
+        imageInfo.width = 1024;
+        imageInfo.height = 1024;
+        imageInfo.debugName = StringId("PbrRenderer::dirShadowMap");
+        _directionalShadowMap = graphics::create<Image>(imageInfo);
 
-    //    Framebuffer::CreateInfo framebufferInfo{};
-    //    framebufferInfo.attachments.push_back({Image::Format::NONE, depthImage});
-    //    framebufferInfo.width = 1024;
-    //    framebufferInfo.height = 1024;
-    //    framebufferInfo.debugName = StringId("PbrRenderer::shadowMap::framebuffer");
-    //    std::shared_ptr<Framebuffer> framebuffer = graphics::create<Framebuffer>(framebufferInfo);
+        Framebuffer::Attachment attachment{};
+        attachment.image = _directionalShadowMap;
+        Framebuffer::CreateInfo framebufferInfo{};
+        framebufferInfo.attachments.push_back(attachment);
+        framebufferInfo.width = 1024;
+        framebufferInfo.height = 1024;
+        framebufferInfo.debugName = StringId("PbrRenderer::shadowMap::framebuffer");
+        _shadowMapFramebuffer = graphics::create<Framebuffer>(framebufferInfo);
 
-    //    // Shader
-    //    std::shared_ptr<Shader> shader = graphics::create<Shader>("shaders/pbrRenderer/shadow.asl");
+        RenderPass::CreateInfo renderPassInfo{};
+        renderPassInfo.framebuffer = _shadowMapFramebuffer;
+        renderPassInfo.debugName = StringId("PbrRenderer::shadowMap::renderPass");
+        _shadowMapRenderPass = graphics::create<RenderPass>(renderPassInfo);
 
-    //    // Render Pass
-    //    RenderPass::CreateInfo renderPassInfo{};
-    //    renderPassInfo.framebuffer = framebuffer;
-    //    renderPassInfo.debugName = StringId("PbrRenderer::shadowMap::renderPass");
-    //    std::shared_ptr<RenderPass> renderPass = graphics::create<RenderPass>(renderPassInfo);
-
-    //    // Pipeline
-    //    Pipeline::CreateInfo pipelineInfo{};
-    //    pipelineInfo.shader = shader;
-    //    pipelineInfo.renderPass = renderPass;
-    //    _shadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
-    //}
+        Pipeline::CreateInfo pipelineInfo{};
+        pipelineInfo.shader = graphics::create<Shader>("shaders/pbrRenderer/shadow.asl");
+        pipelineInfo.renderPass = _shadowMapRenderPass;
+        _shadowMapPipeline = graphics::create<Pipeline>(pipelineInfo);
+    }
 
     ////---------- Omnidirectional shadow mapping ----------//
     //{
@@ -168,7 +163,7 @@ void PbrRenderer::render(std::shared_ptr<Camera> camera) {
         updateIblImageGroup();
     }
 
-    // shadowPass();
+    shadowPass();
     geometryPass(camera);
 
     // if (_renderSelected)
@@ -188,50 +183,61 @@ void PbrRenderer::resize(uint32_t width, uint32_t height) {
 }
 
 void PbrRenderer::shadowPass() {
-    // std::vector<component::EntityId> entities = component::getNoPrototypeView();
+    std::vector<component::EntityId> entities = component::getNoPrototypeView();
 
-    ////----- Directional shadow mapping -----//
-    // component::EntityId directionalLightEntity = -1;
-    // for (auto entity : entities) {
-    //     component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
-    //     component::Transform* t = component::getComponent<component::Transform>(entity);
-    //     if (dl && t) {
-    //         directionalLightEntity = entity;
-    //         break;
-    //     }
-    // }
+    //----- Directional shadow mapping -----//
+    component::EntityId directionalLightEntity = -1;
+    for (auto entity : entities) {
+        component::DirectionalLight* dl = component::getComponent<component::DirectionalLight>(entity);
+        component::Transform* t = component::getComponent<component::Transform>(entity);
+        if (dl && t) {
+            directionalLightEntity = entity;
+            break;
+        }
+    }
 
-    // if (directionalLightEntity != -1) {
-    //     _shadowMapPipeline->begin();
-    //     {
-    //         std::shared_ptr<Shader> shader = _shadowMapPipeline->getShader();
-    //         shader->bind();
+    // Always run the shadow pass to keep the depth image in a valid layout for sampling.
+    // When a directional light exists, render scene geometry into the shadow map.
+    _renderQueue->begin();
+    {
+        _shadowMapRenderPass->begin(_renderQueue);
+        {
+            if (directionalLightEntity != -1) {
+                component::Transform* t = component::getComponent<component::Transform>(directionalLightEntity);
 
-    //        // Create light matrix
-    //        component::Transform* t = component::getComponent<component::Transform>(directionalLightEntity);
+                // Compute light direction (forward is -Z in atta's Z-up coordinate system)
+                mat4 rotation;
+                rotation.setPosOri({0, 0, 0}, t->orientation);
+                vec3 lightDir = normalize(mat3(rotation) * vec3(0.0f, 0.0f, -1.0f));
 
-    //        float height = 10.0f;
-    //        float ratio = 1.0f;
-    //        float far = 25.0f;
-    //        mat4 proj = orthographic(height, ratio, far);
-    //        mat4 view;
-    //        view.setPosOri(vec3(), t->orientation);
-    //        _directionalLightMatrix = proj * view;
-    //        shader->setMat4("lightSpaceMatrix", transpose(_directionalLightMatrix));
+                // Position the light camera behind the scene along the incoming light direction.
+                // Use Z as up; if lightDir is nearly parallel to Z, fall back to Y.
+                vec3 lightPos = -lightDir * 20.0f;
+                vec3 up = (std::abs(lightDir.z) < 0.99f) ? vec3(0.0f, 0.0f, 1.0f) : vec3(0.0f, 1.0f, 0.0f);
+                mat4 lightView = lookAt(lightPos, vec3(0.0f, 0.0f, 0.0f), up);
+                mat4 lightProj = orthographic(20.0f, 1.0f, 40.0f);
+                _directionalLightMatrix = lightProj * lightView;
 
-    //        // Fill shadow map rendering the scene
-    //        for (auto entity : entities) {
-    //            component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
-    //            component::Transform* transform = component::getComponent<component::Transform>(entity);
+                _shadowMapPipeline->begin();
+                {
+                    _shadowMapPipeline->setMat4("lightSpaceMatrix", _directionalLightMatrix);
 
-    //            if (mesh && transform) {
-    //                shader->setMat4("model", transpose(transform->getWorldTransformMatrix(entity)));
-    //                graphics::getGraphicsAPI()->renderMesh(mesh->sid);
-    //            }
-    //        }
-    //    }
-    //    _shadowMapPipeline->end();
-    //}
+                    for (auto entity : entities) {
+                        component::Mesh* mesh = component::getComponent<component::Mesh>(entity);
+                        component::Transform* transform = component::getComponent<component::Transform>(entity);
+                        if (mesh && transform) {
+                            _shadowMapPipeline->setMat4("model", transform->getWorldTransformMatrix(entity));
+                            _shadowMapPipeline->renderMesh(mesh->sid);
+                        }
+                    }
+                }
+                _shadowMapPipeline->end();
+            }
+        }
+        _shadowMapRenderPass->end();
+    }
+    _renderQueue->end();
+    _directionalShadowMap->prepareForSampling();
 
     ////----- Omnidirectional shadow mapping -----//
     // component::EntityId pointLightEntity = -1;
@@ -430,6 +436,8 @@ void PbrRenderer::updateIblImageGroup() {
         iblImages.emplace_back("prefilterMap", _prefilterImage);
     if (_brdfLutImage)
         iblImages.emplace_back("brdfLUT", _brdfLutImage);
+    if (_directionalShadowMap)
+        iblImages.emplace_back("directionalShadowMap", _directionalShadowMap);
     _geometryPipeline->updateImageGroup("iblImg", iblImages);
 }
 

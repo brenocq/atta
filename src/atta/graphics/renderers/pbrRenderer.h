@@ -46,8 +46,6 @@ class PbrRenderer final : public Renderer {
     bool _wasResized;
 
     //----- Lighting -----//
-    // Directional light
-    mat3 _directionalLightMatrix;
     // Environment light
     StringId _lastEnvironmentImg;
     mat3 _environmentMapOri;
@@ -61,6 +59,10 @@ class PbrRenderer final : public Renderer {
 
     // Shadow mapping
     std::shared_ptr<Pipeline> _shadowMapPipeline;
+    std::shared_ptr<RenderPass> _shadowMapRenderPass;
+    std::shared_ptr<Framebuffer> _shadowMapFramebuffer;
+    std::shared_ptr<Image> _directionalShadowMap;
+    mat4 _directionalLightMatrix;
     std::shared_ptr<Pipeline> _omniShadowMapPipeline;
     std::shared_ptr<Image> _omnidirectionalShadowMap;
 };

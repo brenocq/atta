@@ -168,7 +168,7 @@ void Image::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     createImage();
     allocMemory();
     createImageViews();
-    if (isColorFormat(_supportedFormat))
+    if (isColorFormat(_supportedFormat) || isDepthFormat(_supportedFormat))
         createSampler();
 
     // Transfer data if specified
@@ -392,7 +392,7 @@ void Image::createImage() {
         info.usage =
             VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
     else if (isDepthFormat(_supportedFormat))
-        info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
     info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
     info.samples = VK_SAMPLE_COUNT_1_BIT;
     if (vkCreateImage(_device->getHandle(), &info, nullptr, &_image) != VK_SUCCESS)
@@ -428,15 +428,26 @@ void Image::createImageViews() {
 }
 
 void Image::createSampler() {
+    VkSamplerAddressMode addressMode;
+    switch (_samplerWrap) {
+        case Wrap::CLAMP:
+            addressMode = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            break;
+        case Wrap::REPEAT:
+        default:
+            addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            break;
+    }
+
     VkSamplerCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     // Mag/min filters
     info.magFilter = VK_FILTER_LINEAR;
     info.minFilter = VK_FILTER_LINEAR;
     // Address mode
-    info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    info.addressModeU = addressMode;
+    info.addressModeV = addressMode;
+    info.addressModeW = addressMode;
     info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
     // Anisotropy
     info.anisotropyEnable = VK_TRUE;
@@ -452,7 +463,7 @@ void Image::createSampler() {
     info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
     info.mipLodBias = 0.0f;
     info.minLod = 0.0f;
-    info.maxLod = 0.0f;
+    info.maxLod = static_cast<float>(_mipLevels - 1);
 
     if (vkCreateSampler(_device->getHandle(), &info, nullptr, &_sampler) != VK_SUCCESS)
         LOG_ERROR("gfx::vk::Image", "Failed to create texture sampler");
@@ -520,6 +531,10 @@ void populateLayoutStage(VkImageLayout layout, VkPipelineStageFlags* stage, VkAc
             *access = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
             *stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
             break;
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+            *access = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+            *stage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+            break;
         case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
             *access = VK_ACCESS_SHADER_READ_BIT;
             *stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
@@ -549,7 +564,7 @@ void Image::transitionLayout(VkCommandBuffer commandBuffer, VkImageLayout newLay
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.image = _image;
-    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.aspectMask = convertAspectFlags(_supportedFormat);
     barrier.subresourceRange.baseMipLevel = 0;
     barrier.subresourceRange.levelCount = _mipLevels;
     barrier.subresourceRange.baseArrayLayer = 0;

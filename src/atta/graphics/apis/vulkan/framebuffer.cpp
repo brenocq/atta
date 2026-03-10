@@ -20,9 +20,15 @@ void Framebuffer::bind(bool clear) {
     }
 }
 void Framebuffer::unbind() {
-    VkImageLayout layout = _isSwapchain ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    for (size_t i = 0; i < _images.size(); i++)
-        std::dynamic_pointer_cast<vk::Image>(_images[i])->setLayout(layout);
+    for (size_t i = 0; i < _images.size(); i++) {
+        auto vkImage = std::dynamic_pointer_cast<vk::Image>(_images[i]);
+        VkImageLayout layout;
+        if (gfx::Image::isDepthFormat(vkImage->getSupportedFormat()) || gfx::Image::isStencilFormat(vkImage->getSupportedFormat()))
+            layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        else
+            layout = _isSwapchain ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        vkImage->setLayout(layout);
+    }
 }
 
 void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {

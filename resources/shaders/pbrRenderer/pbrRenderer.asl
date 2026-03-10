@@ -31,8 +31,8 @@ perFrame PointLight pointLights[MAX_NUM_POINT_LIGHTS];
 
 // Directional light - Shadow map
 perFrame DirectionalLight directionalLight;
-// perFrame sampler2D directionalShadowMap;
 // perFrame samplerCube omniShadowMap;
+perFrame sampler2D directionalShadowMap;
 perFrame float omniFarPlane;
 
 // Environment light - IBL
@@ -129,11 +129,12 @@ void fragment(out vec4 outColor) {
     }
 
     //----- Directional light -----//
+    float shadow = 0.0f;
     if (numDirectionalLights == 1) {
         vec3 L = -directionalLight.direction;
         vec3 radiance = directionalLight.intensity;
 
-        float shadow = 0.0f; // directionalShadowCalculation(posDirectionalLightSpace, N, L);
+        shadow = directionalShadowCalculation(posDirectionalLightSpace, N, L);
         Lo += calcLightContribution(L, N, V, radiance, albedo, metallic, roughness, F0) * (1.0f - shadow);
     }
 
@@ -156,8 +157,10 @@ void fragment(out vec4 outColor) {
         vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
         ambient = (kD * diffuse + specular) * ao;
+        // Partially darken ambient in shadowed areas (indirect light is reduced but not eliminated)
+        ambient *= (1.0 - shadow * 0.5);
     } else if (numEnvironmentLights == 0) {
-        ambient = vec3(0.03) * albedo * ao;
+        ambient = vec3(0.03) * albedo * ao * (1.0 - shadow * 0.5);
     }
 
     vec3 color = ambient + Lo;
@@ -192,27 +195,24 @@ vec3 calcLightContribution(vec3 L, vec3 N, vec3 V, vec3 radiance, vec3 albedo, f
 }
 
 float directionalShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir) {
-    // perform perspective divide
+    // Perspective divide (no-op for orthographic, but correct for general use)
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = 0.0f; // texture(directionalShadowMap, projCoords.xy).r;
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
+    // Remap XY from [-1,1] to [0,1] UV range; Z is already in [0,1] (Vulkan NDC)
+    projCoords.xy = projCoords.xy * 0.5 + 0.5;
+    // Bias to reduce shadow acne (scale by surface angle to light)
     float bias = max(0.01 * (1.0 - dot(normal, lightDir)), 0.0001);
     float shadow = 0.0;
-    ivec2 texSize = ivec2(0, 0); // textureSize(directionalShadowMap, 0);
-    vec2 texelSize = 1.0f / vec2(texSize);
+    vec2 texelSize = 1.0 / vec2(textureSize(directionalShadowMap, 0));
+    // 5x5 PCF kernel
     for (int x = -2; x <= 2; ++x) {
         for (int y = -2; y <= 2; ++y) {
-            float pcfDepth = 0.0f; // texture(directionalShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+            float pcfDepth = texture(directionalShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += projCoords.z - bias > pcfDepth ? 1.0 : 0.0;
         }
     }
     shadow /= 25.0;
 
+    // No shadow outside the light frustum
     if (projCoords.z > 1.0)
         shadow = 0.0;
 
