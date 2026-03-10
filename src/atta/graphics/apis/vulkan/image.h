@@ -104,8 +104,8 @@ class Image final : public gfx::Image {
     std::vector<uint8_t> _supportedData; ///< Converted _data to _supportedFormat
 
     VkImage _image;
-    VkImageView _imageView;                                    // Image view for the whole image (all layers)
-    std::array<VkImageView, 6> _cubemapImageViews{};           // Image view for each face of a cubemap image
+    VkImageView _imageView;                                              // Image view for the whole image (all layers)
+    std::array<VkImageView, 6> _cubemapImageViews{};                     // Image view for each face of a cubemap image
     std::unordered_map<uint32_t, VkImageView> _cubemapFaceMipImageViews; // Image view for each face+mip of a cubemap image
     VkSampler _sampler;
     VkDeviceMemory _memory;

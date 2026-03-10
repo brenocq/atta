@@ -32,12 +32,12 @@ std::shared_ptr<gfx::Image> Prefilter::createPrefilterCubemap(StringId environme
     // Same face orientations as equiToCubemap/irradiance (learnopengl convention, no Y-flip)
     mat4 proj = perspective(M_PI / 2.0f, 1.0f, 0.1f, 10.0f);
     std::array<mat4, 6> views = {
-        lookAt(vec3(0.0f), vec3( 1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)), // +X face
-        lookAt(vec3(0.0f), vec3(-1.0f,  0.0f,  0.0f), vec3(0.0f, -1.0f,  0.0f)), // -X face
-        lookAt(vec3(0.0f), vec3( 0.0f,  1.0f,  0.0f), vec3(0.0f,  0.0f,  1.0f)), // +Y face
-        lookAt(vec3(0.0f), vec3( 0.0f, -1.0f,  0.0f), vec3(0.0f,  0.0f, -1.0f)), // -Y face
-        lookAt(vec3(0.0f), vec3( 0.0f,  0.0f,  1.0f), vec3(0.0f, -1.0f,  0.0f)), // +Z face
-        lookAt(vec3(0.0f), vec3( 0.0f,  0.0f, -1.0f), vec3(0.0f, -1.0f,  0.0f)), // -Z face
+        lookAt(vec3(0.0f), vec3(1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)),  // +X face
+        lookAt(vec3(0.0f), vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f)), // -X face
+        lookAt(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)),   // +Y face
+        lookAt(vec3(0.0f), vec3(0.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, -1.0f)), // -Y face
+        lookAt(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, -1.0f, 0.0f)),  // +Z face
+        lookAt(vec3(0.0f), vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, -1.0f, 0.0f)), // -Z face
     };
 
     // One framebuffer + renderpass + pipeline per mip level (different dimensions)

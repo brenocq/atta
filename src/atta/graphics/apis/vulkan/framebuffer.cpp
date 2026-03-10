@@ -102,7 +102,8 @@ void Framebuffer::setLayer(uint32_t layer) {
 
 void Framebuffer::setLayerAndMip(uint32_t layer, uint32_t mipLevel) {
     if (_images.size() != 1) {
-        LOG_ERROR("gfx::vk::Framebuffer", "setLayerAndMip is only supported for framebuffers with one attachment, not for framebuffer [w]$0[]", _debugName);
+        LOG_ERROR("gfx::vk::Framebuffer", "setLayerAndMip is only supported for framebuffers with one attachment, not for framebuffer [w]$0[]",
+                  _debugName);
         return;
     }
 
