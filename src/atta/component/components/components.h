@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Component Module
-// components.h
-// Date: 2021-09-02
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_COMPONENTS_H
-#define ATTA_COMPONENT_COMPONENTS_COMPONENTS_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/component/components/boxCollider.h>
 #include <atta/component/components/boxCollider2D.h>
@@ -30,5 +25,3 @@
 #include <atta/component/components/script.h>
 #include <atta/component/components/sphereCollider.h>
 #include <atta/component/components/transform.h>
-
-#endif // ATTA_COMPONENT_COMPONENTS_COMPONENTS_H

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// drawer.inl
-// Date: 2021-09-25
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 
 namespace atta::graphics {
 

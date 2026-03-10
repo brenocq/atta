@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta IO Module
-// linuxBluetooth.h
-// Date: 2022-03-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_IO_BLUETOOTH_LINUX_BLUETOOTH_H
-#define ATTA_IO_BLUETOOTH_LINUX_BLUETOOTH_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #if defined(ATTA_OS_LINUX) && defined(ATTA_SYSTEMD_SUPPORT)
 
 #include <atta/io/bluetooth/bluetooth.h>
@@ -113,4 +108,3 @@ class LinuxBluetooth final : public Bluetooth {
 } // namespace atta::io
 
 #endif // ATTA_OS_LINUX && ATTA_SYSTEMD_SUPPORT
-#endif // ATTA_IO_BLUETOOTH_LINUX_BLUETOOTH_H

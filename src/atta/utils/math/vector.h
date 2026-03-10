@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Math
-// vector.h
-// Date: 2020-12-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_MATH_VECTOR_H
-#define ATTA_UTILS_MATH_VECTOR_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta {
 template <typename T>
@@ -552,4 +547,3 @@ struct hash<atta::vec2> {
 #include <atta/utils/math/vector2.inl>
 #include <atta/utils/math/vector3.inl>
 #include <atta/utils/math/vector4.inl>
-#endif // ATTA_UTILS_MATH_VECTOR_H

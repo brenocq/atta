@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Sensor Module
-// manager.h
-// Date: 2021-09-25
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_SENSOR_MANAGER_H
-#define ATTA_SENSOR_MANAGER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/sensor/interface.h>
 
@@ -66,5 +61,3 @@ class Manager final {
 };
 
 } // namespace atta::sensor
-
-#endif // ATTA_SENSOR_MANAGER_H

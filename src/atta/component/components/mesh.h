@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Component Module
-// mesh.h
-// Date: 2021-09-02
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_MESH_H
-#define ATTA_COMPONENT_COMPONENTS_MESH_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/component/interface.h>
 
@@ -31,5 +26,3 @@ template <>
 ComponentDescription& TypedComponentRegistry<Mesh>::getDescription();
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_COMPONENTS_MESH_H

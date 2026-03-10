@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta IO Module
-// bluetooth.h
-// Date: 2022-03-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_IO_BLUETOOTH_BLUETOOTH_H
-#define ATTA_IO_BLUETOOTH_BLUETOOTH_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/utils/stringId.h>
 
@@ -93,5 +88,3 @@ inline Bluetooth::CharFlags operator&(Bluetooth::CharFlags a, Bluetooth::CharFla
 }
 
 } // namespace atta::io
-
-#endif // ATTA_IO_BLUETOOTH_BLUETOOTH_H

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// transform.cpp
-// Date: 2021-11-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/relationship.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>

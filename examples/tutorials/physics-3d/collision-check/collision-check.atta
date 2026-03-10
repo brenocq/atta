@@ -1,0 +1,98 @@
+[project]
+attaVersion = "0.3.7"
+name = "collision-check"
+
+[config]
+dt = 0.015000
+desiredStepSpeed = 1.000000
+
+[graphics]
+graphicsFPS = 30.000000
+viewportRendering = true
+
+[physics]
+engine = "BULLET"
+gravity = vec3(0.000000, 0.000000, -9.810000)
+showColliders = true
+showContacts = false
+showJoints = false
+bullet.showAabb = false
+bullet.numSubSteps = 1
+
+[sensor]
+showCameras = true
+showInfrareds = true
+
+[material]
+id = "Material"
+color = vec3(0.500000, 0.500000, 0.500000)
+
+[material]
+id = "not-colliding"
+color = vec3(0.000000, 1.000000, 0.000000)
+
+[material]
+id = "colliding"
+color = vec3(1.000000, 0.000000, 0.000000)
+
+[viewport]
+name = "Main Viewport"
+renderer.type = "PbrRenderer"
+camera.type = "PerspectiveCamera"
+camera.position = vec3(4.942663, 0.080228, 4.058456)
+camera.lookAt = vec3(4.092845, 0.075812, 3.531399)
+camera.up = vec3(-0.527050, -0.002739, 0.849830)
+
+[node]
+id = 0
+boxCollider.size = 1.000000
+boxCollider.offset = 0.000000
+material.sid = "not-colliding"
+mesh.sid = "meshes/cube.obj"
+name.name = "Ground"
+rigidBody.type = "STATIC"
+rigidBody.linearVelocity = 0.000000
+rigidBody.angularVelocity = 0.000000
+rigidBody.mass = 1.000000
+rigidBody.friction = 0.500000
+rigidBody.restitution = 0.500000
+rigidBody.linearDamping = 0.000000
+rigidBody.angularDamping = 0.000000
+rigidBody.allowSleep = true
+rigidBody.awake = true
+rigidBody.constraints = 0
+transform.position = vec3(0.000000, 0.000000, 0.000000)
+transform.orientation = quat(-0.000000, -0.000000, -0.000000, 1.000000)
+transform.scale = vec3(5.000000, 5.000000, 0.100000)
+
+[node]
+id = 1
+mesh.sid = "meshes/sphere.obj"
+name.name = "Point light"
+pointLight.intensity = vec3(1.000000, 1.000000, 1.000000)
+transform.position = vec3(0.000000, 0.000000, 3.000000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.050000, 0.050000, 0.050000)
+
+[node]
+id = 2
+boxCollider.size = 1.000000
+boxCollider.offset = 0.000000
+material.sid = "not-colliding"
+mesh.sid = "meshes/cube.obj"
+name.name = "Cube"
+rigidBody.type = "DYNAMIC"
+rigidBody.linearVelocity = 0.000000
+rigidBody.angularVelocity = 0.000000
+rigidBody.mass = 1.000000
+rigidBody.friction = 0.500000
+rigidBody.restitution = 0.500000
+rigidBody.linearDamping = 0.000000
+rigidBody.angularDamping = 0.000000
+rigidBody.allowSleep = true
+rigidBody.awake = true
+rigidBody.constraints = 0
+transform.position = vec3(0.000000, 0.000000, 1.836973)
+transform.orientation = quat(-0.000000, -0.000000, -0.000000, 1.000000)
+transform.scale = vec3(1.000000, 1.000000, 1.000000)
+

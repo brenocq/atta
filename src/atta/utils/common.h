@@ -1,16 +1,9 @@
-//--------------------------------------------------
-// Atta Utils Module
-// common.h
-// Date: 2021-08-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_COMMON_H
-#define ATTA_UTILS_COMMON_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta {
 
 #define BIT(i) (1 << i);
 
 } // namespace atta
-
-#endif ATTA_UTILS_COMMON_H

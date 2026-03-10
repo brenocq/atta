@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Utils Module
-// config.h
-// Date: 2022-03-12
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_CONFIG_H
-#define ATTA_UTILS_CONFIG_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta {
 
@@ -52,5 +47,3 @@ class Config final {
 };
 
 } // namespace atta
-
-#endif // ATTA_PHYSICS_PHYSICS_MANAGER_H

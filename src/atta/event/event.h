@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Event Module
-// event.h
-// Date: 2021-08-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_EVENT_EVENT_H
-#define ATTA_EVENT_EVENT_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/utils/stringId.h>
 
 namespace atta::event {
@@ -38,5 +33,3 @@ class EventTyped : public Event {
 };
 
 } // namespace atta::event
-
-#endif // ATTA_EVENT_EVENT_H

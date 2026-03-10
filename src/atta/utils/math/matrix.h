@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Math
-// matrix.h
-// Date: 2020-12-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_MATH_MATRIX_HH
-#define ATTA_UTILS_MATH_MATRIX_HH
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/utils/math/quaternion.h>
 #include <atta/utils/math/vector.h>
@@ -448,4 +443,3 @@ using mati = matrix<int>;
 } // namespace atta
 
 #include <atta/utils/math/matrix.inl>
-#endif // ATTA_UTILS_MATH_MATRIX_H

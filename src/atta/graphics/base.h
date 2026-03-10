@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// base.h
-// Date: 2022-01-08
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_BASE_H
-#define ATTA_GRAPHICS_BASE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::graphics {
 
@@ -26,5 +21,3 @@ struct GfxId {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_BASE_H

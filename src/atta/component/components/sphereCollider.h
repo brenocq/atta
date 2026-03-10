@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Component Module
-// sphereCollider.h
-// Date: 2021-11-30
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_SPHERE_COLLIDER_H
-#define ATTA_COMPONENT_COMPONENTS_SPHERE_COLLIDER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/component/components/component.h>
 #include <atta/component/interface.h>
@@ -38,5 +33,3 @@ template <>
 ComponentDescription& TypedComponentRegistry<SphereCollider>::getDescription();
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_COMPONENTS_SPHERE_COLLIDER_H

@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// pipeline.h
-// Date: 2021-09-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_PIPELINE_H
-#define ATTA_GRAPHICS_APIS_OPENGL_PIPELINE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/openGL/base.h>
 #include <atta/graphics/pipeline.h>
@@ -40,5 +35,3 @@ class Pipeline final : public gfx::Pipeline {
 };
 
 } // namespace atta::graphics::gl
-
-#endif // ATTA_GRAPHICS_APIS_OPENGL_PIPELINE_H

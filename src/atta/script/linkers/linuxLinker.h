@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Script Module
-// linuxLinker.h
-// Date: 2021-09-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_SCRIPT_LINKERS_LINUX_LINKER_H
-#define ATTA_SCRIPT_LINKERS_LINUX_LINKER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #ifdef ATTA_OS_LINUX
 
 #include <atta/script/linkers/linker.h>
@@ -27,4 +22,3 @@ class LinuxLinker : public Linker {
 } // namespace atta::script
 
 #endif // ATTA_OS_LINUX
-#endif // ATTA_SCRIPT_LINKERS_LINUX_LINKER_H

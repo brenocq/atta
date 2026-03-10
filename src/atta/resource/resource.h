@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Resource Module
-// resource.h
-// Date: 2021-09-07
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_RESOURCE_RESOURCE_H
-#define ATTA_RESOURCE_RESOURCE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/utils/stringId.h>
 
@@ -26,5 +21,3 @@ class Resource {
 };
 
 } // namespace atta::resource
-
-#endif // ATTA_RESOURCE_RESOURCE_H

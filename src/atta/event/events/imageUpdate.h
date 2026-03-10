@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Event Module
-// imageUpdate.h
-// Date: 2021-09-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_EVENT_EVENTS_IMAGE_UPDATE_H
-#define ATTA_EVENT_EVENTS_IMAGE_UPDATE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/event/event.h>
 
 namespace atta::event {
@@ -18,5 +13,3 @@ class ImageUpdate : public EventTyped<SID("ImageUpdate")> {
 };
 
 } // namespace atta::event
-
-#endif // ATTA_EVENT_EVENTS_IMAGE_UPDATE_H

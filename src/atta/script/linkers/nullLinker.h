@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Script Module
-// nullLinker.h
-// Date: 2021-09-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_SCRIPT_LINKERS_NULL_LINKER_H
-#define ATTA_SCRIPT_LINKERS_NULL_LINKER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/script/linkers/linker.h>
 
 namespace atta::script {
@@ -20,5 +15,3 @@ class NullLinker : public Linker {
 };
 
 } // namespace atta::script
-
-#endif // ATTA_SCRIPT_LINKERS_NULL_LINKER_H

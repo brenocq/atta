@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// camera.cpp
-// Date: 2021-09-26
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/io/camera/camera.h>
 #include <atta/io/camera/linuxCamera.h>
 

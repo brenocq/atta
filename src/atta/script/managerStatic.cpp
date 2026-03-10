@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Script Module
-// managerStatic.cpp
-// Date: 2022-06-12
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/event/events/projectOpen.h>
 #include <atta/script/scripts.h>
 

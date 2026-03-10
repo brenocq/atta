@@ -1,0 +1,47 @@
+[project]
+attaVersion = "0.3.7"
+name = "plots"
+
+[config]
+dt = 0.015000
+desiredStepSpeed = 1.000000
+
+[graphics]
+graphicsFPS = 30.000000
+viewportRendering = true
+
+[physics]
+engine = "BULLET"
+gravity = vec3(0.000000, 0.000000, -9.810000)
+showColliders = true
+showContacts = false
+showJoints = false
+bullet.showAabb = false
+bullet.numSubSteps = 1
+
+[sensor]
+showCameras = true
+showInfrareds = true
+
+[material]
+id = "Material"
+color = vec3(0.500000, 0.500000, 0.500000)
+
+[node]
+id = 0
+material.sid = "Material"
+mesh.sid = "meshes/cube.obj"
+name.name = "Cube"
+transform.position = vec3(0.000000, 0.000000, 0.000000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(1.000000, 1.000000, 1.000000)
+
+[node]
+id = 1
+mesh.sid = "meshes/sphere.obj"
+name.name = "Point light"
+pointLight.intensity = vec3(1.000000, 1.000000, 1.000000)
+transform.position = vec3(0.600000, 0.600000, 0.600000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.050000, 0.050000, 0.050000)
+

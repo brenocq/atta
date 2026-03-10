@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// viewportWindows.cpp
-// Date: 2021-12-28
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/base.h>
 #include <atta/component/components/material.h>
 #include <atta/component/components/mesh.h>

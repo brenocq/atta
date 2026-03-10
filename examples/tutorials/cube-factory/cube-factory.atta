@@ -1,0 +1,457 @@
+[project]
+attaVersion = "0.3.7"
+name = "Cube Factory"
+
+[config]
+dt = 0.015000
+desiredStepSpeed = 4.059855
+
+[graphics]
+graphicsFPS = 30.000000
+viewportRendering = true
+
+[physics]
+engine = "BULLET"
+gravity = vec3(0.000000, 0.000000, -9.810000)
+showColliders = true
+showContacts = false
+showJoints = false
+bullet.showAabb = false
+bullet.numSubSteps = 1
+
+[sensor]
+showCameras = true
+showInfrareds = true
+
+[material]
+id = "Material"
+color = vec3(0.500000, 0.500000, 0.500000)
+
+[material]
+id = "Material 0"
+color = vec3(0.117979, 0.877139, 1.000000)
+
+[material]
+id = "Material 1"
+color = vec3(0.049758, 0.946930, 1.000000)
+
+[material]
+id = "Material 2"
+color = vec3(0.009827, 0.988638, 1.000000)
+
+[material]
+id = "Material 3"
+color = vec3(0.000695, 0.999644, 1.000000)
+
+[material]
+id = "Material 4"
+color = vec3(0.022937, 0.979255, 1.000000)
+
+[material]
+id = "Material 5"
+color = vec3(0.075154, 0.928753, 1.000000)
+
+[material]
+id = "Material 6"
+color = vec3(0.154066, 0.851310, 1.000000)
+
+[material]
+id = "Material 7"
+color = vec3(0.254714, 0.751794, 1.000000)
+
+[material]
+id = "Material 8"
+color = vec3(0.370774, 0.636456, 1.000000)
+
+[material]
+id = "Material 9"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 10"
+color = vec3(0.049758, 0.946930, 1.000000)
+
+[material]
+id = "Material 11"
+color = vec3(0.009827, 0.988638, 1.000000)
+
+[material]
+id = "Material 12"
+color = vec3(0.000695, 0.999644, 1.000000)
+
+[material]
+id = "Material 13"
+color = vec3(0.022937, 0.979255, 1.000000)
+
+[material]
+id = "Material 14"
+color = vec3(0.075154, 0.928753, 1.000000)
+
+[material]
+id = "Material 15"
+color = vec3(0.154066, 0.851310, 1.000000)
+
+[material]
+id = "Material 16"
+color = vec3(0.254714, 0.751794, 1.000000)
+
+[material]
+id = "Material 17"
+color = vec3(0.370774, 0.636456, 1.000000)
+
+[material]
+id = "Material 18"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 19"
+color = vec3(0.619451, 0.387844, 1.000000)
+
+[material]
+id = "Material 20"
+color = vec3(0.009827, 0.988638, 1.000000)
+
+[material]
+id = "Material 21"
+color = vec3(0.000695, 0.999644, 1.000000)
+
+[material]
+id = "Material 22"
+color = vec3(0.022937, 0.979255, 1.000000)
+
+[material]
+id = "Material 23"
+color = vec3(0.075154, 0.928753, 1.000000)
+
+[material]
+id = "Material 24"
+color = vec3(0.154066, 0.851310, 1.000000)
+
+[material]
+id = "Material 25"
+color = vec3(0.254714, 0.751794, 1.000000)
+
+[material]
+id = "Material 26"
+color = vec3(0.370774, 0.636456, 1.000000)
+
+[material]
+id = "Material 27"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 28"
+color = vec3(0.619451, 0.387844, 1.000000)
+
+[material]
+id = "Material 29"
+color = vec3(0.736443, 0.270192, 1.000000)
+
+[material]
+id = "Material 30"
+color = vec3(0.000695, 0.999644, 1.000000)
+
+[material]
+id = "Material 31"
+color = vec3(0.022937, 0.979255, 1.000000)
+
+[material]
+id = "Material 32"
+color = vec3(0.075154, 0.928753, 1.000000)
+
+[material]
+id = "Material 33"
+color = vec3(0.154066, 0.851310, 1.000000)
+
+[material]
+id = "Material 34"
+color = vec3(0.254714, 0.751794, 1.000000)
+
+[material]
+id = "Material 35"
+color = vec3(0.370774, 0.636456, 1.000000)
+
+[material]
+id = "Material 36"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 37"
+color = vec3(0.619451, 0.387844, 1.000000)
+
+[material]
+id = "Material 38"
+color = vec3(0.736443, 0.270192, 1.000000)
+
+[material]
+id = "Material 39"
+color = vec3(0.838578, 0.166979, 1.000000)
+
+[material]
+id = "Material 40"
+color = vec3(0.022937, 0.979255, 1.000000)
+
+[material]
+id = "Material 41"
+color = vec3(0.075154, 0.928753, 1.000000)
+
+[material]
+id = "Material 42"
+color = vec3(0.154066, 0.851310, 1.000000)
+
+[material]
+id = "Material 43"
+color = vec3(0.254714, 0.751794, 1.000000)
+
+[material]
+id = "Material 44"
+color = vec3(0.370774, 0.636456, 1.000000)
+
+[material]
+id = "Material 45"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 46"
+color = vec3(0.619451, 0.387844, 1.000000)
+
+[material]
+id = "Material 47"
+color = vec3(0.736443, 0.270192, 1.000000)
+
+[material]
+id = "Material 48"
+color = vec3(0.838578, 0.166979, 1.000000)
+
+[material]
+id = "Material 49"
+color = vec3(0.919439, 0.084691, 1.000000)
+
+[material]
+id = "Material 50"
+color = vec3(0.075154, 0.928753, 1.000000)
+
+[material]
+id = "Material 51"
+color = vec3(0.154066, 0.851310, 1.000000)
+
+[material]
+id = "Material 52"
+color = vec3(0.254714, 0.751794, 1.000000)
+
+[material]
+id = "Material 53"
+color = vec3(0.370774, 0.636456, 1.000000)
+
+[material]
+id = "Material 54"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 55"
+color = vec3(0.619451, 0.387844, 1.000000)
+
+[material]
+id = "Material 56"
+color = vec3(0.736443, 0.270192, 1.000000)
+
+[material]
+id = "Material 57"
+color = vec3(0.838578, 0.166979, 1.000000)
+
+[material]
+id = "Material 58"
+color = vec3(0.919439, 0.084691, 1.000000)
+
+[material]
+id = "Material 59"
+color = vec3(0.973945, 0.028498, 1.000000)
+
+[material]
+id = "Material 60"
+color = vec3(0.154066, 0.851310, 1.000000)
+
+[material]
+id = "Material 61"
+color = vec3(0.254714, 0.751794, 1.000000)
+
+[material]
+id = "Material 62"
+color = vec3(0.370774, 0.636456, 1.000000)
+
+[material]
+id = "Material 63"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 64"
+color = vec3(0.619451, 0.387844, 1.000000)
+
+[material]
+id = "Material 65"
+color = vec3(0.736443, 0.270192, 1.000000)
+
+[material]
+id = "Material 66"
+color = vec3(0.838578, 0.166979, 1.000000)
+
+[material]
+id = "Material 67"
+color = vec3(0.919439, 0.084691, 1.000000)
+
+[material]
+id = "Material 68"
+color = vec3(0.973945, 0.028498, 1.000000)
+
+[material]
+id = "Material 69"
+color = vec3(0.998671, 0.001931, 1.000000)
+
+[material]
+id = "Material 70"
+color = vec3(0.254714, 0.751794, 1.000000)
+
+[material]
+id = "Material 71"
+color = vec3(0.370774, 0.636456, 1.000000)
+
+[material]
+id = "Material 72"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 73"
+color = vec3(0.619451, 0.387844, 1.000000)
+
+[material]
+id = "Material 74"
+color = vec3(0.736443, 0.270192, 1.000000)
+
+[material]
+id = "Material 75"
+color = vec3(0.838578, 0.166979, 1.000000)
+
+[material]
+id = "Material 76"
+color = vec3(0.919439, 0.084691, 1.000000)
+
+[material]
+id = "Material 77"
+color = vec3(0.973945, 0.028498, 1.000000)
+
+[material]
+id = "Material 78"
+color = vec3(0.998671, 0.001931, 1.000000)
+
+[material]
+id = "Material 79"
+color = vec3(0.992064, 0.006660, 1.000000)
+
+[material]
+id = "Material 80"
+color = vec3(0.370774, 0.636456, 1.000000)
+
+[material]
+id = "Material 81"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 82"
+color = vec3(0.619451, 0.387844, 1.000000)
+
+[material]
+id = "Material 83"
+color = vec3(0.736443, 0.270192, 1.000000)
+
+[material]
+id = "Material 84"
+color = vec3(0.838578, 0.166979, 1.000000)
+
+[material]
+id = "Material 85"
+color = vec3(0.919439, 0.084691, 1.000000)
+
+[material]
+id = "Material 86"
+color = vec3(0.973945, 0.028498, 1.000000)
+
+[material]
+id = "Material 87"
+color = vec3(0.998671, 0.001931, 1.000000)
+
+[material]
+id = "Material 88"
+color = vec3(0.992064, 0.006660, 1.000000)
+
+[material]
+id = "Material 89"
+color = vec3(0.954539, 0.042388, 1.000000)
+
+[material]
+id = "Material 90"
+color = vec3(0.494954, 0.512544, 1.000000)
+
+[material]
+id = "Material 91"
+color = vec3(0.619451, 0.387844, 1.000000)
+
+[material]
+id = "Material 92"
+color = vec3(0.736443, 0.270192, 1.000000)
+
+[material]
+id = "Material 93"
+color = vec3(0.838578, 0.166979, 1.000000)
+
+[material]
+id = "Material 94"
+color = vec3(0.919439, 0.084691, 1.000000)
+
+[material]
+id = "Material 95"
+color = vec3(0.973945, 0.028498, 1.000000)
+
+[material]
+id = "Material 96"
+color = vec3(0.998671, 0.001931, 1.000000)
+
+[material]
+id = "Material 97"
+color = vec3(0.992064, 0.006660, 1.000000)
+
+[material]
+id = "Material 98"
+color = vec3(0.954539, 0.042388, 1.000000)
+
+[material]
+id = "Material 99"
+color = vec3(0.888453, 0.106869, 1.000000)
+
+[viewport]
+name = "Main Viewport"
+renderer.type = "PbrRenderer"
+camera.type = "PerspectiveCamera"
+camera.position = vec3(5.570071, 13.174253, 7.422965)
+camera.lookAt = vec3(5.447096, 12.432280, 6.763909)
+camera.up = vec3(-0.107762, -0.650186, 0.752095)
+
+[node]
+id = 0
+mesh.sid = "meshes/sphere.obj"
+name.name = "Point light"
+pointLight.intensity = vec3(1.000000, 1.000000, 1.000000)
+transform.position = vec3(5.000000, 5.000000, 4.000000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(0.050000, 0.050000, 0.050000)
+
+[node]
+id = 1
+prototype.maxClones = 100
+script.sid = "CubeScript"
+material.sid = "Material"
+mesh.sid = "meshes/cube.obj"
+name.name = "Prototype"
+transform.position = vec3(0.000000, 0.000000, 0.000000)
+transform.orientation = quat(0.000000, 0.000000, 0.000000, 1.000000)
+transform.scale = vec3(1.000000, 1.000000, 1.000000)
+

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// timeProfilerWindow.cpp
-// Date: 2022-10-23
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/widgets/button.h>
 #include <atta/ui/windows/timeProfiler/timeProfilerWindow.h>
 

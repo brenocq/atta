@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// window.h
-// Date: 2021-10-31
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_WINDOWS_WINDOW_H
-#define ATTA_GRAPHICS_WINDOWS_WINDOW_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/event/interface.h>
 #include <atta/utils/stringId.h>
 
@@ -48,5 +43,3 @@ class Window {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_WINDOWS_WINDOW_H

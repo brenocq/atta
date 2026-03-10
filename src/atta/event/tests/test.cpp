@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Event Module Tests
-// test.cpp
-// Date: 2021-08-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/event/event.h>
 #include <atta/event/events/windowMouseMove.h>
 #include <atta/event/interface.h>

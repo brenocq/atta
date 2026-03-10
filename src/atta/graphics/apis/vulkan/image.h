@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// image.h
-// Date: 2023-04-04
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_IMAGE_H
-#define ATTA_GRAPHICS_APIS_VULKAN_IMAGE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/vulkan/buffer.h>
 #include <atta/graphics/apis/vulkan/common.h>
@@ -108,5 +103,3 @@ class Image final : public gfx::Image {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_IMAGE_H

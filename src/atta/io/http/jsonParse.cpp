@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// jsonParse.cpp
-// Date: 2022-06-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 namespace atta::io {
 
 bool Json::parse(const std::string& str) {

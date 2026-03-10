@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Script Module
-// compiler.h
-// Date: 2021-09-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_SCRIPT_COMPILERS_COMPILER_H
-#define ATTA_SCRIPT_COMPILERS_COMPILER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/utils/stringId.h>
 
@@ -29,5 +24,3 @@ class Compiler {
 };
 
 } // namespace atta::script
-
-#endif // ATTA_SCRIPT_COMPILERS_COMPILER_H

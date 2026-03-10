@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// openGLAPI.h
-// Date: 2021-08-30
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_OPENGL_RENDERER_H
-#define ATTA_GRAPHICS_APIS_OPENGL_OPENGL_RENDERER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/apis/openGL/image.h>
@@ -37,5 +32,3 @@ class OpenGLAPI final : public GraphicsAPI {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_APIS_OPENGL_OPENGL_RENDERER_H

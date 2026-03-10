@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// manager.cpp
-// Date: 2021-09-02
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/components.h>
 #include <atta/component/factory.h>
 #include <atta/component/interface.h>

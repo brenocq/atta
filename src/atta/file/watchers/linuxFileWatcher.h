@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta File Module
-// linuxFileWatcher.h
-// Date: 2021-09-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_FILE_WATCHER_LINUX_FILE_WATCHER_H
-#define ATTA_FILE_WATCHER_LINUX_FILE_WATCHER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #ifdef ATTA_OS_LINUX
 #include <atta/file/watchers/fileWatcher.h>
 #include <sys/inotify.h>
@@ -38,4 +33,3 @@ class LinuxFileWatcher : public FileWatcher {
 } // namespace atta::file
 
 #endif // ATTA_OS_LINUX
-#endif // ATTA_FILE_WATCHER_LINUX_FILE_WATCHER_H

@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Component Module
-// relationship.h
-// Date: 2021-09-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H
-#define ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/component/interface.h>
 #include <atta/file/serializer/serializer.h>
@@ -69,5 +64,3 @@ template <>
 ComponentDescription& TypedComponentRegistry<Relationship>::getDescription();
 
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_COMPONENTS_RELATIONSHIP_H

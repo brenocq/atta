@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// vertexBuffer.h
-// Date: 2021-09-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_VERTEX_BUFFER_H
-#define ATTA_GRAPHICS_VERTEX_BUFFER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/graphics/bufferLayout.h>
 
 namespace atta::graphics {
@@ -44,5 +39,3 @@ class VertexBuffer {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_VERTEX_BUFFER_H

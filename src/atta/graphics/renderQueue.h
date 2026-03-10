@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// renderQueue.h
-// Date: 2023-12-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDER_QUEUE_H
-#define ATTA_GRAPHICS_RENDER_QUEUE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::graphics {
 
@@ -19,5 +14,3 @@ class RenderQueue {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_RENDER_QUEUE_H

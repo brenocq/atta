@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Sensor Module
-// interface.h
-// Date: 2022-08-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_SENSOR_INTERFACE_H
-#define ATTA_SENSOR_INTERFACE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/component/base.h>
 #include <atta/component/components/cameraSensor.h>
@@ -54,5 +49,3 @@ bool getShowInfrareds();
 void setShowInfrareds(bool showInfrareds);
 
 } // namespace atta::sensor
-
-#endif // ATTA_SENSOR_INTERFACE_H

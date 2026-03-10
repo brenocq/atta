@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta UI Module
-// sensorDrawer.h
-// Date: 2022-03-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UI_DRAWERS_SENSOR_DRAWER_H
-#define ATTA_UI_DRAWERS_SENSOR_DRAWER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::ui {
 
@@ -19,5 +14,3 @@ class SensorDrawer {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_DRAWERS_SENSOR_DRAWER_H

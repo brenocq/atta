@@ -1,7 +1,3 @@
-//--------------------------------------------------
-// Atta Script Module
-// projectScript.cpp
-// Date: 2021-09-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/script/projectScript.h>

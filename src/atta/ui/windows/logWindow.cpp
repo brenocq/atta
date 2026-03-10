@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// logWindow.cpp
-// Date: 2021-12-28
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/windows/logWindow.h>
 #include <imgui.h>
 #include <implot.h>
