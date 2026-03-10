@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// pipelineLayout.cpp
-// Date: 2023-04-04
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/apis/vulkan/pipelineLayout.h>
 
 namespace atta::graphics::vk {

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// rigidBody.cpp
-// Date: 2021-12-06
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/rigidBody.h>
 #include <atta/physics/engines/bulletEngine.h>
 #include <atta/physics/interface.h>

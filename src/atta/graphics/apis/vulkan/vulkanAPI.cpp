@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// vulkanAPI.h
-// Date: 2021-08-30
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/apis/vulkan/vulkanAPI.h>
 
 #include <atta/event/events/windowResize.h>

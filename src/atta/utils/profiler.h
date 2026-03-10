@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Utils Module
-// profiler.h
-// Date: 2022-10-22
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_PROFILER_H
-#define ATTA_UTILS_PROFILER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/utils/stringId.h>
 #include <chrono>
 
@@ -92,5 +87,3 @@ class ProfilerRecord {
 #endif
 
 #define PROFILE() PROFILE_NAME(__PRETTY_FUNCTION__)
-
-#endif // ATTA_UTILS_PROFILER_H

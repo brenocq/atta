@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// bufferLayout.h
-// Date: 2023-08-30
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_BUFFER_LAYOUT_H
-#define ATTA_GRAPHICS_BUFFER_LAYOUT_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::graphics {
 
@@ -90,5 +85,3 @@ class BufferLayout final {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_BUFFER_LAYOUT_H

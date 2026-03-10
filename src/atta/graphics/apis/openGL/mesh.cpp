@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// mesh.cpp
-// Date: 2021-09-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/apis/openGL/mesh.h>
 #include <atta/graphics/interface.h>
 #include <atta/resource/interface.h>

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Memory Module
-// stackAllocator.inl
-// Date: 2021-08-20
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 namespace atta::memory {
 
 template <typename T>

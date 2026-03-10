@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta File Module
-// project.h
-// Date: 2021-09-15
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_FILE_PROJECT_PROJECT_H
-#define ATTA_FILE_PROJECT_PROJECT_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::file {
 
@@ -37,5 +32,3 @@ class Project final {
 };
 
 } // namespace atta::file
-
-#endif // ATTA_FILE_PROJECT_PROJECT_H

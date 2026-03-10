@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// componentRegistry.cpp
-// Date: 2021-11-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/componentRegistry.h>
 #include <atta/component/interface.h>
 #include <imgui.h>

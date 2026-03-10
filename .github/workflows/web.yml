@@ -30,4 +30,4 @@ jobs:
           emcmake cmake ..
 
       - name: Build
-        run: cmake --build build --parallel --config ${{ matrix.config.build_type }}
+        run: cmake --build build --parallel 4 --config ${{ matrix.config.build_type }}

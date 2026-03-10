@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// httpCurlpp.cpp
-// Date: 2022-06-08
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 // The .cpp file with the http implementation is chosen at compile time
 
 #include <atta/io/http/http.h>

@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// manager.h
-// Date: 2021-08-23
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_GRAPHICS_MANAGER_H
-#define ATTA_GRAPHICS_GRAPHICS_MANAGER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/graphicsAPI.h>
 #include <atta/graphics/framebuffer.h>
@@ -102,5 +97,3 @@ class Manager final {
 } // namespace atta::graphics
 
 #include <atta/graphics/manager.inl>
-
-#endif // ATTA_GRAPHICS_GRAPHICS_MANAGER_H

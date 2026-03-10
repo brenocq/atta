@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// physicalDevice.h
-// Date: 2023-04-02
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_PHYSICAL_DEVICE_H
-#define ATTA_GRAPHICS_APIS_VULKAN_PHYSICAL_DEVICE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/instance.h>
@@ -43,5 +38,3 @@ class PhysicalDevice {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_PHYSICAL_DEVICE_H

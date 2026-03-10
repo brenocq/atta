@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Memory Module
-// allocatedObject.h
-// Date: 2021-08-21
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_MEMORY_ALLOCATED_OBJECT_H
-#define ATTA_MEMORY_ALLOCATED_OBJECT_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/utils/stringId.h>
 
 namespace atta::memory {
@@ -56,4 +51,3 @@ class AllocatedObject {
 } // namespace atta::memory
 
 #include <atta/memory/allocatedObject.inl>
-#endif // ATTA_MEMORY_ALLOCATED_OBJECT_H

@@ -1,10 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// cameraSensor.cpp
-// Date: 2021-11-23
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#include <atta/component/components/cameraSensor.h>
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/event/events/uiCameraComponent.h>
 #include <atta/event/interface.h>
 #include <atta/sensor/interface.h>

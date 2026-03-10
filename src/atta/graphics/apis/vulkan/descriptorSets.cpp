@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// descriptorSets.cpp
-// Date: 2023-04-07
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/apis/vulkan/descriptorSets.h>
 
 #include <atta/graphics/apis/vulkan/commandBuffers.h>

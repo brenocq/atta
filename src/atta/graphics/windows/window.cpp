@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// window.cpp
-// Date: 2021-10-31
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {

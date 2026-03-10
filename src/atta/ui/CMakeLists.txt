@@ -6,6 +6,7 @@ set(ATTA_UI_MODULE_SOURCE
 
     panels/topBar/topBar.cpp
     panels/toolBar/toolBar.cpp
+    panels/topBar/localWindows/examplesWindow.cpp
     panels/topBar/localWindows/repoWindow.cpp
     panels/topBar/localWindows/versionWindow.cpp
 

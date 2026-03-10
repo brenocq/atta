@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// graphicsModuleWindow.cpp
-// Date: 2022-10-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/windows/graphicsModuleWindow.h>
 
 #include <atta/graphics/interface.h>

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// json.cpp
-// Date: 2022-06-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/io/http/json.h>
 
 namespace atta::io {

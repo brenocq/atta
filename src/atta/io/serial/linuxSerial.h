@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta IO Module
-// linuxSerial.h
-// Date: 2021-09-29
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_IO_SERIAL_LINUX_SERIAL_H
-#define ATTA_IO_SERIAL_LINUX_SERIAL_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #ifdef ATTA_OS_LINUX
 #include <asm/termbits.h>
@@ -33,4 +28,3 @@ class LinuxSerial final : public Serial {
 
 } // namespace atta::io
 #endif // ATTA_OS_LINUX
-#endif // ATTA_IO_SERIAL_LINUX_SERIAL_H

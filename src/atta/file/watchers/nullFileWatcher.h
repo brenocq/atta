@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta File Module
-// nullFileWatcher.h
-// Date: 2021-09-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_FILE_WATCHER_NULL_FILE_WATCHER_H
-#define ATTA_FILE_WATCHER_NULL_FILE_WATCHER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/file/watchers/fileWatcher.h>
 
 namespace atta::file {
@@ -22,5 +17,3 @@ class NullFileWatcher : public FileWatcher {
 };
 
 } // namespace atta::file
-
-#endif // ATTA_FILE_WATCHER_NULL_FILE_WATCHER_H

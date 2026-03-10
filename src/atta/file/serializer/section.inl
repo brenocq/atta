@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta File Module
-// section.inl
-// Date: 2022-04-22
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 namespace atta::file {
 
 template <typename Test, template <typename...> class Ref>

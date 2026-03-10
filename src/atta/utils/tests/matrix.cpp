@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math Tests
-// matrix.cpp
-// Date: 2025-04-12
-// By: Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/utils/math/matrix.h>
 #include <cmath>
 #include <gtest/gtest.h>

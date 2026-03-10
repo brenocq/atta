@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Utils Module
-// log.h
-// Date: 2021-08-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_LOG_H
-#define ATTA_UTILS_LOG_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 //---------------------------------//
 //------ Terminal Color Code ------//
@@ -121,4 +116,3 @@ class Log final {
 #define LOG_ERROR(...) atta::Log::error(__VA_ARGS__)
 
 #include <atta/utils/log.inl>
-#endif // ATTA_UTILS_LOG_H

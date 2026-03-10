@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// indexBuffer.h
-// Date: 2021-09-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_OPENGL_INDEX_BUFFER_H
-#define ATTA_GRAPHICS_APIS_OPENGL_INDEX_BUFFER_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/openGL/base.h>
 #include <atta/graphics/indexBuffer.h>
@@ -26,5 +21,3 @@ class IndexBuffer final : public gfx::IndexBuffer {
 };
 
 } // namespace atta::graphics::gl
-
-#endif // ATTA_GRAPHICS_APIS_OPENGL_INDEX_BUFFER_H

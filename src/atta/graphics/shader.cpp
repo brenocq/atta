@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// shader.cpp
-// Date: 2021-09-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/file/manager.h>
 #include <atta/graphics/shader.h>
 #include <regex>

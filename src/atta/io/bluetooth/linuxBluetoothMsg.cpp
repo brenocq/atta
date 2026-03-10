@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// linuxBluetooth.cpp
-// Date: 2022-03-18
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 namespace atta::io {
 
 #define RETURN_FOUND 1000 // Used to indicate that found what was looking for

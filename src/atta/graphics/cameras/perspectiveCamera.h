@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// perspectiveCamera.h
-// Date: 2021-09-14
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_CAMERAS_PERSPECTIVE_CAMERA_H
-#define ATTA_GRAPHICS_CAMERAS_PERSPECTIVE_CAMERA_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/graphics/cameras/camera.h>
 
 namespace atta::graphics {
@@ -36,5 +31,3 @@ class PerspectiveCamera : public Camera {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_CAMERAS_PERSPECTIVE_CAMERA_H

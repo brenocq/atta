@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Component Module
-// componentRegistry.h
-// Date: 2021-11-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_COMPONENT_COMPONENT_REGISTRY_H
-#define ATTA_COMPONENT_COMPONENT_REGISTRY_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/component/base.h>
 #include <atta/component/components/component.h>
 #include <atta/utils/stringId.h>
@@ -48,5 +43,3 @@ class ComponentRegistry {
 //---------- Attribute helpers ----------//
 inline std::ostream& operator<<(std::ostream& os, ComponentRegistry& c) { return os << c.getDescription().name; }
 } // namespace atta::component
-
-#endif // ATTA_COMPONENT_COMPONENT_REGISTRY_H

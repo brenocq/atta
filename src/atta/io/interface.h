@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta IO Module
-// interface.h
-// Date: 2022-08-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_IO_INTERFACE_H
-#define ATTA_IO_INTERFACE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/io/bluetooth/bluetooth.h>
 #include <atta/io/camera/camera.h>
@@ -35,5 +30,3 @@ std::shared_ptr<T> create(Args... args) {
 }
 
 } // namespace atta::io
-
-#endif // ATTA_IO_INTERFACE_H

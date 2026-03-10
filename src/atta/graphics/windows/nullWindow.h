@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// nullWindow.h
-// Date: 2021-10-31
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_WINDOWS_NULL_WINDOW_H
-#define ATTA_GRAPHICS_WINDOWS_NULL_WINDOW_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/graphics/windows/window.h>
 
 namespace atta::graphics {
@@ -20,5 +15,3 @@ class NullWindow final : public Window {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_WINDOWS_NULL_WINDOW_H

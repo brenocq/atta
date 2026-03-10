@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// mesh.h
-// Date: 2023-04-10
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_VULKAN_MESH_H
-#define ATTA_GRAPHICS_APIS_VULKAN_MESH_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/apis/vulkan/common.h>
 #include <atta/graphics/apis/vulkan/indexBuffer.h>
@@ -23,5 +18,3 @@ class Mesh final : public gfx::Mesh {
 };
 
 } // namespace atta::graphics::vk
-
-#endif // ATTA_GRAPHICS_APIS_VULKAN_MESH_H

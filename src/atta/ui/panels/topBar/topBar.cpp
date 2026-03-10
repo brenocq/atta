@@ -1,11 +1,8 @@
-//--------------------------------------------------
-// Atta UI Module
-// topBar.cpp
-// Date: 2021-09-01
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/panels/topBar/topBar.h>
 
+#include <atta/ui/panels/topBar/localWindows/examplesWindow.h>
 #include <atta/ui/panels/topBar/localWindows/versionWindow.h>
 #include <atta/ui/widgets/align.h>
 #include <atta/ui/widgets/button.h>
@@ -76,6 +73,8 @@ void TopBar::fileMenu() {
                 FileSelectionWindow::setOpen(true);
                 _waitingChooseAttaFile = true;
             }
+            if (ImGui::MenuItem("From examples"))
+                ExamplesWindow::setOpen(true);
             if (ImGui::MenuItem("From published"))
                 _showOpenPublished = true;
 

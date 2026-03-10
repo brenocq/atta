@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Memory Module
-// stackAllocator.h
-// Date: 2021-08-20
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_MEMORY_ALLOCATORS_STACK_ALLOCATOR_H
-#define ATTA_MEMORY_ALLOCATORS_STACK_ALLOCATOR_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/memory/allocator.h>
 
 namespace atta::memory {
@@ -46,4 +41,3 @@ class StackAllocator final : public Allocator {
 } // namespace atta::memory
 
 #include <atta/memory/allocators/stackAllocator.inl>
-#endif // ATTA_MEMORY_ALLOCATORS_STACK_ALLOCATOR_H

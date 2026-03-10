@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// gridPipeline.h
-// Date: 2021-11-16
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_RENDERERS_COMMON_GRID_PIPELINE_H
-#define ATTA_GRAPHICS_RENDERERS_COMMON_GRID_PIPELINE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 #include <atta/graphics/cameras/camera.h>
 #include <atta/graphics/pipeline.h>
 #include <atta/graphics/renderQueue.h>
@@ -44,5 +39,3 @@ class GridPipeline final {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_RENDERERS_COMMON_GRID_PIPELINE_H

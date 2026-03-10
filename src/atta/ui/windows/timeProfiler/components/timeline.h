@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta UI Module
-// timeline.h
-// Date: 2022-10-30
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UI_WINDOWS_TIME_PROFILER_COMPONENTS_TIMELINE_H
-#define ATTA_UI_WINDOWS_TIME_PROFILER_COMPONENTS_TIMELINE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::ui {
 
@@ -25,5 +20,3 @@ class Timeline {
 };
 
 } // namespace atta::ui
-
-#endif // ATTA_UI_WINDOWS_TIME_PROFILER_COMPONENTS_TIMELINE_H

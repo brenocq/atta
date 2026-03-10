@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// align.h
-// Date: 2024-01-03
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/widgets/align.h>
 
 #include "imgui.h"

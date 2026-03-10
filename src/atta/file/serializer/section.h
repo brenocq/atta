@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta File Module
-// section.h
-// Date: 2022-04-22
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_FILE_SERIALIZER_SECTION_H
-#define ATTA_FILE_SERIALIZER_SECTION_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::file {
 
@@ -78,5 +73,3 @@ class Section {
 } // namespace atta::file
 
 #include <atta/file/serializer/section.inl>
-
-#endif // ATTA_FILE_SERIALIZER_SECTION_H

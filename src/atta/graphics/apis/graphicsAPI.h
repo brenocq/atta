@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// graphicsAPI.h
-// Date: 2021-08-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_GRAPHICS_APIS_GRAPHICS_API_H
-#define ATTA_GRAPHICS_APIS_GRAPHICS_API_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/graphics/framebuffer.h>
 #include <atta/graphics/image.h>
@@ -76,5 +71,3 @@ class GraphicsAPI {
 };
 
 } // namespace atta::graphics
-
-#endif // ATTA_GRAPHICS_APIS_GRAPHICS_API_H

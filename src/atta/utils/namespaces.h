@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Utils Module
-// namespaces.h
-// Date: 2022-11-30
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_NAMESPACES_H
-#define ATTA_UTILS_NAMESPACES_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 namespace atta::component {}
 namespace atta::event {}
@@ -28,5 +23,3 @@ namespace res = ::atta::resource;
 namespace scr = ::atta::script;
 namespace sen = ::atta::sensor;
 namespace ui = ::atta::ui;
-
-#endif // ATTA_UTILS_NAMESPACES_H

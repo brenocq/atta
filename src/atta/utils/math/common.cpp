@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Math
-// common.cpp
-// Date: 2020-12-11
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/utils/math/common.h>
 
 namespace atta {

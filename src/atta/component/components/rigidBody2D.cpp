@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Component Module
-// rigidBody2D.cpp
-// Date: 2021-11-29
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/rigidBody2D.h>
 #include <atta/physics/engines/box2DEngine.h>
 #include <atta/physics/interface.h>

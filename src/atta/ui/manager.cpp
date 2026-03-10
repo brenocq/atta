@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// manager.cpp
-// Date: 2021-09-28
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/cameraSensor.h>
 #include <atta/component/components/material.h>
 #include <atta/component/components/mesh.h>
@@ -510,13 +506,10 @@ void Manager::initVulkan() {
     info.Allocator = nullptr;
     info.MinImageCount = 3;
     info.ImageCount = 3;
+    info.PipelineInfoMain.RenderPass = vulkanAPI->getRenderPass()->getHandle();
+    info.PipelineInfoMain.Subpass = 0;
     info.CheckVkResultFn = nullptr;
-    info.RenderPass = vulkanAPI->getRenderPass()->getHandle();
     ImGui_ImplVulkan_Init(&info);
-
-    // Upload Fonts
-    if (!ImGui_ImplVulkan_CreateFontsTexture())
-        LOG_WARN("ui::Manager", "Failed to created ImGui font texture");
 #endif
 }
 

@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// component.cpp
-// Date: 2025-02-26
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/base.h>
 #include <atta/component/componentRegistry.h>
 #include <atta/component/interface.h>

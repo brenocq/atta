@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// flameGraph.h
-// Date: 2022-10-24
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/ui/windows/timeProfiler/components/flameGraph.h>
 
 #include "implot.h"

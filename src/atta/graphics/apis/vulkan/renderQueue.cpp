@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// renderQueue.h
-// Date: 2023-12-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/graphics/apis/vulkan/renderQueue.h>
 
 #include <atta/graphics/apis/vulkan/common.h>

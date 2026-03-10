@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Math
-// common.h
-// Date: 2020-12-09
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_UTILS_MATH_COMMON_H
-#define ATTA_UTILS_MATH_COMMON_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include <atta/utils/math/vector.h>
 
@@ -24,5 +19,3 @@ static constexpr float maxFloat = std::numeric_limits<float>::max();
 static constexpr float infinity = std::numeric_limits<float>::infinity();
 static constexpr float machineEpsilon = std::numeric_limits<float>::epsilon() * 0.5;
 } // namespace atta
-
-#endif // ATTA_UTILS_MATH_COMMON_H

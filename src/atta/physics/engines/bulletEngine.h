@@ -1,11 +1,6 @@
-//--------------------------------------------------
-// Atta Physics Module
-// bulletEngine.h
-// Date: 2021-12-05
-// By Breno Cunha Queiroz
-//--------------------------------------------------
-#ifndef ATTA_PHYSICS_ENGINES_BULLET_ENGINE_H
-#define ATTA_PHYSICS_ENGINES_BULLET_ENGINE_H
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
+#pragma once
 
 #include "btBulletDynamicsCommon.h"
 #include <atta/component/components/prismaticJoint.h>
@@ -78,5 +73,3 @@ class BulletEngine : public Engine {
 };
 
 } // namespace atta::physics
-
-#endif // ATTA_PHYSICS_ENGINES_BULLET_ENGINE_H

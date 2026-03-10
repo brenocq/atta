@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta IO Module
-// linuxBluetooth.cpp
-// Date: 2022-03-17
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #if defined(ATTA_OS_LINUX) && defined(ATTA_SYSTEMD_SUPPORT)
 #include <atta/io/bluetooth/linuxBluetooth.h>
 // Thanks to https://github.com/infsoft-locaware/blzlib

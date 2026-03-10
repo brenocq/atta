@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta UI Module
-// repoWindow.cpp
-// Date: 2021-12-26
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/file/manager.h>
 #include <atta/ui/panels/topBar/localWindows/repoWindow.h>
 #include <imgui.h>

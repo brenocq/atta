@@ -1,9 +1,5 @@
-//--------------------------------------------------
-// Atta Graphics Module
-// selectedPipeline.cpp
-// Date: 2021-11-15
-// By Breno Cunha Queiroz
-//--------------------------------------------------
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2020-2026 Breno Cunha Queiroz
 #include <atta/component/components/mesh.h>
 #include <atta/component/components/transform.h>
 #include <atta/component/interface.h>
