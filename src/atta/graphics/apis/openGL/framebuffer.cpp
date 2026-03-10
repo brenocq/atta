@@ -113,9 +113,10 @@ void Framebuffer::resize(uint32_t width, uint32_t height, bool forceRecreate) {
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
 
     //----- Update attachment images -----//
-    // Resize attachments
+    // Only resize framebuffer-owned images (not pre-created ones passed via attachment.image)
     for (unsigned i = 0; i < _attachments.size(); i++)
-        _images[i]->resize(width, height, forceRecreate);
+        if (!_attachments[i].image)
+            _images[i]->resize(width, height, forceRecreate);
 
     // Bind attachments
     bindAttachments();
@@ -148,7 +149,17 @@ void Framebuffer::setLayer(uint32_t layer) {
 }
 
 void Framebuffer::setLayerAndMip(uint32_t layer, uint32_t mipLevel) {
-    LOG_WARN("gfx::gl::Framebuffer", "setLayerAndMip is not implemented for OpenGL");
+    if (_images.size() != 1 || _colorAttachmentIndex == -1) {
+        LOG_ERROR(
+            "gfx::gl::Framebuffer",
+            "Error when setting layer+mip for framebuffer [w]$0[]. It is only possible to set layer+mip for a framebuffer with one cubemap color attachment",
+            _debugName);
+        return;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, _id);
+    std::shared_ptr<Image> image = std::dynamic_pointer_cast<Image>(_images[0]);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer, image->getHandle(), mipLevel);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 //---------- Atta to OpenGL conversions ----------//
 //------------------------------------------------//
