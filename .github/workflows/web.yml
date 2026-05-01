@@ -18,7 +18,7 @@ jobs:
         - { name: "Web Latest", os: ubuntu-latest, build_type: "Release" }
 
     steps:
-      - uses: mymindstorm/setup-emsdk@v14
+      - uses: mymindstorm/setup-emsdk@v16
 
       - name: Checkout atta
         uses: actions/checkout@v6
